@@ -1,0 +1,36 @@
+/**
+ * MAYHEN.VN — ADMIN PANEL BASE STYLES
+ * Pure Vanilla CSS & Isolated Layout
+ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F8F9FA;
+    color: #212529;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}

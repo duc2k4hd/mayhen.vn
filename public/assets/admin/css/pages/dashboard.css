@@ -1,0 +1,186 @@
+/**
+ * MAYHEN.VN — ADMIN PANEL STYLES
+ * Prefix: mayhen_admin_
+ */
+
+.mayhen_admin_layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.mayhen_admin_sidebar {
+    width: 240px;
+    background-color: #171513;
+    color: #F8F9FA;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.mayhen_admin_sidebar_brand {
+    padding: 24px 20px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_admin_nav_menu {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 4px;
+    flex: 1;
+}
+
+.mayhen_admin_nav_link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    color: #A8A29E;
+    transition: all 150ms ease;
+}
+
+.mayhen_admin_nav_link:hover,
+.mayhen_admin_nav_link.mayhen_admin_nav_link_active {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+/* Main Content Area */
+.mayhen_admin_main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.mayhen_admin_topbar {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E9ECEF;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_admin_topbar_title {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.mayhen_admin_content {
+    padding: 32px;
+    max-width: 1300px;
+    width: 100%;
+}
+
+/* Stats Cards Grid */
+.mayhen_admin_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.mayhen_admin_stat_card {
+    background-color: #FFFFFF;
+    border: 1px solid #E9ECEF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.mayhen_admin_stat_num {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #171513;
+    line-height: 1.2;
+}
+
+.mayhen_admin_stat_label {
+    font-size: 0.8125rem;
+    color: #6C757D;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+}
+
+/* Card Boxes */
+.mayhen_admin_card {
+    background-color: #FFFFFF;
+    border: 1px solid #E9ECEF;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    margin-bottom: 28px;
+}
+
+.mayhen_admin_card_title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Tables */
+.mayhen_admin_table th {
+    background-color: #F8F9FA;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6C757D;
+    border-bottom: 1px solid #E9ECEF;
+    text-align: left;
+}
+
+.mayhen_admin_table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #E9ECEF;
+    font-size: 0.875rem;
+}
+
+.mayhen_admin_badge_paid {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #D1E7DD;
+    color: #0F5132;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.mayhen_admin_badge_pending {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #FFF3CD;
+    color: #664D03;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.mayhen_admin_btn_sm {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background-color: #E9ECEF;
+    color: #212529;
+    border: 1px solid #CED4DA;
+}
+
+.mayhen_admin_btn_sm:hover {
+    background-color: #DEE2E6;
+}

@@ -29,7 +29,7 @@
                     <p class="mayhen_pricing_card_desc">{{ $plan['description'] }}</p>
 
                     <div class="mayhen_pricing_price_wrap">
-                        <span class="mayhen_pricing_amount">{{ $plan['price'] }}</span>
+                        <span class="mayhen_pricing_amount">{{ $plan['formatted_price'] }}</span>
                         @if (!empty($plan['period']))
                             <span class="mayhen_pricing_period">{{ $plan['period'] }}</span>
                         @endif

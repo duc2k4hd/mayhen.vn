@@ -1,0 +1,168 @@
+/**
+ * MAYHEN.VN — INVITATION EDITOR STYLES
+ * Prefix: mayhen_editor_
+ */
+
+.mayhen_editor_wrapper {
+    background-color: var(--mayhen-color-bg-base);
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Editor Top Subbar */
+.mayhen_editor_topbar {
+    background-color: var(--mayhen-color-bg-surface);
+    border-bottom: 1px solid var(--mayhen-color-border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_editor_topbar_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_editor_view_toggle {
+    display: flex;
+    background-color: var(--mayhen-color-bg-soft);
+    border-radius: var(--mayhen-radius-pill);
+    padding: 3px;
+    gap: 4px;
+}
+
+@media (min-width: 992px) {
+    .mayhen_editor_view_toggle {
+        display: none;
+    }
+}
+
+.mayhen_editor_toggle_btn {
+    padding: 6px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_editor_toggle_btn.mayhen_editor_toggle_btn_active {
+    background-color: #FFFFFF;
+    color: var(--mayhen-color-text-main);
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+/* Main Split Studio Grid */
+.mayhen_editor_studio_grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: var(--mayhen-container-max);
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .mayhen_editor_studio_grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--mayhen-space-2xl);
+        padding: var(--mayhen-space-xl) var(--mayhen-space-md);
+    }
+}
+
+/* Form Panel */
+.mayhen_editor_form_panel {
+    padding: var(--mayhen-space-lg);
+    background-color: var(--mayhen-color-bg-surface);
+    border-radius: var(--mayhen-radius-xl);
+    border: 1px solid var(--mayhen-color-border);
+    margin: var(--mayhen-space-md);
+    box-shadow: var(--mayhen-shadow-sm);
+    overflow-y: auto;
+}
+
+@media (min-width: 992px) {
+    .mayhen_editor_form_panel {
+        margin: 0;
+        padding: var(--mayhen-space-2xl);
+    }
+}
+
+.mayhen_editor_section_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-md);
+    padding-bottom: var(--mayhen-space-xs);
+    border-bottom: 1px solid var(--mayhen-color-border);
+}
+
+/* Template Select Radio Cards */
+.mayhen_editor_template_picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--mayhen-space-sm);
+    margin-bottom: var(--mayhen-space-xl);
+}
+
+.mayhen_editor_template_radio_card {
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--mayhen-transition-fast);
+}
+
+.mayhen_editor_template_radio_card:hover {
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_editor_template_radio_card.mayhen_editor_template_radio_selected {
+    border-color: var(--mayhen-color-primary);
+    background-color: var(--mayhen-color-primary-soft);
+}
+
+.mayhen_editor_template_radio_thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--mayhen-radius-sm);
+    margin-bottom: 6px;
+}
+
+.mayhen_editor_template_radio_name {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Live Preview Panel */
+.mayhen_editor_preview_panel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--mayhen-space-lg);
+    background-color: var(--mayhen-color-bg-soft);
+    border-radius: var(--mayhen-radius-xl);
+    border: 1px solid var(--mayhen-color-border);
+    position: sticky;
+    top: 96px;
+}
+
+@media (max-width: 991px) {
+    .mayhen_editor_preview_panel {
+        display: none;
+    }
+    .mayhen_editor_preview_panel.mayhen_editor_preview_mobile_show {
+        display: flex;
+    }
+}

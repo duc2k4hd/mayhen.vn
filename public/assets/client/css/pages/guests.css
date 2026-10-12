@@ -1,0 +1,160 @@
+/**
+ * MAYHEN.VN — GUEST MANAGEMENT & RSVP DASHBOARD STYLES
+ * Prefix: mayhen_guest_
+ */
+
+.mayhen_guest_wrapper {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-4xl);
+}
+
+.mayhen_guest_header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+    margin-bottom: var(--mayhen-space-2xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guest_header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.mayhen_guest_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: var(--mayhen-color-text-main);
+}
+
+/* Stats Cards Grid */
+.mayhen_guest_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--mayhen-space-md);
+    margin-bottom: var(--mayhen-space-2xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guest_stats_grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.mayhen_guest_stat_card {
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_guest_stat_number {
+    font-family: var(--mayhen-font-serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.2;
+}
+
+.mayhen_guest_stat_label {
+    font-size: var(--mayhen-font-size-caption);
+    color: var(--mayhen-color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+/* Add Guest Card */
+.mayhen_guest_add_card {
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-xl);
+    margin-bottom: var(--mayhen-space-2xl);
+}
+
+.mayhen_guest_add_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-md);
+}
+
+.mayhen_guest_form_row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-md);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guest_form_row {
+        grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+        align-items: flex-end;
+    }
+}
+
+/* Guest Table */
+.mayhen_guest_table_card {
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    overflow: hidden;
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_guest_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.mayhen_guest_table th {
+    background-color: var(--mayhen-color-bg-soft);
+    padding: 14px 18px;
+    font-size: var(--mayhen-font-size-caption);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mayhen-color-text-muted);
+    border-bottom: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_guest_table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--mayhen-color-border);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_guest_table tr:last-child td {
+    border-bottom: none;
+}
+
+.mayhen_guest_badge_attending {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #EBF5EE;
+    color: #2D5A27;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mayhen_guest_badge_pending {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: var(--mayhen-color-bg-soft);
+    color: var(--mayhen-color-text-muted);
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mayhen_guest_actions_cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
