@@ -50,21 +50,204 @@
                     </div>
                 </div>
 
-                <!-- Right Visual: Mobile Mockup Interactive -->
+                <!-- Right Visual: Trio Mobile Mockups Perspective Stage -->
                 <div class="mayhen_home_hero_visual">
-                    <div class="mayhen_home_phone_frame">
-                        <div class="mayhen_home_phone_notch"></div>
-                        <div class="mayhen_home_phone_screen">
-                            <div class="mayhen_home_card_preview">
-                                <div class="mayhen_home_card_envelope_stamp" title="Nhấp để thử hiệu ứng">
-                                    M&A
-                                </div>
-                                <h2 class="mayhen_home_card_title">Minh Quân & Ái Như</h2>
-                                <div class="mayhen_home_card_date">Chủ Nhật &bull; 24.10.2026</div>
-                                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" alt="Ảnh cưới cặp đôi" class="mayhen_home_card_image">
-                                <span class="mayhen_home_card_badge">Chạm để mở phong thư &bull; Chúc mừng</span>
+                    <div class="mayhen_home_trio_phones_stage">
+                        
+                        <!-- Floating Luxury Badge: Background Wedding Music -->
+                        <div class="mayhen_home_float_badge mayhen_home_float_badge_music" title="Nhạc nền tự động khi khách mở thiệp">
+                            <div class="mayhen_home_equalizer">
+                                <span class="mayhen_home_equalizer_bar"></span>
+                                <span class="mayhen_home_equalizer_bar"></span>
+                                <span class="mayhen_home_equalizer_bar"></span>
+                                <span class="mayhen_home_equalizer_bar"></span>
+                            </div>
+                            <div class="mayhen_home_float_badge_text">
+                                <span class="mayhen_home_float_badge_title">Nhạc Nền Cưới</span>
+                                <span class="mayhen_home_float_badge_subtitle">A Thousand Years 🎵</span>
                             </div>
                         </div>
+
+                        <!-- 1. LEFT PHONE (Phong Thư Hoàng Gia & Nắp Gập Tem Sáp) -->
+                        <div class="mayhen_home_phone_device mayhen_home_phone_device_left" title="iPhone 18 Pro Max Sunset Orange Titanium - Phong Thư Mở">
+                            <!-- Earpiece Speaker & Antenna Inlays -->
+                            <span class="mayhen_home_phone_speaker_slit"></span>
+                            <span class="mayhen_home_phone_antenna_top_l"></span>
+                            <span class="mayhen_home_phone_antenna_bot_l"></span>
+                            
+                            <!-- Flat Titanium Hardware Buttons -->
+                            <span class="mayhen_home_phone_btn_action"></span>
+                            <span class="mayhen_home_phone_btn_vol_up"></span>
+                            <span class="mayhen_home_phone_btn_vol_down"></span>
+
+                            <div class="mayhen_home_phone_screen_wrap">
+                                <div class="mayhen_home_phone_island">
+                                    <span class="mayhen_home_phone_island_camera"></span>
+                                </div>
+
+                                <div class="mayhen_home_phone_screen_content mayhen_home_mockup_envelope_screen">
+                                    <div class="mayhen_home_mockup_envelope_box">
+                                        <div class="mayhen_home_mockup_envelope_flap"></div>
+                                        <div class="mayhen_home_mockup_wax_seal" title="Chạm để kiểm tra niêm phong">M&A</div>
+
+                                        <span class="mayhen_home_mockup_envelope_invite_tag">THIỆP MỜI TRỌNG THỂ</span>
+                                        <div class="mayhen_home_mockup_envelope_names">Minh Quân &bull; Ái Như</div>
+                                        <div class="mayhen_home_mockup_envelope_date">Chủ Nhật &bull; 24.10.2026</div>
+
+                                        <div class="mayhen_home_mockup_envelope_cta">
+                                            <span>Chạm Mở Phong Thư</span>
+                                            <span>💌</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <span class="mayhen_home_card_badge" style="font-size: 0.5rem; margin-top: 8px;">
+                                        Hiệu ứng mở thư độc quyền
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. CENTER PHONE (Lễ Thành Hôn & Song Thân Phụ Mẫu - Điểm Nhấn Trung Tâm) -->
+                        <div class="mayhen_home_phone_device mayhen_home_phone_device_center" title="iPhone 18 Pro Max Sunset Orange Titanium - Lễ Thành Hôn">
+                            <!-- Earpiece Speaker & Antenna Inlays -->
+                            <span class="mayhen_home_phone_speaker_slit"></span>
+                            <span class="mayhen_home_phone_antenna_top_l"></span>
+                            <span class="mayhen_home_phone_antenna_bot_l"></span>
+                            <span class="mayhen_home_phone_antenna_top_r"></span>
+                            <span class="mayhen_home_phone_antenna_bot_r"></span>
+
+                            <!-- Full Pro Max Side Controls -->
+                            <span class="mayhen_home_phone_btn_action"></span>
+                            <span class="mayhen_home_phone_btn_vol_up"></span>
+                            <span class="mayhen_home_phone_btn_vol_down"></span>
+                            <span class="mayhen_home_phone_btn_power"></span>
+                            <span class="mayhen_home_phone_btn_camera"></span>
+
+                            <div class="mayhen_home_phone_screen_wrap">
+                                <div class="mayhen_home_phone_island">
+                                    <span class="mayhen_home_phone_island_camera"></span>
+                                </div>
+
+                                <div class="mayhen_home_phone_screen_content">
+                                    <span class="mayhen_home_mockup_top_badge">WELCOME TO OUR WEDDING</span>
+                                    
+                                    <div class="mayhen_home_mockup_monogram_row">
+                                        <div class="mayhen_home_mockup_monogram_name">
+                                            <span class="mayhen_home_mockup_monogram_role">ÚT NAM</span>
+                                            MINH QUÂN
+                                        </div>
+                                        <div class="mayhen_home_mockup_monogram_seal">囍</div>
+                                        <div class="mayhen_home_mockup_monogram_name">
+                                            <span class="mayhen_home_mockup_monogram_role">ÚT NỮ</span>
+                                            ÁI NHƯ
+                                        </div>
+                                    </div>
+
+                                    <div class="mayhen_home_mockup_curved_quote">&bull; LOVE NEVER FAILS &bull; 2026 &bull;</div>
+
+                                    <!-- Arch Photo Frame -->
+                                    <div class="mayhen_home_mockup_arch_frame">
+                                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="lazy">
+                                    </div>
+
+                                    <!-- Ribbon Title -->
+                                    <div class="mayhen_home_mockup_ribbon">
+                                        THÔNG TIN HÔN LỄ
+                                    </div>
+
+                                    <!-- Parents Information Grid -->
+                                    <div class="mayhen_home_mockup_parents_grid">
+                                        <div class="mayhen_home_mockup_parents_col">
+                                            <span class="mayhen_home_mockup_parents_tag">NHÀ TRAI</span>
+                                            <span class="mayhen_home_mockup_parents_name">Trần Văn Long</span>
+                                            <span class="mayhen_home_mockup_parents_name">Phạm Thị Hoa</span>
+                                            <span class="mayhen_home_mockup_parents_addr">12 Nguyễn Trãi, Thanh Xuân, Hà Nội</span>
+                                        </div>
+                                        <div class="mayhen_home_mockup_parents_col">
+                                            <span class="mayhen_home_mockup_parents_tag">NHÀ GÁI</span>
+                                            <span class="mayhen_home_mockup_parents_name">Phan Văn Hoàng</span>
+                                            <span class="mayhen_home_mockup_parents_name">Lê Thị Mai</span>
+                                            <span class="mayhen_home_mockup_parents_addr">36 Nguyễn Thái Sơn, Gò Vấp, TP.HCM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. RIGHT PHONE (Tiệc Cưới Thân Mật & Xác Nhận Tham Dự RSVP) -->
+                        <div class="mayhen_home_phone_device mayhen_home_phone_device_right" title="iPhone 18 Pro Max Sunset Orange Titanium - Tiệc Cưới & RSVP">
+                            <!-- Earpiece Speaker & Antenna Inlays -->
+                            <span class="mayhen_home_phone_speaker_slit"></span>
+                            <span class="mayhen_home_phone_antenna_top_r"></span>
+                            <span class="mayhen_home_phone_antenna_bot_r"></span>
+
+                            <!-- Right Controls: Power & Camera Control Button -->
+                            <span class="mayhen_home_phone_btn_power"></span>
+                            <span class="mayhen_home_phone_btn_camera"></span>
+
+                            <div class="mayhen_home_phone_screen_wrap">
+                                <div class="mayhen_home_phone_island">
+                                    <span class="mayhen_home_phone_island_camera"></span>
+                                </div>
+
+                                <div class="mayhen_home_phone_screen_content">
+                                    <div class="mayhen_home_mockup_header_birds">
+                                        <!-- Left Bird SVG Icon -->
+                                        <svg class="mayhen_home_mockup_bird_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.3-2.3L11 6"/>
+                                            <path d="m3 13 4 5"/>
+                                            <path d="m12 18-3-5"/>
+                                        </svg>
+
+                                        <div class="mayhen_home_mockup_couple_badge">
+                                            <span class="mayhen_home_mockup_couple_name">MINH QUÂN</span>
+                                            <span class="mayhen_home_mockup_hysymbol">囍</span>
+                                            <span class="mayhen_home_mockup_couple_name">ÁI NHƯ</span>
+                                        </div>
+
+                                        <!-- Right Bird SVG Icon (mirrored) -->
+                                        <svg class="mayhen_home_mockup_bird_icon" style="transform: scaleX(-1);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 7h.01M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.3-2.3L11 6"/>
+                                            <path d="m3 13 4 5"/>
+                                            <path d="m12 18-3-5"/>
+                                        </svg>
+                                    </div>
+
+                                    <!-- Scalloped Photo Frame -->
+                                    <div class="mayhen_home_mockup_scallop_frame">
+                                        <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="lazy">
+                                    </div>
+
+                                    <!-- Double-Bordered Info Box -->
+                                    <div class="mayhen_home_mockup_info_box">
+                                        <div class="mayhen_home_mockup_info_title">THÔNG TIN TIỆC CƯỚI</div>
+                                        <div class="mayhen_home_mockup_info_datetime">18:00 &bull; CHỦ NHẬT &bull; 24.10.2026</div>
+                                        <div class="mayhen_home_mockup_info_venue">TRUNG TÂM HỘI NGHỊ THE WHITE PALACE</div>
+                                        <div class="mayhen_home_mockup_info_address">194 Hoàng Văn Thụ, Phường 9, Phú Nhuận, TP.HCM</div>
+                                    </div>
+
+                                    <!-- RSVP Action Button -->
+                                    <div class="mayhen_home_mockup_rsvp_cta">
+                                        <span>✓ Xác Nhận Tham Dự &bull; RSVP</span>
+                                    </div>
+
+                                    <!-- Signature Typography -->
+                                    <div class="mayhen_home_mockup_signature">
+                                        Minh Quân & Ái Như
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Luxury Badge: Live RSVP Count -->
+                        <div class="mayhen_home_float_badge mayhen_home_float_badge_rsvp" title="Tính năng quản lý RSVP tự động">
+                            <div class="mayhen_home_float_badge_icon">💌</div>
+                            <div class="mayhen_home_float_badge_text">
+                                <span class="mayhen_home_float_badge_title">186 Khách Mời</span>
+                                <span class="mayhen_home_float_badge_subtitle">Đã gửi lời chúc & RSVP ✨</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

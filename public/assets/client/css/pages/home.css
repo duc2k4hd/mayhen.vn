@@ -109,13 +109,802 @@
     color: var(--mayhen-color-text-muted);
 }
 
-/* Hero Phone Mockup Interactive */
+/* Hero Trio Phones Mockup Showcase */
 .mayhen_home_hero_visual {
     display: flex;
     justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    min-height: 560px;
+}
+
+.mayhen_home_dual_phones_stage,
+.mayhen_home_trio_phones_stage {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+    height: 620px;
+    margin: 0 auto;
+    perspective: 1400px;
+}
+
+/* Ambient Glow behind phones */
+.mayhen_home_dual_phones_stage::before,
+.mayhen_home_trio_phones_stage::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 440px;
+    height: 440px;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.22) 0%, rgba(247, 244, 238, 0.06) 60%, transparent 75%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Phone Device Housing — iPhone 18 Pro Max Sunset Orange Titanium (Viền Mỏng Tinh Xảo) */
+.mayhen_home_phone_device {
+    position: absolute;
+    /* Khung kim loại Titanium Màu Cam Hoàng Hôn (Sunset Amber Titanium) */
+    background: linear-gradient(160deg, #D46730 0%, #E87A40 30%, #C65620 70%, #9F3E12 100%);
+    border-radius: 46px;
+    padding: 6px; /* Viền mỏng siêu tinh xảo theo yêu cầu */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease, z-index 0.45s ease;
+    cursor: pointer;
+    user-select: none;
+    /* Viền kim loại vuông phẳng thanh mảnh, sắc nét cao cấp */
+    box-shadow: 
+        0 0 0 1px #F7935E,                  /* Vết cắt vát kim cương mép ngoài */
+        0 0 0 2px #A8491A,                  /* Cạnh phẳng kim loại titanium cam */
+        0 0 0 3px #FFBA94,                  /* Đường viền ánh kim cam hổ phách thanh mảnh */
+        0 24px 50px -10px rgba(160, 65, 20, 0.32);
+}
+
+/* Ánh kim phản chiếu dọc viền mỏng (Precision Slim Chamfer Highlight) */
+.mayhen_home_phone_device::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 48px;
+    border: 1px solid rgba(255, 205, 175, 0.7);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 18%, transparent 82%, rgba(255, 195, 160, 0.45) 100%);
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* Side Hardware Buttons — Thanh mảnh kim loại Titanium Cam */
+.mayhen_home_phone_btn_action,
+.mayhen_home_phone_btn_vol_up,
+.mayhen_home_phone_btn_vol_down,
+.mayhen_home_phone_btn_silent,
+.mayhen_home_phone_btn_power,
+.mayhen_home_phone_btn_camera {
+    position: absolute;
+    background: linear-gradient(180deg, #E87A40 0%, #B84A18 100%);
+    border: 1px solid #FFAB80;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+}
+
+/* Cạnh trái: Nút Action Button & Âm lượng */
+.mayhen_home_phone_btn_action,
+.mayhen_home_phone_btn_silent {
+    left: -3.5px;
+    top: 90px;
+    width: 3.5px;
+    height: 24px;
+}
+
+.mayhen_home_phone_btn_vol_up {
+    left: -3.5px;
+    top: 130px;
+    width: 3.5px;
+    height: 44px;
+}
+
+.mayhen_home_phone_btn_vol_down {
+    left: -3.5px;
+    top: 185px;
+    width: 3.5px;
+    height: 44px;
+}
+
+/* Cạnh phải: Nút Nguồn Power & Phím Camera Control */
+.mayhen_home_phone_btn_power {
+    right: -3.5px;
+    top: 135px;
+    width: 3.5px;
+    height: 64px;
+}
+
+.mayhen_home_phone_btn_camera {
+    right: -3.5px;
+    top: 295px;
+    width: 3.5px;
+    height: 42px;
+    background: linear-gradient(180deg, #D46730 0%, #A44014 100%);
+    border: 1px solid #F7935E;
+}
+
+/* Dải ăng-ten kim loại (Antenna Bands) */
+.mayhen_home_phone_antenna_top_l,
+.mayhen_home_phone_antenna_top_r,
+.mayhen_home_phone_antenna_bot_l,
+.mayhen_home_phone_antenna_bot_r {
+    position: absolute;
+    background: #BD5320;
+    z-index: 16;
+}
+
+.mayhen_home_phone_antenna_top_l { left: -3px; top: 55px; width: 3px; height: 3px; }
+.mayhen_home_phone_antenna_bot_l { left: -3px; bottom: 65px; width: 3px; height: 3px; }
+.mayhen_home_phone_antenna_top_r { right: -3px; top: 55px; width: 3px; height: 3px; }
+.mayhen_home_phone_antenna_bot_r { right: -3px; bottom: 65px; width: 3px; height: 3px; }
+
+/* Dải loa thoại siêu mỏng ở mép trên (Earpiece Speaker Slit) */
+.mayhen_home_phone_speaker_slit {
+    position: absolute;
+    top: 2.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 1.5px;
+    background: #1C0C04;
+    border-radius: 2px;
+    z-index: 20;
+}
+
+/* ========================================================
+   TRIO POSITIONING & PERSPECTIVE
+   ======================================================== */
+
+/* 1. LEFT PHONE (Phong Thư Mở - Nghiêng Trái - Lùi Nhẹ) */
+.mayhen_home_phone_device_left {
+    width: 255px;
+    height: 525px;
+    left: 0;
+    top: 40px;
+    z-index: 1;
+    transform: rotate(-10deg) translateY(10px) translateX(-5px);
+    box-shadow: 
+        0 0 0 1px #F7935E,
+        0 0 0 2px #A8491A,
+        0 0 0 3px #FFBA94,
+        0 18px 38px -10px rgba(160, 65, 20, 0.28);
+}
+
+.mayhen_home_phone_device_left:hover {
+    transform: rotate(-5deg) translateY(-10px) scale(1.04);
+    z-index: 10;
+    box-shadow: 
+        0 0 0 1px #FFC4A3,
+        0 0 0 2.5px #C65620,
+        0 0 0 4px #FFE0D1,
+        0 26px 55px -10px rgba(160, 65, 20, 0.4);
+}
+
+/* 2. CENTER PHONE (Lễ Thành Hôn - Trung Tâm - Đỉnh Cao Nhất) */
+.mayhen_home_phone_device_center {
+    width: 275px;
+    height: 565px;
+    left: 50%;
+    top: 5px;
+    transform: translateX(-50%) rotate(0deg);
+    z-index: 3;
+    box-shadow: 
+        0 0 0 1px #F7935E,
+        0 0 0 2.5px #A8491A,
+        0 0 0 3.5px #FFBA94,
+        0 24px 55px -12px rgba(160, 65, 20, 0.35);
+}
+
+.mayhen_home_phone_device_center:hover {
+    transform: translateX(-50%) translateY(-12px) scale(1.04);
+    z-index: 10;
+    box-shadow: 
+        0 0 0 1px #FFC4A3,
+        0 0 0 3px #C65620,
+        0 0 0 4.5px #FFE0D1,
+        0 32px 65px -12px rgba(160, 65, 20, 0.45);
+}
+
+/* 3. RIGHT PHONE (Tiệc Cưới & RSVP - Nghiêng Phải) */
+.mayhen_home_phone_device_right {
+    width: 255px;
+    height: 525px;
+    right: 0;
+    top: 45px;
+    z-index: 2;
+    transform: rotate(9deg) translateY(16px) translateX(5px);
+    box-shadow: 
+        0 0 0 1px #F7935E,
+        0 0 0 2px #A8491A,
+        0 0 0 3px #FFBA94,
+        -12px 20px 42px -10px rgba(160, 65, 20, 0.3);
+}
+
+.mayhen_home_phone_device_right:hover {
+    transform: rotate(4deg) translateY(-10px) scale(1.04);
+    z-index: 10;
+    box-shadow: 
+        0 0 0 1px #FFC4A3,
+        0 0 0 2.5px #C65620,
+        0 0 0 4px #FFE0D1,
+        0 26px 55px -10px rgba(160, 65, 20, 0.4);
+}
+
+/* ========================================================
+   FLOATING INTERACTIVE LUXURY BADGES
+   ======================================================== */
+.mayhen_home_float_badge {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    box-shadow: 0 12px 30px -6px rgba(28, 25, 23, 0.14), 0 4px 10px rgba(197, 168, 128, 0.12);
+    border-radius: var(--mayhen-radius-pill);
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 5;
+    pointer-events: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+}
+
+.mayhen_home_float_badge:hover {
+    transform: translateY(-4px) scale(1.03);
+    border-color: var(--mayhen-color-primary);
+    box-shadow: 0 16px 36px -6px rgba(28, 25, 23, 0.2);
+}
+
+.mayhen_home_float_badge_music {
+    top: 25px;
+    left: -20px;
+    animation: mayhen_home_float_slow 4s ease-in-out infinite alternate;
+}
+
+.mayhen_home_float_badge_rsvp {
+    bottom: 25px;
+    right: -15px;
+    animation: mayhen_home_float_slow 4.5s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes mayhen_home_float_slow {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+.mayhen_home_float_badge_icon {
+    font-size: 1rem;
+    color: var(--mayhen-color-primary);
+    display: flex;
+    align-items: center;
+}
+
+.mayhen_home_float_badge_text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.mayhen_home_float_badge_title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.2;
+}
+
+.mayhen_home_float_badge_subtitle {
+    font-size: 0.625rem;
+    color: var(--mayhen-color-primary-hover);
+    font-weight: 500;
+}
+
+/* Sound Wave Equalizer */
+.mayhen_home_equalizer {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+}
+
+.mayhen_home_equalizer_bar {
+    width: 2.5px;
+    background-color: var(--mayhen-color-primary);
+    border-radius: 2px;
+    animation: mayhen_home_eq 1.2s ease-in-out infinite alternate;
+}
+
+.mayhen_home_equalizer_bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+.mayhen_home_equalizer_bar:nth-child(2) { height: 12px; animation-delay: 0.3s; }
+.mayhen_home_equalizer_bar:nth-child(3) { height: 8px; animation-delay: 0.2s; }
+.mayhen_home_equalizer_bar:nth-child(4) { height: 14px; animation-delay: 0.4s; }
+
+@keyframes mayhen_home_eq {
+    0% { height: 4px; }
+    100% { height: 14px; }
+}
+
+/* Phone Screen Frame (Ultra-Thin Bezel of iPhone 18 Pro Max) */
+.mayhen_home_phone_screen_wrap {
+    width: 100%;
+    height: 100%;
+    background-color: var(--mayhen-color-bg-base);
+    border-radius: 41px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 0 1.5px #000000;
+}
+
+/* Dynamic Island */
+.mayhen_home_phone_island {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 20px;
+    background-color: #000000;
+    border-radius: 12px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.mayhen_home_phone_island_camera {
+    width: 7.5px;
+    height: 7.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #2B160C 0%, #0F0703 70%, #000 100%);
+    border: 1px solid #4A2312;
     position: relative;
 }
 
+.mayhen_home_phone_island_camera::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1.5px;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: rgba(255, 175, 130, 0.7);
+}
+
+/* Inside Card Content (Scrollable & Responsive) */
+.mayhen_home_phone_screen_content {
+    flex: 1;
+    overflow-y: hidden;
+    padding: 34px 14px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+/* ========================================================
+   SCREEN 1: LEFT PHONE (Lễ Thành Hôn & Song Thân Phụ Mẫu)
+   Style: Muted Gold & Ivory Quiet Luxury
+   ======================================================== */
+.mayhen_home_mockup_top_badge {
+    font-size: 0.525rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    margin-bottom: 5px;
+}
+
+.mayhen_home_mockup_monogram_row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.mayhen_home_mockup_monogram_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.mayhen_home_mockup_monogram_role {
+    display: block;
+    font-family: var(--mayhen-font-sans);
+    font-size: 0.475rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.mayhen_home_mockup_monogram_seal {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mayhen-color-primary) 0%, var(--mayhen-color-primary-hover) 100%);
+    color: #FFFFFF;
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(197, 168, 128, 0.4);
+    flex-shrink: 0;
+}
+
+.mayhen_home_mockup_curved_quote {
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+    color: var(--mayhen-color-primary-hover);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Arch Photo Frame with Gold Rim */
+.mayhen_home_mockup_arch_frame {
+    width: 100%;
+    max-width: 215px;
+    height: 200px;
+    position: relative;
+    border-radius: 110px 110px 14px 14px;
+    padding: 3px;
+    background: linear-gradient(180deg, var(--mayhen-color-primary) 0%, var(--mayhen-color-border) 100%);
+    box-shadow: 0 6px 16px rgba(28, 25, 23, 0.08);
+    margin-bottom: 9px;
+}
+
+.mayhen_home_mockup_arch_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 108px 108px 12px 12px;
+    display: block;
+}
+
+/* Ribbon Gold Header: THÔNG TIN HÔN LỄ */
+.mayhen_home_mockup_ribbon {
+    width: 100%;
+    background: #1C1917;
+    color: #FFFFFF;
+    padding: 5px 0;
+    border-radius: 6px;
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(28, 25, 23, 0.12);
+}
+
+/* Two Columns: Song Thân Phụ Mẫu */
+.mayhen_home_mockup_parents_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    text-align: center;
+    background: #FFFFFF;
+    padding: 8px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_home_mockup_parents_col {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.mayhen_home_mockup_parents_col:first-child {
+    border-right: 1px solid var(--mayhen-color-border);
+    padding-right: 6px;
+}
+
+.mayhen_home_mockup_parents_tag {
+    font-size: 0.45rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary-hover);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_mockup_parents_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.585rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.25;
+}
+
+.mayhen_home_mockup_parents_addr {
+    font-size: 0.44rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.3;
+    margin-top: 2px;
+}
+
+/* ========================================================
+   SCREEN 2: RIGHT PHONE (Tiệc Cưới Thân Mật & The White Palace)
+   Style: Scalloped Arch, Rich Gold Border & Signature
+   ======================================================== */
+.mayhen_home_mockup_header_birds {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 4px;
+    margin-bottom: 6px;
+}
+
+.mayhen_home_mockup_bird_icon {
+    width: 16px;
+    height: 16px;
+    color: var(--mayhen-color-primary);
+    opacity: 0.85;
+}
+
+.mayhen_home_mockup_couple_badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_home_mockup_couple_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.685rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_home_mockup_hysymbol {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--mayhen-color-primary);
+    color: var(--mayhen-color-primary);
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Scalloped Soft Arch Frame */
+.mayhen_home_mockup_scallop_frame {
+    width: 100%;
+    max-width: 215px;
+    height: 200px;
+    position: relative;
+    border-radius: 80px 80px 16px 16px;
+    padding: 3px;
+    background: #FFFFFF;
+    border: 1.5px solid var(--mayhen-color-primary);
+    box-shadow: 0 6px 16px rgba(28, 25, 23, 0.08);
+    margin-bottom: 9px;
+}
+
+.mayhen_home_mockup_scallop_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 76px 76px 13px 13px;
+    display: block;
+}
+
+/* Elegant Double-Bordered Information Box */
+.mayhen_home_mockup_info_box {
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-primary);
+    border-radius: 12px;
+    padding: 7px 8px;
+    position: relative;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.12);
+}
+
+.mayhen_home_mockup_info_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-text-main);
+    display: inline-block;
+    padding: 1px 10px;
+    border-bottom: 1px solid var(--mayhen-color-primary-soft);
+    margin-bottom: 4px;
+}
+
+.mayhen_home_mockup_info_datetime {
+    font-size: 0.565rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary-hover);
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_mockup_info_venue {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.25;
+}
+
+.mayhen_home_mockup_info_address {
+    font-size: 0.45rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.3;
+}
+
+/* Calligraphy Signature */
+.mayhen_home_mockup_signature {
+    font-family: var(--mayhen-font-script);
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--mayhen-color-primary);
+    line-height: 1;
+    margin-top: 2px;
+}
+
+/* ========================================================
+   SCREEN 3: LEFT PHONE (Phong Thư Hoàng Gia & Nắp Gập Tem Sáp)
+   Style: Royal Envelope Reveal & Golden Ribbon
+   ======================================================== */
+.mayhen_home_mockup_envelope_screen {
+    background: linear-gradient(180deg, #F9F6F0 0%, #EFE8DC 100%);
+    padding: 28px 12px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.mayhen_home_mockup_envelope_box {
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-primary);
+    border-radius: 18px;
+    padding: 16px 12px;
+    box-shadow: 0 8px 24px rgba(197, 168, 128, 0.18);
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+/* Envelope Flap triangular top fold */
+.mayhen_home_mockup_envelope_flap {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, #F7F3EB 0%, #EDE5D8 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    margin: -16px -12px 12px -12px;
+    border-bottom: 1.5px solid var(--mayhen-color-primary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 6px;
+}
+
+/* Wax Seal Stamp */
+.mayhen_home_mockup_wax_seal {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #D4A5A5 0%, #A65B5B 70%, #8C4343 100%);
+    color: #FFFFFF;
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(166, 91, 91, 0.45), inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+    margin: -24px auto 10px auto;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_home_mockup_wax_seal:hover {
+    transform: scale(1.18) rotate(8deg);
+}
+
+.mayhen_home_mockup_envelope_invite_tag {
+    font-size: 0.485rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary-hover);
+    margin-bottom: 4px;
+}
+
+.mayhen_home_mockup_envelope_names {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.25;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_mockup_envelope_date {
+    font-size: 0.525rem;
+    color: var(--mayhen-color-text-muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+}
+
+.mayhen_home_mockup_envelope_cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 6px 10px;
+    background: #1C1917;
+    color: #FFFFFF;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.55rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 8px rgba(28, 25, 23, 0.2);
+    animation: mayhen_home_pulse_soft 2.5s infinite;
+}
+
+@keyframes mayhen_home_pulse_soft {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+/* RSVP Button on Right Phone */
+.mayhen_home_mockup_rsvp_cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--mayhen-color-primary) 0%, var(--mayhen-color-primary-hover) 100%);
+    color: #FFFFFF;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(197, 168, 128, 0.35);
+    margin-top: 4px;
+}
+
+/* Legacy Support (Editor Page / Fallback) */
 .mayhen_home_phone_frame {
     width: 100%;
     max-width: 330px;
@@ -407,3 +1196,251 @@
     margin-bottom: var(--mayhen-space-xl);
     font-size: var(--mayhen-font-size-lead);
 }
+
+/* ========================================================
+   RESPONSIVE TRIO PHONES SHOWCASE
+   ======================================================== */
+@media (max-width: 1023px) {
+    .mayhen_home_dual_phones_stage,
+    .mayhen_home_trio_phones_stage {
+        max-width: 500px;
+        height: 550px;
+    }
+
+    .mayhen_home_phone_device_center {
+        width: 240px;
+        height: 500px;
+    }
+
+    .mayhen_home_phone_device_left,
+    .mayhen_home_phone_device_right {
+        width: 220px;
+        height: 460px;
+    }
+
+    .mayhen_home_mockup_arch_frame,
+    .mayhen_home_mockup_scallop_frame {
+        height: 170px;
+    }
+
+    .mayhen_home_float_badge_music {
+        left: -10px;
+        top: 15px;
+    }
+
+    .mayhen_home_float_badge_rsvp {
+        right: -10px;
+        bottom: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .mayhen_home_hero_visual {
+        min-height: 470px;
+        padding-top: var(--mayhen-space-md);
+        padding-bottom: var(--mayhen-space-md);
+        overflow: hidden;
+    }
+
+    .mayhen_home_dual_phones_stage,
+    .mayhen_home_trio_phones_stage {
+        max-width: 350px;
+        height: 430px;
+    }
+
+    .mayhen_home_phone_device {
+        border-radius: 34px;
+        padding: 4.5px;
+    }
+
+    .mayhen_home_phone_device::after {
+        border-radius: 36px;
+        inset: -1.5px;
+    }
+
+    .mayhen_home_phone_screen_wrap {
+        border-radius: 30px;
+    }
+
+    .mayhen_home_phone_device_center {
+        width: 185px;
+        height: 395px;
+        top: 0;
+    }
+
+    .mayhen_home_phone_device_left {
+        width: 165px;
+        height: 360px;
+        left: 2px;
+        top: 22px;
+        transform: rotate(-8deg) translateY(6px);
+    }
+
+    .mayhen_home_phone_device_left:hover {
+        transform: rotate(-4deg) translateY(-8px) scale(1.03);
+    }
+
+    .mayhen_home_phone_device_right {
+        width: 165px;
+        height: 360px;
+        right: 2px;
+        top: 26px;
+        transform: rotate(7deg) translateY(10px);
+    }
+
+    .mayhen_home_phone_device_right:hover {
+        transform: rotate(3deg) translateY(-8px) scale(1.03);
+    }
+
+    .mayhen_home_phone_island {
+        width: 60px;
+        height: 15px;
+        top: 5px;
+    }
+
+    .mayhen_home_phone_island_camera {
+        width: 4px;
+        height: 4px;
+    }
+
+    .mayhen_home_phone_screen_content {
+        padding: 22px 6px 8px 6px;
+    }
+
+    .mayhen_home_mockup_arch_frame,
+    .mayhen_home_mockup_scallop_frame {
+        height: 135px;
+        margin-bottom: 5px;
+    }
+
+    .mayhen_home_mockup_ribbon {
+        font-size: 0.5rem;
+        padding: 2.5px 0;
+        margin-bottom: 4px;
+    }
+
+    .mayhen_home_mockup_parents_grid {
+        padding: 4px 2px;
+        gap: 3px;
+    }
+
+    .mayhen_home_mockup_parents_tag {
+        font-size: 0.36rem;
+    }
+
+    .mayhen_home_mockup_parents_name {
+        font-size: 0.44rem;
+    }
+
+    .mayhen_home_mockup_parents_addr {
+        font-size: 0.36rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .mayhen_home_mockup_info_box {
+        padding: 4px 5px;
+        margin-bottom: 4px;
+    }
+
+    .mayhen_home_mockup_info_title {
+        font-size: 0.485rem;
+        margin-bottom: 2px;
+    }
+
+    .mayhen_home_mockup_info_datetime {
+        font-size: 0.44rem;
+    }
+
+    .mayhen_home_mockup_info_venue {
+        font-size: 0.465rem;
+    }
+
+    .mayhen_home_mockup_info_address {
+        font-size: 0.36rem;
+    }
+
+    .mayhen_home_mockup_signature {
+        font-size: 0.85rem;
+    }
+
+    .mayhen_home_mockup_envelope_screen {
+        padding: 22px 8px 10px 8px;
+    }
+
+    .mayhen_home_mockup_wax_seal {
+        width: 34px;
+        height: 34px;
+        font-size: 0.75rem;
+        margin: -18px auto 8px auto;
+    }
+
+    .mayhen_home_mockup_envelope_names {
+        font-size: 0.7rem;
+    }
+
+    .mayhen_home_mockup_envelope_cta,
+    .mayhen_home_mockup_rsvp_cta {
+        font-size: 0.485rem;
+        padding: 4px 8px;
+    }
+
+    /* Floating badges compact on mobile */
+    .mayhen_home_float_badge {
+        padding: 5px 10px;
+        gap: 6px;
+    }
+
+    .mayhen_home_float_badge_title {
+        font-size: 0.65rem;
+    }
+
+    .mayhen_home_float_badge_subtitle {
+        font-size: 0.525rem;
+    }
+
+    .mayhen_home_float_badge_music {
+        left: -5px;
+        top: 5px;
+    }
+
+    .mayhen_home_float_badge_rsvp {
+        right: -5px;
+        bottom: 5px;
+    }
+}
+
+@media (max-width: 379px) {
+    .mayhen_home_dual_phones_stage,
+    .mayhen_home_trio_phones_stage {
+        max-width: 310px;
+        height: 390px;
+    }
+
+    .mayhen_home_phone_device_center {
+        width: 165px;
+        height: 355px;
+    }
+
+    .mayhen_home_phone_device_left {
+        width: 145px;
+        height: 325px;
+    }
+
+    .mayhen_home_phone_device_right {
+        width: 145px;
+        height: 325px;
+    }
+
+    .mayhen_home_mockup_arch_frame,
+    .mayhen_home_mockup_scallop_frame {
+        height: 115px;
+    }
+
+    .mayhen_home_float_badge {
+        display: none;
+    }
+}
+
