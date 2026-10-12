@@ -25,3 +25,11 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+
+# Ignore root directories only
+/.agents/
+/.codex/
+/tests/
+/storage/
+/node_modules/
