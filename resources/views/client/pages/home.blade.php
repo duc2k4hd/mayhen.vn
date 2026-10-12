@@ -14,38 +14,38 @@
             <div class="mayhen_home_hero_grid">
                 <!-- Left Content -->
                 <div class="mayhen_home_hero_content">
-                    <span class="mayhen_home_hero_badge">Thiệp Cưới Điện Tử Thế Hệ Mới</span>
+                    <span class="mayhen_home_hero_badge">Thiệp cưới online gửi người thân quý</span>
                     
                     <h1 class="mayhen_home_hero_title">
-                        Gửi trao hạnh phúc trong <span class="mayhen_home_hero_title_highlight">từng nhịp chạm</span>
+                        Thiệp cưới online <span class="mayhen_home_hero_title_highlight">chỉn chu và trang nhã</span>
                     </h1>
 
                     <p class="mayhen_home_hero_desc">
-                        Nền tảng thiệp cưới online chuẩn phong cách Quiet Luxury. Hiệu ứng mở phong thư sống động, thiết kế tối giản sang trọng, và bộ công cụ mời cưới chu đáo nhất dành cho ngày trọng đại của bạn.
+                        Mây Hẹn giúp bạn tự tạo tấm thiệp cưới online tươm tất để gửi qua Zalo hay tin nhắn. Khách mở thiệp là xem được ảnh cưới, thời gian, bản đồ chỉ đường và có thể bấm báo tham dự để bạn tiện sắp xếp bàn tiệc.
                     </p>
 
                     <div class="mayhen_home_hero_actions">
                         <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg">
-                            Tạo Thiệp Miễn Phí Ngay
+                            Tạo thử thiệp của bạn
                         </a>
                         <a href="{{ route('templates.preview', 'envelope-reveal-luxury') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg">
-                            Xem Mẫu Trực Tiếp
+                            Xem mẫu trên điện thoại
                         </a>
                     </div>
 
-                    <!-- Trust Stats -->
+                    <!-- Trust Stats / Key Benefits -->
                     <div class="mayhen_home_hero_trust">
                         <div class="mayhen_home_hero_trust_item">
-                            <span class="mayhen_home_hero_trust_number">100%</span>
-                            <span class="mayhen_home_hero_trust_label">Chuẩn Điện Thoại</span>
+                            <span class="mayhen_home_hero_trust_number">Dễ gửi Zalo</span>
+                            <span class="mayhen_home_hero_trust_label">Khách mở xem mượt trên mọi máy</span>
                         </div>
                         <div class="mayhen_home_hero_trust_item">
-                            <span class="mayhen_home_hero_trust_number">3 Phút</span>
-                            <span class="mayhen_home_hero_trust_label">Tạo & Xem Thử</span>
+                            <span class="mayhen_home_hero_trust_number">Có bản đồ</span>
+                            <span class="mayhen_home_hero_trust_label">Dẫn đường thuận tiện tới sảnh tiệc</span>
                         </div>
                         <div class="mayhen_home_hero_trust_item">
-                            <span class="mayhen_home_hero_trust_number">0đ</span>
-                            <span class="mayhen_home_hero_trust_label">Dùng Thử Miễn Phí</span>
+                            <span class="mayhen_home_hero_trust_number">Báo tham dự</span>
+                            <span class="mayhen_home_hero_trust_label">Biết trước số khách để tiện xếp bàn</span>
                         </div>
                     </div>
                 </div>
