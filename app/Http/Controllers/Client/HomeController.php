@@ -16,7 +16,7 @@ class HomeController extends Controller
         $featuredTemplates = InvitationTemplate::query()
             ->where('is_active', true)
             ->orderByDesc('is_featured')
-            ->take(3)
+            ->take(20)
             ->get();
 
         return view('client.pages.home', [

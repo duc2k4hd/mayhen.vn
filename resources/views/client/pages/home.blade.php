@@ -254,40 +254,397 @@
         </div>
     </section>
 
-    <!-- 2. Curated Aesthetics Showcase -->
-    <section class="mayhen_client_layout_section mayhen_client_layout_section_soft">
-        <div class="mayhen_client_layout_container">
-            <div class="mayhen_home_section_header">
-                <span class="mayhen_home_section_subtitle">Bộ Sưu Tập Nghệ Thuật</span>
-                <h2 class="mayhen_home_section_title">Mẫu Thiệp Được Thiết Kế Có Chủ Đích</h2>
-                <p class="mayhen_home_section_desc">
-                    Mỗi mẫu thiệp tại Mây Hẹn là một câu chuyện riêng biệt với bố cục, typography và nhịp điệu chuyển động được trau chuốt tỉ mỉ.
-                </p>
+    <!-- 2. 3D Coverflow Invitation Showcase (Haute Couture Gallery) -->
+    <section class="mayhen_home_showcase_section" id="mayhen_home_showcase_section" aria-label="Không gian triển lãm thiệp cưới 3D">
+        <!-- Floating Romantic Petals Canvas -->
+        <canvas class="mayhen_home_showcase_canvas_petals" id="mayhen_home_showcase_canvas_petals" aria-hidden="true"></canvas>
+
+        <!-- Haute Couture Visual Vignettes (2 Bên Cánh Xếp Lớp Nghệ Thuật) -->
+        <div class="mayhen_home_showcase_vignettes_wrap" aria-hidden="true">
+            <!-- Left Vignette: Polaroid & Vintage Wax Envelope -->
+            <div class="mayhen_home_showcase_vignette is-left">
+                <!-- Layer 1: Polaroid Frame -->
+                <div class="mayhen_home_showcase_vignette_card is-polaroid">
+                    <div class="mayhen_home_showcase_vignette_img_box">
+                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Khoảnh khắc hoa cưới" loading="lazy">
+                    </div>
+                    <div class="mayhen_home_showcase_vignette_polaroid_footer">
+                        <span>Forever & Always • 2026</span>
+                    </div>
+                    <!-- Vintage Gold Clip -->
+                    <span class="mayhen_home_showcase_vignette_clip"></span>
+                </div>
+
+                <!-- Layer 2: Wax Seal Luxury Envelope -->
+                <div class="mayhen_home_showcase_vignette_card is-envelope">
+                    <div class="mayhen_home_showcase_vignette_envelope_inner">
+                        <span class="mayhen_home_showcase_vignette_postage">MÂY HẸN • VIỆT NAM</span>
+                        <div class="mayhen_home_showcase_vignette_seal">
+                            <span>囍</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layer 3: Floating Calligraphy Tag -->
+                <div class="mayhen_home_showcase_vignette_tag is-left-tag">
+                    <span>✦ Nghệ thuật trao lời hẹn</span>
+                </div>
             </div>
 
-            <div class="mayhen_home_templates_grid">
-                @foreach ($featuredTemplates as $tpl)
-                    <article class="mayhen_home_template_card">
-                        <div class="mayhen_home_template_card_img_wrap">
-                            <img src="{{ $tpl['image'] }}" alt="{{ $tpl['name'] }}" class="mayhen_home_template_card_img" loading="lazy">
-                            <span class="mayhen_home_template_card_badge">{{ $tpl['badge'] }}</span>
-                        </div>
-                        <div class="mayhen_home_template_card_body">
-                            <span class="mayhen_home_template_card_category">{{ $tpl['category_label'] }}</span>
-                            <h3 class="mayhen_home_template_card_name">{{ $tpl['name'] }}</h3>
-                            <p class="mayhen_home_template_card_desc">{{ $tpl['description'] }}</p>
-                            
-                            <div class="mayhen_home_template_card_footer">
-                                <a href="{{ route('templates.preview', $tpl['slug']) }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm">
-                                    Xem Thử Live
-                                </a>
-                                <a href="{{ route('templates.show', $tpl['slug']) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm">
-                                    Chọn Mẫu Này
-                                </a>
+            <!-- Right Vignette: French Arch Photo & Editorial Invitation -->
+            <div class="mayhen_home_showcase_vignette is-right">
+                <!-- Layer 1: French Arch Frame -->
+                <div class="mayhen_home_showcase_vignette_card is-arch">
+                    <div class="mayhen_home_showcase_vignette_img_box">
+                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80" alt="Nhẫn cưới và lời hẹn ước" loading="lazy">
+                    </div>
+                    <span class="mayhen_home_showcase_vignette_arch_bezel"></span>
+                </div>
+
+                <!-- Layer 2: Editorial Monogram Card -->
+                <div class="mayhen_home_showcase_vignette_card is-stationery">
+                    <div class="mayhen_home_showcase_vignette_stationery_body">
+                        <span class="mayhen_home_showcase_vignette_stat_cat">EDITION 2026</span>
+                        <span class="mayhen_home_showcase_vignette_stat_title">MayHen Wedding Studio</span>
+                        <span class="mayhen_home_showcase_vignette_stat_seal">MH</span>
+                    </div>
+                </div>
+
+                <!-- Layer 3: Floating Rotating Badge -->
+                <div class="mayhen_home_showcase_vignette_badge">
+                    <svg viewBox="0 0 100 100" class="mayhen_home_showcase_vignette_spin_text">
+                        <path id="mayhen_text_path_circle" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" fill="none"/>
+                        <text font-size="9.5" fill="currentColor" letter-spacing="2.2">
+                            <textPath href="#mayhen_text_path_circle">
+                                • QUIET LUXURY • WEDDING STATIONERY
+                            </textPath>
+                        </text>
+                    </svg>
+                    <span class="mayhen_home_showcase_vignette_badge_icon">💍</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mayhen_client_layout_container">
+            <!-- Section Header -->
+            <div class="mayhen_home_showcase_header">
+                <div class="mayhen_home_showcase_badge_wrap">
+                    <span class="mayhen_home_showcase_badge">HAUTE COUTURE COLLECTION</span>
+                    <span class="mayhen_home_showcase_badge_glow"></span>
+                </div>
+                <h2 class="mayhen_home_showcase_title">Không Gian Triển Lãm Thiệp Cưới Nghệ Thuật</h2>
+                <p class="mayhen_home_showcase_desc">
+                    Trải nghiệm tương tác sống động với phong thư hoàng gia, âm nhạc du dương và thị giác 3D đa chiều được thiết kế riêng cho ngày trọng đại.
+                </p>
+
+                <!-- Interactive Category Filter Pills -->
+                <div class="mayhen_home_showcase_filter_bar" role="tablist" aria-label="Bộ lọc phong cách thiệp cưới">
+                    <button type="button" class="mayhen_home_showcase_filter_pill is-active" data-filter="all" role="tab" aria-selected="true">
+                        <span>Tất Cả Mẫu</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="luxury" role="tab" aria-selected="false">
+                        <span>👑 Hoàng Gia Tem Sáp</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="editorial" role="tab" aria-selected="false">
+                        <span>📖 Tạp Chí Editorial</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="minimal" role="tab" aria-selected="false">
+                        <span>✨ Tối Giản Sang Trọng</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="floral" role="tab" aria-selected="false">
+                        <span>🌿 Vườn Thơ & Hoa Cỏ</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="romantic" role="tab" aria-selected="false">
+                        <span>🌸 Hồng Khói Tình Thơ</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_filter_pill" data-filter="modern" role="tab" aria-selected="false">
+                        <span>🎞️ Cinema Ký Ức</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Top Showcase Toolbar (Interactive Audio & Petals Toggle) -->
+            <div class="mayhen_home_showcase_toolbar">
+                <button type="button" class="mayhen_home_showcase_tool_btn mayhen_home_showcase_audio_toggle" id="mayhen_home_showcase_audio_btn" title="Nghe thử giai điệu lãng mạn">
+                    <div class="mayhen_home_showcase_equalizer_bars" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                    <span class="mayhen_home_showcase_audio_text">Nhạc Lễ Cưới: A Thousand Years</span>
+                </button>
+
+                <button type="button" class="mayhen_home_showcase_tool_btn mayhen_home_showcase_petals_toggle is-active" id="mayhen_home_showcase_petals_btn" title="Bật/Tắt hiệu ứng cánh hoa bay">
+                    <span class="mayhen_home_showcase_petals_icon">🌸</span>
+                    <span class="mayhen_home_showcase_petals_text">Cánh Hoa Bay: Đang Bật</span>
+                </button>
+            </div>
+
+            <!-- 3D Coverflow Stage -->
+            <div class="mayhen_home_showcase_stage" data-mayhen-showcase="true">
+                <!-- Navigation Buttons -->
+                <button type="button" class="mayhen_home_showcase_nav_btn mayhen_home_showcase_nav_prev" aria-label="Mẫu thiệp trước đó" data-mayhen-showcase-prev>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                </button>
+                <button type="button" class="mayhen_home_showcase_nav_btn mayhen_home_showcase_nav_next" aria-label="Mẫu thiệp tiếp theo" data-mayhen-showcase-next>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                </button>
+
+                <!-- Viewport & 3D Track -->
+                <div class="mayhen_home_showcase_viewport" role="region" aria-roledescription="carousel" aria-label="Bộ sưu tập thiệp cưới 3D">
+                    <div class="mayhen_home_showcase_track" data-mayhen-showcase-track>
+                        @foreach ($featuredTemplates as $index => $tpl)
+                            <article class="mayhen_home_showcase_card {{ $index === 0 ? 'is-active' : '' }}"
+                                data-index="{{ $index }}"
+                                data-category-slug="{{ $tpl['category'] }}"
+                                data-slug="{{ $tpl['slug'] }}"
+                                data-name="{{ $tpl['name'] }}"
+                                data-category="{{ $tpl['category_label'] }}"
+                                data-badge="{{ $tpl['badge'] }}"
+                                data-desc="{{ $tpl['description'] }}"
+                                data-accent-color="{{ $tpl['accent_color'] }}"
+                                data-font-serif="{{ $tpl['font_serif'] }}"
+                                data-features="{{ json_encode($tpl['features']) }}"
+                                data-preview-url="{{ route('templates.preview', $tpl['slug']) }}"
+                                data-create-url="{{ route('templates.show', $tpl['slug']) }}"
+                                role="group"
+                                aria-roledescription="slide"
+                                aria-label="{{ $tpl['name'] }}"
+                                tabindex="0">
+                                <div class="mayhen_home_showcase_card_inner">
+                                    <!-- Metallic Foil Rim -->
+                                    <div class="mayhen_home_showcase_card_bezel" aria-hidden="true"></div>
+
+                                    <!-- Top Left Badge -->
+                                    <div class="mayhen_home_showcase_card_badge_pin">
+                                        <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
+                                    </div>
+
+                                    <!-- Card Image with 15s vertical object-position pan -->
+                                    <div class="mayhen_home_showcase_card_media">
+                                        <img src="{{ $tpl['image'] }}"
+                                             alt="{{ $tpl['name'] }}"
+                                             class="mayhen_home_showcase_card_img"
+                                             loading="{{ $index < 6 ? 'eager' : 'lazy' }}">
+                                    </div>
+
+                                    <!-- Persistent Bottom Name Label Bar -->
+                                    <div class="mayhen_home_showcase_card_label_bar">
+                                        <h3 class="mayhen_home_showcase_card_label_title">{{ $tpl['name'] }}</h3>
+                                    </div>
+
+                                    <!-- Interactive 3D Wax Seal Monogram -->
+                                    <div class="mayhen_home_showcase_card_wax_wrap" title="Chạm để kiểm tra niêm phong hoàng gia">
+                                        <div class="mayhen_home_showcase_card_wax_stamp">
+                                            <span>囍</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Rich Slide-Up Hover Overlay -->
+                                    <div class="mayhen_home_showcase_card_hover_overlay">
+                                        <div class="mayhen_home_showcase_card_hover_body">
+                                            <span class="mayhen_home_showcase_card_hover_cat">{{ $tpl['category_label'] }}</span>
+                                            <h3 class="mayhen_home_showcase_card_hover_title">{{ $tpl['name'] }}</h3>
+                                            <p class="mayhen_home_showcase_card_hover_desc">{{ $tpl['description'] }}</p>
+
+                                            <!-- Tag Badges -->
+                                            <div class="mayhen_home_showcase_card_hover_tags">
+                                                <span class="mayhen_home_showcase_card_tag">Nhạc Tự Động</span>
+                                                <span class="mayhen_home_showcase_card_tag">RSVP Online</span>
+                                                <span class="mayhen_home_showcase_card_tag">Bản Đồ</span>
+                                            </div>
+
+                                            <!-- Action CTA in Card: Xem Mẫu (mở popup live) & Chọn Mẫu (link tạo thiệp) -->
+                                            <div class="mayhen_home_showcase_card_hover_actions">
+                                                <button type="button" class="mayhen_home_showcase_btn_peek" data-mayhen-showcase-peek-btn title="Xem trải nghiệm thực tế mẫu thiệp này">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                    <span>Xem Mẫu</span>
+                                                </button>
+                                                <a href="{{ route('templates.show', $tpl['slug']) }}" class="mayhen_home_showcase_btn_pick" title="Chọn và bắt đầu tạo thiệp">
+                                                    <span>Chọn Mẫu</span>
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mayhen_home_showcase_card_reflection" aria-hidden="true"></div>
+                            </article>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Stage Floor Shadow & Ambient Light -->
+                <div class="mayhen_home_showcase_floor" aria-hidden="true"></div>
+            </div>
+
+            <!-- Dynamic Active Info & Curator Control Suite -->
+            @if(count($featuredTemplates) > 0)
+                <div class="mayhen_home_showcase_info_box" aria-live="polite">
+                    <div class="mayhen_home_showcase_curator_card">
+                        <!-- Left Details: Category, Title, Description, Font Pairing -->
+                        <div class="mayhen_home_showcase_curator_info">
+                            <div class="mayhen_home_showcase_curator_head">
+                                <span class="mayhen_home_showcase_info_cat" data-mayhen-showcase-info-cat>{{ $featuredTemplates[0]['category_label'] }}</span>
+                                <span class="mayhen_home_showcase_font_badge" data-mayhen-showcase-font-badge>
+                                    Font: {{ $featuredTemplates[0]['font_serif'] }} × Inter
+                                </span>
+                            </div>
+
+                            <h3 class="mayhen_home_showcase_info_title" data-mayhen-showcase-info-name>{{ $featuredTemplates[0]['name'] }}</h3>
+                            <p class="mayhen_home_showcase_info_desc" data-mayhen-showcase-info-desc>{{ $featuredTemplates[0]['description'] }}</p>
+
+                            <!-- Live Color Palette Switcher Swatches -->
+                            <div class="mayhen_home_showcase_palette_row">
+                                <span class="mayhen_home_showcase_palette_label">Bảng màu gợi ý:</span>
+                                <div class="mayhen_home_showcase_palette_swatches" data-mayhen-showcase-palettes>
+                                    <button type="button" class="mayhen_home_showcase_swatch is-active" data-color="#C5A880" style="--swatch-color: #C5A880;" title="Vàng Champagne Hoàng Gia"></button>
+                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#C48B8B" style="--swatch-color: #C48B8B;" title="Hồng Khói Lãng Mạn"></button>
+                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#879883" style="--swatch-color: #879883;" title="Xanh Sage Botanical"></button>
+                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#B89B72" style="--swatch-color: #B89B72;" title="Cát Ấm Minimal"></button>
+                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#1C1917" style="--swatch-color: #1C1917;" title="Đen Editorial Sang Trọng"></button>
+                                </div>
+                            </div>
+
+                            <!-- 4 Signature Feature Chips -->
+                            <div class="mayhen_home_showcase_feature_chips" data-mayhen-showcase-features>
+                                @foreach ($featuredTemplates[0]['features'] as $ft)
+                                    <span class="mayhen_home_showcase_feature_chip">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                        <span>{{ $ft }}</span>
+                                    </span>
+                                @endforeach
                             </div>
                         </div>
-                    </article>
-                @endforeach
+
+                        <!-- Right Actions: CTAs & Instant Preview Trigger -->
+                        <div class="mayhen_home_showcase_curator_actions">
+                            <a href="{{ route('templates.show', $featuredTemplates[0]['slug']) }}"
+                               class="mayhen_client_button_base mayhen_client_button_primary mayhen_home_showcase_action_create"
+                               data-mayhen-showcase-create-btn>
+                                <span>Bắt Đầu Tạo Thiệp Miễn Phí</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14"/>
+                                    <path d="m12 5 7 7-7 7"/>
+                                </svg>
+                            </a>
+
+                            <button type="button"
+                                    class="mayhen_client_button_base mayhen_client_button_ghost mayhen_home_showcase_action_preview"
+                                    data-mayhen-showcase-preview-btn>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <span>Xem Mẫu Trực Tiếp</span>
+                            </button>
+
+                            <span class="mayhen_home_showcase_curator_footnote">
+                                ✨ Không cần thẻ tín dụng &bull; Chỉ thanh toán khi ưng ý
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Dots -->
+                    <div class="mayhen_home_showcase_pagination" data-mayhen-showcase-pagination>
+                        @foreach ($featuredTemplates as $index => $tpl)
+                            <button type="button"
+                                    class="mayhen_home_showcase_dot {{ $index === 0 ? 'is-active' : '' }}"
+                                    data-index="{{ $index }}"
+                                    aria-label="Chuyển đến mẫu {{ $tpl['name'] }}">
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Footer Explore More -->
+            <div class="mayhen_home_showcase_footer_row">
+                <a href="{{ route('templates.index') }}" class="mayhen_home_showcase_view_all_link">
+                    <span>Khám phá toàn bộ bộ sưu tập thiệp cưới nghệ thuật Mây Hẹn</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"/>
+                        <path d="m12 5 7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             LUXURY LIVE DEMO PREVIEW MODAL (ChungDoi-inspired Phone Experience)
+             ======================================================== -->
+        <div class="mayhen_home_showcase_modal" id="mayhen_home_showcase_modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Xem mẫu thiệp cưới trực tiếp">
+            <!-- Dark Frosted Glass Backdrop -->
+            <div class="mayhen_home_showcase_modal_backdrop" data-mayhen-modal-close></div>
+
+            <!-- Floating Close Button (Top Right) -->
+            <button type="button" class="mayhen_home_showcase_modal_close_floating" data-mayhen-modal-close aria-label="Đóng cửa sổ xem mẫu" title="Đóng (Phím Esc)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Floating Top Toolbar (Mobile, Desktop, New Tab, Copy Link) -->
+            <div class="mayhen_home_showcase_modal_top_bar">
+                <div class="mayhen_home_showcase_modal_device_toggles">
+                    <button type="button" class="mayhen_home_showcase_modal_device_btn is-active" data-mayhen-device-mode="mobile" title="Chế độ xem trên Điện Thoại">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                        <span>Mobile</span>
+                    </button>
+                    <button type="button" class="mayhen_home_showcase_modal_device_btn" data-mayhen-device-mode="desktop" title="Chế độ xem trên Máy Tính / Toàn Màn Hình">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                        <span>Desktop</span>
+                    </button>
+                </div>
+
+                <a href="#" target="_blank" rel="noopener noreferrer" class="mayhen_home_showcase_modal_newtab_btn" id="mayhen_home_showcase_modal_newtab_link" title="Mở trang thiệp này trong tab mới">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                    <span>Mở tab mới</span>
+                </a>
+
+                <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_copy_btn" title="Sao chép link chia sẻ mẫu thiệp">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    <span>Sao chép link</span>
+                </button>
+
+                <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_reload_btn" title="Tải lại trang thiệp để xem lại hiệu ứng">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                    <span>Tải lại</span>
+                </button>
+            </div>
+
+            <!-- Toast Notification -->
+            <div class="mayhen_home_showcase_modal_toast" id="mayhen_home_showcase_modal_toast" aria-live="polite">
+                <span>✓ Đã sao chép liên kết mẫu thiệp!</span>
+            </div>
+
+            <!-- Central Preview Container -->
+            <div class="mayhen_home_showcase_modal_container" id="mayhen_home_showcase_modal_container">
+                <!-- Smartphone Outer Titanium Frame -->
+                <div class="mayhen_home_showcase_modal_phone_bezel" id="mayhen_home_showcase_modal_phone_bezel">
+                    <!-- Dynamic Island Camera Sensor -->
+                    <div class="mayhen_home_showcase_modal_phone_island" id="mayhen_home_showcase_modal_phone_island">
+                        <span class="mayhen_home_showcase_modal_phone_lens"></span>
+                        <span class="mayhen_home_showcase_modal_phone_speaker"></span>
+                    </div>
+
+                    <!-- Live Scrollable Iframe -->
+                    <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank" loading="lazy"></iframe>
+                </div>
+
+                <!-- Bottom Sticky Action Bar in Modal -->
+                <div class="mayhen_home_showcase_modal_bottom_action">
+                    <div class="mayhen_home_showcase_modal_bottom_info">
+                        <span class="mayhen_home_showcase_modal_bottom_cat" id="mayhen_home_showcase_modal_bottom_cat">MẪU THIỆP CƯỚI</span>
+                        <h4 class="mayhen_home_showcase_modal_bottom_title" id="mayhen_home_showcase_modal_title">Mẫu Thiệp Cưới</h4>
+                    </div>
+                    <a href="#" class="mayhen_home_showcase_modal_cta_btn" id="mayhen_home_showcase_modal_create_link">
+                        <span>Dùng Mẫu Này Ngay</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </section>

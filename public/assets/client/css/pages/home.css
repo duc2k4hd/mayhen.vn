@@ -5,8 +5,8 @@
 
 /* Hero Section */
 .mayhen_home_hero {
-    padding-top: var(--mayhen-space-2xl);
-    padding-bottom: var(--mayhen-space-3xl);
+    padding-top: var(--mayhen-space-xl);
+    padding-bottom: var(--mayhen-space-xl);
     background-color: #FFFFFF;
     /* 20% trên cùng trắng dần lên đỉnh, 20%-40% giữ nguyên nền, 40%-100% trắng dần xuống đáy */
     background-image: 
@@ -46,8 +46,8 @@
 
 @media (min-width: 992px) {
     .mayhen_home_hero {
-        padding-top: var(--mayhen-space-4xl);
-        padding-bottom: var(--mayhen-space-4xl);
+        padding-top: var(--mayhen-space-2xl);
+        padding-bottom: var(--mayhen-space-2xl);
     }
 }
 
@@ -1063,103 +1063,1816 @@
     font-size: var(--mayhen-font-size-body);
 }
 
-.mayhen_home_templates_grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--mayhen-space-xl);
+/* ========================================================
+   2. HAUTE COUTURE 3D COVERFLOW INVITATION SHOWCASE
+   Style: Quiet Luxury, Ultra-Refined Editorial Exhibition
+   ======================================================== */
+.mayhen_home_showcase_section {
+    position: relative;
+    padding: clamp(38px, 4.5vh, 56px) 0 clamp(42px, 5vh, 60px) 0;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 15%, #F7F4EE 85%, #FFFFFF 100%);
+    overflow: hidden;
 }
 
-@media (min-width: 768px) {
-    .mayhen_home_templates_grid {
-        grid-template-columns: repeat(3, 1fr);
+/* Floating Romantic Petals Canvas */
+.mayhen_home_showcase_canvas_petals {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.9;
+    transition: opacity 0.5s ease;
+}
+
+.mayhen_home_showcase_canvas_petals.is-hidden {
+    opacity: 0;
+}
+
+/* Ambient Radial Warmth & Exhibition Lighting */
+.mayhen_home_showcase_section::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    max-width: 95vw;
+    height: 520px;
+    background: radial-gradient(ellipse at center, rgba(197, 168, 128, 0.16) 0%, rgba(247, 244, 238, 0) 72%);
+    filter: blur(48px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ========================================================
+   HAUTE COUTURE VISUAL VIGNETTES (2 Bên Cánh Xếp Lớp Nghệ Thuật)
+   ======================================================== */
+.mayhen_home_showcase_vignettes_wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+}
+
+@media (max-width: 1159px) {
+    .mayhen_home_showcase_vignettes_wrap {
+        display: none;
     }
 }
 
-.mayhen_home_template_card {
-    background: var(--mayhen-color-bg-surface);
-    border: 1px solid var(--mayhen-color-border);
-    border-radius: var(--mayhen-radius-lg);
-    overflow: hidden;
-    transition: all var(--mayhen-transition-normal);
-    display: flex;
-    flex-direction: column;
+.mayhen_home_showcase_vignette {
+    position: absolute;
+    top: 10px;
+    width: 250px;
+    height: 290px;
+    pointer-events: auto;
 }
 
-.mayhen_home_template_card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--mayhen-shadow-card-hover);
-    border-color: var(--mayhen-color-primary);
+.mayhen_home_showcase_vignette.is-left {
+    left: clamp(12px, 3.2vw, 56px);
+    animation: mayhen_vignette_float_left 7.5s ease-in-out infinite alternate;
 }
 
-.mayhen_home_template_card_img_wrap {
-    position: relative;
+.mayhen_home_showcase_vignette.is-right {
+    right: clamp(12px, 3.2vw, 56px);
+    animation: mayhen_vignette_float_right 8.5s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes mayhen_vignette_float_left {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-10px) rotate(1.2deg); }
+}
+
+@keyframes mayhen_vignette_float_right {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-11px) rotate(-1.4deg); }
+}
+
+/* Layer 1: Polaroid Card (Left) */
+.mayhen_home_showcase_vignette_card.is-polaroid {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 165px;
+    background: #FFFFFF;
+    padding: 9px 9px 20px 9px;
+    border-radius: 8px;
+    box-shadow: 0 16px 36px -8px rgba(43, 26, 17, 0.18), 0 2px 8px rgba(197, 168, 128, 0.2);
+    transform: rotate(-7deg);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.mayhen_home_showcase_vignette_card.is-polaroid:hover {
+    transform: rotate(-2deg) scale(1.06);
+    box-shadow: 0 24px 50px -10px rgba(43, 26, 17, 0.28);
+    z-index: 5;
+}
+
+.mayhen_home_showcase_vignette_img_box {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
-    background-color: var(--mayhen-color-bg-accent);
+    border-radius: 4px;
+    background: #FAF7F2;
 }
 
-.mayhen_home_template_card_img {
+.mayhen_home_showcase_vignette_img_box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--mayhen-transition-smooth);
+    transition: transform 0.5s ease;
 }
 
-.mayhen_home_template_card:hover .mayhen_home_template_card_img {
-    transform: scale(1.04);
+.mayhen_home_showcase_vignette_card:hover .mayhen_home_showcase_vignette_img_box img {
+    transform: scale(1.08);
 }
 
-.mayhen_home_template_card_badge {
+.mayhen_home_showcase_vignette_polaroid_footer {
+    margin-top: 8px;
+    text-align: center;
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.65rem;
+    font-style: italic;
+    color: #8C7A6B;
+}
+
+/* Vintage Gold Paper Clip */
+.mayhen_home_showcase_vignette_clip {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    padding: 4px 10px;
-    border-radius: var(--mayhen-radius-pill);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    color: var(--mayhen-color-text-main);
+    top: -9px;
+    left: 20px;
+    width: 13px;
+    height: 28px;
+    border: 2.2px solid #C5A880;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 6;
 }
 
-.mayhen_home_template_card_body {
-    padding: var(--mayhen-space-lg);
+/* Layer 2: Wax Seal Envelope (Left) */
+.mayhen_home_showcase_vignette_card.is-envelope {
+    position: absolute;
+    top: 105px;
+    left: 55px;
+    width: 160px;
+    height: 110px;
+    background: linear-gradient(135deg, #FAF7F0 0%, #EFE8DA 100%);
+    border: 1px solid rgba(197, 168, 128, 0.5);
+    border-radius: 12px;
+    box-shadow: 0 14px 32px rgba(43, 26, 17, 0.16);
+    transform: rotate(5deg);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.mayhen_home_showcase_vignette_card.is-envelope:hover {
+    transform: rotate(1deg) scale(1.05);
+    box-shadow: 0 20px 42px rgba(43, 26, 17, 0.24);
+    z-index: 4;
+}
+
+.mayhen_home_showcase_vignette_envelope_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    justify-content: space-between;
 }
 
-.mayhen_home_template_card_category {
-    font-size: 0.75rem;
-    color: var(--mayhen-color-primary-hover);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    margin-bottom: 4px;
+.mayhen_home_showcase_vignette_postage {
+    font-size: 0.525rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #9A7B56;
+    border: 1px dashed rgba(197, 168, 128, 0.7);
+    padding: 3px 6px;
+    border-radius: 2px;
+    display: inline-block;
+    align-self: flex-start;
 }
 
-.mayhen_home_template_card_name {
-    font-size: 1.2rem;
+.mayhen_home_showcase_vignette_seal {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #8B2635 0%, #6E1B28 70%, #4D121B 100%);
+    color: #FFFFFF;
     font-family: var(--mayhen-font-serif);
-    color: var(--mayhen-color-text-main);
-    margin-bottom: var(--mayhen-space-xs);
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    box-shadow: 0 3px 10px rgba(110, 27, 40, 0.45);
+    border: 1.5px solid #A83A4B;
 }
 
-.mayhen_home_template_card_desc {
-    font-size: var(--mayhen-font-size-small);
+/* Layer 3: Calligraphy Tag (Left) */
+.mayhen_home_showcase_vignette_tag {
+    position: absolute;
+    bottom: 12px;
+    left: 2px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #735D43;
+    font-style: italic;
+    font-family: var(--mayhen-font-serif);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    transform: rotate(-2deg);
+    z-index: 3;
+}
+
+/* Layer 1: French Arch Frame (Right) */
+.mayhen_home_showcase_vignette_card.is-arch {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    width: 140px;
+    height: 190px;
+    border-radius: 75px 75px 10px 10px;
+    overflow: hidden;
+    box-shadow: 0 16px 36px -8px rgba(43, 26, 17, 0.22);
+    transform: rotate(6deg);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.mayhen_home_showcase_vignette_card.is-arch:hover {
+    transform: rotate(1deg) scale(1.06);
+    box-shadow: 0 24px 48px -10px rgba(43, 26, 17, 0.3);
+    z-index: 5;
+}
+
+.mayhen_home_showcase_vignette_card.is-arch .mayhen_home_showcase_vignette_img_box {
+    aspect-ratio: auto;
+    height: 100%;
+    border-radius: 0;
+}
+
+.mayhen_home_showcase_vignette_arch_bezel {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1.5px solid rgba(197, 168, 128, 0.6);
+    pointer-events: none;
+}
+
+/* Layer 2: Editorial Monogram Card (Right) */
+.mayhen_home_showcase_vignette_card.is-stationery {
+    position: absolute;
+    top: 92px;
+    right: 75px;
+    width: 150px;
+    height: 105px;
+    background: #FFFFFF;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(43, 26, 17, 0.14);
+    transform: rotate(-7deg);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.mayhen_home_showcase_vignette_card.is-stationery:hover {
+    transform: rotate(-2deg) scale(1.05);
+    box-shadow: 0 20px 40px rgba(43, 26, 17, 0.22);
+    z-index: 4;
+}
+
+.mayhen_home_showcase_vignette_stationery_body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.mayhen_home_showcase_vignette_stat_cat {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_home_showcase_vignette_stat_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.775rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.25;
+}
+
+.mayhen_home_showcase_vignette_stat_seal {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C5A880 0%, #A68759 100%);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    box-shadow: 0 2px 6px rgba(197, 168, 128, 0.4);
+}
+
+/* Layer 3: Rotating Badge (Right) */
+.mayhen_home_showcase_vignette_badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    box-shadow: 0 8px 20px rgba(43, 26, 17, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mayhen-color-primary);
+    z-index: 3;
+}
+
+.mayhen_home_showcase_vignette_spin_text {
+    width: 100%;
+    height: 100%;
+    animation: mayhen_vignette_spin 22s linear infinite;
+}
+
+@keyframes mayhen_vignette_spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.mayhen_home_showcase_vignette_badge_icon {
+    position: absolute;
+    font-size: 1rem;
+}
+
+.mayhen_home_showcase_header {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto clamp(24px, 3vh, 36px) auto;
+    padding: 0 var(--mayhen-space-md);
+}
+
+.mayhen_home_showcase_badge_wrap {
+    display: inline-flex;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.mayhen_home_showcase_badge {
+    position: relative;
+    z-index: 2;
+    font-size: 0.725rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    padding: 5px 18px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_home_showcase_badge_glow {
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: linear-gradient(90deg, transparent, rgba(197, 168, 128, 0.4), transparent);
+    filter: blur(4px);
+    z-index: 1;
+}
+
+.mayhen_home_showcase_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: clamp(1.85rem, 3.2vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 8px;
+    letter-spacing: -0.015em;
+}
+
+.mayhen_home_showcase_desc {
+    font-size: clamp(0.9rem, 1.05vw, 1rem);
     color: var(--mayhen-color-text-muted);
     line-height: 1.6;
-    margin-bottom: var(--mayhen-space-md);
-    flex: 1;
+    margin: 0 auto clamp(14px, 2vw, 20px) auto;
+    max-width: 620px;
 }
 
-.mayhen_home_template_card_footer {
+/* Category Filter Bar (Pill Chips) */
+.mayhen_home_showcase_filter_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: clamp(14px, 2vh, 20px);
+}
+
+.mayhen_home_showcase_filter_pill {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    padding: 6px 14px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    outline: none;
+    white-space: nowrap;
+}
+
+.mayhen_home_showcase_filter_pill:hover {
+    background: #FFFFFF;
+    color: var(--mayhen-color-text-main);
+    border-color: var(--mayhen-color-primary);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_home_showcase_filter_pill.is-active {
+    background: linear-gradient(135deg, var(--mayhen-color-primary) 0%, var(--mayhen-color-primary-hover) 100%);
+    color: #FFFFFF;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.38);
+    font-weight: 600;
+}
+
+/* Top Showcase Toolbar (Audio & Petals Controls) */
+.mayhen_home_showcase_toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: clamp(42px, 5vh, 60px);
+    position: relative;
+    z-index: 3;
+    flex-wrap: wrap;
+}
+
+.mayhen_home_showcase_tool_btn {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    padding: 6px 14px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.775rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(43, 26, 17, 0.05);
+}
+
+.mayhen_home_showcase_tool_btn:hover {
+    background: #FFFFFF;
+    border-color: var(--mayhen-color-primary);
+    color: var(--mayhen-color-primary);
+    transform: translateY(-1px);
+}
+
+/* Equalizer Animated Bars */
+.mayhen_home_showcase_equalizer_bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 12px;
+}
+
+.mayhen_home_showcase_equalizer_bars span {
+    width: 2.5px;
+    background: var(--mayhen-color-primary);
+    border-radius: 1px;
+    animation: mayhen_showcase_eq 1.2s ease-in-out infinite alternate;
+}
+
+.mayhen_home_showcase_equalizer_bars span:nth-child(1) { height: 4px; animation-delay: 0.1s; }
+.mayhen_home_showcase_equalizer_bars span:nth-child(2) { height: 11px; animation-delay: 0.3s; }
+.mayhen_home_showcase_equalizer_bars span:nth-child(3) { height: 7px; animation-delay: 0.2s; }
+.mayhen_home_showcase_equalizer_bars span:nth-child(4) { height: 10px; animation-delay: 0.4s; }
+
+.mayhen_home_showcase_audio_toggle.is-playing .mayhen_home_showcase_equalizer_bars span {
+    background: #4A7C59;
+}
+
+@keyframes mayhen_showcase_eq {
+    0% { transform: scaleY(0.4); }
+    100% { transform: scaleY(1); }
+}
+
+/* 3D Stage Container (1000px perspective like ChungDoi) */
+.mayhen_home_showcase_stage {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 1380px;
+    height: clamp(490px, 54vh, 560px);
+    margin: 0 auto clamp(40px, 5vh, 56px) auto;
+    perspective: 1000px;
+    perspective-origin: 50% 50%;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+}
+
+/* Viewport & 3D Track */
+.mayhen_home_showcase_viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_home_showcase_track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+}
+
+/* Stage Floor Glow Reflection */
+.mayhen_home_showcase_floor {
+    position: absolute;
+    bottom: 15px;
+    left: 10%;
+    width: 80%;
+    height: 90px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(197, 168, 128, 0.42) 0%, rgba(197, 168, 128, 0.12) 55%, transparent 75%);
+    filter: blur(20px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 3D Individual Invitation Card (ChungDoi-inspired 3D Cylinder geometry) */
+.mayhen_home_showcase_card {
+    position: absolute;
+    width: clamp(165px, 30vw, 240px);
+    aspect-ratio: 9 / 16;
+    border-radius: 20px;
+    cursor: pointer;
+    transform-origin: center center;
+    transform-style: preserve-3d;
+    transition: transform 550ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 550ms cubic-bezier(0.16, 1, 0.3, 1),
+                scale 550ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 550ms cubic-bezier(0.16, 1, 0.3, 1),
+                filter 550ms ease;
+    will-change: transform, opacity;
+    outline: none;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.25);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    filter: brightness(0.92);
+}
+
+.mayhen_home_showcase_card:focus-visible {
+    outline: 2px solid var(--mayhen-color-primary);
+    outline-offset: 4px;
+}
+
+/* Center Active Card: Cực kỳ nổi bật, hào quang Champagne tỏa sáng */
+.mayhen_home_showcase_card.is-active {
+    transform-style: flat !important;
+    filter: brightness(1);
+    box-shadow: 0 35px 85px -15px rgba(28, 25, 23, 0.48),
+                0 0 0 2.5px rgba(197, 168, 128, 0.9),
+                0 0 45px rgba(197, 168, 128, 0.38);
+}
+
+.mayhen_home_showcase_card:hover {
+    filter: brightness(1);
+}
+
+/* Aura Glow Behind Active Card */
+.mayhen_home_showcase_card.is-active::after {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border-radius: 34px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(197, 168, 128, 0.45) 0%, rgba(197, 168, 128, 0.12) 60%, transparent 80%);
+    filter: blur(22px);
+    z-index: -1;
+    pointer-events: none;
+    animation: mayhen_home_aura_pulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes mayhen_home_aura_pulse {
+    0% { opacity: 0.6; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1.04); }
+}
+
+/* Inner Frame */
+.mayhen_home_showcase_card_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    background: #FAF7F2;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    box-shadow: 0 0 0 1px rgba(197, 168, 128, 0.3);
+}
+
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner {
+    box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.85),
+                0 0 32px rgba(197, 168, 128, 0.3);
+}
+
+/* Metallic Champagne Foil Bezel Rim */
+.mayhen_home_showcase_card_bezel {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    border: 1.5px solid transparent;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(197, 168, 128, 0.6) 50%, rgba(255, 248, 238, 0.95) 100%) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Top Badge Pin: Chỉ hiển thị ở thẻ Active hoặc khi Hover để không đè lên nhau */
+.mayhen_home_showcase_card_badge_pin {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_badge_pin,
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_badge_pin {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mayhen_home_showcase_card_badge {
+    font-size: 0.675rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--mayhen-color-text-main);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Media & Image with 15s Pan Effect */
+.mayhen_home_showcase_card_media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #FAF7F2;
+}
+
+.mayhen_home_showcase_card_img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: object-position 15s ease-in-out;
+}
+
+/* Khi thẻ ở trung tâm: tự động cuộn dọc 15s từ trên xuống dưới */
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_img {
+    object-position: center bottom;
+}
+
+/* Bottom Label Bar: Chỉ hiển thị ở thẻ Active khi chưa hover để không đè lên nút */
+.mayhen_home_showcase_card_label_bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
+    padding: 26px 14px 14px 14px;
+    z-index: 8;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    pointer-events: none !important;
+}
+
+/* Bottom Name Label Bar: Hiển thị ở thẻ Active khi chưa hover */
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_label_bar {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0);
+}
+
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_label_bar,
+.mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_label_bar {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(8px);
+}
+
+.mayhen_home_showcase_card_label_title {
+    color: #FFFFFF;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    font-family: var(--mayhen-font-serif);
+    text-align: center;
+    pointer-events: none !important;
+}
+
+/* Interactive 3D Wax Seal Monogram on Center Card: Chỉ hiển thị ở thẻ Active */
+.mayhen_home_showcase_card_wax_wrap {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 12;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.7);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.3s ease;
+}
+
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_wax_wrap,
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_wax_wrap {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.mayhen_home_showcase_card_wax_stamp {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #C5A880 0%, #A68759 60%, #82653A 100%);
+    border: 1.5px solid #EFE4D2;
+    box-shadow: 0 4px 12px rgba(43, 26, 17, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mayhen_home_showcase_card_wax_wrap:hover .mayhen_home_showcase_card_wax_stamp {
+    transform: scale(1.25) rotate(12deg);
+}
+
+/* Rich Slide-Up Hover Overlay (ChungDoi style) */
+.mayhen_home_showcase_card_hover_overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.72) 48%, rgba(0, 0, 0, 0.05) 100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none !important;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px 12px 20px 12px;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+/* Chỉ hiển thị overlay chi tiết và nút khi hover vào thẻ active */
+.mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_hover_overlay,
+.mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_hover_overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto !important;
+}
+
+.mayhen_home_showcase_card_hover_body {
+    position: relative;
+    z-index: 30;
+    pointer-events: none !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mayhen_home_showcase_card_hover_cat {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #F3E7D3;
+    margin-bottom: 2px;
+    pointer-events: none !important;
+    user-select: none;
+}
+
+.mayhen_home_showcase_card_hover_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.22;
+    margin: 0 0 4px 0;
+    pointer-events: none !important;
+    user-select: none;
+}
+
+.mayhen_home_showcase_card_hover_desc {
+    font-size: 0.775rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.35;
+    margin: 0 0 6px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    pointer-events: none !important;
+    user-select: none;
+}
+
+.mayhen_home_showcase_card_hover_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+    pointer-events: none !important;
+}
+
+.mayhen_home_showcase_card_tag {
+    font-size: 0.65rem;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 2.5px 7px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    pointer-events: none !important;
+    user-select: none;
+}
+
+.mayhen_home_showcase_card_hover_actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 4px;
+    position: relative;
+    z-index: 50;
+    pointer-events: auto !important;
+    box-sizing: border-box;
+}
+
+.mayhen_home_showcase_btn_peek,
+.mayhen_home_showcase_btn_pick {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 8px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer !important;
+    text-decoration: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 55;
+    pointer-events: auto !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_showcase_btn_peek *,
+.mayhen_home_showcase_btn_pick * {
+    pointer-events: none !important;
+}
+
+.mayhen_home_showcase_btn_peek {
+    background: #FFFFFF;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    color: var(--mayhen-color-text-main, #1C1917);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.mayhen_home_showcase_btn_peek:hover {
+    background: #FAF7F2;
+    color: var(--mayhen-color-primary, #C5A880);
+    border-color: var(--mayhen-color-primary, #C5A880);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.mayhen_home_showcase_btn_pick {
+    background: linear-gradient(135deg, var(--mayhen-color-primary, #C5A880) 0%, var(--mayhen-color-primary-hover, #A68759) 100%);
+    border: 1px solid transparent;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.45);
+}
+
+.mayhen_home_showcase_btn_pick:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(197, 168, 128, 0.65);
+    color: #FFFFFF;
+}
+
+/* Floor Reflection */
+.mayhen_home_showcase_card_reflection {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 100%;
+    height: 70px;
+    border-radius: 20px;
+    background: inherit;
+    transform: scaleY(-1);
+    opacity: 0.2;
+    filter: blur(4px);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 80%);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 80%);
+    pointer-events: none;
+}
+
+/* Navigation Buttons (Round floating, z-index 250 like ChungDoi) */
+.mayhen_home_showcase_nav_btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(197, 168, 128, 0.45);
+    color: var(--mayhen-color-text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 250;
+    box-shadow: 0 12px 32px rgba(43, 26, 17, 0.16);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.mayhen_home_showcase_nav_prev { left: 16px; }
+.mayhen_home_showcase_nav_next { right: 16px; }
+
+@media (min-width: 1240px) {
+    .mayhen_home_showcase_nav_prev { left: 24px; }
+    .mayhen_home_showcase_nav_next { right: 24px; }
+}
+
+.mayhen_home_showcase_nav_btn:hover {
+    background: #FFFFFF;
+    color: var(--mayhen-color-primary);
+    transform: translateY(-50%) scale(1.12);
+    box-shadow: 0 16px 40px rgba(197, 168, 128, 0.4);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_home_showcase_nav_btn:active {
+    transform: translateY(-50%) scale(0.94);
+}
+
+/* Curator Suite Control Card */
+.mayhen_home_showcase_info_box {
+    position: relative;
+    z-index: 10;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 var(--mayhen-space-md);
+}
+
+.mayhen_home_showcase_curator_card {
+    background: #FFFFFF;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    border-radius: 20px;
+    padding: clamp(14px, 1.8vw, 20px) clamp(18px, 2.4vw, 28px);
+    box-shadow: 0 16px 40px -12px rgba(43, 26, 17, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(14px, 2vw, 26px);
+    align-items: center;
+}
+
+.mayhen_home_showcase_curator_head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.mayhen_home_showcase_info_cat {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_home_showcase_font_badge {
+    font-size: 0.75rem;
+    color: var(--mayhen-color-text-muted);
+    background: #FAF7F2;
+    padding: 3px 10px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    border: 1px solid rgba(197, 168, 128, 0.25);
+    font-style: italic;
+}
+
+.mayhen_home_showcase_info_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.3;
+    margin: 0 0 10px 0;
+}
+
+.mayhen_home_showcase_info_desc {
+    font-size: 0.95rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.65;
+    margin: 0 0 18px 0;
+}
+
+/* Palette Swatches Row */
+.mayhen_home_showcase_palette_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.mayhen_home_showcase_palette_label {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-main);
+    font-weight: 500;
+}
+
+.mayhen_home_showcase_palette_swatches {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_home_showcase_swatch {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--swatch-color);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    outline: none;
+}
+
+.mayhen_home_showcase_swatch:hover {
+    transform: scale(1.2);
+}
+
+.mayhen_home_showcase_swatch.is-active {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 2px var(--mayhen-color-primary), 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 4 Feature Chips */
+.mayhen_home_showcase_feature_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_home_showcase_feature_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FAF7F2;
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    padding: 5px 12px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.775rem;
+    color: var(--mayhen-color-text-main);
+    font-weight: 500;
+}
+
+.mayhen_home_showcase_feature_chip svg {
+    color: var(--mayhen-color-primary);
+}
+
+/* Curator Actions (Right Column) */
+.mayhen_home_showcase_curator_actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_home_showcase_action_create {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 24px;
+    font-size: 0.9375rem;
+    box-shadow: 0 8px 24px rgba(197, 168, 128, 0.38);
+}
+
+.mayhen_home_showcase_action_preview {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 22px;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(197, 168, 128, 0.45);
+}
+
+.mayhen_home_showcase_curator_footnote {
+    font-size: 0.775rem;
+    color: var(--mayhen-color-text-muted);
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* Pagination Dots */
+.mayhen_home_showcase_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.mayhen_home_showcase_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(197, 168, 128, 0.3);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.mayhen_home_showcase_dot:hover {
+    background: rgba(197, 168, 128, 0.6);
+}
+
+.mayhen_home_showcase_dot.is-active {
+    width: 32px;
+    background: var(--mayhen-color-primary);
+    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.35);
+}
+
+/* Footer Link */
+.mayhen_home_showcase_footer_row {
+    text-align: center;
+    margin-top: clamp(28px, 3.5vh, 42px);
+    position: relative;
+    z-index: 5;
+}
+
+.mayhen_home_showcase_view_all_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.mayhen_home_showcase_view_all_link:hover {
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_home_showcase_view_all_link:hover svg {
+    transform: translateX(3px);
+}
+
+/* Major Sections Optimization on Home (Giảm padding các box chính to theo yêu cầu) */
+.mayhen_client_layout_section {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-2xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_layout_section {
+        padding-top: var(--mayhen-space-2xl);
+        padding-bottom: var(--mayhen-space-2xl);
+    }
+}
+
+/* ========================================================
+   LUXURY LIVE DEMO PREVIEW MODAL (ChungDoi-inspired Phone & Desktop Experience)
+   ======================================================== */
+.mayhen_home_showcase_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_showcase_modal.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mayhen_home_showcase_modal_backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 12, 11, 0.84);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    cursor: pointer;
+}
+
+/* Floating Close Button (Top Right) */
+.mayhen_home_showcase_modal_close_floating {
+    position: fixed;
+    top: 18px;
+    right: 22px;
+    z-index: 100005;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    outline: none;
+}
+
+.mayhen_home_showcase_modal_close_floating:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.1) rotate(90deg);
+    border-color: #FFFFFF;
+}
+
+/* Floating Top Toolbar (ChungDoi capsule style) */
+.mayhen_home_showcase_modal_top_bar {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100005;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(24, 21, 18, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    max-width: calc(100vw - 120px);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.mayhen_home_showcase_modal_top_bar::-webkit-scrollbar {
+    display: none;
+}
+
+.mayhen_home_showcase_modal_device_toggles {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    padding: 3px;
+    gap: 2px;
+}
+
+.mayhen_home_showcase_modal_device_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.mayhen_home_showcase_modal_device_btn.is-active {
+    background: #FFFFFF;
+    color: #1A1614;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.mayhen_home_showcase_modal_device_btn:not(.is-active):hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Red / Coral New Tab CTA (ChungDoi style) */
+.mayhen_home_showcase_modal_newtab_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 15px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: #FF4757;
+    color: #FFFFFF;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(255, 71, 87, 0.45);
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_showcase_modal_newtab_btn:hover {
+    background: #FF2E44;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(255, 71, 87, 0.6);
+}
+
+/* Utility Tool Action Buttons (Copy, Reload) */
+.mayhen_home_showcase_modal_tool_action_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+    font-size: 0.775rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.mayhen_home_showcase_modal_tool_action_btn:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Toast Notification */
+.mayhen_home_showcase_modal_toast {
+    position: fixed;
+    top: 76px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-12px);
+    z-index: 100010;
+    background: #1C1917;
+    color: #F8F5F0;
+    padding: 9px 20px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.825rem;
+    font-weight: 500;
+    border: 1px solid rgba(197, 168, 128, 0.5);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_showcase_modal_toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Central Preview Container */
+.mayhen_home_showcase_modal_container {
+    position: relative;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-height: calc(100vh - 100px);
+    margin-top: 48px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Smartphone Outer Frame (Mobile mode default) */
+.mayhen_home_showcase_modal_phone_bezel {
+    position: relative;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    height: min(730px, calc(100vh - 180px));
+    background: #000000;
+    border-radius: 46px;
+    padding: 10px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65),
+                0 0 0 3px #332D28,
+                0 0 0 7px #1A1715,
+                0 0 0 8.5px rgba(197, 168, 128, 0.25);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+/* Desktop Mode Container Expansion */
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_phone_bezel {
+    width: 1060px;
+    max-width: calc(100vw - 40px);
+    height: min(760px, calc(100vh - 180px));
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.7),
+                0 0 0 2px #3D352F,
+                0 0 0 4px #1A1715;
+}
+
+/* Dynamic Island (Only in mobile mode) */
+.mayhen_home_showcase_modal_phone_island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px;
+    height: 22px;
+    background: #000000;
+    border-radius: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.25s ease;
+}
+
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_phone_island {
+    display: none;
+}
+
+.mayhen_home_showcase_modal_phone_lens {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #0E131A;
+    border: 1.5px solid #1C2330;
+    box-shadow: inset 0 0 2px #3867D6;
+}
+
+.mayhen_home_showcase_modal_phone_speaker {
+    width: 34px;
+    height: 3px;
+    border-radius: 2px;
+    background: #1C1917;
+}
+
+/* Live Scrollable Iframe */
+.mayhen_home_showcase_modal_iframe {
+    width: 100%;
+    height: 100%;
+    border-radius: 38px;
+    border: none;
+    background: #FAF8F5;
+    display: block;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_iframe {
+    border-radius: 12px;
+}
+
+/* Bottom Action Bar in Modal */
+.mayhen_home_showcase_modal_bottom_action {
+    margin-top: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: var(--mayhen-space-sm);
-    border-top: 1px solid var(--mayhen-color-border);
+    gap: 16px;
+    width: 100%;
+    max-width: 380px;
+    background: rgba(24, 21, 18, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 10px 16px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: max-width 0.4s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_bottom_action {
+    max-width: 560px;
+}
+
+.mayhen_home_showcase_modal_bottom_info {
+    min-width: 0;
+    flex: 1;
+}
+
+.mayhen_home_showcase_modal_bottom_cat {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mayhen-color-primary, #C5A880);
+    margin-bottom: 2px;
+}
+
+.mayhen_home_showcase_modal_bottom_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_home_showcase_modal_cta_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: linear-gradient(135deg, var(--mayhen-color-primary, #C5A880) 0%, var(--mayhen-color-primary-hover, #A68759) 100%);
+    color: #FFFFFF;
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.45);
+}
+
+.mayhen_home_showcase_modal_cta_btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(197, 168, 128, 0.65);
+    color: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+    .mayhen_home_showcase_modal_top_bar {
+        top: 12px;
+        gap: 6px;
+        padding: 4px 6px;
+    }
+
+    .mayhen_home_showcase_modal_close_floating {
+        top: 12px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .mayhen_home_showcase_modal_phone_bezel {
+        width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 150px);
+        border-radius: 28px;
+        padding: 6px;
+    }
+
+    .mayhen_home_showcase_modal_iframe {
+        border-radius: 22px;
+    }
+
+    .mayhen_home_showcase_modal_bottom_action {
+        padding: 8px 12px;
+    }
+
+    .mayhen_home_showcase_modal_cta_btn {
+        padding: 7px 14px;
+        font-size: 0.775rem;
+    }
+}
+
+/* ========================================================
+   RESPONSIVE BREAKPOINTS (Mobile-First Excellence)
+   ======================================================== */
+@media (max-width: 1024px) {
+    .mayhen_home_showcase_stage {
+        height: 520px;
+        margin-bottom: 36px;
+        perspective: 1200px;
+    }
+
+    .mayhen_home_showcase_card {
+        width: 230px;
+        aspect-ratio: 9 / 16;
+        height: auto;
+    }
+
+    .mayhen_home_showcase_curator_card {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mayhen_home_showcase_section {
+        padding: 36px 0 36px 0;
+    }
+
+    .mayhen_home_showcase_stage {
+        height: 460px;
+        margin-bottom: 28px;
+        perspective: 1000px;
+    }
+
+    .mayhen_home_showcase_card {
+        width: 195px;
+        aspect-ratio: 9 / 16;
+        height: auto;
+    }
+
+    .mayhen_home_showcase_nav_btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .mayhen_home_showcase_nav_prev { left: 12px; }
+    .mayhen_home_showcase_nav_next { right: 12px; }
+
+    .mayhen_home_showcase_filter_bar {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+    }
+
+    .mayhen_home_showcase_filter_pill {
+        flex-shrink: 0;
+    }
+
+    .mayhen_home_showcase_card_reflection {
+        height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_home_showcase_stage {
+        height: 420px;
+        perspective: 850px;
+    }
+
+    .mayhen_home_showcase_card {
+        width: 195px;
+        height: 350px;
+        margin-left: -97.5px;
+        margin-top: -175px;
+        border-radius: 20px;
+    }
+
+    .mayhen_home_showcase_card_inner {
+        border-radius: 20px;
+    }
+
+    .mayhen_home_showcase_card_bezel {
+        border-radius: 20px;
+    }
+
+    .mayhen_home_showcase_card_meta {
+        padding: 10px 12px 12px 12px;
+    }
+
+    .mayhen_home_showcase_card_name {
+        font-size: 0.925rem;
+    }
+
+    .mayhen_home_showcase_nav_btn {
+        display: none;
+    }
+
+    .mayhen_home_showcase_curator_card {
+        padding: 20px 16px;
+    }
+
+    .mayhen_home_showcase_modal_panel {
+        max-height: 95vh;
+    }
+
+    .mayhen_home_showcase_modal_phone_bezel {
+        width: 260px;
+        height: 440px;
+        border-radius: 30px;
+    }
+
+    .mayhen_home_showcase_modal_footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 360px) {
+    .mayhen_home_showcase_stage {
+        height: 380px;
+    }
+
+    .mayhen_home_showcase_card {
+        width: 175px;
+        height: 320px;
+        margin-left: -87.5px;
+        margin-top: -160px;
+    }
+}
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_home_showcase_card { transition: none !important; }
+    .mayhen_home_showcase_dot { transition: none !important; }
+    .mayhen_home_showcase_equalizer_bars span { animation: none !important; }
 }
 
 /* Feature Steps */
