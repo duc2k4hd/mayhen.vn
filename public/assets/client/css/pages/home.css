@@ -7,8 +7,14 @@
 .mayhen_home_hero {
     padding-top: var(--mayhen-space-2xl);
     padding-bottom: var(--mayhen-space-3xl);
-    background: radial-gradient(circle at 80% 20%, rgba(245, 239, 230, 0.6) 0%, transparent 60%),
-                var(--mayhen-color-bg-base);
+    background-color: var(--mayhen-color-bg-base);
+    background-image: 
+        linear-gradient(135deg, rgba(252, 251, 249, 0.88) 0%, rgba(247, 244, 238, 0.76) 50%, rgba(252, 251, 249, 0.85) 100%),
+        url('/storage/images/client/banners/banner-home.webp');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    position: relative;
     overflow: hidden;
 }
 
