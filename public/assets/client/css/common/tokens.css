@@ -1,0 +1,87 @@
+/**
+ * MAYHEN.VN — DESIGN TOKENS
+ * Quiet Luxury, Minimal, Romantic Aesthetic
+ */
+:root {
+    /* Color Palette - Core */
+    --mayhen-color-bg-base: #FCFBF9;
+    --mayhen-color-bg-surface: #FFFFFF;
+    --mayhen-color-bg-soft: #F7F4EE;
+    --mayhen-color-bg-accent: #EFE9E0;
+
+    /* Typography & Contrasts */
+    --mayhen-color-text-main: #1C1917;
+    --mayhen-color-text-muted: #6A6560;
+    --mayhen-color-text-light: #9C9690;
+
+    /* Brand Accents */
+    --mayhen-color-primary: #C5A880;
+    --mayhen-color-primary-hover: #B59569;
+    --mayhen-color-primary-soft: #F5EFE6;
+    --mayhen-color-romantic: #D4A5A5;
+    --mayhen-color-romantic-soft: #FAF0F0;
+    --mayhen-color-sage: #9FAF90;
+    --mayhen-color-sage-soft: #F1F5F0;
+
+    /* Semantic */
+    --mayhen-color-border: #E8E3DA;
+    --mayhen-color-border-hover: #D0C8BC;
+    --mayhen-color-focus-ring: rgba(197, 168, 128, 0.4);
+    --mayhen-color-success: #4A7C59;
+    --mayhen-color-danger: #C0392B;
+
+    /* Typography */
+    --mayhen-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --mayhen-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mayhen-font-script: 'Cormorant Garamond', Georgia, serif;
+
+    /* Fluid Typography Scale */
+    --mayhen-font-size-display: clamp(2.25rem, 5vw, 3.75rem);
+    --mayhen-font-size-h1: clamp(1.85rem, 3.5vw, 2.75rem);
+    --mayhen-font-size-h2: clamp(1.5rem, 2.5vw, 2.15rem);
+    --mayhen-font-size-h3: clamp(1.25rem, 2vw, 1.65rem);
+    --mayhen-font-size-lead: 1.125rem;
+    --mayhen-font-size-body: 1rem;
+    --mayhen-font-size-small: 0.875rem;
+    --mayhen-font-size-caption: 0.75rem;
+
+    /* Spacing */
+    --mayhen-space-2xs: 4px;
+    --mayhen-space-xs: 8px;
+    --mayhen-space-sm: 12px;
+    --mayhen-space-md: 16px;
+    --mayhen-space-lg: 24px;
+    --mayhen-space-xl: 32px;
+    --mayhen-space-2xl: 48px;
+    --mayhen-space-3xl: 64px;
+    --mayhen-space-4xl: 96px;
+
+    /* Radii */
+    --mayhen-radius-xs: 3px;
+    --mayhen-radius-sm: 6px;
+    --mayhen-radius-md: 10px;
+    --mayhen-radius-lg: 16px;
+    --mayhen-radius-xl: 24px;
+    --mayhen-radius-pill: 9999px;
+
+    /* Shadows */
+    --mayhen-shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.04);
+    --mayhen-shadow-md: 0 4px 16px -2px rgba(28, 25, 23, 0.06);
+    --mayhen-shadow-lg: 0 12px 32px -4px rgba(28, 25, 23, 0.08);
+    --mayhen-shadow-floating: 0 20px 48px -8px rgba(70, 50, 40, 0.12);
+
+    /* Transitions & Motion */
+    --mayhen-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --mayhen-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --mayhen-transition-smooth: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Z-Index */
+    --mayhen-z-header: 100;
+    --mayhen-z-drawer: 200;
+    --mayhen-z-modal: 300;
+    --mayhen-z-toast: 400;
+
+    /* Layout Containers */
+    --mayhen-container-max: 1240px;
+    --mayhen-container-narrow: 840px;
+}

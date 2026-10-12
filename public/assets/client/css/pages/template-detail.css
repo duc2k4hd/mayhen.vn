@@ -1,0 +1,102 @@
+/**
+ * MAYHEN.VN — TEMPLATE DETAIL STYLES
+ * Prefix: mayhen_template_detail_
+ */
+
+.mayhen_template_detail_wrapper {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-4xl);
+}
+
+.mayhen_template_detail_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-2xl);
+    align-items: start;
+}
+
+@media (min-width: 860px) {
+    .mayhen_template_detail_grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--mayhen-space-3xl);
+    }
+}
+
+.mayhen_template_detail_preview_box {
+    position: sticky;
+    top: 96px;
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    overflow: hidden;
+    box-shadow: var(--mayhen-shadow-lg);
+}
+
+.mayhen_template_detail_preview_img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+}
+
+.mayhen_template_detail_info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-lg);
+}
+
+.mayhen_template_detail_badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background-color: var(--mayhen-color-primary-soft);
+    border-radius: var(--mayhen-radius-pill);
+    color: var(--mayhen-color-primary-hover);
+    font-size: var(--mayhen-font-size-caption);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    width: fit-content;
+}
+
+.mayhen_template_detail_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: var(--mayhen-color-text-main);
+    line-height: 1.2;
+}
+
+.mayhen_template_detail_desc {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-lead);
+    line-height: 1.7;
+}
+
+.mayhen_template_detail_features_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+    padding: var(--mayhen-space-md);
+    background-color: var(--mayhen-color-bg-soft);
+    border-radius: var(--mayhen-radius-md);
+    border: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_template_detail_feature_item {
+    display: flex;
+    align-items: center;
+    gap: var(--mayhen-space-sm);
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_template_detail_feature_icon {
+    width: 18px;
+    height: 18px;
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
+}
+
+.mayhen_template_detail_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mayhen-space-md);
+    padding-top: var(--mayhen-space-sm);
+}

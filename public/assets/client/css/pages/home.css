@@ -1,0 +1,409 @@
+/**
+ * MAYHEN.VN — HOME PAGE STYLES
+ * Prefix: mayhen_home_
+ */
+
+/* Hero Section */
+.mayhen_home_hero {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-3xl);
+    background: radial-gradient(circle at 80% 20%, rgba(245, 239, 230, 0.6) 0%, transparent 60%),
+                var(--mayhen-color-bg-base);
+    overflow: hidden;
+}
+
+@media (min-width: 992px) {
+    .mayhen_home_hero {
+        padding-top: var(--mayhen-space-4xl);
+        padding-bottom: var(--mayhen-space-4xl);
+    }
+}
+
+.mayhen_home_hero_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-2xl);
+    align-items: center;
+}
+
+@media (min-width: 992px) {
+    .mayhen_home_hero_grid {
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: var(--mayhen-space-3xl);
+    }
+}
+
+.mayhen_home_hero_content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-lg);
+}
+
+.mayhen_home_hero_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    padding: 6px 14px;
+    background-color: var(--mayhen-color-primary-soft);
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    border-radius: var(--mayhen-radius-pill);
+    color: var(--mayhen-color-primary-hover);
+    font-size: var(--mayhen-font-size-caption);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.mayhen_home_hero_title {
+    font-size: var(--mayhen-font-size-display);
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--mayhen-color-text-main);
+    letter-spacing: -0.02em;
+}
+
+.mayhen_home_hero_title_highlight {
+    font-style: italic;
+    color: var(--mayhen-color-primary);
+    font-weight: 400;
+}
+
+.mayhen_home_hero_desc {
+    font-size: var(--mayhen-font-size-lead);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    max-width: 540px;
+}
+
+.mayhen_home_hero_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mayhen-space-md);
+    padding-top: var(--mayhen-space-xs);
+}
+
+.mayhen_home_hero_trust {
+    display: flex;
+    align-items: center;
+    gap: var(--mayhen-space-lg);
+    padding-top: var(--mayhen-space-md);
+    border-top: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_home_hero_trust_item {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_home_hero_trust_number {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_home_hero_trust_label {
+    font-size: var(--mayhen-font-size-caption);
+    color: var(--mayhen-color-text-muted);
+}
+
+/* Hero Phone Mockup Interactive */
+.mayhen_home_hero_visual {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.mayhen_home_phone_frame {
+    width: 100%;
+    max-width: 330px;
+    height: 610px;
+    background-color: #FFFFFF;
+    border-radius: 44px;
+    box-shadow: var(--mayhen-shadow-floating), 0 0 0 10px #1C1917, 0 0 0 12px #3E3B38;
+    overflow: hidden;
+    position: relative;
+    border: 4px solid #1C1917;
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_home_phone_notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 22px;
+    background-color: #1C1917;
+    border-radius: 14px;
+    z-index: 10;
+}
+
+.mayhen_home_phone_screen {
+    flex: 1;
+    overflow-y: auto;
+    background: #FAF8F5;
+    padding: 36px 18px 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.mayhen_home_card_preview {
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: 24px 16px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(70, 50, 40, 0.08);
+    position: relative;
+}
+
+.mayhen_home_card_envelope_stamp {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--mayhen-color-primary);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(197, 168, 128, 0.4);
+}
+
+.mayhen_home_card_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 4px;
+}
+
+.mayhen_home_card_date {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-primary-hover);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+
+.mayhen_home_card_image {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: var(--mayhen-radius-md);
+    margin-bottom: 14px;
+}
+
+.mayhen_home_card_badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--mayhen-color-bg-soft);
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.75rem;
+    color: var(--mayhen-color-text-muted);
+}
+
+/* Styles Showcase Section */
+.mayhen_home_section_header {
+    text-align: center;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--mayhen-space-3xl);
+}
+
+.mayhen_home_section_subtitle {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-primary-hover);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_home_section_title {
+    font-size: var(--mayhen-font-size-h2);
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_home_section_desc {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-body);
+}
+
+.mayhen_home_templates_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_home_templates_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_home_template_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    overflow: hidden;
+    transition: all var(--mayhen-transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_home_template_card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mayhen-shadow-card-hover);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_home_template_card_img_wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: var(--mayhen-color-bg-accent);
+}
+
+.mayhen_home_template_card_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--mayhen-transition-smooth);
+}
+
+.mayhen_home_template_card:hover .mayhen_home_template_card_img {
+    transform: scale(1.04);
+}
+
+.mayhen_home_template_card_badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_home_template_card_body {
+    padding: var(--mayhen-space-lg);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.mayhen_home_template_card_category {
+    font-size: 0.75rem;
+    color: var(--mayhen-color-primary-hover);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.mayhen_home_template_card_name {
+    font-size: 1.2rem;
+    font-family: var(--mayhen-font-serif);
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_home_template_card_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--mayhen-space-md);
+    flex: 1;
+}
+
+.mayhen_home_template_card_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--mayhen-space-sm);
+    border-top: 1px solid var(--mayhen-color-border);
+}
+
+/* Feature Steps */
+.mayhen_home_steps_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_home_steps_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_home_step_item {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-xl);
+    position: relative;
+}
+
+.mayhen_home_step_number {
+    font-family: var(--mayhen-font-serif);
+    font-size: 2.5rem;
+    color: var(--mayhen-color-primary);
+    line-height: 1;
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_home_step_title {
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_home_step_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+}
+
+/* Final CTA Section */
+.mayhen_home_cta_banner {
+    background: #1C1917;
+    color: #FFFFFF;
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-3xl) var(--mayhen-space-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_home_cta_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: #FFFFFF;
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_home_cta_desc {
+    color: #D6D3D1;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--mayhen-space-xl);
+    font-size: var(--mayhen-font-size-lead);
+}

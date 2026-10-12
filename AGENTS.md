@@ -147,4 +147,65 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Run `vendor/bin/pest` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
 - After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
 
+=== mayhen rules ===
+
+# MÂY HẸN (MAYHEN.VN) PROJECT RULES
+
+## 1. Brand & Aesthetic
+- Style: Quiet Luxury, Editorial, Minimal, Romantic, Modern.
+- Tone: Warm Cream, Soft Beige, Ivory White, Charcoal, Muted Gold, Dusty Rose, Sage Green.
+- Focus: High-emotional value, beautiful invitations, smooth natural animations, mobile-first excellence.
+
+## 2. Frontend Strict Rules
+- BẮT BUỘC: HTML thuần + CSS thuần + JavaScript thuần (Native ES Modules).
+- CẤM TUYỆT ĐỐI: Bootstrap, Tailwind CSS, Bulma, Foundation, jQuery, Vue, React, Alpine.js, GSAP, Anime.js, AOS, Swiper.js, Slick Slider.
+- CẤM: Không sử dụng CDN bên ngoài, không nhúng inline style hoặc script vào Blade.
+- MANDATORY CSS CLASS PREFIX:
+  - Client Home: `mayhen_home_*`
+  - Client Services: `mayhen_service_*`
+  - Client Pricing: `mayhen_pricing_*`
+  - Client Templates: `mayhen_templates_*`
+  - Client Template Detail: `mayhen_template_detail_*`
+  - Client Blog: `mayhen_blog_*`
+  - Client About: `mayhen_about_*`
+  - Client Contact: `mayhen_contact_*`
+  - Client FAQ: `mayhen_faq_*`
+  - Client Auth: `mayhen_auth_*`
+  - Client Dashboard: `mayhen_dashboard_*`
+  - Client Editor: `mayhen_editor_*`
+  - Client Guests: `mayhen_guest_*`
+  - Public Invitation: `mayhen_invitation_*`
+  - Shared Client Components: `mayhen_client_*` (e.g. `mayhen_client_header_*`, `mayhen_client_button_*`, `mayhen_client_modal_*`)
+  - Admin: `mayhen_admin_*`
+
+## 3. Blade & File Organization
+- One independent Blade file per page (e.g., `client/pages/home.blade.php`).
+- Client CSS lives in `public/assets/client/css/` (e.g., `common/tokens.css`, `common/base.css`, `pages/home.css`).
+- Client JS lives in `public/assets/client/js/` (e.g., `common/dom.js`, `pages/home.js`).
+- Admin assets strictly isolated in `public/assets/admin/`.
+
+## 4. Skills Dispatch Table
+Activate and read the corresponding skill in `.agents/skills/` before executing:
+- Architecture / Folders -> `mayhen-project-architecture`
+- Brand, Colors, Typography -> `mayhen-brand-design`
+- UI/UX, Responsive, Mobile -> `mayhen-ui-ux`
+- Blade Templates -> `mayhen-blade`
+- CSS Styling & Prefix -> `mayhen-css`
+- JavaScript & DOM -> `mayhen-javascript`
+- Invitation Animations -> `mayhen-animation`
+- Template Engine -> `mayhen-invitation-templates`
+- Database & Migrations -> `mayhen-database`
+- Backend, Controllers, Services -> `mayhen-laravel-backend`
+- Auth, Security, Privacy -> `mayhen-auth-security`
+- Payments & Webhooks -> `mayhen-payments`
+- Guest Management & RSVP -> `mayhen-guest-rsvp`
+- Admin Modules -> `mayhen-admin`
+- Partner & Studio -> `mayhen-partners`
+- SEO, OpenGraph -> `mayhen-seo`
+- Performance & Core Web Vitals -> `mayhen-performance`
+- Testing & Quality -> `mayhen-testing-quality`
+- Deployment -> `mayhen-deployment`
+- Code Review & Quality Checklist -> `mayhen-code-review`
+
 </laravel-boost-guidelines>
+

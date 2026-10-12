@@ -1,0 +1,128 @@
+/**
+ * MAYHEN.VN — PRICING PAGE STYLES
+ * Prefix: mayhen_pricing_
+ */
+
+.mayhen_pricing_header {
+    text-align: center;
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-xl);
+}
+
+.mayhen_pricing_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_pricing_desc {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-lead);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mayhen_pricing_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+    margin-bottom: var(--mayhen-space-4xl);
+}
+
+@media (min-width: 860px) {
+    .mayhen_pricing_grid {
+        grid-template-columns: repeat(3, 1fr);
+        align-items: stretch;
+    }
+}
+
+.mayhen_pricing_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-2xl) var(--mayhen-space-xl);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all var(--mayhen-transition-normal);
+}
+
+.mayhen_pricing_card_featured {
+    border-color: var(--mayhen-color-primary);
+    box-shadow: 0 12px 36px -4px rgba(197, 168, 128, 0.2);
+    transform: translateY(-6px);
+}
+
+.mayhen_pricing_card_badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--mayhen-color-primary);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 16px;
+    border-radius: var(--mayhen-radius-pill);
+}
+
+.mayhen_pricing_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.4rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_pricing_card_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    margin-bottom: var(--mayhen-space-lg);
+    min-height: 44px;
+}
+
+.mayhen_pricing_price_wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: var(--mayhen-space-xl);
+    padding-bottom: var(--mayhen-space-lg);
+    border-bottom: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_pricing_amount {
+    font-family: var(--mayhen-font-serif);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_pricing_period {
+    font-size: 0.875rem;
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_pricing_feature_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+    margin-bottom: var(--mayhen-space-2xl);
+    flex: 1;
+}
+
+.mayhen_pricing_feature_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_pricing_feature_check {
+    width: 18px;
+    height: 18px;
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
+}

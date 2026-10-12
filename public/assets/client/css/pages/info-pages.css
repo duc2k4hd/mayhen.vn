@@ -1,0 +1,108 @@
+/**
+ * MAYHEN.VN — INFORMATIONAL & POLICY PAGES STYLES
+ * Prefix: mayhen_info_
+ */
+
+.mayhen_info_wrapper {
+    padding-top: var(--mayhen-space-3xl);
+    padding-bottom: var(--mayhen-space-4xl);
+}
+
+.mayhen_info_header {
+    text-align: center;
+    margin-bottom: var(--mayhen-space-3xl);
+}
+
+.mayhen_info_subtitle {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-primary-hover);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_info_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_info_lead {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-lead);
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+}
+
+.mayhen_info_content {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-2xl);
+    line-height: 1.8;
+    color: var(--mayhen-color-text-main);
+}
+
+@media (min-width: 768px) {
+    .mayhen_info_content {
+        padding: var(--mayhen-space-3xl);
+    }
+}
+
+.mayhen_info_content h2 {
+    font-size: var(--mayhen-font-size-h2);
+    margin-top: var(--mayhen-space-2xl);
+    margin-bottom: var(--mayhen-space-md);
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_info_content h2:first-child {
+    margin-top: 0;
+}
+
+.mayhen_info_content h3 {
+    font-size: var(--mayhen-font-size-h3);
+    margin-top: var(--mayhen-space-xl);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_info_content ul {
+    list-style: disc;
+    margin-left: var(--mayhen-space-xl);
+    margin-bottom: var(--mayhen-space-lg);
+}
+
+.mayhen_info_content li {
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+/* FAQ Accordion */
+.mayhen_info_faq_group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+}
+
+.mayhen_info_faq_item {
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    background-color: var(--mayhen-color-bg-surface);
+    padding: var(--mayhen-space-lg);
+}
+
+.mayhen_info_faq_question {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_info_faq_answer {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-body);
+    line-height: 1.7;
+    margin-bottom: 0;
+}

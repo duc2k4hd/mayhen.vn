@@ -1,0 +1,173 @@
+/**
+ * MAYHEN.VN — CLIENT HEADER STYLES
+ * Prefix: mayhen_client_header
+ */
+
+.mayhen_client_header_wrapper {
+    position: sticky;
+    top: 0;
+    z-index: var(--mayhen-z-header);
+    background-color: rgba(252, 251, 249, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--mayhen-color-border);
+    transition: all var(--mayhen-transition-normal);
+}
+
+.mayhen_client_header_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+}
+
+/* Brand Logo */
+.mayhen_client_header_brand {
+    display: flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    text-decoration: none;
+}
+
+.mayhen_client_header_logo_icon {
+    width: 32px;
+    height: 32px;
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_client_header_brand_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_client_header_brand_tagline {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--mayhen-color-text-muted);
+    font-family: var(--mayhen-font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+@media (min-width: 992px) {
+    .mayhen_client_header_brand_tagline {
+        display: inline-block;
+        padding-left: var(--mayhen-space-sm);
+        margin-left: var(--mayhen-space-sm);
+        border-left: 1px solid var(--mayhen-color-border);
+    }
+}
+
+/* Navigation Menu (Desktop) */
+.mayhen_client_header_nav {
+    display: none;
+}
+
+@media (min-width: 860px) {
+    .mayhen_client_header_nav {
+        display: flex;
+        align-items: center;
+        gap: var(--mayhen-space-xl);
+    }
+}
+
+.mayhen_client_header_nav_link {
+    font-size: var(--mayhen-font-size-small);
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    transition: color var(--mayhen-transition-fast);
+    padding: var(--mayhen-space-2xs) 0;
+    position: relative;
+}
+
+.mayhen_client_header_nav_link:hover,
+.mayhen_client_header_nav_link.mayhen_client_header_nav_link_active {
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_client_header_nav_link.mayhen_client_header_nav_link_active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background-color: var(--mayhen-color-primary);
+}
+
+/* Actions Group */
+.mayhen_client_header_actions {
+    display: flex;
+    align-items: center;
+    gap: var(--mayhen-space-sm);
+}
+
+.mayhen_client_header_cta {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .mayhen_client_header_cta {
+        display: inline-flex;
+    }
+}
+
+/* Mobile Hamburger Toggle */
+.mayhen_client_header_toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--mayhen-radius-sm);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    gap: 5px;
+}
+
+@media (min-width: 860px) {
+    .mayhen_client_header_toggle {
+        display: none;
+    }
+}
+
+.mayhen_client_header_toggle_bar {
+    width: 22px;
+    height: 2px;
+    background-color: var(--mayhen-color-text-main);
+    border-radius: 2px;
+    transition: all var(--mayhen-transition-normal);
+}
+
+/* Mobile Drawer Overlay */
+.mayhen_client_header_drawer {
+    display: none;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--mayhen-color-bg-base);
+    padding: var(--mayhen-space-xl) var(--mayhen-space-lg);
+    z-index: var(--mayhen-z-drawer);
+    flex-direction: column;
+    gap: var(--mayhen-space-lg);
+    border-top: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_client_header_drawer.mayhen_client_header_drawer_open {
+    display: flex;
+}
+
+.mayhen_client_header_drawer_link {
+    font-size: 1.25rem;
+    font-family: var(--mayhen-font-serif);
+    color: var(--mayhen-color-text-main);
+    padding: var(--mayhen-space-sm) 0;
+    border-bottom: 1px solid var(--mayhen-color-border);
+}

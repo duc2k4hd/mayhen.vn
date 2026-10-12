@@ -1,0 +1,82 @@
+/**
+ * MAYHEN.VN — BASE & RESET STYLES
+ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--mayhen-color-bg-base);
+    color: var(--mayhen-color-text-main);
+}
+
+body {
+    font-family: var(--mayhen-font-sans);
+    font-size: var(--mayhen-font-size-body);
+    line-height: 1.65;
+    background-color: var(--mayhen-color-bg-base);
+    color: var(--mayhen-color-text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+input, button, textarea, select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--mayhen-transition-fast);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--mayhen-font-serif);
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--mayhen-color-text-main);
+    letter-spacing: -0.01em;
+}
+
+p {
+    margin-bottom: var(--mayhen-space-md);
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

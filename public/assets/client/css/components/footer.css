@@ -1,0 +1,96 @@
+/**
+ * MAYHEN.VN — CLIENT FOOTER STYLES
+ * Prefix: mayhen_client_footer
+ */
+
+.mayhen_client_footer_wrapper {
+    background-color: #171513;
+    color: #F7F4EE;
+    padding-top: var(--mayhen-space-4xl);
+    padding-bottom: var(--mayhen-space-2xl);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: auto;
+}
+
+.mayhen_client_footer_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-2xl);
+    margin-bottom: var(--mayhen-space-3xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_footer_grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: var(--mayhen-space-xl);
+    }
+}
+
+.mayhen_client_footer_brand_col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+}
+
+.mayhen_client_footer_brand_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.75rem;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_client_footer_brand_desc {
+    color: #A8A29E;
+    font-size: var(--mayhen-font-size-small);
+    line-height: 1.7;
+    max-width: 320px;
+}
+
+.mayhen_client_footer_nav_title {
+    font-family: var(--mayhen-font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mayhen-color-primary);
+    margin-bottom: var(--mayhen-space-md);
+}
+
+.mayhen_client_footer_nav_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+}
+
+.mayhen_client_footer_nav_link {
+    color: #D6D3D1;
+    font-size: var(--mayhen-font-size-small);
+    transition: color var(--mayhen-transition-fast);
+}
+
+.mayhen_client_footer_nav_link:hover {
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_client_footer_bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+    padding-top: var(--mayhen-space-xl);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: var(--mayhen-font-size-caption);
+    color: #78716C;
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_footer_bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.mayhen_client_footer_legal_links {
+    display: flex;
+    gap: var(--mayhen-space-md);
+}

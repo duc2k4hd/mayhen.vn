@@ -1,0 +1,285 @@
+/**
+ * MAYHEN.VN — LIVE INVITATION PREVIEW STYLES
+ * Prefix: mayhen_invitation_
+ */
+
+.mayhen_invitation_wrapper {
+    background-color: #F8F6F0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-bottom: 60px;
+}
+
+/* Floating Audio Player Button */
+.mayhen_invitation_music_btn {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    box-shadow: var(--mayhen-shadow-md);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mayhen-color-primary);
+    cursor: pointer;
+    transition: all var(--mayhen-transition-fast);
+}
+
+.mayhen_invitation_music_btn.mayhen_invitation_music_playing {
+    animation: mayhen_spin 6s linear infinite;
+    color: var(--mayhen-color-primary-hover);
+}
+
+@keyframes mayhen_spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Top Demo Banner */
+.mayhen_invitation_demo_banner {
+    width: 100%;
+    background: #1C1917;
+    color: #FFFFFF;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    z-index: 110;
+}
+
+.mayhen_invitation_demo_banner_left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Envelope Container & Animation */
+.mayhen_invitation_envelope_stage {
+    width: 100%;
+    max-width: 480px;
+    padding: 24px 16px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.mayhen_invitation_envelope {
+    width: 100%;
+    max-width: 420px;
+    background-color: #EFE8DD;
+    border-radius: 16px;
+    box-shadow: var(--mayhen-shadow-floating);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    border: 1px solid #DFD7CA;
+    margin-bottom: 24px;
+    transition: all var(--mayhen-transition-smooth);
+}
+
+.mayhen_invitation_envelope_seal {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #DDB88E, #A37F55);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    font-style: italic;
+    box-shadow: 0 8px 20px rgba(130, 95, 60, 0.4);
+    cursor: pointer;
+    margin-bottom: 16px;
+    border: 2px solid #F0D4B2;
+    transition: transform var(--mayhen-transition-normal);
+}
+
+.mayhen_invitation_envelope_seal:hover {
+    transform: scale(1.08);
+}
+
+.mayhen_invitation_envelope_to {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.35rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_envelope_hint {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* The Main Invitation Card Body */
+.mayhen_invitation_card {
+    width: 100%;
+    max-width: 440px;
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: var(--mayhen-shadow-floating);
+    overflow: hidden;
+    border: 1px solid var(--mayhen-color-border);
+    margin: 0 auto;
+    transition: all var(--mayhen-transition-smooth);
+}
+
+.mayhen_invitation_card_header {
+    text-align: center;
+    padding: 36px 24px 20px 24px;
+}
+
+.mayhen_invitation_subhead {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_names {
+    font-family: var(--mayhen-font-serif);
+    font-size: 2.15rem;
+    line-height: 1.25;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_names_amp {
+    font-family: var(--mayhen-font-script);
+    font-style: italic;
+    color: var(--mayhen-color-primary);
+    font-weight: 400;
+}
+
+.mayhen_invitation_photo_wrap {
+    width: 100%;
+    padding: 0 20px;
+    margin-bottom: 24px;
+}
+
+.mayhen_invitation_photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 14px;
+}
+
+/* Countdown Clock */
+.mayhen_invitation_countdown_box {
+    background-color: #F8F5EE;
+    border-radius: 14px;
+    margin: 0 20px 28px 20px;
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.mayhen_invitation_countdown_title {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mayhen-color-text-muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.mayhen_invitation_countdown_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.mayhen_invitation_countdown_item {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_invitation_countdown_num {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_invitation_countdown_unit {
+    font-size: 0.6875rem;
+    color: var(--mayhen-color-text-light);
+    text-transform: uppercase;
+}
+
+/* Event Section */
+.mayhen_invitation_event_section {
+    padding: 24px 20px;
+    border-top: 1px dashed var(--mayhen-color-border);
+    text-align: center;
+}
+
+.mayhen_invitation_event_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.35rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_event_time {
+    font-size: 0.9375rem;
+    color: var(--mayhen-color-primary-hover);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.mayhen_invitation_event_venue {
+    font-size: 0.9375rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+/* RSVP Form Inside Card */
+.mayhen_invitation_rsvp_section {
+    padding: 28px 20px;
+    background-color: #FAF8F5;
+    border-top: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_invitation_rsvp_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_rsvp_desc {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-muted);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Success Feedback */
+.mayhen_invitation_alert_success {
+    background-color: #EBF5EE;
+    color: #2D5A27;
+    border: 1px solid #C3E6CB;
+    border-radius: var(--mayhen-radius-md);
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-top: 14px;
+    display: none;
+}

@@ -1,0 +1,55 @@
+/**
+ * MAYHEN.VN — CLIENT FORM CONTROLS
+ * Prefix: mayhen_client_form
+ */
+
+.mayhen_client_form_group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-xs);
+    margin-bottom: var(--mayhen-space-md);
+}
+
+.mayhen_client_form_label {
+    font-size: var(--mayhen-font-size-small);
+    font-weight: 500;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_client_form_input,
+.mayhen_client_form_textarea,
+.mayhen_client_form_select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: var(--mayhen-font-size-body);
+    font-family: var(--mayhen-font-sans);
+    color: var(--mayhen-color-text-main);
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    transition: all var(--mayhen-transition-fast);
+    outline: none;
+}
+
+.mayhen_client_form_input:focus,
+.mayhen_client_form_textarea:focus,
+.mayhen_client_form_select:focus {
+    border-color: var(--mayhen-color-primary);
+    box-shadow: 0 0 0 3px var(--mayhen-color-focus-ring);
+}
+
+.mayhen_client_form_input::placeholder,
+.mayhen_client_form_textarea::placeholder {
+    color: var(--mayhen-color-text-light);
+}
+
+.mayhen_client_form_hint {
+    font-size: var(--mayhen-font-size-caption);
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_client_form_error {
+    font-size: var(--mayhen-font-size-caption);
+    color: var(--mayhen-color-danger);
+    font-weight: 500;
+}

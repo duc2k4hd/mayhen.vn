@@ -1,0 +1,53 @@
+/**
+ * MAYHEN.VN — CLIENT LAYOUT UTILITIES
+ * All classes prefixed with mayhen_client_layout_
+ */
+
+.mayhen_client_layout_main {
+    flex: 1 0 auto;
+}
+
+.mayhen_client_layout_container {
+    width: 100%;
+    max-width: var(--mayhen-container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--mayhen-space-md);
+    padding-right: var(--mayhen-space-md);
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_layout_container {
+        padding-left: var(--mayhen-space-xl);
+        padding-right: var(--mayhen-space-xl);
+    }
+}
+
+.mayhen_client_layout_container_narrow {
+    width: 100%;
+    max-width: var(--mayhen-container-narrow);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--mayhen-space-md);
+    padding-right: var(--mayhen-space-md);
+}
+
+.mayhen_client_layout_section {
+    padding-top: var(--mayhen-space-3xl);
+    padding-bottom: var(--mayhen-space-3xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_layout_section {
+        padding-top: var(--mayhen-space-4xl);
+        padding-bottom: var(--mayhen-space-4xl);
+    }
+}
+
+.mayhen_client_layout_section_soft {
+    background-color: var(--mayhen-color-bg-soft);
+}
+
+.mayhen_client_layout_section_accent {
+    background-color: var(--mayhen-color-bg-accent);
+}

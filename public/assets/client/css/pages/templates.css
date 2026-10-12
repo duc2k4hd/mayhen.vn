@@ -1,0 +1,74 @@
+/**
+ * MAYHEN.VN — TEMPLATES DIRECTORY STYLES
+ * Prefix: mayhen_templates_
+ */
+
+.mayhen_templates_header {
+    text-align: center;
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-xl);
+}
+
+.mayhen_templates_title {
+    font-size: var(--mayhen-font-size-h1);
+    color: var(--mayhen-color-text-main);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_templates_desc {
+    color: var(--mayhen-color-text-muted);
+    font-size: var(--mayhen-font-size-lead);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Category Filter Bar */
+.mayhen_templates_filter_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--mayhen-space-xs);
+    margin-bottom: var(--mayhen-space-3xl);
+}
+
+.mayhen_templates_filter_pill {
+    padding: 8px 18px;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: var(--mayhen-font-size-small);
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    transition: all var(--mayhen-transition-fast);
+}
+
+.mayhen_templates_filter_pill:hover {
+    color: var(--mayhen-color-text-main);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_templates_filter_pill_active {
+    background-color: var(--mayhen-color-text-main);
+    color: #FFFFFF;
+    border-color: var(--mayhen-color-text-main);
+}
+
+.mayhen_templates_filter_pill_active:hover {
+    color: #FFFFFF;
+}
+
+/* Grid */
+.mayhen_templates_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+    margin-bottom: var(--mayhen-space-4xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_templates_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
