@@ -6632,4 +6632,148 @@
     }
 }
 
+/* ========================================================
+ * 8. SEMANTIC SEO EDITORIAL GUIDE (KNOWLEDGE HUB)
+ * Quiet Luxury Editorial Cards for "Thiệp Cưới Online"
+ * ======================================================== */
+.mayhen_home_guide_section {
+    padding: clamp(60px, 8vw, 100px) 0 clamp(40px, 6vw, 70px) 0;
+    background: linear-gradient(180deg, rgba(250, 248, 245, 0.4) 0%, rgba(245, 240, 232, 0.6) 100%);
+    position: relative;
+    border-top: 1px solid rgba(197, 168, 128, 0.16);
+}
+
+.mayhen_home_guide_header {
+    text-align: center;
+    max-width: 780px;
+    margin: 0 auto clamp(36px, 5vw, 56px) auto;
+}
+
+.mayhen_home_guide_badge {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #9C7A4A;
+    background: rgba(197, 168, 128, 0.12);
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    border-radius: 9999px;
+    padding: 6px 18px;
+    margin-bottom: 14px;
+}
+
+.mayhen_home_guide_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: clamp(1.85rem, 3.2vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--mayhen-color-text-main, #1F1D1A);
+    margin: 0 0 16px 0;
+}
+
+.mayhen_home_guide_title_serif {
+    font-style: italic;
+    font-weight: 400;
+    color: #9C7A4A;
+}
+
+.mayhen_home_guide_desc {
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.7;
+    color: var(--mayhen-color-text-muted, #5A554E);
+    margin: 0 auto;
+}
+
+.mayhen_home_guide_grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .mayhen_home_guide_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .mayhen_home_guide_grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+    }
+}
+
+.mayhen_home_guide_card {
+    background: #FFFFFF;
+    border: 1px solid rgba(223, 215, 202, 0.7);
+    border-radius: 18px;
+    box-shadow: 0 6px 24px rgba(44, 38, 30, 0.04);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mayhen_home_guide_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(44, 38, 30, 0.08);
+    border-color: rgba(197, 168, 128, 0.45);
+}
+
+.mayhen_home_guide_card_body {
+    padding: clamp(24px, 3vw, 32px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.mayhen_home_guide_tag {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9C7A4A;
+    margin-bottom: 12px;
+}
+
+.mayhen_home_guide_card_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: clamp(1.15rem, 1.4vw, 1.3rem);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--mayhen-color-text-main, #1F1D1A);
+    margin: 0 0 14px 0;
+}
+
+.mayhen_home_guide_card_text {
+    font-size: 0.885rem;
+    line-height: 1.7;
+    color: var(--mayhen-color-text-muted, #5A554E);
+    margin: 0 0 20px 0;
+    flex: 1;
+}
+
+.mayhen_home_guide_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(223, 215, 202, 0.6);
+    font-size: 0.75rem;
+    color: var(--mayhen-color-text-light, #8C8479);
+}
+
+.mayhen_home_guide_author {
+    font-weight: 500;
+    color: #7A6342;
+}
+
+.mayhen_home_guide_readtime {
+    font-style: italic;
+}
+
 
