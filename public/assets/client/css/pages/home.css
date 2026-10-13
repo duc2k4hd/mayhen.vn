@@ -1126,7 +1126,7 @@
 .mayhen_home_showcase_vignette {
     position: absolute;
     top: 10px;
-    width: 250px;
+    width: clamp(250px, 28vw, 440px);
     height: 290px;
     pointer-events: auto;
 }
@@ -1431,6 +1431,257 @@
     position: absolute;
     font-size: 1rem;
 }
+
+/* Layer 4: Editorial Whisper Quotes (Lấp đầy khoảng trống Box 1 & Box 2) */
+.mayhen_home_showcase_vignette_quote {
+    position: absolute;
+    top: 24px;
+    width: clamp(170px, 13vw, 215px);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(197, 168, 128, 0.38);
+    border-radius: 12px;
+    padding: 12px 14px 10px 14px;
+    box-shadow: 0 10px 24px -6px rgba(43, 26, 17, 0.08), 0 2px 6px rgba(197, 168, 128, 0.12);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    cursor: default;
+    z-index: 3;
+}
+
+.mayhen_home_showcase_vignette_quote:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: rgba(197, 168, 128, 0.7);
+    box-shadow: 0 14px 30px -6px rgba(43, 26, 17, 0.14), 0 4px 10px rgba(197, 168, 128, 0.2);
+}
+
+.mayhen_home_showcase_vignette_quote.is-left-quote {
+    left: 200px;
+    transform: rotate(2deg);
+}
+
+.mayhen_home_showcase_vignette_quote.is-left-quote:hover {
+    transform: rotate(0deg) scale(1.03);
+}
+
+.mayhen_home_showcase_vignette_quote.is-right-quote {
+    right: 200px;
+    transform: rotate(-2.5deg);
+}
+
+.mayhen_home_showcase_vignette_quote.is-right-quote:hover {
+    transform: rotate(0deg) scale(1.03);
+}
+
+.mayhen_home_showcase_quote_ornament {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.mayhen_home_showcase_quote_leaf {
+    color: var(--mayhen-color-primary, #C5A880);
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.mayhen_home_showcase_quote_line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(197, 168, 128, 0.6) 0%, transparent 100%);
+}
+
+.is-right-quote .mayhen_home_showcase_quote_line {
+    background: linear-gradient(270deg, rgba(197, 168, 128, 0.6) 0%, transparent 100%);
+}
+
+.mayhen_home_showcase_vignette_quote_text {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.775rem;
+    font-style: italic;
+    color: #4A3E36;
+    line-height: 1.45;
+    margin: 0 0 6px 0;
+}
+
+.mayhen_home_showcase_vignette_quote_author {
+    display: block;
+    font-size: 0.565rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--mayhen-color-primary-hover, #A68759);
+    text-transform: uppercase;
+}
+
+/* ========================================================
+   BOTTOM FLANK PANELS (Lấp đầy khoảng trống Box 3 & Box 4)
+   ======================================================== */
+.mayhen_home_showcase_flank {
+    position: absolute;
+    top: 318px;
+    width: clamp(210px, 16vw, 256px);
+    pointer-events: auto;
+    z-index: 4;
+}
+
+.mayhen_home_showcase_flank.is-bottom-left {
+    left: clamp(12px, 3.2vw, 56px);
+    animation: mayhen_vignette_float_left 9s ease-in-out infinite alternate;
+}
+
+.mayhen_home_showcase_flank.is-bottom-right {
+    right: clamp(12px, 3.2vw, 56px);
+    animation: mayhen_vignette_float_right 9.5s ease-in-out infinite alternate-reverse;
+}
+
+.mayhen_home_showcase_flank_inner {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    border-radius: 16px;
+    padding: 14px 14px 12px 14px;
+    box-shadow: 0 12px 32px -8px rgba(43, 26, 17, 0.1), 0 2px 8px rgba(197, 168, 128, 0.12);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    cursor: default;
+}
+
+.mayhen_home_showcase_flank_inner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -8px rgba(43, 26, 17, 0.16), 0 4px 14px rgba(197, 168, 128, 0.22);
+    border-color: rgba(197, 168, 128, 0.7);
+}
+
+.mayhen_home_showcase_flank_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.585rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary, #C5A880);
+    margin-bottom: 2px;
+}
+
+.mayhen_home_showcase_flank_sparkle {
+    font-size: 0.65rem;
+    line-height: 1;
+}
+
+.mayhen_home_showcase_flank_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main, #1C1917);
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+}
+
+.mayhen_home_showcase_flank_divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(197, 168, 128, 0.5) 0%, rgba(197, 168, 128, 0.08) 100%);
+    margin-bottom: 10px;
+}
+
+.is-bottom-right .mayhen_home_showcase_flank_divider {
+    background: linear-gradient(270deg, rgba(197, 168, 128, 0.5) 0%, rgba(197, 168, 128, 0.08) 100%);
+}
+
+.mayhen_home_showcase_flank_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_home_showcase_flank_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.mayhen_home_showcase_flank_icon {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.mayhen_home_showcase_flank_text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mayhen_home_showcase_flank_text strong {
+    font-size: 0.765rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main, #1C1917);
+    line-height: 1.25;
+}
+
+.mayhen_home_showcase_flank_text span {
+    font-size: 0.675rem;
+    color: var(--mayhen-color-text-muted, #786C60);
+    line-height: 1.35;
+    margin-top: 1px;
+}
+
+.mayhen_home_showcase_flank_footer {
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(197, 168, 128, 0.35);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mayhen_home_showcase_flank_seal_text {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--mayhen-color-primary-hover, #A68759);
+    text-transform: uppercase;
+}
+
+/* Responsive Scaling for Large & Medium Screens */
+@media (max-width: 1439px) {
+    .mayhen_home_showcase_vignette.is-left {
+        width: 390px;
+    }
+    .mayhen_home_showcase_vignette.is-right {
+        width: 390px;
+    }
+    .mayhen_home_showcase_vignette_quote.is-left-quote {
+        left: 185px;
+        width: 185px;
+    }
+    .mayhen_home_showcase_vignette_quote.is-right-quote {
+        right: 185px;
+        width: 185px;
+    }
+    .mayhen_home_showcase_flank {
+        width: 225px;
+    }
+}
+
+@media (max-width: 1259px) {
+    /* Hide top quotes & flank panels on compact laptop screens to avoid crowding center title */
+    .mayhen_home_showcase_vignette_quote {
+        display: none !important;
+    }
+    .mayhen_home_showcase_vignette {
+        width: 250px;
+    }
+    .mayhen_home_showcase_flank {
+        display: none !important;
+    }
+}
+
 
 .mayhen_home_showcase_header {
     position: relative;

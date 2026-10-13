@@ -261,7 +261,7 @@
 
         <!-- Haute Couture Visual Vignettes (2 Bên Cánh Xếp Lớp Nghệ Thuật) -->
         <div class="mayhen_home_showcase_vignettes_wrap" aria-hidden="true">
-            <!-- Left Vignette: Polaroid & Vintage Wax Envelope -->
+            <!-- Left Vignette: Polaroid, Vintage Wax Envelope & Editorial Quote (Fills Box 1) -->
             <div class="mayhen_home_showcase_vignette is-left">
                 <!-- Layer 1: Polaroid Frame -->
                 <div class="mayhen_home_showcase_vignette_card is-polaroid">
@@ -289,9 +289,21 @@
                 <div class="mayhen_home_showcase_vignette_tag is-left-tag">
                     <span>✦ Nghệ thuật trao lời hẹn</span>
                 </div>
+
+                <!-- Layer 4: Editorial Whisper Quote (Lấp đầy khoảng trống bên trái tiêu đề) -->
+                <div class="mayhen_home_showcase_vignette_quote is-left-quote">
+                    <div class="mayhen_home_showcase_quote_ornament">
+                        <span class="mayhen_home_showcase_quote_leaf">❦</span>
+                        <span class="mayhen_home_showcase_quote_line"></span>
+                    </div>
+                    <p class="mayhen_home_showcase_vignette_quote_text">
+                        “Mỗi tấm thiệp là một nốt nhạc dịu êm, dệt nên khúc dạo đầu ngọt ngào cho ngày trăm năm.”
+                    </p>
+                    <span class="mayhen_home_showcase_vignette_quote_author">MAY HEN • CHUYỆN TRĂM NĂM</span>
+                </div>
             </div>
 
-            <!-- Right Vignette: French Arch Photo & Editorial Invitation -->
+            <!-- Right Vignette: French Arch Photo, Editorial Card & Aesthetic Motto (Fills Box 2) -->
             <div class="mayhen_home_showcase_vignette is-right">
                 <!-- Layer 1: French Arch Frame -->
                 <div class="mayhen_home_showcase_vignette_card is-arch">
@@ -321,6 +333,94 @@
                         </text>
                     </svg>
                     <span class="mayhen_home_showcase_vignette_badge_icon">💍</span>
+                </div>
+
+                <!-- Layer 4: Couture Motto Plaque (Lấp đầy khoảng trống bên phải tiêu đề) -->
+                <div class="mayhen_home_showcase_vignette_quote is-right-quote">
+                    <div class="mayhen_home_showcase_quote_ornament">
+                        <span class="mayhen_home_showcase_quote_line"></span>
+                        <span class="mayhen_home_showcase_quote_leaf">❦</span>
+                    </div>
+                    <p class="mayhen_home_showcase_vignette_quote_text">
+                        “Chuẩn mực thẩm mỹ Quiet Luxury — tối giản, thanh lịch và trường tồn cùng năm tháng.”
+                    </p>
+                    <span class="mayhen_home_showcase_vignette_quote_author">HAUTE COUTURE • 2026</span>
+                </div>
+            </div>
+
+            <!-- Bottom Left Flank Panel: Quy Chuẩn Thiết Kế (Lấp đầy khoảng trống góc dưới bên trái) -->
+            <div class="mayhen_home_showcase_flank is-bottom-left">
+                <div class="mayhen_home_showcase_flank_inner">
+                    <div class="mayhen_home_showcase_flank_badge">
+                        <span class="mayhen_home_showcase_flank_sparkle">✦</span>
+                        <span>QUY CHUẨN THIẾT KẾ</span>
+                    </div>
+                    <h3 class="mayhen_home_showcase_flank_title">Nghệ Thuật Thiệp Cưới</h3>
+                    <div class="mayhen_home_showcase_flank_divider"></div>
+                    <ul class="mayhen_home_showcase_flank_list">
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">💌</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Nắp Gấp Tem Sáp 3D</strong>
+                                <span>Tương tác mở phong thư như chạm vào chất liệu thật</span>
+                            </div>
+                        </li>
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">🎵</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Âm Nhạc Du Dương</strong>
+                                <span>Giai điệu lễ cưới tự động ngân vang khi mở thiệp</span>
+                            </div>
+                        </li>
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">📱</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Tối Ưu Từng Màn Hình</strong>
+                                <span>Mượt mà, sắc nét trên cả iPhone và Android</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="mayhen_home_showcase_flank_footer">
+                        <span class="mayhen_home_showcase_flank_seal_text">MAYHEN BESPOKE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Right Flank Panel: Tiện Ích Dành Cho Khách (Lấp đầy khoảng trống góc dưới bên phải) -->
+            <div class="mayhen_home_showcase_flank is-bottom-right">
+                <div class="mayhen_home_showcase_flank_inner">
+                    <div class="mayhen_home_showcase_flank_badge">
+                        <span class="mayhen_home_showcase_flank_sparkle">✦</span>
+                        <span>TIỆN ÍCH DÀNH CHO KHÁCH</span>
+                    </div>
+                    <h3 class="mayhen_home_showcase_flank_title">Gửi Trao Chu Đáo</h3>
+                    <div class="mayhen_home_showcase_flank_divider"></div>
+                    <ul class="mayhen_home_showcase_flank_list">
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">💬</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Gửi Nhanh Qua Zalo</strong>
+                                <span>Một chạm là khách xem được ngay, không cần cài app</span>
+                            </div>
+                        </li>
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">✨</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Báo Tham Dự (RSVP)</strong>
+                                <span>Biết trước số lượng khách để xếp bàn tiệc chu toàn</span>
+                            </div>
+                        </li>
+                        <li class="mayhen_home_showcase_flank_item">
+                            <span class="mayhen_home_showcase_flank_icon">📍</span>
+                            <div class="mayhen_home_showcase_flank_text">
+                                <strong>Bản Đồ Chỉ Đường</strong>
+                                <span>Tích hợp Google Maps dẫn đường chính xác tới sảnh tiệc</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="mayhen_home_showcase_flank_footer">
+                        <span class="mayhen_home_showcase_flank_seal_text">TRẢI NGHIỆM LIỀN MẠCH</span>
+                    </div>
                 </div>
             </div>
         </div>
