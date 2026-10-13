@@ -23,28 +23,38 @@
 </head>
 <body class="mayhen_invitation_wrapper {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}">
     @if (!$isEmbed)
-        <!-- Top Demo Navigation Bar -->
+        <!-- Top Demo Navigation Bar (Redesigned Quiet Luxury Header) -->
         <header class="mayhen_invitation_demo_banner">
-            <div class="mayhen_invitation_demo_banner_left">
-                <a href="{{ route('templates.index') }}" style="color: #A8A29E; text-decoration: underline;">&larr; Trở Về</a>
-                <span>&bull;</span>
-                <strong>Bản Xem Thử: {{ $template['name'] }}</strong>
+            <div class="mayhen_invitation_banner_info">
+                <span class="mayhen_invitation_banner_badge">
+                    <span class="mayhen_invitation_banner_badge_dot"></span>
+                    <span>Bản Xem Thử</span>
+                </span>
+                <h1 class="mayhen_invitation_banner_title" title="{{ $template['name'] }}">
+                    {{ $template['name'] }}
+                </h1>
             </div>
-            <div>
-                <a href="{{ route('templates.show', $template['slug']) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm">
-                    Dùng Mẫu Này
+
+            <div class="mayhen_invitation_banner_actions">
+                <!-- Music Control -->
+                <button type="button" class="mayhen_invitation_music_btn" data-mayhen-action="toggle-music" aria-label="Bật hoặc tắt nhạc nền" title="Bật nhạc nền">
+                    <svg class="mayhen_icon_music_static" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                    </svg>
+                    <span class="mayhen_equalizer_mini" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </span>
+                </button>
+
+                <!-- Dùng Mẫu CTA -->
+                <a href="{{ route('templates.show', $template['slug']) }}" class="mayhen_invitation_banner_cta_btn" title="Sử dụng mẫu thiệp này">
+                    <span>Dùng Mẫu</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
             </div>
         </header>
-
-        <!-- Floating Audio Control -->
-        <button type="button" class="mayhen_invitation_music_btn" data-mayhen-action="toggle-music" aria-label="Bật/Tắt nhạc nền" title="Bật nhạc nền">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="6" cy="18" r="3"/>
-                <circle cx="18" cy="16" r="3"/>
-            </svg>
-        </button>
     @endif
 
     <div class="mayhen_invitation_envelope_stage">

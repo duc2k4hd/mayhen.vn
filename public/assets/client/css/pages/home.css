@@ -2858,6 +2858,22 @@
     flex-direction: column;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Screen Wrapper to clip iframe perfectly with zero corner gap */
+.mayhen_home_showcase_modal_phone_screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 36px;
+    overflow: hidden;
+    background: #161310;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
+    display: flex;
+    flex-direction: column;
+    isolation: isolate;
 }
 
 /* Desktop Mode Container Expansion */
@@ -2872,10 +2888,14 @@
                 0 0 0 4px #1A1715;
 }
 
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_phone_screen {
+    border-radius: 10px;
+}
+
 /* Dynamic Island (Only in mobile mode) */
 .mayhen_home_showcase_modal_phone_island {
     position: absolute;
-    top: 14px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     width: 96px;
@@ -2916,16 +2936,16 @@
 .mayhen_home_showcase_modal_iframe {
     width: 100%;
     height: 100%;
-    border-radius: 38px;
+    border-radius: 36px;
     border: none;
-    background: #FAF8F5;
+    background: #161310;
     display: block;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
 .mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_iframe {
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 /* Bottom Action Bar in Modal */

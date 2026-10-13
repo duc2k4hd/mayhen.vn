@@ -737,14 +737,17 @@
             <div class="mayhen_home_showcase_modal_container" id="mayhen_home_showcase_modal_container">
                 <!-- Smartphone Outer Titanium Frame -->
                 <div class="mayhen_home_showcase_modal_phone_bezel" id="mayhen_home_showcase_modal_phone_bezel">
-                    <!-- Dynamic Island Camera Sensor -->
-                    <div class="mayhen_home_showcase_modal_phone_island" id="mayhen_home_showcase_modal_phone_island">
-                        <span class="mayhen_home_showcase_modal_phone_lens"></span>
-                        <span class="mayhen_home_showcase_modal_phone_speaker"></span>
-                    </div>
+                    <!-- Screen Container with Perfect Hardware Corner Masking -->
+                    <div class="mayhen_home_showcase_modal_phone_screen" id="mayhen_home_showcase_modal_phone_screen">
+                        <!-- Dynamic Island Camera Sensor -->
+                        <div class="mayhen_home_showcase_modal_phone_island" id="mayhen_home_showcase_modal_phone_island">
+                            <span class="mayhen_home_showcase_modal_phone_lens"></span>
+                            <span class="mayhen_home_showcase_modal_phone_speaker"></span>
+                        </div>
 
-                    <!-- Live Scrollable Iframe -->
-                    <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank" loading="lazy"></iframe>
+                        <!-- Live Scrollable Iframe -->
+                        <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank" loading="lazy"></iframe>
+                    </div>
                 </div>
 
                 <!-- Bottom Sticky Action Bar in Modal -->

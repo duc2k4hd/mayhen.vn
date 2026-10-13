@@ -3,6 +3,10 @@
  * Prefix: mayhen_invitation_
  */
 
+html {
+    background-color: #161310;
+}
+
 .mayhen_invitation_wrapper {
     background-color: #F8F6F0;
     min-height: 100vh;
@@ -13,53 +17,176 @@
     padding-bottom: 60px;
 }
 
-/* Floating Audio Player Button */
-.mayhen_invitation_music_btn {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background-color: #FFFFFF;
-    border: 1px solid var(--mayhen-color-border);
-    box-shadow: var(--mayhen-shadow-md);
-    z-index: 150;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--mayhen-color-primary);
-    cursor: pointer;
-    transition: all var(--mayhen-transition-fast);
-}
-
-.mayhen_invitation_music_btn.mayhen_invitation_music_playing {
-    animation: mayhen_spin 6s linear infinite;
-    color: var(--mayhen-color-primary-hover);
-}
-
-@keyframes mayhen_spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Top Demo Banner */
+/* Top Demo Banner — Quiet Luxury Editorial Header */
 .mayhen_invitation_demo_banner {
+    position: sticky;
+    top: 0;
     width: 100%;
-    background: #1C1917;
+    background: #161310;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     color: #FFFFFF;
-    padding: 10px 16px;
+    padding: 42px 18px 12px 18px; /* 42px safe area clears the phone mockup Dynamic Island */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.8125rem;
-    z-index: 110;
+    gap: 12px;
+    z-index: 120;
+    box-sizing: border-box;
+    border-top-left-radius: 36px;
+    border-top-right-radius: 36px;
 }
 
-.mayhen_invitation_demo_banner_left {
+@media (min-width: 640px) {
+    .mayhen_invitation_demo_banner {
+        padding: 14px 24px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}
+
+.mayhen_invitation_banner_info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.mayhen_invitation_banner_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #C5A880;
+    line-height: 1;
+    margin-bottom: 3px;
+}
+
+.mayhen_invitation_banner_badge_dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ADE80;
+    box-shadow: 0 0 6px #4ADE80;
+}
+
+.mayhen_invitation_banner_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #FAF8F5;
+    margin: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+@media (min-width: 640px) {
+    .mayhen_invitation_banner_title {
+        max-width: 420px;
+        font-size: 1.05rem;
+    }
+}
+
+.mayhen_invitation_banner_actions {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Audio Player Button (Inside Header) */
+.mayhen_invitation_music_btn {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FAF8F5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.mayhen_invitation_music_btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+    transform: scale(1.05);
+}
+
+.mayhen_invitation_music_btn.mayhen_invitation_music_playing {
+    background: rgba(197, 168, 128, 0.25);
+    border-color: #C5A880;
+    color: #E5C358;
+    box-shadow: 0 0 10px rgba(197, 168, 128, 0.4);
+}
+
+.mayhen_invitation_music_btn.mayhen_invitation_music_playing .mayhen_icon_music_static {
+    display: none;
+}
+
+.mayhen_equalizer_mini {
+    display: none;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+}
+
+.mayhen_invitation_music_btn.mayhen_invitation_music_playing .mayhen_equalizer_mini {
+    display: flex;
+}
+
+.mayhen_equalizer_mini span {
+    width: 2.5px;
+    background: #E5C358;
+    border-radius: 1px;
+    animation: mayhen_eq_bar 0.75s ease-in-out infinite alternate;
+}
+
+.mayhen_equalizer_mini span:nth-child(1) { height: 5px; animation-delay: 0.1s; }
+.mayhen_equalizer_mini span:nth-child(2) { height: 12px; animation-delay: 0.3s; }
+.mayhen_equalizer_mini span:nth-child(3) { height: 7px; animation-delay: 0.2s; }
+
+@keyframes mayhen_eq_bar {
+    0% { height: 4px; }
+    100% { height: 12px; }
+}
+
+/* Banner CTA Button */
+.mayhen_invitation_banner_cta_btn {
+    background: linear-gradient(135deg, #C5A880 0%, #A68759 100%);
+    color: #FFFFFF !important;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 9999px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(166, 135, 89, 0.35);
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.mayhen_invitation_banner_cta_btn:hover {
+    background: linear-gradient(135deg, #D4B68E 0%, #B89666 100%);
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(166, 135, 89, 0.5);
 }
 
 /* Envelope Container & Animation */
