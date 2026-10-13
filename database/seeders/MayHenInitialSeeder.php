@@ -156,7 +156,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'song-hy-red',
                 'name' => 'Song Hỷ - Đỏ Hoàng Gia',
                 'category' => 'luxury',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/song-hy-red',
                 'default_config' => [
                     'accent_color' => '#B32B2B',
@@ -170,7 +170,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'song-hy-green',
                 'name' => 'Song Hỷ - Xanh Ngọc Bích',
                 'category' => 'luxury',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/song-hy-green',
                 'default_config' => [
                     'accent_color' => '#3D6B52',
@@ -184,7 +184,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'song-hy-v2-red',
                 'name' => 'Song Hỷ V2 - Đỏ Nhung Quý Phái',
                 'category' => 'luxury',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/song-hy-v2-red',
                 'default_config' => [
                     'accent_color' => '#8C1D24',
@@ -198,7 +198,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'boho-floral-green',
                 'name' => 'Hoa Mộc - Xanh Thảo Mộc',
                 'category' => 'floral',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/boho-floral-green',
                 'default_config' => [
                     'accent_color' => '#6B8E68',
@@ -212,7 +212,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'minimalism-darkred',
                 'name' => 'Tối Giản - Đỏ Rượu Vang',
                 'category' => 'minimal',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/minimalism-darkred',
                 'default_config' => [
                     'accent_color' => '#721C24',
@@ -226,7 +226,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'minimalism-darkbrown',
                 'name' => 'Tối Giản - Nâu Cà Phê Ấm',
                 'category' => 'minimal',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/minimalism-darkbrown',
                 'default_config' => [
                     'accent_color' => '#5C4033',
@@ -240,7 +240,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'mai-lan-white',
                 'name' => 'Mai Lan - Trắng Tinh Khôi',
                 'category' => 'floral',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1509927083803-4bd519298ac4?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/mai-lan-white',
                 'default_config' => [
                     'accent_color' => '#D4AF37',
@@ -254,7 +254,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'to-duyen-green',
                 'name' => 'Tơ Duyên - Xanh Lam Tinh Tế',
                 'category' => 'romantic',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/to-duyen-green',
                 'default_config' => [
                     'accent_color' => '#4A6984',
@@ -268,7 +268,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'vuon-kinh-pink',
                 'name' => 'Vườn Kính - Hồng Phấn Dịu Ngọt',
                 'category' => 'romantic',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/vuon-kinh-pink',
                 'default_config' => [
                     'accent_color' => '#D88A96',
@@ -282,7 +282,7 @@ class MayHenInitialSeeder extends Seeder
                 'slug' => 'long-phung-red',
                 'name' => 'Long Phụng - Cung Đình Đỏ Vàng',
                 'category' => 'luxury',
-                'thumbnail_url' => 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80',
+                'thumbnail_url' => 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1000&q=85',
                 'demo_url' => '/xem-thu/long-phung-red',
                 'default_config' => [
                     'accent_color' => '#A62121',

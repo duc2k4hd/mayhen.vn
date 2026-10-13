@@ -3959,7 +3959,1242 @@
 }
 
 /* ========================================================
-   4. REAL WORKFLOW SECTION (Quiet Luxury Customer Journey)
+   4. WEDDING INVITATION GALLERY & LIGHTBOX SECTION
+   Prefix: mayhen_home_gallery_
+   ======================================================== */
+.mayhen_home_gallery_section {
+    position: relative;
+    padding: clamp(68px, 9vh, 112px) 0;
+    background: #FAF8F5;
+    border-top: 1px solid var(--mayhen-color-border);
+    overflow: hidden;
+}
+
+.mayhen_home_gallery_header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 46px auto;
+}
+
+.mayhen_home_gallery_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8F7249;
+    background: #F5EFE6;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    padding: 6px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    margin-bottom: 16px;
+}
+
+.mayhen_home_gallery_title {
+    font-size: var(--mayhen-font-size-h2);
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.35;
+    margin: 0 0 14px 0;
+}
+
+.mayhen_home_gallery_title_serif {
+    font-family: var(--mayhen-font-serif);
+    font-style: italic;
+    font-weight: 500;
+    color: #8F7249;
+}
+
+.mayhen_home_gallery_desc {
+    font-size: 1rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.68;
+    margin: 0 auto;
+    max-width: 660px;
+}
+
+/* Toolbar & Filter Suite */
+.mayhen_home_gallery_toolbar_wrapper {
+    margin-bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mayhen_home_gallery_filter_tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_home_gallery_filter_btn {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-pill);
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.mayhen_home_gallery_filter_btn:hover {
+    color: var(--mayhen-color-text-main);
+    border-color: rgba(197, 168, 128, 0.6);
+    background: #FFFFFF;
+}
+
+.mayhen_home_gallery_filter_btn.is-active {
+    background: #1C1917;
+    color: #FFFFFF;
+    border-color: #1C1917;
+    box-shadow: 0 4px 14px -2px rgba(28, 25, 23, 0.15);
+}
+
+.mayhen_home_gallery_actions_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 18px;
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(28, 25, 23, 0.02);
+}
+
+.mayhen_home_gallery_search_box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 380px;
+}
+
+.mayhen_home_gallery_search_icon {
+    position: absolute;
+    left: 12px;
+    color: #A8A29E;
+    pointer-events: none;
+}
+
+.mayhen_home_gallery_search_input {
+    width: 100%;
+    padding: 9px 36px 9px 36px;
+    font-size: 0.85rem;
+    background: #FAF8F5;
+    border: 1px solid #E8E3DA;
+    border-radius: var(--mayhen-radius-pill);
+    color: var(--mayhen-color-text-main);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_home_gallery_search_input:focus {
+    background: #FFFFFF;
+    border-color: var(--mayhen-color-primary);
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.18);
+}
+
+.mayhen_home_gallery_search_clear {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #9C9690;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.mayhen_home_gallery_view_controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.mayhen_home_gallery_counter_badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #8F7249;
+    background: #F5EFE6;
+    padding: 4px 12px;
+    border-radius: var(--mayhen-radius-pill);
+    border: 1px solid rgba(197, 168, 128, 0.3);
+}
+
+.mayhen_home_gallery_mode_toggles {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #FAF8F5;
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid #ECE7DE;
+}
+
+.mayhen_home_gallery_mode_btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #78716C;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_gallery_mode_btn:hover {
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_home_gallery_mode_btn.is-active {
+    background: #FFFFFF;
+    color: #1C1917;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Gallery Grid & Masonry Modes */
+.mayhen_home_gallery_grid {
+    width: 100%;
+    margin-bottom: 40px;
+    transition: opacity 0.25s ease;
+}
+
+/* Mode: Masonry (Multi-column flow) */
+.mayhen_home_gallery_grid.mayhen_mode_masonry {
+    column-count: 4;
+    column-gap: 22px;
+}
+
+.mayhen_home_gallery_grid.mayhen_mode_masonry .mayhen_home_gallery_item {
+    break-inside: avoid;
+    margin-bottom: 22px;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Mode: Regular Grid */
+.mayhen_home_gallery_grid.mayhen_mode_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.mayhen_home_gallery_grid.mayhen_mode_grid .mayhen_home_gallery_item {
+    width: 100%;
+    height: 100%;
+}
+
+.mayhen_home_gallery_grid.mayhen_mode_grid .mayhen_home_gallery_thumb_wrap {
+    aspect-ratio: 3 / 4;
+}
+
+/* Gallery Card Design */
+.mayhen_home_gallery_item {
+    outline: none;
+}
+
+.mayhen_home_gallery_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(28, 25, 23, 0.03);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.mayhen_home_gallery_item:hover .mayhen_home_gallery_card,
+.mayhen_home_gallery_item:focus-visible .mayhen_home_gallery_card {
+    transform: translateY(-6px);
+    border-color: rgba(197, 168, 128, 0.6);
+    box-shadow: 0 16px 36px -6px rgba(70, 50, 40, 0.08), 0 4px 12px rgba(197, 168, 128, 0.08);
+}
+
+.mayhen_home_gallery_item:focus-visible {
+    outline: 2px solid var(--mayhen-color-primary);
+    outline-offset: 4px;
+    border-radius: 18px;
+}
+
+/* Thumbnail Wrap & Image */
+.mayhen_home_gallery_thumb_wrap {
+    position: relative;
+    overflow: hidden;
+    background: #EFECE6;
+    width: 100%;
+}
+
+.mayhen_home_gallery_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_gallery_item:hover .mayhen_home_gallery_img {
+    transform: scale(1.05);
+}
+
+/* Hover Overlay (Desktop) */
+.mayhen_home_gallery_overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20, 16, 14, 0.25) 0%, rgba(20, 16, 14, 0.8) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #FFFFFF;
+}
+
+.mayhen_home_gallery_item:hover .mayhen_home_gallery_overlay {
+    opacity: 1;
+}
+
+.mayhen_home_gallery_overlay_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mayhen_home_gallery_cat_pill {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1C1917;
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill);
+    backdrop-filter: blur(4px);
+}
+
+.mayhen_home_gallery_zoom_hint {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mayhen_home_gallery_zoom_hint:hover {
+    transform: scale(1.1);
+    background: rgba(197, 168, 128, 0.85);
+}
+
+.mayhen_home_gallery_overlay_bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mayhen_home_gallery_item_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.35;
+    margin: 0;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.mayhen_home_gallery_overlay_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_home_gallery_btn_lightbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #FFFFFF;
+    color: #1C1917;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_gallery_btn_lightbox:hover {
+    background: var(--mayhen-color-primary-soft);
+    color: #8F7249;
+}
+
+.mayhen_home_gallery_btn_detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #FFFFFF;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_gallery_btn_detail:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: #FFFFFF;
+}
+
+/* Bottom Card Footer (Mobile friendly) */
+.mayhen_home_gallery_card_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #FFFFFF;
+    border-top: 1px solid #FAF6F0;
+}
+
+.mayhen_home_gallery_card_meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_home_gallery_card_cat {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #8F7249;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_gallery_card_name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_home_gallery_card_btn_open {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #E8E3DA;
+    background: #FAF8F5;
+    color: #78716C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_gallery_card_btn_open:hover {
+    color: #1C1917;
+    background: #FFFFFF;
+    border-color: #C5A880;
+}
+
+/* No results state */
+.mayhen_home_gallery_no_results {
+    text-align: center;
+    padding: 54px 20px;
+    background: #FFFFFF;
+    border: 1px dashed var(--mayhen-color-border);
+    border-radius: 16px;
+    margin-bottom: 40px;
+}
+
+.mayhen_home_gallery_no_results_icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.mayhen_home_gallery_no_results_title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 6px;
+}
+
+.mayhen_home_gallery_no_results_desc {
+    font-size: 0.88rem;
+    color: var(--mayhen-color-text-muted);
+    margin-bottom: 20px;
+}
+
+/* Bottom Expand Bar */
+.mayhen_home_gallery_bottom_bar {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 100%);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: 16px;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 16px -2px rgba(28, 25, 23, 0.04);
+}
+
+.mayhen_home_gallery_bottom_note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--mayhen-color-text-main);
+    font-weight: 500;
+}
+
+.mayhen_home_gallery_bottom_dot {
+    width: 8px;
+    height: 8px;
+    background: #4A7C59;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.mayhen_home_gallery_bottom_actions {
+    flex-shrink: 0;
+}
+
+/* ========================================================
+   FULLSCREEN LIGHTBOX MODAL (Pure Vanilla JS Experience)
+   ======================================================== */
+.mayhen_home_gallery_lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    overflow: hidden;
+}
+
+.mayhen_home_gallery_lightbox.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mayhen_home_gallery_lightbox_backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 12, 10, 0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+/* Lightbox Header */
+.mayhen_home_gallery_lightbox_header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, transparent 100%);
+    color: #FFFFFF;
+    gap: 16px;
+}
+
+.mayhen_home_gallery_lightbox_counter_wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.mayhen_home_gallery_lightbox_counter_box {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+.mayhen_home_gallery_lightbox_counter_box strong {
+    color: #FFFFFF;
+}
+
+.mayhen_home_gallery_lightbox_counter_box span {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.mayhen_home_gallery_lightbox_cat_badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #C5A880;
+    background: rgba(197, 168, 128, 0.15);
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill);
+}
+
+.mayhen_home_gallery_lightbox_title_wrap {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+}
+
+.mayhen_home_gallery_lightbox_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_home_gallery_lightbox_toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.mayhen_home_gallery_lightbox_tool_group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--mayhen-radius-pill);
+    padding: 2px 4px;
+}
+
+.mayhen_home_gallery_lightbox_zoom_indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0 6px;
+    min-width: 44px;
+    text-align: center;
+}
+
+.mayhen_home_gallery_lightbox_tool_btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_home_gallery_lightbox_tool_btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.mayhen_home_gallery_lightbox_tool_btn.is-active {
+    color: #C5A880;
+}
+
+.mayhen_home_gallery_lightbox_close_btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 6px;
+}
+
+.mayhen_home_gallery_lightbox_close_btn:hover {
+    background: rgba(220, 53, 69, 0.8);
+    transform: scale(1.08) rotate(90deg);
+}
+
+/* Lightbox Stage */
+.mayhen_home_gallery_lightbox_stage {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 72px 20px 145px 20px;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.mayhen_home_gallery_lightbox_nav_btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 25;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+}
+
+.mayhen_home_gallery_lightbox_nav_btn.is-prev {
+    left: 20px;
+}
+
+.mayhen_home_gallery_lightbox_nav_btn.is-next {
+    right: 20px;
+}
+
+.mayhen_home_gallery_lightbox_nav_btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.mayhen_home_gallery_lightbox_viewport {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 90vw;
+    max-height: 74vh;
+}
+
+.mayhen_home_gallery_lightbox_canvas {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center center;
+    cursor: zoom-in;
+}
+
+.mayhen_home_gallery_lightbox_canvas.is-zoomed {
+    cursor: grab;
+}
+
+.mayhen_home_gallery_lightbox_canvas.is-panning {
+    cursor: grabbing;
+    transition: none !important;
+}
+
+.mayhen_home_gallery_lightbox_img {
+    max-width: 100%;
+    max-height: 74vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    display: block;
+    pointer-events: none;
+}
+
+/* Lightbox Loader */
+.mayhen_home_gallery_lightbox_loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    z-index: 15;
+    background: rgba(14, 12, 10, 0.4);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.2s ease;
+}
+
+.mayhen_home_gallery_lightbox_spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #C5A880;
+    border-radius: 50%;
+    animation: mayhenLightboxSpin 0.8s linear infinite;
+}
+
+@keyframes mayhenLightboxSpin {
+    to { transform: rotate(360deg); }
+}
+
+.mayhen_home_gallery_lightbox_error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: #FFFFFF;
+    background: rgba(20, 16, 14, 0.85);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    z-index: 16;
+}
+
+/* Bottom Floating Info Bar */
+.mayhen_home_gallery_lightbox_info_bar {
+    position: absolute;
+    bottom: 84px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    width: calc(100% - 40px);
+    max-width: 780px;
+    background: rgba(28, 25, 23, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #FFFFFF;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.mayhen_home_gallery_lightbox_info_bar.is-hidden {
+    transform: translateX(-50%) translateY(40px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mayhen_home_gallery_lightbox_info_meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_home_gallery_lightbox_info_cat {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #C5A880;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_gallery_lightbox_info_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 3px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_home_gallery_lightbox_info_hint {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+}
+
+.mayhen_home_gallery_lightbox_info_actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_base {
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.825rem;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: var(--mayhen-radius-pill);
+    padding: 9px 18px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Nút Chi Tiết Mẫu — Rõ nét, nền kính mờ sang trọng, chữ trắng nổi bật 100% */
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="detail"],
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_secondary {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="detail"]:hover,
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_secondary:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.65) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* Nút Xem Thử Trực Tiếp — Kính mờ thanh thoát, chữ sáng dễ nhìn */
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="preview"],
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_ghost {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="preview"]:hover,
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_ghost:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    transform: translateY(-1px);
+}
+
+/* Nút Tạo Thiệp Mẫu Này — Sắc vàng hoàng gia rạng rỡ */
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="create"],
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_primary {
+    background: linear-gradient(135deg, #D4AF37 0%, #B89047 100%) !important;
+    color: #1C1917 !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(184, 144, 71, 0.4) !important;
+}
+
+.mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="create"]:hover,
+.mayhen_home_gallery_lightbox_info_actions .mayhen_client_button_primary:hover {
+    background: linear-gradient(135deg, #E5C358 0%, #C89F52 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(184, 144, 71, 0.55) !important;
+}
+
+/* Horizontal Thumbnail Strip — Căn giữa hoàn hảo & cuộn mượt mà */
+.mayhen_home_gallery_lightbox_strip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    height: 76px;
+    background: rgba(14, 12, 10, 0.92);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 16px;
+    text-align: center;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(197, 168, 128, 0.4) transparent;
+}
+
+.mayhen_home_gallery_lightbox_strip::-webkit-scrollbar {
+    height: 4px;
+}
+
+.mayhen_home_gallery_lightbox_strip::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mayhen_home_gallery_lightbox_strip::-webkit-scrollbar-thumb {
+    background: rgba(197, 168, 128, 0.35);
+    border-radius: 4px;
+}
+
+.mayhen_home_gallery_lightbox_strip_track {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 100%;
+}
+
+.mayhen_home_gallery_lightbox_thumb {
+    width: 44px;
+    height: 56px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    opacity: 0.5;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: #000000;
+}
+
+.mayhen_home_gallery_lightbox_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_home_gallery_lightbox_thumb:hover {
+    opacity: 0.85;
+}
+
+.mayhen_home_gallery_lightbox_thumb.is-active {
+    opacity: 1;
+    border-color: #C5A880;
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(197, 168, 128, 0.6);
+}
+
+/* Toast */
+.mayhen_home_gallery_lightbox_toast {
+    position: absolute;
+    top: 72px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    z-index: 30;
+    background: #4A7C59;
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: var(--mayhen-radius-pill);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_gallery_lightbox_toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Responsive Rules for Gallery & Lightbox */
+@media (max-width: 1023px) {
+    .mayhen_home_gallery_grid.mayhen_mode_masonry {
+        column-count: 3;
+        column-gap: 18px;
+    }
+
+    .mayhen_home_gallery_grid.mayhen_mode_grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .mayhen_home_gallery_bottom_bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .mayhen_home_gallery_bottom_note {
+        justify-content: center;
+    }
+
+    .mayhen_home_gallery_bottom_actions {
+        width: 100%;
+    }
+
+    .mayhen_home_gallery_bottom_actions a {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .mayhen_home_gallery_grid.mayhen_mode_masonry {
+        column-count: 2;
+        column-gap: 12px;
+    }
+
+    .mayhen_home_gallery_grid.mayhen_mode_masonry .mayhen_home_gallery_item {
+        margin-bottom: 12px;
+    }
+
+    .mayhen_home_gallery_grid.mayhen_mode_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .mayhen_home_gallery_actions_row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mayhen_home_gallery_search_box {
+        max-width: 100%;
+    }
+
+    .mayhen_home_gallery_view_controls {
+        justify-content: space-between;
+    }
+
+    /* Lightbox mobile optimizations */
+    .mayhen_home_gallery_lightbox_header {
+        padding: 10px 14px;
+    }
+
+    .mayhen_home_gallery_lightbox_title_wrap {
+        display: none;
+    }
+
+    .mayhen_home_gallery_lightbox_tool_group {
+        display: none;
+    }
+
+    .mayhen_home_gallery_lightbox_stage {
+        padding: 56px 10px 135px 10px;
+    }
+
+    .mayhen_home_gallery_lightbox_nav_btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .mayhen_home_gallery_lightbox_nav_btn.is-prev {
+        left: 8px;
+    }
+
+    .mayhen_home_gallery_lightbox_nav_btn.is-next {
+        right: 8px;
+    }
+
+    .mayhen_home_gallery_lightbox_info_bar {
+        bottom: 80px;
+        width: calc(100% - 20px);
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .mayhen_home_gallery_lightbox_info_hint {
+        display: none;
+    }
+
+    .mayhen_home_gallery_lightbox_info_actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .mayhen_home_gallery_lightbox_info_actions a {
+        justify-content: center;
+        padding: 6px 8px;
+        font-size: 0.72rem;
+    }
+
+    .mayhen_home_gallery_lightbox_info_actions [data-lightbox-link="create"] {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 360px) {
+    .mayhen_home_gallery_grid.mayhen_mode_masonry {
+        column-count: 2;
+        column-gap: 8px;
+    }
+
+    .mayhen_home_gallery_grid.mayhen_mode_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .mayhen_home_gallery_card_footer {
+        padding: 8px 10px;
+    }
+
+    .mayhen_home_gallery_card_name {
+        font-size: 0.78rem;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_home_gallery_card {
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .mayhen_home_gallery_img {
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .mayhen_home_gallery_overlay {
+        transition: none !important;
+    }
+
+    .mayhen_home_gallery_lightbox {
+        transition: none !important;
+    }
+
+    .mayhen_home_gallery_lightbox_canvas {
+        transition: none !important;
+    }
+}
+
+/* ========================================================
+   5. REAL WORKFLOW SECTION (Quiet Luxury Customer Journey)
    Prefix: mayhen_home_steps_
    ======================================================== */
 .mayhen_home_steps_section {
@@ -5376,4 +6611,5 @@
         display: none;
     }
 }
+
 

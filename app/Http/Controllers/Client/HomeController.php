@@ -19,8 +19,18 @@ class HomeController extends Controller
             ->take(20)
             ->get();
 
+        $galleryTemplates = InvitationTemplate::query()
+            ->where('is_active', true)
+            ->whereNotNull('thumbnail_url')
+            ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
+            ->orderByDesc('is_featured')
+            ->orderBy('id')
+            ->take(50)
+            ->get();
+
         return view('client.pages.home', [
             'featuredTemplates' => $featuredTemplates,
+            'galleryTemplates' => $galleryTemplates,
         ]);
     }
 }

@@ -1000,7 +1000,318 @@
         </div>
     </section>
 
-    <!-- 4. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
+    <!-- 4. Wedding Invitation Gallery Section (Bộ Sưu Tập Hình Ảnh Mẫu Thiệp Cưới) -->
+    <section class="mayhen_home_gallery_section" id="bo-suu-tap" aria-labelledby="mayhen-gallery-heading">
+        <div class="mayhen_client_layout_container">
+            <!-- Section Header -->
+            <div class="mayhen_home_gallery_header">
+                <span class="mayhen_home_gallery_badge">Phòng Trưng Bày Nghệ Thuật &bull; Gallery Thiệp Cưới</span>
+                <h2 class="mayhen_home_gallery_title" id="mayhen-gallery-heading">
+                    Bộ Sưu Tập Hình Ảnh <span class="mayhen_home_gallery_title_serif">Mẫu Thiệp Cưới Online</span>
+                </h2>
+                <p class="mayhen_home_gallery_desc">
+                    Khám phá kho ảnh đại diện thực tế từ bộ sưu tập thiệp cưới online Mây Hẹn. Chạm vào bất kỳ ảnh nào để mở trình xem Lightbox toàn màn hình, phóng to chi tiết và trải nghiệm trực tiếp.
+                </p>
+            </div>
+
+            <!-- Filter & Search Toolbar Suite -->
+            <div class="mayhen_home_gallery_toolbar_wrapper">
+                <!-- Category Filter Tabs -->
+                <nav class="mayhen_home_gallery_filter_tabs" role="tablist" aria-label="Lọc mẫu thiệp theo phong cách">
+                    <button type="button" class="mayhen_home_gallery_filter_btn is-active" data-filter="all" role="tab" aria-selected="true">
+                        <span>Tất Cả ({{ count($galleryTemplates) }})</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="luxury" role="tab" aria-selected="false">
+                        <span>Hoàng Gia &amp; Sáp</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="editorial" role="tab" aria-selected="false">
+                        <span>Tạp Chí Vogue</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="minimal" role="tab" aria-selected="false">
+                        <span>Tối Giản Tinh Tế</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="floral" role="tab" aria-selected="false">
+                        <span>Hoa Cỏ Thơ Mộng</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="romantic" role="tab" aria-selected="false">
+                        <span>Hồng Khói Lãng Mạn</span>
+                    </button>
+                    <button type="button" class="mayhen_home_gallery_filter_btn" data-filter="modern" role="tab" aria-selected="false">
+                        <span>Điện Ảnh Ký Ức</span>
+                    </button>
+                </nav>
+
+                <!-- Search Input & View Mode Toggles -->
+                <div class="mayhen_home_gallery_actions_row">
+                    <div class="mayhen_home_gallery_search_box">
+                        <svg class="mayhen_home_gallery_search_icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <input type="text"
+                               class="mayhen_home_gallery_search_input"
+                               id="mayhen_home_gallery_search"
+                               placeholder="Tìm tên mẫu thiệp cưới..."
+                               aria-label="Tìm kiếm mẫu thiệp trong bộ sưu tập">
+                        <button type="button" class="mayhen_home_gallery_search_clear" id="mayhen_home_gallery_search_clear" aria-label="Xóa từ khóa tìm kiếm" style="display:none;">
+                            &times;
+                        </button>
+                    </div>
+
+                    <div class="mayhen_home_gallery_view_controls">
+                        <span class="mayhen_home_gallery_counter_badge" id="mayhen_home_gallery_count">
+                            {{ count($galleryTemplates) }} mẫu thiệp
+                        </span>
+                        <div class="mayhen_home_gallery_mode_toggles">
+                            <button type="button" class="mayhen_home_gallery_mode_btn is-active" data-gallery-mode="masonry" title="Bố cục Masonry nghệ thuật" aria-label="Chế độ xem Masonry">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="12" x="3" y="3" rx="1"/><rect width="8" height="6" x="13" y="3" rx="1"/><rect width="8" height="6" x="3" y="17" rx="1"/><rect width="8" height="12" x="13" y="11" rx="1"/></svg>
+                            </button>
+                            <button type="button" class="mayhen_home_gallery_mode_btn" data-gallery-mode="grid" title="Lưới ảnh đều đặn" aria-label="Chế độ xem lưới đều">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Grid Container -->
+            <div class="mayhen_home_gallery_grid mayhen_mode_masonry" id="mayhen_home_gallery_grid">
+                @forelse ($galleryTemplates as $index => $tpl)
+                    <article class="mayhen_home_gallery_item {{ $tpl->is_featured ? 'is-featured' : '' }}"
+                             data-gallery-index="{{ $index }}"
+                             data-id="{{ $tpl->id }}"
+                             data-name="{{ $tpl->name }}"
+                             data-slug="{{ $tpl->slug }}"
+                             data-category="{{ $tpl->category }}"
+                             data-category-label="{{ $tpl->category_label }}"
+                             data-image="{{ $tpl->thumbnail_url }}"
+                             data-detail-url="{{ route('templates.show', $tpl->slug) }}"
+                             data-preview-url="{{ route('templates.preview', $tpl->slug) }}"
+                             data-create-url="{{ route('invitation.create', ['template' => $tpl->slug]) }}"
+                             tabindex="0"
+                             role="button"
+                             aria-haspopup="dialog"
+                             aria-label="Xem ảnh lớn mẫu thiệp cưới {{ $tpl->name }}">
+                        <div class="mayhen_home_gallery_card">
+                            <!-- Image Wrap with natural aspect ratio -->
+                            <div class="mayhen_home_gallery_thumb_wrap">
+                                <img src="{{ $tpl->thumbnail_url }}"
+                                     alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — Mây Hẹn"
+                                     class="mayhen_home_gallery_img"
+                                     loading="{{ $index < 6 ? 'eager' : 'lazy' }}"
+                                     width="600"
+                                     height="800">
+
+                                <!-- Hover Overlay (Desktop) -->
+                                <div class="mayhen_home_gallery_overlay" aria-hidden="true">
+                                    <div class="mayhen_home_gallery_overlay_top">
+                                        <span class="mayhen_home_gallery_cat_pill">{{ $tpl->category_label }}</span>
+                                        <span class="mayhen_home_gallery_zoom_hint" title="Bấm để mở Lightbox phóng to">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                                        </span>
+                                    </div>
+                                    <div class="mayhen_home_gallery_overlay_bottom">
+                                        <h3 class="mayhen_home_gallery_item_title">{{ $tpl->name }}</h3>
+                                        <div class="mayhen_home_gallery_overlay_actions">
+                                            <span class="mayhen_home_gallery_btn_lightbox">
+                                                <span>Xem Ảnh Lớn</span>
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                                            </span>
+                                            <a href="{{ route('templates.show', $tpl->slug) }}" class="mayhen_home_gallery_btn_detail" onclick="event.stopPropagation();" title="Xem chi tiết mẫu thiệp này">
+                                                <span>Chi Tiết Mẫu</span>
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Card Info (Mobile friendly, always visible) -->
+                            <div class="mayhen_home_gallery_card_footer">
+                                <div class="mayhen_home_gallery_card_meta">
+                                    <span class="mayhen_home_gallery_card_cat">{{ $tpl->category_label }}</span>
+                                    <h3 class="mayhen_home_gallery_card_name">{{ $tpl->name }}</h3>
+                                </div>
+                                <button type="button" class="mayhen_home_gallery_card_btn_open" aria-label="Xem ảnh lớn mẫu {{ $tpl->name }}">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <div class="mayhen_home_gallery_empty">
+                        <p>Hiện chưa có mẫu thiệp trong danh mục này.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- No results state for search/filter -->
+            <div class="mayhen_home_gallery_no_results" id="mayhen_home_gallery_no_results" style="display:none;">
+                <span class="mayhen_home_gallery_no_results_icon">🔍</span>
+                <p class="mayhen_home_gallery_no_results_title">Không tìm thấy mẫu thiệp cưới phù hợp</p>
+                <p class="mayhen_home_gallery_no_results_desc">Vui lòng thử tìm kiếm với từ khóa khác hoặc chọn danh mục "Tất Cả".</p>
+                <button type="button" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_sm" id="mayhen_home_gallery_reset_filter_btn">
+                    Xem Lại Tất Cả Mẫu Thiệp
+                </button>
+            </div>
+
+            <!-- Bottom Expand / Explore More Bar -->
+            <div class="mayhen_home_gallery_bottom_bar">
+                <div class="mayhen_home_gallery_bottom_note">
+                    <span class="mayhen_home_gallery_bottom_dot"></span>
+                    <span>Toàn bộ mẫu thiệp đều sẵn sàng tạo thử miễn phí và hỗ trợ thanh toán VietQR tự động.</span>
+                </div>
+                <div class="mayhen_home_gallery_bottom_actions">
+                    <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_md">
+                        <span>Khám Phá Toàn Bộ Thư Viện Thiệp</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             FULLSCREEN LIGHTBOX SUITE (Quiet Luxury Image Viewer)
+             ======================================================== -->
+        <div class="mayhen_home_gallery_lightbox"
+             id="mayhen_home_gallery_lightbox"
+             role="dialog"
+             aria-modal="true"
+             aria-label="Trình xem ảnh mẫu thiệp cưới toàn màn hình"
+             aria-hidden="true">
+            <!-- Frosted Glass Backdrop -->
+            <div class="mayhen_home_gallery_lightbox_backdrop" data-lightbox-action="close"></div>
+
+            <!-- Top Header Suite -->
+            <header class="mayhen_home_gallery_lightbox_header">
+                <!-- Counter & Category Badge -->
+                <div class="mayhen_home_gallery_lightbox_counter_wrap">
+                    <span class="mayhen_home_gallery_lightbox_counter_box">
+                        <strong data-lightbox-text="current">1</strong>
+                        <span>/</span>
+                        <span data-lightbox-text="total">{{ count($galleryTemplates) }}</span>
+                    </span>
+                    <span class="mayhen_home_gallery_lightbox_cat_badge" data-lightbox-text="category">Hoàng Gia</span>
+                </div>
+
+                <!-- Center Title -->
+                <div class="mayhen_home_gallery_lightbox_title_wrap">
+                    <h3 class="mayhen_home_gallery_lightbox_title" data-lightbox-text="title">Tên Mẫu Thiệp</h3>
+                </div>
+
+                <!-- Toolbar Actions Suite -->
+                <div class="mayhen_home_gallery_lightbox_toolbar">
+                    <!-- Zoom Controls -->
+                    <div class="mayhen_home_gallery_lightbox_tool_group" role="group" aria-label="Điều khiển phóng to thu nhỏ">
+                        <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="zoom-out" title="Thu nhỏ (-)" aria-label="Thu nhỏ">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                        </button>
+                        <span class="mayhen_home_gallery_lightbox_zoom_indicator" data-lightbox-text="zoom">100%</span>
+                        <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="zoom-in" title="Phóng to (+)" aria-label="Phóng to">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                        </button>
+                        <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="zoom-reset" title="Đặt lại kích thước gốc" aria-label="Kích thước gốc">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Fullscreen Toggle -->
+                    <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="fullscreen" title="Chế độ toàn màn hình" aria-label="Toàn màn hình">
+                        <svg class="mayhen_icon_fullscreen_enter" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                        <svg class="mayhen_icon_fullscreen_exit" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                    </button>
+
+                    <!-- Share / Copy Link -->
+                    <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="share" title="Chia sẻ mẫu thiệp này" aria-label="Chia sẻ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    </button>
+
+                    <!-- Download Photo Direct -->
+                    <button type="button" class="mayhen_home_gallery_lightbox_tool_btn" data-lightbox-action="download" title="Tải ảnh mẫu thiệp này xuống máy" aria-label="Tải ảnh xuống máy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+
+                    <!-- Toggle Info Panel -->
+                    <button type="button" class="mayhen_home_gallery_lightbox_tool_btn is-active" data-lightbox-action="toggle-info" title="Ẩn/Hiện thông tin mẫu" aria-label="Ẩn hoặc hiện thông tin">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    </button>
+
+                    <!-- Close Button -->
+                    <button type="button" class="mayhen_home_gallery_lightbox_close_btn" data-lightbox-action="close" title="Đóng cửa sổ xem ảnh (Phím Esc)" aria-label="Đóng cửa sổ">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Stage Viewport -->
+            <div class="mayhen_home_gallery_lightbox_stage">
+                <!-- Navigation Prev -->
+                <button type="button" class="mayhen_home_gallery_lightbox_nav_btn is-prev" data-lightbox-action="prev" title="Ảnh trước (Mũi tên trái)" aria-label="Xem ảnh trước">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+
+                <!-- Viewport & Image Canvas -->
+                <div class="mayhen_home_gallery_lightbox_viewport" data-lightbox-element="viewport">
+                    <div class="mayhen_home_gallery_lightbox_canvas" data-lightbox-element="canvas">
+                        <img src="" alt="" class="mayhen_home_gallery_lightbox_img" data-lightbox-element="img">
+                    </div>
+
+                    <!-- Loader Spinner -->
+                    <div class="mayhen_home_gallery_lightbox_loader" data-lightbox-element="loader">
+                        <div class="mayhen_home_gallery_lightbox_spinner"></div>
+                        <span>Đang tải ảnh nghệ thuật...</span>
+                    </div>
+
+                    <!-- Error state -->
+                    <div class="mayhen_home_gallery_lightbox_error" data-lightbox-element="error" style="display:none;">
+                        <p>Không thể tải ảnh. Vui lòng thử lại.</p>
+                        <button type="button" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_sm" data-lightbox-action="retry">
+                            Tải Lại Ảnh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation Next -->
+                <button type="button" class="mayhen_home_gallery_lightbox_nav_btn is-next" data-lightbox-action="next" title="Ảnh tiếp theo (Mũi tên phải)" aria-label="Xem ảnh tiếp theo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <!-- Bottom Floating Info Bar -->
+            <div class="mayhen_home_gallery_lightbox_info_bar" data-lightbox-element="info-bar">
+                <div class="mayhen_home_gallery_lightbox_info_meta">
+                    <span class="mayhen_home_gallery_lightbox_info_cat" data-lightbox-text="info-cat">PHONG CÁCH</span>
+                    <h4 class="mayhen_home_gallery_lightbox_info_name" data-lightbox-text="info-name">Tên Mẫu Thiệp</h4>
+                    <p class="mayhen_home_gallery_lightbox_info_hint">Click đúp để phóng to &bull; Kéo để di chuyển chi tiết &bull; Vuốt ngón tay để chuyển ảnh</p>
+                </div>
+                <div class="mayhen_home_gallery_lightbox_info_actions">
+                    <a href="#" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" data-lightbox-link="preview" target="_blank" rel="noopener noreferrer">
+                        <span>Xem Thử Trực Tiếp</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </a>
+                    <a href="#" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_sm" data-lightbox-link="detail">
+                        <span>Chi Tiết Mẫu</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    <a href="#" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm" data-lightbox-link="create">
+                        <span>Tạo Thiệp Mẫu Này</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Horizontal Thumbnail Strip Slider -->
+            <div class="mayhen_home_gallery_lightbox_strip" data-lightbox-element="strip">
+                <div class="mayhen_home_gallery_lightbox_strip_track" data-lightbox-element="strip-track">
+                    <!-- Populated by JS for quick thumbnail jumps -->
+                </div>
+            </div>
+
+            <!-- Toast Notification -->
+            <div class="mayhen_home_gallery_lightbox_toast" data-lightbox-element="toast" aria-live="polite">
+                <span>✓ Đã sao chép liên kết mẫu thiệp!</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
     <section class="mayhen_home_steps_section" id="quy-trinh" aria-labelledby="mayhen-steps-heading">
         <div class="mayhen_client_layout_container">
             <!-- Section Header -->
@@ -1194,7 +1505,7 @@
         </div>
     </section>
 
-    <!-- 4. FAQ Section (Câu Hỏi Thường Gặp — Thiệp Mời Online) -->
+    <!-- 6. FAQ Section (Câu Hỏi Thường Gặp — Thiệp Mời Online) -->
     <section class="mayhen_home_faq_section" id="faq" aria-labelledby="mayhen-faq-heading">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_home_faq_grid">
@@ -1528,7 +1839,7 @@
         </div>
     </section>
 
-    <!-- 5. Final CTA Banner -->
+    <!-- 7. Final CTA Banner -->
     <section class="mayhen_client_layout_section" style="padding-top: 0;">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_home_cta_banner">
