@@ -762,7 +762,245 @@
         </div>
     </section>
 
-    <!-- 3. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
+    <!-- 3. Highlight Features Section (Tính Năng Nổi Bật — Vì Sao Nên Chọn Mây Hẹn?) -->
+    <section class="mayhen_home_features_section" id="tinh-nang" aria-labelledby="mayhen-features-heading">
+        <div class="mayhen_client_layout_container">
+            <!-- Section Header -->
+            <div class="mayhen_home_features_header">
+                <span class="mayhen_home_features_badge">Giá Trị Khác Biệt &bull; Vì Sao Chọn Mây Hẹn</span>
+                <h2 class="mayhen_home_features_title" id="mayhen-features-heading">
+                    Những Tiện Ích Đột Phá Cho Tấm <span class="mayhen_home_features_title_serif">Thiệp Mời Online</span>
+                </h2>
+                <p class="mayhen_home_features_desc">
+                    Không chỉ đơn thuần là trang thông báo ngày cưới, Mây Hẹn kết hợp nghệ thuật thẩm mỹ Quiet Luxury cùng các tính năng thiết thực giúp bạn gửi trao trọn vẹn sự trang trọng tới từng vị khách quý.
+                </p>
+            </div>
+
+            <!-- Asymmetric Bento Grid -->
+            <div class="mayhen_home_features_bento">
+                <!-- Feature 01: Hero Bento Card (7 cols on desktop) -->
+                <article class="mayhen_home_features_card mayhen_home_features_card_hero" tabindex="0" aria-label="Tính năng: Mở nắp phong bì dấu sáp hoàng gia và nhạc nền lãng mạn">
+                    <div class="mayhen_home_features_card_inner">
+                        <div class="mayhen_home_features_card_body">
+                            <span class="mayhen_home_features_card_tag">Trải Nghiệm Cảm Xúc</span>
+                            <h3 class="mayhen_home_features_card_title">Mở Nắp Phong Bì Dấu Sáp &amp; Nhạc Nền Du Dương</h3>
+                            <p class="mayhen_home_features_card_desc">
+                                Khách mời chạm nhẹ để bóc con dấu sáp dập nổi chữ Hỷ 囍, mở ra lá thư cưới trang nhã kèm giai điệu tình ca lãng mạn và đồng hồ đếm ngược thời gian thực tới ngày hạnh phúc.
+                            </p>
+                            <div class="mayhen_home_features_card_perk">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                                <span>Tối ưu mở mượt trên mọi điện thoại &bull; Nhạc nền tùy chỉnh</span>
+                            </div>
+                        </div>
+
+                        <!-- Mini Visual Mockup 01: Envelope + Wax Seal + Music Equalizer + Countdown -->
+                        <div class="mayhen_home_features_visual mayhen_home_features_visual_hero" aria-hidden="true">
+                            <div class="mayhen_home_features_envelope_mockup">
+                                <div class="mayhen_home_features_envelope_back">
+                                    <div class="mayhen_home_features_envelope_card_peek">
+                                        <span class="mayhen_home_features_peek_label">THIỆP MỜI TRỌNG THỂ</span>
+                                        <span class="mayhen_home_features_peek_names">Minh Quân &bull; Ái Như</span>
+                                        <!-- Mini Countdown in peek card -->
+                                        <div class="mayhen_home_features_peek_countdown">
+                                            <div class="mayhen_home_features_countdown_item">
+                                                <strong>12</strong><span>Ngày</span>
+                                            </div>
+                                            <div class="mayhen_home_features_countdown_item">
+                                                <strong>08</strong><span>Giờ</span>
+                                            </div>
+                                            <div class="mayhen_home_features_countdown_item">
+                                                <strong>45</strong><span>Phút</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mayhen_home_features_envelope_flap"></div>
+                                    <div class="mayhen_home_features_envelope_seal" title="Chạm nhẹ để kiểm tra con dấu">囍</div>
+                                </div>
+                                <!-- Floating Audio Pill -->
+                                <div class="mayhen_home_features_music_pill">
+                                    <span class="mayhen_home_features_music_disc">🎵</span>
+                                    <span class="mayhen_home_features_music_title">A Thousand Years</span>
+                                    <div class="mayhen_home_features_equalizer">
+                                        <span></span><span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Feature 02: Card (5 cols on desktop) -->
+                <article class="mayhen_home_features_card mayhen_home_features_card_zalo" tabindex="0" aria-label="Tính năng: Cá nhân hóa từng khách mời và 1-chạm gửi Zalo">
+                    <div class="mayhen_home_features_card_body">
+                        <span class="mayhen_home_features_card_tag">Chỉn Chu Từng Khách</span>
+                        <h3 class="mayhen_home_features_card_title">Cá Nhân Hóa Lời Mời &amp; 1-Chạm Gửi Zalo</h3>
+                        <p class="mayhen_home_features_card_desc">
+                            Hệ thống tạo sẵn link riêng theo đúng danh xưng (Kính mời, Thân mời, Thương mời). Nút 1-chạm sao chép lời mời Zalo kèm ảnh đại diện cưới chuẩn Open Graph hiển thị trang trọng.
+                        </p>
+                    </div>
+
+                    <!-- Mini Visual Mockup 02: Zalo Message Bubble & Guest Card -->
+                    <div class="mayhen_home_features_visual mayhen_home_features_visual_zalo" aria-hidden="true">
+                        <div class="mayhen_home_features_zalo_card">
+                            <div class="mayhen_home_features_salutation_chip">
+                                <span class="mayhen_home_features_salutation_dot"></span>
+                                <span>Danh xưng: <strong>Kính mời</strong></span>
+                            </div>
+                            <div class="mayhen_home_features_zalo_bubble">
+                                <div class="mayhen_home_features_zalo_sender">
+                                    <span class="mayhen_home_features_zalo_badge">Zalo Message</span>
+                                    <span class="mayhen_home_features_zalo_time">Vừa xong</span>
+                                </div>
+                                <p class="mayhen_home_features_zalo_text">
+                                    Kính mời <strong>Anh Hoàng &amp; Bạn gái</strong> tới chung vui cùng Minh Quân &amp; Ái Như vào ngày 24.10 tại The White Palace 💌
+                                </p>
+                                <div class="mayhen_home_features_zalo_link_preview">
+                                    <div class="mayhen_home_features_zalo_link_thumb">🕊️</div>
+                                    <div class="mayhen_home_features_zalo_link_meta">
+                                        <span class="mayhen_home_features_zalo_link_title">Thiệp Cưới Minh Quân &amp; Ái Như</span>
+                                        <span class="mayhen_home_features_zalo_link_url">mayhen.vn/thiep/quan-nhu</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_features_card_perk">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Khách mở không cần app &bull; Sao chép tin nhắn trong 1 giây</span>
+                    </div>
+                </article>
+
+                <!-- Feature 03: Card (4 cols on desktop) -->
+                <article class="mayhen_home_features_card mayhen_home_features_card_rsvp" tabindex="0" aria-label="Tính năng: Báo hỷ RSVP và quản lý bàn tiệc tự động">
+                    <div class="mayhen_home_features_card_body">
+                        <span class="mayhen_home_features_card_tag">Chốt Cỗ Chu Đáo</span>
+                        <h3 class="mayhen_home_features_card_title">Báo Hỷ RSVP &amp; Quản Lý Bàn Tiệc</h3>
+                        <p class="mayhen_home_features_card_desc">
+                            Khách mời dễ dàng báo trước có tham dự hay không, số người đi cùng và gửi lời chúc phúc. Dữ liệu cập nhật về bảng quản lý giúp bạn xếp chỗ chuẩn xác, tránh lãng phí cỗ cưới.
+                        </p>
+                    </div>
+
+                    <!-- Mini Visual Mockup 03: RSVP Interactive Pill & Live Stats -->
+                    <div class="mayhen_home_features_visual mayhen_home_features_visual_rsvp" aria-hidden="true">
+                        <div class="mayhen_home_features_rsvp_mockup">
+                            <div class="mayhen_home_features_rsvp_toggle">
+                                <span class="mayhen_home_features_rsvp_option is-selected">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                                    <span>Chắc chắn dự (2 người)</span>
+                                </span>
+                            </div>
+                            <div class="mayhen_home_features_rsvp_stats_row">
+                                <div class="mayhen_home_features_rsvp_stat_box">
+                                    <span class="mayhen_home_features_rsvp_stat_val">128</span>
+                                    <span class="mayhen_home_features_rsvp_stat_lbl">Khách tham dự</span>
+                                </div>
+                                <div class="mayhen_home_features_rsvp_stat_box">
+                                    <span class="mayhen_home_features_rsvp_stat_val">24</span>
+                                    <span class="mayhen_home_features_rsvp_stat_lbl">Bàn tiệc đã chốt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_features_card_perk">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Cập nhật thời gian thực &bull; Đính kèm lời chúc phúc</span>
+                    </div>
+                </article>
+
+                <!-- Feature 04: Card (4 cols on desktop) -->
+                <article class="mayhen_home_features_card mayhen_home_features_card_map" tabindex="0" aria-label="Tính năng: Tích hợp Google Maps dẫn đường 1-chạm tới sảnh cưới">
+                    <div class="mayhen_home_features_card_body">
+                        <span class="mayhen_home_features_card_tag">Tránh Lạc Đường</span>
+                        <h3 class="mayhen_home_features_card_title">Bản Đồ Google Maps Dẫn Đường 1-Chạm</h3>
+                        <p class="mayhen_home_features_card_desc">
+                            Gắn vị trí sảnh cưới chính xác trên bản đồ. Khách bấm nút dẫn đường là Google Maps tự động mở lộ trình di chuyển, giúp người thân ở xa hay người lớn tuổi tới đúng giờ lành.
+                        </p>
+                    </div>
+
+                    <!-- Mini Visual Mockup 04: Map Pin & Directions Card -->
+                    <div class="mayhen_home_features_visual mayhen_home_features_visual_map" aria-hidden="true">
+                        <div class="mayhen_home_features_map_mockup">
+                            <div class="mayhen_home_features_map_pin_badge">
+                                <span class="mayhen_home_features_map_pin_icon">📍</span>
+                                <div class="mayhen_home_features_map_pin_text">
+                                    <strong>The White Palace</strong>
+                                    <span>Sảnh Grand Ballroom</span>
+                                </div>
+                            </div>
+                            <div class="mayhen_home_features_map_cta_pill">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                                <span>Chỉ Đường Bằng Google Maps</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_features_card_perk">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Định vị chính xác sảnh tiệc &bull; Mở nhanh trên điện thoại</span>
+                    </div>
+                </article>
+
+                <!-- Feature 05: Card (4 cols on desktop) -->
+                <article class="mayhen_home_features_card mayhen_home_features_card_qr" tabindex="0" aria-label="Tính năng: Hộp mừng cưới VietQR chính chủ 0% chiết khấu">
+                    <div class="mayhen_home_features_card_body">
+                        <span class="mayhen_home_features_card_tag">Minh Bạch Tuyệt Đối</span>
+                        <h3 class="mayhen_home_features_card_title">Hộp Mừng Cưới VietQR Chính Chủ</h3>
+                        <p class="mayhen_home_features_card_desc">
+                            Tích hợp mã VietQR ngân hàng chính chủ của cô dâu chú rể. Khách ở xa gửi tiền mừng trực tiếp vào tài khoản của bạn, tuyệt đối không qua trung gian và không chiết khấu.
+                        </p>
+                    </div>
+
+                    <!-- Mini Visual Mockup 05: Bank VietQR Card -->
+                    <div class="mayhen_home_features_visual mayhen_home_features_visual_qr" aria-hidden="true">
+                        <div class="mayhen_home_features_qr_mockup">
+                            <div class="mayhen_home_features_qr_head">
+                                <span class="mayhen_home_features_qr_bank">VietinBank &bull; MB Bank</span>
+                                <span class="mayhen_home_features_qr_direct">100% Trực Tiếp</span>
+                            </div>
+                            <div class="mayhen_home_features_qr_frame">
+                                <div class="mayhen_home_features_qr_pixels">
+                                    <span></span><span></span><span></span>
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="mayhen_home_features_qr_center">囍</div>
+                            </div>
+                            <div class="mayhen_home_features_qr_owner">
+                                <span>Chủ TK: NGUYEN MINH QUAN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_features_card_perk">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Chuẩn VietQR toàn quốc &bull; 0% phí hoa hồng</span>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Bottom Action & Reassurance Bar -->
+            <div class="mayhen_home_features_bottom_bar">
+                <div class="mayhen_home_features_bottom_content">
+                    <span class="mayhen_home_features_bottom_icon" aria-hidden="true">✨</span>
+                    <p class="mayhen_home_features_bottom_text">
+                        Mọi tính năng đều được tối ưu tải trang dưới 1 giây trên điện thoại, không chèn quảng cáo và cho phép bạn xem thử miễn phí trước khi quyết định.
+                    </p>
+                </div>
+                <div class="mayhen_home_features_bottom_actions">
+                    <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_md">
+                        <span>Tạo Thử Thiệp Cưới Của Bạn</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    <a href="{{ route('services') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_md">
+                        <span>Khám Phá Dịch Vụ</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
     <section class="mayhen_home_steps_section" id="quy-trinh" aria-labelledby="mayhen-steps-heading">
         <div class="mayhen_client_layout_container">
             <!-- Section Header -->

@@ -62,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Real Workflow Step Cards Interactivity & Keyboard Navigation
     initStepsInteractivity();
+
+    // Initialize Highlight Features Bento Cards Interactivity & Keyboard Navigation
+    initFeaturesInteractivity();
 });
 
 /**
@@ -1070,4 +1073,95 @@ function initStepsInteractivity() {
         });
     }
 }
+
+/**
+ * HIGHLIGHT FEATURES BENTO CARDS CONTROLLER
+ * Keyboard navigation (Arrow keys, Home, End) & Gentle micro-interactions
+ * Fully honors prefers-reduced-motion
+ */
+function initFeaturesInteractivity() {
+    const cards = Array.from(document.querySelectorAll('.mayhen_home_features_card'));
+    if (!cards.length) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Keyboard navigation across Bento cards
+    cards.forEach((card, index) => {
+        card.addEventListener('keydown', (e) => {
+            let targetIndex = -1;
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                targetIndex = (index + 1) % cards.length;
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                targetIndex = (index - 1 + cards.length) % cards.length;
+            } else if (e.key === 'Home') {
+                targetIndex = 0;
+            } else if (e.key === 'End') {
+                targetIndex = cards.length - 1;
+            }
+
+            if (targetIndex !== -1) {
+                e.preventDefault();
+                cards[targetIndex].focus();
+            }
+        });
+
+        // Touch feedback on mobile
+        card.addEventListener('touchstart', () => {
+            card.classList.add('mayhen_home_features_card_touch');
+        }, { passive: true });
+
+        card.addEventListener('touchend', () => {
+            setTimeout(() => {
+                card.classList.remove('mayhen_home_features_card_touch');
+            }, 300);
+        }, { passive: true });
+    });
+
+    if (prefersReducedMotion) return;
+
+    // Feature 01: Hero envelope wax seal tap interaction
+    const heroSeal = document.querySelector('.mayhen_home_features_envelope_seal');
+    if (heroSeal) {
+        heroSeal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            heroSeal.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            heroSeal.style.transform = 'scale(1.25) rotate(15deg)';
+            setTimeout(() => {
+                heroSeal.style.transform = 'scale(1) rotate(0deg)';
+            }, 350);
+        });
+    }
+
+    // Feature 03: RSVP option click feedback
+    const rsvpOption = document.querySelector('.mayhen_home_features_rsvp_option');
+    if (rsvpOption) {
+        rsvpOption.style.cursor = 'pointer';
+        rsvpOption.addEventListener('click', (e) => {
+            e.stopPropagation();
+            rsvpOption.style.transition = 'transform 0.2s ease, background 0.2s ease';
+            rsvpOption.style.transform = 'scale(1.08)';
+            rsvpOption.style.background = '#E2EFE0';
+            setTimeout(() => {
+                rsvpOption.style.transform = 'scale(1)';
+                rsvpOption.style.background = '';
+            }, 300);
+        });
+    }
+
+    // Feature 05: VietQR box pulse feedback
+    const qrFrame = document.querySelector('.mayhen_home_features_qr_frame');
+    if (qrFrame) {
+        qrFrame.style.cursor = 'pointer';
+        qrFrame.addEventListener('click', (e) => {
+            e.stopPropagation();
+            qrFrame.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            qrFrame.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                qrFrame.style.transform = 'scale(1)';
+            }, 300);
+        });
+    }
+}
+
 
