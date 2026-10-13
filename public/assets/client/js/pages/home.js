@@ -456,13 +456,23 @@ function initShowcaseCoverflow() {
         }
     });
 
-    // Autoplay Engine: Tự động chuyển mẫu sau mỗi 2s, tạm dừng khi rê chuột hoặc tương tác
+    // Helper: CHỈ kiểm tra xem chuột có đang nằm trên bất kỳ thẻ mayhen_home_showcase_card hay không
+    function isHoveringCard() {
+        try {
+            return cards.some(c => c.matches(':hover'));
+        } catch {
+            return false;
+        }
+    }
+
+    // Autoplay Engine: Tự động chuyển mẫu sau mỗi 2s, CHỈ DỪNG khi rê chuột vào thẻ
     function startAutoplay() {
         stopAutoplay();
         autoplayTimer = setInterval(() => {
-            if (!isPaused) {
-                goNext();
+            if (isHoveringCard()) {
+                return;
             }
+            goNext();
         }, 2000);
     }
 
@@ -473,20 +483,35 @@ function initShowcaseCoverflow() {
         }
     }
 
-    function pauseAutoplay() { isPaused = true; }
-    function resumeAutoplay() { isPaused = false; }
-
-    const showcaseSection = document.getElementById('mayhen_home_showcase_section');
-    if (showcaseSection) {
-        showcaseSection.addEventListener('mouseenter', pauseAutoplay);
-        showcaseSection.addEventListener('mouseleave', resumeAutoplay);
-        showcaseSection.addEventListener('focusin', pauseAutoplay);
-        showcaseSection.addEventListener('focusout', resumeAutoplay);
+    function pauseAutoplay() {
+        stopAutoplay();
     }
 
+    function resumeAutoplay() {
+        if (isHoveringCard()) return;
+        startAutoplay();
+    }
+
+    // CHỈ lắng nghe hover trực tiếp trên các thẻ .mayhen_home_showcase_card
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            pauseAutoplay();
+        });
+        card.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!isHoveringCard()) {
+                    startAutoplay();
+                }
+            }, 60);
+        });
+    });
+
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) pauseAutoplay();
-        else resumeAutoplay();
+        if (document.hidden) {
+            pauseAutoplay();
+        } else if (!isHoveringCard()) {
+            startAutoplay();
+        }
     });
 
     // Resize Debouncer
