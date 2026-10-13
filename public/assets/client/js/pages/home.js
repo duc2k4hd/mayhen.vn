@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Accessible Editorial FAQ Accordion
     initFaqAccordion();
+
+    // Initialize Real Workflow Step Cards Interactivity & Keyboard Navigation
+    initStepsInteractivity();
 });
 
 /**
@@ -985,6 +988,85 @@ function initFaqAccordion() {
                     }
                 }, 1400);
             }
+        });
+    }
+}
+
+/**
+ * REAL WORKFLOW STEP CARDS INTERACTIVITY
+ * Keyboard navigation (Arrow keys, Home, End) & Gentle micro-interactions
+ * Fully honors prefers-reduced-motion
+ */
+function initStepsInteractivity() {
+    const cards = Array.from(document.querySelectorAll('.mayhen_home_steps_card'));
+    if (!cards.length) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Keyboard navigation across cards
+    cards.forEach((card, index) => {
+        card.addEventListener('keydown', (e) => {
+            let targetIndex = -1;
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                targetIndex = (index + 1) % cards.length;
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                targetIndex = (index - 1 + cards.length) % cards.length;
+            } else if (e.key === 'Home') {
+                targetIndex = 0;
+            } else if (e.key === 'End') {
+                targetIndex = cards.length - 1;
+            }
+
+            if (targetIndex !== -1) {
+                e.preventDefault();
+                cards[targetIndex].focus();
+            }
+        });
+
+        // Touch feedback on mobile
+        card.addEventListener('touchstart', () => {
+            card.classList.add('mayhen_home_steps_card_touch');
+        }, { passive: true });
+
+        card.addEventListener('touchend', () => {
+            setTimeout(() => {
+                card.classList.remove('mayhen_home_steps_card_touch');
+            }, 300);
+        }, { passive: true });
+    });
+
+    if (prefersReducedMotion) return;
+
+    // Step 01: Mini wax seal click/tap interaction
+    const miniSeal = document.querySelector('.mayhen_home_steps_visual_seal');
+    if (miniSeal) {
+        miniSeal.style.cursor = 'pointer';
+        miniSeal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            miniSeal.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            miniSeal.style.transform = 'scale(1.25) rotate(15deg)';
+            setTimeout(() => {
+                miniSeal.style.transform = 'scale(1) rotate(0deg)';
+            }, 350);
+        });
+    }
+
+    // Step 03: Mini QR box scan-line pulse
+    const qrBox = document.querySelector('.mayhen_home_steps_visual_qr_box');
+    const scanLine = document.querySelector('.mayhen_home_steps_visual_qr_scan_line');
+    if (qrBox && scanLine) {
+        qrBox.style.cursor = 'pointer';
+        qrBox.addEventListener('click', (e) => {
+            e.stopPropagation();
+            scanLine.style.transition = 'top 0.4s ease-in-out';
+            scanLine.style.top = '10%';
+            setTimeout(() => {
+                scanLine.style.top = '85%';
+                setTimeout(() => {
+                    scanLine.style.top = '50%';
+                }, 300);
+            }, 400);
         });
     }
 }

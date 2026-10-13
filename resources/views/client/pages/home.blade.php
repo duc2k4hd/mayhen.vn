@@ -762,40 +762,195 @@
         </div>
     </section>
 
-    <!-- 3. How It Works (3 Steps) -->
-    <section class="mayhen_client_layout_section">
+    <!-- 3. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
+    <section class="mayhen_home_steps_section" id="quy-trinh" aria-labelledby="mayhen-steps-heading">
         <div class="mayhen_client_layout_container">
-            <div class="mayhen_home_section_header">
-                <span class="mayhen_home_section_subtitle">Trải Nghiệm Dễ Dàng</span>
-                <h2 class="mayhen_home_section_title">Tạo Thiệp Cưới Hoàn Hảo Trong 3 Bước</h2>
-                <p class="mayhen_home_section_desc">
-                    Không đòi hỏi kỹ năng thiết kế, không giao diện phức tạp. Mây Hẹn giúp bạn chuẩn bị thiệp cưới trong nháy mắt.
+            <!-- Section Header -->
+            <div class="mayhen_home_steps_header">
+                <span class="mayhen_home_steps_badge">Hành Trình Trực Quan</span>
+                <h2 class="mayhen_home_steps_title" id="mayhen-steps-heading">
+                    Quy Trình Tạo & Sử Dụng <span class="mayhen_home_steps_title_serif">Thiệp Cưới Online</span>
+                </h2>
+                <p class="mayhen_home_steps_desc">
+                    Trải nghiệm liền mạch từ lúc chọn mẫu, tự tay điền thông tin cưới, xem thử miễn phí trên điện thoại đến khi gửi link Zalo và quản lý bàn tiệc chu đáo.
                 </p>
             </div>
 
+            <!-- 4-Stage Continuous Journey Grid -->
             <div class="mayhen_home_steps_grid">
-                <div class="mayhen_home_step_item">
-                    <div class="mayhen_home_step_number">01</div>
-                    <h3 class="mayhen_home_step_title">Chọn Mẫu & Nhập Thông Tin</h3>
-                    <p class="mayhen_home_step_desc">
-                        Lựa chọn mẫu thiệp yêu thích, điền tên cô dâu chú rể, ngày cưới, địa điểm tiệc và tải lên những bức ảnh kỷ niệm đẹp nhất.
+                <!-- Step 01: Khám Phá & Xem Thử Trực Tiếp -->
+                <article class="mayhen_home_steps_card" data-mayhen-step="1" tabindex="0" aria-label="Bước 1: Chọn mẫu thiệp và xem thử trên điện thoại">
+                    <div class="mayhen_home_steps_card_top">
+                        <span class="mayhen_home_steps_card_num" aria-hidden="true">01</span>
+                        <span class="mayhen_home_steps_card_phase">Khám Phá Miễn Phí</span>
+                    </div>
+
+                    <h3 class="mayhen_home_steps_card_title">Chọn Mẫu Thiệp & Xem Thử Trên Điện Thoại</h3>
+                    <p class="mayhen_home_steps_card_desc">
+                        Lựa chọn phong cách yêu thích từ bộ sưu tập Quiet Luxury, Editorial hay Phong thư hoàng gia. Bạn có thể mở xem thử trực tiếp trên điện thoại để trải nghiệm trọn vẹn hiệu ứng mở nắp sáp, nhạc nền và đếm ngược trước khi tạo.
+                    </p>
+
+                    <!-- Mini Visual Mockup 01: Phong bì & Xem Thử -->
+                    <div class="mayhen_home_steps_visual" aria-hidden="true">
+                        <div class="mayhen_home_steps_visual_phone_mini">
+                            <div class="mayhen_home_steps_visual_phone_bar">
+                                <span class="mayhen_home_steps_visual_dot"></span>
+                                <span>mayhen.vn/xem-thu</span>
+                            </div>
+                            <div class="mayhen_home_steps_visual_envelope">
+                                <div class="mayhen_home_steps_visual_flap"></div>
+                                <div class="mayhen_home_steps_visual_seal">囍</div>
+                                <span class="mayhen_home_steps_visual_env_title">THIỆP MỜI TRỌNG THỂ</span>
+                                <span class="mayhen_home_steps_visual_env_names">Minh Quân &bull; Ái Như</span>
+                                <div class="mayhen_home_steps_visual_music_pill">
+                                    <span class="mayhen_home_steps_visual_music_note">🎵</span>
+                                    <span>A Thousand Years</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_steps_card_chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Trải nghiệm xem thử miễn phí 100%</span>
+                    </div>
+                </article>
+
+                <!-- Step 02: Studio Điền Thông Tin Realtime -->
+                <article class="mayhen_home_steps_card" data-mayhen-step="2" tabindex="0" aria-label="Bước 2: Nhập thông tin cưới và xem trước realtime">
+                    <div class="mayhen_home_steps_card_top">
+                        <span class="mayhen_home_steps_card_num" aria-hidden="true">02</span>
+                        <span class="mayhen_home_steps_card_phase">Studio Trực Quan</span>
+                    </div>
+
+                    <h3 class="mayhen_home_steps_card_title">Nhập Thông Tin Cưới & Xem Trước Realtime</h3>
+                    <p class="mayhen_home_steps_card_desc">
+                        Tại Studio tạo thiệp, bạn chỉ cần gõ tên cô dâu chú rể, ngày cưới, sảnh tiệc và tải lên bộ ảnh kỷ niệm. Giao diện chia đôi thông minh tự động căn chỉnh và hiển thị bản xem trước song song theo thời gian thực trong 5 phút mà không cần biết thiết kế.
+                    </p>
+
+                    <!-- Mini Visual Mockup 02: Studio Form & Live Preview -->
+                    <div class="mayhen_home_steps_visual" aria-hidden="true">
+                        <div class="mayhen_home_steps_visual_studio_mini">
+                            <div class="mayhen_home_steps_visual_studio_fields">
+                                <div class="mayhen_home_steps_visual_field_line">
+                                    <span class="mayhen_home_steps_visual_field_lbl">Dâu Rể:</span>
+                                    <span class="mayhen_home_steps_visual_field_val">Minh Quân & Ái Như</span>
+                                </div>
+                                <div class="mayhen_home_steps_visual_field_line">
+                                    <span class="mayhen_home_steps_visual_field_lbl">Ngày Cưới:</span>
+                                    <span class="mayhen_home_steps_visual_field_val">24.10.2026</span>
+                                </div>
+                                <div class="mayhen_home_steps_visual_field_line">
+                                    <span class="mayhen_home_steps_visual_field_lbl">Sảnh Tiệc:</span>
+                                    <span class="mayhen_home_steps_visual_field_val">The White Palace</span>
+                                </div>
+                            </div>
+                            <div class="mayhen_home_steps_visual_studio_sync">
+                                <span class="mayhen_home_steps_visual_sync_badge">✓ Cập nhật realtime</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_steps_card_chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Tự động căn chỉnh • Hoàn thành trong 5 phút</span>
+                    </div>
+                </article>
+
+                <!-- Step 03: Kích Hoạt VietQR Minh Bạch -->
+                <article class="mayhen_home_steps_card" data-mayhen-step="3" tabindex="0" aria-label="Bước 3: Nhận link riêng và kích hoạt VietQR tự động">
+                    <div class="mayhen_home_steps_card_top">
+                        <span class="mayhen_home_steps_card_num" aria-hidden="true">03</span>
+                        <span class="mayhen_home_steps_card_phase">Kích Hoạt Minh Bạch</span>
+                    </div>
+
+                    <h3 class="mayhen_home_steps_card_title">Nhận Link Riêng & Thanh Toán VietQR Tự Động</h3>
+                    <p class="mayhen_home_steps_card_desc">
+                        Khi đã ưng ý hoàn toàn với bản thiệp của mình, bạn kích hoạt gói lưu trữ (Gói Premium hoặc Pro) bằng cách quét mã VietQR tự động qua app ngân hàng. Kích hoạt trong vài giây, thanh toán 1 lần trọn gói, tuyệt đối không phí ẩn và không giữ tiền mừng cưới.
+                    </p>
+
+                    <!-- Mini Visual Mockup 03: VietQR Payment -->
+                    <div class="mayhen_home_steps_visual" aria-hidden="true">
+                        <div class="mayhen_home_steps_visual_qr_mini">
+                            <div class="mayhen_home_steps_visual_qr_header">
+                                <span class="mayhen_home_steps_visual_qr_brand">VietQR</span>
+                                <span class="mayhen_home_steps_visual_qr_order">MH-8899</span>
+                            </div>
+                            <div class="mayhen_home_steps_visual_qr_box">
+                                <div class="mayhen_home_steps_visual_qr_pattern">
+                                    <span></span><span></span><span></span>
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="mayhen_home_steps_visual_qr_scan_line"></div>
+                            </div>
+                            <div class="mayhen_home_steps_visual_qr_footer">
+                                <span class="mayhen_home_steps_visual_qr_price">149.000đ</span>
+                                <span class="mayhen_home_steps_visual_qr_status">✓ Tự động kích hoạt</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_steps_card_chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Thanh toán 1 lần • Không giữ tiền mừng</span>
+                    </div>
+                </article>
+
+                <!-- Step 04: Gửi Link Zalo & Quản Lý RSVP -->
+                <article class="mayhen_home_steps_card" data-mayhen-step="4" tabindex="0" aria-label="Bước 4: Gửi thiệp qua Zalo và theo dõi khách báo hỷ">
+                    <div class="mayhen_home_steps_card_top">
+                        <span class="mayhen_home_steps_card_num" aria-hidden="true">04</span>
+                        <span class="mayhen_home_steps_card_phase">Gửi Trao & Quản Lý</span>
+                    </div>
+
+                    <h3 class="mayhen_home_steps_card_title">Gửi Thiệp Qua Zalo & Theo Dõi Khách Báo Hỷ</h3>
+                    <p class="mayhen_home_steps_card_desc">
+                        Nhận đường link thiệp riêng biệt với ảnh đại diện Zalo/Facebook trang trọng. Khách nhận link chạm mở ngay trên điện thoại không cần tải app. Toàn bộ phản hồi xác nhận tham dự (đi bao nhiêu người, gửi lời chúc) được tổng hợp tự động để bạn chốt số bàn tiệc chu đáo.
+                    </p>
+
+                    <!-- Mini Visual Mockup 04: Zalo Message & RSVP Summary -->
+                    <div class="mayhen_home_steps_visual" aria-hidden="true">
+                        <div class="mayhen_home_steps_visual_rsvp_mini">
+                            <div class="mayhen_home_steps_visual_zalo_bubble">
+                                <span class="mayhen_home_steps_visual_zalo_badge">Tin Nhắn Zalo</span>
+                                <p class="mayhen_home_steps_visual_zalo_text">Kính mời Anh Long & Người thương dự lễ cưới Quân & Như 💌</p>
+                            </div>
+                            <div class="mayhen_home_steps_visual_rsvp_stats">
+                                <div class="mayhen_home_steps_visual_rsvp_stat_item">
+                                    <span class="mayhen_home_steps_visual_rsvp_num">128</span>
+                                    <span class="mayhen_home_steps_visual_rsvp_lbl">Khách tham dự</span>
+                                </div>
+                                <div class="mayhen_home_steps_visual_rsvp_stat_item">
+                                    <span class="mayhen_home_steps_visual_rsvp_num">24</span>
+                                    <span class="mayhen_home_steps_visual_rsvp_lbl">Bàn tiệc chốt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_home_steps_card_chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                        <span>Khách mở không cần app • Chốt bàn tiệc dễ dàng</span>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Bottom Action Recommendation Bar -->
+            <div class="mayhen_home_steps_bottom_bar">
+                <div class="mayhen_home_steps_bottom_content">
+                    <span class="mayhen_home_steps_bottom_icon" aria-hidden="true">✨</span>
+                    <p class="mayhen_home_steps_bottom_text">
+                        Bạn có thể bắt đầu tạo thử thiệp cưới của mình ngay bây giờ — Trải nghiệm miễn phí và chỉ kích hoạt khi đã hoàn toàn ưng ý.
                     </p>
                 </div>
-
-                <div class="mayhen_home_step_item">
-                    <div class="mayhen_home_step_number">02</div>
-                    <h3 class="mayhen_home_step_title">Xem Thử Trực Tiếp Trên Điện Thoại</h3>
-                    <p class="mayhen_home_step_desc">
-                        Bản thiệp tự động kết xuất với animation mở phong thư mượt mà, đồng hồ đếm ngược, nhạc nền và bản đồ dẫn đường chính xác.
-                    </p>
-                </div>
-
-                <div class="mayhen_home_step_item">
-                    <div class="mayhen_home_step_number">03</div>
-                    <h3 class="mayhen_home_step_title">Xuất Bản & Gửi Tới Khách Mời</h3>
-                    <p class="mayhen_home_step_desc">
-                        Nhận đường link thiệp riêng, tạo lời mời cá nhân hóa gửi qua Zalo/Facebook và dễ dàng theo dõi xác nhận tham dự (RSVP).
-                    </p>
+                <div class="mayhen_home_steps_bottom_actions">
+                    <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_md">
+                        <span>Tạo Thử Thiệp Miễn Phí</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                    <a href="{{ route('how-it-works') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_md">
+                        <span>Xem Chi Tiết Quy Trình</span>
+                    </a>
                 </div>
             </div>
         </div>

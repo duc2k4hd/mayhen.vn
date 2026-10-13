@@ -3174,45 +3174,562 @@
     .mayhen_home_showcase_equalizer_bars span { animation: none !important; }
 }
 
-/* Feature Steps */
+/* ========================================================
+   3. REAL WORKFLOW SECTION (Quiet Luxury Customer Journey)
+   Prefix: mayhen_home_steps_
+   ======================================================== */
+.mayhen_home_steps_section {
+    position: relative;
+    padding: clamp(64px, 8.5vh, 104px) 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(197, 168, 128, 0.05) 0%, transparent 70%), #FAF7F2;
+    border-top: 1px solid var(--mayhen-color-border);
+    border-bottom: 1px solid var(--mayhen-color-border);
+    overflow: hidden;
+}
+
+.mayhen_home_steps_header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 52px auto;
+}
+
+.mayhen_home_steps_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8F7249;
+    background: #F5EFE6;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    padding: 6px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    margin-bottom: 16px;
+}
+
+.mayhen_home_steps_title {
+    font-size: var(--mayhen-font-size-h2);
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.35;
+    margin: 0 0 14px 0;
+}
+
+.mayhen_home_steps_title_serif {
+    font-family: var(--mayhen-font-serif);
+    font-style: italic;
+    font-weight: 500;
+    color: #8F7249;
+}
+
+.mayhen_home_steps_desc {
+    font-size: 1rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.68;
+    margin: 0 auto;
+    max-width: 620px;
+}
+
+/* 4-Stage Continuous Journey Grid */
 .mayhen_home_steps_grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--mayhen-space-xl);
-}
-
-@media (min-width: 768px) {
-    .mayhen_home_steps_grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.mayhen_home_step_item {
-    background: var(--mayhen-color-bg-surface);
-    border: 1px solid var(--mayhen-color-border);
-    border-radius: var(--mayhen-radius-lg);
-    padding: var(--mayhen-space-xl);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
     position: relative;
 }
 
-.mayhen_home_step_number {
+.mayhen_home_steps_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: 20px;
+    padding: 26px 20px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(28, 25, 23, 0.03);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
+}
+
+.mayhen_home_steps_card:hover,
+.mayhen_home_steps_card:focus-visible,
+.mayhen_home_steps_card.mayhen_home_steps_card_touch {
+    transform: translateY(-6px);
+    border-color: rgba(197, 168, 128, 0.6);
+    box-shadow: 0 16px 36px -6px rgba(70, 50, 40, 0.08), 0 4px 12px rgba(197, 168, 128, 0.08);
+}
+
+.mayhen_home_steps_card:focus-visible {
+    outline: 2px solid var(--mayhen-color-primary);
+    outline-offset: 3px;
+}
+
+.mayhen_home_steps_card_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.mayhen_home_steps_card_num {
     font-family: var(--mayhen-font-serif);
-    font-size: 2.5rem;
+    font-size: 1.85rem;
+    font-weight: 600;
     color: var(--mayhen-color-primary);
     line-height: 1;
-    margin-bottom: var(--mayhen-space-sm);
+    letter-spacing: -0.02em;
 }
 
-.mayhen_home_step_title {
-    font-size: 1.25rem;
+.mayhen_home_steps_card_phase {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8F7249;
+    background: #FAF7F2;
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill);
+    border: 1px solid rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_home_steps_card_title {
+    font-size: 1.05rem;
+    font-weight: 600;
     color: var(--mayhen-color-text-main);
-    margin-bottom: var(--mayhen-space-xs);
+    line-height: 1.45;
+    margin: 0 0 10px 0;
+    min-height: 48px;
 }
 
-.mayhen_home_step_desc {
-    font-size: var(--mayhen-font-size-small);
+.mayhen_home_steps_card_desc {
+    font-size: 0.85rem;
     color: var(--mayhen-color-text-muted);
-    line-height: 1.6;
+    line-height: 1.62;
+    margin: 0 0 18px 0;
+    flex-grow: 1;
+}
+
+/* Mini Visual Mockups Container */
+.mayhen_home_steps_visual {
+    height: 165px;
+    background: #FAF8F5;
+    border: 1px solid rgba(232, 227, 218, 0.85);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Mockup 1: Phone Mini Preview */
+.mayhen_home_steps_visual_phone_mini {
+    width: 144px;
+    background: #FFFFFF;
+    border: 1px solid #D6D0C5;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    padding: 8px 8px 10px 8px;
+    text-align: center;
+}
+
+.mayhen_home_steps_visual_phone_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 8px;
+    color: #9C9690;
+    margin-bottom: 7px;
+}
+
+.mayhen_home_steps_visual_dot {
+    width: 4px;
+    height: 4px;
+    background: #4A7C59;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mayhen_home_steps_visual_envelope {
+    background: #FAF7F2;
+    border: 1px solid #E5DFD5;
+    border-radius: 6px;
+    padding: 8px 6px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_home_steps_visual_seal {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #D44E4E, #A02B2B);
+    color: #FFE6D5;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(160, 43, 43, 0.3);
+    margin-bottom: 4px;
+}
+
+.mayhen_home_steps_visual_env_title {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    color: #8F7249;
+    font-weight: 600;
+    display: block;
+}
+
+.mayhen_home_steps_visual_env_names {
+    font-family: var(--mayhen-font-serif);
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #1C1917;
+    display: block;
+    margin-top: 1px;
+}
+
+.mayhen_home_steps_visual_music_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #F0EAE1;
+    padding: 2px 7px;
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 7.5px;
+    color: #6A6560;
+    margin-top: 5px;
+}
+
+/* Mockup 2: Studio Fields & Realtime Sync */
+.mayhen_home_steps_visual_studio_mini {
+    width: 165px;
+    background: #FFFFFF;
+    border: 1px solid #D6D0C5;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    padding: 9px 10px;
+}
+
+.mayhen_home_steps_visual_field_line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    padding: 4px 6px;
+    background: #FAF7F2;
+    border: 1px solid #ECE7DE;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.mayhen_home_steps_visual_field_lbl {
+    color: #9C9690;
+    font-weight: 500;
+}
+
+.mayhen_home_steps_visual_field_val {
+    color: #1C1917;
+    font-weight: 600;
+}
+
+.mayhen_home_steps_visual_studio_sync {
+    text-align: center;
+    margin-top: 6px;
+}
+
+.mayhen_home_steps_visual_sync_badge {
+    display: inline-block;
+    background: #F1F5F0;
+    color: #4A7C59;
+    font-size: 7.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(74, 124, 89, 0.2);
+}
+
+/* Mockup 3: VietQR Instant Activation */
+.mayhen_home_steps_visual_qr_mini {
+    width: 148px;
+    background: #FFFFFF;
+    border: 1px solid #D6D0C5;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.mayhen_home_steps_visual_qr_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8px;
+    margin-bottom: 5px;
+}
+
+.mayhen_home_steps_visual_qr_brand {
+    font-weight: 700;
+    color: #00529C;
+    letter-spacing: 0.05em;
+}
+
+.mayhen_home_steps_visual_qr_order {
+    font-weight: 600;
+    color: #C5A880;
+}
+
+.mayhen_home_steps_visual_qr_box {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 5px auto;
+    border: 1.5px solid #1C1917;
+    border-radius: 5px;
+    padding: 4px;
+    position: relative;
+    background: #FDFDFD;
+}
+
+.mayhen_home_steps_visual_qr_pattern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    height: 100%;
+}
+
+.mayhen_home_steps_visual_qr_pattern span {
+    background: #1C1917;
+    border-radius: 1px;
+}
+
+.mayhen_home_steps_visual_qr_pattern span:nth-child(2) {
+    background: #8F7249;
+}
+
+.mayhen_home_steps_visual_qr_pattern span:nth-child(5) {
+    background: #4A7C59;
+}
+
+.mayhen_home_steps_visual_qr_scan_line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1.5px;
+    background: #4A7C59;
+    box-shadow: 0 0 6px rgba(74, 124, 89, 0.8);
+}
+
+.mayhen_home_steps_visual_qr_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8px;
+}
+
+.mayhen_home_steps_visual_qr_price {
+    font-weight: 700;
+    color: #1C1917;
+}
+
+.mayhen_home_steps_visual_qr_status {
+    color: #4A7C59;
+    font-weight: 600;
+    font-size: 7.5px;
+}
+
+/* Mockup 4: Zalo Message & Live RSVP */
+.mayhen_home_steps_visual_rsvp_mini {
+    width: 165px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mayhen_home_steps_visual_zalo_bubble {
+    background: #EBF3FF;
+    border: 1px solid #D0E1FD;
+    border-radius: 8px;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.mayhen_home_steps_visual_zalo_badge {
+    font-size: 7.5px;
+    font-weight: 700;
+    color: #0068FF;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.mayhen_home_steps_visual_zalo_text {
+    font-size: 8px;
+    color: #1E3A8A;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.mayhen_home_steps_visual_rsvp_stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.mayhen_home_steps_visual_rsvp_stat_item {
+    background: #FFFFFF;
+    border: 1px solid #E8E3DA;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: center;
+}
+
+.mayhen_home_steps_visual_rsvp_num {
+    font-family: var(--mayhen-font-serif);
+    font-size: 11px;
+    font-weight: 700;
+    color: #1C1917;
+    display: block;
+}
+
+.mayhen_home_steps_visual_rsvp_lbl {
+    font-size: 7px;
+    color: #78716C;
+    display: block;
+}
+
+/* Step Card Bottom Chip */
+.mayhen_home_steps_card_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: #4A7C59;
+    background: #F1F5F0;
+    border: 1px solid rgba(74, 124, 89, 0.18);
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-top: auto;
+}
+
+.mayhen_home_steps_card_chip svg {
+    flex-shrink: 0;
+    color: #4A7C59;
+}
+
+/* Bottom Action Bar */
+.mayhen_home_steps_bottom_bar {
+    margin-top: 48px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAF8F5 100%);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: 16px;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 16px -2px rgba(28, 25, 23, 0.04);
+}
+
+.mayhen_home_steps_bottom_content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_home_steps_bottom_icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.mayhen_home_steps_bottom_text {
+    font-size: 0.92rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0;
+    font-weight: 500;
+}
+
+.mayhen_home_steps_bottom_actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1023px) {
+    .mayhen_home_steps_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .mayhen_home_steps_bottom_bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .mayhen_home_steps_bottom_content {
+        justify-content: center;
+    }
+
+    .mayhen_home_steps_bottom_actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 639px) {
+    .mayhen_home_steps_grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .mayhen_home_steps_card {
+        padding: 22px 18px 18px 18px;
+    }
+
+    .mayhen_home_steps_card_title {
+        min-height: auto;
+    }
+
+    .mayhen_home_steps_bottom_actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .mayhen_home_steps_bottom_actions a {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 360px) {
+    .mayhen_home_steps_card {
+        padding: 18px 14px;
+    }
+
+    .mayhen_home_steps_visual {
+        height: 155px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_home_steps_card {
+        transition: none !important;
+        transform: none !important;
+    }
 }
 
 /* Final CTA Section */
