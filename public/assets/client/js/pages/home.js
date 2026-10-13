@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize 3D Coverflow Invitation Showcase
     initShowcaseCoverflow();
+
+    // Initialize Accessible Editorial FAQ Accordion
+    initFaqAccordion();
 });
 
 /**
@@ -861,4 +864,128 @@ function initLivePreviewModalEvents() {
     }
 }
 
+/**
+ * ========================================================
+ * 3. ACCESSIBLE FAQ ACCORDION CONTROLLER
+ * Style: Quiet Luxury, Smooth CSS-Grid Motion
+ * WAI-ARIA Accordion Pattern (Click + Full Keyboard Support)
+ * ========================================================
+ */
+function initFaqAccordion() {
+    const wrap = document.querySelector('[data-mayhen-component="faq-accordion"]');
+    if (!wrap) return;
+
+    const items = Array.from(wrap.querySelectorAll('[data-mayhen-faq-item]'));
+    const triggers = Array.from(wrap.querySelectorAll('.mayhen_home_faq_trigger'));
+
+    triggers.forEach((trigger, idx) => {
+        // Toggle on Click
+        trigger.addEventListener('click', () => {
+            const currentItem = items[idx];
+            if (!currentItem) return;
+
+            const isCurrentlyOpen = currentItem.classList.contains('is-open');
+
+            // Close other items for a clean, focused reading experience
+            items.forEach((item, i) => {
+                const btn = triggers[i];
+                item.classList.remove('is-open');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            });
+
+            // Toggle current item
+            if (!isCurrentlyOpen) {
+                currentItem.classList.add('is-open');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // WAI-ARIA Keyboard Navigation
+        trigger.addEventListener('keydown', (e) => {
+            let targetIdx = null;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                targetIdx = (idx + 1) % triggers.length;
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                targetIdx = (idx - 1 + triggers.length) % triggers.length;
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                targetIdx = 0;
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                targetIdx = triggers.length - 1;
+            }
+
+            if (targetIdx !== null && triggers[targetIdx]) {
+                triggers[targetIdx].focus();
+            }
+        });
+    });
+
+    // Interactive Wedding Postcard Wax Seal Burst
+    const sealBtn = document.getElementById('mayhen_home_faq_seal_btn');
+    const sealText = document.getElementById('mayhen_home_faq_seal_text');
+    const burstsWrap = document.getElementById('mayhen_home_faq_bursts');
+
+    if (sealBtn && burstsWrap) {
+        const blessingIcons = ['🌸', '💖', '✨', '💍', '🕊️', '💐', '囍'];
+        let resetTimer = null;
+
+        sealBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Seal bounce animation
+            sealBtn.style.transform = 'scale(1.22) rotate(14deg)';
+            setTimeout(() => {
+                sealBtn.style.transform = '';
+            }, 350);
+
+            // Change label temporarily
+            if (sealText) {
+                const originalText = 'Chạm con dấu sáp 💌';
+                sealText.textContent = 'Trăm năm hạnh phúc! 🌸✨';
+                sealText.style.color = '#B59569';
+                if (resetTimer) clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => {
+                    sealText.textContent = originalText;
+                    sealText.style.color = '';
+                }, 3000);
+            }
+
+            // Spawn lovely floating burst icons
+            const rect = sealBtn.getBoundingClientRect();
+            const parentRect = burstsWrap.getBoundingClientRect();
+            const originX = rect.left - parentRect.left + rect.width / 2;
+            const originY = rect.top - parentRect.top + rect.height / 2;
+
+            for (let i = 0; i < 7; i++) {
+                const burstEl = document.createElement('span');
+                burstEl.className = 'mayhen_home_faq_burst_item';
+                burstEl.textContent = blessingIcons[Math.floor(Math.random() * blessingIcons.length)];
+
+                const dx = (Math.random() - 0.5) * 120;
+                const dy = -(40 + Math.random() * 80);
+                const rot = (Math.random() - 0.5) * 60;
+                const size = 16 + Math.random() * 10;
+
+                burstEl.style.left = `${originX}px`;
+                burstEl.style.top = `${originY}px`;
+                burstEl.style.fontSize = `${size}px`;
+                burstEl.style.setProperty('--burst-dx', `${dx}px`);
+                burstEl.style.setProperty('--burst-dy', `${dy}px`);
+                burstEl.style.setProperty('--burst-rot', `${rot}deg`);
+
+                burstsWrap.appendChild(burstEl);
+
+                setTimeout(() => {
+                    if (burstEl.parentNode) {
+                        burstEl.parentNode.removeChild(burstEl);
+                    }
+                }, 1400);
+            }
+        });
+    }
+}
 

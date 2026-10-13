@@ -801,7 +801,341 @@
         </div>
     </section>
 
-    <!-- 4. Final CTA Banner -->
+    <!-- 4. FAQ Section (Câu Hỏi Thường Gặp — Thiệp Mời Online) -->
+    <section class="mayhen_home_faq_section" id="faq" aria-labelledby="mayhen-faq-heading">
+        <div class="mayhen_client_layout_container">
+            <div class="mayhen_home_faq_grid">
+                <!-- Left Editorial Column: Header & Consultation Help Note -->
+                <aside class="mayhen_home_faq_sidebar">
+                    <div class="mayhen_home_faq_sidebar_sticky">
+                        <span class="mayhen_home_faq_badge">Hỏi & Đáp Thường Gặp</span>
+
+                        <h2 class="mayhen_home_faq_title" id="mayhen-faq-heading">
+                            Giải đáp băn khoăn về <span class="mayhen_home_faq_title_serif">thiệp mời online</span>
+                        </h2>
+
+                        <p class="mayhen_home_faq_desc">
+                            Tổng hợp những thắc mắc phổ biến nhất khi tự tạo thiệp cưới online và gửi tới bạn bè, người thân qua Zalo.
+                        </p>
+
+                        <!-- Atelier Consultation Box -->
+                        <div class="mayhen_home_faq_help_card">
+                            <div class="mayhen_home_faq_help_icon_wrap" aria-hidden="true">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    <circle cx="9" cy="10" r="1" fill="currentColor"/>
+                                    <circle cx="12" cy="10" r="1" fill="currentColor"/>
+                                    <circle cx="15" cy="10" r="1" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <div class="mayhen_home_faq_help_body">
+                                <h3 class="mayhen_home_faq_help_title">Bạn cần tư vấn thêm?</h3>
+                                <p class="mayhen_home_faq_help_text">
+                                    Đội ngũ Mây Hẹn luôn sẵn lòng đồng hành và giải đáp mọi yêu cầu riêng cho thiệp cưới của bạn.
+                                </p>
+                                <a href="{{ route('contact') }}" class="mayhen_home_faq_help_link">
+                                    <span>Trò chuyện cùng Mây Hẹn</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Romantic Atelier Wedding Postcard Widget (Đáng yêu & Lấp đầy hoàn hảo khoảng trống) -->
+                        <div class="mayhen_home_faq_postcard" data-mayhen-faq-postcard>
+                            <!-- Vintage Postage Stamp -->
+                            <div class="mayhen_home_faq_postcard_stamp" aria-hidden="true">
+                                <span class="mayhen_home_faq_postcard_stamp_icon">🕊️</span>
+                                <span class="mayhen_home_faq_postcard_stamp_title">MÂY HẸN</span>
+                                <span class="mayhen_home_faq_postcard_stamp_year">2026</span>
+                                <div class="mayhen_home_faq_postcard_stamp_postmark">LOVE POST</div>
+                            </div>
+
+                            <!-- Postcard Header -->
+                            <div class="mayhen_home_faq_postcard_head">
+                                <span class="mayhen_home_faq_postcard_tag">Lời Nhắn Hạnh Phúc</span>
+                                <h4 class="mayhen_home_faq_postcard_title">Gửi Người Thương Quý</h4>
+                            </div>
+
+                            <!-- Romantic Quote -->
+                            <p class="mayhen_home_faq_postcard_quote">
+                                "Tấm thiệp gửi đi mang theo trọn vẹn sự trân trọng. Mây Hẹn nâng niu từng chi tiết để ngày vui của hai bạn thật vẹn tròn."
+                            </p>
+
+                            <!-- Interactive Wax Seal Monogram -->
+                            <div class="mayhen_home_faq_postcard_seal_row">
+                                <button type="button" 
+                                        class="mayhen_home_faq_postcard_seal_btn" 
+                                        id="mayhen_home_faq_seal_btn"
+                                        title="Chạm vào con dấu sáp để nhận lời chúc phúc"
+                                        aria-label="Chạm vào con dấu sáp Song Hỷ để nhận lời chúc phúc">
+                                    <span class="mayhen_home_faq_postcard_seal_char">囍</span>
+                                    <span class="mayhen_home_faq_postcard_seal_halo"></span>
+                                </button>
+                                <div class="mayhen_home_faq_postcard_seal_meta">
+                                    <span class="mayhen_home_faq_postcard_seal_text" id="mayhen_home_faq_seal_text">Chạm con dấu sáp 💌</span>
+                                    <span class="mayhen_home_faq_postcard_seal_hint">Gửi lời chúc phúc trăm năm</span>
+                                </div>
+                            </div>
+
+                            <!-- 3 Mini Trust Chips -->
+                            <div class="mayhen_home_faq_postcard_chips">
+                                <span class="mayhen_home_faq_postcard_chip">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                                    <span>Không quảng cáo</span>
+                                </span>
+                                <span class="mayhen_home_faq_postcard_chip">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                                    <span>Xem thử miễn phí</span>
+                                </span>
+                                <span class="mayhen_home_faq_postcard_chip">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+                                    <span>Mở mượt trên Zalo</span>
+                                </span>
+                            </div>
+
+                            <!-- Action CTA Button -->
+                            <a href="{{ route('templates.index') }}" class="mayhen_home_faq_postcard_cta">
+                                <span>Thử làm thiệp của bạn ngay</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </a>
+
+                            <!-- Floating hearts and petals target container -->
+                            <div class="mayhen_home_faq_postcard_bursts" id="mayhen_home_faq_bursts" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Right Accordion Column -->
+                <div class="mayhen_home_faq_accordion_wrap" data-mayhen-component="faq-accordion" role="region" aria-label="Danh sách câu hỏi thường gặp">
+                    <!-- Item 01 -->
+                    <div class="mayhen_home_faq_item is-open" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="true"
+                                aria-controls="mayhen-faq-answer-1"
+                                id="mayhen-faq-trigger-1">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">01</span>
+                            <span class="mayhen_home_faq_question">Thiệp mời online là gì và khác gì so với thiệp cưới giấy truyền thống?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-1"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-1">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Thiệp mời online (hay thiệp cưới điện tử) là một trang web thiệp cưới riêng biệt được thiết kế tối ưu cho màn hình điện thoại. Khác với thiệp giấy thông thường hay ảnh chụp màn hình chỉ xem được chữ tĩnh, thiệp mời online tích hợp trọn vẹn nhạc nền, album ảnh cưới, bản đồ chỉ đường Google Maps tới tận sảnh tiệc, đồng hồ đếm ngược ngày cưới và nút báo có tham dự hay không. Bạn có thể gửi link thiệp mời online qua Zalo, Messenger hoặc SMS cho bạn bè, đồng nghiệp ở xa rất nhanh chóng và chỉn chu, đồng thời dùng song song với thiệp giấy để việc mời cưới trọn vẹn nhất.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 02 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-2"
+                                id="mayhen-faq-trigger-2">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">02</span>
+                            <span class="mayhen_home_faq_question">Tôi không rành công nghệ và không biết thiết kế thì có tự tạo thiệp mời online được không?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-2"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-2">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Hoàn toàn được. Toàn bộ mẫu thiệp cưới đẹp trên Mây Hẹn đã được dàn trang, phối màu và căn chỉnh tỷ lệ chuẩn xác. Bạn chỉ cần chọn mẫu mình thích, gõ tên cô dâu chú rể, ngày giờ tổ chức, địa chỉ sảnh cưới và tải ảnh kỷ niệm lên. Giao diện trực quan cho phép bạn thao tác dễ dàng trên cả điện thoại lẫn máy tính và hoàn thành tấm thiệp trong khoảng 5 đến 10 phút mà không cần bất kỳ kiến thức đồ họa nào.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 03 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-3"
+                                id="mayhen-faq-trigger-3">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">03</span>
+                            <span class="mayhen_home_faq_question">Tôi có thể xem thử thiệp cưới trên điện thoại trước khi thanh toán không?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-3"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-3">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Có. Bạn được tự do chọn mẫu, nhập đầy đủ thông tin, tải ảnh và trải nghiệm xem thử thực tế trên điện thoại hoàn toàn miễn phí. Bạn có thể kiểm tra hiệu ứng mở phong thư, nghe thử nhạc nền, kiểm tra bản đồ chỉ đường và duyệt lại từng chi tiết. Khi nào bạn thực sự ưng ý với tác phẩm của mình và muốn nhận đường link chính thức để gửi cho khách mời thì mới tiến hành thanh toán kích hoạt.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 04 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-4"
+                                id="mayhen-faq-trigger-4">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">04</span>
+                            <span class="mayhen_home_faq_question">Khách mời nhận link qua Zalo có cần tải app hay tạo tài khoản để xem thiệp không?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-4"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-4">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Không. Khi bạn gửi đường link thiệp qua Zalo, Messenger hay tin nhắn thông thường, khách mời chỉ cần chạm vào link là thiệp sẽ mở tức thì trên trình duyệt mặc định của máy (tương thích mượt mà với cả iPhone, Samsung, Xiaomi hay máy tính). Khách không cần cài thêm bất kỳ ứng dụng nào và không phải đăng ký tài khoản.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 05 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-5"
+                                id="mayhen-faq-trigger-5">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">05</span>
+                            <span class="mayhen_home_faq_question">Tính năng xác nhận tham dự (RSVP) trên thiệp hoạt động như thế nào?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-5"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-5">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Cuối mỗi tấm thiệp mời online có sẵn một biểu mẫu phản hồi ngắn gọn. Khách mời có thể nhanh chóng chọn: chắc chắn tham dự, rất tiếc không thể đến hoặc chưa chắc chắn, kèm theo số lượng người đi cùng và lời chúc gửi tới cô dâu chú rể. Tất cả câu trả lời sẽ được tổng hợp tự động vào danh sách quản lý của bạn theo thời gian thực, giúp bạn nắm rõ số lượng khách để chốt số bàn tiệc chính xác, hạn chế tình trạng thừa hoặc thiếu cỗ.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 06 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-6"
+                                id="mayhen-faq-trigger-6">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">06</span>
+                            <span class="mayhen_home_faq_question">Sau khi đã gửi link cho khách mời, tôi có thể chỉnh sửa lại thông tin trên thiệp không?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-6"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-6">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Có. Nếu cần thay đổi ảnh cưới, cập nhật lại giờ đón khách hay đính kèm thêm ghi chú về trang phục (dress code), bạn chỉ cần đăng nhập và cập nhật nội dung trong trang quản trị. Thông tin mới sẽ hiển thị ngay lập tức trên đường link mà không làm thay đổi địa chỉ link bạn đã gửi trước đó cho khách.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 07 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-7"
+                                id="mayhen-faq-trigger-7">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">07</span>
+                            <span class="mayhen_home_faq_question">Mã QR mừng cưới trên thiệp có bị thu phí hoa hồng hay qua trung gian không?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-7"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-7">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Tuyệt đối không. Mã QR hiển thị trên thiệp cưới là mã chuyển khoản ngân hàng chính chủ của cô dâu chú rể theo tiêu chuẩn VietQR. Khi khách quét mã, tiền mừng cưới sẽ được chuyển trực tiếp vào tài khoản ngân hàng của bạn ngay lập tức. Mây Hẹn không đóng vai trò giữ tiền trung gian và không thu bất kỳ khoản chiết khấu nào từ tiền mừng của bạn.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 08 -->
+                    <div class="mayhen_home_faq_item" data-mayhen-faq-item>
+                        <button type="button"
+                                class="mayhen_home_faq_trigger"
+                                aria-expanded="false"
+                                aria-controls="mayhen-faq-answer-8"
+                                id="mayhen-faq-trigger-8">
+                            <span class="mayhen_home_faq_item_num" aria-hidden="true">08</span>
+                            <span class="mayhen_home_faq_question">Thiệp cưới online của tôi sẽ duy trì hoạt động trong bao lâu sau ngày cưới?</span>
+                            <span class="mayhen_home_faq_icon" aria-hidden="true">
+                                <svg class="mayhen_home_faq_icon_svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" class="mayhen_home_faq_icon_vert"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="mayhen_home_faq_answer_region"
+                             id="mayhen-faq-answer-8"
+                             role="region"
+                             aria-labelledby="mayhen-faq-trigger-8">
+                            <div class="mayhen_home_faq_answer_inner">
+                                <p class="mayhen_home_faq_answer_text">
+                                    Sau khi kích hoạt, thiệp của bạn sẽ duy trì hoạt động liên tục trong suốt thời gian chuẩn bị đám cưới và tiếp tục lưu trữ tối thiểu 6 tháng sau ngày cưới. Bạn và bạn bè, người thân vẫn có thể mở lại đường link bất cứ lúc nào để xem lại những khung hình kỷ niệm và những lời chúc thân thương được gửi gắm trong ngày cưới.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Final CTA Banner -->
     <section class="mayhen_client_layout_section" style="padding-top: 0;">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_home_cta_banner">
