@@ -522,12 +522,25 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Image with 15s vertical object-position pan -->
+                                    <!-- Card Media: Mẫu thiệp live preview + Ảnh đại diện (nếu có) -->
                                     <div class="mayhen_home_showcase_card_media">
-                                        <img src="{{ $tpl['image'] }}"
-                                             alt="{{ $tpl['name'] }}"
-                                             class="mayhen_home_showcase_card_img"
-                                             loading="{{ $index < 6 ? 'eager' : 'lazy' }}">
+                                        <!-- Mẫu thiệp cưới (được nhúng live, cuộn chậm rãi khi hover) -->
+                                        <div class="mayhen_home_showcase_card_frame_wrap">
+                                            <iframe src="{{ route('templates.preview', $tpl['slug']) }}?embed=1"
+                                                    class="mayhen_home_showcase_card_iframe"
+                                                    tabindex="-1"
+                                                    aria-hidden="true"
+                                                    loading="{{ $index < 4 ? 'eager' : 'lazy' }}"></iframe>
+                                            <div class="mayhen_home_showcase_card_iframe_shield" aria-hidden="true"></div>
+                                        </div>
+
+                                        <!-- Ảnh đại diện: Mặc định hiển thị che lên trên; khi hover sẽ ẩn để lộ mẫu thiệp đang cuộn -->
+                                        @if (!empty($tpl['image']))
+                                            <img src="{{ $tpl['image'] }}"
+                                                 alt="{{ $tpl['name'] }}"
+                                                 class="mayhen_home_showcase_card_img"
+                                                 loading="{{ $index < 6 ? 'eager' : 'lazy' }}">
+                                        @endif
                                     </div>
 
                                     <!-- Persistent Bottom Name Label Bar -->

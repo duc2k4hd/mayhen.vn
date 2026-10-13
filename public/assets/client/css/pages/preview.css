@@ -283,3 +283,33 @@
     margin-top: 14px;
     display: none;
 }
+
+/* Embedded Preview in Showcase Coverflow Card */
+body.mayhen_invitation_is_embed {
+    padding-bottom: 0 !important;
+    min-height: auto !important;
+    background: #FAF7F2 !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+body.mayhen_invitation_is_embed .mayhen_invitation_envelope_stage {
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+body.mayhen_invitation_is_embed .mayhen_invitation_card {
+    display: block !important;
+    opacity: 1 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 24px 16px 40px 16px !important;
+}
+

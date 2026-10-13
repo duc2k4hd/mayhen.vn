@@ -2030,20 +2030,68 @@
     background: #FAF7F2;
 }
 
+/* Ảnh đại diện của mẫu thiệp: Mặc định hiển thị phủ lên thẻ; khi hover sẽ fade out để lộ mẫu thiệp đang cuộn */
 .mayhen_home_showcase_card_img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
-    transition: object-position 15s ease-in-out;
+    object-position: center;
+    z-index: 3;
+    opacity: 1;
+    transition: opacity 0.45s ease;
+    will-change: opacity;
 }
 
-/* Khi thẻ ở trung tâm: tự động cuộn dọc 15s từ trên xuống dưới */
-.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_img {
-    object-position: center bottom;
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_img,
+.mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_img {
+    opacity: 0;
+    pointer-events: none !important;
 }
+
+/* Khung chứa mẫu thiệp cưới live preview */
+.mayhen_home_showcase_card_frame_wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #FAF7F2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* Trang mẫu thiệp cưới (375px mobile scale to fit card) */
+.mayhen_home_showcase_card_iframe {
+    width: 375px;
+    height: 1400px;
+    border: none;
+    transform-origin: top center;
+    transform: scale(0.64) translateY(0);
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none !important;
+    background: #FAF7F2;
+    overflow: hidden !important;
+    will-change: transform;
+}
+
+/* Khi hover vào thẻ: Tự động cuộn chậm rãi mẫu thiệp từ đầu đến cuối */
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_iframe,
+.mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+    transform: scale(0.64) translateY(calc(-100% + 667px));
+    transition: transform 9s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.mayhen_home_showcase_card_iframe_shield {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none !important;
+}
+
 
 /* Bottom Label Bar: Chỉ hiển thị ở thẻ Active khi chưa hover để không đè lên nút */
 .mayhen_home_showcase_card_label_bar {
@@ -2136,7 +2184,7 @@
     position: absolute;
     inset: 0;
     z-index: 25;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.72) 48%, rgba(0, 0, 0, 0.05) 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.70) 28%, rgba(0, 0, 0, 0.15) 50%, transparent 70%);
     opacity: 0;
     visibility: hidden;
     pointer-events: none !important;

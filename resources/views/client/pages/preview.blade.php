@@ -1,3 +1,6 @@
+@php
+    $isEmbed = request()->boolean('embed');
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -18,42 +21,46 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
 </head>
-<body class="mayhen_invitation_wrapper">
-    <!-- Top Demo Navigation Bar -->
-    <header class="mayhen_invitation_demo_banner">
-        <div class="mayhen_invitation_demo_banner_left">
-            <a href="{{ route('templates.index') }}" style="color: #A8A29E; text-decoration: underline;">&larr; Trở Về</a>
-            <span>&bull;</span>
-            <strong>Bản Xem Thử: {{ $template['name'] }}</strong>
-        </div>
-        <div>
-            <a href="{{ route('templates.show', $template['slug']) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm">
-                Dùng Mẫu Này
-            </a>
-        </div>
-    </header>
+<body class="mayhen_invitation_wrapper {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}">
+    @if (!$isEmbed)
+        <!-- Top Demo Navigation Bar -->
+        <header class="mayhen_invitation_demo_banner">
+            <div class="mayhen_invitation_demo_banner_left">
+                <a href="{{ route('templates.index') }}" style="color: #A8A29E; text-decoration: underline;">&larr; Trở Về</a>
+                <span>&bull;</span>
+                <strong>Bản Xem Thử: {{ $template['name'] }}</strong>
+            </div>
+            <div>
+                <a href="{{ route('templates.show', $template['slug']) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm">
+                    Dùng Mẫu Này
+                </a>
+            </div>
+        </header>
 
-    <!-- Floating Audio Control -->
-    <button type="button" class="mayhen_invitation_music_btn" data-mayhen-action="toggle-music" aria-label="Bật/Tắt nhạc nền" title="Bật nhạc nền">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="6" cy="18" r="3"/>
-            <circle cx="18" cy="16" r="3"/>
-        </svg>
-    </button>
+        <!-- Floating Audio Control -->
+        <button type="button" class="mayhen_invitation_music_btn" data-mayhen-action="toggle-music" aria-label="Bật/Tắt nhạc nền" title="Bật nhạc nền">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+            </svg>
+        </button>
+    @endif
 
     <div class="mayhen_invitation_envelope_stage">
-        <!-- 1. The Royal Wax Seal Envelope -->
-        <div class="mayhen_invitation_envelope" data-mayhen-component="envelope">
-            <button type="button" class="mayhen_invitation_envelope_seal" data-mayhen-action="unseal-envelope" aria-label="Chạm để mở thiệp">
-                M&A
-            </button>
-            <h2 class="mayhen_invitation_envelope_to">Kính Mời: Bạn & Người Thương</h2>
-            <p class="mayhen_invitation_envelope_hint">Chạm vào con dấu sáp để mở thiệp cưới</p>
-        </div>
+        @if (!$isEmbed)
+            <!-- 1. The Royal Wax Seal Envelope -->
+            <div class="mayhen_invitation_envelope" data-mayhen-component="envelope">
+                <button type="button" class="mayhen_invitation_envelope_seal" data-mayhen-action="unseal-envelope" aria-label="Chạm để mở thiệp">
+                    M&A
+                </button>
+                <h2 class="mayhen_invitation_envelope_to">Kính Mời: Bạn & Người Thương</h2>
+                <p class="mayhen_invitation_envelope_hint">Chạm vào con dấu sáp để mở thiệp cưới</p>
+            </div>
+        @endif
 
         <!-- 2. The Main Invitation Card -->
-        <article class="mayhen_invitation_card" data-mayhen-component="invitation-card" style="display: none; opacity: 0;">
+        <article class="mayhen_invitation_card" data-mayhen-component="invitation-card" style="{{ $isEmbed ? 'display: block; opacity: 1;' : 'display: none; opacity: 0;' }}">
             <!-- Header -->
             <div class="mayhen_invitation_card_header">
                 <span class="mayhen_invitation_subhead">Save Our Date &bull; Lời Mời Cưới</span>

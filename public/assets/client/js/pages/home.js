@@ -525,10 +525,49 @@ function initShowcaseCoverflow() {
     initPetalsCanvas();
     initRomanticAudio();
     initLivePreviewModalEvents();
+    initCardImageHoverScroll();
 
     // Start
     updateStage();
     startAutoplay();
+}
+
+/**
+ * Tính toán độ cuộn của ảnh đại diện mẫu thiệp khi hover
+ */
+function initCardImageHoverScroll() {
+    const images = document.querySelectorAll('.mayhen_home_showcase_card_img');
+    images.forEach(img => {
+        function calculateDelta() {
+            const media = img.closest('.mayhen_home_showcase_card_media');
+            if (!media) return;
+            const mediaHeight = media.clientHeight;
+            const imgHeight = img.clientHeight;
+            if (imgHeight > mediaHeight) {
+                const delta = imgHeight - mediaHeight;
+                img.style.setProperty('--mayhen-scroll-delta', `-${delta}px`);
+                const duration = Math.min(12, Math.max(6.5, (delta / 100) * 1.8));
+                img.style.setProperty('--mayhen-scroll-duration', `${duration}s`);
+            }
+        }
+
+        if (img.complete && img.naturalHeight > 0) {
+            calculateDelta();
+        } else {
+            img.addEventListener('load', calculateDelta);
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        images.forEach(img => {
+            const media = img.closest('.mayhen_home_showcase_card_media');
+            if (!media) return;
+            const delta = img.clientHeight - media.clientHeight;
+            if (delta > 0) {
+                img.style.setProperty('--mayhen-scroll-delta', `-${delta}px`);
+            }
+        });
+    });
 }
 
 /**
