@@ -344,6 +344,8 @@ Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân
 ## 13. TỐI ƯU HÓA MOBILE-FIRST CHO TRANG CHI TIẾT MẪU THIỆP (/mau-thiep/{slug})
 
 Nhằm mang lại trải nghiệm xem và đặt thiệp cưới đỉnh cao trên điện thoại di động:
+0. **Breadcrumb Tinh Gọn 1 Hàng Duy Nhất**:
+   - Breadcrumb và tất cả các mục bên trong được cố định trên 1 hàng duy nhất (`flex-wrap: nowrap; white-space: nowrap; overflow-x: auto; scrollbar-width: none;`), chống hoàn toàn hiện tượng tên mẫu thiệp bị rớt xuống dòng thứ 2 gây mất thẩm mỹ.
 1. **Sân Khấu Trưng Bày Thiệp (Visual Stage)**:
    - Thẻ trưng bày co gọn padding xuống `8px`, bo góc `16px`.
    - Khung hình thiệp `mayhen_template_detail_stage_media` và ảnh `mayhen_template_detail_stage_img` luôn luôn được cố định tỷ lệ chuẩn mực `aspect-ratio: 3 / 4` trên mọi kích thước màn hình (desktop, tablet, mobile), xóa bỏ giới hạn max-height để ảnh thiệp không bao giờ bị méo hay sai lệch tỷ lệ.

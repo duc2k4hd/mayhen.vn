@@ -21,7 +21,7 @@
     padding-right: var(--mayhen-container-padding);
 }
 
-/* 1. Breadcrumb - Thanh mảnh, tinh tế */
+/* 1. Breadcrumb - Thanh mảnh, tinh tế, luôn trên 1 hàng */
 .mayhen_template_detail_breadcrumb {
     display: flex;
     align-items: center;
@@ -30,14 +30,24 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--mayhen-color-text-muted);
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.mayhen_template_detail_breadcrumb::-webkit-scrollbar {
+    display: none;
 }
 
 .mayhen_template_detail_breadcrumb a {
     color: var(--mayhen-color-text-muted);
     text-decoration: none;
     transition: color var(--mayhen-transition-fast);
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .mayhen_template_detail_breadcrumb a:hover {
@@ -47,11 +57,14 @@
 .mayhen_template_detail_breadcrumb_sep {
     font-size: 0.6rem;
     opacity: 0.35;
+    flex-shrink: 0;
 }
 
 .mayhen_template_detail_breadcrumb_current {
     color: var(--mayhen-color-text-main);
     font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* 2. Main Two-Column Luxury Grid */
@@ -832,6 +845,7 @@
         font-size: 0.7rem;
         margin-bottom: 0.75rem;
         gap: 6px;
+        flex-wrap: nowrap;
         white-space: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
