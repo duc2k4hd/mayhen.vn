@@ -11,6 +11,7 @@
     </main>
 
     @include('client.components.footer')
+    @include('client.components.bottom-nav')
 
     <!-- May Hen Core Scripts -->
     <script type="module" src="{{ asset('assets/client/js/components/header.js') }}"></script>

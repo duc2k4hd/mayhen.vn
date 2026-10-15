@@ -303,7 +303,25 @@ Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo
 
 ---
 
-## 11. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
+## 11. THANH ĐIỀU HƯỚNG ĐÁY MÀN HÌNH TOÀN WEB (BOTTOM NAVIGATION BAR)
+
+Hệ thống thanh dock điều hướng đáy trang (`mayhen_client_bottom_nav_*`) được tích hợp cố định trên toàn bộ website (`client.layouts.master`):
+
+1. **Thứ Tự 5 Nút Thuần Icon SVG (Không viết chữ nhãn để giữ thẩm mỹ tối giản)**:
+   - **Nút 1: Trang chủ** (`route('home')`) — Icon Home nét vẽ thanh mảnh.
+   - **Nút 2: Mẫu thiệp** (`route('templates.index')`) — Icon Card / Grid layout.
+   - **Nút 3: Tạo thiệp** (`route('invitation.create')`) — **Nút tròn lớn ở chính giữa nổi nhô cao** (`margin-top: -24px`), viền nền 3.5px `#FAF8F5`, phủ dải màu Muted Gold sang trọng, hiệu ứng animation sóng hào quang lan tỏa (`mayhenPulseGlow`) và nhịp thở (`mayhenIconFloat`).
+   - **Nút 4: Yêu thích** (`route('templates.index')#yeu-thich`) — Icon Trái tim lãng mạn.
+   - **Nút 5: Trợ lý AI** (`route('contact')#tro-ly-ai`) — Icon Robot AI thông minh.
+2. **Quy Chuẩn Kỹ Thuật**:
+   - Mỗi nút có thuộc tính `title` và `aria-label` đầy đủ để hỗ trợ tooltip và trợ năng (accessibility).
+   - Tự động kích hoạt trạng thái Active chấm nhỏ dưới icon theo từng route.
+   - Body tự động có khoảng đệm bù đáy `padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px))` đảm bảo không bị che khuất nội dung chân trang.
+   - Tương thích đa màn hình: Cố định chân màn hình trên Mobile và chuyển thành thanh Dock nổi bo tròn bo viên thuốc ở giữa đáy trên Desktop.
+
+---
+
+## 12. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
    - Quản lý tài khoản cô dâu, chú rể, studio đối tác hoặc admin.

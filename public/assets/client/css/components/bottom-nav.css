@@ -1,0 +1,167 @@
+/**
+ * MAYHEN.VN — CLIENT BOTTOM NAVIGATION STYLES
+ * Prefix: mayhen_client_bottom_nav_*
+ * Aesthetic: Quiet Luxury, Minimalist SVG Dock, Pulsing Central CTA
+ */
+
+/* ==========================================================================
+   1. BOTTOM NAV WRAPPER
+   ========================================================================== */
+.mayhen_client_bottom_nav_wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 990;
+    background: rgba(253, 252, 250, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(232, 227, 218, 0.85);
+    box-shadow: 0 -4px 25px rgba(28, 25, 23, 0.05);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: transform var(--mayhen-transition-normal);
+}
+
+.mayhen_client_bottom_nav_container {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 60px;
+    position: relative;
+    padding: 0 12px;
+}
+
+/* ==========================================================================
+   2. STANDARD ACTION BUTTONS (SVG ONLY, NO TEXT)
+   ========================================================================== */
+.mayhen_client_bottom_nav_item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: #78716C;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mayhen_client_bottom_nav_item:hover {
+    color: var(--mayhen-color-text-main);
+    background-color: rgba(197, 168, 128, 0.12);
+    transform: translateY(-2px);
+}
+
+.mayhen_client_bottom_nav_item:active {
+    transform: scale(0.92);
+}
+
+/* Trạng thái Active */
+.mayhen_client_bottom_nav_item_active {
+    color: #9C7A4A;
+    background-color: rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_client_bottom_nav_item_active::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #9C7A4A;
+}
+
+/* ==========================================================================
+   3. PROMINENT CENTRAL CTA BUTTON (TẠO THIỆP - ANIMATION ĐẸP)
+   ========================================================================== */
+.mayhen_client_bottom_nav_item_create {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    margin-top: -60px;
+    background: linear-gradient(135deg, #C5A880 0%, #B8935D 50%, #9C7A4A 100%);
+    color: #FFFFFF;
+    text-decoration: none;
+    border: 3.5px solid #FAF8F5;
+    position: relative;
+    z-index: 2;
+    animation: mayhenPulseGlow 2.8s infinite ease-in-out;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mayhen_client_bottom_nav_item_create:hover {
+    transform: translateY(-4px) scale(1.08);
+    background: linear-gradient(135deg, #B8935D 0%, #9C7A4A 60%, #876538 100%);
+    box-shadow: 0 12px 28px rgba(156, 122, 74, 0.6);
+}
+
+.mayhen_client_bottom_nav_item_create:active {
+    transform: translateY(0) scale(0.96);
+}
+
+/* Hiệu ứng nhịp rung nhẹ cho icon bên trong */
+.mayhen_client_bottom_nav_item_create svg {
+    animation: mayhenIconFloat 2.8s infinite ease-in-out;
+}
+
+/* Animation Hào Quang Lan Tỏa (Pulse Glow Ripple) */
+@keyframes mayhenPulseGlow {
+    0% {
+        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 0 rgba(197, 168, 128, 0.55);
+    }
+    60% {
+        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 14px rgba(197, 168, 128, 0);
+    }
+    100% {
+        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 0 rgba(197, 168, 128, 0);
+    }
+}
+
+/* Animation Nhịp Thở Icon */
+@keyframes mayhenIconFloat {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.08) rotate(-5deg);
+    }
+}
+
+/* ==========================================================================
+   4. BODY PADDING OFFSET ĐẢM BẢO KHÔNG BỊ CHE KHUẤT NỘI DUNG CHÂN TRANG
+   ========================================================================== */
+body {
+    padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 860px) {
+    /* Trên màn hình lớn, thanh dock bo tròn nổi tuyệt đẹp ở giữa đáy */
+    .mayhen_client_bottom_nav_wrapper {
+        bottom: 16px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: 440px;
+        border-radius: 9999px;
+        border: 1px solid rgba(232, 227, 218, 0.9);
+        box-shadow: 0 12px 35px rgba(28, 25, 23, 0.12);
+        padding-bottom: 0;
+    }
+
+    .mayhen_client_bottom_nav_container {
+        height: 58px;
+    }
+
+    .mayhen_client_bottom_nav_item_create {
+        margin-top: -20px;
+    }
+}
