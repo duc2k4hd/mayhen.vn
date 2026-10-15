@@ -1,0 +1,680 @@
+/**
+ * MAYHEN.VN — SERVICES PAGE STYLES
+ * Quiet Luxury, Minimal, Editorial & Romantic
+ * CSS Prefix: mayhen_service_*
+ */
+
+.mayhen_service_wrapper {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-4xl);
+}
+
+/* ==========================================
+   1. HERO HEADER
+   ========================================== */
+.mayhen_service_header {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto var(--mayhen-space-3xl) auto;
+}
+
+.mayhen_service_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    margin-bottom: var(--mayhen-space-md);
+    background: var(--mayhen-color-primary-soft);
+    padding: 6px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    border: 1px solid rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_service_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-display);
+    line-height: 1.2;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-md) 0;
+    font-weight: 500;
+}
+
+.mayhen_service_title_accent {
+    font-style: italic;
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_service_desc {
+    font-size: var(--mayhen-font-size-lead);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0 auto var(--mayhen-space-xl) auto;
+    max-width: 700px;
+}
+
+.mayhen_service_trust_strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--mayhen-space-md) var(--mayhen-space-xl);
+    padding: var(--mayhen-space-md) var(--mayhen-space-xl);
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-pill);
+    box-shadow: var(--mayhen-shadow-sm);
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.mayhen_service_trust_item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+    font-weight: 500;
+}
+
+.mayhen_service_trust_icon {
+    width: 16px;
+    height: 16px;
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   2. SECTION GENERAL
+   ========================================== */
+.mayhen_service_section {
+    margin-top: var(--mayhen-space-4xl);
+}
+
+.mayhen_service_section_header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto var(--mayhen-space-2xl) auto;
+}
+
+.mayhen_service_section_kicker {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_service_section_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-h2);
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.mayhen_service_section_desc {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================
+   3. PACKAGES CARDS
+   ========================================== */
+.mayhen_service_packages_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+    align-items: stretch;
+}
+
+@media (min-width: 860px) {
+    .mayhen_service_packages_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_service_package_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-2xl) var(--mayhen-space-xl);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: var(--mayhen-shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.mayhen_service_package_card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--mayhen-shadow-lg);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_service_package_featured {
+    border-color: var(--mayhen-color-primary);
+    box-shadow: 0 14px 34px rgba(197, 168, 128, 0.15);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FDFBF7 100%);
+}
+
+.mayhen_service_package_badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--mayhen-color-primary);
+    color: #FFFFFF;
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 4px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    box-shadow: var(--mayhen-shadow-sm);
+    white-space: nowrap;
+}
+
+.mayhen_service_package_kicker {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_service_package_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-xs) 0;
+    font-weight: 500;
+}
+
+.mayhen_service_package_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0 0 var(--mayhen-space-lg) 0;
+}
+
+.mayhen_service_package_price_wrap {
+    padding: var(--mayhen-space-md) 0;
+    border-top: 1px dashed var(--mayhen-color-border);
+    border-bottom: 1px dashed var(--mayhen-color-border);
+    margin-bottom: var(--mayhen-space-lg);
+}
+
+.mayhen_service_package_price_label {
+    font-size: var(--mayhen-font-size-caption);
+    color: var(--mayhen-color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.mayhen_service_package_price {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.85rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.2;
+}
+
+.mayhen_service_package_features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+    margin-bottom: var(--mayhen-space-xl);
+    flex-grow: 1;
+}
+
+.mayhen_service_package_feature_item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--mayhen-space-xs);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+    line-height: 1.5;
+}
+
+.mayhen_service_package_check {
+    width: 18px;
+    height: 18px;
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* ==========================================
+   4. MATERIAL & CRAFT SPECS
+   ========================================== */
+.mayhen_service_specs_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-lg);
+}
+
+@media (min-width: 640px) {
+    .mayhen_service_specs_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .mayhen_service_specs_grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.mayhen_service_spec_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.mayhen_service_spec_card:hover {
+    transform: translateY(-4px);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_service_spec_icon_wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--mayhen-radius-sm);
+    background: var(--mayhen-color-primary-soft);
+    color: var(--mayhen-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--mayhen-space-md);
+}
+
+.mayhen_service_spec_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-xs) 0;
+    font-weight: 600;
+}
+
+.mayhen_service_spec_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================
+   5. COMPARISON / PRICE TIERS TABLE
+   ========================================== */
+.mayhen_service_table_wrapper {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    box-shadow: var(--mayhen-shadow-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mayhen_service_table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.mayhen_service_table th,
+.mayhen_service_table td {
+    padding: var(--mayhen-space-md) var(--mayhen-space-lg);
+    border-bottom: 1px solid var(--mayhen-color-border);
+    vertical-align: middle;
+}
+
+.mayhen_service_table th {
+    background: var(--mayhen-color-bg-soft);
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_service_table tr:last-child td {
+    border-bottom: none;
+}
+
+.mayhen_service_table tr:hover td {
+    background: rgba(247, 244, 238, 0.4);
+}
+
+.mayhen_service_table_highlight {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary);
+}
+
+/* ==========================================
+   6. COMBO BOX (IN THIỆP GIẤY + THIỆP ONLINE)
+   ========================================== */
+.mayhen_service_combo_box {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-3xl) var(--mayhen-space-2xl);
+    box-shadow: var(--mayhen-shadow-md);
+    margin-top: var(--mayhen-space-4xl);
+}
+
+.mayhen_service_combo_header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto var(--mayhen-space-2xl) auto;
+}
+
+.mayhen_service_combo_badge {
+    display: inline-block;
+    background: var(--mayhen-color-primary);
+    color: #FFFFFF;
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: var(--mayhen-radius-pill);
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_service_combo_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-h2);
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+}
+
+.mayhen_service_combo_desc {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.mayhen_service_combo_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+}
+
+@media (min-width: 768px) {
+    .mayhen_service_combo_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.mayhen_service_combo_card {
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_service_combo_card_tag {
+    font-size: var(--mayhen-font-size-caption);
+    font-weight: 600;
+    color: var(--mayhen-color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_service_combo_card_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.35rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+}
+
+.mayhen_service_combo_card_text {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================
+   7. PROCESS STEPS
+   ========================================== */
+.mayhen_service_steps_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-lg);
+}
+
+@media (min-width: 640px) {
+    .mayhen_service_steps_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .mayhen_service_steps_grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.mayhen_service_step_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl) var(--mayhen-space-lg);
+    box-shadow: var(--mayhen-shadow-sm);
+    position: relative;
+    transition: transform 0.25s ease;
+}
+
+.mayhen_service_step_card:hover {
+    transform: translateY(-4px);
+}
+
+.mayhen_service_step_num {
+    font-family: var(--mayhen-font-serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary);
+    line-height: 1;
+    margin-bottom: var(--mayhen-space-sm);
+    opacity: 0.85;
+}
+
+.mayhen_service_step_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.1rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-xs) 0;
+    font-weight: 600;
+}
+
+.mayhen_service_step_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* ==========================================
+   8. COMMITMENTS & ADVANTAGES
+   ========================================== */
+.mayhen_service_diff_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-lg);
+}
+
+@media (min-width: 768px) {
+    .mayhen_service_diff_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.mayhen_service_diff_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl);
+    display: flex;
+    gap: var(--mayhen-space-md);
+    align-items: flex-start;
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_service_diff_icon_wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--mayhen-radius-pill);
+    background: var(--mayhen-color-primary-soft);
+    color: var(--mayhen-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_service_diff_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.2rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-xs) 0;
+    font-weight: 600;
+}
+
+.mayhen_service_diff_text {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================
+   9. FAQ LIST
+   ========================================== */
+.mayhen_service_faq_list {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+}
+
+.mayhen_service_faq_item {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_service_faq_q {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: var(--mayhen-space-xs);
+    line-height: 1.4;
+}
+
+.mayhen_service_faq_q_badge {
+    color: var(--mayhen-color-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.mayhen_service_faq_a {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==========================================
+   10. BOTTOM ACTION BOX
+   ========================================== */
+.mayhen_service_cta_box {
+    margin-top: var(--mayhen-space-4xl);
+    background: var(--mayhen-color-text-main);
+    color: #FFFFFF;
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-3xl) var(--mayhen-space-2xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_service_cta_kicker {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_service_cta_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-h2);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.mayhen_service_cta_desc {
+    font-size: var(--mayhen-font-size-body);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 600px;
+    margin: 0 auto var(--mayhen-space-xl) auto;
+    line-height: 1.6;
+}
+
+.mayhen_service_cta_actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--mayhen-space-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .mayhen_service_wrapper {
+        padding-top: var(--mayhen-space-lg);
+    }
+    .mayhen_service_header {
+        margin-bottom: var(--mayhen-space-2xl);
+    }
+    .mayhen_service_section {
+        margin-top: var(--mayhen-space-3xl);
+    }
+    .mayhen_service_combo_box {
+        padding: var(--mayhen-space-xl) var(--mayhen-space-md);
+    }
+    .mayhen_service_cta_box {
+        padding: var(--mayhen-space-2xl) var(--mayhen-space-md);
+    }
+}

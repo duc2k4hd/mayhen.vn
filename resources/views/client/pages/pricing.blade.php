@@ -22,6 +22,12 @@
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
+                    'name' => 'Bảng giá',
+                    'item' => url('/bang-gia'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
                     'name' => 'Bảng giá thiệp cưới',
                     'item' => url('/bang-gia'),
                 ],
@@ -115,7 +121,7 @@
         <header class="mayhen_pricing_header">
             <span class="mayhen_pricing_kicker">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Bảng Giá Thiệp Cưới Minh Bạch 2026
+                Bảng Giá Thiệp Cưới Minh Bạch {{ date('Y') }}
             </span>
             <h1 class="mayhen_pricing_title">
                 Bảng Giá Thiệp Cưới Online <br>
