@@ -291,7 +291,19 @@ Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo
 
 ---
 
-## 8. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
+## 10. KIẾN TRÚC HEADER & MOBILE MENU DRAWER
+
+1. **Khắc Phục Lỗi Xuyên Thấu & Stacking Context**:
+   - Khi mở menu mobile drawer, `mayhen_client_header_wrapper` được nâng lên `z-index: 10000;` với nền đục `#FAF8F5` và tắt `backdrop-filter` để triệt tiêu lỗi tạo Containing Block làm fixed element bị lỗi.
+   - Drawer `mayhen_client_header_drawer` phủ toàn màn hình (`100vw x 100dvh`), nền đục `#FAF8F5 !important;` với `z-index: 9999;` ngăn chặn hoàn toàn việc nội dung trang web bên dưới đè xuyên qua chữ menu.
+2. **Trải Nghiệm Tương Tác**:
+   - Hamburger icon 3 vạch tự động chuyển đổi thành dấu X đóng menu mượt mà (`mayhen_client_header_toggle_active`).
+   - Tự động kích hoạt khóa cuộn trang (`body.mayhen_no_scroll`) khi mở drawer để chống cuộn trang bên dưới.
+   - Tự động đóng menu khi click vào bất kỳ liên kết nào, nhấn phím Escape hoặc thay đổi kích thước màn hình sang desktop.
+
+---
+
+## 11. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
    - Quản lý tài khoản cô dâu, chú rể, studio đối tác hoặc admin.

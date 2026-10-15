@@ -49,15 +49,54 @@
         </div>
     </div>
 
-    <!-- Mobile Drawer Menu -->
+    <!-- Mobile Drawer Menu (Toàn màn hình, nền đục Quiet Luxury) -->
     <div class="mayhen_client_header_drawer" data-mayhen-component="mobile-drawer" role="navigation" aria-label="Menu di động">
-        <a href="{{ route('templates.index') }}" class="mayhen_client_header_drawer_link">Bộ Sưu Tập Mẫu Thiệp</a>
-        <a href="{{ route('services') }}" class="mayhen_client_header_drawer_link">Dịch Vụ & Tiện Ích</a>
-        <a href="{{ route('pricing') }}" class="mayhen_client_header_drawer_link">Bảng Giá Gói Dịch Vụ</a>
-        <a href="{{ route('how-it-works') }}" class="mayhen_client_header_drawer_link">Hướng Dẫn Tạo Thiệp</a>
-        <a href="{{ route('contact') }}" class="mayhen_client_header_drawer_link">Liên Hệ & Hỗ Trợ</a>
-        <div style="margin-top: 1rem;">
-            <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary" style="width: 100%;">
+        <a href="{{ route('templates.index') }}" class="mayhen_client_header_drawer_link">
+            <span>Bộ Sưu Tập Mẫu Thiệp</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+        <a href="{{ route('services') }}" class="mayhen_client_header_drawer_link">
+            <span>Dịch Vụ & Tiện Ích</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+        <a href="{{ route('pricing') }}" class="mayhen_client_header_drawer_link">
+            <span>Bảng Giá Gói Dịch Vụ</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+        <a href="{{ route('how-it-works') }}" class="mayhen_client_header_drawer_link">
+            <span>Hướng Dẫn Tạo Thiệp</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+        <a href="{{ route('contact') }}" class="mayhen_client_header_drawer_link">
+            <span>Liên Hệ & Hỗ Trợ</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+
+        @auth
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 6px; border-bottom: 1px solid rgba(232, 227, 218, 0.8);">
+                <span style="font-size: 0.9375rem; font-weight: 500; color: var(--mayhen-color-text-main);">
+                    Xin chào, <strong>{{ auth()->user()->name }}</strong>
+                </span>
+                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" style="padding: 6px 14px; font-size: 0.8125rem;">
+                        Đăng Xuất
+                    </button>
+                </form>
+            </div>
+        @else
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <a href="{{ route('login') }}" class="mayhen_client_button_base mayhen_client_button_secondary" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
+                    Đăng Nhập
+                </a>
+                <a href="{{ route('register') }}" class="mayhen_client_button_base mayhen_client_button_outline" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
+                    Đăng Ký
+                </a>
+            </div>
+        @endauth
+
+        <div style="margin-top: 12px;">
+            <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary" style="width: 100%; justify-content: center; height: 48px; font-size: 0.9375rem; border-radius: var(--mayhen-radius-pill);">
                 Tạo Thiệp Cưới Miễn Phí
             </a>
         </div>

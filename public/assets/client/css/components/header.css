@@ -1,17 +1,26 @@
 /**
  * MAYHEN.VN — CLIENT HEADER STYLES
  * Prefix: mayhen_client_header
+ * Aesthetic: Quiet Luxury, Sticky Blur & Pristine Mobile Drawer
  */
 
 .mayhen_client_header_wrapper {
     position: sticky;
     top: 0;
     z-index: var(--mayhen-z-header);
-    background-color: rgba(252, 251, 249, 0.92);
+    background-color: rgba(252, 251, 249, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--mayhen-color-border);
-    transition: all var(--mayhen-transition-normal);
+    transition: background-color var(--mayhen-transition-normal), box-shadow var(--mayhen-transition-normal);
+}
+
+/* Khi mở mobile menu: Header nâng z-index lên tối thượng và chuyển nền đục */
+.mayhen_client_header_wrapper.mayhen_client_header_open {
+    z-index: 10000;
+    background-color: #FAF8F5;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .mayhen_client_header_container {
@@ -19,6 +28,8 @@
     align-items: center;
     justify-content: space-between;
     height: 72px;
+    position: relative;
+    z-index: 10001;
 }
 
 /* Brand Logo */
@@ -103,6 +114,8 @@
     display: flex;
     align-items: center;
     gap: var(--mayhen-space-sm);
+    position: relative;
+    z-index: 10002;
 }
 
 .mayhen_client_header_cta {
@@ -128,6 +141,7 @@
     border: none;
     cursor: pointer;
     gap: 5px;
+    padding: 0;
 }
 
 @media (min-width: 860px) {
@@ -141,41 +155,103 @@
     height: 2px;
     background-color: var(--mayhen-color-text-main);
     border-radius: 2px;
-    transition: all var(--mayhen-transition-normal);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    transform-origin: center;
 }
 
-/* Mobile Drawer Overlay */
+/* Hiệu ứng chuyển Hamburger thành Dấu X khi menu mở */
+.mayhen_client_header_toggle.mayhen_client_header_toggle_active .mayhen_client_header_toggle_bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.mayhen_client_header_toggle.mayhen_client_header_toggle_active .mayhen_client_header_toggle_bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.mayhen_client_header_toggle.mayhen_client_header_toggle_active .mayhen_client_header_toggle_bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   MOBILE DRAWER OVERLAY (MENU TOÀN MÀN HÌNH CHUẨN ĐỤC, KHÔNG BỊ XUYÊN THẤU)
+   ========================================================================== */
 .mayhen_client_header_drawer {
     display: none;
     position: fixed;
-    top: 72px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--mayhen-color-bg-base);
-    padding: var(--mayhen-space-xl) var(--mayhen-space-lg);
-    z-index: var(--mayhen-z-drawer);
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background-color: #FAF8F5 !important;
+    opacity: 1 !important;
+    z-index: 9999;
+    padding: 85px var(--mayhen-space-lg) var(--mayhen-space-2xl);
     flex-direction: column;
-    gap: var(--mayhen-space-lg);
-    border-top: 1px solid var(--mayhen-color-border);
+    gap: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
 }
 
 .mayhen_client_header_drawer.mayhen_client_header_drawer_open {
     display: flex;
+    animation: mayhenDrawerSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mayhenDrawerSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .mayhen_client_header_drawer_link {
-    font-size: 1.25rem;
+    font-size: 1.1875rem;
     font-family: var(--mayhen-font-serif);
     color: var(--mayhen-color-text-main);
-    padding: var(--mayhen-space-sm) 0;
-    border-bottom: 1px solid var(--mayhen-color-border);
+    text-decoration: none;
+    padding: 14px 6px;
+    border-bottom: 1px solid rgba(232, 227, 218, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color var(--mayhen-transition-fast), padding-left var(--mayhen-transition-fast);
 }
 
+.mayhen_client_header_drawer_link:hover {
+    color: var(--mayhen-color-primary);
+    padding-left: 6px;
+}
+
+/* Khóa cuộn trang khi menu mở */
+body.mayhen_no_scroll {
+    overflow: hidden !important;
+    height: 100% !important;
+    touch-action: none;
+}
+
+/* Responsive Container Header trên Mobile */
 @media (max-width: 860px) {
     .mayhen_client_header_container {
-        height: auto;
-        padding-top: 5px;
-        padding-bottom: 5px;
+        height: 60px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .mayhen_client_header_brand_name {
+        font-size: 1.35rem;
+    }
+
+    .mayhen_client_header_logo_icon {
+        width: 28px;
+        height: 28px;
     }
 }
