@@ -39,7 +39,7 @@
 4. **CẤM CDN NGOẠI**: Không tải CSS/JS từ `cdnjs`, `unpkg`, `jsdelivr`. Toàn bộ asset phải nằm cục bộ trong thư mục `public/assets/`.
 5. **CẤM INLINE STYLE & INLINE SCRIPT**: Không viết thẻ `<style>` hoặc `<script>` bên trong file Blade (trừ thẻ JSON-LD SEO trong `<head>`). Toàn bộ CSS/JS phải được tách thành file độc lập trong `public/assets/client/`.
 
-###  TIỀN TỐ CSS CLASS BẮT BUỘC (MANDATORY CLASS PREFIX)
+### 🏷️ TIỀN TỐ CSS CLASS BẮT BUỘC (MANDATORY CLASS PREFIX)
 Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đột style 100%:
 - **Client Home (Trang chủ)**: `mayhen_home_*`
 - **Client Services (Dịch vụ)**: `mayhen_service_*`
@@ -76,7 +76,64 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 
 ---
 
-## 4. KIẾN TRÚC THƯ MỤC DỰ ÁN
+## 4. QUY TẮC BẢO VỆ PHÂN TẦNG MẪU THIỆP & QUẢN LÝ TRẢI NGHIỆM KHÁCH HÀNG
+
+### 1. Phân Tầng Gói Dịch Vụ (Tiering System)
+- **Gói Free (Miễn phí)**: 
+  - Cho phép người dùng chưa đăng nhập hoặc đã đăng nhập tự do tạo và chỉnh sửa thiệp ngay lập tức trên `/tao-thiep`.
+  - Phù hợp với các cặp đôi muốn trải nghiệm nhanh (setup siêu tốc 2-3 phút).
+- **Gói Plus (Nâng cao) & Gói Pro VIP (Hoàng gia)**:
+  - Khách vãng lai (chưa đăng nhập) **vẫn được xem thử (preview) và xem chi tiết trang trọng** tại `/mau-thiep` và `/mau-thiep/{slug}`.
+  - Tuyệt đối **KHÔNG** để nhãn thô như "Đăng nhập để dùng". Nút hành động luôn giữ nguyên văn phong tự nhiên, sang trọng: **"Tạo Thiệp Với Mẫu Này"**.
+  - **Cơ chế bảo vệ thông minh (Smart Auth Redirect)**: Khi khách chưa đăng nhập bấm nút "Tạo Thiệp Với Mẫu Này" hoặc submit lưu thiệp Plus/Pro, hệ thống tự động ghi nhớ `intended_template` và chuyển hướng mượt mà sang trang Đăng nhập (`/dang-nhap`), sau khi đăng nhập thành công sẽ đưa khách quay trở lại ngay đúng mẫu thiệp họ vừa chọn.
+
+### 2. Tiêu Chuẩn SEO & Chỉ Mục (Robots Indexing Rules)
+- **Trang chủ (`/`), Kho mẫu (`/mau-thiep`), Bảng giá (`/bang-gia`), Dịch vụ (`/dich-vu`), Bài viết**: Cấu hình `index, follow` chuẩn SEO Top 1.
+- **Trang chi tiết mẫu thiệp (`/mau-thiep/{slug}`)**: Cấu hình chuẩn `<meta name="robots" content="noindex, follow">` (không index để tránh trùng lặp nội dung bộ mẫu, nhưng cho phép bọ tìm kiếm follow để truyền sức mạnh liên kết nội bộ).
+- **Trang biên tập tạo thiệp (`/tao-thiep`)**: Cấu hình chuẩn `<meta name="robots" content="noindex, nofollow">` (bảo vệ quyền riêng tư người dùng).
+- **Trang thiệp cưới công khai (`/thiep/{slug}`)**: Cấu hình chuẩn `<meta name="robots" content="noindex, nofollow">` (bảo mật tuyệt đối thông tin cá nhân ngày cưới của cô dâu chú rể).
+
+### 3. Quy Ước Đường Link Thiệp Cưới Chống Trùng Lặp (Slug Collision Prevention)
+- Khi cô dâu chú rể trùng họ tên (ví dụ: Đặng Minh Quân & Lê Ái Như), link thiệp cưới `/thiep/{slug}` được bổ sung **hậu tố ngẫu nhiên kép** để đảm bảo 100% độc bản, không bao giờ xảy ra lỗi ghi đè thiệp của nhau:
+  - Ví dụ URL chuẩn: `http://mayhen.vn/thiep/dang-minh-quan-le-ai-nhu-uxdbm-f5bez2shgm8`.
+
+---
+
+## 5. THIẾT KẾ CHI TIẾT TRANG MẪU THIỆP (`/mau-thiep/{slug}`)
+
+Trang chi tiết mẫu thiệp (`resources/views/client/pages/template-detail.blade.php`) tuân thủ nghiêm ngặt chuẩn mực **Quiet Luxury Editorial** với đầy đủ các khối:
+1. **Sân khấu trưng bày thiệp nghệ thuật (Visual Stage 3D Silk Elevation)**:
+   - Khung chứa ảnh thiệp di động nổi bật với đổ bóng lụa 3D đa tầng (`rgba(28, 25, 23, 0.12)`), viền mạ tinh xảo, bám dính khi cuộn (`position: sticky; top: 90px`).
+   - Nút kính mờ Glassmorphism **"Xem Trước Live"** (`/xem-thu/{slug}`) mở demo thực tế trên màn hình smartphone.
+   - Dải thông số kỹ thuật chân ảnh: *Chuẩn màn hình điện thoại 100%* & *Độc bản Quiet Luxury*.
+2. **Huy hiệu Gói Pro VIP ánh kim hoàng gia (Royal Seal)**:
+   - Mẫu Pro được phủ gradient hoàng gia vàng kim hổ phách (`#FFFDF7` chuyển `#FDE68A`), viền chỉ vàng kim loại `#D97706`, icon vương miện dập nổi và hiệu ứng phát sáng nhẹ (`mayhen_gold_glow`).
+3. **Bố cục 2 cột tỷ lệ vàng (Golden Ratio Grid)**:
+   - Cột trái 460px - 480px, cột phải 1fr, khoảng cách gap co hẹp tinh tế (`1.5rem` - `2.5rem`), loại bỏ hoàn toàn cảm giác thưa thớt, rời rạc.
+4. **Bảng Hồ Sơ Thiết Kế (Design Atelier Sheet)**:
+   - Trưng bày tóm tắt: Tone sắc chủ đạo (kèm chấm màu thực tế), Kiểu chữ nghệ thuật, Hiệu ứng mở phong thư sáp 3D, Tính năng tương tác (RSVP, Nhạc nền, VietQR).
+5. **Khối Đặc Quyền Tính Năng (Features Highlight)**:
+   - Liệt kê các tính năng có sẵn: giấy mỹ thuật cổ điển, mở phong thư vintage, Love Story, sổ lưu bút online, mã VietQR mừng cưới tách biệt hai họ.
+6. **Section "Trải Nghiệm Khách Mời Nhận Được" (The Guest Experience)**:
+   - 3 điểm chạm cảm xúc thúc đẩy cô dâu chú rể sẵn sàng xuống tiền:
+     1. *Chạm mở phong thư sang trọng*
+     2. *Chiêm ngưỡng chuyện tình của hai bạn*
+     3. *Xác nhận tham dự & Mừng cưới tinh tế*
+7. **Section Bài Viết Chuyên Sâu Tối Ưu SEO & Thuyết Phục Khách Hàng (SEO Story)**:
+   - H2: *"Tại Sao Mẫu Thiệp Cưới {Tên Mẫu} Lại Được Yêu Thích?"*.
+   - Phân tích 3 lý do cốt lõi: Tối ưu hoàn hảo cho smartphone, Tiết kiệm 80% chi phí in ấn, Hộp mừng cưới VietQR văn minh & tinh tế.
+8. **Section Câu Hỏi Thường Gặp (FAQ Accordion)**:
+   - Giải đáp 4 thắc mắc then chốt: hiển thị trên di động, chỉnh sửa không giới hạn, tạo thiệp riêng cho từng khách mời, tốc độ tạo thiệp siêu tốc 3 phút.
+9. **Cấu trúc Dữ Liệu Có Cấu Trúc Schema JSON-LD**:
+   - Schema `Product` & `Offer`: Khai báo giá niêm yết, tình trạng tồn kho, số cặp đôi tin dùng và rating 4.9 sao.
+   - Schema `FAQPage`: Giúp hiển thị danh sách câu hỏi nổi bật trên công cụ tìm kiếm.
+   - **LƯU Ý KỸ THUẬT BLADE**: Luôn viết `"@@context": "https://schema.org"` để tránh Blade engine hiểu nhầm là directive `@context`.
+10. **Liên Kết Nội Bộ - Mẫu Cùng Phong Cách (Similar Templates)**:
+    - Tự động gợi ý 3 mẫu thiệp cùng phong cách, giữ chân khách hàng tiếp tục trải nghiệm.
+
+---
+
+## 6. KIẾN TRÚC THƯ MỤC DỰ ÁN
 
 ```text
 mayhen.vn/
@@ -110,12 +167,12 @@ mayhen.vn/
 │       └── client/
 │           ├── layouts/
 │           │   └── master.blade.php    # Layout khung chuẩn (SEO, CSS, JS master)
-│           ├── components/             # Header, Footer, Notification, v.v.
+│           ├── components/             # Header, Footer, Head, Notification, v.v.
 │           ├── pages/
 │           │   ├── home.blade.php      # Landing Page trang chủ (12 sections chuẩn SEO Top 1)
-│           │   ├── templates.blade.php # Danh mục kho mẫu thiệp cưới
-│           │   ├── template-detail.blade.php
-│           │   ├── preview.blade.php   # Trang xem thử mẫu thiệp (Desktop & Mobile)
+│           │   ├── templates.blade.php # Danh mục kho mẫu thiệp cưới (bộ lọc tier & category)
+│           │   ├── template-detail.blade.php # Trang chi tiết mẫu thiệp Quiet Luxury & Content SEO
+│           │   ├── preview.blade.php   # Trang xem thử mẫu thiệp (mô phỏng smartphone)
 │           │   ├── editor.blade.php    # Trình tạo & chỉnh sửa thiệp trực tiếp
 │           │   ├── checkout.blade.php  # Thanh toán VietQR động
 │           │   ├── guests.blade.php    # Quản lý danh sách khách & RSVP
@@ -132,14 +189,15 @@ mayhen.vn/
 │           │   └── public-invitation.blade.php
 │           └── invitations/            # Các theme thiệp cưới cụ thể
 │               ├── hoang-gia-tem-sap-luxury/
-│               └── thanh-manh-01/
+│               ├── thanh-manh-01/
+│               └── duyen-dang-01/
 ├── public/
 │   └── assets/
 │       ├── client/
 │       │   ├── css/
-│       │   │   ├── common/             # tokens.css, base.css, reset.css
-│       │   │   ├── components/         # header.css, footer.css, button.css, modal.css
-│       │   │   └── pages/              # home.css, templates.css, editor.css...
+│       │   │   ├── common/             # tokens.css, base.css, layout.css
+│       │   │   ├── components/         # header.css, footer.css, buttons.css, forms.css
+│       │   │   └── pages/              # home.css, templates.css, template-detail.css, editor.css...
 │       │   ├── js/
 │       │   │   ├── common/             # dom.js, events.js, http.js
 │       │   │   ├── components/         # header.js, modal.js, toast.js
@@ -155,17 +213,17 @@ mayhen.vn/
 
 ---
 
-## 5. BẢN ĐỒ ROUTES & CHỨC NĂNG HỆ THỐNG
+## 7. BẢN ĐỒ ROUTES & CHỨC NĂNG HỆ THỐNG
 
-| Method | URI | Tên Route | Controller & Action | Chức năng |
+| Method | URI | Tên Route | Controller & Action | Chức năng & Chính sách SEO |
 | :--- | :--- | :--- | :--- | :--- |
-| **GET** | `/` | `home` | `HomeController@index` | Trang chủ Landing Page chuẩn SEO Top 1 |
-| **GET** | `/mau-thiep` | `templates.index` | `TemplateController@index` | Kho mẫu thiệp cưới phân loại theo phong cách |
-| **GET** | `/mau-thiep/{slug}`| `templates.show` | `TemplateController@show` | Chi tiết mẫu thiệp, hình ảnh, tính năng |
-| **GET** | `/xem-thu/{slug}` | `templates.preview`| `TemplateController@preview` | Xem thử thiệp live (mô phỏng màn hình điện thoại) |
-| **GET** | `/tao-thiep` | `invitation.create`| `InvitationEditorController@create` | Mở trình soạn thảo tạo thiệp mới |
-| **POST** | `/tao-thiep` | `invitation.store` | `InvitationEditorController@store` | Lưu dữ liệu đám cưới & cấu hình thiệp |
-| **GET** | `/thiep/{slug}` | `invitation.show` | `InvitationEditorController@show` | Trang thiệp cưới công khai cho khách nhận |
+| **GET** | `/` | `home` | `HomeController@index` | Trang chủ Landing Page chuẩn SEO Top 1 (`index, follow`) |
+| **GET** | `/mau-thiep` | `templates.index` | `TemplateController@index` | Kho mẫu thiệp cưới có bộ lọc phân tầng & phong cách (`index, follow`) |
+| **GET** | `/mau-thiep/{slug}`| `templates.show` | `TemplateController@show` | Chi tiết mẫu thiệp Quiet Luxury & Content SEO (`noindex, follow`) |
+| **GET** | `/xem-thu/{slug}` | `templates.preview`| `TemplateController@preview` | Xem thử thiệp live mô phỏng smartphone (`noindex, nofollow`) |
+| **GET** | `/tao-thiep` | `invitation.create`| `InvitationEditorController@create` | Mở trình soạn thảo tạo thiệp mới (`noindex, nofollow`, chặn khách chưa login nếu chọn mẫu Plus/Pro) |
+| **POST** | `/tao-thiep` | `invitation.store` | `InvitationEditorController@store` | Lưu dữ liệu đám cưới & cấu hình thiệp (sinh slug hậu tố kép chống trùng) |
+| **GET** | `/thiep/{slug}` | `invitation.show` | `InvitationEditorController@show` | Trang thiệp cưới công khai cho khách nhận (`noindex, nofollow`) |
 | **POST** | `/thiep/{slug}/rsvp`| `rsvp.submit` | `GuestController@submitRsvp` | Khách gửi phản hồi RSVP xác nhận tham dự |
 | **GET** | `/thanh-toan/{planSlug}`| `checkout.show` | `CheckoutController@show` | Trang thanh toán chuyển khoản VietQR |
 | **POST** | `/api/checkout/process`| `checkout.process` | `CheckoutController@process` | Tạo đơn hàng & mã thanh toán VietQR |
@@ -174,72 +232,25 @@ mayhen.vn/
 | **GET** | `/tai-khoan/thiep/{id}/khach-moi`| `guests.index` | `GuestController@index` | Quản lý danh sách khách, gửi thiệp cá nhân hóa |
 | **POST** | `/tai-khoan/thiep/{id}/khach-moi`| `guests.store` | `GuestController@store` | Thêm khách mời mới vào danh sách |
 | **DELETE**| `/tai-khoan/khach-moi/{id}`| `guests.destroy` | `GuestController@destroy` | Xóa khách mời |
-| **GET** | `/dich-vu` | `services` | `PageController@services` | Giới thiệu các dịch vụ của Mây Hẹn |
-| **GET** | `/bang-gia` | `pricing` | `PageController@pricing` | Bảng giá các gói thiệp cưới online |
-| **GET** | `/huong-dan` | `how-it-works` | `PageController@howItWorks` | Hướng dẫn 3 bước tạo và gửi thiệp |
-| **GET** | `/ve-may-hen` | `about` | `PageController@about` | Câu chuyện thương hiệu Mây Hẹn |
-| **GET** | `/lien-he` | `contact` | `PageController@contact` | Trang liên hệ hỗ trợ & tư vấn |
-| **GET** | `/cau-hoi-thuong-gap`| `faq` | `PageController@faq` | Giải đáp thắc mắc thường gặp |
-| **GET** | `/dieu-khoan-dich-vu`| `terms` | `PageController@terms` | Điều khoản dịch vụ |
-| **GET** | `/chinh-sach-bao-mat`| `privacy` | `PageController@privacy` | Chính sách bảo vệ dữ liệu cá nhân |
-| **GET/POST**| `/dang-nhap`, `/dang-ky`, `/dang-xuat` | Auth routes | `AuthController` | Xác thực người dùng |
+| **GET** | `/dich-vu` | `services` | `PageController@services` | Giới thiệu các dịch vụ của Mây Hẹn (`index, follow`) |
+| **GET** | `/bang-gia` | `pricing` | `PageController@pricing` | Bảng giá các gói thiệp cưới online (`index, follow`) |
+| **GET** | `/huong-dan` | `how-it-works` | `PageController@howItWorks` | Hướng dẫn 3 bước tạo và gửi thiệp (`index, follow`) |
+| **GET** | `/ve-may-hen` | `about` | `PageController@about` | Câu chuyện thương hiệu Mây Hẹn (`index, follow`) |
+| **GET** | `/lien-he` | `contact` | `PageController@contact` | Trang liên hệ hỗ trợ & tư vấn (`index, follow`) |
+| **GET** | `/cau-hoi-thuong-gap`| `faq` | `PageController@faq` | Giải đáp thắc mắc thường gặp (`index, follow`) |
+| **GET** | `/dieu-khoan-dich-vu`| `terms` | `PageController@terms` | Điều khoản dịch vụ (`index, follow`) |
+| **GET** | `/chinh-sach-bao-mat`| `privacy` | `PageController@privacy` | Chính sách bảo vệ dữ liệu cá nhân (`index, follow`) |
+| **GET/POST**| `/dang-nhap`, `/dang-ky`, `/dang-xuat` | Auth routes | `AuthController` | Xác thực người dùng & điều hướng thông minh sau khi đăng nhập |
 | **ANY** | `/admin/*` | `admin.*` | Admin Controllers | Quản lý hệ thống mẫu, đơn hàng, khách hàng |
 
 ---
 
-## 6. CHI TIẾT TRANG CHỦ & CHIẾN LƯỢC SEO TOP 1 "THIỆP CƯỚI ONLINE"
-
-Trang chủ (`resources/views/client/pages/home.blade.php`) đã được thiết kế và tối ưu toàn diện để cạnh tranh trực tiếp vị trí **Top 1–3 Google** cho từ khóa cốt lõi: **"Thiệp cưới online"**, "Thiệp cưới điện tử", "Thiệp cưới thông minh":
-
-### Cấu trúc 12 Sections chuẩn Semantic HTML:
-1. **Hero Section (`mayhen_home_hero`)**:
-   - `<h1>` chứa từ khóa chính tự nhiên: *"Thiệp cưới online tinh tế lưu giữ khoảnh khắc trăm năm"*.
-   - Khẳng định giá trị Quiet Luxury, 2 nút CTA điều hướng rõ ràng ("Khám phá mẫu thiệp" & "Tạo thiệp thử miễn phí").
-   - Stats xã hội: 15.000+ cặp đôi tin chọn, 99.8% hài lòng, 4.9/5 sao.
-2. **Showcase Carousel & Modal (`mayhen_home_showcase`)**:
-   - Trưng bày các mẫu thiệp thực tế tiêu biểu (Hoàng Gia Tem Sáp, Tối Giản Hàn Quốc, Thơ Mộng Hoa Cỏ, Cổ Điển Đông Dương, Vàng Đồng Sang Trọng...).
-   - **Showcase Modal tương tác cao cấp**:
-     - Xem mẫu trực tiếp qua Iframe responsive hoặc ảnh chất lượng cao.
-     - Thanh điều khiển trực quan: Tab chuyển đổi Xem Iframe / Xem ảnh nét, nút phóng to/thu nhỏ, **nút tải ảnh thẳng về máy** (`download`), nút mở xem thử trang riêng.
-     - Thiết kế bo góc liền lạc, không hở viền, chuẩn thẩm mỹ cao cấp.
-3. **Giá trị cốt lõi / Ưu điểm vượt trội (`mayhen_home_values`)**:
-   - So sánh thiệp cưới online Mây Hẹn vs Thiệp giấy truyền thống.
-   - 4 trụ cột: Thiết kế Quiet Luxury, Quản lý RSVP chính xác, Gửi không giới hạn qua Zalo/Facebook, Tiết kiệm 85% chi phí.
-4. **Tính năng độc quyền (`mayhen_home_features`)**:
-   - Mở phong bì kèm tem sáp độc quyền, bản đồ Google Maps chỉ đường 1 chạm, hộp mừng cưới tích hợp VietQR, nhạc nền lãng mạn, album ảnh HD.
-5. **Bộ sưu tập thịnh hành (`mayhen_home_collections`)**:
-   - Phân loại theo phong cách: Luxury Wax Seal, Editorial Modern, Traditional Vietnam, Vintage Romance.
-6. **Quy trình 3 bước đơn giản (`mayhen_home_steps`)**:
-   - 1. Chọn mẫu thiệp -> 2. Điền thông tin & ảnh cưới -> 3. Nhận link & gửi thiệp tức thì.
-7. **Bảng so sánh tính năng (`mayhen_home_comparison`)**:
-   - Minh bạch tính năng giữa các gói: Miễn Phí (Trải nghiệm), Tiêu Chuẩn (Hạnh Phúc) và Cao Cấp (Trọn Đời).
-8. **Đánh giá khách hàng thực tế (`mayhen_home_testimonials`)**:
-   - Lời chia sẻ từ các cặp đôi thật, trích dẫn ảnh đại diện và địa điểm cưới thực tế.
-9. **FAQ Chuẩn SEO (`mayhen_home_faq`)**:
-   - 6 câu hỏi thường gặp nhất về thiệp cưới online, hỗ trợ cấu trúc Rich Snippet Google.
-10. **Báo chí & Đối tác (`mayhen_home_press`)**:
-    - Tăng độ tin cậy E-E-A-T (VnExpress, Marry.vn, ELLE Wedding...).
-11. **CTA Cuối trang (`mayhen_home_cta_bottom`)**:
-    - Kêu gọi hành động mạnh mẽ, tặng ưu đãi trải nghiệm.
-12. **Cụm liên kết từ khóa SEO chân trang (`mayhen_home_seo_block`)**:
-    - Internal link tự nhiên tới các chủ đề liên quan (thiệp cưới điện tử, RSVP, thiệp cưới Zalo, thiệp mừng cưới mã QR).
-
-### Tối ưu Onpage & Schema SEO:
-- Meta Title: `Thiệp Cưới Online Cao Cấp — Tạo Thiệp Cưới Điện Tử Tinh Tế | Mây Hẹn` (Dưới 65 ký tự, chứa từ khóa chính ngay đầu).
-- Meta Description: Viết chuẩn 155 ký tự, hấp dẫn, có call-to-action rõ ràng.
-- Canonical URL: `{{ url()->current() }}`.
-- Open Graph & Twitter Card: Chuẩn kích thước 1200x630.
-- Schema JSON-LD: `@type: WebSite`, `@type: Organization`, `@type: FAQPage`.
-- **LƯU Ý KỸ THUẬT BLADE**: Trong file Blade, cú pháp JSON-LD phải viết là `@@context: "https://schema.org"` để tránh Blade hiểu nhầm là directive `@context`.
-
----
-
-## 7. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
+## 8. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
    - Quản lý tài khoản cô dâu, chú rể, studio đối tác hoặc admin.
 2. **`InvitationTemplate` (`invitation_templates`)**:
-   - `id`, `name`, `slug`, `category`, `price`, `thumbnail`, `preview_url`, `sections_schema` (JSON), `is_active`, `is_featured`.
+   - `id`, `name`, `slug`, `category`, `thumbnail_url`, `demo_url`, `default_config` (JSON lưu: `tier` [free/plus/pro], `stats` [rating, pairs_used], `features`, `animation`, `complexity`, `font_serif`, `setup_time`, `description`, `accent_color`, `style_layout`, `required_inputs`), `current_version`, `is_active`, `is_featured`.
 3. **`Wedding` (`weddings`)**:
    - `id`, `user_id`, `groom_name`, `bride_name`, `groom_parents`, `bride_parents`, `event_date`, `venue_name`, `venue_address`, `map_lat_lng`, `qr_bank_info`.
 4. **`Invitation` (`invitations`)**:
@@ -255,7 +266,7 @@ Trang chủ (`resources/views/client/pages/home.blade.php`) đã được thiế
 
 ---
 
-## 8. QUY TRÌNH LÀM VIỆC DÀNH CHO AI (STANDARD WORKFLOW)
+## 9. QUY TRÌNH LÀM VIỆC DÀNH CHO AI (STANDARD WORKFLOW)
 
 Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện tuần tự 5 bước:
 
