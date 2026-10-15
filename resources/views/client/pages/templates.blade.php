@@ -215,13 +215,16 @@
 
         {{-- Meta Bar --}}
         <div class="mayhen_templates_meta_bar">
-            <span>Hiển thị <strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp cưới đang sẵn sàng</span>
+            <span class="mayhen_templates_meta_count">
+                <span class="mayhen_templates_meta_count_desktop">Hiển thị <strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp cưới đang sẵn sàng</span>
+                <span class="mayhen_templates_meta_count_mobile"><strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp</span>
+            </span>
             <div class="mayhen_templates_sort_group">
-                <span>Sắp xếp:</span>
+                <span class="mayhen_templates_sort_label">Sắp xếp:</span>
                 <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => $currentTier, 'sort' => 'featured'])) }}" class="mayhen_templates_sort_link {{ empty($currentSort) || $currentSort === 'featured' ? 'mayhen_templates_sort_link_active' : '' }}">
                     Nổi bật
                 </a>
-                <span>&bull;</span>
+                <span class="mayhen_templates_sort_dot">&bull;</span>
                 <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => $currentTier, 'sort' => 'popular'])) }}" class="mayhen_templates_sort_link {{ $currentSort === 'popular' ? 'mayhen_templates_sort_link_active' : '' }}">
                     Chuộng nhất
                 </a>
@@ -250,7 +253,7 @@
 
                         <div class="mayhen_home_template_card_stats">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <span>{{ number_format($tpl->usage_count) }} cặp đôi đã dùng</span>
+                            <span>{{ number_format($tpl->usage_count) }} cặp đôi</span>
                         </div>
 
                         <div class="mayhen_home_template_card_footer">

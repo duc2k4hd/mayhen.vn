@@ -321,7 +321,26 @@ Hệ thống thanh dock điều hướng đáy trang (`mayhen_client_bottom_nav_
 
 ---
 
-## 12. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
+## 13. TỐI ƯU HÓA MOBILE-FIRST CHO KHO MẪU THIỆP (/mau-thiep)
+
+Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân thủ định vị Quiet Luxury:
+1. **Hero Header & Highlights Siêu Gọn**:
+   - Header thu gọn padding dọc xuống `4px 0 8px 0`, tiêu đề H1 co về `1.35rem` thanh lịch, mô tả ngắn gọn `0.8125rem`.
+   - Dải 4 điểm nhấn (`mayhen_templates_highlights_bar`) được chuyển thành thanh cuộn ngang 1 hàng với các pill chip nền sáng (`overflow-x: auto`), không chiếm diện tích dọc màn hình.
+2. **Bộ Lọc Phong Cách & Gói Dịch Vụ Dạng Horizontal Scroll Chips**:
+   - Cả 2 thanh lọc (`mayhen_templates_filter_bar` và `mayhen_templates_tier_bar`) được thiết kế cuộn ngang 1 hàng duy nhất (`flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;`), vuốt ngón tay lướt êm ái, xóa bỏ hoàn toàn hiện tượng rớt thành 4-5 hàng nham nhở.
+3. **Thanh Meta Bar & Sắp Xếp Chống Gãy Chữ**:
+   - Tối ưu hiển thị số lượng mẫu thiệp dạng rút gọn trên mobile (`6 / 16 mẫu thiệp`) và cụm sắp xếp nằm cùng 1 hàng duy nhất (`white-space: nowrap`), loại bỏ triệt để lỗi gãy chữ "Nổi" và "bật".
+4. **Lưới Mẫu Thiệp 2 Cột Cân Đối & Tỷ Lệ Ảnh 3:4**:
+   - Khung hình thẻ thiệp chuyển sang `aspect-ratio: 3 / 4` vừa vặn, không bị dài lòng thòng.
+   - Thân thẻ được co gọn padding (`8px 8px 10px`), ẩn mô tả dài dòng trên mobile 2 cột để chiều cao thẻ đồng đều tuyệt đối.
+   - Nút "Xem Live" và "Dùng Mẫu" dàn ngang cân xứng, bấm mượt mà.
+5. **Tinh Gọn Khoảng Trống Các Section SEO, So Sánh Gói, FAQ, CTA**:
+   - Thu nhỏ padding dọc từ `64px - 96px` xuống còn `20px - 28px`, giúp giao diện liền mạch, trang nhã, không còn cảm giác rỗng tuếch hay xa cách.
+
+---
+
+## 14. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
    - Quản lý tài khoản cô dâu, chú rể, studio đối tác hoặc admin.
