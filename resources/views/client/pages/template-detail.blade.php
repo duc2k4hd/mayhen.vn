@@ -4,8 +4,11 @@
     $seoTitle = 'Mẫu Thiệp Cưới ' . $template->name . ' Online — ' . config('app.name');
     $seoDesc = 'Khám phá mẫu thiệp cưới online ' . $template->name . ' (' . $template->category_label . ') tại Mây Hẹn. Tích hợp RSVP xác nhận khách mời, album ảnh cưới, mã QR mừng cưới VietQR và nhạc nền. Tạo thiệp cưới đẹp chỉ trong ' . $template->setup_time . '.';
     $canonicalUrl = route('templates.show', $template->slug);
-    $createUrl = route('invitation.create', ['template' => $template->slug]);
     $previewUrl = route('templates.preview', $template->slug);
+    $isLocked = $template->tier !== 'free' && !auth()->check();
+    $createUrl = $isLocked 
+        ? route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])])
+        : route('invitation.create', ['template' => $template->slug]);
 
     $schemaData = [
         '@context' => 'https://schema.org',
@@ -192,9 +195,14 @@
 
                 <!-- High-Converting Action Buttons -->
                 <div class="mayhen_template_detail_actions">
-                    <a href="{{ $createUrl }}" class="mayhen_template_detail_btn_primary" title="Bắt đầu tạo thiệp cưới với mẫu {{ $template->name }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        <span>Tạo Thiệp Với Mẫu Này</span>
+                    <a href="{{ $createUrl }}" class="mayhen_template_detail_btn_primary" title="{{ $isLocked ? 'Đăng nhập để tạo mẫu thiệp này' : 'Bắt đầu tạo thiệp cưới với mẫu ' . $template->name }}">
+                        @if ($isLocked)
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <span>Đăng Nhập Để Dùng Mẫu Này</span>
+                        @else
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            <span>Tạo Thiệp Với Mẫu Này</span>
+                        @endif
                     </a>
                     
                     <a href="{{ $previewUrl }}" target="_blank" rel="noopener" class="mayhen_template_detail_btn_secondary" title="Mở trang xem thử mẫu thiệp {{ $template->name }}">

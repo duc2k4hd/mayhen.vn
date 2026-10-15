@@ -52,8 +52,14 @@
                 </button>
 
                 <!-- Dùng Mẫu CTA -->
-                <a href="{{ route('invitation.create', ['template' => $template->slug]) }}" class="mayhen_invitation_banner_cta_btn" title="Sử dụng mẫu thiệp này để bắt đầu tạo thiệp cưới">
-                    <span>Tạo Thiệp Với Mẫu Này</span>
+                @php
+                    $isLocked = $template->tier !== 'free' && !auth()->check();
+                    $targetCta = $isLocked
+                        ? route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])])
+                        : route('invitation.create', ['template' => $template->slug]);
+                @endphp
+                <a href="{{ $targetCta }}" class="mayhen_invitation_banner_cta_btn" title="{{ $isLocked ? 'Đăng nhập để sử dụng mẫu này' : 'Sử dụng mẫu thiệp này để bắt đầu tạo thiệp cưới' }}">
+                    <span>{{ $isLocked ? 'Đăng Nhập Để Dùng' : 'Tạo Thiệp Với Mẫu Này' }}</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
             </div>

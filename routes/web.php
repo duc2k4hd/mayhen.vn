@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
+use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
@@ -32,6 +33,13 @@ Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('i
 Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->name('invitation.store');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->name('rsvp.submit');
+
+// Authentication
+Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/dang-nhap', [AuthController::class, 'login'])->name('login.submit');
+Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/dang-ky', [AuthController::class, 'register'])->name('register.submit');
+Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');

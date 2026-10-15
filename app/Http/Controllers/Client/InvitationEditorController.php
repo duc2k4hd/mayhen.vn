@@ -22,11 +22,27 @@ class InvitationEditorController extends Controller
     /**
      * Show the quick creation & live editor studio.
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
-        $selectedTemplateSlug = $request->query('template', 'thanh-manh-01');
-        $template = InvitationTemplate::where('slug', $selectedTemplateSlug)->first()
-            ?? InvitationTemplate::first();
+        $selectedTemplateSlug = $request->query('template');
+
+        // Mặc định chọn mẫu free nếu không chỉ định
+        if (! $selectedTemplateSlug) {
+            $template = InvitationTemplate::where('is_active', true)
+                ->where('default_config->tier', 'free')
+                ->first()
+                ?? InvitationTemplate::where('is_active', true)->first();
+        } else {
+            $template = InvitationTemplate::where('slug', $selectedTemplateSlug)
+                ->where('is_active', true)
+                ->firstOrFail();
+        }
+
+        // Mẫu Plus & Pro bắt buộc phải đăng nhập mới được tạo/chỉnh sửa
+        if ($template->tier !== 'free' && ! auth()->check()) {
+            return redirect()->route('login', ['redirect' => $request->fullUrl()])
+                ->with('warning', "Mẫu thiệp \"{$template->name}\" thuộc gói {$template->tier_label}. Vui lòng đăng nhập để bắt đầu tạo thiệp.");
+        }
 
         $allTemplates = InvitationTemplate::where('is_active', true)->get();
         $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1');
@@ -45,6 +61,20 @@ class InvitationEditorController extends Controller
     {
         $templateId = (int) $request->input('template_id');
         $template = InvitationTemplate::findOrFail($templateId);
+
+        // Kiểm tra quyền: mẫu Plus và Pro bắt buộc phải đăng nhập
+        if ($template->tier !== 'free' && ! auth()->check()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng đăng nhập để lưu và tạo mẫu thiệp này.',
+                    'redirect' => route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])]),
+                ], 403);
+            }
+
+            return redirect()->route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])])
+                ->with('warning', 'Vui lòng đăng nhập để sử dụng mẫu thiệp Plus/Pro này.');
+        }
 
         // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
         $rawWedding = $request->input('wedding', []);

@@ -342,14 +342,27 @@
                 </div>
                 <div class="mayhen_editor_template_grid">
                     @foreach ($allTemplates as $tpl)
-                        <a href="{{ route('invitation.create', ['template' => $tpl->slug]) }}" 
+                        @php
+                            $isLocked = $tpl->tier !== 'free' && !auth()->check();
+                            $targetUrl = $isLocked
+                                ? route('login', ['redirect' => route('invitation.create', ['template' => $tpl->slug])])
+                                : route('invitation.create', ['template' => $tpl->slug]);
+                        @endphp
+                        <a href="{{ $targetUrl }}" 
                            class="mayhen_editor_template_radio_card {{ $tpl->id === $selectedTemplate->id ? 'mayhen_editor_template_radio_selected' : '' }}"
-                           style="text-decoration: none; color: inherit;">
+                           style="text-decoration: none; color: inherit; position: relative;">
                             <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" class="mayhen_editor_template_radio_thumb">
                             <div class="mayhen_editor_template_radio_name">{{ $tpl->name }}</div>
-                            <div style="font-size: 0.6875rem; color: var(--mayhen-color-primary); margin-top: 2px;">
-                                {{ strtoupper($tpl->tier ?? 'FREE') }}
-                            </div>
+                            @if ($isLocked)
+                                <div style="font-size: 0.6875rem; color: #D97706; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                    <span>Đăng nhập</span>
+                                </div>
+                            @else
+                                <div style="font-size: 0.6875rem; color: var(--mayhen-color-primary); margin-top: 2px;">
+                                    {{ strtoupper($tpl->tier ?? 'FREE') }}
+                                </div>
+                            @endif
                         </a>
                     @endforeach
                 </div>

@@ -21,6 +21,21 @@
 
         <!-- Header Actions -->
         <div class="mayhen_client_header_actions">
+            @auth
+                <span style="font-size: 0.8125rem; font-weight: 500; color: var(--mayhen-color-text-main);">
+                    {{ Str::limit(auth()->user()->name, 14) }}
+                </span>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline; margin: 0;">
+                    @csrf
+                    <button type="submit" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" style="padding: 6px 12px; font-size: 0.75rem;">
+                        Thoát
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" style="padding: 6px 14px;">
+                    Đăng Nhập
+                </a>
+            @endauth
             <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm mayhen_client_header_cta">
                 Tạo Thiệp Ngay
             </a>

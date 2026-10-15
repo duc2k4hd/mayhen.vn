@@ -1,0 +1,100 @@
+/**
+ * MAYHEN.VN — CLIENT AUTHENTICATION STYLES
+ * Prefix: mayhen_auth_*
+ * Aesthetic: Quiet Luxury, Minimal, Warm Cream & Sage
+ */
+
+.mayhen_auth_wrapper {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--mayhen-space-2xl) var(--mayhen-space-md);
+    background-color: var(--mayhen-color-bg-base);
+}
+
+.mayhen_auth_card {
+    background-color: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-2xl);
+    width: 100%;
+    max-width: 460px;
+    padding: var(--mayhen-space-2xl);
+    box-shadow: 0 20px 45px -15px rgba(28, 25, 23, 0.1);
+}
+
+.mayhen_auth_header {
+    text-align: center;
+    margin-bottom: var(--mayhen-space-xl);
+}
+
+.mayhen_auth_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background-color: var(--mayhen-color-primary-soft);
+    color: var(--mayhen-color-primary-hover);
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: var(--mayhen-space-sm);
+}
+
+.mayhen_auth_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 8px;
+}
+
+.mayhen_auth_desc {
+    font-size: var(--mayhen-font-size-body-sm);
+    color: var(--mayhen-color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.mayhen_auth_alert_info {
+    background-color: #FEF3C7;
+    border: 1px solid #FDE68A;
+    border-radius: var(--mayhen-radius-md);
+    padding: 10px 14px;
+    margin-bottom: var(--mayhen-space-lg);
+    font-size: 0.8125rem;
+    color: #92400E;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+}
+
+.mayhen_auth_alert_error {
+    background-color: #FEE2E2;
+    border: 1px solid #FECACA;
+    border-radius: var(--mayhen-radius-md);
+    padding: 10px 14px;
+    margin-bottom: var(--mayhen-space-lg);
+    font-size: 0.8125rem;
+    color: #991B1B;
+    line-height: 1.5;
+}
+
+.mayhen_auth_footer_links {
+    margin-top: var(--mayhen-space-xl);
+    text-align: center;
+    font-size: var(--mayhen-font-size-body-sm);
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_auth_link {
+    color: var(--mayhen-color-primary-hover);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--mayhen-transition-fast);
+}
+
+.mayhen_auth_link:hover {
+    text-decoration: underline;
+}
