@@ -12,10 +12,14 @@
 @php
     // Kiểm tra URL có chứa tham số query (? hoặc &)
     $hasQueryParams = count(request()->query()) > 0 || !empty(request()->getQueryString());
-    // Kiểm tra các trang công cụ/chức năng không phải trang nội dung SEO chính
-    $isNonMainPage = request()->is('tao-thiep*', 'thanh-toan*', 'tai-khoan*', 'admin*', 'xem-thu*');
+    // Trang xem thử hoặc admin mặc định là noindex, nofollow
+    $isNoFollowRoute = request()->is('xem-thu*', 'admin*');
+    // Các trang công cụ/chức năng khác không phải trang nội dung SEO chính là noindex, follow
+    $isNonMainPage = request()->is('tao-thiep*', 'thanh-toan*', 'tai-khoan*');
 @endphp
-@if ($hasQueryParams || $isNonMainPage)
+@if ($isNoFollowRoute)
+    <meta name="robots" content="noindex, nofollow">
+@elseif ($hasQueryParams || $isNonMainPage)
     <meta name="robots" content="noindex, follow">
 @elseif (trim($__env->yieldContent('robots')))
     <meta name="robots" content="@yield('robots')">
