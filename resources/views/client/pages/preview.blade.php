@@ -52,8 +52,8 @@
                 </button>
 
                 <!-- Dùng Mẫu CTA -->
-                <a href="{{ route('templates.show', $template['slug']) }}" class="mayhen_invitation_banner_cta_btn" title="Sử dụng mẫu thiệp này">
-                    <span>Dùng Mẫu</span>
+                <a href="{{ route('invitation.create', ['template' => $template->slug]) }}" class="mayhen_invitation_banner_cta_btn" title="Sử dụng mẫu thiệp này để bắt đầu tạo thiệp cưới">
+                    <span>Tạo Thiệp Với Mẫu Này</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
             </div>

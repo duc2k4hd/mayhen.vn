@@ -57,8 +57,19 @@ class TemplateController extends Controller
 
         $similarTemplates = InvitationTemplate::where('id', '!=', $template->id)
             ->where('is_active', true)
-            ->take(2)
+            ->where('category', $template->category)
+            ->take(3)
             ->get();
+
+        if ($similarTemplates->count() < 3) {
+            $needed = 3 - $similarTemplates->count();
+            $additional = InvitationTemplate::where('id', '!=', $template->id)
+                ->where('is_active', true)
+                ->whereNotIn('id', $similarTemplates->pluck('id'))
+                ->take($needed)
+                ->get();
+            $similarTemplates = $similarTemplates->merge($additional);
+        }
 
         return view('client.pages.template-detail', [
             'template' => $template,
