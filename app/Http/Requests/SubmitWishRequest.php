@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\NoProfanity;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubmitWishRequest extends FormRequest
@@ -14,8 +15,8 @@ class SubmitWishRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:100',
-            'message' => 'required|string|max:1000',
+            'name' => ['required', 'string', 'max:100', new NoProfanity],
+            'message' => ['required', 'string', 'max:1000', new NoProfanity],
         ];
     }
 

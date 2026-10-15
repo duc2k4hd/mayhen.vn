@@ -624,9 +624,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Kết quả kiểm thử: **15/15 tests passed (186 assertions)**.
   - Laravel Pint: **100% passed**.
 
+### 📌 Phiên bản 1.1.8 — Hệ Thống Kiểm Duyệt Chặn Từ Ngữ Thô Tục, Chửi Bới & Trù Ẻo Đám Cưới (Zero Trust Moderation FE & BE)
+- **Triết lý bảo mật**:
+  - *"Không bao giờ tin tưởng người dùng (Zero-Trust User Input)"*: Kẻ xấu có thể cố tình phá đám cưới, để lại lời lẽ khiếm nhã, thô tục, chửi thề hoặc trù ẻo đôi bạn trẻ trên trang thiệp cưới công khai.
+  - Bắt buộc kiểm soát và chặn sạch sẽ ở cả **Frontend (FE)** (chặn trước trải nghiệm người dùng, cảnh báo văn minh) và **Backend (BE)** (chốt chặn validation cuối cùng, chặn mọi bypass fetch/curl/Postman).
+- **Backend Content Moderation Engine (`App\Services\ContentModerationService`)**:
+  - **Từ điển tiếng Việt chuyên sâu**:
+    + Nhóm 1: Tục tĩu, bộ phận sinh dục, hành vi tình dục thô bỉ (`buồi`, `cặc`, `lồn`, `địt`, `đụ`, `chịch`, `nện`, `sóc lọ`, `thủ dâm`, `hiếp dâm`,...).
+    + Nhóm 2: Chửi thề, tiếng lóng mạng xã hội và Gen Z (`đm`, `dkm`, `vcl`, `vl`, `clgt`, `cmnr`, `đéo`, `đếch`, `méo`,...).
+    + Nhóm 3: Xúc phạm cha mẹ, tổ tiên, danh dự gia đình (`mẹ mày`, `bố mày`, `bà già mày`, `tổ cha`, `mả mẹ`, `tiên sư`,...).
+    + Nhóm 4: Miệt thị phụ nữ, nghề nghiệp xúc phạm (`đĩ`, `con đĩ`, `thằng đĩ`, `đĩ chó`, `phò`, `cave`, `bán dâm`,...).
+    + Nhóm 5: Chửi thú vật, miệt thị trí tuệ (`chó đẻ`, `chó chết`, `đồ chó`, `thằng chó`, `súc vật`, `đồ lợn`, `óc chó`, `đần độn`, `đồ điên`, `đồ khùng`, `thiểu năng`,...).
+    + Nhóm 6: Trù ẻo đám cưới, tang tóc, chia rẽ hạnh phúc (`chết mẹ`, `đoản mệnh`, `tai nạn`, `đám ma`, `tang gia`, `quan tài`, `bát hương`, `ly dị`, `ly hôn`, `đứt gánh`, `cắm sừng`, `mọc sừng`, `tan vỡ`, `bỏ nhau`, `ngoại tình`, `tiểu tam`, `con giáp thứ 13`, `vô sinh`, `tuyệt tự`,...).
+  - **Thuật toán đa tầng chống lách chữ**:
+    + *Word Boundary Check*: Bắt chính xác từ khóa trong câu có dấu và không dấu (ASCII Normalization) mà không bắt nhầm các từ ghép tiếng Việt lành tính (ví dụ: loại bỏ các từ đồng âm ngắn đơn lẻ gây false positive như `dien` trong `giao diện`, `cho` trong `chúc cho`, `di` trong `đi ăn cưới`).
+    + *Leetspeak Normalization*: Chuyển đổi các ký tự số thay thế chữ cái (`0` -> `o`, `1` -> `i`, `3` -> `e`, `4` -> `a`, `7` -> `t`, `@` -> `a`).
+    + *Separated Character Patterns*: Bắt các dạng cố tình ngắt chữ bằng dấu chấm, dấu cách, dấu gạch ngang, sao (`d.m`, `d m`, `c.a.c`, `c a c`, `l.o.n`, `l o n`, `d.i.t`, `v.c.l`, `v l`,...).
+- **Custom Validation Rule Laravel (`App\Rules\NoProfanity`)**:
+  - Sử dụng `ContentModerationService::containsProfanity()`.
+  - Thông báo lỗi rõ ràng, nhân văn: *"Nội dung chứa từ ngữ không phù hợp hoặc thiếu văn minh. Vui lòng sử dụng ngôn từ lịch sự, trang trọng để gửi lời chúc phúc."*
+  - Tích hợp vào:
+    + `SubmitWishRequest`: Kiểm duyệt cả ô `name` và `message`.
+    + `SubmitRsvpRequest`: Kiểm duyệt cả ô `guest_name`, `wishes` và `dietary_requirements`.
+    + `GuestController::replyWish`: Kiểm duyệt ô `reply` khi chủ thiệp gửi phản hồi.
+- **Frontend Moderation (`script.js`)**:
+  - Nhúng bộ lọc `checkProfanity()` tương đồng với Backend vào file JavaScript của template thiệp cưới (cả `resources/views/...` và `public/assets/...`).
+  - Kiểm tra tức thì khi người dùng submit:
+    + Form Sổ lưu bút (Tên & Lời chúc phúc).
+    + Form Xác nhận tham dự RSVP (Họ tên & Lời nhắn gửi cô dâu chú rể).
+    + Form Phản hồi lời chúc của chủ thiệp.
+  - Khi phát hiện vi phạm: Ngừng gửi request ngay lập tức (`preventDefault()`, không gọi API fetch), bật thông báo cảnh báo yêu cầu dùng ngôn từ lịch sự, trang trọng.
+- **Kiểm thử tự động & Định dạng**:
+  - Bổ sung 3 test cases Feature trong `tests/Feature/NetMucTinhYeuTemplateTest.php`:
+    1. Chặn từ ngữ chửi bậy, lách chữ, xúc phạm và trù ẻo đám cưới trong sổ lưu bút (HTTP 422 cho tên/lời chúc vi phạm, HTTP 201 cho lời chúc văn minh).
+    2. Chặn từ ngữ thô tục, chửi bới trong form xác nhận tham dự RSVP (HTTP 422).
+    3. Chặn từ ngữ không phù hợp trong phản hồi của chủ thiệp cưới (HTTP 422).
+  - Kết quả kiểm thử: **18/18 tests passed (213 assertions)**.
+  - Laravel Pint: **100% formatted & passed**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 

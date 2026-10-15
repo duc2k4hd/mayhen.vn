@@ -245,6 +245,116 @@
     return p;
   }
 
+  // 4.1 BỘ LỌC TỪ KHÓA CHỬI BẬY, TỤC TĨU, XÚC PHẠM, TRÙ ẺO ĐÁM CƯỚI (FE MODERATION)
+  const VIETNAMESE_BAD_WORDS = [
+    // Tục tĩu, bộ phận sinh dục, hành vi tình dục
+    'buồi', 'buoi', 'bòi', 'cặc', 'cac', 'kặc', 'kac', 'dái', 'hòn dái', 'hon dai',
+    'lồn', 'lon', 'lồz', 'loz', 'l0n', 'bướm', 'hột le', 'vú', 'bóp vú',
+    'địt', 'dit', 'd1t', 'đ1t', 'đụ', 'đụ má', 'du ma', 'đụ mẹ', 'du me', 'đụ cụ', 'du cu',
+    'chịch', 'chich', 'nện', 'xoạc', 'vét máng', 'vet mang', 'bú cu', 'bu cu', 'liếm lồn', 'liem lon',
+    'sóc lọ', 'soc lo', 'sục cặc', 'suc cac', 'thủ dâm', 'thu dam', 'thông đít', 'thong dit',
+    'giao cấu', 'giao cau', 'hiếp dâm', 'hấp diêm', 'hap diem', 'cưỡng bức', 'quấy rối tình dục',
+
+    // Chửi thề, viết tắt tiếng lóng Gen Z & MXH
+    'đm', 'dm', 'đkm', 'dkm', 'đcm', 'dcm', 'đmm', 'dmm',
+    'vcl', 'vkl', 'vcc', 'vl', 'vlon', 'vloz',
+    'clgt', 'clgv', 'cmn', 'cmnr', 'cc', 'dbrr', 'đbrr', 'dcmm', 'đcmm',
+    'đéo', 'deo', 'đếch', 'dech', 'méo',
+
+    // Xúc phạm cha mẹ, tổ tiên, nhân phẩm gia đình
+    'mẹ mày', 'me may', 'mẹ m', 'me m', 'bố mày', 'bo may', 'bố m', 'bo m',
+    'bà già mày', 'ba gia may', 'ông già mày', 'ong gia may',
+    'cha mày', 'cha may', 'tổ cha', 'to cha', 'tổ mẹ', 'to me',
+    'mả cha', 'ma cha', 'mả mẹ', 'ma me', 'tiên sư', 'tien su', 'ông nội mày', 'bà nội mày',
+
+    // Miệt thị phụ nữ, nghề nghiệp xúc phạm
+    'đĩ', 'con đĩ', 'con di', 'đĩ mẹ', 'di me', 'đĩ chó', 'di cho', 'đĩ thõa', 'thằng đĩ', 'thang di',
+    'điếm', 'diem', 'gái bao', 'gai bao', 'gái gọi', 'gai goi', 'phò', 'pho', 'cave',
+    'bán dâm', 'ban dam', 'mại dâm', 'mai dam',
+
+    // Chửi thú vật, miệt thị trí tuệ
+    'chó đẻ', 'cho de', 'chó chết', 'cho chet', 'đồ chó', 'do cho', 'thằng chó', 'thang cho', 'con chó', 'con cho',
+    'chó má', 'cho ma', 'súc vật', 'suc vat', 'súc sinh', 'suc sinh', 'xúc vật', 'xuc vat',
+    'đồ lợn', 'do lon', 'con lợn', 'con lon', 'đồ heo', 'con heo',
+    'đồ ngu', 'do ngu', 'ngu lồn', 'ngu lon', 'ngu dốt', 'ngu si', 'óc chó', 'oc cho',
+    'óc lợn', 'oc lon', 'óc bò', 'oc bo', 'đần độn', 'dan don', 'đồ đần', 'do dan',
+    'đồ khùng', 'do khung', 'bị khùng', 'bi khung', 'thằng khùng', 'thang khung', 'con khùng', 'con khung',
+    'đồ điên', 'do dien', 'bị điên', 'bi dien', 'thằng điên', 'thang dien', 'con điên', 'con dien',
+    'thiểu năng', 'thieu nang', 'bại não', 'bai nao', 'thần kinh', 'than kinh', 'tâm thần', 'tam than',
+
+    // Trù ẻo đám cưới, tang tóc, ly tán, phá hoại hạnh phúc (Đặc thù thiệp cưới)
+    'chết mẹ', 'chet me', 'chết cha', 'chet cha', 'đi chết', 'di chet',
+    'chết tiệt', 'chet tiet', 'đoản mệnh', 'doan menh', 'tai nạn', 'tai nan',
+    'đám ma', 'dam ma', 'tang gia', 'ma chay', 'quan tài', 'quan tai', 'khăn tang', 'khan tang',
+    'bát hương', 'bat huong', 'vòng hoa tang', 'chia buồn tang tóc',
+    'ly dị', 'ly di', 'ly hôn', 'ly hon', 'đứt gánh', 'dut ganh',
+    'cắm sừng', 'cam sung', 'mọc sừng', 'moc sung', 'tan vỡ', 'tan vo', 'bỏ nhau', 'bo nhau',
+    'ngoại tình', 'ngoai tinh', 'phản bội', 'phan boi', 'tiểu tam', 'tieu tam', 'trà xanh', 'tra xanh',
+    'con giáp thứ 13', 'con giap thu 13', 'giật chồng', 'giat chong', 'giật vợ', 'giat vo',
+    'vô sinh', 'vo sinh', 'tuyệt tự', 'tuyet tu', 'đẻ không có lỗ đít', 'quả báo', 'qua bao'
+  ];
+
+  function removeVietnameseTones(str) {
+    if (!str) return '';
+    return str
+      .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/gi, 'a')
+      .replace(/[èéẹẻẽêềếệểễ]/gi, 'e')
+      .replace(/[ìíịỉĩ]/gi, 'i')
+      .replace(/[òóọỏõôồốộổỗơờớợởỡ]/gi, 'o')
+      .replace(/[ùúụủũưừứựửữ]/gi, 'u')
+      .replace(/[ỳýỵỷỹ]/gi, 'y')
+      .replace(/[đ]/gi, 'd')
+      .replace(/[Đ]/gi, 'D');
+  }
+
+  function checkProfanity(text) {
+    if (!text || typeof text !== 'string') return false;
+    const lower = text.toLowerCase();
+    const ascii = removeVietnameseTones(lower);
+    const leet = ascii
+      .replace(/0/g, 'o')
+      .replace(/1/g, 'i')
+      .replace(/3/g, 'e')
+      .replace(/4/g, 'a')
+      .replace(/7/g, 't')
+      .replace(/@/g, 'a');
+
+    for (const bad of VIETNAMESE_BAD_WORDS) {
+      if (bad.includes(' ')) {
+        if (lower.includes(bad) || ascii.includes(bad) || leet.includes(bad)) {
+          return true;
+        }
+      } else {
+        const boundaryRegex = new RegExp('(?:^|[^a-z0-9_])' + bad + '(?:[^a-z0-9_]|$)', 'i');
+        if (boundaryRegex.test(lower) || boundaryRegex.test(ascii) || boundaryRegex.test(leet)) {
+          return true;
+        }
+      }
+    }
+
+    const separatedPatterns = [
+      /d[\s._*~-]*m/i,
+      /d[\s._*~-]*k[\s._*~-]*m/i,
+      /d[\s._*~-]*c[\s._*~-]*m/i,
+      /v[\s._*~-]*c[\s._*~-]*l/i,
+      /v[\s._*~-]*k[\s._*~-]*l/i,
+      /v[\s._*~-]*l/i,
+      /c[\s._*~-]*l[\s._*~-]*g[\s._*~-]*t/i,
+      /c[\s._*~-]*a[\s._*~-]*c/i,
+      /l[\s._*~-]*[o0*][\s._*~-]*n/i,
+      /d[\s._*~-]*[i1*][\s._*~-]*t/i,
+      /b[\s._*~-]*u[\s._*~-]*[o0*][\s._*~-]*i/i
+    ];
+
+    for (const regex of separatedPatterns) {
+      if (regex.test(leet)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // Sổ lưu bút (Guestbook)
   const guestbookButton = $('[data-modal="guestbook"]');
   if (guestbookButton) {
@@ -279,6 +389,11 @@
         const message = (data.get('message') || '').trim();
         if (!name || !message) {
           alert('Vui lòng điền đầy đủ tên và lời chúc của bạn.');
+          return;
+        }
+
+        if (checkProfanity(name) || checkProfanity(message)) {
+          alert('Vui lòng sử dụng ngôn từ lịch sự, trang trọng để gửi lời chúc phúc tới cặp đôi.');
           return;
         }
 
@@ -423,6 +538,11 @@
       const replyText = (data.get('reply') || '').trim();
       if (!replyText) {
         alert('Vui lòng nhập nội dung phản hồi.');
+        return;
+      }
+
+      if (checkProfanity(replyText)) {
+        alert('Vui lòng sử dụng ngôn từ lịch sự, trang trọng.');
         return;
       }
 
@@ -676,6 +796,11 @@
 
         if (!guestName) {
           alert('Vui lòng nhập họ và tên của bạn.');
+          return;
+        }
+
+        if (checkProfanity(guestName) || (wishMessage && checkProfanity(wishMessage))) {
+          alert('Vui lòng sử dụng ngôn từ lịch sự, trang trọng khi gửi thông tin tới cặp đôi.');
           return;
         }
 

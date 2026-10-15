@@ -10,6 +10,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -247,7 +248,7 @@ class GuestController extends Controller
         }
 
         $request->validate([
-            'reply' => 'required|string|max:1000',
+            'reply' => ['required', 'string', 'max:1000', new NoProfanity],
         ], [
             'reply.required' => 'Vui lòng nhập nội dung phản hồi.',
             'reply.max' => 'Nội dung phản hồi không được vượt quá 1000 ký tự.',
