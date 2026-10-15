@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
+use App\Models\WeddingWish;
 use App\Services\InvitationTemplateService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -145,6 +147,21 @@ class InvitationEditorController extends Controller
         $wishSubmitUrl = route('invitation.wish.store', $slug);
         $rsvpSubmitUrl = route('rsvp.submit', $slug);
 
+        $clientIp = request()->ip();
+        $currentRsvp = null;
+        $myWish = null;
+
+        if ($wedding) {
+            $currentRsvp = GuestResponse::where('wedding_id', $wedding->id)
+                ->where('ip_address', $clientIp)
+                ->latest()
+                ->first();
+
+            $myWish = WeddingWish::where('wedding_id', $wedding->id)
+                ->where('ip_address', $clientIp)
+                ->first();
+        }
+
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
 
@@ -156,6 +173,8 @@ class InvitationEditorController extends Controller
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
+                'currentRsvp' => $currentRsvp,
+                'myWish' => $myWish,
             ]);
         }
 
@@ -166,6 +185,8 @@ class InvitationEditorController extends Controller
             'wishes' => $wishes,
             'wishSubmitUrl' => $wishSubmitUrl,
             'rsvpSubmitUrl' => $rsvpSubmitUrl,
+            'currentRsvp' => $currentRsvp,
+            'myWish' => $myWish,
         ]);
     }
 

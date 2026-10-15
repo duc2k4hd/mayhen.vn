@@ -577,7 +577,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Kết quả kiểm thử: **12/12 tests passed (135 assertions)**.
   - Laravel Pint: **100% passed**, không có bất kỳ lỗi định dạng nào.
 
+### 📌 Phiên bản 1.1.6 — Giới Hạn Xác Nhận Tham Dự 1 Lần & Chỉnh Sửa Lời Chúc Theo IP Cho Từng Đám Cưới
+- **Chính sách giới hạn & bảo vệ dữ liệu theo địa chỉ IP**:
+  - **Khóa xác nhận tham dự (RSVP Lock)**:
+    - Mỗi địa chỉ IP chỉ được xác nhận tham dự (Có đi hoặc Không thể tham dự) **duy nhất 1 lần** cho mỗi đám cưới (`wedding_id` + `ip_address`).
+    - Sau khi đã chọn, không được phép chọn lại. Nút phản hồi bị vô hiệu hóa (`disabled`), đánh dấu trạng thái đã chọn (`mayhen_invitation_dhsuudushi9428r_rsvp_selected`) và hiển thị thông báo ghi nhận.
+    - Phía Backend (`GuestController::submitRsvp`): Kiểm tra nếu IP đã tồn tại trong `GuestResponse` của đám cưới đó, lập tức trả về lỗi HTTP 422 JSON ngăn chặn mọi hành vi gửi lại.
+  - **Chế độ Chỉnh sửa lưu bút (Wish Edit Mode)**:
+    - Mỗi địa chỉ IP chỉ được phép có **1 lời chúc duy nhất** trong mỗi đám cưới (`wedding_id` + `ip_address`).
+    - Nếu người dùng đã gửi lời chúc trước đó:
+      - Nút lưu bút chuyển thành *"Chỉnh sửa lời chúc của bạn"*.
+      - Thẻ lời chúc của người đó trên danh sách sổ lưu bút được gắn huy hiệu *"Lời chúc của bạn"*.
+      - Khi mở modal, hệ thống tự động điền sẵn Họ tên và Lời chúc cũ để người dùng chỉnh sửa.
+      - Phía Backend (`GuestController::submitWish`): Thực hiện cập nhật (`update`) bản ghi cũ, trả về `is_update: true`. Không tạo thêm bản ghi mới, tổng số lượng comment lưu bút trong cơ sở dữ liệu không bị tăng lên.
+      - Phía Frontend (`script.js`): Cập nhật trực tiếp nội dung thẻ chúc trên DOM (`(Vừa cập nhật)`), không chèn thêm thẻ mới và không tăng bộ đếm số lượng lời chúc.
+- **Cập nhật Controllers & Views**:
+  - `InvitationEditorController::show`: Truy vấn `$currentRsvp` và `$myWish` theo `request()->ip()` và truyền trực tiếp vào view thiệp cưới.
+  - `template.blade.php`, `styles.css`, `script.js` (đồng bộ cả `resources/views/...` và `public/assets/...`): Xử lý trạng thái selected/disabled của RSVP và form edit của lưu bút.
+- **Kiểm thử tự động**:
+  - Bổ sung 2 test cases Feature trong `tests/Feature/NetMucTinhYeuTemplateTest.php`:
+    1. `user cannot rsvp more than once from the same ip for the same wedding`: Kiểm tra gửi lần 1 (200), gửi lần 2 cùng IP bị chặn 422, gửi từ IP khác vẫn hợp lệ.
+    2. `user can only edit their existing wish and cannot submit multiple comments from the same ip`: Kiểm tra gửi lần 1 (201), gửi lần 2 cùng IP chỉ cập nhật nội dung (200) và số lượng bản ghi DB không tăng, hiển thị đúng giao diện chỉnh sửa.
+  - Kết quả kiểm thử: **14/14 tests passed (160 assertions)**.
+  - Laravel Pint: **100% passed**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 

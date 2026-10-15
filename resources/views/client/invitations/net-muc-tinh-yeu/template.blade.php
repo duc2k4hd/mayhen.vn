@@ -105,6 +105,8 @@
     $wishes = $wishes ?? collect([]);
     $wishSubmitUrl = $wishSubmitUrl ?? (isset($invitation) ? route('invitation.wish.store', $invitation->slug) : route('templates.preview.wish', 'net-muc-tinh-yeu'));
     $rsvpSubmitUrl = $rsvpSubmitUrl ?? (isset($invitation) ? route('rsvp.submit', $invitation->slug) : route('templates.preview.rsvp', 'net-muc-tinh-yeu'));
+    $currentRsvp = $currentRsvp ?? null;
+    $myWish = $myWish ?? null;
 @endphp
 <!doctype html>
 <html lang="vi">
@@ -142,6 +144,8 @@
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
+        window.__MAYHEN_CURRENT_RSVP = @json($currentRsvp ? ['attending_status' => $currentRsvp->attending_status, 'guest_name' => $currentRsvp->guest_name] : null);
+        window.__MAYHEN_MY_WISH = @json($myWish ? ['id' => $myWish->id, 'name' => $myWish->name, 'message' => $myWish->message] : null);
     </script>
     <script src="{{ $assetBase }}/script.js" defer></script>
 </head>
@@ -390,13 +394,23 @@
                     </div>
                 </div>
                 <p class="mayhen_invitation_dhsuudushi9428r_demo_note">Gửi lời chúc tốt đẹp nhất tới cô dâu & chú rể</p>
-                <button class="mayhen_invitation_dhsuudushi9428r_primary_button" type="button" data-modal="guestbook">Ký tên chúc phúc</button>
+                <button class="mayhen_invitation_dhsuudushi9428r_primary_button" type="button" data-modal="guestbook" id="mayhen_guestbook_open_btn">
+                    {{ $myWish ? 'Chỉnh sửa lời chúc của bạn' : 'Ký tên chúc phúc' }}
+                </button>
                 <p class="mayhen_invitation_dhsuudushi9428r_steps">1. Ký tên &nbsp;·&nbsp; 2. Viết lời chúc &nbsp;·&nbsp; 3. Gửi trao yêu thương</p>
                 <div class="mayhen_invitation_dhsuudushi9428r_messages" id="mayhen_wishes_container" aria-live="polite">
                     @forelse ($wishes as $wish)
-                        <article class="mayhen_invitation_dhsuudushi9428r_wish_item">
+                        @php
+                            $isMyWish = $myWish && $myWish->id === $wish->id;
+                        @endphp
+                        <article class="mayhen_invitation_dhsuudushi9428r_wish_item" @if($isMyWish) id="mayhen_my_wish_item" data-my-wish="true" @endif>
                             <div class="mayhen_invitation_dhsuudushi9428r_wish_header">
-                                <strong>{{ $wish->name }}</strong>
+                                <strong>
+                                    {{ $wish->name }}
+                                    @if($isMyWish)
+                                        <span class="mayhen_invitation_dhsuudushi9428r_my_wish_tag">Lời chúc của bạn</span>
+                                    @endif
+                                </strong>
                                 <time>{{ $wish->created_at ? $wish->created_at->diffForHumans() : 'Vừa xong' }}</time>
                             </div>
                             <p>{{ $wish->message }}</p>
@@ -445,10 +459,23 @@
                 <div class="mayhen_invitation_dhsuudushi9428r_reveal">
                     <span class="mayhen_invitation_dhsuudushi9428r_ornament">✧</span>
                     <h2>Xác Nhận Tham Dự</h2>
-                    <div class="mayhen_invitation_dhsuudushi9428r_rsvp_choices">
-                        <button type="button" data-rsvp="yes"><span>♡</span>Có, tôi sẽ tham dự</button>
-                        <button type="button" data-rsvp="no"><span>✉</span>Rất tiếc, chưa sắp xếp được</button>
+                    <div class="mayhen_invitation_dhsuudushi9428r_rsvp_choices" id="mayhen_rsvp_choices_wrap">
+                        @if ($currentRsvp)
+                            @if ($currentRsvp->attending_status === 'attending')
+                                <button type="button" data-rsvp="yes" class="mayhen_invitation_dhsuudushi9428r_rsvp_selected" disabled><span>✓</span>Đã xác nhận: Có tham dự</button>
+                                <button type="button" data-rsvp="no" class="mayhen_invitation_dhsuudushi9428r_rsvp_disabled" disabled><span>✉</span>Không thể tham dự</button>
+                            @else
+                                <button type="button" data-rsvp="yes" class="mayhen_invitation_dhsuudushi9428r_rsvp_disabled" disabled><span>♡</span>Có tham dự</button>
+                                <button type="button" data-rsvp="no" class="mayhen_invitation_dhsuudushi9428r_rsvp_selected" disabled><span>✓</span>Đã phản hồi: Không thể tham dự</button>
+                            @endif
+                        @else
+                            <button type="button" data-rsvp="yes"><span>♡</span>Có, tôi sẽ tham dự</button>
+                            <button type="button" data-rsvp="no"><span>✉</span>Rất tiếc, chưa sắp xếp được</button>
+                        @endif
                     </div>
+                    <p class="mayhen_invitation_dhsuudushi9428r_rsvp_locked_note" id="mayhen_rsvp_locked_notice" @if(!$currentRsvp) style="display: none;" @endif>
+                        ✓ Bạn đã hoàn tất xác nhận tham dự.
+                    </p>
                 </div>
             </section>
 

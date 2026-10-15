@@ -88,6 +88,23 @@ class GuestController extends Controller
 
         $guestToken = $request->query('token');
         $guest = $guestToken ? Guest::where('guest_token', $guestToken)->first() : null;
+        $ip = $request->ip();
+
+        // 1. Kiểm tra nếu IP này đã từng gửi xác nhận tham dự cho đám cưới này
+        $existingResponse = GuestResponse::where('wedding_id', $wedding->id)
+            ->where('ip_address', $ip)
+            ->first();
+
+        if ($existingResponse) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn đã gửi xác nhận tham dự cho lễ cưới này rồi và không thể thay đổi.',
+                ], 422);
+            }
+
+            return back()->with('rsvp_error', 'Bạn đã gửi xác nhận tham dự cho lễ cưới này rồi.');
+        }
 
         $response = GuestResponse::create([
             'wedding_id' => $wedding->id,
@@ -100,18 +117,22 @@ class GuestController extends Controller
             'dietary_requirements' => $request->validated('dietary_requirements'),
             'wishes' => $request->validated('wishes'),
             'is_wishes_public' => true,
-            'ip_address' => $request->ip(),
+            'ip_address' => $ip,
         ]);
 
-        // Nếu RSVP có kèm lời chúc, tự động lưu vào sổ lưu bút của đám cưới
+        // Nếu RSVP có kèm lời chúc, tự động lưu hoặc cập nhật vào sổ lưu bút của IP này
         if (! empty($request->validated('wishes'))) {
-            WeddingWish::create([
-                'wedding_id' => $wedding->id,
-                'name' => $request->validated('guest_name'),
-                'message' => $request->validated('wishes'),
-                'is_approved' => true,
-                'ip_address' => $request->ip(),
-            ]);
+            WeddingWish::updateOrCreate(
+                [
+                    'wedding_id' => $wedding->id,
+                    'ip_address' => $ip,
+                ],
+                [
+                    'name' => $request->validated('guest_name'),
+                    'message' => $request->validated('wishes'),
+                    'is_approved' => true,
+                ]
+            );
         }
 
         if ($request->wantsJson()) {
@@ -140,24 +161,43 @@ class GuestController extends Controller
     }
 
     /**
-     * Submit a wish to the wedding guestbook.
+     * Submit or edit a wish to the wedding guestbook.
+     * 1 IP chỉ được gửi 1 lời chúc, nếu gửi lại sẽ cập nhật lời chúc cũ.
      */
     public function submitWish(SubmitWishRequest $request, string $slug): JsonResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+        $ip = $request->ip();
 
-        $wish = WeddingWish::create([
-            'wedding_id' => $wedding->id,
-            'name' => $request->validated('name'),
-            'message' => $request->validated('message'),
-            'is_approved' => true,
-            'ip_address' => $request->ip(),
-        ]);
+        $existingWish = WeddingWish::where('wedding_id', $wedding->id)
+            ->where('ip_address', $ip)
+            ->first();
+
+        $isUpdate = false;
+        if ($existingWish) {
+            $existingWish->update([
+                'name' => $request->validated('name'),
+                'message' => $request->validated('message'),
+            ]);
+            $wish = $existingWish;
+            $isUpdate = true;
+            $message = 'Đã cập nhật lời chúc của bạn thành công!';
+        } else {
+            $wish = WeddingWish::create([
+                'wedding_id' => $wedding->id,
+                'name' => $request->validated('name'),
+                'message' => $request->validated('message'),
+                'is_approved' => true,
+                'ip_address' => $ip,
+            ]);
+            $message = 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!';
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!',
+            'is_update' => $isUpdate,
+            'message' => $message,
             'wish' => [
                 'id' => $wish->id,
                 'name' => $wish->name,
@@ -165,7 +205,7 @@ class GuestController extends Controller
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ],
-        ], 201);
+        ], $isUpdate ? 200 : 201);
     }
 
     /**

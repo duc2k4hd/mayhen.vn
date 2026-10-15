@@ -220,15 +220,20 @@
     $$('[data-close="true"]', modal).forEach(el => el.addEventListener('click', closeModal));
   }
 
-  function field(label, tag, name, required = true) {
+  function field(label, tag, name, required = true, initialValue = '') {
     const wrapper = document.createElement('label');
     wrapper.textContent = label;
     const input = document.createElement(tag);
     input.name = name;
     input.required = required;
     input.maxLength = name === 'message' ? 400 : 80;
-    if (tag === 'textarea') input.rows = 3;
-    if (name === 'guests') { input.type = 'number'; input.min = '1'; input.max = '10'; input.value = '1'; }
+    if (tag === 'textarea') {
+      input.rows = 3;
+      if (initialValue) input.value = initialValue;
+    } else {
+      if (initialValue) input.value = initialValue;
+    }
+    if (name === 'guests') { input.type = 'number'; input.min = '1'; input.max = '10'; input.value = initialValue || '1'; }
     wrapper.append(input);
     return wrapper;
   }
@@ -244,16 +249,22 @@
   const guestbookButton = $('[data-modal="guestbook"]');
   if (guestbookButton) {
     guestbookButton.addEventListener('click', () => {
+      const myWish = window.__MAYHEN_MY_WISH;
+      const isEditing = Boolean(myWish && myWish.message);
+
       const form = document.createElement('form');
       form.append(
-        field('Tên của bạn *', 'input', 'name'),
-        field('Lời chúc hạnh phúc gửi đôi bạn *', 'textarea', 'message'),
-        note('Lời chúc của bạn sẽ được lưu giữ trang trọng trong sổ lưu niệm của cô dâu chú rể.')
+        field('Tên của bạn *', 'input', 'name', true, myWish ? myWish.name : ''),
+        field('Lời chúc hạnh phúc gửi đôi bạn *', 'textarea', 'message', true, myWish ? myWish.message : ''),
+        note(isEditing 
+          ? 'Bạn đang chỉnh sửa lời chúc đã gửi trước đó. Lời chúc sẽ được cập nhật trong sổ lưu niệm.' 
+          : 'Lời chúc của bạn sẽ được lưu giữ trang trọng trong sổ lưu niệm của cô dâu chú rể.'
+        )
       );
       const submit = document.createElement('button');
       submit.type = 'submit';
       submit.className = prefix + 'primary_button';
-      submit.textContent = 'Gửi Lời Chúc';
+      submit.textContent = isEditing ? 'Lưu Cập Nhật Lời Chúc' : 'Gửi Lời Chúc';
       form.append(submit);
 
       form.addEventListener('submit', async event => {
@@ -267,7 +278,7 @@
         }
 
         submit.disabled = true;
-        submit.textContent = 'Đang gửi...';
+        submit.textContent = isEditing ? 'Đang cập nhật...' : 'Đang gửi...';
 
         const submitUrl = window.__MAYHEN_WISH_SUBMIT_URL || (window.location.pathname.replace(/\/$/, '') + '/wishes');
         const csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -289,42 +300,79 @@
             throw new Error(result.message || 'Có lỗi xảy ra khi gửi lời chúc.');
           }
 
+          // Cập nhật trạng thái lời chúc của IP này
+          window.__MAYHEN_MY_WISH = {
+            id: result.wish ? result.wish.id : (myWish ? myWish.id : null),
+            name: result.wish ? result.wish.name : name,
+            message: result.wish ? result.wish.message : message
+          };
+
+          // Cập nhật text nút bấm
+          guestbookButton.textContent = 'Chỉnh sửa lời chúc của bạn';
+
           // Thành công: Cập nhật DOM
           const container = document.getElementById('mayhen_wishes_container') || $(className('messages'));
           if (container) {
             const emptyNote = container.querySelector(className('no_wishes')) || container.querySelector('p');
             if (emptyNote) emptyNote.remove();
 
-            const card = document.createElement('article');
-            card.className = prefix + 'wish_item';
+            // Tìm xem đã có thẻ wish của IP này chưa
+            let myWishCard = document.getElementById('mayhen_my_wish_item');
 
-            const header = document.createElement('div');
-            header.className = prefix + 'wish_header';
-
-            const author = document.createElement('strong');
-            author.textContent = result.wish ? result.wish.name : name;
-
-            const time = document.createElement('time');
-            time.textContent = result.wish ? (result.wish.created_at_human || 'Vừa xong') : 'Vừa xong';
-
-            header.append(author, time);
-
-            const body = document.createElement('p');
-            body.textContent = result.wish ? result.wish.message : message;
-
-            card.append(header, body);
-            container.prepend(card);
-          }
-
-          // Cập nhật bộ đếm lời chúc
-          const counter = document.getElementById('mayhen_guestboard_counter');
-          if (counter) {
-            const countStrong = counter.querySelector('strong');
-            if (countStrong) {
-              const current = parseInt(countStrong.textContent, 10) || 0;
-              countStrong.textContent = current + 1;
+            if (myWishCard && (result.is_update || isEditing)) {
+              // Cập nhật thẻ cũ
+              const strongEl = myWishCard.querySelector('strong');
+              if (strongEl) {
+                strongEl.innerHTML = (result.wish ? result.wish.name : name) + ' <span class="' + prefix + 'my_wish_tag">Lời chúc của bạn</span>';
+              }
+              const timeEl = myWishCard.querySelector('time');
+              if (timeEl) {
+                timeEl.textContent = 'Vừa cập nhật';
+              }
+              const bodyEl = myWishCard.querySelector('p');
+              if (bodyEl) {
+                bodyEl.textContent = result.wish ? result.wish.message : message;
+              }
             } else {
-              counter.innerHTML = '<span>Đã có <strong>1</strong> lời chúc phúc gửi tới đôi bạn</span>';
+              // Thêm thẻ mới
+              const card = document.createElement('article');
+              card.className = prefix + 'wish_item';
+              card.id = 'mayhen_my_wish_item';
+              card.setAttribute('data-my-wish', 'true');
+
+              const header = document.createElement('div');
+              header.className = prefix + 'wish_header';
+
+              const author = document.createElement('strong');
+              author.textContent = result.wish ? result.wish.name : name;
+
+              const tag = document.createElement('span');
+              tag.className = prefix + 'my_wish_tag';
+              tag.textContent = 'Lời chúc của bạn';
+              author.append(tag);
+
+              const time = document.createElement('time');
+              time.textContent = result.wish ? (result.wish.created_at_human || 'Vừa xong') : 'Vừa xong';
+
+              header.append(author, time);
+
+              const body = document.createElement('p');
+              body.textContent = result.wish ? result.wish.message : message;
+
+              card.append(header, body);
+              container.prepend(card);
+
+              // Cập nhật bộ đếm lời chúc nếu là tạo mới
+              const counter = document.getElementById('mayhen_guestboard_counter');
+              if (counter) {
+                const countStrong = counter.querySelector('strong');
+                if (countStrong) {
+                  const current = parseInt(countStrong.textContent, 10) || 0;
+                  countStrong.textContent = current + 1;
+                } else {
+                  counter.innerHTML = '<span>Đã có <strong>1</strong> lời chúc phúc gửi tới đôi bạn</span>';
+                }
+              }
             }
           }
 
@@ -334,11 +382,11 @@
           alert(error.message || 'Không thể kết nối đến máy chủ. Vui lòng thử lại!');
         } finally {
           submit.disabled = false;
-          submit.textContent = 'Gửi Lời Chúc';
+          submit.textContent = isEditing ? 'Lưu Cập Nhật Lời Chúc' : 'Gửi Lời Chúc';
         }
       });
 
-      openModal('Ký Tên Chúc Phúc', form);
+      openModal(isEditing ? 'Chỉnh Sửa Lời Chúc Của Bạn' : 'Ký Tên Chúc Phúc', form);
     });
   }
 
@@ -391,8 +439,46 @@
   }
 
   // Xác nhận tham dự (RSVP Choices)
-  $$('[data-rsvp]').forEach(button => {
+  const rsvpButtons = $$('[data-rsvp]');
+  const rsvpNotice = document.getElementById('mayhen_rsvp_locked_notice');
+
+  function lockRsvpButtons(selectedChoice) {
+    rsvpButtons.forEach(btn => {
+      btn.disabled = true;
+      const btnChoice = btn.getAttribute('data-rsvp');
+      if (btnChoice === selectedChoice) {
+        btn.classList.add(prefix + 'rsvp_selected');
+        btn.classList.remove(prefix + 'rsvp_disabled');
+        btn.innerHTML = btnChoice === 'yes'
+          ? '<span>✓</span>Đã xác nhận: Có tham dự'
+          : '<span>✓</span>Đã phản hồi: Không thể tham dự';
+      } else {
+        btn.classList.add(prefix + 'rsvp_disabled');
+        btn.classList.remove(prefix + 'rsvp_selected');
+        btn.innerHTML = btnChoice === 'yes'
+          ? '<span>♡</span>Có tham dự'
+          : '<span>✉</span>Không thể tham dự';
+      }
+    });
+
+    if (rsvpNotice) {
+      rsvpNotice.style.display = 'inline-block';
+    }
+  }
+
+  // Khởi tạo nếu đã có RSVP từ trước
+  if (window.__MAYHEN_CURRENT_RSVP) {
+    const prevStatus = window.__MAYHEN_CURRENT_RSVP.attending_status;
+    lockRsvpButtons(prevStatus === 'attending' ? 'yes' : 'no');
+  }
+
+  rsvpButtons.forEach(button => {
     button.addEventListener('click', () => {
+      if (window.__MAYHEN_CURRENT_RSVP || button.disabled) {
+        alert('Bạn đã xác nhận tham dự trước đó rồi và không thể thay đổi.');
+        return;
+      }
+
       const choice = button.getAttribute('data-rsvp');
       const isYes = choice === 'yes';
       const form = document.createElement('form');
@@ -465,12 +551,27 @@
           closeModal();
           alert(result.message || (isYes ? 'Cảm ơn bạn đã xác nhận tham dự!' : 'Cảm ơn bạn đã phản hồi!'));
 
-          // Cập nhật giao diện nút lựa chọn
-          button.style.background = 'var(--mayhen_ink)';
-          button.style.color = '#ffffff';
-          button.style.borderColor = 'var(--mayhen_ink)';
+          // Cập nhật trạng thái đã RSVP và khóa các lựa chọn
+          window.__MAYHEN_CURRENT_RSVP = {
+            attending_status: isYes ? 'attending' : 'declined',
+            guest_name: guestName
+          };
+          lockRsvpButtons(choice);
+
+          // Nếu có gửi kèm lời chúc, cập nhật trạng thái My Wish
+          if (wishMessage) {
+            window.__MAYHEN_MY_WISH = { name: guestName, message: wishMessage };
+            if (guestbookButton) {
+              guestbookButton.textContent = 'Chỉnh sửa lời chúc của bạn';
+            }
+          }
         } catch (error) {
           alert(error.message || 'Không thể kết nối đến máy chủ. Vui lòng thử lại!');
+          if (error.message && error.message.indexOf('không thể thay đổi') !== -1) {
+            window.__MAYHEN_CURRENT_RSVP = { attending_status: 'attending' };
+            lockRsvpButtons(choice);
+            closeModal();
+          }
         } finally {
           submit.disabled = false;
           submit.textContent = 'Xác Nhận';
