@@ -94,6 +94,7 @@ class TemplateController extends Controller
             ->firstOrFail();
 
         $wishSubmitUrl = route('templates.preview.wish', $slug);
+        $rsvpSubmitUrl = route('templates.preview.rsvp', $slug);
         $wishes = collect([]);
 
         $customView = "client.invitations.{$template->slug}.template";
@@ -104,6 +105,7 @@ class TemplateController extends Controller
                 'invitation' => null,
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
+                'rsvpSubmitUrl' => $rsvpSubmitUrl,
             ]);
         }
 

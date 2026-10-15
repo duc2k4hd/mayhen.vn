@@ -549,6 +549,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Kết quả kiểm thử: **11/11 tests passed (117 assertions)**.
   - Laravel Pint: **100% passed**, sạch sẽ không có lỗi format.
 
+### 📌 Phiên bản 1.1.5 — Chuẩn Hóa Hệ Thống Xác Nhận Tham Dự (RSVP Có Đi / Không Đi) Độc Lập Cho Mọi Template
+- **Kiến trúc Backend chuẩn hóa**:
+  - **Bảng Database `guest_responses`**:
+    - Bổ sung cột `phone` (string 30, nullable) để lưu số điện thoại liên lạc của khách mời xác nhận.
+    - Trường dữ liệu đầy đủ: `id`, `wedding_id` (foreignId cascade on delete), `guest_id` (nullable), `guest_name`, `phone`, `attending_status` (`attending` hoặc `declined`), `adults_count`, `children_count`, `dietary_requirements`, `wishes`, `ip_address`, `created_at`.
+    - Bảo đảm 100% tính độc lập (Isolation): Mỗi đám cưới có cơ sở dữ liệu khách mời và phản hồi RSVP riêng biệt gắn với `wedding_id`.
+  - **Validation & Request**:
+    - `SubmitRsvpRequest` validate: `guest_name` (required, max 255), `phone` (nullable, max 30), `attending_status` (required, in: attending, declined, uncertain), `adults_count`, `wishes`.
+  - **API Endpoints thống nhất**:
+    - `POST /thiep/{slug}/rsvp`: Nhận phản hồi RSVP thực tế, lưu vào `guest_responses`. Nếu khách chọn không đi và để lại lời nhắn chúc phúc, hệ thống tự động đồng bộ bản ghi sang `wedding_wishes` để hiển thị trên sổ lưu bút.
+    - `POST /xem-thu/{slug}/rsvp`: Endpoint giả lập cho chế độ xem thử (Preview / Live Editor), phản hồi thành công JSON ngay lập tức giúp kiểm thử UX/UI mượt mà.
+- **Tích hợp giao diện & tương tác Frontend (mẫu "Nét Mực Tình Yêu" và mọi template)**:
+  - Khung "Xác Nhận Tham Dự" cung cấp 2 lựa chọn trực quan:
+    1. **"Có, tôi sẽ tham dự"**: Mở modal nhập Họ tên, Số điện thoại và Số lượng người tham dự (`guests`).
+    2. **"Rất tiếc, chưa sắp xếp được"**: Mở modal nhập Họ tên, Số điện thoại và Lời nhắn gửi tới cặp đôi.
+  - Khi submit: JavaScript gửi AJAX `fetch` lên endpoint backend thật với CSRF token, nút bấm hiển thị trạng thái *"Đang ghi nhận..."*.
+  - Khi hoàn tất: Đóng modal, hiển thị thông báo phản hồi trân trọng từ server và cập nhật trạng thái đã chọn trên nút bấm.
+  - Đồng bộ mã nguồn đồng thời tại `resources/views/client/invitations/net-muc-tinh-yeu/` và `public/assets/client/invitations/net-muc-tinh-yeu/`.
+- **Kiểm thử tự động**:
+  - Đã bổ sung test case Feature `each wedding has independent rsvp responses for attending and declining` kiểm tra trọn vẹn:
+    1. Khách A xác nhận CÓ THAM DỰ vào đám cưới A với số lượng 2 người và số điện thoại.
+    2. Khách B xác nhận KHÔNG THAM DỰ vào đám cưới B kèm lời nhắn chúc phúc.
+    3. Đảm bảo tính độc lập dữ liệu 100%: RSVP của đám cưới nào nằm đúng trong đám cưới đó, không có sự can thiệp chéo.
+    4. Lời nhắn từ RSVP từ chối tham dự tự động đồng bộ vào sổ lưu bút `wedding_wishes` của đám cưới B, không lọt sang đám cưới A.
+    5. Test endpoint demo RSVP trên preview mode.
+  - Kết quả kiểm thử: **12/12 tests passed (135 assertions)**.
+  - Laravel Pint: **100% passed**, không có bất kỳ lỗi định dạng nào.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

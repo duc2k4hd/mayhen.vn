@@ -143,6 +143,7 @@ class InvitationEditorController extends Controller
         $wedding = $invitation->wedding;
         $wishes = $wedding ? $wedding->wishes()->where('is_approved', true)->take(50)->get() : collect([]);
         $wishSubmitUrl = route('invitation.wish.store', $slug);
+        $rsvpSubmitUrl = route('rsvp.submit', $slug);
 
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
@@ -154,6 +155,7 @@ class InvitationEditorController extends Controller
                 'template' => $template,
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
+                'rsvpSubmitUrl' => $rsvpSubmitUrl,
             ]);
         }
 
@@ -163,6 +165,7 @@ class InvitationEditorController extends Controller
             'template' => $template,
             'wishes' => $wishes,
             'wishSubmitUrl' => $wishSubmitUrl,
+            'rsvpSubmitUrl' => $rsvpSubmitUrl,
         ]);
     }
 

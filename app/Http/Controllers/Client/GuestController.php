@@ -93,6 +93,7 @@ class GuestController extends Controller
             'wedding_id' => $wedding->id,
             'guest_id' => $guest?->id,
             'guest_name' => $request->validated('guest_name'),
+            'phone' => $request->validated('phone'),
             'attending_status' => $request->validated('attending_status'),
             'adults_count' => $request->validated('adults_count') ?? 1,
             'children_count' => $request->validated('children_count') ?? 0,
@@ -116,11 +117,26 @@ class GuestController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Cảm ơn quý khách! Phản hồi RSVP đã được ghi nhận.',
+                'message' => $request->validated('attending_status') === 'attending'
+                    ? 'Cảm ơn quý khách đã xác nhận tham dự! Chúng tôi rất hân hạnh được đón tiếp.'
+                    : 'Cảm ơn quý khách đã gửi phản hồi! Chúng tôi rất tiếc vì quý khách chưa thể sắp xếp tham dự.',
             ]);
         }
 
         return back()->with('rsvp_success', 'Cảm ơn quý khách! Phản hồi đã được ghi nhận.');
+    }
+
+    /**
+     * Demo RSVP submission for template preview mode.
+     */
+    public function submitDemoRsvp(SubmitRsvpRequest $request, string $slug): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $request->validated('attending_status') === 'attending'
+                ? 'Cảm ơn bạn đã xác nhận tham dự! (Thử nghiệm)'
+                : 'Cảm ơn bạn đã gửi phản hồi! (Thử nghiệm)',
+        ], 200);
     }
 
     /**

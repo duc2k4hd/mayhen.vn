@@ -15,6 +15,7 @@ class SubmitRsvpRequest extends FormRequest
     {
         return [
             'guest_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:30',
             'attending_status' => 'required|in:attending,declined,uncertain',
             'adults_count' => 'nullable|integer|min:0|max:10',
             'children_count' => 'nullable|integer|min:0|max:10',

@@ -101,9 +101,10 @@
     $qrBride = $wedding->extra_data['qr_bride_image'] ?? ($assetBase . '/assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg');
     $musicUrl = $wedding->music_url ?? ($assetBase . '/assets/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
 
-    // 7. Sổ lưu bút (Wishes & Guestbook)
+    // 7. Sổ lưu bút (Wishes & Guestbook) & RSVP
     $wishes = $wishes ?? collect([]);
     $wishSubmitUrl = $wishSubmitUrl ?? (isset($invitation) ? route('invitation.wish.store', $invitation->slug) : route('templates.preview.wish', 'net-muc-tinh-yeu'));
+    $rsvpSubmitUrl = $rsvpSubmitUrl ?? (isset($invitation) ? route('rsvp.submit', $invitation->slug) : route('templates.preview.rsvp', 'net-muc-tinh-yeu'));
 @endphp
 <!doctype html>
 <html lang="vi">
@@ -139,6 +140,7 @@
         window.__MAYHEN_GIFT_QR_GROOM = "{{ $qrGroom }}";
         window.__MAYHEN_GIFT_QR_BRIDE = "{{ $qrBride }}";
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
+        window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
     <script src="{{ $assetBase }}/script.js" defer></script>

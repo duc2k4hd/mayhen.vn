@@ -14,6 +14,7 @@ class GuestResponse extends Model
         'wedding_id',
         'guest_id',
         'guest_name',
+        'phone',
         'attending_status',
         'adults_count',
         'children_count',

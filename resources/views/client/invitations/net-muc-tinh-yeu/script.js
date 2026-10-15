@@ -419,13 +419,65 @@
       submit.textContent = 'Xác Nhận';
       form.append(submit);
 
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
-        alert('Cảm ơn bạn đã gửi phản hồi xác nhận!');
-        closeModal();
+        const data = new FormData(form);
+        const guestName = (data.get('name') || '').trim();
+        const phone = (data.get('phone') || '').trim();
+        const guestsCount = isYes ? (parseInt(data.get('guests'), 10) || 1) : 0;
+        const wishMessage = !isYes ? (data.get('message') || '').trim() : '';
+
+        if (!guestName) {
+          alert('Vui lòng nhập họ và tên của bạn.');
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = 'Đang ghi nhận...';
+
+        const submitUrl = window.__MAYHEN_RSVP_SUBMIT_URL || (window.location.pathname.replace(/\/$/, '') + '/rsvp');
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = window.__MAYHEN_CSRF_TOKEN || (csrfMeta ? csrfMeta.content : '');
+
+        try {
+          const response = await fetch(submitUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+              guest_name: guestName,
+              phone: phone,
+              attending_status: isYes ? 'attending' : 'declined',
+              adults_count: guestsCount,
+              children_count: 0,
+              wishes: wishMessage
+            })
+          });
+
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Có lỗi xảy ra khi gửi phản hồi.');
+          }
+
+          closeModal();
+          alert(result.message || (isYes ? 'Cảm ơn bạn đã xác nhận tham dự!' : 'Cảm ơn bạn đã phản hồi!'));
+
+          // Cập nhật giao diện nút lựa chọn
+          button.style.background = 'var(--mayhen_ink)';
+          button.style.color = '#ffffff';
+          button.style.borderColor = 'var(--mayhen_ink)';
+        } catch (error) {
+          alert(error.message || 'Không thể kết nối đến máy chủ. Vui lòng thử lại!');
+        } finally {
+          submit.disabled = false;
+          submit.textContent = 'Xác Nhận';
+        }
       });
 
-      openModal('Xác Nhận Tham Dự', form);
+      openModal(isYes ? 'Xác Nhận Tham Dự Lễ Cưới' : 'Gửi Lời Nhắn Tới Đôi Bạn', form);
     });
   });
 

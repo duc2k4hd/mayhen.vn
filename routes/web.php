@@ -28,6 +28,7 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->name('templates.preview.wish');
+Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->name('templates.preview.rsvp');
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
