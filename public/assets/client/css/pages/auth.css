@@ -1,100 +1,545 @@
 /**
  * MAYHEN.VN — CLIENT AUTHENTICATION STYLES
  * Prefix: mayhen_auth_*
- * Aesthetic: Quiet Luxury, Minimal, Warm Cream & Sage
+ * Aesthetic: Quiet Luxury, Organic Curved Waves, Pill Controls
+ * Palette: Mây Hẹn Brand (Charcoal #1C1917, Muted Gold #C5A880, Warm Cream #FAF8F5, Soft Beige #EFE8DD)
  */
 
+/* ==========================================================================
+   1. AUTH WRAPPER & CONTAINER
+   ========================================================================== */
 .mayhen_auth_wrapper {
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 140px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--mayhen-space-2xl) var(--mayhen-space-md);
+    padding: clamp(1.5rem, 4vw, 3.5rem) var(--mayhen-space-md);
     background-color: var(--mayhen-color-bg-base);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(197, 168, 128, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(197, 168, 128, 0.08) 0%, transparent 45%);
 }
 
-.mayhen_auth_card {
-    background-color: var(--mayhen-color-bg-surface);
-    border: 1px solid var(--mayhen-color-border);
-    border-radius: var(--mayhen-radius-2xl);
+.mayhen_auth_container {
     width: 100%;
-    max-width: 460px;
-    padding: var(--mayhen-space-2xl);
-    box-shadow: 0 20px 45px -15px rgba(28, 25, 23, 0.1);
+    max-width: 960px;
+    margin: 0 auto;
 }
 
-.mayhen_auth_header {
+/* ==========================================================================
+   2. MAIN AUTH CARD (SPLIT LAYOUT)
+   ========================================================================== */
+.mayhen_auth_card {
+    display: grid;
+    grid-template-columns: 44% 56%;
+    background-color: #FFFFFF;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 
+        0 25px 60px -15px rgba(28, 25, 23, 0.15),
+        0 10px 25px -5px rgba(197, 168, 128, 0.1),
+        0 0 1px rgba(28, 25, 23, 0.08);
+    border: 1px solid rgba(232, 227, 218, 0.8);
+    min-height: 560px;
+    position: relative;
+}
+
+/* Biến thể trang đăng ký có nhiều input hơn -> chiều rộng vừa vặn */
+.mayhen_auth_card_register {
+    grid-template-columns: 42% 58%;
+    min-height: 640px;
+}
+
+/* ==========================================================================
+   3. HERO / WELCOME PANEL (LEFT SIDE — ORGANIC CURVED WAVES)
+   ========================================================================== */
+.mayhen_auth_hero {
+    position: relative;
+    background: linear-gradient(145deg, #1A1715 0%, #2A231C 50%, #382E24 100%);
+    padding: clamp(2rem, 3.5vw, 3rem) clamp(1.75rem, 3vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin-bottom: var(--mayhen-space-xl);
+    color: #FFFFFF;
+    overflow: hidden;
+    z-index: 1;
 }
 
-.mayhen_auth_badge {
+/* Các lớp vòng tròn hữu cơ xếp tầng tạo sóng uốn lượn chuẩn như ảnh */
+.mayhen_auth_hero_wave_1 {
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.35) 0%, rgba(181, 149, 105, 0.12) 70%, transparent 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.mayhen_auth_hero_wave_2 {
+    position: absolute;
+    bottom: -100px;
+    left: -80px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.28) 0%, rgba(156, 122, 74, 0.1) 75%, transparent 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.mayhen_auth_hero_wave_3 {
+    position: absolute;
+    top: 35%;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.mayhen_auth_hero_wave_4 {
+    position: absolute;
+    bottom: 20%;
+    right: 15%;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Huy hiệu Logo hình tròn trắng nổi bật */
+.mayhen_auth_hero_logo_circle {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    margin-bottom: 12px;
+    transition: transform var(--mayhen-transition-normal);
+}
+
+.mayhen_auth_hero_logo_circle:hover {
+    transform: scale(1.05);
+}
+
+.mayhen_auth_hero_logo_circle svg {
+    width: 32px;
+    height: 32px;
+    color: #9C7A4A;
+}
+
+/* Tên thương hiệu dưới logo */
+.mayhen_auth_hero_brand {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #EFE8DD;
+    margin-bottom: 24px;
+}
+
+/* Tiêu đề chào mừng panel trái */
+.mayhen_auth_hero_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: clamp(1.75rem, 2.3vw, 2.25rem);
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 12px;
+    line-height: 1.25;
+}
+
+/* Mô tả ngắn panel trái */
+.mayhen_auth_hero_desc {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    margin: 0 0 28px;
+    max-width: 290px;
+}
+
+/* Nút Pill Outline viền trắng dạng viền tròn hoàn toàn */
+.mayhen_auth_pill_btn_outline {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    background-color: var(--mayhen-color-primary-soft);
-    color: var(--mayhen-color-primary-hover);
-    border-radius: var(--mayhen-radius-pill);
-    font-size: 0.75rem;
+    justify-content: center;
+    height: 44px;
+    padding: 0 36px;
+    border: 1.5px solid rgba(255, 255, 255, 0.8);
+    border-radius: 9999px;
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 0.8125rem;
     font-weight: 600;
-    margin-bottom: var(--mayhen-space-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.mayhen_auth_title {
+.mayhen_auth_pill_btn_outline:hover {
+    background: #FFFFFF;
+    color: #1C1917;
+    border-color: #FFFFFF;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Footer nhỏ ở đáy panel trái */
+.mayhen_auth_hero_footer {
+    margin-top: auto;
+    padding-top: 24px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ==========================================================================
+   4. FORM PANEL (RIGHT SIDE)
+   ========================================================================== */
+.mayhen_auth_form_panel {
+    position: relative;
+    background: #FFFFFF;
+    padding: clamp(2rem, 4vw, 3.25rem) clamp(1.75rem, 3.5vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Mảng cong trang trí hữu cơ ở góc trên bên phải form y hệt ảnh mẫu */
+.mayhen_auth_corner_accent {
+    position: absolute;
+    top: -45px;
+    right: -45px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.35) 0%, rgba(156, 122, 74, 0.18) 60%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mayhen_auth_corner_accent_inner {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(197, 168, 128, 0.25);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Header của form */
+.mayhen_auth_form_header {
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.mayhen_auth_form_title {
     font-family: var(--mayhen-font-serif);
-    font-size: 1.875rem;
-    font-weight: 600;
-    color: var(--mayhen-color-text-main);
-    margin: 0 0 8px;
+    font-size: clamp(2rem, 2.6vw, 2.5rem);
+    font-weight: 700;
+    color: #1C1917;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
 }
 
-.mayhen_auth_desc {
-    font-size: var(--mayhen-font-size-body-sm);
-    color: var(--mayhen-color-text-muted);
+.mayhen_auth_form_subtitle {
+    font-size: 0.875rem;
+    color: #78716C;
     margin: 0;
-    line-height: 1.5;
 }
 
+/* Form container */
+.mayhen_auth_form {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* ==========================================================================
+   5. PILL INPUTS & FORM CONTROLS
+   ========================================================================== */
+.mayhen_auth_field_group {
+    margin-bottom: 16px;
+}
+
+/* Nhãn phụ (ẩn để giống ảnh, nhưng hỗ trợ accessibility và screen-readers) */
+.mayhen_auth_sr_only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Ô nhập liệu hình viên thuốc (Pill Input) chuẩn như ảnh */
+.mayhen_auth_pill_input {
+    width: 100%;
+    height: 50px;
+    padding: 0 24px;
+    border-radius: 9999px;
+    border: 1px solid rgba(229, 220, 205, 0.8);
+    background-color: #F4EFEA;
+    color: #1C1917;
+    font-family: var(--mayhen-font-sans);
+    font-size: 0.9375rem;
+    line-height: normal;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_auth_pill_input::placeholder {
+    color: #9C9690;
+    opacity: 0.9;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_auth_pill_input:hover {
+    background-color: #EFE8DD;
+    border-color: rgba(197, 168, 128, 0.6);
+}
+
+.mayhen_auth_pill_input:focus {
+    background-color: #FFFFFF;
+    border-color: #C5A880;
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.25);
+}
+
+/* Link quên mật khẩu */
+.mayhen_auth_forgot_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0 16px;
+    padding: 0 6px;
+}
+
+.mayhen_auth_remember_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    color: #78716C;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mayhen_auth_remember_checkbox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    accent-color: #9C7A4A;
+    cursor: pointer;
+}
+
+.mayhen_auth_forgot_link {
+    font-size: 0.8125rem;
+    color: #78716C;
+    text-decoration: none;
+    transition: color var(--mayhen-transition-fast);
+}
+
+.mayhen_auth_forgot_link:hover {
+    color: #9C7A4A;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   6. SUBMIT PILL BUTTON & SWITCH LINK
+   ========================================================================== */
+.mayhen_auth_btn_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
+    margin-bottom: 16px;
+}
+
+/* Nút Submit hình viên thuốc căn giữa y như ảnh mẫu */
+.mayhen_auth_pill_btn_submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    min-width: 170px;
+    padding: 0 36px;
+    border-radius: 9999px;
+    border: none;
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #FFFFFF;
+    font-family: var(--mayhen-font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -4px rgba(156, 122, 74, 0.4);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_auth_pill_btn_submit:hover {
+    background: linear-gradient(135deg, #B8935D 0%, #876538 100%);
+    box-shadow: 0 12px 24px -4px rgba(156, 122, 74, 0.5);
+    transform: translateY(-2px);
+}
+
+.mayhen_auth_pill_btn_submit:active {
+    transform: translateY(0);
+}
+
+/* Dòng chuyển đổi Đăng ký / Đăng nhập dưới nút */
+.mayhen_auth_switch_row {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #78716C;
+    margin-top: 4px;
+}
+
+.mayhen_auth_switch_link {
+    color: #9C7A4A;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: color var(--mayhen-transition-fast);
+}
+
+.mayhen_auth_switch_link:hover {
+    color: #7A5B30;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   7. ALERTS & NOTIFICATIONS
+   ========================================================================== */
 .mayhen_auth_alert_info {
     background-color: #FEF3C7;
     border: 1px solid #FDE68A;
-    border-radius: var(--mayhen-radius-md);
-    padding: 10px 14px;
-    margin-bottom: var(--mayhen-space-lg);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
     font-size: 0.8125rem;
     color: #92400E;
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
     line-height: 1.5;
 }
 
 .mayhen_auth_alert_error {
     background-color: #FEE2E2;
     border: 1px solid #FECACA;
-    border-radius: var(--mayhen-radius-md);
-    padding: 10px 14px;
-    margin-bottom: var(--mayhen-space-lg);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
     font-size: 0.8125rem;
     color: #991B1B;
     line-height: 1.5;
 }
 
-.mayhen_auth_footer_links {
-    margin-top: var(--mayhen-space-xl);
-    text-align: center;
-    font-size: var(--mayhen-font-size-body-sm);
-    color: var(--mayhen-color-text-muted);
-}
+/* ==========================================================================
+   8. RESPONSIVE MOBILE EXCELLENCE (< 768px)
+   (Mô phỏng 2 màn hình điện thoại trong ảnh)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .mayhen_auth_card,
+    .mayhen_auth_card_register {
+        grid-template-columns: 1fr;
+        border-radius: 28px;
+        min-height: auto;
+    }
 
-.mayhen_auth_link {
-    color: var(--mayhen-color-primary-hover);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color var(--mayhen-transition-fast);
-}
+    /* Trên mobile: Hero biến thành Banner uốn lượn phía trên */
+    .mayhen_auth_hero {
+        padding: 2.25rem 1.5rem 2rem;
+        min-height: 220px;
+    }
 
-.mayhen_auth_link:hover {
-    text-decoration: underline;
+    .mayhen_auth_hero_logo_circle {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 10px;
+    }
+
+    .mayhen_auth_hero_logo_circle svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .mayhen_auth_hero_brand {
+        margin-bottom: 12px;
+        font-size: 0.75rem;
+    }
+
+    .mayhen_auth_hero_title {
+        font-size: 1.625rem;
+        margin-bottom: 8px;
+    }
+
+    .mayhen_auth_hero_desc {
+        font-size: 0.8125rem;
+        margin-bottom: 18px;
+        max-width: 320px;
+    }
+
+    .mayhen_auth_pill_btn_outline {
+        height: 40px;
+        padding: 0 28px;
+        font-size: 0.75rem;
+    }
+
+    .mayhen_auth_hero_footer {
+        display: none;
+    }
+
+    /* Form panel trên mobile */
+    .mayhen_auth_form_panel {
+        padding: 2rem 1.25rem 2.25rem;
+    }
+
+    .mayhen_auth_form_title {
+        font-size: 1.875rem;
+    }
+
+    .mayhen_auth_pill_input {
+        height: 48px;
+        font-size: 0.875rem;
+        padding: 0 20px;
+    }
+
+    .mayhen_auth_pill_btn_submit {
+        width: 100%;
+        max-width: 220px;
+    }
+
+    .mayhen_auth_corner_accent {
+        width: 110px;
+        height: 110px;
+        top: -30px;
+        right: -30px;
+    }
 }

@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
 @section('title', 'Đăng Nhập Tài Khoản | ' . config('app.name'))
-@section('meta_description', 'Đăng nhập vào tài khoản Mây Hẹn để tạo và quản lý thiệp cưới online cao cấp.')
+@section('meta_description', 'Đăng nhập vào tài khoản Mây Hẹn để thiết kế thiệp cưới online phong cách Quiet Luxury và quản lý khách mời.')
 @section('robots', 'noindex, follow')
 
 @push('styles')
@@ -9,64 +9,120 @@
 @endpush
 
 @section('content')
-    <div class="mayhen_auth_wrapper">
+<div class="mayhen_auth_wrapper">
+    <div class="mayhen_auth_container">
         <div class="mayhen_auth_card">
-            <div class="mayhen_auth_header">
-                <span class="mayhen_auth_badge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    <span>Trải Nghiệm Mẫu Thiệp Cao Cấp</span>
-                </span>
-                <h1 class="mayhen_auth_title">Đăng Nhập</h1>
-                <p class="mayhen_auth_desc">Chào mừng bạn quay trở lại với Mây Hẹn</p>
+            <!-- Cột Trái: Welcome Hero Panel (Organic Curved Wave) -->
+            <div class="mayhen_auth_hero">
+                <!-- Các lớp sóng cong hữu cơ đan xen -->
+                <div class="mayhen_auth_hero_wave_1"></div>
+                <div class="mayhen_auth_hero_wave_2"></div>
+                <div class="mayhen_auth_hero_wave_3"></div>
+                <div class="mayhen_auth_hero_wave_4"></div>
+
+                <!-- Logo Circle Badge -->
+                <div class="mayhen_auth_hero_logo_circle">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M16 3C16 3 13 8 9 10C5 12 3 16 3 18C3 24 9 28 16 29C23 28 29 24 29 18C29 16 27 12 23 10C19 8 16 3 16 3Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 11V23M11 16H21" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <div class="mayhen_auth_hero_brand">{{ config('app.name') }}</div>
+
+                <h2 class="mayhen_auth_hero_title">Welcome Back!</h2>
+                <p class="mayhen_auth_hero_desc">
+                    Để tiếp tục đồng hành cùng Mây Hẹn, vui lòng đăng nhập bằng thông tin của bạn
+                </p>
+
+                <a href="{{ route('register', ['redirect' => $redirect]) }}" class="mayhen_auth_pill_btn_outline">
+                    Đăng Ký
+                </a>
+
+                <div class="mayhen_auth_hero_footer">
+                    Mây Hẹn &bull; Quiet Luxury Wedding
+                </div>
             </div>
 
-            @if ($redirect && str_contains($redirect, 'tao-thiep'))
-                <div class="mayhen_auth_alert_info">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    <span>Mẫu thiệp này thuộc gói <strong>Plus / Pro VIP</strong>. Vui lòng đăng nhập để bắt đầu chỉnh sửa và tạo thiệp cưới.</span>
-                </div>
-            @endif
+            <!-- Cột Phải: Form Đăng Nhập -->
+            <div class="mayhen_auth_form_panel">
+                <!-- Điểm nhấn cong góc trên bên phải -->
+                <div class="mayhen_auth_corner_accent"></div>
+                <div class="mayhen_auth_corner_accent_inner"></div>
 
-            @if ($errors->any())
-                <div class="mayhen_auth_alert_error">
-                    @foreach ($errors->all() as $err)
-                        <div>{{ $err }}</div>
-                    @endforeach
-                </div>
-            @endif
-
-            <form action="{{ route('login.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="redirect" value="{{ $redirect }}">
-
-                <div class="mayhen_client_form_group">
-                    <label class="mayhen_client_form_label" for="email">Địa chỉ Email</label>
-                    <input type="email" id="email" name="email" class="mayhen_client_form_input" value="{{ old('email') }}" placeholder="nhapemail@gmail.com" required autofocus>
+                <div class="mayhen_auth_form_header">
+                    <h1 class="mayhen_auth_form_title">welcome</h1>
+                    <p class="mayhen_auth_form_subtitle">Đăng nhập vào tài khoản để tiếp tục</p>
                 </div>
 
-                <div class="mayhen_client_form_group">
-                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
-                        <label class="mayhen_client_form_label" for="password" style="margin-bottom: 0;">Mật khẩu</label>
+                @if ($redirect && str_contains($redirect, 'tao-thiep'))
+                    <div class="mayhen_auth_alert_info">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <span>Mẫu thiệp này thuộc gói <strong>Plus / Pro VIP</strong>. Đăng nhập để bắt đầu chỉnh sửa thiệp.</span>
                     </div>
-                    <input type="password" id="password" name="password" class="mayhen_client_form_input" placeholder="••••••••" required>
-                </div>
+                @endif
 
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--mayhen-color-text-main); cursor: pointer;">
-                        <input type="checkbox" name="remember" value="1" style="accent-color: var(--mayhen-color-primary);">
-                        <span>Ghi nhớ đăng nhập</span>
-                    </label>
-                </div>
+                @if ($errors->any())
+                    <div class="mayhen_auth_alert_error">
+                        @foreach ($errors->all() as $err)
+                            <div>{{ $err }}</div>
+                        @endforeach
+                    </div>
+                @endif
 
-                <button type="submit" class="mayhen_client_button_base mayhen_client_button_primary" style="width: 100%; height: 48px; font-size: 0.9375rem;">
-                    Đăng Nhập
-                </button>
-            </form>
+                <form action="{{ route('login.submit') }}" method="POST" class="mayhen_auth_form">
+                    @csrf
+                    <input type="hidden" name="redirect" value="{{ $redirect }}">
 
-            <div class="mayhen_auth_footer_links">
-                <span>Chưa có tài khoản?</span>
-                <a href="{{ route('register', ['redirect' => $redirect]) }}" class="mayhen_auth_link">Đăng ký tài khoản mới</a>
+                    <div class="mayhen_auth_field_group">
+                        <label for="email" class="mayhen_auth_sr_only">Địa chỉ Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="mayhen_auth_pill_input" 
+                            value="{{ old('email') }}" 
+                            placeholder="Email........" 
+                            required 
+                            autofocus
+                        >
+                    </div>
+
+                    <div class="mayhen_auth_field_group">
+                        <label for="password" class="mayhen_auth_sr_only">Mật khẩu</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="mayhen_auth_pill_input" 
+                            placeholder="Mật khẩu........" 
+                            required
+                        >
+                    </div>
+
+                    <div class="mayhen_auth_forgot_row">
+                        <label class="mayhen_auth_remember_label">
+                            <input type="checkbox" name="remember" value="1" class="mayhen_auth_remember_checkbox">
+                            <span>Ghi nhớ</span>
+                        </label>
+                        <a href="{{ route('contact') }}" class="mayhen_auth_forgot_link">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+
+                    <div class="mayhen_auth_btn_container">
+                        <button type="submit" class="mayhen_auth_pill_btn_submit">
+                            ĐĂNG NHẬP
+                        </button>
+                    </div>
+
+                    <div class="mayhen_auth_switch_row">
+                        <span>Chưa có tài khoản?</span>
+                        <a href="{{ route('register', ['redirect' => $redirect]) }}" class="mayhen_auth_switch_link">Đăng ký ngay</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 @endsection

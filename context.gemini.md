@@ -245,6 +245,31 @@ mayhen.vn/
 
 ---
 
+## 8. GIAO DIỆN AUTH: ĐĂNG NHẬP & ĐĂNG KÝ (ORGANIC CURVED WAVES & PILL CONTROLS)
+
+Hệ thống xác thực (`/dang-nhap` và `/dang-ky`) đã được tái thiết kế toàn diện theo cảm hứng mỹ thuật hiện đại kết hợp Quiet Luxury của thương hiệu Mây Hẹn:
+
+1. **Bố cục 2 Cột Đối Xứng (Split Screen Card)**:
+   - Bo góc lớn cao cấp `36px` (`border-radius: 36px`), đổ bóng êm ái đa tầng.
+   - **Cột Trái (Hero / Welcome Panel)**:
+     - Nền gradient hoàng gia Charcoal kết hợp Muted Gold (`#1A1715` -> `#2A231C` -> `#382E24`).
+     - Hiệu ứng các lớp sóng cong hữu cơ đan xen (`mayhen_auth_hero_wave_1` đến `4`) bằng CSS thuần với radial gradients.
+     - Vòng tròn trắng nổi bật chứa biểu tượng Logo Mây Hẹn hoa sen dập nổi.
+     - Nút viền mỏng bo tròn hoàn toàn dạng viên thuốc (`mayhen_auth_pill_btn_outline`) chuyển đổi nhanh giữa Đăng Nhập và Đăng Ký.
+     - Footer thanh lịch: *"MÂY HẸN • QUIET LUXURY WEDDING"*.
+   - **Cột Phải (Form Panel)**:
+     - Nền trắng tinh khôi kết hợp mảng cong hữu cơ uốn nhẹ ở góc trên bên phải (`mayhen_auth_corner_accent`).
+     - Tiêu đề `welcome` / `register` thanh thoát, subtitle định hướng người dùng.
+     - **Ô nhập liệu dạng viên thuốc (Pill Inputs - `border-radius: 9999px`)**: Nền kem nhạt `#F4EFEA`, viền mờ tinh tế, placeholder có chấm nối đuôi (`Email........`, `Mật khẩu........`), chuyển màu mượt mà khi focus.
+     - **Nút gửi dạng viên thuốc (Pill Submit Button)**: Đặt ở chính giữa form với kích thước cân đối, phủ gradient Muted Gold hoàng gia (`#C5A880` -> `#9C7A4A`), chữ hoa `ĐĂNG NHẬP` / `ĐĂNG KÝ`.
+     - Dòng chuyển đổi tài khoản dưới nút với link hover đổi màu mượt mà.
+2. **Tương Thích Di Động (Mobile Excellence < 768px)**:
+   - Trên màn hình điện thoại, card tự động chuyển sang 1 cột dạng dọc: Phần trên là banner cong hữu cơ ôm lấy logo Mây Hẹn, phần dưới là form nhập liệu viên thuốc gọn gàng, chạm vuốt dễ dàng, không bị co giật.
+3. **Bộ Kiểm Thử Tự Động (Pest Feature Tests)**:
+   - Đã được bao phủ trong `tests/Feature/AuthTest.php` kiểm tra toàn vẹn mã trạng thái HTTP 200, các thẻ CSS prefix `mayhen_auth_*` và các trường input.
+
+---
+
 ## 8. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
