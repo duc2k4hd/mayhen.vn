@@ -1,0 +1,77 @@
+{
+  "slug": "thanh-manh-01",
+  "version": "v1",
+  "name": "Thanh Mảnh (Minimal 01)",
+  "tier": "free",
+  "complexity": "quick",
+  "setup_time": "2 phút",
+  "sections": [
+    {
+      "id": "couple",
+      "title": "Thông Tin Cô Dâu & Chú Rể",
+      "icon": "heart",
+      "description": "Nhập tên đôi uyên ương hiển thị thanh nhã trên thiệp",
+      "fields": [
+        {
+          "key": "wedding.groom_name",
+          "label": "Họ tên Chú rể",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ví dụ: Minh Anh",
+          "max": 100
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Họ tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ví dụ: Ngọc Hà",
+          "max": 100
+        }
+      ]
+    },
+    {
+      "id": "event",
+      "title": "Thời Gian & Sảnh Tiệc",
+      "icon": "calendar",
+      "description": "Thông tin đón khách và làm lễ thành hôn",
+      "fields": [
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "wedding.venue_name",
+          "label": "Tên trung tâm tiệc cưới",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ví dụ: Trung Tâm Tiệc Cưới White Palace"
+        },
+        {
+          "key": "wedding.venue_address",
+          "label": "Địa chỉ sảnh tiệc cụ thể",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "194 Hoàng Văn Thụ, Phường 9, Phú Nhuận, TP. HCM"
+        }
+      ]
+    },
+    {
+      "id": "cover",
+      "title": "Ảnh Cưới Đại Diện",
+      "icon": "image",
+      "description": "Ảnh cưới chính duy nhất của mẫu tối giản",
+      "fields": [
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa thiệp cưới",
+          "type": "image",
+          "required": false,
+          "placeholder": "Dán đường dẫn ảnh cưới hoặc tải ảnh lên"
+        }
+      ]
+    }
+  ]
+}

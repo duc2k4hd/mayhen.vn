@@ -5,15 +5,21 @@
 import { $, $$, on } from '../common/dom.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Live Inputs Sync
-    const groomInput = $('#groom_name');
-    const brideInput = $('#bride_name');
-    const dateInput = $('#wedding_date');
-    const venueInput = $('#venue_name');
+    // 1. Live Inputs Sync với hỗ trợ Schema Dynamic Fields
+    const findInput = (keyPart, fallbackId) => {
+        return $(`[data-sync-key*="${keyPart}"]`) || $(`#${fallbackId}`);
+    };
+
+    const groomInput = findInput('groom_name', 'groom_name');
+    const brideInput = findInput('bride_name', 'bride_name');
+    const dateInput = findInput('wedding_date', 'wedding_date');
+    const venueInput = findInput('venue_name', 'venue_name');
+    const colorInput = findInput('accent_color', 'accent_color');
 
     const previewNames = $('[data-mayhen-preview="names"]');
     const previewDate = $('[data-mayhen-preview="date"]');
     const previewVenue = $('[data-mayhen-preview="venue"]');
+    const previewCard = $('.mayhen_invitation_card');
 
     const updatePreview = () => {
         const groom = groomInput?.value.trim() || 'Minh Quân';
@@ -33,14 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (venueInput && previewVenue) {
-            previewVenue.textContent = venueInput.value.trim() || 'The Grand Ballroom &bull; TP. Hồ Chí Minh';
+            previewVenue.textContent = venueInput.value.trim() || 'The White Palace • TP. HCM';
+        }
+
+        if (colorInput && previewCard) {
+            previewCard.style.setProperty('--mayhen-color-primary', colorInput.value);
         }
     };
 
-    on(groomInput, 'input', updatePreview);
-    on(brideInput, 'input', updatePreview);
-    on(dateInput, 'change', updatePreview);
-    on(venueInput, 'input', updatePreview);
+    if (groomInput) on(groomInput, 'input', updatePreview);
+    if (brideInput) on(brideInput, 'input', updatePreview);
+    if (dateInput) on(dateInput, 'change', updatePreview);
+    if (venueInput) on(venueInput, 'input', updatePreview);
+    if (colorInput) on(colorInput, 'input', updatePreview);
+
+    // Lắng nghe tất cả các input động
+    const allSyncInputs = $$('[data-sync-key]');
+    allSyncInputs.forEach(input => {
+        on(input, 'input', updatePreview);
+    });
 
     // 2. Template Picker Selection
     const templateCards = $$('[data-mayhen-template-card]');

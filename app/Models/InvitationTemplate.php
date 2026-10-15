@@ -18,6 +18,7 @@ class InvitationTemplate extends Model
         'thumbnail_url',
         'demo_url',
         'default_config',
+        'current_version',
         'is_active',
         'is_featured',
     ];

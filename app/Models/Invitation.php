@@ -17,6 +17,7 @@ class Invitation extends Model
         'slug',
         'title',
         'version_type',
+        'template_version',
         'custom_config',
         'is_published',
         'published_at',

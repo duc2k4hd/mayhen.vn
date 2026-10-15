@@ -37,50 +37,127 @@
                     <input type="hidden" name="template_id" id="template_id" value="{{ $selectedTemplate->id }}">
 
                     <!-- Step 1: Template Selection -->
-                    <h2 class="mayhen_editor_section_title">1. Chọn Phong Cách Thiệp</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                        <h2 class="mayhen_editor_section_title" style="margin-bottom: 0;">1. Phong Cách Thiệp Đang Chọn</h2>
+                        <span style="font-size: 0.8125rem; color: var(--mayhen-color-primary); font-weight: 600;">
+                            {{ $selectedTemplate->name }} ({{ strtoupper($selectedTemplate->tier ?? 'FREE') }})
+                        </span>
+                    </div>
+                    <p style="font-size: 0.8125rem; color: var(--mayhen-color-text-muted); margin-bottom: 1rem;">
+                        Bấm vào mẫu bên dưới để đổi giao diện. Form nhập liệu sẽ tự động điều chỉnh theo đúng tính năng của mẫu được chọn.
+                    </p>
+
                     <div class="mayhen_editor_template_picker">
                         @foreach ($allTemplates as $tpl)
-                            <div class="mayhen_editor_template_radio_card {{ $tpl->id === $selectedTemplate->id ? 'mayhen_editor_template_radio_selected' : '' }}" data-mayhen-template-card data-mayhen-template-id="{{ $tpl->id }}">
+                            <a href="{{ route('invitation.create', ['template' => $tpl->slug]) }}" 
+                               class="mayhen_editor_template_radio_card {{ $tpl->id === $selectedTemplate->id ? 'mayhen_editor_template_radio_selected' : '' }}" 
+                               data-mayhen-template-card 
+                               data-mayhen-template-id="{{ $tpl->id }}"
+                               style="text-decoration: none; color: inherit;">
                                 <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" class="mayhen_editor_template_radio_thumb">
                                 <div class="mayhen_editor_template_radio_name">{{ $tpl->name }}</div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
 
-                    <!-- Step 2: Couple Info -->
-                    <h2 class="mayhen_editor_section_title">2. Thông Tin Cặp Đôi</h2>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="mayhen_client_form_group">
-                            <label class="mayhen_client_form_label" for="groom_name">Tên Chú Rể *</label>
-                            <input type="text" id="groom_name" name="groom_name" class="mayhen_client_form_input" required value="Đặng Minh Quân" placeholder="Ví dụ: Minh Quân">
-                        </div>
-                        <div class="mayhen_client_form_group">
-                            <label class="mayhen_client_form_label" for="bride_name">Tên Cô Dâu *</label>
-                            <input type="text" id="bride_name" name="bride_name" class="mayhen_client_form_input" required value="Lê Ái Như" placeholder="Ví dụ: Ái Như">
-                        </div>
-                    </div>
+                    <!-- Dynamic Schema Sections (Các mục chỉnh sửa sinh tự động từ Schema của mẫu) -->
+                    @if (!empty($schema['sections']))
+                        @foreach ($schema['sections'] as $sIndex => $sec)
+                            <div class="mayhen_editor_schema_section" style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed var(--mayhen-color-border);">
+                                <div style="margin-bottom: 0.75rem;">
+                                    <h3 class="mayhen_editor_section_title" style="font-size: 1.05rem; margin-bottom: 2px;">
+                                        {{ $sIndex + 2 }}. {{ $sec['title'] }}
+                                    </h3>
+                                    @if (!empty($sec['description']))
+                                        <p style="font-size: 0.78125rem; color: var(--mayhen-color-text-muted); margin: 0;">
+                                            {{ $sec['description'] }}
+                                        </p>
+                                    @endif
+                                </div>
 
-                    <!-- Step 3: Date & Venue -->
-                    <h2 class="mayhen_editor_section_title">3. Ngày Cưới & Địa Điểm</h2>
-                    <div class="mayhen_client_form_group">
-                        <label class="mayhen_client_form_label" for="wedding_date">Ngày Tổ Chức Hôn Lễ *</label>
-                        <input type="date" id="wedding_date" name="wedding_date" class="mayhen_client_form_input" required value="2026-10-24">
-                    </div>
+                                @foreach ($sec['fields'] as $field)
+                                    @php
+                                        $fieldId = str_replace(['.', '[', ']', ' '], '_', $field['key']);
+                                        $defaultVal = $field['default'] ?? '';
+                                        
+                                        // Demo mock values nếu chưa có dữ liệu
+                                        if (empty($defaultVal)) {
+                                            if (str_contains($field['key'], 'groom_name')) $defaultVal = 'Đặng Minh Quân';
+                                            if (str_contains($field['key'], 'bride_name')) $defaultVal = 'Lê Ái Như';
+                                            if (str_contains($field['key'], 'wedding_date')) $defaultVal = '2026-10-24';
+                                            if (str_contains($field['key'], 'venue_name')) $defaultVal = 'The White Palace';
+                                            if (str_contains($field['key'], 'venue_address')) $defaultVal = 'Sảnh Grand Ballroom • 194 Hoàng Văn Thụ, TP. HCM';
+                                            if (str_contains($field['key'], 'story')) $defaultVal = 'Yêu là khi nhìn thấy cả thế giới trong mắt một người.';
+                                            if (str_contains($field['key'], 'seal_monogram')) $defaultVal = 'M & N';
+                                        }
+                                    @endphp
 
-                    <div class="mayhen_client_form_group">
-                        <label class="mayhen_client_form_label" for="venue_name">Tên Trung Tâm Tiệc Cưới</label>
-                        <input type="text" id="venue_name" name="venue_name" class="mayhen_client_form_input" value="The White Palace" placeholder="Ví dụ: The White Palace">
-                    </div>
+                                    <div class="mayhen_client_form_group" style="margin-bottom: 12px;">
+                                        <label class="mayhen_client_form_label" for="{{ $fieldId }}" style="font-size: 0.8125rem;">
+                                            {{ $field['label'] }}
+                                            @if (!empty($field['required']))
+                                                <span style="color: var(--mayhen-color-danger);">*</span>
+                                            @endif
+                                        </label>
 
-                    <div class="mayhen_client_form_group">
-                        <label class="mayhen_client_form_label" for="venue_address">Địa Chỉ Sảnh Tiệc</label>
-                        <input type="text" id="venue_address" name="venue_address" class="mayhen_client_form_input" value="Sảnh Grand Ballroom &bull; 194 Hoàng Văn Thụ, TP. HCM">
-                    </div>
-
-                    <div class="mayhen_client_form_group">
-                        <label class="mayhen_client_form_label" for="story">Lời Nhắn / Câu Chuyện Tình Yêu</label>
-                        <textarea id="story" name="story" class="mayhen_client_form_textarea" rows="2" placeholder="Gửi gắm thông điệp lãng mạn tới khách mời...">Yêu là khi nhìn thấy cả thế giới trong mắt một người.</textarea>
-                    </div>
+                                        @if ($field['type'] === 'textarea')
+                                            <textarea id="{{ $fieldId }}" 
+                                                      name="{{ $field['key'] }}" 
+                                                      class="mayhen_client_form_textarea" 
+                                                      rows="2" 
+                                                      data-sync-key="{{ $field['key'] }}"
+                                                      placeholder="{{ $field['placeholder'] ?? '' }}"
+                                                      {{ !empty($field['required']) ? 'required' : '' }}>{{ old($field['key'], $defaultVal) }}</textarea>
+                                        @elseif ($field['type'] === 'date')
+                                            <input type="date" 
+                                                   id="{{ $fieldId }}" 
+                                                   name="{{ $field['key'] }}" 
+                                                   class="mayhen_client_form_input" 
+                                                   data-sync-key="{{ $field['key'] }}"
+                                                   value="{{ old($field['key'], $defaultVal) }}" 
+                                                   {{ !empty($field['required']) ? 'required' : '' }}>
+                                        @elseif ($field['type'] === 'color')
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <input type="color" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $field['key'] }}" 
+                                                       data-sync-key="{{ $field['key'] }}"
+                                                       value="{{ old($field['key'], $defaultVal ?: '#C5A880') }}"
+                                                       style="width: 44px; height: 36px; padding: 2px; border: 1px solid var(--mayhen-color-border); border-radius: 6px; cursor: pointer;">
+                                                <span style="font-size: 0.8125rem; color: var(--mayhen-color-text-muted);">Bấm để chọn màu sắc chủ đạo</span>
+                                            </div>
+                                        @elseif ($field['type'] === 'gallery')
+                                            <div style="background-color: var(--mayhen-color-bg-base); border: 1px dashed var(--mayhen-color-border); padding: 12px; border-radius: var(--mayhen-radius-md);">
+                                                <input type="text" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $field['key'] }}[]" 
+                                                       class="mayhen_client_form_input" 
+                                                       placeholder="Dán đường dẫn ảnh cưới hoặc album online"
+                                                       value="{{ $selectedTemplate->thumbnail_url }}">
+                                                <p style="font-size: 0.75rem; color: var(--mayhen-color-text-muted); margin: 6px 0 0;">
+                                                    Mẫu VIP hỗ trợ hiển thị album ảnh cưới đa góc nhìn với hiệu ứng chuyển động mượt mà.
+                                                </p>
+                                            </div>
+                                        @elseif ($field['type'] === 'repeater')
+                                            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px;">
+                                                <input type="text" name="extra_data[timeline][0][time]" class="mayhen_client_form_input" placeholder="17:30" value="17:30">
+                                                <input type="text" name="extra_data[timeline][0][title]" class="mayhen_client_form_input" placeholder="Đón khách & Chụp ảnh lưu niệm" value="Đón khách & Chụp ảnh">
+                                            </div>
+                                        @else
+                                            <input type="text" 
+                                                   id="{{ $fieldId }}" 
+                                                   name="{{ $field['key'] }}" 
+                                                   class="mayhen_client_form_input" 
+                                                   data-sync-key="{{ $field['key'] }}"
+                                                   value="{{ old($field['key'], $defaultVal) }}" 
+                                                   placeholder="{{ $field['placeholder'] ?? '' }}"
+                                                   {{ !empty($field['required']) ? 'required' : '' }}>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    @endif
 
                     <div style="margin-top: 2rem;">
                         <button type="submit" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg" style="width: 100%;">

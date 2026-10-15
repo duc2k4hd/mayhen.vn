@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
-use App\Models\Wedding;
+use App\Services\InvitationTemplateService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -15,20 +15,26 @@ use Illuminate\Support\Str;
 
 class InvitationEditorController extends Controller
 {
+    public function __construct(
+        protected InvitationTemplateService $templateService
+    ) {}
+
     /**
      * Show the quick creation & live editor studio.
      */
     public function create(Request $request): View
     {
-        $selectedTemplateSlug = $request->query('template', 'envelope-reveal-luxury');
+        $selectedTemplateSlug = $request->query('template', 'thanh-manh-01');
         $template = InvitationTemplate::where('slug', $selectedTemplateSlug)->first()
             ?? InvitationTemplate::first();
 
         $allTemplates = InvitationTemplate::where('is_active', true)->get();
+        $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1');
 
         return view('client.pages.editor', [
             'selectedTemplate' => $template,
             'allTemplates' => $allTemplates,
+            'schema' => $schema,
         ]);
     }
 
@@ -37,18 +43,36 @@ class InvitationEditorController extends Controller
      */
     public function store(Request $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
+        $templateId = (int) $request->input('template_id');
+        $template = InvitationTemplate::findOrFail($templateId);
+
+        // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
+        $rawWedding = $request->input('wedding', []);
+        if (empty($rawWedding) && $request->has('groom_name')) {
+            $rawWedding = [
+                'groom_name' => $request->input('groom_name'),
+                'bride_name' => $request->input('bride_name'),
+                'groom_parents' => $request->input('groom_parents'),
+                'bride_parents' => $request->input('bride_parents'),
+                'wedding_date' => $request->input('wedding_date'),
+                'venue_name' => $request->input('venue_name'),
+                'venue_address' => $request->input('venue_address'),
+                'story' => $request->input('story'),
+                'cover_photo_url' => $request->input('cover_photo_url'),
+                'music_url' => $request->input('music_url'),
+                'bank_name' => $request->input('bank_name'),
+                'bank_account_number' => $request->input('bank_account_number'),
+                'bank_account_name' => $request->input('bank_account_name'),
+                'extra_data' => $request->input('extra_data', []),
+            ];
+        }
+
+        // Validate cơ bản
+        $request->validate([
             'template_id' => 'required|exists:invitation_templates,id',
-            'groom_name' => 'required|string|max:100',
-            'bride_name' => 'required|string|max:100',
-            'wedding_date' => 'required|date',
-            'venue_name' => 'nullable|string|max:255',
-            'venue_address' => 'nullable|string|max:255',
-            'story' => 'nullable|string|max:1000',
-            'cover_photo_url' => 'nullable|url|max:500',
         ]);
 
-        // Find or create temporary guest session/user
+        // Tìm hoặc tạo guest user
         $user = auth()->user() ?? User::firstOrCreate(
             ['email' => 'guest@mayhen.vn'],
             [
@@ -58,29 +82,11 @@ class InvitationEditorController extends Controller
             ]
         );
 
-        $wedding = Wedding::create([
-            'user_id' => $user->id,
-            'groom_name' => $validated['groom_name'],
-            'bride_name' => $validated['bride_name'],
-            'wedding_date' => $validated['wedding_date'],
-            'venue_name' => $validated['venue_name'] ?? 'The Grand Ballroom',
-            'venue_address' => $validated['venue_address'] ?? 'TP. Hồ Chí Minh',
-            'story' => $validated['story'] ?? 'Hành trình tình yêu của chúng mình.',
-            'cover_photo_url' => $validated['cover_photo_url'] ?? 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
-        ]);
-
-        $slugBase = Str::slug($validated['groom_name'].'-'.$validated['bride_name']);
-        $uniqueSlug = $slugBase.'-'.Str::lower(Str::random(5));
-
-        $invitation = Invitation::create([
-            'wedding_id' => $wedding->id,
-            'template_id' => $validated['template_id'],
-            'slug' => $uniqueSlug,
-            'title' => 'Thiệp Cưới '.$validated['groom_name'].' & '.$validated['bride_name'],
-            'version_type' => 'general',
-            'is_published' => true,
-            'published_at' => now(),
-            'expires_at' => now()->addDays(30),
+        $invitation = $this->templateService->saveInvitation($user, $template->id, [
+            'wedding' => $rawWedding,
+            'invitation' => [
+                'custom_config' => $request->input('invitation.custom_config', []),
+            ],
         ]);
 
         if ($request->wantsJson()) {
