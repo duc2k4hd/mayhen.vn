@@ -1,121 +1,36 @@
 /**
  * MAYHEN.VN — INVITATION LIVE EDITOR CONTROLLER
- * Realtime 2-way input preview sync, step-by-step navigation & mobile dock
- * Strict: Pure Vanilla JavaScript, No external dependencies
+ * Schema-Driven Dynamic Stepper & Realtime Iframe Template Sync
+ * Strict: Pure Vanilla JavaScript (ES Modules), Zero external dependencies
  */
 import { $, $$, on } from '../common/dom.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ----------------------------------------------------
-    // 1. Inputs Realtime Live Sync Engine
-    // ----------------------------------------------------
-    const groomInput = $('#groom_name');
-    const brideInput = $('#bride_name');
-    const dateInput = $('#wedding_date');
-    const venueInput = $('#venue_name');
-    const addressInput = $('#venue_address');
-    const storyInput = $('#story');
-    const coverInput = $('#cover_photo_url');
-    const colorInput = $('#accent_color');
-    const bankNameInput = $('#bank_name');
-    const bankAccInput = $('#bank_account_number');
-    const bankOwnerInput = $('#bank_account_name');
-
-    // Preview targets (hỗ trợ cả Phone screen PC và Mobile Dock)
-    const nameTargets = $$('[data-mayhen-preview="names"]');
-    const dateTargets = $$('[data-mayhen-preview="date"]');
-    const venueTargets = $$('[data-mayhen-preview="venue"]');
-    const addressTargets = $$('[data-mayhen-preview="address"]');
-    const storyTargets = $$('[data-mayhen-preview="story"]');
-    const photoTargets = $$('[data-mayhen-preview="photo"]');
-    const bankingTargets = $$('[data-mayhen-preview="banking"]');
-    const dockThumb = $('#mayhen_dock_thumb');
-    const previewCards = $$('.mayhen_invitation_card');
-
-    const updatePreview = () => {
-        const groom = groomInput?.value.trim() || 'Minh Quân';
-        const bride = brideInput?.value.trim() || 'Ái Như';
-        
-        nameTargets.forEach(el => {
-            if (el.classList.contains('mayhen_editor_dock_names')) {
-                el.textContent = `${groom} • ${bride}`;
-            } else {
-                el.innerHTML = `${groom} <span style="font-family: var(--mayhen-font-script); font-style: italic; color: var(--mayhen-color-primary);">&</span> ${bride}`;
-            }
-        });
-
-        if (dateInput?.value) {
-            const parts = dateInput.value.split('-');
-            if (parts.length === 3) {
-                const formattedDate = `Ngày ${parts[2]}.${parts[1]}.${parts[0]}`;
-                dateTargets.forEach(el => el.textContent = formattedDate);
-            }
-        }
-
-        if (venueInput) {
-            const venue = venueInput.value.trim() || 'The White Palace Ballroom';
-            venueTargets.forEach(el => el.textContent = venue);
-        }
-
-        if (addressInput) {
-            const addr = addressInput.value.trim() || '194 Hoàng Văn Thụ, TP. HCM';
-            addressTargets.forEach(el => el.textContent = addr);
-        }
-
-        if (storyInput) {
-            const story = storyInput.value.trim() || 'Yêu là khi nhìn thấy cả thế giới bình yên trong mắt một người.';
-            storyTargets.forEach(el => el.textContent = `"${story}"`);
-        }
-
-        if (coverInput?.value) {
-            const url = coverInput.value.trim();
-            photoTargets.forEach(img => img.src = url);
-            if (dockThumb) dockThumb.src = url;
-        }
-
-        if (colorInput) {
-            const color = colorInput.value;
-            previewCards.forEach(card => {
-                card.style.setProperty('--mayhen-color-primary', color);
-            });
-        }
-
-        if (bankNameInput || bankAccInput || bankOwnerInput) {
-            const bName = bankNameInput?.value.trim() || 'Vietcombank';
-            const bAcc = bankAccInput?.value.trim() || '1023456789';
-            const bOwner = bankOwnerInput?.value.trim() || 'DANG MINH QUAN';
-            bankingTargets.forEach(el => el.textContent = `${bName} • ${bAcc} • ${bOwner}`);
-        }
-    };
-
-    // Gán listener realtime cho tất cả các input
-    const inputsToWatch = [groomInput, brideInput, dateInput, venueInput, addressInput, storyInput, coverInput, colorInput, bankNameInput, bankAccInput, bankOwnerInput];
-    inputsToWatch.forEach(inp => {
-        if (!inp) return;
-        on(inp, 'input', updatePreview);
-        on(inp, 'change', updatePreview);
-    });
+    const mainForm = $('#mayhen_editor_form');
+    const previewIframe = $('#mayhen_editor_preview_iframe');
+    const mobileIframe = $('#mayhen_editor_mobile_preview_iframe');
+    const dockNames = $('[data-mayhen-preview="names"]');
 
     // ----------------------------------------------------
-    // 2. Stepper Tabs Navigation (Chuyển bước mượt mà)
+    // 1. Dynamic Stepper Navigation
     // ----------------------------------------------------
     let currentStep = 1;
-    const totalSteps = 4;
     const stepTabs = $$('[data-mayhen-step]');
     const stepPanels = $$('[data-step-panel]');
+    const totalSteps = stepPanels.length;
     const btnPrev = $('#mayhen_btn_prev');
     const btnNext = $('#mayhen_btn_next');
-    const mainForm = $('#mayhen_editor_form');
 
     const goToStep = (step) => {
         if (step < 1 || step > totalSteps) return;
         currentStep = step;
 
-        // Cập nhật tab pills
+        // Cập nhật tab navigation pills
         stepTabs.forEach(tab => {
             const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
             if (s === currentStep) {
                 tab.classList.add('mayhen_editor_stepper_tab_active');
+                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             } else {
                 tab.classList.remove('mayhen_editor_stepper_tab_active');
             }
@@ -177,22 +92,108 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------
+    // 2. Realtime Iframe Communication Engine (PostMessage Sync)
+    // ----------------------------------------------------
+    const sendSyncMessage = (key, value) => {
+        const payload = {
+            type: 'MAYHEN_SYNC_INPUT',
+            key: key,
+            value: value,
+        };
+
+        try {
+            if (previewIframe && previewIframe.contentWindow) {
+                previewIframe.contentWindow.postMessage(payload, '*');
+            }
+            if (mobileIframe && mobileIframe.contentWindow) {
+                mobileIframe.contentWindow.postMessage(payload, '*');
+            }
+        } catch (e) {
+            // Safe cross-origin fallback
+        }
+    };
+
+    const updateDockNames = () => {
+        if (!dockNames) return;
+        const groomInp = document.querySelector('[data-sync-key="wedding.groom_name"]');
+        const brideInp = document.querySelector('[data-sync-key="wedding.bride_name"]');
+        const g = groomInp ? groomInp.value.trim() : 'Tràng Đức';
+        const b = brideInp ? brideInp.value.trim() : 'Ngọc Phượng';
+        dockNames.textContent = `${g || 'Chú Rể'} • ${b || 'Cô Dâu'}`;
+    };
+
+    if (mainForm) {
+        const handleInputEvent = (e) => {
+            const target = e.target;
+            const key = target.getAttribute('data-sync-key');
+            if (!key) return;
+
+            const val = target.value;
+
+            // Xem trước ảnh nhỏ nếu là trường image
+            if (target.id) {
+                const thumb = document.getElementById('preview_thumb_' + target.id);
+                if (thumb && val) {
+                    thumb.src = val;
+                }
+            }
+
+            // Cập nhật tên đôi uyên ương trên mobile dock
+            if (key === 'wedding.groom_name' || key === 'wedding.bride_name') {
+                updateDockNames();
+            }
+
+            // Đồng bộ sang Iframe
+            sendSyncMessage(key, val);
+        };
+
+        on(mainForm, 'input', handleInputEvent);
+        on(mainForm, 'change', handleInputEvent);
+    }
+
+    // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form hiện thời sang iframe
+    const syncAllFieldsToIframe = (iframeEl) => {
+        if (!iframeEl || !iframeEl.contentWindow) return;
+        const inputs = $$('[data-sync-key]');
+        inputs.forEach(inp => {
+            const key = inp.getAttribute('data-sync-key');
+            const val = inp.value;
+            if (key && val) {
+                iframeEl.contentWindow.postMessage({
+                    type: 'MAYHEN_SYNC_INPUT',
+                    key: key,
+                    value: val,
+                }, '*');
+            }
+        });
+    };
+
+    if (previewIframe) {
+        previewIframe.addEventListener('load', () => {
+            setTimeout(() => syncAllFieldsToIframe(previewIframe), 300);
+        });
+    }
+
+    if (mobileIframe) {
+        mobileIframe.addEventListener('load', () => {
+            setTimeout(() => syncAllFieldsToIframe(mobileIframe), 300);
+        });
+    }
+
+    // ----------------------------------------------------
     // 3. Mobile Fullscreen Preview Modal
     // ----------------------------------------------------
     const previewModal = $('#mayhen_mobile_preview_modal');
-    const modalBody = $('#mayhen_mobile_modal_body');
     const openPreviewBtn = $('[data-mayhen-action="open-preview-modal"]');
     const closePreviewBtn = $('[data-mayhen-action="close-preview-modal"]');
 
-    if (openPreviewBtn && previewModal && modalBody) {
+    if (openPreviewBtn && previewModal) {
         on(openPreviewBtn, 'click', () => {
-            // Clone phone screen content vào modal
-            const phoneScreen = $('.mayhen_editor_phone_screen');
-            if (phoneScreen) {
-                modalBody.innerHTML = phoneScreen.innerHTML;
-            }
             previewModal.classList.add('mayhen_editor_modal_open');
             document.body.style.overflow = 'hidden';
+            if (mobileIframe) {
+                syncAllFieldsToIframe(mobileIframe);
+            }
         });
     }
 
@@ -203,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Đóng khi click ngoài backdrop
     if (previewModal) {
         on(previewModal, 'click', (e) => {
             if (e.target === previewModal) {
@@ -243,6 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Khởi chạy đồng bộ lần đầu
-    updatePreview();
+    // Khởi chạy dock
+    updateDockNames();
 });

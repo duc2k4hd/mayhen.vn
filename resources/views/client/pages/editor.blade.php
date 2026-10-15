@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
 @section('title', 'Tạo Thiệp Cưới Online — ' . ($selectedTemplate ? $selectedTemplate->name : 'Thiệp Mời') . ' | ' . config('app.name'))
-@section('meta_description', 'Tự tạo thiệp cưới online phong cách Quiet Luxury dễ dàng chỉ trong 3 phút với chế độ xem thử realtime.')
+@section('meta_description', 'Tự tạo thiệp cưới online phong cách Quiet Luxury dễ dàng với chế độ xem thử realtime chính xác theo từng mẫu thiệp.')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')
@@ -9,6 +9,35 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
 @endpush
+
+@php
+    $sections = $schema['sections'] ?? [];
+    if (empty($sections)) {
+        $sections = [
+            [
+                'id' => 'basic',
+                'title' => 'Thông Tin Hôn Lễ',
+                'description' => 'Nhập thông tin cơ bản của cô dâu và chú rể',
+                'fields' => [
+                    ['key' => 'wedding.groom_name', 'label' => 'Họ tên Chú Rể', 'type' => 'text', 'required' => true, 'default' => 'Tràng Đức'],
+                    ['key' => 'wedding.bride_name', 'label' => 'Họ tên Cô Dâu', 'type' => 'text', 'required' => true, 'default' => 'Ngọc Phượng'],
+                    ['key' => 'wedding.wedding_date', 'label' => 'Ngày cử hành hôn lễ', 'type' => 'date', 'required' => true, 'default' => '2027-03-07'],
+                ],
+            ],
+        ];
+    }
+
+    $formatInputName = function (string $key): string {
+        $parts = explode('.', $key);
+        $first = array_shift($parts);
+
+        return empty($parts) ? $first : $first . '[' . implode('][', $parts) . ']';
+    };
+
+    $formatOldKey = function (string $key): string {
+        return str_replace(['[', ']'], ['.', ''], $key);
+    };
+@endphp
 
 @section('content')
     <div class="mayhen_editor_wrapper">
@@ -39,20 +68,17 @@
             </div>
         </header>
 
-        <!-- 2. Mobile Mini Live Preview Dock (Cố định đầu màn hình Mobile — Loại bỏ 100% vuốt mỏi tay) -->
+        <!-- 2. Mobile Mini Live Preview Dock -->
         <div class="mayhen_editor_mobile_live_dock">
             <div class="mayhen_editor_dock_content">
                 <img src="{{ $selectedTemplate->thumbnail_url }}" alt="Preview" class="mayhen_editor_dock_avatar" id="mayhen_dock_thumb">
                 <div class="mayhen_editor_dock_info">
                     <div class="mayhen_editor_dock_live_badge">
                         <span class="mayhen_editor_dock_live_dot"></span>
-                        <span>Xem thử trực tiếp</span>
+                        <span>Đang sửa mẫu: {{ $selectedTemplate->name }}</span>
                     </div>
                     <div class="mayhen_editor_dock_names" data-mayhen-preview="names">
-                        Minh Quân &bull; Ái Như
-                    </div>
-                    <div class="mayhen_editor_dock_sub">
-                        <span data-mayhen-preview="date">24.10.2026</span> • <span data-mayhen-preview="venue">The White Palace</span>
+                        Tràng Đức &bull; Ngọc Phượng
                     </div>
                 </div>
             </div>
@@ -65,231 +91,221 @@
 
         <!-- 3. Main Split Studio Grid -->
         <div class="mayhen_editor_studio_grid">
-            <!-- Left: Form Nhập Liệu Chia Bước Gọn Gàng -->
+            <!-- Left: Dynamic Schema-Driven Form Panel -->
             <div class="mayhen_editor_form_panel">
                 <!-- Stepper Navigation Pills -->
                 <nav class="mayhen_editor_stepper_nav" aria-label="Các bước nhập liệu">
-                    <button type="button" class="mayhen_editor_stepper_tab mayhen_editor_stepper_tab_active" data-mayhen-step="1">
-                        <span class="mayhen_editor_stepper_tab_num">1</span>
-                        <span>Đôi Uyên Ương</span>
-                    </button>
-                    <button type="button" class="mayhen_editor_stepper_tab" data-mayhen-step="2">
-                        <span class="mayhen_editor_stepper_tab_num">2</span>
-                        <span>Ngày & Sảnh Tiệc</span>
-                    </button>
-                    <button type="button" class="mayhen_editor_stepper_tab" data-mayhen-step="3">
-                        <span class="mayhen_editor_stepper_tab_num">3</span>
-                        <span>Ảnh & Lời Ngỏ</span>
-                    </button>
-                    <button type="button" class="mayhen_editor_stepper_tab" data-mayhen-step="4">
-                        <span class="mayhen_editor_stepper_tab_num">4</span>
-                        <span>Mừng Cưới & Giao Diện</span>
-                    </button>
+                    @foreach ($sections as $index => $section)
+                        @php
+                            $shortTitle = $section['short_title'] ?? match ($section['id'] ?? '') {
+                                'couple' => 'Đôi Uyên Ương',
+                                'bride_events' => 'Nhà Gái',
+                                'groom_events' => 'Nhà Trai',
+                                'gallery_and_photos' => 'Ảnh Cưới',
+                                'story_and_timeline' => 'Lịch Trình',
+                                'gift_and_music' => 'Mừng Cưới',
+                                default => \Illuminate\Support\Str::limit($section['title'], 18)
+                            };
+                        @endphp
+                        <button type="button" 
+                                class="mayhen_editor_stepper_tab {{ $index === 0 ? 'mayhen_editor_stepper_tab_active' : '' }}" 
+                                data-mayhen-step="{{ $index + 1 }}"
+                                title="{{ $section['title'] }}">
+                            <span class="mayhen_editor_stepper_tab_num">{{ $index + 1 }}</span>
+                            <span>{{ $shortTitle }}</span>
+                        </button>
+                    @endforeach
                 </nav>
 
                 <form id="mayhen_editor_form" action="{{ route('invitation.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="template_id" id="template_id" value="{{ $selectedTemplate->id }}">
 
-                    <!-- BƯỚC 1: THÔNG TIN CÔ DÂU & CHÚ RỂ -->
-                    <div class="mayhen_editor_step_content mayhen_editor_step_active" data-step-panel="1">
-                        <div class="mayhen_editor_step_header">
-                            <h2 class="mayhen_editor_step_heading">
-                                <span>1. Thông Tin Cô Dâu & Chú Rể</span>
-                            </h2>
-                            <p class="mayhen_editor_step_subtext">Nhập tên của đôi bạn để hiển thị trang trọng trên trang bìa thiệp cưới.</p>
-                        </div>
-
-                        <div class="mayhen_editor_field_grid_2">
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="groom_name">
-                                    Họ tên Chú Rể <span style="color: var(--mayhen-color-danger);">*</span>
-                                </label>
-                                <input type="text" id="groom_name" name="wedding[groom_name]" class="mayhen_client_form_input" data-sync-key="wedding.groom_name" value="{{ old('wedding.groom_name', 'Đặng Minh Quân') }}" placeholder="Ví dụ: Minh Quân" required>
-                                <div class="mayhen_editor_input_help">Tên chú rể hiển thị trang trọng</div>
+                    @foreach ($sections as $index => $section)
+                        <div class="mayhen_editor_step_content {{ $index === 0 ? 'mayhen_editor_step_active' : '' }}" data-step-panel="{{ $index + 1 }}">
+                            <div class="mayhen_editor_step_header">
+                                <h2 class="mayhen_editor_step_heading">
+                                    <span>{{ $index + 1 }}. {{ $section['title'] }}</span>
+                                </h2>
+                                @if (!empty($section['description']))
+                                    <p class="mayhen_editor_step_subtext">{{ $section['description'] }}</p>
+                                @endif
                             </div>
 
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="bride_name">
-                                    Họ tên Cô Dâu <span style="color: var(--mayhen-color-danger);">*</span>
-                                </label>
-                                <input type="text" id="bride_name" name="wedding[bride_name]" class="mayhen_client_form_input" data-sync-key="wedding.bride_name" value="{{ old('wedding.bride_name', 'Lê Ái Như') }}" placeholder="Ví dụ: Ái Như" required>
-                                <div class="mayhen_editor_input_help">Tên cô dâu hiển thị thanh tao</div>
+                            <div class="mayhen_editor_fields_container" style="display: flex; flex-direction: column; gap: 14px;">
+                                @php
+                                    $fields = $section['fields'] ?? [];
+                                @endphp
+
+                                @foreach ($fields as $field)
+                                    @php
+                                        $fieldKey = $field['key'];
+                                        $inputName = $formatInputName($fieldKey);
+                                        $oldKey = $formatOldKey($inputName);
+                                        $fieldId = str_replace('.', '_', $fieldKey);
+                                        $defaultVal = $field['default'] ?? '';
+                                        $val = old($oldKey, $defaultVal);
+                                        $type = $field['type'] ?? 'text';
+                                        $label = $field['label'] ?? $fieldKey;
+                                        $isRequired = !empty($field['required']);
+                                    @endphp
+
+                                    @if ($type === 'repeater')
+                                        {{-- Trường dạng danh sách repeater (Ví dụ Timeline) --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label">{{ $label }}</label>
+                                            <div class="mayhen_editor_repeater_list">
+                                                @php
+                                                    $items = is_array($val) ? $val : ($field['default'] ?? []);
+                                                @endphp
+                                                @foreach ($items as $rIdx => $rItem)
+                                                    <div class="mayhen_editor_repeater_item">
+                                                        <input type="text" 
+                                                               name="{{ $inputName }}[{{ $rIdx }}][time]" 
+                                                               class="mayhen_client_form_input" 
+                                                               value="{{ $rItem['time'] ?? '' }}" 
+                                                               placeholder="07:00"
+                                                               data-sync-key="{{ $fieldKey }}.{{ $rIdx }}.time">
+                                                        <input type="text" 
+                                                               name="{{ $inputName }}[{{ $rIdx }}][title]" 
+                                                               class="mayhen_client_form_input" 
+                                                               value="{{ $rItem['title'] ?? '' }}" 
+                                                               placeholder="Nội dung sự kiện..."
+                                                               data-sync-key="{{ $fieldKey }}.{{ $rIdx }}.title">
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            <div class="mayhen_editor_input_help">Chỉnh sửa giờ và các mốc trình tự cử hành hôn lễ</div>
+                                        </div>
+
+                                    @elseif ($type === 'gallery')
+                                        {{-- Trường Album ảnh --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label">{{ $label }}</label>
+                                            <div class="mayhen_editor_gallery_grid">
+                                                @for ($gIdx = 0; $gIdx < ($field['max_items'] ?? 10); $gIdx++)
+                                                    @php
+                                                        $gVal = is_array($val) && isset($val[$gIdx]) ? $val[$gIdx] : '';
+                                                    @endphp
+                                                    <input type="text" 
+                                                           name="{{ $inputName }}[{{ $gIdx }}]" 
+                                                           class="mayhen_client_form_input" 
+                                                           value="{{ $gVal }}" 
+                                                           placeholder="Link ảnh {{ $gIdx + 1 }}..."
+                                                           data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
+                                                @endfor
+                                            </div>
+                                            <div class="mayhen_editor_input_help">Nhập URL ảnh cưới trong album (để trống sẽ dùng ảnh mẫu có sẵn)</div>
+                                        </div>
+
+                                    @elseif ($type === 'image')
+                                        {{-- Trường Ảnh đơn kèm xem trước ảnh nhỏ --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            <div class="mayhen_editor_image_field_row">
+                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : asset('assets/client/invitations/net-muc-tinh-yeu/' . $val) }}" 
+                                                     alt="Xem trước ảnh" 
+                                                     class="mayhen_editor_image_field_preview"
+                                                     id="preview_thumb_{{ $fieldId }}"
+                                                     onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                <input type="text" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $inputName }}" 
+                                                       class="mayhen_client_form_input" 
+                                                       data-sync-key="{{ $fieldKey }}" 
+                                                       value="{{ is_string($val) ? $val : '' }}" 
+                                                       placeholder="{{ $field['placeholder'] ?? 'Dán đường dẫn ảnh...' }}"
+                                                       {{ $isRequired ? 'required' : '' }}>
+                                            </div>
+                                        </div>
+
+                                    @elseif ($type === 'textarea')
+                                        {{-- Trường Textarea --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            <textarea id="{{ $fieldId }}" 
+                                                      name="{{ $inputName }}" 
+                                                      class="mayhen_client_form_textarea" 
+                                                      rows="2" 
+                                                      data-sync-key="{{ $fieldKey }}" 
+                                                      placeholder="{{ $field['placeholder'] ?? '' }}"
+                                                      {{ $isRequired ? 'required' : '' }}>{{ is_string($val) ? $val : '' }}</textarea>
+                                        </div>
+
+                                    @elseif ($type === 'color')
+                                        {{-- Trường Color Accent --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label">{{ $label }}</label>
+                                            <div class="mayhen_editor_color_picker_wrap">
+                                                <input type="color" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $inputName }}" 
+                                                       class="mayhen_editor_color_input" 
+                                                       data-sync-key="{{ $fieldKey }}" 
+                                                       value="{{ $val ?: '#151515' }}">
+                                                <span style="font-size: 0.8125rem; color: var(--mayhen-color-text-main); font-weight: 500;">Bấm để đổi tông màu thiệp</span>
+                                            </div>
+                                        </div>
+
+                                    @else
+                                        {{-- Trường Text / Date / Time thông thường --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            <input type="{{ $type === 'date' ? 'date' : 'text' }}" 
+                                                   id="{{ $fieldId }}" 
+                                                   name="{{ $inputName }}" 
+                                                   class="mayhen_client_form_input" 
+                                                   data-sync-key="{{ $fieldKey }}" 
+                                                   value="{{ is_string($val) ? $val : '' }}" 
+                                                   placeholder="{{ $field['placeholder'] ?? '' }}"
+                                                   {{ $isRequired ? 'required' : '' }}>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
-
-                        <div class="mayhen_editor_field_grid_2" style="margin-top: 10px;">
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="groom_parents">Phụ mẫu Nhà Trai (Tùy chọn)</label>
-                                <input type="text" id="groom_parents" name="wedding[groom_parents]" class="mayhen_client_form_input" data-sync-key="wedding.groom_parents" value="{{ old('wedding.groom_parents', 'Ông: Nguyễn Văn A & Bà: Lê Thị B') }}" placeholder="Ông: ... & Bà: ...">
-                            </div>
-
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="bride_parents">Phụ mẫu Nhà Gái (Tùy chọn)</label>
-                                <input type="text" id="bride_parents" name="wedding[bride_parents]" class="mayhen_client_form_input" data-sync-key="wedding.bride_parents" value="{{ old('wedding.bride_parents', 'Ông: Trần Văn C & Bà: Phạm Thị D') }}" placeholder="Ông: ... & Bà: ...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BƯỚC 2: THỜI GIAN & SẢNH TIỆC CƯỚI -->
-                    <div class="mayhen_editor_step_content" data-step-panel="2">
-                        <div class="mayhen_editor_step_header">
-                            <h2 class="mayhen_editor_step_heading">
-                                <span>2. Thời Gian & Địa Điểm Tổ Chức Tiệc</span>
-                            </h2>
-                            <p class="mayhen_editor_step_subtext">Cung cấp ngày giờ cử hành hôn lễ để khách mời kịp thời sắp xếp chung vui.</p>
-                        </div>
-
-                        <div class="mayhen_editor_field_grid_2">
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="wedding_date">
-                                    Ngày cử hành hôn lễ <span style="color: var(--mayhen-color-danger);">*</span>
-                                </label>
-                                <input type="date" id="wedding_date" name="wedding[wedding_date]" class="mayhen_client_form_input" data-sync-key="wedding.wedding_date" value="{{ old('wedding.wedding_date', '2026-10-24') }}" required>
-                            </div>
-
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="venue_name">
-                                    Tên Sảnh Tiệc / Trung Tâm Hội Nghị <span style="color: var(--mayhen-color-danger);">*</span>
-                                </label>
-                                <input type="text" id="venue_name" name="wedding[venue_name]" class="mayhen_client_form_input" data-sync-key="wedding.venue_name" value="{{ old('wedding.venue_name', 'The White Palace Ballroom') }}" placeholder="Ví dụ: Trung Tâm Hội Nghị White Palace" required>
-                            </div>
-                        </div>
-
-                        <div class="mayhen_client_form_group" style="margin-top: 10px;">
-                            <label class="mayhen_client_form_label" for="venue_address">
-                                Địa chỉ cụ thể sảnh tiệc <span style="color: var(--mayhen-color-danger);">*</span>
-                            </label>
-                            <textarea id="venue_address" name="wedding[venue_address]" class="mayhen_client_form_textarea" rows="2" data-sync-key="wedding.venue_address" placeholder="Ví dụ: 194 Hoàng Văn Thụ, Phường 9, Quận Phú Nhuận, TP. Hồ Chí Minh" required>{{ old('wedding.venue_address', '194 Hoàng Văn Thụ, Phường 9, Phú Nhuận, TP. Hồ Chí Minh') }}</textarea>
-                            <div class="mayhen_editor_input_help">Khách có thể bấm trực tiếp để mở Google Maps chỉ đường</div>
-                        </div>
-                    </div>
-
-                    <!-- BƯỚC 3: HÌNH ẢNH & LỜI NGỎ YÊU THƯƠNG -->
-                    <div class="mayhen_editor_step_content" data-step-panel="3">
-                        <div class="mayhen_editor_step_header">
-                            <h2 class="mayhen_editor_step_heading">
-                                <span>3. Ảnh Cưới & Câu Chuyện Tình Yêu</span>
-                            </h2>
-                            <p class="mayhen_editor_step_subtext">Gợi nhắc những khoảnh khắc ngọt ngào nhất của hai bạn gửi tới quan khách.</p>
-                        </div>
-
-                        <div class="mayhen_client_form_group">
-                            <label class="mayhen_client_form_label" for="cover_photo_url">Đường dẫn ảnh cưới chính (Ảnh bìa)</label>
-                            <input type="url" id="cover_photo_url" name="wedding[cover_photo_url]" class="mayhen_client_form_input" data-sync-key="wedding.cover_photo_url" value="{{ old('wedding.cover_photo_url', $selectedTemplate->thumbnail_url) }}" placeholder="https://... dán link ảnh cưới chất lượng cao">
-                            <div class="mayhen_editor_input_help">Ảnh bìa đại diện hiển thị nổi bật trên đầu thiệp cưới</div>
-                        </div>
-
-                        <div class="mayhen_client_form_group" style="margin-top: 10px;">
-                            <label class="mayhen_client_form_label" for="story">Lời ngỏ tâm tình / Chuyện tình yêu (Love Story)</label>
-                            <textarea id="story" name="wedding[story]" class="mayhen_client_form_textarea" rows="3" data-sync-key="wedding.story" placeholder="Chia sẻ khoảnh khắc cầu hôn hoặc lời cảm ơn chân thành đến người thân...">{{ old('wedding.story', 'Yêu là khi nhìn thấy cả thế giới bình yên trong mắt một người. Cảm ơn bạn đã luôn đồng hành cùng chúng mình trên hành trình hạnh phúc này.') }}</textarea>
-                        </div>
-
-                        <div class="mayhen_client_form_group" style="margin-top: 10px;">
-                            <label class="mayhen_client_form_label" for="music_url">Bài hát nhạc nền hôn lễ (Link file MP3)</label>
-                            <input type="url" id="music_url" name="wedding[music_url]" class="mayhen_client_form_input" data-sync-key="wedding.music_url" value="{{ old('wedding.music_url', 'https://assets.mixkit.co/music/preview/mixkit-romantic-wedding-love-643.mp3') }}" placeholder="https://... link mp3 nhạc lãng mạn">
-                            <div class="mayhen_editor_input_help">Tự động phát nhạc êm dịu khi khách mở thiệp cưới</div>
-                        </div>
-                    </div>
-
-                    <!-- BƯỚC 4: MỪNG CƯỚI VIETQR & TÙY BIẾN GIAO DIỆN -->
-                    <div class="mayhen_editor_step_content" data-step-panel="4">
-                        <div class="mayhen_editor_step_header">
-                            <h2 class="mayhen_editor_step_heading">
-                                <span>4. Quà Mừng Cưới & Tùy Chỉnh Màu Sắc</span>
-                            </h2>
-                            <p class="mayhen_editor_step_subtext">Tích hợp mã QR mừng cưới từ xa và điều chỉnh màu sắc trang nhã hợp sở thích.</p>
-                        </div>
-
-                        <div class="mayhen_editor_field_grid_2">
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="bank_name">Tên Ngân Hàng Thụ Hưởng</label>
-                                <input type="text" id="bank_name" name="wedding[bank_name]" class="mayhen_client_form_input" data-sync-key="wedding.bank_name" value="{{ old('wedding.bank_name', 'Vietcombank') }}" placeholder="Ví dụ: Vietcombank, Techcombank, MB">
-                            </div>
-
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="bank_account_number">Số Tài Khoản</label>
-                                <input type="text" id="bank_account_number" name="wedding[bank_account_number]" class="mayhen_client_form_input" data-sync-key="wedding.bank_account_number" value="{{ old('wedding.bank_account_number', '1023456789') }}" placeholder="Nhập chính xác số tài khoản">
-                            </div>
-                        </div>
-
-                        <div class="mayhen_editor_field_grid_2" style="margin-top: 10px;">
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label" for="bank_account_name">Tên Chủ Tài Khoản</label>
-                                <input type="text" id="bank_account_name" name="wedding[bank_account_name]" class="mayhen_client_form_input" data-sync-key="wedding.bank_account_name" value="{{ old('wedding.bank_account_name', 'DANG MINH QUAN') }}" placeholder="DANG MINH QUAN">
-                            </div>
-
-                            <div class="mayhen_client_form_group">
-                                <label class="mayhen_client_form_label">Màu Sắc Nhấn Chủ Đạo</label>
-                                <div class="mayhen_editor_color_picker_wrap">
-                                    <input type="color" id="accent_color" name="invitation[custom_config][accent_color]" class="mayhen_editor_color_input" data-sync-key="invitation.custom_config.accent_color" value="{{ old('invitation.custom_config.accent_color', '#C5A880') }}">
-                                    <span style="font-size: 0.8125rem; color: var(--mayhen-color-text-main); font-weight: 500;">Bấm để đổi tông màu thiệp</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </form>
             </div>
 
-            <!-- Right Column: Live Sticky Phone Preview (Trên PC) -->
+            <!-- Right Column: Live Iframe Phone Preview (Hiển thị CHÍNH XÁC MẪU THIỆP ĐƯỢC CHỌN) -->
             <div class="mayhen_editor_preview_panel">
                 <div class="mayhen_editor_phone_wrap">
                     <div class="mayhen_editor_phone_notch"></div>
-                    <div class="mayhen_editor_phone_screen">
-                        <article class="mayhen_invitation_card" style="box-shadow: none; border: none; width: 100%; padding: 12px 10px;">
-                            <!-- Header -->
-                            <div class="mayhen_invitation_card_header" style="padding-top: 6px;">
-                                <span class="mayhen_invitation_subhead" style="font-size: 0.75rem; letter-spacing: 0.15em;">Save Our Date</span>
-                                <h1 class="mayhen_invitation_names" data-mayhen-preview="names" style="font-size: 1.625rem; margin: 6px 0;">
-                                    Đặng Minh Quân <span style="font-family: var(--mayhen-font-script); font-style: italic; color: var(--mayhen-color-primary);">&</span> Lê Ái Như
-                                </h1>
-                                <p style="font-size: 0.78125rem; color: var(--mayhen-color-text-muted); font-style: italic;" data-mayhen-preview="story">
-                                    "Yêu là khi nhìn thấy cả thế giới bình yên trong mắt một người."
-                                </p>
-                            </div>
-
-                            <!-- Cover Image -->
-                            <div class="mayhen_invitation_photo_wrap" style="padding: 0 4px; margin-bottom: 14px;">
-                                <img src="{{ $selectedTemplate->thumbnail_url }}" alt="Ảnh cưới preview" class="mayhen_invitation_photo" data-mayhen-preview="photo" style="aspect-ratio: 4/5; border-radius: 8px;">
-                            </div>
-
-                            <!-- Countdown Card -->
-                            <div class="mayhen_invitation_countdown_box" style="margin: 0 4px 14px; padding: 10px;">
-                                <div class="mayhen_invitation_countdown_title" data-mayhen-preview="date" style="font-size: 0.75rem; margin-bottom: 0;">
-                                    Ngày 24.10.2026
-                                </div>
-                            </div>
-
-                            <!-- Event Details -->
-                            <section class="mayhen_invitation_event_section" style="padding: 12px 8px; margin: 0 4px 14px;">
-                                <div class="mayhen_invitation_event_time" style="font-size: 0.8125rem;">18:00 &bull; Tiệc Mừng Hôn Lễ</div>
-                                <div class="mayhen_invitation_event_venue" data-mayhen-preview="venue" style="font-size: 0.875rem; font-weight: 600; margin: 4px 0;">
-                                    The White Palace Ballroom
-                                </div>
-                                <div class="mayhen_invitation_event_addr" data-mayhen-preview="address" style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);">
-                                    194 Hoàng Văn Thụ, Phường 9, Phú Nhuận, TP. Hồ Chí Minh
-                                </div>
-                            </section>
-
-                            <!-- VietQR Section Preview -->
-                            <div style="background: #FFFFFF; border: 1px dashed var(--mayhen-color-border); border-radius: 8px; padding: 10px; text-align: center; margin: 0 4px;">
-                                <div style="font-size: 0.75rem; font-weight: 600; color: var(--mayhen-color-primary-hover);">Hộp Mừng Cưới VietQR</div>
-                                <div style="font-size: 0.6875rem; color: var(--mayhen-color-text-muted);" data-mayhen-preview="banking">
-                                    Vietcombank • 1023456789 • DANG MINH QUAN
-                                </div>
-                            </div>
-                        </article>
+                    <div class="mayhen_editor_phone_screen mayhen_editor_phone_screen_iframe">
+                        <iframe 
+                            id="mayhen_editor_preview_iframe"
+                            src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor"
+                            class="mayhen_editor_preview_iframe"
+                            title="Bản xem trước trực tiếp mẫu thiệp cưới {{ $selectedTemplate->name }}"
+                            loading="eager"
+                        ></iframe>
                     </div>
                 </div>
 
                 <div class="mayhen_editor_preview_hint">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    <span>Mọi thông tin bạn nhập đều tự động cập nhật ngay lập tức</span>
+                    <span>Mọi thông tin bạn sửa bên trái đều phản chiếu thời gian thực trên mẫu thiệp</span>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Sticky Bottom Action Bar (Cố định ở đáy màn hình cả PC & Mobile) -->
+        <!-- 4. Sticky Bottom Action Bar -->
         <div class="mayhen_editor_bottom_bar">
             <div class="mayhen_editor_bottom_bar_inner">
                 <div class="mayhen_editor_bottom_nav_btns">
@@ -312,24 +328,29 @@
             </div>
         </div>
 
-        <!-- 5. Modal Fullscreen Preview trên Mobile (Bật lên chỉ 1 chạm, đóng lại tiếp tục gõ) -->
+        <!-- 5. Modal Fullscreen Preview trên Mobile -->
         <div class="mayhen_editor_modal_preview" id="mayhen_mobile_preview_modal" role="dialog" aria-modal="true" aria-label="Xem trước thiệp cưới toàn màn hình">
             <div class="mayhen_editor_modal_sheet">
                 <div class="mayhen_editor_modal_header">
                     <div style="font-weight: 600; font-size: 0.9375rem; color: var(--mayhen-color-text-main);">
-                        Bản Xem Thử Trực Tiếp
+                        Bản Xem Thử Trực Tiếp ({{ $selectedTemplate->name }})
                     </div>
                     <button type="button" class="mayhen_editor_modal_close_btn" data-mayhen-action="close-preview-modal" aria-label="Đóng bản xem trước">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
-                <div class="mayhen_editor_modal_body" id="mayhen_mobile_modal_body">
-                    <!-- Cloned realtime content injects here via JS -->
+                <div class="mayhen_editor_modal_body" id="mayhen_mobile_modal_body" style="padding: 0; height: calc(100vh - 120px); overflow: hidden;">
+                    <iframe 
+                        id="mayhen_editor_mobile_preview_iframe"
+                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor"
+                        style="width: 100%; height: 100%; border: none; display: block;"
+                        title="Bản xem trước di động"
+                    ></iframe>
                 </div>
             </div>
         </div>
 
-        <!-- 6. Modal Đổi Mẫu Thiệp (Template Switcher Modal) -->
+        <!-- 6. Modal Đổi Mẫu Thiệp -->
         <div class="mayhen_editor_template_modal" id="mayhen_template_switcher_modal" role="dialog" aria-modal="true" aria-label="Chọn mẫu thiệp khác">
             <div class="mayhen_editor_template_modal_box">
                 <div class="mayhen_editor_modal_header">

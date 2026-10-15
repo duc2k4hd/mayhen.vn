@@ -93,6 +93,15 @@ class TemplateController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $customView = "client.invitations.{$template->slug}.template";
+        if (view()->exists($customView)) {
+            return view($customView, [
+                'template' => $template,
+                'wedding' => null,
+                'invitation' => null,
+            ]);
+        }
+
         return view('client.pages.preview', [
             'template' => $template,
         ]);

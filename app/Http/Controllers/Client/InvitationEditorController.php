@@ -139,10 +139,21 @@ class InvitationEditorController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        $template = $invitation->template;
+        $customView = $template ? "client.invitations.{$template->slug}.template" : null;
+
+        if ($customView && view()->exists($customView)) {
+            return view($customView, [
+                'invitation' => $invitation,
+                'wedding' => $invitation->wedding,
+                'template' => $template,
+            ]);
+        }
+
         return view('client.pages.public-invitation', [
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
-            'template' => $invitation->template,
+            'template' => $template,
         ]);
     }
 }

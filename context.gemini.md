@@ -424,4 +424,52 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+## 10. NHẬT KÝ CẬP NHẬT & TÍCH HỢP MẪU THIỆP (CHANGELOG)
+
+### 📌 Phiên bản 1.1.0 — Tích hợp mẫu chuẩn độc bản "Nét Mực Tình Yêu" (net-muc-tinh-yeu)
+- **Dọn dẹp hệ thống**:
+  - Đã làm sạch toàn bộ dữ liệu mẫu thiệp cũ trong database (`invitation_templates`, `invitations`, `weddings`, `guests`, `guest_responses`).
+  - Đã dọn dẹp các thư mục view cũ trong `resources/views/client/invitations/`.
+- **Tích hợp mẫu thiệp flagship "Nét Mực Tình Yêu"**:
+  - **Slug**: `net-muc-tinh-yeu`
+  - **Tên**: Nét Mực Tình Yêu (Phong cách Quiet Luxury, Thư pháp phương Tây Quarzo & Editorial sang trọng).
+  - **Thư mục Assets**: `public/assets/client/invitations/net-muc-tinh-yeu/` (toàn bộ 28 hình ảnh, font chữ Quarzo, nhạc nền MP3, styles.css, script.js native).
+  - **Script tương tác động**: `public/assets/client/invitations/net-muc-tinh-yeu/script.js` kết nối mượt mà với biến toàn cục `window.__MAYHEN_WEDDING_DATE`, `window.__MAYHEN_WEDDING_TARGET_TIME` và mã VietQR `window.__MAYHEN_GIFT_QR_GROOM` / `window.__MAYHEN_GIFT_QR_BRIDE`.
+  - **Blade Template**: `resources/views/client/invitations/net-muc-tinh-yeu/template.blade.php` hỗ trợ cả chế độ nhúng Iframe (`embed=1`) và chế độ thiệp độc lập của khách hàng.
+  - **Schema Cấu Hình Khách Hàng**: `resources/views/client/invitations/net-muc-tinh-yeu/schema.json` mô tả 100% các trường dữ liệu tùy chỉnh:
+    1. Thông tin cô dâu, chú rể & phụ mẫu hai bên.
+    2. Hai tab sự kiện riêng biệt: Tiệc Cưới & Lễ Thành Hôn Nhà Gái vs Nhà Trai (ngày giờ, âm lịch, địa chỉ, link bản đồ Google Maps).
+    3. Bộ sưu tập ảnh: Ảnh bìa phong bì mở tem sáp, ảnh mở thiệp, ảnh dọc (Hero photo), bộ 3 ảnh ghép Triptych, Album 10 ảnh Lightbox chạm phóng to sắc nét, ảnh chân trang.
+    4. Lời ngỏ tình yêu (Love story / Quote).
+    5. Lịch trình ngày cưới (Timeline mốc thời gian tùy biến).
+    6. Quy định trang phục (Dresscode gợi ý màu sắc).
+    7. Bộ đếm ngược ngày cưới & Lịch tháng tự động tính toán.
+    8. Xác nhận tham dự (RSVP Online) & Sổ lưu bút lời chúc.
+    9. Hộp mừng cưới VietQR riêng biệt cho Chú Rể và Cô Dâu.
+    10. Nhạc nền MP3 lãng mạn kèm phím đĩa than quay nhẹ nhàng.
+  - **Controllers cập nhật**:
+    - `TemplateController::preview()`: Nhận diện và tự động nạp view `client.invitations.{$template->slug}.template` khi xem thử.
+    - `InvitationEditorController::show()`: Nhận diện và tự động nạp template tương ứng khi khách mở trang thiệp đã xuất bản `/thiep/{slug}`.
+  - **Database Seeder**: `InvitationTemplateSeeder.php` thiết lập duy nhất mẫu `net-muc-tinh-yeu` với đầy đủ metadata, tier Pro VIP, complexity Deluxe, tags và thống kê.
+  - **Kiểm thử tự động**: Đã bổ sung `tests/Feature/NetMucTinhYeuTemplateTest.php` với 100% tests passed (xem chi tiết, xem thử preview, hiển thị dữ liệu tùy biến của cặp đôi).
+
+### 📌 Phiên bản 1.1.1 — Studio Tạo Thiệp Thông Minh Thích Ứng Theo Schema (Schema-Driven Live Editor)
+- **Vấn đề đã giải quyết triệt để**: Khắc phục tình trạng "mẫu thiệp một kiểu, vào tạo thiệp lại hiển thị một kiểu", loại bỏ hoàn toàn khung preview tĩnh hardcode và form cứng ngắc không phản ánh đúng mẫu thiệp.
+- **Khung Preview Điện Thoại (Exact Template Live Preview)**:
+  - Khung điện thoại trong `editor.blade.php` được nhúng trực tiếp `<iframe>` trỏ tới route xem thử của chính mẫu thiệp đó: `/xem-thu/{slug}?embed=1&mode=editor`.
+  - Khách hàng chọn mẫu nào (ví dụ: Nét Mực Tình Yêu), chiếc điện thoại bên phải hiển thị **chính xác 100% mẫu thiệp đó** với đầy đủ phong bì tem sáp, thư pháp Quarzo, 2 tab sự kiện, timeline, album ảnh, VietQR...
+- **Form Động Thích Ứng Theo Từng Mẫu (Schema-Driven Form Engine)**:
+  - Form bên trái tự động duyệt qua `schema['sections']` để sinh số bước Stepper Navigation và các trường dữ liệu tương ứng riêng biệt cho từng mẫu.
+  - Hỗ trợ đầy đủ các loại input: `text`, `textarea`, `date`, `time`, `image` (kèm preview ảnh nhỏ), `repeater` (Timeline mốc thời gian), `gallery` (Album 10 ảnh), `color`.
+  - Tự động chuẩn hóa input name chuẩn Laravel: `wedding[groom_name]`, `wedding[extra_data][bride_party_address]`, `wedding[extra_data][timeline]`, v.v.
+- **Đồng Bộ Hai Chiều Thời Gian Thực (PostMessage Realtime Sync)**:
+  - Khi người dùng gõ vào bất kỳ trường nào trên form, `editor.js` tự động phát tín hiệu `MAYHEN_SYNC_INPUT` qua `postMessage` sang iframe.
+  - Template của mẫu thiệp lắng nghe và cập nhật DOM ngay lập tức (tên cô dâu chú rể, ngày cưới, ảnh cưới, phụ mẫu, địa chỉ tiệc, quote, dresscode...).
+- **Tối Ưu Stepper Navigation Tabs**:
+  - Khắc phục lỗi các tab bị co ép đè chữ lên nhau bằng cách thiết lập `flex: 0 0 auto`, `white-space: nowrap`, cuộn ngang cảm ứng mượt mà.
+  - Sử dụng tiêu đề ngắn gọn (Short Title) trên các tab (Đôi Uyên Ương, Nhà Gái, Nhà Trai, Ảnh Cưới, Lịch Trình, Mừng Cưới) kết hợp tooltip đầy đủ.
+- **Kiểm thử tự động**: Đã bổ sung test case Feature kiểm tra iframe preview và dynamic schema fields, đạt **9/9 tests passed (96 assertions)**.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
