@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>{{ $invitation->title }} — Mây Hẹn</title>
+    <title>{{ $invitation->title }} — {{ config('app.name') }}</title>
     <meta name="description" content="Trân trọng kính mời quý khách tới chung vui cùng {{ $wedding->groom_name }} & {{ $wedding->bride_name }}.">
     <link rel="canonical" href="{{ url()->current() }}">
 

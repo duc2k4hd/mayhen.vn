@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', 'Liên Hệ & Hỗ Trợ Khách Hàng — Mây Hẹn')
-@section('meta_description', 'Kênh hỗ trợ và liên hệ chính thức của Mây Hẹn (mayhen.vn) dành cho cô dâu chú rể và đối tác studio.')
+@section('title', 'Liên Hệ & Hỗ Trợ Khách Hàng — ' . config('app.name'))
+@section('meta_description', 'Kênh hỗ trợ và liên hệ chính thức của ' . config('app.name') . ' (mayhen.vn) dành cho cô dâu chú rể và đối tác studio.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
@@ -11,9 +11,9 @@
     <div class="mayhen_client_layout_container_narrow mayhen_info_wrapper">
         <header class="mayhen_info_header">
             <span class="mayhen_info_subtitle">Chăm Sóc & Đồng Hành</span>
-            <h1 class="mayhen_info_title">Liên Hệ Với Mây Hẹn</h1>
+            <h1 class="mayhen_info_title">Liên Hệ Với {{ config('app.name') }}</h1>
             <p class="mayhen_info_lead">
-                Đội ngũ Mây Hẹn luôn sẵn sàng hỗ trợ bạn hoàn thiện tấm thiệp cưới hoàn hảo nhất.
+                Đội ngũ {{ config('app.name') }} luôn sẵn sàng hỗ trợ bạn hoàn thiện tấm thiệp cưới hoàn hảo nhất.
             </p>
         </header>
 

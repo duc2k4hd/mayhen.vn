@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', 'Điều Khoản Dịch Vụ — Mây Hẹn')
-@section('meta_description', 'Quy định và điều khoản sử dụng nền tảng thiệp cưới online Mây Hẹn.')
+@section('title', 'Điều Khoản Dịch Vụ — ' . config('app.name'))
+@section('meta_description', 'Quy định và điều khoản sử dụng nền tảng thiệp cưới online ' . config('app.name') . '.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
@@ -20,7 +20,7 @@
         <article class="mayhen_info_content">
             <h2>1. Chấp Thuận Điều Khoản</h2>
             <p>
-                Khi truy cập và sử dụng Mây Hẹn (mayhen.vn), bạn đồng ý tuân thủ các điều khoản và quy định được nêu tại trang này. Nếu không đồng ý, xin vui lòng ngừng sử dụng dịch vụ.
+                Khi truy cập và sử dụng {{ config('app.name') }} (mayhen.vn), bạn đồng ý tuân thủ các điều khoản và quy định được nêu tại trang này. Nếu không đồng ý, xin vui lòng ngừng sử dụng dịch vụ.
             </p>
 
             <h2>2. Quyền Sở Hữu Nội Dung & Hình Ảnh</h2>
@@ -30,12 +30,12 @@
 
             <h2>3. Chính Sách Thanh Toán & Hoàn Tiền</h2>
             <p>
-                Khách hàng được quyền xem thử và kiểm tra đầy đủ mọi tính năng trước khi quyết định nâng cấp gói dịch vụ. Khi giao dịch thanh toán thành công, dịch vụ xuất bản thiệp sẽ được kích hoạt tự động. Các yêu cầu hoàn tiền sẽ được xem xét nếu có lỗi kỹ thuật từ phía hệ thống Mây Hẹn khiến thiệp không thể hoạt động.
+                Khách hàng được quyền xem thử và kiểm tra đầy đủ mọi tính năng trước khi quyết định nâng cấp gói dịch vụ. Khi giao dịch thanh toán thành công, dịch vụ xuất bản thiệp sẽ được kích hoạt tự động. Các yêu cầu hoàn tiền sẽ được xem xét nếu có lỗi kỹ thuật từ phía hệ thống {{ config('app.name') }} khiến thiệp không thể hoạt động.
             </p>
 
             <h2>4. Giới Hạn Trách Nhiệm</h2>
             <p>
-                Mây Hẹn không can thiệp và không chịu trách nhiệm đối với các giao dịch tài chính mừng cưới giữa khách mời và chủ hôn thông qua mã QR được cung cấp trong thiệp.
+                {{ config('app.name') }} không can thiệp và không chịu trách nhiệm đối với các giao dịch tài chính mừng cưới giữa khách mời và chủ hôn thông qua mã QR được cung cấp trong thiệp.
             </p>
         </article>
     </div>

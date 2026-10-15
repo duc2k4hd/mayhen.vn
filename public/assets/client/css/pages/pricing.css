@@ -91,7 +91,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
-    margin-bottom: var(--mayhen-space-4xl);
+    margin: var(--mayhen-space-2xl) 0;
     align-items: stretch;
 }
 

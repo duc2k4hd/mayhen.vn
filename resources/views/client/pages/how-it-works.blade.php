@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', 'Hướng Dẫn Tạo Thiệp Cưới Online — Mây Hẹn')
-@section('meta_description', 'Các bước tạo thiệp cưới online đơn giản và nhanh chóng trên nền tảng Mây Hẹn.')
+@section('title', 'Hướng Dẫn Tạo Thiệp Cưới Online — ' . config('app.name'))
+@section('meta_description', 'Các bước tạo thiệp cưới online đơn giản và nhanh chóng trên nền tảng ' . config('app.name') . '.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
@@ -12,7 +12,7 @@
     <div class="mayhen_client_layout_container mayhen_info_wrapper">
         <header class="mayhen_info_header">
             <span class="mayhen_info_subtitle">Quy Trình 4 Bước</span>
-            <h1 class="mayhen_info_title">Cách Tạo Thiệp Cưới Tại Mây Hẹn</h1>
+            <h1 class="mayhen_info_title">Cách Tạo Thiệp Cưới Tại {{ config('app.name') }}</h1>
             <p class="mayhen_info_lead">
                 Dễ dàng hoàn thiện thiệp cưới online đẳng cấp trong vòng vài phút mà không cần bất kỳ kiến thức nào về đồ họa.
             </p>
@@ -23,7 +23,7 @@
                 <div class="mayhen_home_step_number">01</div>
                 <h2 class="mayhen_home_step_title">Khám Phá & Chọn Mẫu</h2>
                 <p class="mayhen_home_step_desc">
-                    Truy cập kho mẫu thiệp Mây Hẹn và chọn phong cách phù hợp với chủ đề đám cưới của bạn: Quiet Luxury, Editorial hoặc Minimal.
+                    Truy cập kho mẫu thiệp {{ config('app.name') }} và chọn phong cách phù hợp với chủ đề đám cưới của bạn: Quiet Luxury, Editorial hoặc Minimal.
                 </p>
             </div>
 

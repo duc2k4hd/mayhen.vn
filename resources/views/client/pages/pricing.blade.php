@@ -1,8 +1,8 @@
 @extends('client.layouts.master')
 
-@section('title', 'Bảng Giá Thiệp Cưới Online Chi Tiết '. date('Y').' | Mây Hẹn')
-@section('meta_description', 'Xem bảng giá thiệp cưới online mới nhất '. date('Y').' tại Mây Hẹn. Giá thiệp cưới từ 0đ (miễn phí), gói Plus 149.000đ, Pro 299.000đ dùng trọn đời. Không chi phí ẩn, tiết kiệm đến 90% so với in thiệp giấy.')
-@section('meta_keywords', 'bảng giá thiệp cưới, giá thiệp cưới, giá thiệp cưới online, chi phí làm thiệp cưới, giá in thiệp cưới, thiệp cưới online giá rẻ, thiệp cưới online miễn phí, mây hẹn, mayhen.vn')
+@section('title', 'Bảng Giá Thiệp Cưới Online Chi Tiết '. date('Y').' | ' . config('app.name'))
+@section('meta_description', 'Xem bảng giá thiệp cưới online mới nhất '. date('Y').' tại ' . config('app.name') . '. Giá thiệp cưới từ 0đ (miễn phí), gói Plus 149.000đ, Pro 299.000đ dùng trọn đời. Không chi phí ẩn, tiết kiệm đến 90% so với in thiệp giấy.')
+@section('meta_keywords', 'bảng giá thiệp cưới, giá thiệp cưới, giá thiệp cưới online, chi phí làm thiệp cưới, giá in thiệp cưới, thiệp cưới online giá rẻ, thiệp cưới online miễn phí, ' . mb_strtolower(config('app.name')))
 
 @push('schema')
 <script type="application/ld+json">
@@ -30,11 +30,11 @@
         [
             '@type' => 'Product',
             '@id' => url('/bang-gia') . '/#product',
-            'name' => 'Thiệp Cưới Online Mây Hẹn',
+            'name' => 'Thiệp Cưới Online ' . config('app.name'),
             'description' => 'Nền tảng tạo thiệp cưới online, thiệp cưới điện tử cao cấp. Bảng giá thiệp cưới trọn gói dùng trọn đời không phát sinh phí ẩn.',
             'brand' => [
                 '@type' => 'Brand',
-                'name' => 'Mây Hẹn',
+                'name' => config('app.name'),
             ],
             'offers' => [
                 '@type' => 'AggregateOffer',
@@ -50,10 +50,10 @@
             'mainEntity' => [
                 [
                     '@type' => 'Question',
-                    'name' => 'Giá thiệp cưới online tại Mây Hẹn là bao nhiêu?',
+                    'name' => 'Giá thiệp cưới online tại ' . config('app.name') . ' là bao nhiêu?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Bảng giá thiệp cưới online tại Mây Hẹn gồm 3 gói: Gói Trải Nghiệm (Free) giá 0đ, Gói Hạnh Phúc (Plus) giá 149.000đ và Gói Trọn Vẹn (Pro VIP) giá 299.000đ. Toàn bộ thanh toán 1 lần duy nhất cho toàn bộ đám cưới, dùng trọn đời mà không thu phí duy trì hàng tháng.',
+                        'text' => 'Bảng giá thiệp cưới online tại ' . config('app.name') . ' gồm 3 gói: Gói Trải Nghiệm (Free) giá 0đ, Gói Hạnh Phúc (Plus) giá 149.000đ và Gói Trọn Vẹn (Pro VIP) giá 299.000đ. Toàn bộ thanh toán 1 lần duy nhất cho toàn bộ đám cưới, dùng trọn đời mà không thu phí duy trì hàng tháng.',
                     ],
                 ],
                 [
@@ -69,7 +69,7 @@
                     'name' => 'Gói thiệp cưới miễn phí (0đ) có bị giới hạn khách mời hay bị xóa sau đám cưới không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Gói miễn phí tại Mây Hẹn cho phép bạn tạo 1 thiệp cưới tối giản, xem trước và chia sẻ không giới hạn số lượng khách truy cập. Thiệp không bị chèn quảng cáo khó chịu của bên thứ ba.',
+                        'text' => 'Gói miễn phí tại ' . config('app.name') . ' cho phép bạn tạo 1 thiệp cưới tối giản, xem trước và chia sẻ không giới hạn số lượng khách truy cập. Thiệp không bị chèn quảng cáo khó chịu của bên thứ ba.',
                     ],
                 ],
                 [
@@ -85,7 +85,7 @@
                     'name' => 'Có phát sinh khoản phí duy trì, phí server hay phí nhận tiền mừng cưới không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Hoàn toàn không. Mây Hẹn cam kết không phí duy trì server, không phí gia hạn ẩn. Tiền mừng cưới qua mã QR chuyển thẳng 100% vào tài khoản ngân hàng chính chủ của cô dâu chú rể, Mây Hẹn không giữ tiền và không thu bất kỳ đồng phí giao dịch nào.',
+                        'text' => 'Hoàn toàn không. ' . config('app.name') . ' cam kết không phí duy trì server, không phí gia hạn ẩn. Tiền mừng cưới qua mã QR chuyển thẳng 100% vào tài khoản ngân hàng chính chủ của cô dâu chú rể, ' . config('app.name') . ' không giữ tiền và không thu bất kỳ đồng phí giao dịch nào.',
                     ],
                 ],
                 [
@@ -122,7 +122,7 @@
                 <span class="mayhen_pricing_title_accent">Thanh Toán 1 Lần, Dùng Trọn Đời</span>
             </h1>
             <p class="mayhen_pricing_desc">
-                So với giá in thiệp cưới giấy truyền thống từ 3 - 6 triệu đồng, thiệp cưới online Mây Hẹn giúp bạn tiết kiệm đến 90% chi phí. Dùng thử miễn phí, chỉ trả tiền khi bạn hoàn toàn hài lòng với thiệp mời của mình.
+                So với giá in thiệp cưới giấy truyền thống từ 3 - 6 triệu đồng, thiệp cưới online {{ config('app.name') }} giúp bạn tiết kiệm đến 90% chi phí. Dùng thử miễn phí, chỉ trả tiền khi bạn hoàn toàn hài lòng với thiệp mời của mình.
             </p>
 
             <div class="mayhen_pricing_trust_strip">
@@ -215,7 +215,7 @@
                         <tr>
                             <th>Tiêu Chí So Sánh</th>
                             <th>Thiệp Cưới In Giấy Truyền Thống</th>
-                            <th>Thiệp Cưới Online Mây Hẹn</th>
+                            <th>Thiệp Cưới Online {{ config('app.name') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -376,13 +376,13 @@
         </section>
 
         <!-- ==========================================
-             5. BOX 4 CAM KẾT VỀ GIÁ TẠI MÂY HẸN
+             5. BOX 4 CAM KẾT VỀ GIÁ TẠI {{ mb_strtoupper(config('app.name')) }}
              ========================================== -->
         <section class="mayhen_pricing_section" aria-labelledby="cam-ket-gia-heading">
             <div class="mayhen_pricing_section_header">
                 <span class="mayhen_pricing_section_kicker">Sự Khác Biệt</span>
                 <h2 id="cam-ket-gia-heading" class="mayhen_pricing_section_title">
-                    Tại Sao Giá Thiệp Cưới Online Mây Hẹn Được Tin Dùng?
+                    Tại Sao Giá Thiệp Cưới Online {{ config('app.name') }} Được Tin Dùng?
                 </h2>
                 <p class="mayhen_pricing_section_desc">
                     Chúng tôi định giá dựa trên giá trị thật, không cạnh tranh bằng cách giấu bớt chi phí rồi đòi tiền phụ thu về sau.
@@ -397,7 +397,7 @@
                     <div>
                         <h3 class="mayhen_pricing_diff_title">1. Tuyệt Đối Không Chèn Quảng Cáo Rác</h3>
                         <p class="mayhen_pricing_diff_text">
-                            Nhiều website làm thiệp cưới miễn phí thường chèn banner quảng cáo game, vay tiền, thực phẩm chức năng nhấp nháy làm mất đi sự trang nghiêm của ngày cưới. Mây Hẹn cam kết giao diện 100% sạch sẽ, thanh lịch theo chuẩn Quiet Luxury.
+                            Nhiều website làm thiệp cưới miễn phí thường chèn banner quảng cáo game, vay tiền, thực phẩm chức năng nhấp nháy làm mất đi sự trang nghiêm của ngày cưới. {{ config('app.name') }} cam kết giao diện 100% sạch sẽ, thanh lịch theo chuẩn Quiet Luxury.
                         </p>
                     </div>
                 </div>
@@ -421,7 +421,7 @@
                     <div>
                         <h3 class="mayhen_pricing_diff_title">3. Nhận Tiền Mừng Cưới 0% Phí Trung Gian</h3>
                         <p class="mayhen_pricing_diff_text">
-                            Khách mời quét mã QR mừng cưới là tiền chuyển thẳng 100% về tài khoản ngân hàng chính chủ của cô dâu chú rể. Mây Hẹn không giữ hộ tiền và không thu bất kỳ đồng phí giao dịch nào.
+                            Khách mời quét mã QR mừng cưới là tiền chuyển thẳng 100% về tài khoản ngân hàng chính chủ của cô dâu chú rể. {{ config('app.name') }} không giữ hộ tiền và không thu bất kỳ đồng phí giao dịch nào.
                         </p>
                     </div>
                 </div>
@@ -499,10 +499,10 @@
                 <article class="mayhen_pricing_faq_item">
                     <h3 class="mayhen_pricing_faq_q">
                         <span class="mayhen_pricing_faq_q_badge">Q.</span>
-                        Giá thiệp cưới online tại Mây Hẹn là bao nhiêu? Có phát sinh thêm tiền không?
+                        Giá thiệp cưới online tại {{ config('app.name') }} là bao nhiêu? Có phát sinh thêm tiền không?
                     </h3>
                     <p class="mayhen_pricing_faq_a">
-                        Mây Hẹn có 3 gói niêm yết rõ ràng: <strong>Gói Trải Nghiệm (Free) giá 0đ</strong>, <strong>Gói Hạnh Phúc (Plus) giá 149.000đ</strong> và <strong>Gói Trọn Vẹn (Pro) giá 299.000đ</strong>. Đây là mức giá trọn gói thanh toán đúng 1 lần cho cả đám cưới, tuyệt đối không có phụ phí hay phát sinh bất kỳ khoản nào khác.
+                        {{ config('app.name') }} có 3 gói niêm yết rõ ràng: <strong>Gói Trải Nghiệm (Free) giá 0đ</strong>, <strong>Gói Hạnh Phúc (Plus) giá 149.000đ</strong> và <strong>Gói Trọn Vẹn (Pro) giá 299.000đ</strong>. Đây là mức giá trọn gói thanh toán đúng 1 lần cho cả đám cưới, tuyệt đối không có phụ phí hay phát sinh bất kỳ khoản nào khác.
                     </p>
                 </article>
 
@@ -532,7 +532,7 @@
                         Khách mời lớn tuổi trong gia đình có biết mở xem thiệp cưới online không?
                     </h3>
                     <p class="mayhen_pricing_faq_a">
-                        Tất cả mẫu thiệp tại Mây Hẹn đều được tối ưu giao diện cực kỳ trực quan, font chữ to rõ ràng, nút bấm lớn. Người nhận chỉ cần bấm vào đường link gửi qua Zalo là xem được ngay trên trình duyệt mà không cần cài đặt thêm ứng dụng nào.
+                        Tất cả mẫu thiệp tại {{ config('app.name') }} đều được tối ưu giao diện cực kỳ trực quan, font chữ to rõ ràng, nút bấm lớn. Người nhận chỉ cần bấm vào đường link gửi qua Zalo là xem được ngay trên trình duyệt mà không cần cài đặt thêm ứng dụng nào.
                     </p>
                 </article>
 
@@ -552,7 +552,7 @@
                         Tiền mừng cưới gửi qua mã QR trên thiệp sẽ về tài khoản của ai?
                     </h3>
                     <p class="mayhen_pricing_faq_a">
-                        Tiền mừng chuyển thẳng 100% vào tài khoản ngân hàng cá nhân của cô dâu hoặc chú rể theo mã VietQR chính chủ bạn cài đặt. Mây Hẹn không can thiệp, không giữ tiền và không thu bất kỳ khoản chiết khấu nào.
+                        Tiền mừng chuyển thẳng 100% vào tài khoản ngân hàng cá nhân của cô dâu hoặc chú rể theo mã VietQR chính chủ bạn cài đặt. {{ config('app.name') }} không can thiệp, không giữ tiền và không thu bất kỳ khoản chiết khấu nào.
                     </p>
                 </article>
             </div>

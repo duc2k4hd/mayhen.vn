@@ -3,7 +3,7 @@
         <div class="mayhen_client_footer_grid">
             <!-- Brand Column -->
             <div class="mayhen_client_footer_brand_col">
-                <span class="mayhen_client_footer_brand_title">Mây Hẹn</span>
+                <span class="mayhen_client_footer_brand_title">{{ config('app.name') }}</span>
                 <p class="mayhen_client_footer_brand_desc">
                     Nền tảng tạo thiệp cưới online cao cấp, mang phong cách Quiet Luxury và trải nghiệm cảm xúc trọn vẹn dành cho ngày trọng đại của bạn.
                 </p>
@@ -38,7 +38,7 @@
             <div>
                 <h3 class="mayhen_client_footer_nav_title">Thông Tin</h3>
                 <ul class="mayhen_client_footer_nav_list">
-                    <li><a href="{{ route('about') }}" class="mayhen_client_footer_nav_link">Về Mây Hẹn</a></li>
+                    <li><a href="{{ route('about') }}" class="mayhen_client_footer_nav_link">Về {{ config('app.name') }}</a></li>
                     <li><a href="{{ route('contact') }}" class="mayhen_client_footer_nav_link">Liên Hệ Studio</a></li>
                     <li><a href="{{ route('terms') }}" class="mayhen_client_footer_nav_link">Điều Khoản Dịch Vụ</a></li>
                     <li><a href="{{ route('privacy') }}" class="mayhen_client_footer_nav_link">Chính Sách Bảo Mật</a></li>
@@ -48,7 +48,7 @@
 
         <div class="mayhen_client_footer_bottom">
             <div>
-                &copy; {{ date('Y') }} Mây Hẹn (mayhen.vn). Tất cả quyền được bảo lưu.
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Tất cả quyền được bảo lưu.
             </div>
             <div class="mayhen_client_footer_legal_links">
                 <a href="{{ route('privacy') }}" class="mayhen_client_footer_nav_link">Bảo Vệ Dữ Liệu</a>

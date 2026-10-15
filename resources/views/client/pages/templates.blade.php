@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Bộ Sưu Tập Mẫu Thiệp Cưới Online — Mây Hẹn')
+@section('title', 'Bộ Sưu Tập Mẫu Thiệp Cưới Online — ' . config('app.name'))
 @section('meta_description', 'Khám phá các mẫu thiệp cưới online phong cách Quiet Luxury, Editorial thời trang, tối giản tinh tế với hiệu ứng chuyển động mượt mà.')
 
 @push('styles')

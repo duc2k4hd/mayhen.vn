@@ -1,8 +1,8 @@
 @extends('client.layouts.master')
 
-@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | Mây Hẹn')
-@section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên Mây Hẹn (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
-@section('meta_keywords', 'thiệp cưới online, tạo thiệp cưới online, mẫu thiệp cưới online, thiệp cưới online đẹp, thiệp cưới điện tử, thiệp mời cưới online, tự làm thiệp cưới online, thiệp cưới online miễn phí, thiệp cưới gửi zalo, mây hẹn, mayhen.vn')
+@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | ' . config('app.name'))
+@section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên ' . config('app.name') . ' (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
+@section('meta_keywords', 'thiệp cưới online, tạo thiệp cưới online, mẫu thiệp cưới online, thiệp cưới online đẹp, thiệp cưới điện tử, thiệp mời cưới online, tự làm thiệp cưới online, thiệp cưới online miễn phí, thiệp cưới gửi zalo, ' . mb_strtolower(config('app.name')) . ', mayhen.vn')
 
 @push('schema')
 <script type="application/ld+json">

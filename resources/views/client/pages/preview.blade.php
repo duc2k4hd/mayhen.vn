@@ -8,8 +8,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Xem Thử: {{ $template['name'] }} — Mây Hẹn</title>
-    <meta name="description" content="Trải nghiệm thực tế thiệp cưới online phong cách {{ $template['category_label'] }} trên Mây Hẹn.">
+    <title>Xem Thử: {{ $template['name'] }} — {{ config('app.name') }}</title>
+    <meta name="description" content="Trải nghiệm thực tế thiệp cưới online phong cách {{ $template['category_label'] }} trên {{ config('app.name') }}.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

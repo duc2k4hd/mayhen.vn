@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', 'Về Mây Hẹn — Nền Tảng Thiệp Cưới Online Đẳng Cấp')
-@section('meta_description', 'Câu chuyện thương hiệu và sứ mệnh của Mây Hẹn (mayhen.vn) trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.')
+@section('title', 'Về ' . config('app.name') . ' — Nền Tảng Thiệp Cưới Online Đẳng Cấp')
+@section('meta_description', 'Câu chuyện thương hiệu và sứ mệnh của ' . config('app.name') . ' (mayhen.vn) trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
@@ -11,9 +11,9 @@
     <div class="mayhen_client_layout_container_narrow mayhen_info_wrapper">
         <header class="mayhen_info_header">
             <span class="mayhen_info_subtitle">Thương Hiệu & Tầm Nhìn</span>
-            <h1 class="mayhen_info_title">Về Mây Hẹn (mayhen.vn)</h1>
+            <h1 class="mayhen_info_title">Về {{ config('app.name') }} (mayhen.vn)</h1>
             <p class="mayhen_info_lead">
-                Mây Hẹn ra đời từ mong muốn mang lại một tấm thiệp cưới online thực sự tinh tế, sang trọng và giàu cảm xúc cho các cặp đôi Việt Nam.
+                {{ config('app.name') }} ra đời từ mong muốn mang lại một tấm thiệp cưới online thực sự tinh tế, sang trọng và giàu cảm xúc cho các cặp đôi Việt Nam.
             </p>
         </header>
 
@@ -25,12 +25,12 @@
 
             <h2>Tối Ưu Tuyệt Đối Cho Điện Thoại Di Động</h2>
             <p>
-                Hơn 95% khách mời tại Việt Nam nhận và mở thiệp cưới qua các ứng dụng di động như Zalo hoặc Facebook Messenger. Do đó, toàn bộ kiến trúc của Mây Hẹn được xây dựng theo tiêu chuẩn Mobile-First: tải trang dưới 2 giây, không bị giật lag, dễ dàng chạm mở và tương thích với mọi kích thước màn hình.
+                Hơn 95% khách mời tại Việt Nam nhận và mở thiệp cưới qua các ứng dụng di động như Zalo hoặc Facebook Messenger. Do đó, toàn bộ kiến trúc của {{ config('app.name') }} được xây dựng theo tiêu chuẩn Mobile-First: tải trang dưới 2 giây, không bị giật lag, dễ dàng chạm mở và tương thích với mọi kích thước màn hình.
             </p>
 
             <h2>Cam Kết Bảo Mật Thông Tin & Quyền Riêng Tư</h2>
             <p>
-                Mây Hẹn coi trọng quyền riêng tư của cô dâu, chú rể và danh sách khách mời. Chúng tôi tuân thủ nghiêm ngặt các quy định pháp luật Việt Nam về bảo vệ dữ liệu cá nhân (bao gồm Luật số 91/2025/QH15). Đường link thiệp cá nhân hóa được mã hóa bằng token an toàn, không thể dò đoán và không bao giờ rò rỉ danh sách khách mời ra bên ngoài.
+                {{ config('app.name') }} coi trọng quyền riêng tư của cô dâu, chú rể và danh sách khách mời. Chúng tôi tuân thủ nghiêm ngặt các quy định pháp luật Việt Nam về bảo vệ dữ liệu cá nhân (bao gồm Luật số 91/2025/QH15). Đường link thiệp cá nhân hóa được mã hóa bằng token an toàn, không thể dò đoán và không bao giờ rò rỉ danh sách khách mời ra bên ngoài.
             </p>
         </article>
     </div>

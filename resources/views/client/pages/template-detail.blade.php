@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', $template['name'] . ' — Chi Tiết Mẫu Thiệp Mây Hẹn')
+@section('title', $template['name'] . ' — Chi Tiết Mẫu Thiệp ' . config('app.name'))
 @section('meta_description', $template['description'])
 
 @push('styles')

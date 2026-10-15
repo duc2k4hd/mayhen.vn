@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Dịch Vụ & Tiện Ích Thiệp Cưới Điện Tử — Mây Hẹn')
+@section('title', 'Dịch Vụ & Tiện Ích Thiệp Cưới Điện Tử — ' . config('app.name'))
 @section('meta_description', 'Khám phá trọn bộ dịch vụ thiệp cưới online cao cấp: thiệp chuyển động phong thư, xác nhận tham dự RSVP gia đình, công cụ gửi Zalo, QR mừng cưới.')
 
 @push('styles')
@@ -12,7 +12,7 @@
     <div class="mayhen_client_layout_container mayhen_info_wrapper">
         <header class="mayhen_info_header">
             <span class="mayhen_info_subtitle">Giải Pháp Toàn Diện</span>
-            <h1 class="mayhen_info_title">Dịch Vụ Thiệp Cưới Cao Cấp Mây Hẹn</h1>
+            <h1 class="mayhen_info_title">Dịch Vụ Thiệp Cưới Cao Cấp {{ config('app.name') }}</h1>
             <p class="mayhen_info_lead">
                 Chúng tôi kết hợp nghệ thuật thẩm mỹ Quiet Luxury cùng công nghệ hiện đại để mang đến trải nghiệm mời cưới trọn vẹn nhất cho bạn và quan khách.
             </p>
