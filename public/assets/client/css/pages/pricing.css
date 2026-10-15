@@ -128,10 +128,10 @@
 
 @media (min-width: 860px) {
     .mayhen_pricing_card_featured {
-        transform: translateY(-8px);
+        transform: translateY(-30px);
     }
     .mayhen_pricing_card_featured:hover {
-        transform: translateY(-12px);
+        transform: translateY(-35px);
     }
 }
 
