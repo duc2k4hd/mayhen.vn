@@ -22,7 +22,13 @@
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
-                    'name' => 'Hướng dẫn làm thiệp cưới',
+                    'name' => 'Hướng dẫn',
+                    'item' => url('/huong-dan'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => 'Cách Làm Thiệp Cưới Online Trên Điện Thoại Đơn Giản Trong 5 Phút',
                     'item' => url('/huong-dan'),
                 ],
             ],
