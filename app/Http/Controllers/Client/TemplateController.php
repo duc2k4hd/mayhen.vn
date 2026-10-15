@@ -93,12 +93,17 @@ class TemplateController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $wishSubmitUrl = route('templates.preview.wish', $slug);
+        $wishes = collect([]);
+
         $customView = "client.invitations.{$template->slug}.template";
         if (view()->exists($customView)) {
             return view($customView, [
                 'template' => $template,
                 'wedding' => null,
                 'invitation' => null,
+                'wishes' => $wishes,
+                'wishSubmitUrl' => $wishSubmitUrl,
             ]);
         }
 

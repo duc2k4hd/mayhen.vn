@@ -100,12 +100,17 @@
     $qrGroom = $wedding->extra_data['qr_groom_image'] ?? ($assetBase . '/assets/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg');
     $qrBride = $wedding->extra_data['qr_bride_image'] ?? ($assetBase . '/assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg');
     $musicUrl = $wedding->music_url ?? ($assetBase . '/assets/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
+
+    // 7. Sổ lưu bút (Wishes & Guestbook)
+    $wishes = $wishes ?? collect([]);
+    $wishSubmitUrl = $wishSubmitUrl ?? (isset($invitation) ? route('invitation.wish.store', $invitation->slug) : route('templates.preview.wish', 'net-muc-tinh-yeu'));
 @endphp
 <!doctype html>
 <html lang="vi">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="Thiệp cưới {{ $groomName }} & {{ $brideName }} – ngày {{ $coverDateFormatted }}.">
     <title>Thiệp Mời Cưới {{ $groomName }} & {{ $brideName }}</title>
@@ -133,6 +138,8 @@
         };
         window.__MAYHEN_GIFT_QR_GROOM = "{{ $qrGroom }}";
         window.__MAYHEN_GIFT_QR_BRIDE = "{{ $qrBride }}";
+        window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
+        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
     <script src="{{ $assetBase }}/script.js" defer></script>
 </head>
@@ -372,15 +379,29 @@
                     <span>Những lời chúc phúc ngọt ngào gửi tới đôi bạn</span>
                 </div>
                 <div class="mayhen_invitation_dhsuudushi9428r_guestboard mayhen_invitation_dhsuudushi9428r_reveal">
-                    <div class="mayhen_invitation_dhsuudushi9428r_guestboard_empty">
-                        <span>Hãy là người đầu tiên ký tên!</span>
+                    <div class="mayhen_invitation_dhsuudushi9428r_guestboard_empty" id="mayhen_guestboard_counter">
+                        @if ($wishes->count() > 0)
+                            <span>Đã có <strong>{{ $wishes->count() }}</strong> lời chúc phúc gửi tới đôi bạn</span>
+                        @else
+                            <span>Hãy là người đầu tiên ký tên!</span>
+                        @endif
                     </div>
                 </div>
                 <p class="mayhen_invitation_dhsuudushi9428r_demo_note">Gửi lời chúc tốt đẹp nhất tới cô dâu & chú rể</p>
                 <button class="mayhen_invitation_dhsuudushi9428r_primary_button" type="button" data-modal="guestbook">Ký tên chúc phúc</button>
                 <p class="mayhen_invitation_dhsuudushi9428r_steps">1. Ký tên &nbsp;·&nbsp; 2. Viết lời chúc &nbsp;·&nbsp; 3. Gửi trao yêu thương</p>
-                <div class="mayhen_invitation_dhsuudushi9428r_messages" aria-live="polite">
-                    <p>Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc mừng!</p>
+                <div class="mayhen_invitation_dhsuudushi9428r_messages" id="mayhen_wishes_container" aria-live="polite">
+                    @forelse ($wishes as $wish)
+                        <article class="mayhen_invitation_dhsuudushi9428r_wish_item">
+                            <div class="mayhen_invitation_dhsuudushi9428r_wish_header">
+                                <strong>{{ $wish->name }}</strong>
+                                <time>{{ $wish->created_at ? $wish->created_at->diffForHumans() : 'Vừa xong' }}</time>
+                            </div>
+                            <p>{{ $wish->message }}</p>
+                        </article>
+                    @empty
+                        <p class="mayhen_invitation_dhsuudushi9428r_no_wishes">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc mừng!</p>
+                    @endforelse
                 </div>
             </section>
 

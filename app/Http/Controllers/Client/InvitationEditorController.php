@@ -136,9 +136,13 @@ class InvitationEditorController extends Controller
      */
     public function show(string $slug): View
     {
-        $invitation = Invitation::with(['wedding', 'template'])
+        $invitation = Invitation::with(['wedding.wishes', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $wedding = $invitation->wedding;
+        $wishes = $wedding ? $wedding->wishes()->where('is_approved', true)->take(50)->get() : collect([]);
+        $wishSubmitUrl = route('invitation.wish.store', $slug);
 
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
@@ -146,15 +150,19 @@ class InvitationEditorController extends Controller
         if ($customView && view()->exists($customView)) {
             return view($customView, [
                 'invitation' => $invitation,
-                'wedding' => $invitation->wedding,
+                'wedding' => $wedding,
                 'template' => $template,
+                'wishes' => $wishes,
+                'wishSubmitUrl' => $wishSubmitUrl,
             ]);
         }
 
         return view('client.pages.public-invitation', [
             'invitation' => $invitation,
-            'wedding' => $invitation->wedding,
+            'wedding' => $wedding,
             'template' => $template,
+            'wishes' => $wishes,
+            'wishSubmitUrl' => $wishSubmitUrl,
         ]);
     }
 

@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGuestRequest;
 use App\Http\Requests\SubmitRsvpRequest;
+use App\Http\Requests\SubmitWishRequest;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
+use App\Models\WeddingWish;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -100,6 +102,17 @@ class GuestController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
+        // Nếu RSVP có kèm lời chúc, tự động lưu vào sổ lưu bút của đám cưới
+        if (! empty($request->validated('wishes'))) {
+            WeddingWish::create([
+                'wedding_id' => $wedding->id,
+                'name' => $request->validated('guest_name'),
+                'message' => $request->validated('wishes'),
+                'is_approved' => true,
+                'ip_address' => $request->ip(),
+            ]);
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -108,5 +121,76 @@ class GuestController extends Controller
         }
 
         return back()->with('rsvp_success', 'Cảm ơn quý khách! Phản hồi đã được ghi nhận.');
+    }
+
+    /**
+     * Submit a wish to the wedding guestbook.
+     */
+    public function submitWish(SubmitWishRequest $request, string $slug): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        $wish = WeddingWish::create([
+            'wedding_id' => $wedding->id,
+            'name' => $request->validated('name'),
+            'message' => $request->validated('message'),
+            'is_approved' => true,
+            'ip_address' => $request->ip(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!',
+            'wish' => [
+                'id' => $wish->id,
+                'name' => $wish->name,
+                'message' => $wish->message,
+                'created_at_human' => $wish->created_at->diffForHumans(),
+                'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
+            ],
+        ], 201);
+    }
+
+    /**
+     * Get wishes list for an invitation.
+     */
+    public function getWishes(string $slug): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wishes = $invitation->wedding->wishes()
+            ->where('is_approved', true)
+            ->take(50)
+            ->get()
+            ->map(fn ($wish) => [
+                'id' => $wish->id,
+                'name' => $wish->name,
+                'message' => $wish->message,
+                'created_at_human' => $wish->created_at->diffForHumans(),
+                'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'wishes' => $wishes,
+        ]);
+    }
+
+    /**
+     * Demo wish submission for template preview mode.
+     */
+    public function submitDemoWish(SubmitWishRequest $request, string $slug): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Cảm ơn bạn đã gửi lời chúc thử nghiệm!',
+            'wish' => [
+                'id' => rand(1000, 9999),
+                'name' => $request->validated('name'),
+                'message' => $request->validated('message'),
+                'created_at_human' => 'Vừa xong',
+                'created_at_date' => now()->format('d/m/Y H:i'),
+            ],
+        ], 201);
     }
 }

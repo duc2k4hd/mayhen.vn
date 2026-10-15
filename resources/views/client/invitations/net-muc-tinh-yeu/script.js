@@ -256,28 +256,86 @@
       submit.textContent = 'Gửi Lời Chúc';
       form.append(submit);
 
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
         const data = new FormData(form);
-        const name = data.get('name').trim();
-        const message = data.get('message').trim();
-        if (!name || !message) return;
-
-        const container = $(className('messages'));
-        if (container) {
-          const emptyNote = container.querySelector('p');
-          if (emptyNote) emptyNote.remove();
-
-          const card = document.createElement('article');
-          const author = document.createElement('strong');
-          author.textContent = name;
-          const body = document.createElement('p');
-          body.textContent = message;
-          card.append(author, body);
-          container.prepend(card);
+        const name = (data.get('name') || '').trim();
+        const message = (data.get('message') || '').trim();
+        if (!name || !message) {
+          alert('Vui lòng điền đầy đủ tên và lời chúc của bạn.');
+          return;
         }
 
-        closeModal();
+        submit.disabled = true;
+        submit.textContent = 'Đang gửi...';
+
+        const submitUrl = window.__MAYHEN_WISH_SUBMIT_URL || (window.location.pathname.replace(/\/$/, '') + '/wishes');
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = window.__MAYHEN_CSRF_TOKEN || (csrfMeta ? csrfMeta.content : '');
+
+        try {
+          const response = await fetch(submitUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({ name, message })
+          });
+
+          const result = await response.json();
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Có lỗi xảy ra khi gửi lời chúc.');
+          }
+
+          // Thành công: Cập nhật DOM
+          const container = document.getElementById('mayhen_wishes_container') || $(className('messages'));
+          if (container) {
+            const emptyNote = container.querySelector(className('no_wishes')) || container.querySelector('p');
+            if (emptyNote) emptyNote.remove();
+
+            const card = document.createElement('article');
+            card.className = prefix + 'wish_item';
+
+            const header = document.createElement('div');
+            header.className = prefix + 'wish_header';
+
+            const author = document.createElement('strong');
+            author.textContent = result.wish ? result.wish.name : name;
+
+            const time = document.createElement('time');
+            time.textContent = result.wish ? (result.wish.created_at_human || 'Vừa xong') : 'Vừa xong';
+
+            header.append(author, time);
+
+            const body = document.createElement('p');
+            body.textContent = result.wish ? result.wish.message : message;
+
+            card.append(header, body);
+            container.prepend(card);
+          }
+
+          // Cập nhật bộ đếm lời chúc
+          const counter = document.getElementById('mayhen_guestboard_counter');
+          if (counter) {
+            const countStrong = counter.querySelector('strong');
+            if (countStrong) {
+              const current = parseInt(countStrong.textContent, 10) || 0;
+              countStrong.textContent = current + 1;
+            } else {
+              counter.innerHTML = '<span>Đã có <strong>1</strong> lời chúc phúc gửi tới đôi bạn</span>';
+            }
+          }
+
+          closeModal();
+          alert(result.message || 'Cảm ơn bạn đã gửi lời chúc tốt đẹp!');
+        } catch (error) {
+          alert(error.message || 'Không thể kết nối đến máy chủ. Vui lòng thử lại!');
+        } finally {
+          submit.disabled = false;
+          submit.textContent = 'Gửi Lời Chúc';
+        }
       });
 
       openModal('Ký Tên Chúc Phúc', form);

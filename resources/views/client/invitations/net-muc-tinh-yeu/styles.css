@@ -1056,9 +1056,63 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .mayhen_invitation_dhsuudushi9428r_messages {
   border-top: 1px solid var(--mayhen_line);
-  padding: 12px 4px 4px;
+  padding: 14px 4px 4px;
   color: var(--mayhen_muted);
   font-size: 12.5px;
+  max-height: 290px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_item {
+  background: #ffffff;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: mayhen_invitation_fade_in 0.4s ease;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_header strong {
+  font-size: 12.5px;
+  color: var(--mayhen_ink);
+  font-weight: 700;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_header time {
+  font-size: 10.5px;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_item p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mayhen_ink_light);
+  white-space: pre-wrap;
+}
+
+.mayhen_invitation_dhsuudushi9428r_no_wishes {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--mayhen_muted);
+  margin: 6px 0;
+}
+
+@keyframes mayhen_invitation_fade_in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ================= SECTION 7: ALBUM ẢNH CƯỚI ================= */

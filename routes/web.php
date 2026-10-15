@@ -27,6 +27,7 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 });
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
+Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->name('templates.preview.wish');
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
@@ -34,6 +35,8 @@ Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->name('i
 Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->name('invitation.uploadAsset');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->name('rsvp.submit');
+Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
+Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->name('invitation.wish.store');
 
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');

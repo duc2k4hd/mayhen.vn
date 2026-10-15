@@ -519,6 +519,36 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `php artisan test --compact`: **10/10 tests passed (101 assertions)**.
   - Laravel Pint: **100% passed**, không có lỗi format.
 
+### 📌 Phiên bản 1.1.4 — Hệ Thống Sổ Lưu Bút & Ký Tên Chúc Phúc Độc Lập Theo Từng Đám Cưới (Database-Backed Guestbook Engine)
+- **Kiến trúc Backend chuẩn hóa dùng chung cho mọi template**:
+  - **Bảng Database `wedding_wishes`**:
+    - Trường dữ liệu: `id`, `wedding_id` (foreignId cascade on delete), `name` (tên người chúc), `message` (lời chúc), `is_approved` (kiểm duyệt hiển thị), `ip_address`, `created_at`, `updated_at`.
+    - Đảm bảo mỗi đám cưới sở hữu toàn vẹn một cơ sở dữ liệu sổ lưu bút riêng biệt gắn với `wedding_id`.
+  - **Model & Relationships**:
+    - Model `App\Models\WeddingWish` liên kết `BelongsTo(Wedding::class)`.
+    - Model `App\Models\Wedding` bổ sung quan hệ `hasMany(WeddingWish::class)->latest()`.
+  - **API Endpoints thống nhất**:
+    - `POST /thiep/{slug}/wishes`: Nhận `name` và `message`, validate qua `SubmitWishRequest`, lưu vào database của đám cưới và trả về JSON kèm thời gian `diffForHumans()`.
+    - `GET /thiep/{slug}/wishes`: Trả về danh sách lời chúc công khai dạng JSON.
+    - `POST /xem-thu/{slug}/wishes`: Endpoint thử nghiệm cho chế độ preview/editor studio, phản hồi JSON thành công ngay lập tức giúp kiểm thử UI mà không phát sinh rác DB.
+    - Đồng thời, khi khách gửi RSVP (`POST /thiep/{slug}/rsvp`) có điền lời chúc, hệ thống tự động đồng bộ sang `wedding_wishes` để hiển thị trên sổ lưu bút.
+- **Tích hợp giao diện & tương tác Frontend (mẫu "Nét Mực Tình Yêu" và mọi template)**:
+  - Khi render template, controller tự động nạp `$wishes` từ database và URL endpoint `$wishSubmitUrl`.
+  - Khung Sổ lưu bút hiển thị danh sách lời chúc thực tế từ database với tên người gửi, thời gian tương đối ("Vừa xong", "2 giờ trước"), nội dung lời chúc định dạng trang nhã.
+  - Bộ đếm trên bảng lưu bút (`#mayhen_guestboard_counter`) tự động hiển thị số lượng lời chúc hiện có ("Đã có X lời chúc phúc gửi tới đôi bạn").
+  - Khi khách bấm *"Ký tên chúc phúc"* và gửi form:
+    - JavaScript gửi AJAX `fetch` lên endpoint backend thật kèm CSRF token.
+    - Nút bấm hiển thị trạng thái "Đang gửi...".
+    - Khi thành công: Tự động chèn thẻ lời chúc mới lên đầu danh sách (`container.prepend`), cập nhật bộ đếm lời chúc và đóng modal mượt mà mà không cần reload trang.
+- **Kiểm thử tự động**:
+  - Đã bổ sung test case Feature `each wedding has its own independent guestbook database with wish submissions and isolation` kiểm tra trọn vẹn:
+    1. Gửi lời chúc vào thiệp cưới A thành công.
+    2. Gửi lời chúc vào thiệp cưới B thành công.
+    3. Đảm bảo tính độc lập (Isolation) 100%: thiệp A chỉ thấy lời chúc của A, tuyệt đối không thấy lời chúc của B.
+    4. Gửi lời chúc thử nghiệm trên preview mode.
+  - Kết quả kiểm thử: **11/11 tests passed (117 assertions)**.
+  - Laravel Pint: **100% passed**, sạch sẽ không có lỗi format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
