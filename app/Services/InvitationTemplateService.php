@@ -370,9 +370,17 @@ class InvitationTemplateService
                 return $existingInvitation;
             }
 
-            // Tạo link thiệp mới với slug độc nhất
+            // Tạo link thiệp mới với slug độc nhất có hậu tố kép chống trùng (ví dụ: dang-minh-quan-le-ai-nhu-edsra-94y9rwhfget)
             $slugBase = Str::slug($wedding->groom_name.'-'.$wedding->bride_name);
-            $uniqueSlug = $slugBase.'-'.Str::lower(Str::random(5));
+            if (empty($slugBase)) {
+                $slugBase = 'thiep-cuoi';
+            }
+            $trimmedBase = Str::limit($slugBase, 70, '');
+
+            do {
+                $suffix = Str::lower(Str::random(5)).'-'.Str::lower(Str::random(11));
+                $uniqueSlug = $trimmedBase.'-'.$suffix;
+            } while (Invitation::where('slug', $uniqueSlug)->exists());
 
             $invitation = Invitation::create([
                 'wedding_id' => $wedding->id,
