@@ -1,390 +1,431 @@
 @extends('client.layouts.master')
 
 @php
-    $seoTitle = 'Mẫu Thiệp Cưới ' . $template->name . ' Online | ' . config('app.name');
-    $seoDesc = 'Khám phá mẫu thiệp cưới online ' . $template->name . ' (' . $template->category_label . ') tại Mây Hẹn. Tích hợp RSVP xác nhận khách mời, album ảnh cưới, mã QR mừng cưới VietQR và nhạc nền. Tạo thiệp cưới đẹp chỉ trong ' . $template->setup_time . '.';
-    $canonicalUrl = route('templates.show', $template->slug);
-    $createUrl = route('invitation.create', ['template' => $template->slug]);
-    $previewUrl = route('templates.preview', $template->slug);
-
-    $schemaData = [
-        '@context' => 'https://schema.org',
-        '@graph' => [
-            [
-                '@type' => 'BreadcrumbList',
-                'itemListElement' => [
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 1,
-                        'name' => 'Trang Chủ',
-                        'item' => route('home'),
-                    ],
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 2,
-                        'name' => 'Mẫu Thiệp Cưới',
-                        'item' => route('templates.index'),
-                    ],
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 3,
-                        'name' => $template->name,
-                        'item' => $canonicalUrl,
-                    ],
-                ],
-            ],
-            [
-                '@type' => 'Product',
-                'name' => $template->name,
-                'image' => $template->image,
-                'description' => $seoDesc,
-                'brand' => [
-                    '@type' => 'Brand',
-                    'name' => config('app.name'),
-                ],
-                'category' => $template->category_label,
-                'offers' => [
-                    '@type' => 'Offer',
-                    'url' => $canonicalUrl,
-                    'priceCurrency' => 'VND',
-                    'price' => $template->tier === 'free' ? '0' : '199000',
-                    'availability' => 'https://schema.org/InStock',
-                    'seller' => [
-                        '@type' => 'Organization',
-                        'name' => config('app.name'),
-                    ],
-                ],
-                'aggregateRating' => [
-                    '@type' => 'AggregateRating',
-                    'ratingValue' => '5.0',
-                    'reviewCount' => max((int) $template->usage_count, 120),
-                ],
-            ],
-            [
-                '@type' => 'FAQPage',
-                'mainEntity' => [
-                    [
-                        '@type' => 'Question',
-                        'name' => 'Mẫu thiệp ' . $template->name . ' có chèn được bài hát đám cưới và album ảnh không?',
-                        'acceptedAnswer' => [
-                            '@type' => 'Answer',
-                            'text' => 'Có. Mẫu thiệp hỗ trợ đầy đủ album ảnh cưới chất lượng cao, bài hát nhạc nền lãng mạn tự động phát và đếm ngược ngày cưới.',
-                        ],
-                    ],
-                    [
-                        '@type' => 'Question',
-                        'name' => 'Khách mời có thể xác nhận tham dự (RSVP) trực tiếp trên thiệp không?',
-                        'acceptedAnswer' => [
-                            '@type' => 'Answer',
-                            'text' => 'Có. Mẫu thiệp cưới Mây Hẹn tích hợp sẵn tính năng RSVP giúp khách phản hồi đi một mình hay cùng người thương, ăn chay hay ăn mặn, và gửi lời chúc trực tiếp.',
-                        ],
-                    ],
-                    [
-                        '@type' => 'Question',
-                        'name' => 'Tôi có thể chỉnh sửa lại nội dung thiệp sau khi đã gửi đi không?',
-                        'acceptedAnswer' => [
-                            '@type' => 'Answer',
-                            'text' => 'Hoàn toàn được. Mọi cập nhật về giờ đón khách, sảnh tiệc hay ảnh cưới đều được đồng bộ tức thì trên cùng một đường link duy nhất mà không cần gửi lại link mới.',
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ];
+    $tierLabel = match ($template->tier ?? 'free') {
+        'pro' => 'Gói Pro VIP',
+        'plus' => 'Gói Plus Cao Cấp',
+        default => 'Mẫu Miễn Phí',
+    };
+    $tierClass = match ($template->tier ?? 'free') {
+        'pro' => 'mayhen_template_detail_tier_pro',
+        'plus' => 'mayhen_template_detail_tier_plus',
+        default => 'mayhen_template_detail_tier_free',
+    };
+    $categoryLabel = $template->category_label ?? 'Thiệp cưới tinh tế';
+    $primaryColor = $template->accent_color ?? '#B76E79';
+    $fontFamily = $template->font_serif ?? 'Playfair Display / Cinzel';
+    $features = $template->features ?? [];
+    $usageCount = $template->usage_count ?? 120;
 @endphp
 
-@section('title', $seoTitle)
-@section('meta_description', $seoDesc)
+@section('title', ('Mẫu thiệp "'. $template->name ?? '') . '" Sang Trọng & Qúy Phái | ' . config('app.name'))
+@section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . config('app.name') . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
 @section('robots', 'noindex, follow')
-@section('canonical', $canonicalUrl)
-@section('og_type', 'product')
-@section('og_image', $template->image)
-
-@push('schema')
-    <!-- Schema.org JSON-LD Structured Data (Product + BreadcrumbList + FAQPage) -->
-    <script type="application/ld+json">
-    {!! json_encode($schemaData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
-    </script>
-@endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/template-detail.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/template-detail.css') }}?v={{ time() }}">
+@endpush
+
+@push('schema')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ $template->name }} — Mẫu Thiệp Cưới Online",
+    "image": "{{ $template->thumbnail_url ?: asset('assets/client/images/og-share.jpg') }}",
+    "description": "{{ $template->description }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "{{ config('app.name') }}"
+    },
+    "offers": {
+        "@type": "Offer",
+        "price": "{{ ($template->tier ?? 'free') === 'free' ? '0' : (($template->tier ?? 'free') === 'plus' ? '199000' : '399000') }}",
+        "priceCurrency": "VND",
+        "availability": "https://schema.org/InStock",
+        "url": "{{ url()->current() }}"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "{{ $usageCount }}"
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Mẫu thiệp cưới {{ $template->name }} có hiển thị đẹp trên điện thoại không?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Có. Mọi mẫu thiệp cưới tại Mây Hẹn đều được tối ưu hóa 100% hiển thị chuẩn tỉ lệ trên mọi dòng smartphone (iPhone, Samsung, Xiaomi) từ hiệu ứng mở phong thư, phông chữ đến ảnh cưới full HD."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Tôi có thể chỉnh sửa những thông tin gì trên mẫu này?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Bạn có thể tự do thay đổi tên cô dâu chú rể, ngày giờ cử hành hôn lễ, địa chỉ 2 nhà, bản đồ chỉ đường Google Maps, album ảnh cưới, nhạc nền lãng mạn và tài khoản ngân hàng mừng cưới VietQR."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Mẫu thiệp này có hỗ trợ gửi thiệp riêng theo tên từng khách mời không?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Có. Hệ thống quản lý khách mời thông minh của Mây Hẹn hỗ trợ bạn tạo link gửi đích danh từng vị khách (Ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự trân trọng tối đa."
+            }
+        }
+    ]
+}
+</script>
 @endpush
 
 @section('content')
-    <div class="mayhen_client_layout_container mayhen_template_detail_wrapper">
-        <!-- 1. Breadcrumb Navigation -->
-        <nav class="mayhen_template_detail_breadcrumb" aria-label="Điều hướng liên kết">
-            <a href="{{ route('home') }}" class="mayhen_template_detail_breadcrumb_link">Trang Chủ</a>
-            <span class="mayhen_template_detail_breadcrumb_sep" aria-hidden="true">/</span>
-            <a href="{{ route('templates.index') }}" class="mayhen_template_detail_breadcrumb_link">Mẫu Thiệp Cưới</a>
-            <span class="mayhen_template_detail_breadcrumb_sep" aria-hidden="true">/</span>
+<div class="mayhen_template_detail_wrapper">
+    <div class="mayhen_template_detail_container">
+        
+        {{-- Breadcrumb thanh lịch tối giản --}}
+        <nav class="mayhen_template_detail_breadcrumb" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}">Trang chủ</a>
+            <span class="mayhen_template_detail_breadcrumb_sep">/</span>
+            <a href="{{ route('templates.index') }}">Bộ sưu tập thiệp cưới</a>
+            <span class="mayhen_template_detail_breadcrumb_sep">/</span>
             <span class="mayhen_template_detail_breadcrumb_current">{{ $template->name }}</span>
         </nav>
 
-        <!-- 2. Main Two-Column Compact Editorial Layout -->
-        <div class="mayhen_template_detail_grid">
-            <!-- Left Column: Visual Mockup Preview Sticky & Gallery Showcase -->
-            <div class="mayhen_template_detail_preview_sticky">
-                <div class="mayhen_template_detail_preview_box">
-                    <img src="{{ $template->image }}" alt="Mẫu thiệp cưới online {{ $template->name }}" class="mayhen_template_detail_preview_img" id="mayhen_main_preview_img" width="490" height="612" loading="eager">
-                    
-                    <a href="{{ $previewUrl }}" target="_blank" rel="noopener" class="mayhen_template_detail_preview_overlay_btn" title="Mở trang xem thử toàn màn hình">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        <span>Mở Trải Nghiệm Xem Thử Live</span>
-                    </a>
-                </div>
+        {{-- Bố cục chính 2 cột chặt chẽ, tỷ lệ vàng 480px - 1fr --}}
+        <section class="mayhen_template_detail_hero_grid">
+            
+            {{-- Cột trái: Sân khấu trưng bày thiệp nghệ thuật (Visual Stage) --}}
+            <div class="mayhen_template_detail_stage_col">
+                <div class="mayhen_template_detail_stage_card">
+                    <div class="mayhen_template_detail_stage_media">
+                        <img 
+                            src="{{ $template->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" 
+                            alt="Mẫu thiệp cưới online {{ $template->name }} phong cách {{ $categoryLabel }}" 
+                            class="mayhen_template_detail_stage_img"
+                            loading="eager"
+                        >
+                        <div class="mayhen_template_detail_stage_overlay"></div>
+                        
+                        {{-- Nút xem demo trực tiếp dạng Glassmorphism --}}
+                        <div class="mayhen_template_detail_stage_floating_action">
+                            <a href="{{ route('templates.preview', $template->slug) }}" target="_blank" rel="noopener noreferrer" class="mayhen_template_detail_btn_demo">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span>Xem Trước Live</span>
+                            </a>
+                        </div>
+                    </div>
 
-                <!-- Showcase Thư Viện Ảnh Chi Tiết Các Góc Mẫu Thiệp -->
-                <div class="mayhen_template_detail_gallery_strip">
-                    <div class="mayhen_template_detail_gallery_thumb active" onclick="document.getElementById('mayhen_main_preview_img').src='{{ $template->image }}'">
-                        <img src="{{ $template->image }}" alt="Mặt trước thiệp cưới">
-                        <span class="mayhen_template_detail_gallery_thumb_label">Toàn cảnh</span>
-                    </div>
-                    <div class="mayhen_template_detail_gallery_thumb" onclick="window.open('{{ $previewUrl }}', '_blank')">
-                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80" alt="Khoảnh khắc cô dâu chú rể">
-                        <span class="mayhen_template_detail_gallery_thumb_label">Ảnh kỷ niệm</span>
-                    </div>
-                    <div class="mayhen_template_detail_gallery_thumb" onclick="window.open('{{ $previewUrl }}', '_blank')">
-                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Sảnh tiệc hoàng gia">
-                        <span class="mayhen_template_detail_gallery_thumb_label">Sảnh tiệc</span>
-                    </div>
-                    <div class="mayhen_template_detail_gallery_thumb" onclick="window.open('{{ $previewUrl }}', '_blank')">
-                        <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=400&q=80" alt="Tem sáp niêm phong">
-                        <span class="mayhen_template_detail_gallery_thumb_label">Tem sáp 3D</span>
+                    {{-- Dải thông số kỹ thuật bên dưới ảnh --}}
+                    <div class="mayhen_template_detail_stage_footer">
+                        <div class="mayhen_template_detail_stage_spec">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                            </svg>
+                            <span>Chuẩn màn hình điện thoại 100%</span>
+                        </div>
+                        <div class="mayhen_template_detail_stage_spec">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span>Độc bản Quiet Luxury</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Editorial Information & Actions -->
-            <div class="mayhen_template_detail_info">
-                <!-- Badges Row - Nổi bật cực đỉnh chữ Gói Pro VIP -->
-                <div class="mayhen_template_detail_badges_row">
-                    @if ($template->tier === 'pro')
-                        <span class="mayhen_template_detail_vip_pro_badge">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
-                            <span>GÓI PRO VIP</span>
-                        </span>
-                    @elseif ($template->tier === 'plus')
-                        <span class="mayhen_template_detail_plus_badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="6 3 18 3 22 9 12 22 2 9"/></svg>
-                            <span>GÓI PLUS</span>
-                        </span>
-                    @else
-                        <span class="mayhen_template_detail_free_badge">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            <span>GÓI MIỄN PHÍ 100%</span>
-                        </span>
+            {{-- Cột phải: Thông tin tác phẩm, Hồ sơ thiết kế & Kêu gọi hành động --}}
+            <div class="mayhen_template_detail_info_col">
+                <div class="mayhen_template_detail_info_card">
+                    
+                    {{-- Khối Kicker: Danh mục, Số cặp đôi tin dùng & Huy hiệu Gói Pro VIP nổi bật --}}
+                    <div class="mayhen_template_detail_kicker_row">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span class="mayhen_template_detail_category_badge">{{ $categoryLabel }}</span>
+                            <span style="font-size: 0.75rem; color: var(--mayhen-color-text-muted); display: inline-flex; align-items: center; gap: 4px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <strong>{{ number_format($usageCount) }}+</strong> cặp đôi đã chọn
+                            </span>
+                        </div>
+                        
+                        <div class="mayhen_template_detail_tier_badge {{ $tierClass }}">
+                            @if(($template->tier ?? 'free') === 'pro')
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5v-2z"></path>
+                                </svg>
+                            @elseif(($template->tier ?? 'free') === 'plus')
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            @endif
+                            <span>{{ $tierLabel }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Tiêu đề mẫu thiệp chuẩn tạp chí --}}
+                    <h1 class="mayhen_template_detail_title">{{ $template->name }}</h1>
+
+                    {{-- Dòng mô tả cảm xúc tinh tế (SEO Lead) --}}
+                    <p class="mayhen_template_detail_lead">
+                        {{ $template->description ?: 'Bản hòa ca giữa vẻ đẹp tối giản và phong vị lãng mạn đương đại. Được chắt lọc từng đường nét typography, phối màu trang nhã và chuyển động chạm mở mượt mà để tôn vinh câu chuyện tình yêu của bạn.' }}
+                    </p>
+
+                    {{-- Bảng Hồ Sơ Thiết Kế (Design Atelier Sheet) --}}
+                    <div class="mayhen_template_detail_atelier_sheet">
+                        <div class="mayhen_template_detail_atelier_title">
+                            <span>Hồ Sơ Thiết Kế Độc Bản</span>
+                        </div>
+                        <div class="mayhen_template_detail_atelier_grid">
+                            <div class="mayhen_template_detail_atelier_item">
+                                <span class="mayhen_template_detail_atelier_label">Tone sắc chủ đạo:</span>
+                                <div class="mayhen_template_detail_atelier_val">
+                                    <span class="mayhen_template_detail_color_dot" style="background-color: {{ $primaryColor }};"></span>
+                                    <span>{{ $primaryColor }}</span>
+                                </div>
+                            </div>
+                            <div class="mayhen_template_detail_atelier_item">
+                                <span class="mayhen_template_detail_atelier_label">Kiểu chữ:</span>
+                                <span class="mayhen_template_detail_atelier_val">{{ $fontFamily }}</span>
+                            </div>
+                            <div class="mayhen_template_detail_atelier_item">
+                                <span class="mayhen_template_detail_atelier_label">Hiệu ứng mở:</span>
+                                <span class="mayhen_template_detail_atelier_val">Phong thư lụa & Tem sáp 3D</span>
+                            </div>
+                            <div class="mayhen_template_detail_atelier_item">
+                                <span class="mayhen_template_detail_atelier_label">Tương tác:</span>
+                                <span class="mayhen_template_detail_atelier_val">RSVP, Nhạc nền & VietQR mừng cưới</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Danh sách tính năng cao cấp tích hợp trong mẫu --}}
+                    @if(!empty($features))
+                        <div class="mayhen_template_detail_features_list">
+                            <span class="mayhen_template_detail_features_title">Đặc quyền có sẵn trong mẫu thiệp:</span>
+                            <ul class="mayhen_template_detail_features_ul">
+                                @foreach($features as $feat)
+                                    <li>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span>{{ $feat }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @endif
 
-                    <span class="mayhen_template_detail_badge_cat">
-                        {{ $template->category_label }}
-                    </span>
-                    <span class="mayhen_template_detail_badge_time">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>Cài đặt {{ $template->setup_time }}</span>
-                    </span>
+                    {{-- Nút bấm kêu gọi hành động chính --}}
+                    <div class="mayhen_template_detail_actions_group">
+                        <a href="{{ route('invitation.create', ['template' => $template->slug]) }}" class="mayhen_template_detail_btn_primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            <span>Tạo Thiệp Với Mẫu Này</span>
+                        </a>
+
+                        <a href="{{ route('templates.preview', $template->slug) }}" target="_blank" rel="noopener noreferrer" class="mayhen_template_detail_btn_secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                            </svg>
+                            <span>Xem Thử Trực Tiếp</span>
+                        </a>
+                    </div>
+
+                    {{-- Cam kết chất lượng dịch vụ --}}
+                    <div class="mayhen_template_detail_trust_row">
+                        <div class="mayhen_template_detail_trust_item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Chỉnh sửa ảnh, nhạc và thông tin không giới hạn</span>
+                        </div>
+                        <div class="mayhen_template_detail_trust_item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Xem trước thời gian thực (Live Preview)</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- Section: Trải nghiệm khách mời (The Guest Experience) - Điểm then chốt thúc đẩy chuyển đổi --}}
+        <section class="mayhen_template_detail_experience_section">
+            <div class="mayhen_template_detail_section_header">
+                <span class="mayhen_template_detail_section_kicker">Cảm xúc đắt giá</span>
+                <h2 class="mayhen_template_detail_section_title">Trải Nghiệm Khách Mời Của Bạn Sẽ Nhận Được</h2>
+                <p class="mayhen_template_detail_section_subtitle">Không chỉ là một tấm thiệp điện tử vô hồn, đây là cánh cửa đón tiếp trang trọng gửi gắm trọn vẹn tình cảm của hai bạn.</p>
+            </div>
+
+            <div class="mayhen_template_detail_experience_grid">
+                <div class="mayhen_template_detail_experience_card">
+                    <div class="mayhen_template_detail_experience_num">01</div>
+                    <div class="mayhen_template_detail_experience_icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="mayhen_template_detail_experience_name">Chạm Mở Phong Thư Sang Trọng</h3>
+                    <p class="mayhen_template_detail_experience_text">Khách mời nhẹ nhàng chạm vào tem sáp dập nổi để mở phong thư, âm nhạc vang lên du dương mang lại cảm giác được trân quý đặc biệt.</p>
                 </div>
 
-                <!-- Main Title H1 -->
-                <h1 class="mayhen_template_detail_title">{{ $template->name }}</h1>
-
-                <!-- Trust Meta & Social Proof -->
-                <div class="mayhen_template_detail_meta_bar">
-                    <div class="mayhen_template_detail_rating">
-                        <span>★★★★★</span>
-                        <span>5.0</span>
+                <div class="mayhen_template_detail_experience_card">
+                    <div class="mayhen_template_detail_experience_num">02</div>
+                    <div class="mayhen_template_detail_experience_icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
                     </div>
-                    <span>&bull;</span>
-                    <div class="mayhen_template_detail_pairs">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span><strong>{{ number_format($template->usage_count) }}+</strong> cặp đôi đã tạo mẫu thiệp này</span>
-                    </div>
+                    <h3 class="mayhen_template_detail_experience_name">Chiêm Ngưỡng Chuyện Tình Của Hai Bạn</h3>
+                    <p class="mayhen_template_detail_experience_text">Album ảnh cưới độ nét cao hiển thị chuẩn màu sắc, timeline lịch trình ngày cưới và bản đồ Google Maps chỉ đường chỉ với 1 chạm.</p>
                 </div>
 
-                <!-- Emotional Description -->
-                <p class="mayhen_template_detail_desc">
-                    {{ $template->description }}
-                </p>
+                <div class="mayhen_template_detail_experience_card">
+                    <div class="mayhen_template_detail_experience_num">03</div>
+                    <div class="mayhen_template_detail_experience_icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mayhen_template_detail_experience_name">Xác Nhận Tham Dự & Mừng Cưới Tinh Tế</h3>
+                    <p class="mayhen_template_detail_experience_text">Hệ thống form RSVP gửi thẳng lời chúc về tài khoản của bạn, kèm mã VietQR tự động điền số tài khoản để khách gửi gắm yêu thương dễ dàng.</p>
+                </div>
+            </div>
+        </section>
 
-                <!-- High-Converting Action Buttons (Nút chính luôn để rõ Tạo Thiệp Với Mẫu Này) -->
-                <div class="mayhen_template_detail_actions">
-                    <a href="{{ $createUrl }}" class="mayhen_template_detail_btn_primary" title="Bắt đầu tạo thiệp cưới với mẫu {{ $template->name }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        <span>Tạo Thiệp Với Mẫu Này</span>
-                    </a>
+        {{-- Section SEO Narrative: Câu chuyện thiết kế & Lợi ích độc bản (SEO Content Article) --}}
+        <section class="mayhen_template_detail_seo_story_section">
+            <div class="mayhen_template_detail_seo_story_container">
+                <div class="mayhen_template_detail_seo_story_header">
+                    <span class="mayhen_template_detail_section_kicker">Góc nhìn thiết kế</span>
+                    <h2 class="mayhen_template_detail_seo_story_title">Tại Sao Mẫu Thiệp Cưới {{ $template->name }} Lại Được Yêu Thích?</h2>
+                </div>
+                
+                <div class="mayhen_template_detail_seo_story_content">
+                    <p>
+                        Ngày cưới là cột mốc thiêng liêng nhất của đời người, và chiếc thiệp mời chính là lời chào trang trọng đầu tiên gửi tới gia đình, người thân và bạn bè hai bên. Khác với thiệp giấy truyền thống dễ thất lạc hoặc thiệp mời thông thường đơn điệu, <strong>mẫu thiệp cưới online {{ $template->name }}</strong> tại <strong>{{ config('app.name') }}</strong> được định hình theo trường phái <em>Quiet Luxury</em> — vẻ đẹp sang trọng đến từ sự tinh giản, trật tự thị giác và cảm xúc thăng hoa.
+                    </p>
                     
-                    <a href="{{ $previewUrl }}" target="_blank" rel="noopener" class="mayhen_template_detail_btn_secondary" title="Mở trang xem thử mẫu thiệp {{ $template->name }}">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>Mở Trải Nghiệm Xem Thử Live</span>
-                    </a>
-                </div>
-
-                <!-- Feature Highlights Box -->
-                <div class="mayhen_template_detail_features_wrap">
-                    <div class="mayhen_template_detail_features_heading">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        <span>Đặc Điểm & Tính Năng Nổi Bật:</span>
-                    </div>
-                    <div class="mayhen_template_detail_features_grid">
-                        @foreach ($template->features as $feat)
-                            <div class="mayhen_template_detail_feature_item">
-                                <svg class="mayhen_template_detail_feature_icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                <span>{{ $feat }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Quality Guarantees Strip -->
-                <div class="mayhen_template_detail_guarantees">
-                    <div class="mayhen_template_detail_guarantee_item">
-                        <svg class="mayhen_template_detail_guarantee_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        <div class="mayhen_template_detail_guarantee_label">Không giới hạn khách</div>
-                    </div>
-                    <div class="mayhen_template_detail_guarantee_item">
-                        <svg class="mayhen_template_detail_guarantee_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        <div class="mayhen_template_detail_guarantee_label">Tải trang dưới 0.8s</div>
-                    </div>
-                    <div class="mayhen_template_detail_guarantee_item">
-                        <svg class="mayhen_template_detail_guarantee_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <div class="mayhen_template_detail_guarantee_label">Bảo mật riêng tư</div>
-                    </div>
-                    <div class="mayhen_template_detail_guarantee_item">
-                        <svg class="mayhen_template_detail_guarantee_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-                        <div class="mayhen_template_detail_guarantee_label">Cập nhật tức thì 24/7</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Section Chuyên Sâu: "Vì Sao Mẫu Thiệp Này Xứng Đáng Để Bạn Xuống Tiền?" -->
-        <section class="mayhen_template_detail_selling_section" aria-labelledby="selling-heading">
-            <div class="mayhen_template_detail_selling_header">
-                <span class="mayhen_template_detail_selling_badge">Trải Nghiệm Đẳng Cấp & Tiết Kiệm</span>
-                <h2 id="selling-heading" class="mayhen_template_detail_selling_title">Vì Sao Mẫu Thiệp Này Xứng Đáng Để Bạn Xuống Tiền?</h2>
-                <p style="font-size: 0.875rem; color: var(--mayhen-color-text-muted); margin: 0;">
-                    Không chỉ là một tấm thiệp báo tin mừng, đây là lời mời cưới trang trọng chạm đến cảm xúc của từng vị khách quý
-                </p>
-            </div>
-
-            <div class="mayhen_template_detail_selling_grid">
-                <div class="mayhen_template_detail_selling_card">
-                    <div class="mayhen_template_detail_selling_icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                    </div>
-                    <h3 class="mayhen_template_detail_selling_card_title">Hiệu Ứng Hoàng Gia Độc Bản</h3>
-                    <p class="mayhen_template_detail_selling_card_desc">
-                        Nắp phong bì mở ra mượt mà, con dấu sáp niêm phong 3D tinh xảo dập chữ cái tên hai bạn (Monogram), kết hợp âm thanh nhạc cưới du dương khiến khách mời trầm trồ ngay giây đầu tiên mở thiệp.
+                    <h3>1. Tối ưu hoàn hảo cho thời đại số & Thiết bị di động</h3>
+                    <p>
+                        100% khách mời hiện nay tiếp nhận lời mời cưới qua điện thoại thông minh (Zalo, Facebook, Tin nhắn). Mẫu <strong>{{ $template->name }}</strong> được kiến tạo với công nghệ hiển thị responsive vượt trội, tải trang thần tốc dưới 0.8 giây, đảm bảo màu sắc ảnh cưới luôn rực rỡ và nắp phong bì chuyển động mượt mà mà không làm tiêu tốn dung lượng của khách mời.
                     </p>
-                </div>
 
-                <div class="mayhen_template_detail_selling_card">
-                    <div class="mayhen_template_detail_selling_icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    </div>
-                    <h3 class="mayhen_template_detail_selling_card_title">Tiết Kiệm 80% Chi Phí In Ấn</h3>
-                    <p class="mayhen_template_detail_selling_card_desc">
-                        In 300 - 500 thiệp giấy cao cấp có thể tốn từ 3 đến 8 triệu đồng. Với Mây Hẹn, bạn chỉ trả một lần duy nhất để gửi không giới hạn khách mời, có thể sửa đổi thông tin giờ tiệc tức thì mà không lo hủy in hỏng thiệp.
+                    <h3>2. Tiết kiệm 80% chi phí in ấn và gửi thiệp xa</h3>
+                    <p>
+                        Thay vì phải in hàng trăm bộ thiệp đắt đỏ và lo lắng việc chuyển phát xa bị trễ lịch trình, bạn chỉ cần tạo thiệp một lần, lấy liên kết và gửi ngay tới bạn bè ở xa, ở nước ngoài trong vòng một nốt nhạc. Mọi lời chúc và phản hồi dự tiệc (RSVP) đều được lưu trữ trực quan trong tài khoản quản trị của bạn.
                     </p>
-                </div>
 
-                <div class="mayhen_template_detail_selling_card">
-                    <div class="mayhen_template_detail_selling_icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                    </div>
-                    <h3 class="mayhen_template_detail_selling_card_title">Quản Lý Khách & VietQR Tiện Lợi</h3>
-                    <p class="mayhen_template_detail_selling_card_desc">
-                        Tích hợp sẵn bảng RSVP để khách phản hồi đi một mình hay cùng gia đình, ăn chay hay ăn mặn. Mã VietQR tự động điền số tài khoản giúp bạn bè phương xa gửi lời chúc và mừng cưới chỉ với 1 chạm.
+                    <h3>3. Hộp mừng cưới thông minh & Bảo mật</h3>
+                    <p>
+                        Tính năng quét mã VietQR tự động hiển thị số tài khoản ngân hàng và cú pháp chúc mừng giúp khách mời dễ dàng gửi quà mừng cưới tinh tế, văn minh, phù hợp với xu hướng cưới hiện đại mà vẫn giữ trọn sự trang trọng.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Section: 3-Step Creation Process -->
-        <section class="mayhen_template_detail_extra_section" aria-labelledby="process-heading">
-            <h2 id="process-heading" class="mayhen_template_detail_section_title">Tạo Thiệp Cưới Trong 3 Bước Đơn Giản</h2>
-            <p class="mayhen_template_detail_section_subtitle">Không cần biết thiết kế, bất kỳ cặp đôi nào cũng có thể tự tạo thiệp cưới online chuẩn thẩm mỹ Quiet Luxury</p>
-
-            <div class="mayhen_template_detail_steps_grid">
-                <div class="mayhen_template_detail_step_card">
-                    <div class="mayhen_template_detail_step_num">1</div>
-                    <h3 class="mayhen_template_detail_step_title">Nhập Thông Tin Đôi Bạn</h3>
-                    <p class="mayhen_template_detail_step_desc">Điền tên cô dâu chú rể, ngày giờ hôn lễ, sảnh tiệc đón khách và tải lên những bức ảnh cưới ưng ý nhất.</p>
-                </div>
-                <div class="mayhen_template_detail_step_card">
-                    <div class="mayhen_template_detail_step_num">2</div>
-                    <h3 class="mayhen_template_detail_step_title">Xem Trực Tiếp & Cá Nhân Hóa</h3>
-                    <p class="mayhen_template_detail_step_desc">Mọi thay đổi đều hiển thị trực quan theo thời gian thực. Tùy chọn bài hát nhạc nền và màu nhấn thiệp.</p>
-                </div>
-                <div class="mayhen_template_detail_step_card">
-                    <div class="mayhen_template_detail_step_num">3</div>
-                    <h3 class="mayhen_template_detail_step_title">Nhận Link & Gửi Quan Khách</h3>
-                    <p class="mayhen_template_detail_step_desc">Nhận đường link thiệp cưới cá nhân hóa riêng để gửi tới người thân, bạn bè qua Zalo, Messenger hoặc SMS.</p>
-                </div>
+        {{-- Section: Câu hỏi thường gặp (FAQ Accordion Schema) --}}
+        <section class="mayhen_template_detail_faq_section">
+            <div class="mayhen_template_detail_section_header">
+                <span class="mayhen_template_detail_section_kicker">Giải đáp thắc mắc</span>
+                <h2 class="mayhen_template_detail_section_title">Câu Hỏi Thường Gặp Về Mẫu Thiệp {{ $template->name }}</h2>
+                <p class="mayhen_template_detail_section_subtitle">Tất cả những thông tin bạn cần biết trước khi bắt đầu tạo thiệp cưới</p>
             </div>
-        </section>
-
-        <!-- 5. Section: Frequently Asked Questions (FAQ) -->
-        <section class="mayhen_template_detail_extra_section" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" class="mayhen_template_detail_section_title">Câu Hỏi Thường Gặp Về Mẫu Thiệp Này</h2>
-            <p class="mayhen_template_detail_section_subtitle">Giải đáp nhanh những thắc mắc thường gặp của các cặp đôi khi chuẩn bị thiệp cưới online</p>
 
             <div class="mayhen_template_detail_faq_list">
                 <div class="mayhen_template_detail_faq_item">
-                    <h3 class="mayhen_template_detail_faq_q">Mẫu thiệp này có hỗ trợ quét mã QR mừng cưới và chỉ đường không?</h3>
-                    <p class="mayhen_template_detail_faq_a">Có. Thiệp cưới tích hợp sẵn mã VietQR tự động điền số tài khoản ngân hàng và tên người nhận, kèm nút bấm mở bản đồ Google Maps chỉ dẫn đường đến tận sảnh tiệc.</p>
+                    <h3 class="mayhen_template_detail_faq_q">1. Mẫu thiệp cưới {{ $template->name }} có hiển thị đẹp trên điện thoại không?</h3>
+                    <p class="mayhen_template_detail_faq_a">Hoàn toàn có. Mọi chi tiết từ bìa thiệp, phong bì gập mở đến album ảnh và bản đồ đều được tối ưu hóa chuẩn xác cho cả iPhone và tất cả dòng máy Android, đảm bảo trải nghiệm mở thiệp sắc nét tuyệt đối.</p>
                 </div>
+
                 <div class="mayhen_template_detail_faq_item">
-                    <h3 class="mayhen_template_detail_faq_q">Tôi có thể gửi thiệp có tên riêng của từng vị khách không?</h3>
-                    <p class="mayhen_template_detail_faq_a">Hoàn toàn có thể. Tính năng quản lý khách mời của Mây Hẹn cho phép bạn tạo danh sách khách và sinh ra các link thiệp cá nhân hóa kèm tên khách mời (Ví dụ: Kính mời Anh Hoàng & Người Thương).</p>
+                    <h3 class="mayhen_template_detail_faq_q">2. Tôi có thể thay đổi ảnh cưới, bài hát và thông tin sau khi tạo không?</h3>
+                    <p class="mayhen_template_detail_faq_a">Có. Bạn có thể tự do thay đổi ảnh cưới, ngày giờ, địa chỉ tiệc cưới, nhạc nền và tài khoản ngân hàng mừng cưới bất cứ lúc nào trong tài khoản mà không làm thay đổi đường link gửi thiệp.</p>
                 </div>
+
                 <div class="mayhen_template_detail_faq_item">
-                    <h3 class="mayhen_template_detail_faq_q">Sau khi tạo thiệp xong, tôi có được hỗ trợ chỉnh sửa không?</h3>
-                    <p class="mayhen_template_detail_faq_a">Bạn có thể chỉnh sửa lại bất kỳ thông tin nào bất cứ lúc nào trong trang quản trị. Đội ngũ kỹ thuật của Mây Hẹn luôn sẵn sàng hỗ trợ bạn qua Zalo 24/7.</p>
+                    <h3 class="mayhen_template_detail_faq_q">3. Tôi có thể gửi thiệp có tên riêng của từng vị khách không?</h3>
+                    <p class="mayhen_template_detail_faq_a">Hoàn toàn được. Hệ thống quản lý khách mời của Mây Hẹn hỗ trợ tạo danh sách và sinh ra các đường link thiệp riêng biệt đính kèm tên từng khách mời (ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự chu đáo tối đa.</p>
+                </div>
+
+                <div class="mayhen_template_detail_faq_item">
+                    <h3 class="mayhen_template_detail_faq_q">4. Thời gian tạo và hoàn thiện một bộ thiệp cưới mất bao lâu?</h3>
+                    <p class="mayhen_template_detail_faq_a">Chỉ mất từ 3 đến 5 phút thao tác với giao diện biên tập trực quan. Bạn có thể xem trước kết quả thời gian thực (Live Preview) trên màn hình trước khi gửi đến bạn bè.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 6. Section: Similar Templates (Internal Links) -->
-        @if ($similarTemplates->isNotEmpty())
-            <section class="mayhen_template_detail_extra_section" aria-labelledby="similar-heading">
-                <h2 id="similar-heading" class="mayhen_template_detail_section_title">Mẫu Thiệp Cưới Cùng Phong Cách</h2>
-                <p class="mayhen_template_detail_section_subtitle">Khám phá thêm các thiết kế thiệp cưới được yêu thích khác trong cùng bộ sưu tập</p>
+        {{-- Section: Các mẫu cùng phong cách (Related Templates - Internal Linking) --}}
+        @if(isset($similarTemplates) && $similarTemplates->count() > 0)
+            <section class="mayhen_template_detail_related_section">
+                <div class="mayhen_template_detail_section_header">
+                    <span class="mayhen_template_detail_section_kicker">Gợi ý dành riêng cho bạn</span>
+                    <h2 class="mayhen_template_detail_section_title">Các Mẫu Thiệp Cùng Phong Cách</h2>
+                    <p class="mayhen_template_detail_section_subtitle">Khám phá thêm các thiết kế thiệp cưới được yêu thích khác trong cùng bộ sưu tập</p>
+                </div>
 
-                <div class="mayhen_template_detail_similar_grid">
-                    @foreach ($similarTemplates as $item)
-                        <article class="mayhen_home_template_card" data-tier="{{ $item->tier }}">
-                            <div class="mayhen_home_template_card_img_wrap">
-                                <img src="{{ $item->image }}" alt="Mẫu thiệp {{ $item->name }}" class="mayhen_home_template_card_img" loading="lazy" width="380" height="475">
-                                <span class="mayhen_home_template_card_badge">{{ $item->badge }}</span>
-                                <span class="mayhen_home_template_card_tier_badge {{ $item->tier_badge_class }}">{{ $item->tier_label }}</span>
-                            </div>
-                            <div class="mayhen_home_template_card_body">
-                                <div class="mayhen_home_template_card_meta">
-                                    <span class="mayhen_home_template_card_category">{{ $item->category_label }}</span>
-                                    <span class="mayhen_home_template_card_setup_badge">{{ $item->setup_time }}</span>
+                <div class="mayhen_template_detail_related_grid">
+                    @foreach($similarTemplates as $related)
+                        <div class="mayhen_template_detail_related_card">
+                            <a href="{{ route('templates.show', $related->slug) }}" class="mayhen_template_detail_related_thumb">
+                                <img src="{{ $related->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" alt="Mẫu thiệp cưới {{ $related->name }}" loading="lazy">
+                                <div class="mayhen_template_detail_related_badge">
+                                    {{ match ($related->tier ?? 'free') { 'pro' => 'VIP Pro', 'plus' => 'Plus', default => 'Free' } }}
                                 </div>
-                                <h3 class="mayhen_home_template_card_title">{{ $item->name }}</h3>
-                                <p class="mayhen_home_template_card_desc">{{ $item->description }}</p>
-                                <div class="mayhen_home_template_card_footer">
-                                    <span class="mayhen_home_template_card_users">{{ number_format($item->usage_count) }} lượt tạo</span>
-                                    <div class="mayhen_home_template_card_actions">
-                                        <a href="{{ route('templates.preview', $item->slug) }}" class="mayhen_home_template_card_btn_preview" target="_blank" rel="noopener">Xem thử</a>
-                                        <a href="{{ route('templates.show', $item->slug) }}" class="mayhen_home_template_card_btn_select">Chi tiết</a>
-                                    </div>
+                            </a>
+                            <div class="mayhen_template_detail_related_body">
+                                <h3 class="mayhen_template_detail_related_name">
+                                    <a href="{{ route('templates.show', $related->slug) }}">{{ $related->name }}</a>
+                                </h3>
+                                <div class="mayhen_template_detail_related_footer">
+                                    <span class="mayhen_template_detail_related_category">{{ $related->category_label ?? 'Thiệp cưới' }}</span>
+                                    <a href="{{ route('templates.show', $related->slug) }}" class="mayhen_template_detail_related_link">
+                                        Chi tiết
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </a>
                                 </div>
                             </div>
-                        </article>
+                        </div>
                     @endforeach
                 </div>
             </section>
         @endif
+
+        {{-- Thanh CTA neo ở cuối trang (Bottom Conversion Banner) --}}
+        <section class="mayhen_template_detail_bottom_banner">
+            <div class="mayhen_template_detail_bottom_banner_content">
+                <div class="mayhen_template_detail_bottom_banner_txt">
+                    <h3 class="mayhen_template_detail_bottom_banner_title">Sẵn sàng khởi tạo thiệp cưới độc bản của hai bạn?</h3>
+                    <p class="mayhen_template_detail_bottom_banner_desc">Thao tác chỉnh sửa trực quan chỉ mất 3 phút, lưu lại ngay trong tài khoản và chia sẻ bất cứ lúc nào.</p>
+                </div>
+                <div class="mayhen_template_detail_bottom_banner_btn">
+                    <a href="{{ route('invitation.create', ['template' => $template->slug]) }}" class="mayhen_template_detail_btn_primary">
+                        <span>Tạo Thiệp Với Mẫu Này</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
     </div>
+</div>
 @endsection
