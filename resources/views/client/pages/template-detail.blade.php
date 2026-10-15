@@ -247,13 +247,13 @@
                     {{-- Cam kết chất lượng dịch vụ --}}
                     <div class="mayhen_template_detail_trust_row">
                         <div class="mayhen_template_detail_trust_item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9C7A4A" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Chỉnh sửa ảnh, nhạc và thông tin không giới hạn</span>
                         </div>
                         <div class="mayhen_template_detail_trust_item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9C7A4A" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                             <span>Xem trước thời gian thực (Live Preview)</span>

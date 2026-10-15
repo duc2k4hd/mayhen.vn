@@ -574,7 +574,7 @@
 .mayhen_template_detail_related_thumb {
     display: block;
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
     background-color: #FAF7F2;
 }
@@ -809,4 +809,426 @@
     line-height: 1.65;
     margin: 0;
 }
+
+/* ==========================================================================
+   MOBILE RESPONSIVE ENHANCEMENTS (< 768px)
+   Tối ưu hóa toàn diện giao diện Chi tiết Mẫu Thiệp trên Mobile Quiet Luxury
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Container & Breadcrumb thu gọn */
+    .mayhen_template_detail_wrapper {
+        padding-top: 0.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .mayhen_template_detail_container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .mayhen_template_detail_breadcrumb {
+        font-size: 0.7rem;
+        margin-bottom: 0.75rem;
+        gap: 6px;
+        white-space: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+
+    .mayhen_template_detail_breadcrumb::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mayhen_template_detail_hero_grid {
+        gap: 1rem;
+    }
+
+    /* 2. Sân khấu trưng bày thiệp nghệ thuật (Visual Stage) */
+    .mayhen_template_detail_stage_card {
+        padding: 8px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px -6px rgba(44, 40, 37, 0.08);
+    }
+
+    .mayhen_template_detail_stage_media {
+        border-radius: 12px;
+        aspect-ratio: 3 / 4;
+        max-height: 420px;
+    }
+
+    .mayhen_template_detail_stage_img {
+        max-height: 420px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .mayhen_template_detail_stage_floating_action {
+        bottom: 12px;
+    }
+
+    .mayhen_template_detail_btn_demo {
+        padding: 7px 16px;
+        font-size: 0.75rem;
+        gap: 6px;
+        border-radius: var(--mayhen-radius-pill);
+    }
+
+    .mayhen_template_detail_stage_footer {
+        padding-top: 8px;
+        margin-top: 8px;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .mayhen_template_detail_stage_spec {
+        font-size: 0.6875rem;
+        gap: 4px;
+    }
+
+    .mayhen_template_detail_stage_spec svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* 3. Thẻ thông tin & Kêu gọi hành động (Info Card) */
+    .mayhen_template_detail_info_card {
+        gap: 0.875rem;
+    }
+
+    .mayhen_template_detail_kicker_row {
+        gap: 8px;
+        margin-bottom: 0;
+    }
+
+    .mayhen_template_detail_category_badge {
+        font-size: 0.6875rem;
+        letter-spacing: 0.1em;
+    }
+
+    .mayhen_template_detail_tier_badge {
+        font-size: 0.6875rem;
+    }
+
+    .mayhen_template_detail_tier_pro,
+    .mayhen_template_detail_tier_plus,
+    .mayhen_template_detail_tier_free {
+        padding: 4px 10px;
+    }
+
+    .mayhen_template_detail_title {
+        font-size: 1.35rem;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+    }
+
+    .mayhen_template_detail_lead {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        padding-left: 10px;
+        border-left-width: 2.5px;
+    }
+
+    /* 4. Bảng Hồ Sơ Thiết Kế Tinh Gọn 2 Cột */
+    .mayhen_template_detail_atelier_sheet {
+        padding: 12px 14px;
+        border-radius: 14px;
+    }
+
+    .mayhen_template_detail_atelier_title {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+    }
+
+    .mayhen_template_detail_atelier_grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 12px;
+    }
+
+    .mayhen_template_detail_atelier_item {
+        gap: 2px;
+        font-size: 0.75rem;
+    }
+
+    .mayhen_template_detail_atelier_label {
+        font-size: 0.6875rem;
+    }
+
+    .mayhen_template_detail_atelier_val {
+        font-size: 0.75rem;
+        gap: 5px;
+    }
+
+    .mayhen_template_detail_color_dot {
+        width: 11px;
+        height: 11px;
+    }
+
+    /* 5. Danh Sách Đặc Quyền Có Sẵn */
+    .mayhen_template_detail_features_list {
+        padding: 12px 14px;
+        border-radius: 12px;
+    }
+
+    .mayhen_template_detail_features_title {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+    }
+
+    .mayhen_template_detail_features_ul {
+        gap: 5px;
+    }
+
+    .mayhen_template_detail_features_ul li {
+        font-size: 0.775rem;
+        gap: 6px;
+    }
+
+    .mayhen_template_detail_features_ul li svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* 6. Cụm Action Buttons */
+    .mayhen_template_detail_actions_group {
+        gap: 8px;
+        padding-top: 4px;
+    }
+
+    .mayhen_template_detail_btn_primary {
+        padding: 12px 20px;
+        font-size: 0.875rem;
+        gap: 8px;
+    }
+
+    .mayhen_template_detail_btn_primary svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .mayhen_template_detail_btn_secondary {
+        padding: 11px 18px;
+        font-size: 0.8125rem;
+        gap: 6px;
+    }
+
+    .mayhen_template_detail_btn_secondary svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .mayhen_template_detail_trust_row {
+        gap: 5px;
+        padding-top: 2px;
+        font-size: 0.725rem;
+    }
+
+    .mayhen_template_detail_trust_item svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* 7. Section Trải Nghiệm Khách Mời */
+    .mayhen_template_detail_experience_section {
+        margin-top: 24px;
+        padding: 20px 14px;
+        border-radius: 18px;
+    }
+
+    .mayhen_template_detail_section_header {
+        margin: 0 auto 16px;
+    }
+
+    .mayhen_template_detail_section_kicker {
+        font-size: 0.65rem;
+        padding: 3px 10px;
+        margin-bottom: 4px;
+    }
+
+    .mayhen_template_detail_section_title {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        margin: 0 0 6px;
+    }
+
+    .mayhen_template_detail_section_subtitle {
+        font-size: 0.775rem;
+        line-height: 1.5;
+    }
+
+    .mayhen_template_detail_experience_grid {
+        gap: 10px;
+    }
+
+    .mayhen_template_detail_experience_card {
+        padding: 16px 14px;
+        border-radius: 14px;
+    }
+
+    .mayhen_template_detail_experience_num {
+        font-size: 1.5rem;
+        margin-bottom: 6px;
+    }
+
+    .mayhen_template_detail_experience_icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .mayhen_template_detail_experience_icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .mayhen_template_detail_experience_name {
+        font-size: 1.05rem;
+        margin: 0 0 6px;
+    }
+
+    .mayhen_template_detail_experience_text {
+        font-size: 0.775rem;
+        line-height: 1.5;
+    }
+
+    /* 8. Section SEO Story */
+    .mayhen_template_detail_seo_story_section {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    .mayhen_template_detail_seo_story_header {
+        margin-bottom: 14px;
+    }
+
+    .mayhen_template_detail_seo_story_title {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        margin: 6px 0 0;
+    }
+
+    .mayhen_template_detail_seo_story_content {
+        font-size: 0.8125rem;
+        line-height: 1.6;
+    }
+
+    .mayhen_template_detail_seo_story_content p {
+        margin-bottom: 12px;
+    }
+
+    .mayhen_template_detail_seo_story_content h3 {
+        font-size: 1.05rem;
+        margin: 16px 0 6px;
+    }
+
+    /* 9. Section FAQ */
+    .mayhen_template_detail_faq_section {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    .mayhen_template_detail_faq_list {
+        gap: 8px;
+    }
+
+    .mayhen_template_detail_faq_item {
+        padding: 14px 14px;
+        border-radius: 12px;
+    }
+
+    .mayhen_template_detail_faq_q {
+        font-size: 0.925rem;
+        margin: 0 0 6px;
+        line-height: 1.35;
+    }
+
+    .mayhen_template_detail_faq_a {
+        font-size: 0.775rem;
+        line-height: 1.55;
+    }
+
+    /* 10. Section Related Templates: Lưới 2 cột dọc tỷ lệ 3:4 chuẩn mực */
+    .mayhen_template_detail_related_section {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    .mayhen_template_detail_related_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .mayhen_template_detail_related_card {
+        border-radius: 12px;
+    }
+
+    .mayhen_template_detail_related_thumb {
+        aspect-ratio: 3 / 4;
+    }
+
+    .mayhen_template_detail_related_badge {
+        top: 6px;
+        left: 6px;
+        padding: 2px 7px;
+        font-size: 0.6rem;
+    }
+
+    .mayhen_template_detail_related_body {
+        padding: 10px 8px;
+    }
+
+    .mayhen_template_detail_related_name {
+        font-size: 0.8125rem;
+        line-height: 1.25;
+        margin: 0 0 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2em;
+    }
+
+    .mayhen_template_detail_related_footer {
+        font-size: 0.65rem;
+    }
+
+    .mayhen_template_detail_related_link {
+        font-size: 0.6875rem;
+    }
+
+    /* 11. Bottom Banner */
+    .mayhen_template_detail_bottom_banner {
+        margin-top: 24px;
+        padding: 20px 14px;
+        border-radius: 16px;
+    }
+
+    .mayhen_template_detail_bottom_banner_content {
+        gap: 12px;
+        text-align: center;
+    }
+
+    .mayhen_template_detail_bottom_banner_title {
+        font-size: 1.2rem;
+        margin: 0 0 4px;
+    }
+
+    .mayhen_template_detail_bottom_banner_desc {
+        font-size: 0.775rem;
+        line-height: 1.5;
+    }
+
+    .mayhen_template_detail_bottom_banner_btn {
+        width: 100%;
+    }
+
+    .mayhen_template_detail_bottom_banner_btn .mayhen_template_detail_btn_primary {
+        width: 100%;
+    }
+}
+
 

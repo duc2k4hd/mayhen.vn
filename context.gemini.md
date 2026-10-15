@@ -341,6 +341,26 @@ Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân
 
 ---
 
+## 13. TỐI ƯU HÓA MOBILE-FIRST CHO TRANG CHI TIẾT MẪU THIỆP (/mau-thiep/{slug})
+
+Nhằm mang lại trải nghiệm xem và đặt thiệp cưới đỉnh cao trên điện thoại di động:
+1. **Sân Khấu Trưng Bày Thiệp (Visual Stage)**:
+   - Thẻ trưng bày co gọn padding xuống `8px`, bo góc `16px`.
+   - Khung hình thiệp định vị tỷ lệ dọc chuẩn mực `aspect-ratio: 3 / 4` (thay vì để tự do bị kéo dài hoặc quá to), max-height `420px`.
+   - Nút nổi "Xem Trước Live" dạng Glassmorphism bo tròn nhỏ gọn (`padding: 7px 16px; font-size: 0.75rem`).
+   - Dải thông số chân sân khấu rút gọn flex 1 hàng, icon 14px thanh nhã.
+2. **Khối Thông Tin Tác Phẩm & Hồ Sơ Thiết Kế**:
+   - Tiêu đề H1 co về `1.35rem`, line-height `1.25`, tôn vinh nghệ thuật typography chữ than ấm `#1F1D1A`.
+   - Bảng **Hồ Sơ Thiết Kế** tổ chức thành 2 cột dạng lưới compact (`grid-template-columns: 1fr 1fr; gap: 8px 12px; padding: 12px 14px;`), hiển thị rõ ràng tone màu chủ đạo, font chữ, hiệu ứng mở mà không chiếm diện tích dọc.
+   - Danh sách đặc quyền rút gọn gàng, icon chuẩn tone Mây Hẹn.
+   - Nút bấm chính "Tạo Thiệp Với Mẫu Này" và "Xem Thử Trực Tiếp" căn chỉnh chiều cao vừa tay, icon cam kết đổi sang tone màu Muted Gold `#9C7A4A`.
+3. **Các Section Trải Nghiệm, Bài Viết SEO, FAQ & Mẫu Liên Quan**:
+   - Khoảng cách padding dọc giữa các section giảm mạnh từ `4.5rem` xuống còn `24px`, xóa bỏ khoảng trắng thừa.
+   - **Mẫu Thiệp Cùng Phong Cách**: Chuyển từ layout 1 cột ảnh ngang 4:3 sang **Lưới 2 cột dọc tỷ lệ 3:4 chuẩn mực** đồng bộ với trang danh mục.
+   - Hộp kêu gọi hành động cuối trang (Bottom Banner) co gọn `padding: 20px 14px`, nút bấm mở rộng 100% chiều ngang tiện lợi.
+
+---
+
 ## 14. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:
