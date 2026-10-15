@@ -9,6 +9,22 @@
 @hasSection('meta_keywords')
     <meta name="keywords" content="@yield('meta_keywords')">
 @endif
+
+
+{{-- Favicon --}}
+<link rel="apple-touch-icon" sizes="180x180"
+    href="{{ asset('storage/images/client/business/mayhen-favicon.webp') }}">
+<link rel="icon" type="image/png" sizes="32x32"
+    href="{{ asset('storage/images/client/business/mayhen-favicon.webp') }}">
+<link rel="icon" type="image/png" sizes="16x16"
+    href="{{ asset('storage/images/client/business/mayhen-favicon.webp') }}">
+<link rel="mask-icon"
+    href="{{ asset('storage/images/client/business/mayhen-favicon.webp') }}"
+    color="#5bbad5">
+<link rel="icon"
+    href="{{ asset('storage/images/client/business/mayhen-favicon.webp') }}"
+    type="image/x-icon">
+<meta name="theme-color" content="#C5A880">
 @php
     // Kiểm tra URL có chứa tham số query (? hoặc &)
     $hasQueryParams = count(request()->query()) > 0 || !empty(request()->getQueryString());

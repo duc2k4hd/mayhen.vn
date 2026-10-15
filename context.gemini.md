@@ -270,6 +270,23 @@ Hệ thống xác thực (`/dang-nhap` và `/dang-ky`) đã được tái thiế
 
 ---
 
+## 9. HỆ THỐNG PHÂN LOẠI & BỘ LỌC TIER MẪU THIỆP (FREE / PLUS / PRO)
+
+Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo gói dịch vụ (`?tier=free`, `?tier=plus`, `?tier=pro`):
+
+1. **Phân Loại Gói (Tier Categorization)**:
+   - **Gói Miễn Phí (`tier: free` — 4 mẫu)**: `minimal-sand-beige`, `minimalism-darkred`, `minimalism-darkbrown`, `mai-lan-white`. Đặc điểm: Setup siêu tốc 2 phút, bố cục tinh gọn, đầy đủ thông tin lễ cưới cốt lõi & bản đồ GPS.
+   - **Gói Plus (`tier: plus` — 6 mẫu)**: `botanical-sage-garden`, `romantic-dusty-rose`, `cinema-modern-lovestory`, `boho-floral-green`, `to-duyen-green`, `vuon-kinh-pink`. Đặc điểm: Bố cục hoa lá & sân vườn lãng mạn, hiệu ứng cánh hoa rơi, timeline câu chuyện tình yêu, album ảnh cưới HD.
+   - **Gói Pro VIP (`tier: pro` — 6 mẫu)**: `envelope-reveal-luxury`, `editorial-scroll-vogue`, `song-hy-red`, `song-hy-green`, `song-hy-v2-red`, `long-phung-red`. Đặc điểm: Mở phong thư hoàng gia 3D tem sáp niêm phong, phong cách tạp chí Editorial cao cấp, Song Hỷ & Long Phụng dệt gấm cung đình.
+
+2. **Cơ Chế Truy Vấn & Migration Dữ Liệu**:
+   - Dữ liệu tier được lưu trữ chuẩn hóa trong cột JSON `default_config->tier`.
+   - Migration `2026_10_15_000001_update_invitation_templates_tier_and_config.php` tự động cập nhật toàn bộ metadata `tier`, `complexity`, `setup_time`, `stats` cho toàn bộ mẫu.
+   - `TemplateController@index` áp dụng truy vấn JSON linh hoạt kết hợp fallback an toàn cho trường hợp tier chưa set.
+   - Kiểm thử tự động `tests/Feature/TemplateFilterTest.php` bao phủ 100% các trạng thái lọc.
+
+---
+
 ## 8. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
 1. **`User` (`users`)**:

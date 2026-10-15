@@ -26,7 +26,14 @@ class TemplateController extends Controller
         }
 
         if ($tier && in_array($tier, ['free', 'plus', 'pro'])) {
-            $query->where('default_config->tier', $tier);
+            if ($tier === 'plus') {
+                $query->where(function ($q) {
+                    $q->where('default_config->tier', 'plus')
+                        ->orWhereNull('default_config->tier');
+                });
+            } else {
+                $query->where('default_config->tier', $tier);
+            }
         }
 
         if ($sort === 'popular') {

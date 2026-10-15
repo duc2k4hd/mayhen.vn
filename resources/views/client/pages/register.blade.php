@@ -51,7 +51,7 @@
                 <div class="mayhen_auth_corner_accent_inner"></div>
 
                 <div class="mayhen_auth_form_header">
-                    <h1 class="mayhen_auth_form_title">register</h1>
+                    <h1 class="mayhen_auth_form_title">Đăng ký ngay để sử dụng ngay</h1>
                     <p class="mayhen_auth_form_subtitle">Khởi tạo tài khoản để trải nghiệm ngay</p>
                 </div>
 
