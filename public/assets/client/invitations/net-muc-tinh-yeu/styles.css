@@ -1676,3 +1676,215 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     transform: none;
   }
 }
+
+/* ================= OWNER CONTROLS (DÀNH CHO CHỦ NHÂN THIỆP CƯỚI) ================= */
+.mayhen_invitation_dhsuudushi9428r_owner_pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #a48243, #8a6a2f);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 2px 6px rgba(138, 106, 47, 0.25);
+  margin-bottom: 8px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_notice_box {
+  background: #fbf7ee;
+  border: 1px dashed var(--mayhen_gold);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 12px auto 16px;
+  text-align: center;
+  max-width: 95%;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_notice_box p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--mayhen_ink);
+  line-height: 1.45;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_reply {
+  margin-top: 10px;
+  background: #faf6f0;
+  border-left: 3px solid var(--mayhen_gold);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_reply_header {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mayhen_gold);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_reply_header span {
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wish_reply_body {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mayhen_ink);
+  font-style: italic;
+  white-space: pre-wrap;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_wish_action {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.mayhen_invitation_dhsuudushi9428r_reply_trigger {
+  background: none;
+  border: 1px solid var(--mayhen_gold);
+  color: var(--mayhen_gold);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_reply_trigger:hover {
+  background: var(--mayhen_gold);
+  color: #ffffff;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_dashboard {
+  padding: 10px 4px 6px;
+  text-align: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_dashboard_desc {
+  font-size: 12.5px;
+  color: var(--mayhen_ink_light);
+  margin: 4px auto 14px;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+.mayhen_invitation_dhsuudushi9428r_owner_summary_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_summary_card {
+  padding: 14px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--mayhen_line_light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--mayhen_bg_warm);
+}
+
+.mayhen_summary_attending {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.mayhen_summary_declined {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.mayhen_summary_num {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mayhen_summary_attending .mayhen_summary_num {
+  color: #166534;
+}
+
+.mayhen_summary_declined .mayhen_summary_num {
+  color: #9a3412;
+}
+
+.mayhen_summary_label {
+  font-size: 11px;
+  color: var(--mayhen_ink_light);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.mayhen_btn_view_rsvps {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+/* Modal danh sách RSVP của chủ thiệp */
+.mayhen_rsvp_list_modal {
+  max-height: 65vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.mayhen_rsvp_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.mayhen_rsvp_table th, .mayhen_rsvp_table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--mayhen_line_light);
+  vertical-align: top;
+}
+
+.mayhen_rsvp_table th {
+  background: var(--mayhen_bg_warm);
+  font-weight: 600;
+  color: var(--mayhen_ink);
+  position: sticky;
+  top: 0;
+}
+
+.mayhen_rsvp_tag_attending {
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  display: inline-block;
+}
+
+.mayhen_rsvp_tag_declined {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  display: inline-block;
+}
+
+.mayhen_rsvp_empty_text {
+  text-align: center;
+  padding: 24px 0;
+  font-style: italic;
+  color: var(--mayhen_muted);
+}

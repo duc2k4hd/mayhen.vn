@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -44,6 +45,7 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            $this->syncOwnedInvitations($request, Auth::user());
             $request->session()->regenerate();
 
             $redirectUrl = $request->input('redirect');
@@ -102,6 +104,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user, true);
+        $this->syncOwnedInvitations($request, $user);
         $request->session()->regenerate();
 
         $redirectUrl = $request->input('redirect');
@@ -122,5 +125,24 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home')->with('success', 'Đã đăng xuất tài khoản an toàn.');
+    }
+
+    /**
+     * Đồng bộ các thiệp cưới được tạo lúc chưa đăng nhập sang tài khoản người dùng vừa đăng nhập.
+     */
+    protected function syncOwnedInvitations(Request $request, User $user): void
+    {
+        $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
+        if (! empty($ownedSlugs)) {
+            $invitations = Invitation::with('wedding')
+                ->whereIn('slug', $ownedSlugs)
+                ->get();
+
+            foreach ($invitations as $invitation) {
+                if ($invitation->wedding && (int) $invitation->wedding->user_id !== (int) $user->id) {
+                    $invitation->wedding->update(['user_id' => $user->id]);
+                }
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ class WeddingWish extends Model
         'wedding_id',
         'name',
         'message',
+        'reply',
+        'replied_at',
         'is_approved',
         'ip_address',
     ];
@@ -22,6 +24,7 @@ class WeddingWish extends Model
     {
         return [
             'is_approved' => 'boolean',
+            'replied_at' => 'datetime',
         ];
     }
 

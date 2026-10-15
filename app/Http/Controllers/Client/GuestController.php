@@ -13,6 +13,7 @@ use App\Models\WeddingWish;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class GuestController extends Controller
@@ -86,6 +87,18 @@ class GuestController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        // 0. Chủ nhân thiệp không được phép gửi xác nhận tham dự cho chính mình
+        if ($invitation->isOwner()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn là chủ nhân của thiệp cưới này nên không thể tự gửi xác nhận tham dự cho chính mình.',
+                ], 403);
+            }
+
+            return back()->with('rsvp_error', 'Bạn là chủ nhân của thiệp cưới này.');
+        }
+
         $guestToken = $request->query('token');
         $guest = $guestToken ? Guest::where('guest_token', $guestToken)->first() : null;
         $ip = $request->ip();
@@ -138,6 +151,7 @@ class GuestController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
+                'attending_status' => $request->validated('attending_status'),
                 'message' => $request->validated('attending_status') === 'attending'
                     ? 'Cảm ơn quý khách đã xác nhận tham dự! Chúng tôi rất hân hạnh được đón tiếp.'
                     : 'Cảm ơn quý khách đã gửi phản hồi! Chúng tôi rất tiếc vì quý khách chưa thể sắp xếp tham dự.',
@@ -168,6 +182,15 @@ class GuestController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+
+        // Chủ nhân thiệp không gửi lời chúc cho chính mình mà chỉ trả lời lời chúc của khách
+        if ($invitation->isOwner()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn là chủ nhân của thiệp cưới này nên không thể tự gửi lời chúc. Bạn có thể trả lời các lời chúc của khách mời.',
+            ], 403);
+        }
+
         $ip = $request->ip();
 
         $existingWish = WeddingWish::where('wedding_id', $wedding->id)
@@ -202,10 +225,90 @@ class GuestController extends Controller
                 'id' => $wish->id,
                 'name' => $wish->name,
                 'message' => $wish->message,
+                'reply' => $wish->reply,
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ],
         ], $isUpdate ? 200 : 201);
+    }
+
+    /**
+     * Reply to a wish (Owner only).
+     */
+    public function replyWish(Request $request, string $slug, int $wishId): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+
+        if (! $invitation->isOwner()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền phản hồi lời chúc của thiệp cưới này.',
+            ], 403);
+        }
+
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ], [
+            'reply.required' => 'Vui lòng nhập nội dung phản hồi.',
+            'reply.max' => 'Nội dung phản hồi không được vượt quá 1000 ký tự.',
+        ]);
+
+        $wedding = $invitation->wedding;
+        $wish = WeddingWish::where('wedding_id', $wedding->id)->findOrFail($wishId);
+
+        $wish->update([
+            'reply' => $request->input('reply'),
+            'replied_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã gửi phản hồi lời chúc thành công!',
+            'reply' => $wish->reply,
+            'replied_at_human' => 'Vừa xong',
+        ]);
+    }
+
+    /**
+     * Get RSVP responses list and statistics (Owner only).
+     */
+    public function getRsvpResponses(Request $request, string $slug): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+
+        if (! $invitation->isOwner()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xem danh sách phản hồi của thiệp cưới này.',
+            ], 403);
+        }
+
+        $wedding = $invitation->wedding;
+        $responses = GuestResponse::where('wedding_id', $wedding->id)
+            ->latest()
+            ->get()
+            ->map(fn ($r) => [
+                'id' => $r->id,
+                'guest_name' => $r->guest_name,
+                'phone' => $r->phone,
+                'attending_status' => $r->attending_status,
+                'adults_count' => $r->adults_count,
+                'children_count' => $r->children_count,
+                'wishes' => $r->wishes,
+                'created_at_human' => $r->created_at?->diffForHumans() ?? 'Vừa xong',
+                'created_at_date' => $r->created_at?->format('d/m/Y H:i') ?? '',
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'total' => $responses->count(),
+                'attending' => $responses->where('attending_status', 'attending')->count(),
+                'attending_guests' => (int) $responses->where('attending_status', 'attending')->sum('adults_count'),
+                'declined' => $responses->where('attending_status', 'declined')->count(),
+            ],
+            'responses' => $responses,
+        ]);
     }
 
     /**
@@ -222,6 +325,7 @@ class GuestController extends Controller
                 'id' => $wish->id,
                 'name' => $wish->name,
                 'message' => $wish->message,
+                'reply' => $wish->reply,
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ]);
@@ -244,6 +348,7 @@ class GuestController extends Controller
                 'id' => rand(1000, 9999),
                 'name' => $request->validated('name'),
                 'message' => $request->validated('message'),
+                'reply' => null,
                 'created_at_human' => 'Vừa xong',
                 'created_at_date' => now()->format('d/m/Y H:i'),
             ],

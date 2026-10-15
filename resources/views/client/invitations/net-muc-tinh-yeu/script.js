@@ -249,6 +249,11 @@
   const guestbookButton = $('[data-modal="guestbook"]');
   if (guestbookButton) {
     guestbookButton.addEventListener('click', () => {
+      if (window.__MAYHEN_IS_OWNER) {
+        alert('Bạn là chủ nhân của thiệp cưới này nên không thể tự gửi lời chúc. Bạn có thể nhấn "Trả lời" dưới mỗi lời chúc của khách mời.');
+        return;
+      }
+
       const myWish = window.__MAYHEN_MY_WISH;
       const isEditing = Boolean(myWish && myWish.message);
 
@@ -329,7 +334,7 @@
               if (timeEl) {
                 timeEl.textContent = 'Vừa cập nhật';
               }
-              const bodyEl = myWishCard.querySelector('p');
+              const bodyEl = myWishCard.querySelector(className('wish_message')) || myWishCard.querySelector('p');
               if (bodyEl) {
                 bodyEl.textContent = result.wish ? result.wish.message : message;
               }
@@ -357,6 +362,7 @@
               header.append(author, time);
 
               const body = document.createElement('p');
+              body.className = prefix + 'wish_message';
               body.textContent = result.wish ? result.wish.message : message;
 
               card.append(header, body);
@@ -387,6 +393,156 @@
       });
 
       openModal(isEditing ? 'Chỉnh Sửa Lời Chúc Của Bạn' : 'Ký Tên Chúc Phúc', form);
+    });
+  }
+
+  // Xử lý sự kiện Chủ nhân trả lời lời chúc của khách mời
+  document.addEventListener('click', async event => {
+    const replyBtn = event.target.closest(className('reply_trigger'));
+    if (!replyBtn) return;
+
+    const wishId = replyBtn.getAttribute('data-wish-id');
+    const author = replyBtn.getAttribute('data-author') || 'khách mời';
+    const currentReply = replyBtn.getAttribute('data-reply') || '';
+
+    const form = document.createElement('form');
+    form.append(
+      field(`Lời phản hồi từ Cô Dâu & Chú Rể gửi tới ${author} *`, 'textarea', 'reply', true, currentReply),
+      note('Lời cảm ơn của bạn sẽ hiển thị công khai ngay bên dưới lời chúc của khách mời này.')
+    );
+
+    const submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.className = prefix + 'primary_button';
+    submit.textContent = currentReply ? 'Lưu Thay Đổi' : 'Gửi Phản Hồi';
+    form.append(submit);
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const replyText = (data.get('reply') || '').trim();
+      if (!replyText) {
+        alert('Vui lòng nhập nội dung phản hồi.');
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = 'Đang lưu...';
+
+      const replyUrl = (window.__MAYHEN_WISH_REPLY_BASE_URL || '') + `/${wishId}/reply`;
+      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+      const csrfToken = window.__MAYHEN_CSRF_TOKEN || (csrfMeta ? csrfMeta.content : '');
+
+      try {
+        const response = await fetch(replyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify({ reply: replyText })
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Không thể lưu phản hồi.');
+        }
+
+        // Cập nhật DOM
+        const replyBox = document.getElementById(`mayhen_wish_reply_${wishId}`);
+        if (replyBox) {
+          replyBox.style.display = 'block';
+          const bodyEl = replyBox.querySelector(className('wish_reply_body')) || replyBox.querySelector('p');
+          if (bodyEl) bodyEl.textContent = replyText;
+        }
+
+        replyBtn.setAttribute('data-reply', replyText);
+        replyBtn.textContent = '✎ Sửa phản hồi';
+
+        closeModal();
+        alert('Đã gửi phản hồi lời chúc thành công!');
+      } catch (error) {
+        alert(error.message || 'Có lỗi xảy ra khi gửi phản hồi.');
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Gửi Phản Hồi';
+      }
+    });
+
+    openModal(`Phản Hồi Lời Chúc Của ${author}`, form);
+  });
+
+  // Xử lý xem danh sách phản hồi RSVP của Chủ nhân
+  const viewRsvpBtn = document.getElementById('mayhen_btn_view_rsvp_list');
+  if (viewRsvpBtn) {
+    viewRsvpBtn.addEventListener('click', async () => {
+      const modalContainer = document.createElement('div');
+      modalContainer.className = 'mayhen_rsvp_list_modal';
+      modalContainer.innerHTML = '<p style="text-align:center;padding:24px;font-style:italic;color:var(--mayhen_muted);">Đang tải danh sách phản hồi...</p>';
+
+      openModal('Danh Sách Phản Hồi Tham Dự', modalContainer);
+
+      try {
+        const response = await fetch(window.__MAYHEN_RSVP_RESPONSES_URL, {
+          headers: { 'Accept': 'application/json' }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Không thể tải danh sách phản hồi.');
+        }
+
+        const responses = result.responses || [];
+        if (responses.length === 0) {
+          modalContainer.innerHTML = '<p class="mayhen_rsvp_empty_text">Chưa có khách mời nào gửi xác nhận tham dự.</p>';
+          return;
+        }
+
+        let html = `
+          <div style="margin-bottom:12px;font-size:12px;color:var(--mayhen_ink);display:flex;gap:12px;justify-content:flex-end;">
+            <span>Tổng: <strong>${responses.length}</strong> khách</span>
+          </div>
+          <table class="mayhen_rsvp_table">
+            <thead>
+              <tr>
+                <th>Khách Mời</th>
+                <th>Trạng Thái</th>
+                <th>Số Khách</th>
+                <th>Lời Nhắn</th>
+                <th>Thời Gian</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        responses.forEach(r => {
+          const isAttending = r.attending_status === 'attending';
+          const tagClass = isAttending ? 'mayhen_rsvp_tag_attending' : 'mayhen_rsvp_tag_declined';
+          const tagText = isAttending ? 'Tham dự' : 'Không đi';
+          const guestsCount = isAttending ? (r.adults_count || 1) : 0;
+          const wishes = r.wishes ? r.wishes : '-';
+          const phone = r.phone ? `<br><small style="color:var(--mayhen_muted);">${r.phone}</small>` : '';
+
+          html += `
+            <tr>
+              <td><strong>${r.guest_name}</strong>${phone}</td>
+              <td><span class="${tagClass}">${tagText}</span></td>
+              <td style="text-align:center;"><strong>${guestsCount}</strong></td>
+              <td style="max-width:140px;word-break:break-word;">${wishes}</td>
+              <td><small style="color:var(--mayhen_muted);">${r.created_at_human || ''}</small></td>
+            </tr>
+          `;
+        });
+
+        html += `
+            </tbody>
+          </table>
+        `;
+
+        modalContainer.innerHTML = html;
+      } catch (error) {
+        modalContainer.innerHTML = `<p style="color:#b91c1c;padding:24px;text-align:center;">${error.message || 'Có lỗi xảy ra khi tải danh sách.'}</p>`;
+      }
     });
   }
 
@@ -474,6 +630,11 @@
 
   rsvpButtons.forEach(button => {
     button.addEventListener('click', () => {
+      if (window.__MAYHEN_IS_OWNER) {
+        alert('Bạn là chủ nhân của thiệp cưới này nên không thể tự gửi xác nhận tham dự cho chính mình.');
+        return;
+      }
+
       if (window.__MAYHEN_CURRENT_RSVP || button.disabled) {
         alert('Bạn đã xác nhận tham dự trước đó rồi và không thể thay đổi.');
         return;

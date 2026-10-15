@@ -65,20 +65,6 @@ class InvitationEditorController extends Controller
         $templateId = (int) $request->input('template_id');
         $template = InvitationTemplate::findOrFail($templateId);
 
-        // Kiểm tra quyền: mẫu Plus và Pro bắt buộc phải đăng nhập
-        if ($template->tier !== 'free' && ! auth()->check()) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Vui lòng đăng nhập để lưu và tạo mẫu thiệp này.',
-                    'redirect' => route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])]),
-                ], 403);
-            }
-
-            return redirect()->route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])])
-                ->with('warning', 'Vui lòng đăng nhập để sử dụng mẫu thiệp Plus/Pro này.');
-        }
-
         // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
         $rawWedding = $request->input('wedding', []);
         if (empty($rawWedding) && $request->has('groom_name')) {
@@ -122,6 +108,13 @@ class InvitationEditorController extends Controller
             ],
         ]);
 
+        // Lưu slug thiệp vào session để ghi nhận người tạo là chủ nhân thiệp
+        $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
+        if (! in_array($invitation->slug, $ownedSlugs, true)) {
+            $ownedSlugs[] = $invitation->slug;
+            $request->session()->put('owned_invitation_slugs', $ownedSlugs);
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -162,6 +155,23 @@ class InvitationEditorController extends Controller
                 ->first();
         }
 
+        $isOwner = $invitation->isOwner();
+        $rsvpStats = null;
+        $rsvpResponses = collect([]);
+
+        if ($isOwner && $wedding) {
+            $rsvpResponses = GuestResponse::where('wedding_id', $wedding->id)
+                ->latest()
+                ->get();
+
+            $rsvpStats = [
+                'total' => $rsvpResponses->count(),
+                'attending' => $rsvpResponses->where('attending_status', 'attending')->count(),
+                'attending_guests' => (int) $rsvpResponses->where('attending_status', 'attending')->sum('adults_count'),
+                'declined' => $rsvpResponses->where('attending_status', 'declined')->count(),
+            ];
+        }
+
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
 
@@ -175,6 +185,9 @@ class InvitationEditorController extends Controller
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
                 'currentRsvp' => $currentRsvp,
                 'myWish' => $myWish,
+                'isOwner' => $isOwner,
+                'rsvpStats' => $rsvpStats,
+                'rsvpResponses' => $rsvpResponses,
             ]);
         }
 
@@ -187,6 +200,9 @@ class InvitationEditorController extends Controller
             'rsvpSubmitUrl' => $rsvpSubmitUrl,
             'currentRsvp' => $currentRsvp,
             'myWish' => $myWish,
+            'isOwner' => $isOwner,
+            'rsvpStats' => $rsvpStats,
+            'rsvpResponses' => $rsvpResponses,
         ]);
     }
 

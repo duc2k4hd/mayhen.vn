@@ -601,8 +601,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Kết quả kiểm thử: **14/14 tests passed (160 assertions)**.
   - Laravel Pint: **100% passed**.
 
+### 📌 Phiên bản 1.1.7 — Cơ Chế Phân Quyền Chủ Nhân Thiệp Cưới (Session & Auth), Trả Lời Lưu Bút & Quản Lý RSVP
+- **Nhận diện Chủ Nhân Thiệp Cưới (Owner Detection)**:
+  - **Tạo thiệp khi chưa đăng nhập**: Cho phép khách vãng lai tạo thiệp trải nghiệm, slug thiệp được lưu vào session `owned_invitation_slugs`. Người này được hệ thống công nhận là Chủ nhân của thiệp cưới thông qua session.
+  - **Tạo thiệp khi đã đăng nhập**: Thiệp cưới gắn trực tiếp với `user_id` của tài khoản đó.
+  - **Đồng bộ tự động khi đăng nhập/đăng ký**: Khi người dùng đăng nhập hoặc đăng ký tài khoản mới, hệ thống tự động quét session `owned_invitation_slugs` và chuyển quyền sở hữu toàn bộ các thiệp đã tạo sang `user_id` của tài khoản đó (`AuthController::syncOwnedInvitations`).
+  - **Helper method `Invitation::isOwner()`**: Xác thực chủ quyền dựa trên `auth()->id() === wedding->user_id` HOẶC `in_array(slug, session('owned_invitation_slugs'))`.
+- **Giới hạn & Đặc quyền của Chủ Nhân (Owner Permissions & Restrictions)**:
+  - **KHÔNG được phép**:
+    + Không được tự gửi xác nhận tham dự cho chính mình (chặn HTTP 403 cả Backend lẫn Frontend).
+    + Không được tự gửi lời chúc mới trong sổ lưu bút (chặn HTTP 403 cả Backend lẫn Frontend).
+  - **ĐƯỢC PHÉP**:
+    + **Trả lời lưu bút**:
+      - Thêm migration cột `reply` (text, nullable) và `replied_at` (timestamp, nullable) vào bảng `wedding_wishes`.
+      - API `POST /thiep/{slug}/wishes/{wishId}/reply`: Chủ nhân gửi câu trả lời lời chúc của từng khách mời; giao diện thiệp hiển thị khung trang trọng *"♥ Phản hồi từ Cô Dâu & Chú Rể"*.
+      - Người lạ không phải chủ nhân gọi API reply sẽ bị chặn HTTP 403.
+    + **Xem danh sách và thống kê khách phản hồi tham dự (RSVP Dashboard)**:
+      - API `GET /thiep/{slug}/rsvp/responses`: Chủ nhân xem danh sách chi tiết (Tên, SĐT, Trạng thái tham dự/không tham dự, Số khách đi cùng, Lời nhắn, Thời gian). Người lạ truy cập bị chặn HTTP 403.
+      - Giao diện thiệp thay thế 2 nút chọn RSVP thành Bảng điều khiển Quản lý khách mời kèm nút xem bảng danh sách modal chi tiết.
+- **Kiểm thử tự động & Định dạng**:
+  - Bổ sung test case Feature toàn diện trong `tests/Feature/NetMucTinhYeuTemplateTest.php`: Kiểm tra tạo thiệp bằng session, chặn chủ thiệp gửi RSVP & Wish mới, cho phép chủ thiệp trả lời lưu bút và xem danh sách RSVP, chặn người lạ can thiệp, và kiểm tra đồng bộ quyền sở hữu khi đăng nhập.
+  - Kết quả kiểm thử: **15/15 tests passed (186 assertions)**.
+  - Laravel Pint: **100% passed**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 

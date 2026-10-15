@@ -36,8 +36,10 @@ Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->name('i
 Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->name('invitation.uploadAsset');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->name('rsvp.submit');
+Route::get('/thiep/{slug}/rsvp/responses', [GuestController::class, 'getRsvpResponses'])->name('invitation.rsvp.responses');
 Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
 Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->name('invitation.wish.store');
+Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->name('invitation.wish.reply');
 
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
