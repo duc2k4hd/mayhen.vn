@@ -346,7 +346,7 @@ Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân
 Nhằm mang lại trải nghiệm xem và đặt thiệp cưới đỉnh cao trên điện thoại di động:
 1. **Sân Khấu Trưng Bày Thiệp (Visual Stage)**:
    - Thẻ trưng bày co gọn padding xuống `8px`, bo góc `16px`.
-   - Khung hình thiệp định vị tỷ lệ dọc chuẩn mực `aspect-ratio: 3 / 4` (thay vì để tự do bị kéo dài hoặc quá to), max-height `420px`.
+   - Khung hình thiệp `mayhen_template_detail_stage_media` và ảnh `mayhen_template_detail_stage_img` luôn luôn được cố định tỷ lệ chuẩn mực `aspect-ratio: 3 / 4` trên mọi kích thước màn hình (desktop, tablet, mobile), xóa bỏ giới hạn max-height để ảnh thiệp không bao giờ bị méo hay sai lệch tỷ lệ.
    - Nút nổi "Xem Trước Live" dạng Glassmorphism bo tròn nhỏ gọn (`padding: 7px 16px; font-size: 0.75rem`).
    - Dải thông số chân sân khấu rút gọn flex 1 hàng, icon 14px thanh nhã.
 2. **Khối Thông Tin Tác Phẩm & Hồ Sơ Thiết Kế**:
