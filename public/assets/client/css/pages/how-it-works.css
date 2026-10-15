@@ -1,0 +1,569 @@
+/**
+ * MAYHEN.VN — HOW IT WORKS / GUIDE PAGE STYLES
+ * Quiet Luxury, Minimal, Editorial & Romantic
+ * CSS Prefix: mayhen_guide_*
+ */
+
+.mayhen_guide_wrapper {
+    padding-top: var(--mayhen-space-2xl);
+    padding-bottom: var(--mayhen-space-4xl);
+}
+
+/* ==========================================
+   1. HERO HEADER
+   ========================================== */
+.mayhen_guide_header {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto var(--mayhen-space-3xl) auto;
+}
+
+.mayhen_guide_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    margin-bottom: var(--mayhen-space-md);
+    background: var(--mayhen-color-primary-soft);
+    padding: 6px 16px;
+    border-radius: var(--mayhen-radius-pill);
+    border: 1px solid rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_guide_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-display);
+    line-height: 1.2;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-md) 0;
+    font-weight: 500;
+}
+
+.mayhen_guide_title_accent {
+    font-style: italic;
+    color: var(--mayhen-color-primary);
+}
+
+.mayhen_guide_desc {
+    font-size: var(--mayhen-font-size-lead);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0 auto var(--mayhen-space-xl) auto;
+    max-width: 720px;
+}
+
+.mayhen_guide_trust_strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--mayhen-space-md) var(--mayhen-space-xl);
+    padding: var(--mayhen-space-md) var(--mayhen-space-xl);
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-pill);
+    box-shadow: var(--mayhen-shadow-sm);
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.mayhen_guide_trust_item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mayhen-space-xs);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+    font-weight: 500;
+}
+
+.mayhen_guide_trust_icon {
+    width: 16px;
+    height: 16px;
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
+}
+
+/* ==========================================
+   2. SECTION GENERAL
+   ========================================== */
+.mayhen_guide_section {
+    margin-top: var(--mayhen-space-4xl);
+}
+
+.mayhen_guide_section_header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto var(--mayhen-space-2xl) auto;
+}
+
+.mayhen_guide_section_kicker {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_guide_section_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-h2);
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.mayhen_guide_section_desc {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ==========================================
+   3. FOUR CORE STEPS (HOW-TO)
+   ========================================== */
+.mayhen_guide_steps_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-2xl);
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.mayhen_guide_step_item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-2xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (min-width: 768px) {
+    .mayhen_guide_step_item {
+        grid-template-columns: 80px 1fr;
+        align-items: flex-start;
+    }
+}
+
+.mayhen_guide_step_item:hover {
+    box-shadow: var(--mayhen-shadow-md);
+    border-color: var(--mayhen-color-border-hover);
+}
+
+.mayhen_guide_step_badge {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--mayhen-radius-pill);
+    background: var(--mayhen-color-primary-soft);
+    color: var(--mayhen-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid rgba(197, 168, 128, 0.3);
+}
+
+.mayhen_guide_step_content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-sm);
+}
+
+.mayhen_guide_step_heading {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.35rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0;
+    font-weight: 600;
+}
+
+.mayhen_guide_step_text {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.mayhen_guide_step_tips {
+    background: var(--mayhen-color-bg-soft);
+    border-left: 3px solid var(--mayhen-color-primary);
+    border-radius: var(--mayhen-radius-xs);
+    padding: var(--mayhen-space-sm) var(--mayhen-space-md);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+    line-height: 1.6;
+    margin-top: var(--mayhen-space-xs);
+}
+
+/* ==========================================
+   4. ETIQUETTE & NAMING RULES (BOX NGHI LỄ)
+   ========================================== */
+.mayhen_guide_protocol_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-lg);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guide_protocol_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_guide_protocol_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_guide_protocol_tag {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_guide_protocol_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.25rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 600;
+}
+
+.mayhen_guide_protocol_desc {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.65;
+    margin: 0 0 var(--mayhen-space-md) 0;
+    flex-grow: 1;
+}
+
+.mayhen_guide_protocol_example {
+    background: var(--mayhen-color-bg-soft);
+    border: 1px dashed var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-sm);
+    padding: var(--mayhen-space-sm) var(--mayhen-space-md);
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.5;
+}
+
+/* ==========================================
+   5. QR CODE SETUP GUIDE
+   ========================================== */
+.mayhen_guide_qr_box {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-3xl) var(--mayhen-space-2xl);
+    box-shadow: var(--mayhen-shadow-md);
+}
+
+.mayhen_guide_qr_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-xl);
+    align-items: center;
+}
+
+@media (min-width: 860px) {
+    .mayhen_guide_qr_grid {
+        grid-template-columns: 1.2fr 0.8fr;
+    }
+}
+
+.mayhen_guide_qr_points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+    margin-top: var(--mayhen-space-lg);
+}
+
+.mayhen_guide_qr_point_item {
+    display: flex;
+    gap: var(--mayhen-space-sm);
+    align-items: flex-start;
+}
+
+.mayhen_guide_qr_point_num {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--mayhen-radius-pill);
+    background: var(--mayhen-color-primary);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--mayhen-font-size-small);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.mayhen_guide_qr_point_text {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-main);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.mayhen_guide_qr_card_preview {
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    text-align: center;
+}
+
+.mayhen_guide_qr_dummy_icon {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--mayhen-radius-md);
+    background: var(--mayhen-color-primary-soft);
+    color: var(--mayhen-color-primary);
+    margin: 0 auto var(--mayhen-space-md) auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================
+   6. ZALO & MESSENGER TEMPLATES
+   ========================================== */
+.mayhen_guide_messages_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-lg);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guide_messages_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_guide_msg_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_guide_msg_role {
+    font-size: var(--mayhen-font-size-caption);
+    font-weight: 600;
+    color: var(--mayhen-color-primary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_guide_msg_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.2rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-md) 0;
+    font-weight: 600;
+}
+
+.mayhen_guide_msg_bubble {
+    background: var(--mayhen-color-bg-soft);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-md);
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-main);
+    line-height: 1.65;
+    flex-grow: 1;
+    font-style: italic;
+    white-space: pre-line;
+}
+
+/* ==========================================
+   7. MISTAKES & HOW TO AVOID
+   ========================================== */
+.mayhen_guide_mistakes_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--mayhen-space-md);
+}
+
+@media (min-width: 768px) {
+    .mayhen_guide_mistakes_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.mayhen_guide_mistake_card {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+    display: flex;
+    gap: var(--mayhen-space-md);
+    align-items: flex-start;
+}
+
+.mayhen_guide_mistake_icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--mayhen-radius-pill);
+    background: #FDF2F2;
+    color: #DC2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_guide_mistake_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-xs) 0;
+    font-weight: 600;
+}
+
+.mayhen_guide_mistake_text {
+    font-size: var(--mayhen-font-size-small);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================
+   8. FAQ LIST
+   ========================================== */
+.mayhen_guide_faq_list {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mayhen-space-md);
+}
+
+.mayhen_guide_faq_item {
+    background: var(--mayhen-color-bg-surface);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: var(--mayhen-space-xl);
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_guide_faq_q {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    color: var(--mayhen-color-text-main);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: var(--mayhen-space-xs);
+    line-height: 1.4;
+}
+
+.mayhen_guide_faq_q_badge {
+    color: var(--mayhen-color-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.mayhen_guide_faq_a {
+    font-size: var(--mayhen-font-size-body);
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==========================================
+   9. BOTTOM CTA BOX
+   ========================================== */
+.mayhen_guide_cta_box {
+    margin-top: var(--mayhen-space-4xl);
+    background: var(--mayhen-color-text-main);
+    color: #FFFFFF;
+    border-radius: var(--mayhen-radius-xl);
+    padding: var(--mayhen-space-3xl) var(--mayhen-space-2xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_guide_cta_kicker {
+    font-size: var(--mayhen-font-size-caption);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-color-primary);
+    font-weight: 600;
+    display: block;
+    margin-bottom: var(--mayhen-space-xs);
+}
+
+.mayhen_guide_cta_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: var(--mayhen-font-size-h2);
+    margin: 0 0 var(--mayhen-space-sm) 0;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.mayhen_guide_cta_desc {
+    font-size: var(--mayhen-font-size-body);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 600px;
+    margin: 0 auto var(--mayhen-space-xl) auto;
+    line-height: 1.6;
+}
+
+.mayhen_guide_cta_actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--mayhen-space-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .mayhen_guide_wrapper {
+        padding-top: var(--mayhen-space-lg);
+    }
+    .mayhen_guide_header {
+        margin-bottom: var(--mayhen-space-2xl);
+    }
+    .mayhen_guide_section {
+        margin-top: var(--mayhen-space-3xl);
+    }
+    .mayhen_guide_step_item {
+        padding: var(--mayhen-space-lg);
+    }
+    .mayhen_guide_qr_box {
+        padding: var(--mayhen-space-xl) var(--mayhen-space-md);
+    }
+    .mayhen_guide_cta_box {
+        padding: var(--mayhen-space-2xl) var(--mayhen-space-md);
+    }
+}
