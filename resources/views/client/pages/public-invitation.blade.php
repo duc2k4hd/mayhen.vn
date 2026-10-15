@@ -6,6 +6,11 @@
     <title>{{ $invitation->title }} — {{ config('app.name') }}</title>
     <meta name="description" content="Trân trọng kính mời quý khách tới chung vui cùng {{ $wedding->groom_name }} & {{ $wedding->bride_name }}.">
     <link rel="canonical" href="{{ url()->current() }}">
+    @if (count(request()->query()) > 0 || !empty(request()->getQueryString()))
+        <meta name="robots" content="noindex, follow">
+    @else
+        <meta name="robots" content="index, follow">
+    @endif
 
     <!-- Open Graph for Zalo / Facebook -->
     <meta property="og:type" content="article">

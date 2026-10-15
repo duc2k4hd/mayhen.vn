@@ -9,7 +9,19 @@
 @hasSection('meta_keywords')
     <meta name="keywords" content="@yield('meta_keywords')">
 @endif
-<meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+@php
+    // Kiểm tra URL có chứa tham số query (? hoặc &)
+    $hasQueryParams = count(request()->query()) > 0 || !empty(request()->getQueryString());
+    // Kiểm tra các trang công cụ/chức năng không phải trang nội dung SEO chính
+    $isNonMainPage = request()->is('tao-thiep*', 'thanh-toan*', 'tai-khoan*', 'admin*', 'xem-thu*');
+@endphp
+@if ($hasQueryParams || $isNonMainPage)
+    <meta name="robots" content="noindex, follow">
+@elseif (trim($__env->yieldContent('robots')))
+    <meta name="robots" content="@yield('robots')">
+@else
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+@endif
 <link rel="canonical" href="@yield('canonical', url()->current())">
 
 <!-- Open Graph / Facebook / Zalo -->
