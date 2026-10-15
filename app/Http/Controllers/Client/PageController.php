@@ -15,7 +15,17 @@ class PageController extends Controller
 
     public function pricing(): View
     {
-        $plans = Plan::where('is_active', true)->get();
+        $plans = Plan::where('is_active', true)
+            ->whereIn('slug', ['free', 'plus', 'pro'])
+            ->orderBy('price')
+            ->get();
+
+        if ($plans->where('slug', 'plus')->isEmpty()) {
+            $plans = Plan::where('is_active', true)
+                ->whereIn('slug', ['free', 'premium', 'pro'])
+                ->orderBy('price')
+                ->get();
+        }
 
         return view('client.pages.pricing', ['plans' => $plans]);
     }

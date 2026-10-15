@@ -47,7 +47,7 @@ class Plan extends Model
     protected function isFeatured(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->slug === 'premium',
+            get: fn () => in_array($this->slug, ['plus', 'premium']),
         );
     }
 
@@ -55,9 +55,9 @@ class Plan extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->slug) {
-                'free' => 'Tạo thiệp dùng thử và xem trước đầy đủ tính năng.',
-                'premium' => 'Gói phổ biến nhất, đáp ứng hoàn hảo cho mọi cặp đôi.',
-                default => 'Dành cho tiệc cưới quy mô lớn, cần cá nhân hóa tối đa.',
+                'free' => 'Dành cho cặp đôi muốn tạo thử trước hoặc thích phong cách thiệp tinh gọn, setup 2 phút.',
+                'plus', 'premium' => 'Gói được 85% cặp đôi chọn: mở khóa toàn bộ mẫu hoa lá, nhạc nền, album ảnh & RSVP.',
+                default => 'Gói cao cấp nhất: mở khóa mẫu phong thư hoàng gia tem sáp 3D, tạp chí Vogue, passport & tách link 2 nhà.',
             },
         );
     }
@@ -65,7 +65,7 @@ class Plan extends Model
     protected function period(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->price === 0 ? '' : '/đám cưới',
+            get: fn () => $this->price === 0 ? '' : '/đám cưới (dùng trọn đời)',
         );
     }
 
@@ -74,8 +74,8 @@ class Plan extends Model
         return Attribute::make(
             get: fn () => match ($this->slug) {
                 'free' => 'Tạo Thiệp Miễn Phí',
-                'premium' => 'Chọn Gói Premium',
-                default => 'Chọn Gói Pro',
+                'plus', 'premium' => 'Chọn Gói Hạnh Phúc',
+                default => 'Chọn Gói Trọn Vẹn (Pro)',
             },
         );
     }
