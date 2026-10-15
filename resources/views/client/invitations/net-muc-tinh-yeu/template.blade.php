@@ -5,8 +5,8 @@
     // 1. Tên cô dâu chú rể & Gia đình
     $groomName = $wedding->groom_name ?? 'Tràng Đức';
     $brideName = $wedding->bride_name ?? 'Ngọc Phượng';
-    $groomParents = $wedding->groom_parents ?? 'ÔNG: Nguyễn Tràng Giang<br>BÀ: Nguyễn Thị Tám';
-    $brideParents = $wedding->bride_parents ?? 'ÔNG: Đỗ Như Trung<br>BÀ: Lê Thị Hảo';
+    $groomParents = $wedding->groom_parents ?? "ÔNG: Nguyễn Tràng Giang\nBÀ: Nguyễn Thị Tám";
+    $brideParents = $wedding->bride_parents ?? "ÔNG: Đỗ Như Trung\nBÀ: Lê Thị Hảo";
 
     // 2. Ngày giờ và sảnh tiệc
     $weddingDate = isset($wedding->wedding_date) ? \Carbon\Carbon::parse($wedding->wedding_date) : \Carbon\Carbon::create(2027, 3, 7, 7, 0, 0);
@@ -84,7 +84,7 @@
     $albumPhotos = !empty($wedding->extra_data['gallery']) ? $wedding->extra_data['gallery'] : $defaultAlbum;
 
     // 4. Lời ngỏ / Quote
-    $loveQuote = $wedding->story ?? 'Một tình yêu được khắc trên tim';
+    $loveQuote = $wedding->story ?? 'Một tình yêu được khắc trên tim, cùng nhau đi qua năm tháng';
 
     // 5. Timeline (Lịch trình)
     $timelineItems = $wedding->extra_data['timeline'] ?? [
@@ -125,7 +125,6 @@
     @endif
 
     <script>
-        // Dữ liệu đồng bộ cho client JavaScript
         window.__MAYHEN_WEDDING_TARGET_TIME = {{ $targetTimestamp }};
         window.__MAYHEN_WEDDING_DATE = {
             year: {{ $calendarYear }},
@@ -137,284 +136,320 @@
     </script>
     <script src="{{ $assetBase }}/script.js" defer></script>
 </head>
-<body>
+<body class="mayhen_invitation_scroll_locked">
     <main class="mayhen_invitation_dhsuudushi9428r_page">
-        {{-- Section 1: Phong bì mở thiệp --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_cover" aria-label="Mở thiệp mời cưới">
+        {{-- Section 1: Màn hình mở đầu & Phong bì mở thiệp sang trọng --}}
+        <section class="mayhen_invitation_dhsuudushi9428r_cover" id="mayhen_invitation_cover" aria-label="Mở thiệp mời cưới">
             <div class="mayhen_invitation_dhsuudushi9428r_cover_heading">
                 <img class="mayhen_invitation_dhsuudushi9428r_corner mayhen_invitation_dhsuudushi9428r_corner_right" src="{{ $assetBase }}/assets/goc-vuong.png" alt="" aria-hidden="true">
                 <img class="mayhen_invitation_dhsuudushi9428r_corner" src="{{ $assetBase }}/assets/goc-vuong.png" alt="" aria-hidden="true">
                 <p class="mayhen_invitation_dhsuudushi9428r_kicker">Thiệp</p>
                 <h1 class="mayhen_invitation_dhsuudushi9428r_display mayhen_invitation_dhsuudushi9428r_cover_title">Mời Cưới</h1>
-            </div>
-
-            <button class="mayhen_invitation_dhsuudushi9428r_envelope_button" type="button" aria-label="Chạm để mở thiệp mời" aria-expanded="false">
-                <span class="mayhen_invitation_dhsuudushi9428r_envelope_shell">
-                    <img src="{{ $assetBase }}/assets/closed-envelope.png" alt="Phong bì thiệp mời cưới">
-                </span>
-            </button>
-
-            <div class="mayhen_invitation_dhsuudushi9428r_opened_stage" hidden>
-                <img id="sync_cover_photo" src="{{ $coverPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}">
-            </div>
-
-            <p class="mayhen_invitation_dhsuudushi9428r_open_hint">Chạm vào thiệp để mở <span aria-hidden="true">⌄</span></p>
-
-            <div class="mayhen_invitation_dhsuudushi9428r_cover_names">
-                <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
-                <p class="mayhen_invitation_dhsuudushi9428r_display"><span data-sync-target="groom_name">{{ $groomName }}</span> <span>❤</span> <span data-sync-target="bride_name">{{ $brideName }}</span></p>
-                <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
-            </div>
-            <p class="mayhen_invitation_dhsuudushi9428r_cover_date" data-sync-target="cover_date">{{ $coverDateFormatted }}</p>
-        </section>
-
-        {{-- Section 2: Gia đình hai bên --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_families" id="mayhen_invitation_dhsuudushi9428r_families" aria-label="Gia đình hai bên">
-            <div class="mayhen_invitation_dhsuudushi9428r_families_layout mayhen_invitation_dhsuudushi9428r_reveal">
-                <div class="mayhen_invitation_dhsuudushi9428r_family_ribbon" aria-hidden="true">
-                    <span>●</span>
-                    <img src="{{ $assetBase }}/assets/chu-hy-trang.png" alt="">
-                    <span>●</span>
-                </div>
-                <div class="mayhen_invitation_dhsuudushi9428r_family_details">
-                    <div>
-                        <p class="mayhen_invitation_dhsuudushi9428r_family_label">NHÀ TRAI:</p>
-                        <div data-sync-target="groom_parents">{!! nl2br(e($groomParents)) !!}</div>
-                    </div>
-                    <div>
-                        <p class="mayhen_invitation_dhsuudushi9428r_family_label">NHÀ GÁI:</p>
-                        <div data-sync-target="bride_parents">{!! nl2br(e($brideParents)) !!}</div>
-                    </div>
-                </div>
-                <p class="mayhen_invitation_dhsuudushi9428r_family_vertical">Thiệp Mời Cưới</p>
-            </div>
-        </section>
-
-        {{-- Section 3: Câu chuyện & Bộ ảnh cưới --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_story" aria-label="Cô dâu chú rể">
-            <div class="mayhen_invitation_dhsuudushi9428r_story_names mayhen_invitation_dhsuudushi9428r_reveal">
-                <p class="mayhen_invitation_dhsuudushi9428r_display" data-sync-target="groom_name">{{ $groomName }}</p>
-                <p>&amp;</p>
-                <p class="mayhen_invitation_dhsuudushi9428r_display" data-sync-target="bride_name">{{ $brideName }}</p>
-            </div>
-
-            <img id="sync_hero_photo" class="mayhen_invitation_dhsuudushi9428r_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}" loading="eager">
-            <p id="sync_love_quote" class="mayhen_invitation_dhsuudushi9428r_quote mayhen_invitation_dhsuudushi9428r_reveal" data-sync-target="story">{{ $loveQuote }}</p>
-
-            <div class="mayhen_invitation_dhsuudushi9428r_triptych mayhen_invitation_dhsuudushi9428r_reveal">
-                <img id="sync_triptych_1" src="{{ $triptych1 }}" alt="Ảnh cưới 1" loading="lazy">
-                <img id="sync_triptych_2" src="{{ $triptych2 }}" alt="Ảnh cưới 2" loading="lazy">
-                <img id="sync_triptych_3" src="{{ $triptych3 }}" alt="Ảnh cưới 3" loading="lazy">
-            </div>
-        </section>
-
-        {{-- Section 4: Lời mời và Hai tab Lễ cưới Nhà Gái / Nhà Trai --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_invite" id="mayhen_invitation_dhsuudushi9428r_invite">
-            <div class="mayhen_invitation_dhsuudushi9428r_reveal">
-                <p class="mayhen_invitation_dhsuudushi9428r_invite_title">Trân Trọng Kính Mời!</p>
-                <div class="mayhen_invitation_dhsuudushi9428r_rule"><span>✦</span></div>
-                <p class="mayhen_invitation_dhsuudushi9428r_invite_intro">Chúng tôi rất vinh dự khi được mời quý khách đến dự lễ cưới và cùng chia sẻ niềm hạnh phúc trong ngày trọng đại này.</p>
                 
-                <div class="mayhen_invitation_dhsuudushi9428r_tabs" role="tablist" aria-label="Thông tin lễ cưới">
-                    <button class="mayhen_invitation_dhsuudushi9428r_tab mayhen_invitation_dhsuudushi9428r_tab_active" role="tab" aria-selected="true" aria-controls="mayhen_invitation_dhsuudushi9428r_bride" id="mayhen_invitation_dhsuudushi9428r_bride_tab" type="button">Nhà gái</button>
-                    <button class="mayhen_invitation_dhsuudushi9428r_tab" role="tab" aria-selected="false" aria-controls="mayhen_invitation_dhsuudushi9428r_groom" id="mayhen_invitation_dhsuudushi9428r_groom_tab" type="button">Nhà trai</button>
+                <div class="mayhen_invitation_dhsuudushi9428r_cover_names">
+                    <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
+                    <p class="mayhen_invitation_dhsuudushi9428r_display">
+                        <span data-sync-target="groom_name">{{ $groomName }}</span>
+                        <span class="mayhen_heart">❤</span>
+                        <span data-sync-target="bride_name">{{ $brideName }}</span>
+                    </p>
+                    <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
                 </div>
+                <p class="mayhen_invitation_dhsuudushi9428r_cover_date" data-sync-target="cover_date">{{ $coverDateFormatted }}</p>
+            </div>
 
-                {{-- Tab Nhà Gái --}}
-                <div class="mayhen_invitation_dhsuudushi9428r_event_panel" id="mayhen_invitation_dhsuudushi9428r_bride" role="tabpanel" aria-labelledby="mayhen_invitation_dhsuudushi9428r_bride_tab">
-                    <article class="mayhen_invitation_dhsuudushi9428r_event">
-                        <h2 data-sync-target="bride_ceremony_title">{{ $brideCeremonyTitle }}</h2>
-                        <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="bride_ceremony_time">{{ $brideCeremonyTime }}</span></p>
-                        <p data-sync-target="bride_ceremony_day_name">{{ $brideCeremonyDayName }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
-                            <small>THÁNG {{ $brideCeremonyMonthNum }}</small>
-                            <b>{{ $brideCeremonyDayNum }}</b>
-                            <small>{{ $brideCeremonyYearNum }}</small>
-                        </p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="bride_ceremony_lunar">{{ $brideCeremonyLunar }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="bride_ceremony_address">{{ $brideCeremonyAddress }}</p>
-                        <a target="_blank" rel="noopener noreferrer" href="{{ $brideMapLink }}">Xem bản đồ ↗</a>
-                    </article>
+            {{-- 3D Realistic Interactive Envelope --}}
+            <div class="mayhen_invitation_dhsuudushi9428r_envelope_stage">
+                <div class="mayhen_invitation_dhsuudushi9428r_envelope" id="mayhen_envelope_element" role="button" tabindex="0" aria-label="Chạm để mở thiệp mời" aria-expanded="false">
+                    {{-- Thân lưng phong bì --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_envelope_back">
+                        <div class="mayhen_invitation_dhsuudushi9428r_envelope_liner"></div>
+                    </div>
+                    
+                    {{-- Tấm thiệp bên trong sẽ trồi lên khi mở --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_envelope_letter">
+                        <img id="sync_cover_photo" class="mayhen_invitation_dhsuudushi9428r_envelope_letter_img" src="{{ $coverPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}">
+                        <span class="mayhen_invitation_dhsuudushi9428r_envelope_letter_text">Thiệp Mời Hôn Lễ</span>
+                    </div>
 
-                    <article class="mayhen_invitation_dhsuudushi9428r_event">
-                        <h2 data-sync-target="bride_party_title">{{ $bridePartyTitle }}</h2>
-                        <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span></p>
-                        <p data-sync-target="bride_party_day_name">{{ $bridePartyDayName }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
-                            <small>THÁNG {{ $bridePartyMonthNum }}</small>
-                            <b>{{ $bridePartyDayNum }}</b>
-                            <small>{{ $bridePartyYearNum }}</small>
-                        </p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="bride_party_lunar">{{ $bridePartyLunar }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
-                        <a target="_blank" rel="noopener noreferrer" href="{{ $brideMapLink }}">Xem bản đồ ↗</a>
-                    </article>
-                </div>
+                    {{-- Nắp gập phong bì 3D --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_envelope_flap"></div>
 
-                {{-- Tab Nhà Trai --}}
-                <div class="mayhen_invitation_dhsuudushi9428r_event_panel" id="mayhen_invitation_dhsuudushi9428r_groom" role="tabpanel" aria-labelledby="mayhen_invitation_dhsuudushi9428r_groom_tab" hidden>
-                    <article class="mayhen_invitation_dhsuudushi9428r_event">
-                        <h2 data-sync-target="groom_ceremony_title">{{ $groomCeremonyTitle }}</h2>
-                        <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="groom_ceremony_time">{{ $groomCeremonyTime }}</span></p>
-                        <p data-sync-target="groom_ceremony_day_name">{{ $groomCeremonyDayName }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
-                            <small>THÁNG {{ $groomCeremonyMonthNum }}</small>
-                            <b>{{ $groomCeremonyDayNum }}</b>
-                            <small>{{ $groomCeremonyYearNum }}</small>
-                        </p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="groom_ceremony_lunar">{{ $groomCeremonyLunar }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="groom_ceremony_address">{{ $groomCeremonyAddress }}</p>
-                        <a target="_blank" rel="noopener noreferrer" href="{{ $groomMapLink }}">Xem bản đồ ↗</a>
-                    </article>
+                    {{-- Tem sáp niêm phong (Wax Seal) --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_wax_seal" title="Chạm để mở thiệp">
+                        囍
+                    </div>
 
-                    <article class="mayhen_invitation_dhsuudushi9428r_event">
-                        <h2 data-sync-target="groom_party_title">{{ $groomPartyTitle }}</h2>
-                        <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span></p>
-                        <p data-sync-target="groom_party_day_name">{{ $groomPartyDayName }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
-                            <small>THÁNG {{ $groomPartyMonthNum }}</small>
-                            <b>{{ $groomPartyDayNum }}</b>
-                            <small>{{ $groomPartyYearNum }}</small>
-                        </p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="groom_party_lunar">{{ $groomPartyLunar }}</p>
-                        <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
-                        <a target="_blank" rel="noopener noreferrer" href="{{ $groomMapLink }}">Xem bản đồ ↗</a>
-                    </article>
-                </div>
-
-                <div class="mayhen_invitation_dhsuudushi9428r_dress">
-                    <p>DRESS CODE</p>
-                    <span data-sync-target="dresscode_hint">Màu sắc trang phục gợi ý: {{ $wedding->extra_data['dresscode_hint'] ?? 'Trắng, Nâu nhạt, Đỏ trầm' }}</span>
-                    <div class="mayhen_invitation_dhsuudushi9428r_swatches">
-                        <i title="Trắng"></i>
-                        <i title="Nâu nhạt"></i>
-                        <i title="Đỏ trầm"></i>
+                    {{-- Cánh trước phong bì --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_envelope_front">
+                        <div class="mayhen_invitation_dhsuudushi9428r_envelope_pocket"></div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        {{-- Section 5: Lịch, Đếm ngược & Timeline --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_schedule" aria-label="Lịch và chương trình cưới">
-            <div class="mayhen_invitation_dhsuudushi9428r_calendar mayhen_invitation_dhsuudushi9428r_reveal">
-                <h2>Tháng {{ $calendarMonth }} <span>{{ $calendarYear }}</span></h2>
-                <div class="mayhen_invitation_dhsuudushi9428r_calendar_grid" id="mayhen_invitation_dhsuudushi9428r_calendar"></div>
+            {{-- CTA Button & Hint --}}
+            <div class="mayhen_invitation_dhsuudushi9428r_open_cta">
+                <button type="button" class="mayhen_invitation_dhsuudushi9428r_open_btn" id="mayhen_open_invitation_btn">
+                    <span>✉</span> Chạm Mở Thiệp
+                </button>
+                <p class="mayhen_invitation_dhsuudushi9428r_open_hint">Chạm vào phong bì hoặc tem sáp để mở thiệp</p>
             </div>
 
-            <div class="mayhen_invitation_dhsuudushi9428r_countdown mayhen_invitation_dhsuudushi9428r_reveal">
-                <p>Cùng đếm ngược thời gian với chúng tôi nha!</p>
-                <div class="mayhen_invitation_dhsuudushi9428r_countdown_numbers">
-                    <div><strong data-unit="days">000</strong><span>Ngày</span></div>
-                    <div><strong data-unit="hours">00</strong><span>Giờ</span></div>
-                    <div><strong data-unit="minutes">00</strong><span>Phút</span></div>
-                    <div><strong data-unit="seconds">00</strong><span>Giây</span></div>
-                </div>
-            </div>
-
-            <div class="mayhen_invitation_dhsuudushi9428r_heart_divider" aria-hidden="true">♥ &nbsp; ♥ &nbsp; ♥</div>
-
-            <div class="mayhen_invitation_dhsuudushi9428r_timeline mayhen_invitation_dhsuudushi9428r_reveal">
-                <h2 class="mayhen_invitation_dhsuudushi9428r_display">Timeline</h2>
-                <ol>
-                    @foreach ($timelineItems as $item)
-                        <li>
-                            <time>{{ $item['time'] ?? '' }}</time>
-                            <span>{{ $item['title'] ?? '' }}</span>
-                        </li>
-                    @endforeach
-                </ol>
+            {{-- Nút cuộn xuống sau khi mở thiệp --}}
+            <div class="mayhen_invitation_dhsuudushi9428r_scroll_down">
+                <button type="button" id="mayhen_scroll_down_btn">
+                    Cuộn xuống xem tiếp ↓
+                </button>
             </div>
         </section>
 
-        {{-- Section 6: Sổ lưu bút --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_guestbook" id="mayhen_invitation_dhsuudushi9428r_guestbook">
-            <div class="mayhen_invitation_dhsuudushi9428r_section_head mayhen_invitation_dhsuudushi9428r_reveal">
-                <p>Sổ Lưu Bút</p>
-                <h2 class="mayhen_invitation_dhsuudushi9428r_display">Gửi Lời Chúc</h2>
-                <span>Những lời chúc mừng hạnh phúc</span>
-            </div>
-            <div class="mayhen_invitation_dhsuudushi9428r_guestboard mayhen_invitation_dhsuudushi9428r_reveal">
-                <div class="mayhen_invitation_dhsuudushi9428r_guestboard_empty">
-                    <span>Hãy là người đầu tiên ký tên!</span>
+        {{-- MAIN INVITATION BODY (Nội dung chi tiết được cuộn xuống sau khi mở) --}}
+        <div class="mayhen_invitation_dhsuudushi9428r_main_body" id="mayhen_invitation_main_content">
+            {{-- Section 2: Gia đình hai bên (Thiết kế đối xứng cân bằng Quiet Luxury) --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_families" id="mayhen_invitation_dhsuudushi9428r_families" aria-label="Gia đình hai bên">
+                <div class="mayhen_invitation_dhsuudushi9428r_family_card mayhen_invitation_dhsuudushi9428r_reveal">
+                    <div class="mayhen_invitation_dhsuudushi9428r_family_col">
+                        <span class="mayhen_invitation_dhsuudushi9428r_family_badge">NHÀ TRAI</span>
+                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="groom_parents">{!! nl2br(e($groomParents)) !!}</div>
+                    </div>
+                    <div class="mayhen_invitation_dhsuudushi9428r_family_divider" aria-hidden="true">
+                        <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="">
+                    </div>
+                    <div class="mayhen_invitation_dhsuudushi9428r_family_col">
+                        <span class="mayhen_invitation_dhsuudushi9428r_family_badge">NHÀ GÁI</span>
+                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="bride_parents">{!! nl2br(e($brideParents)) !!}</div>
+                    </div>
                 </div>
-            </div>
-            <p class="mayhen_invitation_dhsuudushi9428r_demo_note">Gửi lời chúc tốt đẹp nhất tới cô dâu & chú rể</p>
-            <button class="mayhen_invitation_dhsuudushi9428r_primary_button" type="button" data-modal="guestbook">Ký tên chúc phúc</button>
-            <p class="mayhen_invitation_dhsuudushi9428r_steps">1 Ký tên &nbsp;·&nbsp; 2 Chọn vị trí &nbsp;·&nbsp; 3 Viết lời chúc &amp; gửi</p>
-            <div class="mayhen_invitation_dhsuudushi9428r_messages" aria-live="polite">
-                <p>Chưa có lời chúc nào. Hãy là người đầu tiên!</p>
-            </div>
-        </section>
+                <div class="mayhen_invitation_dhsuudushi9428r_family_subtext mayhen_invitation_dhsuudushi9428r_reveal">
+                    Trân trọng thông báo tin hôn lễ
+                </div>
+            </section>
 
-        {{-- Section 7: Album ảnh cưới --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_album" aria-label="Album ảnh cưới">
-            <button class="mayhen_invitation_dhsuudushi9428r_album_photo mayhen_invitation_dhsuudushi9428r_album_wide mayhen_invitation_dhsuudushi9428r_reveal" type="button" data-photo="0">
-                <img src="{{ $albumPhotos[0] ?? $defaultAlbum[0] }}" alt="Ảnh cưới trong album 1" loading="lazy">
-            </button>
-            <div class="mayhen_invitation_dhsuudushi9428r_album_mosaic">
-                <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="1">
-                    <img src="{{ $albumPhotos[1] ?? $defaultAlbum[1] }}" alt="Ảnh cưới trong album 2" loading="lazy">
-                </button>
-                <div class="mayhen_invitation_dhsuudushi9428r_album_title">
-                    <span>Album</span>
-                    <strong class="mayhen_invitation_dhsuudushi9428r_display">Ảnh cưới</strong>
-                    <i>♥</i>
+            {{-- Section 3: Câu chuyện & Bộ ảnh cưới --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_story" aria-label="Cô dâu chú rể">
+                <div class="mayhen_invitation_dhsuudushi9428r_story_names mayhen_invitation_dhsuudushi9428r_reveal">
+                    <span class="mayhen_invitation_dhsuudushi9428r_display" data-sync-target="groom_name">{{ $groomName }}</span>
+                    <span class="mayhen_invitation_dhsuudushi9428r_story_amp">&amp;</span>
+                    <span class="mayhen_invitation_dhsuudushi9428r_display" data-sync-target="bride_name">{{ $brideName }}</span>
                 </div>
-                <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="2">
-                    <img src="{{ $albumPhotos[2] ?? $defaultAlbum[2] }}" alt="Ảnh cưới trong album 3" loading="lazy">
+
+                <div class="mayhen_invitation_dhsuudushi9428r_hero_wrap mayhen_invitation_dhsuudushi9428r_reveal">
+                    <img id="sync_hero_photo" class="mayhen_invitation_dhsuudushi9428r_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}" loading="eager">
+                </div>
+                
+                <p id="sync_love_quote" class="mayhen_invitation_dhsuudushi9428r_quote mayhen_invitation_dhsuudushi9428r_reveal" data-sync-target="story">“{{ $loveQuote }}”</p>
+
+                <div class="mayhen_invitation_dhsuudushi9428r_triptych mayhen_invitation_dhsuudushi9428r_reveal">
+                    <img id="sync_triptych_1" src="{{ $triptych1 }}" alt="Ảnh cưới 1" loading="lazy">
+                    <img id="sync_triptych_2" src="{{ $triptych2 }}" alt="Ảnh cưới 2" loading="lazy">
+                    <img id="sync_triptych_3" src="{{ $triptych3 }}" alt="Ảnh cưới 3" loading="lazy">
+                </div>
+            </section>
+
+            {{-- Section 4: Lời mời và Hai tab Lễ cưới Nhà Gái / Nhà Trai --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_invite" id="mayhen_invitation_dhsuudushi9428r_invite">
+                <div class="mayhen_invitation_dhsuudushi9428r_reveal">
+                    <p class="mayhen_invitation_dhsuudushi9428r_invite_title">Trân Trọng Kính Mời</p>
+                    <div class="mayhen_invitation_dhsuudushi9428r_rule"><span>✦</span></div>
+                    <p class="mayhen_invitation_dhsuudushi9428r_invite_intro">Chúng tôi rất vinh dự khi được mời quý khách đến dự lễ cưới và cùng chia sẻ niềm hạnh phúc trong ngày trọng đại này.</p>
+                    
+                    <div class="mayhen_invitation_dhsuudushi9428r_tabs" role="tablist" aria-label="Thông tin lễ cưới">
+                        <button class="mayhen_invitation_dhsuudushi9428r_tab mayhen_invitation_dhsuudushi9428r_tab_active" role="tab" aria-selected="true" aria-controls="mayhen_invitation_dhsuudushi9428r_bride" id="mayhen_invitation_dhsuudushi9428r_bride_tab" type="button">Tiệc Nhà Gái</button>
+                        <button class="mayhen_invitation_dhsuudushi9428r_tab" role="tab" aria-selected="false" aria-controls="mayhen_invitation_dhsuudushi9428r_groom" id="mayhen_invitation_dhsuudushi9428r_groom_tab" type="button">Tiệc Nhà Trai</button>
+                    </div>
+
+                    {{-- Tab Nhà Gái --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_event_panel" id="mayhen_invitation_dhsuudushi9428r_bride" role="tabpanel" aria-labelledby="mayhen_invitation_dhsuudushi9428r_bride_tab">
+                        <article class="mayhen_invitation_dhsuudushi9428r_event">
+                            <h2 data-sync-target="bride_ceremony_title">{{ $brideCeremonyTitle }}</h2>
+                            <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="bride_ceremony_time">{{ $brideCeremonyTime }}</span></p>
+                            <p data-sync-target="bride_ceremony_day_name">{{ $brideCeremonyDayName }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
+                                <small>THÁNG {{ $brideCeremonyMonthNum }}</small>
+                                <b>{{ $brideCeremonyDayNum }}</b>
+                                <small>{{ $brideCeremonyYearNum }}</small>
+                            </p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="bride_ceremony_lunar">{{ $brideCeremonyLunar }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="bride_ceremony_address">{{ $brideCeremonyAddress }}</p>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ $brideMapLink }}">Xem chỉ đường ↗</a>
+                        </article>
+
+                        <article class="mayhen_invitation_dhsuudushi9428r_event">
+                            <h2 data-sync-target="bride_party_title">{{ $bridePartyTitle }}</h2>
+                            <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span></p>
+                            <p data-sync-target="bride_party_day_name">{{ $bridePartyDayName }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
+                                <small>THÁNG {{ $bridePartyMonthNum }}</small>
+                                <b>{{ $bridePartyDayNum }}</b>
+                                <small>{{ $bridePartyYearNum }}</small>
+                            </p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="bride_party_lunar">{{ $bridePartyLunar }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ $brideMapLink }}">Xem chỉ đường ↗</a>
+                        </article>
+                    </div>
+
+                    {{-- Tab Nhà Trai --}}
+                    <div class="mayhen_invitation_dhsuudushi9428r_event_panel" id="mayhen_invitation_dhsuudushi9428r_groom" role="tabpanel" aria-labelledby="mayhen_invitation_dhsuudushi9428r_groom_tab" hidden>
+                        <article class="mayhen_invitation_dhsuudushi9428r_event">
+                            <h2 data-sync-target="groom_ceremony_title">{{ $groomCeremonyTitle }}</h2>
+                            <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="groom_ceremony_time">{{ $groomCeremonyTime }}</span></p>
+                            <p data-sync-target="groom_ceremony_day_name">{{ $groomCeremonyDayName }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
+                                <small>THÁNG {{ $groomCeremonyMonthNum }}</small>
+                                <b>{{ $groomCeremonyDayNum }}</b>
+                                <small>{{ $groomCeremonyYearNum }}</small>
+                            </p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="groom_ceremony_lunar">{{ $groomCeremonyLunar }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="groom_ceremony_address">{{ $groomCeremonyAddress }}</p>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ $groomMapLink }}">Xem chỉ đường ↗</a>
+                        </article>
+
+                        <article class="mayhen_invitation_dhsuudushi9428r_event">
+                            <h2 data-sync-target="groom_party_title">{{ $groomPartyTitle }}</h2>
+                            <p class="mayhen_invitation_dhsuudushi9428r_event_time">Vào lúc: <span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span></p>
+                            <p data-sync-target="groom_party_day_name">{{ $groomPartyDayName }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_date_tile">
+                                <small>THÁNG {{ $groomPartyMonthNum }}</small>
+                                <b>{{ $groomPartyDayNum }}</b>
+                                <small>{{ $groomPartyYearNum }}</small>
+                            </p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_lunar" data-sync-target="groom_party_lunar">{{ $groomPartyLunar }}</p>
+                            <p class="mayhen_invitation_dhsuudushi9428r_address" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ $groomMapLink }}">Xem chỉ đường ↗</a>
+                        </article>
+                    </div>
+
+                    <div class="mayhen_invitation_dhsuudushi9428r_dress">
+                        <p>DRESS CODE GỢI Ý</p>
+                        <span data-sync-target="dresscode_hint">{{ $wedding->extra_data['dresscode_hint'] ?? 'Trắng, Nâu nhạt, Đỏ trầm' }}</span>
+                        <div class="mayhen_invitation_dhsuudushi9428r_swatches">
+                            <i title="Trắng"></i>
+                            <i title="Nâu nhạt"></i>
+                            <i title="Đỏ trầm"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- Section 5: Lịch, Đếm ngược & Timeline --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_schedule" aria-label="Lịch và chương trình cưới">
+                <div class="mayhen_invitation_dhsuudushi9428r_calendar mayhen_invitation_dhsuudushi9428r_reveal">
+                    <h2>Tháng {{ $calendarMonth }} <span>/ {{ $calendarYear }}</span></h2>
+                    <div class="mayhen_invitation_dhsuudushi9428r_calendar_grid" id="mayhen_invitation_dhsuudushi9428r_calendar"></div>
+                </div>
+
+                <div class="mayhen_invitation_dhsuudushi9428r_countdown mayhen_invitation_dhsuudushi9428r_reveal">
+                    <p>Cùng đếm ngược khoảnh khắc hạnh phúc</p>
+                    <div class="mayhen_invitation_dhsuudushi9428r_countdown_numbers">
+                        <div><strong data-unit="days">000</strong><span>Ngày</span></div>
+                        <div><strong data-unit="hours">00</strong><span>Giờ</span></div>
+                        <div><strong data-unit="minutes">00</strong><span>Phút</span></div>
+                        <div><strong data-unit="seconds">00</strong><span>Giây</span></div>
+                    </div>
+                </div>
+
+                <div class="mayhen_invitation_dhsuudushi9428r_heart_divider" aria-hidden="true">♥ &nbsp; ♥ &nbsp; ♥</div>
+
+                <div class="mayhen_invitation_dhsuudushi9428r_timeline mayhen_invitation_dhsuudushi9428r_reveal">
+                    <h2 class="mayhen_invitation_dhsuudushi9428r_display">Lịch Trình</h2>
+                    <ol>
+                        @foreach ($timelineItems as $item)
+                            <li>
+                                <time>{{ $item['time'] ?? '' }}</time>
+                                <span>{{ $item['title'] ?? '' }}</span>
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+            </section>
+
+            {{-- Section 6: Sổ lưu bút --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_guestbook" id="mayhen_invitation_dhsuudushi9428r_guestbook">
+                <div class="mayhen_invitation_dhsuudushi9428r_section_head mayhen_invitation_dhsuudushi9428r_reveal">
+                    <p>Sổ Lưu Bút</p>
+                    <h2 class="mayhen_invitation_dhsuudushi9428r_display">Gửi Lời Chúc</h2>
+                    <span>Những lời chúc phúc ngọt ngào gửi tới đôi bạn</span>
+                </div>
+                <div class="mayhen_invitation_dhsuudushi9428r_guestboard mayhen_invitation_dhsuudushi9428r_reveal">
+                    <div class="mayhen_invitation_dhsuudushi9428r_guestboard_empty">
+                        <span>Hãy là người đầu tiên ký tên!</span>
+                    </div>
+                </div>
+                <p class="mayhen_invitation_dhsuudushi9428r_demo_note">Gửi lời chúc tốt đẹp nhất tới cô dâu & chú rể</p>
+                <button class="mayhen_invitation_dhsuudushi9428r_primary_button" type="button" data-modal="guestbook">Ký tên chúc phúc</button>
+                <p class="mayhen_invitation_dhsuudushi9428r_steps">1. Ký tên &nbsp;·&nbsp; 2. Viết lời chúc &nbsp;·&nbsp; 3. Gửi trao yêu thương</p>
+                <div class="mayhen_invitation_dhsuudushi9428r_messages" aria-live="polite">
+                    <p>Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc mừng!</p>
+                </div>
+            </section>
+
+            {{-- Section 7: Album ảnh cưới --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_album" aria-label="Album ảnh cưới">
+                <button class="mayhen_invitation_dhsuudushi9428r_album_photo mayhen_invitation_dhsuudushi9428r_album_wide mayhen_invitation_dhsuudushi9428r_reveal" type="button" data-photo="0">
+                    <img src="{{ $albumPhotos[0] ?? $defaultAlbum[0] }}" alt="Ảnh cưới trong album 1" loading="lazy">
                 </button>
-                <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="3">
-                    <img src="{{ $albumPhotos[3] ?? $defaultAlbum[3] }}" alt="Ảnh cưới trong album 4" loading="lazy">
-                </button>
-                <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="4">
-                    <img src="{{ $albumPhotos[4] ?? $defaultAlbum[4] }}" alt="Ảnh cưới trong album 5" loading="lazy">
-                </button>
-            </div>
-            <div class="mayhen_invitation_dhsuudushi9428r_album_pairs">
-                @for ($i = 5; $i < 10; $i++)
-                    <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="{{ $i }}">
-                        <img src="{{ $albumPhotos[$i] ?? ($defaultAlbum[$i] ?? $defaultAlbum[0]) }}" alt="Ảnh cưới trong album {{ $i + 1 }}" loading="lazy">
+                <div class="mayhen_invitation_dhsuudushi9428r_album_mosaic">
+                    <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="1">
+                        <img src="{{ $albumPhotos[1] ?? $defaultAlbum[1] }}" alt="Ảnh cưới trong album 2" loading="lazy">
                     </button>
-                @endfor
-            </div>
-        </section>
-
-        {{-- Section 8: Xác nhận tham dự (RSVP) --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_rsvp mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_rsvp">
-            <div class="mayhen_invitation_dhsuudushi9428r_reveal">
-                <span class="mayhen_invitation_dhsuudushi9428r_ornament">✧</span>
-                <h2>Xác Nhận Tham Dự</h2>
-                <div class="mayhen_invitation_dhsuudushi9428r_rsvp_choices">
-                    <button type="button" data-rsvp="yes"><span>♡</span>Có, tôi sẽ tham dự</button>
-                    <button type="button" data-rsvp="no"><span>✉</span>Rất tiếc, chưa sắp xếp được</button>
-                </div>
-            </div>
-        </section>
-
-        {{-- Section 9: Hộp mừng cưới VietQR --}}
-        <section class="mayhen_invitation_dhsuudushi9428r_gift mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_gift">
-            <div class="mayhen_invitation_dhsuudushi9428r_reveal">
-                <h2>Hộp Mừng Cưới</h2>
-                <div class="mayhen_invitation_dhsuudushi9428r_gift_scene">
-                    <span class="mayhen_invitation_dhsuudushi9428r_coin">$</span>
-                    <span class="mayhen_invitation_dhsuudushi9428r_coin">$</span>
-                    <span class="mayhen_invitation_dhsuudushi9428r_coin">$</span>
-                    <span class="mayhen_invitation_dhsuudushi9428r_coin">$</span>
-                    <button class="mayhen_invitation_dhsuudushi9428r_gift_box" type="button" data-modal="gift" aria-label="Mở hộp mừng cưới">
-                        <span>囍</span>
+                    <div class="mayhen_invitation_dhsuudushi9428r_album_title">
+                        <span>Khoảnh Khắc</span>
+                        <strong class="mayhen_invitation_dhsuudushi9428r_display">Ảnh cưới</strong>
+                        <i>♥</i>
+                    </div>
+                    <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="2">
+                        <img src="{{ $albumPhotos[2] ?? $defaultAlbum[2] }}" alt="Ảnh cưới trong album 3" loading="lazy">
+                    </button>
+                    <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="3">
+                        <img src="{{ $albumPhotos[3] ?? $defaultAlbum[3] }}" alt="Ảnh cưới trong album 4" loading="lazy">
+                    </button>
+                    <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="4">
+                        <img src="{{ $albumPhotos[4] ?? $defaultAlbum[4] }}" alt="Ảnh cưới trong album 5" loading="lazy">
                     </button>
                 </div>
-                <p>Sự hiện diện của bạn là món quà quý giá nhất đối với chúng tôi</p>
-            </div>
-        </section>
+                <div class="mayhen_invitation_dhsuudushi9428r_album_pairs">
+                    @for ($i = 5; $i < 10; $i++)
+                        <button class="mayhen_invitation_dhsuudushi9428r_album_photo" type="button" data-photo="{{ $i }}">
+                            <img src="{{ $albumPhotos[$i] ?? ($defaultAlbum[$i] ?? $defaultAlbum[0]) }}" alt="Ảnh cưới trong album {{ $i + 1 }}" loading="lazy">
+                        </button>
+                    @endfor
+                </div>
+            </section>
 
-        {{-- Section 10: Footer --}}
-        <footer class="mayhen_invitation_dhsuudushi9428r_footer">
-            <img src="{{ $footerPhotoUrl }}" alt="Ảnh cuối thiệp" loading="lazy">
-            <div>
-                <p class="mayhen_invitation_dhsuudushi9428r_display">Rất hân hạnh được đón tiếp</p>
-            </div>
-        </footer>
+            {{-- Section 8: Xác nhận tham dự (RSVP) --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_rsvp mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_rsvp">
+                <div class="mayhen_invitation_dhsuudushi9428r_reveal">
+                    <span class="mayhen_invitation_dhsuudushi9428r_ornament">✧</span>
+                    <h2>Xác Nhận Tham Dự</h2>
+                    <div class="mayhen_invitation_dhsuudushi9428r_rsvp_choices">
+                        <button type="button" data-rsvp="yes"><span>♡</span>Có, tôi sẽ tham dự</button>
+                        <button type="button" data-rsvp="no"><span>✉</span>Rất tiếc, chưa sắp xếp được</button>
+                    </div>
+                </div>
+            </section>
+
+            {{-- Section 9: Hộp mừng cưới VietQR --}}
+            <section class="mayhen_invitation_dhsuudushi9428r_gift mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_gift">
+                <div class="mayhen_invitation_dhsuudushi9428r_reveal">
+                    <h2>Hộp Mừng Cưới</h2>
+                    <div class="mayhen_invitation_dhsuudushi9428r_gift_scene">
+                        <button class="mayhen_invitation_dhsuudushi9428r_gift_box" type="button" data-modal="gift" aria-label="Mở hộp mừng cưới">
+                            <span>囍</span>
+                        </button>
+                    </div>
+                    <p>Sự hiện diện của bạn là món quà quý giá nhất đối với chúng tôi</p>
+                </div>
+            </section>
+
+            {{-- Section 10: Footer --}}
+            <footer class="mayhen_invitation_dhsuudushi9428r_footer">
+                <img src="{{ $footerPhotoUrl }}" alt="Ảnh cuối thiệp" loading="lazy">
+                <div>
+                    <p class="mayhen_invitation_dhsuudushi9428r_display">Rất hân hạnh được đón tiếp quý khách!</p>
+                </div>
+            </footer>
+        </div>
     </main>
 
     {{-- Điều khiển nổi: Nhạc nền & Lên đầu trang --}}
@@ -442,92 +477,38 @@
         <button type="button" class="mayhen_invitation_dhsuudushi9428r_lightbox_next" aria-label="Ảnh tiếp theo">›</button>
         <span class="mayhen_invitation_dhsuudushi9428r_lightbox_count"></span>
     </div>
+
     {{-- Script đồng bộ thời gian thực từ Editor Studio --}}
     <script>
         window.addEventListener('message', function(event) {
             if (!event.data || event.data.type !== 'MAYHEN_SYNC_INPUT') return;
             var key = event.data.key;
             var value = event.data.value;
-            if (!key) return;
 
-            if (key === 'wedding.groom_name') {
-                document.querySelectorAll('[data-sync-target="groom_name"]').forEach(function(el) {
-                    el.textContent = value || 'Tràng Đức';
-                });
-            } else if (key === 'wedding.bride_name') {
-                document.querySelectorAll('[data-sync-target="bride_name"]').forEach(function(el) {
-                    el.textContent = value || 'Ngọc Phượng';
-                });
-            } else if (key === 'wedding.groom_parents') {
-                var el = document.querySelector('[data-sync-target="groom_parents"]');
-                if (el) el.innerHTML = (value || '').replace(/\n/g, '<br>');
-            } else if (key === 'wedding.bride_parents') {
-                var el = document.querySelector('[data-sync-target="bride_parents"]');
-                if (el) el.innerHTML = (value || '').replace(/\n/g, '<br>');
-            } else if (key === 'wedding.cover_photo_url') {
-                var img = document.getElementById('sync_cover_photo');
-                if (img && value) img.src = value;
-            } else if (key === 'wedding.extra_data.hero_photo_url') {
-                var img = document.getElementById('sync_hero_photo');
-                if (img && value) img.src = value;
-            } else if (key === 'wedding.extra_data.triptych_photo_1') {
-                var img = document.getElementById('sync_triptych_1');
-                if (img && value) img.src = value;
-            } else if (key === 'wedding.extra_data.triptych_photo_2') {
-                var img = document.getElementById('sync_triptych_2');
-                if (img && value) img.src = value;
-            } else if (key === 'wedding.extra_data.triptych_photo_3') {
-                var img = document.getElementById('sync_triptych_3');
-                if (img && value) img.src = value;
-            } else if (key === 'wedding.story') {
-                var q = document.getElementById('sync_love_quote');
-                if (q) q.textContent = value;
-            } else if (key === 'wedding.extra_data.dresscode_hint') {
-                var d = document.querySelector('[data-sync-target="dresscode_hint"]');
-                if (d) d.textContent = 'Màu sắc trang phục gợi ý: ' + value;
-            } else if (key === 'wedding.extra_data.bride_ceremony_title') {
-                var el = document.querySelector('[data-sync-target="bride_ceremony_title"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.bride_ceremony_time') {
-                var el = document.querySelector('[data-sync-target="bride_ceremony_time"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.bride_ceremony_address') {
-                var el = document.querySelector('[data-sync-target="bride_ceremony_address"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.bride_party_title') {
-                var el = document.querySelector('[data-sync-target="bride_party_title"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.bride_party_time') {
-                var el = document.querySelector('[data-sync-target="bride_party_time"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.bride_party_address') {
-                var el = document.querySelector('[data-sync-target="bride_party_address"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_ceremony_title') {
-                var el = document.querySelector('[data-sync-target="groom_ceremony_title"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_ceremony_time') {
-                var el = document.querySelector('[data-sync-target="groom_ceremony_time"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_ceremony_address') {
-                var el = document.querySelector('[data-sync-target="groom_ceremony_address"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_party_title') {
-                var el = document.querySelector('[data-sync-target="groom_party_title"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_party_time') {
-                var el = document.querySelector('[data-sync-target="groom_party_time"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.groom_party_address') {
-                var el = document.querySelector('[data-sync-target="groom_party_address"]');
-                if (el) el.textContent = value;
-            } else if (key === 'wedding.extra_data.qr_groom_image') {
-                window.__MAYHEN_GIFT_QR_GROOM = value;
-            } else if (key === 'wedding.extra_data.qr_bride_image') {
-                window.__MAYHEN_GIFT_QR_BRIDE = value;
-            } else if (key === 'wedding.music_url') {
-                var audio = document.getElementById('mayhen_invitation_dhsuudushi9428r_audio');
-                if (audio && value) audio.src = value;
+            var textTargets = document.querySelectorAll('[data-sync-target="' + key + '"]');
+            textTargets.forEach(function(el) {
+                if (key.indexOf('parents') !== -1) {
+                    el.innerHTML = (value || '').replace(/\n/g, '<br>');
+                } else {
+                    el.textContent = value || '';
+                }
+            });
+
+            if (key === 'cover_photo_url') {
+                var el = document.getElementById('sync_cover_photo');
+                if (el) el.src = value;
+            } else if (key === 'hero_photo_url') {
+                var el = document.getElementById('sync_hero_photo');
+                if (el) el.src = value;
+            } else if (key === 'triptych_photo_1') {
+                var el = document.getElementById('sync_triptych_1');
+                if (el) el.src = value;
+            } else if (key === 'triptych_photo_2') {
+                var el = document.getElementById('sync_triptych_2');
+                if (el) el.src = value;
+            } else if (key === 'triptych_photo_3') {
+                var el = document.getElementById('sync_triptych_3');
+                if (el) el.src = value;
             }
         });
     </script>

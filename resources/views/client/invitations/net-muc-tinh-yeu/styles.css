@@ -1,81 +1,1575 @@
-/* Static invitation. Every authored class uses the requested namespace. */
-@font-face{font-family:Montserrat;src:url('assets/montserrat-vi.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+102-103,U+110-111,U+128-129,U+168-169,U+1A0-1A1,U+1AF-1B0,U+300-301,U+303-304,U+308-309,U+323,U+329,U+1EA0-1EF9,U+20AB}
-@font-face{font-family:Montserrat;src:url('assets/montserrat-latin.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:Montserrat;src:url('assets/montserrat-latin-italic.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:Quarzo;src:url('assets/quarzo.otf') format('opentype');font-display:swap}
-:root{color-scheme:light;--ink:#151515;--muted:#666;--line:#dedede;--paper:#fff;--soft:#f7f7f7}
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:#f2f2f2;color:var(--ink);font-family:Montserrat,"Arial",sans-serif;-webkit-font-smoothing:antialiased}
-button,input,textarea{font:inherit}button{cursor:pointer}img{display:block;max-width:100%}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #111;outline-offset:3px}
-.mayhen_invitation_dhsuudushi9428r_page{width:min(100%,430px);margin-inline:auto;overflow:hidden;background:var(--paper);min-height:100vh;box-shadow:0 0 20px #0000000b;border-inline:1px solid #e7e7e7}
-.mayhen_invitation_dhsuudushi9428r_page section{position:relative}
-.mayhen_invitation_dhsuudushi9428r_display{font-family:Quarzo,"Brush Script MT",cursive;font-weight:400}
-.mayhen_invitation_dhsuudushi9428r_reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
-.mayhen_invitation_dhsuudushi9428r_reveal.mayhen_invitation_dhsuudushi9428r_visible{opacity:1;transform:none}
+/* MÂY HẸN (MAYHEN.VN) - QUIET LUXURY WEDDING INVITATION TEMPLATE: NÉT MỰC TÌNH YÊU */
+/* Strict Pure CSS - Class Prefix: mayhen_invitation_dhsuudushi9428r_ */
 
-/* Envelope and family introduction */
-.mayhen_invitation_dhsuudushi9428r_cover{text-align:center;padding:8px 12px 32px;min-height:565px}
-.mayhen_invitation_dhsuudushi9428r_cover_heading{position:relative;padding:38px 0 8px}
-.mayhen_invitation_dhsuudushi9428r_corner{position:absolute;left:7px;top:0;width:80px;filter:grayscale(1)}
-.mayhen_invitation_dhsuudushi9428r_corner_right{left:auto;right:7px;transform:scaleX(-1)}
-.mayhen_invitation_dhsuudushi9428r_kicker{font-size:13px;letter-spacing:.22em;text-transform:uppercase;margin:0 0 2px;font-weight:600}
-.mayhen_invitation_dhsuudushi9428r_cover_title{font-size:clamp(48px,15vw,68px);line-height:1.05;margin:0}
-.mayhen_invitation_dhsuudushi9428r_envelope_button{display:block;border:0;background:none;padding:0;width:min(300px,82vw);margin:16px auto 0;perspective:800px}
-.mayhen_invitation_dhsuudushi9428r_envelope_button[hidden],.mayhen_invitation_dhsuudushi9428r_open_hint[hidden]{display:none}
-.mayhen_invitation_dhsuudushi9428r_envelope_shell{display:block;transition:transform .9s cubic-bezier(.18,.7,.22,1),filter .8s;filter:grayscale(1)}
-.mayhen_invitation_dhsuudushi9428r_envelope_button:hover .mayhen_invitation_dhsuudushi9428r_envelope_shell{transform:translateY(-4px) scale(1.02)}
-.mayhen_invitation_dhsuudushi9428r_envelope_button.mayhen_invitation_dhsuudushi9428r_opened .mayhen_invitation_dhsuudushi9428r_envelope_shell{transform:rotateX(65deg) translateY(-45px) scale(.85);opacity:.35}
-.mayhen_invitation_dhsuudushi9428r_opened_stage[hidden]{display:none}.mayhen_invitation_dhsuudushi9428r_opened_stage{width:min(215px,60vw);margin:8px auto 11px;aspect-ratio:3/4;overflow:hidden;border:7px solid white;border-radius:8px;box-shadow:0 12px 35px #0004;animation:mayhen_invitation_dhsuudushi9428r_card_rise .9s cubic-bezier(.2,.7,.2,1) both}.mayhen_invitation_dhsuudushi9428r_opened_stage img{width:100%;height:100%;object-fit:cover}
-.mayhen_invitation_dhsuudushi9428r_open_hint{text-transform:uppercase;font-size:11px;font-weight:700;letter-spacing:.11em;margin:8px 0 12px;animation:mayhen_invitation_dhsuudushi9428r_bob 2s ease-in-out infinite}
-.mayhen_invitation_dhsuudushi9428r_open_hint span{font-size:19px;vertical-align:-2px}
-.mayhen_invitation_dhsuudushi9428r_cover_names{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0}
-.mayhen_invitation_dhsuudushi9428r_cover_names img{width:42px;opacity:.18;filter:grayscale(1)}
-.mayhen_invitation_dhsuudushi9428r_cover_names img:last-child{transform:scaleX(-1)}
-.mayhen_invitation_dhsuudushi9428r_cover_names p{font-size:clamp(20px,6vw,27px);white-space:nowrap;line-height:1.1;margin:0}.mayhen_invitation_dhsuudushi9428r_cover_names span{font-family:Arial;font-size:14px}
-.mayhen_invitation_dhsuudushi9428r_cover_date{font-size:24px;letter-spacing:.15em;font-weight:700;margin:14px 0 0}
-.mayhen_invitation_dhsuudushi9428r_families{padding:32px 0;min-height:290px}
-.mayhen_invitation_dhsuudushi9428r_families_layout{display:flex;align-items:stretch;min-height:235px}
-.mayhen_invitation_dhsuudushi9428r_family_ribbon{width:72px;flex:0 0 72px;background:#101010;color:#fff;border-radius:6px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:20px 7px;margin-left:0}.mayhen_invitation_dhsuudushi9428r_family_ribbon span{font-size:11px}.mayhen_invitation_dhsuudushi9428r_family_ribbon img{width:50px;max-height:66px;object-fit:contain;filter:grayscale(1)}
-.mayhen_invitation_dhsuudushi9428r_family_details{flex:1;min-width:0;padding:34px 2px 0 18px;display:flex;flex-direction:column;gap:25px;text-transform:uppercase;font-size:clamp(9px,2.5vw,11px);letter-spacing:.02em;white-space:nowrap}
-.mayhen_invitation_dhsuudushi9428r_family_details p{margin:0 0 5px}.mayhen_invitation_dhsuudushi9428r_family_details .mayhen_invitation_dhsuudushi9428r_family_label{font-weight:800;font-size:12px;letter-spacing:.1em;margin-bottom:8px}
-.mayhen_invitation_dhsuudushi9428r_family_vertical{writing-mode:vertical-rl;letter-spacing:.15em;text-transform:uppercase;margin:12px 8px 0 4px;font-size:12px;font-weight:700;display:flex;align-items:center;flex:0 0 40px}
+@font-face {
+  font-family: Montserrat;
+  src: url('assets/montserrat-vi.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+102-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+1AF-1B0, U+300-301, U+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('assets/montserrat-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('assets/montserrat-latin-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+??, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: Quarzo;
+  src: url('assets/quarzo.otf') format('opentype');
+  font-display: swap;
+}
 
-/* Portraits and invitation details */
-.mayhen_invitation_dhsuudushi9428r_story_names{padding:38px 32px 24px}.mayhen_invitation_dhsuudushi9428r_story_names p{margin:0}.mayhen_invitation_dhsuudushi9428r_story_names p:first-child{font-size:47px;text-align:left;line-height:1}.mayhen_invitation_dhsuudushi9428r_story_names p:nth-child(2){font-size:27px;text-align:center;margin:7px 0;font-weight:300}.mayhen_invitation_dhsuudushi9428r_story_names p:last-child{font-size:47px;text-align:right;line-height:1}
-.mayhen_invitation_dhsuudushi9428r_hero_photo{width:100%;aspect-ratio:3/4;object-fit:cover}
-.mayhen_invitation_dhsuudushi9428r_quote{text-align:center;font-size:15px;font-style:italic;color:#444;line-height:1.7;margin:0;padding:29px 12px 28px}
-.mayhen_invitation_dhsuudushi9428r_triptych{display:flex;gap:8px;padding:0 12px 38px;align-items:flex-end}.mayhen_invitation_dhsuudushi9428r_triptych img{width:calc((100% - 16px)/3);aspect-ratio:3/4;object-fit:cover;border-radius:8px}.mayhen_invitation_dhsuudushi9428r_triptych img:nth-child(2){aspect-ratio:3/5}
-.mayhen_invitation_dhsuudushi9428r_invite{text-align:center;padding:34px 18px 42px}.mayhen_invitation_dhsuudushi9428r_invite_title{text-transform:uppercase;font-size:16px;font-weight:800;letter-spacing:.2em;margin:0 0 12px}.mayhen_invitation_dhsuudushi9428r_rule{display:flex;align-items:center;justify-content:center;gap:12px;color:#222}.mayhen_invitation_dhsuudushi9428r_rule::before,.mayhen_invitation_dhsuudushi9428r_rule::after{content:"";height:1px;width:88px;background:#c6c6c6}.mayhen_invitation_dhsuudushi9428r_invite_intro{max-width:355px;margin:16px auto 20px;font-size:14px;line-height:1.7}
-.mayhen_invitation_dhsuudushi9428r_tabs{display:flex;gap:8px;justify-content:center;margin-bottom:18px}.mayhen_invitation_dhsuudushi9428r_tab{border:1px solid #bbb;border-radius:999px;background:white;padding:10px 21px;font-size:13px;transition:.25s}.mayhen_invitation_dhsuudushi9428r_tab:hover,.mayhen_invitation_dhsuudushi9428r_tab_active{background:#111;color:#fff;border-color:#111}
-.mayhen_invitation_dhsuudushi9428r_event_panel{border:1px solid #e2e2e2;border-radius:12px;overflow:hidden}.mayhen_invitation_dhsuudushi9428r_event_panel[hidden]{display:none}.mayhen_invitation_dhsuudushi9428r_event{padding:23px 14px 22px}.mayhen_invitation_dhsuudushi9428r_event+ .mayhen_invitation_dhsuudushi9428r_event{border-top:1px solid #e7e7e7}.mayhen_invitation_dhsuudushi9428r_event h2{font-size:16px;letter-spacing:.15em;text-transform:uppercase;margin:0 0 12px}.mayhen_invitation_dhsuudushi9428r_event p{font-size:13px;margin:0 0 7px}.mayhen_invitation_dhsuudushi9428r_event .mayhen_invitation_dhsuudushi9428r_event_time{font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px}.mayhen_invitation_dhsuudushi9428r_date_tile{display:flex;align-items:center;justify-content:center;gap:12px;margin:9px 0 4px!important}.mayhen_invitation_dhsuudushi9428r_date_tile small{font-size:13px;letter-spacing:.08em}.mayhen_invitation_dhsuudushi9428r_date_tile b{font-size:37px;line-height:1;border-inline:1px solid #777;padding:0 13px}.mayhen_invitation_dhsuudushi9428r_lunar{font-style:italic}.mayhen_invitation_dhsuudushi9428r_address{font-weight:600;line-height:1.5;margin:13px auto 0!important;max-width:300px}.mayhen_invitation_dhsuudushi9428r_event a{font-size:13px;display:inline-block;padding:7px;margin-top:1px;text-underline-offset:3px}
-.mayhen_invitation_dhsuudushi9428r_dress{border-block:1px solid #ccc;padding:20px 10px;margin-top:20px}.mayhen_invitation_dhsuudushi9428r_dress p{letter-spacing:.25em;font-weight:700;font-size:13px;margin:0 0 7px}.mayhen_invitation_dhsuudushi9428r_dress span{display:block;text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:#666}.mayhen_invitation_dhsuudushi9428r_swatches{display:flex;gap:12px;justify-content:center;margin-top:14px}.mayhen_invitation_dhsuudushi9428r_swatches i{width:21px;height:21px;border-radius:50%;background:#fff;border:1px solid #aaa}.mayhen_invitation_dhsuudushi9428r_swatches i:nth-child(2){background:#b8ad9f}.mayhen_invitation_dhsuudushi9428r_swatches i:nth-child(3){background:#690101}
+:root {
+  color-scheme: light;
+  --mayhen_ink: #181818;
+  --mayhen_ink_light: #3d3a36;
+  --mayhen_muted: #736e67;
+  --mayhen_line: #e6e2dc;
+  --mayhen_line_light: #f0ebe4;
+  --mayhen_paper: #ffffff;
+  --mayhen_bg_warm: #faf7f2;
+  --mayhen_gold: #9c7a4a;
+  --mayhen_gold_soft: #d8c29d;
+  --mayhen_wax: #871f1f;
+  --mayhen_shadow_subtle: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
 
-/* March calendar, timer and wedding day sequence */
-.mayhen_invitation_dhsuudushi9428r_schedule{padding:35px 21px 43px;text-align:center}.mayhen_invitation_dhsuudushi9428r_calendar{background:linear-gradient(#fffffff0,#fffffff0),url('assets/26d486c7-1a08-462e-982a-f5b338fefe86.jpg') center/cover;border:1px solid #eee;padding:20px 17px 24px}.mayhen_invitation_dhsuudushi9428r_calendar h2{font-size:23px;font-weight:600;margin:0 0 20px}.mayhen_invitation_dhsuudushi9428r_calendar h2 span{font-size:15px;font-weight:400}
-.mayhen_invitation_dhsuudushi9428r_calendar_grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px 3px;align-items:center}.mayhen_invitation_dhsuudushi9428r_calendar_grid span{font-size:12px;height:29px;display:grid;place-items:center}.mayhen_invitation_dhsuudushi9428r_calendar_grid .mayhen_invitation_dhsuudushi9428r_calendar_week{font-weight:700;font-size:10px;letter-spacing:.04em}.mayhen_invitation_dhsuudushi9428r_calendar_grid .mayhen_invitation_dhsuudushi9428r_calendar_day{background:#111;color:#fff;border-radius:50%;font-weight:700;width:30px;margin:auto;position:relative}.mayhen_invitation_dhsuudushi9428r_calendar_day::after{content:"♥";position:absolute;font-size:11px;color:#111;top:-13px;left:50%;transform:translateX(-50%)}
-.mayhen_invitation_dhsuudushi9428r_countdown{margin-top:30px}.mayhen_invitation_dhsuudushi9428r_countdown p{font-style:italic;font-size:14px;margin:0 0 17px}.mayhen_invitation_dhsuudushi9428r_countdown_numbers{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.mayhen_invitation_dhsuudushi9428r_countdown_numbers>div{background:#f5f5f5;padding:12px 3px 11px;border-radius:4px}.mayhen_invitation_dhsuudushi9428r_countdown_numbers strong{display:block;font-size:24px;letter-spacing:.02em}.mayhen_invitation_dhsuudushi9428r_countdown_numbers span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
-.mayhen_invitation_dhsuudushi9428r_heart_divider{height:55px;display:grid;place-items:center;color:#aaa;font-size:12px;letter-spacing:15px;animation:mayhen_invitation_dhsuudushi9428r_bob 3s ease-in-out infinite}
-.mayhen_invitation_dhsuudushi9428r_timeline h2{font-size:49px;font-weight:400;margin:8px 0 26px}.mayhen_invitation_dhsuudushi9428r_timeline ol{list-style:none;position:relative;padding:0 0 0 26px;margin:0 12px;text-align:left}.mayhen_invitation_dhsuudushi9428r_timeline ol::before{content:"";position:absolute;top:8px;bottom:22px;left:23px;width:1px;background:#b0b0b0}.mayhen_invitation_dhsuudushi9428r_timeline li{position:relative;display:flex;align-items:center;gap:20px;min-height:65px;padding-left:27px;font-size:13px}.mayhen_invitation_dhsuudushi9428r_timeline li::before{content:"♥";position:absolute;left:-11px;top:20px;background:#fff;font-size:14px;color:#111}.mayhen_invitation_dhsuudushi9428r_timeline time{font-weight:800;font-size:14px;min-width:48px}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-/* Guestbook and wedding photos */
-.mayhen_invitation_dhsuudushi9428r_guestbook{padding:35px 20px 40px;text-align:center}.mayhen_invitation_dhsuudushi9428r_section_head p{text-transform:uppercase;letter-spacing:.16em;font-size:13px;margin:0}.mayhen_invitation_dhsuudushi9428r_section_head h2{font-size:45px;margin:2px 0 5px}.mayhen_invitation_dhsuudushi9428r_section_head span{display:block;font-size:13.5px;font-style:italic;margin:0 0 23px}.mayhen_invitation_dhsuudushi9428r_guestboard{height:245px;display:grid;place-items:center;background:linear-gradient(#0003,#0003),url('assets/a7449983-218b-4e16-94e8-64030d2dab3d.jpg') center/cover;border-radius:5px;overflow:hidden}.mayhen_invitation_dhsuudushi9428r_guestboard_empty span{display:inline-block;color:white;background:#0008;border-radius:99px;font-size:14px;padding:9px 15px}.mayhen_invitation_dhsuudushi9428r_demo_note{margin:17px auto 14px;font-size:11px;color:#555;background:#f2f2f2;padding:8px 10px;border-radius:5px;max-width:290px}.mayhen_invitation_dhsuudushi9428r_primary_button{background:#111;color:white;border:1px solid #111;border-radius:7px;padding:11px 24px;font-weight:700;font-size:14px}.mayhen_invitation_dhsuudushi9428r_primary_button:hover{background:#444}.mayhen_invitation_dhsuudushi9428r_steps{font-size:11px;color:#777;margin:15px 0 18px}.mayhen_invitation_dhsuudushi9428r_messages{border-top:1px solid #e9e9e9;padding:14px 4px;color:#666;font-size:13px}.mayhen_invitation_dhsuudushi9428r_messages p{margin:5px 0}.mayhen_invitation_dhsuudushi9428r_messages article{text-align:left;padding:10px;border-bottom:1px solid #eee}.mayhen_invitation_dhsuudushi9428r_messages article strong{display:block;color:#111}.mayhen_invitation_dhsuudushi9428r_messages article p{white-space:pre-wrap}
-.mayhen_invitation_dhsuudushi9428r_album{padding:3px 11px 35px;display:flex;flex-direction:column;gap:6px}.mayhen_invitation_dhsuudushi9428r_album_photo{display:block;background:#f0f0f0;padding:0;border:0;overflow:hidden;width:100%;height:100%}.mayhen_invitation_dhsuudushi9428r_album_photo img{width:100%;height:100%;object-fit:cover;transition:transform .55s}.mayhen_invitation_dhsuudushi9428r_album_photo:hover img{transform:scale(1.04)}.mayhen_invitation_dhsuudushi9428r_album_wide{aspect-ratio:3/2}.mayhen_invitation_dhsuudushi9428r_album_mosaic{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:clamp(130px,40vw,160px) clamp(50px,16.5vw,64px) clamp(50px,16.5vw,64px) clamp(100px,33vw,128px);gap:6px}.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:first-child{grid-area:1/1}.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(3){grid-area:1/3/3}.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(4){grid-area:2/1/5/3}.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(5){grid-area:3/3/5}.mayhen_invitation_dhsuudushi9428r_album_title{grid-area:1/2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#fff}.mayhen_invitation_dhsuudushi9428r_album_title span{font-size:11px;letter-spacing:.18em;text-transform:uppercase}.mayhen_invitation_dhsuudushi9428r_album_title strong{font-size:26px;font-weight:400;line-height:1.2}.mayhen_invitation_dhsuudushi9428r_album_title i{font-style:normal;font-size:12px;margin-top:6px}.mayhen_invitation_dhsuudushi9428r_album_pairs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mayhen_invitation_dhsuudushi9428r_album_pairs .mayhen_invitation_dhsuudushi9428r_album_photo{aspect-ratio:3/4}.mayhen_invitation_dhsuudushi9428r_album_pairs .mayhen_invitation_dhsuudushi9428r_album_photo:last-child{grid-column:span 2;aspect-ratio:3/2}
+html {
+  scroll-behavior: smooth;
+}
 
-/* RSVP, gift, closing image and controls */
-.mayhen_invitation_dhsuudushi9428r_frame{text-align:center;padding:32px 26px 36px;background:linear-gradient(#fff,#f9f9f9)}.mayhen_invitation_dhsuudushi9428r_frame::after{content:"";position:absolute;inset:20px;border:1px solid #e6e6e6;pointer-events:none}.mayhen_invitation_dhsuudushi9428r_frame>div{position:relative;z-index:1}.mayhen_invitation_dhsuudushi9428r_frame h2{font-size:27px;font-weight:500;margin:7px 0 25px}.mayhen_invitation_dhsuudushi9428r_ornament{font-size:19px;color:#777}.mayhen_invitation_dhsuudushi9428r_rsvp_choices{display:flex;gap:10px}.mayhen_invitation_dhsuudushi9428r_rsvp_choices button{flex:1;display:flex;min-height:116px;flex-direction:column;align-items:center;justify-content:center;gap:13px;border:1px solid #d6d6d6;border-radius:15px;background:white;padding:13px 8px;font-size:13px;line-height:1.4;transition:.25s}.mayhen_invitation_dhsuudushi9428r_rsvp_choices button:hover{background:#111;color:white;border-color:#111;transform:translateY(-3px)}.mayhen_invitation_dhsuudushi9428r_rsvp_choices span{font-size:26px}
-.mayhen_invitation_dhsuudushi9428r_gift{padding-block:41px}.mayhen_invitation_dhsuudushi9428r_gift_scene{height:170px;display:grid;place-items:center;position:relative}.mayhen_invitation_dhsuudushi9428r_gift_box{border:0;width:118px;height:100px;background:#121212;color:#fff;border-radius:5px;position:relative;box-shadow:0 12px 18px #0003;animation:mayhen_invitation_dhsuudushi9428r_shake 6s ease-in-out infinite}.mayhen_invitation_dhsuudushi9428r_gift_box::before{content:"";height:22px;position:absolute;top:-13px;left:-8px;right:-8px;background:#333;border-radius:3px}.mayhen_invitation_dhsuudushi9428r_gift_box::after{content:"";position:absolute;width:18px;inset-block:-13px 0;left:calc(50% - 9px);background:#eee5;pointer-events:none}.mayhen_invitation_dhsuudushi9428r_gift_box span{position:relative;z-index:1;font-size:42px}.mayhen_invitation_dhsuudushi9428r_coin{position:absolute;top:55px;left:40%;color:#111;opacity:0;font-weight:800;animation:mayhen_invitation_dhsuudushi9428r_coin 6s linear infinite}.mayhen_invitation_dhsuudushi9428r_coin:nth-child(2){left:51%;animation-delay:.23s}.mayhen_invitation_dhsuudushi9428r_coin:nth-child(3){left:57%;animation-delay:.45s}.mayhen_invitation_dhsuudushi9428r_coin:nth-child(4){left:35%;animation-delay:.7s}.mayhen_invitation_dhsuudushi9428r_gift p{font-size:12px;color:#666;margin:0 13px;line-height:1.5}
-.mayhen_invitation_dhsuudushi9428r_footer{position:relative;text-align:center;color:white;min-height:180px}.mayhen_invitation_dhsuudushi9428r_footer img{width:100%;height:auto;max-height:420px;object-fit:cover;object-position:center}.mayhen_invitation_dhsuudushi9428r_footer div{position:absolute;bottom:0;left:0;right:0;padding:35px 10px 10px;background:linear-gradient(transparent,#000b);text-shadow:0 2px 5px #0006}.mayhen_invitation_dhsuudushi9428r_footer p{font-size:21px;margin:0}
-.mayhen_invitation_dhsuudushi9428r_floating{position:fixed;right:max(12px,calc((100vw - 430px)/2 + 12px));bottom:18px;z-index:10;display:flex;flex-direction:column;gap:8px}.mayhen_invitation_dhsuudushi9428r_floating button{width:38px;height:38px;border-radius:50%;background:#111;color:white;border:1px solid #fff;box-shadow:0 2px 8px #0004;font-size:21px}.mayhen_invitation_dhsuudushi9428r_music[aria-pressed=true]{animation:mayhen_invitation_dhsuudushi9428r_music_spin 5s linear infinite}.mayhen_invitation_dhsuudushi9428r_to_top{opacity:0;pointer-events:none;transition:opacity .2s}.mayhen_invitation_dhsuudushi9428r_to_top.mayhen_invitation_dhsuudushi9428r_visible{opacity:1;pointer-events:auto}
+body {
+  margin: 0;
+  background: #ece8e1;
+  color: var(--mayhen_ink);
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* Local demonstration dialogs and album viewer */
-.mayhen_invitation_dhsuudushi9428r_modal[hidden],.mayhen_invitation_dhsuudushi9428r_lightbox[hidden]{display:none}.mayhen_invitation_dhsuudushi9428r_modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px}.mayhen_invitation_dhsuudushi9428r_modal_backdrop{position:absolute;inset:0;background:#0009}.mayhen_invitation_dhsuudushi9428r_modal_card{width:min(100%,390px);max-height:min(85vh,700px);overflow:auto;position:relative;background:white;border-radius:14px;padding:25px 22px 26px;box-shadow:0 16px 55px #0005}.mayhen_invitation_dhsuudushi9428r_modal_close{position:absolute;top:8px;right:12px;background:none;border:0;font-size:30px;line-height:1}.mayhen_invitation_dhsuudushi9428r_modal_card h2{font-size:20px;text-align:center;margin:5px 25px 19px}.mayhen_invitation_dhsuudushi9428r_modal_body form{display:grid;gap:12px}.mayhen_invitation_dhsuudushi9428r_modal_body label{display:grid;gap:5px;font-size:13px;font-weight:700}.mayhen_invitation_dhsuudushi9428r_modal_body input,.mayhen_invitation_dhsuudushi9428r_modal_body textarea{width:100%;border:1px solid #ccc;border-radius:6px;padding:10px;font-size:14px;resize:vertical}.mayhen_invitation_dhsuudushi9428r_modal_body .mayhen_invitation_dhsuudushi9428r_modal_note{font-size:12px;color:#666;line-height:1.5;margin:4px 0}.mayhen_invitation_dhsuudushi9428r_bank_tabs{display:flex;justify-content:center;gap:8px;margin:0 0 14px}.mayhen_invitation_dhsuudushi9428r_bank_tabs button{padding:7px 14px;background:#fff;border:1px solid #aaa;border-radius:99px}.mayhen_invitation_dhsuudushi9428r_bank_tabs button[aria-selected=true]{color:white;background:#111;border-color:#111}.mayhen_invitation_dhsuudushi9428r_qr{width:min(100%,240px);margin:0 auto 14px}.mayhen_invitation_dhsuudushi9428r_qr_caption{text-align:center;font-size:13px;color:#666}
-.mayhen_invitation_dhsuudushi9428r_lightbox{position:fixed;inset:0;z-index:35;background:#000e;display:flex;align-items:center;justify-content:center;padding:55px 38px;color:white}.mayhen_invitation_dhsuudushi9428r_lightbox img{max-height:85vh;max-width:100%;object-fit:contain}.mayhen_invitation_dhsuudushi9428r_lightbox button{position:absolute;background:#0008;border:1px solid #fffa;color:white;border-radius:50%;width:38px;height:38px;font-size:27px;line-height:1}.mayhen_invitation_dhsuudushi9428r_lightbox_close{right:13px;top:13px}.mayhen_invitation_dhsuudushi9428r_lightbox_prev{left:10px;top:50%}.mayhen_invitation_dhsuudushi9428r_lightbox_next{right:10px;top:50%}.mayhen_invitation_dhsuudushi9428r_lightbox_count{position:absolute;bottom:14px;font-size:12px}
-@keyframes mayhen_invitation_dhsuudushi9428r_bob{50%{transform:translateY(5px)}}
-@keyframes mayhen_invitation_dhsuudushi9428r_card_rise{from{opacity:0;transform:translateY(95px) scale(.86)}to{opacity:1;transform:none}}
-@keyframes mayhen_invitation_dhsuudushi9428r_music_spin{to{transform:rotate(360deg)}}
-@keyframes mayhen_invitation_dhsuudushi9428r_shake{0%,35%,100%{transform:rotate(0) scale(1)}5%{transform:rotate(-15deg) scale(1.05)}10%{transform:rotate(12deg) scale(1.05)}15%{transform:rotate(-10deg)}20%{transform:rotate(8deg)}25%{transform:rotate(-5deg)}30%{transform:rotate(3deg)}}
-@keyframes mayhen_invitation_dhsuudushi9428r_coin{0%,35%,100%{opacity:0;transform:translateY(0) scale(.4)}39%{opacity:1;transform:translateY(-18px)}53%{opacity:.7;transform:translateY(-80px) scale(.7)}65%{opacity:0;transform:translateY(-125px) scale(.2)}}
-@media(max-width:390px){.mayhen_invitation_dhsuudushi9428r_cover{min-height:525px}.mayhen_invitation_dhsuudushi9428r_family_ribbon{width:60px;flex-basis:60px}.mayhen_invitation_dhsuudushi9428r_family_details{padding-left:10px;font-size:9px}.mayhen_invitation_dhsuudushi9428r_family_vertical{flex-basis:31px;margin-right:4px}.mayhen_invitation_dhsuudushi9428r_story_names p:first-child,.mayhen_invitation_dhsuudushi9428r_story_names p:last-child{font-size:40px}.mayhen_invitation_dhsuudushi9428r_album_title strong{font-size:21px}}
-@media(min-width:700px){.mayhen_invitation_dhsuudushi9428r_page{margin-top:24px;margin-bottom:24px;border-radius:5px}.mayhen_invitation_dhsuudushi9428r_floating{bottom:26px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.mayhen_invitation_dhsuudushi9428r_reveal{opacity:1;transform:none}}
+body.mayhen_invitation_scroll_locked {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--mayhen_ink);
+  outline-offset: 3px;
+}
+
+/* ================= PAGE CONTAINER ================= */
+.mayhen_invitation_dhsuudushi9428r_page {
+  width: min(100%, 430px);
+  margin-inline: auto;
+  position: relative;
+  background: var(--mayhen_paper);
+  min-height: 100vh;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-inline: 1px solid #e0dad1;
+}
+
+.mayhen_invitation_dhsuudushi9428r_display {
+  font-family: Quarzo, "Brush Script MT", "Cormorant Garamond", cursive, serif;
+  font-weight: 400;
+}
+
+.mayhen_invitation_dhsuudushi9428r_reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_reveal.mayhen_invitation_dhsuudushi9428r_visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ================= SECTION 1: COVER & DELUXE ENVELOPE OPENING ================= */
+.mayhen_invitation_dhsuudushi9428r_cover {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 20px 28px;
+  background: radial-gradient(circle at 50% 20%, #fffdfa 0%, #f6f1e8 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(156, 122, 74, 0.28);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_heading {
+  position: relative;
+  width: 100%;
+  padding-top: 10px;
+  z-index: 2;
+}
+
+.mayhen_invitation_dhsuudushi9428r_corner {
+  position: absolute;
+  left: 6px;
+  top: 0;
+  width: 60px;
+  opacity: 0.75;
+  filter: grayscale(1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_corner_right {
+  left: auto;
+  right: 6px;
+  transform: scaleX(-1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_kicker {
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_title {
+  font-size: clamp(40px, 12vw, 54px);
+  line-height: 1.05;
+  margin: 0;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_names {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_names img {
+  width: 28px;
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_names img:last-child {
+  transform: scaleX(-1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_names p {
+  font-size: clamp(19px, 5.5vw, 24px);
+  margin: 0;
+  color: var(--mayhen_ink_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_names span.mayhen_heart {
+  color: var(--mayhen_gold);
+  font-size: 13px;
+  margin: 0 4px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_date {
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: var(--mayhen_gold);
+  margin: 4px 0 0;
+}
+
+/* ----- 3D Realistic Envelope Structure ----- */
+.mayhen_invitation_dhsuudushi9428r_envelope_stage {
+  position: relative;
+  width: min(290px, 78vw);
+  height: 200px;
+  margin: 18px auto;
+  perspective: 900px;
+  z-index: 5;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope:hover {
+  transform: translateY(-3px) scale(1.015);
+}
+
+/* Thân phong bì (Đáy & Lưng) */
+.mayhen_invitation_dhsuudushi9428r_envelope_back {
+  position: absolute;
+  inset: 0;
+  background: #252422;
+  border-radius: 10px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+  border: 1px solid #3d3b37;
+  overflow: hidden;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope_liner {
+  position: absolute;
+  inset: 4px;
+  background: linear-gradient(135deg, #1f1e1c 0%, #2f2d29 100%);
+  border-radius: 8px;
+  border: 1px dashed rgba(216, 194, 157, 0.25);
+}
+
+/* Tấm thiệp mời bên trong (Letter inside) */
+.mayhen_invitation_dhsuudushi9428r_envelope_letter {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 185px;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2ddd5;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  transition: transform 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.15), opacity 0.6s ease;
+  transform: translateY(18px) scale(0.95);
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope_letter_img {
+  width: 100%;
+  height: 110px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope_letter_text {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mayhen_ink);
+  font-weight: 700;
+}
+
+/* Mặt trước phong bì: 2 cánh gấp trái/phải và cánh dưới */
+.mayhen_invitation_dhsuudushi9428r_envelope_front {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope_pocket {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(175deg, #2c2a27 0%, #1c1b19 100%);
+  border-radius: 10px;
+  box-shadow: inset 0 -2px 6px rgba(255, 255, 255, 0.05);
+}
+
+/* Nắp phong bì (Top Flap lật 3D) */
+.mayhen_invitation_dhsuudushi9428r_envelope_flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 54%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(180deg, #383531 0%, #282623 100%);
+  border-radius: 10px 10px 0 0;
+  transform-origin: top center;
+  transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.3s;
+  z-index: 4;
+}
+
+/* Tem sáp niêm phong (Wax Seal) */
+.mayhen_invitation_dhsuudushi9428r_wax_seal {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #a82e2e 0%, #701616 75%, #4e0f0f 100%);
+  border: 1px solid #c24343;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  display: grid;
+  place-items: center;
+  color: #f7dca7;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 6;
+  transition: transform 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
+  animation: mayhen_invitation_pulse 2.2s infinite ease-in-out;
+}
+
+.mayhen_invitation_dhsuudushi9428r_wax_seal::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1px dashed rgba(247, 220, 167, 0.5);
+}
+
+/* TRẠNG THÁI KHI MỞ THIỆP (OPENED) */
+.mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_envelope_flap {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_wax_seal {
+  transform: translate(-50%, -130%) scale(0.65);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_envelope_letter {
+  transform: translateY(-95px) scale(1.05);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+  z-index: 8;
+}
+
+/* Hướng dẫn mở & Nút mở thiệp */
+.mayhen_invitation_dhsuudushi9428r_open_cta {
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_open_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mayhen_ink);
+  color: #ffffff;
+  border: 1px solid var(--mayhen_ink);
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.mayhen_invitation_dhsuudushi9428r_open_btn:hover {
+  background: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.mayhen_invitation_dhsuudushi9428r_open_hint {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mayhen_muted);
+  margin-top: 8px;
+  animation: mayhen_invitation_bob 2s ease-in-out infinite;
+}
+
+/* Nút cuộn xuống sau khi mở thiệp */
+.mayhen_invitation_dhsuudushi9428r_scroll_down {
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.5s ease 0.6s, transform 0.5s ease 0.6s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened ~ .mayhen_invitation_dhsuudushi9428r_scroll_down,
+.mayhen_opened_state .mayhen_invitation_dhsuudushi9428r_scroll_down {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mayhen_invitation_dhsuudushi9428r_scroll_down button {
+  background: transparent;
+  border: 1px solid var(--mayhen_gold);
+  color: var(--mayhen_ink);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_scroll_down button:hover {
+  background: var(--mayhen_ink);
+  color: #fff;
+  border-color: var(--mayhen_ink);
+}
+
+/* ================= MAIN CONTENT BODY (LOCKED/UNLOCKED) ================= */
+.mayhen_invitation_dhsuudushi9428r_main_body {
+  position: relative;
+  background: var(--mayhen_paper);
+}
+
+/* ================= SECTION 2: GIA ĐÌNH HAI BÊN (CÂN XỨNG & TINH TẾ) ================= */
+.mayhen_invitation_dhsuudushi9428r_families {
+  padding: 26px 16px 22px;
+  background: var(--mayhen_bg_warm);
+  border-block: 1px solid var(--mayhen_line_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_card {
+  background: #ffffff;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 12px;
+  padding: 20px 14px;
+  box-shadow: var(--mayhen_shadow_subtle);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_col {
+  text-align: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--mayhen_gold);
+  border-bottom: 1px solid var(--mayhen_gold_soft);
+  padding-bottom: 3px;
+  margin-bottom: 8px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_text {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--mayhen_ink_light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_divider img {
+  width: 32px;
+  opacity: 0.55;
+  filter: grayscale(1);
+}
+
+.mayhen_invitation_dhsuudushi9428r_family_subtext {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mayhen_muted);
+}
+
+/* ================= SECTION 3: CÂU CHUYỆN & ẢNH CƯỚI ================= */
+.mayhen_invitation_dhsuudushi9428r_story {
+  padding: 24px 16px 20px;
+  text-align: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_story_names {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_story_names span.mayhen_invitation_dhsuudushi9428r_display {
+  font-size: clamp(34px, 9vw, 44px);
+  line-height: 1;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_story_amp {
+  font-size: 20px;
+  font-style: italic;
+  color: var(--mayhen_gold);
+  font-weight: 300;
+}
+
+.mayhen_invitation_dhsuudushi9428r_hero_wrap {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
+  border: 1px solid var(--mayhen_line);
+}
+
+.mayhen_invitation_dhsuudushi9428r_hero_photo {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+}
+
+.mayhen_invitation_dhsuudushi9428r_quote {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--mayhen_ink_light);
+  line-height: 1.65;
+  margin: 16px auto 14px;
+  padding: 0 10px;
+  max-width: 340px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_triptych {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_triptych img {
+  width: calc((100% - 16px) / 3);
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: var(--mayhen_shadow_subtle);
+  border: 1px solid var(--mayhen_line_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_triptych img:nth-child(2) {
+  aspect-ratio: 3/4.6;
+  border-color: var(--mayhen_gold_soft);
+}
+
+/* ================= SECTION 4: LỜI MỜI & TABS LỄ CƯỚI ================= */
+.mayhen_invitation_dhsuudushi9428r_invite {
+  padding: 24px 16px 20px;
+  text-align: center;
+  background: var(--mayhen_bg_warm);
+}
+
+.mayhen_invitation_dhsuudushi9428r_invite_title {
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  margin: 0 0 10px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_rule::before,
+.mayhen_invitation_dhsuudushi9428r_rule::after {
+  content: "";
+  height: 1px;
+  width: 60px;
+  background: var(--mayhen_gold_soft);
+}
+
+.mayhen_invitation_dhsuudushi9428r_invite_intro {
+  max-width: 330px;
+  margin: 12px auto 16px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_tab {
+  border: 1px solid var(--mayhen_line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--mayhen_ink_light);
+  padding: 8px 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: all 0.25s ease;
+}
+
+.mayhen_invitation_dhsuudushi9428r_tab:hover,
+.mayhen_invitation_dhsuudushi9428r_tab_active {
+  background: var(--mayhen_ink);
+  color: #ffffff;
+  border-color: var(--mayhen_ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.mayhen_invitation_dhsuudushi9428r_event_panel {
+  background: #ffffff;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--mayhen_shadow_subtle);
+}
+
+.mayhen_invitation_dhsuudushi9428r_event_panel[hidden] {
+  display: none;
+}
+
+.mayhen_invitation_dhsuudushi9428r_event {
+  padding: 18px 14px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_event + .mayhen_invitation_dhsuudushi9428r_event {
+  border-top: 1px dashed var(--mayhen_line);
+}
+
+.mayhen_invitation_dhsuudushi9428r_event h2 {
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--mayhen_gold);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.mayhen_invitation_dhsuudushi9428r_event p {
+  font-size: 13px;
+  margin: 0 0 6px;
+  color: var(--mayhen_ink_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_event .mayhen_invitation_dhsuudushi9428r_event_time {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_date_tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 6px !important;
+}
+
+.mayhen_invitation_dhsuudushi9428r_date_tile small {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_date_tile b {
+  font-size: 32px;
+  line-height: 1;
+  border-inline: 1px solid var(--mayhen_gold_soft);
+  padding: 0 14px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_lunar {
+  font-style: italic;
+  font-size: 12px !important;
+  color: var(--mayhen_muted) !important;
+}
+
+.mayhen_invitation_dhsuudushi9428r_address {
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 10px auto 4px !important;
+  max-width: 290px;
+  font-size: 12.5px !important;
+  color: var(--mayhen_ink) !important;
+}
+
+.mayhen_invitation_dhsuudushi9428r_event a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mayhen_gold);
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1px solid var(--mayhen_gold_soft);
+  border-radius: 999px;
+  margin-top: 6px;
+  transition: all 0.2s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_event a:hover {
+  background: var(--mayhen_gold);
+  color: #fff;
+}
+
+.mayhen_invitation_dhsuudushi9428r_dress {
+  border-top: 1px solid var(--mayhen_line);
+  padding: 16px 10px 4px;
+  margin-top: 16px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_dress p {
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  font-size: 12px;
+  margin: 0 0 4px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_dress span {
+  display: block;
+  font-size: 11px;
+  color: var(--mayhen_muted);
+  letter-spacing: 0.05em;
+}
+
+.mayhen_invitation_dhsuudushi9428r_swatches {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_swatches i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #c9c3bc;
+}
+.mayhen_invitation_dhsuudushi9428r_swatches i:nth-child(2) {
+  background: #b8ad9f;
+}
+.mayhen_invitation_dhsuudushi9428r_swatches i:nth-child(3) {
+  background: #690101;
+}
+
+/* ================= SECTION 5: LỊCH, ĐẾM NGƯỢC & TIMELINE ================= */
+.mayhen_invitation_dhsuudushi9428r_schedule {
+  padding: 24px 16px 20px;
+  text-align: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar {
+  background: #ffffff;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 12px;
+  padding: 18px 14px;
+  box-shadow: var(--mayhen_shadow_subtle);
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 14px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar h2 span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar_grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px 2px;
+  align-items: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar_grid span {
+  font-size: 11.5px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  color: var(--mayhen_ink_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar_grid .mayhen_invitation_dhsuudushi9428r_calendar_week {
+  font-weight: 700;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar_grid .mayhen_invitation_dhsuudushi9428r_calendar_day {
+  background: var(--mayhen_ink);
+  color: #ffffff;
+  border-radius: 50%;
+  font-weight: 700;
+  width: 25px;
+  height: 25px;
+  margin: auto;
+  position: relative;
+}
+
+.mayhen_invitation_dhsuudushi9428r_calendar_day::after {
+  content: "♥";
+  position: absolute;
+  font-size: 9px;
+  color: var(--mayhen_wax);
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown {
+  margin-top: 20px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown p {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--mayhen_muted);
+  margin: 0 0 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown_numbers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown_numbers > div {
+  background: var(--mayhen_bg_warm);
+  border: 1px solid var(--mayhen_line_light);
+  padding: 10px 2px 8px;
+  border-radius: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown_numbers strong {
+  display: block;
+  font-size: 20px;
+  color: var(--mayhen_ink);
+  letter-spacing: 0.02em;
+}
+
+.mayhen_invitation_dhsuudushi9428r_countdown_numbers span {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mayhen_muted);
+  margin-top: 2px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_heart_divider {
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: var(--mayhen_gold_soft);
+  font-size: 11px;
+  letter-spacing: 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline h2 {
+  font-size: 38px;
+  font-weight: 400;
+  margin: 4px 0 16px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline ol {
+  list-style: none;
+  position: relative;
+  padding: 0 0 0 20px;
+  margin: 0 8px;
+  text-align: left;
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline ol::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 16px;
+  left: 17px;
+  width: 1px;
+  background: var(--mayhen_line);
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 48px;
+  padding-left: 20px;
+  font-size: 12.5px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline li::before {
+  content: "♥";
+  position: absolute;
+  left: -8px;
+  top: 14px;
+  background: #ffffff;
+  font-size: 11px;
+  color: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_timeline time {
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 44px;
+  color: var(--mayhen_ink);
+}
+
+/* ================= SECTION 6: SỔ LƯU BÚT ================= */
+.mayhen_invitation_dhsuudushi9428r_guestbook {
+  padding: 24px 16px 20px;
+  text-align: center;
+  background: var(--mayhen_bg_warm);
+  border-block: 1px solid var(--mayhen_line_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_section_head p {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  margin: 0;
+  color: var(--mayhen_gold);
+  font-weight: 600;
+}
+
+.mayhen_invitation_dhsuudushi9428r_section_head h2 {
+  font-size: 38px;
+  margin: 2px 0 4px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_section_head span {
+  display: block;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--mayhen_muted);
+  margin: 0 0 16px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_guestboard {
+  height: 180px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('assets/a7449983-218b-4e16-94e8-64030d2dab3d.jpg') center/cover;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--mayhen_shadow_subtle);
+}
+
+.mayhen_invitation_dhsuudushi9428r_guestboard_empty span {
+  display: inline-block;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 99px;
+  font-size: 13px;
+  padding: 7px 16px;
+  backdrop-filter: blur(2px);
+}
+
+.mayhen_invitation_dhsuudushi9428r_demo_note {
+  margin: 12px auto 12px;
+  font-size: 11px;
+  color: var(--mayhen_muted);
+  background: #ffffff;
+  border: 1px solid var(--mayhen_line);
+  padding: 6px 12px;
+  border-radius: 6px;
+  max-width: 290px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_primary_button {
+  background: var(--mayhen_ink);
+  color: white;
+  border: 1px solid var(--mayhen_ink);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  transition: all 0.25s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_primary_button:hover {
+  background: #333333;
+  transform: translateY(-2px);
+}
+
+.mayhen_invitation_dhsuudushi9428r_steps {
+  font-size: 10.5px;
+  color: var(--mayhen_muted);
+  margin: 10px 0 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_messages {
+  border-top: 1px solid var(--mayhen_line);
+  padding: 12px 4px 4px;
+  color: var(--mayhen_muted);
+  font-size: 12.5px;
+}
+
+/* ================= SECTION 7: ALBUM ẢNH CƯỚI ================= */
+.mayhen_invitation_dhsuudushi9428r_album {
+  padding: 22px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_photo {
+  display: block;
+  background: #f0ebe4;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_photo:hover img {
+  transform: scale(1.03);
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_wide {
+  aspect-ratio: 3/2;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_mosaic {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: clamp(100px, 32vw, 130px) clamp(45px, 14vw, 55px) clamp(45px, 14vw, 55px) clamp(80px, 26vw, 105px);
+  gap: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:first-child {
+  grid-area: 1 / 1;
+}
+.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(3) {
+  grid-area: 1 / 3 / 3;
+}
+.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(4) {
+  grid-area: 2 / 1 / 5 / 3;
+}
+.mayhen_invitation_dhsuudushi9428r_album_mosaic .mayhen_invitation_dhsuudushi9428r_album_photo:nth-child(5) {
+  grid-area: 3 / 3 / 5;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_title {
+  grid-area: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--mayhen_bg_warm);
+  border-radius: 6px;
+  border: 1px solid var(--mayhen_line_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_title span {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_title strong {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_title i {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--mayhen_gold);
+  margin-top: 3px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_pairs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_pairs .mayhen_invitation_dhsuudushi9428r_album_photo {
+  aspect-ratio: 3/4;
+}
+
+.mayhen_invitation_dhsuudushi9428r_album_pairs .mayhen_invitation_dhsuudushi9428r_album_photo:last-child {
+  grid-column: span 2;
+  aspect-ratio: 3/2;
+}
+
+/* ================= SECTION 8: RSVP (XÁC NHẬN THAM DỰ) ================= */
+.mayhen_invitation_dhsuudushi9428r_frame {
+  text-align: center;
+  padding: 24px 18px 20px;
+  background: #ffffff;
+  position: relative;
+}
+
+.mayhen_invitation_dhsuudushi9428r_frame::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid var(--mayhen_line_light);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.mayhen_invitation_dhsuudushi9428r_frame > div {
+  position: relative;
+  z-index: 1;
+}
+
+.mayhen_invitation_dhsuudushi9428r_frame h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 6px 0 16px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_ornament {
+  font-size: 16px;
+  color: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_rsvp_choices {
+  display: flex;
+  gap: 10px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_rsvp_choices button {
+  flex: 1;
+  display: flex;
+  min-height: 85px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 10px;
+  background: var(--mayhen_bg_warm);
+  padding: 12px 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--mayhen_ink_light);
+  font-weight: 600;
+  transition: all 0.25s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_rsvp_choices button:hover {
+  background: var(--mayhen_ink);
+  color: white;
+  border-color: var(--mayhen_ink);
+  transform: translateY(-2px);
+}
+
+.mayhen_invitation_dhsuudushi9428r_rsvp_choices span {
+  font-size: 20px;
+}
+
+/* ================= SECTION 9: HỘP MỪNG CƯỚI (QUIET LUXURY) ================= */
+.mayhen_invitation_dhsuudushi9428r_gift {
+  padding-block: 24px;
+  background: var(--mayhen_bg_warm);
+  border-block: 1px solid var(--mayhen_line_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_scene {
+  height: 120px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  margin: 6px auto;
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_box {
+  border: 0;
+  width: 95px;
+  height: 82px;
+  background: linear-gradient(135deg, #232220 0%, #151413 100%);
+  color: #fff;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_box:hover {
+  transform: scale(1.05);
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_box::before {
+  content: "";
+  height: 18px;
+  position: absolute;
+  top: -10px;
+  left: -6px;
+  right: -6px;
+  background: #3d3b37;
+  border-radius: 4px;
+  border: 1px solid rgba(216, 194, 157, 0.3);
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_box::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  inset-block: -10px 0;
+  left: calc(50% - 7px);
+  background: linear-gradient(180deg, #d8c29d 0%, #9c7a4a 100%);
+  pointer-events: none;
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift_box span {
+  position: relative;
+  z-index: 1;
+  font-size: 32px;
+  color: #f7dca7;
+}
+
+.mayhen_invitation_dhsuudushi9428r_gift p {
+  font-size: 12px;
+  color: var(--mayhen_muted);
+  margin: 8px 12px 0;
+  line-height: 1.5;
+}
+
+/* ================= SECTION 10: FOOTER ================= */
+.mayhen_invitation_dhsuudushi9428r_footer {
+  position: relative;
+  text-align: center;
+  color: white;
+  min-height: 160px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_footer img {
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_footer div {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 10px 14px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+}
+
+.mayhen_invitation_dhsuudushi9428r_footer p {
+  font-size: 20px;
+  margin: 0;
+}
+
+/* ================= CONTROLS & FLOATING BUTTONS ================= */
+.mayhen_invitation_dhsuudushi9428r_floating {
+  position: fixed;
+  right: max(12px, calc((100vw - 430px) / 2 + 12px));
+  bottom: 18px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_floating button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--mayhen_ink);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_floating button:hover {
+  transform: scale(1.08);
+}
+
+.mayhen_invitation_dhsuudushi9428r_music[aria-pressed="true"] {
+  animation: mayhen_invitation_spin 5s linear infinite;
+  background: var(--mayhen_gold);
+}
+
+.mayhen_invitation_dhsuudushi9428r_to_top {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.mayhen_invitation_dhsuudushi9428r_to_top.mayhen_invitation_dhsuudushi9428r_visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ================= MODALS & LIGHTBOX ================= */
+.mayhen_invitation_dhsuudushi9428r_modal[hidden],
+.mayhen_invitation_dhsuudushi9428r_lightbox[hidden] {
+  display: none;
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_card {
+  width: min(100%, 380px);
+  max-height: min(85vh, 680px);
+  overflow-y: auto;
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 22px 18px 24px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--mayhen_line);
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: 0;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_card h2 {
+  font-size: 18px;
+  text-align: center;
+  margin: 4px 20px 16px;
+  color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_body form {
+  display: grid;
+  gap: 10px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_body label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mayhen_ink_light);
+}
+
+.mayhen_invitation_dhsuudushi9428r_modal_body input,
+.mayhen_invitation_dhsuudushi9428r_modal_body textarea {
+  width: 100%;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  background: var(--mayhen_bg_warm);
+}
+
+.mayhen_invitation_dhsuudushi9428r_bank_tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.mayhen_invitation_dhsuudushi9428r_bank_tabs button {
+  padding: 6px 14px;
+  background: #fff;
+  border: 1px solid var(--mayhen_line);
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mayhen_invitation_dhsuudushi9428r_bank_tabs button[aria-selected="true"] {
+  color: white;
+  background: var(--mayhen_ink);
+  border-color: var(--mayhen_ink);
+}
+
+.mayhen_invitation_dhsuudushi9428r_qr {
+  width: min(100%, 220px);
+  margin: 0 auto 10px;
+  border-radius: 6px;
+  border: 1px solid var(--mayhen_line);
+}
+
+.mayhen_invitation_dhsuudushi9428r_qr_caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--mayhen_muted);
+}
+
+.mayhen_invitation_dhsuudushi9428r_lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: white;
+}
+
+.mayhen_invitation_dhsuudushi9428r_lightbox img {
+  max-height: 85vh;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.mayhen_invitation_dhsuudushi9428r_lightbox button {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: white;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 24px;
+  display: grid;
+  place-items: center;
+}
+
+.mayhen_invitation_dhsuudushi9428r_lightbox_close {
+  right: 12px;
+  top: 12px;
+}
+.mayhen_invitation_dhsuudushi9428r_lightbox_prev {
+  left: 10px;
+  top: 50%;
+}
+.mayhen_invitation_dhsuudushi9428r_lightbox_next {
+  right: 10px;
+  top: 50%;
+}
+.mayhen_invitation_dhsuudushi9428r_lightbox_count {
+  position: absolute;
+  bottom: 12px;
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes mayhen_invitation_bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@keyframes mayhen_invitation_spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mayhen_invitation_pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+  50% { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 6px 20px rgba(135,31,31,0.5); }
+}
+
+/* ================= RESPONSIVE ADJUSTMENTS ================= */
+@media (min-width: 700px) {
+  .mayhen_invitation_dhsuudushi9428r_page {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .mayhen_invitation_dhsuudushi9428r_reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

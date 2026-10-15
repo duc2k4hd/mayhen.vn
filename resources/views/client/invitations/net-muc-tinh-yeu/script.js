@@ -6,26 +6,33 @@
   const byId = name => document.getElementById(prefix + name);
   const className = name => '.' + prefix + name;
 
-  // The source calendar starts on Monday, March 1, 2027.
+  // 1. KHỞI TẠO LỊCH CƯỚI (CALENDAR)
   const calendar = byId('calendar');
-  ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].forEach(day => {
-    const cell = document.createElement('span');
-    cell.className = prefix + 'calendar_week';
-    cell.textContent = day;
-    calendar.append(cell);
-  });
-  for (let day = 1; day <= 31; day += 1) {
-    const cell = document.createElement('span');
-    cell.textContent = String(day).padStart(2, '0');
-    if (day === 7) {
-      cell.textContent = '7';
-      cell.className = prefix + 'calendar_day';
-      cell.setAttribute('aria-label', 'Ngày cưới: 7 tháng 3 năm 2027');
+  if (calendar) {
+    const weddingDateData = window.__MAYHEN_WEDDING_DATE || { year: 2027, month: 3, day: 7 };
+    const targetDay = weddingDateData.day || 7;
+    
+    ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].forEach(day => {
+      const cell = document.createElement('span');
+      cell.className = prefix + 'calendar_week';
+      cell.textContent = day;
+      calendar.append(cell);
+    });
+
+    for (let day = 1; day <= 31; day += 1) {
+      const cell = document.createElement('span');
+      cell.textContent = String(day).padStart(2, '0');
+      if (day === targetDay) {
+        cell.textContent = String(day);
+        cell.className = prefix + 'calendar_day';
+        cell.setAttribute('aria-label', 'Ngày cưới: ' + targetDay + ' tháng 3');
+      }
+      calendar.append(cell);
     }
-    calendar.append(cell);
   }
 
-  const targetTime = new Date(2027, 2, 7, 7, 0, 0).getTime();
+  // 2. ĐẾM NGƯỢC (COUNTDOWN TIMER)
+  const targetTime = window.__MAYHEN_WEDDING_TARGET_TIME || new Date(2027, 2, 7, 7, 0, 0).getTime();
   function updateCountdown() {
     let remaining = Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
     const values = {
@@ -35,12 +42,16 @@
       seconds: remaining % 60
     };
     Object.entries(values).forEach(([unit, value]) => {
-      $('[data-unit="' + unit + '"]').textContent = String(value).padStart(unit === 'days' ? 3 : 2, '0');
+      const el = $('[data-unit="' + unit + '"]');
+      if (el) {
+        el.textContent = String(value).padStart(unit === 'days' ? 3 : 2, '0');
+      }
     });
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
+  // 3. HIỆU ỨNG HIỂN THỊ KHI CUỘN (SCROLL REVEAL)
   const revealItems = $$(className('reveal'));
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
@@ -56,47 +67,111 @@
     revealItems.forEach(item => item.classList.add(prefix + 'visible'));
   }
 
+  // 4. NHẠC NỀN (BACKGROUND MUSIC)
   const audio = byId('audio');
-  audio.volume = 0.5;
+  if (audio) {
+    audio.volume = 0.5;
+  }
   const musicButton = $(className('music'));
   async function playMusic() {
+    if (!audio) return;
     try {
       await audio.play();
-      musicButton.setAttribute('aria-pressed', 'true');
-      musicButton.setAttribute('aria-label', 'Tắt nhạc nền');
+      if (musicButton) {
+        musicButton.setAttribute('aria-pressed', 'true');
+        musicButton.setAttribute('aria-label', 'Tắt nhạc nền');
+      }
     } catch {
-      musicButton.setAttribute('aria-pressed', 'false');
+      if (musicButton) {
+        musicButton.setAttribute('aria-pressed', 'false');
+      }
     }
   }
-  musicButton.addEventListener('click', () => {
-    if (audio.paused) playMusic();
-    else {
-      audio.pause();
-      musicButton.setAttribute('aria-pressed', 'false');
-      musicButton.setAttribute('aria-label', 'Bật nhạc nền');
-    }
-  });
-  const envelope = $(className('envelope_button'));
-  envelope.addEventListener('click', () => {
-    envelope.classList.add(prefix + 'opened');
-    envelope.setAttribute('aria-expanded', 'true');
-    if (audio.paused) playMusic();
-    setTimeout(() => {
-      envelope.hidden = true;
-      $(className('open_hint')).hidden = true;
-      $(className('opened_stage')).hidden = false;
-    }, 450);
-  });
 
+  if (musicButton && audio) {
+    musicButton.addEventListener('click', () => {
+      if (audio.paused) {
+        playMusic();
+      } else {
+        audio.pause();
+        musicButton.setAttribute('aria-pressed', 'false');
+        musicButton.setAttribute('aria-label', 'Bật nhạc nền');
+      }
+    });
+  }
+
+  // 5. TRẢI NGHIỆM MỞ THIỆP ĐỈNH CAO (ENVELOPE OPENING & SMOOTH SCROLL)
+  const envelope = document.getElementById('mayhen_envelope_element');
+  const openBtn = document.getElementById('mayhen_open_invitation_btn');
+  const scrollDownBtn = document.getElementById('mayhen_scroll_down_btn');
+  const coverSection = document.getElementById('mayhen_invitation_cover');
+  const mainContent = document.getElementById('mayhen_invitation_main_content');
+
+  let isOpened = false;
+
+  function openEnvelope() {
+    if (isOpened) return;
+    isOpened = true;
+
+    // 1. Kích hoạt hiệu ứng mở nắp phong bì và tem sáp
+    if (envelope) {
+      envelope.classList.add('mayhen_opened');
+      envelope.setAttribute('aria-expanded', 'true');
+    }
+    if (coverSection) {
+      coverSection.classList.add('mayhen_opened_state');
+    }
+
+    // 2. Bật nhạc nền
+    if (audio && audio.paused) {
+      playMusic();
+    }
+
+    // 3. Mở khóa cuộn trang
+    document.body.classList.remove('mayhen_invitation_scroll_locked');
+
+    // 4. Sau khi thiệp trồi lên (khoảng 800ms), tự động cuộn nhẹ nhàng xuống nội dung
+    setTimeout(() => {
+      if (mainContent) {
+        mainContent.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 850);
+  }
+
+  if (envelope) {
+    envelope.addEventListener('click', openEnvelope);
+    envelope.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openEnvelope();
+      }
+    });
+  }
+
+  if (openBtn) {
+    openBtn.addEventListener('click', openEnvelope);
+  }
+
+  if (scrollDownBtn && mainContent) {
+    scrollDownBtn.addEventListener('click', () => {
+      mainContent.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // 6. CHUYỂN TAB TIỆC NHÀ GÁI / TIỆC NHÀ TRAI
   const tabButtons = $$(className('tab'));
   function activateTab(button) {
     tabButtons.forEach(tab => {
       const active = tab === button;
       tab.classList.toggle(prefix + 'tab_active', active);
       tab.setAttribute('aria-selected', String(active));
-      document.getElementById(tab.getAttribute('aria-controls')).hidden = !active;
+      const targetPanel = document.getElementById(tab.getAttribute('aria-controls'));
+      if (targetPanel) {
+        targetPanel.hidden = !active;
+      }
     });
   }
+
   tabButtons.forEach((button, index) => {
     button.addEventListener('click', () => activateTab(button));
     button.addEventListener('keydown', event => {
@@ -108,30 +183,42 @@
     });
   });
 
+  // 7. NÚT LÊN ĐẦU TRANG
   const toTop = $(className('to_top'));
-  const updateTopButton = () => toTop.classList.toggle(prefix + 'visible', window.scrollY > 350);
-  window.addEventListener('scroll', updateTopButton, { passive: true });
-  updateTopButton();
-  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  if (toTop) {
+    const updateTopButton = () => toTop.classList.toggle(prefix + 'visible', window.scrollY > 350);
+    window.addEventListener('scroll', updateTopButton, { passive: true });
+    updateTopButton();
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
 
+  // 8. MODAL VÀ THÔNG BÁO TƯƠNG TÁC
   const modal = byId('modal');
   const modalTitle = byId('modal_title');
   const modalBody = $(className('modal_body'));
   let previousFocus = null;
+
   function openModal(title, content) {
+    if (!modal) return;
     previousFocus = document.activeElement;
     modalTitle.textContent = title;
     modalBody.replaceChildren(content);
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
-    $(className('modal_close'), modal).focus();
+    const closeBtn = $(className('modal_close'), modal);
+    if (closeBtn) closeBtn.focus();
   }
+
   function closeModal() {
+    if (!modal) return;
     modal.hidden = true;
     document.body.style.overflow = '';
     if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
   }
-  $$('[data-close="true"]', modal).forEach(el => el.addEventListener('click', closeModal));
+
+  if (modal) {
+    $$('[data-close="true"]', modal).forEach(el => el.addEventListener('click', closeModal));
+  }
 
   function field(label, tag, name, required = true) {
     const wrapper = document.createElement('label');
@@ -145,126 +232,194 @@
     wrapper.append(input);
     return wrapper;
   }
+
   function note(text) {
     const p = document.createElement('p');
     p.className = prefix + 'modal_note';
     p.textContent = text;
     return p;
   }
-  function submitButton(label) {
-    const button = document.createElement('button');
-    button.className = prefix + 'primary_button';
-    button.type = 'submit';
-    button.textContent = label;
-    return button;
-  }
-  function guestbookModal() {
-    const form = document.createElement('form');
-    form.append(field('Tên của bạn', 'input', 'name'), field('Lời chúc', 'textarea', 'message'), note('Chế độ xem thử: lời chúc chỉ hiển thị trong phiên này và sẽ mất khi tải lại trang.'), submitButton('Gửi lời chúc'));
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      const name = form.elements.name.value.trim();
-      const message = form.elements.message.value.trim();
-      if (!name || !message) return;
-      const list = $(className('messages'));
-      if (list.firstElementChild?.tagName === 'P') list.replaceChildren();
-      const item = document.createElement('article');
-      const author = document.createElement('strong');
-      const text = document.createElement('p');
-      author.textContent = name;
-      text.textContent = message;
-      item.append(author, text);
-      list.prepend(item);
-      $(className('guestboard_empty') + ' span').textContent = 'Cảm ơn lời chúc của bạn!';
-      closeModal();
-    });
-    openModal('Gửi Lời Chúc', form);
-  }
-  function rsvpModal(attending) {
-    const form = document.createElement('form');
-    form.append(field('Họ và tên', 'input', 'name'));
-    if (attending) form.append(field('Số người tham dự', 'input', 'guests'));
-    form.append(field('Lời nhắn (không bắt buộc)', 'textarea', 'message', false), note('Xem thử giao diện: xác nhận không được gửi hay lưu lên máy chủ.'), submitButton('Xác nhận'));
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      const name = form.elements.name.value.trim();
-      if (!name) return;
-      const summary = document.createElement('div');
-      summary.append(note('Cảm ơn ' + name + '! Lựa chọn của bạn đã được ghi nhận trong phiên xem thử này.'));
-      const okay = document.createElement('button');
-      okay.className = prefix + 'primary_button';
-      okay.textContent = 'Đóng';
-      okay.type = 'button';
-      okay.addEventListener('click', closeModal);
-      summary.append(okay);
-      modalTitle.textContent = attending ? 'Hẹn gặp tại lễ cưới!' : 'Cảm ơn lời phản hồi';
-      modalBody.replaceChildren(summary);
-    });
-    openModal(attending ? 'Xác Nhận Tham Dự' : 'Rất tiếc, chưa sắp xếp được', form);
-  }
-  function giftModal() {
-    const container = document.createElement('div');
-    const tabs = document.createElement('div');
-    tabs.className = prefix + 'bank_tabs';
-    const image = document.createElement('img');
-    image.className = prefix + 'qr';
-    image.alt = 'Mã QR mừng cưới';
-    const caption = document.createElement('p');
-    caption.className = prefix + 'qr_caption';
-    const banks = [
-      { label: 'Nhà trai', image: 'assets/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg' },
-      { label: 'Nhà gái', image: 'assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg' }
-    ];
-    banks.forEach((bank, index) => {
-      const button = document.createElement('button');
-      button.textContent = bank.label;
-      button.type = 'button';
-      button.addEventListener('click', () => {
-        image.src = bank.image;
-        image.alt = 'Mã QR mừng cưới ' + bank.label;
-        caption.textContent = bank.label;
-        [...tabs.children].forEach(el => el.setAttribute('aria-selected', String(el === button)));
-      });
-      tabs.append(button);
-    });
-    container.append(tabs, image, caption, note('Sự hiện diện của bạn là món quà quý giá nhất đối với chúng tôi.'));
-    openModal('Hộp Mừng Cưới', container);
-    tabs.firstElementChild.click();
-  }
-  $('[data-modal="guestbook"]').addEventListener('click', guestbookModal);
-  $('[data-modal="gift"]').addEventListener('click', giftModal);
-  $$('[data-rsvp]').forEach(button => button.addEventListener('click', () => rsvpModal(button.dataset.rsvp === 'yes')));
 
-  const lightbox = byId('lightbox');
-  const photos = $$('[data-photo] img');
-  let photoIndex = 0;
-  function showPhoto(index) {
-    photoIndex = (index + photos.length) % photos.length;
-    $('img', lightbox).src = photos[photoIndex].src;
-    $('img', lightbox).alt = photos[photoIndex].alt;
-    $(className('lightbox_count'), lightbox).textContent = (photoIndex + 1) + ' / ' + photos.length;
+  // Sổ lưu bút (Guestbook)
+  const guestbookButton = $('[data-modal="guestbook"]');
+  if (guestbookButton) {
+    guestbookButton.addEventListener('click', () => {
+      const form = document.createElement('form');
+      form.append(
+        field('Tên của bạn *', 'input', 'name'),
+        field('Lời chúc hạnh phúc gửi đôi bạn *', 'textarea', 'message'),
+        note('Lời chúc của bạn sẽ được lưu giữ trang trọng trong sổ lưu niệm của cô dâu chú rể.')
+      );
+      const submit = document.createElement('button');
+      submit.type = 'submit';
+      submit.className = prefix + 'primary_button';
+      submit.textContent = 'Gửi Lời Chúc';
+      form.append(submit);
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const name = data.get('name').trim();
+        const message = data.get('message').trim();
+        if (!name || !message) return;
+
+        const container = $(className('messages'));
+        if (container) {
+          const emptyNote = container.querySelector('p');
+          if (emptyNote) emptyNote.remove();
+
+          const card = document.createElement('article');
+          const author = document.createElement('strong');
+          author.textContent = name;
+          const body = document.createElement('p');
+          body.textContent = message;
+          card.append(author, body);
+          container.prepend(card);
+        }
+
+        closeModal();
+      });
+
+      openModal('Ký Tên Chúc Phúc', form);
+    });
   }
-  function closeLightbox() {
-    lightbox.hidden = true;
-    document.body.style.overflow = '';
-    $('[data-photo="' + photoIndex + '"]').focus();
+
+  // Hộp mừng cưới (Gift VietQR)
+  const giftButton = $('[data-modal="gift"]');
+  if (giftButton) {
+    giftButton.addEventListener('click', () => {
+      const container = document.createElement('div');
+      const tabs = document.createElement('div');
+      tabs.className = prefix + 'bank_tabs';
+      
+      const groomTab = document.createElement('button');
+      groomTab.type = 'button';
+      groomTab.textContent = 'Mừng Chú Rể';
+      groomTab.setAttribute('aria-selected', 'true');
+
+      const brideTab = document.createElement('button');
+      brideTab.type = 'button';
+      brideTab.textContent = 'Mừng Cô Dâu';
+      brideTab.setAttribute('aria-selected', 'false');
+
+      tabs.append(groomTab, brideTab);
+
+      const qrImg = document.createElement('img');
+      qrImg.className = prefix + 'qr';
+      const qrGroom = window.__MAYHEN_GIFT_QR_GROOM || '';
+      const qrBride = window.__MAYHEN_GIFT_QR_BRIDE || '';
+      qrImg.src = qrGroom;
+      qrImg.alt = 'Mã VietQR mừng cưới';
+
+      const caption = document.createElement('p');
+      caption.className = prefix + 'qr_caption';
+      caption.textContent = 'Quét mã VietQR chuyển khoản nhanh bằng ứng dụng ngân hàng';
+
+      groomTab.addEventListener('click', () => {
+        groomTab.setAttribute('aria-selected', 'true');
+        brideTab.setAttribute('aria-selected', 'false');
+        qrImg.src = qrGroom;
+      });
+
+      brideTab.addEventListener('click', () => {
+        brideTab.setAttribute('aria-selected', 'true');
+        groomTab.setAttribute('aria-selected', 'false');
+        qrImg.src = qrBride;
+      });
+
+      container.append(tabs, qrImg, caption);
+      openModal('Hộp Mừng Cưới', container);
+    });
   }
-  $$('[data-photo]').forEach((button, index) => button.addEventListener('click', () => {
-    showPhoto(index);
-    lightbox.hidden = false;
-    document.body.style.overflow = 'hidden';
-    $(className('lightbox_close'), lightbox).focus();
-  }));
-  $(className('lightbox_close'), lightbox).addEventListener('click', closeLightbox);
-  $(className('lightbox_prev'), lightbox).addEventListener('click', () => showPhoto(photoIndex - 1));
-  $(className('lightbox_next'), lightbox).addEventListener('click', () => showPhoto(photoIndex + 1));
-  lightbox.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      if (!lightbox.hidden) closeLightbox();
-      else if (!modal.hidden) closeModal();
-    }
-    if (!lightbox.hidden && event.key === 'ArrowLeft') showPhoto(photoIndex - 1);
-    if (!lightbox.hidden && event.key === 'ArrowRight') showPhoto(photoIndex + 1);
+
+  // Xác nhận tham dự (RSVP Choices)
+  $$('[data-rsvp]').forEach(button => {
+    button.addEventListener('click', () => {
+      const choice = button.getAttribute('data-rsvp');
+      const isYes = choice === 'yes';
+      const form = document.createElement('form');
+      form.append(
+        field('Họ và tên *', 'input', 'name'),
+        field('Số điện thoại *', 'input', 'phone')
+      );
+
+      if (isYes) {
+        form.append(
+          field('Số lượng người tham dự', 'input', 'guests'),
+          note('Cảm ơn bạn đã nhận lời! Sự hiện diện của bạn là niềm vinh dự lớn đối với chúng tôi.')
+        );
+      } else {
+        form.append(
+          field('Lời nhắn gửi tới cặp đôi', 'textarea', 'message', false),
+          note('Rất tiếc vì bạn chưa thể tham gia. Cảm ơn bạn vì đã luôn quan tâm và chúc phúc!')
+        );
+      }
+
+      const submit = document.createElement('button');
+      submit.type = 'submit';
+      submit.className = prefix + 'primary_button';
+      submit.textContent = 'Xác Nhận';
+      form.append(submit);
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        alert('Cảm ơn bạn đã gửi phản hồi xác nhận!');
+        closeModal();
+      });
+
+      openModal('Xác Nhận Tham Dự', form);
+    });
   });
+
+  // 9. LIGHTBOX PHÓNG TO ALBUM ẢNH
+  const lightbox = byId('lightbox');
+  if (lightbox) {
+    const lightboxImg = $('img', lightbox);
+    const lightboxCount = $(className('lightbox_count'), lightbox);
+    const photos = $$('[data-photo]');
+    let currentIndex = 0;
+
+    function showPhoto(index) {
+      currentIndex = (index + photos.length) % photos.length;
+      const targetPhoto = photos[currentIndex];
+      const img = $('img', targetPhoto);
+      if (img && lightboxImg) {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+      }
+      if (lightboxCount) {
+        lightboxCount.textContent = (currentIndex + 1) + ' / ' + photos.length;
+      }
+    }
+
+    photos.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = parseInt(btn.getAttribute('data-photo'), 10) || 0;
+        showPhoto(index);
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    const closeLightbox = () => {
+      lightbox.hidden = true;
+      document.body.style.overflow = '';
+    };
+
+    const closeBtn = $(className('lightbox_close'), lightbox);
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+
+    const prevBtn = $(className('lightbox_prev'), lightbox);
+    if (prevBtn) prevBtn.addEventListener('click', () => showPhoto(currentIndex - 1));
+
+    const nextBtn = $(className('lightbox_next'), lightbox);
+    if (nextBtn) nextBtn.addEventListener('click', () => showPhoto(currentIndex + 1));
+
+    window.addEventListener('keydown', (e) => {
+      if (lightbox.hidden) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showPhoto(currentIndex - 1);
+      if (e.key === 'ArrowRight') showPhoto(currentIndex + 1);
+    });
+  }
 })();

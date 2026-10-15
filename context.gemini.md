@@ -487,6 +487,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Hỗ trợ xem trước tức thì (Instant Local Preview) và lập tức đồng bộ sang iframe xem trước thời gian thực.
 - **Kiểm thử tự động**: Đã bổ sung test case upload asset, đạt **10/10 tests passed (99 assertions)**.
 
+### 📌 Phiên bản 1.1.3 — Tái Thiết Kế Trải Nghiệm Mở Thiệp 3D & Tinh Chỉnh Giao Diện Quiet Luxury (net-muc-tinh-yeu)
+- **Màn hình mở đầu trang trọng (Full Height Cover & 3D Interactive Envelope Stage)**:
+  - Khắc phục triệt để tình trạng "chưa mở thiệp mà toàn bộ nội dung đã phơi bày":
+    - Khởi tạo trang với class `mayhen_invitation_scroll_locked` trên `body` để khóa cuộn ban đầu, tập trung 100% ánh nhìn vào màn hình mở đầu.
+    - Màn hình mở đầu chiếm trọn chiều cao viewport (`min-height: 100vh`/`100dvh`) với nền Warm Cream/Ivory, khung viền kép thanh thoát và hoa văn góc đối xứng tinh xảo.
+  - Thiết kế phong bì cưới 3D chân thực (Deluxe Envelope):
+    - Thân phong bì màu xám than chì nhung mờ cao cấp (`#252422`), viền lót chỉ vàng dát nhũ nhẹ.
+    - Tem sáp niêm phong (Wax Seal) dập nổi 3D màu đỏ rượu trầm (`#871f1f`) với chữ Hỷ `囍` dát nhũ vàng kim và hiệu ứng nhịp thở thu hút (`mayhen_invitation_pulse`).
+    - Tấm thiệp mời bên trong (Letter inside) với ảnh cưới của đôi bạn nằm khéo léo trong khe phong bì.
+  - Trải nghiệm mở thiệp mượt mà và tự động cuộn xuống:
+    - Khi chạm vào phong bì, nút "Chạm Mở Thiệp" hoặc tem sáp: Nắp phong bì mở 3D lật lên (`transform: rotateX(180deg)`), tem sáp mở nhẹ, tấm thiệp trồi lên (card slide-up) hé lộ ảnh cưới lung linh.
+    - Tự động kích hoạt nhạc nền cưới MP3 du dương.
+    - Gỡ bỏ khóa cuộn (`body.mayhen_invitation_scroll_locked`) và sau 850ms tự động cuộn mượt mà (`window.scrollTo({ behavior: 'smooth' })`) dẫn lối người xem xuống phần nội dung chi tiết.
+    - Bổ sung nút "Cuộn xuống xem tiếp ↓" trang nhã.
+- **Khắc phục tình trạng thô sơ, lệch lạc và khoảng cách quá xa (Tight & Rhythmic Spacing)**:
+  - **Gia đình hai bên (`mayhen_invitation_dhsuudushi9428r_families`)**:
+    - Loại bỏ dải ribbon màu đen xì lệch méo bên trái và cột chữ dọc kỳ lạ.
+    - Thay thế bằng thẻ thiệp song hành đối xứng (Symmetrical Family Card) gồm 2 cột cân bằng: Cột trái "NHÀ TRAI", Cột phải "NHÀ GÁI", chính giữa là biểu tượng chữ Hỷ trang nhã.
+  - **Tối ưu khoảng cách dọc (Vertical Spacing)**:
+    - Thu nhỏ các padding dư thừa từ 38px-45px xuống còn 20px-26px có nhịp điệu hài hòa, loại bỏ các `min-height` cứng ngắc.
+  - **Typography & Màu sắc Quiet Luxury**:
+    - Tiêu đề viết tay Quarzo phối hợp font Montserrat hiện đại, kích thước chữ cân đối.
+    - Tông màu chuẩn mực: Trắng ngà (Ivory), Mực than (#181818), Nâu ấm (#faf7f2), Nhũ vàng đồng (#9c7a4a), không màu mè sặc sỡ.
+  - **Lược bỏ các chi tiết thô thiển**:
+    - Bỏ các ký tự dollar bay tán loạn trong hộp mừng cưới, thay bằng Hộp quà / Phong bao cưới nhung đen viền vàng sang trọng, mở modal VietQR quét mã tức thì.
+    - Bộ đếm ngược, timeline và tabs tiệc cưới được tinh giản, gọn gàng, sắc nét.
+- **Đồng bộ toàn diện Assets**:
+  - Đã cập nhật và đồng bộ đồng thời tại `resources/views/client/invitations/net-muc-tinh-yeu/` và `public/assets/client/invitations/net-muc-tinh-yeu/`.
+- **Kiểm thử tự động**:
+  - `php artisan test --compact`: **10/10 tests passed (101 assertions)**.
+  - Laravel Pint: **100% passed**, không có lỗi format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
