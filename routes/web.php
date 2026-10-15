@@ -31,6 +31,7 @@ Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('tem
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
 Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->name('invitation.store');
+Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->name('invitation.uploadAsset');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->name('rsvp.submit');
 

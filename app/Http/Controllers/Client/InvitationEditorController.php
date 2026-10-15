@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class InvitationEditorController extends Controller
@@ -154,6 +155,54 @@ class InvitationEditorController extends Controller
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
             'template' => $template,
+        ]);
+    }
+
+    /**
+     * Upload an asset image and save directly into the current template's assets folder.
+     */
+    public function uploadAsset(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:jpeg,png,jpg,webp,svg,gif,heic|max:15360',
+            'template_slug' => 'required|string',
+        ]);
+
+        $templateSlug = Str::slug($request->input('template_slug'));
+        $file = $request->file('file');
+
+        $ext = strtolower($file->getClientOriginalExtension());
+        $filename = Str::uuid()->toString().'.'.$ext;
+
+        // Thư mục public để trình duyệt phục vụ ngay lập tức
+        $publicAssetDir = public_path("assets/client/invitations/{$templateSlug}/assets");
+        // Thư mục views để đồng bộ trọn gói template folder
+        $resourceAssetDir = resource_path("views/client/invitations/{$templateSlug}/assets");
+
+        if (! File::exists($publicAssetDir)) {
+            File::makeDirectory($publicAssetDir, 0755, true);
+        }
+        if (! File::exists($resourceAssetDir)) {
+            File::makeDirectory($resourceAssetDir, 0755, true);
+        }
+
+        // Lưu vào public assets
+        $file->move($publicAssetDir, $filename);
+
+        // Đồng bộ bản sao sang resource views template assets
+        $publicFilePath = $publicAssetDir.DIRECTORY_SEPARATOR.$filename;
+        $resourceFilePath = $resourceAssetDir.DIRECTORY_SEPARATOR.$filename;
+        if (File::exists($publicFilePath)) {
+            File::copy($publicFilePath, $resourceFilePath);
+        }
+
+        $assetUrl = asset("assets/client/invitations/{$templateSlug}/assets/{$filename}");
+
+        return response()->json([
+            'success' => true,
+            'file_name' => $filename,
+            'file_url' => $assetUrl,
+            'relative_path' => "assets/{$filename}",
         ]);
     }
 }

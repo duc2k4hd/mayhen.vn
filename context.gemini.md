@@ -470,6 +470,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Sử dụng tiêu đề ngắn gọn (Short Title) trên các tab (Đôi Uyên Ương, Nhà Gái, Nhà Trai, Ảnh Cưới, Lịch Trình, Mừng Cưới) kết hợp tooltip đầy đủ.
 - **Kiểm thử tự động**: Đã bổ sung test case Feature kiểm tra iframe preview và dynamic schema fields, đạt **9/9 tests passed (96 assertions)**.
 
+### 📌 Phiên bản 1.1.2 — Chuẩn Hóa Định Dạng Thư Mục Template & Tải Ảnh Trực Tiếp Vào Assets
+- **Chuẩn Hóa Cấu Trúc Template Trọn Gói (Self-contained Template Package)**:
+  - Bắt buộc mỗi thư mục mẫu thiệp tại `resources/views/client/invitations/{slug}/` phải có cấu trúc chuẩn mực gồm 6 thành phần:
+    1. `assets/` (chứa toàn bộ hình ảnh, font chữ, âm thanh độc bản của mẫu)
+    2. `README.md` (hướng dẫn và mô tả phong cách mẫu thiệp)
+    3. `schema.json` (định nghĩa các section và trường dữ liệu tùy biến)
+    4. `script.js` (logic chuyển động và tương tác native)
+    5. `styles.css` (tạo hình, typography, layout thuần CSS)
+    6. `template.blade.php` (Blade view nhận dữ liệu động và đồng bộ thời gian thực)
+  - Đồng thời duy trì bản sao assets tĩnh tại `public/assets/client/invitations/{slug}/` để trình duyệt tải với tốc độ cao nhất.
+- **Tính Năng Tải Ảnh Trực Tiếp Vào Assets Của Mẫu Đang Sửa**:
+  - Bổ sung endpoint `POST /tao-thiep/upload-asset` trong `InvitationEditorController`.
+  - Khách hàng có thể chọn tải ảnh từ máy tính hoặc điện thoại tại tất cả các trường ảnh (Ảnh cưới mở thiệp, Ảnh Hero dọc, Bộ 3 ảnh Triptych, Ảnh chân trang, Mã QR mừng cưới Nhà Trai, Nhà Gái và toàn bộ 10 ảnh trong Album cưới).
+  - Tự động lưu trữ file tải lên vào thư mục assets của template đang sửa: `public/assets/client/invitations/{template_slug}/assets/` và đồng bộ vào `resources/views/client/invitations/{template_slug}/assets/`.
+  - Hỗ trợ xem trước tức thì (Instant Local Preview) và lập tức đồng bộ sang iframe xem trước thời gian thực.
+- **Kiểm thử tự động**: Đã bổ sung test case upload asset, đạt **10/10 tests passed (99 assertions)**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

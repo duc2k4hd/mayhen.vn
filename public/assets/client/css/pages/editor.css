@@ -493,6 +493,40 @@
     }
 }
 
+.mayhen_editor_upload_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary-hover);
+    cursor: pointer;
+    transition: all var(--mayhen-transition-fast);
+    box-shadow: 0 1px 3px rgba(28, 25, 23, 0.05);
+    width: fit-content;
+}
+
+.mayhen_editor_upload_btn:hover {
+    background: var(--mayhen-color-primary-soft);
+    border-color: var(--mayhen-color-primary);
+}
+
+.mayhen_editor_upload_btn_sm {
+    padding: 3px 9px;
+    font-size: 0.6875rem;
+}
+
+.mayhen_editor_gallery_item_box {
+    background: var(--mayhen-color-bg-soft);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-md);
+    padding: 8px 10px;
+}
+
 .mayhen_editor_preview_hint {
     margin-top: 12px;
     font-size: 0.78125rem;

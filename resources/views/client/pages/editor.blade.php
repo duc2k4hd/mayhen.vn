@@ -179,27 +179,57 @@
                                         </div>
 
                                     @elseif ($type === 'gallery')
-                                        {{-- Trường Album ảnh --}}
+                                        {{-- Trường Album ảnh kèm nút tải ảnh trực tiếp --}}
                                         <div class="mayhen_client_form_group">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_editor_gallery_grid">
                                                 @for ($gIdx = 0; $gIdx < ($field['max_items'] ?? 10); $gIdx++)
                                                     @php
                                                         $gVal = is_array($val) && isset($val[$gIdx]) ? $val[$gIdx] : '';
+                                                        $gId = "gallery_photo_{$gIdx}";
                                                     @endphp
-                                                    <input type="text" 
-                                                           name="{{ $inputName }}[{{ $gIdx }}]" 
-                                                           class="mayhen_client_form_input" 
-                                                           value="{{ $gVal }}" 
-                                                           placeholder="Link ảnh {{ $gIdx + 1 }}..."
-                                                           data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
+                                                    <div class="mayhen_editor_gallery_item_box">
+                                                        <div class="mayhen_editor_image_field_row">
+                                                            <img src="{{ is_string($gVal) && (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) ? $gVal : ($gVal ? asset('assets/client/invitations/' . $selectedTemplate->slug . '/' . $gVal) : $selectedTemplate->thumbnail_url) }}" 
+                                                                 alt="Ảnh {{ $gIdx + 1 }}" 
+                                                                 class="mayhen_editor_image_field_preview"
+                                                                 id="preview_thumb_{{ $gId }}"
+                                                                 onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                                                <input type="text" 
+                                                                       id="{{ $gId }}"
+                                                                       name="{{ $inputName }}[{{ $gIdx }}]" 
+                                                                       class="mayhen_client_form_input" 
+                                                                       value="{{ $gVal }}" 
+                                                                       placeholder="Ảnh {{ $gIdx + 1 }}..."
+                                                                       data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
+                                                                <div style="display: flex; align-items: center; gap: 6px;">
+                                                                    <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh lên">
+                                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                                                                        </svg>
+                                                                        <span>Tải ảnh {{ $gIdx + 1 }}</span>
+                                                                    </label>
+                                                                    <input type="file" 
+                                                                           id="upload_{{ $gId }}" 
+                                                                           class="mayhen_editor_file_uploader" 
+                                                                           data-target-input="{{ $gId }}"
+                                                                           data-target-thumb="preview_thumb_{{ $gId }}"
+                                                                           data-template-slug="{{ $selectedTemplate->slug }}"
+                                                                           accept="image/*" 
+                                                                           style="display: none;">
+                                                                    <span class="mayhen_editor_upload_status" id="status_{{ $gId }}" style="font-size: 0.7rem; color: var(--mayhen-color-text-muted);"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endfor
                                             </div>
-                                            <div class="mayhen_editor_input_help">Nhập URL ảnh cưới trong album (để trống sẽ dùng ảnh mẫu có sẵn)</div>
+                                            <div class="mayhen_editor_input_help">Tải trực tiếp ảnh từ thiết bị để lưu vào assets của mẫu</div>
                                         </div>
 
                                     @elseif ($type === 'image')
-                                        {{-- Trường Ảnh đơn kèm xem trước ảnh nhỏ --}}
+                                        {{-- Trường Ảnh đơn kèm nút tải ảnh lên trực tiếp --}}
                                         <div class="mayhen_client_form_group">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
@@ -208,19 +238,38 @@
                                                 @endif
                                             </label>
                                             <div class="mayhen_editor_image_field_row">
-                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : asset('assets/client/invitations/net-muc-tinh-yeu/' . $val) }}" 
+                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : asset('assets/client/invitations/' . $selectedTemplate->slug . '/' . $val) }}" 
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"
                                                      onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
-                                                <input type="text" 
-                                                       id="{{ $fieldId }}" 
-                                                       name="{{ $inputName }}" 
-                                                       class="mayhen_client_form_input" 
-                                                       data-sync-key="{{ $fieldKey }}" 
-                                                       value="{{ is_string($val) ? $val : '' }}" 
-                                                       placeholder="{{ $field['placeholder'] ?? 'Dán đường dẫn ảnh...' }}"
-                                                       {{ $isRequired ? 'required' : '' }}>
+                                                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                                                    <input type="text" 
+                                                           id="{{ $fieldId }}" 
+                                                           name="{{ $inputName }}" 
+                                                           class="mayhen_client_form_input" 
+                                                           data-sync-key="{{ $fieldKey }}" 
+                                                           value="{{ is_string($val) ? $val : '' }}" 
+                                                           placeholder="{{ $field['placeholder'] ?? 'Dán link hoặc bấm nút tải ảnh...' }}"
+                                                           {{ $isRequired ? 'required' : '' }}>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                                                            </svg>
+                                                            <span>Tải ảnh lên</span>
+                                                        </label>
+                                                        <input type="file" 
+                                                               id="upload_{{ $fieldId }}" 
+                                                               class="mayhen_editor_file_uploader" 
+                                                               data-target-input="{{ $fieldId }}"
+                                                               data-target-thumb="preview_thumb_{{ $fieldId }}"
+                                                               data-template-slug="{{ $selectedTemplate->slug }}"
+                                                               accept="image/*" 
+                                                               style="display: none;">
+                                                        <span class="mayhen_editor_upload_status" id="status_{{ $fieldId }}" style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);"></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 

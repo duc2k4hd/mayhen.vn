@@ -181,7 +181,86 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 3. Mobile Fullscreen Preview Modal
+    // 3. Asset Image Uploader (Upload trực tiếp vào assets của template)
+    // ----------------------------------------------------
+    const fileUploaders = $$('.mayhen_editor_file_uploader');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                      document.querySelector('input[name="_token"]')?.value || '';
+
+    fileUploaders.forEach(uploader => {
+        on(uploader, 'change', async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const targetInputId = uploader.getAttribute('data-target-input');
+            const targetThumbId = uploader.getAttribute('data-target-thumb');
+            const templateSlug = uploader.getAttribute('data-template-slug');
+            const targetInput = document.getElementById(targetInputId);
+            const targetThumb = document.getElementById(targetThumbId);
+            const statusEl = document.getElementById('status_' + targetInputId);
+
+            // 1. Xem trước ảnh tức thì trên trình duyệt
+            const localPreviewUrl = URL.createObjectURL(file);
+            if (targetThumb) targetThumb.src = localPreviewUrl;
+
+            // Gửi ngay sang iframe để xem trước thời gian thực
+            if (targetInput) {
+                const key = targetInput.getAttribute('data-sync-key');
+                if (key) {
+                    sendSyncMessage(key, localPreviewUrl);
+                }
+            }
+
+            if (statusEl) {
+                statusEl.textContent = 'Đang tải lên...';
+                statusEl.style.color = 'var(--mayhen-color-primary)';
+            }
+
+            // 2. Upload file lên server lưu vào assets của template
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('template_slug', templateSlug);
+            formData.append('_token', csrfToken);
+
+            try {
+                const res = await fetch('/tao-thiep/upload-asset', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: formData,
+                });
+
+                const data = await res.json();
+                if (data.success && data.file_url) {
+                    if (targetInput) {
+                        targetInput.value = data.file_url;
+                        const key = targetInput.getAttribute('data-sync-key');
+                        if (key) {
+                            sendSyncMessage(key, data.file_url);
+                        }
+                    }
+                    if (targetThumb) targetThumb.src = data.file_url;
+                    if (statusEl) {
+                        statusEl.textContent = '✓ Đã lưu vào assets!';
+                        statusEl.style.color = '#10B981';
+                        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+                    }
+                } else {
+                    throw new Error(data.message || 'Lỗi khi tải ảnh lên');
+                }
+            } catch (err) {
+                if (statusEl) {
+                    statusEl.textContent = 'Lỗi tải ảnh';
+                    statusEl.style.color = 'var(--mayhen-color-danger)';
+                }
+            }
+        });
+    });
+
+    // ----------------------------------------------------
+    // 4. Mobile Fullscreen Preview Modal
     // ----------------------------------------------------
     const previewModal = $('#mayhen_mobile_preview_modal');
     const openPreviewBtn = $('[data-mayhen-action="open-preview-modal"]');
