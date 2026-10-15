@@ -27,7 +27,12 @@ class InvitationTemplateService
             return self::$schemaCache[$cacheKey];
         }
 
-        $schemaPath = resource_path("invitation-templates/{$slug}/schema.json");
+        $schemaPath = resource_path("views/client/invitations/{$slug}/schema.json");
+
+        // Tương thích ngược nếu còn ở đường dẫn cũ
+        if (! File::exists($schemaPath)) {
+            $schemaPath = resource_path("invitation-templates/{$slug}/schema.json");
+        }
 
         if (File::exists($schemaPath)) {
             $json = File::get($schemaPath);
