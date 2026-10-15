@@ -46,7 +46,106 @@ class InvitationTemplate extends Model
     protected function badge(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->is_featured ? 'Nổi Bật Nhất' : 'Phong Cách Mới',
+            get: function () {
+                if ($this->is_featured) {
+                    return 'Nổi Bật Nhất';
+                }
+                $tier = $this->tier;
+                if ($tier === 'free') {
+                    return 'Miễn Phí 100%';
+                }
+                if ($tier === 'pro') {
+                    return 'Bản VIP Pro';
+                }
+
+                return 'Được Chuộng Nhất';
+            },
+        );
+    }
+
+    protected function tier(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['tier'] ?? 'plus',
+        );
+    }
+
+    protected function tierLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match ($this->tier) {
+                'free' => 'Gói Miễn Phí',
+                'pro' => 'Gói Pro VIP',
+                default => 'Gói Plus',
+            },
+        );
+    }
+
+    protected function tierBadgeClass(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match ($this->tier) {
+                'free' => 'mayhen_tier_free',
+                'pro' => 'mayhen_tier_pro',
+                default => 'mayhen_tier_plus',
+            },
+        );
+    }
+
+    protected function complexity(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['complexity'] ?? 'standard',
+        );
+    }
+
+    protected function setupTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['setup_time'] ?? match ($this->complexity) {
+                'quick' => '2 phút',
+                'deluxe' => '10 phút',
+                default => '5 phút',
+            },
+        );
+    }
+
+    protected function complexityLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => match ($this->complexity) {
+                'quick' => 'Setup 2 phút (Ít thông tin)',
+                'deluxe' => 'Setup đầy đủ (Nhiều ảnh & timeline)',
+                default => 'Setup chuẩn 5 phút',
+            },
+        );
+    }
+
+    protected function requiredInputs(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['required_inputs'] ?? ['basic_info', 'wedding_event'],
+        );
+    }
+
+    protected function styleLayout(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['style_layout'] ?? 'standard',
+        );
+    }
+
+    protected function usageCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => (int) ($this->default_config['stats']['pairs_used'] ?? 100),
+        );
+    }
+
+    protected function tags(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->default_config['tags'] ?? [],
         );
     }
 
@@ -54,12 +153,15 @@ class InvitationTemplate extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->category) {
+                'minimal' => 'Tối Giản Tinh Tế',
+                'floral' => 'Hoa Lá & Thiên Nhiên',
+                'traditional' => 'Truyền Thống Á Đông',
                 'luxury' => 'Hoàng Gia Tem Sáp',
+                'modern' => 'Hiện Đại Sắc Nét',
                 'editorial' => 'Tạp Chí Editorial',
-                'minimal' => 'Tối Giản Sang Trọng',
-                'floral' => 'Vườn Thơ & Hoa Cỏ',
-                'romantic' => 'Hồng Khói Lãng Mạn',
-                'modern' => 'Điện Ảnh Ký Ức',
+                'creative' => 'Độc Đáo (Passport / Lá Thư)',
+                'cute' => 'Dễ Thương & Chibi',
+                'romantic' => 'Lãng Mạn Pastel',
                 default => 'Thiệp Cưới Cao Cấp',
             },
         );
@@ -89,7 +191,7 @@ class InvitationTemplate extends Model
     protected function features(): Attribute
     {
         return Attribute::make(
-            get: fn () => match ($this->category) {
+            get: fn () => $this->default_config['features'] ?? match ($this->category) {
                 'luxury' => [
                     'Hiệu ứng mở phong thư hoàng gia',
                     'Tem sáp niêm phong 3D nổi',
@@ -108,6 +210,12 @@ class InvitationTemplate extends Model
                     'Đếm ngược ngày cưới thanh lịch',
                     'Tích hợp chỉ đường Google Maps',
                 ],
+                'traditional' => [
+                    'Chữ Song Hỷ đỏ truyền thống',
+                    'Lời kính báo hai họ trang nghiêm',
+                    'Sơ đồ đường đi chi tiết',
+                    'Hộp mừng cưới riêng biệt 2 nhà',
+                ],
                 'romantic' => [
                     'Tông màu hồng khói dịu dàng',
                     'Dải ruy băng lụa tháo nơ mượt mà',
@@ -119,6 +227,12 @@ class InvitationTemplate extends Model
                     'Typography hiện đại sắc nét',
                     'Chế độ xem tối ưu cho iPhone/Android',
                     'Chia sẻ tức thì qua Zalo & Facebook',
+                ],
+                'minimal' => [
+                    'Nhập thông tin siêu tốc trong 2 phút',
+                    'Typography chuẩn phong cách Quiet Luxury',
+                    'Tải nhanh tức thì trên mọi thiết bị',
+                    'Dễ đọc, phù hợp cả người lớn tuổi',
                 ],
                 default => [
                     'Khoảng trắng thở thanh lịch',
@@ -133,12 +247,14 @@ class InvitationTemplate extends Model
     protected function description(): Attribute
     {
         return Attribute::make(
-            get: fn () => match ($this->category) {
+            get: fn () => $this->default_config['description'] ?? match ($this->category) {
                 'luxury' => 'Phong cách hoàng gia quý phái với nắp phong thư gập mở, tem sáp niêm phong dập nổi và nhạc cưới du dương.',
                 'editorial' => 'Đậm chất bìa tạp chí thời trang Vogue, tôn vinh bộ ảnh cưới với bố cục typography sắc sảo và cuốn hút.',
                 'floral' => 'Mang hơi thở khu vườn mùa hạ thanh bình với sắc xanh Olive, nhành hoa lá nước vẽ tay và cánh hoa phiêu lãng.',
+                'traditional' => 'Trang trọng, chuẩn mực truyền thống với sắc đỏ thắm hoàng hỷ, gắn kết hai họ bền chặt trăm năm.',
                 'romantic' => 'Gam màu hồng khói ấm áp, thơ mộng như một bức thư tình tinh tế gửi trọn sự trân quý đến từng khách mời.',
                 'modern' => 'Phong cách thước phim điện ảnh hiện đại, kể lại hành trình tình yêu sống động qua từng khung hình kỷ niệm.',
+                'minimal' => 'Khoảng trắng phóng khoáng, phong cách kem cát ấm áp, tập trung vào sự tinh gọn và tốc độ setup.',
                 default => 'Khoảng trắng phóng khoáng, phong cách kem cát ấm áp, tập trung vào typography và chiều sâu cảm xúc.',
             },
         );

@@ -15,18 +15,34 @@ class TemplateController extends Controller
     public function index(Request $request): View
     {
         $category = $request->query('category');
+        $tier = $request->query('tier');
+        $sort = $request->query('sort', 'featured');
+
         $query = InvitationTemplate::query()->where('is_active', true);
 
-        if ($category && in_array($category, ['luxury', 'editorial', 'minimal', 'envelope'])) {
+        if ($category && $category !== 'all') {
             $catFilter = ($category === 'envelope') ? 'luxury' : $category;
             $query->where('category', $catFilter);
+        }
+
+        if ($tier && in_array($tier, ['free', 'plus', 'pro'])) {
+            $query->where('default_config->tier', $tier);
+        }
+
+        if ($sort === 'popular') {
+            $query->orderByRaw("CAST(JSON_UNQUOTE(JSON_EXTRACT(default_config, '$.stats.pairs_used')) AS UNSIGNED) DESC");
+        } else {
+            $query->orderBy('is_featured', 'desc')->orderBy('id', 'asc');
         }
 
         $templates = $query->get();
 
         return view('client.pages.templates', [
             'templates' => $templates,
-            'currentCategory' => $request->query('category'),
+            'currentCategory' => $category,
+            'currentTier' => $tier,
+            'currentSort' => $sort,
+            'totalCount' => InvitationTemplate::where('is_active', true)->count(),
         ]);
     }
 

@@ -1,5 +1,7 @@
 @php
     $isEmbed = request()->boolean('embed');
+    $hasEnvelope = in_array($template->style_layout, ['envelope-wax-seal']) || in_array($template->category, ['luxury']);
+    $showEnvelope = $hasEnvelope && !$isEmbed;
 @endphp
 <!DOCTYPE html>
 <html lang="vi">
@@ -28,7 +30,7 @@
             <div class="mayhen_invitation_banner_info">
                 <span class="mayhen_invitation_banner_badge">
                     <span class="mayhen_invitation_banner_badge_dot"></span>
-                    <span>Bản Xem Thử</span>
+                    <span>{{ $template->tier_label }} &bull; {{ $template->complexity_label }}</span>
                 </span>
                 <h1 class="mayhen_invitation_banner_title" title="{{ $template['name'] }}">
                     {{ $template['name'] }}
@@ -58,7 +60,7 @@
     @endif
 
     <div class="mayhen_invitation_envelope_stage">
-        @if (!$isEmbed)
+        @if ($showEnvelope)
             <!-- 1. The Royal Wax Seal Envelope -->
             <div class="mayhen_invitation_envelope" data-mayhen-component="envelope">
                 <button type="button" class="mayhen_invitation_envelope_seal" data-mayhen-action="unseal-envelope" aria-label="Chạm để mở thiệp">
@@ -70,7 +72,7 @@
         @endif
 
         <!-- 2. The Main Invitation Card -->
-        <article class="mayhen_invitation_card" data-mayhen-component="invitation-card" style="{{ $isEmbed ? 'display: block; opacity: 1;' : 'display: none; opacity: 0;' }}">
+        <article class="mayhen_invitation_card" data-mayhen-component="invitation-card" style="{{ $showEnvelope ? 'display: none; opacity: 0;' : 'display: block; opacity: 1;' }}">
             <!-- Header -->
             <div class="mayhen_invitation_card_header">
                 <span class="mayhen_invitation_subhead">Save Our Date &bull; Lời Mời Cưới</span>

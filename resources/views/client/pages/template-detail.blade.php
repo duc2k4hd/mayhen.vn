@@ -18,8 +18,20 @@
 
             <!-- Right: Details & Action -->
             <div class="mayhen_template_detail_info">
-                <span class="mayhen_template_detail_badge">{{ $template['category_label'] }}</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <span class="mayhen_home_template_card_tier_badge {{ $template->tier_badge_class }}">
+                        {{ $template->tier_label }}
+                    </span>
+                    <span class="mayhen_template_detail_badge">{{ $template['category_label'] }}</span>
+                    <span class="mayhen_home_template_card_setup_badge" style="font-size: 0.75rem; padding: 4px 8px;">
+                        {{ $template->complexity_label }}
+                    </span>
+                </div>
                 <h1 class="mayhen_template_detail_title">{{ $template['name'] }}</h1>
+                <div style="font-size: 0.8125rem; color: var(--mayhen-color-text-muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span><strong>{{ number_format($template->usage_count) }}</strong> cặp đôi đã lựa chọn mẫu này</span>
+                </div>
                 <p class="mayhen_template_detail_desc">{{ $template['description'] }}</p>
 
                 <!-- Features Included -->
