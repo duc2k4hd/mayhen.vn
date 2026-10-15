@@ -7,6 +7,10 @@
 
 This application is a Laravel application running on PHP 8.5. Always use the APIs that match the installed major version of each package — do not assume a version.
 
+### ⚠️ MANDATORY AI PROTOCOL — CONTEXT MANAGEMENT
+- **READ FIRST**: Any AI Agent (Gemini, Claude, GPT, Cursor, etc.) working on this repository **MUST ALWAYS READ `context.gemini.md` FIRST** before undertaking any task or writing any code.
+- **ALWAYS UPDATE AFTER CODING**: After finishing any task, bugfix, or new feature, the AI **MUST UPDATE `context.gemini.md`** to record all changes, new routes, UI updates, and current project state so the repository context on Git is always 100% up-to-date for future sessions.
+
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
 - JS packages: check `package.json` for the installed versions.
