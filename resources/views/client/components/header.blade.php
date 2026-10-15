@@ -32,7 +32,7 @@
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" style="padding: 6px 14px;">
+                <a href="{{ route('login') }}" class="mayhen_client_header_login_btn">
                     Đăng Nhập
                 </a>
             @endauth

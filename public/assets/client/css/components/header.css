@@ -118,6 +118,37 @@
     z-index: 10002;
 }
 
+/* Nút Đăng Nhập Header - Nổi Bật Nhẹ Nhàng, Quiet Luxury */
+.mayhen_client_header_login_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 15px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #8C6A3B;
+    background: rgba(197, 168, 128, 0.12);
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    border-radius: var(--mayhen-radius-pill);
+    text-decoration: none;
+    box-shadow: 0 1px 4px rgba(156, 122, 74, 0.06);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mayhen_client_header_login_btn:hover {
+    color: #6D4C1E;
+    background: rgba(197, 168, 128, 0.22);
+    border-color: #9C7A4A;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(156, 122, 74, 0.12);
+}
+
+.mayhen_client_header_login_btn:active {
+    transform: scale(0.97);
+}
+
 .mayhen_client_header_cta {
     display: none;
 }

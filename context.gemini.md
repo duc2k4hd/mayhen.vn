@@ -301,6 +301,8 @@ Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo
    - Hamburger icon 3 vạch tự động chuyển đổi thành dấu X đóng menu mượt mà (`mayhen_client_header_toggle_active`).
    - Tự động kích hoạt khóa cuộn trang (`body.mayhen_no_scroll`) khi mở drawer để chống cuộn trang bên dưới.
    - Tự động đóng menu khi click vào bất kỳ liên kết nào, nhấn phím Escape hoặc thay đổi kích thước màn hình sang desktop.
+3. **Nút Đăng Nhập Header Nổi Bật Nhẹ Nhàng (Quiet Luxury)**:
+   - Nút Đăng nhập trên Header (`mayhen_client_header_login_btn`) được thiết kế dạng bo tròn viên thuốc (pill), nền kem ánh vàng ngà mờ `rgba(197, 168, 128, 0.12)`, viền mỏng Muted Gold `rgba(197, 168, 128, 0.45)`, chữ vàng đậm sang trọng `#8C6A3B`, tạo điểm nhấn thanh tao vừa vặn trên mobile mà không gây gắt mắt.
 
 ---
 
