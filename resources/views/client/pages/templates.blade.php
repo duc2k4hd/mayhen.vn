@@ -198,17 +198,17 @@
         </nav>
 
         {{-- Tier Filter Bar --}}
-        <div class="mayhen_templates_tier_bar" aria-label="Lọc theo gói dịch vụ">
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'sort' => $currentSort])) }}" class="mayhen_templates_tier_pill {{ empty($currentTier) ? 'mayhen_templates_tier_pill_active' : '' }}">
+        <div class="mayhen_templates_tier_bar" id="mayhen_templates_tier_bar" aria-label="Lọc theo gói dịch vụ">
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ empty($currentTier) ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Tất cả gói
             </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'free', 'sort' => $currentSort])) }}" class="mayhen_templates_tier_pill {{ $currentTier === 'free' ? 'mayhen_templates_tier_pill_active' : '' }}">
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'free', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'free' ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Gói Miễn Phí (Setup 2 phút)
             </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'plus', 'sort' => $currentSort])) }}" class="mayhen_templates_tier_pill {{ $currentTier === 'plus' ? 'mayhen_templates_tier_pill_active' : '' }}">
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'plus', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'plus' ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Gói Plus (Hoa lá & Album ảnh)
             </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'pro', 'sort' => $currentSort])) }}" class="mayhen_templates_tier_pill {{ $currentTier === 'pro' ? 'mayhen_templates_tier_pill_active' : '' }}">
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'pro', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'pro' ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Gói Pro VIP (Tem sáp & Tạp chí)
             </a>
         </div>
@@ -570,4 +570,8 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script type="module" src="{{ asset('assets/client/js/pages/templates.js') }}"></script>
+@endpush
 

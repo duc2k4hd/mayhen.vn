@@ -285,6 +285,10 @@ Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo
    - `TemplateController@index` áp dụng truy vấn JSON linh hoạt kết hợp fallback an toàn cho trường hợp tier chưa set.
    - Kiểm thử tự động `tests/Feature/TemplateFilterTest.php` bao phủ 100% các trạng thái lọc.
 
+3. **Cơ Chế Tự Động Cuộn Chạm Top (Auto-Scroll Offset 75px)**:
+   - Khi chọn lọc theo bất kỳ gói nào (`mayhen_templates_tier_bar`), trang web tự động cuộn đưa thanh `mayhen_templates_tier_bar` lên chạm mép trên với khoảng cách chính xác `top: 75px` (ngay sát chân Header) trên cả Desktop và Mobile.
+   - Kết hợp `scroll-margin-top: 75px` trong [templates.css](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/css/pages/templates.css), neo định danh `#mayhen_templates_tier_bar` và module JavaScript [templates.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/templates.js).
+
 ---
 
 ## 8. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH

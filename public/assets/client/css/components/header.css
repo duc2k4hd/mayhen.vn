@@ -171,3 +171,11 @@
     padding: var(--mayhen-space-sm) 0;
     border-bottom: 1px solid var(--mayhen-color-border);
 }
+
+@media (max-width: 860px) {
+    .mayhen_client_header_container {
+        height: auto;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
