@@ -3,7 +3,8 @@
 > **⚠️ BẮT BUỘC ĐỐI VỚI MỌI AI AGENT (GEMINI, CLAUDE, GPT, CURSOR, COPILOT...):**
 > 1. **ĐỌC FILE NÀY ĐẦU TIÊN** trước khi phân tích hoặc viết bất kỳ dòng code nào trong repository này!
 > 2. **CẬP NHẬT FILE NÀY SAU MỖI LẦN CODE**: Bất kỳ khi nào hoàn thành hoặc thay đổi tính năng, cấu trúc, route, UI/UX hay database, AI **bắt buộc phải cập nhật lại file này** để giữ context luôn mới nhất trên Git.
-> 3. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
+> 3. Viết cho tôi commit Tiếng Việt có dấu có mở đầu mang ý nghĩa chính xác (ví dụ: fix(), refactor(),...) để tôi gửi commit, bạn không được phép tự gửi lệnh, viết git chi tiết mức độ vừa, đủ để đọc hiểu
+> 4. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
 
 ---
 
@@ -307,21 +308,21 @@ Kho mẫu thiệp cưới (`/mau-thiep`) hỗ trợ bộ lọc phân loại theo
 
 Hệ thống thanh dock điều hướng đáy trang (`mayhen_client_bottom_nav_*`) được tích hợp cố định trên toàn bộ website (`client.layouts.master`):
 
-1. **Thứ Tự 5 Nút Thuần Icon SVG (Không viết chữ nhãn để giữ thẩm mỹ tối giản)**:
-   - **Nút 1: Trang chủ** (`route('home')`) — Icon Home nét vẽ thanh mảnh.
-   - **Nút 2: Mẫu thiệp** (`route('templates.index')`) — Icon Card / Grid layout.
-   - **Nút 3: Tạo thiệp** (`route('invitation.create')`) — **Nút tròn lớn ở chính giữa nổi nhô cao** (`margin-top: -24px`), viền nền 3.5px `#FAF8F5`, phủ dải màu Muted Gold sang trọng, hiệu ứng animation sóng hào quang lan tỏa (`mayhenPulseGlow`) và nhịp thở (`mayhenIconFloat`).
-   - **Nút 4: Yêu thích** (`route('templates.index')#yeu-thich`) — Icon Trái tim lãng mạn.
-   - **Nút 5: Trợ lý AI** (`route('contact')#tro-ly-ai`) — Icon Robot AI thông minh.
+1. **Cấu Trúc 5 Nút: Icon SVG kèm Nhãn Text Rõ Ràng**:
+   - **Nút 1: Trang chủ** (`route('home')`) — Icon Home nét vẽ thanh mảnh + Text `Trang chủ`.
+   - **Nút 2: Mẫu thiệp** (`route('templates.index')`) — Icon Card / Grid layout + Text `Mẫu thiệp`.
+   - **Nút 3: Tạo thiệp** (`route('invitation.create')`) — **Nút tròn lớn ở chính giữa nổi bật** (`mayhen_client_bottom_nav_create_btn`, kích thước 44px, margin-top nhô nhẹ -16px), viền 3px `#FAF8F5`, phủ gradient Muted Gold, hiệu ứng sóng hào quang lan tỏa (`mayhenPulseGlow`), icon nhịp thở (`mayhenIconFloat`) + Text `Tạo thiệp` màu Gold đậm nét ở dưới.
+   - **Nút 4: Yêu thích** (`route('templates.index')#yeu-thich`) — Icon Trái tim + Text `Yêu thích`.
+   - **Nút 5: Trợ lý AI** (`route('contact')#tro-ly-ai`) — Icon Robot AI + Text `Trợ lý AI`.
 2. **Quy Chuẩn Kỹ Thuật**:
-   - Mỗi nút có thuộc tính `title` và `aria-label` đầy đủ để hỗ trợ tooltip và trợ năng (accessibility).
-   - Tự động kích hoạt trạng thái Active chấm nhỏ dưới icon theo từng route.
-   - Body tự động có khoảng đệm bù đáy `padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px))` đảm bảo không bị che khuất nội dung chân trang.
-   - Tương thích đa màn hình: Cố định chân màn hình trên Mobile và chuyển thành thanh Dock nổi bo tròn bo viên thuốc ở giữa đáy trên Desktop.
+   - Bố cục flex dạng cột cân đối: Icon ở trên, text label ở dưới (size `0.65rem`), chống trống trải và giúp người dùng nhận diện chức năng ngay lập tức.
+   - Tự động kích hoạt trạng thái Active chuyển sang màu vàng ánh kim `#9C7A4A` và font-weight 600 theo từng route.
+   - Khoảng đệm bù đáy cho body: `padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px))` đảm bảo không bao giờ che khuất nội dung trang.
+   - Tương thích đa thiết bị: Cố định chân màn hình trên Mobile và chuyển thành thanh Dock nổi bo tròn 9999px ở giữa đáy trên Desktop.
 
 ---
 
-## 13. TỐI ƯU HÓA MOBILE-FIRST CHO KHO MẪU THIỆP (/mau-thiep)
+## 12. TỐI ƯU HÓA MOBILE-FIRST CHO KHO MẪU THIỆP (/mau-thiep)
 
 Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân thủ định vị Quiet Luxury:
 1. **Hero Header & Highlights Siêu Gọn**:

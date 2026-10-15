@@ -1,7 +1,7 @@
 /**
  * MAYHEN.VN — CLIENT BOTTOM NAVIGATION STYLES
  * Prefix: mayhen_client_bottom_nav_*
- * Aesthetic: Quiet Luxury, Minimalist SVG Dock, Pulsing Central CTA
+ * Aesthetic: Quiet Luxury, Compact Dock với Icon + Text Label cân đối
  */
 
 /* ==========================================================================
@@ -13,11 +13,11 @@
     left: 0;
     right: 0;
     z-index: 990;
-    background: rgba(253, 252, 250, 0.94);
+    background: rgba(253, 252, 250, 0.96);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid rgba(232, 227, 218, 0.85);
-    box-shadow: 0 -4px 25px rgba(28, 25, 23, 0.05);
+    box-shadow: 0 -4px 20px rgba(28, 25, 23, 0.05);
     padding-bottom: env(safe-area-inset-bottom, 0px);
     transition: transform var(--mayhen-transition-normal);
 }
@@ -26,103 +26,140 @@
     max-width: 480px;
     margin: 0 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-around;
     height: 60px;
     position: relative;
-    padding: 0 12px;
+    padding: 0 4px 6px 4px;
 }
 
 /* ==========================================================================
-   2. STANDARD ACTION BUTTONS (SVG ONLY, NO TEXT)
+   2. STANDARD ACTION ITEMS (ICON + TEXT LABEL)
    ========================================================================== */
 .mayhen_client_bottom_nav_item {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
+    flex: 1;
+    height: 100%;
     color: #78716C;
     text-decoration: none;
     position: relative;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 3px;
+    transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     -webkit-tap-highlight-color: transparent;
+    padding: 2px 0;
+}
+
+.mayhen_client_bottom_nav_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_client_bottom_nav_label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1.1;
+    color: inherit;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
 .mayhen_client_bottom_nav_item:hover {
     color: var(--mayhen-color-text-main);
-    background-color: rgba(197, 168, 128, 0.12);
+}
+
+.mayhen_client_bottom_nav_item:hover .mayhen_client_bottom_nav_icon {
     transform: translateY(-2px);
 }
 
 .mayhen_client_bottom_nav_item:active {
-    transform: scale(0.92);
+    transform: scale(0.94);
 }
 
 /* Trạng thái Active */
 .mayhen_client_bottom_nav_item_active {
     color: #9C7A4A;
-    background-color: rgba(197, 168, 128, 0.15);
 }
 
-.mayhen_client_bottom_nav_item_active::after {
-    content: '';
-    position: absolute;
-    bottom: 5px;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: #9C7A4A;
+.mayhen_client_bottom_nav_item_active .mayhen_client_bottom_nav_label {
+    color: #9C7A4A;
+    font-weight: 600;
+}
+
+.mayhen_client_bottom_nav_item_active .mayhen_client_bottom_nav_icon svg {
+    stroke-width: 2.1;
 }
 
 /* ==========================================================================
-   3. PROMINENT CENTRAL CTA BUTTON (TẠO THIỆP - ANIMATION ĐẸP)
+   3. PROMINENT CENTRAL CTA BUTTON (TẠO THIỆP NỔI BẬT Ở GIỮA)
    ========================================================================== */
-.mayhen_client_bottom_nav_item_create {
-    display: inline-flex;
+.mayhen_client_bottom_nav_item_center {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    margin-top: -60px;
-    background: linear-gradient(135deg, #C5A880 0%, #B8935D 50%, #9C7A4A 100%);
-    color: #FFFFFF;
-    text-decoration: none;
-    border: 3.5px solid #FAF8F5;
+    justify-content: flex-end;
+    flex: 1;
+    height: calc(100% + 16px);
+    margin-bottom: 13px;
     position: relative;
     z-index: 2;
-    animation: mayhenPulseGlow 2.8s infinite ease-in-out;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-.mayhen_client_bottom_nav_item_create:hover {
-    transform: translateY(-4px) scale(1.08);
-    background: linear-gradient(135deg, #B8935D 0%, #9C7A4A 60%, #876538 100%);
-    box-shadow: 0 12px 28px rgba(156, 122, 74, 0.6);
+.mayhen_client_bottom_nav_create_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C5A880 0%, #B8935D 50%, #9C7A4A 100%);
+    color: #FFFFFF;
+    border: 3px solid #FAF8F5;
+    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4);
+    animation: mayhenPulseGlow 2.8s infinite ease-in-out;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    margin-bottom: 3px;
 }
 
-.mayhen_client_bottom_nav_item_create:active {
-    transform: translateY(0) scale(0.96);
+.mayhen_client_bottom_nav_label_create {
+    color: #9C7A4A;
+    font-weight: 600;
+}
+
+.mayhen_client_bottom_nav_item_center:hover .mayhen_client_bottom_nav_create_btn {
+    transform: translateY(-3px) scale(1.06);
+    background: linear-gradient(135deg, #B8935D 0%, #9C7A4A 60%, #876538 100%);
+    box-shadow: 0 8px 20px rgba(156, 122, 74, 0.55);
+}
+
+.mayhen_client_bottom_nav_item_center:active .mayhen_client_bottom_nav_create_btn {
+    transform: translateY(0) scale(0.95);
 }
 
 /* Hiệu ứng nhịp rung nhẹ cho icon bên trong */
-.mayhen_client_bottom_nav_item_create svg {
+.mayhen_client_bottom_nav_create_btn svg {
     animation: mayhenIconFloat 2.8s infinite ease-in-out;
 }
 
 /* Animation Hào Quang Lan Tỏa (Pulse Glow Ripple) */
 @keyframes mayhenPulseGlow {
     0% {
-        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 0 rgba(197, 168, 128, 0.55);
+        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 0 rgba(197, 168, 128, 0.5);
     }
     60% {
-        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 14px rgba(197, 168, 128, 0);
+        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 10px rgba(197, 168, 128, 0);
     }
     100% {
-        box-shadow: 0 8px 20px rgba(156, 122, 74, 0.45), 0 0 0 0 rgba(197, 168, 128, 0);
+        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 0 rgba(197, 168, 128, 0);
     }
 }
 
@@ -132,7 +169,7 @@
         transform: scale(1) rotate(0deg);
     }
     50% {
-        transform: scale(1.08) rotate(-5deg);
+        transform: scale(1.08) rotate(-4deg);
     }
 }
 
@@ -140,7 +177,7 @@
    4. BODY PADDING OFFSET ĐẢM BẢO KHÔNG BỊ CHE KHUẤT NỘI DUNG CHÂN TRANG
    ========================================================================== */
 body {
-    padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 860px) {
@@ -150,18 +187,19 @@ body {
         left: 50%;
         right: auto;
         transform: translateX(-50%);
-        width: 440px;
+        width: 450px;
         border-radius: 9999px;
         border: 1px solid rgba(232, 227, 218, 0.9);
-        box-shadow: 0 12px 35px rgba(28, 25, 23, 0.12);
+        box-shadow: 0 10px 30px rgba(28, 25, 23, 0.1);
         padding-bottom: 0;
     }
 
     .mayhen_client_bottom_nav_container {
-        height: 58px;
+        height: 62px;
+        padding: 0 8px 6px 8px;
     }
 
-    .mayhen_client_bottom_nav_item_create {
-        margin-top: -20px;
+    .mayhen_client_bottom_nav_item_center {
+        margin-top: -16px;
     }
 }
