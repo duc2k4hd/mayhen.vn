@@ -105,15 +105,56 @@
             {{-- Cột trái: Sân khấu trưng bày thiệp nghệ thuật (Visual Stage) --}}
             <div class="mayhen_template_detail_stage_col">
                 <div class="mayhen_template_detail_stage_card">
-                    <div class="mayhen_template_detail_stage_media">
-                        <img 
-                            src="{{ $template->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" 
-                            alt="Mẫu thiệp cưới online {{ $template->name }} phong cách {{ $categoryLabel }}" 
-                            class="mayhen_template_detail_stage_img"
-                            loading="eager"
-                        >
+                    <div class="mayhen_template_detail_stage_media" id="mayhen_stage_media">
+                        {{-- Dải cuộn nghệ thuật: Ảnh đại diện hiển thị ban đầu, Iframe bám ngay đít phía dưới --}}
+                        <div class="mayhen_template_detail_stage_reel" id="mayhen_stage_reel">
+                            {{-- 1. Poster ảnh đại diện hiển thị đầy đủ khi tải trang --}}
+                            <div class="mayhen_template_detail_stage_poster" id="mayhen_stage_poster">
+                                <img 
+                                    src="{{ $template->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" 
+                                    alt="Mẫu thiệp cưới online {{ $template->name }} phong cách {{ $categoryLabel }}" 
+                                    class="mayhen_template_detail_stage_img"
+                                    id="mayhen_stage_img"
+                                    loading="eager"
+                                >
+                            </div>
+
+                            {{-- 2. Iframe trang mẫu thiệp cưới sống động bám ngay sau đít ảnh đại diện --}}
+                            <div class="mayhen_template_detail_stage_iframe_wrap" id="mayhen_stage_iframe_wrap">
+                                <iframe 
+                                    src="{{ route('templates.preview', $template->slug) }}?embed=1" 
+                                    class="mayhen_template_detail_stage_iframe" 
+                                    id="mayhen_stage_iframe" 
+                                    title="Xem trước toàn bộ trang mẫu thiệp cưới {{ $template->name }}" 
+                                    loading="eager"
+                                    tabindex="-1"
+                                    aria-hidden="true"
+                                ></iframe>
+                            </div>
+                        </div>
+
                         <div class="mayhen_template_detail_stage_overlay"></div>
+
+                        {{-- Gợi ý cuộn trên Desktop (Hover to Scroll) --}}
+                        <div class="mayhen_template_detail_stage_hint_desktop">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M19 12l-7 7-7-7"/>
+                            </svg>
+                            <span>Rê chuột để cuộn xem trang thiệp</span>
+                        </div>
                         
+                        {{-- Nút Chạy Thử trên Mobile (Demo Auto-Scroll) --}}
+                        <button type="button" class="mayhen_template_detail_btn_autoscroll" id="mayhen_btn_autoscroll" aria-label="Chạy thử cuộn mẫu thiệp">
+                            <svg class="mayhen_btn_autoscroll_icon_play" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="6 4 20 12 6 20 6 4"></polygon>
+                            </svg>
+                            <svg class="mayhen_btn_autoscroll_icon_pause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                                <rect x="6" y="4" width="4" height="16"></rect>
+                                <rect x="14" y="4" width="4" height="16"></rect>
+                            </svg>
+                            <span class="mayhen_btn_autoscroll_text">Chạy Thử</span>
+                        </button>
+
                         {{-- Nút xem demo trực tiếp dạng Glassmorphism --}}
                         <div class="mayhen_template_detail_stage_floating_action">
                             <a href="{{ route('templates.preview', $template->slug) }}" target="_blank" rel="noopener noreferrer" class="mayhen_template_detail_btn_demo">
@@ -429,3 +470,7 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="module" src="{{ asset('assets/client/js/pages/template-detail.js') }}?v={{ time() }}"></script>
+@endpush

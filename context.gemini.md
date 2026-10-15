@@ -348,9 +348,11 @@ Nhằm nâng cao trải nghiệm người dùng trên màn hình nhỏ và tuân
 Nhằm mang lại trải nghiệm xem và đặt thiệp cưới đỉnh cao trên điện thoại di động:
 0. **Breadcrumb Tinh Gọn 1 Hàng Duy Nhất**:
    - Breadcrumb và tất cả các mục bên trong được cố định trên 1 hàng duy nhất (`flex-wrap: nowrap; white-space: nowrap; overflow-x: auto; scrollbar-width: none;`), chống hoàn toàn hiện tượng tên mẫu thiệp bị rớt xuống dòng thứ 2 gây mất thẩm mỹ.
-1. **Sân Khấu Trưng Bày Thiệp (Visual Stage)**:
+1. **Sân Khấu Trưng Bày Thiệp (Visual Stage) & Chuyển Động Tự Động Cuộn**:
    - Thẻ trưng bày co gọn padding xuống `8px`, bo góc `16px`.
    - Khung hình thiệp `mayhen_template_detail_stage_media` và ảnh `mayhen_template_detail_stage_img` luôn luôn được cố định tỷ lệ chuẩn mực `aspect-ratio: 3 / 4` trên mọi kích thước màn hình (desktop, tablet, mobile), xóa bỏ giới hạn max-height để ảnh thiệp không bao giờ bị méo hay sai lệch tỷ lệ.
+   - **Tự động cuộn mẫu chậm rãi khi Hover (Desktop)**: Khi rê chuột vào khung thiệp, ảnh bên trong tự động trượt mượt mà từ trên xuống dưới (`transition: transform 6s cubic-bezier(0.25, 0.46, 0.45, 0.94)`), khi rời chuột ra tự động cuộn êm ái quay về đỉnh ban đầu. Kèm tooltip gợi ý nhỏ gọn `mayhen_template_detail_stage_hint_desktop`.
+   - **Nút "Chạy Thử" trên Mobile**: Góc trên bên phải khung thiệp tích hợp nút `mayhen_template_detail_btn_autoscroll` bo tròn Glassmorphism. Khi khách chạm vào, hệ thống tự động kích hoạt chuyển động trượt chậm rãi từ đầu tới chân thiệp, dừng ngắm 1.2s rồi tự động quay về đỉnh hoặc cho phép bấm dừng bất kỳ lúc nào.
    - Nút nổi "Xem Trước Live" dạng Glassmorphism bo tròn nhỏ gọn (`padding: 7px 16px; font-size: 0.75rem`).
    - Dải thông số chân sân khấu rút gọn flex 1 hàng, icon 14px thanh nhã.
 2. **Khối Thông Tin Tác Phẩm & Hồ Sơ Thiết Kế**:
@@ -358,12 +360,21 @@ Nhằm mang lại trải nghiệm xem và đặt thiệp cưới đỉnh cao tr�
    - Bảng **Hồ Sơ Thiết Kế** tổ chức thành 2 cột dạng lưới compact (`grid-template-columns: 1fr 1fr; gap: 8px 12px; padding: 12px 14px;`), hiển thị rõ ràng tone màu chủ đạo, font chữ, hiệu ứng mở mà không chiếm diện tích dọc.
    - Danh sách đặc quyền rút gọn gàng, icon chuẩn tone Mây Hẹn.
    - Nút bấm chính "Tạo Thiệp Với Mẫu Này" và "Xem Thử Trực Tiếp" căn chỉnh chiều cao vừa tay, icon cam kết đổi sang tone màu Muted Gold `#9C7A4A`.
-3. **Các Section Trải Nghiệm, Bài Viết SEO, FAQ & Mẫu Liên Quan**:
+3. **Sân Khấu Trưng Bày Thiệp Cưới Dải Cuộn Liên Hoàn (Showcase Reel)**:
+   - Khung sân khấu tỷ lệ cố định **3:4** (`mayhen_template_detail_stage_media`) tổ chức theo cấu trúc dải cuộn (`mayhen_template_detail_stage_reel`):
+     - **Vị trí 1**: Poster ảnh đại diện hiển thị đầy đủ 100% khi vừa nạp trang (`load`).
+     - **Vị trí 2**: Iframe trang web mẫu thiệp cưới sống động (`route('templates.preview', $template->slug) . '?embed=1'`) bám ngay sau đít ảnh poster.
+   - **Cơ chế chuyển động thông minh (Autoplay 3s & Hover Restart)**:
+     - **Tự chạy sau 3 giây khi load trang**: Người dùng vừa vào trang sẽ ngắm ảnh đại diện trong 3 giây, sau đó hệ thống tự động đẩy ảnh poster lên trên và cuộn nội dung trang thiệp trong iframe mà không cần thao tác chuột. (Đã fix triệt để phạm vi function scope `setButtonState`).
+     - **Chạy lại từ đầu khi Hover**: Bất cứ khi nào người dùng rê chuột vào (`mouseenter`), dải cuộn lập tức reset về vị trí xuất phát (ảnh đại diện) và bắt đầu chạy lại từ đầu.
+     - Khi chuột rời ra (`mouseleave`): Toàn bộ thu hồi êm dịu (`transition: transform cubic-bezier`) đưa ảnh đại diện ban đầu trở lại vị trí trung tâm.
+4. **Các Section Trải Nghiệm, Bài Viết SEO, FAQ & Mẫu Liên Quan**:
    - Khoảng cách padding dọc giữa các section giảm mạnh từ `4.5rem` xuống còn `24px`, xóa bỏ khoảng trắng thừa.
    - **Mẫu Thiệp Cùng Phong Cách**: Chuyển từ layout 1 cột ảnh ngang 4:3 sang **Lưới 2 cột dọc tỷ lệ 3:4 chuẩn mực** đồng bộ với trang danh mục.
    - Hộp kêu gọi hành động cuối trang (Bottom Banner) co gọn `padding: 20px 14px`, nút bấm mở rộng 100% chiều ngang tiện lợi.
 
 ---
+
 
 ## 14. CẤU TRÚC DATABASE & CÁC MODEL CHÍNH
 
