@@ -713,7 +713,9 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - **Lỗi 5 (RouteNotFoundException)**: Khắc phục tên route `invitation.uploadAsset` (camelCase) chuẩn xác trong `editor.blade.php`.
 - **Cập nhật Bố Cục Tên Đôi Uyên Ương Phần Mở Đầu Thiệp (`net-muc-tinh-yeu`)**:
   - Chuyển từ dạng ngang 1 hàng sang bố cục dọc 3 tầng sang trọng: Tên Chú Rể (trên) -> Trái tim vàng `❤` (giữa) -> Tên Cô Dâu (dưới).
-  - Tối ưu cho các cặp đôi có họ tên dài (3-4 từ), không bị tràn viền 2 mép, chữ hiển thị rõ nét, thanh lịch và cân xứng hoàn hảo với 2 biểu tượng chữ Hỷ 2 bên.
+- **Nâng cấp Hiệu Ứng Phong Bì 3D Mở Thiệp (`net-muc-tinh-yeu`)**:
+  - Tinh chỉnh chiều cao trồi lên của lá thư (`envelope_letter`) từ `-135px` xuống `-68px`: không bị đẩy lên quá cao làm che mất tên cô dâu chú rể và ngày cưới ở trên.
+  - Thiết lập chiều sâu 3D chân thực: giữ nguyên `z-index: 2` dưới lớp túi mặt trước phong bì `envelope_pocket` (`z-index: 3`) kèm đổ bóng drop-shadow tự nhiên, giữ khoảng 20% phần đáy của lá thư và ảnh cưới nằm cắm sâu bên trong lòng phong bì, 80% phần trên vươn lên khoe trọn vẹn ảnh cưới.
 
 ---
 

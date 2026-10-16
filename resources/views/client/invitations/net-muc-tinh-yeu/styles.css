@@ -231,7 +231,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   position: relative;
   width: min(320px, 86vw);
   height: 225px;
-  margin: 18px auto;
+  margin: 130px auto 18px auto;
   perspective: 900px;
   z-index: 5;
 }
@@ -271,42 +271,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* Tấm thiệp mời bên trong (Letter inside) */
 .mayhen_invitation_dhsuudushi9428r_envelope_letter {
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 18px;
+  right: 18px;
   bottom: 8px;
-  height: 250px;
+  height: 240px;
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
   border: 1px solid #e2ddd5;
-  padding: 10px 10px 8px;
+  padding: 8px 8px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   text-align: center;
   z-index: 2;
-  transition: transform 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.15), opacity 0.6s ease;
-  transform: translateY(35px) scale(0.95);
+  transition: transform 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.15), box-shadow 0.6s ease;
+  transform: translateY(32px) scale(0.96);
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope_letter_img {
   width: 100%;
-  max-width: 160px;
+  max-width: 145px;
   aspect-ratio: 3 / 4;
   height: auto;
   border-radius: 6px;
   object-fit: cover;
   border: 2px solid #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
   display: block;
   margin: 0 auto;
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope_letter_text {
-  margin-top: 8px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  margin-top: 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--mayhen_ink);
   font-weight: 700;
@@ -324,9 +324,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   position: absolute;
   inset: 0;
   clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
-  background: linear-gradient(175deg, #2c2a27 0%, #1c1b19 100%);
+  background: linear-gradient(175deg, #2d2b28 0%, #1c1b19 100%);
   border-radius: 10px;
   box-shadow: inset 0 -2px 6px rgba(255, 255, 255, 0.05);
+  filter: drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.5));
 }
 
 /* Nắp phong bì (Top Flap lật 3D) */
@@ -378,7 +379,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* TRẠNG THÁI KHI MỞ THIỆP (OPENED) */
 .mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_envelope_flap {
   transform: rotateX(180deg);
-  z-index: 1;
+  z-index: 0;
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_wax_seal {
@@ -388,9 +389,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_envelope_letter {
-  transform: translateY(-135px) scale(1.02);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
-  z-index: 8;
+  transform: translateY(-68px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  z-index: 2;
 }
 
 /* Hướng dẫn mở & Nút mở thiệp */
