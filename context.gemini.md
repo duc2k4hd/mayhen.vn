@@ -717,6 +717,9 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Bỏ giới hạn `max-width` ở ảnh thiệp chính (`envelope_letter_img`), mở rộng chiều ngang ảnh chiếm trọn 100% bề ngang lá thư, to ngang gần bằng phong bì nhìn sang trọng và nổi bật.
   - Tích hợp **Animation chuyển đổi khoảng cách động (Dynamic Margin Animation)**: Khi tải trang, phong bì giữ khoảng cách gọn gàng `margin: 18px auto`. Khi bấm mở thiệp, phong bì tự động trượt êm ái xuống `margin: 160px auto 18px auto` (`transition: margin 0.9s cubic-bezier(...)`), tạo khoảng không gian thoáng đãng cho bức ảnh cưới to vươn lên mà không che mất tên cô dâu chú rể.
   - Thiết lập chiều sâu 3D chân thực: giữ nguyên `z-index: 2` dưới lớp túi mặt trước phong bì `envelope_pocket` (`z-index: 3`) kèm đổ bóng drop-shadow tự nhiên, giữ khoảng 20% phần đáy của lá thư và ảnh cưới nằm cắm sâu bên trong lòng phong bì, 80% phần trên vươn lên khoe trọn vẹn ảnh cưới.
+- **Chuẩn Hóa Tiêu Đề Trang Thiệp Cưới Đã Tạo (`/thiep/{slug}`)**:
+  - Định dạng chuẩn: `Thiệp mời cưới: "Tên Chú Rể & Tên Cô Dâu" | Mây Hẹn` (Ví dụ: `Thiệp mời cưới: "Nguyễn Minh Đức & Nguyễn Thị Huyền" | Mây Hẹn`).
+  - Áp dụng đồng bộ cho cả `template.blade.php` và `public-invitation.blade.php` (kèm Open Graph meta tags cho mạng xã hội).
 
 ---
 

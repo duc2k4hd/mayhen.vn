@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>{{ $invitation->title }} | {{ config('app.name') }}</title>
+    <title>Thiệp mời cưới: "{{ $wedding->groom_name }} & {{ $wedding->bride_name }}" | {{ config('app.name') }}</title>
     <meta name="description" content="Trân trọng kính mời quý khách tới chung vui cùng {{ $wedding->groom_name }} & {{ $wedding->bride_name }}.">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="robots" content="noindex, follow">
 
     <!-- Open Graph for Zalo / Facebook -->
     <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $invitation->title }} | {{ config('app.name') }}">
+    <meta property="og:title" content="Thiệp mời cưới: &quot;{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}&quot; | {{ config('app.name') }}">
     <meta property="og:description" content="Hôn lễ được tổ chức vào ngày {{ $wedding->wedding_date->format('d.m.Y') }} tại {{ $wedding->venue_name }}. Kính mời quý khách tới tham dự.">
     <meta property="og:image" content="{{ $wedding->cover_photo_url }}">
 

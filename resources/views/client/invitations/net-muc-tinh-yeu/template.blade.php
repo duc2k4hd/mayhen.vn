@@ -139,7 +139,7 @@
     $templateName = $template->name ?? 'Nét Mực Tình Yêu';
     $pageTitle = $isPreview 
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
-        : 'Thiệp Mời Cưới ' . $groomName . ' & ' . $brideName;
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
 <!doctype html>
 <html lang="vi">
