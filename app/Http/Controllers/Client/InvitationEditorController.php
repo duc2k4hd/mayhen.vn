@@ -9,6 +9,7 @@ use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\WeddingWish;
 use App\Services\InvitationTemplateService;
+use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,8 @@ use Illuminate\Support\Str;
 class InvitationEditorController extends Controller
 {
     public function __construct(
-        protected InvitationTemplateService $templateService
+        protected InvitationTemplateService $templateService,
+        protected WeddingMusicService $musicService
     ) {}
 
     /**
@@ -49,11 +51,13 @@ class InvitationEditorController extends Controller
 
         $allTemplates = InvitationTemplate::where('is_active', true)->get();
         $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1');
+        $banks = config('banks.supported', []);
 
         return view('client.pages.editor', [
             'selectedTemplate' => $template,
             'allTemplates' => $allTemplates,
             'schema' => $schema,
+            'banks' => $banks,
         ]);
     }
 
@@ -239,6 +243,29 @@ class InvitationEditorController extends Controller
             'file_name' => $filename,
             'file_url' => $assetUrl,
             'relative_path' => "assets/{$filename}",
+        ]);
+    }
+
+    /**
+     * API Tìm kiếm nhạc đám cưới thông minh từ storage/app/public/client/musics/singer/
+     */
+    public function musics(Request $request): JsonResponse
+    {
+        $keyword = (string) $request->query('q', '');
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = min(50, max(1, (int) $request->query('per_page', 20)));
+
+        $result = $this->musicService->search($keyword, $page, $perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result['data'],
+            'pagination' => [
+                'total' => $result['total'],
+                'page' => $result['page'],
+                'per_page' => $result['per_page'],
+                'total_pages' => $result['total_pages'],
+            ],
         ]);
     }
 }

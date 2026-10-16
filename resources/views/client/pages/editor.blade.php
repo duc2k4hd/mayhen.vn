@@ -228,8 +228,88 @@
                                             <div class="mayhen_editor_input_help">Tải trực tiếp ảnh từ thiết bị để lưu vào assets của mẫu</div>
                                         </div>
 
+                                    @elseif ($fieldKey === 'wedding.music_url')
+                                        {{-- Trường Nhạc nền: Chọn bài hát thông minh từ thư viện --}}
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            <div style="display: flex; gap: 8px; align-items: center;">
+                                                <input type="text" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $inputName }}" 
+                                                       class="mayhen_client_form_input" 
+                                                       data-sync-key="{{ $fieldKey }}" 
+                                                       value="{{ is_string($val) ? $val : '' }}" 
+                                                       placeholder="Chọn bài hát từ danh sách..."
+                                                       readonly
+                                                       style="background: var(--mayhen-color-bg-soft); cursor: pointer;"
+                                                       data-mayhen-action="open-music-modal">
+                                                <button type="button" 
+                                                        class="mayhen_editor_upload_btn" 
+                                                        data-mayhen-action="open-music-modal"
+                                                        title="Chọn bài hát từ kho nhạc cưới">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                                    <span>Chọn bài hát</span>
+                                                </button>
+                                            </div>
+                                            <div class="mayhen_editor_input_help">Kho nhạc lãng mạn bản quyền chất lượng cao, tìm kiếm theo tên bài hát hoặc ca sĩ</div>
+                                        </div>
+
+                                    @elseif ($fieldKey === 'wedding.extra_data.qr_groom_image' || $fieldKey === 'wedding.extra_data.qr_bride_image')
+                                        {{-- Trường QR Mừng Cưới: Tạo VietQR ngân hàng an toàn tuyệt đối --}}
+                                        @php
+                                            $isGroomQr = str_contains($fieldKey, 'groom');
+                                            $prefixQr = $isGroomQr ? 'groom_qr' : 'bride_qr';
+                                            $sideLabel = $isGroomQr ? 'Nhà Trai' : 'Nhà Gái';
+                                        @endphp
+                                        <div class="mayhen_client_form_group">
+                                            <label class="mayhen_client_form_label">{{ $label }}</label>
+                                            <div class="mayhen_vietqr_box">
+                                                <div class="mayhen_vietqr_preview_wrap">
+                                                    <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
+                                                         alt="Mã QR {{ $sideLabel }}" 
+                                                         class="mayhen_vietqr_img" 
+                                                         id="preview_thumb_{{ $fieldId }}"
+                                                         onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                    <div class="mayhen_vietqr_fields">
+                                                        <select class="mayhen_client_form_input mayhen_vietqr_bank_select" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}">
+                                                            <option value="">-- Chọn ngân hàng thụ hưởng --</option>
+                                                            @foreach ($banks as $b)
+                                                                <option value="{{ $b['code'] }}">{{ $b['short_name'] }} - {{ $b['name'] }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <input type="text" 
+                                                               class="mayhen_client_form_input mayhen_vietqr_acc_input" 
+                                                               data-qr-side="{{ $prefixQr }}" 
+                                                               data-target-input="{{ $fieldId }}"
+                                                               placeholder="Số tài khoản ngân hàng...">
+                                                        <input type="text" 
+                                                               class="mayhen_client_form_input mayhen_vietqr_name_input" 
+                                                               data-qr-side="{{ $prefixQr }}" 
+                                                               data-target-input="{{ $fieldId }}"
+                                                               placeholder="Tên chủ tài khoản (không dấu)...">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" 
+                                                       id="{{ $fieldId }}" 
+                                                       name="{{ $inputName }}" 
+                                                       data-sync-key="{{ $fieldKey }}" 
+                                                       value="{{ is_string($val) ? $val : '' }}">
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-size: 0.75rem; color: #10B981; font-weight: 500;">✓ Tự động tạo mã VietQR NAPAS bảo mật chuẩn 100%</span>
+                                                    <button type="button" class="mayhen_cropper_btn_tool mayhen_btn_gen_vietqr" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}" style="padding: 4px 12px; font-size: 11px;">
+                                                        ⚡ Cập nhật mã VietQR
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     @elseif ($type === 'image')
-                                        {{-- Trường Ảnh đơn kèm nút tải ảnh lên trực tiếp --}}
+                                        {{-- Trường Ảnh đơn kèm kiểm tra tỷ lệ 3/4 và popup cắt ảnh --}}
                                         <div class="mayhen_client_form_group">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
@@ -257,7 +337,7 @@
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                             </svg>
-                                                            <span>Tải ảnh lên</span>
+                                                            <span>Chọn ảnh</span>
                                                         </label>
                                                         <input type="file" 
                                                                id="upload_{{ $fieldId }}" 
@@ -265,12 +345,16 @@
                                                                data-target-input="{{ $fieldId }}"
                                                                data-target-thumb="preview_thumb_{{ $fieldId }}"
                                                                data-template-slug="{{ $selectedTemplate->slug }}"
+                                                               data-is-main-photo="{{ str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo') ? '1' : '0' }}"
                                                                accept="image/*" 
                                                                style="display: none;">
                                                         <span class="mayhen_editor_upload_status" id="status_{{ $fieldId }}" style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);"></span>
                                                     </div>
                                                 </div>
                                             </div>
+                                            @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo'))
+                                                <div class="mayhen_editor_input_help">Ảnh chính mở thiệp bắt buộc tỉ lệ đứng 3/4. Hệ thống sẽ tự động hỗ trợ căn chỉnh và cắt ảnh cho bạn.</div>
+                                            @endif
                                         </div>
 
                                     @elseif ($type === 'textarea')
@@ -438,6 +522,77 @@
                 </div>
             </div>
         </div>
+
+        <!-- 7. Modal Cắt Ảnh 3/4 Thông Minh (Pure Canvas Cropper) -->
+        <div class="mayhen_cropper_modal" id="mayhen_cropper_modal" role="dialog" aria-modal="true" aria-label="Cắt ảnh theo tỷ lệ 3/4">
+            <div class="mayhen_cropper_box">
+                <div class="mayhen_cropper_header">
+                    <div class="mayhen_cropper_header_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+                        <span>Cắt ảnh bìa chính (Tỉ lệ chuẩn 3:4)</span>
+                    </div>
+                    <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_cropper_close_btn" aria-label="Hủy cắt ảnh">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="mayhen_cropper_body">
+                    <div class="mayhen_cropper_stage" id="mayhen_cropper_stage">
+                        <canvas id="mayhen_cropper_canvas" class="mayhen_cropper_canvas"></canvas>
+                        <div class="mayhen_cropper_overlay" id="mayhen_cropper_overlay"></div>
+                    </div>
+                    <div class="mayhen_cropper_controls">
+                        <button type="button" class="mayhen_cropper_btn_tool" id="mayhen_cropper_zoom_in">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                            <span>Phóng to</span>
+                        </button>
+                        <button type="button" class="mayhen_cropper_btn_tool" id="mayhen_cropper_zoom_out">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                            <span>Thu nhỏ</span>
+                        </button>
+                        <button type="button" class="mayhen_cropper_btn_tool" id="mayhen_cropper_rotate_left">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            <span>Xoay trái</span>
+                        </button>
+                        <button type="button" class="mayhen_cropper_btn_tool" id="mayhen_cropper_rotate_right">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                            <span>Xoay phải</span>
+                        </button>
+                        <button type="button" class="mayhen_cropper_btn_tool" id="mayhen_cropper_reset">
+                            <span>Đặt lại</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mayhen_cropper_footer">
+                    <button type="button" class="mayhen_cropper_btn_cancel" id="mayhen_cropper_btn_cancel">Hủy bỏ</button>
+                    <button type="button" class="mayhen_cropper_btn_confirm" id="mayhen_cropper_btn_confirm">
+                        <span>✓ Cắt & Sử Dụng Ảnh Này</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Modal Chọn Nhạc Cưới Thông Minh -->
+        <div class="mayhen_music_picker_modal" id="mayhen_music_picker_modal" role="dialog" aria-modal="true" aria-label="Kho nhạc đám cưới">
+            <div class="mayhen_music_picker_box">
+                <div class="mayhen_cropper_header">
+                    <div class="mayhen_cropper_header_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        <span>Kho Nhạc Cưới Lãng Mạn Bản Quyền</span>
+                    </div>
+                    <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_music_close_btn" aria-label="Đóng kho nhạc">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="mayhen_music_search_bar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--mayhen-color-text-muted);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="mayhen_music_search_input" id="mayhen_music_search_input" placeholder="Tìm theo tên bài hát hoặc ca sĩ (ví dụ: Kai Đinh, Váy Cưới...)...">
+                </div>
+                <div class="mayhen_music_list" id="mayhen_music_list">
+                    <p style="text-align: center; color: var(--mayhen-color-text-muted); padding: 24px; font-style: italic;">Đang tải danh sách bài hát...</p>
+                </div>
+            </div>
+        </div>
+        <audio id="mayhen_music_preview_audio" preload="none"></audio>
     </div>
 @endsection
 
