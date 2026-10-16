@@ -8,6 +8,8 @@
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="robots" content="noindex, follow">
 
+    @include('client.components.favicon')
+
     <!-- Open Graph for Zalo / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:title" content="Thiệp mời cưới: &quot;{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}&quot; | {{ config('app.name') }}">

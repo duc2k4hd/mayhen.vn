@@ -11,6 +11,8 @@
     <title>Xem Thử: {{ $template['name'] }} — {{ config('app.name') }}</title>
     <meta name="description" content="Trải nghiệm thực tế thiệp cưới online phong cách {{ $template['category_label'] }} trên {{ config('app.name') }}.">
     <meta name="robots" content="noindex, nofollow">
+    
+    @include('client.components.favicon')
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

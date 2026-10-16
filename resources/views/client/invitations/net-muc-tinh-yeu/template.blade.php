@@ -147,9 +147,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#ffffff">
     <meta name="description" content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.' }}">
     <title>{{ $pageTitle }}</title>
+    @include('client.components.favicon')
 
     @php
         $cssPath = resource_path("views/client/invitations/net-muc-tinh-yeu/styles.css");

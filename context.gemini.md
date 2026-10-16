@@ -721,6 +721,18 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng chuẩn: `Thiệp mời cưới: "Tên Chú Rể & Tên Cô Dâu" | Mây Hẹn` (Ví dụ: `Thiệp mời cưới: "Nguyễn Minh Đức & Nguyễn Thị Huyền" | Mây Hẹn`).
   - Áp dụng đồng bộ cho cả `template.blade.php` và `public-invitation.blade.php` (kèm Open Graph meta tags cho mạng xã hội).
 
+- **Đồng Bộ & Chuẩn Hóa Favicon Cho Tất Cả Các Trang (100% Coverage)**:
+  - Tách cụm thẻ khai báo Favicon thành component dùng chung: `resources/views/client/components/favicon.blade.php`.
+  - Nguồn asset chính thức: `storage/client/images/business/mayhen-favicon.png`.
+  - Cụm thẻ chuẩn gồm đầy đủ: `apple-touch-icon (180x180)`, `icon (32x32)`, `icon (16x16)`, `mask-icon`, `icon (x-icon)` và `meta theme-color (#C5A880)`.
+  - Tích hợp `@include('client.components.favicon')` vào toàn bộ các layout và trang độc lập trong hệ thống:
+    + `resources/views/client/components/head.blade.php` (áp dụng cho toàn bộ các trang Client: Home, Editor, Pricing, Templates, Services, About, FAQ, Auth, Dashboard, Guests...).
+    + `resources/views/client/pages/public-invitation.blade.php` (Trang xem thiệp cưới công khai cho khách mời).
+    + `resources/views/client/pages/preview.blade.php` (Trang xem thử mẫu thiệp).
+    + `resources/views/client/invitations/net-muc-tinh-yeu/template.blade.php` (Trang template thiệp cưới độc lập).
+    + `resources/views/admin/layouts/master.blade.php` (Trang quản trị Admin Dashboard).
+    + `resources/views/welcome.blade.php`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
