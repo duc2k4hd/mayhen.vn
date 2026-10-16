@@ -18,7 +18,7 @@ class InvitationTemplateSeeder extends Seeder
                 'slug' => 'net-muc-tinh-yeu',
                 'name' => 'Nét Mực Tình Yêu',
                 'category' => 'luxury',
-                'thumbnail_url' => '/assets/client/invitations/net-muc-tinh-yeu/assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg',
+                'thumbnail_url' => '/mau-thiep/net-muc-tinh-yeu/assets/assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg',
                 'demo_url' => '/xem-thu/net-muc-tinh-yeu',
                 'default_config' => [
                     'tier' => 'pro',

@@ -222,29 +222,17 @@ class InvitationEditorController extends Controller
         $ext = strtolower($file->getClientOriginalExtension());
         $filename = Str::uuid()->toString().'.'.$ext;
 
-        // Thư mục public để trình duyệt phục vụ ngay lập tức
-        $publicAssetDir = public_path("assets/client/invitations/{$templateSlug}/assets");
-        // Thư mục views để đồng bộ trọn gói template folder
+        // Thư mục lưu trữ trực tiếp duy nhất trong resources/views/client/invitations/
         $resourceAssetDir = resource_path("views/client/invitations/{$templateSlug}/assets");
 
-        if (! File::exists($publicAssetDir)) {
-            File::makeDirectory($publicAssetDir, 0755, true);
-        }
         if (! File::exists($resourceAssetDir)) {
             File::makeDirectory($resourceAssetDir, 0755, true);
         }
 
-        // Lưu vào public assets
-        $file->move($publicAssetDir, $filename);
+        // Lưu trực tiếp file vào resources/views/client/invitations/{templateSlug}/assets
+        $file->move($resourceAssetDir, $filename);
 
-        // Đồng bộ bản sao sang resource views template assets
-        $publicFilePath = $publicAssetDir.DIRECTORY_SEPARATOR.$filename;
-        $resourceFilePath = $resourceAssetDir.DIRECTORY_SEPARATOR.$filename;
-        if (File::exists($publicFilePath)) {
-            File::copy($publicFilePath, $resourceFilePath);
-        }
-
-        $assetUrl = asset("assets/client/invitations/{$templateSlug}/assets/{$filename}");
+        $assetUrl = url("/mau-thiep/{$templateSlug}/assets/assets/{$filename}");
 
         return response()->json([
             'success' => true,

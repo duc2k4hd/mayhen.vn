@@ -27,6 +27,7 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 });
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
+Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->name('templates.preview.rsvp');
 

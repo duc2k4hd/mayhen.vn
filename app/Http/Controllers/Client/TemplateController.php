@@ -113,4 +113,44 @@ class TemplateController extends Controller
             'template' => $template,
         ]);
     }
+
+    /**
+     * Serve static assets directly from resources/views/client/invitations/{slug}/
+     */
+    public function asset(string $slug, string $path): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        // Làm sạch và chuẩn hóa path để chống directory traversal
+        $safePath = str_replace(['..', "\0"], '', $path);
+        $fullPath = resource_path("views/client/invitations/{$slug}/{$safePath}");
+
+        if (! file_exists($fullPath) || is_dir($fullPath)) {
+            abort(404, 'Asset not found');
+        }
+
+        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'css' => 'text/css; charset=UTF-8',
+            'js' => 'application/javascript; charset=UTF-8',
+            'json' => 'application/json',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            'svg' => 'image/svg+xml',
+            'gif' => 'image/gif',
+            'mp3' => 'audio/mpeg',
+            'woff' => 'font/woff',
+            'woff2' => 'font/woff2',
+            'ttf' => 'font/ttf',
+            'otf' => 'font/otf',
+        ];
+
+        $headers = [
+            'Content-Type' => $mimeTypes[$extension] ?? (mime_content_type($fullPath) ?: 'application/octet-stream'),
+            'Cache-Control' => 'public, max-age=31536000',
+        ];
+
+        return response()->file($fullPath, $headers);
+    }
 }
+

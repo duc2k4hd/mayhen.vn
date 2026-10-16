@@ -1,5 +1,5 @@
 @php
-    $assetBase = asset('assets/client/invitations/net-muc-tinh-yeu');
+    $assetBase = url('/mau-thiep/net-muc-tinh-yeu/assets');
     $isEmbed = request()->boolean('embed');
 
     // 1. Tên cô dâu chú rể & Gia đình

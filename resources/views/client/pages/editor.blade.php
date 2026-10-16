@@ -190,7 +190,7 @@
                                                     @endphp
                                                     <div class="mayhen_editor_gallery_item_box">
                                                         <div class="mayhen_editor_image_field_row">
-                                                            <img src="{{ is_string($gVal) && (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) ? $gVal : ($gVal ? asset('assets/client/invitations/' . $selectedTemplate->slug . '/' . $gVal) : $selectedTemplate->thumbnail_url) }}" 
+                                                            <img src="{{ is_string($gVal) && (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) ? $gVal : ($gVal ? url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $gVal) : $selectedTemplate->thumbnail_url) }}" 
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
@@ -238,7 +238,7 @@
                                                 @endif
                                             </label>
                                             <div class="mayhen_editor_image_field_row">
-                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : asset('assets/client/invitations/' . $selectedTemplate->slug . '/' . $val) }}" 
+                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"

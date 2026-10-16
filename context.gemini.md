@@ -676,9 +676,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Đồng bộ hóa 100% mã nguồn**:
   - Đã cập nhật song song tại `resources/views/client/invitations/net-muc-tinh-yeu/` và `public/assets/client/invitations/net-muc-tinh-yeu/` (`styles.css` & `script.js`).
 
+### 📌 Phiên bản 1.2.0 — Đóng Gói Toàn Diện Assets Vào Thư Mục Template & Xóa Bỏ Public Invitations
+- **Quy chuẩn lưu trữ mẫu thiệp độc lập (Self-Contained Invitation Template Packages)**:
+  - Toàn bộ tài nguyên của mẫu thiệp (gồm `styles.css`, `script.js`, `schema.json`, `template.blade.php`, thư mục `assets/` chứa ảnh, font chữ, file nhạc MP3) được đặt trực tiếp và duy nhất tại:
+    `resources/views/client/invitations/{template_slug}/`.
+  - **Đã xóa bỏ hoàn toàn thư mục `public/assets/client/invitations`** để loại bỏ tình trạng phân mảnh, dễ kiểm soát và không cần bảo trì 2 bản sao cùng lúc.
+- **Cơ chế phục vụ Static Assets Trực Tiếp từ Resources**:
+  - Bổ sung route: `GET /mau-thiep/{slug}/assets/{path}` (đặt tên `templates.asset`, bắt mọi path con `.*`).
+  - Xử lý qua controller `TemplateController::asset()`:
+    + Bảo mật: Khử sạch `..` và ký tự null byte để chống tấn công Directory Traversal.
+    + Nhận diện và thiết lập đúng chuẩn MIME Type: CSS (`text/css; charset=UTF-8`), JS (`application/javascript; charset=UTF-8`), JPEG/PNG/WebP/SVG, MP3 (`audio/mpeg`), WOFF/WOFF2/OTF/TTF.
+    + Bổ sung header HTTP Cache tối ưu: `Cache-Control: public, max-age=31536000`.
+- **Nâng cấp Tính năng Tải Ảnh Lên (`InvitationEditorController::uploadAsset`)**:
+  - File tải lên từ thiết bị được lưu trực tiếp vào: `resources/views/client/invitations/{templateSlug}/assets/{filename}`.
+  - Trả về đường dẫn truy cập qua route nội bộ: `/mau-thiep/{templateSlug}/assets/assets/{filename}`.
+- **Cập nhật Template Views & Live Editor**:
+  - `template.blade.php`: Biến `$assetBase` trỏ trực tiếp tới `url('/mau-thiep/net-muc-tinh-yeu/assets')`.
+  - `editor.blade.php`: Toàn bộ các thẻ preview ảnh của mẫu thiệp được nạp mượt mà qua route URL nội bộ.
+  - `InvitationTemplateSeeder.php`: `thumbnail_url` được cập nhật đồng bộ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 
