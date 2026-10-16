@@ -120,6 +120,9 @@
                 <form id="mayhen_editor_form" action="{{ route('invitation.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="template_id" id="template_id" value="{{ $selectedTemplate->id }}">
+                    @if (isset($editingInvitation) && $editingInvitation)
+                        <input type="hidden" name="invitation_id" id="invitation_id" value="{{ $editingInvitation->id }}">
+                    @endif
 
                     @foreach ($sections as $index => $section)
                         <div class="mayhen_editor_step_content {{ $index === 0 ? 'mayhen_editor_step_active' : '' }}" data-step-panel="{{ $index + 1 }}">
@@ -143,7 +146,20 @@
                                         $inputName = $formatInputName($fieldKey);
                                         $oldKey = $formatOldKey($inputName);
                                         $fieldId = str_replace('.', '_', $fieldKey);
-                                        $defaultVal = $field['default'] ?? '';
+
+                                        // Lấy giá trị khởi tạo: ưu tiên old input -> giá trị thiệp cũ đang sửa -> default trong schema
+                                        $editingVal = null;
+                                        if (isset($editingInvitation) && $editingInvitation->wedding) {
+                                            $cleanKey = str_replace(['wedding.', 'invitation.'], '', $fieldKey);
+                                            if (str_starts_with($cleanKey, 'extra_data.')) {
+                                                $extraSub = str_replace('extra_data.', '', $cleanKey);
+                                                $editingVal = $editingInvitation->wedding->extra_data[$extraSub] ?? null;
+                                            } else {
+                                                $editingVal = $editingInvitation->wedding->{$cleanKey} ?? null;
+                                            }
+                                        }
+
+                                        $defaultVal = $editingVal !== null ? $editingVal : ($field['default'] ?? '');
                                         $val = old($oldKey, $defaultVal);
                                         $type = $field['type'] ?? 'text';
                                         $label = $field['label'] ?? $fieldKey;

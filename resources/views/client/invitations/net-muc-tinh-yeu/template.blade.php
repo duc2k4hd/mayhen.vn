@@ -198,6 +198,25 @@
                 </div>
             </div>
         </header>
+    @elseif (isset($isOwner) && $isOwner && isset($invitation) && !$isEmbed)
+        {{-- Floating Top Bar dành riêng cho Chủ Nhân Thiệp (Đăng nhập hoặc theo Session tạo thiệp) --}}
+        <header class="mayhen_preview_topbar mayhen_owner_topbar" aria-label="Thanh quản trị chủ thiệp">
+            <div class="mayhen_preview_topbar_inner">
+                <div class="mayhen_preview_topbar_left">
+                    <span class="mayhen_preview_badge_label" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+                        👑 Chủ Thiệp
+                    </span>
+                    <span style="font-size: 13px; font-weight: 500; color: var(--mayhen_ink);">Thiệp cưới của bạn đã xuất bản</span>
+                </div>
+
+                <div class="mayhen_preview_topbar_right">
+                    <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_preview_btn_cta" title="Mở lại trình soạn thảo để chỉnh sửa thông tin, ảnh và nhạc của thiệp này">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        <span>Sửa Lại Thiệp Cưới</span>
+                    </a>
+                </div>
+            </div>
+        </header>
     @endif
 
     <main class="mayhen_invitation_dhsuudushi9428r_page">

@@ -30,6 +30,18 @@ class InvitationEditorController extends Controller
     public function create(Request $request): View|RedirectResponse
     {
         $selectedTemplateSlug = $request->query('template');
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        $editingInvitation = null;
+
+        if ($editSlug) {
+            $inv = Invitation::with(['wedding', 'template'])->where('slug', $editSlug)->first();
+            if ($inv && $inv->isOwner()) {
+                $editingInvitation = $inv;
+                if (! $selectedTemplateSlug && $inv->template) {
+                    $selectedTemplateSlug = $inv->template->slug;
+                }
+            }
+        }
 
         // Mặc định chọn mẫu free nếu không chỉ định
         if (! $selectedTemplateSlug) {
@@ -58,6 +70,7 @@ class InvitationEditorController extends Controller
             'allTemplates' => $allTemplates,
             'schema' => $schema,
             'banks' => $banks,
+            'editingInvitation' => $editingInvitation,
         ]);
     }
 
@@ -105,12 +118,20 @@ class InvitationEditorController extends Controller
             ]
         );
 
+        $invitationId = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
+        if ($invitationId) {
+            $existing = Invitation::find($invitationId);
+            if (! $existing || ! $existing->isOwner()) {
+                $invitationId = null; // Bảo mật: nếu không phải chủ nhân thì không cho ghi đè
+            }
+        }
+
         $invitation = $this->templateService->saveInvitation($user, $template->id, [
             'wedding' => $rawWedding,
             'invitation' => [
                 'custom_config' => $request->input('invitation.custom_config', []),
             ],
-        ]);
+        ], $invitationId);
 
         // Lưu slug thiệp vào session để ghi nhận người tạo là chủ nhân thiệp
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);

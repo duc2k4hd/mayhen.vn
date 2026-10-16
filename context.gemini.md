@@ -222,11 +222,11 @@ mayhen.vn/
 | **GET** | `/mau-thiep` | `templates.index` | `TemplateController@index` | Kho mẫu thiệp cưới có bộ lọc phân tầng & phong cách (`index, follow`) |
 | **GET** | `/mau-thiep/{slug}`| `templates.show` | `TemplateController@show` | Chi tiết mẫu thiệp Quiet Luxury & Content SEO (`noindex, follow`) |
 | **GET** | `/xem-thu/{slug}` | `templates.preview`| `TemplateController@preview` | Xem thử thiệp live: Tiêu đề `Xem thử: "Tên thiệp" | {App Name}`, thanh điều hướng Quiet Luxury (`Kho Mẫu`, `Chi Tiết Mẫu`, `Tạo Thiệp Với Mẫu Này`), Preview-only Mode chỉ mô phỏng UI không gửi dữ liệu backend, tự động cache-busting `?v={filemtime}` chống dính CSS cũ (`noindex, nofollow`) |
-| **GET** | `/tao-thiep` | `invitation.create`| `InvitationEditorController@create` | Mở trình soạn thảo tạo thiệp mới: Tích hợp Cropper tỷ lệ 3/4 Pure Canvas, Sinh VietQR ngân hàng an toàn 100%, Modal chọn nhạc đám cưới thông minh (`noindex, nofollow`, chặn khách chưa login nếu chọn mẫu Plus/Pro) |
-| **POST** | `/tao-thiep` | `invitation.store` | `InvitationEditorController@store` | Lưu dữ liệu đám cưới & cấu hình thiệp (sinh slug hậu tố kép chống trùng) |
+| **GET** | `/tao-thiep` | `invitation.create`| `InvitationEditorController@create` | Mở trình soạn thảo tạo thiệp mới (hoặc chỉnh sửa thiệp đã tạo với tham số `?edit={slug}`): Tích hợp Cropper tỷ lệ 3/4 Pure Canvas, Sinh VietQR ngân hàng an toàn 100%, Modal chọn nhạc đám cưới thông minh (`noindex, nofollow`, chặn khách chưa login nếu chọn mẫu Plus/Pro) |
+| **POST** | `/tao-thiep` | `invitation.store` | `InvitationEditorController@store` | Lưu dữ liệu đám cưới & cấu hình thiệp (tự động cập nhật nếu truyền `invitation_id` của chủ nhân) |
 | **POST** | `/tao-thiep/upload-asset` | `invitation.uploadAsset` | `InvitationEditorController@uploadAsset` | Tải file ảnh thực sự lên assets của mẫu thiệp khi submit tạo thiệp |
 | **GET** | `/api/wedding-musics` | `invitation.musics` | `InvitationEditorController@musics` | API tìm kiếm bài hát thông minh siêu tốc độ từ thư mục ca sĩ (`/singer/{ca sĩ}/{bài hát}.mp3`), hỗ trợ tìm không dấu/có dấu, phân trang |
-| **GET** | `/thiep/{slug}` | `invitation.show` | `InvitationEditorController@show` | Trang thiệp cưới công khai cho khách nhận (`noindex, nofollow`) |
+| **GET** | `/thiep/{slug}` | `invitation.show` | `InvitationEditorController@show` | Trang thiệp cưới công khai cho khách nhận; tự động nhận diện chủ nhân thiệp (qua User ID hoặc session `owned_invitation_slugs`) để hiển thị thanh quản trị nổi bật kèm nút **"Sửa Lại Thiệp Cưới"** (`noindex, nofollow`) |
 | **POST** | `/thiep/{slug}/rsvp`| `rsvp.submit` | `GuestController@submitRsvp` | Khách gửi phản hồi RSVP xác nhận tham dự |
 | **GET** | `/thanh-toan/{planSlug}`| `checkout.show` | `CheckoutController@show` | Trang thanh toán chuyển khoản VietQR |
 | **POST** | `/api/checkout/process`| `checkout.process` | `CheckoutController@process` | Tạo đơn hàng & mã thanh toán VietQR |

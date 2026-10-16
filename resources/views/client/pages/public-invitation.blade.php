@@ -27,6 +27,28 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
 </head>
 <body class="mayhen_invitation_wrapper">
+    @if (isset($isOwner) && $isOwner && isset($invitation))
+        {{-- Floating Top Bar dành riêng cho Chủ Nhân Thiệp --}}
+        <header class="mayhen_invitation_demo_banner" style="background: rgba(28, 25, 23, 0.95); z-index: 9999;">
+            <div class="mayhen_invitation_banner_info">
+                <span class="mayhen_invitation_banner_badge" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">
+                    <span class="mayhen_invitation_banner_badge_dot" style="background: #10B981;"></span>
+                    <span>Chủ Nhân Thiệp</span>
+                </span>
+                <span style="font-size: 0.8125rem; color: #FFFFFF; font-weight: 500;">
+                    {{ $wedding->groom_name }} & {{ $wedding->bride_name }}
+                </span>
+            </div>
+
+            <div class="mayhen_invitation_banner_actions">
+                <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_invitation_banner_cta_btn" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFFFFF;" title="Chỉnh sửa lại nội dung thiệp">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <span>Sửa Lại Thiệp</span>
+                </a>
+            </div>
+        </header>
+    @endif
+
     <!-- Floating Audio Control -->
     <button type="button" class="mayhen_invitation_music_btn" data-mayhen-action="toggle-music" aria-label="Bật/Tắt nhạc nền" title="Bật nhạc nền">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
