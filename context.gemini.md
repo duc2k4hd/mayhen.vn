@@ -221,7 +221,7 @@ mayhen.vn/
 | **GET** | `/` | `home` | `HomeController@index` | Trang chủ Landing Page chuẩn SEO Top 1 (`index, follow`) |
 | **GET** | `/mau-thiep` | `templates.index` | `TemplateController@index` | Kho mẫu thiệp cưới có bộ lọc phân tầng & phong cách (`index, follow`) |
 | **GET** | `/mau-thiep/{slug}`| `templates.show` | `TemplateController@show` | Chi tiết mẫu thiệp Quiet Luxury & Content SEO (`noindex, follow`) |
-| **GET** | `/xem-thu/{slug}` | `templates.preview`| `TemplateController@preview` | Xem thử thiệp live: Tiêu đề `Xem thử: "Tên thiệp" | {App Name}`, thanh điều hướng Quiet Luxury (`Kho Mẫu`, `Chi Tiết Mẫu`, `Tạo Thiệp Với Mẫu Này`), chế độ Preview-only Mode chỉ mô phỏng UI không gửi dữ liệu backend (`noindex, nofollow`) |
+| **GET** | `/xem-thu/{slug}` | `templates.preview`| `TemplateController@preview` | Xem thử thiệp live: Tiêu đề `Xem thử: "Tên thiệp" | {App Name}`, thanh điều hướng Quiet Luxury (`Kho Mẫu`, `Chi Tiết Mẫu`, `Tạo Thiệp Với Mẫu Này`), Preview-only Mode chỉ mô phỏng UI không gửi dữ liệu backend, tự động cache-busting `?v={filemtime}` chống dính CSS cũ (`noindex, nofollow`) |
 | **GET** | `/tao-thiep` | `invitation.create`| `InvitationEditorController@create` | Mở trình soạn thảo tạo thiệp mới (`noindex, nofollow`, chặn khách chưa login nếu chọn mẫu Plus/Pro) |
 | **POST** | `/tao-thiep` | `invitation.store` | `InvitationEditorController@store` | Lưu dữ liệu đám cưới & cấu hình thiệp (sinh slug hậu tố kép chống trùng) |
 | **GET** | `/thiep/{slug}` | `invitation.show` | `InvitationEditorController@show` | Trang thiệp cưới công khai cho khách nhận (`noindex, nofollow`) |

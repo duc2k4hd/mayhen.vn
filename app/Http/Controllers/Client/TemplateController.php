@@ -145,9 +145,10 @@ class TemplateController extends Controller
             'otf' => 'font/otf',
         ];
 
+        $isDev = config('app.debug') || app()->environment('local');
         $headers = [
             'Content-Type' => $mimeTypes[$extension] ?? (mime_content_type($fullPath) ?: 'application/octet-stream'),
-            'Cache-Control' => 'public, max-age=31536000',
+            'Cache-Control' => $isDev ? 'no-cache, no-store, must-revalidate' : 'public, max-age=31536000',
         ];
 
         return response()->file($fullPath, $headers);

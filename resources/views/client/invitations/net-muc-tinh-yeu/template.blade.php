@@ -128,7 +128,13 @@
     <meta name="description" content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.' }}">
     <title>{{ $pageTitle }}</title>
 
-    <link rel="stylesheet" href="{{ $assetBase }}/styles.css">
+    @php
+        $cssPath = resource_path("views/client/invitations/net-muc-tinh-yeu/styles.css");
+        $jsPath = resource_path("views/client/invitations/net-muc-tinh-yeu/script.js");
+        $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
+        $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
+    @endphp
+    <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
     
     @if ($isEmbed)
         <style>
@@ -161,7 +167,7 @@
         window.__MAYHEN_WISH_REPLY_BASE_URL = "{{ $wishReplyBaseUrl }}";
         window.__MAYHEN_RSVP_RESPONSES_URL = "{{ $rsvpResponsesUrl }}";
     </script>
-    <script src="{{ $assetBase }}/script.js" defer></script>
+    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}" defer></script>
 </head>
 <body class="mayhen_invitation_scroll_locked">
     @if ($isPreview && !$isEmbed)
