@@ -602,6 +602,9 @@ textarea:focus-visible {
     box-shadow: 0 2px 9px #0002;
 }
 .mayhen_invitation_djcvhwiuo9w9_invitation-copy {
+    margin-top: 46px;
+    padding-top: 30px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.12);
     font-size: 20px;
     line-height: 1.5;
     letter-spacing: 0.02em;
@@ -631,9 +634,9 @@ textarea:focus-visible {
 }
 .mayhen_invitation_djcvhwiuo9w9_invitation-event-block {
     position: relative;
-    margin: 36px auto 0;
-    padding: 24px 15px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    margin: 28px auto 0;
+    padding: 20px 15px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
     display: none;
 }
 

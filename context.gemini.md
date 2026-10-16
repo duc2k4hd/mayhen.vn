@@ -780,6 +780,11 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     + **Lịch Trình Tiệc Cưới (Timeline)**: Icon tròn kính mờ viền vàng champagne mờ, đường timeline nối dọc xuyên qua tâm hoàn hảo.
     + **Hộp Mừng Cưới & RSVP**: Hộp quà có animation nhún nhảy mời gọi mở hộp, modal QR Code ngân hàng sắc nét, thẻ RSVP nút bấm rõ ràng và thanh lịch.
 
+    + **Tối Ưu Vị Trí Khối Sự Kiện Cưới (Event Block UX)**:
+      * Chuyển toàn bộ 2 khối sự kiện cưới `.mayhen_invitation_djcvhwiuo9w9_invitation-event-block` (Lễ Vu Quy & Tiệc Cưới) lên nằm ngay bên dưới tab chuyển đổi Nhà gái / Nhà trai (`.mayhen_invitation_djcvhwiuo9w9_side-switch-wrap`).
+      * Giúp người dùng khi bấm chuyển qua lại giữa 2 tab Nhà gái / Nhà trai sẽ thấy ngay lập tức sự kiện tương ứng (ngày giờ, sảnh tiệc, địa chỉ và nút chỉ đường) thay đổi trực quan trước mắt mà không cần phải cuộn xuống dưới.
+      * Tinh chỉnh khoảng cách thẩm mỹ: `margin: 28px auto 0; padding: 20px 15px 0; border-top: 1px solid rgba(0, 0, 0, 0.08);` cho khối sự kiện, và bổ sung đường nét đứt mờ nhạt (`border-top: 1px dashed rgba(0, 0, 0, 0.12); margin-top: 46px;`) phân tách êm dịu phần lời mời "Thân mời Quý vị & Gia đình..." và tên cô dâu chú rể ở bên dưới.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
