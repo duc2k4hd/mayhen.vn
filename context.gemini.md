@@ -710,6 +710,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - **Lỗi 3 (Dữ liệu Album ảnh cưới Null)**: Mảng `$wedding->extra_data['gallery']` chứa 10 phần tử `null` khiến điều kiện `!empty()` trong Blade bị hiểu là có dữ liệu.
     -> Giải pháp: Dùng `array_filter` lọc bỏ giá trị rỗng/null và link `blob:`, fallback tự động về `$defaultAlbum` của mẫu thiệp.
   - **Lỗi 4 (Giao diện tên Cô dâu Chú rể bị rớt chữ)**: Thêm `white-space: nowrap` và tinh chỉnh `clamp(15px, 4.2vw, 22px)` cho `.mayhen_invitation_dhsuudushi9428r_cover_names p` trong `styles.css`.
+  - **Lỗi 5 (RouteNotFoundException)**: Khắc phục tên route `invitation.uploadAsset` (camelCase) chuẩn xác trong `editor.blade.php`.
+- **Cập nhật Bố Cục Tên Đôi Uyên Ương Phần Mở Đầu Thiệp (`net-muc-tinh-yeu`)**:
+  - Chuyển từ dạng ngang 1 hàng sang bố cục dọc 3 tầng sang trọng: Tên Chú Rể (trên) -> Trái tim vàng `❤` (giữa) -> Tên Cô Dâu (dưới).
+  - Tối ưu cho các cặp đôi có họ tên dài (3-4 từ), không bị tràn viền 2 mép, chữ hiển thị rõ nét, thanh lịch và cân xứng hoàn hảo với 2 biểu tượng chữ Hỷ 2 bên.
 
 ---
 

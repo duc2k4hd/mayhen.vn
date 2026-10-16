@@ -252,13 +252,13 @@
                 <h1 class="mayhen_invitation_dhsuudushi9428r_display mayhen_invitation_dhsuudushi9428r_cover_title">Mời Cưới</h1>
                 
                 <div class="mayhen_invitation_dhsuudushi9428r_cover_names">
-                    <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
-                    <p class="mayhen_invitation_dhsuudushi9428r_display">
-                        <span data-sync-target="groom_name">{{ $groomName }}</span>
-                        <span class="mayhen_heart">❤</span>
-                        <span data-sync-target="bride_name">{{ $brideName }}</span>
-                    </p>
-                    <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
+                    <img class="mayhen_invitation_dhsuudushi9428r_cover_emblem" src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
+                    <div class="mayhen_invitation_dhsuudushi9428r_cover_couple">
+                        <span class="mayhen_invitation_dhsuudushi9428r_display mayhen_invitation_dhsuudushi9428r_name" data-sync-target="groom_name">{{ $groomName }}</span>
+                        <span class="mayhen_heart" aria-hidden="true">❤</span>
+                        <span class="mayhen_invitation_dhsuudushi9428r_display mayhen_invitation_dhsuudushi9428r_name" data-sync-target="bride_name">{{ $brideName }}</span>
+                    </div>
+                    <img class="mayhen_invitation_dhsuudushi9428r_cover_emblem mayhen_invitation_dhsuudushi9428r_cover_emblem_right" src="{{ $assetBase }}/assets/chu-hy-1.png" alt="" aria-hidden="true">
                 </div>
                 <p class="mayhen_invitation_dhsuudushi9428r_cover_date" data-sync-target="cover_date">{{ $coverDateFormatted }}</p>
             </div>

@@ -177,31 +177,45 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0 10px;
 }
 
-.mayhen_invitation_dhsuudushi9428r_cover_names img {
-  width: 28px;
+.mayhen_invitation_dhsuudushi9428r_cover_emblem {
+  width: 26px;
   opacity: 0.35;
   filter: grayscale(1);
+  flex-shrink: 0;
 }
 
-.mayhen_invitation_dhsuudushi9428r_cover_names img:last-child {
+.mayhen_invitation_dhsuudushi9428r_cover_emblem_right {
   transform: scaleX(-1);
 }
 
-.mayhen_invitation_dhsuudushi9428r_cover_names p {
-  font-size: clamp(15px, 4.2vw, 22px);
-  margin: 0;
-  color: var(--mayhen_ink_light);
-  white-space: nowrap;
+.mayhen_invitation_dhsuudushi9428r_cover_couple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
 }
 
-.mayhen_invitation_dhsuudushi9428r_cover_names span.mayhen_heart {
+.mayhen_invitation_dhsuudushi9428r_cover_couple .mayhen_invitation_dhsuudushi9428r_name {
+  font-size: clamp(20px, 5.5vw, 26px);
+  color: var(--mayhen_ink_light);
+  margin: 0;
+  text-align: center;
+  word-break: keep-all;
+  display: block;
+}
+
+.mayhen_invitation_dhsuudushi9428r_cover_couple .mayhen_heart {
   color: var(--mayhen_gold);
   font-size: 13px;
-  margin: 0 4px;
+  line-height: 1;
+  margin: 10px 0;
+  opacity: 0.85;
 }
 
 .mayhen_invitation_dhsuudushi9428r_cover_date {
