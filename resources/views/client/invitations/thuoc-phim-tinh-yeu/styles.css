@@ -631,9 +631,19 @@ textarea:focus-visible {
 }
 .mayhen_invitation_djcvhwiuo9w9_invitation-event-block {
     position: relative;
-    margin: 50px auto 0;
-    padding: 30px 15px 0;
-    border-top: 1px solid #0002;
+    margin: 36px auto 0;
+    padding: 24px 15px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    display: none;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_invitation-event-block.mayhen_invitation_djcvhwiuo9w9_selected-event {
+    display: block;
+    animation: mayhenG4FadeIn 0.4s var(--ease) both;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_parent.mayhen_invitation_djcvhwiuo9w9_parent-dim {
+    opacity: 0.45;
 }
 .mayhen_invitation_djcvhwiuo9w9_event-title {
     font-size: clamp(40px, 8vw, 57px);

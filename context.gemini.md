@@ -772,7 +772,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     + **Monogram Cặp Đôi**: Bổ sung huy hiệu tròn viền kép mạ vàng champagne mờ, chữ lồng nhau nghệ thuật và đổ bóng giấy mỹ thuật sang trọng.
     + **Bộ Đếm Ngược Ngày Cưới**: Bổ sung nhãn phụ Ngày, Giờ, Phút, Giây bằng font Sans thanh mảnh, căn giữa các ô số có nền kính mờ tinh xảo.
     + **Phong Bì Ảnh 3D & Lồng Ảnh**: Đổ bóng nhiều tầng chân thật, hiệu ứng hover xoay vươn ảnh sống động.
-    + **Tab Chuyển Đổi Sảnh Tiệc Nhà Trai / Nhà Gái**: Bo góc tròn dạng viên ngọc (pill), viền vàng champagne ấm áp, gradient mềm mại.
+    + **Tab Chuyển Đổi Sảnh Tiệc Nhà Trai / Nhà Gái**: Bo góc tròn dạng viên ngọc (pill), viền vàng champagne ấm áp, gradient mềm mại. Khi bấm chuyển tab, hệ thống tự động ẩn/hiện khối sự kiện tương ứng (Lễ Vu Quy cho Nhà Gái và Tiệc Cưới cho Nhà Trai) kèm animation fade-in mượt mà, đồng thời highlight cột thông tin phụ huynh tương ứng.
     + **Nút Chỉ Đường Google Maps**: Bo góc 999px, viền và icon mạ vàng ánh kim, hover nổi bật êm ái.
     + **Khung Ảnh Chú Rể & Cô Dâu (Love Story)**: Viền trắng lưu niệm Polaroid cổ điển, bề mặt giấy mỹ thuật gân nổi, hover đưa ảnh về góc thẳng tự nhiên.
     + **Dải Phim & Lưới Album Cưới**: Dải phim cuộn ngang vintage 35mm mượt mà, lưới 10 ảnh Polaroid nghệ thuật, hover zoom nhẹ kèm bóng đổ mềm.

@@ -72,7 +72,7 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // Invitation side selector. Original invitation data displays both events; preserve both.
+  // Invitation side selector (Nhà gái / Nhà trai)
   const sideSwitch = $(C('side-switch'));
   if (sideSwitch) {
     const buttons = $$('button', sideSwitch);
@@ -83,8 +83,19 @@
       });
       state.activeSide = i === 0 ? 'bride' : 'groom';
       root.dataset.side = state.activeSide;
+
+      // Ẩn/hiện khối sự kiện: 0 = Nhà gái (Lễ Vu Quy), 1 = Nhà trai (Tiệc Cưới)
       const events = $$(C('invitation-event-block'));
-      events.forEach((event, j) => event.classList.toggle(`${P}selected-event`, i === j));
+      events.forEach((event, j) => {
+        event.classList.toggle(`${P}selected-event`, i === j);
+      });
+
+      // Highlight cột bố mẹ tương ứng: parentCols[0] = Nhà trai, parentCols[1] = Nhà gái
+      const parentCols = $$(C('parent'));
+      if (parentCols.length >= 2) {
+        parentCols[0].classList.toggle(`${P}parent-dim`, i === 0);
+        parentCols[1].classList.toggle(`${P}parent-dim`, i === 1);
+      }
     }
     buttons.forEach((btn, i) => btn.addEventListener('click', () => selectSide(i)));
     selectSide(0);
