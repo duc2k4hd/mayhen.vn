@@ -295,8 +295,9 @@ class InvitationEditorController extends Controller
         $keyword = (string) $request->query('q', '');
         $page = max(1, (int) $request->query('page', 1));
         $perPage = min(50, max(1, (int) $request->query('per_page', 20)));
+        $forceRefresh = $request->boolean('refresh', false);
 
-        $result = $this->musicService->search($keyword, $page, $perPage);
+        $result = $this->musicService->search($keyword, $page, $perPage, $forceRefresh);
 
         return response()->json([
             'success' => true,

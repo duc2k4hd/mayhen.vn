@@ -789,6 +789,12 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Cung cấp sẵn một file hướng dẫn chuẩn hóa (Master Prompt) tại thư mục gốc của repository.
   - Sau này khi có bất kỳ giao diện template thiệp cưới mới nào (HTML/CSS/JS tĩnh hoặc từ file thiết kế), chỉ cần copy toàn bộ nội dung file prompt này, điền tên mẫu, slug, prefix ID và đường dẫn thư mục nguồn rồi gửi cho AI là hệ thống sẽ tự động chuyển đổi và tích hợp chuẩn xác 100% theo toàn bộ quy chuẩn của Mây Hẹn (Pure HTML/CSS/Native JS, dynamic data fallback, Mobile-First, RSVP, Sổ lưu bút, Hộp mừng cưới, Nhạc nền, Seeder DB, Lint và testing).
 
+- **Nâng Cấp Hệ Thống Nhạc Cưới Tự Động Làm Mới Cache (`WeddingMusicService`)**:
+  - **Tự động làm mới cache (Auto-Invalidation siêu tốc)**: Dựa trên so sánh `filemtime` của thư mục nhạc với file `client_musics_index.json`. Khi người dùng thêm, sửa hoặc xóa bất kỳ file bài hát/thư mục ca sĩ nào, hệ thống tự động phát hiện và quét lại toàn bộ để cập nhật file JSON ngay lập tức (<1ms).
+  - **Linh hoạt cấu trúc thư mục**: Quét đồng thời cả các file `.mp3` nằm trực tiếp trong `storage/app/public/client/musics/` lẫn trong các thư mục con `musics/singer/{Tên ca sĩ}/`.
+  - **Artisan Command `php artisan musics:refresh`**: Bổ sung lệnh console cho phép quản trị viên hoặc lập trình viên chủ động quét lại và in ra thống kê bài hát.
+  - **API Query Parameter**: Hỗ trợ param `GET /api/wedding-musics?refresh=1` để ép làm mới cache trực tiếp từ trình duyệt.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

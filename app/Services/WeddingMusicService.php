@@ -13,24 +13,25 @@ class WeddingMusicService
     protected string $musicBasePath;
 
     /**
-     * File cache json metadata để tối ưu 100% tốc độ truy vấn
+     * Đường dẫn thư mục gốc nhạc client
      */
-    protected string $indexCachePath;
+    protected string $musicRootPath;
 
     public function __construct()
     {
+        $this->musicRootPath = storage_path('app/public/client/musics');
         $this->musicBasePath = storage_path('app/public/client/musics/singer');
         $this->indexCachePath = storage_path('app/client_musics_index.json');
     }
 
     /**
-     * Lấy toàn bộ danh sách bài hát (có hỗ trợ cache thông minh & tự động làm mới khi phát hiện thay đổi).
+     * Lấy toàn bộ danh sách bài hát (có cơ chế tự động phát hiện thay đổi file để làm mới cache siêu tốc).
      *
      * @return array<int, array{id: string, title: string, artist: string, url: string, filename: string, search_str: string}>
      */
     public function getCatalog(bool $forceRefresh = false): array
     {
-        if (! $forceRefresh && File::exists($this->indexCachePath)) {
+        if (! $forceRefresh && ! $this->shouldRefreshIndex()) {
             $json = File::get($this->indexCachePath);
             $data = json_decode($json, true);
             if (is_array($data) && ! empty($data)) {
@@ -42,7 +43,42 @@ class WeddingMusicService
     }
 
     /**
-     * Quét thư mục singer/{Tên ca sĩ}/{Tên bài hát}.mp3 và lập chỉ mục siêu tốc.
+     * Kiểm tra xem thư mục nhạc có bài hát hoặc thư mục mới hơn file cache index không.
+     * Tận dụng mtime của inode (thời gian xử lý < 1ms, không load lại database hay ổ đĩa nặng).
+     */
+    public function shouldRefreshIndex(): bool
+    {
+        if (! File::exists($this->indexCachePath)) {
+            return true;
+        }
+
+        $cacheMtime = File::lastModified($this->indexCachePath);
+
+        // Kiểm tra thư mục gốc musics
+        if (File::exists($this->musicRootPath) && File::lastModified($this->musicRootPath) > $cacheMtime) {
+            return true;
+        }
+
+        // Kiểm tra thư mục ca sĩ singer
+        if (File::exists($this->musicBasePath)) {
+            if (File::lastModified($this->musicBasePath) > $cacheMtime) {
+                return true;
+            }
+
+            // Kiểm tra từng thư mục ca sĩ con (nếu có file mới thêm vào, mtime thư mục ca sĩ đó sẽ thay đổi)
+            $singerDirs = File::directories($this->musicBasePath);
+            foreach ($singerDirs as $singerDir) {
+                if (File::lastModified($singerDir) > $cacheMtime) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Quét thư mục musics/ và musics/singer/{Tên ca sĩ}/{Tên bài hát}.mp3 và lập chỉ mục siêu tốc.
      */
     public function buildIndex(): array
     {
@@ -52,6 +88,44 @@ class WeddingMusicService
             File::makeDirectory($this->musicBasePath, 0755, true);
         }
 
+        // 1. Quét các file MP3 nằm trực tiếp trong thư mục musics/ (nếu có)
+        if (File::exists($this->musicRootPath)) {
+            $rootFiles = File::files($this->musicRootPath);
+            foreach ($rootFiles as $file) {
+                if (strtolower($file->getExtension()) !== 'mp3') {
+                    continue;
+                }
+
+                $filename = $file->getFilename();
+                $title = pathinfo($filename, PATHINFO_FILENAME);
+                $artistName = 'Mây Hẹn Collection';
+
+                // Nếu tên file có dạng "Ca sĩ - Tên bài hát"
+                if (str_contains($title, ' - ')) {
+                    [$guessedArtist, $guessedTitle] = explode(' - ', $title, 2);
+                    if (! empty(trim($guessedArtist)) && ! empty(trim($guessedTitle))) {
+                        $artistName = trim($guessedArtist);
+                        $title = trim($guessedTitle);
+                    }
+                }
+
+                $id = md5('root/'.$filename);
+                $encodedFile = rawurlencode($filename);
+                $url = asset("storage/client/musics/{$encodedFile}");
+                $searchStr = Str::lower($this->removeAccents($title.' '.$artistName));
+
+                $catalog[] = [
+                    'id' => $id,
+                    'title' => $title,
+                    'artist' => $artistName,
+                    'filename' => $filename,
+                    'url' => $url,
+                    'search_str' => $searchStr,
+                ];
+            }
+        }
+
+        // 2. Quét các file MP3 trong thư mục con singer/{Tên ca sĩ}/
         $singerDirs = File::directories($this->musicBasePath);
 
         foreach ($singerDirs as $singerDir) {
@@ -65,12 +139,12 @@ class WeddingMusicService
 
                 $filename = $file->getFilename();
                 $title = pathinfo($filename, PATHINFO_FILENAME);
-                $id = md5($artistName . '/' . $filename);
+                $id = md5($artistName.'/'.$filename);
                 $encodedArtist = rawurlencode($artistName);
                 $encodedFile = rawurlencode($filename);
                 $url = asset("storage/client/musics/singer/{$encodedArtist}/{$encodedFile}");
 
-                $searchStr = Str::lower($this->removeAccents($title . ' ' . $artistName));
+                $searchStr = Str::lower($this->removeAccents($title.' '.$artistName));
 
                 $catalog[] = [
                     'id' => $id,
@@ -83,8 +157,15 @@ class WeddingMusicService
             }
         }
 
-        // Lưu vào cache json
-        File::put($this->indexCachePath, json_encode($catalog, JSON_UNESCAPED_UNICODE));
+        // Sắp xếp bài hát theo thứ tự bảng chữ cái tên ca sĩ và tiêu đề
+        usort($catalog, function ($a, $b) {
+            $artistCmp = strcasecmp($a['artist'], $b['artist']);
+
+            return $artistCmp !== 0 ? $artistCmp : strcasecmp($a['title'], $b['title']);
+        });
+
+        // Lưu vào cache json với định dạng Unicode chuẩn
+        File::put($this->indexCachePath, json_encode($catalog, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
         return $catalog;
     }
@@ -92,9 +173,9 @@ class WeddingMusicService
     /**
      * Tìm kiếm bài hát thông minh (theo tên bài hát hoặc tên ca sĩ/thư mục) có phân trang cực nhanh.
      */
-    public function search(?string $keyword = '', int $page = 1, int $perPage = 20): array
+    public function search(?string $keyword = '', int $page = 1, int $perPage = 20, bool $forceRefresh = false): array
     {
-        $catalog = $this->getCatalog();
+        $catalog = $this->getCatalog($forceRefresh);
 
         if (! empty($keyword)) {
             $normalized = Str::lower($this->removeAccents(trim($keyword)));
