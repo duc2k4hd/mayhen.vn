@@ -613,5 +613,10 @@
 @endsection
 
 @push('scripts')
+    <script>
+        window.__MAYHEN_TEMPLATE_SLUG = "{{ $selectedTemplate->slug }}";
+        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
+        window.__MAYHEN_UPLOAD_URL = "{{ route('invitation.upload_asset') }}";
+    </script>
     <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}"></script>
 @endpush

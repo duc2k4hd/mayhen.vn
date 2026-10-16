@@ -60,28 +60,51 @@
     $groomPartyAddress = $wedding->extra_data['groom_party_address'] ?? 'Số nhà 5, Ngõ 56, Siêu Quần, Đại Thanh, Hà Nội';
     $groomMapLink = $wedding->extra_data['groom_map_link'] ?? 'https://www.google.com/maps/search/?api=1&query=' . urlencode($groomPartyAddress);
 
+    // Hàm resolve asset chuẩn: hỗ trợ full URL, relative template assets và loại bỏ link blob tạm thời bị hủy
+    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
+        $val = trim((string) $path);
+        // Loại bỏ đường dẫn blob: nếu bị rò rỉ từ client
+        if (str_starts_with($val, 'blob:')) {
+            $val = '';
+        }
+        if (empty($val)) {
+            $fb = trim($fallback);
+            if (empty($fb)) return '';
+            return (str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/'))
+                ? $fb
+                : $assetBase . '/' . ltrim($fb, '/');
+        }
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+            return $val;
+        }
+        return $assetBase . '/' . ltrim($val, '/');
+    };
+
     // 3. Ảnh cưới
-    $coverPhotoUrl = $wedding->cover_photo_url ?? ($assetBase . '/assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg');
-    $heroPhotoUrl = $wedding->extra_data['hero_photo_url'] ?? ($assetBase . '/assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg');
-    $triptych1 = $wedding->extra_data['triptych_photo_1'] ?? ($assetBase . '/assets/c3ee7507-53b8-461b-b5cb-c416ffc03791.jpg');
-    $triptych2 = $wedding->extra_data['triptych_photo_2'] ?? ($assetBase . '/assets/feecd763-f272-424b-9985-b4f3d68d7fb1.jpg');
-    $triptych3 = $wedding->extra_data['triptych_photo_3'] ?? ($assetBase . '/assets/320f95e0-b0c7-4b48-9d11-16c791076898.jpg');
-    $footerPhotoUrl = $wedding->extra_data['footer_photo_url'] ?? ($assetBase . '/assets/8abb1d4e-e543-4ccf-994d-7114bbdfa561.jpg');
+    $coverPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? null, 'assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg');
+    $heroPhotoUrl = $resolveAsset($wedding->extra_data['hero_photo_url'] ?? null, 'assets/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg');
+    $triptych1 = $resolveAsset($wedding->extra_data['triptych_photo_1'] ?? null, 'assets/c3ee7507-53b8-461b-b5cb-c416ffc03791.jpg');
+    $triptych2 = $resolveAsset($wedding->extra_data['triptych_photo_2'] ?? null, 'assets/feecd763-f272-424b-9985-b4f3d68d7fb1.jpg');
+    $triptych3 = $resolveAsset($wedding->extra_data['triptych_photo_3'] ?? null, 'assets/320f95e0-b0c7-4b48-9d11-16c791076898.jpg');
+    $footerPhotoUrl = $resolveAsset($wedding->extra_data['footer_photo_url'] ?? null, 'assets/8abb1d4e-e543-4ccf-994d-7114bbdfa561.jpg');
 
     // 10 ảnh trong Album cưới
     $defaultAlbum = [
-        $assetBase . '/assets/17561028-8353-443f-9499-3cacf8e00f39.jpg',
-        $assetBase . '/assets/3d8c97cc-9a05-42c1-916e-c76f3e635f19.jpg',
-        $assetBase . '/assets/5bf6d6e7-c1f7-4b0b-bf30-011dc81a7191.jpg',
-        $assetBase . '/assets/58d06c3d-d76a-437b-8661-7058afa6798a.jpg',
-        $assetBase . '/assets/42c5230a-1ea7-4043-906f-545987e51dee.jpg',
-        $assetBase . '/assets/b0406e5d-ad0e-4074-87cc-3cfb05978f06.jpg',
-        $assetBase . '/assets/96c5fed3-ce54-4fd7-83e7-2e7e5019190a.jpg',
-        $assetBase . '/assets/7fbc223f-7c5e-4438-a3c7-6c2aff07be19.jpg',
-        $assetBase . '/assets/6b382386-e964-4bfa-80f0-25285128f65d.jpg',
-        $assetBase . '/assets/e5ed00b3-76fb-4467-bf7f-d9c436472f4e.jpg',
+        'assets/17561028-8353-443f-9499-3cacf8e00f39.jpg',
+        'assets/3d8c97cc-9a05-42c1-916e-c76f3e635f19.jpg',
+        'assets/5bf6d6e7-c1f7-4b0b-bf30-011dc81a7191.jpg',
+        'assets/58d06c3d-d76a-437b-8661-7058afa6798a.jpg',
+        'assets/42c5230a-1ea7-4043-906f-545987e51dee.jpg',
+        'assets/b0406e5d-ad0e-4074-87cc-3cfb05978f06.jpg',
+        'assets/96c5fed3-ce54-4fd7-83e7-2e7e5019190a.jpg',
+        'assets/7fbc223f-7c5e-4438-a3c7-6c2aff07be19.jpg',
+        'assets/6b382386-e964-4bfa-80f0-25285128f65d.jpg',
+        'assets/e5ed00b3-76fb-4467-bf7f-d9c436472f4e.jpg',
     ];
-    $albumPhotos = !empty($wedding->extra_data['gallery']) ? $wedding->extra_data['gallery'] : $defaultAlbum;
+    $rawGallery = $wedding->extra_data['gallery'] ?? [];
+    $validGallery = is_array($rawGallery) ? array_filter($rawGallery, fn($item) => !empty(trim((string)$item)) && !str_starts_with((string)$item, 'blob:')) : [];
+    $selectedAlbum = !empty($validGallery) ? array_values($validGallery) : $defaultAlbum;
+    $albumPhotos = array_map(fn($p) => $resolveAsset($p), $selectedAlbum);
 
     // 4. Lời ngỏ / Quote
     $loveQuote = $wedding->story ?? 'Một tình yêu được khắc trên tim, cùng nhau đi qua năm tháng';
@@ -97,9 +120,9 @@
     ];
 
     // 6. Mừng cưới QR & Nhạc nền
-    $qrGroom = $wedding->extra_data['qr_groom_image'] ?? ($assetBase . '/assets/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg');
-    $qrBride = $wedding->extra_data['qr_bride_image'] ?? ($assetBase . '/assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg');
-    $musicUrl = $wedding->music_url ?? ($assetBase . '/assets/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
+    $qrGroom = $resolveAsset($wedding->extra_data['qr_groom_image'] ?? null, 'assets/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg');
+    $qrBride = $resolveAsset($wedding->extra_data['qr_bride_image'] ?? null, 'assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg');
+    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'assets/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
 
     // 7. Sổ lưu bút (Wishes & Guestbook) & RSVP
     $wishes = $wishes ?? collect([]);

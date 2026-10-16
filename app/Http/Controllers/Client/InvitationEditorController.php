@@ -103,6 +103,19 @@ class InvitationEditorController extends Controller
             ];
         }
 
+        // Khử toàn diện chuỗi URL tạm thời blob: tránh lưu vào database
+        $sanitizeBlobs = function (mixed $value) use (&$sanitizeBlobs): mixed {
+            if (is_array($value)) {
+                return array_map($sanitizeBlobs, $value);
+            }
+            if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
+                return null;
+            }
+
+            return $value;
+        };
+        $rawWedding = $sanitizeBlobs($rawWedding);
+
         // Validate cơ bản
         $request->validate([
             'template_id' => 'required|exists:invitation_templates,id',
@@ -241,10 +254,17 @@ class InvitationEditorController extends Controller
             'template_slug' => 'required|string',
         ]);
 
-        $templateSlug = Str::slug($request->input('template_slug'));
-        $file = $request->file('file');
+        $rawSlug = $request->input('template_slug');
+        $templateSlug = Str::slug($rawSlug);
+        if (empty($templateSlug) || $templateSlug === 'selectedtemplate-slug') {
+            $templateSlug = 'net-muc-tinh-yeu';
+        }
 
+        $file = $request->file('file');
         $ext = strtolower($file->getClientOriginalExtension());
+        if (empty($ext) || $ext === 'bin') {
+            $ext = 'jpg';
+        }
         $filename = Str::uuid()->toString().'.'.$ext;
 
         // Thư mục lưu trữ trực tiếp duy nhất trong resources/views/client/invitations/

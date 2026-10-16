@@ -697,6 +697,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `editor.blade.php`: Toàn bộ các thẻ preview ảnh của mẫu thiệp được nạp mượt mà qua route URL nội bộ.
   - `InvitationTemplateSeeder.php`: `thumbnail_url` được cập nhật đồng bộ.
 
+### 📌 Phiên bản 1.2.1 — Khắc Phục Triệt Để Lưu Ảnh & Dữ Liệu Khi Xuất Bản Thiệp Cưới
+- **Khắc phục lỗi nạp ảnh và dữ liệu khi F5 / Reload trang thiệp cưới (`/thiep/{slug}`)**:
+  - **Lỗi 1 (Đường dẫn Relative trong Database)**: Các trường `hero_photo_url`, `qr_groom_image`, `qr_bride_image`, `footer_photo_url` được lưu đường dẫn tương đối dạng `assets/...`. Khi render ở trang thiệp thật, trình duyệt tự nối `/thiep/assets/...` dẫn tới lỗi 404 toàn bộ ảnh.
+    -> Giải pháp: Bổ sung helper closure `$resolveAsset` trong `template.blade.php`, tự động bổ sung prefix `$assetBase` (`/mau-thiep/{slug}/assets/...`) đối với đường dẫn relative, đồng thời giữ nguyên nếu là URL tuyệt đối (`http://`, `https://`, `/`).
+  - **Lỗi 2 (Rò rỉ URL tạm thời `blob:` vào Database)**: Khi cắt ảnh 3/4 ở modal cropper, trình duyệt tạo URL `blob:http://...`. Do file `editor.js` tĩnh không compile cú pháp Blade `{{ $selectedTemplate->slug }}` và bị ReferenceError biến `csrfToken`/`submitTriggers`, form bị submit sớm dẫn đến lưu thẳng chuỗi `blob:...` vào database. Khi người dùng reload trang, `blob:` bị trình duyệt giải phóng khỏi RAM gây icon ảnh vỡ.
+    -> Giải pháp: 
+      + Truyền biến toàn cục `window.__MAYHEN_TEMPLATE_SLUG`, `window.__MAYHEN_CSRF_TOKEN`, `window.__MAYHEN_UPLOAD_URL` từ `editor.blade.php`.
+      + Gỡ bỏ việc bind sự kiện submit trùng lặp sớm trong `editor.js`.
+      + Tái cấu trúc hàm `submitFormWithPendingUploads` sử dụng `Promise.all` tải toàn bộ ảnh blob lên server `/tao-thiep/upload-asset`, nhận link thật từ server gán vào form trước khi gọi `mainForm.submit()`.
+      + Bổ sung cơ chế bảo vệ kép (cả Client & Backend): Xóa sạch mọi chuỗi bắt đầu bằng `blob:` trước khi gửi và trước khi lưu vào Model `Wedding`.
+  - **Lỗi 3 (Dữ liệu Album ảnh cưới Null)**: Mảng `$wedding->extra_data['gallery']` chứa 10 phần tử `null` khiến điều kiện `!empty()` trong Blade bị hiểu là có dữ liệu.
+    -> Giải pháp: Dùng `array_filter` lọc bỏ giá trị rỗng/null và link `blob:`, fallback tự động về `$defaultAlbum` của mẫu thiệp.
+  - **Lỗi 4 (Giao diện tên Cô dâu Chú rể bị rớt chữ)**: Thêm `white-space: nowrap` và tinh chỉnh `clamp(15px, 4.2vw, 22px)` cho `.mayhen_invitation_dhsuudushi9428r_cover_names p` trong `styles.css`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

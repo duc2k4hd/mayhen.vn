@@ -78,18 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentStep < totalSteps) {
                 goToStep(currentStep + 1);
             } else {
-                if (mainForm) mainForm.submit();
+                submitFormWithPendingUploads();
             }
         });
     }
-
-    // Trigger submit từ các nút Hoàn Tất
-    const submitTriggers = $$('[data-mayhen-action="trigger-submit"]');
-    submitTriggers.forEach(btn => {
-        on(btn, 'click', () => {
-            if (mainForm) mainForm.submit();
-        });
-    });
 
     // ----------------------------------------------------
     // 2. Realtime Iframe Communication Engine (PostMessage Sync)
@@ -599,44 +591,82 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitBtns = $$('[data-mayhen-action="trigger-submit"]');
         submitBtns.forEach(btn => {
             btn.disabled = true;
-            btn.innerHTML = '<span>Đang tạo thiệp cưới...</span>';
+            btn.innerHTML = '<span>Đang chuẩn bị lưu thiệp cưới...</span>';
         });
 
-        // Nếu có ảnh đang chờ upload trong pendingUploadBlobs -> upload lên assets của template trước khi submit
+        const templateSlug = window.__MAYHEN_TEMPLATE_SLUG || document.getElementById('template_id')?.value || 'net-muc-tinh-yeu';
+        const csrfToken = window.__MAYHEN_CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
+        const uploadUrl = window.__MAYHEN_UPLOAD_URL || '/tao-thiep/upload-asset';
+
+        // 1. Tải toàn bộ các file ảnh blob lên server
         if (pendingUploadBlobs.size > 0) {
-            const templateSlug = '{{ $selectedTemplate->slug }}';
+            submitBtns.forEach(btn => {
+                btn.innerHTML = '<span>Đang tải ảnh cưới lên hệ thống...</span>';
+            });
+
+            const uploadPromises = [];
             for (const [inputId, blobOrFile] of pendingUploadBlobs.entries()) {
                 const targetInput = document.getElementById(inputId);
+                const fileUploader = document.querySelector(`input[type="file"][data-target-input="${inputId}"]`);
+                const actualSlug = fileUploader?.getAttribute('data-template-slug') || templateSlug;
                 const statusEl = document.getElementById('status_' + inputId);
                 if (statusEl) statusEl.textContent = 'Đang lưu ảnh...';
 
                 const formData = new FormData();
-                formData.append('file', blobOrFile, 'photo.jpg');
-                formData.append('template_slug', targetInput ? (targetInput.getAttribute('data-template-slug') || templateSlug) : templateSlug);
+                formData.append('file', blobOrFile, 'wedding_photo.jpg');
+                formData.append('template_slug', actualSlug);
                 formData.append('_token', csrfToken);
 
-                try {
-                    const res = await fetch('/tao-thiep/upload-asset', {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': csrfToken,
-                        },
-                        body: formData,
-                    });
-                    const data = await res.json();
-                    if (data.success && data.file_url && targetInput) {
-                        targetInput.value = data.file_url;
+                const uploadPromise = fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: formData,
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.file_url) {
+                        if (targetInput) targetInput.value = data.file_url;
+                        if (statusEl) {
+                            statusEl.textContent = '✓ Đã lưu ảnh';
+                            statusEl.style.color = '#10B981';
+                        }
                     }
-                } catch {
-                    // Tiếp tục xử lý
-                }
+                })
+                .catch(err => {
+                    console.error('Lỗi tải ảnh:', err);
+                });
+
+                uploadPromises.push(uploadPromise);
+            }
+
+            try {
+                await Promise.all(uploadPromises);
+            } catch (err) {
+                console.error('Một số ảnh chưa kịp lưu:', err);
             }
         }
 
-        if (mainForm) mainForm.submit();
+        // 2. Bảo vệ chống rò rỉ URL dạng blob: vào database
+        if (mainForm) {
+            const allInputs = mainForm.querySelectorAll('input');
+            allInputs.forEach(inp => {
+                if (typeof inp.value === 'string' && inp.value.startsWith('blob:')) {
+                    inp.value = ''; // Xóa sạch URL blob tạm thời để backend tự fallback về ảnh mẫu
+                }
+            });
+
+            submitBtns.forEach(btn => {
+                btn.innerHTML = '<span>Đang xuất bản thiệp cưới...</span>';
+            });
+
+            mainForm.submit();
+        }
     };
 
+    const submitTriggers = $$('[data-mayhen-action="trigger-submit"]');
     submitTriggers.forEach(btn => {
         on(btn, 'click', (e) => {
             e.preventDefault();
