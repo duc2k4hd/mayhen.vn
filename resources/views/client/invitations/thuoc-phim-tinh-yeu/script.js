@@ -399,6 +399,47 @@
       img.setAttribute('title','Không thể tải ảnh từ máy chủ nguồn');
     },{once:true});
   });
+  // Mở rèm thiệp 2 cánh (Bấm cánh trái hoặc cánh phải để mở animation sang 2 bên)
+  const openingSides = $(C('opening-sides'));
+  if (openingSides) {
+    let isOpened = false;
+    const openInvitation = () => {
+      if (isOpened) return;
+      isOpened = true;
+      openingSides.classList.add(`${P}opened`);
+
+      // Tự động phát nhạc nền khi mở thiệp
+      const audioEl = $(`#${P}audio`);
+      const musicBtn = $(C('music-toggle'));
+      if (audioEl) {
+        audioEl.play().then(() => {
+          if (musicBtn) {
+            musicBtn.classList.add(`${P}music-playing`);
+            musicBtn.setAttribute('aria-pressed', 'true');
+            musicBtn.setAttribute('aria-label', 'Tắt nhạc nền');
+          }
+        }).catch(() => {});
+      }
+
+      setTimeout(() => {
+        openingSides.setAttribute('aria-hidden', 'true');
+      }, 1250);
+    };
+
+    openingSides.addEventListener('click', openInvitation);
+    const leftSide = $(C('opening-left'), openingSides);
+    const rightSide = $(C('opening-right'), openingSides);
+    if (leftSide) leftSide.addEventListener('click', openInvitation);
+    if (rightSide) rightSide.addEventListener('click', openInvitation);
+
+    openingSides.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openInvitation();
+      }
+    });
+  }
+
   // Trình phát nhạc nền Mây Hẹn
   const musicButton = $(C('music-toggle'));
   const audio = $(`#${P}audio`);

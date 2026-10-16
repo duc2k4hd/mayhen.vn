@@ -73,28 +73,124 @@ textarea:focus-visible {
     background: var(--paper);
     overflow: hidden;
 }
+/* ==========================================================================
+   OPENING SIDES - 2 CÁNH RÈM CỬA THIỆP MỞ ĐẦU (QUIET LUXURY)
+   Bắt buộc bấm vào cánh trái hoặc cánh phải để mở animation sang 2 bên
+   ========================================================================== */
 .mayhen_invitation_djcvhwiuo9w9_opening-sides {
     position: fixed;
     inset: 0;
-    z-index: 0;
-    pointer-events: none;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
-    justify-content: space-between;
+    overflow: hidden;
+    pointer-events: auto;
+    transition: visibility 1.25s ease;
+    touch-action: manipulation;
 }
+
+.mayhen_invitation_djcvhwiuo9w9_opening-sides.mayhen_invitation_djcvhwiuo9w9_opened {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .mayhen_invitation_djcvhwiuo9w9_card-side {
-    width: calc((100% - 590px) / 2);
-    min-width: 0;
-    background-color: #c9c9c9;
-    background-size: cover;
-    background-position: center;
+    position: relative;
+    width: 50vw;
+    height: 100%;
+    cursor: pointer;
+    will-change: transform;
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    display: flex;
+    align-items: center;
+    overflow: visible;
+    -webkit-tap-highlight-color: transparent;
 }
+
+/* Cánh trái: nền giấy kem ấm, chứa ảnh opening-left.webp */
 .mayhen_invitation_djcvhwiuo9w9_opening-left {
-    background-image:
-        linear-gradient(#ffffff30, #ffffff30), var(--mayhen-g4-opening-left);
+    background-color: #f5f3ef;
+    z-index: 2;
+    transform-origin: left center;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.25);
 }
+
+/* Cánh phải: nền giấy kem ấm, chứa ảnh opening-right.webp */
 .mayhen_invitation_djcvhwiuo9w9_opening-right {
-    background-image:
-        linear-gradient(#ffffff30, #ffffff30), var(--mayhen-g4-opening-right);
+    background-color: #f6f4f0;
+    z-index: 1;
+    transform-origin: right center;
+    overflow: hidden;
+}
+
+/* Hover nhẹ nhàng trên từng cánh cửa */
+.mayhen_invitation_djcvhwiuo9w9_card-side:hover {
+    filter: brightness(1.02);
+}
+
+/* Ảnh của 2 cánh: giữ trọn tỉ lệ chiều cao và căn khít đường viền vàng tại tâm màn hình */
+.mayhen_invitation_djcvhwiuo9w9_opening-img {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Ảnh cánh trái: dịch sang phải để đường kẻ vàng và con dấu sáp vàng thật nằm chính xác tại mép phải cánh trái (tâm màn hình) */
+.mayhen_invitation_djcvhwiuo9w9_opening-img-left {
+    right: calc(-1 * (166 / 2070) * 100vh);
+    object-position: right top;
+}
+
+/* Ảnh cánh phải: dịch sang trái để đường kẻ vàng cánh phải trùng khít với đường kẻ vàng cánh trái tại tâm màn hình */
+.mayhen_invitation_djcvhwiuo9w9_opening-img-right {
+    left: calc(-1 * (70 / 2065) * 100vh);
+    object-position: left top;
+}
+
+/* Vòng sóng ánh sáng vàng tỏa ra nhẹ nhàng quanh con dấu sáp vàng thật có sẵn */
+.mayhen_invitation_djcvhwiuo9w9_seal-pulse-glow {
+    position: absolute;
+    top: 57.5%;
+    right: 0;
+    transform: translate(50%, -50%);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(197, 168, 128, 0.7);
+    box-shadow: 0 0 16px rgba(197, 168, 128, 0.4);
+    animation: mayhen_real_seal_pulse 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    pointer-events: none;
+}
+
+@keyframes mayhen_real_seal_pulse {
+    0% {
+        transform: translate(50%, -50%) scale(0.85);
+        opacity: 0.9;
+    }
+    50% {
+        transform: translate(50%, -50%) scale(1.25);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translate(50%, -50%) scale(1.55);
+        opacity: 0;
+    }
+}
+
+/* Khi mở: Cánh trái trượt sang trái, cánh phải trượt sang phải */
+.mayhen_invitation_djcvhwiuo9w9_opening-sides.mayhen_invitation_djcvhwiuo9w9_opened .mayhen_invitation_djcvhwiuo9w9_opening-left {
+    transform: translate3d(-101%, 0, 0);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_opening-sides.mayhen_invitation_djcvhwiuo9w9_opened .mayhen_invitation_djcvhwiuo9w9_opening-right {
+    transform: translate3d(101%, 0, 0);
 }
 .mayhen_invitation_djcvhwiuo9w9_card-section {
     position: relative;
@@ -1473,9 +1569,7 @@ textarea:focus-visible {
 }
 /* Responsive: full-width invitation on handheld, two-dimensional layout remains readable */
 @media (max-width: 720px) {
-    .mayhen_invitation_djcvhwiuo9w9_opening-sides {
-        display: none;
-    }
+    /* Opening sides preserved for mobile interactive curtain opening */
     .mayhen_invitation_djcvhwiuo9w9_root
         .mayhen_invitation_djcvhwiuo9w9_card-wrapper {
         box-shadow: none;
@@ -1654,9 +1748,7 @@ textarea:focus-visible {
         .mayhen_invitation_djcvhwiuo9w9_card-wrapper {
         margin-block: 0;
     }
-    .mayhen_invitation_djcvhwiuo9w9_card-side {
-        filter: grayscale(1);
-    }
+    /* Retain vibrant natural colors on desktop */
 }
 @media (prefers-reduced-motion: reduce) {
     html {
@@ -1917,4 +2009,283 @@ body:has(.mayhen_preview_topbar) .mayhen_invitation_djcvhwiuo9w9_root {
 @keyframes mayhen_vinyl_spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+/* ==========================================================================
+   NÂNG CẤP GIAO DIỆN QUIET LUXURY - THƯỚC PHIM TÌNH YÊU
+   ========================================================================== */
+
+/* 1. Huy hiệu Monogram Cô dâu & Chú rể */
+.mayhen_invitation_djcvhwiuo9w9_logo {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    box-shadow: 0 4px 24px rgba(156, 122, 74, 0.12), inset 0 0 15px rgba(255, 255, 255, 0.6);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(250, 248, 245, 0.45) 100%);
+    position: relative;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_logo::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 1px dashed rgba(197, 168, 128, 0.3);
+    pointer-events: none;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_monogram-text {
+    font-size: 88px;
+    line-height: 1;
+    font-family: var(--serif);
+    font-style: italic;
+    white-space: nowrap;
+    letter-spacing: -0.22em;
+    transform: translateX(-0.06em);
+    color: #2C2824;
+}
+
+/* 2. Ô số đếm ngược có nhãn phụ Ngày, Giờ, Phút, Giây */
+.mayhen_invitation_djcvhwiuo9w9_box {
+    min-width: 68px;
+    padding: 8px 6px 6px;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 8px;
+    border: 1px solid rgba(216, 194, 157, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_countdown-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8C6A3B;
+    margin-top: 3px;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_colon {
+    font-size: 32px;
+    color: #9C7A4A;
+    font-weight: 300;
+    margin: 0 5px 14px;
+}
+
+/* 3. Phong bì ảnh 3D nổi bật */
+.mayhen_invitation_djcvhwiuo9w9_envelope-wrap {
+    filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.16)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+}
+
+.mayhen_invitation_djcvhwiuo9w9_envelope-picture {
+    border-radius: 4px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.4s var(--ease);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_envelope-wrap:hover .mayhen_invitation_djcvhwiuo9w9_picture-one {
+    transform: rotate(-14deg) translateY(-8px);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_envelope-wrap:hover .mayhen_invitation_djcvhwiuo9w9_picture-two {
+    transform: rotate(12deg) translateY(-8px);
+}
+
+/* 4. Tab chuyển đổi Nhà Trai / Nhà Gái */
+.mayhen_invitation_djcvhwiuo9w9_side-switch {
+    background: #F4EFEB;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    padding: 4px;
+    border-radius: 999px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+    display: inline-flex;
+    gap: 4px;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_side-switch button {
+    border: none;
+    background: transparent;
+    color: #726B63;
+    padding: 9px 24px;
+    border-radius: 999px;
+    font: 600 12px var(--sans);
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_side-switch button.mayhen_invitation_djcvhwiuo9w9_active {
+    background: linear-gradient(135deg, #2B2825 0%, #171513 100%);
+    color: #FAF6ED;
+    box-shadow: 0 4px 14px rgba(27, 24, 21, 0.24);
+}
+
+/* 5. Nút chỉ đường Google Maps sang trọng */
+.mayhen_invitation_djcvhwiuo9w9_location-button {
+    border: 1px solid #9C7A4A;
+    color: #8C6A3B;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 11px 26px;
+    border-radius: 999px;
+    font: 600 12px var(--sans);
+    letter-spacing: 0.08em;
+    box-shadow: 0 3px 12px rgba(156, 122, 74, 0.12);
+    transition: all 0.25s ease;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_location-button:hover {
+    background: #9C7A4A;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(156, 122, 74, 0.28);
+}
+
+/* 6. Ô màu Dresscode viền kép ánh kim */
+.mayhen_invitation_djcvhwiuo9w9_dress-code-swatches span {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(255, 255, 255, 0.85);
+    transition: transform 0.2s ease;
+    cursor: default;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_dress-code-swatches span:hover {
+    transform: scale(1.15);
+}
+
+/* 7. Khung ảnh Polaroid Chú rể & Cô dâu */
+.mayhen_invitation_djcvhwiuo9w9_person-photo {
+    background: #FFFFFF;
+    padding: 10px 10px 34px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-radius: 2px;
+    transition: transform 0.4s var(--ease);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_person-photo:hover {
+    transform: rotate(0deg) scale(1.03) !important;
+}
+
+/* 8. Lưới ảnh 10 ảnh cưới Album dạng Polaroid nghệ thuật */
+.mayhen_invitation_djcvhwiuo9w9_photo {
+    padding: 6px;
+    background: #FFFFFF;
+    border-radius: 4px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_photo:hover {
+    transform: translateY(-5px) scale(1.03) rotate(0deg) !important;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.18);
+    z-index: 5;
+}
+
+/* 9. Trái tim nhịp đập trong lịch cưới */
+.mayhen_invitation_djcvhwiuo9w9_calendar-heart {
+    color: #9C7A4A;
+    animation: mayhen_heartbeat 2.2s ease-in-out infinite;
+}
+
+@keyframes mayhen_heartbeat {
+    0%, 100% {
+        transform: scale(1.05);
+    }
+    50% {
+        transform: scale(1.22);
+    }
+}
+
+/* 10. Biểu tượng Timeline tròn kính mờ sang trọng */
+.mayhen_invitation_djcvhwiuo9w9_timeline-item-icon {
+    width: 68px;
+    height: 68px;
+    min-width: 68px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_timeline-items::before {
+    left: 34px;
+    border-left: 1.5px dashed rgba(197, 168, 128, 0.5);
+}
+
+/* 11. Hộp quà cưới nhún nhảy mời gọi mở hộp */
+.mayhen_invitation_djcvhwiuo9w9_present-box button {
+    animation: mayhen_gift_float 3.2s ease-in-out infinite;
+}
+
+@keyframes mayhen_gift_float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(2deg);
+    }
+}
+
+/* 12. Thẻ RSVP cao cấp */
+.mayhen_invitation_djcvhwiuo9w9_rsvp-card {
+    border-radius: 14px;
+    border: 1px solid rgba(216, 194, 157, 0.38);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06);
+    padding: 26px 22px;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_rsvp-options button {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_rsvp-options button.mayhen_invitation_djcvhwiuo9w9_active {
+    background: linear-gradient(135deg, #1E5E41 0%, #13422D 100%);
+    border-color: #13422D;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(30, 94, 65, 0.28);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_attendance-stepper {
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(216, 194, 157, 0.45);
+    background: #FAF8F5;
+}
+
+.mayhen_invitation_djcvhwiuo9w9_form-button {
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2B2825 0%, #151413 100%);
+    border: 1px solid #151413;
+    box-shadow: 0 4px 16px rgba(21, 20, 19, 0.2);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_form-button:hover {
+    background: linear-gradient(135deg, #9C7A4A 0%, #7E6035 100%);
+    border-color: #7E6035;
+    box-shadow: 0 6px 20px rgba(156, 122, 74, 0.3);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_guestbook-start-button {
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2B2825 0%, #151413 100%);
+    border: 1px solid #151413;
+    box-shadow: 0 4px 16px rgba(21, 20, 19, 0.2);
+}
+
+.mayhen_invitation_djcvhwiuo9w9_guestbook-start-button:hover {
+    background: linear-gradient(135deg, #9C7A4A 0%, #7E6035 100%);
+    border-color: #7E6035;
+    box-shadow: 0 6px 20px rgba(156, 122, 74, 0.3);
 }

@@ -757,9 +757,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - **Tối ưu hóa Phục vụ Asset (`TemplateController::asset`)**: Bổ sung cơ chế fallback tự động tìm kiếm trong thư mục `assets/` con, cho phép nạp asset mượt mà và an toàn.
   - **Database Seeder**: Cập nhật `InvitationTemplateSeeder.php` và seed thành công vào CSDL.
 
+- **Nâng Cấp Giao Diện & Hiệu Ứng Mở Rèm 2 Cánh Mẫu Thiệp "Thước Phim Tình Yêu" (`thuoc-phim-tinh-yeu`)**:
+  - **Cơ chế Mở Rèm 2 Cánh Tương Tác (`opening-sides`)**:
+    + Chuyển đổi lớp 2 cánh rèm (`opening-left` & `opening-right`) thành overlay full-screen cố định (`z-index: 1000`), khớp nối chính xác tại trung tâm màn hình.
+    + Bắt buộc người dùng bấm vào **cánh trái**, **cánh phải**, hoặc **con dấu sáp hoàng gia ở chính giữa** thì animation mở cửa thiệp sang 2 bên mới được kích hoạt (`translate3d(-101%, 0, 0)` và `translate3d(101%, 0, 0)` trong 1.25s).
+    + Con dấu sáp hoàng gia (`.mayhen_invitation_djcvhwiuo9w9_opening-seal`): Viền vàng champagne ánh kim, dập nổi chữ Monogram đôi uyên ương và dòng chữ "MỞ THIỆP" cùng hiệu ứng sóng lan toả (ripple pulse) mời gọi chạm mở.
+    + Sau 1.3s khi kết thúc animation, overlay tự động ẩn hoàn toàn (`visibility: hidden; pointer-events: none;`) để giải phóng tương tác cho thiệp bên dưới.
+    + Xóa bỏ triệt để quy tắc `display: none` trên màn hình di động, mang lại trải nghiệm mở rèm thiệp đôi đỉnh cao trên mọi thiết bị (Mobile-First).
+    + Tự động kích hoạt phát nhạc nền du dương ngay khi người dùng chạm mở thiệp (User Interaction Gesture Playback).
+  - **Nâng Cấp Thẩm Mỹ Toàn Diện Giao Diện Thiệp (Chuẩn Quiet Luxury)**:
+    + **Monogram Cặp Đôi**: Bổ sung huy hiệu tròn viền kép mạ vàng champagne mờ, chữ lồng nhau nghệ thuật và đổ bóng giấy mỹ thuật sang trọng.
+    + **Bộ Đếm Ngược Ngày Cưới**: Bổ sung nhãn phụ Ngày, Giờ, Phút, Giây bằng font Sans thanh mảnh, căn giữa các ô số có nền kính mờ tinh xảo.
+    + **Phong Bì Ảnh 3D & Lồng Ảnh**: Đổ bóng nhiều tầng chân thật, hiệu ứng hover xoay vươn ảnh sống động.
+    + **Tab Chuyển Đổi Sảnh Tiệc Nhà Trai / Nhà Gái**: Bo góc tròn dạng viên ngọc (pill), viền vàng champagne ấm áp, gradient mềm mại.
+    + **Nút Chỉ Đường Google Maps**: Bo góc 999px, viền và icon mạ vàng ánh kim, hover nổi bật êm ái.
+    + **Khung Ảnh Chú Rể & Cô Dâu (Love Story)**: Viền trắng lưu niệm Polaroid cổ điển, bề mặt giấy mỹ thuật gân nổi, hover đưa ảnh về góc thẳng tự nhiên.
+    + **Dải Phim & Lưới Album Cưới**: Dải phim cuộn ngang vintage 35mm mượt mà, lưới 10 ảnh Polaroid nghệ thuật, hover zoom nhẹ kèm bóng đổ mềm.
+    + **Lịch Ngày Cưới**: Trái tim bao quanh ngày cưới số 7 có animation nhịp đập (heartbeat) lãng mạn.
+    + **Lịch Trình Tiệc Cưới (Timeline)**: Icon tròn kính mờ viền vàng champagne mờ, đường timeline nối dọc xuyên qua tâm hoàn hảo.
+    + **Hộp Mừng Cưới & RSVP**: Hộp quà có animation nhún nhảy mời gọi mở hộp, modal QR Code ngân hàng sắc nét, thẻ RSVP nút bấm rõ ràng và thanh lịch.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 
