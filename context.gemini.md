@@ -785,6 +785,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
       * Giúp người dùng khi bấm chuyển qua lại giữa 2 tab Nhà gái / Nhà trai sẽ thấy ngay lập tức sự kiện tương ứng (ngày giờ, sảnh tiệc, địa chỉ và nút chỉ đường) thay đổi trực quan trước mắt mà không cần phải cuộn xuống dưới.
       * Tinh chỉnh khoảng cách thẩm mỹ: `margin: 28px auto 0; padding: 20px 15px 0; border-top: 1px solid rgba(0, 0, 0, 0.08);` cho khối sự kiện, và bổ sung đường nét đứt mờ nhạt (`border-top: 1px dashed rgba(0, 0, 0, 0.12); margin-top: 46px;`) phân tách êm dịu phần lời mời "Thân mời Quý vị & Gia đình..." và tên cô dâu chú rể ở bên dưới.
 
+- **Tạo Master Prompt Tích Hợp Template Mới (`PROMPT_INTEGRATE_TEMPLATE.md`)**:
+  - Cung cấp sẵn một file hướng dẫn chuẩn hóa (Master Prompt) tại thư mục gốc của repository.
+  - Sau này khi có bất kỳ giao diện template thiệp cưới mới nào (HTML/CSS/JS tĩnh hoặc từ file thiết kế), chỉ cần copy toàn bộ nội dung file prompt này, điền tên mẫu, slug, prefix ID và đường dẫn thư mục nguồn rồi gửi cho AI là hệ thống sẽ tự động chuyển đổi và tích hợp chuẩn xác 100% theo toàn bộ quy chuẩn của Mây Hẹn (Pure HTML/CSS/Native JS, dynamic data fallback, Mobile-First, RSVP, Sổ lưu bút, Hộp mừng cưới, Nhạc nền, Seeder DB, Lint và testing).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
