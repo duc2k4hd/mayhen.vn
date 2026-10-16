@@ -764,7 +764,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     + Con dấu sáp hoàng gia (`.mayhen_invitation_djcvhwiuo9w9_opening-seal`): Viền vàng champagne ánh kim, dập nổi chữ Monogram đôi uyên ương và dòng chữ "MỞ THIỆP" cùng hiệu ứng sóng lan toả (ripple pulse) mời gọi chạm mở.
     + Sau 1.3s khi kết thúc animation, overlay tự động ẩn hoàn toàn (`visibility: hidden; pointer-events: none;`) để giải phóng tương tác cho thiệp bên dưới.
     + Xóa bỏ triệt để quy tắc `display: none` trên màn hình di động, mang lại trải nghiệm mở rèm thiệp đôi đỉnh cao trên mọi thiết bị (Mobile-First).
-    + Tự động kích hoạt phát nhạc nền du dương ngay khi người dùng chạm mở thiệp (User Interaction Gesture Playback).
+    + **Cơ chế Khóa Cuộn & Tự Động Về Đầu Trang**:
+      * Khi load trang, hệ thống tự động thiết lập `history.scrollRestoration = 'manual'` và đưa vị trí trang về đỉnh (`window.scrollTo(0, 0)`).
+      * Toàn bộ trang bị khóa cuộn (`overflow: hidden; touch-action: none; overscroll-behavior: none;`) để người dùng không thể cuộn xem nội dung khi chưa mở rèm.
+      * Ngay khi người dùng chạm mở cánh trái hoặc cánh phải, hiệu ứng mở rèm kích hoạt và hệ thống tự động gỡ khóa cuộn, cho phép người dùng cuộn xem toàn bộ thiệp cưới mượt mà.
   - **Nâng Cấp Thẩm Mỹ Toàn Diện Giao Diện Thiệp (Chuẩn Quiet Luxury)**:
     + **Monogram Cặp Đôi**: Bổ sung huy hiệu tròn viền kép mạ vàng champagne mờ, chữ lồng nhau nghệ thuật và đổ bóng giấy mỹ thuật sang trọng.
     + **Bộ Đếm Ngược Ngày Cưới**: Bổ sung nhãn phụ Ngày, Giờ, Phút, Giây bằng font Sans thanh mảnh, căn giữa các ô số có nền kính mờ tinh xảo.

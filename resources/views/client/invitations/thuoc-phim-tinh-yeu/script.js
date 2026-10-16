@@ -403,10 +403,23 @@
   const openingSides = $(C('opening-sides'));
   if (openingSides) {
     let isOpened = false;
+
+    // Khi load trang: mặc định cuộn về đầu trang và khóa cuộn cho đến khi mở thiệp
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    document.documentElement.classList.add(`${P}no-scroll`);
+    document.body.classList.add(`${P}no-scroll`);
+
     const openInvitation = () => {
       if (isOpened) return;
       isOpened = true;
       openingSides.classList.add(`${P}opened`);
+
+      // Mở khóa cuộn trang
+      document.documentElement.classList.remove(`${P}no-scroll`);
+      document.body.classList.remove(`${P}no-scroll`);
 
       // Tự động phát nhạc nền khi mở thiệp
       const audioEl = $(`#${P}audio`);

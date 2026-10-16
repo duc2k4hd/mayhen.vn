@@ -88,7 +88,7 @@ textarea:focus-visible {
     overflow: hidden;
     pointer-events: auto;
     transition: visibility 1.25s ease;
-    touch-action: manipulation;
+    touch-action: none;
 }
 
 .mayhen_invitation_djcvhwiuo9w9_opening-sides.mayhen_invitation_djcvhwiuo9w9_opened {
@@ -1564,8 +1564,12 @@ textarea:focus-visible {
     font: 600 13px var(--sans);
     letter-spacing: 0.1em;
 }
+html.mayhen_invitation_djcvhwiuo9w9_no-scroll,
+body.mayhen_invitation_djcvhwiuo9w9_no-scroll,
 .mayhen_invitation_djcvhwiuo9w9_no-scroll {
     overflow: hidden !important;
+    height: 100% !important;
+    overscroll-behavior: none !important;
 }
 /* Responsive: full-width invitation on handheld, two-dimensional layout remains readable */
 @media (max-width: 720px) {
