@@ -1,10 +1,26 @@
 (() => {
   'use strict';
+
+  // Tự động đưa trang về đầu khi tải lại (F5 / Reload / History Navigation)
+  // Bắt buộc xem phần mở phong thư trước khi mở khóa nội dung
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+
   const prefix = 'mayhen_invitation_dhsuudushi9428r_';
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const byId = name => document.getElementById(prefix + name);
   const className = name => '.' + prefix + name;
+
+  // Đảm bảo cuộn về đỉnh khi DOM sẵn sàng và sau khi toàn bộ tài nguyên đã nạp
+  document.addEventListener('DOMContentLoaded', () => {
+    window.scrollTo(0, 0);
+  });
+  window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+  });
 
   // 1. KHỞI TẠO LỊCH CƯỚI (CALENDAR)
   const calendar = byId('calendar');

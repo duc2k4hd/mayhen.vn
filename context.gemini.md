@@ -662,9 +662,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Kết quả kiểm thử: **18/18 tests passed (213 assertions)**.
   - Laravel Pint: **100% formatted & passed**.
 
+### 📌 Phiên bản 1.1.9 — Chuẩn Hóa Tỷ Lệ Ảnh Bìa 3/4 & Tự Động Cuộn Về Đỉnh Khi Nạp Trang (net-muc-tinh-yeu)
+- **Chuẩn hóa tỷ lệ ảnh cưới mở đầu 3/4 (`aspect-ratio: 3 / 4`)**:
+  - Khắc phục triệt để tình trạng ảnh cưới nằm ngang bị méo mó, co ép hoặc sai lệch tỉ lệ dọc chuẩn studio cưới:
+    + Thẻ phong bì `.mayhen_invitation_dhsuudushi9428r_envelope_stage` được mở rộng kích thước lên `width: min(320px, 86vw); height: 225px;`.
+    + Tấm thiệp bên trong `.mayhen_invitation_dhsuudushi9428r_envelope_letter` được tăng chiều cao lên `height: 250px;` với cấu trúc flex dọc gọn gàng.
+    + Ảnh thiệp `.mayhen_invitation_dhsuudushi9428r_envelope_letter_img` được thiết lập chính xác `aspect-ratio: 3 / 4; max-width: 160px; height: auto; object-fit: cover;`, hiển thị trọn vẹn vẻ đẹp khung hình chân dung của cô dâu chú rể.
+    + Khi mở thiệp (`.mayhen_opened`), tấm thiệp trồi lên cao hơn (`transform: translateY(-135px) scale(1.02);`), hé lộ đầy đủ 100% ảnh cưới 3/4 sắc nét mà không bị che khuất bởi nắp và mép phong bì.
+- **Tự động cuộn về đỉnh trang khi tải lại (Auto Scroll To Top on Reload)**:
+  - Khắc phục lỗi khi người dùng đang ở cuối trang bấm F5 / Reload trang bị trình duyệt giữ vị trí cuộn ở dưới, làm người xem bỏ lỡ trải nghiệm chạm mở phong thư bắt buộc.
+  - Vô hiệu hóa tính năng nhớ vị trí cuộn mặc định của trình duyệt: `history.scrollRestoration = 'manual'`.
+  - Thực thi `window.scrollTo(0, 0)` ngay lập tức khi file script thực thi, kết hợp lắng nghe cả sự kiện `DOMContentLoaded` và `load` để đảm bảo trang luôn bắt đầu từ màn hình phong thư trang trọng.
+- **Đồng bộ hóa 100% mã nguồn**:
+  - Đã cập nhật song song tại `resources/views/client/invitations/net-muc-tinh-yeu/` và `public/assets/client/invitations/net-muc-tinh-yeu/` (`styles.css` & `script.js`).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 
