@@ -795,6 +795,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - **Artisan Command `php artisan musics:refresh`**: Bổ sung lệnh console cho phép quản trị viên hoặc lập trình viên chủ động quét lại và in ra thống kê bài hát.
   - **API Query Parameter**: Hỗ trợ param `GET /api/wedding-musics?refresh=1` để ép làm mới cache trực tiếp từ trình duyệt.
 
+- **Thiết Kế Split Hero Layout 2 Cột Trang Kho Mẫu Thiệp (`/mau-thiep`) Chuẩn Quiet Luxury**:
+  - **Bố Cục 2 Bên (Split Grid Hero)**: Thay thế khối text căn giữa đơn điệu bằng layout 2 cột bất đối xứng thanh lịch (`grid-template-columns: 1.15fr 0.85fr;`), đặt trong khung nền gradient cát ấm `rgba(248, 245, 239, 0.94)`, viền chỉ vàng champagne mỏng và đổ bóng đa tầng mềm mại.
+  - **Cột Trái (Editorial Copy & Feature Badges)**:
+    + **Kicker / Eyebrow**: Huy hiệu nhỏ bo tròn `Bộ Sưu Tập Mẫu Thiệp 2026` kèm icon ngôi sao tinh tế và chữ lồng `MÂY HẸN STUDIO`.
+    + **H1 & SEO Copy**: Tiêu đề Serif quý phái `Mẫu Thiệp Cưới Đẹp & Thiệp Mời Online Cao Cấp`, đoạn văn mô tả mềm mại chuẩn Semantic SEO tối ưu cho các cụm từ khóa tìm kiếm (mẫu thiệp cưới đẹp, thiệp cưới online, mở phong thư tem sáp, tự tạo miễn phí, chia sẻ Zalo).
+    + **Lưới 4 Feature Badges (2x2)**: Thẻ tính năng độc bản có icon SVG mạ vàng cát (Tự tạo miễn phí 2 phút, Mở phong thư tem sáp, RSVP & Bản đồ GPS, Tự phát nhạc cưới 20+ bài), hover nhấc nhẹ thanh thoát.
+  - **Cột Phải (Visual Showcase Mockup & Stickers Độc Bản)**:
+    + **Showcase Art Card**: Khung thiệp giấy mỹ thuật xoay nhẹ góc nghiêng 3D (`rotate(-2deg)`), lồng ảnh cưới nghệ thuật editorial, đổ bóng chiều sâu cao cấp và typography dập chữ nổi ("Minh Triết & Thảo Linh · Save The Date").
+    + **Sticker Con Dấu Sáp Hoàng Gia 3D (Wax Seal)**: Tem sáp đỏ rượu Ruby dập nổi monogram `MH SEAL`, viền chỉ trắng mờ và đổ bóng 3D chân thực ở góc trên của thiệp.
+    + **Floating Stickers Tương Tác**: 
+      * Sticker nổi `✨ Chạm mở tương tác` hiệu ứng trôi bồng bềnh (floating animation).
+      * Sticker nổi `🎵 Tự động phát nhạc` kèm dải sóng âm equalizer nhảy nhịp nhàng (`@keyframes mayhenEqBounce`).
+      * Nhãn gập góc `Quiet Luxury` đậm phong cách thiệp cưới châu Âu.
+  - **Responsive Mobile-First**: Tự động xếp chồng cột mượt mà trên tablet và mobile (<992px), bo góc gọn gàng, co giãn ảnh và nhãn dán tỉ lệ vàng, không tràn viền màn hình.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -4,35 +4,438 @@
  */
 
 .mayhen_templates_header {
-    text-align: center;
-    padding-top: var(--mayhen-space-2xl);
-    padding-bottom: var(--mayhen-space-lg);
+    width: 100%;
+    margin-top: var(--mayhen-space-md);
+    margin-bottom: var(--mayhen-space-xl);
+    padding: 0;
 }
 
-.mayhen_templates_kicker {
-    display: inline-block;
+.mayhen_templates_hero_split {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 245, 239, 0.94) 100%);
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    border-radius: 24px;
+    padding: 36px 44px;
+    box-shadow: 0 16px 40px -16px rgba(42, 37, 33, 0.06), 0 2px 8px rgba(197, 168, 128, 0.08);
+    position: relative;
+    overflow: visible;
+}
+
+/* Cột Trái: Content & Badges */
+.mayhen_templates_hero_content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.mayhen_templates_kicker_wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.mayhen_templates_kicker_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--mayhen-color-primary-soft);
+    color: #8C6D3F;
     font-size: 0.75rem;
     font-weight: 600;
+    padding: 4px 12px;
+    border-radius: var(--mayhen-radius-pill);
+    letter-spacing: 0.02em;
+}
+
+.mayhen_templates_kicker_sub {
+    font-size: 0.6875rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--mayhen-color-primary);
-    margin-bottom: var(--mayhen-space-xs);
+    letter-spacing: 0.16em;
+    color: var(--mayhen-color-text-muted);
 }
 
 .mayhen_templates_title {
-    font-size: var(--mayhen-font-size-h1);
+    font-size: clamp(1.75rem, 3.2vw, 2.45rem);
+    line-height: 1.25;
     color: var(--mayhen-color-text-main);
-    margin-bottom: var(--mayhen-space-xs);
+    margin-bottom: 14px;
     font-family: var(--mayhen-font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
 }
 
 .mayhen_templates_desc {
+    color: #5C5650;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.mayhen_templates_desc strong {
+    color: var(--mayhen-color-text-main);
+    font-weight: 600;
+}
+
+/* Features Grid (4 Badges) */
+.mayhen_templates_features_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 14px;
+    margin-top: 24px;
+    width: 100%;
+}
+
+.mayhen_templates_feature_item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(232, 227, 218, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    transition: all var(--mayhen-transition-fast);
+}
+
+.mayhen_templates_feature_item:hover {
+    border-color: var(--mayhen-color-primary);
+    background: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(197, 168, 128, 0.12);
+}
+
+.mayhen_templates_feature_icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--mayhen-color-primary-soft);
+    color: #8C6D3F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_templates_feature_text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mayhen_templates_feature_text strong {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_templates_feature_text span {
+    font-size: 0.75rem;
     color: var(--mayhen-color-text-muted);
-    font-size: var(--mayhen-font-size-base);
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Cột Phải: Visual Showcase Card & Stickers */
+.mayhen_templates_hero_visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    user-select: none;
+}
+
+.mayhen_templates_showcase_stage {
+    position: relative;
+    width: 100%;
+    max-width: 310px;
+    aspect-ratio: 3 / 4;
+}
+
+.mayhen_templates_showcase_glow {
+    position: absolute;
+    inset: -12%;
+    background: radial-gradient(circle at center, rgba(197, 168, 128, 0.28) 0%, rgba(212, 165, 165, 0.14) 45%, transparent 70%);
+    filter: blur(28px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Thẻ thiệp chính */
+.mayhen_templates_art_card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    padding: 7px;
+    background: linear-gradient(145deg, #FAF8F5 0%, #EDE6DC 100%);
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    box-shadow: 0 22px 45px -12px rgba(45, 35, 25, 0.18), 0 4px 10px rgba(0, 0, 0, 0.04);
+    transform: rotate(-2deg);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+}
+
+.mayhen_templates_art_card:hover {
+    transform: rotate(0deg) scale(1.02);
+    box-shadow: 0 28px 56px -14px rgba(45, 35, 25, 0.24);
+}
+
+.mayhen_templates_art_card_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #2A2521;
+}
+
+.mayhen_templates_art_photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+    display: block;
+}
+
+.mayhen_templates_art_overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 14px 14px;
+    background: linear-gradient(to top, rgba(28, 25, 23, 0.88) 0%, rgba(28, 25, 23, 0.45) 60%, transparent 100%);
+    color: #FFFFFF;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_templates_art_tagline {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #E8D8C3;
+}
+
+.mayhen_templates_art_couple {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 4px 0 2px;
+    color: #FFFFFF;
+}
+
+.mayhen_templates_art_divider {
+    width: 32px;
+    height: 1px;
+    background: rgba(232, 216, 195, 0.5);
+    margin: 4px 0;
+}
+
+.mayhen_templates_art_date {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.82);
+    letter-spacing: 0.08em;
+}
+
+/* STICKER 1: Con dấu sáp hoàng gia 3D nổi */
+.mayhen_templates_sticker_wax {
+    position: absolute;
+    top: -14px;
+    right: -12px;
+    z-index: 5;
+}
+
+.mayhen_templates_wax_seal {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #A62B3A 0%, #7A1926 70%, #58101A 100%);
+    box-shadow: 0 8px 18px rgba(122, 25, 38, 0.42), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2px dashed rgba(255, 255, 255, 0.28);
+    transition: transform 0.3s ease;
+}
+
+.mayhen_templates_wax_seal:hover {
+    transform: rotate(8deg) scale(1.05);
+}
+
+.mayhen_templates_wax_inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mayhen_templates_wax_monogram {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FFE8D6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    line-height: 1;
+    letter-spacing: 0.05em;
+}
+
+.mayhen_templates_wax_sub {
+    font-size: 0.45rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #F0C9AF;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* STICKER 2 & 3: Floating Pills */
+.mayhen_templates_floating_pill {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    border-radius: var(--mayhen-radius-pill);
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    box-shadow: 0 10px 24px -4px rgba(45, 35, 25, 0.15);
+    z-index: 5;
+    pointer-events: none;
+}
+
+.mayhen_templates_pill_touch {
+    bottom: 22px;
+    left: -22px;
+    animation: mayhenFloatTouch 4.2s ease-in-out infinite alternate;
+}
+
+.mayhen_templates_pill_music {
+    top: 36%;
+    right: -24px;
+    animation: mayhenFloatMusic 4.8s ease-in-out infinite alternate;
+}
+
+.mayhen_templates_pill_sparkle {
+    font-size: 0.8125rem;
+}
+
+.mayhen_templates_pill_label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    white-space: nowrap;
+}
+
+/* Sound Bars animation */
+.mayhen_templates_audio_eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 13px;
+}
+
+.mayhen_templates_eq_bar {
+    width: 2.5px;
+    height: 100%;
+    background-color: var(--mayhen-color-primary);
+    border-radius: 1px;
+    animation: mayhenEqBounce 1.2s ease-in-out infinite alternate;
+}
+
+.mayhen_templates_eq_bar:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.mayhen_templates_eq_bar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+.mayhen_templates_eq_bar:nth-child(3) { height: 60%; animation-delay: 0.5s; }
+
+/* STICKER 4: Ribbon Badge */
+.mayhen_templates_ribbon_badge {
+    position: absolute;
+    top: 16px;
+    left: -8px;
+    z-index: 4;
+    background: var(--mayhen-color-text-main);
+    color: #F7F4EE;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px 8px 8px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Micro-animations */
+@keyframes mayhenFloatTouch {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-7px); }
+}
+
+@keyframes mayhenFloatMusic {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(6px); }
+}
+
+@keyframes mayhenEqBounce {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(1); }
+}
+
+/* Responsive Split Layout */
+@media (max-width: 991px) {
+    .mayhen_templates_hero_split {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        padding: 28px 22px;
+    }
+
+    .mayhen_templates_showcase_stage {
+        max-width: 270px;
+    }
+
+    .mayhen_templates_pill_touch {
+        left: -10px;
+        bottom: 14px;
+    }
+
+    .mayhen_templates_pill_music {
+        right: -10px;
+        top: 32%;
+    }
+}
+
+@media (max-width: 576px) {
+    .mayhen_templates_hero_split {
+        padding: 22px 16px;
+        border-radius: 18px;
+    }
+
+    .mayhen_templates_features_grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .mayhen_templates_title {
+        font-size: 1.6rem;
+    }
 }
 
 /* Category Filter Bar */
@@ -364,30 +767,42 @@
     font-weight: 500;
 }
 
-/* Highlights Bar */
+/* Highlights Bar (Clean Feature Badges) */
 .mayhen_templates_highlights_bar {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: var(--mayhen-space-lg);
-    margin-top: var(--mayhen-space-md);
+    gap: 8px 12px;
+    margin-top: 18px;
     margin-bottom: var(--mayhen-space-lg);
-    font-size: var(--mayhen-font-size-small);
-    color: var(--mayhen-color-text-muted);
 }
 
 .mayhen_templates_highlight_item {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: var(--mayhen-radius-pill);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(216, 206, 189, 0.65);
+    font-size: 0.78125rem;
+    font-weight: 500;
+    color: var(--mayhen-color-text-main);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all var(--mayhen-transition-fast);
 }
 
-.mayhen_templates_highlight_dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--mayhen-color-primary);
+.mayhen_templates_highlight_item:hover {
+    background: #FFFFFF;
+    border-color: var(--mayhen-color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mayhen_templates_highlight_item svg {
+    color: var(--mayhen-color-primary);
+    flex-shrink: 0;
 }
 
 /* SEO Content Hub Section */

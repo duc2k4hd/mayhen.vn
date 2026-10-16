@@ -138,30 +138,138 @@
             </ul>
         </div>
 
-        {{-- Header Hero --}}
+        {{-- Header Hero (Quiet Luxury Split Layout & Clean SEO) --}}
         <header class="mayhen_templates_header">
-            <span class="mayhen_templates_kicker">Bộ Sưu Tập Mẫu Thiệp Cưới Đẹp {{ date('Y') }}</span>
-            <h1 class="mayhen_templates_title">Mẫu Thiệp Cưới Đẹp, Mẫu Thiệp Cưới Online Xu Hướng {{ date('Y') }}</h1>
-            <p class="mayhen_templates_desc">
-                Tuyển chọn những <strong>mẫu thiệp cưới đẹp</strong> và <strong>mẫu thiệp cưới online</strong> được thiết kế theo phong cách Quiet Luxury, Minimalist tinh tế và hoàng gia mở phong thư tem sáp. Trải nghiệm xem trước trực quan, tự tạo miễn phí và gửi thiệp mời tức thì qua Zalo.
-            </p>
+            <div class="mayhen_templates_hero_split">
+                {{-- Cột Trái: Tiêu đề, SEO Description & Feature Badges --}}
+                <div class="mayhen_templates_hero_content">
+                    <div class="mayhen_templates_kicker_wrap">
+                        <span class="mayhen_templates_kicker_badge">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                                <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z"/>
+                            </svg>
+                            Bộ Sưu Tập Mẫu Thiệp Cưới Đẹp {{ date('Y') }}
+                        </span>
+                        <span class="mayhen_templates_kicker_sub">MÂY HẸN STUDIO</span>
+                    </div>
 
-            <div class="mayhen_templates_highlights_bar">
-                <div class="mayhen_templates_highlight_item">
-                    <span class="mayhen_templates_highlight_dot"></span>
-                    <span>Tự tạo miễn phí 100% trên điện thoại</span>
+                    <h1 class="mayhen_templates_title">Mẫu Thiệp Cưới Đẹp &amp; Thiệp Mời Online Cao Cấp</h1>
+
+                    <p class="mayhen_templates_desc">
+                        Tuyển chọn những <strong>mẫu thiệp cưới đẹp</strong> và <strong>thiệp cưới online</strong> cao cấp theo phong cách Quiet Luxury, Minimalist và Hoàng gia mở phong thư tem sáp. Trải nghiệm xem thử tương tác chân thực, dễ dàng tự tạo thiệp miễn phí và chia sẻ tức thì qua Zalo.
+                    </p>
+
+                    {{-- 4 Feature Highlights dạng Clean Badges có Icon --}}
+                    <div class="mayhen_templates_features_grid" role="list" aria-label="Đặc quyền thiệp cưới Mây Hẹn">
+                        <div class="mayhen_templates_feature_item" role="listitem">
+                            <span class="mayhen_templates_feature_icon" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" width="16" height="16" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="5" y="2" width="10" height="16" rx="2"/>
+                                    <path d="M9 15h2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <div class="mayhen_templates_feature_text">
+                                <strong>Tự tạo miễn phí</strong>
+                                <span>Setup 2 phút trên điện thoại</span>
+                            </div>
+                        </div>
+
+                        <div class="mayhen_templates_feature_item" role="listitem">
+                            <span class="mayhen_templates_feature_icon" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" width="16" height="16" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H15.5A1.5 1.5 0 0 1 17 5.5V14.5A1.5 1.5 0 0 1 15.5 16H4.5A1.5 1.5 0 0 1 3 14.5V5.5Z"/>
+                                    <path d="M3.5 5.5L10 10.5L16.5 5.5" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <div class="mayhen_templates_feature_text">
+                                <strong>Mở phong thư tem sáp</strong>
+                                <span>Tương tác chạm mở độc bản</span>
+                            </div>
+                        </div>
+
+                        <div class="mayhen_templates_feature_item" role="listitem">
+                            <span class="mayhen_templates_feature_icon" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" width="16" height="16" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M10 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                                    <path d="M10 2.5c-3.04 0-5.5 2.46-5.5 5.5 0 4.125 5.5 9.5 5.5 9.5s5.5-5.375 5.5-9.5c0-3.04-2.46-5.5-5.5-5.5Z"/>
+                                </svg>
+                            </span>
+                            <div class="mayhen_templates_feature_text">
+                                <strong>RSVP &amp; Bản đồ GPS</strong>
+                                <span>Mã QR mừng cưới tiện lợi</span>
+                            </div>
+                        </div>
+
+                        <div class="mayhen_templates_feature_item" role="listitem">
+                            <span class="mayhen_templates_feature_icon" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" fill="none" width="16" height="16" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9 14.5V5.5l7-2v9"/>
+                                    <circle cx="6.5" cy="14.5" r="2.5"/>
+                                    <circle cx="16" cy="12.5" r="2.5"/>
+                                </svg>
+                            </span>
+                            <div class="mayhen_templates_feature_text">
+                                <strong>Tự phát nhạc cưới</strong>
+                                <span>20+ giai điệu lãng mạn nhẹ nhàng</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="mayhen_templates_highlight_item">
-                    <span class="mayhen_templates_highlight_dot"></span>
-                    <span>Tích hợp mã QR mừng cưới & sơ đồ GPS</span>
-                </div>
-                <div class="mayhen_templates_highlight_item">
-                    <span class="mayhen_templates_highlight_dot"></span>
-                    <span>Form xác nhận tham dự (RSVP) tự động</span>
-                </div>
-                <div class="mayhen_templates_highlight_item">
-                    <span class="mayhen_templates_highlight_dot"></span>
-                    <span>Hơn 10+ phong cách nghệ thuật độc quyền</span>
+
+                {{-- Cột Phải: Visual Showcase Card & Stickers & Mockup Nghệ Thuật --}}
+                <div class="mayhen_templates_hero_visual" aria-hidden="true">
+                    <div class="mayhen_templates_showcase_stage">
+                        {{-- Ánh sáng lan tỏa nhẹ phía sau --}}
+                        <div class="mayhen_templates_showcase_glow"></div>
+
+                        {{-- Thẻ thiệp mẫu chính (Invitation Art Card) --}}
+                        <div class="mayhen_templates_art_card">
+                            <div class="mayhen_templates_art_card_inner">
+                                <img src="{{ route('templates.asset', ['slug' => 'thuoc-phim-tinh-yeu', 'path' => 'feecd763-f272-424b-9985-b4f3d68d7fb1.jpg']) }}" 
+                                     alt="Mẫu thiệp cưới đẹp Mây Hẹn" 
+                                     class="mayhen_templates_art_photo" 
+                                     loading="eager">
+                                <div class="mayhen_templates_art_overlay">
+                                    <span class="mayhen_templates_art_tagline">WEDDING INVITATION</span>
+                                    <span class="mayhen_templates_art_couple">Minh Triết &amp; Thảo Linh</span>
+                                    <div class="mayhen_templates_art_divider"></div>
+                                    <span class="mayhen_templates_art_date">Save The Date · {{ date('Y') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- STICKER 1: Con dấu sáp hoàng gia 3D nổi (Wax Seal Badge) --}}
+                        <div class="mayhen_templates_sticker_wax">
+                            <div class="mayhen_templates_wax_seal">
+                                <div class="mayhen_templates_wax_rim"></div>
+                                <div class="mayhen_templates_wax_inner">
+                                    <span class="mayhen_templates_wax_monogram">MH</span>
+                                    <span class="mayhen_templates_wax_sub">SEAL</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- STICKER 2: Floating Pill "✨ Chạm Mở Tương Tác" --}}
+                        <div class="mayhen_templates_floating_pill mayhen_templates_pill_touch">
+                            <span class="mayhen_templates_pill_sparkle">✨</span>
+                            <span class="mayhen_templates_pill_label">Chạm mở tương tác</span>
+                        </div>
+
+                        {{-- STICKER 3: Floating Pill "🎵 Tự động phát nhạc" --}}
+                        <div class="mayhen_templates_floating_pill mayhen_templates_pill_music">
+                            <span class="mayhen_templates_audio_eq">
+                                <span class="mayhen_templates_eq_bar"></span>
+                                <span class="mayhen_templates_eq_bar"></span>
+                                <span class="mayhen_templates_eq_bar"></span>
+                            </span>
+                            <span class="mayhen_templates_pill_label">Tự động phát nhạc</span>
+                        </div>
+
+                        {{-- STICKER 4: Sticker góc nhãn Quiet Luxury --}}
+                        <div class="mayhen_templates_ribbon_badge">
+                            <span>Quiet Luxury</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
