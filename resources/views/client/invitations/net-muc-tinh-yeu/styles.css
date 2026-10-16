@@ -231,9 +231,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   position: relative;
   width: min(320px, 86vw);
   height: 225px;
-  margin: 130px auto 18px auto;
+  margin: 18px auto;
   perspective: 900px;
   z-index: 5;
+  transition: margin 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.15);
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope {
@@ -271,15 +272,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* Tấm thiệp mời bên trong (Letter inside) */
 .mayhen_invitation_dhsuudushi9428r_envelope_letter {
   position: absolute;
-  left: 18px;
-  right: 18px;
+  left: 10px;
+  right: 10px;
   bottom: 8px;
-  height: 240px;
+  height: 275px;
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
   border: 1px solid #e2ddd5;
-  padding: 8px 8px 6px;
+  padding: 6px 6px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -287,13 +288,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   text-align: center;
   z-index: 2;
   transition: transform 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.15), box-shadow 0.6s ease;
-  transform: translateY(32px) scale(0.96);
+  transform: translateY(35px) scale(0.96);
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope_letter_img {
   width: 100%;
-  max-width: 145px;
   aspect-ratio: 3 / 4;
+  max-height: 242px;
   height: auto;
   border-radius: 6px;
   object-fit: cover;
@@ -304,7 +305,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope_letter_text {
-  margin-top: 6px;
+  margin-top: 5px;
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -389,9 +390,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .mayhen_invitation_dhsuudushi9428r_envelope.mayhen_opened .mayhen_invitation_dhsuudushi9428r_envelope_letter {
-  transform: translateY(-68px) scale(1.01);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  transform: translateY(-95px) scale(1.02);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
   z-index: 2;
+}
+
+/* Animation đẩy phong bì xuống 160px mượt mà khi mở thiệp */
+.mayhen_opened_state .mayhen_invitation_dhsuudushi9428r_envelope_stage,
+.mayhen_invitation_dhsuudushi9428r_envelope_stage:has(.mayhen_opened) {
+  margin: 160px auto 18px auto;
 }
 
 /* Hướng dẫn mở & Nút mở thiệp */

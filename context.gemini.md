@@ -714,7 +714,8 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Cập nhật Bố Cục Tên Đôi Uyên Ương Phần Mở Đầu Thiệp (`net-muc-tinh-yeu`)**:
   - Chuyển từ dạng ngang 1 hàng sang bố cục dọc 3 tầng sang trọng: Tên Chú Rể (trên) -> Trái tim vàng `❤` (giữa) -> Tên Cô Dâu (dưới).
 - **Nâng cấp Hiệu Ứng Phong Bì 3D Mở Thiệp (`net-muc-tinh-yeu`)**:
-  - Tinh chỉnh chiều cao trồi lên của lá thư (`envelope_letter`) từ `-135px` xuống `-68px`: không bị đẩy lên quá cao làm che mất tên cô dâu chú rể và ngày cưới ở trên.
+  - Bỏ giới hạn `max-width` ở ảnh thiệp chính (`envelope_letter_img`), mở rộng chiều ngang ảnh chiếm trọn 100% bề ngang lá thư, to ngang gần bằng phong bì nhìn sang trọng và nổi bật.
+  - Tích hợp **Animation chuyển đổi khoảng cách động (Dynamic Margin Animation)**: Khi tải trang, phong bì giữ khoảng cách gọn gàng `margin: 18px auto`. Khi bấm mở thiệp, phong bì tự động trượt êm ái xuống `margin: 160px auto 18px auto` (`transition: margin 0.9s cubic-bezier(...)`), tạo khoảng không gian thoáng đãng cho bức ảnh cưới to vươn lên mà không che mất tên cô dâu chú rể.
   - Thiết lập chiều sâu 3D chân thực: giữ nguyên `z-index: 2` dưới lớp túi mặt trước phong bì `envelope_pocket` (`z-index: 3`) kèm đổ bóng drop-shadow tự nhiên, giữ khoảng 20% phần đáy của lá thư và ảnh cưới nằm cắm sâu bên trong lòng phong bì, 80% phần trên vươn lên khoe trọn vẹn ảnh cưới.
 
 ---
