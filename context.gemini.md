@@ -733,6 +733,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     + `resources/views/admin/layouts/master.blade.php` (Trang quản trị Admin Dashboard).
     + `resources/views/welcome.blade.php`.
 
+- **Tái Thiết Kế Menu Tài Khoản & Nút Đăng Nhập Header (Quiet Luxury & Tối Ưu Diện Tích)**:
+  - **Khắc phục giao diện cũ**: Loại bỏ hiển thị text dài `Tên... Thoát` cồng kềnh, thô và chiếm nhiều diện tích trên thanh header.
+  - **Nút Đăng Nhập (`.mayhen_client_header_login_btn`)**:
+    + Tinh chỉnh nhỏ gọn (cao 32px, font 0.775rem), màu sắc trung tính nhẹ nhàng (`#6E685F`), không nền nổi bật, viền mờ tối giản.
+    + Đảm bảo đóng vai trò thứ cấp, không cạnh tranh thị giác với nút CTA chính **"Tạo Thiệp Ngay"**.
+  - **User Dropdown Menu Khi Đăng Nhập (`.mayhen_client_header_user_*`)**:
+    + Thiết kế Pill/Trigger nhỏ gọn (cao 32px), gồm avatar tròn chữ cái đầu (Initials) tinh tế + tên riêng ngắn gọn + mũi tên chevron xoay động.
+    + Popup Dropdown card sang trọng: hiển thị tên đầy đủ, email/SĐT, nhãn Quản trị viên, các liên kết chức năng (Trang Quản Trị, Tạo Mẫu Thiệp Mới) và nút Đăng Xuất.
+    + Tương tác Native JavaScript: click toggle mở/đóng, tự động đóng khi click outside hoặc ấn phím Escape.
+    + Đồng bộ tối ưu giao diện Profile Card bên trong Mobile Drawer.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

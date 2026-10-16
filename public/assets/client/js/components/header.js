@@ -59,6 +59,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // User Dropdown Menu Controller
+    const userMenu = $('[data-mayhen-component="user-menu"]');
+    const userTrigger = $('[data-mayhen-action="toggle-user-menu"]');
+
+    if (userMenu && userTrigger) {
+        const closeUserMenu = () => {
+            userMenu.classList.remove('mayhen_client_header_user_menu_open');
+            userTrigger.setAttribute('aria-expanded', 'false');
+        };
+
+        const toggleUserMenu = () => {
+            const isOpen = userMenu.classList.contains('mayhen_client_header_user_menu_open');
+            if (isOpen) {
+                closeUserMenu();
+            } else {
+                userMenu.classList.add('mayhen_client_header_user_menu_open');
+                userTrigger.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        on(userTrigger, 'click', (e) => {
+            e.stopPropagation();
+            toggleUserMenu();
+        });
+
+        // Đóng khi click bên ngoài menu
+        on(document, 'click', (e) => {
+            if (!userMenu.contains(e.target)) {
+                closeUserMenu();
+            }
+        });
+
+        // Đóng khi nhấn Escape
+        on(document, 'keydown', (e) => {
+            if (e.key === 'Escape' && userMenu.classList.contains('mayhen_client_header_user_menu_open')) {
+                closeUserMenu();
+            }
+        });
+    }
+
     // Hiệu ứng bóng đổ khi cuộn trang
     on(window, 'scroll', () => {
         if (!header) return;
