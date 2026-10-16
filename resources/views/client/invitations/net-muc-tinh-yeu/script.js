@@ -416,6 +416,64 @@
         submit.disabled = true;
         submit.textContent = isEditing ? 'Đang cập nhật...' : 'Đang gửi...';
 
+        // NẾU LÀ TRANG XEM THỬ: Chỉ mô phỏng trải nghiệm người dùng, KHÔNG gửi lên backend
+        if (window.__MAYHEN_IS_PREVIEW) {
+          setTimeout(() => {
+            window.__MAYHEN_MY_WISH = {
+              id: 'preview_demo',
+              name: name,
+              message: message
+            };
+            guestbookButton.textContent = 'Chỉnh sửa lời chúc của bạn';
+
+            const container = document.getElementById('mayhen_wishes_container') || $(className('messages'));
+            if (container) {
+              const emptyNote = container.querySelector(className('no_wishes')) || container.querySelector('p');
+              if (emptyNote) emptyNote.remove();
+
+              let myWishCard = document.getElementById('mayhen_my_wish_item');
+              if (myWishCard) {
+                const strongEl = myWishCard.querySelector('strong');
+                if (strongEl) strongEl.innerHTML = name + ' <span class="' + prefix + 'my_wish_tag">Lời chúc của bạn (Xem thử)</span>';
+                const bodyEl = myWishCard.querySelector(className('wish_message')) || myWishCard.querySelector('p');
+                if (bodyEl) bodyEl.textContent = message;
+              } else {
+                const card = document.createElement('article');
+                card.className = prefix + 'wish_item';
+                card.id = 'mayhen_my_wish_item';
+                card.setAttribute('data-my-wish', 'true');
+
+                const header = document.createElement('div');
+                header.className = prefix + 'wish_header';
+
+                const author = document.createElement('strong');
+                author.textContent = name;
+                const tag = document.createElement('span');
+                tag.className = prefix + 'my_wish_tag';
+                tag.textContent = 'Lời chúc thử nghiệm';
+                author.append(tag);
+
+                const time = document.createElement('time');
+                time.textContent = 'Vừa xong';
+                header.append(author, time);
+
+                const body = document.createElement('p');
+                body.className = prefix + 'wish_message';
+                body.textContent = message;
+
+                card.append(header, body);
+                container.prepend(card);
+              }
+            }
+
+            closeModal();
+            submit.disabled = false;
+            submit.textContent = isEditing ? 'Lưu Cập Nhật Lời Chúc' : 'Gửi Lời Chúc';
+            alert('✨ [Chế độ xem thử] Lời chúc thử nghiệm của bạn đã được hiển thị trên giao diện! Khi bạn tạo thiệp chính thức, lời chúc của khách mời sẽ được lưu vào cơ sở dữ liệu.');
+          }, 350);
+          return;
+        }
+
         const submitUrl = window.__MAYHEN_WISH_SUBMIT_URL || (window.location.pathname.replace(/\/$/, '') + '/wishes');
         const csrfMeta = document.querySelector('meta[name="csrf-token"]');
         const csrfToken = window.__MAYHEN_CSRF_TOKEN || (csrfMeta ? csrfMeta.content : '');
@@ -822,6 +880,20 @@
 
         submit.disabled = true;
         submit.textContent = 'Đang ghi nhận...';
+
+        // NẾU LÀ TRANG XEM THỬ: Chỉ mô phỏng trải nghiệm người dùng, KHÔNG gửi lên backend
+        if (window.__MAYHEN_IS_PREVIEW) {
+          setTimeout(() => {
+            closeModal();
+            lockRsvpButtons(isYes ? 'yes' : 'no');
+            window.__MAYHEN_CURRENT_RSVP = {
+              attending_status: isYes ? 'attending' : 'declined',
+              guest_name: guestName
+            };
+            alert('✨ [Chế độ xem thử] ' + (isYes ? 'Đã mô phỏng xác nhận tham dự thành công!' : 'Đã mô phỏng phản hồi không thể tham dự.') + ' Khi tạo thiệp thật, dữ liệu phản hồi của khách sẽ được tổng hợp đầy đủ trong trang quản lý của bạn.');
+          }, 350);
+          return;
+        }
 
         const submitUrl = window.__MAYHEN_RSVP_SUBMIT_URL || (window.location.pathname.replace(/\/$/, '') + '/rsvp');
         const csrfMeta = document.querySelector('meta[name="csrf-token"]');

@@ -112,6 +112,11 @@
     $rsvpResponses = $rsvpResponses ?? collect([]);
     $wishReplyBaseUrl = isset($invitation) ? url('/thiep/' . $invitation->slug . '/wishes') : '';
     $rsvpResponsesUrl = isset($invitation) ? route('invitation.rsvp.responses', $invitation->slug) : '';
+    $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
+    $templateName = $template->name ?? 'Nét Mực Tình Yêu';
+    $pageTitle = $isPreview 
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+        : 'Thiệp Mời Cưới ' . $groomName . ' & ' . $brideName;
 @endphp
 <!doctype html>
 <html lang="vi">
@@ -120,8 +125,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Thiệp cưới {{ $groomName }} & {{ $brideName }} – ngày {{ $coverDateFormatted }}.">
-    <title>Thiệp Mời Cưới {{ $groomName }} & {{ $brideName }}</title>
+    <meta name="description" content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.' }}">
+    <title>{{ $pageTitle }}</title>
 
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css">
     
@@ -138,6 +143,7 @@
     @endif
 
     <script>
+        window.__MAYHEN_IS_PREVIEW = {{ $isPreview ? 'true' : 'false' }};
         window.__MAYHEN_WEDDING_TARGET_TIME = {{ $targetTimestamp }};
         window.__MAYHEN_WEDDING_DATE = {
             year: {{ $calendarYear }},
@@ -158,6 +164,36 @@
     <script src="{{ $assetBase }}/script.js" defer></script>
 </head>
 <body class="mayhen_invitation_scroll_locked">
+    @if ($isPreview && !$isEmbed)
+        {{-- Floating Top Navigation Bar dành riêng cho trang Xem Thử (Quiet Luxury Style) --}}
+        <header class="mayhen_preview_topbar" id="mayhen_preview_topbar" aria-label="Thanh điều hướng xem thử">
+            <div class="mayhen_preview_topbar_inner">
+                <div class="mayhen_preview_topbar_left">
+                    <a href="{{ route('templates.index') }}" class="mayhen_preview_btn_back" title="Quay lại danh sách mẫu thiệp">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                        <span>Kho Mẫu</span>
+                    </a>
+                    <div class="mayhen_preview_badge_box">
+                        <span class="mayhen_preview_badge_label">Xem thử</span>
+                        <strong class="mayhen_preview_template_name">{{ $templateName }}</strong>
+                    </div>
+                </div>
+
+                <div class="mayhen_preview_topbar_right">
+                    @if (isset($template) && $template->slug)
+                        <a href="{{ route('templates.show', $template->slug) }}" class="mayhen_preview_btn_detail" title="Xem chi tiết thiết kế & tính năng của mẫu thiệp này">
+                            <span>Chi Tiết Mẫu</span>
+                        </a>
+                    @endif
+                    <a href="{{ route('invitation.create', ['template' => $template->slug ?? 'net-muc-tinh-yeu']) }}" class="mayhen_preview_btn_cta" title="Dùng mẫu này để tạo thiệp cưới của bạn">
+                        <span>Tạo Thiệp Với Mẫu Này</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+    @endif
+
     <main class="mayhen_invitation_dhsuudushi9428r_page">
         {{-- Section 1: Màn hình mở đầu & Phong bì mở thiệp sang trọng --}}
         <section class="mayhen_invitation_dhsuudushi9428r_cover" id="mayhen_invitation_cover" aria-label="Mở thiệp mời cưới">
