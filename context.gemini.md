@@ -744,6 +744,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     + Tương tác Native JavaScript: click toggle mở/đóng, tự động đóng khi click outside hoặc ấn phím Escape.
     + Đồng bộ tối ưu giao diện Profile Card bên trong Mobile Drawer.
 
+- **Tích Hợp Thành Công Mẫu Thiệp Độc Bản "Thước Phim Tình Yêu" (`thuoc-phim-tinh-yeu`)**:
+  - **Tên mẫu**: Thước Phim Tình Yêu (MAYHEN_Invitation_djcvhwiuo9w9_Graceful04).
+  - **Slug**: `thuoc-phim-tinh-yeu` (Category: `modern`, Tier: `pro`, Complexity: `deluxe`).
+  - **Prefix CSS độc quyền**: `mayhen_invitation_djcvhwiuo9w9_*` (Chống xung đột phong cách 100%).
+  - **Cấu trúc lưu trữ**: `resources/views/client/invitations/thuoc-phim-tinh-yeu/`
+    + `template.blade.php`: Hỗ trợ đầy đủ dữ liệu động (Cô dâu chú rể, gia đình 2 bên, ngày cưới, sảnh tiệc, album 10 ảnh, triptych, quote, timeline, QR mừng cưới, nhạc nền), tích hợp Favicon, Topbar xem thử và Topbar chủ thiệp.
+    + `styles.css`: Hệ thống CSS độc lập (kèm style cho preview topbar và music toggle).
+    + `script.js`: Native JS kết nối API backend Mây Hẹn (Đếm ngược ngày cưới động, Lightbox album ảnh, Sổ lưu bút canvas ký tên tay cảm ứng, Gửi lời chúc & RSVP trực tuyến lên DB, Modal hộp mừng cưới QR, Trình phát nhạc nền đĩa than).
+    + `schema.json`: Cấu hình toàn bộ trường dữ liệu phục vụ trình tạo thiệp.
+    + `assets/`: Lưu trữ cục bộ 100% toàn bộ 51 file assets (texture giấy, rèm mở đầu, dải film, icon timeline, ảnh mẫu cưới, nhạc nền MP3) không phụ thuộc CDN ngoại.
+  - **Tối ưu hóa Phục vụ Asset (`TemplateController::asset`)**: Bổ sung cơ chế fallback tự động tìm kiếm trong thư mục `assets/` con, cho phép nạp asset mượt mà và an toàn.
+  - **Database Seeder**: Cập nhật `InvitationTemplateSeeder.php` và seed thành công vào CSDL.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

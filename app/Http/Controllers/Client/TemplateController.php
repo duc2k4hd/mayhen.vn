@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvitationTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TemplateController extends Controller
 {
@@ -117,14 +118,19 @@ class TemplateController extends Controller
     /**
      * Serve static assets directly from resources/views/client/invitations/{slug}/
      */
-    public function asset(string $slug, string $path): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function asset(string $slug, string $path): BinaryFileResponse
     {
         // Làm sạch và chuẩn hóa path để chống directory traversal
         $safePath = str_replace(['..', "\0"], '', $path);
         $fullPath = resource_path("views/client/invitations/{$slug}/{$safePath}");
 
         if (! file_exists($fullPath) || is_dir($fullPath)) {
-            abort(404, 'Asset not found');
+            $fallbackAssetsPath = resource_path("views/client/invitations/{$slug}/assets/{$safePath}");
+            if (file_exists($fallbackAssetsPath) && ! is_dir($fallbackAssetsPath)) {
+                $fullPath = $fallbackAssetsPath;
+            } else {
+                abort(404, 'Asset not found');
+            }
         }
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
@@ -154,4 +160,3 @@ class TemplateController extends Controller
         return response()->file($fullPath, $headers);
     }
 }
-
