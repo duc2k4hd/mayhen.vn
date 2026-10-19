@@ -31,20 +31,40 @@
           "max": 100
         },
         {
-          "key": "wedding.groom_parents",
-          "label": "Phụ mẫu Nhà Trai",
+          "key": "wedding.extra_data.groom_father",
+          "label": "Họ tên Cha (Nhà Trai)",
           "type": "text",
           "required": false,
-          "default": "ÔNG: Nguyễn Tràng Giang & BÀ: Nguyễn Thị Tám",
-          "placeholder": "ÔNG: Nguyễn Tràng Giang & BÀ: Nguyễn Thị Tám"
+          "default": "Nguyễn Tràng Giang",
+          "placeholder": "Ví dụ: Nguyễn Tràng Giang",
+          "max": 100
         },
         {
-          "key": "wedding.bride_parents",
-          "label": "Phụ mẫu Nhà Gái",
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Họ tên Mẹ (Nhà Trai)",
           "type": "text",
           "required": false,
-          "default": "ÔNG: Đỗ Như Trung & BÀ: Lê Thị Hảo",
-          "placeholder": "ÔNG: Đỗ Như Trung & BÀ: Lê Thị Hảo"
+          "default": "Nguyễn Thị Tám",
+          "placeholder": "Ví dụ: Nguyễn Thị Tám",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Đỗ Như Trung",
+          "placeholder": "Ví dụ: Đỗ Như Trung",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Họ tên Mẹ (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Lê Thị Hảo",
+          "placeholder": "Ví dụ: Lê Thị Hảo",
+          "max": 100
         }
       ]
     },

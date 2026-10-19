@@ -19,7 +19,11 @@ class Invitation extends Model
         'title',
         'version_type',
         'template_version',
+        'schema_version',
+        'revision_id',
         'custom_config',
+        'draft_config',
+        'last_autosaved_at',
         'is_published',
         'published_at',
         'expires_at',
@@ -28,7 +32,10 @@ class Invitation extends Model
     protected function casts(): array
     {
         return [
+            'revision_id' => 'integer',
             'custom_config' => 'array',
+            'draft_config' => 'array',
+            'last_autosaved_at' => 'datetime',
             'is_published' => 'boolean',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',

@@ -4,10 +4,12 @@
 @section('meta_description', 'Tự tạo thiệp cưới online phong cách Quiet Luxury dễ dàng với chế độ xem thử realtime chính xác theo từng mẫu thiệp.')
 @section('robots', 'noindex, nofollow')
 
+@section('hide_chrome', 'true')
+@section('body_class', 'mayhen_editor_body_fullscreen')
+@section('main_class', 'mayhen_editor_main_fullscreen')
+
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v2.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v2.css')) ? filemtime(public_path('assets/client/css/pages/editor-v2.css')) : time() }}">
 @endpush
 
 @php
@@ -40,61 +42,108 @@
 @endphp
 
 @section('content')
-    <div class="mayhen_editor_wrapper">
-        <!-- 1. Studio Topbar -->
+    <div class="mayhen_editor_wrapper mayhen_editor_v2_container">
+        <!-- 1. Studio Topbar V2 -->
         <header class="mayhen_editor_topbar">
             <div class="mayhen_editor_topbar_left">
+                <a href="{{ route('templates.index') }}" class="mayhen_editor_topbar_back_btn" title="Trở về danh sách mẫu thiệp">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+                </a>
                 <div class="mayhen_editor_topbar_title">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--mayhen-color-primary);">
                         <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                     </svg>
-                    <span>Studio Tạo Thiệp Cưới</span>
+                    <span>Studio Tạo Thiệp</span>
                 </div>
 
                 <!-- Template Active Chip & Quick Switcher -->
-                <button type="button" class="mayhen_editor_template_chip" data-mayhen-action="open-template-modal" title="Bấm để đổi mẫu thiệp khác">
+                <button type="button" class="mayhen_editor_template_chip" data-mayhen-action="open-template-modal" title="Bấm để đổi sang mẫu thiệp khác">
                     <img src="{{ $selectedTemplate->thumbnail_url }}" alt="{{ $selectedTemplate->name }}" class="mayhen_editor_template_chip_thumb">
                     <span class="mayhen_editor_template_chip_name">{{ $selectedTemplate->name }}</span>
                     <span style="font-size: 0.6875rem; color: var(--mayhen-color-primary); font-weight: 700;">Đổi mẫu</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
+
+                <!-- Autosave Live Pill -->
+                <div class="mayhen_editor_save_pill" id="mayhen_save_pill" data-status="idle" title="Trạng thái lưu trữ nháp">
+                    <span class="mayhen_editor_save_dot"></span>
+                    <span class="mayhen_editor_save_text">Đã sẵn sàng</span>
+                </div>
             </div>
 
-            <div>
+            <!-- Segmented Switcher cho Mobile: Nhập Liệu ⇄ Xem Thiệp -->
+            <div class="mayhen_editor_mode_switcher" role="tablist" aria-label="Chuyển chế độ màn hình">
+                <button type="button" class="mayhen_editor_mode_btn active" data-editor-mode="form" role="tab" aria-selected="true">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Nhập Liệu</span>
+                </button>
+                <button type="button" class="mayhen_editor_mode_btn" data-editor-mode="preview" role="tab" aria-selected="false">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span>Xem Thiệp</span>
+                </button>
+            </div>
+
+            <div class="mayhen_editor_topbar_actions">
+                <!-- Undo / Redo -->
+                <div class="mayhen_editor_history_group">
+                    <button type="button" class="mayhen_editor_btn_history" id="mayhen_btn_undo" title="Hoàn tác (Ctrl+Z)" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                    </button>
+                    <button type="button" class="mayhen_editor_btn_history" id="mayhen_btn_redo" title="Làm lại (Ctrl+Y)" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
+                    </button>
+                </div>
+
+                <!-- Device Preview Switcher -->
+                <div class="mayhen_editor_device_group">
+                    <button type="button" class="mayhen_editor_btn_device active" id="mayhen_btn_device_mobile" title="Xem trên màn hình điện thoại">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    </button>
+                    <button type="button" class="mayhen_editor_btn_device" id="mayhen_btn_device_desktop" title="Xem trên màn hình máy tính">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </button>
+                </div>
+
+                <!-- Submit / Publish Button -->
                 <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit">
-                    <span>Tạo Link Thiệp</span>
+                    <span>Xuất Bản Thiệp</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
             </div>
         </header>
 
-        <!-- 2. Mobile Mini Live Preview Dock -->
-        <div class="mayhen_editor_mobile_live_dock">
-            <div class="mayhen_editor_dock_content">
-                <img src="{{ $selectedTemplate->thumbnail_url }}" alt="Preview" class="mayhen_editor_dock_avatar" id="mayhen_dock_thumb">
-                <div class="mayhen_editor_dock_info">
-                    <div class="mayhen_editor_dock_live_badge">
-                        <span class="mayhen_editor_dock_live_dot"></span>
-                        <span>Đang sửa mẫu: {{ $selectedTemplate->name }}</span>
-                    </div>
-                    <div class="mayhen_editor_dock_names" data-mayhen-preview="names">
-                        Tràng Đức &bull; Ngọc Phượng
-                    </div>
-                </div>
-            </div>
+        <!-- 2. Main Split Studio Grid V2 -->
+        <div class="mayhen_editor_v2_body">
+            <!-- Zone 1: Left Tool Rail (Thanh Công Cụ Dọc Trực Quan) -->
+            <aside class="mayhen_editor_left_rail">
+                <button type="button" class="mayhen_editor_rail_item active" data-rail-tab="content" title="Nhập thông tin đám cưới">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Nội Dung</span>
+                </button>
+                <button type="button" class="mayhen_editor_rail_item" data-rail-tab="sections" title="Kéo thả sắp xếp thứ tự các phần">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    <span>Bố Cục</span>
+                </button>
+                <button type="button" class="mayhen_editor_rail_item" data-rail-tab="theme" title="Chọn bảng màu Quiet Luxury & tem sáp">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                    <span>Màu Sắc</span>
+                </button>
+                <button type="button" class="mayhen_editor_rail_item" data-rail-tab="music" title="Kho nhạc cưới lãng mạn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    <span>Âm Nhạc</span>
+                </button>
+                <button type="button" class="mayhen_editor_rail_item" data-mayhen-action="open-template-modal" title="Đổi sang mẫu thiệp khác">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    <span>Đổi Mẫu</span>
+                </button>
+            </aside>
 
-            <button type="button" class="mayhen_editor_dock_action_btn" data-mayhen-action="open-preview-modal" title="Xem thiệp cưới to toàn màn hình">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <span>Xem Toàn Thiệp</span>
-            </button>
-        </div>
-
-        <!-- 3. Main Split Studio Grid -->
-        <div class="mayhen_editor_studio_grid">
-            <!-- Left: Dynamic Schema-Driven Form Panel -->
-            <div class="mayhen_editor_form_panel">
-                <!-- Stepper Navigation Pills -->
-                <nav class="mayhen_editor_stepper_nav" aria-label="Các bước nhập liệu">
+            <!-- Zone 2: Contextual Drawer Subpanel (520px) -->
+            <div class="mayhen_editor_drawer_panel" id="mayhen_drawer_panel">
+                <!-- Subpanel 1: Form Nhập Liệu Nội Dung -->
+                <div class="mayhen_editor_subpanel" data-panel-name="content" style="display: block;">
+                    <!-- Stepper Navigation Pills -->
+                    <nav class="mayhen_editor_stepper_nav" aria-label="Các bước nhập liệu">
                     @foreach ($sections as $index => $section)
                         @php
                             $shortTitle = $section['short_title'] ?? match ($section['id'] ?? '') {
@@ -110,6 +159,7 @@
                         <button type="button" 
                                 class="mayhen_editor_stepper_tab {{ $index === 0 ? 'mayhen_editor_stepper_tab_active' : '' }}" 
                                 data-mayhen-step="{{ $index + 1 }}"
+                                data-section-id="{{ $section['id'] }}"
                                 title="{{ $section['title'] }}">
                             <span class="mayhen_editor_stepper_tab_num">{{ $index + 1 }}</span>
                             <span>{{ $shortTitle }}</span>
@@ -123,9 +173,10 @@
                     @if (isset($editingInvitation) && $editingInvitation)
                         <input type="hidden" name="invitation_id" id="invitation_id" value="{{ $editingInvitation->id }}">
                     @endif
+                    <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode($editingInvitation->custom_config ?? []) }}">
 
                     @foreach ($sections as $index => $section)
-                        <div class="mayhen_editor_step_content {{ $index === 0 ? 'mayhen_editor_step_active' : '' }}" data-step-panel="{{ $index + 1 }}">
+                        <div class="mayhen_editor_step_content {{ $index === 0 ? 'mayhen_editor_step_active' : '' }}" data-step-panel="{{ $index + 1 }}" data-section-id="{{ $section['id'] }}">
                             <div class="mayhen_editor_step_header">
                                 <h2 class="mayhen_editor_step_heading">
                                     <span>{{ $index + 1 }}. {{ $section['title'] }}</span>
@@ -135,7 +186,7 @@
                                 @endif
                             </div>
 
-                            <div class="mayhen_editor_fields_container" style="display: flex; flex-direction: column; gap: 14px;">
+                            <div class="mayhen_editor_fields_container mayhen_editor_fields_grid">
                                 @php
                                     $fields = $section['fields'] ?? [];
                                 @endphp
@@ -154,6 +205,21 @@
                                             if (str_starts_with($cleanKey, 'extra_data.')) {
                                                 $extraSub = str_replace('extra_data.', '', $cleanKey);
                                                 $editingVal = $editingInvitation->wedding->extra_data[$extraSub] ?? null;
+
+                                                // Fallback tu chuoi cu neu chua co extra_data
+                                                if ($editingVal === null) {
+                                                    $gParents = (string) ($editingInvitation->wedding->groom_parents ?? "");
+                                                    $bParents = (string) ($editingInvitation->wedding->bride_parents ?? "");
+                                                    if ($extraSub === "groom_father" && preg_match("/ÔNG:\s*([^&]+?)(?=\s*(&|BÀ:|$))/ui", $gParents, $m)) {
+                                                        $editingVal = trim($m[1]);
+                                                    } elseif ($extraSub === "groom_mother" && preg_match("/BÀ:\s*(.+)$/ui", $gParents, $m)) {
+                                                        $editingVal = trim($m[1]);
+                                                    } elseif ($extraSub === "bride_father" && preg_match("/ÔNG:\s*([^&]+?)(?=\s*(&|BÀ:|$))/ui", $bParents, $m)) {
+                                                        $editingVal = trim($m[1]);
+                                                    } elseif ($extraSub === "bride_mother" && preg_match("/BÀ:\s*(.+)$/ui", $bParents, $m)) {
+                                                        $editingVal = trim($m[1]);
+                                                    }
+                                                }
                                             } else {
                                                 $editingVal = $editingInvitation->wedding->{$cleanKey} ?? null;
                                             }
@@ -164,11 +230,17 @@
                                         $type = $field['type'] ?? 'text';
                                         $label = $field['label'] ?? $fieldKey;
                                         $isRequired = !empty($field['required']);
+                                        $isFullWidth = in_array($type, ['repeater', 'gallery', 'textarea', 'color', 'image'])
+                                            || str_contains($fieldKey, 'extra_data.qr_')
+                                            || str_contains($fieldKey, 'music_url')
+                                            || str_contains($fieldKey, 'map_')
+                                            || str_contains($fieldKey, 'address');
+                                        $groupClass = 'mayhen_client_form_group' . ($isFullWidth ? ' is-full-width' : '');
                                     @endphp
 
                                     @if ($type === 'repeater')
                                         {{-- Trường dạng danh sách repeater (Ví dụ Timeline) --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_editor_repeater_list">
                                                 @php
@@ -196,7 +268,7 @@
 
                                     @elseif ($type === 'gallery')
                                         {{-- Trường Album ảnh kèm nút tải ảnh trực tiếp --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_editor_gallery_grid">
                                                 @for ($gIdx = 0; $gIdx < ($field['max_items'] ?? 10); $gIdx++)
@@ -246,7 +318,7 @@
 
                                     @elseif ($fieldKey === 'wedding.music_url')
                                         {{-- Trường Nhạc nền: Chọn bài hát thông minh từ thư viện --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
                                                 @if ($isRequired)
@@ -282,7 +354,7 @@
                                             $prefixQr = $isGroomQr ? 'groom_qr' : 'bride_qr';
                                             $sideLabel = $isGroomQr ? 'Nhà Trai' : 'Nhà Gái';
                                         @endphp
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_vietqr_box">
                                                 <div class="mayhen_vietqr_preview_wrap">
@@ -326,7 +398,7 @@
 
                                     @elseif ($type === 'image')
                                         {{-- Trường Ảnh đơn kèm kiểm tra tỷ lệ 3/4 và popup cắt ảnh --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
                                                 @if ($isRequired)
@@ -375,7 +447,7 @@
 
                                     @elseif ($type === 'textarea')
                                         {{-- Trường Textarea --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
                                                 @if ($isRequired)
@@ -393,7 +465,7 @@
 
                                     @elseif ($type === 'color')
                                         {{-- Trường Color Accent --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_editor_color_picker_wrap">
                                                 <input type="color" 
@@ -408,7 +480,7 @@
 
                                     @else
                                         {{-- Trường Text / Date / Time thông thường --}}
-                                        <div class="mayhen_client_form_group">
+                                        <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
                                                 @if ($isRequired)
@@ -430,51 +502,181 @@
                         </div>
                     @endforeach
                 </form>
-            </div>
 
-            <!-- Right Column: Live Iframe Phone Preview (Hiển thị CHÍNH XÁC MẪU THIỆP ĐƯỢC CHỌN) -->
-            <div class="mayhen_editor_preview_panel">
-                <div class="mayhen_editor_phone_wrap">
-                    <div class="mayhen_editor_phone_notch"></div>
-                    <div class="mayhen_editor_phone_screen mayhen_editor_phone_screen_iframe">
-                        <iframe 
-                            id="mayhen_editor_preview_iframe"
-                            src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor"
-                            class="mayhen_editor_preview_iframe"
-                            title="Bản xem trước trực tiếp mẫu thiệp cưới {{ $selectedTemplate->name }}"
-                            loading="eager"
-                        ></iframe>
-                    </div>
-                </div>
-
-                <div class="mayhen_editor_preview_hint">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    <span>Mọi thông tin bạn sửa bên trái đều phản chiếu thời gian thực trên mẫu thiệp</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Sticky Bottom Action Bar -->
-        <div class="mayhen_editor_bottom_bar">
-            <div class="mayhen_editor_bottom_bar_inner">
-                <div class="mayhen_editor_bottom_nav_btns">
-                    <button type="button" class="mayhen_editor_btn_nav" data-mayhen-action="prev-step" id="mayhen_btn_prev" style="display: none;">
+                <!-- Sticky Stepper Footer Action Buttons (Ghim cố định ở chân Drawer) -->
+                <div class="mayhen_editor_drawer_footer">
+                    <button type="button" class="mayhen_editor_btn_nav mayhen_editor_btn_nav_prev" data-mayhen-action="prev-step" id="mayhen_btn_prev" disabled>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
                         <span>Quay Lại</span>
                     </button>
-                    <button type="button" class="mayhen_editor_btn_nav" data-mayhen-action="next-step" id="mayhen_btn_next">
+                    <div class="mayhen_editor_drawer_step_indicator" id="mayhen_step_indicator">
+                        <span class="mayhen_step_current">Bước 1</span> / <span class="mayhen_step_total">{{ count($sections) }}</span>
+                    </div>
+                    <button type="button" class="mayhen_editor_btn_nav mayhen_editor_btn_nav_next" data-mayhen-action="next-step" id="mayhen_btn_next">
                         <span>Tiếp Tục</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                 </div>
+                </div>
 
-                <div>
-                    <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        <span>Hoàn Tất & Tạo Thiệp Ngay</span>
-                    </button>
+                <!-- Subpanel 2: Bố Cục Section Kéo Thả (Direct Drag-and-Drop) -->
+                <div class="mayhen_editor_subpanel" data-panel-name="sections" style="display: none; padding: 20px;">
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--mayhen-color-text-main); margin-bottom: 4px;">Sắp Xếp Bố Cục Thiệp</h3>
+                        <p style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);">Nhấn giữ biểu tượng ⠿ để kéo thả đổi vị trí các phần thiệp, hoặc bấm mắt để ẩn bớt phần không cần thiết.</p>
+                    </div>
+
+                    <ul class="mayhen_editor_sections_list">
+                        @foreach ($sections as $sec)
+                            <li class="mayhen_editor_section_card" data-section-id="{{ $sec['id'] }}">
+                                <span class="mayhen_editor_drag_handle" title="Nhấn giữ và kéo để đổi thứ tự">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                                </span>
+                                <div class="mayhen_editor_section_info">
+                                    <div class="mayhen_editor_section_name">{{ $sec['title'] }}</div>
+                                    <div class="mayhen_editor_section_sub">{{ $sec['description'] ?? 'Khối nội dung thiệp cưới' }}</div>
+                                </div>
+                                <div class="mayhen_editor_section_actions">
+                                    <button type="button" class="mayhen_editor_btn_icon" data-section-action="move-up" title="Di chuyển lên">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                                    </button>
+                                    <button type="button" class="mayhen_editor_btn_icon" data-section-action="move-down" title="Di chuyển xuống">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                                    </button>
+                                    <button type="button" class="mayhen_editor_btn_icon" data-section-action="toggle-visibility" title="Ẩn/Hiện khối này">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </button>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Subpanel 3: 6 Bảng Màu Thượng Lưu & Tem Sáp -->
+                <div class="mayhen_editor_subpanel" data-panel-name="theme" style="display: none; padding: 20px;">
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--mayhen-color-text-main); margin-bottom: 4px;">6 Bảng Màu Quiet Luxury</h3>
+                        <p style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);">Đổi tông màu toàn bộ thiệp cưới chỉ với 1 chạm tinh tế.</p>
+                    </div>
+
+                    <div class="mayhen_editor_palette_grid">
+                        <div class="mayhen_editor_palette_card active" data-palette-id="quiet-luxury">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #FAF8F5;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #B45309;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #1C1917;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Quiet Luxury</div>
+                            <div class="mayhen_editor_palette_desc">Vàng cát ấm áp trên nền giấy ngà</div>
+                        </div>
+                        <div class="mayhen_editor_palette_card" data-palette-id="sage-botanic">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #F5F7F5;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #3A4D39;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #739072;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Sage Botanic</div>
+                            <div class="mayhen_editor_palette_desc">Thảo mộc thanh tao & xanh rêu ô-liu</div>
+                        </div>
+                        <div class="mayhen_editor_palette_card" data-palette-id="warm-terracotta">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #FAF4EF;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #C85A32;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #E07A5F;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Warm Terracotta</div>
+                            <div class="mayhen_editor_palette_desc">Đất nung Địa Trung Hải nồng nàn</div>
+                        </div>
+                        <div class="mayhen_editor_palette_card" data-palette-id="rose-vintage">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #FCF7F7;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #9D5C63;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #D8A47F;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Rose Vintage</div>
+                            <div class="mayhen_editor_palette_desc">Hồng khói Pháp dịu dàng lãng mạn</div>
+                        </div>
+                        <div class="mayhen_editor_palette_card" data-palette-id="champagne-glam">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #FAF6F0;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #A67C37;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #C5A059;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Champagne Glam</div>
+                            <div class="mayhen_editor_palette_desc">Vàng rượu sâm panh hoàng gia</div>
+                        </div>
+                        <div class="mayhen_editor_palette_card" data-palette-id="noir-chic">
+                            <div class="mayhen_editor_swatch_row">
+                                <span class="mayhen_editor_swatch_circle" style="background: #F5F5F5;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #1F1F1F;"></span>
+                                <span class="mayhen_editor_swatch_circle" style="background: #BFA46F;"></span>
+                            </div>
+                            <div class="mayhen_editor_palette_name">Noir Chic</div>
+                            <div class="mayhen_editor_palette_desc">Tương phản đen tuyền & vàng ánh kim</div>
+                        </div>
+                    </div>
+
+                    <!-- Tùy Biến Con Dấu Sáp Mở Thiệp -->
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--mayhen-color-border, #e7e5e4);">
+                        <label class="mayhen_client_form_label" style="font-weight: 600;">Màu Con Dấu Sáp Hoàng Gia</label>
+                        <div class="mayhen_editor_seal_swatches">
+                            <button type="button" class="mayhen_editor_seal_btn active" data-seal-color="#8A151B" style="background: #8A151B;" title="Đỏ Bordeaux"></button>
+                            <button type="button" class="mayhen_editor_seal_btn" data-seal-color="#C5A059" style="background: #C5A059;" title="Vàng Hoàng Kim"></button>
+                            <button type="button" class="mayhen_editor_seal_btn" data-seal-color="#9D5C63" style="background: #9D5C63;" title="Hồng Khói"></button>
+                            <button type="button" class="mayhen_editor_seal_btn" data-seal-color="#3A4D39" style="background: #3A4D39;" title="Xanh Rêu"></button>
+                            <button type="button" class="mayhen_editor_seal_btn" data-seal-color="#1C1917" style="background: #1C1917;" title="Đen Huyền Bí"></button>
+                        </div>
+                        <div class="mayhen_client_form_group" style="margin-top: 14px;">
+                            <label class="mayhen_client_form_label" for="mayhen_seal_monogram_input">Ký Tự Dập Nổi Monogram (Tối đa 4 chữ cái)</label>
+                            <input type="text" id="mayhen_seal_monogram_input" class="mayhen_client_form_input" maxlength="4" placeholder="Ví dụ: MH, ĐP, 2027" value="MH" style="text-transform: uppercase; font-family: var(--mayhen-font-serif); letter-spacing: 2px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subpanel 4: Nhạc Nền Đám Cưới -->
+                <div class="mayhen_editor_subpanel" data-panel-name="music" style="display: none; padding: 20px;">
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--mayhen-color-text-main); margin-bottom: 4px;">Nhạc Nền Hôn Lễ</h3>
+                        <p style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);">Giai điệu tình yêu sẽ tự động ngân vang khi khách chạm mở phong thư.</p>
+                    </div>
+
+                    <div style="background-color: var(--mayhen-color-bg-soft, #f7f5f2); border: 1px solid var(--mayhen-color-border, #e7e5e4); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--mayhen-color-primary-soft, #fef3c7); color: var(--mayhen-color-primary, #b45309); display: flex; align-items: center; justify-content: center;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div id="mayhen_active_music_title" style="font-size: 0.875rem; font-weight: 600; color: var(--mayhen-color-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Ánh Nắng Của Anh (Đức Phúc)</div>
+                                <div style="font-size: 0.6875rem; color: var(--mayhen-color-text-muted);">Nhạc cưới bản quyền chất lượng cao</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="mayhen_editor_btn_nav" id="mayhen_open_music_modal_btn" style="width: 100%; justify-content: center; padding: 10px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <span>Duyệt Kho 20+ Bài Hát Đám Cưới</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Zone 3: Center Stage Live Mockup Canvas -->
+            <main class="mayhen_editor_center_stage">
+                <div class="mayhen_editor_mockup_phone">
+                    <div class="mayhen_editor_phone_island"></div>
+                    <iframe 
+                        id="mayhen_editor_preview_iframe"
+                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
+                        class="mayhen_editor_iframe_viewport"
+                        title="Bản xem trước trực tiếp mẫu thiệp cưới {{ $selectedTemplate->name }}"
+                        loading="eager"
+                    ></iframe>
+                </div>
+
+                <div class="mayhen_editor_preview_hint" style="margin-top: 14px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span>Mọi thao tác chỉnh sửa nội dung, thứ tự khối, bảng màu đều phản chiếu thời gian thực trên màn hình</span>
+                </div>
+            </main>
         </div>
 
         <!-- 5. Modal Fullscreen Preview trên Mobile -->
@@ -491,7 +693,7 @@
                 <div class="mayhen_editor_modal_body" id="mayhen_mobile_modal_body" style="padding: 0; height: calc(100vh - 120px); overflow: hidden;">
                     <iframe 
                         id="mayhen_editor_mobile_preview_iframe"
-                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor"
+                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
                         style="width: 100%; height: 100%; border: none; display: block;"
                         title="Bản xem trước di động"
                     ></iframe>
@@ -520,6 +722,13 @@
                         @endphp
                         <a href="{{ $targetUrl }}" 
                            class="mayhen_editor_template_radio_card {{ $tpl->id === $selectedTemplate->id ? 'mayhen_editor_template_radio_selected' : '' }}"
+                           data-template-switch="true"
+                           data-template-id="{{ $tpl->id }}"
+                           data-template-slug="{{ $tpl->slug }}"
+                           data-template-name="{{ $tpl->name }}"
+                           data-template-thumb="{{ $tpl->thumbnail_url }}"
+                           data-template-tier="{{ $tpl->tier }}"
+                           data-template-locked="{{ $isLocked ? 'true' : 'false' }}"
                            style="text-decoration: none; color: inherit; position: relative;">
                             <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" class="mayhen_editor_template_radio_thumb">
                             <div class="mayhen_editor_template_radio_name">{{ $tpl->name }}</div>
@@ -609,14 +818,36 @@
             </div>
         </div>
         <audio id="mayhen_music_preview_audio" preload="none"></audio>
+
+
+
+        <!-- Mobile Floating Action Bar (Nổi khi xem trước trên mobile) -->
+        <div class="mayhen_editor_mobile_floating_bar" role="toolbar" aria-label="Thao tác nhanh trên điện thoại">
+            <button type="button" class="mayhen_editor_mobile_floating_btn" data-editor-mode="form">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span>Sửa Thiệp</span>
+            </button>
+            <button type="button" class="mayhen_editor_mobile_floating_btn" data-mayhen-action="open-template-modal">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                <span>Đổi Mẫu</span>
+            </button>
+            <button type="button" class="mayhen_editor_mobile_floating_btn btn-primary" data-mayhen-action="trigger-submit">
+                <span>Xuất Bản</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+        </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
         window.__MAYHEN_TEMPLATE_SLUG = "{{ $selectedTemplate->slug }}";
+        window.__MAYHEN_TEMPLATE_ID = {{ $selectedTemplate->id }};
+        window.__MAYHEN_INVITATION_ID = {{ isset($editingInvitation) && $editingInvitation ? $editingInvitation->id : 'null' }};
+        window.__MAYHEN_REVISION_ID = {{ isset($editingInvitation) && $editingInvitation ? ($editingInvitation->revision_id ?? 0) : 0 }};
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
         window.__MAYHEN_UPLOAD_URL = "{{ route('invitation.uploadAsset') }}";
+        window.__MAYHEN_AUTOSAVE_URL = "{{ route('invitation.autosave') }}";
     </script>
-    <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}?v={{ file_exists(public_path('assets/client/js/pages/editor.js')) ? filemtime(public_path('assets/client/js/pages/editor.js')) : time() }}"></script>
 @endpush

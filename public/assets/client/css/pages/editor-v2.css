@@ -1,0 +1,1463 @@
+/**
+ * MAYHEN.VN — INVITATION EDITOR V2 STYLES
+ * Quiet Luxury Studio Layout: 4-Zone Balanced Desktop & Segmented-First Mobile
+ * Strict: Pure Vanilla CSS, Prefix `mayhen_editor_*`, Zero external dependencies
+ */
+
+/* ==========================================================================
+   0. RESET & FULLSCREEN CANVAS ENFORCEMENT
+   ========================================================================== */
+
+body.mayhen_editor_body_fullscreen {
+    overflow: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: var(--mayhen-color-bg-base, #faf8f5) !important;
+    font-family: var(--mayhen-font-sans, "Inter", -apple-system, sans-serif);
+    -webkit-font-smoothing: antialiased;
+}
+
+.mayhen_editor_main_fullscreen {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.mayhen_editor_v2_container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+    background-color: var(--mayhen-color-bg-base, #faf8f5);
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative;
+}
+
+/* ==========================================================================
+   0.1 CUSTOM SLIM ELEGANT SCROLLBAR (Quiet Luxury Scrollbar)
+   ========================================================================== */
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #B45309 rgba(0, 0, 0, 0.05);
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #B45309;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #78350F;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* ==========================================================================
+   1. STUDIO TOPBAR (58px Balanced Layout)
+   ========================================================================== */
+
+.mayhen_editor_topbar {
+    height: 58px;
+    padding: 0 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    flex-shrink: 0;
+    gap: 16px;
+}
+
+.mayhen_editor_topbar_left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.mayhen_editor_topbar_back_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    color: var(--mayhen-color-text-main, #1c1917);
+    background-color: var(--mayhen-color-bg-soft, #f7f5f2);
+    border: 1px solid var(--mayhen-color-border, #e7e5e4);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mayhen_editor_topbar_back_btn:hover {
+    background-color: #FAF4EB;
+    color: var(--mayhen-color-primary, #b45309);
+    border-color: #E8D9C5;
+    transform: translateX(-1px);
+}
+
+.mayhen_editor_topbar_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main, #1c1917);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Template Active Chip */
+.mayhen_editor_template_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 12px 3px 4px;
+    background-color: var(--mayhen-color-bg-soft, #f7f5f2);
+    border: 1px solid var(--mayhen-color-border, #e7e5e4);
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.75rem;
+    color: var(--mayhen-color-text-main, #1c1917);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mayhen_editor_template_chip:hover {
+    background-color: #FAF4EB;
+    border-color: #E8D9C5;
+}
+
+.mayhen_editor_template_chip_thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_editor_template_chip_name {
+    font-weight: 600;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Autosave Status Pill */
+.mayhen_editor_save_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    font-size: 0.72rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.mayhen_editor_save_pill[data-status="idle"],
+.mayhen_editor_save_pill[data-status="local_only"] {
+    background-color: rgba(28, 25, 23, 0.05);
+    color: var(--mayhen-color-text-muted, #78716c);
+}
+
+.mayhen_editor_save_pill[data-status="pending"],
+.mayhen_editor_save_pill[data-status="saving"] {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.mayhen_editor_save_pill[data-status="saved"] {
+    background-color: #ECFDF5;
+    color: #065F46;
+}
+
+.mayhen_editor_save_pill[data-status="conflict"] {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    cursor: pointer;
+}
+
+.mayhen_editor_save_pill[data-status="offline"] {
+    background-color: #F3F4F6;
+    color: #4B5563;
+}
+
+.mayhen_editor_save_dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    display: inline-block;
+}
+
+.mayhen_editor_save_pill[data-status="saving"] .mayhen_editor_save_dot {
+    animation: mayhen_pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes mayhen_pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.85); }
+}
+
+/* Mobile Segmented View Mode Switcher (Chỉ hiện trên mobile) */
+.mayhen_editor_mode_switcher {
+    display: none;
+    align-items: center;
+    background-color: #EFECE6;
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.mayhen_editor_mode_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #57534E;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.mayhen_editor_mode_btn.active {
+    background-color: #ffffff;
+    color: #1C1917;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Topbar Right Actions */
+.mayhen_editor_topbar_actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Undo / Redo Buttons */
+.mayhen_editor_history_group {
+    display: flex;
+    align-items: center;
+    background-color: var(--mayhen-color-bg-soft, #f7f5f2);
+    border: 1px solid var(--mayhen-color-border, #e7e5e4);
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.mayhen_editor_btn_history {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--mayhen-color-text-main, #1c1917);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_btn_history:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--mayhen-color-primary, #b45309);
+}
+
+.mayhen_editor_btn_history:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Device Switcher (Mobile / Desktop) */
+.mayhen_editor_device_group {
+    display: none;
+    align-items: center;
+    background-color: var(--mayhen-color-bg-soft, #f7f5f2);
+    border: 1px solid var(--mayhen-color-border, #e7e5e4);
+    border-radius: 9px;
+    padding: 2px;
+}
+
+@media (min-width: 1024px) {
+    .mayhen_editor_device_group {
+        display: flex;
+    }
+}
+
+.mayhen_editor_btn_device {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    color: var(--mayhen-color-text-muted, #78716c);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_btn_device.active {
+    background-color: var(--mayhen-color-bg-surface, #ffffff);
+    color: var(--mayhen-color-primary, #b45309);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Submit Button */
+.mayhen_editor_btn_submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background-color: var(--mayhen-color-primary, #b45309);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(180, 83, 9, 0.22);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mayhen_editor_btn_submit:hover {
+    background-color: #92400e;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(180, 83, 9, 0.3);
+}
+
+/* ==========================================================================
+   2. MAIN STUDIO 4-ZONE ARCHITECTURE (DESKTOP)
+   ========================================================================== */
+
+.mayhen_editor_v2_body {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 58px);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Zone 1: Left Tool Rail (72px) */
+.mayhen_editor_left_rail {
+    width: 72px;
+    background-color: #ffffff;
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 0;
+    gap: 10px;
+    z-index: 20;
+    flex-shrink: 0;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
+}
+
+.mayhen_editor_rail_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 54px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 12px;
+    color: #78716c;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 3px;
+    padding: 6px 2px;
+}
+
+.mayhen_editor_rail_item span {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.mayhen_editor_rail_item:hover {
+    background-color: #FAF8F5;
+    color: #1C1917;
+    transform: translateY(-1px);
+}
+
+.mayhen_editor_rail_item.active {
+    background-color: #FAF4EB;
+    border-color: #E8D9C5;
+    color: #B45309;
+    box-shadow: 0 2px 6px rgba(180, 83, 9, 0.08);
+}
+
+/* Zone 2: Contextual Drawer Subpanel (500px - 560px) */
+.mayhen_editor_drawer_panel {
+    width: 500px;
+    background-color: #ffffff;
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 10;
+    scrollbar-width: thin;
+    scrollbar-color: #B45309 rgba(0, 0, 0, 0.04);
+    position: relative;
+}
+
+@media (min-width: 1440px) {
+    .mayhen_editor_drawer_panel {
+        width: 560px;
+    }
+}
+
+.mayhen_editor_drawer_panel::-webkit-scrollbar {
+    width: 6px;
+}
+.mayhen_editor_drawer_panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+}
+.mayhen_editor_drawer_panel::-webkit-scrollbar-thumb {
+    background-color: #B45309;
+    border-radius: 999px;
+}
+.mayhen_editor_drawer_panel::-webkit-scrollbar-thumb:hover {
+    background-color: #78350F;
+}
+
+.mayhen_editor_subpanel {
+    padding: 24px;
+    padding-bottom: 90px; /* Chừa không gian cho Sticky Footer */
+}
+
+/* Stepper Navigation Tabs */
+.mayhen_editor_stepper_nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 14px 2px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--mayhen-color-border, #e7e5e4);
+    scrollbar-width: none;
+}
+
+.mayhen_editor_stepper_nav::-webkit-scrollbar {
+    display: none;
+}
+
+.mayhen_editor_stepper_tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background-color: var(--mayhen-color-bg-soft, #f7f5f2);
+    border: 1px solid var(--mayhen-color-border, #e7e5e4);
+    border-radius: 20px;
+    color: var(--mayhen-color-text-muted, #78716c);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mayhen_editor_stepper_tab:hover {
+    color: var(--mayhen-color-text-main, #1c1917);
+    border-color: #D6D3D1;
+}
+
+.mayhen_editor_stepper_tab_num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.08);
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.mayhen_editor_stepper_tab_active {
+    background-color: #FAF4EB;
+    border-color: #E8D9C5;
+    color: #B45309;
+    font-weight: 600;
+}
+
+.mayhen_editor_stepper_tab_active .mayhen_editor_stepper_tab_num {
+    background-color: #B45309;
+    color: #ffffff;
+}
+
+/* Step Content Panel Switching */
+.mayhen_editor_step_content {
+    display: none !important;
+}
+
+.mayhen_editor_step_content.mayhen_editor_step_active {
+    display: block !important;
+    animation: mayhen_fade_in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhen_fade_in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Repeater Fields */
+.mayhen_editor_repeater_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_editor_repeater_item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Step Header */
+.mayhen_editor_step_header {
+    margin-bottom: 20px;
+}
+
+.mayhen_editor_step_heading {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main, #1c1917);
+    margin: 0 0 6px 0;
+}
+
+.mayhen_editor_step_subtext {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-muted, #78716c);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Form Group & Card Enclosure (Quiet Luxury Grid) */
+.mayhen_editor_fields_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 18px;
+}
+
+.mayhen_client_form_group {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_client_form_group.is-full-width {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 639px) {
+    .mayhen_editor_fields_grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+}
+
+.mayhen_client_form_label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #2C2824;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mayhen_client_form_input,
+.mayhen_client_form_textarea,
+.mayhen_client_form_select {
+    width: 100%;
+    height: 44px;
+    padding: 10px 14px;
+    background-color: #ffffff;
+    border: 1px solid #E5DCCD;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: #1C1917;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_client_form_textarea {
+    height: auto;
+    min-height: 76px;
+    resize: vertical;
+}
+
+.mayhen_client_form_input:focus,
+.mayhen_client_form_textarea:focus,
+.mayhen_client_form_select:focus {
+    outline: none;
+    border-color: #B45309;
+    box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+}
+
+.mayhen_client_form_input::placeholder,
+.mayhen_client_form_textarea::placeholder {
+    color: #A8A29E;
+    font-size: 0.8125rem;
+}
+
+.mayhen_editor_input_help {
+    font-size: 0.72rem;
+    color: #78716C;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+/* Form Card Container (Gom nhóm form) */
+.mayhen_client_form_card {
+    background-color: #FAF9F6;
+    border: 1px solid #EAE5DD;
+    border-radius: 14px;
+    padding: 18px 16px;
+    margin-bottom: 16px;
+}
+
+.mayhen_client_form_card_title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1C1917;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Image Field Row */
+.mayhen_editor_image_field_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_editor_image_field_preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    background-color: #EFECE6;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.mayhen_editor_upload_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background-color: #ffffff;
+    border: 1px solid #E5DCCD;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1C1917;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_upload_btn:hover {
+    border-color: #B45309;
+    color: #B45309;
+    background-color: #FAF4EB;
+}
+
+.mayhen_editor_upload_btn_sm {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+}
+
+/* Album Gallery Grid 2 Cột Cân Đối */
+.mayhen_editor_gallery_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.mayhen_editor_gallery_item_box {
+    background-color: #ffffff;
+    border: 1px solid #EAE5DD;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* VietQR Box 2 Cột Hiện Đại */
+.mayhen_vietqr_box {
+    background-color: #ffffff;
+    border: 1px solid #EAE5DD;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_vietqr_preview_wrap {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.mayhen_vietqr_img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: contain;
+    background-color: #F8F6F0;
+    border: 1px solid #E5DCCD;
+    flex-shrink: 0;
+}
+
+.mayhen_vietqr_fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Sticky Footer Stepper Navigation Bar */
+.mayhen_editor_drawer_footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-top: 1px solid #EAE5DD;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 30;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+    margin-top: 20px;
+    flex-shrink: 0;
+}
+
+.mayhen_editor_drawer_step_indicator {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #78716C;
+    user-select: none;
+}
+
+.mayhen_editor_drawer_step_indicator .mayhen_step_current {
+    color: #B45309;
+    font-weight: 700;
+}
+
+.mayhen_editor_btn_nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 9px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_btn_nav_prev {
+    background-color: #FAF8F5;
+    color: #57534E;
+    border: 1px solid #E5DCCD;
+}
+
+.mayhen_editor_btn_nav_prev:hover:not(:disabled) {
+    background-color: #F5EFEB;
+    color: #1C1917;
+    border-color: #D6CABA;
+}
+
+.mayhen_editor_btn_nav_prev:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background-color: #FAF8F5;
+    border-color: #EAE5DD;
+    color: #A8A29E;
+}
+
+.mayhen_editor_btn_nav_next {
+    background-color: #B45309;
+    color: #ffffff;
+    border: 1px solid #B45309;
+    box-shadow: 0 2px 8px rgba(180, 83, 9, 0.25);
+}
+
+.mayhen_editor_btn_nav_next:hover {
+    background-color: #92400E;
+    border-color: #92400E;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.32);
+    transform: translateY(-1px);
+}
+
+/* Zone 3: Center Stage Mockup Canvas */
+.mayhen_editor_center_stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #FAF8F5;
+    background-image: radial-gradient(rgba(180, 83, 9, 0.06) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    height: 100%;
+}
+
+/* iPhone Frame Realistic Quiet Luxury */
+.mayhen_editor_mockup_phone {
+    width: 375px;
+    max-width: 90%;
+    height: calc(100vh - 120px);
+    max-height: 750px;
+    aspect-ratio: 9/19.5;
+    background-color: #000000;
+    border-radius: 44px;
+    box-shadow: 
+        0 0 0 5px #24211E,
+        0 0 0 7px #3D3832,
+        0 24px 60px -12px rgba(28, 25, 23, 0.28);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Desktop Preview Frame Mode */
+.mayhen_editor_center_stage.is-desktop-mode .mayhen_editor_mockup_phone {
+    width: 100%;
+    max-width: 960px;
+    height: 94%;
+    aspect-ratio: unset;
+    border-radius: 14px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.15);
+}
+
+.mayhen_editor_phone_island {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96px;
+    height: 22px;
+    background-color: #000000;
+    border-radius: 16px;
+    z-index: 30;
+    pointer-events: none;
+}
+
+.mayhen_editor_iframe_viewport {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: #ffffff;
+    border-radius: 36px;
+    overflow: hidden;
+    display: block;
+}
+
+.mayhen_editor_center_stage.is-desktop-mode .mayhen_editor_iframe_viewport {
+    border-radius: 12px;
+}
+
+.mayhen_editor_preview_hint {
+    font-size: 0.72rem;
+    color: #78716C;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+/* ==========================================================================
+   3. SECTIONS REORDER LIST & DIRECT DRAG-AND-DROP
+   ========================================================================== */
+
+.mayhen_editor_sections_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.mayhen_editor_section_card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background-color: #ffffff;
+    border: 1px solid #EAE5DD;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.mayhen_editor_section_card:hover {
+    border-color: #B45309;
+    background-color: #FAF8F5;
+}
+
+.mayhen_editor_section_card.is-active {
+    border-color: #B45309;
+    background-color: #FAF4EB;
+}
+
+.mayhen_editor_section_card.is-hidden {
+    opacity: 0.55;
+    background-color: #F9FAFB;
+}
+
+.mayhen_editor_drag_handle {
+    cursor: grab;
+    color: #78716c;
+    display: flex;
+    align-items: center;
+    touch-action: none;
+    padding: 4px;
+}
+
+.mayhen_editor_drag_handle:active {
+    cursor: grabbing;
+}
+
+.mayhen_editor_section_info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_editor_section_name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1c1917;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_editor_section_sub {
+    font-size: 0.6875rem;
+    color: #78716c;
+}
+
+.mayhen_editor_section_actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mayhen_editor_btn_icon {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #78716c;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mayhen_editor_btn_icon:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #1c1917;
+}
+
+/* ==========================================================================
+   4. CURATED 6 PALETTES & WAX SEAL CUSTOMIZATION
+   ========================================================================== */
+
+.mayhen_editor_palette_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.mayhen_editor_palette_card {
+    border: 2px solid #EAE5DD;
+    border-radius: 12px;
+    padding: 12px;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_editor_palette_card:hover {
+    border-color: #B45309;
+    transform: translateY(-1px);
+}
+
+.mayhen_editor_palette_card.active {
+    border-color: #B45309;
+    background-color: #FFFDF9;
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.12);
+}
+
+.mayhen_editor_swatch_row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_editor_swatch_circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mayhen_editor_palette_name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1c1917;
+}
+
+.mayhen_editor_palette_desc {
+    font-size: 0.6875rem;
+    color: #78716c;
+}
+
+/* Wax Seal Controls */
+.mayhen_editor_seal_swatches {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.mayhen_editor_seal_btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    outline: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_seal_btn.active {
+    outline-color: #B45309;
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   5. MOBILE VIEWPORT ENHANCEMENTS (< 768px)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+    .mayhen_editor_v2_container {
+        height: 100vh;
+    }
+
+    .mayhen_editor_topbar {
+        padding: 0 12px;
+        height: 54px;
+    }
+
+    .mayhen_editor_topbar_title {
+        display: none; /* Ẩn text dài trên mobile để nhường chỗ cho Mode Switcher */
+    }
+
+    .mayhen_editor_template_chip_name {
+        max-width: 80px;
+    }
+
+    .mayhen_editor_save_pill {
+        display: none; /* Ẩn pill trên mobile hẹp */
+    }
+
+    /* Hiển thị Segmented Mode Switcher ngay giữa Topbar */
+    .mayhen_editor_mode_switcher {
+        display: flex;
+    }
+
+    .mayhen_editor_history_group,
+    .mayhen_editor_device_group {
+        display: none !important;
+    }
+
+    .mayhen_editor_left_rail {
+        display: none !important;
+    }
+
+    .mayhen_editor_v2_body {
+        height: calc(100vh - 54px);
+    }
+
+    /* Mobile Form View: Chiếm toàn màn hình */
+    .mayhen_editor_drawer_panel {
+        width: 100% !important;
+        height: 100% !important;
+        border-right: none;
+        padding-bottom: 70px;
+    }
+
+    .mayhen_editor_subpanel {
+        padding: 16px;
+        padding-bottom: 80px;
+    }
+
+    /* Gallery Grid 1 hoặc 2 cột trên mobile */
+    .mayhen_editor_gallery_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    /* Center Stage Preview: Ẩn khi đang ở tab Nhập liệu, hiện full khi ở tab Xem thiệp */
+    .mayhen_editor_center_stage {
+        display: none;
+        padding: 0;
+        background: #ffffff;
+    }
+
+    .mayhen_editor_mockup_phone {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+    }
+
+    .mayhen_editor_phone_island {
+        display: none;
+    }
+
+    .mayhen_editor_iframe_viewport {
+        border-radius: 0;
+    }
+
+    /* Trạng thái xem thiệp trên Mobile */
+    body.is-mobile-preview-active .mayhen_editor_drawer_panel {
+        display: none !important;
+    }
+
+    body.is-mobile-preview-active .mayhen_editor_center_stage {
+        display: flex !important;
+    }
+
+    /* Floating Quick Bar khi đang xem thiệp trên Mobile */
+    .mayhen_editor_mobile_floating_bar {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(28, 25, 23, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 30px;
+        padding: 6px 14px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        z-index: 60;
+    }
+
+    body.is-mobile-preview-active .mayhen_editor_mobile_floating_bar {
+        display: flex;
+    }
+
+    .mayhen_editor_mobile_floating_btn {
+        background: transparent;
+        border: none;
+        color: #FAF8F5;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+
+    .mayhen_editor_mobile_floating_btn.btn-primary {
+        background-color: #B45309;
+        color: #ffffff;
+        font-weight: 600;
+    }
+}
+
+@media (min-width: 768px) {
+    .mayhen_editor_mode_switcher {
+        display: none !important;
+    }
+
+    .mayhen_editor_mobile_floating_bar {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   6. MODAL SYSTEM (Template Switcher, Music Picker, Cropper)
+   ========================================================================== */
+
+.mayhen_editor_template_modal,
+.mayhen_music_picker_modal,
+.mayhen_cropper_modal,
+.mayhen_editor_modal_preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(28, 25, 23, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 16px;
+}
+
+.mayhen_editor_modal_open {
+    display: flex !important;
+    animation: mayhen_modal_fade 0.2s ease-out;
+}
+
+@keyframes mayhen_modal_fade {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.mayhen_editor_template_modal_box,
+.mayhen_music_picker_box,
+.mayhen_cropper_box {
+    background: #ffffff;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_editor_modal_header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #EAE5DD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_editor_modal_close_btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #F3EFEA;
+    color: #1C1917;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_modal_close_btn:hover {
+    background: #E5DCCD;
+}
+
+/* Template Radio Grid */
+.mayhen_editor_template_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+
+.mayhen_editor_template_radio_card {
+    border: 2px solid #EAE5DD;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    padding-bottom: 12px;
+}
+
+.mayhen_editor_template_radio_card:hover {
+    border-color: #B45309;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_editor_template_radio_card.mayhen_editor_template_radio_selected {
+    border-color: #B45309;
+    box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.2);
+}
+
+.mayhen_editor_template_radio_thumb {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    background-color: #F8F6F0;
+}
+
+.mayhen_editor_template_radio_name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1C1917;
+    margin-top: 10px;
+    padding: 0 8px;
+}
+
+/* Music Modal Elements */
+.mayhen_music_search_bar {
+    padding: 14px 20px;
+    border-bottom: 1px solid #EAE5DD;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #FAF9F6;
+}
+
+.mayhen_music_search_input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    color: #1C1917;
+    outline: none;
+}
+
+.mayhen_music_list {
+    padding: 10px 16px;
+    overflow-y: auto;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_music_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.mayhen_music_item:hover {
+    background-color: #FAF8F5;
+}
+
+.mayhen_music_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.mayhen_music_play_btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #FAF4EB;
+    color: #B45309;
+    border: 1px solid #E8D9C5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.mayhen_music_play_btn.mayhen_playing {
+    background-color: #B45309;
+    color: #ffffff;
+}
+
+.mayhen_music_select_btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #E5DCCD;
+    background-color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1C1917;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_music_select_btn:hover {
+    background-color: #B45309;
+    color: #ffffff;
+    border-color: #B45309;
+}

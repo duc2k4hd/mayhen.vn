@@ -17,6 +17,8 @@ class WeddingMusicService
      */
     protected string $musicRootPath;
 
+    protected string $indexCachePath;
+
     public function __construct()
     {
         $this->musicRootPath = storage_path('app/public/client/musics');

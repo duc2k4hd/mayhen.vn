@@ -398,4 +398,95 @@ class InvitationTemplateService
             return $invitation;
         });
     }
+
+    /**
+     * Lưu bản nháp định kỳ kèm kiểm tra khóa lạc quan (Optimistic Concurrency Control).
+     *
+     * @param  array<string, mixed>  $draftConfig
+     * @param  array<string, mixed>  $weddingDelta
+     * @return array{success: bool, conflict: bool, new_revision_id?: int, current_revision?: int, saved_at?: string, message?: string}
+     */
+    public function saveDraftWithLock(Invitation $invitation, int $clientRevision, array $draftConfig, array $weddingDelta = []): array
+    {
+        return DB::transaction(function () use ($invitation, $clientRevision, $draftConfig, $weddingDelta) {
+            // Khóa dòng để đọc revision mới nhất chống race condition
+            $currentInvitation = Invitation::where('id', $invitation->id)->lockForUpdate()->first();
+            if (! $currentInvitation) {
+                return [
+                    'success' => false,
+                    'conflict' => true,
+                    'message' => 'Không tìm thấy thiệp cưới tương ứng.',
+                ];
+            }
+
+            $currentRevision = (int) ($currentInvitation->revision_id ?? 0);
+
+            // Kiểm tra xung đột phiên bản (Optimistic Concurrency Check)
+            if ($clientRevision < $currentRevision) {
+                return [
+                    'success' => false,
+                    'conflict' => true,
+                    'current_revision' => $currentRevision,
+                    'message' => 'Phiên làm việc đã cũ hoặc đã được chỉnh sửa từ một tab khác. Vui lòng làm mới trang.',
+                ];
+            }
+
+            // Khử blob URLs trong dữ liệu nếu có
+            $sanitize = function (mixed $value) use (&$sanitize): mixed {
+                if (is_array($value)) {
+                    return array_map($sanitize, $value);
+                }
+                if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
+                    return null;
+                }
+
+                return $value;
+            };
+
+            $cleanDraft = $sanitize($draftConfig);
+            $cleanWeddingDelta = $sanitize($weddingDelta);
+
+            // Cập nhật wedding nếu có thay đổi delta
+            $wedding = $currentInvitation->wedding;
+            if ($wedding && ! empty($cleanWeddingDelta)) {
+                $allowedFields = [
+                    'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
+                    'wedding_date', 'venue_name', 'venue_address', 'story',
+                    'cover_photo_url', 'music_url', 'bank_name',
+                    'bank_account_number', 'bank_account_name',
+                ];
+
+                $fieldsToUpdate = [];
+                foreach ($allowedFields as $f) {
+                    if (array_key_exists($f, $cleanWeddingDelta)) {
+                        $fieldsToUpdate[$f] = $cleanWeddingDelta[$f];
+                    }
+                }
+
+                if (isset($cleanWeddingDelta['extra_data']) && is_array($cleanWeddingDelta['extra_data'])) {
+                    $fieldsToUpdate['extra_data'] = array_merge($wedding->extra_data ?? [], $cleanWeddingDelta['extra_data']);
+                }
+
+                if (! empty($fieldsToUpdate)) {
+                    $wedding->update($fieldsToUpdate);
+                }
+            }
+
+            $newRevision = $currentRevision + 1;
+            $mergedDraft = array_merge($currentInvitation->draft_config ?? [], $cleanDraft);
+
+            $currentInvitation->update([
+                'draft_config' => $mergedDraft,
+                'revision_id' => $newRevision,
+                'last_autosaved_at' => now(),
+            ]);
+
+            return [
+                'success' => true,
+                'conflict' => false,
+                'new_revision_id' => $newRevision,
+                'saved_at' => now()->toIso8601String(),
+            ];
+        });
+    }
 }

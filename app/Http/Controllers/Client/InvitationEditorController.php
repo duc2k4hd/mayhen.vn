@@ -14,7 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class InvitationEditorController extends Controller
@@ -116,6 +116,31 @@ class InvitationEditorController extends Controller
         };
         $rawWedding = $sanitizeBlobs($rawWedding);
 
+        // Tự động ghép tên phụ mẫu Nhà Trai & Nhà Gái từ các trường cha mẹ riêng lẻ nếu có
+        $extraData = (array) ($rawWedding['extra_data'] ?? []);
+        if (empty($rawWedding['groom_parents']) && (! empty($extraData['groom_father']) || ! empty($extraData['groom_mother']))) {
+            $father = trim((string) ($extraData['groom_father'] ?? ''));
+            $mother = trim((string) ($extraData['groom_mother'] ?? ''));
+            if ($father !== '' && $mother !== '') {
+                $rawWedding['groom_parents'] = 'ÔNG: '.$father.' & BÀ: '.$mother;
+            } elseif ($father !== '') {
+                $rawWedding['groom_parents'] = 'ÔNG: '.$father;
+            } elseif ($mother !== '') {
+                $rawWedding['groom_parents'] = 'BÀ: '.$mother;
+            }
+        }
+        if (empty($rawWedding['bride_parents']) && (! empty($extraData['bride_father']) || ! empty($extraData['bride_mother']))) {
+            $father = trim((string) ($extraData['bride_father'] ?? ''));
+            $mother = trim((string) ($extraData['bride_mother'] ?? ''));
+            if ($father !== '' && $mother !== '') {
+                $rawWedding['bride_parents'] = 'ÔNG: '.$father.' & BÀ: '.$mother;
+            } elseif ($father !== '') {
+                $rawWedding['bride_parents'] = 'ÔNG: '.$father;
+            } elseif ($mother !== '') {
+                $rawWedding['bride_parents'] = 'BÀ: '.$mother;
+            }
+        }
+
         // Validate cơ bản
         $request->validate([
             'template_id' => 'required|exists:invitation_templates,id',
@@ -139,10 +164,19 @@ class InvitationEditorController extends Controller
             }
         }
 
+        // Tiếp nhận và chuẩn hóa custom_config (bố cục, bảng màu, tem sáp)
+        $rawConfig = $request->input('invitation.custom_config', $request->input('custom_config', []));
+        if (is_string($rawConfig)) {
+            $decoded = json_decode($rawConfig, true);
+            $customConfig = is_array($decoded) ? $decoded : [];
+        } else {
+            $customConfig = is_array($rawConfig) ? $rawConfig : [];
+        }
+
         $invitation = $this->templateService->saveInvitation($user, $template->id, [
             'wedding' => $rawWedding,
             'invitation' => [
-                'custom_config' => $request->input('invitation.custom_config', []),
+                'custom_config' => $customConfig,
             ],
         ], $invitationId);
 
@@ -245,20 +279,14 @@ class InvitationEditorController extends Controller
     }
 
     /**
-     * Upload an asset image and save directly into the current template's assets folder.
+     * Upload an asset image and save into public storage (storage/app/public/weddings/photos/).
      */
     public function uploadAsset(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => 'required|file|mimes:jpeg,png,jpg,webp,svg,gif,heic|max:15360',
-            'template_slug' => 'required|string',
+            'file' => 'required|file|mimes:jpeg,png,jpg,webp,svg,gif,heic|max:20480',
+            'template_slug' => 'nullable|string',
         ]);
-
-        $rawSlug = $request->input('template_slug');
-        $templateSlug = Str::slug($rawSlug);
-        if (empty($templateSlug) || $templateSlug === 'selectedtemplate-slug') {
-            $templateSlug = 'net-muc-tinh-yeu';
-        }
 
         $file = $request->file('file');
         $ext = strtolower($file->getClientOriginalExtension());
@@ -267,23 +295,16 @@ class InvitationEditorController extends Controller
         }
         $filename = Str::uuid()->toString().'.'.$ext;
 
-        // Thư mục lưu trữ trực tiếp duy nhất trong resources/views/client/invitations/
-        $resourceAssetDir = resource_path("views/client/invitations/{$templateSlug}/assets");
-
-        if (! File::exists($resourceAssetDir)) {
-            File::makeDirectory($resourceAssetDir, 0755, true);
-        }
-
-        // Lưu trực tiếp file vào resources/views/client/invitations/{templateSlug}/assets
-        $file->move($resourceAssetDir, $filename);
-
-        $assetUrl = url("/mau-thiep/{$templateSlug}/assets/assets/{$filename}");
+        // Lưu trữ chuẩn tại storage/app/public/weddings/photos/
+        $path = $file->storeAs('weddings/photos', $filename, 'public');
+        $assetUrl = asset('storage/'.$path);
 
         return response()->json([
             'success' => true,
             'file_name' => $filename,
             'file_url' => $assetUrl,
-            'relative_path' => "assets/{$filename}",
+            'relative_path' => $assetUrl,
+            'storage_path' => $path,
         ]);
     }
 
@@ -309,5 +330,41 @@ class InvitationEditorController extends Controller
                 'total_pages' => $result['total_pages'],
             ],
         ]);
+    }
+
+    /**
+     * API Autosave định kỳ từ Studio V2 kèm Optimistic Concurrency Control.
+     */
+    public function autosave(Request $request): JsonResponse
+    {
+        $request->validate([
+            'invitation_id' => 'required|integer|exists:invitations,id',
+            'revision_id' => 'required|integer|min:0',
+            'draft_config' => 'nullable|array',
+            'wedding_delta' => 'nullable|array',
+        ]);
+
+        $invitation = Invitation::with('wedding')->findOrFail((int) $request->input('invitation_id'));
+
+        // Kiểm tra quyền sở hữu thiệp
+        if (! $invitation->isOwner()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền chỉnh sửa thiệp cưới này.',
+            ], 403);
+        }
+
+        $result = $this->templateService->saveDraftWithLock(
+            $invitation,
+            (int) $request->input('revision_id'),
+            (array) $request->input('draft_config', []),
+            (array) $request->input('wedding_delta', [])
+        );
+
+        if (! empty($result['conflict'])) {
+            return response()->json($result, 409);
+        }
+
+        return response()->json($result, 200);
     }
 }

@@ -810,9 +810,140 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
       * Nhãn gập góc `Quiet Luxury` đậm phong cách thiệp cưới châu Âu.
   - **Responsive Mobile-First**: Tự động xếp chồng cột mượt mà trên tablet và mobile (<992px), bo góc gọn gàng, co giãn ảnh và nhãn dán tỉ lệ vàng, không tràn viền màn hình.
 
+- **Nghiên Cứu Đối Thủ, Kiểm Toán Hệ Thống & Thiết Kế Kiến Trúc INVITATION EDITOR V2**:
+  - **Khảo sát chuyên sâu đối thủ Ngày Chung Đôi (`ngaychungdoi.com`)**: Phân tích toàn diện 2 chế độ tạo thiệp (Điền form theo mẫu vs Thiết kế tự do), cơ chế Quick-Fill thu thập thông tin lũy tiến, tính năng bảo lưu mã QR/Link khi sửa thiệp, hệ thống đối tác B2B (Studio credit, link duyệt watermark).
+  - **Kiểm toán mã nguồn Mây Hẹn hiện tại**: Chỉ rõ các lỗ hổng kỹ thuật (lưu ảnh vào `resources/views/`, thiếu state store tập trung, không có autosave ngầm, thiếu Undo/Redo, mobile UX bị che khuất bởi form, đổi mẫu reload trang gây đứt đoạn trải nghiệm).
+  - **Thiết lập Triết lý Trải nghiệm 2 Tầng (Two-Tier Model)**:
+    + *Chế độ 1 — Quick Editor V2*: Tối ưu 60 giây tạo thiệp nhanh cho 60% khách hàng không biết thiết kế.
+    + *Chế độ 2 — Visual Section Designer*: Chạm trực tiếp vào thiệp (Click-to-Select), kéo thả đổi thứ tự section (Section DnD) bằng Native Pointer Events API, tùy biến 6 bộ màu Quiet Luxury, typography Serif và phong thư tem sáp.
+  - **Phân tách dữ liệu cốt lõi (Data Decoupling)**: Tách bạch tuyệt đối giữa `weddings` (dữ liệu cưới bất biến) và `invitations.custom_config` (Document Schema version 2.0.0). Đổi mẫu không bao giờ mất dữ liệu cưới.
+  - **Khởi tạo trọn bộ 10 tài liệu kỹ thuật & sản phẩm trong `docs/`**:
+    1. `docs/research/ngaychungdoi-editor-benchmark.md`
+    2. `docs/research/mayhen-editor-current-audit.md`
+    3. `docs/product/editor-v2-prd.md`
+    4. `docs/product/editor-v2-user-flows.md`
+    5. `docs/design/editor-v2-ux-ui.md`
+    6. `docs/design/editor-v2-component-inventory.md`
+    7. `docs/architecture/editor-v2-architecture.md`
+    8. `docs/database/editor-v2-data-impact.md`
+    9. `docs/implementation/editor-v2-refactor-roadmap.md`
+    10. `docs/implementation/editor-v2-task-breakdown.md`
+  - **Bổ sung AI Skill chuyên biệt**: Tạo `.agents/skills/mayhen-visual-editor/SKILL.md` định nghĩa toàn bộ tiêu chuẩn code và Definition of Done cho phân hệ Editor V2.
+
+- **Triển Khai Hoàn Thành Gói Tasks Kỹ Thuật INVITATION EDITOR V2**:
+  - **TASK-E2-001 (Media & DB Schema)**:
+    + Tạo migration `2026_10_20_000001_add_editor_v2_columns_to_invitations_table.php` bổ sung 4 cột mới: `schema_version` (varchar), `revision_id` (bigint), `draft_config` (json), `last_autosaved_at` (timestamp).
+    + Chuẩn hóa hàm `uploadAsset` trong `InvitationEditorController`: Lưu trữ chuẩn vào `storage/app/public/weddings/photos/`, chấm dứt việc ghi file vào `resources/views/`.
+  - **TASK-E2-003 (Backend Autosave & Concurrency Lock API)**:
+    + Thêm route `POST /api/editor/autosave` (`invitation.autosave`).
+    + Bổ sung phương thức `saveDraftWithLock` trong `InvitationTemplateService` và endpoint `autosave` trong `InvitationEditorController`.
+    + Triển khai Optimistic Concurrency Control: So sánh `revision_id`, từ chối ghi đè và trả HTTP 409 Conflict nếu phiên làm việc ở tab khác đã lưu dữ liệu mới hơn.
+  - **TASK-E2-002 (Vanilla JS Single State Store & Offline Recovery)**:
+    + Tạo `public/assets/client/js/editor/store.js`: Single State Store quản lý luồng dữ liệu một chiều (`state = { wedding, custom_config, revision_id, ui }`).
+    + Tạo `public/assets/client/js/editor/actions.js`: Tập hợp Action types & creators (`UPDATE_FIELD`, `SWITCH_TEMPLATE`, `REORDER_SECTIONS`, `SET_THEME_PALETTE`, `UNDO`, `REDO`...).
+    + Tạo `public/assets/client/js/editor/history.js`: Lịch sử Undo/Redo tối đa 20 snapshot, hỗ trợ phím tắt `Ctrl+Z`, `Ctrl+Y`.
+    + Tạo `public/assets/client/js/editor/autosaver.js`: Ghi đè tức thì vào `localStorage` chống mất điện/tắt tab đột ngột, kết hợp Debounce 1.5s gửi ngầm lên `/api/editor/autosave`.
+  - **TASK-E2-004 & TASK-E2-005 (Studio V2 UI & Zero-Loss Template Switcher)**:
+    + Tạo file CSS chuẩn Quiet Luxury `public/assets/client/css/pages/editor-v2.css`.
+    + Topbar dính: Tích hợp Pill trạng thái lưu trữ trực tiếp (Đang lưu nháp / Đã lưu nháp / Ngoại tuyến / Xung đột), cụm nút Undo/Redo và nút đổi kích thước Mobile (390px) / Desktop.
+    + Module `public/assets/client/js/editor/template-switcher.js`: Chuyển đổi giữa các mẫu thiệp cưới tức thì không reload trang, bảo toàn 100% dữ liệu cưới và đồng bộ sang template mới qua PostMessage.
+  - **Khắc phục lỗi Layout & Tương tác Studio Editor V2**:
+    + **Loại bỏ lỗi Fatal Error 500 Backend**: Xóa khai báo trùng lặp biến `protected string $musicBasePath` trong `app/Services/WeddingMusicService.php` làm sập controller.
+    + **Giải phóng Studio Fullscreen 100vh**: Cập nhật `master.blade.php` hỗ trợ `@unless(View::hasSection('hide_chrome'))`, loại bỏ hoàn toàn Header, Footer và Bottom Nav của website thương mại đè lên Studio.
+    + **Sửa lỗi biến đổi màu nền toàn trang**: Loại bỏ việc nhúng nhầm `preview.css` và `home.css` trong `editor.blade.php` (do `preview.css` quy định `html { background-color: #161310; }` làm tối đen giao diện Studio).
+    + **Tái cấu trúc bố cục cân bằng & Trải nghiệm Mobile 1 chạm**:
+      * Mở rộng Contextual Drawer từ 440px lên `480px` - `520px`, gom nhóm các input thành các Card trang nhã (`.mayhen_client_form_card`), tăng chiều cao input lên 44px chuẩn công thái học.
+      * Tối ưu Album Gallery ảnh thành lưới 2 cột cân xứng (`.mayhen_editor_gallery_grid`), rút ngắn 60% chiều dài cuộn trang.
+      * Ghim thanh điều hướng chân trang (Sticky Stepper Footer `.mayhen_editor_drawer_footer`) luôn nổi ở mép dưới Drawer, không cần cuộn chuột đến đáy mới thấy nút bấm.
+      * Giảm độ dày bezel viền chiếc iPhone Mockup ở Center Stage (từ 22px xuống 5px viền titan mỏng), căn giữa tự co giãn theo chiều cao màn hình laptop/máy tính.
+      * **Đột phá trải nghiệm Mobile (< 768px)**: Tích hợp bộ chuyển đổi Segmented Switcher chuẩn iOS trên Topbar (`[ ✏️ Nhập Liệu | 👁️ Xem Thiệp ]`) cho phép chuyển đổi 1 chạm giữa màn hình form full-width và màn hình thiệp cưới toàn cảnh, kèm Floating Action Bar nổi linh hoạt, loại bỏ hoàn toàn tình trạng kẹt cuộn và che khuất màn hình.
+    + **Khắc phục triệt để lỗi giao diện, phần tử thừa & bố cục mất cân đối**:
+      * **Xóa bỏ xung đột CSS V1**: Gỡ bỏ việc nhúng đồng thời file CSS cũ `editor.css` trong `editor.blade.php`, chỉ nạp duy nhất `editor-v2.css` với cache busting `?v={{ filemtime(...) }}`.
+      * **Sửa lỗi Topbar đè lên Dynamic Island trong iPhone preview**: Cập nhật điều kiện `@if ($isPreview && !$isEmbed)` trong template `thuoc-phim-tinh-yeu`, loại bỏ hoàn toàn thanh xem thử và nút "+ Tạo Thiệp Mẫu Này" xuất hiện sai vị trí bên trong iframe của Studio.
+      * **Dọn sạch các thẻ HTML thừa rớt layout**: Xóa bỏ thẻ `<div class="mayhen_editor_drawer_handle_bar">` (dòng chữ "Chỉnh Sửa Thông Tin X" đè lên tab) và `<nav class="mayhen_editor_mobile_bottom_bar">` (hàng chữ rơi ở góc dưới cùng bên trái màn hình).
+      * **Bố cục 2 cột thông minh cho Form Fields (`.mayhen_editor_fields_grid`)**: Tự động xếp song song các trường cặp đôi tương xứng (Cô Dâu ⇄ Chú Rể, Phụ Mẫu Nhà Trai ⇄ Nhà Gái, Ngày Cử Hành ⇄ Giờ Làm Lễ), giúp form gọn gàng, giảm 50% chiều sâu cuộn chuột, mở rộng Drawer lên `500px` - `560px` cân xứng hoàn hảo với Center Stage.
+      * **Thiết kế Sticky Stepper Footer cân đối 3 phần**: Ghim chắc chắn ở chân Drawer gồm nút "Quay Lại" (disabled tinh tế ở bước 1), bộ đếm bước "Bước 1 / 4" ở giữa, và nút "Tiếp Tục" (hoặc "Xuất Bản Thiệp" ở bước cuối) màu vàng đồng `#B45309`, tích hợp tự động cuộn mượt form về đầu mỗi khi chuyển bước.
+      * **Khắc phục lỗi Tab & Stepper không ẩn hiện nội dung đúng bước**: Bổ sung bộ selector `.mayhen_editor_step_content { display: none !important; }` và `.mayhen_editor_step_content.mayhen_editor_step_active { display: block !important; }` cùng keyframe transition vào `editor-v2.css` (trước đó bị thiếu khi gỡ `editor.css` khiến tất cả các bước đều lộ ra cùng lúc), đồng thời bổ sung style cho danh sách Timeline repeater và gọi `goToStep(1)` khởi tạo trạng thái ban đầu.
+    + **Khắc phục triệt để lỗi Live Preview & Lưu trữ Bố Cục & Màu Sắc (custom_config)**:
+      * **Nguyên nhân cốt lõi**:
+        1. Form `#mayhen_editor_form` trước đó thiếu thẻ input hidden `invitation[custom_config]`, khiến dữ liệu màu sắc, tem sáp, thứ tự và trạng thái ẩn/hiện section chỉ nằm ở client store mà không được gửi lên Controller khi bấm "Xuất Bản Thiệp".
+        2. Iframe của các template thiệp (`thuoc-phim-tinh-yeu`, `net-muc-tinh-yeu`) chỉ mới lắng nghe `MAYHEN_SYNC_INPUT`, hoàn toàn chưa có bộ đón message cho `MAYHEN_CHANGE_THEME`, `MAYHEN_UPDATE_WAX_SEAL`, `MAYHEN_REORDER_SECTIONS`, và `MAYHEN_TOGGLE_SECTION`.
+        3. Các template thiệp chưa có khối CSS SSR đọc từ `$invitation->custom_config` khi người dùng xem thiệp công khai `/thiep-cuoi/{slug}`.
+      * **Giải pháp đã thực thi hoàn tất**:
+        1. **Form Synchronization**: Bổ sung `<input type="hidden" name="invitation[custom_config]" id="invitation_custom_config">` trong `editor.blade.php`. Cập nhật `editor.js` tự động đồng bộ `store.getState().custom_config` vào input này mỗi khi có thay đổi từ `ThemeController` hoặc `SectionDnDManager`, và kiểm tra bắt buộc trước khi submit.
+        2. **Iframe Live Preview Listener**:
+           - Mẫu `thuoc-phim-tinh-yeu/template.blade.php`: Lắng nghe 4 loại message và tiêm động `<style id="mayhen_live_custom_style">` cập nhật các biến CSS `:root` (`--paper`, `--ink`, `--border`, `--primary`), đổi màu và monogram tem sáp, sắp xếp lại các phần tử DOM con trong `.mayhen_invitation_djcvhwiuo9w9_card-wrapper` theo thứ tự người dùng kéo thả, cập nhật `display: none` cho các section bị tắt.
+           - Mẫu `net-muc-tinh-yeu/template.blade.php`: Tương tự, cập nhật `:root` (`--mayhen_bg_warm`, `--mayhen_ink`, `--mayhen_gold`, `--mayhen_gold_soft`, `--mayhen_wax`), thay đổi monogram tem sáp `.mayhen_invitation_dhsuudushi9428r_wax_seal`, sắp xếp lại DOM bên trong `#mayhen_invitation_main_content` và ẩn/hiện các section.
+        3. **Template Initial State Sync**: Bổ sung hàm bắn trọn bộ theme, wax seal và section order sang iframe ngay khi iframe hoàn tất tải trang (`iframe.addEventListener('load')`).
+        4. **Backend Persistence**: Cập nhật `InvitationEditorController@store` nhận trường `invitation.custom_config`, giải mã `json_decode(..., true)` an toàn và lưu trực tiếp vào trường `custom_config` (kiểu json) trong bảng `invitations`.
+        5. **SSR Persistence Render**: Thêm khối `<style id="mayhen_custom_theme_style">` đọc từ `$invitation->custom_config` vào phần `<head>` của cả 2 template thiệp cưới, đảm bảo khi xuất bản ra đường dẫn công khai `/thiep-cuoi/{slug}`, màu sắc và các section bị ẩn của thiệp vẫn giữ nguyên 100% như lúc người dùng tùy chỉnh.
+    + **Tính năng Cuộn Thông Minh (Auto-Scroll Live Preview) theo Tab Nhập Liệu**:
+      * **Vấn đề**: Người dùng bấm chuyển tab trên Stepper (ví dụ sang "4. Ảnh Cưới", "5. Lịch Trình", "2. Nhà Gái"...) thì màn hình iPhone preview bên phải vẫn đứng yên ở vị trí cũ hoặc bị kẹt ở cánh mở thiệp, người dùng phải tự dùng chuột cuộn qua lại rất mất thời gian.
+      * **Giải pháp**:
+        1. **Mở sẵn thiệp khi nhúng Studio (isEmbed)**: Trong chế độ `isEmbed`, 2 cánh mở đầu phong bì tự động ẩn (`display: none !important`), đồng thời loại bỏ triệt để các lớp khóa cuộn `.mayhen_invitation_djcvhwiuo9w9_no-scroll` / `mayhen_invitation_scroll_locked` (ghi đè `overflow-y: auto !important`, `height: 100% !important`), cho phép màn hình iframe luôn trong trạng thái sẵn sàng cuộn tự do bằng chuột, cảm ứng và thanh cuộn.
+        2. **Gắn metadata `data-section-id`**: Bổ sung `data-section-id="{{ $section['id'] }}"` vào từng tab stepper và panel nội dung trong `editor.blade.php`.
+        3. **Phát tín hiệu `MAYHEN_SCROLL_TO_SECTION`**: Trong hàm `goToStep(step)` của `editor.js`, mỗi khi người dùng chuyển bước (bấm tab, bấm Tiếp Tục hoặc Quay Lại), Studio tự động phát message `MAYHEN_SCROLL_TO_SECTION` chứa `section_id` sang Iframe.
+        4. **Bộ xử lý cuộn mượt trong Template**: Cả hai mẫu thiệp (`thuoc-phim-tinh-yeu` và `net-muc-tinh-yeu`) bắt sự kiện `MAYHEN_SCROLL_TO_SECTION`, tìm chính xác phần tử section tương ứng trong DOM và thực hiện `targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })`.
+        5. **Thanh cuộn siêu mảnh & Bảo toàn cuộn tự do**: Tùy chỉnh thanh cuộn siêu mảnh (6px) với màu vàng đồng Quiet Luxury `#B45309`, viền trắng nhẹ `rgba(255, 255, 255, 0.8)`, nền track mờ `rgba(0, 0, 0, 0.06)`, bo tròn viền mềm mại, không bao giờ khóa cuộn (`overflow-y: auto !important`), cho phép người dùng thoải mái dùng con lăn chuột, kéo vuốt hoặc kéo thanh scrollbar trên cả màn hình Studio và bên trong iPhone preview mà không gặp bất kỳ trở ngại nào.
+    + **Khắc phục lỗi Đổi Mẫu Thiệp không cập nhật khi Tạo / Cập nhật Thiệp**:
+      * **Vấn đề**: Người dùng đang chỉnh sửa thiệp, sau đó dùng tính năng "Đổi Mẫu Thiệp" (`TemplateSwitcher`) để chuyển sang mẫu khác (ví dụ từ `thuoc-phim-tinh-yeu` sang `net-muc-tinh-yeu`), nhưng khi bấm "Xuất Bản Thiệp" hoặc lưu cập nhật thì thiệp tạo/cập nhật ra vẫn là mẫu cũ.
+      * **Nguyên nhân cốt lõi**:
+        1. Trong `public/assets/client/js/editor/template-switcher.js`: Hàm `switchTemplate({ id, slug, name, thumb, tier })` chỉ dispatch vào `this.store` và đổi `iframe.src`, nhưng **hoàn toàn quên cập nhật giá trị vào thẻ input form `#template_id`** (`<input type="hidden" name="template_id" id="template_id" value="...">`) của form chính.
+        2. Trong `public/assets/client/js/pages/editor.js`: Hàm `submitFormWithPendingUploads()` trước khi gọi `mainForm.submit()` không kiểm tra và gán lại `template_id` mới nhất từ `store.getState().template_id` vào input `#template_id`.
+        3. Do đó, khi form gửi request POST lên `InvitationEditorController@store`, trường `template_id` vẫn mang ID của template ban đầu, khiến backend ghi đè lại template cũ thay vì template mới đã chọn.
+      * **Giải pháp đã thực thi**:
+        1. **Đồng bộ DOM tức thì trong `template-switcher.js`**: Ngay khi người dùng chọn mẫu mới, cập nhật trực tiếp `document.getElementById('template_id').value = id`, đồng thời cập nhật biến toàn cục `window.__MAYHEN_TEMPLATE_ID = id; window.__MAYHEN_TEMPLATE_SLUG = slug;`.
+        2. **Chốt chặn an toàn trong `editor.js`**: Trước khi `mainForm.submit()`, tự động đọc `store.getState().template_id` và gán đè vào input `#template_id` nếu có giá trị, bảo đảm dữ liệu gửi lên máy chủ luôn chính xác 100% với mẫu thiệp người dùng đã chọn.
+
+    + **Khắc Phục Triệt Để Lỗi Mất Ảnh Khi Chỉnh Sửa Thiệp Cũ (Live Preview Edit Mode)**:
+      * **Nguyên nhân gốc rễ**:
+        1. Khi vào URL chỉnh sửa thiệp cũ `tao-thiep?edit={slug}`, iframe bên phải chỉ tải URL mặc định `route('templates.preview', $slug)` mà không truyền slug thiệp (`&edit={slug}`). Do đó, `TemplateController@preview` chỉ render template với ` = null`, toàn bộ ảnh cưới của thiệp đã lưu không được SSR nạp vào màn hình preview.
+        2. Sau khi iframe tải xong, `syncAllFieldsToIframe` trong `editor.js` gửi các giá trị từ form sang iframe qua PostMessage `MAYHEN_SYNC_INPUT`. Nhưng các ảnh mặc định trong cơ sở dữ liệu được lưu dưới dạng tương đối (ví dụ `assets/3ed9dcf0-...jpg`). Bộ xử lý `editor-bridge.blade.php` trước đây gán trực tiếp `img.src = val`, dẫn đến trình duyệt trong iframe hiểu sai URL và tải về ảnh rỗng hoặc gãy (broken image icon), đồng thời các section dùng `background-image` (như hero section) không được gán style tương ứng.
+      * **Giải pháp đã thực thi**:
+        1. **Nạp dữ liệu thiệp đang sửa vào Preview Iframe**: Cập nhật cả 2 thẻ iframe preview (màn hình chính và modal mobile) trong `editor.blade.php` thành:
+           `route('templates.preview', $selectedTemplate->slug) . '?embed=1&mode=editor' . (isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '')`.
+        2. **Xử lý SSR trong `TemplateController@preview`**: Nhận tham số `edit` hoặc `invitation`, truy vấn thông tin `` và `` nếu người dùng là chủ sở hữu và truyền trực tiếp vào Blade template khi nhúng vào Studio.
+        3. **Chuẩn hóa hàm `resolveUrl` trong `editor-bridge.blade.php`**: Khi nhận message `MAYHEN_SYNC_INPUT`, tự động nhận diện đường dẫn tương đối để ghép đúng với URL gốc `` (`/mau-thiep/{slug}/assets/...`), đồng thời tự động cập nhật cả `el.style.backgroundImage` cho các khối banner/hero ảnh cưới.
+
+    + **Tách Biệt & Tự Động Ghép Tên Phụ Mẫu Nhà Trai & Nhà Gái (UX Phụ Mẫu Chuẩn Văn Hóa Việt)**:
+      * **Vấn đề**: Trước đây, form nhập liệu yêu cầu người dùng tự gõ cả chuỗi dài (ví dụ: `ÔNG: Nguyễn Tràng Giang & BÀ: Lê Thị Mai`), khiến người dùng lúng túng, gõ sai format và dễ làm hỏng bố cục thiết kế thiệp cưới.
+      * **Giải pháp thực hiện**:
+        1. **Tách 4 ô nhập liệu độc lập trong `schema.json`**:
+           - Nhà Trai: `Họ tên Cha (Nhà Trai)` (`wedding.extra_data.groom_father`) và `Họ tên Mẹ (Nhà Trai)` (`wedding.extra_data.groom_mother`).
+           - Nhà Gái: `Họ tên Cha (Nhà Gái)` (`wedding.extra_data.bride_father`) và `Họ tên Mẹ (Nhà Gái)` (`wedding.extra_data.bride_mother`).
+        2. **Tự Động Ghép Chuỗi Phụ Mẫu Chuẩn Văn Hóa (Live Preview & Backend)**:
+           - **Editor Bridge (`editor-bridge.blade.php`)**: Khi người dùng gõ vào bất kỳ ô cha/mẹ nào, bridge tự động tổng hợp thành `ÔNG: {Cha} & BÀ: {Mẹ}` (hoặc định dạng 2 dòng tùy template) và phản ánh tức thì lên màn hình xem thử Live Preview.
+           - **Backend (`InvitationEditorController@store`)**: Khi lưu thiệp, controller tự động tổng hợp từ `extra_data` thành chuỗi chuẩn gán vào 2 cột `groom_parents` và `bride_parents` của bảng `weddings`, đảm bảo tương thích ngược 100% với các tính năng cũ và thiệp đã xuất bản.
+           - **Khả năng tương thích ngược khi sửa thiệp (`editor.blade.php`)**: Nếu mở thiệp cũ chưa có 4 trường riêng biệt trong `extra_data`, hệ thống tự động bóc tách từ chuỗi `groom_parents` / `bride_parents` điền sẵn vào 4 ô nhập liệu, người dùng không cần nhập lại từ đầu.
+        3. **Template Contract**: Các mẫu thiệp hỗ trợ cả hiển thị riêng lẻ (`[data-sync-target="groom_father"]`, `[data-sync-target="groom_mother"]`) lẫn hiển thị gộp (`[data-sync-target="groom_parents"]`, `[data-sync-target="bride_parents"]`).
+
+    + **Chuẩn Hóa Toàn Diện Template Contract & Module Bridge Dùng Chung (Scale Cho Hàng Trăm Mẫu Thiệp)**:
+      * **Vấn đề đã nhận diện**: Trước đây, các template thiệp (`thuoc-phim-tinh-yeu`, `net-muc-tinh-yeu`) sử dụng các bộ selector CSS / ID ngẫu nhiên không đồng nhất (như `#mayhen_invitation_djcvhwiuo9w9_home`, `.mayhen_invitation_dhsuudushi9428r_story`...) và phải viết lại hàng trăm dòng mã JavaScript riêng lẻ trong mỗi file template để xử lý PostMessage, đồng bộ màu sắc, tem sáp, sắp xếp section và cuộn tự động. Cách này không thể mở rộng khi hệ thống phát triển lên hàng chục hoặc hàng trăm mẫu thiệp cưới khác nhau.
+      * **Giải pháp kiến trúc chuẩn hóa**:
+        1. **HTML Contract Chuẩn Dùng Chung Toàn Hệ Thống**:
+           - **Container các section**: Bọc thẻ chứa các phần bằng thuộc tính chuẩn: `data-mayhen-section-container`.
+           - **Từng Section**: Gắn thuộc tính thống nhất: `data-mayhen-section="{section_id}"` (với các id chuẩn: `couple`, `bride_events`, `groom_events`, `countdown`, `gallery_and_photos`, `story_and_timeline`, `gift_and_music`, `rsvp`, `guestbook`).
+           - **Phần tử đồng bộ dữ liệu trực tiếp**: Gắn `data-sync-target="{field_key}"` (ví dụ `data-sync-target="groom_name"`, `data-sync-target="bride_name"`, `data-sync-target="hero_photo_url"`).
+        2. **Partial Blade Thống Nhất `resources/views/client/invitations/partials/editor-bridge.blade.php`**:
+           - Tách toàn bộ logic PostMessage của iframe thành một partial dùng chung duy nhất, chỉ tải khi `isEmbed` (trong Studio).
+           - Tự động bắt và xử lý hoàn chỉnh 5 loại message từ Studio:
+             * `MAYHEN_SYNC_INPUT`: Cập nhật text content, thuộc tính src của ảnh, và ngày giờ đếm ngược qua `[data-sync-target]`.
+             * `MAYHEN_CHANGE_THEME`: Tiêm thẻ `<style id="mayhen_live_custom_style">` cập nhật bảng màu `:root` tức thì.
+             * `MAYHEN_UPDATE_WAX_SEAL`: Đổi màu nền con dấu sáp và ký tự lồng chữ cái monogram.
+             * `MAYHEN_REORDER_SECTIONS`: Tự động sắp xếp lại thứ tự DOM của các section bên trong `[data-mayhen-section-container]`.
+             * `MAYHEN_TOGGLE_SECTION`: Bật/tắt hiển thị (`display: none` / `display: block`) theo `[data-mayhen-section="{section_id}"]`.
+             * `MAYHEN_SCROLL_TO_SECTION`: Tìm kiếm phần tử `[data-mayhen-section="{section_id}"]` và kích hoạt cuộn mượt tự động `scrollIntoView({ behavior: 'smooth', block: 'start' })`.
+        3. **Refactor Hoàn Toàn 2 Template Mẫu (`thuoc-phim-tinh-yeu` & `net-muc-tinh-yeu`)**:
+           - Xóa bỏ toàn bộ các khối `@match` hardcode và script riêng lẻ cồng kềnh (tiết kiệm hơn 300 dòng code thừa).
+           - SSR ẩn hiện section chuyển sang dạng 1 dòng CSS duy nhất: `[data-mayhen-section="{{ $hiddenId }}"] { display: none !important; }`.
+           - Nhúng partial dùng chung: `@include('client.invitations.partials.editor-bridge')`.
+        4. **Khả năng mở rộng (Scalability)**: Bất kỳ mẫu thiệp cưới nào được tạo mới trong tương lai chỉ cần gán thuộc tính `data-mayhen-section` cho từng khối và thêm đúng 1 dòng `@include('client.invitations.partials.editor-bridge')` ở cuối file là tự động hoạt động 100% với Studio Editor V2 mà không cần viết thêm bất kỳ dòng script nào.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
+
 
 
 

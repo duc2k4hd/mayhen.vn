@@ -5,8 +5,32 @@
     // 1. Tên cô dâu chú rể & Gia đình
     $groomName = $wedding->groom_name ?? 'Tràng Đức';
     $brideName = $wedding->bride_name ?? 'Ngọc Phượng';
-    $groomParents = $wedding->groom_parents ?? "ÔNG: Nguyễn Tràng Giang\nBÀ: Nguyễn Thị Tám";
-    $brideParents = $wedding->bride_parents ?? "ÔNG: Đỗ Như Trung\nBÀ: Lê Thị Hảo";
+    $extraData = $wedding->extra_data ?? [];
+
+    $parseParents = function($text, $defaultFather, $defaultMother) {
+        $lines = preg_split('/[\r\n&]+/u', trim((string)$text));
+        $father = $defaultFather;
+        $mother = $defaultMother;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (preg_match('/^(?:ÔNG|Ông|Bố|Cha)[:\s-]*(.*)$/ui', $line, $m)) {
+                $father = trim($m[1]) ?: $father;
+            } elseif (preg_match('/^(?:BÀ|Bà|Mẹ)[:\s-]*(.*)$/ui', $line, $m)) {
+                $mother = trim($m[1]) ?: $mother;
+            }
+        }
+        return [$father, $mother];
+    };
+    [$legacyGroomFather, $legacyGroomMother] = $parseParents($wedding->groom_parents ?? '', 'Nguyễn Tràng Giang', 'Nguyễn Thị Tám');
+    [$legacyBrideFather, $legacyBrideMother] = $parseParents($wedding->bride_parents ?? '', 'Đỗ Như Trung', 'Lê Thị Hảo');
+
+    $groomFather = !empty($extraData['groom_father']) ? $extraData['groom_father'] : $legacyGroomFather;
+    $groomMother = !empty($extraData['groom_mother']) ? $extraData['groom_mother'] : $legacyGroomMother;
+    $brideFather = !empty($extraData['bride_father']) ? $extraData['bride_father'] : $legacyBrideFather;
+    $brideMother = !empty($extraData['bride_mother']) ? $extraData['bride_mother'] : $legacyBrideMother;
+
+    $groomParents = "ÔNG: {$groomFather}\nBÀ: {$groomMother}";
+    $brideParents = "ÔNG: {$brideFather}\nBÀ: {$brideMother}";
 
     // 2. Ngày giờ và sảnh tiệc
     $weddingDate = isset($wedding->wedding_date) ? \Carbon\Carbon::parse($wedding->wedding_date) : \Carbon\Carbon::create(2027, 3, 7, 7, 0, 0);
@@ -159,14 +183,81 @@
     @endphp
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
     
+    @php
+        $customConfig = $invitation->custom_config ?? [];
+        $themeConfig = $customConfig['theme'] ?? [];
+        $waxSealConfig = $customConfig['wax_seal'] ?? [];
+        $sectionsHidden = $customConfig['sections_hidden'] ?? [];
+
+        $themeBg = $themeConfig['bg'] ?? null;
+        $themePrimary = $themeConfig['primary'] ?? null;
+        $themeAccent = $themeConfig['accent'] ?? null;
+        $themeText = $themeConfig['text'] ?? null;
+
+        $sealColor = $waxSealConfig['color'] ?? null;
+        $sealMonogram = $waxSealConfig['monogram'] ?? null;
+    @endphp
+
+    <style id="mayhen_custom_theme_style">
+        :root {
+            @if ($themeBg) --mayhen_bg_warm: {{ $themeBg }} !important; @endif
+            @if ($themeText) --mayhen_ink: {{ $themeText }} !important; @endif
+            @if ($themePrimary) --mayhen_gold: {{ $themePrimary }} !important; @endif
+            @if ($themeAccent) --mayhen_gold_soft: {{ $themeAccent }} !important; @endif
+            @if ($sealColor) --mayhen_wax: {{ $sealColor }} !important; @endif
+        }
+        @if (!empty($sectionsHidden))
+            @foreach ($sectionsHidden as $hiddenId)
+                [data-mayhen-section="{{ $hiddenId }}"] { display: none !important; }
+            @endforeach
+        @endif
+    </style>
+
     @if ($isEmbed)
         <style>
             body { background: transparent !important; }
+            html, body {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                height: 100% !important;
+                -webkit-overflow-scrolling: touch !important;
+                scroll-behavior: smooth !important;
+            }
+            body.mayhen_invitation_scroll_locked {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                height: 100% !important;
+                touch-action: auto !important;
+            }
             .mayhen_invitation_dhsuudushi9428r_page {
                 box-shadow: none !important;
                 border: none !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                min-height: 100% !important;
+                overflow: visible !important;
+            }
+
+            /* Thanh cuộn siêu mảnh, mềm mại, màu vàng đồng Quiet Luxury rõ nét */
+            html, body {
+                scrollbar-width: thin !important;
+                scrollbar-color: #B45309 rgba(0, 0, 0, 0.08) !important;
+            }
+            ::-webkit-scrollbar {
+                width: 6px !important;
+                height: 6px !important;
+            }
+            ::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.06) !important;
+                border-radius: 999px !important;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #B45309 !important;
+                border-radius: 999px !important;
+                border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #78350F !important;
             }
         </style>
     @endif
@@ -309,9 +400,9 @@
         </section>
 
         {{-- MAIN INVITATION BODY (Nội dung chi tiết được cuộn xuống sau khi mở) --}}
-        <div class="mayhen_invitation_dhsuudushi9428r_main_body" id="mayhen_invitation_main_content">
+        <div class="mayhen_invitation_dhsuudushi9428r_main_body" id="mayhen_invitation_main_content" data-mayhen-section-container>
             {{-- Section 2: Gia đình hai bên (Thiết kế đối xứng cân bằng Quiet Luxury) --}}
-            <section class="mayhen_invitation_dhsuudushi9428r_families" id="mayhen_invitation_dhsuudushi9428r_families" aria-label="Gia đình hai bên">
+            <section data-mayhen-section="couple" class="mayhen_invitation_dhsuudushi9428r_families" id="mayhen_invitation_dhsuudushi9428r_families" aria-label="Gia đình hai bên">
                 <div class="mayhen_invitation_dhsuudushi9428r_family_card mayhen_invitation_dhsuudushi9428r_reveal">
                     <div class="mayhen_invitation_dhsuudushi9428r_family_col">
                         <span class="mayhen_invitation_dhsuudushi9428r_family_badge">NHÀ TRAI</span>
@@ -339,20 +430,20 @@
                 </div>
 
                 <div class="mayhen_invitation_dhsuudushi9428r_hero_wrap mayhen_invitation_dhsuudushi9428r_reveal">
-                    <img id="sync_hero_photo" class="mayhen_invitation_dhsuudushi9428r_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}" loading="eager">
+                    <img id="sync_hero_photo" class="mayhen_invitation_dhsuudushi9428r_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} và {{ $brideName }}" loading="eager" data-sync-target="hero_photo_url">
                 </div>
                 
                 <p id="sync_love_quote" class="mayhen_invitation_dhsuudushi9428r_quote mayhen_invitation_dhsuudushi9428r_reveal" data-sync-target="story">“{{ $loveQuote }}”</p>
 
                 <div class="mayhen_invitation_dhsuudushi9428r_triptych mayhen_invitation_dhsuudushi9428r_reveal">
-                    <img id="sync_triptych_1" src="{{ $triptych1 }}" alt="Ảnh cưới 1" loading="lazy">
-                    <img id="sync_triptych_2" src="{{ $triptych2 }}" alt="Ảnh cưới 2" loading="lazy">
-                    <img id="sync_triptych_3" src="{{ $triptych3 }}" alt="Ảnh cưới 3" loading="lazy">
+                    <img id="sync_triptych_1" src="{{ $triptych1 }}" alt="Ảnh cưới 1" loading="lazy" data-sync-target="triptych_photo_1">
+                    <img id="sync_triptych_2" src="{{ $triptych2 }}" alt="Ảnh cưới 2" loading="lazy" data-sync-target="triptych_photo_2">
+                    <img id="sync_triptych_3" src="{{ $triptych3 }}" alt="Ảnh cưới 3" loading="lazy" data-sync-target="triptych_photo_3">
                 </div>
             </section>
 
             {{-- Section 4: Lời mời và Hai tab Lễ cưới Nhà Gái / Nhà Trai --}}
-            <section class="mayhen_invitation_dhsuudushi9428r_invite" id="mayhen_invitation_dhsuudushi9428r_invite">
+            <section data-mayhen-section="bride_events" class="mayhen_invitation_dhsuudushi9428r_invite" id="mayhen_invitation_dhsuudushi9428r_invite">
                 <div class="mayhen_invitation_dhsuudushi9428r_reveal">
                     <p class="mayhen_invitation_dhsuudushi9428r_invite_title">Trân Trọng Kính Mời</p>
                     <div class="mayhen_invitation_dhsuudushi9428r_rule"><span>✦</span></div>
@@ -438,7 +529,7 @@
             </section>
 
             {{-- Section 5: Lịch, Đếm ngược & Timeline --}}
-            <section class="mayhen_invitation_dhsuudushi9428r_schedule" aria-label="Lịch và chương trình cưới">
+            <section data-mayhen-section="story_and_timeline" class="mayhen_invitation_dhsuudushi9428r_schedule" aria-label="Lịch và chương trình cưới">
                 <div class="mayhen_invitation_dhsuudushi9428r_calendar mayhen_invitation_dhsuudushi9428r_reveal">
                     <h2>Tháng {{ $calendarMonth }} <span>/ {{ $calendarYear }}</span></h2>
                     <div class="mayhen_invitation_dhsuudushi9428r_calendar_grid" id="mayhen_invitation_dhsuudushi9428r_calendar"></div>
@@ -537,7 +628,7 @@
             </section>
 
             {{-- Section 7: Album ảnh cưới --}}
-            <section class="mayhen_invitation_dhsuudushi9428r_album" aria-label="Album ảnh cưới">
+            <section data-mayhen-section="gallery_and_photos" class="mayhen_invitation_dhsuudushi9428r_album" aria-label="Album ảnh cưới">
                 <button class="mayhen_invitation_dhsuudushi9428r_album_photo mayhen_invitation_dhsuudushi9428r_album_wide mayhen_invitation_dhsuudushi9428r_reveal" type="button" data-photo="0">
                     <img src="{{ $albumPhotos[0] ?? $defaultAlbum[0] }}" alt="Ảnh cưới trong album 1" loading="lazy">
                 </button>
@@ -621,7 +712,7 @@
             </section>
 
             {{-- Section 9: Hộp mừng cưới VietQR --}}
-            <section class="mayhen_invitation_dhsuudushi9428r_gift mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_gift">
+            <section data-mayhen-section="gift_and_music" class="mayhen_invitation_dhsuudushi9428r_gift mayhen_invitation_dhsuudushi9428r_frame" id="mayhen_invitation_dhsuudushi9428r_gift">
                 <div class="mayhen_invitation_dhsuudushi9428r_reveal">
                     <h2>Hộp Mừng Cưới</h2>
                     <div class="mayhen_invitation_dhsuudushi9428r_gift_scene">
@@ -669,39 +760,9 @@
         <span class="mayhen_invitation_dhsuudushi9428r_lightbox_count"></span>
     </div>
 
-    {{-- Script đồng bộ thời gian thực từ Editor Studio --}}
-    <script>
-        window.addEventListener('message', function(event) {
-            if (!event.data || event.data.type !== 'MAYHEN_SYNC_INPUT') return;
-            var key = event.data.key;
-            var value = event.data.value;
+    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
 
-            var textTargets = document.querySelectorAll('[data-sync-target="' + key + '"]');
-            textTargets.forEach(function(el) {
-                if (key.indexOf('parents') !== -1) {
-                    el.innerHTML = (value || '').replace(/\n/g, '<br>');
-                } else {
-                    el.textContent = value || '';
-                }
-            });
-
-            if (key === 'cover_photo_url') {
-                var el = document.getElementById('sync_cover_photo');
-                if (el) el.src = value;
-            } else if (key === 'hero_photo_url') {
-                var el = document.getElementById('sync_hero_photo');
-                if (el) el.src = value;
-            } else if (key === 'triptych_photo_1') {
-                var el = document.getElementById('sync_triptych_1');
-                if (el) el.src = value;
-            } else if (key === 'triptych_photo_2') {
-                var el = document.getElementById('sync_triptych_2');
-                if (el) el.src = value;
-            } else if (key === 'triptych_photo_3') {
-                var el = document.getElementById('sync_triptych_3');
-                if (el) el.src = value;
-            }
-        });
-    </script>
+    {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}
+    @include('client.invitations.partials.editor-bridge')
 </body>
 </html>

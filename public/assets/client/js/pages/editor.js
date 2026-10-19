@@ -1,15 +1,227 @@
 /**
- * MAYHEN.VN — INVITATION LIVE EDITOR CONTROLLER
- * Schema-Driven Dynamic Stepper & Realtime Iframe Template Sync
+ * MAYHEN.VN — INVITATION LIVE EDITOR CONTROLLER V2
+ * Single State Store, Autosave Engine, Undo/Redo & Zero-Loss Template Switcher
  * Strict: Pure Vanilla JavaScript (ES Modules), Zero external dependencies
  */
 import { $, $$, on } from '../common/dom.js';
+import { EditorStore } from '../editor/store.js';
+import { ActionTypes } from '../editor/actions.js';
+import { TemplateSwitcher } from '../editor/template-switcher.js';
+import { SectionDnDManager } from '../editor/dnd-section.js';
+import { ThemeController } from '../editor/theme-controller.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const mainForm = $('#mayhen_editor_form');
     const previewIframe = $('#mayhen_editor_preview_iframe');
     const mobileIframe = $('#mayhen_editor_mobile_preview_iframe');
     const dockNames = $('[data-mayhen-preview="names"]');
+
+    // UI Topbar Elements
+    const savePill = $('#mayhen_save_pill');
+    const saveText = savePill?.querySelector('.mayhen_editor_save_text');
+    const btnUndo = $('#mayhen_btn_undo');
+    const btnRedo = $('#mayhen_btn_redo');
+    const btnDeviceMobile = $('#mayhen_btn_device_mobile');
+    const btnDeviceDesktop = $('#mayhen_btn_device_desktop');
+    const previewPanel = $('.mayhen_editor_preview_panel');
+
+    // ----------------------------------------------------
+    // 0. Initialize Single State Store & Subsystems
+    // ----------------------------------------------------
+    const invitationId = window.__MAYHEN_INVITATION_ID || null;
+    const templateId = window.__MAYHEN_TEMPLATE_ID || null;
+    const templateSlug = window.__MAYHEN_TEMPLATE_SLUG || '';
+    const initialRevision = window.__MAYHEN_REVISION_ID || 0;
+
+    // Đọc các giá trị input hiện có trong DOM để khởi tạo State
+    const initialWedding = {};
+    const inputs = $$('[data-sync-key]');
+    inputs.forEach(inp => {
+        const key = inp.getAttribute('data-sync-key');
+        if (key && key.startsWith('wedding.')) {
+            const prop = key.replace('wedding.', '');
+            initialWedding[prop] = inp.value;
+        }
+    });
+
+    const store = new EditorStore({
+        invitation_id: invitationId,
+        template_id: templateId,
+        template_slug: templateSlug,
+        revision_id: initialRevision,
+        wedding: initialWedding,
+    });
+
+    // Khởi tạo các phân hệ
+    const templateSwitcher = new TemplateSwitcher(store, { previewIframe, mobileIframe });
+    const dndManager = new SectionDnDManager(store, { previewIframe, mobileIframe });
+    const themeController = new ThemeController(store, { previewIframe, mobileIframe });
+
+    // Kiểm tra và phục hồi bản nháp offline từ LocalStorage nếu có
+    const localDraft = store.autosaver.getLocalDraft(invitationId);
+    if (localDraft && localDraft.wedding) {
+        // Nếu bản nháp LocalStorage có dữ liệu mới hơn, hỏi người dùng hoặc tự động đồng bộ
+        const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
+        if (hasData && !invitationId) {
+            store.dispatch({
+                type: ActionTypes.RESTORE_DRAFT,
+                payload: { draft: localDraft }
+            });
+
+            // Cập nhật lại các trường form
+            Object.keys(localDraft.wedding).forEach(prop => {
+                const val = localDraft.wedding[prop];
+                const inputEl = document.querySelector(`[data-sync-key="wedding.${prop}"]`);
+                if (inputEl && val) {
+                    inputEl.value = val;
+                }
+            });
+        }
+    }
+
+    // Subscribe Store để cập nhật UI Topbar (Autosave pill, Undo/Redo buttons)
+    store.subscribe((state, action) => {
+        // Cập nhật trạng thái nút Undo/Redo
+        if (btnUndo) btnUndo.disabled = !state.ui.canUndo;
+        if (btnRedo) btnRedo.disabled = !state.ui.canRedo;
+
+        // Cập nhật Save Status Pill
+        if (savePill && saveText) {
+            const status = state.ui.saveStatus;
+            savePill.setAttribute('data-status', status);
+
+            switch (status) {
+                case 'idle':
+                    saveText.textContent = 'Đã sẵn sàng';
+                    break;
+                case 'pending':
+                    saveText.textContent = 'Có thay đổi...';
+                    break;
+                case 'saving':
+                    saveText.textContent = 'Đang lưu nháp...';
+                    break;
+                case 'saved':
+                    saveText.textContent = 'Đã lưu nháp';
+                    break;
+                case 'local_only':
+                    saveText.textContent = 'Đã lưu trình duyệt';
+                    break;
+                case 'conflict':
+                    saveText.textContent = 'Xung đột phiên làm việc!';
+                    break;
+                case 'offline':
+                    saveText.textContent = 'Đang lưu ngoại tuyến';
+                    break;
+                default:
+                    saveText.textContent = 'Đã sẵn sàng';
+            }
+        }
+
+        // Luôn đồng bộ custom_config (bố cục, bảng màu, tem sáp) vào input hidden của form
+        const customConfigInput = document.getElementById('invitation_custom_config');
+        if (customConfigInput && state.custom_config) {
+            customConfigInput.value = JSON.stringify(state.custom_config);
+        }
+
+        // Nếu là action Undo hoặc Redo, cập nhật ngược lại các input trên DOM
+        if (action.type === ActionTypes.UNDO || action.type === ActionTypes.REDO) {
+            const wedding = state.wedding;
+            Object.keys(wedding).forEach(prop => {
+                const val = wedding[prop];
+                const inputEl = document.querySelector(`[data-sync-key="wedding.${prop}"]`);
+                if (inputEl && inputEl.value !== val) {
+                    inputEl.value = val !== undefined && val !== null ? val : '';
+                }
+            });
+            syncAllFieldsToIframe(previewIframe);
+            syncAllFieldsToIframe(mobileIframe);
+            updateDockNames();
+        }
+    });
+
+    // Bắt sự kiện Undo / Redo qua nút bấm Topbar
+    if (btnUndo) {
+        on(btnUndo, 'click', () => store.dispatch({ type: ActionTypes.UNDO }));
+    }
+    if (btnRedo) {
+        on(btnRedo, 'click', () => store.dispatch({ type: ActionTypes.REDO }));
+    }
+
+    // Phím tắt bàn phím Ctrl+Z, Ctrl+Y
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            if (e.shiftKey) {
+                e.preventDefault();
+                store.dispatch({ type: ActionTypes.REDO });
+            } else {
+                e.preventDefault();
+                store.dispatch({ type: ActionTypes.UNDO });
+            }
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+            e.preventDefault();
+            store.dispatch({ type: ActionTypes.REDO });
+        }
+    });
+
+    // Chuyển đổi chế độ xem Thiết bị Preview (Mobile / Desktop)
+    if (btnDeviceMobile && btnDeviceDesktop) {
+        on(btnDeviceMobile, 'click', () => {
+            btnDeviceMobile.classList.add('active');
+            btnDeviceDesktop.classList.remove('active');
+            previewPanel?.classList.remove('is-desktop-mode');
+            store.dispatch({ type: ActionTypes.SET_PREVIEW_DEVICE, payload: { device: 'mobile' } });
+        });
+
+        on(btnDeviceDesktop, 'click', () => {
+            btnDeviceDesktop.classList.add('active');
+            btnDeviceMobile.classList.remove('active');
+            previewPanel?.classList.add('is-desktop-mode');
+            store.dispatch({ type: ActionTypes.SET_PREVIEW_DEVICE, payload: { device: 'desktop' } });
+        });
+    }
+
+    // ----------------------------------------------------
+    // Chuyển đổi các Tab trên Left Tool Rail (Nội Dung, Bố Cục, Màu Sắc, Âm Nhạc)
+    // ----------------------------------------------------
+    const railItems = $$('.mayhen_editor_rail_item');
+    const subpanels = $$('.mayhen_editor_subpanel');
+
+    railItems.forEach(item => {
+        on(item, 'click', () => {
+            const tabName = item.getAttribute('data-rail-tab');
+            if (!tabName || tabName === 'templates') return; // templates mở modal riêng
+
+            railItems.forEach(ri => ri.classList.remove('active'));
+            item.classList.add('active');
+
+            subpanels.forEach(p => {
+                if (p.getAttribute('data-panel-name') === tabName) {
+                    p.style.display = 'block';
+                } else {
+                    p.style.display = 'none';
+                }
+            });
+
+            store.dispatch({
+                type: ActionTypes.SET_ACTIVE_TAB,
+                payload: { tab: tabName }
+            });
+        });
+    });
+
+    // Mở kho nhạc từ Tab Âm Nhạc
+    const openMusicModalBtn = $('#mayhen_open_music_modal_btn');
+    if (openMusicModalBtn) {
+        on(openMusicModalBtn, 'click', () => {
+            const mModal = $('#mayhen_music_picker_modal');
+            if (mModal) {
+                mModal.classList.add('mayhen_editor_modal_open');
+                document.body.style.overflow = 'hidden';
+                const searchInp = $('#mayhen_music_search_input');
+                if (searchInp) searchInp.dispatchEvent(new Event('input'));
+            }
+        });
+    }
 
     // ----------------------------------------------------
     // 1. Dynamic Stepper Navigation
@@ -46,14 +258,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Ẩn hiện nút Quay lại / Tiếp theo
+        // Cập nhật trạng thái nút Quay lại
         if (btnPrev) {
-            btnPrev.style.display = currentStep > 1 ? 'inline-flex' : 'none';
+            btnPrev.disabled = currentStep === 1;
+        }
+
+        // Cập nhật chỉ số bước hiện tại
+        const stepCurrentEl = document.querySelector('.mayhen_step_current');
+        if (stepCurrentEl) {
+            stepCurrentEl.textContent = `Bước ${currentStep}`;
+        }
+
+        // Tự động cuộn Iframe preview đến đúng Section tương ứng
+        const activeTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
+        const sectionId = activeTab ? activeTab.getAttribute('data-section-id') : null;
+        if (sectionId) {
+            const scrollPayload = {
+                type: 'MAYHEN_SCROLL_TO_SECTION',
+                section_id: sectionId,
+                step: currentStep,
+            };
+            if (previewIframe && previewIframe.contentWindow) {
+                previewIframe.contentWindow.postMessage(scrollPayload, '*');
+            }
+            if (mobileIframe && mobileIframe.contentWindow) {
+                mobileIframe.contentWindow.postMessage(scrollPayload, '*');
+            }
+        }
+
+        // Cuộn mượt form về đầu khi chuyển bước
+        const drawerPanel = $('#mayhen_drawer_panel');
+        if (drawerPanel) {
+            drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         if (btnNext) {
             if (currentStep === totalSteps) {
-                btnNext.innerHTML = `<span>Xem Lại & Tạo Thiệp</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
+                btnNext.innerHTML = `<span>Xuất Bản Thiệp</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
             } else {
                 btnNext.innerHTML = `<span>Tiếp Tục</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
             }
@@ -82,6 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Khởi tạo trạng thái ban đầu cho Stepper
+    goToStep(1);
 
     // ----------------------------------------------------
     // 2. Realtime Iframe Communication Engine (PostMessage Sync)
@@ -122,6 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const val = target.value;
 
+            // Dispatch vào State Store
+            store.dispatch({
+                type: ActionTypes.UPDATE_FIELD,
+                payload: { key, value: val }
+            });
+
             // Xem trước ảnh nhỏ nếu là trường image
             if (target.id) {
                 const thumb = document.getElementById('preview_thumb_' + target.id);
@@ -143,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         on(mainForm, 'change', handleInputEvent);
     }
 
-    // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form hiện thời sang iframe
+    // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form, bảng màu và thứ tự bố cục sang iframe
     const syncAllFieldsToIframe = (iframeEl) => {
         if (!iframeEl || !iframeEl.contentWindow) return;
         const inputs = $$('[data-sync-key]');
@@ -158,6 +408,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, '*');
             }
         });
+
+        const state = store.getState();
+        const customConfig = state.custom_config || {};
+
+        // Đồng bộ Bảng màu (Theme Palette)
+        if (customConfig.theme && customConfig.theme.palette_id) {
+            iframeEl.contentWindow.postMessage({
+                type: 'MAYHEN_CHANGE_THEME',
+                palette_id: customConfig.theme.palette_id,
+                palette: customConfig.theme,
+            }, '*');
+        }
+
+        // Đồng bộ Con dấu sáp (Wax Seal)
+        if (customConfig.wax_seal) {
+            iframeEl.contentWindow.postMessage({
+                type: 'MAYHEN_UPDATE_WAX_SEAL',
+                wax_seal: customConfig.wax_seal,
+            }, '*');
+        }
+
+        // Đồng bộ Thứ tự Bố cục (Section Order & Hidden)
+        if (customConfig.sections_order || customConfig.sections_hidden) {
+            iframeEl.contentWindow.postMessage({
+                type: 'MAYHEN_REORDER_SECTIONS',
+                order: customConfig.sections_order || [],
+                sections_hidden: customConfig.sections_hidden || [],
+            }, '*');
+        }
+
+        // Cuộn đến section ban đầu tương ứng với bước đang mở
+        const initialTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
+        const initialSectionId = initialTab ? initialTab.getAttribute('data-section-id') : null;
+        if (initialSectionId) {
+            iframeEl.contentWindow.postMessage({
+                type: 'MAYHEN_SCROLL_TO_SECTION',
+                section_id: initialSectionId,
+                step: currentStep,
+            }, '*');
+        }
     };
 
     if (previewIframe) {
@@ -658,6 +948,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            // Cập nhật custom_config (bố cục, bảng màu, tem sáp) mới nhất vào input form
+            const customConfigInput = document.getElementById('invitation_custom_config');
+            if (customConfigInput) {
+                customConfigInput.value = JSON.stringify(store.getState().custom_config || {});
+            }
+
+            // Đảm bảo template_id gửi lên khớp với mẫu hiện tại trong store
+            const currentTemplateId = store.getState().template_id;
+            const templateInput = document.getElementById('template_id');
+            if (templateInput && currentTemplateId) {
+                templateInput.value = currentTemplateId;
+            }
+
             submitBtns.forEach(btn => {
                 btn.innerHTML = '<span>Đang xuất bản thiệp cưới...</span>';
             });
@@ -678,25 +981,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Mobile Fullscreen Preview Modal
     // ----------------------------------------------------
     const previewModal = $('#mayhen_mobile_preview_modal');
-    const openPreviewBtn = $('[data-mayhen-action="open-preview-modal"]');
-    const closePreviewBtn = $('[data-mayhen-action="close-preview-modal"]');
+    const openPreviewBtns = $$('[data-mayhen-action="open-preview-modal"]');
+    const closePreviewBtns = $$('[data-mayhen-action="close-preview-modal"]');
 
-    if (openPreviewBtn && previewModal) {
-        on(openPreviewBtn, 'click', () => {
-            previewModal.classList.add('mayhen_editor_modal_open');
-            document.body.style.overflow = 'hidden';
-            if (mobileIframe) {
-                syncAllFieldsToIframe(mobileIframe);
+    openPreviewBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            if (previewModal) {
+                previewModal.classList.add('mayhen_editor_modal_open');
+                document.body.style.overflow = 'hidden';
+                if (mobileIframe) {
+                    syncAllFieldsToIframe(mobileIframe);
+                }
             }
         });
-    }
+    });
 
-    if (closePreviewBtn && previewModal) {
-        on(closePreviewBtn, 'click', () => {
-            previewModal.classList.remove('mayhen_editor_modal_open');
-            document.body.style.overflow = '';
+    closePreviewBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            if (previewModal) {
+                previewModal.classList.remove('mayhen_editor_modal_open');
+                document.body.style.overflow = '';
+            }
         });
-    }
+    });
 
     if (previewModal) {
         on(previewModal, 'click', (e) => {
@@ -708,25 +1015,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 4. Template Switcher Modal (Đổi Mẫu Nhanh)
+    // 5. Template Switcher Modal (Đổi Mẫu Nhanh)
     // ----------------------------------------------------
     const templateModal = $('#mayhen_template_switcher_modal');
-    const openTemplateBtn = $('[data-mayhen-action="open-template-modal"]');
-    const closeTemplateBtn = $('[data-mayhen-action="close-template-modal"]');
+    const openTemplateBtns = $$('[data-mayhen-action="open-template-modal"]');
+    const closeTemplateBtns = $$('[data-mayhen-action="close-template-modal"]');
 
-    if (openTemplateBtn && templateModal) {
-        on(openTemplateBtn, 'click', () => {
-            templateModal.classList.add('mayhen_editor_modal_open');
-            document.body.style.overflow = 'hidden';
+    openTemplateBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            if (templateModal) {
+                templateModal.classList.add('mayhen_editor_modal_open');
+                document.body.style.overflow = 'hidden';
+            }
         });
-    }
+    });
 
-    if (closeTemplateBtn && templateModal) {
-        on(closeTemplateBtn, 'click', () => {
-            templateModal.classList.remove('mayhen_editor_modal_open');
-            document.body.style.overflow = '';
+    closeTemplateBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            if (templateModal) {
+                templateModal.classList.remove('mayhen_editor_modal_open');
+                document.body.style.overflow = '';
+            }
         });
-    }
+    });
 
     if (templateModal) {
         on(templateModal, 'click', (e) => {
@@ -736,6 +1047,89 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ----------------------------------------------------
+    // 6. Mobile Bottom Navigation Drawer Handler
+    // ----------------------------------------------------
+    const mobileBottomBtns = $$('.mayhen_editor_mobile_bottom_btn');
+    const drawerPanel = $('#mayhen_drawer_panel');
+    const mobileCloseDrawerBtn = $('#mayhen_mobile_close_drawer_btn');
+
+    mobileBottomBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            const tabName = btn.getAttribute('data-mobile-tab');
+            if (tabName === 'preview') {
+                if (previewModal) {
+                    previewModal.classList.add('mayhen_editor_modal_open');
+                    document.body.style.overflow = 'hidden';
+                    if (mobileIframe) syncAllFieldsToIframe(mobileIframe);
+                }
+                return;
+            }
+
+            mobileBottomBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (drawerPanel) {
+                drawerPanel.classList.add('is-open');
+            }
+
+            subpanels.forEach(p => {
+                if (p.getAttribute('data-panel-name') === tabName) {
+                    p.style.display = 'block';
+                } else {
+                    p.style.display = 'none';
+                }
+            });
+
+            // Đồng bộ tab tương ứng trên rail
+            railItems.forEach(ri => {
+                if (ri.getAttribute('data-rail-tab') === tabName) {
+                    ri.classList.add('active');
+                } else {
+                    ri.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    if (mobileCloseDrawerBtn && drawerPanel) {
+        on(mobileCloseDrawerBtn, 'click', () => {
+            drawerPanel.classList.remove('is-open');
+            mobileBottomBtns.forEach(b => b.classList.remove('active'));
+        });
+    }
+
+    // ----------------------------------------------------
+    // 7. Mobile Segmented Mode Switcher (Nhập Liệu ⇄ Xem Thiệp)
+    // ----------------------------------------------------
+    const modeBtns = $$('[data-editor-mode]');
+    const setMobileMode = (mode) => {
+        if (mode === 'preview') {
+            document.body.classList.add('is-mobile-preview-active');
+            syncAllFieldsToIframe(previewIframe);
+            syncAllFieldsToIframe(mobileIframe);
+        } else {
+            document.body.classList.remove('is-mobile-preview-active');
+        }
+
+        modeBtns.forEach(btn => {
+            if (btn.getAttribute('data-editor-mode') === mode) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+            } else {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            }
+        });
+    };
+
+    modeBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            const mode = btn.getAttribute('data-editor-mode');
+            if (mode) setMobileMode(mode);
+        });
+    });
 
     // Khởi chạy dock
     updateDockNames();

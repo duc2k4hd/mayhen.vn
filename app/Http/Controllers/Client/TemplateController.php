@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -63,6 +64,39 @@ class TemplateController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $invitation = null;
+        $wedding = null;
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        if ($editSlug) {
+            $inv = Invitation::with('wedding')->where('slug', $editSlug)->first();
+            if ($inv && $inv->isOwner()) {
+                $invitation = $inv;
+                $wedding = $inv->wedding;
+            }
+        }
+
+        $invitation = null;
+        $wedding = null;
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        if ($editSlug) {
+            $inv = Invitation::with('wedding')->where('slug', $editSlug)->first();
+            if ($inv && $inv->isOwner()) {
+                $invitation = $inv;
+                $wedding = $inv->wedding;
+            }
+        }
+
+        $invitation = null;
+        $wedding = null;
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        if ($editSlug) {
+            $inv = Invitation::with('wedding')->where('slug', $editSlug)->first();
+            if ($inv && $inv->isOwner()) {
+                $invitation = $inv;
+                $wedding = $inv->wedding;
+            }
+        }
+
         $similarTemplates = InvitationTemplate::where('id', '!=', $template->id)
             ->where('is_active', true)
             ->where('category', $template->category)
@@ -88,11 +122,22 @@ class TemplateController extends Controller
     /**
      * Preview actual live invitation demo.
      */
-    public function preview(string $slug): View
+    public function preview(string $slug, Request $request): View
     {
         $template = InvitationTemplate::where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
+
+        $invitation = null;
+        $wedding = null;
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        if ($editSlug) {
+            $inv = Invitation::with('wedding')->where('slug', $editSlug)->first();
+            if ($inv && $inv->isOwner()) {
+                $invitation = $inv;
+                $wedding = $inv->wedding;
+            }
+        }
 
         $wishSubmitUrl = route('templates.preview.wish', $slug);
         $rsvpSubmitUrl = route('templates.preview.rsvp', $slug);
@@ -102,8 +147,8 @@ class TemplateController extends Controller
         if (view()->exists($customView)) {
             return view($customView, [
                 'template' => $template,
-                'wedding' => null,
-                'invitation' => null,
+                'wedding' => $wedding,
+                'invitation' => $invitation,
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
