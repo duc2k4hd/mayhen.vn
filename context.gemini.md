@@ -1008,9 +1008,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
          3. Sửa fallback `$musicUrl` chuẩn không lặp `assets/` và đặt `preload="auto"` trên thẻ `<audio>`.
          4. Bổ sung `@keyframes mayhen_invitation_spin` xoay 360 độ mượt mà khi nhạc phát.
 
+     + **Khóa Cuộn Trang & Khắc Phục Bật/Tắt Nhạc Mẫu Thiệp (`thuoc-phim-tinh-yeu`)**:
+        * **Vấn đề nhận diện**:
+          1. Tương tự mẫu nét mực, khi truy cập mẫu thiệp `thuoc-phim-tinh-yeu`, dù hai cánh rèm/cửa (`opening-sides`) chưa mở nhưng người dùng vẫn có thể cuộn trang xuống phần nội dung thân thiệp dài 8.000px bên dưới.
+          2. Nút bật/tắt nhạc `.mayhen_invitation_djcvhwiuo9w9_music-toggle` bị sai lệch trạng thái sau khi mở thiệp: khi mở thiệp nhạc tự phát nhưng biến cờ nội bộ chưa đồng bộ, khiến khi người dùng click vào nút nhạc để tắt thì không thể tắt được (hoặc bị phát lại).
+        * **Nguyên nhân kỹ thuật**:
+          1. Thẻ `<html>` và `<body>` ban đầu trong `template.blade.php` không có sẵn class khóa cuộn `mayhen_invitation_djcvhwiuo9w9_no-scroll`. Đồng thời thân thiệp `.mayhen_invitation_djcvhwiuo9w9_card-wrapper` có `display: block` nằm bên dưới lớp fixed của hai cánh cửa khiến trang vẫn tính chiều cao cuộn tổng thể.
+          2. Nút nhạc có `z-index: 99` thấp hơn `opening-sides` (`z-index: 1000`), và logic click dựa trên biến cờ `let isPlaying = false` tách biệt không đồng bộ với sự kiện gọi `audio.play()` khi mở thiệp.
+        * **Giải pháp đã xử lý**:
+          1. **Khóa cuộn triệt để**:
+             - Thêm trực tiếp `class="mayhen_invitation_djcvhwiuo9w9_no-scroll"` vào cả `<html lang="vi">` và `<body>` ngay khi load trang trong `template.blade.php`.
+             - Nâng cấp CSS khóa cuộn `html.mayhen_invitation_djcvhwiuo9w9_no-scroll, body.mayhen_invitation_djcvhwiuo9w9_no-scroll`: `height: 100% !important; height: 100dvh !important; max-height: 100dvh !important; overflow: hidden !important; touch-action: none !important; overscroll-behavior: none !important;`.
+             - Ẩn hoàn toàn thân thiệp khi đang đóng: `body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_card-wrapper { display: none !important; }` (vẫn bảo toàn `display: block !important` khi ở chế độ Studio Editor preview `?embed=1`).
+             - Bổ sung bộ chặn sự kiện `wheel`, `touchmove`, `keydown` (ArrowDown, PageDown, Space...) trong `script.js` cho đến khi thiệp được mở hoàn tất.
+          2. **Bật/Tắt nhạc mượt mà 100%**:
+             - Tăng `z-index: 1005` cho `.mayhen_invitation_djcvhwiuo9w9_music-toggle` để nút luôn tương tác được kể cả trước và sau khi mở thiệp.
+             - Đặt `preload="auto"` trên thẻ `<audio>`.
+             - Loại bỏ biến cờ tĩnh bị lệch pha, chuyển sang cơ chế kiểm tra trực tiếp trạng thái native của audio element: `if (!audioEl.paused) audioEl.pause(); else audioEl.play();`.
+          3. **Khắc phục lỗi không bấm mở được thiệp**:
+             - **Nguyên nhân cốt lõi**: Trong [template.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/template.blade.php), thẻ script khởi tạo `window.__MAYHEN_*` ở cuối trang trước đó bị thiếu thẻ đóng `</script>`, khiến trình duyệt xem toàn bộ thẻ `<script src="script.js">` bên dưới là nội dung text của khối script inline, dẫn đến [script.js](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js) không được tải và thực thi. Đồng thời sự kiện click trước đây chỉ lắng nghe `click` đơn thuần.
+             - **Giải pháp**:
+               * Bổ sung thẻ đóng `</script>` chuẩn xác trước khi nhúng file [script.js](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js).
+               * Trong [script.js](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js), bổ sung lắng nghe đa phương thức (`click`, `pointerdown`, `touchend`, và phím `Enter`/`Space`) trên cả hai cánh rèm `openingSides`, `opening-left` và `opening-right`, đồng thời gọi `e.stopPropagation()`. Khi mở thiệp, loại bỏ class khóa cuộn trên cả `html` và `body` và gỡ bỏ hoàn toàn rèm che (`display: none`) sau khi hiệu ứng trượt hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 

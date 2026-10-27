@@ -423,43 +423,73 @@
     document.documentElement.classList.add(`${P}no-scroll`);
     document.body.classList.add(`${P}no-scroll`);
 
-    const openInvitation = () => {
+    const openInvitation = (e) => {
       if (isOpened) return;
+      if (e && e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+      if (e) {
+        e.stopPropagation();
+      }
       isOpened = true;
       openingSides.classList.add(`${P}opened`);
 
-      // Mở khóa cuộn trang
+      // Mở khóa cuộn trang trên document & body
       document.documentElement.classList.remove(`${P}no-scroll`);
       document.body.classList.remove(`${P}no-scroll`);
 
       // Tự động phát nhạc nền khi mở thiệp
       const audioEl = $(`#${P}audio`);
-      const musicBtn = $(C('music-toggle'));
-      if (audioEl) {
-        audioEl.play().then(() => {
-          if (musicBtn) {
-            musicBtn.classList.add(`${P}music-playing`);
-            musicBtn.setAttribute('aria-pressed', 'true');
-            musicBtn.setAttribute('aria-label', 'Tắt nhạc nền');
-          }
-        }).catch(() => {});
+      if (audioEl && audioEl.paused) {
+        audioEl.play().catch(() => {});
       }
 
+      // Xóa bỏ hoàn toàn lớp chắn sau khi animation kết thúc
       setTimeout(() => {
         openingSides.setAttribute('aria-hidden', 'true');
+        openingSides.style.display = 'none';
       }, 1250);
     };
 
+    // Chặn hoàn toàn thao tác cuộn chuột/cảm ứng/bàn phím khi chưa mở thiệp
+    function preventScrollBeforeOpen(e) {
+      if (!isOpened) {
+        if (e.target && (e.target.closest(C('opening-sides')) || e.target.closest(C('music-toggle')))) {
+          return;
+        }
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener('wheel', preventScrollBeforeOpen, { passive: false });
+    window.addEventListener('touchmove', preventScrollBeforeOpen, { passive: false });
+    window.addEventListener('keydown', (e) => {
+      if (!isOpened && ['ArrowDown', 'ArrowUp', 'Space', 'PageDown', 'PageUp', 'Home', 'End'].includes(e.code)) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Hỗ trợ cả pointerdown, click và touchend để phản hồi ngay lập tức trên mọi thiết bị
     openingSides.addEventListener('click', openInvitation);
+    openingSides.addEventListener('pointerdown', (e) => {
+      if (e.button === 0) openInvitation(e);
+    });
+    openingSides.addEventListener('touchend', openInvitation, { passive: true });
+
     const leftSide = $(C('opening-left'), openingSides);
     const rightSide = $(C('opening-right'), openingSides);
-    if (leftSide) leftSide.addEventListener('click', openInvitation);
-    if (rightSide) rightSide.addEventListener('click', openInvitation);
+    if (leftSide) {
+      leftSide.addEventListener('click', openInvitation);
+      leftSide.addEventListener('touchend', openInvitation, { passive: true });
+    }
+    if (rightSide) {
+      rightSide.addEventListener('click', openInvitation);
+      rightSide.addEventListener('touchend', openInvitation, { passive: true });
+    }
 
     openingSides.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openInvitation();
+        openInvitation(e);
       }
     });
   }
@@ -468,32 +498,43 @@
   const musicButton = $(C('music-toggle'));
   const audio = $(`#${P}audio`);
   if (musicButton && audio) {
-    let isPlaying = false;
-    const playMusic = () => {
-      audio.play().then(() => {
-        isPlaying = true;
-        musicButton.classList.add(`${P}music-playing`);
-        musicButton.setAttribute('aria-pressed', 'true');
-        musicButton.setAttribute('aria-label', 'Tắt nhạc nền');
-      }).catch(() => {});
+    audio.volume = 0.5;
+
+    const updateButtonUI = (playing) => {
+      musicButton.classList.toggle(`${P}music-playing`, playing);
+      musicButton.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      musicButton.setAttribute('aria-label', playing ? 'Tắt nhạc nền' : 'Bật nhạc nền');
     };
+
+    // Đồng bộ trực tiếp theo các sự kiện native của audio
+    audio.addEventListener('play', () => updateButtonUI(true));
+    audio.addEventListener('pause', () => updateButtonUI(false));
+    audio.addEventListener('ended', () => updateButtonUI(false));
+
+    const playMusic = () => {
+      return audio.play().catch(err => {
+        console.warn('Lỗi phát nhạc:', err);
+        updateButtonUI(false);
+      });
+    };
+
     const pauseMusic = () => {
       audio.pause();
-      isPlaying = false;
-      musicButton.classList.remove(`${P}music-playing`);
-      musicButton.setAttribute('aria-pressed', 'false');
-      musicButton.setAttribute('aria-label', 'Bật nhạc nền');
     };
 
     musicButton.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (isPlaying) pauseMusic();
-      else playMusic();
+      e.preventDefault();
+      if (!audio.paused) {
+        pauseMusic();
+      } else {
+        playMusic();
+      }
     });
 
     // Thử tự động phát khi người dùng có tương tác đầu tiên trên trang
     const autoPlayOnce = () => {
-      if (!isPlaying) playMusic();
+      if (audio.paused) playMusic();
       window.removeEventListener('click', autoPlayOnce);
       window.removeEventListener('touchstart', autoPlayOnce);
     };

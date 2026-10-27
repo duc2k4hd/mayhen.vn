@@ -1584,7 +1584,21 @@ body.mayhen_invitation_djcvhwiuo9w9_no-scroll,
 .mayhen_invitation_djcvhwiuo9w9_no-scroll {
     overflow: hidden !important;
     height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     overscroll-behavior: none !important;
+    touch-action: none !important;
+}
+
+body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_root {
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+}
+
+body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_card-wrapper {
+    display: none !important;
 }
 /* Responsive: full-width invitation on handheld, two-dimensional layout remains readable */
 @media (max-width: 720px) {
@@ -1996,7 +2010,7 @@ body:has(.mayhen_preview_topbar) .mayhen_invitation_djcvhwiuo9w9_root {
     position: fixed;
     right: 20px;
     bottom: 24px;
-    z-index: 999;
+    z-index: 1005;
     width: 44px;
     height: 44px;
     border-radius: 50%;

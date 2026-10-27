@@ -200,7 +200,7 @@
     $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
 @endphp
 <!doctype html>
-<html lang="vi">
+<html lang="vi" class="mayhen_invitation_djcvhwiuo9w9_no-scroll">
 
 <head>
     <meta charset="utf-8">
@@ -320,6 +320,10 @@
                 visibility: hidden !important;
             }
 
+            .mayhen_invitation_djcvhwiuo9w9_card-wrapper {
+                display: block !important;
+            }
+
             /* Thanh cuộn siêu mảnh, mềm mại, màu vàng đồng Quiet Luxury rõ nét */
             html,
             body {
@@ -350,7 +354,7 @@
     @endif
 </head>
 
-<body class="mayhen_invitation_wrapper">
+<body class="mayhen_invitation_wrapper mayhen_invitation_djcvhwiuo9w9_no-scroll">
     <main class="mayhen_invitation_djcvhwiuo9w9_root mayhen_invitation_djcvhwiuo9w9_invitation-page" lang="vi"
         style='--mayhen-g4-opening-left:url("{{ $assetBase }}/opening-left.webp");--mayhen-g4-opening-right:url("{{ $assetBase }}/opening-right.webp");--mayhen-g4-paper-base:url("{{ $assetBase }}/paper-base-seamless.jpg");--mayhen-g4-paper-top:url("{{ $assetBase }}/paper-top-textured.jpg");--mayhen-g4-paper-countdown-bottom:url("{{ $assetBase }}/paper-countdown-bottom-textured.jpg");--mayhen-g4-paper-corner:url("{{ $assetBase }}/paper-corner-textured.jpg");--mayhen-g4-paper-bottom:url("{{ $assetBase }}/paper-bottom-textured.jpg");--mayhen-g4-album-paper:url("{{ $assetBase }}/album-paper-textured.jpg");--mayhen-g4-paper-footer:url("{{ $assetBase }}/paper-footer-textured.jpg");--mayhen-g4-paper-top-overlay:url("{{ $assetBase }}/paper-top-overlay-v2.png");--mayhen-g4-paper-countdown-bottom-overlay:url("{{ $assetBase }}/paper-countdown-bottom-overlay-v2.png");--mayhen-g4-paper-corner-overlay:url("{{ $assetBase }}/paper-corner-overlay-v2.png");--mayhen-g4-paper-tear-overlay:url("{{ $assetBase }}/paper-tear-overlay-v2.png");--mayhen-g4-album-floral-overlay:url("{{ $assetBase }}/album-floral-overlay-v2.png");--mayhen-g4-paper-footer-overlay:url("{{ $assetBase }}/paper-footer-overlay-v2.png")'>
         <div class="mayhen_invitation_djcvhwiuo9w9_opening-sides" id="mayhen_invitation_djcvhwiuo9w9_opening_sides"
@@ -1203,7 +1207,7 @@
             <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.6" />
         </svg>
     </button>
-    <audio id="mayhen_invitation_djcvhwiuo9w9_audio" src="{{ $musicUrl }}" loop preload="none"></audio>
+    <audio id="mayhen_invitation_djcvhwiuo9w9_audio" src="{{ $musicUrl }}" loop preload="auto"></audio>
     <script>
         window.__MAYHEN_IS_PREVIEW = {{ $isPreview ? 'true' : 'false' }};
         window.__MAYHEN_WEDDING_TARGET_TIME = {{ $targetTimestamp }};
@@ -1214,6 +1218,7 @@
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
+    </script>
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
 
     {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}
