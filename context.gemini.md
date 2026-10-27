@@ -1031,9 +1031,75 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                * Bổ sung thẻ đóng `</script>` chuẩn xác trước khi nhúng file [script.js](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js).
                * Trong [script.js](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js), bổ sung lắng nghe đa phương thức (`click`, `pointerdown`, `touchend`, và phím `Enter`/`Space`) trên cả hai cánh rèm `openingSides`, `opening-left` và `opening-right`, đồng thời gọi `e.stopPropagation()`. Khi mở thiệp, loại bỏ class khóa cuộn trên cả `html` và `body` và gỡ bỏ hoàn toàn rèm che (`display: none`) sau khi hiệu ứng trượt hoàn tất.
 
+     + **Tích Hợp Hoàn Chỉnh Mẫu Thiệp Mới: "Từng Trang Hạnh Phúc" (`tung-trang-hanh-phuc`)**:
+        * **Nguồn**: `D:\File\Templates Mây Hẹn\Từng Trang Hạnh Phúc`
+        * **Vị trí tích hợp**: `resources/views/client/invitations/tung-trang-hanh-phuc/`
+        * **CSS Prefix độc quyền**: `mayhen_invitation_ksnvo949dudf_*` (chống xung đột class 100% theo tiêu chuẩn Mây Hẹn).
+        * **Chi tiết cấu trúc kỹ thuật**:
+          1. `template.blade.php`:
+             - Hỗ trợ đầy đủ dữ liệu động từ `$wedding` và `$invitation` kết hợp fallback thông minh theo phong cách Storybook / Editorial sang trọng.
+             - Áp dụng các contract `data-sync-target` cho Live Editor Studio V2 (`bride_name`, `groom_name`, `event_date`, `timeline`, `gallery`, `gift`, `rsvp`, `wishes`...).
+             - Tích hợp `@include('client.invitations.partials.editor-bridge')` và xử lý chế độ nhúng `?embed=1` mượt mà.
+             - Khóa cuộn trang bằng class `mayhen_invitation_ksnvo949dudf_scroll-lock` trên cả `<html>` và `<body>` khi chưa mở phong bì thư.
+          2. `styles.css`:
+             - Thiết kế Quiet Luxury ấm áp, phong cách Editorial Storybook với màu nhấn đất nung (#8f533a), kem sáng (#FAF7F2), giấy lụa mềm mại.
+             - Khóa cuộn hoàn hảo: `html.mayhen_invitation_ksnvo949dudf_scroll-lock, body.mayhen_invitation_ksnvo949dudf_scroll-lock` và ẩn thân thiệp khi phong bì đang đóng.
+             - Keyframes xoay đĩa nhạc 360 độ mượt mà.
+          3. `script.js`:
+             - Viết lại 100% bằng Native ES Modules thuần, không phụ thuộc thư viện bên ngoài.
+             - Hiệu ứng mở phong bì thư tem sáp 3D, mở thư và kích hoạt phát nhạc cưới native an toàn.
+             - Bộ đếm ngược thời gian thực (Ngày, Giờ, Phút, Giây).
+             - Tab chuyển đổi sự kiện Lễ Thành Hôn / Tiệc Cưới và bản đồ chỉ đường Google Maps.
+             - Tích hợp AJAX lưu lời chúc online (`POST /thiep/{slug}/loi-chuc` hoặc endpoint cấu hình).
+             - Tích hợp AJAX gửi xác nhận tham dự RSVP (`POST /thiep/{slug}/rsvp` hoặc endpoint cấu hình).
+             - Hộp mừng cưới VietQR kèm chức năng sao chép số tài khoản một chạm.
+             - Lightbox album ảnh cưới 6 khung hình phóng to sắc nét, vuốt chạm mượt mà.
+             - Tải file sự kiện lịch `.ics` và chia sẻ liên kết mạng xã hội Native Share API.
+          4. `schema.json`:
+             - Khai báo metadata schema đầy đủ cho Studio V2 Editor (thông tin CDCR, sự kiện, thời gian, album ảnh, tài khoản ngân hàng QR, dresscode).
+          5. `assets/`:
+             - Lưu trữ cục bộ toàn bộ vector nghệ thuật: `bride-art.svg`, `groom-art.svg`, `hero-art.svg`, `scene-art.svg`, `gallery-01.svg` -> `gallery-06.svg`, `favicon.svg`.
+             - Nhạc cưới chất lượng cao: `wedding.mp3`.
+             - Ảnh xem trước đại diện: `thumbnail.png`.
+          6. **Cơ sở dữ liệu & Danh mục (`InvitationTemplateSeeder.php`)**:
+             - Đã đăng ký bản ghi mẫu thiệp trong `InvitationTemplateSeeder.php` với slug `tung-trang-hanh-phuc`, danh mục `editorial`, phân hạng `pro` deluxe.
+             - Đã chạy `php artisan db:seed --class=InvitationTemplateSeeder`, xuất hiện đầy đủ trong trang danh sách mẫu `/mau-thiep` và xem thử trực tiếp tại `/xem-thu/tung-trang-hanh-phuc`.
+          7. **Refactor Giao Diện Chuẩn Quiet Luxury & Loại Bỏ Header/Footer Website**:
+             - **Vấn đề nhận diện**: Mã nguồn tĩnh gốc chứa thanh Header điều hướng (logo chữ, danh mục menu, nút hamburger menu) và Footer dạng website tin tức/bán hàng, cùng với việc dùng hình vẽ vector phẳng xám nhạt (`.svg`) và bộ lọc CSS `filter: grayscale(1)` khiến thiệp cưới nhìn trắng bệch, đơn điệu và thiếu tính trang trọng, lãng mạn của một tấm thiệp cưới cao cấp.
+             - **Giải pháp refactor toàn diện**:
+               * **Xóa bỏ hoàn toàn Navbar & Footer Website**: Loại bỏ thanh `<header>` cố định và `<footer>` bản quyền. Thay vào đó là nút điều khiển nhạc nổi đĩa than xoay tròn tinh xảo góc màn hình và khối "Lời Cảm Tạ" (Gratitude Ending) chân thành, ấm áp từ Cô dâu & Chú rể kèm chữ ký Monogram quý phái.
+               * **Nâng cấp Hình ảnh Thực Tế Sang Trọng**: Thay thế toàn bộ hình vector thô sơ bằng bộ ảnh cưới studio nghệ thuật thực tế (`hero-wedding.jpg`, `groom.jpg`, `bride.jpg`, `gallery-01.jpg` đến `gallery-06.jpg`), loại bỏ hoàn toàn bộ lọc grayscale để ảnh cưới giữ trọn màu sắc tự nhiên, trong trẻo, rạng ngời.
+               * **Nâng tầm Bảng Màu & Typography Quiet Luxury**: Sử dụng tông màu Warm Cream/Ivory (`#FAF7F2`), Warm Beige (`#F4EFE6`), Nâu Espresso (`#2D2520`), Vàng kim loại Antique Gold (`#C5A880`) và đỏ sáp Burgundy (`#8B2635`).
+               * **Phong Bì Thư 3D Tinh Xảo**: Hiệu ứng mở nắp phong bì hoàng gia, tem sáp đỏ dập nổi monogram, lá thư trồi lên 3D và khóa cuộn trang mượt mà trước khi mở.
+
+---
+
+          8. **Nâng Cấp Đĩa Than Vinyl Hoàng Gia & Hiệu Ứng Animation Cho Tất Cả Các Box**:
+             - **Thiết kế lại nút nhạc nền**: Loại bỏ hoàn toàn vòng tròn phẳng đơn điệu, thay bằng **Đĩa than vinyl hoàng gia (Vintage Gold Vinyl Record)**:
+               * Thân đĩa màu đen mun Espresso với đường rãnh vinyl xoắn ốc đồng tâm phản quang mờ.
+               * Viền ngoài bọc kim loại vàng ánh kim, nhãn giữa là tâm đĩa vàng chạm nốt nhạc `♪`.
+               * Khi phát nhạc (`playing`): Đĩa xoay tròn 360 độ êm ái, kèm bộ thanh sóng âm thanh (Equalizer Soundbars) 4 cột nhấp nhô theo điệu nhạc và các nốt nhạc vàng óng `♪ ♫` bay lơ lửng mềm mại.
+             - **Animation trồi mượt (Scroll-driven Reveal & Stagger) cho 100% các Box**:
+               * Gán class `.mayhen_invitation_ksnvo949dudf_box-anim` cho toàn bộ các card: Hero card, Thư báo hỷ, Box Nhà trai / Nhà gái, Thẻ Chú rể & Cô dâu, Box đếm ngược, Thẻ sự kiện, Lịch trình ngày cưới, Khung ảnh Gallery, Thẻ mừng cưới VietQR, Sổ lưu bút, Form RSVP và Box Lời cảm tạ.
+               * Sử dụng `IntersectionObserver` thuần kết hợp tính toán stagger delay so le tự động, giúp các box mềm mại trồi lên từ dưới với tỷ lệ vàng (`translateY(0) scale(1)`) ngay khi người dùng cuộn tới.
+               * Bổ sung hiệu ứng Hover sang trọng: Nổi nhẹ `translateY(-5px)`, đổ bóng đa tầng `0 24px 50px rgba(45, 37, 32, 0.11)` và viền sáng vàng óng ánh.
+
+---
+
+          9. **Nâng Cấp Màn Hình Mở Đầu Phong Bì Hoàng Gia Rực Rỡ (Grand Royal Envelope)**:
+             - **Vấn đề nhận diện**: Màn hình mở đầu trước đó bị đơn điệu, phong bì nhỏ, màu be xỉn lọt thỏm giữa nền trắng, nút bấm đen kịt thiếu cảm xúc lễ cưới.
+             - **Giải pháp nâng cấp toàn diện**:
+               * **Không gian nền lộng lẫy**: Nền lụa nhung dệt ấm áp kết hợp vầng sáng hào quang tỏa tròn và 4 góc hoa văn hoàng gia cổ điển bằng vector ánh kim.
+               * **Huy hiệu & Tiêu đề bề thế**: Thêm huy hiệu hoàng gia Monogram dập nổi, tag `SAVE OUR DATE · THIỆP CƯỚI BÁO HỶ` và tên đôi uyên ương hiển thị to, rực rỡ, trang trọng cùng ngày cưới.
+               * **Phong bì 3D kích thước lớn (Grand 3D Envelope)**: Nâng kích thước lên bề thế (rộng 480px, cao 285px), nắp vát hoàng gia viền chỉ vàng, tấm thiệp bên trong hé lộ ảnh cưới studio thực tế của cặp đôi và chi tiết báo hỷ.
+               * **Tem sáp đỏ Ruby lộng lẫy**: Nâng kích thước lên 68px, màu đỏ Ruby thẫm pha ánh vàng kim dập chìm Monogram kèm hiệu ứng nhịp đập hào quang vàng (`seal-glow pulse`).
+               * **Thẻ đón tiếp VIP**: Tên khách mời được đóng khung huy hiệu lụa vàng sang trọng `KÍNH MỜI QUÝ KHÁCH: [Tên]`.
+               * **Nút mở thiệp Vàng Hoàng Gia Ánh Kim (Royal Radiant Gold)**: Nền gradient vàng kim loại quý phái, hiệu ứng vệt sáng kim loại quét ngang (`btn-shimmer`), bóng đổ vàng đồng thau rực rỡ và icon phong bì mở thanh lịch.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 

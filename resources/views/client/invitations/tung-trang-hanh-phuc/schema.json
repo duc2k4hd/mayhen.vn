@@ -1,0 +1,218 @@
+{
+  "slug": "tung-trang-hanh-phuc",
+  "version": "v1",
+  "name": "Từng Trang Hạnh Phúc",
+  "tier": "luxury",
+  "complexity": "full",
+  "setup_time": "5 phút",
+  "sections": [
+    {
+      "id": "couple",
+      "title": "Thông Tin Cô Dâu & Chú Rể",
+      "icon": "heart",
+      "description": "Tên đôi uyên ương và phụ mẫu hai bên gia đình",
+      "fields": [
+        {
+          "key": "wedding.groom_name",
+          "label": "Họ và tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Hoàng Nam",
+          "placeholder": "Ví dụ: Hoàng Nam",
+          "max": 100
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Họ và tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Minh Anh",
+          "placeholder": "Ví dụ: Minh Anh",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Họ tên Cha (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Nguyễn Hoàng Hải",
+          "placeholder": "Ví dụ: Nguyễn Hoàng Hải",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Họ tên Mẹ (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Trần Thị Mai",
+          "placeholder": "Ví dụ: Trần Thị Mai",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Phạm Văn Minh",
+          "placeholder": "Ví dụ: Phạm Văn Minh",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Họ tên Mẹ (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Lê Thị Thu",
+          "placeholder": "Ví dụ: Lê Thị Thu",
+          "max": 100
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Thông Tin Lễ Cưới & Tiệc Mừng",
+      "icon": "calendar",
+      "description": "Thời gian và địa điểm tổ chức Lễ thành hôn và Tiệc mừng",
+      "fields": [
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cưới (YYYY-MM-DD)",
+          "type": "date",
+          "default": "2027-01-16"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ cử hành hôn lễ",
+          "type": "text",
+          "default": "10:00"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_venue",
+          "label": "Địa điểm làm lễ",
+          "type": "text",
+          "default": "Tư gia Nhà Trai"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_address",
+          "label": "Địa chỉ nơi làm lễ",
+          "type": "text",
+          "default": "Số 168 Hoàng Hoa Thám, Ba Đình, Hà Nội"
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ khai tiệc cưới",
+          "type": "text",
+          "default": "11:30"
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên trung tâm tiệc cưới",
+          "type": "text",
+          "default": "Trung tâm Hội nghị Trống Đồng Palace"
+        },
+        {
+          "key": "wedding.extra_data.party_address",
+          "label": "Địa chỉ sảnh tiệc",
+          "type": "text",
+          "default": "Số 72 Trần Đăng Ninh, Cầu Giấy, Hà Nội"
+        },
+        {
+          "key": "wedding.extra_data.party_map_link",
+          "label": "Link Google Maps chỉ đường",
+          "type": "url",
+          "default": "https://maps.google.com"
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Lời Ngỏ & Câu Chuyện Tình Yêu",
+      "icon": "book-open",
+      "description": "Thông điệp yêu thương và các mốc kỷ niệm đẹp",
+      "fields": [
+        {
+          "key": "wedding.story",
+          "label": "Lời ngỏ thiệp cưới",
+          "type": "textarea",
+          "default": "Một ngày đặc biệt, có bạn chung vui. Chúng mình vô cùng hạnh phúc khi được gửi tới bạn lời mời tham dự ngày trọng đại."
+        }
+      ]
+    },
+    {
+      "id": "gallery",
+      "title": "Album Ảnh Cưới",
+      "icon": "image",
+      "description": "Các bức ảnh khoảnh khắc hạnh phúc của đôi bạn",
+      "fields": [
+        {
+          "key": "wedding.extra_data.hero_photo_url",
+          "label": "Ảnh bìa chính (Hero Photo)",
+          "type": "image",
+          "default": "assets/images/hero-art.svg"
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Chân dung Chú rể",
+          "type": "image",
+          "default": "assets/images/groom-art.svg"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Chân dung Cô dâu",
+          "type": "image",
+          "default": "assets/images/bride-art.svg"
+        },
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh Save the Date",
+          "type": "image",
+          "default": "assets/images/scene-art.svg"
+        }
+      ]
+    },
+    {
+      "id": "banking",
+      "title": "Hộp Mừng Cưới & Chuyển Khoản",
+      "icon": "credit-card",
+      "description": "Số tài khoản ngân hàng và mã QR mừng cưới",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Tên Ngân hàng (Chú rể)",
+          "type": "text",
+          "default": "Vietcombank"
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Tên chủ tài khoản",
+          "type": "text",
+          "default": "HOANG NAM"
+        },
+        {
+          "key": "wedding.extra_data.groom_account_number",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "default": "1012345678"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Tên Ngân hàng (Cô dâu)",
+          "type": "text",
+          "default": "Techcombank"
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Tên chủ tài khoản",
+          "type": "text",
+          "default": "MINH ANH"
+        },
+        {
+          "key": "wedding.extra_data.bride_account_number",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "default": "190123456789"
+        }
+      ]
+    }
+  ]
+}
