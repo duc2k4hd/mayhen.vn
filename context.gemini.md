@@ -25,6 +25,15 @@
 - **Muted Gold / Bronze**: `#C5A880`, `#9C7A4A`, `#B8935D` (Điểm nhấn kim loại cao cấp, hoa văn, nút kêu gọi hành động).
 - **Dusty Rose / Sage Green**: `#D9B4A7`, `#9AA899` (Màu nhấn phụ cho thiệp hoa, phong bì và thiệp lưu niệm).
 
+### 🎨 QUY TẮC BẮT BUỘC: ĐA DẠNG HÓA MÀU SẮC THIỆP CƯỚI (TEMPLATE COLOR PALETTES)
+> **NGUYÊN TẮC BẤT DI BẤT DỊCH**: Mỗi mẫu thiệp cưới tạo ra **BẮT BUỘC PHẢI CÓ TÔNG MÀU ĐẶC TRƯNG RIÊNG BIỆT**, tuyệt đối **KHÔNG ĐƯỢC MẪU NÀO CŨNG GIỐNG MẪU NÀO** (không lạm dụng màu trắng đơn điệu hay đen trắng cứng nhắc). Màu sắc phải rực rỡ, trang nhã, giàu cảm xúc và gắn liền với ngày cưới trọng đại:
+> 1. **Tông Đỏ Hồng Ngọc / Rượu Vang Hoàng Gia (Royal Crimson / Velvet Ruby & Gold)**: Đỏ rượu vang (`#85182A`), đỏ nhung (`#5E0E1C`), vàng ánh kim Antique Gold (`#CFA860`) trên nền kem ấm (`#FAF7F2`) — Mang lại sự hỷ sự, trang trọng, quý phái bậc nhất cho ngày cưới truyền thống & hiện đại.
+> 2. **Tông Hồng Tro & Phấn Lụa (Dusty Rose & Champagne)**: Hồng tro (`#D9B4A7`), hồng đào nude, champagne gold và viền ngà lụa — Dành cho phong cách ngọt ngào, lãng mạn, thơ mộng.
+> 3. **Tông Xanh Xô Thơm & Rừng Thu (Sage Green & Olive Cream)**: Xanh olive (`#748E8A`), xanh xô thơm (`#9AA899`), gold nhạt — Mang phong cách hòa hợp thiên nhiên, tiệc cưới ngoài trời (Outdoor/Garden Wedding).
+> 4. **Tông Xanh Hoàng Gia & Bạc Ánh Trăng (Royal Navy / Dusty Blue & Silver)**: Xanh đêm huyền ảo (`#1B2A4A`), xanh pastel sương mù và ánh bạc — Phong cách cổ điển châu Âu thanh khiết.
+> 5. **Tông Hổ Phách & Hoàng Hôn Ấm (Terracotta & Warm Amber)**: Nâu cam đất ấm cúng, đồng cổ — Mang chất điện ảnh Bohemian / Rustic ấm cúng.
+
+
 ### Typography chuẩn mực
 - **Heading / Editorial Title**: `Cormorant Garamond`, `Playfair Display` (Font serif thanh lịch, quý phái).
 - **Body / Interface / Form**: `Inter`, system font sans-serif (Rõ nét, dễ đọc trên màn hình điện thoại).
