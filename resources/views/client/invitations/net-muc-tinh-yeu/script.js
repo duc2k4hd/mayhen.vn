@@ -97,21 +97,31 @@
         musicButton.setAttribute('aria-pressed', 'true');
         musicButton.setAttribute('aria-label', 'Tắt nhạc nền');
       }
-    } catch {
+    } catch (err) {
+      console.warn('Lỗi phát nhạc:', err);
       if (musicButton) {
         musicButton.setAttribute('aria-pressed', 'false');
       }
     }
   }
 
+  function pauseMusic() {
+    if (!audio) return;
+    audio.pause();
+    if (musicButton) {
+      musicButton.setAttribute('aria-pressed', 'false');
+      musicButton.setAttribute('aria-label', 'Bật nhạc nền');
+    }
+  }
+
   if (musicButton && audio) {
-    musicButton.addEventListener('click', () => {
+    musicButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
       if (audio.paused) {
         playMusic();
       } else {
-        audio.pause();
-        musicButton.setAttribute('aria-pressed', 'false');
-        musicButton.setAttribute('aria-label', 'Bật nhạc nền');
+        pauseMusic();
       }
     });
   }
@@ -158,7 +168,7 @@
   // Chặn hoàn toàn thao tác cuộn chuột/cảm ứng/bàn phím khi chưa mở thiệp
   function preventScrollBeforeOpen(e) {
     if (!isOpened) {
-      if (e.target && (e.target.closest('#mayhen_envelope_element') || e.target.closest('#mayhen_open_invitation_btn'))) {
+      if (e.target && (e.target.closest('#mayhen_envelope_element') || e.target.closest('#mayhen_open_invitation_btn') || e.target.closest('.mayhen_invitation_dhsuudushi9428r_music'))) {
         return;
       }
       e.preventDefault();

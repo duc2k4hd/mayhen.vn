@@ -1587,6 +1587,15 @@ textarea:focus-visible {
     background: var(--mayhen_gold);
 }
 
+@keyframes mayhen_invitation_spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .mayhen_invitation_dhsuudushi9428r_to_top {
     opacity: 0;
     pointer-events: none;

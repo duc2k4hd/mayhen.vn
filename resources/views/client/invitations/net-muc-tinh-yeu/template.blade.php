@@ -146,7 +146,7 @@
     // 6. Mừng cưới QR & Nhạc nền
     $qrGroom = $resolveAsset($wedding->extra_data['qr_groom_image'] ?? null, 'assets/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg');
     $qrBride = $resolveAsset($wedding->extra_data['qr_bride_image'] ?? null, 'assets/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg');
-    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'assets/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
+    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3');
 
     // 7. Sổ lưu bút (Wishes & Guestbook) & RSVP
     $wishes = $wishes ?? collect([]);
@@ -282,7 +282,6 @@
         window.__MAYHEN_WISH_REPLY_BASE_URL = "{{ $wishReplyBaseUrl }}";
         window.__MAYHEN_RSVP_RESPONSES_URL = "{{ $rsvpResponsesUrl }}";
     </script>
-    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}" defer></script>
 </head>
 <body class="mayhen_invitation_scroll_locked">
 
@@ -693,7 +692,7 @@
         <button class="mayhen_invitation_dhsuudushi9428r_music" type="button" aria-label="Bật nhạc nền" aria-pressed="false" title="Bật hoặc tắt nhạc">♫</button>
         <button class="mayhen_invitation_dhsuudushi9428r_to_top" type="button" aria-label="Lên đầu trang" title="Lên đầu trang">↑</button>
     </div>
-    <audio id="mayhen_invitation_dhsuudushi9428r_audio" src="{{ $musicUrl }}" loop preload="none"></audio>
+    <audio id="mayhen_invitation_dhsuudushi9428r_audio" src="{{ $musicUrl }}" loop preload="auto"></audio>
 
     {{-- Modal chung --}}
     <div class="mayhen_invitation_dhsuudushi9428r_modal" id="mayhen_invitation_dhsuudushi9428r_modal" role="dialog" aria-modal="true" aria-labelledby="mayhen_invitation_dhsuudushi9428r_modal_title" hidden>

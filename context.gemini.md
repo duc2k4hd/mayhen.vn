@@ -997,6 +997,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
          2. Trong `styles.css`, thiết lập khóa cuộn toàn diện: `html, body, .page, .cover` đều đạt `height: 100dvh; overflow: hidden !important; touch-action: none !important; overscroll-behavior: none !important;` và ẩn hoàn toàn thân thiệp `.mayhen_invitation_dhsuudushi9428r_main_body { display: none !important; }`.
          3. Trong `script.js`, bổ sung bộ lắng nghe chặn triệt để thao tác cuộn chuột (`wheel`), vuốt chạm (`touchmove`) và phím điều hướng (`keydown`) trước khi mở. Khi người dùng bấm "Chạm mở thiệp", phong bì mở nắp 3D, thiệp trồi lên, nhạc cưới phát, class khóa cuộn được gỡ trên cả `html` và `body`, sau đó trang tự động cuộn nhẹ nhàng (smooth scroll) xuống nội dung thiệp cưới.
 
+    + **Sửa Lỗi Nút Bật/Tắt Nhạc Không Hoạt Động (`net-muc-tinh-yeu`)**:
+       * **Nguyên nhân lỗi**:
+         1. File `script.js` trước đó bị nhúng 2 lần (1 lần trong `<head>` có `defer`, 1 lần ở cuối `<body>`), khiến sự kiện `click` trên nút nhạc `mayhen_invitation_dhsuudushi9428r_music` bị gán 2 listener chạy song song (khi bấm click thì listener 1 play rồi listener 2 lập tức pause, triệt tiêu lẫn nhau).
+         2. Đường dẫn nhạc fallback bị lặp tiền tố `assets/assets/...` và thẻ `<audio>` thiếu thuộc tính `preload="auto"`.
+         3. Thiếu `@keyframes mayhen_invitation_spin` trong `styles.css` cho hiệu ứng đĩa nhạc xoay tròn khi phát.
+       * **Giải pháp đã xử lý**:
+         1. Xóa bỏ thẻ `<script>` trùng lặp trong thẻ `<head>`, chỉ giữ duy nhất một thẻ script ở cuối `<body>`.
+         2. Tách bạch hàm `playMusic()` và `pauseMusic()` với `stopPropagation()` và `preventDefault()` chống xung đột sự kiện.
+         3. Sửa fallback `$musicUrl` chuẩn không lặp `assets/` và đặt `preload="auto"` trên thẻ `<audio>`.
+         4. Bổ sung `@keyframes mayhen_invitation_spin` xoay 360 độ mượt mà khi nhạc phát.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
