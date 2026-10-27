@@ -182,6 +182,9 @@
         $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
     @endphp
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
     
     @php
         $customConfig = $invitation->custom_config ?? [];
@@ -712,6 +715,10 @@
         <button type="button" class="mayhen_invitation_dhsuudushi9428r_lightbox_next" aria-label="Ảnh tiếp theo">›</button>
         <span class="mayhen_invitation_dhsuudushi9428r_lightbox_count"></span>
     </div>
+
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        @include('client.components.bottom-nav')
+    @endif
 
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
 

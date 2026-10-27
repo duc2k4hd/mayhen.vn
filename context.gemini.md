@@ -1163,6 +1163,25 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                  3. **Bổ sung trải nghiệm UX cho Lightbox**: Tự động khóa cuộn trang (`document.body.style.overflow = 'hidden'`) khi mở modal và phục hồi khi đóng, hỗ trợ phím điều hướng `Escape` (đóng), `ArrowLeft` (ảnh trước), `ArrowRight` (ảnh sau).
                  4. **Kiểm thử tự động**: Tạo Feature Test `tests/Feature/HacBachTraoDuyenTemplateTest.php` xác thực trang preview tải thành công, cả 9 URL ảnh phóng to đều trả về HTTP 200 và script chứa hàm `getGalleryItemSrc` (100% Passed 23 assertions).
 
+
+           13. **Tích hợp Thanh Điều Hướng Chân Trang (`mayhen_client_bottom_nav_wrapper`) Vào Toàn Bộ Trang Xem Thử (`/xem-thu/{slug}`)**:
+               - **Mục tiêu**: Nâng cao trải nghiệm khám phá và chuyển đổi cho khách hàng khi đang xem thử thiệp cưới số. Người xem có thể dễ dàng điều hướng về Trang chủ, xem Mẫu thiệp, Yêu thích, Trợ lý AI và đặc biệt là nút "Tạo thiệp" nổi bật ở giữa sẽ tự động gắn kèm mã mẫu thiệp (`?template={slug}`) để chuyển thẳng vào studio tạo thiệp.
+               - **Các thành phần được cập nhật**:
+                 1. **Component `bottom-nav.blade.php`**: Nút "Tạo thiệp" ở giữa tự động kiểm tra biến `$template` và truyền param: `{{ (isset($template) && !empty($template->slug)) ? route('invitation.create', ['template' => $template->slug]) : route('invitation.create') }}`.
+                 2. **Stylesheet `bottom-nav.css`**: Bổ sung media query `@media (max-width: 859px)` tự động nâng độ cao cho các floating controls / music dock của các mẫu thiệp (`.mayhen_invitation_ladjihe38udhd_music_dock`, `.mayhen_invitation_ksnvo949dudf_music-dock`, `.mayhen_invitation_djcvhwiuo9w9_music-toggle`, `.mayhen_invitation_dhsuudushi9428r_floating`) lên `bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;` khi có sự hiện diện của `.mayhen_client_bottom_nav_wrapper` để tránh bị dock điều hướng che khuất trên điện thoại.
+                 3. **Trang xem thử cơ bản `client/pages/preview.blade.php`**: Nhúng `bottom-nav.css` trong `<head>` và `@include('client.components.bottom-nav')` trước thẻ `</body>` khi không ở chế độ embed (`!$isEmbed`).
+                 4. **5 Mẫu thiệp cưới cao cấp**:
+                    * `hac-bach-trao-duyen/template.blade.php`
+                    * `hac-bach-trao-duyen-2/template.blade.php`
+                    * `net-muc-tinh-yeu/template.blade.php`
+                    * `tung-trang-hanh-phuc/template.blade.php`
+                    * `thuoc-phim-tinh-yeu/template.blade.php`
+                    * Đều được trang bị điều kiện hiển thị `@if (($isPreview ?? false) && !($isEmbed ?? false))` cho cả file CSS `bottom-nav.css` và component `@include('client.components.bottom-nav')`. Đảm bảo khi thiệp cưới thật được gửi cho khách mời hoặc nhúng iframe trong studio editor (`embed=1`) thì thanh bottom navigation sẽ tự động ẩn đi.
+                 5. **Kiểm thử tự động (`tests/Feature/BottomNavTest.php`)**: Đã bổ sung 2 test case mới kiểm tra:
+                    * Thanh bottom nav hiển thị đầy đủ trên cả 5 mẫu thiệp ở chế độ xem thử, kèm CSS và link tạo thiệp theo đúng slug.
+                    * Thanh bottom nav tự động ẩn khi có tham số `embed=1`.
+                    * 100% Passed (3 tests, 34 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

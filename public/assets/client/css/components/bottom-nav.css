@@ -203,3 +203,15 @@ body {
         margin-top: -16px;
     }
 }
+
+/* ==========================================================================
+   5. TEMPLATE PREVIEW FLOATING CONTROLS OFFSET (TRÁNH XUNG ĐỘT TRÊN MOBILE)
+   ========================================================================== */
+@media (max-width: 859px) {
+    body:has(.mayhen_client_bottom_nav_wrapper) .mayhen_invitation_ladjihe38udhd_music_dock,
+    body:has(.mayhen_client_bottom_nav_wrapper) .mayhen_invitation_ksnvo949dudf_music-dock,
+    body:has(.mayhen_client_bottom_nav_wrapper) .mayhen_invitation_djcvhwiuo9w9_music-toggle,
+    body:has(.mayhen_client_bottom_nav_wrapper) .mayhen_invitation_dhsuudushi9428r_floating {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+}

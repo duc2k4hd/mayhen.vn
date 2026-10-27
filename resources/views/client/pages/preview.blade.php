@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/components/buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
+    @if (!$isEmbed)
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
 </head>
 <body class="mayhen_invitation_wrapper {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}">
     @if (!$isEmbed)
@@ -188,6 +191,10 @@
             </footer>
         </article>
     </div>
+
+    @if (!$isEmbed)
+        @include('client.components.bottom-nav')
+    @endif
 
     <!-- Scripts -->
     <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>

@@ -102,6 +102,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+  @if (($isPreview ?? false) && !($isEmbed ?? false))
+      <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+  @endif
   @include('client.components.favicon')
 </head>
 <body class="mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked" data-target-date="{{ $targetTimestamp }}">
@@ -2980,6 +2983,10 @@
         }
     </style>
 
+
+  @if (($isPreview ?? false) && !($isEmbed ?? false))
+      @include('client.components.bottom-nav')
+  @endif
 
   <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 @include('client.invitations.partials.editor-bridge')

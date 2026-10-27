@@ -32,7 +32,7 @@
         </a>
 
         <!-- 3. Tạo Thiệp (Nổi bật ở giữa với nút tròn và nhãn text) -->
-        <a href="{{ route('invitation.create') }}" 
+        <a href="{{ (isset($template) && !empty($template->slug)) ? route('invitation.create', ['template' => $template->slug]) : route('invitation.create') }}" 
            class="mayhen_client_bottom_nav_item mayhen_client_bottom_nav_item_center mayhen_client_bottom_nav_item_create {{ request()->routeIs('invitation.create') ? 'mayhen_client_bottom_nav_item_active' : '' }}" 
            title="Tạo thiệp cưới ngay" 
            aria-label="Tạo thiệp">

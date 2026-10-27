@@ -131,6 +131,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
 
     @if ($isEmbed)
         <style>
@@ -713,6 +716,9 @@
         window.__MAYHEN_GALLERY_PHOTOS = @json($galleryPhotos);
     </script>
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        @include('client.components.bottom-nav')
+    @endif
 </body>
 
 </html>

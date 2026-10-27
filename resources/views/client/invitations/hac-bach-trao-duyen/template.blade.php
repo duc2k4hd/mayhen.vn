@@ -103,6 +103,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
     @include('client.components.favicon')
 </head>
 <body class="mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked" data-target-date="{{ $targetTimestamp }}">
@@ -895,6 +898,10 @@
     </footer>
 
   </main>
+
+  @if (($isPreview ?? false) && !($isEmbed ?? false))
+      @include('client.components.bottom-nav')
+  @endif
 
   <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 </body>

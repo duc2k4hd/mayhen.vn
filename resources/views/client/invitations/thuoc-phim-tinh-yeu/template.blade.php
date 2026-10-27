@@ -216,6 +216,9 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Manrope:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
 
     @php
         $customConfig = $invitation->custom_config ?? [];
@@ -1219,6 +1222,10 @@
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
+
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        @include('client.components.bottom-nav')
+    @endif
 
     {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}
     @include('client.invitations.partials.editor-bridge')
