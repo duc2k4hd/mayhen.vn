@@ -961,6 +961,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
         5. **SEO Keywords Strip**: Danh sách từ khóa thiệp cưới online tối ưu SEO on-page tự nhiên.
         6. **Chân Trang Pháp Lý & Bản Quyền**: Thông tin pháp nhân công ty, GPĐKKD, địa chỉ, bản quyền `© 2026 MÂY HẸN (mayhen.vn)` và các liên kết pháp lý.
 
+    + **Bảo Mật Toàn Diện (Security Hardening) & Tối Ưu SEO Hiện Đại (Theo Skill `security-audit`)**:
+       * **Mục tiêu**: Nâng cấp bảo mật đa tầng cho toàn bộ hệ thống web Mây Hẹn (`mayhen.vn`) theo chuẩn OWASP và Google Search Central, tuyệt đối không ảnh hưởng đến mã nguồn khác, không làm giảm tốc độ tải trang, và tối ưu hóa tốt nhất cho SEO hiện đại.
+       * **Các cải tiến đã thực thi**:
+         1. **Security Headers Middleware (`app/Http/Middleware/SecurityHeaders.php`)**:
+            - Tự động bổ sung các tiêu đề bảo mật cấp cao trên mọi phản hồi HTTP:
+              * `X-Content-Type-Options: nosniff`: Chống MIME type sniffing & MIME confusion attacks.
+              * `X-Frame-Options: SAMEORIGIN`: Bảo vệ toàn diện chống Clickjacking, đồng thời vẫn cho phép tính năng Live Preview iframe cùng nguồn hoạt động hoàn hảo.
+              * `Referrer-Policy: strict-origin-when-cross-origin`: Tiêu chuẩn vàng được Google Search & Analytics khuyến nghị, bảo vệ sự riêng tư mà vẫn duy trì toàn bộ tín hiệu SEO khi chuyển hướng.
+              * `Permissions-Policy: camera=(), microphone=(), geolocation=()`: Giới hạn truy cập phần cứng nhạy cảm.
+              * `X-XSS-Protection: 1; mode=block`: Bật bộ lọc XSS sẵn có của trình duyệt.
+         2. **Khắc Phục Triệt Để Rủi Ro Stored XSS Trong Upload File (`InvitationEditorController.php`)**:
+            - Loại bỏ định dạng `svg` khỏi validation tải lên file ảnh cưới trong hàm `uploadAsset` (`mimes:jpeg,png,jpg,webp,gif,heic|max:20480`), ngăn chặn nguy cơ tin tặc nhúng mã độc JavaScript vào tệp vector XML.
+         3. **Chống Path Traversal & LFI Tuyệt Đối (`TemplateController.php`)**:
+            - Trong hàm `asset()`, bổ sung xác thực Regex cho slug (`^[a-z0-9_-]+$`), sử dụng `realpath()` và `str_starts_with()` để đối chiếu đường dẫn thực tế, đảm bảo tài nguyên chỉ được phục vụ khi nằm hoàn toàn bên trong thư mục template hợp lệ, chặn đứng mọi kỹ thuật tấn công leo thang thư mục (`../`).
+         4. **Làm Sạch Dữ Liệu Đầu Vào (XSS Sanitization) Trong Form Requests**:
+            - Bổ sung `prepareForValidation()` với hàm `strip_tags()` và `trim()` trong `SubmitWishRequest.php`, `SubmitRsvpRequest.php`, `StoreGuestRequest.php`.
+            - Dữ liệu lời chúc, tên khách mời, số điện thoại, ghi chú ăn uống được làm sạch triệt để trước khi chuyển qua bước xác thực và lưu vào cơ sở dữ liệu.
+         5. **Rate Limiting (Throttle) Phân Tầng Theo Rủi Ro & Session-Aware (`AppServiceProvider.php` & `routes/web.php`)**:
+            - Áp dụng Named Rate Limiters thông minh phân định theo `Session ID` / `User ID` thay vì chỉ dùng IP đơn thuần, tránh triệt để vấn đề 1000 khách mời cùng dự tiệc cưới chung 1 mạng WiFi (NAT IP) bị chặn chéo lẫn nhau:
+              * `guest_interactions`: Áp dụng cho gửi lời chúc & RSVP (60 yêu cầu/phút/thiết bị).
+              * `auth_attempts`: Áp dụng cho đăng nhập & đăng ký (15 yêu cầu/phút/email+IP chống brute-force).
+              * `editor_actions`: Áp dụng cho tạo thiệp, upload ảnh cưới, autosave (120 yêu cầu/phút/tài khoản).
+              * `throttle:60,1`: Áp dụng cho webhook thanh toán và API thêm khách mời.
+            - **Tối ưu SEO & High-concurrency**: Giữ nguyên 100% các route `GET` công khai (trang chủ, kho mẫu thiệp, chi tiết thiệp, bài viết, dịch vụ) không bị giới hạn, giúp Googlebot và các công cụ tìm kiếm thu thập dữ liệu với tốc độ tức thì và 0ms độ trễ.
+         6. **Tối Ưu Crawl Budget Với `public/robots.txt`**:
+            - Cho phép bot crawl toàn bộ nội dung công khai và tài nguyên hiển thị (`/assets/`, `/storage/`, `/mau-thiep/`, `/thiep/`).
+            - Chặn các vùng nhạy cảm và nội bộ (`/admin/`, `/api/`, `/tai-khoan/`, `/dang-nhap`, `/dang-ky`, `/thanh-toan/`) để tập trung 100% crawl budget vào các trang có giá trị SEO cao.
+            - Khai báo sitemap chính thức `https://mayhen.vn/sitemap.xml`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

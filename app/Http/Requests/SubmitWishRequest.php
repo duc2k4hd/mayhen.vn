@@ -12,6 +12,14 @@ class SubmitWishRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name' => is_string($this->name) ? strip_tags(trim($this->name)) : $this->name,
+            'message' => is_string($this->message) ? strip_tags(trim($this->message)) : $this->message,
+        ]);
+    }
+
     public function rules(): array
     {
         return [

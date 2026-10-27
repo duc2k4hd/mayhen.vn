@@ -28,39 +28,39 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
 Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
-Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->name('templates.preview.wish');
-Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->name('templates.preview.rsvp');
+Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
+Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
-Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->name('invitation.store');
-Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->name('invitation.uploadAsset');
-Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->name('invitation.autosave');
+Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->middleware('throttle:editor_actions')->name('invitation.store');
+Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->middleware('throttle:editor_actions')->name('invitation.uploadAsset');
+Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->middleware('throttle:editor_actions')->name('invitation.autosave');
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
-Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->name('rsvp.submit');
+Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');
 Route::get('/thiep/{slug}/rsvp/responses', [GuestController::class, 'getRsvpResponses'])->name('invitation.rsvp.responses');
 Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
-Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->name('invitation.wish.store');
-Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->name('invitation.wish.reply');
+Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.store');
+Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.reply');
 
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/dang-nhap', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/dang-nhap', [AuthController::class, 'login'])->middleware('throttle:auth_attempts')->name('login.submit');
 Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/dang-ky', [AuthController::class, 'register'])->name('register.submit');
-Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
+Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:auth_attempts')->name('register.submit');
+Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:20,1')->name('checkout.process');
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
-Route::post('/api/webhook/payment', [CheckoutController::class, 'handleWebhook'])->name('webhook.payment');
+Route::post('/api/webhook/payment', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
 
 // Guest Management & RSVP
 Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/khach-moi', [GuestController::class, 'index'])->name('guests.index');
-    Route::post('/thiep/{id}/khach-moi', [GuestController::class, 'store'])->name('guests.store');
+    Route::post('/thiep/{id}/khach-moi', [GuestController::class, 'store'])->middleware('throttle:60,1')->name('guests.store');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
 });
 

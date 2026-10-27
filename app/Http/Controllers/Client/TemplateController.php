@@ -165,18 +165,32 @@ class TemplateController extends Controller
      */
     public function asset(string $slug, string $path): BinaryFileResponse
     {
-        // Làm sạch và chuẩn hóa path để chống directory traversal
-        $safePath = str_replace(['..', "\0"], '', $path);
-        $fullPath = resource_path("views/client/invitations/{$slug}/{$safePath}");
-
-        if (! file_exists($fullPath) || is_dir($fullPath)) {
-            $fallbackAssetsPath = resource_path("views/client/invitations/{$slug}/assets/{$safePath}");
-            if (file_exists($fallbackAssetsPath) && ! is_dir($fallbackAssetsPath)) {
-                $fullPath = $fallbackAssetsPath;
-            } else {
-                abort(404, 'Asset not found');
-            }
+        // Chống directory traversal & validate slug
+        if (! preg_match('/^[a-z0-9_-]+$/', $slug)) {
+            abort(404, 'Mẫu thiệp không hợp lệ.');
         }
+
+        $baseDir = resource_path("views/client/invitations/{$slug}");
+        $realBaseDir = realpath($baseDir);
+        if ($realBaseDir === false) {
+            abort(404, 'Thư mục mẫu không tồn tại.');
+        }
+
+        $cleanPath = ltrim(str_replace(['\\', "\0"], ['/', ''], $path), '/');
+        $targetPath = $baseDir.DIRECTORY_SEPARATOR.$cleanPath;
+        $realTarget = realpath($targetPath);
+
+        // Fallback thư mục assets/ nếu chưa tìm thấy
+        if ($realTarget === false || ! is_file($realTarget) || ! str_starts_with($realTarget, $realBaseDir)) {
+            $fallbackPath = $baseDir.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.$cleanPath;
+            $realTarget = realpath($fallbackPath);
+        }
+
+        if ($realTarget === false || ! is_file($realTarget) || ! str_starts_with($realTarget, $realBaseDir)) {
+            abort(404, 'Asset not found');
+        }
+
+        $fullPath = $realTarget;
 
         $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
         $mimeTypes = [

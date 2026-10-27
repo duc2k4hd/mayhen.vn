@@ -12,6 +12,16 @@ class SubmitRsvpRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'guest_name' => is_string($this->guest_name) ? strip_tags(trim($this->guest_name)) : $this->guest_name,
+            'phone' => is_string($this->phone) ? strip_tags(trim($this->phone)) : $this->phone,
+            'dietary_requirements' => is_string($this->dietary_requirements) ? strip_tags(trim($this->dietary_requirements)) : $this->dietary_requirements,
+            'wishes' => is_string($this->wishes) ? strip_tags(trim($this->wishes)) : $this->wishes,
+        ]);
+    }
+
     public function rules(): array
     {
         return [

@@ -1,2 +1,14 @@
 User-agent: *
-Disallow:
+Allow: /
+Allow: /assets/
+Allow: /storage/
+Allow: /mau-thiep/
+Allow: /thiep/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /tai-khoan/
+Disallow: /dang-nhap
+Disallow: /dang-ky
+Disallow: /thanh-toan/
+
+Sitemap: https://mayhen.vn/sitemap.xml

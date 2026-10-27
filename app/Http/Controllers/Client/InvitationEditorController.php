@@ -284,7 +284,7 @@ class InvitationEditorController extends Controller
     public function uploadAsset(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => 'required|file|mimes:jpeg,png,jpg,webp,svg,gif,heic|max:20480',
+            'file' => 'required|file|mimes:jpeg,png,jpg,webp,gif,heic|max:20480',
             'template_slug' => 'nullable|string',
         ]);
 
