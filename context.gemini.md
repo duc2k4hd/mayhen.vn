@@ -1152,6 +1152,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
               - **Seeder CSDL**: Đã đăng ký vào `InvitationTemplateSeeder.php` với slug `hac-bach-trao-duyen-2`, category `luxury`, tier `pro`, complexity `deluxe`.
               - **Route xem thử**: `http://127.0.0.1:8000/xem-thu/hac-bach-trao-duyen-2` (HTTP Status 200 OK).
 
+           12. **Sửa Lỗi Hỏng Ảnh Khi Bấm Phóng To (Lightbox) Mẫu Thiệp "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`)**:
+               - **Nguyên nhân lỗi**:
+                 * Trong file `template.blade.php`, các thẻ item của gallery ảnh cưới đang bị hardcoded thuộc tính `data-full="assets/hip_..."` dạng đường dẫn tương đối (relative) thay vì gọi helper `{{ $resolveAsset('', '...') }}`.
+                 * Khi người dùng xem thiệp ở route `/xem-thu/hac-bach-trao-duyen` hoặc `/thiep/{slug}`, JavaScript gán trực tiếp `lbImg.src = item.getAttribute('data-full')`, dẫn đến trình duyệt tự resolve thành `/xem-thu/assets/hip_...` (HTTP 404 Not Found), gây ra biểu tượng ảnh bị vỡ (`Enlarged Wedding Photo`).
+                 * Cuối file `template.blade.php` có thẻ script thừa `<script src="script.js"></script>` gây lỗi 404 console.
+               - **Giải pháp xử lý**:
+                 1. **Cập nhật `template.blade.php`**: Đồng bộ toàn bộ 9 thẻ gallery item sử dụng `data-full="{{ $resolveAsset('', 'hip_...jpg') }}"` để sinh ra URL tuyệt đối chính xác thông qua route asset `templates.asset` (`/mau-thiep/hac-bach-trao-duyen/assets/...`). Đồng thời loại bỏ thẻ script thừa.
+                 2. **Nâng cấp `script.js` (Bulletproof Image Resolution)**: Bổ sung hàm `getGalleryItemSrc(item)` với cơ chế phòng thủ đa tầng: nếu `data-full` hợp lệ (`http://`, `https://`, `/`) thì dùng; nếu không, tự động fallback lấy `img.currentSrc` hoặc `img.src` từ thẻ `img` con bên trong item.
+                 3. **Bổ sung trải nghiệm UX cho Lightbox**: Tự động khóa cuộn trang (`document.body.style.overflow = 'hidden'`) khi mở modal và phục hồi khi đóng, hỗ trợ phím điều hướng `Escape` (đóng), `ArrowLeft` (ảnh trước), `ArrowRight` (ảnh sau).
+                 4. **Kiểm thử tự động**: Tạo Feature Test `tests/Feature/HacBachTraoDuyenTemplateTest.php` xác thực trang preview tải thành công, cả 9 URL ảnh phóng to đều trả về HTTP 200 và script chứa hàm `getGalleryItemSrc` (100% Passed 23 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

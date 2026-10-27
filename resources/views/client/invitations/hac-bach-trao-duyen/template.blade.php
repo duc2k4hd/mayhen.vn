@@ -600,39 +600,39 @@
         </div>
 
         <div class="mayhen_invitation_ladjihe38udhd_gallery_grid">
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_tall mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_1314-20250417154153-ezy7i.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_tall mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_1314-20250417154153-ezy7i.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_1314-20250417154153-ezy7i.jpg') }}" alt="Gallery Photo 1" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_1055-20250417154150-fnhf7.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_1055-20250417154150-fnhf7.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_1055-20250417154150-fnhf7.jpg') }}" alt="Gallery Photo 2" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_1663-20250417154215-1gooa.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_1663-20250417154215-1gooa.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_1663-20250417154215-1gooa.jpg') }}" alt="Gallery Photo 3" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_wide mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_2035-20250417154231-lro9v.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_wide mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_2035-20250417154231-lro9v.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_2035-20250417154231-lro9v.jpg') }}" alt="Gallery Photo 4" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_1653-20250417154214-6m0kb.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_1653-20250417154214-6m0kb.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_1653-20250417154214-6m0kb.jpg') }}" alt="Gallery Photo 5" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_tall mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_2216-20250417154241-dok5k.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_tall mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_2216-20250417154241-dok5k.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_2216-20250417154241-dok5k.jpg') }}" alt="Gallery Photo 6" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_2450-20250417154258-ynmd_.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_2450-20250417154258-ynmd_.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_2450-20250417154258-ynmd_.jpg') }}" alt="Gallery Photo 7" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_1350-20250417154155-wsx2n.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_1350-20250417154155-wsx2n.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_1350-20250417154155-wsx2n.jpg') }}" alt="Gallery Photo 8" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_wide mayhen_invitation_ladjihe38udhd_box_anim" data-full="assets/hip_2226-20250417154242-utfbm.jpg">
+          <div class="mayhen_invitation_ladjihe38udhd_gallery_item item_wide mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $resolveAsset('', 'hip_2226-20250417154242-utfbm.jpg') }}">
             <img src="{{ $resolveAsset('', 'hip_2226-20250417154242-utfbm.jpg') }}" alt="Gallery Photo 9" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
           </div>
@@ -896,8 +896,6 @@
 
   </main>
 
-  <script src="script.js"></script>
-
-    <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
+  <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 </body>
 </html>

@@ -292,13 +292,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const lbNext = document.getElementById('mayhen_invitation_ladjihe38udhd_lb_next');
 
   let currentImgIndex = 0;
-  const imageSources = Array.from(galleryItems).map(item => item.getAttribute('data-full'));
+
+  function getGalleryItemSrc(item) {
+    if (!item) return '';
+    const full = item.getAttribute('data-full');
+    if (full && (full.startsWith('http://') || full.startsWith('https://') || full.startsWith('/'))) {
+      return full;
+    }
+    const innerImg = item.querySelector('img');
+    return innerImg ? (innerImg.currentSrc || innerImg.src || innerImg.getAttribute('src') || '') : (full || '');
+  }
 
   function showLightbox(index) {
-    if (!lightbox || !lbImg) return;
-    currentImgIndex = (index + imageSources.length) % imageSources.length;
-    lbImg.src = imageSources[currentImgIndex];
-    lightbox.classList.add('active');
+    if (!lightbox || !lbImg || galleryItems.length === 0) return;
+    currentImgIndex = (index + galleryItems.length) % galleryItems.length;
+    const targetItem = galleryItems[currentImgIndex];
+    const src = getGalleryItemSrc(targetItem);
+    if (src) {
+      lbImg.src = src;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
   }
 
   galleryItems.forEach((item, index) => {
@@ -306,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (lbClose) {
-    lbClose.addEventListener('click', () => lightbox.classList.remove('active'));
+    lbClose.addEventListener('click', closeLightbox);
   }
   if (lbPrev) {
     lbPrev.addEventListener('click', () => showLightbox(currentImgIndex - 1));
@@ -316,9 +336,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (lightbox) {
     lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) lightbox.classList.remove('active');
+      if (e.target === lightbox) closeLightbox();
     });
   }
+
+  window.addEventListener('keydown', (e) => {
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showLightbox(currentImgIndex - 1);
+    if (e.key === 'ArrowRight') showLightbox(currentImgIndex + 1);
+  });
 
   /* ==========================================================================
      8. RSVP FORM SUBMISSION (LOCAL STORAGE CACHE)
