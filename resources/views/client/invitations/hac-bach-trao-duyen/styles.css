@@ -52,6 +52,25 @@ body.mayhen_invitation_ladjihe38udhd_body {
 }
 
 /* ==========================================================================
+   KHÓA CUỘN TRIỆT ĐỂ KHI CHƯA MỞ PHONG BÌ (STRICT SCROLL LOCK)
+   ========================================================================== */
+html.mayhen_invitation_ladjihe38udhd_scroll_locked,
+body.mayhen_invitation_ladjihe38udhd_scroll_locked {
+  overflow: hidden !important;
+  height: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
+body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_ladjihe38udhd_wrapper,
+body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_ladjihe38udhd_music_dock {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
    SCROLL-DRIVEN REVEAL & STAGGER ANIMATIONS (HIỆU ỨNG BOX TOÀN DIỆN)
    ========================================================================== */
 

@@ -84,6 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function openEnvelope() {
     if (openingOverlay) {
       openingOverlay.classList.add('closed');
+      
+      // Mở khóa cuộn trang
+      document.documentElement.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
+      document.body.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
+
       // Phát nhạc ngay khi khách bấm mở thiệp
       if (audio && audio.paused) {
         audio.play().then(() => {

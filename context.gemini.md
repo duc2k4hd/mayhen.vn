@@ -1119,6 +1119,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
               - **Quy ước tiền tố CSS Class**: `mayhen_invitation_ladjihe38udhd_*`.
               - **Các tính năng nổi bật**:
                 * Màn hình mở thiệp phong bì 3D hoàng gia kết hợp tem sáp đỏ dập nổi.
+                * **Cơ chế Khóa Cuộn Toàn Diện (Strict Scroll Lock)**: Khóa cứng cuộn trang (`overflow: hidden; touch-action: none; overscroll-behavior: none;`) và ẩn hoàn toàn nội dung thiệp bên dưới trước khi mở; chỉ mở khóa cuộn mượt mà khi người dùng bấm vào con dấu sáp hoặc nút "MỞ THIỆP CƯỚI".
                 * Thanh công cụ floating dock đĩa than vinyl phát nhạc cưới kèm sóng âm nhấp nhô.
                 * Đếm ngược thời gian thực, lịch tháng hạnh phúc điểm xuyết trái tim.
                 * Bảng thông tin cặp đôi, gia đình hai bên và thiệp mời chi tiết.

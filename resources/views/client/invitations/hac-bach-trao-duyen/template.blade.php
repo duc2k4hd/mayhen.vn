@@ -93,7 +93,7 @@
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="mayhen_invitation_ladjihe38udhd_scroll_locked">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -105,7 +105,7 @@
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
     @include('client.components.favicon')
 </head>
-<body class="mayhen_invitation_ladjihe38udhd_body" data-target-date="{{ $targetTimestamp }}">
+<body class="mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked" data-target-date="{{ $targetTimestamp }}">
 
 
   <!-- Audio Player (Hidden) -->
