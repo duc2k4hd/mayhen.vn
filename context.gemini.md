@@ -989,6 +989,9 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
             - Cho phép bot crawl toàn bộ nội dung công khai và tài nguyên hiển thị (`/assets/`, `/storage/`, `/mau-thiep/`, `/thiep/`).
             - Chặn các vùng nhạy cảm và nội bộ (`/admin/`, `/api/`, `/tai-khoan/`, `/dang-nhap`, `/dang-ky`, `/thanh-toan/`) để tập trung 100% crawl budget vào các trang có giá trị SEO cao.
             - Khai báo sitemap chính thức `https://mayhen.vn/sitemap.xml`.
+    + **Sửa Lỗi Liên Kết Nút 'Xem Mẫu Trên Điện Thoại' Tại Hero Trang Chủ (`home.blade.php`)**:
+       * **Nguyên nhân lỗi**: Nút ban đầu bị hardcode slug `envelope-reveal-luxury` vốn không tồn tại trong cơ sở dữ liệu mẫu thiệp, dẫn đến lỗi HTTP 404 (Not Found) khi bấm vào.
+       * **Khắc phục**: Chuyển liên kết sang cơ chế động `route('templates.preview', $featuredTemplates->first()?->slug ?? 'thuoc-phim-tinh-yeu')`, tự động trỏ đến mẫu thiệp nổi bật hiện có trong hệ thống (`thuoc-phim-tinh-yeu`), đảm bảo luôn phản hồi HTTP 200 OK và mang lại trải nghiệm xem thử mượt mà trên di động.
 
 ---
 

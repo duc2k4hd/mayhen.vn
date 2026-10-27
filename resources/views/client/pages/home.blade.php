@@ -172,7 +172,7 @@
                         <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg">
                             Tạo thử thiệp của bạn
                         </a>
-                        <a href="{{ route('templates.preview', 'envelope-reveal-luxury') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg">
+                        <a href="{{ route('templates.preview', $featuredTemplates->first()?->slug ?? 'thuoc-phim-tinh-yeu') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg">
                             Xem mẫu trên điện thoại
                         </a>
                     </div>
