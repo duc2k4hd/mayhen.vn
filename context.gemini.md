@@ -1134,9 +1134,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
               - **Seeder CSDL**: Đã đăng ký vào `InvitationTemplateSeeder.php` với slug `hac-bach-trao-duyen`, category `luxury`, tier `pro`, complexity `deluxe`.
               - **Route xem thử**: `http://127.0.0.1:8000/xem-thu/hac-bach-trao-duyen` (HTTP Status 200 OK).
 
+          11. **Tích Hợp Template Mới: "Hắc Bạch Trao Duyên 2" (`hac-bach-trao-duyen-2`)**:
+              - **Nguồn gốc & Phong cách**: Chuyển giao và chuẩn hóa từ mẫu thiết kế Black & White Editorial Luxury (gốc mẫu Wedding 18), phong cách tối giản thanh lịch, trắng đen sang trọng mang chất điện ảnh phương Tây.
+              - **Đường dẫn thư mục**: `resources/views/client/invitations/hac-bach-trao-duyen-2/` gồm `template.blade.php`, `styles.css`, `script.js`, `schema.json` và thư mục `assets/` (73 tài nguyên ngoại tuyến gồm hình ảnh chất lượng cao, icon, font chữ, âm nhạc MP3).
+              - **Quy ước tiền tố CSS Class**: `mayhen_invitation_ladjihe38udhd_*`.
+              - **Các tính năng nổi bật**:
+                * **Màn hình mở phong bì hoàng gia 3D (#POPUP8)**: Căn giữa hoàn mỹ trên cả Mobile & Desktop, nền mờ kính đen quý phái (`backdrop-filter: blur(16px)`), ảnh cưới cô dâu chú rể trong khung oval trang nhã, hoa văn viền góc và nút bấm "Ấn vào để Xem" rực rỡ.
+                * **Cơ chế Khóa Cuộn Toàn Diện**: Mặc định khóa cuộn trang (`overflow: hidden; touch-action: none;`) khi chưa mở thiệp, ngăn cuộn chuột và ẩn dock nhạc; khi bấm "Ấn vào để Xem", phong bì mở nhẹ nhàng, mở khóa cuộn và kích hoạt nhạc cưới tự động.
+                * **Thanh Floating Audio Dock đĩa than Vinyl**: Nút xoay đĩa than sang trọng ở góc dưới bên phải, kèm hiệu ứng sóng âm thanh sống động (Equalizer animated).
+                * **Tiêu đề trang chuẩn mực**: Sử dụng đúng cú pháp quy định:
+                  `$pageTitle = $isPreview ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');`
+                * **Section Save the Date & Đếm ngược thời gian thực (Countdown Timer)**: Hiển thị Ngày, Giờ, Phút, Giây cập nhật từng giây kèm biểu tượng đồng hồ cát nghệ thuật.
+                * **Lịch cưới và tính năng "Thêm vào lịch"**: Trực quan, rõ ràng cho khách mời ghi nhớ ngày cưới.
+                * **Album ảnh cưới thời thượng & Câu chuyện tình yêu (Love Story)**: Hình ảnh sắc nét, bố cục đa tầng không bị méo vỡ hay cắt xén.
+                * **Form gửi lời chúc, Xác nhận tham dự (RSVP) & Hộp mừng cưới số tài khoản QR Bank**: Tích hợp đầy đủ cho khách mời từ xa.
+                * **Editor Bridge V2**: Tích hợp sẵn `@include('client.invitations.partials.editor-bridge')` giúp tương thích 100% với trình chỉnh sửa trực quan mayhen.vn.
+              - **Seeder CSDL**: Đã đăng ký vào `InvitationTemplateSeeder.php` với slug `hac-bach-trao-duyen-2`, category `luxury`, tier `pro`, complexity `deluxe`.
+              - **Route xem thử**: `http://127.0.0.1:8000/xem-thu/hac-bach-trao-duyen-2` (HTTP Status 200 OK).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
 
 
 
