@@ -946,7 +946,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
            - Tích hợp đầy đủ: Badge xanh "Đang xem thử" + Tên mẫu thiệp hiện tại (`#mayhen_home_showcase_modal_header_title`), bộ chuyển đổi chế độ xem Mobile / Desktop, nút "Mở tab mới", nút "Tải lại", và nút "Sao chép link".
            - Đồng bộ tự động qua hàm `openLivePreviewModal` trong `home.js`.
            - Tối ưu responsive: Trên thiết bị di động (<640px), tự động ẩn nhãn phụ để thanh bar luôn vừa vặn, không bao giờ bị chèn đè lên các nút xung quanh.
-        3. **Chống tràn ngang triệt để**: Bổ sung `overflow-x: hidden` trên `html, body` và chuyển đổi chiều rộng `100vw` của các cánh rèm thiệp sang `100%`, loại bỏ hoàn toàn hiện tượng thanh cuộn ngang xuất hiện trong iframe.
+    + **Tái Thiết Kế Toàn Diện Global Footer Chuẩn Quiet Luxury Đa Tầng**:
+      * **Vấn đề đã nhận diện**: Footer trước đây chỉ có 3 cột menu đơn sơ, thiếu thông tin thương hiệu, thiếu các cam kết cốt lõi, cổng thanh toán và trải nghiệm khách hàng di động.
+      * **Giải pháp kiến trúc**: Tái thiết kế toàn diện [footer.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/components/footer.blade.php) và [footer.css](file:///e:/Project/Laravel/mayhen.vn/public/assets/client/css/components/footer.css) theo 6 tầng thông tin đầy đủ, đẹp mắt và thuận mắt:
+        1. **Value Proposition Strip (4 Khối Cam Kết)**: Chuẩn Quiet Luxury, Khởi tạo trong 5 phút, Cá nhân hóa từng khách mời, Bảo mật & riêng tư.
+        2. **Newsletter & Payment Gateway**: Form nhập email nhận Voucher 10% và cẩm nang cưới + Huy hiệu các cổng thanh toán an toàn (VietQR, VNPAY, MoMo, ZaloPay, Apple Pay, Visa, Mastercard, Napas).
+        3. **Lưới Điều Hướng 5 Cột Cân Xứng**:
+           - Cột 1: Thương hiệu Mây Hẹn, lời ngỏ, card Hotline tư vấn 24/7, email, atelier và mạng xã hội (Facebook, Instagram, TikTok, Zalo).
+           - Cột 2: Kho mẫu thiệp cưới phân loại theo chủ đề (Quiet Luxury, Tạp chí Editorial, Phong thư sáp 3D, Minimalist, Flora, Lễ Vu Quy).
+           - Cột 3: Tính năng cưới (Mở phong bì tem sáp, Nhạc nền tự động, Báo hỷ RSVP, Mừng cưới VietQR, Bản đồ chỉ đường, Album Lightbox, Sổ lưu bút).
+           - Cột 4: Về Mây Hẹn (Câu chuyện thương hiệu, Bảng giá gói cưới, Quy trình, Hợp tác Studio/Nhiếp ảnh, FAQ, Chính sách bảo mật, Điều khoản).
+           - Cột 5: Trải nghiệm di động (Mã QR scan mở demo thiệp trên điện thoại) + Chứng nhận Bộ Công Thương, DMCA Protected, SSL 256-bit.
+        4. **Hệ Sinh Thái & Đối Tác Đồng Hành**: Mây Hẹn Atelier, Mây Hẹn RSVP Pro, VietQR Napas, Wedding Studio Partners, Nhà In Mỹ Thuật.
+        5. **SEO Keywords Strip**: Danh sách từ khóa thiệp cưới online tối ưu SEO on-page tự nhiên.
+        6. **Chân Trang Pháp Lý & Bản Quyền**: Thông tin pháp nhân công ty, GPĐKKD, địa chỉ, bản quyền `© 2026 MÂY HẸN (mayhen.vn)` và các liên kết pháp lý.
 
 ---
 

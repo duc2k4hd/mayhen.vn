@@ -1,96 +1,768 @@
 /**
- * MAYHEN.VN — CLIENT FOOTER STYLES
- * Prefix: mayhen_client_footer
+ * MAYHEN.VN — CLIENT GLOBAL FOOTER STYLES (QUIET LUXURY EDITORIAL FOOTER)
+ * Prefix: mayhen_client_footer_
  */
 
 .mayhen_client_footer_wrapper {
-    background-color: #171513;
-    color: #F7F4EE;
-    padding-top: var(--mayhen-space-4xl);
-    padding-bottom: var(--mayhen-space-2xl);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #141210;
+    color: #E6E1DA;
+    border-top: 1px solid rgba(216, 194, 157, 0.22);
     margin-top: auto;
+    font-family: var(--mayhen-font-sans, "Inter", -apple-system, BlinkMacSystemFont, sans-serif);
+    position: relative;
+    overflow: hidden;
 }
 
-.mayhen_client_footer_grid {
+/* ==========================================================================
+   1. THANH CAM KẾT GIÁ TRỊ (VALUE PROPOSITION BAR)
+   ========================================================================== */
+.mayhen_client_footer_value_strip {
+    background: #181512;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 24px 0;
+}
+
+.mayhen_client_footer_value_grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--mayhen-space-2xl);
-    margin-bottom: var(--mayhen-space-3xl);
+    gap: 20px;
 }
 
-@media (min-width: 768px) {
-    .mayhen_client_footer_grid {
-        grid-template-columns: 2fr 1fr 1fr 1fr;
-        gap: var(--mayhen-space-xl);
+@media (min-width: 640px) {
+    .mayhen_client_footer_value_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
     }
 }
 
-.mayhen_client_footer_brand_col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--mayhen-space-md);
+@media (min-width: 1024px) {
+    .mayhen_client_footer_value_grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 28px;
+    }
 }
 
-.mayhen_client_footer_brand_title {
-    font-family: var(--mayhen-font-serif);
-    font-size: 1.75rem;
+.mayhen_client_footer_value_item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.mayhen_client_footer_value_icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(197, 168, 128, 0.12);
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    color: var(--mayhen-color-primary, #C5A880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.mayhen_client_footer_value_item:hover .mayhen_client_footer_value_icon {
+    background: rgba(197, 168, 128, 0.22);
+    border-color: var(--mayhen-color-primary, #C5A880);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_client_footer_value_content {
+    min-width: 0;
+}
+
+.mayhen_client_footer_value_title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 2px 0;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_client_footer_value_desc {
+    font-size: 0.775rem;
+    color: #9C948A;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   2. KHỐI ĐĂNG KÝ BẢN TIN & CỔNG THANH TOÁN
+   ========================================================================== */
+.mayhen_client_footer_newsletter_strip {
+    padding: 36px 0;
+    background: #161310;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mayhen_client_footer_newsletter_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: center;
+}
+
+@media (min-width: 1024px) {
+    .mayhen_client_footer_newsletter_grid {
+        grid-template-columns: 1.4fr 1fr;
+        gap: 48px;
+    }
+}
+
+.mayhen_client_footer_newsletter_badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(197, 168, 128, 0.16);
+    color: var(--mayhen-color-primary, #C5A880);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.mayhen_client_footer_newsletter_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_client_footer_newsletter_sub {
+    font-size: 0.825rem;
+    color: #A39B90;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.mayhen_client_footer_newsletter_form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 520px;
+}
+
+@media (min-width: 540px) {
+    .mayhen_client_footer_newsletter_form {
+        flex-direction: row;
+        align-items: stretch;
+    }
+}
+
+.mayhen_client_footer_input_wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.mayhen_client_footer_input_wrapper svg {
+    position: absolute;
+    left: 14px;
+    color: #7D766D;
+    pointer-events: none;
+}
+
+.mayhen_client_footer_input {
+    width: 100%;
+    padding: 11px 14px 11px 40px;
+    background: #201D19;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    color: #FFFFFF;
+    font-size: 0.84rem;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_client_footer_input:focus {
+    border-color: var(--mayhen-color-primary, #C5A880);
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.2);
+    background: #26221E;
+}
+
+.mayhen_client_footer_input::placeholder {
+    color: #7D766D;
+}
+
+.mayhen_client_footer_submit_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 22px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: linear-gradient(135deg, var(--mayhen-color-primary, #C5A880) 0%, var(--mayhen-color-primary-hover, #A68759) 100%);
+    color: #FFFFFF;
+    font-size: 0.825rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_client_footer_submit_btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(197, 168, 128, 0.5);
+    background: linear-gradient(135deg, #D4B68E 0%, #B89666 100%);
+}
+
+.mayhen_client_footer_payments_right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_client_footer_payments_label {
+    font-size: 0.775rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mayhen-color-primary, #C5A880);
+}
+
+.mayhen_client_footer_payments_badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_client_footer_pay_pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    background: #221F1B;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #E0DDD7;
+    letter-spacing: 0.02em;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.mayhen_client_footer_pay_pill:hover {
+    border-color: rgba(197, 168, 128, 0.4);
+    background: #2A2621;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   3. LƯỚI ĐIỀU HƯỚNG 5 CỘT CHÍNH
+   ========================================================================== */
+.mayhen_client_footer_main_section {
+    padding: 56px 0 44px 0;
+}
+
+.mayhen_client_footer_grid_5col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px 24px;
+}
+
+@media (min-width: 640px) {
+    .mayhen_client_footer_grid_5col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .mayhen_client_footer_grid_5col {
+        grid-template-columns: 1.8fr 1fr 1fr 1.1fr;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mayhen_client_footer_grid_5col {
+        grid-template-columns: 1.8fr 1fr 1fr 1.1fr 1.1fr;
+        gap: 40px;
+    }
+}
+
+.mayhen_client_footer_col {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_client_footer_brand_logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-bottom: 14px;
+}
+
+.mayhen_client_footer_brand_monogram {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #141210;
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_client_footer_brand_text {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 1.5rem;
+    font-weight: 700;
     color: #FFFFFF;
     letter-spacing: -0.01em;
 }
 
 .mayhen_client_footer_brand_desc {
-    color: #A8A29E;
-    font-size: var(--mayhen-font-size-small);
-    line-height: 1.7;
-    max-width: 320px;
+    font-size: 0.825rem;
+    color: #9E968B;
+    line-height: 1.65;
+    margin: 0 0 20px 0;
+    max-width: 340px;
 }
 
-.mayhen_client_footer_nav_title {
-    font-family: var(--mayhen-font-sans);
-    font-size: 0.8125rem;
+.mayhen_client_footer_contact_box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.mayhen_client_footer_hotline_card {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #1D1A16;
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    border-radius: 12px;
+    max-width: 300px;
+}
+
+.mayhen_client_footer_hotline_icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(197, 168, 128, 0.18);
+    color: var(--mayhen-color-primary, #C5A880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_hotline_sub {
+    display: block;
+    font-size: 0.675rem;
+    color: #8C8478;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.mayhen_client_footer_hotline_num {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+}
+
+.mayhen_client_footer_hotline_num:hover {
+    color: var(--mayhen-color-primary, #C5A880);
+}
+
+.mayhen_client_footer_contact_item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.8rem;
+    color: #9C948A;
+}
+
+.mayhen_client_footer_contact_item svg {
+    color: var(--mayhen-color-primary, #C5A880);
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_contact_item a {
+    color: #E6E1DA;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mayhen_client_footer_contact_item a:hover {
+    color: var(--mayhen-color-primary, #C5A880);
+}
+
+/* Social Icons */
+.mayhen_client_footer_socials {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_client_footer_socials_title {
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--mayhen-color-primary);
-    margin-bottom: var(--mayhen-space-md);
+    letter-spacing: 0.08em;
+    color: #8C8478;
+}
+
+.mayhen_client_footer_social_icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_client_footer_social_btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #201D19;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #D4CEBE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.mayhen_client_footer_social_btn:hover {
+    background: var(--mayhen-color-primary, #C5A880);
+    border-color: var(--mayhen-color-primary, #C5A880);
+    color: #141210;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(197, 168, 128, 0.35);
+}
+
+/* Menu Column Headings */
+.mayhen_client_footer_nav_title {
+    font-family: var(--mayhen-font-serif, "Playfair Display", serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 16px 0;
+    letter-spacing: 0.02em;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.mayhen_client_footer_nav_title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background: var(--mayhen-color-primary, #C5A880);
+    border-radius: 2px;
 }
 
 .mayhen_client_footer_nav_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--mayhen-space-sm);
+    gap: 10px;
 }
 
 .mayhen_client_footer_nav_link {
-    color: #D6D3D1;
-    font-size: var(--mayhen-font-size-small);
-    transition: color var(--mayhen-transition-fast);
+    font-size: 0.8125rem;
+    color: #B5ADA1;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+    line-height: 1.45;
 }
 
 .mayhen_client_footer_nav_link:hover {
-    color: var(--mayhen-color-primary);
+    color: var(--mayhen-color-primary, #C5A880);
+    transform: translateX(3px);
 }
 
-.mayhen_client_footer_bottom {
+.mayhen_client_footer_highlight_link {
+    color: var(--mayhen-color-primary, #C5A880) !important;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* QR Experience Box (Column 5) */
+.mayhen_client_footer_qr_box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    background: #1C1916;
+    border: 1px solid rgba(197, 168, 128, 0.25);
+    border-radius: 12px;
+    margin-bottom: 22px;
+}
+
+.mayhen_client_footer_qr_code {
+    background: #FFFFFF;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_qr_info {
     display: flex;
     flex-direction: column;
-    gap: var(--mayhen-space-md);
-    padding-top: var(--mayhen-space-xl);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: var(--mayhen-font-size-caption);
-    color: #78716C;
+    gap: 3px;
+}
+
+.mayhen_client_footer_qr_label {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.mayhen_client_footer_qr_desc {
+    font-size: 0.725rem;
+    color: #8C8478;
+    line-height: 1.35;
+}
+
+/* Certifications & Badges (Column 5) */
+.mayhen_client_footer_badges_group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.mayhen_client_footer_cert_label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8C8478;
+}
+
+.mayhen_client_footer_cert_row {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mayhen_client_footer_cert_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    background: #1F1C18;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 6px;
+    font-size: 0.725rem;
+    color: #C7C0B3;
+    font-weight: 500;
+    width: fit-content;
+}
+
+.mayhen_client_footer_cert_dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   4. HỆ SINH THÁI & ĐỐI TÁC ĐỒNG HÀNH
+   ========================================================================== */
+.mayhen_client_footer_ecosystem_strip {
+    background: #12100E;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 16px 0;
+}
+
+.mayhen_client_footer_ecosystem_inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
 }
 
 @media (min-width: 768px) {
-    .mayhen_client_footer_bottom {
+    .mayhen_client_footer_ecosystem_inner {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+    }
+}
+
+.mayhen_client_footer_ecosystem_label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mayhen-color-primary, #C5A880);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_ecosystem_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_client_footer_eco_pill {
+    padding: 4px 10px;
+    background: #1C1916;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    font-size: 0.72rem;
+    color: #B5ADA1;
+    transition: all 0.2s ease;
+}
+
+.mayhen_client_footer_eco_pill:hover {
+    border-color: rgba(197, 168, 128, 0.35);
+    color: #FFFFFF;
+}
+
+/* ==========================================================================
+   5. ĐÁM MÂY TỪ KHÓA SEO NỔI BẬT
+   ========================================================================== */
+.mayhen_client_footer_seo_strip {
+    padding: 16px 0;
+    background: #100E0C;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mayhen_client_footer_seo_inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_footer_seo_inner {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 12px;
+    }
+}
+
+.mayhen_client_footer_seo_title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #8C8478;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_seo_links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    font-size: 0.74rem;
+    color: #5C554B;
+    line-height: 1.6;
+}
+
+.mayhen_client_footer_seo_links a {
+    color: #7D7569;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mayhen_client_footer_seo_links a:hover {
+    color: var(--mayhen-color-primary, #C5A880);
+    text-decoration: underline;
+}
+
+.mayhen_client_footer_seo_links span {
+    color: #38332C;
+}
+
+/* ==========================================================================
+   6. CHÂN TRANG PHÁP LÝ & BẢN QUYỀN
+   ========================================================================== */
+.mayhen_client_footer_bottom {
+    padding: 24px 0 28px 0;
+    background: #0E0C0A;
+}
+
+.mayhen_client_footer_bottom_inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .mayhen_client_footer_bottom_inner {
         flex-direction: row;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
     }
+}
+
+.mayhen_client_footer_legal_info {
+    max-width: 680px;
+}
+
+.mayhen_client_footer_company_name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #D1CBC0;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_client_footer_company_meta {
+    font-size: 0.715rem;
+    color: #7D7569;
+    margin: 0 0 6px 0;
+    line-height: 1.5;
+}
+
+.mayhen_client_footer_copyright {
+    font-size: 0.715rem;
+    color: #635C52;
+    margin: 0;
 }
 
 .mayhen_client_footer_legal_links {
     display: flex;
-    gap: var(--mayhen-space-md);
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.mayhen_client_footer_legal_link {
+    font-size: 0.74rem;
+    color: #8C8478;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mayhen_client_footer_legal_link:hover {
+    color: var(--mayhen-color-primary, #C5A880);
+}
+
+.mayhen_client_footer_legal_sep {
+    color: #4A443B;
+    font-size: 0.7rem;
 }
