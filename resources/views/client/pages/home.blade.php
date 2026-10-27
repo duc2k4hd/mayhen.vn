@@ -843,8 +843,16 @@
                 </svg>
             </button>
 
-            <!-- Floating Top Toolbar (Mobile, Desktop, New Tab, Copy Link) -->
+            <!-- Floating Top Toolbar (Global Preview Topbar) -->
             <div class="mayhen_home_showcase_modal_top_bar">
+                <div class="mayhen_home_showcase_modal_badge_info">
+                    <span class="mayhen_home_showcase_modal_badge_dot"></span>
+                    <span class="mayhen_home_showcase_modal_badge_label">Xem Thử</span>
+                    <strong class="mayhen_home_showcase_modal_header_title" id="mayhen_home_showcase_modal_header_title">Mẫu Thiệp Cưới</strong>
+                </div>
+
+                <div class="mayhen_home_showcase_modal_top_bar_divider" aria-hidden="true"></div>
+
                 <div class="mayhen_home_showcase_modal_device_toggles">
                     <button type="button" class="mayhen_home_showcase_modal_device_btn is-active" data-mayhen-device-mode="mobile" title="Chế độ xem trên Điện Thoại">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
@@ -856,20 +864,24 @@
                     </button>
                 </div>
 
-                <a href="#" target="_blank" rel="noopener noreferrer" class="mayhen_home_showcase_modal_newtab_btn" id="mayhen_home_showcase_modal_newtab_link" title="Mở trang thiệp này trong tab mới">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-                    <span>Mở tab mới</span>
-                </a>
+                <div class="mayhen_home_showcase_modal_top_bar_divider" aria-hidden="true"></div>
 
-                <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_copy_btn" title="Sao chép link chia sẻ mẫu thiệp">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    <span>Sao chép link</span>
-                </button>
+                <div class="mayhen_home_showcase_modal_top_actions">
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="mayhen_home_showcase_modal_newtab_btn" id="mayhen_home_showcase_modal_newtab_link" title="Mở trang thiệp này trong tab mới">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        <span>Mở tab mới</span>
+                    </a>
 
-                <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_reload_btn" title="Tải lại trang thiệp để xem lại hiệu ứng">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-                    <span>Tải lại</span>
-                </button>
+                    <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_reload_btn" title="Tải lại trang thiệp để xem lại hiệu ứng mở thiệp">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                        <span>Tải lại</span>
+                    </button>
+
+                    <button type="button" class="mayhen_home_showcase_modal_tool_action_btn" id="mayhen_home_showcase_modal_copy_btn" title="Sao chép link chia sẻ mẫu thiệp">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        <span>Sao chép</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Toast Notification -->

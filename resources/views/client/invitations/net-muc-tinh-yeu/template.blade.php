@@ -284,54 +284,7 @@
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}" defer></script>
 </head>
 <body class="mayhen_invitation_scroll_locked">
-    @if ($isPreview && !$isEmbed)
-        {{-- Floating Top Navigation Bar dành riêng cho trang Xem Thử (Quiet Luxury Style) --}}
-        <header class="mayhen_preview_topbar" id="mayhen_preview_topbar" aria-label="Thanh điều hướng xem thử">
-            <div class="mayhen_preview_topbar_inner">
-                <div class="mayhen_preview_topbar_left">
-                    <a href="{{ route('templates.index') }}" class="mayhen_preview_btn_back" title="Quay lại danh sách mẫu thiệp">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                        <span>Kho Mẫu</span>
-                    </a>
-                    <div class="mayhen_preview_badge_box">
-                        <span class="mayhen_preview_badge_label">Xem thử</span>
-                        <strong class="mayhen_preview_template_name">{{ $templateName }}</strong>
-                    </div>
-                </div>
 
-                <div class="mayhen_preview_topbar_right">
-                    @if (isset($template) && $template->slug)
-                        <a href="{{ route('templates.show', $template->slug) }}" class="mayhen_preview_btn_detail" title="Xem chi tiết thiết kế & tính năng của mẫu thiệp này">
-                            <span>Chi Tiết Mẫu</span>
-                        </a>
-                    @endif
-                    <a href="{{ route('invitation.create', ['template' => $template->slug ?? 'net-muc-tinh-yeu']) }}" class="mayhen_preview_btn_cta" title="Dùng mẫu này để tạo thiệp cưới của bạn">
-                        <span>Tạo Thiệp Với Mẫu Này</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-        </header>
-    @elseif (isset($isOwner) && $isOwner && isset($invitation) && !$isEmbed)
-        {{-- Floating Top Bar dành riêng cho Chủ Nhân Thiệp (Đăng nhập hoặc theo Session tạo thiệp) --}}
-        <header class="mayhen_preview_topbar mayhen_owner_topbar" aria-label="Thanh quản trị chủ thiệp">
-            <div class="mayhen_preview_topbar_inner">
-                <div class="mayhen_preview_topbar_left">
-                    <span class="mayhen_preview_badge_label" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
-                        👑 Chủ Thiệp
-                    </span>
-                    <span style="font-size: 13px; font-weight: 500; color: var(--mayhen_ink);">Thiệp cưới của bạn đã xuất bản</span>
-                </div>
-
-                <div class="mayhen_preview_topbar_right">
-                    <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_preview_btn_cta" title="Mở lại trình soạn thảo để chỉnh sửa thông tin, ảnh và nhạc của thiệp này">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        <span>Sửa Lại Thiệp Cưới</span>
-                    </a>
-                </div>
-            </div>
-        </header>
-    @endif
 
     <main class="mayhen_invitation_dhsuudushi9428r_page">
         {{-- Section 1: Màn hình mở đầu & Phong bì mở thiệp sang trọng --}}

@@ -351,72 +351,6 @@
 </head>
 
 <body class="mayhen_invitation_wrapper">
-    @if ($isPreview && !$isEmbed)
-        <!-- Topbar Điều Hướng Xem Thử (Quiet Luxury) -->
-        <header class="mayhen_preview_topbar" id="mayhen_preview_topbar" aria-label="Thanh điều hướng xem thử">
-            <div class="mayhen_preview_topbar_inner">
-                <div class="mayhen_preview_topbar_left">
-                    <a href="{{ route('templates.index') }}" class="mayhen_preview_btn_back"
-                        title="Quay lại kho mẫu thiệp cưới">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16"
-                            height="16">
-                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.6"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <span>Kho mẫu thiệp</span>
-                    </a>
-                    <span class="mayhen_preview_topbar_badge">
-                        <span class="mayhen_preview_topbar_dot"></span>
-                        <span>Đang xem thử: <strong>{{ $templateName }}</strong></span>
-                    </span>
-                </div>
-                <div class="mayhen_preview_topbar_right">
-                    <a href="{{ route('invitation.create', ['template' => $template->slug ?? 'thuoc-phim-tinh-yeu']) }}"
-                        class="mayhen_preview_btn_cta" title="Dùng mẫu này để tạo thiệp cưới của bạn">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16"
-                            height="16">
-                            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.8"
-                                stroke-linecap="round" />
-                        </svg>
-                        <span>Tạo Thiệp Mẫu Này</span>
-                    </a>
-                </div>
-            </div>
-        </header>
-    @endif
-
-    @if (isset($isOwner) && $isOwner && isset($invitation))
-        <!-- Topbar Quản Trị Dành Cho Chủ Thiệp -->
-        <header class="mayhen_preview_topbar mayhen_owner_topbar" aria-label="Thanh quản trị chủ thiệp">
-            <div class="mayhen_preview_topbar_inner">
-                <div class="mayhen_preview_topbar_left">
-                    <span class="mayhen_owner_badge">
-                        <span class="mayhen_preview_topbar_dot" style="background: #10B981;"></span>
-                        <span>Chủ thiệp: <strong>{{ $groomName }} & {{ $brideName }}</strong></span>
-                    </span>
-                </div>
-                <div class="mayhen_preview_topbar_right">
-                    <a href="{{ route('guests.index', $invitation->id) }}" class="mayhen_owner_btn_guests"
-                        title="Xem danh sách khách xác nhận tham dự">
-                        <span>Khách Mời ({{ $rsvpStats['attending'] ?? 0 }}/{{ $rsvpStats['total'] ?? 0 }})</span>
-                    </a>
-                    <a href="{{ route('invitation.create', ['edit' => $invitation->id]) }}"
-                        class="mayhen_owner_btn_edit" title="Chỉnh sửa lại thông tin và ảnh thiệp cưới">
-                        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14"
-                            height="14">
-                            <path
-                                d="M11.3333 2.00004C11.5084 1.82494 11.7163 1.68605 11.9451 1.59129C12.1739 1.49653 12.4191 1.44775 12.6667 1.44775C12.9142 1.44775 13.1594 1.49653 13.3882 1.59129C13.617 1.68605 13.8249 1.82494 14 2.00004C14.1751 2.17513 14.314 2.383 14.4088 2.61182C14.5035 2.84064 14.5523 3.08584 14.5523 3.33337C14.5523 3.58091 14.5035 3.82611 14.4088 4.05493C14.314 4.28375 14.1751 4.49162 14 4.66671L5 13.6667L1.33333 14.6667L2.33333 11L11.3333 2.00004Z"
-                                stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        <span>Sửa Thiệp</span>
-                    </a>
-                </div>
-            </div>
-        </header>
-    @endif
-
-
     <main class="mayhen_invitation_djcvhwiuo9w9_root mayhen_invitation_djcvhwiuo9w9_invitation-page" lang="vi"
         style='--mayhen-g4-opening-left:url("{{ $assetBase }}/opening-left.webp");--mayhen-g4-opening-right:url("{{ $assetBase }}/opening-right.webp");--mayhen-g4-paper-base:url("{{ $assetBase }}/paper-base-seamless.jpg");--mayhen-g4-paper-top:url("{{ $assetBase }}/paper-top-textured.jpg");--mayhen-g4-paper-countdown-bottom:url("{{ $assetBase }}/paper-countdown-bottom-textured.jpg");--mayhen-g4-paper-corner:url("{{ $assetBase }}/paper-corner-textured.jpg");--mayhen-g4-paper-bottom:url("{{ $assetBase }}/paper-bottom-textured.jpg");--mayhen-g4-album-paper:url("{{ $assetBase }}/album-paper-textured.jpg");--mayhen-g4-paper-footer:url("{{ $assetBase }}/paper-footer-textured.jpg");--mayhen-g4-paper-top-overlay:url("{{ $assetBase }}/paper-top-overlay-v2.png");--mayhen-g4-paper-countdown-bottom-overlay:url("{{ $assetBase }}/paper-countdown-bottom-overlay-v2.png");--mayhen-g4-paper-corner-overlay:url("{{ $assetBase }}/paper-corner-overlay-v2.png");--mayhen-g4-paper-tear-overlay:url("{{ $assetBase }}/paper-tear-overlay-v2.png");--mayhen-g4-album-floral-overlay:url("{{ $assetBase }}/album-floral-overlay-v2.png");--mayhen-g4-paper-footer-overlay:url("{{ $assetBase }}/paper-footer-overlay-v2.png")'>
         <div class="mayhen_invitation_djcvhwiuo9w9_opening-sides" id="mayhen_invitation_djcvhwiuo9w9_opening_sides"
@@ -1280,8 +1214,6 @@
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
-    </script>
-    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
     <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
 
     {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}

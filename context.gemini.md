@@ -937,7 +937,16 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
            - Xóa bỏ toàn bộ các khối `@match` hardcode và script riêng lẻ cồng kềnh (tiết kiệm hơn 300 dòng code thừa).
            - SSR ẩn hiện section chuyển sang dạng 1 dòng CSS duy nhất: `[data-mayhen-section="{{ $hiddenId }}"] { display: none !important; }`.
            - Nhúng partial dùng chung: `@include('client.invitations.partials.editor-bridge')`.
-        4. **Khả năng mở rộng (Scalability)**: Bất kỳ mẫu thiệp cưới nào được tạo mới trong tương lai chỉ cần gán thuộc tính `data-mayhen-section` cho từng khối và thêm đúng 1 dòng `@include('client.invitations.partials.editor-bridge')` ở cuối file là tự động hoạt động 100% với Studio Editor V2 mà không cần viết thêm bất kỳ dòng script nào.
+    + **Chuẩn Hóa Global Preview Topbar Dùng Chung & Loại Bỏ Topbar Khỏi Giao Diện Template**:
+      * **Vấn đề đã nhận diện**: Trước đây, các template mẫu thiệp (`thuoc-phim-tinh-yeu`, `net-muc-tinh-yeu`) tự nhúng khối `<header class="mayhen_preview_topbar">` bên trong file `template.blade.php`. Khi xem trong popup Modal Showcase ở trang chủ hoặc trên mobile, các nút bị dồn ép với Dynamic Island của khung điện thoại, vỡ lề và xuất hiện thanh cuộn ngang Windows ở đáy màn hình.
+      * **Giải pháp kiến trúc**:
+        1. **Tách biệt hoàn toàn**: Xóa sạch toàn bộ khối topbar xem thử (`mayhen_preview_topbar`) và topbar chủ thiệp khỏi mã nguồn của từng template (`thuoc-phim-tinh-yeu`, `net-muc-tinh-yeu`). Mẫu thiệp giữ trọn vẹn 100% không gian hiển thị nghệ thuật thuần khiết.
+        2. **Thanh Global Preview Topbar Dùng Chung Tại Trang Chủ (`home.blade.php`)**:
+           - Tái cấu trúc `.mayhen_home_showcase_modal_top_bar` thành thanh điều hướng capsule Quiet Luxury thống nhất cho toàn bộ mẫu thiệp.
+           - Tích hợp đầy đủ: Badge xanh "Đang xem thử" + Tên mẫu thiệp hiện tại (`#mayhen_home_showcase_modal_header_title`), bộ chuyển đổi chế độ xem Mobile / Desktop, nút "Mở tab mới", nút "Tải lại", và nút "Sao chép link".
+           - Đồng bộ tự động qua hàm `openLivePreviewModal` trong `home.js`.
+           - Tối ưu responsive: Trên thiết bị di động (<640px), tự động ẩn nhãn phụ để thanh bar luôn vừa vặn, không bao giờ bị chèn đè lên các nút xung quanh.
+        3. **Chống tràn ngang triệt để**: Bổ sung `overflow-x: hidden` trên `html, body` và chuyển đổi chiều rộng `100vw` của các cánh rèm thiệp sang `100%`, loại bỏ hoàn toàn hiện tượng thanh cuộn ngang xuất hiện trong iframe.
 
 ---
 

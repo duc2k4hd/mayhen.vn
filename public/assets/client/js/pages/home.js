@@ -758,12 +758,14 @@ function openLivePreviewModal(card) {
     const createUrl = card.getAttribute('data-create-url') || '#';
 
     const titleEl = document.getElementById('mayhen_home_showcase_modal_title');
+    const headerTitleEl = document.getElementById('mayhen_home_showcase_modal_header_title');
     const catEl = document.getElementById('mayhen_home_showcase_modal_bottom_cat');
     const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
     const newtabLink = document.getElementById('mayhen_home_showcase_modal_newtab_link');
     const createLink = document.getElementById('mayhen_home_showcase_modal_create_link');
 
     if (titleEl) titleEl.textContent = name;
+    if (headerTitleEl) headerTitleEl.textContent = name;
     if (catEl) catEl.textContent = cat;
     if (iframe && previewUrl) iframe.src = previewUrl;
     if (newtabLink) newtabLink.href = previewUrl;
