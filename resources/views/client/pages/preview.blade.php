@@ -1,35 +1,30 @@
 @php
     $isEmbed = request()->boolean('embed');
+    $isPreview = true;
     $hasEnvelope = in_array($template->style_layout, ['envelope-wax-seal']) || in_array($template->category, ['luxury']);
     $showEnvelope = $hasEnvelope && !$isEmbed;
 @endphp
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Xem Thử: {{ $template['name'] }} — {{ config('app.name') }}</title>
-    <meta name="description" content="Trải nghiệm thực tế thiệp cưới online phong cách {{ $template['category_label'] }} trên {{ config('app.name') }}.">
-    <meta name="robots" content="noindex, nofollow">
-    
-    @include('client.components.favicon')
+@extends('client.layouts.invitation')
 
-    <!-- Google Fonts -->
+@section('title', 'Xem Thử: ' . $template['name'] . ' — ' . config('app.name'))
+@section('meta_description', 'Trải nghiệm thực tế thiệp cưới online phong cách ' . $template['category_label'] . ' trên ' . config('app.name') . '.')
+@section('body_class', 'mayhen_invitation_wrapper ' . ($isEmbed ? 'mayhen_invitation_is_embed' : ''))
+
+@push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+@endpush
 
-    <!-- Core Styles -->
+@push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/common/tokens.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/common/base.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/components/buttons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
-    @if (!$isEmbed)
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-    @endif
-</head>
-<body class="mayhen_invitation_wrapper {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}">
+@endpush
+
+@section('content')
     @if (!$isEmbed)
         <!-- Top Demo Navigation Bar (Redesigned Quiet Luxury Header) -->
         <header class="mayhen_invitation_demo_banner">
@@ -192,11 +187,9 @@
         </article>
     </div>
 
-    @if (!$isEmbed)
-        @include('client.components.bottom-nav')
-    @endif
+@endsection
 
+@push('scripts')
     <!-- Scripts -->
     <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>
-</body>
-</html>
+@endpush

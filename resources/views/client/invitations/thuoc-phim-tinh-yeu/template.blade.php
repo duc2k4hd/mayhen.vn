@@ -198,27 +198,26 @@
     $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
     $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
 @endphp
-<!doctype html>
-<html lang="vi" class="mayhen_invitation_djcvhwiuo9w9_no-scroll">
+@extends('client.layouts.invitation')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description"
-        content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.' }}">
-    <title>{{ $pageTitle }}</title>
-    @include('client.components.favicon')
+@section('html_class', 'mayhen_invitation_djcvhwiuo9w9_no-scroll')
+@section('title', $pageTitle)
+@section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.')
+@section('body_class', 'mayhen_invitation_wrapper mayhen_invitation_djcvhwiuo9w9_no-scroll')
 
+@push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Manrope:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-    @endif
+@endpush
+
+@push('styles')
+    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'thuoc-phim-tinh-yeu', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+@endpush
+
+@section('head_extra')
 
     @php
         $customConfig = $invitation->custom_config ?? [];
@@ -354,9 +353,9 @@
             }
         </style>
     @endif
-</head>
+@endsection
 
-<body class="mayhen_invitation_wrapper mayhen_invitation_djcvhwiuo9w9_no-scroll">
+@section('content')
     <main class="mayhen_invitation_djcvhwiuo9w9_root mayhen_invitation_djcvhwiuo9w9_invitation-page" lang="vi"
         style='--mayhen-g4-opening-left:url("{{ $assetBase }}/opening-left.webp");--mayhen-g4-opening-right:url("{{ $assetBase }}/opening-right.webp");--mayhen-g4-paper-base:url("{{ $assetBase }}/paper-base-seamless.jpg");--mayhen-g4-paper-top:url("{{ $assetBase }}/paper-top-textured.jpg");--mayhen-g4-paper-countdown-bottom:url("{{ $assetBase }}/paper-countdown-bottom-textured.jpg");--mayhen-g4-paper-corner:url("{{ $assetBase }}/paper-corner-textured.jpg");--mayhen-g4-paper-bottom:url("{{ $assetBase }}/paper-bottom-textured.jpg");--mayhen-g4-album-paper:url("{{ $assetBase }}/album-paper-textured.jpg");--mayhen-g4-paper-footer:url("{{ $assetBase }}/paper-footer-textured.jpg");--mayhen-g4-paper-top-overlay:url("{{ $assetBase }}/paper-top-overlay-v2.png");--mayhen-g4-paper-countdown-bottom-overlay:url("{{ $assetBase }}/paper-countdown-bottom-overlay-v2.png");--mayhen-g4-paper-corner-overlay:url("{{ $assetBase }}/paper-corner-overlay-v2.png");--mayhen-g4-paper-tear-overlay:url("{{ $assetBase }}/paper-tear-overlay-v2.png");--mayhen-g4-album-floral-overlay:url("{{ $assetBase }}/album-floral-overlay-v2.png");--mayhen-g4-paper-footer-overlay:url("{{ $assetBase }}/paper-footer-overlay-v2.png")'>
         <div class="mayhen_invitation_djcvhwiuo9w9_opening-sides" id="mayhen_invitation_djcvhwiuo9w9_opening_sides"
@@ -1210,8 +1209,10 @@
         </svg>
     </button>
     <audio id="mayhen_invitation_djcvhwiuo9w9_audio" src="{{ $musicUrl }}" loop preload="auto"></audio>
+@endsection
+
+@push('scripts')
     <script>
-        window.__MAYHEN_IS_PREVIEW = {{ $isPreview ? 'true' : 'false' }};
         window.__MAYHEN_WEDDING_TARGET_TIME = {{ $targetTimestamp }};
         window.__MAYHEN_GIFT_QR_GROOM = "{{ $qrGroom }}";
         window.__MAYHEN_GIFT_QR_BRIDE = "{{ $qrBride }}";
@@ -1219,16 +1220,6 @@
         window.__MAYHEN_BRIDE_ACCOUNT = {!! json_encode($brideBankInfo) !!};
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
-        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
-    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
-
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        @include('client.components.bottom-nav')
-    @endif
-
-    {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}
-    @include('client.invitations.partials.editor-bridge')
-</body>
-
-</html>
+    <script src="{{ route('templates.asset', ['slug' => 'thuoc-phim-tinh-yeu', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
+@endpush

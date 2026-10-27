@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" class="@yield('html_class')">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', $pageTitle ?? config('app.name'))</title>
+    <meta name="robots" content="noindex, nofollow">
+    @hasSection('meta_description')
+        <meta name="description" content="@yield('meta_description')">
+    @elseif(!empty($metaDescription))
+        <meta name="description" content="{{ $metaDescription }}">
+    @endif
+
+    {{-- Favicon chuẩn Mây Hẹn --}}
+    @include('client.components.favicon')
+
+    {{-- Typography Fonts của từng mẫu thiệp --}}
+    @stack('fonts')
+
+    {{-- Stylesheets của từng mẫu thiệp --}}
+    @stack('styles')
+
+    {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử) --}}
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+    @endif
+
+    {{-- Extra Styles / Code nhúng trong thẻ head --}}
+    @yield('head_extra')
+</head>
+<body class="@yield('body_class')" @yield('body_attributes')>
+    {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}
+    @yield('content')
+
+    {{-- Modals / Lightbox / Popups nếu có --}}
+    @yield('modals')
+
+    {{-- Thanh điều hướng chân trang (tự động nạp khi xem thử) --}}
+    @if (($isPreview ?? false) && !($isEmbed ?? false))
+        @include('client.components.bottom-nav')
+    @endif
+
+    {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template --}}
+    @include('client.invitations.partials.editor-bridge')
+
+    {{-- Cấu hình JavaScript toàn cục chuẩn hóa --}}
+    <script>
+        window.__MAYHEN_IS_PREVIEW = {{ ($isPreview ?? false) ? 'true' : 'false' }};
+        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
+    </script>
+    @stack('scripts')
+</body>
+</html>

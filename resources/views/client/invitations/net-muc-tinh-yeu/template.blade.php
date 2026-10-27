@@ -164,28 +164,24 @@
     $pageTitle = $isPreview 
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
-@endphp
-<!doctype html>
-<html lang="vi" class="mayhen_invitation_scroll_locked">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.' }}">
-    <title>{{ $pageTitle }}</title>
-    @include('client.components.favicon')
 
-    @php
-        $cssPath = resource_path("views/client/invitations/net-muc-tinh-yeu/styles.css");
-        $jsPath = resource_path("views/client/invitations/net-muc-tinh-yeu/script.js");
-        $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
-        $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
-    @endphp
-    <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-    @endif
-    
+    $cssPath = resource_path('views/client/invitations/net-muc-tinh-yeu/styles.css');
+    $jsPath = resource_path('views/client/invitations/net-muc-tinh-yeu/script.js');
+    $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
+    $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
+@endphp
+@extends('client.layouts.invitation')
+
+@section('html_class', 'mayhen_invitation_scroll_locked')
+@section('title', $pageTitle)
+@section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.')
+@section('body_class', 'mayhen_invitation_scroll_locked')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'net-muc-tinh-yeu', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+@endpush
+
+@section('head_extra')
     @php
         $customConfig = $invitation->custom_config ?? [];
         $themeConfig = $customConfig['theme'] ?? [];
@@ -267,7 +263,6 @@
     @endif
 
     <script>
-        window.__MAYHEN_IS_PREVIEW = {{ $isPreview ? 'true' : 'false' }};
         window.__MAYHEN_WEDDING_TARGET_TIME = {{ $targetTimestamp }};
         window.__MAYHEN_WEDDING_DATE = {
             year: {{ $calendarYear }},
@@ -278,15 +273,15 @@
         window.__MAYHEN_GIFT_QR_BRIDE = "{{ $qrBride }}";
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
-        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
         window.__MAYHEN_CURRENT_RSVP = @json($currentRsvp ? ['attending_status' => $currentRsvp->attending_status, 'guest_name' => $currentRsvp->guest_name] : null);
         window.__MAYHEN_MY_WISH = @json($myWish ? ['id' => $myWish->id, 'name' => $myWish->name, 'message' => $myWish->message] : null);
         window.__MAYHEN_IS_OWNER = {{ $isOwner ? 'true' : 'false' }};
         window.__MAYHEN_WISH_REPLY_BASE_URL = "{{ $wishReplyBaseUrl }}";
         window.__MAYHEN_RSVP_RESPONSES_URL = "{{ $rsvpResponsesUrl }}";
     </script>
-</head>
-<body class="mayhen_invitation_scroll_locked">
+@endsection
+
+@section('content')
 
 
     <main class="mayhen_invitation_dhsuudushi9428r_page">
@@ -716,13 +711,8 @@
         <span class="mayhen_invitation_dhsuudushi9428r_lightbox_count"></span>
     </div>
 
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        @include('client.components.bottom-nav')
-    @endif
+@endsection
 
-    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
-
-    {{-- Bộ kết nối chuẩn hóa giữa Studio V2 và Template --}}
-    @include('client.invitations.partials.editor-bridge')
-</body>
-</html>
+@push('scripts')
+    <script src="{{ route('templates.asset', ['slug' => 'net-muc-tinh-yeu', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
+@endpush

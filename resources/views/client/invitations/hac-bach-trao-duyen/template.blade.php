@@ -92,23 +92,24 @@
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
-<!DOCTYPE html>
-<html lang="vi" class="mayhen_invitation_ladjihe38udhd_scroll_locked">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>{{ $pageTitle }}</title>
-    <meta name="robots" content="noindex, nofollow">
+@extends('client.layouts.invitation')
+
+@section('html_class', 'mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('title', $pageTitle)
+@section('body_class', 'mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('body_attributes', 'data-target-date=' . $targetTimestamp)
+
+@push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+@endpush
+
+@push('styles')
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-    @endif
-    @include('client.components.favicon')
-</head>
-<body class="mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked" data-target-date="{{ $targetTimestamp }}">
+@endpush
+
+@section('content')
 
 
   <!-- Audio Player (Hidden) -->
@@ -899,10 +900,8 @@
 
   </main>
 
-  @if (($isPreview ?? false) && !($isEmbed ?? false))
-      @include('client.components.bottom-nav')
-  @endif
+@endsection
 
+@push('scripts')
   <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
-</body>
-</html>
+@endpush

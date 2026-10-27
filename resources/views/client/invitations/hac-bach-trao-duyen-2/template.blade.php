@@ -92,22 +92,24 @@
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
-<!DOCTYPE html>
-<html lang="vi" class="mayhen_invitation_ladjihe38udhd_scroll_locked">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>{{ $pageTitle }}</title>
+@extends('client.layouts.invitation')
+
+@section('html_class', 'mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('title', $pageTitle)
+@section('body_class', 'mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('body_attributes', 'data-target-date=' . $targetTimestamp)
+
+@push('fonts')
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+@endpush
+
+@push('styles')
   <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
-  @if (($isPreview ?? false) && !($isEmbed ?? false))
-      <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-  @endif
-  @include('client.components.favicon')
-</head>
-<body class="mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked" data-target-date="{{ $targetTimestamp }}">
+@endpush
+
+@section('content')
 
 <!-- Audio Player (Hidden) -->
 <audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto">
@@ -2984,11 +2986,8 @@
     </style>
 
 
-  @if (($isPreview ?? false) && !($isEmbed ?? false))
-      @include('client.components.bottom-nav')
-  @endif
+@endsection
 
+@push('scripts')
   <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
-@include('client.invitations.partials.editor-bridge')
-</body>
-</html>
+@endpush

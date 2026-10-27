@@ -114,27 +114,25 @@
     $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
     $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
 @endphp
-<!doctype html>
-<html lang="vi" class="mayhen_invitation_ksnvo949dudf_scroll-lock">
+@extends('client.layouts.invitation')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#FAF7F2">
-    <meta name="description"
-        content="{{ $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Trân trọng kính mời ' . $guestName . ' chung vui trong lễ cưới của ' . $groomName . ' & ' . $brideName . '.' }}">
-    <title>{{ $pageTitle }}</title>
-    @include('client.components.favicon')
+@section('html_class', 'mayhen_invitation_ksnvo949dudf_scroll-lock')
+@section('title', $pageTitle)
+@section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Trân trọng kính mời ' . $guestName . ' chung vui trong lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
+@section('body_class', 'mayhen_invitation_ksnvo949dudf_body mayhen_invitation_ksnvo949dudf_scroll-lock')
 
+@push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ $assetBase }}/styles.css?v={{ $cssVersion }}">
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-    @endif
+@endpush
 
+@push('styles')
+    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'tung-trang-hanh-phuc', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+@endpush
+
+@section('head_extra')
+    <meta name="theme-color" content="#FAF7F2">
     @if ($isEmbed)
         <style>
             body {
@@ -169,9 +167,9 @@
             }
         </style>
     @endif
-</head>
+@endsection
 
-<body class="mayhen_invitation_ksnvo949dudf_body mayhen_invitation_ksnvo949dudf_scroll-lock">
+@section('content')
     <a class="mayhen_invitation_ksnvo949dudf_skip-link" href="#mayhen_invitation_ksnvo949dudf_main">Bỏ qua mở phong bì</a>
 
     {{-- NÚT ĐIỀU KHIỂN NHẠC ĐĨA THAN HOÀNG GIA (VINTAGE GOLD VINYL RECORD) --}}
@@ -704,21 +702,15 @@
     {{-- TOAST THÔNG BÁO TINH TẾ --}}
     <div class="mayhen_invitation_ksnvo949dudf_toast" id="mayhen_invitation_ksnvo949dudf_toast" role="status" aria-live="polite"></div>
 
-    {{-- LIVE PREVIEW STUDIO V2 BRIDGE --}}
-    @include('client.invitations.partials.editor-bridge')
+@endsection
 
+@push('scripts')
     {{-- KHỞI TẠO BIẾN TOÀN CỤC CHO SCRIPT.JS --}}
     <script>
         window.__MAYHEN_WEDDING_TIMESTAMP = {{ (int) $targetTimestamp }};
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
-        window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
         window.__MAYHEN_GALLERY_PHOTOS = @json($galleryPhotos);
     </script>
-    <script src="{{ $assetBase }}/script.js?v={{ $jsVersion }}"></script>
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
-        @include('client.components.bottom-nav')
-    @endif
-</body>
-
-</html>
+    <script src="{{ route('templates.asset', ['slug' => 'tung-trang-hanh-phuc', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
+@endpush

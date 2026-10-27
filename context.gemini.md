@@ -1182,6 +1182,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     * Thanh bottom nav tự động ẩn khi có tham số `embed=1`.
                     * 100% Passed (3 tests, 34 assertions).
 
+
+           14. **Tái Cấu Trúc Toàn Diện Kiến Trúc Thiệp Cưới: Giới Thiệu Master Layout `client.layouts.invitation` (DRY Architecture)**:
+               - **Vấn đề đã xử lý**: Trước đây, các mẫu thiệp cưới (`template.blade.php`) và trang xem thử (`preview.blade.php`) tự khai báo toàn bộ thẻ `<!DOCTYPE html>`, `<head>`, meta, CSRF, Favicon, fonts, styles, scripts, `editor-bridge` và `bottom-nav`. Dẫn đến mã lặp nghiêm trọng, khó bảo trì khi số lượng mẫu tăng lên hàng chục, hàng trăm mẫu.
+               - **Kiến trúc mới**: Tạo layout dùng chung chuẩn mực [resources/views/client/layouts/invitation.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/layouts/invitation.blade.php):
+                 * Quản lý tập trung toàn bộ cấu trúc khung HTML5, chuẩn hóa viewport, UTF-8, CSRF token, robots, favicon và meta SEO.
+                 * Tự động nạp stylesheet `bottom-nav.css` và component điều hướng `bottom-nav` khi ở chế độ xem thử (`@if (( ?? false) && !( ?? false))`).
+                 * Tự động tích hợp bộ kết nối Studio Live Editor (`@include('client.invitations.partials.editor-bridge')`).
+                 * Tự động thiết lập cấu hình biến JS toàn cục: `window.__MAYHEN_IS_PREVIEW`, `window.__MAYHEN_CSRF_TOKEN`.
+                 * Cung cấp các slots linh hoạt: `@yield('html_class')`, `@yield('title')`, `@yield('meta_description')`, `@yield('body_class')`, `@yield('body_attributes')`, `@stack('fonts')`, `@stack('styles')`, `@yield('head_extra')`, `@yield('content')`, `@yield('modals')`, `@stack('scripts')`.
+               - **Refactor toàn bộ 5 mẫu thiệp & trang preview**:
+                 * [hac-bach-trao-duyen/template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen/template.blade.php) -> `@extends('client.layouts.invitation')`
+                 * [hac-bach-trao-duyen-2/template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen-2/template.blade.php) -> `@extends('client.layouts.invitation')`
+                 * [net-muc-tinh-yeu/template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/net-muc-tinh-yeu/template.blade.php) -> `@extends('client.layouts.invitation')`
+                 * [tung-trang-hanh-phuc/template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/tung-trang-hanh-phuc/template.blade.php) -> `@extends('client.layouts.invitation')`
+                 * [thuoc-phim-tinh-yeu/template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/thuoc-phim-tinh-yeu/template.blade.php) -> `@extends('client.layouts.invitation')`
+                 * [preview.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/preview.blade.php) -> `@extends('client.layouts.invitation')`
+               - **Kết quả kiểm thử**: 100% test cases (BottomNavTest, HacBachTraoDuyenTemplateTest, NetMucTinhYeuTemplateTest) đều vượt qua thành công, sẵn sàng mở rộng không giới hạn số lượng mẫu thiệp mới mà không lo phát sinh mã lặp.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
