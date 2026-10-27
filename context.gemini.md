@@ -1107,6 +1107,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+          10. **Tích Hợp Template Mới: "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`)**:
+              - **Nguồn gốc & Phong cách**: Chuyển giao và nâng cấp từ bản mẫu thiết kế cao cấp theo bảng màu Hồng Bảo Hoàng Gia (Royal Crimson & Antique Gold).
+              - **Đường dẫn thư mục**: `resources/views/client/invitations/hac-bach-trao-duyen/` gồm `template.blade.php`, `styles.css`, `script.js`, `schema.json` và thư mục `assets/` (54 tài nguyên ngoại tuyến gồm hình ảnh, icon, âm nhạc MP3).
+              - **Quy ước tiền tố CSS Class**: `mayhen_invitation_ladjihe38udhd_*`.
+              - **Các tính năng nổi bật**:
+                * Màn hình mở thiệp phong bì 3D hoàng gia kết hợp tem sáp đỏ dập nổi.
+                * Thanh công cụ floating dock đĩa than vinyl phát nhạc cưới kèm sóng âm nhấp nhô.
+                * Đếm ngược thời gian thực, lịch tháng hạnh phúc điểm xuyết trái tim.
+                * Bảng thông tin cặp đôi, gia đình hai bên và thiệp mời chi tiết.
+                * Timeline 3 mốc sự kiện cưới: Ăn Hỏi, Rước Dâu, Lễ Thành Hôn.
+                * Câu chuyện tình yêu (Love Story) với bố cục ảnh cưới tối ưu không bị cắt xén (`object-position: center 15%`).
+                * **Sổ lưu bút ký tên điện tử trực tiếp**: Canvas cảm ứng ngón tay/bút vẽ kèm hiển thị chữ ký thực tế.
+                * Album ảnh cưới phong cách Pinterest tích hợp Lightbox phóng to sắc nét.
+                * Form xác nhận tham dự (RSVP) & Sổ lưu bút gửi lời chúc AJAX không tải lại trang.
+                * Hộp mừng cưới thông minh hiển thị mã QR VietQR Chú rể và Cô dâu.
+                * Bản đồ vị trí hôn lễ và Lời cảm ơn thiệp cưới vòm hoa trang trọng.
+                * Toàn bộ 100% các box đều được trang bị hiệu ứng scroll reveal mượt mà (`.mayhen_invitation_ladjihe38udhd_box_anim`).
+              - **Seeder CSDL**: Đã đăng ký vào `InvitationTemplateSeeder.php` với slug `hac-bach-trao-duyen`, category `luxury`, tier `pro`, complexity `deluxe`.
+              - **Route xem thử**: `http://127.0.0.1:8000/xem-thu/hac-bach-trao-duyen` (HTTP Status 200 OK).
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
 
 
