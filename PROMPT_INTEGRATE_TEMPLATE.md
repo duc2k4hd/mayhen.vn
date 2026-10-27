@@ -57,10 +57,18 @@ Bao gồm đúng 4 file và 1 thư mục con:
   + Nhận và xử lý các biến động: `$wedding`, `$invitation`, `$template`, `$isEmbed`, `$isPreview`, `$isOwner`.
   + Tự động fallback dữ liệu demo mẫu nếu chưa có dữ liệu DB (tên CDCR, ngày cưới, gia đình 2 bên, địa chỉ, ảnh cưới...).
   + Versioning CSS/JS theo timestamp (`filemtime`) để tránh dính cache trình duyệt: `?v={{ $cssVersion }}`.
-- **Thẻ `<head>`**:
+- **Thẻ `<head>` & Tiêu đề trang chuẩn (`$pageTitle`)**:
+  + **BẮT BUỘC dùng định dạng tiêu đề dùng chung, không viết tiêu đề riêng**:
+    ```php
+    $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
+    $templateName = $template->name ?? 'Tên Template';
+    $pageTitle = $isPreview 
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+    ```
   + Thẻ meta viewport chuẩn: `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`.
   + Favicon: `@include('client.components.favicon')`.
-  + SEO Title & Meta Description tự động theo trạng thái xem thử hay thiệp thật.
+  + SEO Title: `<title>{{ $pageTitle }}</title>`.
 - **Topbar điều hướng**:
   + `@if ($isPreview)`: Tự động hiển thị thanh Topbar Xem thử (`mayhen_preview_topbar`) với nút "Kho mẫu thiệp" và nút CTA "Tạo Thiệp Mẫu Này".
   + `@if (isset($isOwner) && $isOwner)`: Hiển thị thanh Topbar Quản trị dành cho chủ thiệp.

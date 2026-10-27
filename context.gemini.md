@@ -48,6 +48,12 @@
 3. **CẤM THƯ VIỆN HIỆU ỨNG NGOÀI**: Tuyệt đối **KHÔNG** cài đặt/nhúng Swiper.js, Slick Slider, GSAP, Anime.js, AOS, v.v. Tất cả carousel, modal, slider, animation đều viết bằng **Pure CSS + Native JS**.
 4. **CẤM CDN NGOẠI**: Không tải CSS/JS từ `cdnjs`, `unpkg`, `jsdelivr`. Toàn bộ asset phải nằm cục bộ trong thư mục `public/assets/`.
 5. **CẤM INLINE STYLE & INLINE SCRIPT**: Không viết thẻ `<style>` hoặc `<script>` bên trong file Blade (trừ thẻ JSON-LD SEO trong `<head>`). Toàn bộ CSS/JS phải được tách thành file độc lập trong `public/assets/client/`.
+6. **QUY TẮC BẮT BUỘC VỀ TIÊU ĐỀ TRANG MẪU THIỆP (`$pageTitle`)**: Tuyệt đối không tự viết tiêu đề riêng lẻ trong các mẫu thiệp. Tất cả mọi thiệp cưới BẮT BUỘC phải dùng chung đúng một định dạng chuẩn:
+   ```php
+   $pageTitle = $isPreview 
+       ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+       : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+   ```
 
 ### 🏷️ TIỀN TỐ CSS CLASS BẮT BUỘC (MANDATORY CLASS PREFIX)
 Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đột style 100%:

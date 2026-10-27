@@ -187,11 +187,10 @@
     $myWish = $myWish ?? null;
     $isOwner = $isOwner ?? false;
     $rsvpStats = $rsvpStats ?? null;
-    $rsvpResponses = $rsvpResponses ?? collect([]);
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Thước Phim Tình Yêu';
-    $pageTitle = $isPreview
-        ? 'Xem Thử Mẫu Thiệp: ' . $templateName . ' | ' . config('app.name')
+    $pageTitle = $isPreview 
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 
     $cssPath = resource_path('views/client/invitations/thuoc-phim-tinh-yeu/styles.css');

@@ -85,8 +85,12 @@
     $cssVersion = file_exists($cssPath) ? filemtime($cssPath) : time();
     $jsVersion = file_exists($jsPath) ? filemtime($jsPath) : time();
 
-    // SEO Title
-    $pageTitle = ($wedding->groom_name ?? 'Hà Kiên') . ' & ' . ($wedding->bride_name ?? 'Phạm Xôn') . ' - Thiệp Cưới Hắc Bạch Trao Duyên';
+    // Chuẩn hóa tiêu đề trang cho tất cả các mẫu thiệp
+    $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
+    $templateName = $template->name ?? 'Hắc Bạch Trao Duyên';
+    $pageTitle = $isPreview 
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
 <!DOCTYPE html>
 <html lang="vi">
@@ -102,12 +106,6 @@
     @include('client.components.favicon')
 </head>
 <body class="mayhen_invitation_ladjihe38udhd_body" data-target-date="{{ $targetTimestamp }}">
-@if (isset($isPreview) && $isPreview)
-    @include('client.invitations.partials.preview-topbar', [
-        'template' => $template ?? null,
-        'title' => 'Xem Thử Thiệp: ' . ($template->name ?? 'Hắc Bạch Trao Duyên')
-    ])
-@endif
 
 
   <!-- Audio Player (Hidden) -->

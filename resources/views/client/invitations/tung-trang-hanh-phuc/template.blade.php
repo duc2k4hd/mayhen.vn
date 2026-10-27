@@ -103,9 +103,9 @@
     $isOwner = $isOwner ?? false;
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Từng Trang Hạnh Phúc';
-    $pageTitle = $isPreview
-        ? 'Xem Thử Mẫu Thiệp: ' . $templateName . ' | ' . config('app.name')
-        : 'Thiệp cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+    $pageTitle = $isPreview 
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 
     $guestName = request()->query('to') ?: (request()->query('guest') ?: 'Quý Khách');
 
