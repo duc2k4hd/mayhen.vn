@@ -989,9 +989,13 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
             - Cho phép bot crawl toàn bộ nội dung công khai và tài nguyên hiển thị (`/assets/`, `/storage/`, `/mau-thiep/`, `/thiep/`).
             - Chặn các vùng nhạy cảm và nội bộ (`/admin/`, `/api/`, `/tai-khoan/`, `/dang-nhap`, `/dang-ky`, `/thanh-toan/`) để tập trung 100% crawl budget vào các trang có giá trị SEO cao.
             - Khai báo sitemap chính thức `https://mayhen.vn/sitemap.xml`.
-    + **Sửa Lỗi 500 Undefined variable $request Tại Trang Chi Tiết Mẫu Thiệp (`TemplateController@show`)**:
-       * **Nguyên nhân lỗi**: Phương thức `show(string $slug)` không nhận tham số `$request` nhưng trước đó có đoạn code thừa bị lặp lại 3 lần gọi `$request->query('edit')`, gây lỗi nghiêm trọng `ErrorException: Undefined variable $request (500 Internal Server Error)`.
-       * **Khắc phục**: Loại bỏ hoàn toàn các khối code thừa trùng lặp không sử dụng, làm sạch hàm `show()` trong `app/Http/Controllers/Client/TemplateController.php`, khôi phục hoạt động bình thường cho các trang `/mau-thiep/{slug}` đạt HTTP 200 OK.
+    + **Khóa Cuộn Trang Tuyệt Đối Khi Chưa Mở Thiệp (`net-muc-tinh-yeu`)**:
+       * **Vấn đề nhận diện**: Trước đây, khi người dùng vào xem mẫu thiệp `net-muc-tinh-yeu` mà chưa chạm mở phong bì thư, phần thông tin thân thiệp bên dưới ("Nhà trai / Nhà gái") đã bị thò lên ở đáy màn hình và người dùng có thể lăn chuột/vuốt màn hình để cuộn xem nội dung bên trong trước khi mở phong bì.
+       * **Nguyên nhân kỹ thuật**: Thẻ `html` không được gán class khóa cuộn, trong khi CSS chỉ set `overflow: hidden` trên `body` khiến trình duyệt desktop/mobile chuyển quyền cuộn lên `html`. Đồng thời thân thiệp `.mayhen_invitation_dhsuudushi9428r_main_body` chưa được ẩn khi trạng thái phong bì đang đóng.
+       * **Giải pháp đã xử lý**:
+         1. Thêm class `mayhen_invitation_scroll_locked` vào cả thẻ `<html>` và `<body>` trong `template.blade.php`.
+         2. Trong `styles.css`, thiết lập khóa cuộn toàn diện: `html, body, .page, .cover` đều đạt `height: 100dvh; overflow: hidden !important; touch-action: none !important; overscroll-behavior: none !important;` và ẩn hoàn toàn thân thiệp `.mayhen_invitation_dhsuudushi9428r_main_body { display: none !important; }`.
+         3. Trong `script.js`, bổ sung bộ lắng nghe chặn triệt để thao tác cuộn chuột (`wheel`), vuốt chạm (`touchmove`) và phím điều hướng (`keydown`) trước khi mở. Khi người dùng bấm "Chạm mở thiệp", phong bì mở nắp 3D, thiệp trồi lên, nhạc cưới phát, class khóa cuộn được gỡ trên cả `html` và `body`, sau đó trang tự động cuộn nhẹ nhàng (smooth scroll) xuống nội dung thiệp cưới.
 
 ---
 

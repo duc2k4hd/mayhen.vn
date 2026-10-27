@@ -166,7 +166,7 @@
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
 <!doctype html>
-<html lang="vi">
+<html lang="vi" class="mayhen_invitation_scroll_locked">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -223,11 +223,12 @@
                 -webkit-overflow-scrolling: touch !important;
                 scroll-behavior: smooth !important;
             }
+            html.mayhen_invitation_scroll_locked,
             body.mayhen_invitation_scroll_locked {
-                overflow-x: hidden !important;
-                overflow-y: auto !important;
+                overflow: hidden !important;
                 height: 100% !important;
-                touch-action: auto !important;
+                height: 100dvh !important;
+                touch-action: none !important;
             }
             .mayhen_invitation_dhsuudushi9428r_page {
                 box-shadow: none !important;

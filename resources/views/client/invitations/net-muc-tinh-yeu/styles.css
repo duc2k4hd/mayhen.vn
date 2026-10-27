@@ -78,9 +78,32 @@ body {
     overflow-x: hidden;
 }
 
+html.mayhen_invitation_scroll_locked,
 body.mayhen_invitation_scroll_locked {
     overflow: hidden !important;
-    touch-action: none;
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+}
+
+body.mayhen_invitation_scroll_locked .mayhen_invitation_dhsuudushi9428r_page {
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+}
+
+body.mayhen_invitation_scroll_locked .mayhen_invitation_dhsuudushi9428r_cover {
+    height: 100% !important;
+    height: 100dvh !important;
+    min-height: 100% !important;
+    overflow: hidden !important;
+}
+
+body.mayhen_invitation_scroll_locked .mayhen_invitation_dhsuudushi9428r_main_body {
+    display: none !important;
 }
 
 button,

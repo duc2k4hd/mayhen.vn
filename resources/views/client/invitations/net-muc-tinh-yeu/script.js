@@ -144,6 +144,7 @@
     }
 
     // 3. Mở khóa cuộn trang
+    document.documentElement.classList.remove('mayhen_invitation_scroll_locked');
     document.body.classList.remove('mayhen_invitation_scroll_locked');
 
     // 4. Sau khi thiệp trồi lên (khoảng 800ms), tự động cuộn nhẹ nhàng xuống nội dung
@@ -153,6 +154,25 @@
       }
     }, 850);
   }
+
+  // Chặn hoàn toàn thao tác cuộn chuột/cảm ứng/bàn phím khi chưa mở thiệp
+  function preventScrollBeforeOpen(e) {
+    if (!isOpened) {
+      if (e.target && (e.target.closest('#mayhen_envelope_element') || e.target.closest('#mayhen_open_invitation_btn'))) {
+        return;
+      }
+      e.preventDefault();
+    }
+  }
+
+  window.addEventListener('wheel', preventScrollBeforeOpen, { passive: false });
+  window.addEventListener('touchmove', preventScrollBeforeOpen, { passive: false });
+  window.addEventListener('keydown', (e) => {
+    if (!isOpened && ['ArrowDown', 'ArrowUp', 'Space', 'PageDown', 'PageUp', 'Home', 'End'].includes(e.code)) {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      e.preventDefault();
+    }
+  }, { passive: false });
 
   if (envelope) {
     envelope.addEventListener('click', openEnvelope);
