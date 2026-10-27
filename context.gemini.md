@@ -1200,6 +1200,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                  * [preview.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/preview.blade.php) -> `@extends('client.layouts.invitation')`
                - **Kết quả kiểm thử**: 100% test cases (BottomNavTest, HacBachTraoDuyenTemplateTest, NetMucTinhYeuTemplateTest) đều vượt qua thành công, sẵn sàng mở rộng không giới hạn số lượng mẫu thiệp mới mà không lo phát sinh mã lặp.
 
+            15. **Nâng Cấp Phần Mở Đầu, Căn Chỉnh Layout & Tích Hợp Popup Album Cưới Mẫu Hắc Bạch Trao Duyên 2 (`hac-bach-trao-duyen-2`)**:
+                - **Phần mở đầu hoàng gia (`#POPUP8`)**:
+                  * Khắc phục tình trạng card mở đầu bị chìm tối và nút "Kéo Xuống" (`#GROUP138`) bị lọt xuyên qua chân thiệp.
+                  * Thiết lập quy tắc CSS ẩn hoàn toàn `#GROUP138` khi chưa mở thiệp (`body.mayhen_invitation_ladjihe38udhd_scroll_locked`).
+                  * Thiết kế phong bì cưới Quiet Luxury: Gradient đen than / charcoal nhung (`linear-gradient(160deg, #1f1f23 0%, #131316 55%, #0a0a0c 100%)`), viền vàng đồng Antique Gold kép tinh xảo (`border: 1.5px solid rgba(212, 175, 55, 0.5)`), đổ bóng đa tầng (`box-shadow: 0 35px 100px rgba(0,0,0,0.95)`).
+                  * Nút "Ấn vào để Xem" (`#BUTTON18`) viền vàng kim kèm hiệu ứng hào quang thở ánh sáng (Pulse Glow Animation), được căn chỉnh nâng cao lên (`top: 474px`) và căn giữa hoàn mỹ, tạo khoảng cách thông thoáng sang trọng so với viền dưới của thiệp.
+                  * Thay thế tên cô dâu chú rể hardcode ("RANDY & QUÝ") thành biến động `{{ mb_strtoupper($groomName) }} &amp; {{ mb_strtoupper($brideName) }}`.
+                  * Khi mở thiệp: Hiệu ứng chuyển cảnh zoom/fade mượt mà, tự động kích hoạt đĩa than quay và âm thanh.
+                - **Khắc phục triệt để lỗi lệch layout trên mọi màn hình**:
+                  * Gỡ bỏ quy tắc `display: none !important;` vô tình gán vào `#SECTION1`, khôi phục lại Hero Section mở đầu của thiệp cưới.
+                  * Chuẩn hóa `.ladi-wraper`, `.ladi-section`, `.ladi-container` căn giữa hoàn mỹ (`margin: 0 auto !important; left: 0 !important; right: 0 !important;`).
+                  * Tích hợp cơ chế tự động co giãn `autoScaleMobile()` trong Native JS: Tự động tính toán tỷ lệ scale trên các thiết bị di động có bề rộng < 420px (iPhone 375px/390px, Samsung 412px), đảm bảo toàn bộ thiệp vừa vặn 100% không bị tràn viền, không lệch mép.
+                  * Nút `#GROUP138` ("Kéo Xuống") tự động fade out mờ dần khi cuộn trang xuống quá màn hình đầu.
+                - **Popup Lightbox xem Album ảnh cưới sắc nét**:
+                  * Bổ sung markup Lightbox modal thuần HTML/CSS/JS (Backdrop mờ sâu 16px, nút Đóng X, nút Trước/Sau, ảnh cưới phóng to sắc nét, bộ đếm ảnh cưới `1 / N`).
+                  * Thêm hiệu ứng `cursor: zoom-in` và hover sáng nhẹ cho toàn bộ ảnh album trong `#SECTION20` và `#SECTION8`.
+                  * Hỗ trợ điều hướng đa năng: Nút chuyển ảnh, phím mũi tên bàn phím (`ArrowLeft`, `ArrowRight`), phím `ESC` để đóng, click backdrop để đóng, và vuốt cảm ứng (Touch swipe) trên điện thoại di động.
+
+            16. **Tái Thiết Kế & Hoàn Thiện Tính Năng Sổ Lưu Bút Ký Tên Mẫu Hắc Bạch Trao Duyên 2 (`hac-bach-trao-duyen-2`)**:
+                - **Khắc phục lỗi giao diện & Thẩm mỹ Quiet Luxury**:
+                  * Loại bỏ hoàn toàn các nút màu xanh lá cây chói lọi (`#BUTTON4`) và màu cam lè (`#BUTTON5`) lạc tông phong cách Quiet Luxury.
+                  * Thiết kế lại bộ nút điều khiển chữ ký sang trọng: Nút "Xóa" (`#BUTTON3`) viền bạc mờ tinh tế, Nút "Xem thử" (`#BUTTON4`) viền vàng champagne, Nút "Lưu Chữ Ký" (`#BUTTON5`) mạ vàng hoàng gia Antique Gold (`linear-gradient(135deg, rgba(212, 175, 55, 0.35) 0%, rgba(184, 147, 93, 0.2) 100%)`) kèm bóng hào quang nhẹ.
+                  * Ẩn và tạo kiểu sang trọng cho modal xác nhận xóa chữ ký (`#deleteDialog`), chấm dứt triệt để tình trạng dòng chữ `"Bạn có chắc chắn muốn xóa chữ ký này? Xóa Hủy"` rò rỉ đè lên canvas.
+                  * Nút `"NHẤN ĐỂ KÝ TÊN"` (`#BUTTON2`): Viền vàng đồng mạ bóng, chữ vàng ánh kim `#e6c88b`, click cuộn êm mượt đưa bảng ký tên vào trung tâm tầm nhìn.
+                  * Khung vẽ chữ ký (`#BOX10`, `#wrapCanvas`, `#signatureCanvas`): Nền giấy nhung than chì, nét vẽ mực vàng hoàng gia Antique Gold `#e6c88b` mượt mà (hỗ trợ cả chuột và cảm ứng đa điểm touch trên mobile với `e.preventDefault()` chống cuộn).
+                - **Chức năng Demo & Thực tế thông minh (Preview vs Live Mode)**:
+                  * **Chế độ xem thử (` = true` / `/xem-thu/`)**:
+                    - Hoạt động demo 100%: Cho phép khách vẽ, xóa, xem thử chữ ký và lưu chữ ký kỷ niệm ngay lập tức.
+                    - Tự động nạp sẵn 3 chữ ký mẫu demo nghệ thuật từ khách mời mẫu (Bác Thành, Gia Bảo, Thuỳ Trang) để bức tường lưu bút luôn sinh động, không bị trống trơn.
+                    - Khi lưu: Lưu vào `localStorage` cho phiên demo, thêm ngay card chữ ký mới lên Bức Tường Lưu Bút (`#previewContainer`), hiển thị Toast Quiet Luxury: *"✨ Đã lưu chữ ký kỷ niệm (Bản xem thử)! Dữ liệu thật sẽ được lưu trữ khi bạn tạo thiệp chính thức."*
+                  * **Chế độ thiệp thật (` = false`)**:
+                    - Dữ liệu demo không bao giờ hiển thị, chỉ lưu trữ và hiển thị chữ ký thật của khách mời vào thiệp cưới của cặp đôi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

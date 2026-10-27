@@ -181,7 +181,7 @@
                                     </div>
                                 </div>
                                 <div id="HEADLINE338" class="ladi-element ">
-                                    <h3 class='ladi-headline ladi-transition'>RANDY &amp; QUÝ</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($groomName) }} &amp; {{ mb_strtoupper($brideName) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -237,13 +237,13 @@
                 <div id="GROUP94" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
                         <div id="HEADLINE3" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>RANDY</h3>
+                            <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($groomName) }}</h3>
                         </div>
                         <div id="HEADLINE282" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
                         </div>
                         <div id="HEADLINE283" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>QUy<br></h3>
+                            <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($brideName) }}<br></h3>
                         </div>
                     </div>
                 </div>
@@ -323,79 +323,6 @@
                         </div>
                         <div id="HEADLINE286" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline ladi-transition'>q</h3>
-                        </div>
-                    </div>
-                </div>
-                <div id="GROUP138" class="ladi-element button_keoXuong mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-group'>
-                        <div id="BOX76" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-box ladi-transition'></div>
-                        </div>
-                        <div data-action="true" id="HEADLINE334" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>Kéo Xuống</h3>
-                        </div>
-                        <div id="HTML_CODE9" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-html-code'>
-                                
-                            </div>
-                        </div>
-                        <div id="SHAPE21" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-shape ladi-transition'><svg xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
-                                    viewBox="0 0 256 256" enable-background="new 0 0 256 256" xml:space="preserve"
-                                    preserveAspectRatio="none" width="100%" height="100%" class=""
-                                    fill="rgba(42, 61, 99, 1)">
-                                    <g>
-                                        <path
-                                            d="M201.893,84.946c3.369,0,6.107,2.732,6.107,6.107c0,3.373-2.738,6.107-6.107,6.107   c-3.379,0-6.107-2.734-6.107-6.107C195.785,87.679,198.514,84.946,201.893,84.946L201.893,84.946z">
-                                        </path>
-                                        <path
-                                            d="M183.424,84.946c3.365,0,6.106,2.732,6.106,6.107c0,3.373-2.741,6.107-6.106,6.107   c-3.378,0-6.113-2.734-6.113-6.107C177.311,87.679,180.046,84.946,183.424,84.946L183.424,84.946z">
-                                        </path>
-                                        <path
-                                            d="M183.424,103.415c3.365,0,6.106,2.734,6.106,6.115c0,3.371-2.741,6.105-6.106,6.105   c-3.378,0-6.113-2.734-6.113-6.105C177.311,106.149,180.046,103.415,183.424,103.415L183.424,103.415z">
-                                        </path>
-                                        <path
-                                            d="M164.941,103.415c3.374,0,6.117,2.734,6.117,6.115c0,3.371-2.743,6.105-6.117,6.105   c-3.367,0-6.107-2.734-6.107-6.105C158.834,106.149,161.574,103.415,164.941,103.415L164.941,103.415z">
-                                        </path>
-                                        <path
-                                            d="M164.941,121.892c3.374,0,6.117,2.734,6.117,6.109c0,3.371-2.743,6.105-6.117,6.105   c-3.367,0-6.107-2.734-6.107-6.105C158.834,124.626,161.574,121.892,164.941,121.892L164.941,121.892z">
-                                        </path>
-                                        <path
-                                            d="M146.47,121.892c3.378,0,6.11,2.734,6.11,6.109c0,3.371-2.732,6.105-6.11,6.105   c-3.366,0-6.105-2.734-6.105-6.105C140.364,124.626,143.104,121.892,146.47,121.892L146.47,121.892z">
-                                        </path>
-                                        <path
-                                            d="M146.47,140.364c3.378,0,6.11,2.734,6.11,6.105c0,3.379-2.732,6.115-6.11,6.115   c-3.366,0-6.105-2.736-6.105-6.115C140.364,143.099,143.104,140.364,146.47,140.364L146.47,140.364z">
-                                        </path>
-                                        <path
-                                            d="M128,140.364c3.379,0,6.109,2.734,6.109,6.105c0,3.379-2.73,6.115-6.109,6.115s-6.109-2.736-6.109-6.115   C121.891,143.099,124.621,140.364,128,140.364L128,140.364z">
-                                        </path>
-                                        <path
-                                            d="M128,158.837c3.379,0,6.109,2.736,6.109,6.111c0,3.373-2.73,6.105-6.109,6.105s-6.109-2.732-6.109-6.105   C121.891,161.573,124.621,158.837,128,158.837L128,158.837z">
-                                        </path>
-                                        <path
-                                            d="M109.53,121.892c3.366,0,6.105,2.734,6.105,6.109c0,3.371-2.739,6.105-6.105,6.105   c-3.378,0-6.11-2.734-6.11-6.105C103.42,124.626,106.152,121.892,109.53,121.892L109.53,121.892z">
-                                        </path>
-                                        <path
-                                            d="M109.53,140.364c3.366,0,6.105,2.734,6.105,6.105c0,3.379-2.739,6.115-6.105,6.115   c-3.378,0-6.11-2.736-6.11-6.115C103.42,143.099,106.152,140.364,109.53,140.364L109.53,140.364z">
-                                        </path>
-                                        <path
-                                            d="M91.059,103.415c3.367,0,6.109,2.734,6.109,6.115c0,3.371-2.742,6.105-6.109,6.105   c-3.374,0-6.117-2.734-6.117-6.105C84.941,106.149,87.685,103.415,91.059,103.415L91.059,103.415z">
-                                        </path>
-                                        <path
-                                            d="M91.059,121.892c3.367,0,6.109,2.734,6.109,6.109c0,3.371-2.742,6.105-6.109,6.105   c-3.374,0-6.117-2.734-6.117-6.105C84.941,124.626,87.685,121.892,91.059,121.892L91.059,121.892z">
-                                        </path>
-                                        <path
-                                            d="M72.576,84.946c3.379,0,6.113,2.732,6.113,6.107c0,3.373-2.734,6.107-6.113,6.107   c-3.365,0-6.106-2.734-6.106-6.107C66.47,87.679,69.211,84.946,72.576,84.946L72.576,84.946z">
-                                        </path>
-                                        <path
-                                            d="M72.576,103.415c3.379,0,6.113,2.734,6.113,6.115c0,3.371-2.734,6.105-6.113,6.105   c-3.365,0-6.106-2.734-6.106-6.105C66.47,106.149,69.211,103.415,72.576,103.415L72.576,103.415z">
-                                        </path>
-                                        <path
-                                            d="M54.108,84.946c3.378,0,6.106,2.732,6.106,6.107c0,3.373-2.729,6.107-6.106,6.107   c-3.38,0-6.108-2.734-6.108-6.107C48,87.679,50.729,84.946,54.108,84.946L54.108,84.946z">
-                                        </path>
-                                    </g>
-                                </svg></div>
                         </div>
                     </div>
                 </div>
@@ -796,7 +723,7 @@
                                     <div class='ladi-paragraph ladi-transition'>The groom</div>
                                 </div>
                                 <div id="HEADLINE300" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>Randy<br></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -824,7 +751,7 @@
                                     <div class='ladi-paragraph ladi-transition'>The bride</div>
                                 </div>
                                 <div id="HEADLINE304" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>Minh Quý<br></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -878,10 +805,10 @@
                     </div>
                 </div>
                 <div id="HEADLINE69" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>Randy</h3>
+                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}</h3>
                 </div>
                 <div id="HEADLINE70" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>Minh Quý</h3>
+                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}</h3>
                 </div>
                 <div id="HEADLINE71" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <h3 class='ladi-headline ladi-transition'>and</h3>
@@ -1081,10 +1008,10 @@
                         <div id="GROUP12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>Minh Quý<br></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE13" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>Randy<br></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
@@ -1095,27 +1022,24 @@
                 </div>
                 <div id="HTML_CODE1" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-html-code'>
-                        
-                        
+                        <div id="previewContainer" class="mayhen_hacbach2_signature_wall">
+                            <div class="mayhen_hacbach2_wall_header">
+                                <span class="wall_icon">✒️</span>
+                                <h4>Sổ Lưu Bút Kỷ Niệm</h4>
+                                <p>Những nét chữ chúc phúc quý giá của bạn bè &amp; người thân</p>
+                            </div>
+                            <div id="mayhen_hacbach2_signature_list" class="mayhen_hacbach2_signature_list"></div>
+                        </div>
 
-                        <style>
-                            #previewContainer {
-                                width: 100%;
-                                height: 100%;
-                                /*background-color: rgba(242, 243, 244, 0.5);*/
-                                position: relative;
-                                user-select: none;
-                            }
-                        </style>
-
-
-                        <div id="previewContainer"></div>
-
-                        <div id="deleteDialog" class="hidden">
-                            <p>Bạn có chắc chắn muốn xóa chữ ký này?</p>
-                            <div id="deleteDialog_group_button">
-                                <button id="confirmDelete">Xóa</button>
-                                <button id="cancelDelete">Hủy</button>
+                        <div id="deleteDialog" class="mayhen_hacbach2_dialog" hidden>
+                            <div class="dialog_backdrop"></div>
+                            <div class="dialog_card">
+                                <div class="dialog_icon">⚠️</div>
+                                <p>Bạn có chắc chắn muốn xóa nét vẽ chữ ký này để ký lại?</p>
+                                <div id="deleteDialog_group_button" class="dialog_actions">
+                                    <button id="cancelDelete" type="button" class="btn_cancel">Hủy</button>
+                                    <button id="confirmDelete" type="button" class="btn_confirm">Xóa nét vẽ</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1138,28 +1062,9 @@
                         </div>
                         <div id="HTML_CODE2" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-html-code'>
-                                <style>
-                                    #wrapCanvas {
-                                        width: 100%;
-                                        height: 100%;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                    }
-                                </style>
                                 <div id="wrapCanvas">
-                                    <canvas id="signatureCanvas" width="400" height="250"
-                                        style="border:1px solid rgba(230, 176, 102, 1.0);"></canvas>
+                                    <canvas id="signatureCanvas" width="400" height="250"></canvas>
                                 </div>
-
-
-
-
-
-                                
-                                
-
-                                
                             </div>
                         </div>
                         <div id="GROUP14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1600,7 +1505,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE318" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>Minh Quý</h3>
+                            <h3 class='ladi-headline'>{{ $brideName }}</h3>
                         </div>
                     </div>
                 </div>
@@ -1612,7 +1517,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE319" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>Randy</h3>
+                            <h3 class='ladi-headline'>{{ $groomName }}</h3>
                         </div>
                     </div>
                 </div>
@@ -2964,28 +2869,29 @@
     <!---->
 
     <!--custom chức năng âm nhạc-->
-    <audio controls="" loop="" id="audio_music" style="display: none;" play="">
-        <source src="assets/Beautiful-In-White-ShaneFilan.wav" type="audio/mpeg">
-    </audio>
-    
+    {{-- LIGHTBOX GALLERY XEM ANH CUOI SAC NET --}}
+    <div id="mayhen_hacbach2_lightbox" class="mayhen_invitation_ladjihe38udhd_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh cưới phóng to" hidden>
+        <div class="mayhen_invitation_ladjihe38udhd_lightbox_backdrop"></div>
+        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_close" aria-label="Đóng (ESC)">
+            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav prev" aria-label="Ảnh trước (Mũi tên trái)">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav next" aria-label="Ảnh sau (Mũi tên phải)">
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+        <div class="mayhen_invitation_ladjihe38udhd_lightbox_stage">
+            <img id="mayhen_hacbach2_lightbox_img" src="" alt="Ảnh cưới phóng to">
+            <div class="mayhen_invitation_ladjihe38udhd_lightbox_counter">
+                <span id="mayhen_hacbach2_lightbox_idx">1</span> / <span id="mayhen_hacbach2_lightbox_total">1</span>
+            </div>
+        </div>
+    </div>
 
 
-    
-    <style>
-        #POPUP8 {
-            max-height: 100vh !important;
-            width: 100%;
-        }
 
-        #GROUP149 {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
-
-
+    <div id="mayhen_hacbach2_toast" class="mayhen_hacbach2_toast"></div>
 @endsection
 
 @push('scripts')
