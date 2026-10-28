@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     3. TỰ ĐỘNG SCALE CHUẨN XÁC TRÊN MÀN HÌNH DI ĐỘNG (< 420px)
+     3. TỰ ĐỘNG SCALE CHUẨN XÁC TRÊN MỌI THIẾT BỊ
      ========================================================================== */
   function autoScaleMobile() {
     const screenWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -109,13 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (screenWidth < 420) {
       const scale = screenWidth / 420;
-      wraper.style.transform = `scale(${scale})`;
-      wraper.style.transformOrigin = 'top center';
-      wraper.style.width = '420px';
-      wraper.style.marginLeft = 'auto';
-      wraper.style.marginRight = 'auto';
+      wraper.style.setProperty('transform-origin', 'top center', 'important');
+      wraper.style.setProperty('transform', `scale(${scale})`, 'important');
+      wraper.style.setProperty('width', '420px', 'important');
+      wraper.style.setProperty('margin-left', 'auto', 'important');
+      wraper.style.setProperty('margin-right', 'auto', 'important');
 
-      // Bù chiều cao để footer không bị hở đáy
+      // Bù chiều cao chính xác để cuộn mượt và không bị hở đáy
+      const naturalHeight = wraper.scrollHeight || wraper.offsetHeight;
+      if (naturalHeight > 0) {
+        document.body.style.minHeight = `${Math.ceil(naturalHeight * scale)}px`;
+        document.body.style.height = `${Math.ceil(naturalHeight * scale)}px`;
+      }
+    } else if (screenWidth >= 768 && screenWidth < 960) {
+      const scale = screenWidth / 960;
       const naturalHeight = wraper.scrollHeight || wraper.offsetHeight;
       if (naturalHeight > 0) {
         document.body.style.minHeight = `${Math.ceil(naturalHeight * scale)}px`;
@@ -127,11 +134,27 @@ document.addEventListener('DOMContentLoaded', () => {
       wraper.style.marginLeft = '';
       wraper.style.marginRight = '';
       document.body.style.minHeight = '';
+      document.body.style.height = '';
     }
   }
 
   window.addEventListener('resize', autoScaleMobile);
+  window.addEventListener('orientationchange', autoScaleMobile);
   autoScaleMobile();
+
+  // Khởi tạo mở sẵn khi nhúng trong Studio Editor (?embed=1)
+  const isEmbedParam = new URLSearchParams(window.location.search).has('embed');
+  if (isEmbedParam) {
+    if (popup8) {
+      popup8.classList.add('closed');
+      popup8.style.display = 'none';
+    }
+    document.documentElement.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
+    document.body.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
+    setTimeout(() => {
+      triggerInitialBoxes();
+    }, 100);
+  }
 
   /* ==========================================================================
      4. GÁN TÊN KHÁCH MỜI TỪ URL PARAM (?to= hoặc ?guest=)

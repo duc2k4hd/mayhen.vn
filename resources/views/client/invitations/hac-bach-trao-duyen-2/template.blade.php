@@ -50,7 +50,8 @@
     $eventPartyTime = $extraData['event_party_time'] ?? '16:00';
     $eventPartyDate = $extraData['event_party_date'] ?? '09/10/2025';
     $eventPartyLunar = $extraData['event_party_lunar'] ?? '(Tức ngày 18 tháng 08 năm Ất Tỵ)';
-    $eventPartyAddress = $extraData['event_party_address'] ?? 'Trung Tâm Hội Nghị Tiệc Cưới Luxury Palace, TP. Hồ Chí Minh';
+    $eventPartyAddress =
+        $extraData['event_party_address'] ?? 'Trung Tâm Hội Nghị Tiệc Cưới Luxury Palace, TP. Hồ Chí Minh';
     $eventPartyMap = $extraData['event_party_map'] ?? 'https://maps.google.com/?q=' . urlencode($eventPartyAddress);
 
     // 3. Hàm resolve asset chuẩn của Mây Hẹn
@@ -76,8 +77,16 @@
 
     // 4. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
-    $wishSubmitUrl = $wishSubmitUrl ?? (isset($invitation) ? route('invitation.wish.store', $invitation->slug) : route('templates.preview.wish', 'hac-bach-trao-duyen-2'));
-    $rsvpSubmitUrl = $rsvpSubmitUrl ?? (isset($invitation) ? route('invitation.rsvp.store', $invitation->slug) : route('templates.preview.rsvp', 'hac-bach-trao-duyen-2'));
+    $wishSubmitUrl =
+        $wishSubmitUrl ??
+        (isset($invitation)
+            ? route('invitation.wish.store', $invitation->slug)
+            : route('templates.preview.wish', 'hac-bach-trao-duyen-2'));
+    $rsvpSubmitUrl =
+        $rsvpSubmitUrl ??
+        (isset($invitation)
+            ? route('invitation.rsvp.store', $invitation->slug)
+            : route('templates.preview.rsvp', 'hac-bach-trao-duyen-2'));
 
     // Cache busting
     $cssPath = resource_path('views/client/invitations/hac-bach-trao-duyen-2/styles.css');
@@ -88,105 +97,140 @@
     // Chuẩn hóa tiêu đề trang cho tất cả các mẫu thiệp
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Hắc Bạch Trao Duyên 2';
-    $pageTitle = $isPreview 
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
+    $pageTitle = $isPreview
+        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 @endphp
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('html_class', $isEmbed ? '' : 'mayhen_invitation_ladjihe38udhd_scroll_locked')
 @section('title', $pageTitle)
-@section('body_class', 'mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('body_class', 'mayhen_invitation_ladjihe38udhd_body' . ($isEmbed ? '' : '
+    mayhen_invitation_ladjihe38udhd_scroll_locked'))
 @section('body_attributes', 'data-target-date=' . $targetTimestamp)
 
 @push('fonts')
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
 @endpush
 
 @push('styles')
-  <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+    <link rel="stylesheet"
+        href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
+    @if ($isEmbed)
+        <style>
+            #POPUP8 {
+                display: none !important;
+            }
+
+            html,
+            body {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100% !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            .mayhen_invitation_ladjihe38udhd_scroll_locked {
+                overflow-y: auto !important;
+                height: auto !important;
+            }
+
+            .mayhen_invitation_ladjihe38udhd_box_anim {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        </style>
+    @endif
 @endpush
 
 @section('content')
 
-<!-- Audio Player (Hidden) -->
-<audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto">
-  <source src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'wedding-song.mp3']) }}" type="audio/mpeg">
-</audio>
+    <!-- Audio Player (Hidden) -->
+    <audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto">
+        <source src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'wedding-song.mp3']) }}"
+            type="audio/mpeg">
+    </audio>
 
-<!-- Floating Audio Controller (Đĩa than Vinyl & Equalizer) -->
-<aside class="mayhen_invitation_ladjihe38udhd_music_dock" aria-label="Điều khiển âm nhạc">
-  <div class="mayhen_invitation_ladjihe38udhd_vinyl_wrap" id="mayhen_invitation_ladjihe38udhd_vinyl_btn" title="Bật/Tắt nhạc">
-    <div class="mayhen_invitation_ladjihe38udhd_vinyl_center">
-      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-    </div>
-  </div>
-  <div class="mayhen_invitation_ladjihe38udhd_soundwave">
-    <span></span><span></span><span></span><span></span>
-  </div>
-</aside>
+    <!-- Floating Audio Controller (Đĩa than Vinyl & Equalizer) -->
+    <aside class="mayhen_invitation_ladjihe38udhd_music_dock" aria-label="Điều khiển âm nhạc">
+        <div class="mayhen_invitation_ladjihe38udhd_vinyl_wrap" id="mayhen_invitation_ladjihe38udhd_vinyl_btn"
+            title="Bật/Tắt nhạc">
+            <div class="mayhen_invitation_ladjihe38udhd_vinyl_center">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </div>
+        </div>
+        <div class="mayhen_invitation_ladjihe38udhd_soundwave">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </aside>
 
-<!-- ROYAL WEDDING INVITATION ENVELOPE (POPUP8) -->
-<div id="POPUP8" class="ladi-element ">
-                    <div class='ladi-popup'>
-                        <div class="ladi-popup-background"></div>
-                        <div id="GROUP149" class="ladi-element ">
-                            <div class='ladi-group'>
-                                <div id="IMAGE159" class="ladi-element ">
-                                    <div class='ladi-image'>
-                                        <div class="ladi-image-background"></div>
-                                    </div>
-                                </div>
-                                <div id="IMAGE158" class="ladi-element ">
-                                    <div class='ladi-image'>
-                                        <div class="ladi-image-background"></div>
-                                    </div>
-                                </div>
-                                <div data-action="true" id="BUTTON18" class="ladi-element off_speaker ">
-                                    <div class='ladi-button'>
-                                        <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT18" class="ladi-element ladi-button-headline ">
-                                            <p class='ladi-headline'>Ấn vào để Xem</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="GROUP145" class="ladi-element ">
-                                    <div class='ladi-group'>
-                                        <div id="BOX79" class="ladi-element circle_image ">
-                                            <div class='ladi-box ladi-transition'></div>
-                                        </div>
-                                        <div id="BOX78" class="ladi-element ">
-                                            <div class='ladi-box ladi-transition'></div>
-                                        </div>
-                                        <div id="IMAGE157" class="ladi-element ">
-                                            <div class='ladi-image ladi-transition'>
-                                                <div class="ladi-image-background" data-sync-target="cover_photo_url"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="GROUP140" class="ladi-element ">
-                                    <div class='ladi-group'>
-                                        <div id="BOX77" class="ladi-element ">
-                                            <div class='ladi-box ladi-transition'></div>
-                                        </div>
-                                        <div id="HEADLINE335" class="ladi-element ">
-                                            <h3 class='ladi-headline'>Thân gửi</h3>
-                                        </div>
-                                        <div id="HEADLINE336" class="ladi-element class_tenKhachMoi ">
-                                            <h3 class='ladi-headline ladi-transition'>Bạn và Gia Đình<br></h3>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="HEADLINE338" class="ladi-element ">
-                                    <h3 class='ladi-headline ladi-transition' data-sync-target="couple_names" data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }} &amp; {{ mb_strtoupper($brideName) }}</h3>
+    <!-- ROYAL WEDDING INVITATION ENVELOPE (POPUP8) -->
+    <div id="POPUP8" class="ladi-element ">
+        <div class='ladi-popup'>
+            <div class="ladi-popup-background"></div>
+            <div id="GROUP149" class="ladi-element ">
+                <div class='ladi-group'>
+                    <div id="IMAGE159" class="ladi-element ">
+                        <div class='ladi-image'>
+                            <div class="ladi-image-background"></div>
+                        </div>
+                    </div>
+                    <div id="IMAGE158" class="ladi-element ">
+                        <div class='ladi-image'>
+                            <div class="ladi-image-background"></div>
+                        </div>
+                    </div>
+                    <div data-action="true" id="BUTTON18" class="ladi-element off_speaker ">
+                        <div class='ladi-button'>
+                            <div class="ladi-button-background"></div>
+                            <div id="BUTTON_TEXT18" class="ladi-element ladi-button-headline ">
+                                <p class='ladi-headline'>Ấn vào để Xem</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="GROUP145" class="ladi-element ">
+                        <div class='ladi-group'>
+                            <div id="BOX79" class="ladi-element circle_image ">
+                                <div class='ladi-box ladi-transition'></div>
+                            </div>
+                            <div id="BOX78" class="ladi-element ">
+                                <div class='ladi-box ladi-transition'></div>
+                            </div>
+                            <div id="IMAGE157" class="ladi-element ">
+                                <div class='ladi-image ladi-transition'>
+                                    <div class="ladi-image-background" data-sync-target="cover_photo_url"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div id="GROUP140" class="ladi-element ">
+                        <div class='ladi-group'>
+                            <div id="BOX77" class="ladi-element ">
+                                <div class='ladi-box ladi-transition'></div>
+                            </div>
+                            <div id="HEADLINE335" class="ladi-element ">
+                                <h3 class='ladi-headline'>Thân gửi</h3>
+                            </div>
+                            <div id="HEADLINE336" class="ladi-element class_tenKhachMoi ">
+                                <h3 class='ladi-headline ladi-transition'>Bạn và Gia Đình<br></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="HEADLINE338" class="ladi-element ">
+                        <h3 class='ladi-headline ladi-transition' data-sync-target="couple_names"
+                            data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }} &amp;
+                            {{ mb_strtoupper($brideName) }}</h3>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -237,23 +281,17 @@
                 <div id="GROUP94" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
                         <div id="HEADLINE3" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name" data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }}</h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name"
+                                data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }}</h3>
                         </div>
                         <div id="HEADLINE282" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
                         </div>
                         <div id="HEADLINE283" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name" data-sync-transform="uppercase">{{ mb_strtoupper($brideName) }}<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name"
+                                data-sync-transform="uppercase">{{ mb_strtoupper($brideName) }}<br></h3>
                         </div>
                     </div>
-                </div>
-                <div data-action="true" id="SHAPE15" class="ladi-element btn_open_menu mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-shape'><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
-                            preserveAspectRatio="none" viewBox="0 0 1536 1896.0833" class="" fill="rgba(42, 61, 99, 1)">
-                            <path
-                                d="M1536 1344v128q0 26-19 45t-45 19H64q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 960V832q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 448V320q0-26 19-45t45-19h1408q26 0 45 19t19 45z">
-                            </path>
-                        </svg></div>
                 </div>
             </div>
         </div>
@@ -587,16 +625,18 @@
                     target="_blank" id="BUTTON10" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-button'>
                         <div class="ladi-button-background"></div>
-                        <div id="BUTTON_SHAPE10" class="ladi-element ladi-button-shape mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-shape'><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
-                                    preserveAspectRatio="none" viewBox="0 0 1672.2646 1896.0833" class=""
-                                    fill="rgba(255, 251, 247, 1)">
+                        <div id="BUTTON_SHAPE10"
+                            class="ladi-element ladi-button-shape mayhen_invitation_ladjihe38udhd_box_anim">
+                            <div class='ladi-shape'><svg xmlns="http://www.w3.org/2000/svg" width="100%"
+                                    height="100%" preserveAspectRatio="none" viewBox="0 0 1672.2646 1896.0833"
+                                    class="" fill="rgba(255, 251, 247, 1)">
                                     <path
                                         d="M128 1664h288v-288H128v288zm352 0h320v-288H480v288zm-352-352h288V992H128v320zm352 0h320V992H480v320zM128 928h288V640H128v288zm736 736h320v-288H864v288zM480 928h320V640H480v288zm768 736h288v-288h-288v288zm-384-352h320V992H864v320zM512 448V160q0-13-9.5-22.5T480 128h-64q-13 0-22.5 9.5T384 160v288q0 13 9.5 22.5T416 480h64q13 0 22.5-9.5T512 448zm736 864h288V992h-288v320zM864 928h320V640H864v288zm384 0h288V640h-288v288zm32-480V160q0-13-9.5-22.5T1248 128h-64q-13 0-22.5 9.5T1152 160v288q0 13 9.5 22.5t22.5 9.5h64q13 0 22.5-9.5t9.5-22.5zm384-64v1280q0 52-38 90t-90 38H128q-52 0-90-38t-38-90V384q0-52 38-90t90-38h128v-96q0-66 47-113T416 0h64q66 0 113 47t47 113v96h384v-96q0-66 47-113t113-47h64q66 0 113 47t47 113v96h128q52 0 90 38t38 90z">
                                     </path>
                                 </svg></div>
                         </div>
-                        <div id="BUTTON_TEXT10" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="BUTTON_TEXT10"
+                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                             <p class='ladi-headline'>&nbsp; &nbsp; &nbsp;Thêm vào lịch</p>
                         </div>
                     </div>
@@ -723,7 +763,8 @@
                                     <div class='ladi-paragraph ladi-transition'>The groom</div>
                                 </div>
                                 <div id="HEADLINE300" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">{{ $groomName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">
+                                        {{ $groomName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -732,7 +773,11 @@
                                 luôn sống hết lòng vì gia đình và những người thân yêu. Với trái tim ấm áp và sự chín
                                 chắn trong suy nghĩ, anh đã và đang là chỗ dựa vững chắc cho cô dâu cũng như là người
                                 bạn đồng hành lý tưởng trong chặng đường hôn nhân sắp tới.<br></div>
-                            <div class="mayhen_invitation_ladjihe38udhd_parents_box" style="margin-top: 10px; font-size: 13px; color: #78716c;" data-sync-target="groom_parents"><strong>Nhà Trai:</strong> Ông <span data-sync-target="groom_father">{{ $groomFather }}</span> &amp; Bà <span data-sync-target="groom_mother">{{ $groomMother }}</span></div>
+                            <div class="mayhen_invitation_ladjihe38udhd_parents_box"
+                                style="margin-top: 10px; font-size: 13px; color: #78716c;"
+                                data-sync-target="groom_parents"><strong>Nhà Trai:</strong> Ông <span
+                                    data-sync-target="groom_father">{{ $groomFather }}</span> &amp; Bà <span
+                                    data-sync-target="groom_mother">{{ $groomMother }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -752,7 +797,8 @@
                                     <div class='ladi-paragraph ladi-transition'>The bride</div>
                                 </div>
                                 <div id="HEADLINE304" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">{{ $brideName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">
+                                        {{ $brideName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -761,7 +807,11 @@
                                 luôn mang đến năng lượng tích cực cho những người xung quanh. Với nụ cười ấm áp và trái
                                 tim chân thành, cô không chỉ là niềm tự hào của gia đình mà còn là người bạn đời lý
                                 tưởng, đồng hành cùng chú rể trong hành trình xây dựng hạnh phúc.<br></div>
-                            <div class="mayhen_invitation_ladjihe38udhd_parents_box" style="margin-top: 10px; font-size: 13px; color: #78716c;" data-sync-target="bride_parents"><strong>Nhà Gái:</strong> Ông <span data-sync-target="bride_father">{{ $brideFather }}</span> &amp; Bà <span data-sync-target="bride_mother">{{ $brideMother }}</span></div>
+                            <div class="mayhen_invitation_ladjihe38udhd_parents_box"
+                                style="margin-top: 10px; font-size: 13px; color: #78716c;"
+                                data-sync-target="bride_parents"><strong>Nhà Gái:</strong> Ông <span
+                                    data-sync-target="bride_father">{{ $brideFather }}</span> &amp; Bà <span
+                                    data-sync-target="bride_mother">{{ $brideMother }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -816,19 +866,25 @@
                     <h3 class='ladi-headline ladi-transition'>and</h3>
                 </div>
                 <div id="PARAGRAPH23" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition'><span style="font-size: 18px;" data-sync-target="event_party_time">VÀO LÚC {{ $eventPartyTime }}
-                            <br></span><span data-sync-target="wedding_date">{{ mb_strtoupper($weddingDate->translatedFormat('l, \n\g\à\y d \t\h\á\n\g m \n\ă\m Y')) }}</span><br></div>
+                    <div class='ladi-paragraph ladi-transition'><span style="font-size: 18px;"
+                            data-sync-target="event_party_time">VÀO LÚC {{ $eventPartyTime }}
+                            <br></span><span
+                            data-sync-target="wedding_date">{{ mb_strtoupper($weddingDate->translatedFormat('l, \n\g\à\y d \t\h\á\n\g m \n\ă\m Y')) }}</span><br>
+                    </div>
                 </div>
                 <div id="PARAGRAPH24" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition'><span style="font-weight: 400;" data-sync-target="event_party_address">{{ $eventPartyAddress }}</span><br></div>
+                    <div class='ladi-paragraph ladi-transition'><span style="font-weight: 400;"
+                            data-sync-target="event_party_address">{{ $eventPartyAddress }}</span><br></div>
                 </div>
                 <div id="PARAGRAPH25" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition' data-sync-target="event_party_lunar">{{ $eventPartyLunar }}</div>
+                    <div class='ladi-paragraph ladi-transition' data-sync-target="event_party_lunar">
+                        {{ $eventPartyLunar }}</div>
                 </div>
                 <div data-action="true" id="BUTTON9" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-button ladi-transition'>
                         <div class="ladi-button-background"></div>
-                        <div id="BUTTON_TEXT9" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="BUTTON_TEXT9"
+                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                             <p class='ladi-headline ladi-transition'>CHỈ ĐƯỜNG/ DIRECTIONS</p>
                         </div>
                     </div>
@@ -1009,10 +1065,12 @@
                         <div id="GROUP12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">{{ $brideName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">
+                                        {{ $brideName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE13" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">{{ $groomName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">
+                                        {{ $groomName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
@@ -1048,7 +1106,8 @@
                 <div data-action="true" id="BUTTON2" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-button ladi-transition'>
                         <div class="ladi-button-background"></div>
-                        <div id="BUTTON_TEXT2" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="BUTTON_TEXT2"
+                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                             <p class='ladi-headline ladi-transition'>NHẤN ĐỂ KÝ TÊN<br></p>
                         </div>
                     </div>
@@ -1070,26 +1129,32 @@
                         </div>
                         <div id="GROUP14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
-                                <div id="BUTTON3" class="ladi-element Signature_BTN_xoa mayhen_invitation_ladjihe38udhd_box_anim">
+                                <div id="BUTTON3"
+                                    class="ladi-element Signature_BTN_xoa mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-button ladi-transition'>
                                         <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT3" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                                        <div id="BUTTON_TEXT3"
+                                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                                             <p class='ladi-headline ladi-transition'>Xóa</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div id="BUTTON4" class="ladi-element Signature_BTN_xem mayhen_invitation_ladjihe38udhd_box_anim">
+                                <div id="BUTTON4"
+                                    class="ladi-element Signature_BTN_xem mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-button ladi-transition'>
                                         <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT4" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                                        <div id="BUTTON_TEXT4"
+                                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                                             <p class='ladi-headline ladi-transition'>Xem thử</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div data-action="true" id="BUTTON5" class="ladi-element Signature_BTN_luu mayhen_invitation_ladjihe38udhd_box_anim">
+                                <div data-action="true" id="BUTTON5"
+                                    class="ladi-element Signature_BTN_luu mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-button ladi-transition'>
                                         <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT5" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                                        <div id="BUTTON_TEXT5"
+                                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                                             <p class='ladi-headline ladi-transition'>Lưu Chữ Ký</p>
                                         </div>
                                     </div>
@@ -1260,12 +1325,14 @@
                 </div>
                 <div id="GROUP90" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
-                        <div id="FORM2" data-config-id="663edb65c9c5120012ef6f25" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="FORM2" data-config-id="663edb65c9c5120012ef6f25"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <form autocomplete="off" method="post" class='ladi-form'>
                                 <div id="BUTTON6" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-button ladi-transition'>
                                         <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT6" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                                        <div id="BUTTON_TEXT6"
+                                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                                             <p class='ladi-headline ladi-transition'>XÁC NHẬN THAM DỰ</p>
                                         </div>
                                     </div>
@@ -1273,8 +1340,8 @@
                                 <div id="FORM_ITEM3" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class="ladi-form-item-container">
                                         <div class="ladi-form-item-background"></div>
-                                        <div class='ladi-form-item'><input autocomplete="off" tabindex="1" name="name"
-                                                required class="ladi-form-control" type="text"
+                                        <div class='ladi-form-item'><input autocomplete="off" tabindex="1"
+                                                name="name" required class="ladi-form-control" type="text"
                                                 placeholder="Tên của bạn là gì? " value="" /></div>
                                     </div>
                                 </div>
@@ -1316,9 +1383,10 @@
                                 <div id="FORM_ITEM26" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class="ladi-form-item-container">
                                         <div class="ladi-form-item-background"></div>
-                                        <div class='ladi-form-item'><textarea autocomplete="off" tabindex="5"
-                                                name="form_item26" class="ladi-form-control"
-                                                placeholder="Để lại lời nhắn"></textarea></div>
+                                        <div class='ladi-form-item'>
+                                            <textarea autocomplete="off" tabindex="5" name="form_item26" class="ladi-form-control"
+                                                placeholder="Để lại lời nhắn"></textarea>
+                                        </div>
                                     </div>
                                 </div><button type="submit" class="ladi-hidden"></button>
                             </form>
@@ -1392,8 +1460,8 @@
                         </style>
                         <div id="MessageBox">
                         </div>
-                        
-                        
+
+
                     </div>
                 </div>
                 <div id="IMAGE21" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1419,12 +1487,14 @@
                 </div>
                 <div id="GROUP101" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
-                        <div id="FORM3" data-config-id="688e346c804b6c0038582f27" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="FORM3" data-config-id="688e346c804b6c0038582f27"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <form autocomplete="off" method="post" class='ladi-form'>
                                 <div id="BUTTON11" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-button ladi-transition'>
                                         <div class="ladi-button-background"></div>
-                                        <div id="BUTTON_TEXT11" class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
+                                        <div id="BUTTON_TEXT11"
+                                            class="ladi-element ladi-button-headline mayhen_invitation_ladjihe38udhd_box_anim">
                                             <p class='ladi-headline ladi-transition'>GỬI LỜI CHÚC</p>
                                         </div>
                                     </div>
@@ -1432,17 +1502,17 @@
                                 <div id="FORM_ITEM11" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class="ladi-form-item-container">
                                         <div class="ladi-form-item-background"></div>
-                                        <div class='ladi-form-item'><input autocomplete="off" tabindex="1" name="name"
-                                                required class="ladi-form-control" type="text"
+                                        <div class='ladi-form-item'><input autocomplete="off" tabindex="1"
+                                                name="name" required class="ladi-form-control" type="text"
                                                 placeholder="Tên Bạn là..." value="" /></div>
                                     </div>
                                 </div>
                                 <div id="FORM_ITEM12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class="ladi-form-item-container">
                                         <div class="ladi-form-item-background"></div>
-                                        <div class='ladi-form-item'><textarea autocomplete="off" tabindex="8"
-                                                name="message" required class="ladi-form-control"
-                                                placeholder=""></textarea></div>
+                                        <div class='ladi-form-item'>
+                                            <textarea autocomplete="off" tabindex="8" name="message" required class="ladi-form-control" placeholder=""></textarea>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="FORM_ITEM14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1500,7 +1570,8 @@
                 </div>
                 <div id="GROUP130" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
-                        <div data-action="true" id="IMAGE134" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="IMAGE134"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
                                 <div class="ladi-image-background" data-sync-target="bride_bank_account"></div>
                             </div>
@@ -1512,7 +1583,8 @@
                 </div>
                 <div id="GROUP131" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
-                        <div data-action="true" id="IMAGE135" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="IMAGE135"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
                                 <div class="ladi-image-background" data-sync-target="groom_bank_account"></div>
                             </div>
@@ -1541,8 +1613,8 @@
                                 <div id="HTML_CODE5" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-html-code'><iframe
                                             src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1756.9885563739792!2d108.1463068!3d16.0950639!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219f3604f0ac7%3A0x6d7c119700749d02!2sNami%20Restaurant!5e1!3m2!1svi!2s!4v1749724413112!5m2!1svi!2s"
-                                            width="400" height="250" style="border:0;" allowfullscreen="" loading="lazy"
-                                            referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                                            width="400" height="250" style="border:0;" allowfullscreen=""
+                                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                                 </div>
                             </div>
                         </div>
@@ -1627,7 +1699,8 @@
                 <div id="DROPBOX1" data-dropbox="true" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-popup'>
                         <div class="ladi-popup-background"></div>
-                        <div data-action="true" id="GROUP105" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="GROUP105"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="BOX54" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-box ladi-transition'></div>
@@ -1647,7 +1720,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-action="true" id="GROUP107" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="GROUP107"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="BOX56" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-box ladi-transition'></div>
@@ -1656,8 +1730,8 @@
                                     <div class='ladi-shape'><svg xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
                                             viewBox="0 0 100 100" enable-background="new 0 0 100 100"
-                                            xml:space="preserve" preserveAspectRatio="none" width="100%" height="100%"
-                                            class="" fill="rgba(255, 255, 255, 1)">
+                                            xml:space="preserve" preserveAspectRatio="none" width="100%"
+                                            height="100%" class="" fill="rgba(255, 255, 255, 1)">
                                             <path
                                                 d="M87.808,44.589c0-6.96-5.642-12.603-12.603-12.603H60.497c4.249-1.59,8.789-3.693,11.225-6.129  c3.378-3.372,5.397-7.735,5.391-11.667c0-2.683-0.898-5.003-2.609-6.707c-4.191-4.209-12.695-2.911-18.375,2.781  C53.693,12.7,51.59,17.24,50,21.489c-1.59-4.249-3.693-8.789-6.129-11.225c-5.686-5.698-14.184-6.997-18.375-2.781  c-1.711,1.705-2.609,4.024-2.609,6.707c-0.006,3.932,2.012,8.295,5.391,11.667c2.436,2.436,6.976,4.539,11.225,6.129H24.795  c-6.96,0-12.603,5.642-12.603,12.603v12.603h6.301v25.205c0,6.96,5.642,12.603,12.603,12.603h37.808  c6.96,0,12.603-5.642,12.603-12.603V57.192h6.301V44.589z M60.584,14.72c2.185-2.191,4.948-3.544,7.206-3.544  c0.683,0,1.625,0.129,2.258,0.763c0.634,0.634,0.763,1.575,0.763,2.258c0.006,2.258-1.354,5.021-3.544,7.206  c-2.086,2.086-7.661,4.344-12.646,5.963C56.234,22.381,58.498,16.806,60.584,14.72z M29.188,14.197c0-0.683,0.129-1.625,0.763-2.258  c0.634-0.634,1.575-0.763,2.258-0.763c2.258,0,5.021,1.354,7.206,3.544c2.086,2.086,4.344,7.661,5.963,12.646  c-4.984-1.612-10.56-3.877-12.646-5.963C30.542,19.218,29.182,16.455,29.188,14.197z M18.493,44.589  c0-3.474,2.827-6.301,6.301-6.301h22.055v12.603H18.493V44.589z M24.795,82.397V57.192h22.055v31.507H31.096  C27.622,88.699,24.795,85.872,24.795,82.397z M75.205,82.397c0,3.474-2.827,6.301-6.301,6.301H53.151V57.192h22.055V82.397z   M81.507,50.891H53.151V38.288h22.055c3.474,0,6.301,2.827,6.301,6.301V50.891z">
                                             </path>
@@ -1675,15 +1749,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-action="true" id="GROUP109" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="GROUP109"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="BOX58" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-box ladi-transition'></div>
                                 </div>
                                 <div id="SHAPE17" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-shape'><svg xmlns="http://www.w3.org/2000/svg" width="100%"
-                                            height="100%" preserveAspectRatio="none" viewBox="0 0 24 24" class=""
-                                            fill="rgba(255, 255, 255, 1)">
+                                            height="100%" preserveAspectRatio="none" viewBox="0 0 24 24"
+                                            class="" fill="rgba(255, 255, 255, 1)">
                                             <path
                                                 d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,15L18,7L16.59,5.58L10,12.17L7.41,9.59L6,11L10,15Z">
                                             </path>
@@ -1691,7 +1766,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div data-action="true" id="GROUP110" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div data-action="true" id="GROUP110"
+                            class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="BOX59" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-box ladi-transition'></div>
@@ -1836,14 +1912,14 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
     <div id="backdrop-popup" class="backdrop-popup"></div>
     <div id="backdrop-dropbox" class="backdrop-dropbox"></div>
     <div id="lightbox-screen" class="lightbox-screen"></div>
-    
+
     <!--[if lt IE 9]><![endif]-->
     <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap" rel="stylesheet"
         type="text/css">
@@ -2861,26 +2937,36 @@
             transform: translateX(-50%);
         }
     </style>
-    
-    
-    
-    
-    
+
+
+
+
+
 
     <!---->
 
     <!--custom chức năng âm nhạc-->
     {{-- LIGHTBOX GALLERY XEM ANH CUOI SAC NET --}}
-    <div id="mayhen_hacbach2_lightbox" class="mayhen_invitation_ladjihe38udhd_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh cưới phóng to" hidden>
+    <div id="mayhen_hacbach2_lightbox" class="mayhen_invitation_ladjihe38udhd_lightbox" role="dialog"
+        aria-modal="true" aria-label="Xem ảnh cưới phóng to" hidden>
         <div class="mayhen_invitation_ladjihe38udhd_lightbox_backdrop"></div>
         <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_close" aria-label="Đóng (ESC)">
-            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
         </button>
-        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav prev" aria-label="Ảnh trước (Mũi tên trái)">
-            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav prev"
+            aria-label="Ảnh trước (Mũi tên trái)">
+            <svg viewBox="0 0 24 24">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
         </button>
-        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav next" aria-label="Ảnh sau (Mũi tên phải)">
-            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        <button type="button" class="mayhen_invitation_ladjihe38udhd_lightbox_nav next"
+            aria-label="Ảnh sau (Mũi tên phải)">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+            </svg>
         </button>
         <div class="mayhen_invitation_ladjihe38udhd_lightbox_stage">
             <img id="mayhen_hacbach2_lightbox_img" src="" alt="Ảnh cưới phóng to">
@@ -2896,5 +2982,7 @@
 @endsection
 
 @push('scripts')
-  <script src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
+    <script
+        src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'script.js']) }}?v={{ $jsVersion }}">
+    </script>
 @endpush

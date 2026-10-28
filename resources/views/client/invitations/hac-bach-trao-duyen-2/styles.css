@@ -11347,6 +11347,8 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
 }
 
 #POPUP8.closed {
@@ -11359,14 +11361,15 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 #POPUP8 > .ladi-popup {
     position: relative !important;
     width: 440px !important;
-    max-width: 90vw !important;
     height: 560px !important;
-    max-height: 86vh !important;
     margin: auto !important;
     border-radius: 28px !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     border: 1.5px solid rgba(212, 175, 55, 0.5) !important;
     box-shadow: 0 35px 100px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 40px rgba(212, 175, 55, 0.06) !important;
+    transform-origin: center center !important;
+    transform: scale(min(1, calc(min((100vw - 32px) / 440, (100dvh - 36px) / 560)))) !important;
+    flex-shrink: 0 !important;
 }
 
 #POPUP8 > .ladi-popup > .ladi-popup-background {
@@ -11416,7 +11419,7 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 }
 
 #POPUP8 #BUTTON18 {
-    top: 474px !important;
+    top: 462px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     cursor: pointer !important;
@@ -11474,7 +11477,8 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     right: 0 !important;
 }
 
-@media (min-width: 768px) {
+/* 1. Màn hình máy tính lớn / Desktop & Laptop (>= 960px) */
+@media (min-width: 960px) {
     .ladi-section .ladi-container {
         width: 960px !important;
         max-width: 960px !important;
@@ -11487,9 +11491,30 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     }
 }
 
-@media (max-width: 767px) {
+/* 2. Màn hình máy tính bảng / Tablet (768px <= width < 960px) */
+@media (min-width: 768px) and (max-width: 959.98px) {
+    .ladi-wraper {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    .ladi-section {
+        overflow: hidden !important;
+    }
+    .ladi-section .ladi-container {
+        width: 960px !important;
+        max-width: none !important;
+        transform-origin: top center !important;
+        transform: scale(calc(100vw / 960)) !important;
+        margin-bottom: calc(960px * (calc(100vw / 960) - 1)) !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+/* 3. Màn hình điện thoại lớn / Phablet & Foldables (420px <= width < 768px) */
+@media (min-width: 420px) and (max-width: 767.98px) {
     .ladi-section .ladi-container {
         width: 420px !important;
+        max-width: 420px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         position: relative !important;
@@ -11497,15 +11522,26 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     }
 }
 
-@media (max-width: 420px) {
-    body {
+/* 4. Màn hình điện thoại nhỏ & chuẩn / Small & Standard Mobile (< 420px) */
+@media (max-width: 419.98px) {
+    html, body {
         overflow-x: hidden !important;
+        width: 100% !important;
     }
     .ladi-wraper {
         width: 420px !important;
-        max-width: none !important;
+        max-width: 420px !important;
         transform-origin: top center !important;
+        transform: scale(calc(100vw / 420)) !important;
         margin: 0 auto !important;
+    }
+    .ladi-section .ladi-container {
+        width: 420px !important;
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        position: relative !important;
+        flex-shrink: 0 !important;
     }
 }
 
@@ -11693,6 +11729,23 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     border-radius: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     transition: opacity 0.5s ease, transform 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    .mayhen_invitation_ladjihe38udhd_music_dock {
+        bottom: 16px !important;
+        right: 16px !important;
+        padding: 4px 10px 4px 4px !important;
+        gap: 8px !important;
+    }
+    .mayhen_invitation_ladjihe38udhd_vinyl_wrap {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    .mayhen_invitation_ladjihe38udhd_vinyl_center {
+        width: 15px !important;
+        height: 15px !important;
+    }
 }
 
 .mayhen_invitation_ladjihe38udhd_vinyl_wrap {
@@ -12024,6 +12077,17 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     align-content: start;
     scrollbar-width: thin;
     scrollbar-color: rgba(212, 175, 55, 0.4) transparent;
+}
+
+@media (max-width: 480px) {
+    .mayhen_hacbach2_signature_wall {
+        padding: 14px !important;
+        border-radius: 18px !important;
+    }
+    .mayhen_hacbach2_signature_list {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
 }
 
 .mayhen_hacbach2_signature_list::-webkit-scrollbar {

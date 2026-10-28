@@ -1370,6 +1370,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Cập nhật `resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js`: Bổ sung cờ `isEmbedMode`. Nếu đang chạy trong iframe nhúng của Studio Editor, tự động mở cánh thiệp (`opened`), loại bỏ class `no-scroll` và kích hoạt ngay các hiệu ứng reveal (`is-visible`) để thiệp cưới hiển thị đầy đủ, sắc nét và cuộn mượt mà ngay khi vừa tải trang.
                   * Đã bổ sung feature test khẳng định mẫu thiệp không bị ẩn nội dung khi nhúng: Đạt 26/26 Pest tests Passed 100%.
 
+            23. **Chuẩn Hóa Toàn Diện CSS Responsive & Tương Thích Mọi Thiết Bị Mẫu "Hắc Bạch Trao Duyên 2" (`hac-bach-trao-duyen-2`)**:
+                - **Mục tiêu**: Tối ưu hiển thị hoàn hảo trên tất cả các màn hình (Mobile nhỏ 320px-375px, Mobile chuẩn 390px-430px, Tablet 768px-960px, Desktop lớn >= 960px, và chế độ xem nhúng trong Studio Editor `?embed=1`) mà **tuyệt đối không phá hỏng giao diện gốc** (giữ nguyên 100% typography, màu sắc, hoa văn, vị trí tọa độ nghệ thuật).
+                - **Vấn đề đã khắc phục**:
+                  * *Màn hình phong bì mở đầu (`#POPUP8`)*: Trước đây `.ladi-popup` bị bóp lại bởi `max-width: 90vw` trên điện thoại trong khi các phần tử con `#GROUP149` giữ nguyên 420px x 540px, gây tràn mép và lệch chữ/hoa văn ra ngoài viền thiệp. Đã giải quyết bằng kỹ thuật scale đồng tỷ lệ: `transform: scale(min(1, calc(min((100vw - 32px) / 440, (100dvh - 36px) / 560))))` kèm `overflow: hidden`, nâng nút `#BUTTON18` lên `top: 462px` để thiệp mở đầu luôn căn giữa tuyệt mỹ và vừa vặn trên mọi độ cao màn hình từ iPhone SE đến Desktop.
+                  * *Điện thoại nhỏ & chuẩn (`width < 420px`)*: Áp dụng CSS `transform: scale(calc(100vw / 420))` cho `.ladi-wraper`, căn giữa không bị thanh cuộn ngang, kết hợp bù chiều cao tự động trong `script.js` để triệt tiêu khoảng trống đáy footer.
+                  * *Máy tính bảng (`768px <= width < 960px`)*: Khắc phục lỗi cắt xén 192px nội dung desktop hai bên bằng cơ chế scale tự động `transform: scale(calc(100vw / 960))` cho `.ladi-section .ladi-container`, giúp iPad hiển thị trọn vẹn bố cục 960px sắc nét.
+                  * *Desktop / Laptop (`>= 960px`)*: Giữ nguyên container 960px căn giữa thanh lịch, background các section mở rộng 100% không gian màn hình chuẩn Quiet Luxury.
+                  * *Chế độ nhúng Studio Editor (`$isEmbed = true`)*: Tự động ẩn `#POPUP8`, loại bỏ `scroll_locked` trên `html`/`body`, cưỡng chế hiển thị tức thì các hiệu ứng reveal `.mayhen_invitation_ladjihe38udhd_box_anim` để quá trình biên tập mượt mà, không bao giờ bị đơ cuộn hay trắng màn hình.
+                  * *Sổ lưu bút & Bàn ký tên*: Responsive danh sách chữ ký single-column trên điện thoại (`max-width: 480px`), bo viền 18px tinh tế; thanh điều khiển nhạc Vinyl thu gọn nhẹ nhàng tránh che khuất giao diện.
+                - **Kiểm thử**: Viết mới `tests/Feature/HacBachTraoDuyen2ResponsiveTest.php`, toàn bộ 27/27 Pest tests đạt 100% Passed (325 assertions), Pint format chuẩn chỉnh.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
