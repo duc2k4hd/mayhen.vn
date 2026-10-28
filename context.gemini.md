@@ -7,6 +7,7 @@
 > 4. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
 > 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
 > 6. **QUY ĐỊNH VỀ TỆP KIỂM THỬ (TESTING & TEST FILES)**: Khi viết file test, **BẮT BUỘC PHẢI ĐẶT TRONG THƯ MỤC `tests/`** (ví dụ: `tests/Feature/` hoặc `tests/Unit/`). Tuyệt đối không tạo file test hoặc script kiểm tra bừa bãi ở thư mục gốc hay các thư mục khác ngoài `tests/`. Mỗi lần code xong, nếu file test đó chỉ phục vụ tạm thời và không còn dùng nữa thì **có thể xóa đi** để giữ kho mã nguồn luôn tinh gọn và sạch sẽ.
+> 7. **NGHIÊN CỨU TRƯỚC KHI BẮT ĐẦU (RESEARCH FIRST — KHÔNG VIẾT TỪ CON SỐ 0)**: Đối với những chức năng chưa quen thuộc, **đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm**. Điều này giúp chắt lọc kiến trúc tối ưu, tránh lỗi tiềm ẩn và bám sát các tiêu chuẩn thực tế tốt nhất.
 
 ---
 

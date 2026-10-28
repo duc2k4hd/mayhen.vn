@@ -11,6 +11,8 @@ This application is a Laravel application running on PHP 8.5. Always use the API
 - **READ FIRST**: Any AI Agent (Gemini, Claude, GPT, Cursor, etc.) working on this repository **MUST ALWAYS READ `context.gemini.md` FIRST** before undertaking any task or writing any code.
 - **ALWAYS UPDATE AFTER CODING**: After finishing any task, bugfix, or new feature, the AI **MUST UPDATE `context.gemini.md`** to record all changes, new routes, UI updates, and current project state so the repository context on Git is always 100% up-to-date for future sessions.
 - **TRANSPARENT FILE EDITING**: Always edit files directly using `edit_file` so the user can inspect the visual diff for every single change. Never use hidden background scripts (python/powershell/bash) to modify source files without user visibility.
+- **RESEARCH FIRST (GITHUB / OPEN SOURCE)**: Đối với những chức năng chưa quen thuộc, đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm.
+- **TEST FILES LOCATION**: Khi viết file test, bắt buộc phải đặt trong `tests/` (`tests/Feature/` hoặc `tests/Unit/`). Các file test tạm thời có thể xóa đi sau khi hoàn tất kiểm tra và code xong để giữ kho mã nguồn tinh gọn.
 
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
