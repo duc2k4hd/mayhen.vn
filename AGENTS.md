@@ -13,6 +13,12 @@ This application is a Laravel application running on PHP 8.5. Always use the API
 - **TRANSPARENT FILE EDITING**: Always edit files directly using `edit_file` so the user can inspect the visual diff for every single change. Never use hidden background scripts (python/powershell/bash) to modify source files without user visibility.
 - **RESEARCH FIRST (GITHUB / OPEN SOURCE)**: Đối với những chức năng chưa quen thuộc, đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm.
 - **TEST FILES LOCATION**: Khi viết file test, bắt buộc phải đặt trong `tests/` (`tests/Feature/` hoặc `tests/Unit/`). Các file test tạm thời có thể xóa đi sau khi hoàn tất kiểm tra và code xong để giữ kho mã nguồn tinh gọn.
+- **TEMPLATE CREATION LOGIC**: Khi tạo mẫu thiệp mới hoặc sửa mẫu thiệp cũ, **BẮT BUỘC TUÂN THỦ ĐÚNG 5 NGUYÊN TẮC CHUẨN HÓA** để tạo thiệp trơn tru, mượt mà và chuyển mẫu không bị lỗi:
+  1. *Khóa Schema chung chuẩn*: Dùng đúng key `wedding.groom_name`, `wedding.bride_name`, `wedding.extra_data.groom_father/mother`, `wedding.extra_data.bride_father/mother`, `wedding.wedding_date`, `wedding.extra_data.event_party_address`, `wedding.extra_data.groom_bank_account/bride_bank_account`.
+  2. *Hợp đồng Live Sync*: Gắn đầy đủ `data-sync-target="{tên_trường}"` cho mọi vị trí hiển thị dữ liệu trong `template.blade.php`, tuyệt đối không hardcode tĩnh.
+  3. *Phòng vệ nhúng Studio Editor (`$isEmbed = true`)*: Tự động mở sẵn cánh thiệp (`opened`), không gắn class khóa cuộn `no-scroll` lên `html`/`body`, cưỡng chế `.card-wrapper { display: block !important; }` để không bao giờ bị màn hình trắng trơn.
+  4. *Phòng vệ ảnh lỗi (Asset Fallback)*: Mọi hàm `$resolveAsset` phải có fallback chỉ đến file ảnh có thật trong thư mục `assets/` của mẫu.
+  5. *Kế thừa Layout chung*: Mọi mẫu thiệp bắt buộc `@extends('client.layouts.invitation')` để tích hợp tự động `editor-bridge.blade.php` và handshake 2 chiều `MAYHEN_BRIDGE_READY`.
 
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.

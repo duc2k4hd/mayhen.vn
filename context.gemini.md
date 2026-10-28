@@ -8,6 +8,19 @@
 > 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
 > 6. **QUY ĐỊNH VỀ TỆP KIỂM THỬ (TESTING & TEST FILES)**: Khi viết file test, **BẮT BUỘC PHẢI ĐẶT TRONG THƯ MỤC `tests/`** (ví dụ: `tests/Feature/` hoặc `tests/Unit/`). Tuyệt đối không tạo file test hoặc script kiểm tra bừa bãi ở thư mục gốc hay các thư mục khác ngoài `tests/`. Mỗi lần code xong, nếu file test đó chỉ phục vụ tạm thời và không còn dùng nữa thì **có thể xóa đi** để giữ kho mã nguồn luôn tinh gọn và sạch sẽ.
 > 7. **NGHIÊN CỨU TRƯỚC KHI BẮT ĐẦU (RESEARCH FIRST — KHÔNG VIẾT TỪ CON SỐ 0)**: Đối với những chức năng chưa quen thuộc, **đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm**. Điều này giúp chắt lọc kiến trúc tối ưu, tránh lỗi tiềm ẩn và bám sát các tiêu chuẩn thực tế tốt nhất.
+> 8. **QUY CHUẨN BẮT BUỘC KHI TẠO MẪU THIỆP CƯỚI (TEMPLATE CREATION LOGIC & ZERO-FRICTION STANDARDS)**: Để quá trình tạo thiệp (`/tao-thiep`) diễn ra trơn tru, mượt mà 100%, chuyển đổi giữa các mẫu không bị lệch tên, lỗi ảnh hay hỏng giao diện, và **tránh tuyệt đối việc phải sửa đi sửa lại tốn thời gian**, MỌI MẪU THIỆP MỚI HOẶC CHỈNH SỬA MẪU CŨ BẮT BUỘC PHẢI TUÂN THỦ ĐÚNG 5 NGUYÊN TẮC SAU:
+>    - **Chuẩn hóa 100% Bộ Khóa Schema (`schema.json`)**: Các trường thông tin chung giữa các mẫu thiệp bắt buộc phải dùng đúng key chuẩn:
+>      * Đôi uyên ương: `wedding.groom_name`, `wedding.bride_name`.
+>      * Phụ mẫu hai bên: `wedding.extra_data.groom_father`, `wedding.extra_data.groom_mother`, `wedding.extra_data.bride_father`, `wedding.extra_data.bride_mother`.
+>      * Thời gian & Địa điểm: `wedding.wedding_date`, `wedding.extra_data.event_party_address`, `wedding.extra_data.event_party_lunar`.
+>      * Mừng cưới & Ngân hàng: `wedding.extra_data.groom_bank_account`, `wedding.extra_data.groom_bank_name`, `wedding.extra_data.bride_bank_account`, `wedding.extra_data.bride_bank_name`.
+>      * Ảnh cưới chính: `wedding.cover_photo_url`, `wedding.extra_data.hero_photo_url`.
+>    - **Gắn đầy đủ hợp đồng `data-sync-target` cho mọi vị trí hiển thị dữ liệu**: Bất kỳ vị trí nào hiển thị tên, bố mẹ, ngày cưới, sảnh tiệc, lời nhắn trong `template.blade.php` **ĐỀU PHẢI CÓ** `data-sync-target="{tên_trường}"` (ví dụ: `data-sync-target="groom_name"`, `data-sync-target="groom_father"`, `data-sync-target="wedding_date"`). Tuyệt đối **KHÔNG hardcode văn bản mẫu** trực tiếp vào thẻ HTML.
+>    - **Phòng vệ Chế Độ Nhúng Studio Editor (`$isEmbed = true`)**:
+>      * Khi nhúng trong iframe trình tạo thiệp (`?embed=1`), bắt buộc phải mở sẵn cánh thiệp (`.opened`), không được gắn class khóa cuộn `no-scroll` hay `scroll_locked` vào `html`/`body`, và cưỡng chế `.card-wrapper { display: block !important; }` để tránh thiệp bị màn hình trắng trơn.
+>      * Toàn bộ phần tử hiệu ứng (reveal/motion) phải hiển thị tức thì (`is-visible`) trong iframe để khách hàng nhìn thấy nội dung ngay lập tức.
+>    - **Phòng vệ Ảnh Lỗi (Asset Fallback Defense)**: Mọi lời gọi `$resolveAsset($path, $fallback)` luôn phải có fallback chỉ đến file ảnh có thật trong thư mục `assets/` của mẫu đó. Tuyệt đối không bao giờ để xuất hiện icon ảnh vỡ hoặc URL rỗng.
+>    - **Kế thừa Layout chung & Bridge**: Mọi mẫu thiệp bắt buộc phải `@extends('client.layouts.invitation')` để tự động kích hoạt `editor-bridge.blade.php` và cơ chế handshake 2 chiều `MAYHEN_BRIDGE_READY`.
 
 ---
 
