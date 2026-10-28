@@ -1395,12 +1395,12 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * **Backend Sanitization & Security (`InvitationEditorController`)**: Kiểm tra nghiêm ngặt `validateAndSanitizeName`, lọc thẻ HTML bằng `strip_tags()` chống XSS, chuẩn hóa khoảng trắng; sanitize địa chỉ (max 255), tài khoản ngân hàng (chỉ alphanumeric, max 30).
                 - **Kiểm thử chất lượng**: Bổ sung bộ test ca thành công và ca từ chối (>4 từ, >30 ký tự, chứa script/số), toàn bộ 28/28 tests Passed 100%.
 
-            25. **Tối Ưu Bố Cục Tên Phong Thư Mẫu "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`)**:
-                - **Cải tiến**: Điều chỉnh dòng tiêu đề mở thiệp dòng 177 (`.mayhen_invitation_ladjihe38udhd_opening_names`):
-                  * Tên 1 (Chú rể) nằm ở dòng trên (`.mayhen_invitation_ladjihe38udhd_name_line`, căn giữa).
-                  * Ký tự `&` mềm mại nghệ thuật nằm ở dòng giữa (`.mayhen_invitation_ladjihe38udhd_opening_amp`, font script, căn giữa).
-                  * Tên 2 (Cô dâu) nằm ở dòng dưới (`.mayhen_invitation_ladjihe38udhd_name_line`, căn giữa).
-                - **CSS & Live Sync**: Cấu hình Flexbox column căn giữa tinh tế, cỡ chữ `clamp(22px, 5.5vw, 28px)`; nâng cấp `editor-bridge.blade.php` để bảo vệ các thẻ con `groom_name` / `bride_name` không bị ghi đè thành 1 dòng khi gõ phím real-time. Toàn bộ 28/28 Pest tests Passed 100%.
+            25. **Tối Ưu Bố Cục Tên 3 Tầng Nghệ Thuật Mẫu "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`)**:
+                - **Cải tiến đồng bộ 3 vị trí hiển thị tên đôi uyên ương**:
+                  1. *Phong bì mở thiệp (`.mayhen_invitation_ladjihe38udhd_opening_names` - dòng 177)*: Tên Chú rể ở trên, ký tự `&` ở giữa, Tên Cô dâu ở dưới.
+                  2. *Hero Section đầu trang (`.mayhen_invitation_ladjihe38udhd_hero_title` - dòng 216-220)*: Tách thành 3 dòng xếp tầng trang trọng (Tên Chú rể -> ký tự `&` font script mềm mại -> Tên Cô dâu) với `clamp(24px, 6vw, 36px)`, giải quyết triệt để vấn đề tên dài tràn dòng hoặc đè chữ.
+                  3. *Footer Section lời cảm ơn (`.mayhen_invitation_ladjihe38udhd_footer_names` - dòng 897-901)*: Tách thành 3 dòng tương tự với `clamp(18px, 4.5vw, 24px)`.
+                - **CSS & Live Sync**: Cấu hình Flexbox column căn giữa tinh tế, cỡ chữ co giãn phản hồi mượt mà; hoàn thiện cơ chế phòng vệ trong `editor-bridge.blade.php` để bảo vệ các thẻ con `groom_name` / `bride_name` không bị ghi đè thành 1 dòng khi gõ phím real-time. Toàn bộ 28/28 Pest tests Passed 100%.
 
 ---
 

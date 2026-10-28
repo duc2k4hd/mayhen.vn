@@ -662,17 +662,34 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_ladjihe38u
   font-family: var(--font-serif);
   font-size: 34px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   margin-bottom: 12px;
   text-shadow: 0 2px 12px rgba(0,0,0,0.6);
   color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.mayhen_invitation_ladjihe38udhd_hero_title .mayhen_invitation_ladjihe38udhd_name_line {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  word-break: break-word;
 }
 
 .mayhen_invitation_ladjihe38udhd_hero_title .mayhen_invitation_ladjihe38udhd_amp {
+  display: block;
   font-family: var(--font-script);
   font-weight: 400;
-  font-size: 42px;
-  margin: 0 8px;
+  font-size: 38px;
+  margin: 0;
+  line-height: 1;
   color: var(--mayhen_invitation_ladjihe38udhd_gold);
 }
 
@@ -1859,6 +1876,32 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_ladjihe38u
   letter-spacing: 1px;
   margin-bottom: 8px;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.mayhen_invitation_ladjihe38udhd_footer_names .mayhen_invitation_ladjihe38udhd_name_line {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 4.5vw, 24px);
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  word-break: break-word;
+}
+
+.mayhen_invitation_ladjihe38udhd_footer_names .mayhen_invitation_ladjihe38udhd_footer_amp {
+  display: block;
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 28px;
+  margin: 0;
+  line-height: 1;
+  color: var(--mayhen_invitation_ladjihe38udhd_gold_light);
 }
 
 .mayhen_invitation_ladjihe38udhd_footer_date {

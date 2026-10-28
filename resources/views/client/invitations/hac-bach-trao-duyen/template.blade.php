@@ -214,9 +214,9 @@
           <span id="mayhen_invitation_ladjihe38udhd_guest_main_name">Bạn và Gia Đình</span>
         </div>
         <h1 class="mayhen_invitation_ladjihe38udhd_hero_title">
-          <span data-sync-target="groom_name">{{ $groomName }}</span>
+          <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="groom_name">{{ $groomName }}</span>
           <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span>
-          <span data-sync-target="bride_name">{{ $brideName }}</span>
+          <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="bride_name">{{ $brideName }}</span>
         </h1>
         <p class="mayhen_invitation_ladjihe38udhd_hero_date" data-sync-target="wedding_date">{{ $weddingDate->format('d . m . Y') }}</p>
 
@@ -895,7 +895,9 @@
             Chân thành cảm ơn tình cảm và sự hiện diện của bạn!
           </p>
           <div class="mayhen_invitation_ladjihe38udhd_footer_names">
-            <span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span>
+            <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="groom_name">{{ $groomName }}</span>
+            <span class="mayhen_invitation_ladjihe38udhd_footer_amp">&amp;</span>
+            <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="bride_name">{{ $brideName }}</span>
           </div>
           <p class="mayhen_invitation_ladjihe38udhd_footer_date" data-sync-target="wedding_date">{{ $weddingDate->format('d . m . Y') }}</p>
         </div>
