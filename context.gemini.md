@@ -6,6 +6,7 @@
 > 3. Viết cho tôi commit Tiếng Việt có dấu có mở đầu mang ý nghĩa chính xác (ví dụ: fix(), refactor(),...) để tôi gửi commit, bạn không được phép tự gửi lệnh, viết git chi tiết mức độ vừa, đủ để đọc hiểu
 > 4. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
 > 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
+> 6. **QUY ĐỊNH VỀ TỆP KIỂM THỬ (TESTING & TEST FILES)**: Khi viết file test, **BẮT BUỘC PHẢI ĐẶT TRONG THƯ MỤC `tests/`** (ví dụ: `tests/Feature/` hoặc `tests/Unit/`). Tuyệt đối không tạo file test hoặc script kiểm tra bừa bãi ở thư mục gốc hay các thư mục khác ngoài `tests/`. Mỗi lần code xong, nếu file test đó chỉ phục vụ tạm thời và không còn dùng nữa thì **có thể xóa đi** để giữ kho mã nguồn luôn tinh gọn và sạch sẽ.
 
 ---
 
@@ -87,7 +88,7 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
   - Pure Blade Template (`resources/views/client/`)
   - Pure Vanilla CSS (`public/assets/client/css/`)
   - Pure Vanilla JavaScript ES Modules (`public/assets/client/js/`)
-- **Testing**: Pest PHP (`vendor/bin/pest`)
+- **Testing**: Pest PHP (`vendor/bin/pest`) — *Mọi file test bắt buộc nằm trong thư mục `tests/` (`tests/Feature/` hoặc `tests/Unit/`). Các file test tạm thời có thể xóa đi sau khi hoàn tất kiểm tra và code xong.*
 - **Code Formatter**: Laravel Pint (`vendor/bin/pint --format agent`)
 - **Thanh toán tự động**: VietQR (Ngân hàng Việt Nam) & SePay Webhook
 
