@@ -1245,6 +1245,16 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Đăng ký CSDL & Kiểm thử chất lượng**:
                   * Cập nhật bản ghi mẫu trong `database/seeders/InvitationTemplateSeeder.php` với metadata chuẩn (slug: `luu-but-ngay-chung-doi`, name: "Lưu Bút Ngày Chung Đôi", category: `editorial`, tier: `pro`, complexity: `deluxe`).
                   * Kiểm tra HTTP Status `200 OK` vượt qua 100% cho cả route xem thử `/xem-thu/luu-but-ngay-chung-doi` và nạp asset CSS/JS/Font. Định dạng code chuẩn PSR-12 qua Laravel Pint.
+                - **Refactor Giao Diện Màu Xanh Cưới (Sage Green Luxury) & Sửa Lỗi Che Nút Bấm**:
+                  * **Loại bỏ hoàn toàn bộ lọc grayscale**: Xóa `filter: grayscale(1)` để toàn bộ ảnh cưới của cô dâu chú rể và hoa văn tự nhiên hiển thị rạng rỡ, trong trẻo, tràn đầy năng lượng hỷ sự.
+                  * **Chuyển đổi tone màu cưới**: Thay thế màu đen than `#1a1a1a` / `rgb(32,32,32)` sang hệ màu xanh xô thơm hoàng gia (Sage Green `#3B5E4F` & `#2A453B`), kết hợp viền vàng kim Antique Gold (`#C5A880`) trên nền kem ngà mỹ thuật ấm áp (`#FAF9F5`). Chuyển nền `SECTION24` (Lịch cưới) sang xanh rêu nhung quý phái.
+                  * **Sửa lỗi che nút bấm Lightbox Album Kỷ Niệm**: Tái cấu trúc thanh điều hướng modal thành `dialog-gallery-toolbar` cân đối, giới hạn chiều cao ảnh `max-height: 52dvh` để hai nút `‹ Ảnh trước` và `Ảnh tiếp ›` kèm bộ đếm trang luôn hiển thị 100% thông thoáng, không bao giờ bị cắt mép dưới. Bổ sung thêm cặp nút mũi tên nổi (`.lightbox-arrow`) trực tiếp trên ảnh.
+                  * **Sửa lỗi che nút bấm Floating Widget Nav & Cuối trang**: Nâng cụm nút nổi Menu/Nhạc/Share lên `bottom: 85px` để không bị thanh Bottom Nav của trang xem thử đè lên; đồng thời thêm `padding-bottom: 95px` cho `#mayhen_w18_stage` để các nút ở section chân trang không bị che khuất.
+                  * **Nâng cấp nút bấm**: Toàn bộ nút chính (`BUTTON6`, `BUTTON11`, `BUTTON21`, `BUTTON2`, `BUTTON5`, `BUTTON9`, `BUTTON10`, nút Mở thiệp) đều được chuyển sang gradient xanh sage viền vàng gold sang trọng, bấm có hiệu ứng hover mượt mà.
+                - **Sửa Lỗi Click Mở Album Lightbox & Chuẩn Hóa Tính Năng Ký Tên Sổ Lưu Bút (Demo vs Live Mode)**:
+                  * **Mở Album Lightbox mượt mà 100%**: Truyền trực tiếp danh sách 12 ảnh cưới chất lượng cao qua mảng `window.MAYHEN_W18.album`, gắn sự kiện click cho toàn bộ 12 khối `.photoBookImage`, khắc phục lỗi không mở được modal xem ảnh.
+                  * **Modal Ký Tên Điện Tử không bị đè layout**: Nút "NHẤN ĐỂ KÝ TÊN" (`#BUTTON2`) giờ đây kích hoạt Modal toàn màn hình chuyên nghiệp với Canvas cảm ứng đa điểm, ô nhập tên người ký, nút xóa vẽ lại và nút lưu chữ ký. Ẩn hoàn toàn khung inline cũ `#GROUP13` để triệt tiêu vĩnh viễn tình trạng bị section Album đè lên.
+                  * **Chế độ Demo vs Thiệp Thật thông minh**: Khi ở chế độ xem thử (`isPreview === true`), tự động nạp 3 chữ ký mẫu demo nghệ thuật (Bác Thành, Gia Bảo, Thuỳ Trang) lên Bức Tường Lưu Bút (`#previewContainer`), cho phép khách ký thử và lưu vào `localStorage`. Khi ở chế độ thiệp thật (`isPreview === false`), không hiển thị dữ liệu demo mà lưu chữ ký thật của khách mời trực tiếp vào hệ thống Mây Hẹn. Thẻ chữ ký trên bức tường lưu bút được thiết kế dạng lưới card nghệ thuật có ảnh nét ký, tên và ngày giờ trang nhã.
 
 ---
 

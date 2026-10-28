@@ -93,7 +93,32 @@
     // 4. Nhạc nền
     $musicUrl = $resolveAsset($wedding->music_url ?? null, '');
 
-    // 5. Lời chúc & RSVP URLs
+    // 5. Album ảnh cưới 12 ảnh
+    $defaultAlbum = [
+        $assetBase . '/images/external/3901bfd3190f56014d895d1a.jpg',
+        $assetBase . '/images/external/e9af36aeab2bdadab5cfa38a.jpg',
+        $assetBase . '/images/external/92a00aa5496c7a21b66e849c.jpg',
+        $assetBase . '/images/external/69415bc1a70fa6ab262a5a64.jpg',
+        $assetBase . '/images/external/26844409b0f13b3939a425ed.jpg',
+        $assetBase . '/images/external/6da36455f708e4ada496156b.jpg',
+        $assetBase . '/images/external/d186c382da25135ecdb84a26.jpg',
+        $assetBase . '/images/external/9a1368650f4a8f7d390b25fb.jpg',
+        $assetBase . '/images/external/0086c9a04b4db8dd38df1f73.jpg',
+        $assetBase . '/images/external/fd1e0117e9fae02cd4a4ce79.jpg',
+        $assetBase . '/images/external/ba3d1ab0162723fc4b2a42b8.jpg',
+        $assetBase . '/images/external/750ef46df6b267d9fe57e090.jpg',
+    ];
+    $rawGallery = $wedding->extra_data['gallery'] ?? [];
+    $validGallery = is_array($rawGallery)
+        ? array_filter(
+            $rawGallery,
+            fn($item) => !empty(trim((string) $item)) && !str_starts_with((string) $item, 'blob:'),
+        )
+        : [];
+    $selectedAlbum = !empty($validGallery) ? array_values($validGallery) : $defaultAlbum;
+    $albumPhotos = array_map(fn($p) => $resolveAsset($p), $selectedAlbum);
+
+    // 6. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
     $wishSubmitUrl = $wishSubmitUrl ?? (isset($invitation)
         ? route('invitation.wish.store', $invitation->slug)
@@ -145,6 +170,8 @@
                 groom: @json($groomBankInfo),
                 bride: @json($brideBankInfo)
             },
+            album: @json($albumPhotos),
+            isPreview: {{ $isPreview ? 'true' : 'false' }},
             music: @json($musicUrl),
             wishSubmitUrl: @json($wishSubmitUrl),
             rsvpSubmitUrl: @json($rsvpSubmitUrl),
@@ -212,7 +239,7 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_btn_open_menu" data-action="true" id="SHAPE15">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-shape"><svg class="" fill="rgb(133, 133, 105)" height="100%" preserveaspectratio="none" viewbox="0 0 1536 1896.0833" width="100%" xmlns="http://www.w3.org/2000/svg">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-shape"><svg class="" fill="#3B5E4F" height="100%" preserveaspectratio="none" viewbox="0 0 1536 1896.0833" width="100%" xmlns="http://www.w3.org/2000/svg">
 <path d="M1536 1344v128q0 26-19 45t-45 19H64q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 960V832q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 448V320q0-26 19-45t45-19h1408q26 0 45 19t19 45z">
 </path>
 </svg></div>
@@ -353,7 +380,7 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_ladi-animation" id="SHAPE21">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-shape mayhen_invitation_ladjihe38udhd_ladi-transition"><svg class="" enable-background="new 0 0 256 256" fill="rgb(133, 133, 105)" height="100%" preserveaspectratio="none" version="1.1" viewbox="0 0 256 256" width="100%" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-shape mayhen_invitation_ladjihe38udhd_ladi-transition"><svg class="" enable-background="new 0 0 256 256" fill="#3B5E4F" height="100%" preserveaspectratio="none" version="1.1" viewbox="0 0 256 256" width="100%" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
 <g>
 <path d="M201.893,84.946c3.369,0,6.107,2.732,6.107,6.107c0,3.373-2.738,6.107-6.107,6.107   c-3.379,0-6.107-2.734-6.107-6.107C195.785,87.679,198.514,84.946,201.893,84.946L201.893,84.946z">
 </path>
@@ -1109,7 +1136,7 @@
 </div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP13" style="display:none !important">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP13" style="display:none !important; visibility:hidden !important; height:0 !important; overflow:hidden !important;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX10">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-box mayhen_invitation_ladjihe38udhd_ladi-transition"></div>

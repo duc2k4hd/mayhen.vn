@@ -11521,99 +11521,720 @@
                             }
                         
 
-/* === overrides.css === */
-/* MAYHEN Wedding 18 V2 - independent runtime and responsive patches */
-:root { color-scheme: light; --mayhen-black:#191919; --mayhen-grey:#5f5f5f; --mayhen-white:#fff; }
-html { scroll-behavior:smooth; }
-html,body { padding:0;margin:0;max-width:100%;overflow-x:hidden;background:#fff;color:var(--mayhen-black); }
-body {font-family:Philosopher, Georgia,serif; }
-* {box-sizing:border-box}
-.mayhen_invitation_ladjihe38udhd_ladi-image-background { filter:grayscale(1); }
-.mayhen_invitation_ladjihe38udhd_ladi-wraper {position:relative; }
-.mayhen_invitation_ladjihe38udhd_ladi-element[role=button], .mayhen_invitation_ladjihe38udhd_photoBookImage, .mayhen_invitation_ladjihe38udhd_Signature_BTN_xoa, .mayhen_invitation_ladjihe38udhd_Signature_BTN_xem, .mayhen_invitation_ladjihe38udhd_Signature_BTN_luu{cursor:pointer}
-.mayhen_invitation_ladjihe38udhd_ladi-element:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {outline:3px solid #343434;outline-offset:3px}
-#SECTION28 {display:none}
-#SECTION_POPUP {display:none!important}
-#DROPBOX1 {display:none!important}
-#GROUP138, #SHAPE15, #GROUP165 {display:none!important}
-#HTML_CODE1 #deleteDialog {display:none!important}
-#HTML_CODE8 #MessageBox {scrollbar-width:thin}
-#HTML_CODE8 .mayhen_invitation_ladjihe38udhd_MessageBox-item{border-bottom:1px dashed #aaa}
-#HTML_CODE1 #previewContainer {position:relative;width:100%;height:100%;overflow:hidden}
-#HTML_CODE1 #previewContainer img{max-width:120px;max-height:45px;object-fit:contain;margin:3px}
-#signatureCanvas {display:block;width:100%;height:100%;border:1px solid #333!important;touch-action:none;background:rgba(255,255,255,.75)}
-#GROUP13 {z-index:10}
-#FORM2 input,#FORM2 select,#FORM2 textarea,#FORM3 input,#FORM3 select,#FORM3 textarea {font-family:Philosopher,Georgia,serif}
-#FORM2 .mayhen_invitation_ladjihe38udhd_ladi-form-item-container, #FORM3 .mayhen_invitation_ladjihe38udhd_ladi-form-item-container {border-color:#383838!important}
-#FORM2 .mayhen_invitation_ladjihe38udhd_ladi-form-control, #FORM3 .mayhen_invitation_ladjihe38udhd_ladi-form-control {color:#242424!important}
-#FORM2 input::placeholder, #FORM3 input::placeholder {color:#676767!important}
-#SECTION9 #MessageBox {overflow:auto;max-height:100%;height:100%;padding:14px;background:rgba(255,255,255,.85)!important}
-#SECTION9 #MessageBox .mayhen_invitation_ladjihe38udhd_MessageBox-item-name{color:#111!important}
-#SECTION9 #MessageBox .mayhen_invitation_ladjihe38udhd_MessageBox-item-message{color:#333!important}
-#mayhen_w18_stage {width:100%;height:auto;position:relative}
-@media(max-width:767px) {
-  #mayhen_w18_stage>.mayhen_invitation_ladjihe38udhd_ladi-wraper {width:420px;transform-origin:top left;}
+/* === overrides.css (Refactored: Tone Xanh Cưới Sage Green & Gold Luxury - Sửa lỗi che nút bấm & Màu tối) === */
+:root {
+    color-scheme: light;
+    --mayhen-green-primary: #3B5E4F;
+    --mayhen-green-deep: #2A453B;
+    --mayhen-green-dark: #1E352B;
+    --mayhen-green-light: #527967;
+    --mayhen-green-soft: #E9F0EC;
+    --mayhen-gold: #C5A880;
+    --mayhen-gold-antique: #D4AF37;
+    --mayhen-gold-light: #EFE4D2;
+    --mayhen-ivory: #FAF9F5;
+    --mayhen-cream-soft: #F5F7F5;
+    --mayhen-text: #23352D;
+    --mayhen-text-muted: #597064;
 }
-@media(min-width:768px) {
-  #mayhen_w18_stage>.mayhen_invitation_ladjihe38udhd_ladi-wraper {width:100%;transform:none!important}
+
+html {
+    scroll-behavior: smooth;
 }
-.mayhen_invitation_ladjihe38udhd_widget-nav{position:fixed;right:15px;bottom:15px;display:flex;gap:9px;flex-direction:column;z-index:8000}
-.mayhen_invitation_ladjihe38udhd_widget-nav button{background:#1d1d1d;color:#fff;box-shadow:0 4px 15px #0002;border:1px solid #fff6;border-radius:50%;width:44px;height:44px;cursor:pointer;font:22px/1 Georgia,serif;display:grid;place-items:center}
-.mayhen_invitation_ladjihe38udhd_widget-nav button:hover{background:#555}
-.mayhen_invitation_ladjihe38udhd_dialog-overlay{position:fixed;inset:0;background:#000b;z-index:8500;display:none;align-items:center;justify-content:center;padding:15px;backdrop-filter:blur(6px)}
-.mayhen_invitation_ladjihe38udhd_dialog-overlay[aria-hidden="false"]{display:flex}
-.mayhen_invitation_ladjihe38udhd_dialog-panel{position:relative;max-width:580px;width:100%;max-height:92dvh;overflow:auto;padding:34px 25px 25px;background:#fff;color:#1a1a1a;border:1px solid #222;box-shadow:0 10px 55px #0005;text-align:center}
-.mayhen_invitation_ladjihe38udhd_dialog-panel h2{font:normal clamp(30px,6vw,48px)/1.3 Georgia,serif;margin:0 0 16px}
-.mayhen_invitation_ladjihe38udhd_dialog-panel p{font:17px/1.7 Philosopher,Georgia,serif;margin:8px 0 18px}
-.mayhen_invitation_ladjihe38udhd_dialog-panel button{cursor:pointer}
-.mayhen_invitation_ladjihe38udhd_dialog-close{position:absolute;top:8px;right:8px;border:0;background:transparent!important;color:#111!important;font:28px/1 Arial,sans-serif;padding:6px 10px}
-.mayhen_invitation_ladjihe38udhd_dialog-action{background:#1e1e1e;border:1px solid #1e1e1e;color:white;padding:12px 22px;font:16px Philosopher,Georgia,serif;margin-top:12px}
-.mayhen_invitation_ladjihe38udhd_dialog-action:hover{background:#444}
-.mayhen_invitation_ladjihe38udhd_dialog-photo{width:100%;max-height:70dvh;object-fit:contain;display:block;background:#eee}
-.mayhen_invitation_ladjihe38udhd_dialog-gallery-nav{display:flex;justify-content:space-between;margin-top:15px;gap:14px}
-.mayhen_invitation_ladjihe38udhd_dialog-gallery-nav button{flex:1;background:#222;color:#fff;border:0;padding:12px;font:20px Arial}
-.mayhen_invitation_ladjihe38udhd_dialog-navigation{display:flex;flex-direction:column;gap:7px;margin-top:15px}
-.mayhen_invitation_ladjihe38udhd_dialog-navigation button{background:white;color:#222;border:1px solid #ccc;padding:12px;font:16px Philosopher,Georgia,serif}
-.mayhen_invitation_ladjihe38udhd_dialog-navigation button:hover{background:#eee}
-.mayhen_invitation_ladjihe38udhd_dialog-toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%) translateY(20px);background:#171717;color:white;padding:13px 21px;box-shadow:0 5px 25px #0003;z-index:9000;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;max-width:90%;text-align:center;font:15px Philosopher,Georgia,serif}
-.mayhen_invitation_ladjihe38udhd_dialog-toast.mayhen_invitation_ladjihe38udhd_show{opacity:1;transform:translateX(-50%) translateY(0)}
-.mayhen_invitation_ladjihe38udhd_portrait-fallback{background:#e6e6e6 linear-gradient(125deg,#d6d6d6,#fafafa 55%,#c9c9c9)!important}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-/* Mobile original source hides SECTION1 during the first-screen popup. We render it in the standalone build. */
-@media(max-width:767px){#SECTION1{display:block!important;height:630px!important}}
-/* When image CDNs are not available, visible photo frames keep a neutral monochrome fallback. */
-#IMAGE1>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE88>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE7>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE55>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE51>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE60>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE61>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE62>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE63>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE64>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE65>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background,
-#IMAGE66>.mayhen_invitation_ladjihe38udhd_ladi-image>.mayhen_invitation_ladjihe38udhd_ladi-image-background {background-color:#dfdfdf;background-blend-mode:normal}
-/* The original employs licensed narrow display fonts that may be unavailable offline.
-   Guard against fallback-font overflow without altering the Ladi positioning. */
-#HEADLINE3>.mayhen_invitation_ladjihe38udhd_ladi-headline,
-#HEADLINE283>.mayhen_invitation_ladjihe38udhd_ladi-headline {
-  font-family:Philosopher,Georgia,serif!important;
-  font-stretch:condensed;
-  letter-spacing:-.055em;
-  word-break:normal!important;
-  white-space:nowrap!important;
+
+html, body {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    background: var(--mayhen-ivory);
+    color: var(--mayhen-text);
+    font-family: Philosopher, Georgia, serif;
 }
-@media(max-width:767px){
- #HEADLINE3>.mayhen_invitation_ladjihe38udhd_ladi-headline,
- #HEADLINE283>.mayhen_invitation_ladjihe38udhd_ladi-headline {font-size:38px!important;letter-spacing:-.065em}
- #HEADLINE282>.mayhen_invitation_ladjihe38udhd_ladi-headline {font-size:36px!important}
+
+* {
+    box-sizing: border-box;
 }
-#PARAGRAPH43>.mayhen_invitation_ladjihe38udhd_ladi-paragraph{font-family:Philosopher,Georgia,serif!important;font-size:26px!important;line-height:1.2!important;letter-spacing:.015em}
-#HEADLINE3>.mayhen_invitation_ladjihe38udhd_ladi-headline,
-#HEADLINE283>.mayhen_invitation_ladjihe38udhd_ladi-headline{font-size:43px!important}
-@media(max-width:767px){
- #PARAGRAPH43>.mayhen_invitation_ladjihe38udhd_ladi-paragraph{font-size:23px!important}
- #HEADLINE3>.mayhen_invitation_ladjihe38udhd_ladi-headline,
- #HEADLINE283>.mayhen_invitation_ladjihe38udhd_ladi-headline{font-size:35px!important}
+
+/* LOẠI BỎ HOÀN TOÀN grayscale ĐỂ ẢNH RỰC RỠ TỰ NHIÊN */
+.mayhen_invitation_ladjihe38udhd_ladi-image-background {
+    filter: none !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_ladi-wraper {
+    position: relative;
+    background: transparent;
+}
+
+.mayhen_invitation_ladjihe38udhd_ladi-element[role=button],
+.mayhen_invitation_ladjihe38udhd_photoBookImage,
+.mayhen_invitation_ladjihe38udhd_Signature_BTN_xoa,
+.mayhen_invitation_ladjihe38udhd_Signature_BTN_xem,
+.mayhen_invitation_ladjihe38udhd_Signature_BTN_luu {
+    cursor: pointer;
+}
+
+.mayhen_invitation_ladjihe38udhd_ladi-element:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2.5px solid var(--mayhen-green-primary);
+    outline-offset: 2px;
+}
+
+#SECTION28 { display: none; }
+#SECTION_POPUP { display: none !important; }
+#DROPBOX1 { display: none !important; }
+#GROUP138, #SHAPE15, #GROUP165 { display: none !important; }
+#HTML_CODE1 #deleteDialog { display: none !important; }
+
+/* BẢO ĐẢM KHÔNG BỊ BOTTOM NAV CHE KHUẤT DƯỚI ĐÁY TRANG */
+#mayhen_w18_stage {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding-bottom: 95px !important;
+}
+
+@media(max-width: 767px) {
+    #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
+        width: 420px;
+        transform-origin: top left;
+    }
+    #SECTION1 {
+        display: block !important;
+        height: 630px !important;
+    }
+}
+
+@media(min-width: 768px) {
+    #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
+        width: 100%;
+        transform: none !important;
+    }
+}
+
+/* ========================================================
+   1. ĐỔI MÀU SẮC SANG TONE XANH CƯỚI SAGE GREEN & GOLD LUXURY
+   ======================================================== */
+
+/* Section Lịch cưới (SECTION24) chuyển từ nền đen u ám sang xanh rêu nhung quý phái */
+#SECTION24 {
+    background-color: var(--mayhen-green-dark) !important;
+    color: #FAF8F5 !important;
+}
+
+#SECTION24 .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    color: #FAF8F5 !important;
+}
+
+#SECTION24 #HEADLINE281 h3,
+#SECTION24 #HEADLINE238 h3,
+#SECTION24 #HEADLINE239 h3,
+#SECTION24 #HEADLINE240 h3,
+#SECTION24 #HEADLINE241 h3 {
+    color: var(--mayhen-gold-light) !important;
+}
+
+#SECTION24 .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+    color: rgba(250, 248, 245, 0.9) !important;
+}
+
+/* Đổi màu chữ Headline chính sang màu xanh ngọc bích / charcoal green sang trọng */
+#HEADLINE3 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE283 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    color: var(--mayhen-green-deep) !important;
+    font-family: Philosopher, Georgia, serif !important;
+    font-stretch: condensed;
+    letter-spacing: -.03em;
+    word-break: normal !important;
+    white-space: nowrap !important;
+    font-size: 43px !important;
+}
+
+#HEADLINE282 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    color: var(--mayhen-gold) !important;
+}
+
+@media(max-width: 767px) {
+    #HEADLINE3 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE283 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 36px !important;
+    }
+    #HEADLINE282 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 34px !important;
+    }
+}
+
+/* Cụm Đếm ngược Ngày Cưới (SECTION6 / COUNTDOWN1) */
+#COUNTDOWN1 .mayhen_invitation_ladjihe38udhd_ladi-countdown-text {
+    color: var(--mayhen-green-deep) !important;
+}
+
+#COUNTDOWN1 .mayhen_invitation_ladjihe38udhd_ladi-countdown-title {
+    color: var(--mayhen-text-muted) !important;
+}
+
+/* ========================================================
+   2. REFACTOR BỘ NÚT BẤM (BUTTONS) - SANG TRỌNG, KHÔNG BỊ CHE
+   ======================================================== */
+
+/* Nút Xác Nhận Tham Dự (BUTTON6) */
+#BUTTON6,
+#BUTTON6 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON6 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 5px 18px rgba(42, 69, 59, 0.3) !important;
+}
+#BUTTON6 #BUTTON_TEXT6 p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+}
+#BUTTON6:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+/* Nút Gửi Lời Chúc (BUTTON11) */
+#BUTTON11,
+#BUTTON11 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON11 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 5px 18px rgba(42, 69, 59, 0.3) !important;
+}
+#BUTTON11 #BUTTON_TEXT11 p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+}
+
+/* Nút Gửi Quà Yêu Thương (BUTTON21) */
+#BUTTON21,
+#BUTTON21 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON21 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 6px 20px rgba(42, 69, 59, 0.35) !important;
+}
+#BUTTON21 #BUTTON_TEXT21 p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+/* Nút Nhấn Để Ký Tên (BUTTON2) */
+#BUTTON2,
+#BUTTON2 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON2 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #476E5E 0%, #2E4B3E 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 4px 15px rgba(42, 69, 59, 0.3) !important;
+}
+#BUTTON2 #BUTTON_TEXT2 p {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Nút Xóa Chữ Ký (BUTTON3) */
+#BUTTON3,
+#BUTTON3 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON3 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: #FFFFFF !important;
+    border: 1.5px solid #8FA89B !important;
+    border-radius: 6px !important;
+}
+#BUTTON3 #BUTTON_TEXT3 p {
+    color: var(--mayhen-green-deep) !important;
+    font-weight: 600 !important;
+}
+
+/* Nút Xem Thử Chữ Ký (BUTTON4) */
+#BUTTON4,
+#BUTTON4 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON4 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: #FAF7F0 !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 6px !important;
+}
+#BUTTON4 #BUTTON_TEXT4 p {
+    color: var(--mayhen-gold-dark) !important;
+    font-weight: 600 !important;
+}
+
+/* Nút Lưu Chữ Ký (BUTTON5) */
+#BUTTON5,
+#BUTTON5 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON5 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 15px rgba(42, 69, 59, 0.3) !important;
+}
+#BUTTON5 #BUTTON_TEXT5 p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* Nút Chỉ Đường Google Maps (BUTTON9) */
+#BUTTON9,
+#BUTTON9 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON9 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 6px !important;
+}
+#BUTTON9 #BUTTON_TEXT9 p {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Nút Thêm Vào Lịch (BUTTON10) */
+#BUTTON10,
+#BUTTON10 .mayhen_invitation_ladjihe38udhd_ladi-button,
+#BUTTON10 .mayhen_invitation_ladjihe38udhd_ladi-button-background {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+}
+#BUTTON10 #BUTTON_TEXT10 p {
+    color: var(--mayhen-gold-light) !important;
+    font-weight: 600 !important;
+}
+
+/* ========================================================
+   3. SỬA LỖI CHE NÚT BẤM FLOATING WIDGET NAV (MENU, NHẠC, SHARE)
+   ======================================================== */
+.mayhen_invitation_ladjihe38udhd_widget-nav {
+    position: fixed;
+    right: 18px;
+    bottom: 85px !important; /* NÂNG CAO TRÁNH BỊ THANH BOTTOM-NAV CHE */
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    z-index: 8000;
+}
+
+.mayhen_invitation_ladjihe38udhd_widget-nav button {
+    background: var(--mayhen-green-primary) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 5px 20px rgba(42, 69, 59, 0.35) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font: 20px/1 Georgia, serif;
+    display: grid;
+    place-items: center;
+    transition: all .25s ease;
+}
+
+.mayhen_invitation_ladjihe38udhd_widget-nav button:hover {
+    background: var(--mayhen-green-deep) !important;
+    transform: scale(1.08);
+}
+
+/* ========================================================
+   4. REFACTOR TOÀN DIỆN DIALOG / MODAL (ALBUM, MỪNG CƯỚI, MENU)
+      SỬA LỖI BỊ CHE NÚT ‹ › TRONG ẢNH NGƯỜI DÙNG PHẢN HỒI
+   ======================================================== */
+.mayhen_invitation_ladjihe38udhd_dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 32, 26, 0.82) !important;
+    z-index: 8500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(8px);
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-overlay[aria-hidden="false"] {
+    display: flex;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-panel {
+    position: relative;
+    max-width: 580px;
+    width: 100%;
+    max-height: 88dvh !important; /* GIẢM ĐỂ VỪA VẶN MÀN HÌNH */
+    overflow-y: auto !important;
+    padding: 28px 24px 24px !important; /* PADDING ĐÁY RỘNG RÃI */
+    background: #FAF9F6 !important;
+    color: var(--mayhen-text) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+    text-align: center;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-panel h2 {
+    font: normal clamp(26px, 5.5vw, 38px)/1.3 Philosopher, Georgia, serif !important;
+    color: var(--mayhen-green-deep) !important;
+    margin: 0 0 12px !important;
+    font-weight: 700 !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-panel p {
+    font: 16px/1.6 Philosopher, Georgia, serif;
+    margin: 6px 0 14px;
+    color: var(--mayhen-text-muted);
+}
+
+/* Nút đóng modal × tinh xảo */
+.mayhen_invitation_ladjihe38udhd_dialog-close {
+    position: absolute;
+    top: 12px !important;
+    right: 12px !important;
+    width: 36px !important;
+    height: 36px !important;
+    border: 1px solid rgba(197, 168, 128, 0.4) !important;
+    background: rgba(59, 94, 79, 0.08) !important;
+    color: var(--mayhen-green-deep) !important;
+    border-radius: 50% !important;
+    font: 22px/1 Arial, sans-serif !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-close:hover {
+    background: var(--mayhen-green-primary) !important;
+    color: #FFFFFF !important;
+    transform: rotate(90deg);
+}
+
+/* Ảnh Album trong Lightbox - Giới hạn chiều cao để không đẩy các nút điều hướng */
+.mayhen_invitation_ladjihe38udhd_dialog-photo {
+    width: 100%;
+    max-height: 52dvh !important; /* KHÔNG VƯỢT QUÁ 52dvh ĐỂ NÚT KHÔNG BỊ TRÀN */
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    background: #EAEFEA;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media(max-width: 767px) {
+    .mayhen_invitation_ladjihe38udhd_dialog-photo {
+        max-height: 48dvh !important;
+    }
+}
+
+/* KHỐI ĐIỀU HƯỚNG PREV / NEXT - HIỂN THỊ RÕ RÀNG HOÀN TOÀN */
+/* KHỐI ĐIỀU HƯỚNG PREV / NEXT - HIỂN THỊ RÕ RÀNG HOÀN TOÀN, KHÔNG BỊ CHE KHUẤT */
+.mayhen_invitation_ladjihe38udhd_dialog-gallery-toolbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-top: 14px !important;
+    padding: 6px 4px 4px !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-nav-btn {
+    background: var(--mayhen-green-primary) !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    padding: 9px 18px !important;
+    font: 600 15px Philosopher, Georgia, serif !important;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 4px 12px rgba(42, 69, 59, 0.25) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-nav-btn:hover {
+    background: var(--mayhen-green-deep) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(42, 69, 59, 0.35) !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-gallery-counter {
+    font: 700 16px Philosopher, Georgia, serif !important;
+    color: var(--mayhen-green-deep) !important;
+}
+
+/* NÚT MŨI TÊN NỔI TRỰC TIẾP TRÊN ẢNH */
+.mayhen_invitation_ladjihe38udhd_lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(42, 69, 59, 0.8) !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    font: bold 24px/1 Arial, sans-serif !important;
+    display: grid !important;
+    place-items: center !important;
+    cursor: pointer;
+    transition: all .2s ease;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+.mayhen_invitation_ladjihe38udhd_lightbox-arrow:hover {
+    background: var(--mayhen-green-deep) !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.mayhen_invitation_ladjihe38udhd_lightbox-prev {
+    left: 8px;
+}
+
+.mayhen_invitation_ladjihe38udhd_lightbox-next {
+    right: 8px;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-gallery-nav {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    margin-top: 12px !important;
+    margin-bottom: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-gallery-nav button {
+    flex: 0 1 140px !important;
+    background: var(--mayhen-green-primary) !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font: bold 22px Arial, sans-serif !important;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 4px 14px rgba(42, 69, 59, 0.25) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-gallery-nav button:hover {
+    background: var(--mayhen-green-deep) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(42, 69, 59, 0.35) !important;
+}
+
+/* Nút hành động chính trong dialog (Mở thiệp, Sao chép STK) */
+.mayhen_invitation_ladjihe38udhd_dialog-action {
+    background: linear-gradient(135deg, #3B5E4F 0%, #253D33 100%) !important;
+    border: 1.5px solid var(--mayhen-gold) !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    padding: 12px 28px !important;
+    font: 600 16px Philosopher, Georgia, serif !important;
+    margin-top: 14px !important;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(42, 69, 59, 0.3) !important;
+    transition: all .2s;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-action:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+/* Menu điều hướng mục lục trong Dialog */
+.mayhen_invitation_ladjihe38udhd_dialog-navigation button {
+    background: #FFFFFF !important;
+    color: var(--mayhen-green-deep) !important;
+    border: 1px solid #C5D6CC !important;
+    border-radius: 8px;
+    padding: 12px;
+    font: 600 16px Philosopher, Georgia, serif;
+    transition: all .2s;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-navigation button:hover {
+    background: var(--mayhen-green-soft) !important;
+    border-color: var(--mayhen-green-primary) !important;
+}
+
+/* Toast thông báo */
+.mayhen_invitation_ladjihe38udhd_dialog-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 85px !important; /* NÂNG CAO TRÁNH BOTTOM NAV */
+    transform: translateX(-50%) translateY(20px);
+    background: var(--mayhen-green-deep) !important;
+    color: #FFFFFF !important;
+    border: 1px solid var(--mayhen-gold) !important;
+    border-radius: 8px;
+    padding: 12px 24px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
+    z-index: 9000;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+    font: 15px Philosopher, Georgia, serif;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-toast.mayhen_invitation_ladjihe38udhd_show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ========================================================
+   5. CẢI TIẾN FORM VÀ HỘP LỜI CHÚC (SÁNG SỦA, SANG TRỌNG)
+   ======================================================== */
+#FORM2 .mayhen_invitation_ladjihe38udhd_ladi-form-item-container,
+#FORM3 .mayhen_invitation_ladjihe38udhd_ladi-form-item-container {
+    border-color: #A6C2B4 !important;
+    border-radius: 6px !important;
+    background: #FFFFFF !important;
+}
+
+#FORM2 .mayhen_invitation_ladjihe38udhd_ladi-form-control,
+#FORM3 .mayhen_invitation_ladjihe38udhd_ladi-form-control {
+    color: var(--mayhen-text) !important;
+}
+
+#FORM2 input::placeholder,
+#FORM3 input::placeholder,
+#FORM2 textarea::placeholder,
+#FORM3 textarea::placeholder {
+    color: #7D968A !important;
+}
+
+/* Hộp Lời Chúc (SECTION9) - Nền sáng kem ngà, viền xanh sage */
+#SECTION9 #MessageBox {
+    overflow: auto;
+    max-height: 100%;
+    height: 100%;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #C2D6CB !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 20px rgba(42, 69, 59, 0.08) !important;
+}
+
+#SECTION9 #MessageBox .mayhen_invitation_ladjihe38udhd_MessageBox-item {
+    border-bottom: 1px dashed #C8DCD1 !important;
+    padding: 10px 0;
+}
+
+#SECTION9 #MessageBox .mayhen_invitation_ladjihe38udhd_MessageBox-item-name {
+    color: var(--mayhen-green-deep) !important;
+    font-weight: 700;
+}
+
+#SECTION9 #MessageBox .mayhen_invitation_ladjihe38udhd_MessageBox-item-message {
+    color: var(--mayhen-text) !important;
+}
+
+/* Khung Vẽ Chữ Ký Sổ Lưu Bút */
+#signatureCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 1.5px solid #8FA89B !important;
+    border-radius: 8px;
+    touch-action: none;
+    background: #FAFBF9 !important;
+}
+
+/* ==========================================================
+   🖼️ BỨC TƯỜNG LƯU BÚT KỶ NIỆM (PREVIEW CONTAINER & SIG CARDS)
+   ========================================================== */
+#HTML_CODE1 #previewContainer {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)) !important;
+    gap: 12px !important;
+    padding: 14px 10px !important;
+    align-content: start !important;
+    background: #FAFBF9 !important;
+    border: 1.5px solid #C2D6CB !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 2px 8px rgba(42, 69, 59, 0.06) !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-card {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(197, 168, 128, 0.45) !important;
+    border-radius: 8px !important;
+    padding: 8px 6px 6px !important;
+    text-align: center !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    transition: transform .2s ease;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(42, 69, 59, 0.12) !important;
+    border-color: var(--mayhen-gold) !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-img-wrap {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-img-wrap img {
+    max-width: 100%;
+    max-height: 56px;
+    object-fit: contain;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-meta {
+    margin-top: 6px;
+    border-top: 1px dashed #D6E4DC;
+    padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-name {
+    font-size: 13px !important;
+    color: var(--mayhen-green-deep) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: Philosopher, Georgia, serif;
+    font-weight: 700;
+}
+
+.mayhen_invitation_ladjihe38udhd_sig-time {
+    font-size: 11px !important;
+    color: var(--mayhen-text-muted) !important;
+}
+
+/* ẨN TOÀN BỘ KHUNG INLINE GROUP13 CŨ ĐỂ KHÔNG BỊ SECTION TIẾP THEO ĐÈ LÊN */
+#GROUP13 {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }

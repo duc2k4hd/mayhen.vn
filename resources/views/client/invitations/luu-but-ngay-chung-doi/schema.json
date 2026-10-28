@@ -17,7 +17,7 @@
           "name": "accent_color",
           "label": "Màu điểm nhấn",
           "type": "color",
-          "default": "#1a1a1a"
+          "default": "#3B5E4F"
         },
         {
           "name": "music_url",
