@@ -1320,6 +1320,13 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Dịch vụ (`/dich-vu`): **3.59 ms**!
                   * Sitemap XML (`/sitemap.xml`): **1.32 ms**!
 
+            20. **Sửa Lỗi Chuyển Đổi Thiết Bị Xem Trước Trên Trình Tạo Thiệp (Desktop/Mobile Preview Switcher)**:
+                - **Nguyên nhân**: Trong `public/assets/client/js/pages/editor.js`, biến DOM lưu vùng xem trước bị trỏ nhầm vào class không tồn tại (`.mayhen_editor_preview_panel` thay vì `#mayhen_editor_center_stage` / `.mayhen_editor_center_stage`), dẫn đến việc khi nhấn nút máy tính (`#mayhen_btn_device_desktop`), lớp `.is-desktop-mode` không được gắn vào khung canvas hiển thị.
+                - **Khắc phục**:
+                  * Gán ID `id="mayhen_editor_center_stage"` cho thẻ `<main>` sân khấu trung tâm trong `resources/views/client/pages/editor.blade.php`.
+                  * Cập nhật JavaScript `editor.js`: Trỏ đúng vào `centerStage` và đồng bộ hai chiều với `store.subscribe` cho state `ui.previewDevice`.
+                  * Tối ưu CSS `public/assets/client/css/pages/editor-v2.css`: Khi chuyển sang chế độ Desktop, mở rộng khung mockup từ 375px lên 980px với viền màn hình máy tính Quiet Luxury, đồng thời tự động ẩn Dynamic Island của iPhone (`.mayhen_editor_phone_island { display: none; }`).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

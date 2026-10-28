@@ -660,7 +660,7 @@
             </div>
 
             <!-- Zone 3: Center Stage Live Mockup Canvas -->
-            <main class="mayhen_editor_center_stage">
+            <main class="mayhen_editor_center_stage" id="mayhen_editor_center_stage">
                 <div class="mayhen_editor_mockup_phone">
                     <div class="mayhen_editor_phone_island"></div>
                     <iframe 

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRedo = $('#mayhen_btn_redo');
     const btnDeviceMobile = $('#mayhen_btn_device_mobile');
     const btnDeviceDesktop = $('#mayhen_btn_device_desktop');
-    const previewPanel = $('.mayhen_editor_preview_panel');
+    const centerStage = $('#mayhen_editor_center_stage') || $('.mayhen_editor_center_stage');
 
     // ----------------------------------------------------
     // 0. Initialize Single State Store & Subsystems
@@ -117,6 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Cập nhật chế độ thiết bị xem trước (Mobile / Desktop)
+        if (state.ui && state.ui.previewDevice) {
+            const isDesktop = state.ui.previewDevice === 'desktop';
+            btnDeviceDesktop?.classList.toggle('active', isDesktop);
+            btnDeviceMobile?.classList.toggle('active', !isDesktop);
+            centerStage?.classList.toggle('is-desktop-mode', isDesktop);
+        }
+
         // Luôn đồng bộ custom_config (bố cục, bảng màu, tem sáp) vào input hidden của form
         const customConfigInput = document.getElementById('invitation_custom_config');
         if (customConfigInput && state.custom_config) {
@@ -168,14 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
         on(btnDeviceMobile, 'click', () => {
             btnDeviceMobile.classList.add('active');
             btnDeviceDesktop.classList.remove('active');
-            previewPanel?.classList.remove('is-desktop-mode');
+            centerStage?.classList.remove('is-desktop-mode');
             store.dispatch({ type: ActionTypes.SET_PREVIEW_DEVICE, payload: { device: 'mobile' } });
         });
 
         on(btnDeviceDesktop, 'click', () => {
             btnDeviceDesktop.classList.add('active');
             btnDeviceMobile.classList.remove('active');
-            previewPanel?.classList.add('is-desktop-mode');
+            centerStage?.classList.add('is-desktop-mode');
             store.dispatch({ type: ActionTypes.SET_PREVIEW_DEVICE, payload: { device: 'desktop' } });
         });
     }
