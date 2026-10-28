@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Tạo Thiệp Cưới Online — ' . ($selectedTemplate ? $selectedTemplate->name : 'Thiệp Mời') . ' | ' . config('app.name'))
+@section('title', 'Đang chọn mẫu: "' . ($selectedTemplate ? $selectedTemplate->name : 'Thiệp Mời') . '" | ' . config('app.name'))
 @section('meta_description', 'Tự tạo thiệp cưới online phong cách Quiet Luxury dễ dàng với chế độ xem thử realtime chính xác theo từng mẫu thiệp.')
 @section('robots', 'noindex, nofollow')
 
