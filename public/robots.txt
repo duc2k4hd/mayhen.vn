@@ -2,13 +2,23 @@ User-agent: *
 Allow: /
 Allow: /assets/
 Allow: /storage/
-Allow: /mau-thiep/
-Allow: /thiep/
+Allow: /mau-thiep
+Allow: /bang-gia
+Allow: /dich-vu
+Allow: /ve-chung-toi
+Allow: /lien-he
+Allow: /cau-hoi-thuong-gap
+Allow: /bai-viet
+
+# Chống lập chỉ mục các trang riêng tư, thanh toán, quản trị & thiệp cá nhân
 Disallow: /admin/
 Disallow: /api/
 Disallow: /tai-khoan/
 Disallow: /dang-nhap
 Disallow: /dang-ky
 Disallow: /thanh-toan/
+Disallow: /xem-thu/
+Disallow: /tao-thiep
+Disallow: /thiep/
 
 Sitemap: https://mayhen.vn/sitemap.xml

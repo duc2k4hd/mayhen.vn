@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Cache;
 
 class PageController extends Controller
 {
@@ -15,17 +16,23 @@ class PageController extends Controller
 
     public function pricing(): View
     {
-        $plans = Plan::where('is_active', true)
-            ->whereIn('slug', ['free', 'plus', 'pro'])
-            ->orderBy('price')
-            ->get();
-
-        if ($plans->where('slug', 'plus')->isEmpty()) {
+        $rawPlans = Cache::remember('mayhen_pricing_plans', 86400, function () {
             $plans = Plan::where('is_active', true)
-                ->whereIn('slug', ['free', 'premium', 'pro'])
+                ->whereIn('slug', ['free', 'plus', 'pro'])
                 ->orderBy('price')
                 ->get();
-        }
+
+            if ($plans->where('slug', 'plus')->isEmpty()) {
+                $plans = Plan::where('is_active', true)
+                    ->whereIn('slug', ['free', 'premium', 'pro'])
+                    ->orderBy('price')
+                    ->get();
+            }
+
+            return $plans->map->getAttributes()->all();
+        });
+
+        $plans = Plan::hydrate($rawPlans);
 
         return view('client.pages.pricing', ['plans' => $plans]);
     }

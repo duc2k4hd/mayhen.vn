@@ -228,7 +228,9 @@
                                 <img src="{{ route('templates.asset', ['slug' => 'thuoc-phim-tinh-yeu', 'path' => 'feecd763-f272-424b-9985-b4f3d68d7fb1.jpg']) }}" 
                                      alt="Mẫu thiệp cưới đẹp Mây Hẹn" 
                                      class="mayhen_templates_art_photo" 
-                                     loading="eager">
+                                     loading="eager"
+                                     fetchpriority="high"
+                                     decoding="async">
                                 <div class="mayhen_templates_art_overlay">
                                     <span class="mayhen_templates_art_tagline">WEDDING INVITATION</span>
                                     <span class="mayhen_templates_art_couple">Minh Triết &amp; Thảo Linh</span>
@@ -344,7 +346,7 @@
             @forelse ($templates as $tpl)
                 <article class="mayhen_home_template_card">
                     <div class="mayhen_home_template_card_img_wrap">
-                        <img src="{{ $tpl->image }}" alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}" class="mayhen_home_template_card_img" loading="lazy">
+                        <img src="{{ $tpl->image }}" alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}" class="mayhen_home_template_card_img" loading="lazy" decoding="async">
                         <div class="mayhen_home_template_card_badge_group">
                             <span class="mayhen_home_template_card_tier_badge {{ $tpl->tier_badge_class }}">
                                 {{ $tpl->tier_label }}

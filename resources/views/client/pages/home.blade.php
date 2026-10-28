@@ -34,7 +34,7 @@
             "url": "{{ url('/') }}",
             "logo": {
                 "@type": "ImageObject",
-                "url": "{{ asset('assets/client/images/logo.png') }}",
+                "url": "{{ asset('storage/images/client/business/mayhen-favicon.png') }}",
                 "caption": "Mây Hẹn — Thiệp Cưới Online Cao Cấp"
             },
             "description": "Thương hiệu thiệp cưới online và thiệp cưới điện tử cao cấp dẫn đầu xu hướng thẩm mỹ tinh tế tại Việt Nam.",
@@ -666,24 +666,14 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Mẫu thiệp live preview + Ảnh đại diện (nếu có) -->
+                                    <!-- Card Media: Ảnh đại diện mẫu thiệp lụa nghệ thuật -->
                                     <div class="mayhen_home_showcase_card_media">
-                                        <!-- Mẫu thiệp cưới (được nhúng live, cuộn chậm rãi khi hover) -->
-                                        <div class="mayhen_home_showcase_card_frame_wrap">
-                                            <iframe src="{{ route('templates.preview', $tpl['slug']) }}?embed=1"
-                                                    class="mayhen_home_showcase_card_iframe"
-                                                    tabindex="-1"
-                                                    aria-hidden="true"
-                                                    loading="{{ $index < 4 ? 'eager' : 'lazy' }}"></iframe>
-                                            <div class="mayhen_home_showcase_card_iframe_shield" aria-hidden="true"></div>
-                                        </div>
-
-                                        <!-- Ảnh đại diện: Mặc định hiển thị che lên trên; khi hover sẽ ẩn để lộ mẫu thiệp đang cuộn -->
                                         @if (!empty($tpl['image']))
                                             <img src="{{ $tpl['image'] }}"
                                                  alt="{{ $tpl['name'] }}"
                                                  class="mayhen_home_showcase_card_img"
-                                                 loading="{{ $index < 6 ? 'eager' : 'lazy' }}">
+                                                 loading="{{ $index < 4 ? 'eager' : 'lazy' }}"
+                                                 decoding="async">
                                         @endif
                                     </div>
 
@@ -1255,6 +1245,7 @@
                                      alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — Mây Hẹn"
                                      class="mayhen_home_gallery_img"
                                      loading="{{ $index < 6 ? 'eager' : 'lazy' }}"
+                                     decoding="async"
                                      width="600"
                                      height="800">
 

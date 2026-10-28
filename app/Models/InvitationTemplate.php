@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class InvitationTemplate extends Model
 {
@@ -30,6 +31,28 @@ class InvitationTemplate extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (InvitationTemplate $template) {
+            static::clearTemplateCaches($template);
+        });
+
+        static::deleted(function (InvitationTemplate $template) {
+            static::clearTemplateCaches($template);
+        });
+    }
+
+    public static function clearTemplateCaches(?InvitationTemplate $template = null): void
+    {
+        Cache::forget('mayhen_home_featured_templates');
+        Cache::forget('mayhen_home_gallery_templates');
+        Cache::forget('mayhen_templates_total_count');
+        Cache::forget('mayhen_sitemap_xml');
+        if ($template) {
+            Cache::forget("mayhen_template_detail_{$template->slug}");
+        }
     }
 
     public function invitations(): HasMany

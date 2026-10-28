@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\PageController;
+use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 | Web Routes — Mây Hẹn (mayhen.vn)
 |--------------------------------------------------------------------------
 */
+
+// SEO Sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // Client Marketing Website
 Route::get('/', [HomeController::class, 'index'])->name('home');

@@ -116,6 +116,8 @@
                                     class="mayhen_template_detail_stage_img"
                                     id="mayhen_stage_img"
                                     loading="eager"
+                                    fetchpriority="high"
+                                    decoding="async"
                                 >
                             </div>
 
@@ -427,7 +429,7 @@
                     @foreach($similarTemplates as $related)
                         <div class="mayhen_template_detail_related_card">
                             <a href="{{ route('templates.show', $related->slug) }}" class="mayhen_template_detail_related_thumb">
-                                <img src="{{ $related->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" alt="Mẫu thiệp cưới {{ $related->name }}" loading="lazy">
+                                <img src="{{ $related->thumbnail_url ?: asset('assets/client/images/template-fallback.svg') }}" alt="Mẫu thiệp cưới {{ $related->name }}" loading="lazy" decoding="async">
                                 <div class="mayhen_template_detail_related_badge">
                                     {{ match ($related->tier ?? 'free') { 'pro' => 'VIP Pro', 'plus' => 'Plus', default => 'Free' } }}
                                 </div>

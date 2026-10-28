@@ -40,13 +40,13 @@
 <meta property="og:locale" content="vi_VN">
 <meta property="og:title" content="@yield('title', 'Thiệp Cưới Online — ' . config('app.name'))">
 <meta property="og:description" content="@yield('meta_description', config('app.name') . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury.')">
-<meta property="og:image" content="@yield('og_image', asset('assets/client/images/og-share.jpg'))">
+<meta property="og:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="@yield('title', 'Thiệp Cưới Online — ' . config('app.name'))">
 <meta name="twitter:description" content="@yield('meta_description', config('app.name') . ' — Nền tảng tạo thiệp cưới online cao cấp.')">
-<meta name="twitter:image" content="@yield('og_image', asset('assets/client/images/og-share.jpg'))">
+<meta name="twitter:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
 
 <!-- Google Fonts: Playfair Display & Inter (Full Vietnamese Subsets) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
