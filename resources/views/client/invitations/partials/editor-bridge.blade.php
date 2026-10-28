@@ -131,6 +131,9 @@
 
                 // Tự động tìm cả phần tử có class hoặc contract couple_names
                 document.querySelectorAll('[data-sync-target="couple_names"]').forEach(function(el) {
+                    if (el.querySelector('[data-sync-target="groom_name"]') || el.querySelector('[data-sync-target="bride_name"]')) {
+                        return; // Đã có các thẻ con quản lý riêng biệt
+                    }
                     var isUpper = el.getAttribute('data-sync-transform') === 'uppercase';
                     var gTxt = isUpper ? (g || 'CHÚ RỂ').toUpperCase() : (g || 'Chú Rể');
                     var bTxt = isUpper ? (b || 'CÔ DÂU').toUpperCase() : (b || 'Cô Dâu');

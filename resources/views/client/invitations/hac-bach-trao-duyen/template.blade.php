@@ -174,7 +174,11 @@
 
       <div class="mayhen_invitation_ladjihe38udhd_opening_content">
         <span class="mayhen_invitation_ladjihe38udhd_opening_subtitle">SAVE THE DATE</span>
-        <h1 class="mayhen_invitation_ladjihe38udhd_opening_names" data-sync-target="couple_names"><p data-sync-target="groom_name">{{ $groomName }}</p> <p>&</p> <p data-sync-target="bride_name">{{ $brideName }}</p></h1>
+        <h1 class="mayhen_invitation_ladjihe38udhd_opening_names">
+          <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="groom_name">{{ $groomName }}</span>
+          <span class="mayhen_invitation_ladjihe38udhd_opening_amp">&</span>
+          <span class="mayhen_invitation_ladjihe38udhd_name_line" data-sync-target="bride_name">{{ $brideName }}</span>
+        </h1>
         <div class="mayhen_invitation_ladjihe38udhd_opening_guest">
           <span class="mayhen_invitation_ladjihe38udhd_guest_label">Kính mời</span>
           <span class="mayhen_invitation_ladjihe38udhd_guest_name" id="mayhen_invitation_ladjihe38udhd_guest_open_name">Bạn và Gia Đình</span>
