@@ -1,0 +1,192 @@
+{
+  "name": "Lưu Bút Ngày Chung Đôi",
+  "slug": "luu-but-ngay-chung-doi",
+  "version": "2.0.0",
+  "author": "Mây Hẹn Studio",
+  "description": "Mẫu thiệp cưới phong cách Quiet Luxury kết hợp sổ lưu bút chữ ký tay nghệ thuật, album kỷ niệm và quản lý khách mời thông minh.",
+  "category": "editorial",
+  "tier": "pro",
+  "complexity": "deluxe",
+  "thumbnail": "assets/preview_1440.png",
+  "sections": [
+    {
+      "id": "general",
+      "title": "Cài đặt chung & Phong cách",
+      "fields": [
+        {
+          "name": "accent_color",
+          "label": "Màu điểm nhấn",
+          "type": "color",
+          "default": "#1a1a1a"
+        },
+        {
+          "name": "music_url",
+          "label": "Nhạc nền MP3",
+          "type": "audio",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "id": "couple",
+      "title": "Thông tin Cặp đôi & Gia đình",
+      "fields": [
+        {
+          "name": "groom_name",
+          "label": "Tên Chú rể",
+          "type": "text",
+          "default": "Ngọc Sơn",
+          "required": true
+        },
+        {
+          "name": "bride_name",
+          "label": "Tên Cô dâu",
+          "type": "text",
+          "default": "Thúy Quỳnh",
+          "required": true
+        },
+        {
+          "name": "groom_father",
+          "label": "Bố Chú rể",
+          "type": "text",
+          "default": "Nguyễn Văn Nam"
+        },
+        {
+          "name": "groom_mother",
+          "label": "Mẹ Chú rể",
+          "type": "text",
+          "default": "Trần Thị Mai"
+        },
+        {
+          "name": "bride_father",
+          "label": "Bố Cô dâu",
+          "type": "text",
+          "default": "Lê Văn Hùng"
+        },
+        {
+          "name": "bride_mother",
+          "label": "Mẹ Cô dâu",
+          "type": "text",
+          "default": "Phạm Thị Lan"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Sự kiện & Tiệc cưới",
+      "fields": [
+        {
+          "name": "wedding_date",
+          "label": "Ngày giờ cưới chính",
+          "type": "datetime",
+          "default": "2027-11-01T11:00",
+          "required": true
+        },
+        {
+          "name": "bride_event_title",
+          "label": "Tiêu đề Tiệc Nhà Gái",
+          "type": "text",
+          "default": "Tiệc Cưới Nhà Gái"
+        },
+        {
+          "name": "bride_event_address",
+          "label": "Địa chỉ Nhà Gái",
+          "type": "textarea",
+          "default": "Đường Nguyễn Tất Thành, Văn Phú, Lào Cai"
+        },
+        {
+          "name": "bride_map_link",
+          "label": "Link Google Maps Nhà Gái",
+          "type": "url",
+          "default": "https://www.google.com/maps"
+        },
+        {
+          "name": "groom_event_title",
+          "label": "Tiêu đề Tiệc Nhà Trai",
+          "type": "text",
+          "default": "Tiệc Cưới Nhà Trai"
+        },
+        {
+          "name": "groom_event_address",
+          "label": "Địa chỉ Nhà Trai",
+          "type": "textarea",
+          "default": "Phố Hoàng Liên, Cốc Lếu, Lào Cai"
+        },
+        {
+          "name": "groom_map_link",
+          "label": "Link Google Maps Nhà Trai",
+          "type": "url",
+          "default": "https://www.google.com/maps"
+        }
+      ]
+    },
+    {
+      "id": "album",
+      "title": "Album ảnh cưới (Tối đa 12 ảnh)",
+      "fields": [
+        {
+          "name": "gallery",
+          "label": "Danh sách ảnh kỷ niệm",
+          "type": "image_gallery",
+          "max": 12,
+          "default": []
+        }
+      ]
+    },
+    {
+      "id": "banking",
+      "title": "Hộp mừng cưới & Mã QR",
+      "fields": [
+        {
+          "name": "groom_bank_name",
+          "label": "Ngân hàng Chú rể",
+          "type": "text",
+          "default": "Techcombank"
+        },
+        {
+          "name": "groom_account_name",
+          "label": "Tên chủ TK Chú rể",
+          "type": "text",
+          "default": "NGUYEN NGOC SON"
+        },
+        {
+          "name": "groom_account_number",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "default": "190368888888"
+        },
+        {
+          "name": "qr_groom_image",
+          "label": "Mã QR Chú rể",
+          "type": "image",
+          "default": ""
+        },
+        {
+          "name": "bride_bank_name",
+          "label": "Ngân hàng Cô dâu",
+          "type": "text",
+          "default": "Vietcombank"
+        },
+        {
+          "name": "bride_account_name",
+          "label": "Tên chủ TK Cô dâu",
+          "type": "text",
+          "default": "LE THUY QUYNH"
+        },
+        {
+          "name": "bride_account_number",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "default": "998877665544"
+        },
+        {
+          "name": "qr_bride_image",
+          "label": "Mã QR Cô dâu",
+          "type": "image",
+          "default": ""
+        }
+      ]
+    }
+  ]
+}
+

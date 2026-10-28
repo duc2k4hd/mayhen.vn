@@ -1233,6 +1233,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * **Chế độ thiệp thật (` = false`)**:
                     - Dữ liệu demo không bao giờ hiển thị, chỉ lưu trữ và hiển thị chữ ký thật của khách mời vào thiệp cưới của cặp đôi.
 
+            17. **Tích Hợp Hoàn Thiện Mẫu Thiệp Mới "Lưu Bút Ngày Chung Đôi" (`luu-but-ngay-chung-doi`)**:
+                - **Nguồn & Bản quyền tài nguyên**:
+                  * Tích hợp từ mẫu thiệp thiết kế cao cấp Wedding 18 V2: toàn bộ 118 hình ảnh và 10 tệp phông chữ đặc thù (`.otf`, `.ttf`) đã được tải và nạp cục bộ tại `resources/views/client/invitations/luu-but-ngay-chung-doi/assets/`, loại bỏ 100% phụ thuộc vào CDN ngoại.
+                  * Tiền tố CSS bảo mật độc nhất chống xung đột giao diện: `mayhen_invitation_ladjihe38udhd_*`.
+                - **Kiến trúc File chuẩn mực**:
+                  * `template.blade.php`: Blade kế thừa layout chung `@extends('client.layouts.invitation')`, tích hợp đầy đủ biến động (`$wedding`, `$groomName`, `$brideName`, `$guestName`, `$weddingDate`, `$brideEventAddress`, `$groomEventAddress`, `$wishes`), logic fallback an toàn tuyệt đối tránh lỗi null/trắng trang.
+                  * `styles.css`: Hợp nhất 6 tệp CSS (base, page, elements, animations, embedded, overrides) thành 1 tệp duy nhất nạp qua route `templates.asset`, tối ưu tốc độ tải trang cao nhất.
+                  * `script.js`: Native ES JavaScript xử lý mở phong bì chào mừng (Greeting Gate), co giãn Mobile Responsive chuẩn tỉ lệ màn hình 420px, menu điều hướng, phát nhạc nền MP3, đếm ngược thời gian thực, bảng vẽ chữ ký tay Canvas HTML5, album ảnh cưới Lightbox vuốt cảm ứng chạm, hộp mừng cưới sao chép STK 1 chạm, và kết nối AJAX an toàn kèm CSRF Token với các route Wish và RSVP của Mây Hẹn.
+                  * `schema.json`: Schema cấu hình chi tiết 5 nhóm trường dữ liệu (Cài đặt chung, Cặp đôi & Phụ mẫu hai bên, Sự kiện & Bản đồ, Album ảnh kỷ niệm, Hộp mừng cưới & QR Code) phục vụ trình biên tập trực quan Live Studio Editor V2.
+                - **Đăng ký CSDL & Kiểm thử chất lượng**:
+                  * Cập nhật bản ghi mẫu trong `database/seeders/InvitationTemplateSeeder.php` với metadata chuẩn (slug: `luu-but-ngay-chung-doi`, name: "Lưu Bút Ngày Chung Đôi", category: `editorial`, tier: `pro`, complexity: `deluxe`).
+                  * Kiểm tra HTTP Status `200 OK` vượt qua 100% cho cả route xem thử `/xem-thu/luu-but-ngay-chung-doi` và nạp asset CSS/JS/Font. Định dạng code chuẩn PSR-12 qua Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
