@@ -12238,3 +12238,565 @@ textarea:focus-visible {
     height: 0 !important;
     overflow: hidden !important;
 }
+
+
+/* ==========================================================================
+   2 CÁNH CỬA TÌNH YÊU MỞ SANG 2 BÊN (GRAND 3D DOUBLE GATE REVEAL)
+   ========================================================================== */
+
+/* Khóa cuộn màn hình khi chưa mở cửa */
+html.mayhen_invitation_ladjihe38udhd_locked,
+body.mayhen_invitation_ladjihe38udhd_locked {
+    overflow: hidden !important;
+    touch-action: none !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+}
+
+/* Ẩn các thanh điều hướng nổi và bottom nav khi chưa mở cánh cửa */
+body.mayhen_invitation_ladjihe38udhd_locked .mayhen_invitation_ladjihe38udhd_widget-nav,
+body.mayhen_invitation_ladjihe38udhd_locked .mayhen_bottom_nav,
+body.mayhen_invitation_ladjihe38udhd_locked .mayhen_bottom_nav_wrap,
+body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+/* Sân khấu cửa 3D toàn màn hình */
+#mayhen-door-stage,
+.mayhen_invitation_ladjihe38udhd_door_stage {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 9999999 !important;
+    display: flex !important;
+    perspective: 1600px !important;
+    perspective-origin: 50% 50% !important;
+    overflow: hidden !important;
+    background: #0f1d16 !important;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s ease;
+}
+
+.mayhen_invitation_ladjihe38udhd_door_stage.mayhen_door_hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Cánh cửa */
+.mayhen_invitation_ladjihe38udhd_door {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    transition: transform 1.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 1.6s ease;
+    will-change: transform;
+}
+
+.mayhen_invitation_ladjihe38udhd_door_left {
+    transform-origin: left center;
+    border-right: 1px solid rgba(197, 168, 128, 0.5);
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6);
+}
+
+.mayhen_invitation_ladjihe38udhd_door_right {
+    transform-origin: right center;
+    border-left: 1px solid rgba(197, 168, 128, 0.5);
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Khi mở: Cánh trái quay sang trái, Cánh phải quay sang phải */
+.mayhen_invitation_ladjihe38udhd_door_stage.opened .mayhen_invitation_ladjihe38udhd_door_left {
+    transform: rotateY(-112deg);
+}
+
+.mayhen_invitation_ladjihe38udhd_door_stage.opened .mayhen_invitation_ladjihe38udhd_door_right {
+    transform: rotateY(112deg);
+}
+
+/* Bề mặt cánh cửa hoa văn hoàng gia sang trọng */
+.mayhen_invitation_ladjihe38udhd_door_surface {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, #2A4839 0%, #1A3025 60%, #102119 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.mayhen_invitation_ladjihe38udhd_door_surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: radial-gradient(#C5A880 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+
+/* Khung viền chỉ vàng kim đắp nổi hai tầng */
+.mayhen_invitation_ladjihe38udhd_door_frame {
+    position: absolute;
+    inset: 20px 14px;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(197, 168, 128, 0.15);
+    pointer-events: none;
+}
+
+.mayhen_invitation_ladjihe38udhd_door_inner_frame {
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(197, 168, 128, 0.55);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Hoa văn góc cổ điển */
+.mayhen_invitation_ladjihe38udhd_door_corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #C5A880;
+    pointer-events: none;
+}
+.mayhen_invitation_ladjihe38udhd_door_corner.mayhen_invitation_ladjihe38udhd_tl {
+    top: 4px; left: 4px; border-right: none; border-bottom: none;
+}
+.mayhen_invitation_ladjihe38udhd_door_corner.mayhen_invitation_ladjihe38udhd_tr {
+    top: 4px; right: 4px; border-left: none; border-bottom: none;
+}
+.mayhen_invitation_ladjihe38udhd_door_corner.mayhen_invitation_ladjihe38udhd_bl {
+    bottom: 4px; left: 4px; border-right: none; border-top: none;
+}
+.mayhen_invitation_ladjihe38udhd_door_corner.mayhen_invitation_ladjihe38udhd_br {
+    bottom: 4px; right: 4px; border-left: none; border-top: none;
+}
+
+/* Tay nắm cửa vàng kim cổ điển */
+.mayhen_invitation_ladjihe38udhd_door_handle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 64px;
+    background: linear-gradient(180deg, #F0DFB8 0%, #C5A880 50%, #87683C 100%);
+    border-radius: 7px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}
+.mayhen_invitation_ladjihe38udhd_door_handle_left {
+    right: 12px;
+}
+.mayhen_invitation_ladjihe38udhd_door_handle_right {
+    left: 12px;
+}
+
+/* ==========================================================================
+   TRUNG TÂM: TẤM THIỆP MỜI VÀ TEM SÁP HOÀNG GIA (WAX SEAL)
+   ========================================================================== */
+.mayhen_invitation_ladjihe38udhd_door_center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+/* Khi mở: Card mờ dần và bay lên nhẹ */
+.mayhen_invitation_ladjihe38udhd_door_stage.opened .mayhen_invitation_ladjihe38udhd_door_center {
+    opacity: 0;
+    transform: translate(-50%, -55%) scale(1.08);
+    pointer-events: none;
+}
+
+/* Tấm thiệp nền ngà ấm áp */
+.mayhen_invitation_ladjihe38udhd_door_card {
+    background: #FAF7F2;
+    border: 1px solid #D8C4A7;
+    border-radius: 12px;
+    padding: 24px 20px 20px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(197, 168, 128, 0.2);
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+.mayhen_invitation_ladjihe38udhd_door_card::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_badge {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #8C7355;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_sub {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #6B7B73;
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_names {
+    font-family: 'Philosopher', 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1F382B;
+    margin: 0 0 12px;
+    line-height: 1.3;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_names .mayhen_invitation_ladjihe38udhd_amp {
+    font-style: italic;
+    color: #C5A880;
+    font-weight: 400;
+    margin: 0 4px;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px auto 14px;
+    width: 60%;
+}
+.mayhen_invitation_ladjihe38udhd_card_divider::before,
+.mayhen_invitation_ladjihe38udhd_card_divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #C5A880, transparent);
+}
+.mayhen_invitation_ladjihe38udhd_card_divider span {
+    font-size: 11px;
+    color: #C5A880;
+    padding: 0 8px;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_guest_label {
+    font-size: 12px;
+    color: #7D8882;
+    margin: 0 0 4px;
+    font-style: italic;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_guest {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A3025;
+    font-family: 'Philosopher', Georgia, serif;
+    margin-bottom: 10px;
+    padding: 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_date {
+    font-size: 12.5px;
+    color: #5C6E65;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* CON DẤU TEM SÁP ĐỎ MẬN HOÀNG GIA (WAX SEAL) */
+.mayhen_invitation_ladjihe38udhd_wax_seal_wrap {
+    margin-top: -24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 5;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mayhen_invitation_ladjihe38udhd_wax_seal_wrap:hover {
+    transform: scale(1.06);
+}
+
+.mayhen_invitation_ladjihe38udhd_wax_seal_wrap:active {
+    transform: scale(0.96);
+}
+
+/* Sóng hào quang nhịp thở của tem sáp */
+.mayhen_invitation_ladjihe38udhd_wax_seal_glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.45) 0%, rgba(197, 168, 128, 0) 70%);
+    animation: mayhen_seal_pulse 2.2s infinite ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes mayhen_seal_pulse {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+    50% { transform: translate(-50%, -50%) scale(1.35); opacity: 0.85; }
+    100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+}
+
+/* Con dấu sáp đỏ mận gợn sóng tự nhiên */
+.mayhen_invitation_ladjihe38udhd_wax_seal {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b2324e 0%, #831d34 60%, #570e20 100%);
+    box-shadow: 
+        0 6px 18px rgba(0, 0, 0, 0.45),
+        inset 0 3px 6px rgba(255, 255, 255, 0.35),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.mayhen_invitation_ladjihe38udhd_wax_rim {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(245, 222, 179, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 70%);
+}
+
+.mayhen_invitation_ladjihe38udhd_wax_monogram {
+    font-family: 'Philosopher', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #F8ECD5;
+    text-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.8),
+        0 -1px 1px rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+}
+
+.mayhen_invitation_ladjihe38udhd_monogram_amp {
+    font-size: 14px;
+    font-style: italic;
+    color: #E2C293;
+    margin: 0 1px;
+}
+
+/* Lời gợi ý mở thiệp */
+.mayhen_invitation_ladjihe38udhd_open_hint {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(26, 48, 37, 0.85);
+    border: 1px solid rgba(197, 168, 128, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 7px 18px;
+    border-radius: 24px;
+    color: #F5EFE6;
+    font-size: 12.5px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    animation: mayhen_hint_bounce 2s infinite ease-in-out;
+}
+
+@keyframes mayhen_hint_bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.mayhen_invitation_ladjihe38udhd_hint_icon {
+    font-size: 14px;
+    animation: mayhen_sparkle_spin 3s infinite linear;
+}
+
+@keyframes mayhen_sparkle_spin {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.25) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+/* ==========================================================================
+   LỚP CÁNH HOA BAY & BỤI SAO VÀNG (FALLING PETALS & STARDUST)
+   ========================================================================== */
+.mayhen_invitation_ladjihe38udhd_door_particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999998;
+    overflow: hidden;
+}
+
+.mayhen_invitation_ladjihe38udhd_petal {
+    position: absolute;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 30% 20%, #FFF5F7 0%, #FAD4DC 60%, #E89CAE 100%);
+    border-radius: 80% 0 80% 0 / 80% 0 80% 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    animation: mayhen_petal_fall linear forwards;
+}
+
+.mayhen_invitation_ladjihe38udhd_stardust {
+    position: absolute;
+    pointer-events: none;
+    background: radial-gradient(circle, #FFF4D0 0%, #D8B467 60%, transparent 100%);
+    border-radius: 50%;
+    opacity: 0;
+    animation: mayhen_stardust_float ease-out forwards;
+}
+
+@keyframes mayhen_petal_fall {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) rotate(0deg) scale(0.6);
+    }
+    15% {
+        opacity: 0.9;
+    }
+    85% {
+        opacity: 0.85;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(105vh) rotate(420deg) scale(1);
+    }
+}
+
+@keyframes mayhen_stardust_float {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.2);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(calc(var(--rand-x, 0px) * 0.3), calc(var(--rand-y, 0px) * 0.3)) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--rand-x, 0px), var(--rand-y, 0px)) scale(0.1);
+    }
+}
+
+/* ==========================================================================
+   ANIMATIONS SINH ĐỘNG BỔ SUNG XUYÊN SUỐT THIỆP
+   ========================================================================== */
+
+/* 1. Hiệu ứng Ken Burns cho bìa thiệp khi vừa mở cửa */
+.mayhen_invitation_ladjihe38udhd_door_stage.opened ~ #mayhen_w18_stage #SECTION1 .mayhen_invitation_ladjihe38udhd_ladi-section-background,
+.mayhen_invitation_ladjihe38udhd_door_stage.opened ~ #mayhen_w18_stage #IMAGE1 {
+    animation: mayhen_ken_burns 12s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
+}
+
+@keyframes mayhen_ken_burns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.04); }
+}
+
+/* 2. Hiệu ứng Đĩa than quay khi phát nhạc */
+body.mayhen_music_playing #mayhen-w18-music {
+    animation: mayhen_spin_vinyl 4s linear infinite !important;
+    background: var(--mayhen-green-deep) !important;
+    color: var(--mayhen-gold) !important;
+    box-shadow: 0 0 16px rgba(197, 168, 128, 0.6) !important;
+}
+
+@keyframes mayhen_spin_vinyl {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 3. Hiệu ứng Nhịp đập trái tim cho Countdown */
+#COUNTDOWN {
+    transition: transform 0.3s ease;
+}
+#COUNTDOWN .mayhen_invitation_ladjihe38udhd_ladi-element {
+    animation: mayhen_heartbeat 2.8s ease-in-out infinite;
+}
+
+@keyframes mayhen_heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.025); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.035); }
+    70% { transform: scale(1); }
+}
+
+/* 4. Hiệu ứng Vệt sáng Kim Sa (Shimmer Light Sweep) cho các nút hành động */
+#BUTTON6, #BUTTON11, #BUTTON12, #BUTTON13, .mayhen_sig_cta_btn {
+    position: relative;
+    overflow: hidden !important;
+}
+
+#BUTTON6::after, #BUTTON11::after, #BUTTON12::after, #BUTTON13::after, .mayhen_sig_cta_btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    animation: mayhen_shimmer_sweep 4.5s infinite ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes mayhen_shimmer_sweep {
+    0%, 60% { left: -60%; opacity: 0; }
+    70% { opacity: 0.8; }
+    85% { left: 140%; opacity: 0.8; }
+    100% { left: 140%; opacity: 0; }
+}
+
+/* 5. Scroll Reveal mượt mà khi người dùng cuộn xem từng phần */
+.mayhen_reveal_element {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+.mayhen_reveal_element.mayhen_revealed {
+    opacity: 1;
+    transform: translateY(0);
+}

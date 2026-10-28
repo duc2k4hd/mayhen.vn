@@ -1,12 +1,17 @@
 @php
     $assetBase = url('/mau-thiep/luu-but-ngay-chung-doi/assets');
     $isEmbed = request()->boolean('embed');
-
     // 1. Tên cô dâu chú rể & Khách mời
     $groomName = $wedding->groom_name ?? 'Ngọc Sơn';
     $brideName = $wedding->bride_name ?? 'Thúy Quỳnh';
     $guestName = request()->query('guest') ?: ($invitation->guest_name ?? 'Bạn và Gia Đình');
     $extraData = $wedding->extra_data ?? [];
+
+    // Chữ cái đầu viết tắt cho tem sáp Monogram
+    $groomWords = array_values(array_filter(explode(' ', trim((string) $groomName))));
+    $brideWords = array_values(array_filter(explode(' ', trim((string) $brideName))));
+    $groomInitial = mb_substr(end($groomWords) ?: 'S', 0, 1, 'UTF-8');
+    $brideInitial = mb_substr(end($brideWords) ?: 'Q', 0, 1, 'UTF-8');
 
     // Bố mẹ hai bên
     $groomFather = !empty($extraData['groom_father']) ? $extraData['groom_father'] : 'Nguyễn Văn Nam';
@@ -142,10 +147,10 @@
 
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_ladjihe38udhd_root')
+@section('html_class', 'mayhen_invitation_ladjihe38udhd_root mayhen_invitation_ladjihe38udhd_locked')
 @section('title', $pageTitle)
 @section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.')
-@section('body_class', 'mayhen_invitation_wrapper')
+@section('body_class', 'mayhen_invitation_wrapper mayhen_invitation_ladjihe38udhd_locked')
 
 @push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -181,6 +186,69 @@
 @endsection
 
 @section('content')
+{{-- 2 CÁNH CỬA TÌNH YÊU MỞ SANG 2 BÊN (GRAND 3D DOUBLE GATE OPENING) --}}
+<div id="mayhen-door-stage" class="mayhen_invitation_ladjihe38udhd_door_stage" aria-label="Cánh cửa tình yêu">
+    <!-- Cánh cửa bên trái -->
+    <div class="mayhen_invitation_ladjihe38udhd_door mayhen_invitation_ladjihe38udhd_door_left">
+        <div class="mayhen_invitation_ladjihe38udhd_door_surface">
+            <div class="mayhen_invitation_ladjihe38udhd_door_frame">
+                <div class="mayhen_invitation_ladjihe38udhd_door_inner_frame">
+                    <div class="mayhen_invitation_ladjihe38udhd_door_corner mayhen_invitation_ladjihe38udhd_tl"></div>
+                    <div class="mayhen_invitation_ladjihe38udhd_door_corner mayhen_invitation_ladjihe38udhd_bl"></div>
+                    <div class="mayhen_invitation_ladjihe38udhd_door_filigree"></div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_ladjihe38udhd_door_handle mayhen_invitation_ladjihe38udhd_door_handle_left"></div>
+        </div>
+    </div>
+
+    <!-- Cánh cửa bên phải -->
+    <div class="mayhen_invitation_ladjihe38udhd_door mayhen_invitation_ladjihe38udhd_door_right">
+        <div class="mayhen_invitation_ladjihe38udhd_door_surface">
+            <div class="mayhen_invitation_ladjihe38udhd_door_frame">
+                <div class="mayhen_invitation_ladjihe38udhd_door_inner_frame">
+                    <div class="mayhen_invitation_ladjihe38udhd_door_corner mayhen_invitation_ladjihe38udhd_tr"></div>
+                    <div class="mayhen_invitation_ladjihe38udhd_door_corner mayhen_invitation_ladjihe38udhd_br"></div>
+                    <div class="mayhen_invitation_ladjihe38udhd_door_filigree"></div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_ladjihe38udhd_door_handle mayhen_invitation_ladjihe38udhd_door_handle_right"></div>
+        </div>
+    </div>
+
+    <!-- Trung tâm: Thiệp mời & Con dấu sáp hoàng gia -->
+    <div class="mayhen_invitation_ladjihe38udhd_door_center" id="mayhen-door-center">
+        <div class="mayhen_invitation_ladjihe38udhd_door_card">
+            <div class="mayhen_invitation_ladjihe38udhd_card_badge">WEDDING INVITATION</div>
+            <div class="mayhen_invitation_ladjihe38udhd_card_sub">THE WEDDING CELEBRATION</div>
+            <h1 class="mayhen_invitation_ladjihe38udhd_card_names">{{ $groomName }} <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span> {{ $brideName }}</h1>
+            <div class="mayhen_invitation_ladjihe38udhd_card_divider">
+                <span>✦</span>
+            </div>
+            <p class="mayhen_invitation_ladjihe38udhd_card_guest_label">Trân trọng kính mời</p>
+            <div class="mayhen_invitation_ladjihe38udhd_card_guest">{{ $guestName }}</div>
+            <p class="mayhen_invitation_ladjihe38udhd_card_date">{{ $weddingDayOfWeek }}, {{ $coverDateFormatted }}</p>
+        </div>
+
+        <!-- Con dấu sáp đỏ mận hoàng gia (Royal Wax Seal) -->
+        <div class="mayhen_invitation_ladjihe38udhd_wax_seal_wrap" id="mayhen-wax-seal" role="button" tabindex="0" title="Chạm để mở cánh cửa tình yêu">
+            <div class="mayhen_invitation_ladjihe38udhd_wax_seal_glow"></div>
+            <div class="mayhen_invitation_ladjihe38udhd_wax_seal">
+                <div class="mayhen_invitation_ladjihe38udhd_wax_rim">
+                    <div class="mayhen_invitation_ladjihe38udhd_wax_monogram">{{ $groomInitial }}<span class="mayhen_invitation_ladjihe38udhd_monogram_amp">&amp;</span>{{ $brideInitial }}</div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_ladjihe38udhd_open_hint">
+                <span class="mayhen_invitation_ladjihe38udhd_hint_icon">✨</span>
+                <span class="mayhen_invitation_ladjihe38udhd_hint_text">Chạm để mở cánh cửa tình yêu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lớp cánh hoa rơi & bụi sao vàng kim lộng lẫy -->
+    <div id="mayhen-door-particles" class="mayhen_invitation_ladjihe38udhd_door_particles" aria-hidden="true"></div>
+</div>
+
 <div id="mayhen_w18_stage"><div class="mayhen_invitation_ladjihe38udhd_ladi-wraper">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION28">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>

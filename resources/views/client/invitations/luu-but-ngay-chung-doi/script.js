@@ -14,6 +14,17 @@
     const storeKey = DATA.storageKey || 'mayhen_lbcd_demo';
     const sigStorageKey = isPreview ? 'mayhen_demo_signatures_lbcd' : 'mayhen_real_signatures_lbcd';
     const csrfToken = window.__MAYHEN_CSRF_TOKEN || $('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    // Khởi tạo: Luôn cuộn lên đầu trang và kích hoạt khóa màn hình cho 2 cánh cửa
+    try {
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+    } catch {}
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    document.documentElement.classList.add(P + 'locked');
+    document.body.classList.add(P + 'locked');
 
     const loadStorage = (type) => {
         try {
@@ -176,6 +187,7 @@
         }
         if (music.paused) {
             music.play().then(() => {
+                document.body.classList.add('mayhen_music_playing');
                 showToast('Đang phát nhạc nền');
                 if (speakerOff) speakerOff.style.display = 'none';
                 if (speakerOn) speakerOn.style.display = 'block';
@@ -184,6 +196,7 @@
             });
         } else {
             music.pause();
+            document.body.classList.remove('mayhen_music_playing');
             showToast('Đã tạm dừng nhạc');
             if (speakerOff) speakerOff.style.display = 'block';
             if (speakerOn) speakerOn.style.display = 'none';
@@ -747,45 +760,166 @@
     }
     renderWishes();
 
-    // Phong bì chào mừng mở thiệp (Greeting Gate)
-    const openedOnce = (() => {
-        try {
-            return sessionStorage.getItem(storeKey + '_opened') === '1';
-        } catch {
-            return false;
+    // =========================================================================
+    // 2 CÁNH CỬA TÌNH YÊU MỞ SANG 2 BÊN (GRAND 3D DOUBLE GATE OPENING)
+    // =========================================================================
+    const doorStage = $('#mayhen-door-stage');
+    const waxSeal = $('#mayhen-wax-seal');
+    const doorCenter = $('#mayhen-door-center');
+    const particlesLayer = $('#mayhen-door-particles');
+
+    let doorOpened = false;
+
+    // Sinh cánh hoa bay và bụi sao vàng lấp lánh (Falling Petals & Golden Stardust)
+    function spawnCelebrationParticles() {
+        if (!particlesLayer) return;
+        particlesLayer.innerHTML = '';
+
+        const petalColors = [
+            'radial-gradient(ellipse at 30% 20%, #FFF8FA 0%, #FDD7E4 60%, #E89CAE 100%)',
+            'radial-gradient(ellipse at 30% 20%, #F7FFF9 0%, #D4EADB 60%, #9BC4A7 100%)',
+            'radial-gradient(ellipse at 30% 20%, #FFFDF8 0%, #F5E8D3 60%, #D8C3A5 100%)'
+        ];
+
+        for (let i = 0; i < 30; i++) {
+            const petal = document.createElement('div');
+            petal.className = P + 'petal';
+            const size = Math.floor(Math.random() * 12 + 14);
+            const left = Math.random() * 100;
+            const duration = (Math.random() * 2.2 + 2.8).toFixed(2);
+            const delay = (Math.random() * 1.8).toFixed(2);
+            const bg = petalColors[Math.floor(Math.random() * petalColors.length)];
+
+            petal.style.width = size + 'px';
+            petal.style.height = Math.floor(size * 1.3) + 'px';
+            petal.style.left = left + '%';
+            petal.style.top = '-25px';
+            petal.style.background = bg;
+            petal.style.animationDuration = duration + 's';
+            petal.style.animationDelay = delay + 's';
+
+            particlesLayer.appendChild(petal);
         }
-    })();
 
-    if (!openedOnce) {
-        const groom = DATA.groom || 'Ngọc Sơn';
-        const bride = DATA.bride || 'Thúy Quỳnh';
-        const guest = DATA.guest || 'Bạn và Gia Đình';
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
 
-        openModal(`
-            <p style="text-transform:uppercase;letter-spacing:3px;font-size:12px;color:#888;margin-bottom:8px">The Wedding of</p>
-            <h2 style="font-size:32px;font-family:'Philosopher',serif;margin:10px 0">${escapeHTML(groom)} <span style="font-style:italic;color:#999">&amp;</span> ${escapeHTML(bride)}</h2>
-            <div style="margin:20px auto;border-top:1px solid #ddd;border-bottom:1px solid #ddd;padding:20px 0;line-height:1.7">
-                <p style="color:#666;font-size:14px;margin-bottom:4px">Thân gửi</p>
-                <p style="font-size:19px;font-weight:700;color:#111;margin-bottom:8px">${escapeHTML(guest)}</p>
-                <p style="font-size:14px;color:#555">Trân trọng kính mời bạn đến chung vui cùng chúng mình trong ngày trọng đại.</p>
-            </div>
-            <button id="mayhen-w18-open" class="${P}dialog-action" type="button" style="font-size:16px;padding:12px 28px">Mở Thiệp Cưới</button>
-        `);
+        for (let j = 0; j < 45; j++) {
+            const star = document.createElement('div');
+            star.className = P + 'stardust';
+            const size = Math.floor(Math.random() * 6 + 4);
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * (Math.min(window.innerWidth, window.innerHeight) * 0.45) + 60;
+            const targetX = Math.cos(angle) * distance;
+            const targetY = Math.sin(angle) * distance;
+            const duration = (Math.random() * 1.5 + 1.2).toFixed(2);
+            const delay = (Math.random() * 0.4).toFixed(2);
 
-        $('#mayhen-w18-open')?.addEventListener('click', () => {
-            try {
-                sessionStorage.setItem(storeKey + '_opened', '1');
-            } catch {}
-            closeModal();
-            window.scrollTo({ top: 0, behavior: 'instant' });
-            if (music && music.src && music.paused) {
-                music.play().then(() => {
-                    if (speakerOff) speakerOff.style.display = 'none';
-                    if (speakerOn) speakerOn.style.display = 'block';
-                }).catch(() => {});
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = centerX + 'px';
+            star.style.top = centerY + 'px';
+            star.style.setProperty('--rand-x', targetX + 'px');
+            star.style.setProperty('--rand-y', targetY + 'px');
+            star.style.animationDuration = duration + 's';
+            star.style.animationDelay = delay + 's';
+
+            particlesLayer.appendChild(star);
+        }
+
+        setTimeout(() => {
+            if (particlesLayer) particlesLayer.innerHTML = '';
+        }, 5500);
+    }
+
+    function openDoubleDoor() {
+        if (doorOpened) return;
+        doorOpened = true;
+
+        if (doorStage) {
+            doorStage.classList.add('opened');
+        }
+
+        // Bùng nổ hạt cánh hoa & ánh sáng sao vàng
+        spawnCelebrationParticles();
+
+        // Tự động phát nhạc cưới
+        if (music && music.src && music.paused) {
+            music.play().then(() => {
+                document.body.classList.add('mayhen_music_playing');
+                if (speakerOff) speakerOff.style.display = 'none';
+                if (speakerOn) speakerOn.style.display = 'block';
+            }).catch(() => {});
+        }
+
+        // Mở khóa cuộn trang
+        setTimeout(() => {
+            document.documentElement.classList.remove(P + 'locked');
+            document.body.classList.remove(P + 'locked');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1100);
+
+        // Ẩn hoàn toàn stage cửa sau khi hoàn tất hiệu ứng mở 3D
+        setTimeout(() => {
+            if (doorStage) {
+                doorStage.classList.add('mayhen_door_hidden');
+            }
+        }, 1800);
+    }
+
+    if (doorStage) {
+        // Đảm bảo cửa luôn hiển thị ở trạng thái sẵn sàng mở
+        doorStage.classList.remove('mayhen_door_hidden', 'opened');
+        doorStage.style.display = 'flex';
+
+        // Bấm vào tem sáp hoặc tấm thiệp ở giữa hoặc cánh cửa để mở
+        waxSeal?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDoubleDoor();
+        });
+
+        doorCenter?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDoubleDoor();
+        });
+
+        doorStage.addEventListener('click', () => {
+            openDoubleDoor();
+        });
+
+        waxSeal?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openDoubleDoor();
             }
         });
     }
+
+    // Scroll reveal cho các khối section chính
+    const revealSections = $$('#SECTION4, #SECTION16, #SECTION13, #SECTION7, #SECTION20, #SECTION8, #SECTION9, #SECTION27, #SECTION17');
+    if ('IntersectionObserver' in window) {
+        const secObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('mayhen_revealed');
+                    secObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08 });
+        revealSections.forEach(sec => {
+            sec.classList.add('mayhen_reveal_element');
+            secObserver.observe(sec);
+        });
+    }
+
+    // Đảm bảo khi toàn bộ DOM tải xong vẫn ở vị trí đầu trang (0, 0)
+    window.addEventListener('load', () => {
+        if (!doorOpened) {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        }
+    });
 
     setTimeout(responsive, 50);
     setTimeout(responsive, 600);

@@ -1255,6 +1255,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * **Mở Album Lightbox mượt mà 100%**: Truyền trực tiếp danh sách 12 ảnh cưới chất lượng cao qua mảng `window.MAYHEN_W18.album`, gắn sự kiện click cho toàn bộ 12 khối `.photoBookImage`, khắc phục lỗi không mở được modal xem ảnh.
                   * **Modal Ký Tên Điện Tử không bị đè layout**: Nút "NHẤN ĐỂ KÝ TÊN" (`#BUTTON2`) giờ đây kích hoạt Modal toàn màn hình chuyên nghiệp với Canvas cảm ứng đa điểm, ô nhập tên người ký, nút xóa vẽ lại và nút lưu chữ ký. Ẩn hoàn toàn khung inline cũ `#GROUP13` để triệt tiêu vĩnh viễn tình trạng bị section Album đè lên.
                   * **Chế độ Demo vs Thiệp Thật thông minh**: Khi ở chế độ xem thử (`isPreview === true`), tự động nạp 3 chữ ký mẫu demo nghệ thuật (Bác Thành, Gia Bảo, Thuỳ Trang) lên Bức Tường Lưu Bút (`#previewContainer`), cho phép khách ký thử và lưu vào `localStorage`. Khi ở chế độ thiệp thật (`isPreview === false`), không hiển thị dữ liệu demo mà lưu chữ ký thật của khách mời trực tiếp vào hệ thống Mây Hẹn. Thẻ chữ ký trên bức tường lưu bút được thiết kế dạng lưới card nghệ thuật có ảnh nét ký, tên và ngày giờ trang nhã.
+                - **Nâng Cấp Hiệu Ứng Mở Thiệp 2 Cánh Cửa Tình Yêu Mở Sang 2 Bên (Grand 3D Double Gate Reveal) & Bộ Animation Sinh Động**:
+                  * **Màn chắn mở thiệp 2 cánh cửa hoàng gia 3D (`#mayhen-door-stage`)**:
+                    - Khóa cuộn trang khi chưa mở thiệp (`body.mayhen_invitation_ladjihe38udhd_locked`).
+                    - **Đảm bảo luôn xuất hiện khi tải trang**: Loại bỏ hoàn toàn cờ `sessionStorage` cũ (trước đây lưu trạng thái đã mở khiến F5 tải lại trang bị ẩn cửa). Thiết lập cơ chế tự động cuộn lên đầu trang (`window.scrollTo(0, 0)`), khóa cuộn `html` và `body`, ẩn hoàn toàn thanh Bottom Nav và Floating Nav cho đến khi khách chạm vào con dấu tem sáp để mở cửa.
+                    - Thiết kế 2 cánh cửa đôi phong cách dinh thự Quiet Luxury tân cổ điển: Tone xanh xô thơm sâu thẳm (`#1A3025` -> `#2A4839`), chất liệu gấm gân mỹ thuật phủ nhẹ hạt vàng kim, phào chỉ viền kép Antique Champagne Gold (`rgba(197, 168, 128, 0.55)`), hoa văn góc uốn lượn cổ điển (Baroque Ornate Corner) và cặp tay nắm cửa hoàng gia mạ vàng đúc nổi tinh xảo.
+                    - Tấm thiệp trung tâm ngà ấm áp (`#FAF7F2`) hiển thị lời chúc *"THE WEDDING CELEBRATION"*, tên cô dâu chú rể (`$groomName & $brideName`), tên khách quý (`$guestName`) và ngày cưới trọng đại.
+                    - Con dấu tem sáp đỏ mận hoàng gia (Royal Wax Seal Monogram) dập nổi 3D chữ cái lồng (`S & Q`), bao quanh bởi vòng sóng hào quang thở nhẹ (Breathing Pulse Glow) cùng bảng gợi ý *"✨ Chạm để mở cánh cửa tình yêu"*.
+                  * **Chuyển động mở cửa 3D chân thực & Lộng lẫy**:
+                    - Khi chạm vào tem sáp hoặc cánh cửa: Tem sáp và thiệp trung tâm phát ra ánh sáng vàng kim bùng nổ rồi tan biến nhẹ nhàng; Cánh cửa trái xoay mở 3D 112 độ sang bên trái (`transform: rotateY(-112deg)`), cánh cửa phải xoay mở 3D 112 độ sang bên phải (`transform: rotateY(112deg)`) với chiều sâu `perspective: 1600px` và gia tốc tự nhiên (`cubic-bezier(0.25, 1, 0.5, 1)`), tạo cảm giác sảnh đường cưới tráng lệ mở toang đón khách.
+                    - Cùng lúc đó, hệ thống hạt rơi tự động sinh 30 cánh hoa bay lượn (Falling Rose Petals) mang các sắc độ hồng phấn, xanh sage, champagne cùng 45 hạt bụi sao vàng kim tuyến (Golden Stardust) bùng nổ bay khắp màn hình trong 4 giây.
+                    - Tự động kích hoạt phát nhạc nền đám cưới êm ái, sau 1.1s mở khóa cuộn trang và trôi êm lên đầu trang thiệp.
+                  * **Bộ Animation sinh động xuyên suốt các thành phần trong thiệp**:
+                    - **Ảnh bìa cưới cinematic**: Kích hoạt hiệu ứng trôi chậm (Slow Zoom / Ken Burns Reveal) cho bức ảnh bìa đầu tiên khi vừa mở cửa.
+                    - **Đĩa than âm nhạc**: Nút nhạc xoay tròn 360 độ êm dịu (`@keyframes mayhen_spin_vinyl`) liên tục khi bài hát đang phát.
+                    - **Nhịp tim ngày cưới**: Các ô số đếm ngược ngày cưới tự động co bóp theo nhịp đập lãng mạn nhẹ nhàng (`@keyframes mayhen_heartbeat`).
+                    - **Vệt sáng kim sa (Shimmer Light Sweep)**: Quét luồng sáng kim cương qua định kỳ trên các nút hành động chính (Nhấn để ký tên, Gửi lời chúc, RSVP) tạo điểm nhấn sang trọng.
+                    - **Scroll Reveal mượt mà**: Toàn bộ các section ảnh cưới, timeline, thông điệp tự động trồi lên mượt mà (Fade In Up) khi khách cuộn tới nhờ Native `IntersectionObserver`.
 
 ---
 
