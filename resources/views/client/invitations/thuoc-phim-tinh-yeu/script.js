@@ -412,7 +412,16 @@
   });
   // Mở rèm thiệp 2 cánh (Bấm cánh trái hoặc cánh phải để mở animation sang 2 bên)
   const openingSides = $(C('opening-sides'));
-  if (openingSides) {
+  const isEmbedMode = (new URLSearchParams(window.location.search)).get('embed') === '1' || (window.parent && window.parent !== window);
+
+  if (isEmbedMode) {
+    if (openingSides) {
+      openingSides.classList.add(`${P}opened`);
+    }
+    document.documentElement.classList.remove(`${P}no-scroll`);
+    document.body.classList.remove(`${P}no-scroll`);
+    $$(C('reveal'), root).forEach(el => el.classList.add(`${P}is-visible`));
+  } else if (openingSides) {
     let isOpened = false;
 
     // Khi load trang: mặc định cuộn về đầu trang và khóa cuộn cho đến khi mở thiệp

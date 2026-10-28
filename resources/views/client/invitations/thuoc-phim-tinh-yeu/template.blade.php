@@ -200,10 +200,10 @@
 @endphp
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_djcvhwiuo9w9_no-scroll')
+@section('html_class', $isEmbed ? '' : 'mayhen_invitation_djcvhwiuo9w9_no-scroll')
 @section('title', $pageTitle)
 @section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.')
-@section('body_class', 'mayhen_invitation_wrapper mayhen_invitation_djcvhwiuo9w9_no-scroll')
+@section('body_class', 'mayhen_invitation_wrapper' . ($isEmbed ? '' : ' mayhen_invitation_djcvhwiuo9w9_no-scroll'))
 
 @push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -321,8 +321,20 @@
                 visibility: hidden !important;
             }
 
+            body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_card-wrapper,
+            body .mayhen_invitation_djcvhwiuo9w9_card-wrapper,
+            html .mayhen_invitation_djcvhwiuo9w9_card-wrapper,
             .mayhen_invitation_djcvhwiuo9w9_card-wrapper {
                 display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            /* Đảm bảo toàn bộ nội dung trong iframe editor hiển thị tức thì */
+            .mayhen_invitation_djcvhwiuo9w9_root.mayhen_invitation_djcvhwiuo9w9_motion-ready .mayhen_invitation_djcvhwiuo9w9_reveal {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
             }
 
             /* Thanh cuộn siêu mảnh, mềm mại, màu vàng đồng Quiet Luxury rõ nét */

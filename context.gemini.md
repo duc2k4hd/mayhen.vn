@@ -1345,6 +1345,18 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * **Khắc phục triệt để lỗi ảnh vỡ (Asset Fallback Defense)**: Chuẩn hóa bộ lọc URL trong `resources/views/client/pages/editor.blade.php` và `editor.js`. Không bao giờ tạo URL asset rỗng khi chưa tải ảnh, luôn sử dụng ảnh đại diện mẫu (`thumbnail_url`) làm điểm tựa an toàn.
                   * **Kiểm thử tự động**: Viết test feature `tests/Feature/InvitationEditorDataSyncTest.php` xác thực toàn bộ 5 mẫu thiệp đều tải thành công, tích hợp đúng `editor-bridge` và có đầy đủ hợp đồng `data-sync-target`. Đạt 25/25 Pest tests (307 assertions) Passed 100%.
 
+            22. **Sửa Lỗi Màn Hình Trắng Khi Mở Mẫu "Thước Phim Tình Yêu" Trong Studio Editor (`/tao-thiep?template=thuoc-phim-tinh-yeu`)**:
+                - **Nguyên nhân**:
+                  * Trong `thuoc-phim-tinh-yeu/styles.css` (dòng 1600), có quy tắc CSS độ ưu tiên cao: `body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_card-wrapper { display: none !important; }`.
+                  * Khi nạp trang trong iframe editor (`?embed=1`), `template.blade.php` gán sẵn class `mayhen_invitation_djcvhwiuo9w9_no-scroll` vào `body_class` và ẩn hai cánh thiệp mở đầu (`.mayhen_invitation_djcvhwiuo9w9_opening-sides { display: none !important; }`).
+                  * Đồng thời, script `thuoc-phim-tinh-yeu/script.js` khi khởi chạy lại tiếp tục thêm class `no-scroll` vào `document.body`.
+                  * Kết quả: Do CSS `styles.css` có độ ưu tiên cao hơn, cả 2 cánh thiệp và toàn bộ khối thẻ nội dung (`.mayhen_invitation_djcvhwiuo9w9_card-wrapper`) đều bị đặt thành `display: none !important`, khiến khung xem trước của điện thoại biến thành một màn hình trắng trơn (chỉ hiển thị duy nhất nút âm nhạc nổi).
+                - **Khắc phục**:
+                  * Cập nhật `resources/views/client/invitations/thuoc-phim-tinh-yeu/template.blade.php`: Khi `$isEmbed` là `true`, không gán `no-scroll` vào `html_class` và `body_class`.
+                  * Tăng độ đặc hiệu CSS trong khối `@if ($isEmbed)`: Cưỡng chế `body.mayhen_invitation_djcvhwiuo9w9_no-scroll .mayhen_invitation_djcvhwiuo9w9_card-wrapper, .mayhen_invitation_djcvhwiuo9w9_card-wrapper { display: block !important; visibility: visible !important; opacity: 1 !important; }`.
+                  * Cập nhật `resources/views/client/invitations/thuoc-phim-tinh-yeu/script.js`: Bổ sung cờ `isEmbedMode`. Nếu đang chạy trong iframe nhúng của Studio Editor, tự động mở cánh thiệp (`opened`), loại bỏ class `no-scroll` và kích hoạt ngay các hiệu ứng reveal (`is-visible`) để thiệp cưới hiển thị đầy đủ, sắc nét và cuộn mượt mà ngay khi vừa tải trang.
+                  * Đã bổ sung feature test khẳng định mẫu thiệp không bị ẩn nội dung khi nhúng: Đạt 26/26 Pest tests Passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
