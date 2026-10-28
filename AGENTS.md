@@ -10,6 +10,7 @@ This application is a Laravel application running on PHP 8.5. Always use the API
 ### ⚠️ MANDATORY AI PROTOCOL — CONTEXT MANAGEMENT
 - **READ FIRST**: Any AI Agent (Gemini, Claude, GPT, Cursor, etc.) working on this repository **MUST ALWAYS READ `context.gemini.md` FIRST** before undertaking any task or writing any code.
 - **ALWAYS UPDATE AFTER CODING**: After finishing any task, bugfix, or new feature, the AI **MUST UPDATE `context.gemini.md`** to record all changes, new routes, UI updates, and current project state so the repository context on Git is always 100% up-to-date for future sessions.
+- **TRANSPARENT FILE EDITING**: Always edit files directly using `edit_file` so the user can inspect the visual diff for every single change. Never use hidden background scripts (python/powershell/bash) to modify source files without user visibility.
 
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.

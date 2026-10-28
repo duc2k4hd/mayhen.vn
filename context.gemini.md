@@ -5,6 +5,7 @@
 > 2. **CẬP NHẬT FILE NÀY SAU MỖI LẦN CODE**: Bất kỳ khi nào hoàn thành hoặc thay đổi tính năng, cấu trúc, route, UI/UX hay database, AI **bắt buộc phải cập nhật lại file này** để giữ context luôn mới nhất trên Git.
 > 3. Viết cho tôi commit Tiếng Việt có dấu có mở đầu mang ý nghĩa chính xác (ví dụ: fix(), refactor(),...) để tôi gửi commit, bạn không được phép tự gửi lệnh, viết git chi tiết mức độ vừa, đủ để đọc hiểu
 > 4. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
+> 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
 
 ---
 
