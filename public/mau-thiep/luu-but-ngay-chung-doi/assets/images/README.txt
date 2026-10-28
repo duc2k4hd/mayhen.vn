@@ -1,0 +1,1 @@
+The original images and fonts referenced by the pasted HTML are hosted on third-party domains (iili.io, w.ladicdn.com). They are NOT included as local image/font files. Replace URLs in assets/css/elements.css with your own licensed assets for offline use.

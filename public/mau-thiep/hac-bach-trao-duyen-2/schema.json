@@ -1,0 +1,137 @@
+{
+    "slug": "hac-bach-trao-duyen-2",
+    "version": "v1",
+    "name": "Hắc Bạch Trao Duyên 2",
+    "tier": "pro",
+    "complexity": "deluxe",
+    "setup_time": "5 phút",
+    "sections": [
+        {
+            "id": "couple",
+            "title": "Thông Tin Cô Dâu & Chú Rể",
+            "icon": "heart",
+            "description": "Tên đôi uyên ương và phụ mẫu hai bên gia đình",
+            "fields": [
+                {
+                    "key": "wedding.groom_name",
+                    "label": "Họ và tên Chú rể",
+                    "type": "text",
+                    "required": true,
+                    "default": "Randy",
+                    "placeholder": "Ví dụ: Randy",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.bride_name",
+                    "label": "Họ và tên Cô dâu",
+                    "type": "text",
+                    "required": true,
+                    "default": "Minh Quý",
+                    "placeholder": "Ví dụ: Minh Quý",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.groom_father",
+                    "label": "Họ tên Cha (Nhà Trai)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Trần Văn Hùng",
+                    "placeholder": "Ví dụ: Trần Văn Hùng",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.groom_mother",
+                    "label": "Họ tên Mẹ (Nhà Trai)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Lê Thị Mai",
+                    "placeholder": "Ví dụ: Lê Thị Mai",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.bride_father",
+                    "label": "Họ tên Cha (Nhà Gái)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Nguyễn Văn Nam",
+                    "placeholder": "Ví dụ: Nguyễn Văn Nam",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.bride_mother",
+                    "label": "Họ tên Mẹ (Nhà Gái)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Vũ Thị Lan",
+                    "placeholder": "Ví dụ: Vũ Thị Lan",
+                    "max": 100
+                }
+            ]
+        },
+        {
+            "id": "event",
+            "title": "Thời Gian & Địa Điểm Tiệc Cưới",
+            "icon": "calendar",
+            "description": "Ngày giờ tổ chức hôn lễ và địa chỉ đón tiếp",
+            "fields": [
+                {
+                    "key": "wedding.wedding_date",
+                    "label": "Ngày cử hành hôn lễ",
+                    "type": "datetime",
+                    "required": true,
+                    "default": "2025-10-09T16:00:00"
+                },
+                {
+                    "key": "wedding.extra_data.event_party_address",
+                    "label": "Địa chỉ tư gia hôn lễ",
+                    "type": "text",
+                    "required": true,
+                    "default": "Luxury Palace Wedding Center, TP. Hồ Chí Minh"
+                },
+                {
+                    "key": "wedding.extra_data.event_party_lunar",
+                    "label": "Ngày âm lịch",
+                    "type": "text",
+                    "required": false,
+                    "default": "(Tức ngày 18 tháng 08 năm Ất Tỵ)"
+                }
+            ]
+        },
+        {
+            "id": "banking",
+            "title": "Hộp Mừng Cưới (Tài Khoản & Mã QR)",
+            "icon": "credit-card",
+            "description": "Thông tin ngân hàng mừng cưới cô dâu & chú rể",
+            "fields": [
+                {
+                    "key": "wedding.extra_data.groom_bank_account",
+                    "label": "Số tài khoản Chú rể",
+                    "type": "text",
+                    "required": false,
+                    "default": "999999999999999"
+                },
+                {
+                    "key": "wedding.extra_data.groom_bank_name",
+                    "label": "Tên ngân hàng (Chú rể)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Vietcombank"
+                },
+                {
+                    "key": "wedding.extra_data.bride_bank_account",
+                    "label": "Số tài khoản Cô dâu",
+                    "type": "text",
+                    "required": false,
+                    "default": "888888888888888"
+                },
+                {
+                    "key": "wedding.extra_data.bride_bank_name",
+                    "label": "Tên ngân hàng (Cô dâu)",
+                    "type": "text",
+                    "required": false,
+                    "default": "MB Bank"
+                }
+            ]
+        }
+    ]
+}

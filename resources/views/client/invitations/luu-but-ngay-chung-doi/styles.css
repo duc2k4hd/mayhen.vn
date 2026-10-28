@@ -20,51 +20,61 @@
         @font-face {
             font-family: "NixZnRLXZpcCoYXNZWdpLTIwMjUwMzIzMDcNjMLXltemRLmZg";
             src: url("fonts/6-1ftv-vip-hastegi-20250323075635-ymzdv-20250612082412-qvd3n.otf")
+            font-display: swap;
         }
 
         @font-face {
             font-family: "QnJvdgUVnYXIgLmZg";
             src: url("fonts/brown-sugar--20250612170432-mrowu.otf")
+            font-display: swap;
         }
 
         @font-face {
             font-family: "TWFMTdfREZWTiBJbmRbGdlIFNjcmlwdCvdGY";
             src: url("fonts/mau17_dfvn-indulge-script-20250328143031-tpgin.otf")
+            font-display: swap;
         }
 
         @font-face {
             font-family: "OCEkWhuqFuIHbEggYmdhcmFtbkLXJlZVsYXItMjAyNTAzMjAwNDAMzktcJucQudHRm";
             src: url("fonts/8-doan-van-bgaramond-regular-20250320040439-sbnst-20250612093855-psdtr.ttf") format("truetype");
+            font-display: swap;
         }
 
         @font-face {
             font-family: "bWFMTMudHRm";
             src: url("fonts/mau13-20240226024859-uszgq.ttf") format("truetype");
+            font-display: swap;
         }
 
         @font-face {
             font-family: "MTMtMWZdiaXAtbWuclldXItbGEtZGbGFpcUtcmVndWxhciyMDIMDIxOTExMzIyOScWttbivdGY";
             src: url("fonts/13-1ftv-vip-monsieur-la-doulaise-regular-20250219113229-vqkmn-20250612152835-mmpxa.otf")
+            font-display: swap;
         }
 
         @font-face {
             font-family: "RmxldXJEZUxlYWgtUmVndWxhcidGY";
             src: url("fonts/fleurdeleah-regular-20231219141658-bijfj.ttf") format("truetype");
+            font-display: swap;
         }
 
         @font-face {
             font-family: "MTQtZWRYXJkaWFucNyaXBaXRjLnRZg";
             src: url("fonts/14-edwardianscriptitc-20250612162958-ueckw.ttf") format("truetype");
+            font-display: swap;
         }
 
         @font-face {
             font-family: "MTAtRXllctZSTYJpcHQubRm";
             src: url("fonts/10-eyesome-script-20250612144924-htq6e.otf")
+            font-display: swap;
         }
 
         @font-face {
             font-family: "MTUgLSBCbGzdGEgUNyaXBLnRZg";
             src: url("fonts/15-blosta-script-20250613024044-tfo52.ttf") format("truetype");
+            font-display: swap;
         }
 
         body {

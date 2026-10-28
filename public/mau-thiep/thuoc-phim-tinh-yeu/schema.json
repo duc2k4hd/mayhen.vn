@@ -1,0 +1,379 @@
+{
+    "slug": "thuoc-phim-tinh-yeu",
+    "version": "v1",
+    "name": "Thước Phim Tình Yêu",
+    "tier": "luxury",
+    "complexity": "full",
+    "setup_time": "5 phút",
+    "sections": [
+        {
+            "id": "couple",
+            "title": "Thông Tin Cô Dâu & Chú Rể",
+            "icon": "heart",
+            "description": "Tên đôi uyên ương và phụ mẫu hai bên gia đình",
+            "fields": [
+                {
+                    "key": "wedding.groom_name",
+                    "label": "Họ và tên Chú rể",
+                    "type": "text",
+                    "required": true,
+                    "default": "Tràng Đức",
+                    "placeholder": "Ví dụ: Tràng Đức",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.bride_name",
+                    "label": "Họ và tên Cô dâu",
+                    "type": "text",
+                    "required": true,
+                    "default": "Ngọc Phượng",
+                    "placeholder": "Ví dụ: Ngọc Phượng",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.groom_father",
+                    "label": "Họ tên Cha (Nhà Trai)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Nguyễn Tràng Giang",
+                    "placeholder": "Ví dụ: Nguyễn Tràng Giang",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.groom_mother",
+                    "label": "Họ tên Mẹ (Nhà Trai)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Nguyễn Thị Tám",
+                    "placeholder": "Ví dụ: Nguyễn Thị Tám",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.bride_father",
+                    "label": "Họ tên Cha (Nhà Gái)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Đỗ Như Trung",
+                    "placeholder": "Ví dụ: Đỗ Như Trung",
+                    "max": 100
+                },
+                {
+                    "key": "wedding.extra_data.bride_mother",
+                    "label": "Họ tên Mẹ (Nhà Gái)",
+                    "type": "text",
+                    "required": false,
+                    "default": "Lê Thị Hảo",
+                    "placeholder": "Ví dụ: Lê Thị Hảo",
+                    "max": 100
+                }
+            ]
+        },
+        {
+            "id": "bride_events",
+            "title": "Lễ Cưới & Tiệc Mừng — Nhà Gái",
+            "icon": "calendar",
+            "description": "Thời gian cử hành Lễ Vu Quy và Tiệc Cưới bên Nhà Gái",
+            "fields": [
+                {
+                    "key": "wedding.extra_data.bride_ceremony_title",
+                    "label": "Tiêu đề nghi lễ",
+                    "type": "text",
+                    "default": "Lễ Vu Quy"
+                },
+                {
+                    "key": "wedding.extra_data.bride_ceremony_time",
+                    "label": "Giờ cử hành Lễ Vu Quy",
+                    "type": "text",
+                    "default": "07:00",
+                    "placeholder": "07:00"
+                },
+                {
+                    "key": "wedding.extra_data.bride_ceremony_day_name",
+                    "label": "Thứ trong tuần",
+                    "type": "text",
+                    "default": "Chủ Nhật"
+                },
+                {
+                    "key": "wedding.extra_data.bride_ceremony_date",
+                    "label": "Ngày dương lịch (DD\/MM\/YYYY)",
+                    "type": "text",
+                    "default": "07\/03\/2027"
+                },
+                {
+                    "key": "wedding.extra_data.bride_ceremony_lunar",
+                    "label": "Ngày âm lịch",
+                    "type": "text",
+                    "default": "Nhằm Ngày 30 Tháng 01 Năm Đinh Mùi"
+                },
+                {
+                    "key": "wedding.extra_data.bride_ceremony_address",
+                    "label": "Địa điểm tổ chức Lễ Vu Quy",
+                    "type": "textarea",
+                    "default": "Xóm 22, Khoái Châu, Hưng Yên"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_title",
+                    "label": "Tiêu đề tiệc",
+                    "type": "text",
+                    "default": "Tiệc Cưới"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_time",
+                    "label": "Giờ đón khách Tiệc Cưới",
+                    "type": "text",
+                    "default": "17:00"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_day_name",
+                    "label": "Thứ trong tuần",
+                    "type": "text",
+                    "default": "Thứ Sáu"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_date",
+                    "label": "Ngày dương lịch",
+                    "type": "text",
+                    "default": "06\/03\/2026"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_lunar",
+                    "label": "Ngày âm lịch",
+                    "type": "text",
+                    "default": "Nhằm Ngày 18 Tháng 01 Năm Bính Ngọ"
+                },
+                {
+                    "key": "wedding.extra_data.bride_party_address",
+                    "label": "Địa điểm tiệc cưới Nhà Gái",
+                    "type": "textarea",
+                    "default": "Xóm 22, Khoái Châu, Hưng Yên"
+                },
+                {
+                    "key": "wedding.extra_data.bride_map_link",
+                    "label": "Link Google Maps Chỉ Đường Nhà Gái",
+                    "type": "text",
+                    "default": "https:\/\/www.google.com\/maps\/search\/?api=1&query=X%C3%B3m%2022%2C%20Kho%C3%A1i%20Ch%C3%A2u%2C%20H%C6%B0ng%20Y%C3%AAn"
+                }
+            ]
+        },
+        {
+            "id": "groom_events",
+            "title": "Lễ Cưới & Tiệc Mừng — Nhà Trai",
+            "icon": "calendar",
+            "description": "Thời gian cử hành Lễ Thành Hôn và Tiệc Cưới bên Nhà Trai",
+            "fields": [
+                {
+                    "key": "wedding.extra_data.groom_ceremony_title",
+                    "label": "Tiêu đề nghi lễ",
+                    "type": "text",
+                    "default": "Lễ Thành Hôn"
+                },
+                {
+                    "key": "wedding.extra_data.groom_ceremony_time",
+                    "label": "Giờ cử hành Lễ Thành Hôn",
+                    "type": "text",
+                    "default": "10:00"
+                },
+                {
+                    "key": "wedding.extra_data.groom_ceremony_day_name",
+                    "label": "Thứ trong tuần",
+                    "type": "text",
+                    "default": "Chủ Nhật"
+                },
+                {
+                    "key": "wedding.extra_data.groom_ceremony_date",
+                    "label": "Ngày dương lịch",
+                    "type": "text",
+                    "default": "07\/03\/2027"
+                },
+                {
+                    "key": "wedding.extra_data.groom_ceremony_lunar",
+                    "label": "Ngày âm lịch",
+                    "type": "text",
+                    "default": "Nhằm Ngày 30 Tháng 01 Năm Đinh Mùi"
+                },
+                {
+                    "key": "wedding.extra_data.groom_ceremony_address",
+                    "label": "Địa điểm tổ chức Lễ Thành Hôn",
+                    "type": "textarea",
+                    "default": "Số nhà 5, Ngõ 56, Siêu Quần, Đại Thanh, Hà Nội"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_title",
+                    "label": "Tiêu đề tiệc",
+                    "type": "text",
+                    "default": "Tiệc Cưới"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_time",
+                    "label": "Giờ đón khách Tiệc Cưới",
+                    "type": "text",
+                    "default": "18:00"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_day_name",
+                    "label": "Thứ trong tuần",
+                    "type": "text",
+                    "default": "Thứ Sáu"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_date",
+                    "label": "Ngày dương lịch",
+                    "type": "text",
+                    "default": "06\/03\/2026"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_lunar",
+                    "label": "Ngày âm lịch",
+                    "type": "text",
+                    "default": "Nhằm Ngày 18 Tháng 01 Năm Bính Ngọ"
+                },
+                {
+                    "key": "wedding.extra_data.groom_party_address",
+                    "label": "Địa điểm tiệc cưới Nhà Trai",
+                    "type": "textarea",
+                    "default": "Số nhà 5, Ngõ 56, Siêu Quần, Đại Thanh, Hà Nội"
+                },
+                {
+                    "key": "wedding.extra_data.groom_map_link",
+                    "label": "Link Google Maps Chỉ Đường Nhà Trai",
+                    "type": "text",
+                    "default": "https:\/\/www.google.com\/maps\/search\/?api=1&query=S%E1%BB%91%20nh%C3%A0%205%2C%20Ng%C3%B5%2056%2C%20Si%C3%AAu%20Qu%E1%BA%A7n%2C%20%C4%90%E1%BA%A1i%20Thanh%2C%20H%C3%A0%20N%E1%BB%99i"
+                }
+            ]
+        },
+        {
+            "id": "gallery_and_photos",
+            "title": "Ảnh Cưới & Album Kỷ Niệm",
+            "icon": "image",
+            "description": "Ảnh bìa mở phong bì, ảnh chân dung và bộ sưu tập 10 ảnh cưới",
+            "fields": [
+                {
+                    "key": "wedding.cover_photo_url",
+                    "label": "Ảnh cưới chính khi mở thiệp",
+                    "type": "image",
+                    "default": "assets\/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.hero_photo_url",
+                    "label": "Ảnh lớn câu chuyện đôi bạn",
+                    "type": "image",
+                    "default": "assets\/3ed9dcf0-26a2-47ad-af9e-8895bff01519.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.triptych_photo_1",
+                    "label": "Ảnh bộ ba (1)",
+                    "type": "image",
+                    "default": "assets\/c3ee7507-53b8-461b-b5cb-c416ffc03791.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.triptych_photo_2",
+                    "label": "Ảnh bộ ba (2)",
+                    "type": "image",
+                    "default": "assets\/feecd763-f272-424b-9985-b4f3d68d7fb1.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.triptych_photo_3",
+                    "label": "Ảnh bộ ba (3)",
+                    "type": "image",
+                    "default": "assets\/320f95e0-b0c7-4b48-9d11-16c791076898.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.footer_photo_url",
+                    "label": "Ảnh kết thiệp cuối trang",
+                    "type": "image",
+                    "default": "assets\/8abb1d4e-e543-4ccf-994d-7114bbdfa561.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.gallery",
+                    "label": "Album 10 ảnh cưới (Xem phóng lớn Lightbox)",
+                    "type": "gallery",
+                    "max_items": 10
+                }
+            ]
+        },
+        {
+            "id": "story_and_timeline",
+            "title": "Chuyện Tình Yêu & Lịch Trình Hôn Lễ",
+            "icon": "clock",
+            "description": "Câu trích dẫn ý nghĩa, lịch trình trong ngày và màu sắc trang phục",
+            "fields": [
+                {
+                    "key": "wedding.story",
+                    "label": "Câu trích dẫn tình yêu (Quote)",
+                    "type": "textarea",
+                    "default": "Một tình yêu được khắc trên tim"
+                },
+                {
+                    "key": "wedding.wedding_date",
+                    "label": "Ngày cưới chính (Đếm ngược)",
+                    "type": "date",
+                    "default": "2027-03-07"
+                },
+                {
+                    "key": "wedding.extra_data.dresscode_hint",
+                    "label": "Gợi ý màu sắc trang phục (Dress code)",
+                    "type": "text",
+                    "default": "Trắng, Nâu nhạt, Đỏ trầm"
+                },
+                {
+                    "key": "wedding.extra_data.timeline",
+                    "label": "Lịch trình các mốc thời gian ngày cưới",
+                    "type": "repeater",
+                    "default": [
+                        {
+                            "time": "05:00",
+                            "title": "Xuất phát từ nhà trai"
+                        },
+                        {
+                            "time": "07:00",
+                            "title": "Đến nhà cô dâu"
+                        },
+                        {
+                            "time": "07:50",
+                            "title": "Bắt đầu về nhà trai"
+                        },
+                        {
+                            "time": "10:00",
+                            "title": "Lễ thành hôn"
+                        },
+                        {
+                            "time": "11:00",
+                            "title": "Chụp ảnh kỷ niệm"
+                        },
+                        {
+                            "time": "11:30",
+                            "title": "Dự tiệc"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "gift_and_music",
+            "title": "Hộp Mừng Cưới & Nhạc Nền",
+            "icon": "gift",
+            "description": "Mã QR mừng cưới VietQR hai bên gia đình và file âm thanh lãng mạn",
+            "fields": [
+                {
+                    "key": "wedding.extra_data.qr_groom_image",
+                    "label": "Ảnh mã QR mừng cưới Nhà Trai",
+                    "type": "image",
+                    "default": "assets\/4904bdb1-f9fa-4fdc-a3b2-f6a0be4df18b.jpg"
+                },
+                {
+                    "key": "wedding.extra_data.qr_bride_image",
+                    "label": "Ảnh mã QR mừng cưới Nhà Gái",
+                    "type": "image",
+                    "default": "assets\/b9782cd0-2a24-412c-bd15-2626bbe77477.jpg"
+                },
+                {
+                    "key": "wedding.music_url",
+                    "label": "Nhạc nền đám cưới (File MP3)",
+                    "type": "text",
+                    "default": "assets\/c236c024-0b4a-472e-a8fb-f64e2fead1a0.mp3"
+                }
+            ]
+        }
+    ],
+    "description": "Mẫu thiệp cưới mang phong cách thước phim điện ảnh lãng mạn, thanh lịch, kết hợp dải film chạy vòng động, đếm ngược ngày cưới và sổ lưu bút chữ ký tay."
+}

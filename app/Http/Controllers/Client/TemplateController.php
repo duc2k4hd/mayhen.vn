@@ -7,7 +7,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class TemplateController extends Controller
 {
@@ -130,7 +130,7 @@ class TemplateController extends Controller
     /**
      * Serve static assets directly from resources/views/client/invitations/{slug}/
      */
-    public function asset(string $slug, string $path): BinaryFileResponse
+    public function asset(string $slug, string $path): Response
     {
         // Chống directory traversal & validate slug
         if (! preg_match('/^[a-z0-9_-]+$/', $slug)) {
@@ -177,10 +177,32 @@ class TemplateController extends Controller
             'otf' => 'font/otf',
         ];
 
-        $isDev = config('app.debug') || app()->environment('local');
+        $lastModified = filemtime($fullPath);
+        $etag = sprintf('"%x-%x"', $lastModified, filesize($fullPath));
+
+        $ifNoneMatch = request()->header('If-None-Match');
+        $ifModifiedSince = request()->header('If-Modified-Since');
+
+        // Phản hồi 304 Not Modified tức thì (0ms body transfer)
+        if (($ifNoneMatch && trim($ifNoneMatch) === $etag) ||
+            ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified)) {
+            return response('', 304, [
+                'ETag' => $etag,
+                'Last-Modified' => gmdate('D, d M Y H:i:s', $lastModified).' GMT',
+                'Cache-Control' => 'public, max-age=604800, stale-while-revalidate=86400',
+            ]);
+        }
+
+        $isStaticMedia = in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'svg', 'gif', 'woff', 'woff2', 'ttf', 'otf', 'mp3']);
+        $cacheControl = $isStaticMedia
+            ? 'public, max-age=2592000, immutable'
+            : 'public, max-age=86400, stale-while-revalidate=604800';
+
         $headers = [
-            'Content-Type' => $mimeTypes[$extension] ?? (mime_content_type($fullPath) ?: 'application/octet-stream'),
-            'Cache-Control' => $isDev ? 'no-cache, no-store, must-revalidate' : 'public, max-age=31536000',
+            'Content-Type' => $mimeTypes[$extension] ?? 'application/octet-stream',
+            'Cache-Control' => $cacheControl,
+            'ETag' => $etag,
+            'Last-Modified' => gmdate('D, d M Y H:i:s', $lastModified).' GMT',
         ];
 
         return response()->file($fullPath, $headers);
