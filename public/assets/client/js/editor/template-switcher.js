@@ -54,7 +54,7 @@ export class TemplateSwitcher {
     }
 
     /**
-     * Thực hiện đổi mẫu thiệp
+     * Thực hiện đổi mẫu thiệp: Bảo toàn 100% dữ liệu cưới và tải đúng schema của mẫu mới
      */
     switchTemplate({ id, slug, name, thumb, tier }) {
         const state = this.store.getState();
@@ -65,78 +65,72 @@ export class TemplateSwitcher {
             return;
         }
 
-        // 1. Dispatch action lưu trữ vào Store
-        this.store.dispatch({
-            type: ActionTypes.SWITCH_TEMPLATE,
-            payload: {
-                template_id: id,
-                template_slug: slug,
-            },
-        });
-
-        // 1.1 Đồng bộ trực tiếp vào Form Input #template_id để khi bấm submit sẽ gửi template_id mới lên máy chủ
-        const templateInput = document.getElementById('template_id');
-        if (templateInput) {
-            templateInput.value = id;
-        }
-        if (window.__MAYHEN_TEMPLATE_ID !== undefined) {
-            window.__MAYHEN_TEMPLATE_ID = id;
-        }
-        if (window.__MAYHEN_TEMPLATE_SLUG !== undefined) {
-            window.__MAYHEN_TEMPLATE_SLUG = slug;
-        }
-
-        // 2. Cập nhật Chip trên Topbar
-        if (this.chipName) this.chipName.textContent = name;
-        if (this.chipThumb && thumb) this.chipThumb.src = thumb;
-
-        // Cập nhật card được chọn trong modal
-        const cards = this.modal.querySelectorAll('[data-template-switch]');
-        cards.forEach((c) => {
-            if (parseInt(c.getAttribute('data-template-id'), 10) === id) {
-                c.classList.add('mayhen_editor_template_radio_selected');
-            } else {
-                c.classList.remove('mayhen_editor_template_radio_selected');
+        // 1. Thu thập toàn bộ dữ liệu người dùng đã nhập trên form hiện tại
+        const draftData = {};
+        const inputs = document.querySelectorAll('[data-sync-key]');
+        inputs.forEach((inp) => {
+            const key = inp.getAttribute('data-sync-key');
+            if (key && inp.value !== undefined) {
+                draftData[key] = inp.value;
             }
         });
 
-        // 3. Cập nhật src cho Iframe Canvas và đồng bộ dữ liệu cưới ngay khi load xong
-        const newPreviewUrl = `/xem-thu/${slug}?embed=1&mode=editor`;
+        // Hợp nhất cả state hiện có trong store
+        const weddingState = state.wedding || {};
+        Object.keys(weddingState).forEach((wKey) => {
+            const val = weddingState[wKey];
+            if (val && typeof val === 'string' && !draftData[`wedding.${wKey}`]) {
+                draftData[`wedding.${wKey}`] = val;
+            }
+        });
 
-        const syncToIframe = (iframe) => {
-            if (!iframe) return;
-            iframe.src = newPreviewUrl;
-
-            const handleLoad = () => {
-                const currentState = this.store.getState();
-                const wedding = currentState.wedding;
-
-                // Bắn toàn bộ trường cưới qua postMessage
-                Object.keys(wedding).forEach((key) => {
-                    const val = wedding[key];
-                    if (val !== undefined && val !== null) {
-                        iframe.contentWindow?.postMessage({
-                            type: 'MAYHEN_SYNC_INPUT',
-                            key: `wedding.${key}`,
-                            value: val,
-                        }, '*');
-                    }
-                });
-
-                iframe.removeEventListener('load', handleLoad);
-            };
-
-            iframe.addEventListener('load', handleLoad);
+        // Sinh thêm alias cho các trường tương đương để chuyển đổi giữa các mẫu khác nhau không bao giờ bị mất dữ liệu
+        const fieldAliases = {
+            'groom_bank_account': 'groom_account_number',
+            'groom_account_number': 'groom_bank_account',
+            'bride_bank_account': 'bride_account_number',
+            'bride_account_number': 'bride_bank_account',
+            'event_party_address': 'ceremony_address',
+            'ceremony_address': 'event_party_address',
+            'party_address': 'event_party_address',
+            'groom_party_address': 'event_party_address',
+            'bride_party_address': 'event_party_address',
+            'event_party_date': 'wedding_date',
+            'wedding_date': 'event_party_date',
+            'event_party_time': 'party_time',
+            'party_time': 'event_party_time',
+            'groom_party_time': 'event_party_time',
+            'hero_photo_url': 'cover_photo_url',
+            'cover_photo_url': 'hero_photo_url'
         };
 
-        syncToIframe(this.previewIframe);
-        syncToIframe(this.mobileIframe);
+        Object.keys(fieldAliases).forEach((fromKey) => {
+            const toKey = fieldAliases[fromKey];
+            const fromVal = draftData[`wedding.extra_data.${fromKey}`] || draftData[`wedding.${fromKey}`] || draftData[fromKey];
+            if (fromVal && !draftData[`wedding.extra_data.${toKey}`] && !draftData[`wedding.${toKey}`]) {
+                draftData[`wedding.extra_data.${toKey}`] = fromVal;
+            }
+        });
 
-        // 4. Đóng modal
+        // Lưu vào sessionStorage để trang mẫu mới tự động khôi phục toàn vẹn dữ liệu
+        try {
+            sessionStorage.setItem('mayhen_transferred_draft', JSON.stringify({
+                wedding: draftData,
+                custom_config: state.custom_config || {},
+                timestamp: Date.now()
+            }));
+        } catch (e) {}
+
         this.closeModal();
+        this.showToast(`Đang chuyển sang mẫu "${name}". Dữ liệu của bạn được giữ nguyên 100%...`);
 
-        // 5. Hiện toast thông báo chúc mừng
-        this.showToast(`Đã chuyển sang mẫu "${name}" thành công! Mọi thông tin bạn vừa nhập đều được giữ nguyên.`);
+        // 2. Chuyển hướng sang URL của mẫu mới với đầy đủ schema form và preview đồng nhất
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('template', slug);
+
+        setTimeout(() => {
+            window.location.href = currentUrl.toString();
+        }, 120);
     }
 
     closeModal() {

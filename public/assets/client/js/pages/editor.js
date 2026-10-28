@@ -57,26 +57,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const dndManager = new SectionDnDManager(store, { previewIframe, mobileIframe });
     const themeController = new ThemeController(store, { previewIframe, mobileIframe });
 
-    // Kiểm tra và phục hồi bản nháp offline từ LocalStorage nếu có
-    const localDraft = store.autosaver.getLocalDraft(invitationId);
-    if (localDraft && localDraft.wedding) {
-        // Nếu bản nháp LocalStorage có dữ liệu mới hơn, hỏi người dùng hoặc tự động đồng bộ
-        const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
-        if (hasData && !invitationId) {
-            store.dispatch({
-                type: ActionTypes.RESTORE_DRAFT,
-                payload: { draft: localDraft }
-            });
+    // Kiểm tra và phục hồi bản nháp (Ưu tiên bản nháp vừa chuyển mẫu transferred_draft)
+    let draftWeddingData = null;
+    const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
+    if (transferredDraftRaw) {
+        try {
+            const parsed = JSON.parse(transferredDraftRaw);
+            if (parsed && parsed.wedding) {
+                draftWeddingData = parsed.wedding;
+            }
+            sessionStorage.removeItem('mayhen_transferred_draft');
+        } catch (e) {}
+    }
 
-            // Cập nhật lại các trường form
-            Object.keys(localDraft.wedding).forEach(prop => {
-                const val = localDraft.wedding[prop];
-                const inputEl = document.querySelector(`[data-sync-key="wedding.${prop}"]`);
-                if (inputEl && val) {
-                    inputEl.value = val;
-                }
-            });
+    if (!draftWeddingData) {
+        const localDraft = store.autosaver.getLocalDraft(invitationId);
+        if (localDraft && localDraft.wedding) {
+            const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
+            if (hasData && !invitationId) {
+                draftWeddingData = localDraft.wedding;
+            }
         }
+    }
+
+    if (draftWeddingData) {
+        Object.keys(draftWeddingData).forEach(key => {
+            const val = draftWeddingData[key];
+            if (val === undefined || val === null || val === '') return;
+
+            const inputEl = document.querySelector(`[data-sync-key="${key}"]`) ||
+                            document.querySelector(`[data-sync-key="wedding.${key}"]`) ||
+                            document.querySelector(`[data-sync-key="wedding.extra_data.${key}"]`);
+            if (inputEl) {
+                inputEl.value = val;
+            }
+
+            store.dispatch({
+                type: ActionTypes.UPDATE_FIELD,
+                payload: { key: key.startsWith('wedding.') ? key : `wedding.${key}`, value: val }
+            });
+        });
     }
 
     // Subscribe Store để cập nhật UI Topbar (Autosave pill, Undo/Redo buttons)
@@ -384,7 +404,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target.id) {
                 const thumb = document.getElementById('preview_thumb_' + target.id);
                 if (thumb && val) {
-                    thumb.src = val;
+                    if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('blob:') || val.startsWith('data:')) {
+                        thumb.src = val;
+                    } else if (templateSlug) {
+                        thumb.src = `/mau-thiep/${templateSlug}/assets/${val}`;
+                    }
                 }
             }
 
@@ -408,11 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.forEach(inp => {
             const key = inp.getAttribute('data-sync-key');
             const val = inp.value;
-            if (key && val) {
+            if (key) {
                 iframeEl.contentWindow.postMessage({
                     type: 'MAYHEN_SYNC_INPUT',
                     key: key,
-                    value: val,
+                    value: val !== undefined ? val : '',
                 }, '*');
             }
         });
@@ -458,16 +482,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Bắt tay 2 chiều: Khi Template Iframe gửi tín hiệu MAYHEN_BRIDGE_READY, lập tức đồng bộ toàn bộ dữ liệu
+    window.addEventListener('message', (event) => {
+        if (!event.data || typeof event.data !== 'object') return;
+        if (event.data.type === 'MAYHEN_BRIDGE_READY') {
+            syncAllFieldsToIframe(previewIframe);
+            syncAllFieldsToIframe(mobileIframe);
+        }
+    });
+
     if (previewIframe) {
         previewIframe.addEventListener('load', () => {
-            setTimeout(() => syncAllFieldsToIframe(previewIframe), 300);
+            syncAllFieldsToIframe(previewIframe);
         });
+        // Nếu iframe đã hoàn tất tải trước khi JS khởi chạy
+        try {
+            if (previewIframe.contentDocument && previewIframe.contentDocument.readyState === 'complete') {
+                syncAllFieldsToIframe(previewIframe);
+            }
+        } catch (e) {}
     }
 
     if (mobileIframe) {
         mobileIframe.addEventListener('load', () => {
-            setTimeout(() => syncAllFieldsToIframe(mobileIframe), 300);
+            syncAllFieldsToIframe(mobileIframe);
         });
+        try {
+            if (mobileIframe.contentDocument && mobileIframe.contentDocument.readyState === 'complete') {
+                syncAllFieldsToIframe(mobileIframe);
+            }
+        } catch (e) {}
     }
 
     // ----------------------------------------------------
@@ -754,7 +798,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetInput) {
             targetInput.value = qrUrl;
             const syncKey = targetInput.getAttribute('data-sync-key');
-            if (syncKey) sendSyncMessage(syncKey, qrUrl);
+            if (syncKey) {
+                store.dispatch({
+                    type: ActionTypes.UPDATE_FIELD,
+                    payload: { key: syncKey, value: qrUrl }
+                });
+                sendSyncMessage(syncKey, qrUrl);
+            }
         }
     };
 

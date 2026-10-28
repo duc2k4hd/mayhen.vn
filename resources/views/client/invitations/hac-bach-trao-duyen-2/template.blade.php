@@ -162,7 +162,7 @@
                                         </div>
                                         <div id="IMAGE157" class="ladi-element ">
                                             <div class='ladi-image ladi-transition'>
-                                                <div class="ladi-image-background"></div>
+                                                <div class="ladi-image-background" data-sync-target="cover_photo_url"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -181,7 +181,7 @@
                                     </div>
                                 </div>
                                 <div id="HEADLINE338" class="ladi-element ">
-                                    <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($groomName) }} &amp; {{ mb_strtoupper($brideName) }}</h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="couple_names" data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }} &amp; {{ mb_strtoupper($brideName) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -200,7 +200,7 @@
             <div class="ladi-container">
                 <div id="IMAGE1" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="hero_photo_url"></div>
                     </div>
                 </div>
                 <div id="BOX43" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -237,13 +237,13 @@
                 <div id="GROUP94" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
                         <div id="HEADLINE3" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($groomName) }}</h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name" data-sync-transform="uppercase">{{ mb_strtoupper($groomName) }}</h3>
                         </div>
                         <div id="HEADLINE282" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
                         </div>
                         <div id="HEADLINE283" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>{{ mb_strtoupper($brideName) }}<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name" data-sync-transform="uppercase">{{ mb_strtoupper($brideName) }}<br></h3>
                         </div>
                     </div>
                 </div>
@@ -713,7 +713,7 @@
                             <div class='ladi-group'>
                                 <div id="IMAGE115" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-image ladi-transition'>
-                                        <div class="ladi-image-background"></div>
+                                        <div class="ladi-image-background" data-sync-target="groom_photo_url"></div>
                                     </div>
                                 </div>
                                 <div id="BOX60" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -723,7 +723,7 @@
                                     <div class='ladi-paragraph ladi-transition'>The groom</div>
                                 </div>
                                 <div id="HEADLINE300" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">{{ $groomName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -732,6 +732,7 @@
                                 luôn sống hết lòng vì gia đình và những người thân yêu. Với trái tim ấm áp và sự chín
                                 chắn trong suy nghĩ, anh đã và đang là chỗ dựa vững chắc cho cô dâu cũng như là người
                                 bạn đồng hành lý tưởng trong chặng đường hôn nhân sắp tới.<br></div>
+                            <div class="mayhen_invitation_ladjihe38udhd_parents_box" style="margin-top: 10px; font-size: 13px; color: #78716c;" data-sync-target="groom_parents"><strong>Nhà Trai:</strong> Ông <span data-sync-target="groom_father">{{ $groomFather }}</span> &amp; Bà <span data-sync-target="groom_mother">{{ $groomMother }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -741,7 +742,7 @@
                             <div class='ladi-group'>
                                 <div id="IMAGE122" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-image ladi-transition'>
-                                        <div class="ladi-image-background"></div>
+                                        <div class="ladi-image-background" data-sync-target="bride_photo_url"></div>
                                     </div>
                                 </div>
                                 <div id="BOX67" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -751,7 +752,7 @@
                                     <div class='ladi-paragraph ladi-transition'>The bride</div>
                                 </div>
                                 <div id="HEADLINE304" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">{{ $brideName }}<br></h3>
                                 </div>
                             </div>
                         </div>
@@ -760,6 +761,7 @@
                                 luôn mang đến năng lượng tích cực cho những người xung quanh. Với nụ cười ấm áp và trái
                                 tim chân thành, cô không chỉ là niềm tự hào của gia đình mà còn là người bạn đời lý
                                 tưởng, đồng hành cùng chú rể trong hành trình xây dựng hạnh phúc.<br></div>
+                            <div class="mayhen_invitation_ladjihe38udhd_parents_box" style="margin-top: 10px; font-size: 13px; color: #78716c;" data-sync-target="bride_parents"><strong>Nhà Gái:</strong> Ông <span data-sync-target="bride_father">{{ $brideFather }}</span> &amp; Bà <span data-sync-target="bride_mother">{{ $brideMother }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -805,24 +807,23 @@
                     </div>
                 </div>
                 <div id="HEADLINE69" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}</h3>
+                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">{{ $groomName }}</h3>
                 </div>
                 <div id="HEADLINE70" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}</h3>
+                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">{{ $brideName }}</h3>
                 </div>
                 <div id="HEADLINE71" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <h3 class='ladi-headline ladi-transition'>and</h3>
                 </div>
                 <div id="PARAGRAPH23" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition'><span style="font-size: 18px;">VÀO LÚC 16 GIỜ 00
-                            <br></span>THỨ BẢY, NGÀY 09 THÁNG 08 NĂM 2025<br></div>
+                    <div class='ladi-paragraph ladi-transition'><span style="font-size: 18px;" data-sync-target="event_party_time">VÀO LÚC {{ $eventPartyTime }}
+                            <br></span><span data-sync-target="wedding_date">{{ mb_strtoupper($weddingDate->translatedFormat('l, \n\g\à\y d \t\h\á\n\g m \n\ă\m Y')) }}</span><br></div>
                 </div>
                 <div id="PARAGRAPH24" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition'><span style="font-weight: 400;">3801 Nguyễn Tất Thành,
-                            Hoà Hiệp Nam<br>Liên Chiểu, Đà Nẵng</span><br></div>
+                    <div class='ladi-paragraph ladi-transition'><span style="font-weight: 400;" data-sync-target="event_party_address">{{ $eventPartyAddress }}</span><br></div>
                 </div>
                 <div id="PARAGRAPH25" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-paragraph ladi-transition'>(Tức ngày 16 tháng 06 năm Ất Tỵ)</div>
+                    <div class='ladi-paragraph ladi-transition' data-sync-target="event_party_lunar">{{ $eventPartyLunar }}</div>
                 </div>
                 <div data-action="true" id="BUTTON9" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-button ladi-transition'>
@@ -1008,10 +1009,10 @@
                         <div id="GROUP12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE12" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>{{ $brideName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="bride_name">{{ $brideName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE13" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>{{ $groomName }}<br></h3>
+                                    <h3 class='ladi-headline ladi-transition' data-sync-target="groom_name">{{ $groomName }}<br></h3>
                                 </div>
                                 <div id="HEADLINE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
@@ -1501,11 +1502,11 @@
                     <div class='ladi-group'>
                         <div data-action="true" id="IMAGE134" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
+                                <div class="ladi-image-background" data-sync-target="bride_bank_account"></div>
                             </div>
                         </div>
                         <div id="HEADLINE318" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>{{ $brideName }}</h3>
+                            <h3 class='ladi-headline' data-sync-target="bride_name">{{ $brideName }}</h3>
                         </div>
                     </div>
                 </div>
@@ -1513,11 +1514,11 @@
                     <div class='ladi-group'>
                         <div data-action="true" id="IMAGE135" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
+                                <div class="ladi-image-background" data-sync-target="groom_bank_account"></div>
                             </div>
                         </div>
                         <div id="HEADLINE319" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>{{ $groomName }}</h3>
+                            <h3 class='ladi-headline' data-sync-target="groom_name">{{ $groomName }}</h3>
                         </div>
                     </div>
                 </div>

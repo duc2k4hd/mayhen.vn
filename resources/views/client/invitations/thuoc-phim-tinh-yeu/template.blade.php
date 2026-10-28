@@ -520,22 +520,22 @@
                     <div class="mayhen_invitation_djcvhwiuo9w9_invitation-event-block" data-event-style="standard">
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_text mayhen_invitation_djcvhwiuo9w9_event-title"
                             data-reveal="fade-up"
-                            style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:1650ms">Lễ Vu Quy</div>
+                            style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:1650ms" data-sync-target="bride_ceremony_title">{{ $brideCeremonyTitle ?? 'Lễ Vu Quy' }}</div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_date-and-time">
                             <div class="mayhen_invitation_djcvhwiuo9w9_date-and-time-inner">
                                 <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-soft-scale mayhen_invitation_djcvhwiuo9w9_time"
                                     data-reveal="soft-scale"
                                     style="--mayhen-g4-reveal-delay:80ms;--mayhen-g4-reveal-duration:1750ms">
-                                    {{ $brideCeremonyTime }} - {{ $brideCeremonyDayName }}</div>
+                                    <span data-sync-target="bride_ceremony_time">{{ $brideCeremonyTime }}</span> - <span data-sync-target="bride_ceremony_day_name">{{ $brideCeremonyDayName }}</span></div>
                                 <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-soft-scale mayhen_invitation_djcvhwiuo9w9_date"
                                     data-reveal="soft-scale"
-                                    style="--mayhen-g4-reveal-delay:160ms;--mayhen-g4-reveal-duration:1750ms">
+                                    style="--mayhen-g4-reveal-delay:160ms;--mayhen-g4-reveal-duration:1750ms" data-sync-target="bride_ceremony_date">
                                     {{ $brideCeremonyDayNum }}.{{ $brideCeremonyMonthNum }}.{{ $brideCeremonyYearNum }}
                                 </div>
                             </div>
                             <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_lunar-date"
                                 data-reveal="fade-up"
-                                style="--mayhen-g4-reveal-delay:220ms;--mayhen-g4-reveal-duration:1650ms">
+                                style="--mayhen-g4-reveal-delay:220ms;--mayhen-g4-reveal-duration:1650ms" data-sync-target="bride_ceremony_lunar">
                                 {{ $brideCeremonyLunar }}</div>
                         </div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_text mayhen_invitation_djcvhwiuo9w9_venue-label"
@@ -544,7 +544,7 @@
                         </div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_hotel"
                             data-reveal="fade-up"
-                            style="--mayhen-g4-reveal-delay:190ms;--mayhen-g4-reveal-duration:1700ms">
+                            style="--mayhen-g4-reveal-delay:190ms;--mayhen-g4-reveal-duration:1700ms" data-sync-target="bride_ceremony_address">
                             {{ $brideCeremonyAddress }}</div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up"
                             data-reveal="fade-up"
@@ -564,21 +564,21 @@
                     <div class="mayhen_invitation_djcvhwiuo9w9_invitation-event-block" data-event-style="standard">
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_text mayhen_invitation_djcvhwiuo9w9_event-title"
                             data-reveal="fade-up"
-                            style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:1650ms">Tiệc Cưới</div>
+                            style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:1650ms" data-sync-target="bride_party_title">{{ $bridePartyTitle ?? 'Tiệc Cưới' }}</div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_date-and-time">
                             <div class="mayhen_invitation_djcvhwiuo9w9_date-and-time-inner">
                                 <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-soft-scale mayhen_invitation_djcvhwiuo9w9_time"
                                     data-reveal="soft-scale"
                                     style="--mayhen-g4-reveal-delay:80ms;--mayhen-g4-reveal-duration:1750ms">
-                                    {{ $groomPartyTime }} - {{ $groomPartyDayName }}</div>
+                                    <span data-sync-target="bride_party_time">{{ $groomPartyTime }}</span> - <span data-sync-target="bride_party_day_name">{{ $groomPartyDayName }}</span></div>
                                 <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-soft-scale mayhen_invitation_djcvhwiuo9w9_date"
                                     data-reveal="soft-scale"
-                                    style="--mayhen-g4-reveal-delay:160ms;--mayhen-g4-reveal-duration:1750ms">
+                                    style="--mayhen-g4-reveal-delay:160ms;--mayhen-g4-reveal-duration:1750ms" data-sync-target="bride_party_date">
                                     {{ $groomPartyDayNum }}.{{ $groomPartyMonthNum }}.{{ $groomPartyYearNum }}</div>
                             </div>
                             <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_lunar-date"
                                 data-reveal="fade-up"
-                                style="--mayhen-g4-reveal-delay:220ms;--mayhen-g4-reveal-duration:1650ms">
+                                style="--mayhen-g4-reveal-delay:220ms;--mayhen-g4-reveal-duration:1650ms" data-sync-target="bride_party_lunar">
                                 {{ $groomPartyLunar }}</div>
                         </div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_text mayhen_invitation_djcvhwiuo9w9_venue-label"
@@ -587,7 +587,7 @@
                         </div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_hotel"
                             data-reveal="fade-up"
-                            style="--mayhen-g4-reveal-delay:190ms;--mayhen-g4-reveal-duration:1700ms">
+                            style="--mayhen-g4-reveal-delay:190ms;--mayhen-g4-reveal-duration:1700ms" data-sync-target="bride_party_address">
                             {{ $brideCeremonyAddress }}</div>
                         <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up"
                             data-reveal="fade-up"
@@ -618,11 +618,11 @@
                         style="--mayhen-g4-reveal-delay:120ms;--mayhen-g4-reveal-duration:1850ms">
                         <div class="mayhen_invitation_djcvhwiuo9w9_names" data-fit-text-group="invitation-couple">
                             <div class="mayhen_invitation_djcvhwiuo9w9_name mayhen_invitation_djcvhwiuo9w9_font2"
-                                data-fit-text="true">{{ $groomName }}</div>
+                                data-fit-text="true" data-sync-target="groom_name">{{ $groomName }}</div>
                             <div class="mayhen_invitation_djcvhwiuo9w9_and mayhen_invitation_djcvhwiuo9w9_font1">and
                             </div>
                             <div class="mayhen_invitation_djcvhwiuo9w9_name mayhen_invitation_djcvhwiuo9w9_font2"
-                                data-fit-text="true">{{ $brideName }}</div>
+                                data-fit-text="true" data-sync-target="bride_name">{{ $brideName }}</div>
                         </div>
                     </div>
                     <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-fade-up mayhen_invitation_djcvhwiuo9w9_dress-code-block"
@@ -662,7 +662,8 @@
                                 style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:2000ms">
                                 <div class="mayhen_invitation_djcvhwiuo9w9_person-photo"><img
                                         alt="Ảnh Chú rể {{ $groomName }}" loading="lazy"
-                                        src="{{ $assetBase }}/7f029b2b-7c7d-4a44-949d-ca0f9ca46ca9.jpg"
+                                        src="{{ $resolveAsset($extraData['groom_photo_url'] ?? '', '7f029b2b-7c7d-4a44-949d-ca0f9ca46ca9.jpg') }}"
+                                        data-sync-target="groom_photo_url"
                                         style="object-position:50% 50%" /></div>
                             </div>
                             <div class="mayhen_invitation_djcvhwiuo9w9_reveal mayhen_invitation_djcvhwiuo9w9_reveal-from-right mayhen_invitation_djcvhwiuo9w9_person-info"
@@ -672,7 +673,7 @@
                                     <div
                                         class="mayhen_invitation_djcvhwiuo9w9_label mayhen_invitation_djcvhwiuo9w9_font1">
                                         Chú rể</div>
-                                    <div class="mayhen_invitation_djcvhwiuo9w9_name" data-fit-text="true">
+                                    <div class="mayhen_invitation_djcvhwiuo9w9_name" data-fit-text="true" data-sync-target="groom_name">
                                         {{ $groomName }}</div>
                                 </div>
                             </div>
@@ -685,7 +686,7 @@
                                     <div
                                         class="mayhen_invitation_djcvhwiuo9w9_label mayhen_invitation_djcvhwiuo9w9_font1">
                                         Cô dâu</div>
-                                    <div class="mayhen_invitation_djcvhwiuo9w9_name" data-fit-text="true">
+                                    <div class="mayhen_invitation_djcvhwiuo9w9_name" data-fit-text="true" data-sync-target="bride_name">
                                         {{ $brideName }}</div>
                                 </div>
                             </div>
@@ -694,7 +695,8 @@
                                 style="--mayhen-g4-reveal-delay:0ms;--mayhen-g4-reveal-duration:2000ms">
                                 <div class="mayhen_invitation_djcvhwiuo9w9_person-photo"><img
                                         alt="Ảnh Cô dâu {{ $brideName }}" loading="lazy"
-                                        src="{{ $assetBase }}/7f82ce42-b36d-4124-b34a-b91777ec3271.jpg"
+                                        src="{{ $resolveAsset($extraData['bride_photo_url'] ?? '', '7f82ce42-b36d-4124-b34a-b91777ec3271.jpg') }}"
+                                        data-sync-target="bride_photo_url"
                                         style="object-position:50% 50%" /></div>
                             </div>
                         </div>

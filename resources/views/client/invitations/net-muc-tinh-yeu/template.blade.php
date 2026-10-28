@@ -29,8 +29,8 @@
     $brideFather = !empty($extraData['bride_father']) ? $extraData['bride_father'] : $legacyBrideFather;
     $brideMother = !empty($extraData['bride_mother']) ? $extraData['bride_mother'] : $legacyBrideMother;
 
-    $groomParents = "ÔNG: {$groomFather}\nBÀ: {$groomMother}";
-    $brideParents = "ÔNG: {$brideFather}\nBÀ: {$brideMother}";
+    $groomParents = "ÔNG: <span data-sync-target=\"groom_father\">" . e($groomFather) . "</span>\nBÀ: <span data-sync-target=\"groom_mother\">" . e($groomMother) . "</span>";
+    $brideParents = "ÔNG: <span data-sync-target=\"bride_father\">" . e($brideFather) . "</span>\nBÀ: <span data-sync-target=\"bride_mother\">" . e($brideMother) . "</span>";
 
     // 2. Ngày giờ và sảnh tiệc
     $weddingDate = isset($wedding->wedding_date) ? \Carbon\Carbon::parse($wedding->wedding_date) : \Carbon\Carbon::create(2027, 3, 7, 7, 0, 0);
@@ -357,14 +357,14 @@
                 <div class="mayhen_invitation_dhsuudushi9428r_family_card mayhen_invitation_dhsuudushi9428r_reveal">
                     <div class="mayhen_invitation_dhsuudushi9428r_family_col">
                         <span class="mayhen_invitation_dhsuudushi9428r_family_badge">NHÀ TRAI</span>
-                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="groom_parents">{!! nl2br(e($groomParents)) !!}</div>
+                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="groom_parents">{!! nl2br($groomParents) !!}</div>
                     </div>
                     <div class="mayhen_invitation_dhsuudushi9428r_family_divider" aria-hidden="true">
                         <img src="{{ $assetBase }}/assets/chu-hy-1.png" alt="">
                     </div>
                     <div class="mayhen_invitation_dhsuudushi9428r_family_col">
                         <span class="mayhen_invitation_dhsuudushi9428r_family_badge">NHÀ GÁI</span>
-                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="bride_parents">{!! nl2br(e($brideParents)) !!}</div>
+                        <div class="mayhen_invitation_dhsuudushi9428r_family_text" data-sync-target="bride_parents">{!! nl2br($brideParents) !!}</div>
                     </div>
                 </div>
                 <div class="mayhen_invitation_dhsuudushi9428r_family_subtext mayhen_invitation_dhsuudushi9428r_reveal">

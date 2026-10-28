@@ -1327,6 +1327,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Cập nhật JavaScript `editor.js`: Trỏ đúng vào `centerStage` và đồng bộ hai chiều với `store.subscribe` cho state `ui.previewDevice`.
                   * Tối ưu CSS `public/assets/client/css/pages/editor-v2.css`: Khi chuyển sang chế độ Desktop, mở rộng khung mockup từ 375px lên 980px với viền màn hình máy tính Quiet Luxury, đồng thời tự động ẩn Dynamic Island của iPhone (`.mayhen_editor_phone_island { display: none; }`).
 
+            21. **Đồng Bộ Thời Gian Thực & Chuẩn Hóa Logic Đổi Mẫu Thiệp Toàn Diện (Zero-Loss Template Switcher & Live Contract)**:
+                - **Vấn đề triệt để**:
+                  * Khi người dùng đổi mẫu trong trình tạo thiệp (`/tao-thiep`), mã cũ chỉ thay đổi thuộc tính `src` của iframe preview mà không tải lại schema của form bên trái. Kết quả là form bên trái hiển thị các trường của mẫu cũ, preview bên phải tải mẫu mới với dữ liệu mặc định, dẫn đến tình trạng "nhập tên một đằng, giao diện hiển thị một nẻo", lỗi ảnh và mất đồng bộ logic giữa các mẫu.
+                  * Các mẫu `hac-bach-trao-duyen`, `hac-bach-trao-duyen-2`, và `thuoc-phim-tinh-yeu` bị thiếu hợp đồng `data-sync-target` cho tên cô dâu chú rể, phụ mẫu, ngày cưới, sảnh tiệc và địa chỉ, khiến khung preview không phản hồi khi gõ phím.
+                  * Dữ liệu tài khoản ngân hàng và địa chỉ tiệc cưới có tên trường khác nhau giữa các mẫu (`groom_bank_account` vs `groom_account_number`, `event_party_address` vs `ceremony_address`), khiến dữ liệu bị thất lạc khi chuyển mẫu.
+                - **Giải pháp & Kiến trúc thực hiện**:
+                  * **Bộ Chuyển Đổi Mẫu Bảo Toàn Dữ Liệu 100% (Zero-Loss Template Switcher)**: Trong `public/assets/client/js/editor/template-switcher.js`, khi người dùng bấm chọn mẫu khác, toàn bộ dữ liệu đã nhập (tên cô dâu chú rể, phụ mẫu hai bên, ngày cưới, địa chỉ, số tài khoản VietQR, ảnh bìa...) được thu thập và tự động ánh xạ tương thích thông qua bảng `fieldAliases`, sau đó lưu vào `sessionStorage` (`mayhen_transferred_draft`) và điều hướng tới `/tao-thiep?template={new_slug}`. Form bên trái nạp đúng 100% schema của mẫu mới, preview tải đúng mẫu mới, và dữ liệu cưới vừa nhập được tự động điền lại toàn vẹn.
+                  * **Bắt tay 2 Chiều (Realtime Handshake Bridge)**: Trong `resources/views/client/invitations/partials/editor-bridge.blade.php`, iframe phát tín hiệu `MAYHEN_BRIDGE_READY` ngay khi DOM sẵn sàng. Trình tạo thiệp lắng nghe tín hiệu này và đồng bộ ngay lập tức toàn bộ dữ liệu form sang iframe (0ms lag).
+                  * **Tương thích khóa mở rộng (Cross-Template Alias Mapping)**: `editor-bridge.blade.php` tự động nhận diện và đồng bộ các trường tương đương (`groom_bank_account` <-> `groom_account_number`, `event_party_address` <-> `party_address` <-> `ceremony_address`, `hero_photo_url` <-> `cover_photo_url`).
+                  * **Gắn đầy đủ hợp đồng `data-sync-target` cho toàn bộ 5 mẫu thiệp**:
+                    - `hac-bach-trao-duyen-2`: Bổ sung `data-sync-target` cho tên mở đầu, ảnh bìa, hero photo, tên chú rể, tên cô dâu, phụ mẫu hai bên, ngày giờ tiệc cưới, địa chỉ sảnh tiệc, ngày âm lịch, sổ lưu bút và số tài khoản ngân hàng.
+                    - `hac-bach-trao-duyen`: Thay thế các giá trị hardcoded bằng biến Blade động kèm `data-sync-target` cho phụ mẫu hai bên (ông, bà), ngày cưới, địa chỉ tư gia, ảnh chú rể, ảnh cô dâu và chân trang.
+                    - `thuoc-phim-tinh-yeu`: Bổ sung `data-sync-target` cho toàn bộ các khối sự kiện Nhà gái và Nhà trai (Lễ Vu Quy, Tiệc Cưới), ngày giờ, ngày âm lịch, ảnh cưới và tên đôi uyên ương.
+                    - `tung-trang-hanh-phuc`: Bổ sung `data-sync-target` cho họ tên cha mẹ nhà trai, nhà gái.
+                    - `net-muc-tinh-yeu`: Chuẩn hóa cả cấp độ thẻ chứa `groom_parents`/`bride_parents` lẫn thẻ chi tiết từng người `groom_father`/`groom_mother`/`bride_father`/`bride_mother`.
+                  * **Khắc phục triệt để lỗi ảnh vỡ (Asset Fallback Defense)**: Chuẩn hóa bộ lọc URL trong `resources/views/client/pages/editor.blade.php` và `editor.js`. Không bao giờ tạo URL asset rỗng khi chưa tải ảnh, luôn sử dụng ảnh đại diện mẫu (`thumbnail_url`) làm điểm tựa an toàn.
+                  * **Kiểm thử tự động**: Viết test feature `tests/Feature/InvitationEditorDataSyncTest.php` xác thực toàn bộ 5 mẫu thiệp đều tải thành công, tích hợp đúng `editor-bridge` và có đầy đủ hợp đồng `data-sync-target`. Đạt 25/25 Pest tests (307 assertions) Passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

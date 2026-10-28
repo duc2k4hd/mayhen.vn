@@ -161,12 +161,12 @@
         <div class="mayhen_invitation_ladjihe38udhd_envelope_body">
           <div class="mayhen_invitation_ladjihe38udhd_envelope_flap"></div>
           <div class="mayhen_invitation_ladjihe38udhd_envelope_peek_card">
-            <img src="{{ $resolveAsset('', 'hip_2307-20250417154245-1n-2l.jpg') }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_peek_img">
+            <img src="{{ $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? ''), 'hip_2307-20250417154245-1n-2l.jpg') }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_peek_img" data-sync-target="cover_photo_url">
           </div>
           <div class="mayhen_invitation_ladjihe38udhd_envelope_pocket">
             <!-- Wax Seal Button -->
             <button type="button" class="mayhen_invitation_ladjihe38udhd_wax_seal" id="mayhen_invitation_ladjihe38udhd_seal_btn" aria-label="Chạm để mở thiệp">
-              <span class="mayhen_invitation_ladjihe38udhd_seal_stamp">HK & PX</span>
+              <span class="mayhen_invitation_ladjihe38udhd_seal_stamp"><span data-monogram-role="groom">{{ mb_substr($groomName, 0, 1) }}</span> &amp; <span data-monogram-role="bride">{{ mb_substr($brideName, 0, 1) }}</span></span>
             </button>
           </div>
         </div>
@@ -174,7 +174,7 @@
 
       <div class="mayhen_invitation_ladjihe38udhd_opening_content">
         <span class="mayhen_invitation_ladjihe38udhd_opening_subtitle">SAVE THE DATE</span>
-        <h1 class="mayhen_invitation_ladjihe38udhd_opening_names">{{ $groomName }} <span>&</span> {{ $brideName }}</h1>
+        <h1 class="mayhen_invitation_ladjihe38udhd_opening_names" data-sync-target="couple_names"><span data-sync-target="groom_name">{{ $groomName }}</span> <span>&</span> <span data-sync-target="bride_name">{{ $brideName }}</span></h1>
         <div class="mayhen_invitation_ladjihe38udhd_opening_guest">
           <span class="mayhen_invitation_ladjihe38udhd_guest_label">Kính mời</span>
           <span class="mayhen_invitation_ladjihe38udhd_guest_name" id="mayhen_invitation_ladjihe38udhd_guest_open_name">Bạn và Gia Đình</span>
@@ -195,26 +195,26 @@
     <!-- HERO SECTION (SECTION 18 & 1) -->
     <header class="mayhen_invitation_ladjihe38udhd_hero mayhen_invitation_ladjihe38udhd_box_anim" id="hero">
       <div class="mayhen_invitation_ladjihe38udhd_hero_bg_wrap">
-        <img src="{{ $resolveAsset('', 'hip_1524-20250418032309-dzaln.jpg') }}" alt="Wedding Couple Hero" class="mayhen_invitation_ladjihe38udhd_hero_img">
+        <img src="{{ $resolveAsset($extraData['hero_photo_url'] ?? ($wedding->cover_photo_url ?? ''), 'hip_1524-20250418032309-dzaln.jpg') }}" alt="Wedding Couple Hero" class="mayhen_invitation_ladjihe38udhd_hero_img" data-sync-target="hero_photo_url">
         <div class="mayhen_invitation_ladjihe38udhd_hero_overlay"></div>
       </div>
       
       <div class="mayhen_invitation_ladjihe38udhd_hero_content">
         <div class="mayhen_invitation_ladjihe38udhd_monogram">
-          <span>HK</span>
+          <span data-monogram-role="groom">{{ mb_substr($groomName, 0, 1) }}</span>
           <span class="mayhen_invitation_ladjihe38udhd_mono_amp">&</span>
-          <span>PX</span>
+          <span data-monogram-role="bride">{{ mb_substr($brideName, 0, 1) }}</span>
         </div>
         <p class="mayhen_invitation_ladjihe38udhd_hero_tagline">TRÂN TRỌNG KÍNH MỜI</p>
         <div class="mayhen_invitation_ladjihe38udhd_guest_badge">
           <span id="mayhen_invitation_ladjihe38udhd_guest_main_name">Bạn và Gia Đình</span>
         </div>
         <h1 class="mayhen_invitation_ladjihe38udhd_hero_title">
-          <span>{{ $groomName }}</span>
+          <span data-sync-target="groom_name">{{ $groomName }}</span>
           <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span>
-          <span>{{ $brideName }}</span>
+          <span data-sync-target="bride_name">{{ $brideName }}</span>
         </h1>
-        <p class="mayhen_invitation_ladjihe38udhd_hero_date">20 . 12 . 2025</p>
+        <p class="mayhen_invitation_ladjihe38udhd_hero_date" data-sync-target="wedding_date">{{ $weddingDate->format('d . m . Y') }}</p>
 
         <!-- Scroll down hint -->
         <a href="#save-date" class="mayhen_invitation_ladjihe38udhd_scroll_down">
@@ -355,14 +355,14 @@
           <!-- Chú Rể -->
           <div class="mayhen_invitation_ladjihe38udhd_person_card mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_person_photo_wrap">
-              <img src="{{ $resolveAsset('', 'hip_1854-20250417154226-mql7h.jpg') }}" alt="Chú rể {{ $groomName }}" class="mayhen_invitation_ladjihe38udhd_person_img">
+              <img src="{{ $resolveAsset($extraData['groom_photo_url'] ?? '', 'hip_1854-20250417154226-mql7h.jpg') }}" alt="Chú rể {{ $groomName }}" class="mayhen_invitation_ladjihe38udhd_person_img" data-sync-target="groom_photo_url">
               <span class="mayhen_invitation_ladjihe38udhd_person_role">CHÚ RỂ</span>
             </div>
-            <h3 class="mayhen_invitation_ladjihe38udhd_person_name">{{ $groomName }}</h3>
+            <h3 class="mayhen_invitation_ladjihe38udhd_person_name" data-sync-target="groom_name">{{ $groomName }}</h3>
             <p class="mayhen_invitation_ladjihe38udhd_family_title">NHÀ TRAI</p>
-            <p class="mayhen_invitation_ladjihe38udhd_family_names">
-              <strong>Ông:</strong> Lê Quang Minh<br>
-              <strong>Bà:</strong> Trần Thị Thu Trang
+            <p class="mayhen_invitation_ladjihe38udhd_family_names" data-sync-target="groom_parents">
+              <strong>Ông:</strong> <span data-sync-target="groom_father">{{ $groomFather }}</span><br>
+              <strong>Bà:</strong> <span data-sync-target="groom_mother">{{ $groomMother }}</span>
             </p>
           </div>
 
@@ -376,14 +376,14 @@
           <!-- Cô Dâu -->
           <div class="mayhen_invitation_ladjihe38udhd_person_card mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_person_photo_wrap">
-              <img src="{{ $resolveAsset('', 'hip_2374-20250417154254-fetzp.jpg') }}" alt="Cô dâu {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_person_img">
+              <img src="{{ $resolveAsset($extraData['bride_photo_url'] ?? '', 'hip_2374-20250417154254-fetzp.jpg') }}" alt="Cô dâu {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_person_img" data-sync-target="bride_photo_url">
               <span class="mayhen_invitation_ladjihe38udhd_person_role">CÔ DÂU</span>
             </div>
-            <h3 class="mayhen_invitation_ladjihe38udhd_person_name">{{ $brideName }}</h3>
+            <h3 class="mayhen_invitation_ladjihe38udhd_person_name" data-sync-target="bride_name">{{ $brideName }}</h3>
             <p class="mayhen_invitation_ladjihe38udhd_family_title">NHÀ GÁI</p>
-            <p class="mayhen_invitation_ladjihe38udhd_family_names">
-              <strong>Ông:</strong> Lê Quang Minh<br>
-              <strong>Bà:</strong> Trần Thị Thu Trang
+            <p class="mayhen_invitation_ladjihe38udhd_family_names" data-sync-target="bride_parents">
+              <strong>Ông:</strong> <span data-sync-target="bride_father">{{ $brideFather }}</span><br>
+              <strong>Bà:</strong> <span data-sync-target="bride_mother">{{ $brideMother }}</span>
             </p>
           </div>
         </div>
@@ -394,14 +394,14 @@
             "TỚI DỰ BỮA TIỆC MỪNG CƯỚI CÙNG GIA ĐÌNH CHÚNG MÌNH"
           </p>
           <div class="mayhen_invitation_ladjihe38udhd_notice_time">
-            <span class="mayhen_invitation_ladjihe38udhd_notice_hour">10 GIỜ 00</span>
-            <span class="mayhen_invitation_ladjihe38udhd_notice_day">CHỦ NHẬT | 26 . 12 . 2025</span>
-            <span class="mayhen_invitation_ladjihe38udhd_lunar">(Tức ngày 16 tháng 08 năm Ất Tỵ)</span>
+            <span class="mayhen_invitation_ladjihe38udhd_notice_hour" data-sync-target="event_party_time">{{ $eventPartyTime ?? '10 GIỜ 00' }}</span>
+            <span class="mayhen_invitation_ladjihe38udhd_notice_day" data-sync-target="wedding_date">{{ mb_strtoupper($weddingDate->translatedFormat('l | d . m . Y')) }}</span>
+            <span class="mayhen_invitation_ladjihe38udhd_lunar" data-sync-target="event_party_lunar">{{ $eventPartyLunar ?? '(Tức ngày 16 tháng 08 năm Ất Tỵ)' }}</span>
           </div>
           <div class="mayhen_invitation_ladjihe38udhd_notice_place">
-            <p class="mayhen_invitation_ladjihe38udhd_place_name">TẠI TƯ GIA NHÀ TRAI</p>
-            <p class="mayhen_invitation_ladjihe38udhd_place_address">423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội</p>
-            <a href="https://maps.google.com/?q=423+An+Dương+Vương+Phú+Thượng+Tây+Hồ+Hà+Nội" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_ladjihe38udhd_btn_map">
+            <p class="mayhen_invitation_ladjihe38udhd_place_name">TẠI TƯ GIA</p>
+            <p class="mayhen_invitation_ladjihe38udhd_place_address" data-sync-target="event_party_address">{{ $eventPartyAddress ?? '423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội' }}</p>
+            <a href="https://maps.google.com/?q={{ urlencode($eventPartyAddress ?? '423 An Dương Vương Phú Thượng Tây Hồ Hà Nội') }}" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_ladjihe38udhd_btn_map">
               <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
               <span>XEM VỊ TRÍ TRÊN BẢN ĐỒ</span>
             </a>
@@ -891,9 +891,9 @@
             Chân thành cảm ơn tình cảm và sự hiện diện của bạn!
           </p>
           <div class="mayhen_invitation_ladjihe38udhd_footer_names">
-            <span>{{ $groomName }}</span> &amp; <span>{{ $brideName }}</span>
+            <span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span>
           </div>
-          <p class="mayhen_invitation_ladjihe38udhd_footer_date">20 . 12 . 2025</p>
+          <p class="mayhen_invitation_ladjihe38udhd_footer_date" data-sync-target="wedding_date">{{ $weddingDate->format('d . m . Y') }}</p>
         </div>
       </div>
     </footer>

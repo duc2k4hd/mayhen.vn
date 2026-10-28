@@ -635,7 +635,7 @@ textarea:focus-visible {
 .mayhen_invitation_dhsuudushi9428r_story_names
     span.mayhen_invitation_dhsuudushi9428r_display {
     font-size: clamp(34px, 9vw, 44px);
-    line-height: 1;
+    line-height: 1.5;
     color: var(--mayhen_ink);
 }
 

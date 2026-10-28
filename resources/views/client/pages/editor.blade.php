@@ -278,7 +278,17 @@
                                                     @endphp
                                                     <div class="mayhen_editor_gallery_item_box">
                                                         <div class="mayhen_editor_image_field_row">
-                                                            <img src="{{ is_string($gVal) && (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) ? $gVal : ($gVal ? url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $gVal) : $selectedTemplate->thumbnail_url) }}" 
+                                                            @php
+                                                                $galleryThumbSrc = $selectedTemplate->thumbnail_url;
+                                                                if (!empty($gVal) && is_string($gVal)) {
+                                                                    if (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) {
+                                                                        $galleryThumbSrc = $gVal;
+                                                                    } else {
+                                                                        $galleryThumbSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($gVal, '/'));
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <img src="{{ $galleryThumbSrc }}" 
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
@@ -406,7 +416,17 @@
                                                 @endif
                                             </label>
                                             <div class="mayhen_editor_image_field_row">
-                                                <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
+                                                @php
+                                                    $imagePreviewSrc = $selectedTemplate->thumbnail_url;
+                                                    if (!empty($val) && is_string($val)) {
+                                                        if (str_starts_with($val, 'http') || str_starts_with($val, '/')) {
+                                                            $imagePreviewSrc = $val;
+                                                        } else {
+                                                            $imagePreviewSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($val, '/'));
+                                                        }
+                                                    }
+                                                @endphp
+                                                <img src="{{ $imagePreviewSrc }}" 
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"

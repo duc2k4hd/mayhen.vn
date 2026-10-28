@@ -335,9 +335,9 @@
                     <div class="mayhen_invitation_ksnvo949dudf_parents-grid">
                         <div class="mayhen_invitation_ksnvo949dudf_family-side mayhen_invitation_ksnvo949dudf_box-anim">
                             <span class="mayhen_invitation_ksnvo949dudf_family-badge">NHÀ TRAI</span>
-                            <p class="mayhen_invitation_ksnvo949dudf_parent-names">
-                                <strong>{{ $groomFather }}</strong>
-                                <strong>{{ $groomMother }}</strong>
+                            <p class="mayhen_invitation_ksnvo949dudf_parent-names" data-sync-target="groom_parents">
+                                <strong data-sync-target="groom_father">{{ $groomFather }}</strong>
+                                <strong data-sync-target="groom_mother">{{ $groomMother }}</strong>
                             </p>
                             <span class="mayhen_invitation_ksnvo949dudf_child-role">Trưởng Nam</span>
                             <h3 class="mayhen_invitation_ksnvo949dudf_couple-fullname" data-sync-target="groom_name">{{ $groomName }}</h3>
@@ -349,9 +349,9 @@
 
                         <div class="mayhen_invitation_ksnvo949dudf_family-side mayhen_invitation_ksnvo949dudf_box-anim">
                             <span class="mayhen_invitation_ksnvo949dudf_family-badge">NHÀ GÁI</span>
-                            <p class="mayhen_invitation_ksnvo949dudf_parent-names">
-                                <strong>{{ $brideFather }}</strong>
-                                <strong>{{ $brideMother }}</strong>
+                            <p class="mayhen_invitation_ksnvo949dudf_parent-names" data-sync-target="bride_parents">
+                                <strong data-sync-target="bride_father">{{ $brideFather }}</strong>
+                                <strong data-sync-target="bride_mother">{{ $brideMother }}</strong>
                             </p>
                             <span class="mayhen_invitation_ksnvo949dudf_child-role">Ái Nữ</span>
                             <h3 class="mayhen_invitation_ksnvo949dudf_couple-fullname" data-sync-target="bride_name">{{ $brideName }}</h3>
