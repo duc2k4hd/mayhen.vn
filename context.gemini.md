@@ -1377,9 +1377,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *Điện thoại nhỏ & chuẩn (`width < 420px`)*: Áp dụng CSS `transform: scale(calc(100vw / 420))` cho `.ladi-wraper`, căn giữa không bị thanh cuộn ngang, kết hợp bù chiều cao tự động trong `script.js` để triệt tiêu khoảng trống đáy footer.
                   * *Máy tính bảng (`768px <= width < 960px`)*: Khắc phục lỗi cắt xén 192px nội dung desktop hai bên bằng cơ chế scale tự động `transform: scale(calc(100vw / 960))` cho `.ladi-section .ladi-container`, giúp iPad hiển thị trọn vẹn bố cục 960px sắc nét.
                   * *Desktop / Laptop (`>= 960px`)*: Giữ nguyên container 960px căn giữa thanh lịch, background các section mở rộng 100% không gian màn hình chuẩn Quiet Luxury.
-                  * *Chế độ nhúng Studio Editor (`$isEmbed = true`)*: Tự động ẩn `#POPUP8`, loại bỏ `scroll_locked` trên `html`/`body`, cưỡng chế hiển thị tức thì các hiệu ứng reveal `.mayhen_invitation_ladjihe38udhd_box_anim` để quá trình biên tập mượt mà, không bao giờ bị đơ cuộn hay trắng màn hình.
+                  * *Chế độ nhúng Studio Editor (`$isEmbed = true`)*: Giữ nguyên phong bì mở thiệp tương tác `#POPUP8`, người dùng bấm "Ấn vào để Xem" để mở mượt mà và cuộn trang bình thường.
                   * *Sổ lưu bút & Bàn ký tên*: Responsive danh sách chữ ký single-column trên điện thoại (`max-width: 480px`), bo viền 18px tinh tế; thanh điều khiển nhạc Vinyl thu gọn nhẹ nhàng tránh che khuất giao diện.
-                - **Kiểm thử**: Viết mới `tests/Feature/HacBachTraoDuyen2ResponsiveTest.php`, toàn bộ 27/27 Pest tests đạt 100% Passed (325 assertions), Pint format chuẩn chỉnh.
+                - **Kiểm thử**: Viết mới `tests/Feature/HacBachTraoDuyen2ResponsiveTest.php`, toàn bộ 28/28 Pest tests đạt 100% Passed (331 assertions), Pint format chuẩn chỉnh.
+
+            24. **Giải Quyết Triệt Để Lỗi Tràn Chữ, Đè Chữ & Chuẩn Hóa Nhập Liệu Chống Hack/XSS Cho Tất Cả Mẫu Thiệp**:
+                - **Khôi phục màn hình phong bì mở thiệp (`#POPUP8`) trong Studio Editor**:
+                  * Khắc phục việc trước đó ẩn hoàn toàn `#POPUP8` trong iframe editor. Giờ đây khi tạo thiệp, người dùng vẫn nhìn thấy phong thư sang trọng với ảnh cưới, tên đôi uyên ương và nút bấm "Ấn vào để Xem". Khi bấm vào nút, thiệp mở ra hiệu ứng âm thanh và cuộn mượt mà.
+                - **Bẻ khóa và cấu trúc lại toàn bộ các khối typography hiển thị tên đôi uyên ương**:
+                  * *Section 1 (`#GROUP94`)*: Bỏ hoàn toàn 3 khối tọa độ cứng đè lên nhau (`#HEADLINE3` 194px, `#HEADLINE282` 62px, `#HEADLINE283` 154px) vốn làm tên dài bị bẻ gãy từ (`NGUY - ỄN`) và đè lên dấu `&`. Chuyển sang bố cục Flexbox tự động co giãn dòng, font-size `clamp(18px, 4.8vw, 30px)`, đảm bảo tên chú rể và cô dâu cân xứng 2 bên dấu `&` không bao giờ va chạm.
+                  * *Section 6 (`#HEADLINE300` & `#HEADLINE304`)*: Hạ font size từ 75px xuống `clamp(28px, 7vw, 38px)`, dịch đoạn văn miêu tả xuống 560px để triệt tiêu hoàn toàn lỗi đè chữ vào phần tiểu sử.
+                  * *Section 4 / 13 (`#HEADLINE69`, `#HEADLINE71`, `#HEADLINE70`)*: Đặt lại tọa độ top phân tầng rõ ràng (275px -> 380px -> 425px) kèm font clamp(28px, 40px), loại bỏ 100% tình trạng tên chú rể chiếm 2 dòng đè bẹp lên chữ "and" và tên cô dâu.
+                  * *Khu vực ngân hàng & lưu bút (`#GROUP12`, `#HEADLINE318`, `#HEADLINE319`)*: Áp dụng font clamp và wrap tự nhiên, không bao giờ tràn mép.
+                - **Quy chuẩn Validation & Sanitization tên và dữ liệu chống hack/chống phá toàn diện**:
+                  * **Họ tên (Chú rể, Cô dâu, Cha/Mẹ hai bên)**: Bắt buộc tối đa 4 từ, tối đa 30 ký tự (tính cả dấu cách), chỉ cho phép chữ cái tiếng Việt/Latin và khoảng trắng (regex `/^[\p{L}\s]+$/u`), cấm tuyệt đối số và ký tự đặc biệt.
+                  * **Frontend Sanitization (`editor.js` & `editor.blade.php`)**: Gắn `maxlength="30"`, `data-max-words="4"`, và lọc real-time tự động gạt bỏ ký tự lạ khi người dùng gõ hoặc dán văn bản.
+                  * **Backend Sanitization & Security (`InvitationEditorController`)**: Kiểm tra nghiêm ngặt `validateAndSanitizeName`, lọc thẻ HTML bằng `strip_tags()` chống XSS, chuẩn hóa khoảng trắng; sanitize địa chỉ (max 255), tài khoản ngân hàng (chỉ alphanumeric, max 30).
+                - **Kiểm thử chất lượng**: Bổ sung bộ test ca thành công và ca từ chối (>4 từ, >30 ký tự, chứa script/số), toàn bộ 28/28 tests Passed 100%.
 
 ---
 

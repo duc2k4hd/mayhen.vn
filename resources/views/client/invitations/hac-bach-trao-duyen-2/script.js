@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function unlockAndOpen() {
     if (popup8) {
       popup8.classList.add('closed');
+      setTimeout(() => {
+        if (popup8.classList.contains('closed')) {
+          popup8.style.display = 'none';
+        }
+      }, 850);
     }
     // Mở khóa cuộn trang
     document.documentElement.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
@@ -142,19 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('orientationchange', autoScaleMobile);
   autoScaleMobile();
 
-  // Khởi tạo mở sẵn khi nhúng trong Studio Editor (?embed=1)
-  const isEmbedParam = new URLSearchParams(window.location.search).has('embed');
-  if (isEmbedParam) {
-    if (popup8) {
-      popup8.classList.add('closed');
-      popup8.style.display = 'none';
+  // Lắng nghe sự kiện mở lại thiệp nếu cần từ Studio Editor
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'MAYHEN_REOPEN_ENVELOPE') {
+      if (popup8) {
+        popup8.style.display = 'flex';
+        popup8.classList.remove('closed');
+        document.documentElement.classList.add('mayhen_invitation_ladjihe38udhd_scroll_locked');
+        document.body.classList.add('mayhen_invitation_ladjihe38udhd_scroll_locked');
+      }
     }
-    document.documentElement.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
-    document.body.classList.remove('mayhen_invitation_ladjihe38udhd_scroll_locked');
-    setTimeout(() => {
-      triggerInitialBoxes();
-    }, 100);
-  }
+  });
 
   /* ==========================================================================
      4. GÁN TÊN KHÁCH MỜI TỪ URL PARAM (?to= hoặc ?guest=)

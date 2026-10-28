@@ -103,10 +103,9 @@
 @endphp
 @extends('client.layouts.invitation')
 
-@section('html_class', $isEmbed ? '' : 'mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('html_class', 'mayhen_invitation_ladjihe38udhd_scroll_locked')
 @section('title', $pageTitle)
-@section('body_class', 'mayhen_invitation_ladjihe38udhd_body' . ($isEmbed ? '' : '
-    mayhen_invitation_ladjihe38udhd_scroll_locked'))
+@section('body_class', 'mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked')
 @section('body_attributes', 'data-target-date=' . $targetTimestamp)
 
 @push('fonts')
@@ -120,22 +119,10 @@
         href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
     @if ($isEmbed)
         <style>
-            #POPUP8 {
-                display: none !important;
-            }
-
             html,
             body {
                 overflow-x: hidden !important;
-                overflow-y: auto !important;
-                height: auto !important;
-                min-height: 100% !important;
                 -webkit-overflow-scrolling: touch !important;
-            }
-
-            .mayhen_invitation_ladjihe38udhd_scroll_locked {
-                overflow-y: auto !important;
-                height: auto !important;
             }
 
             .mayhen_invitation_ladjihe38udhd_box_anim {

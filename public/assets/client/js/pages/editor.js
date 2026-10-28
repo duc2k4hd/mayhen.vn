@@ -392,6 +392,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = target.getAttribute('data-sync-key');
             if (!key) return;
 
+            // Kiểm tra và khử ký tự đặc biệt cho các trường họ tên (chống hack, chống phá, tối đa 4 từ và 30 ký tự)
+            if (target.classList && target.classList.contains('mayhen_validate_human_name')) {
+                let cleaned = target.value.replace(/[^\p{L}\s]/gu, ''); // Chỉ giữ chữ cái tiếng Việt/Latin và khoảng trắng
+                cleaned = cleaned.replace(/\s{2,}/g, ' '); // Khử khoảng trắng kép
+                if (cleaned.length > 30) {
+                    cleaned = cleaned.slice(0, 30);
+                }
+                const words = cleaned.trim().split(/\s+/).filter(Boolean);
+                if (words.length > 4) {
+                    cleaned = words.slice(0, 4).join(' ');
+                }
+                if (target.value !== cleaned) {
+                    target.value = cleaned;
+                }
+            }
+
             const val = target.value;
 
             // Dispatch vào State Store

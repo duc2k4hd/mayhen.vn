@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class InvitationEditorController extends Controller
 {
@@ -116,8 +117,44 @@ class InvitationEditorController extends Controller
         };
         $rawWedding = $sanitizeBlobs($rawWedding);
 
-        // Tự động ghép tên phụ mẫu Nhà Trai & Nhà Gái từ các trường cha mẹ riêng lẻ nếu có
         $extraData = (array) ($rawWedding['extra_data'] ?? []);
+
+        // Validate và sanitize họ tên: tối đa 4 từ, tối đa 30 ký tự, không số/ký tự đặc biệt, chống XSS
+        if (! empty($rawWedding['groom_name'])) {
+            $rawWedding['groom_name'] = $this->validateAndSanitizeName($rawWedding['groom_name'], 'Họ và tên Chú Rể');
+        }
+        if (! empty($rawWedding['bride_name'])) {
+            $rawWedding['bride_name'] = $this->validateAndSanitizeName($rawWedding['bride_name'], 'Họ và tên Cô Dâu');
+        }
+        if (! empty($extraData['groom_father'])) {
+            $extraData['groom_father'] = $this->validateAndSanitizeName($extraData['groom_father'], 'Họ tên Cha (Nhà Trai)');
+        }
+        if (! empty($extraData['groom_mother'])) {
+            $extraData['groom_mother'] = $this->validateAndSanitizeName($extraData['groom_mother'], 'Họ tên Mẹ (Nhà Trai)');
+        }
+        if (! empty($extraData['bride_father'])) {
+            $extraData['bride_father'] = $this->validateAndSanitizeName($extraData['bride_father'], 'Họ tên Cha (Nhà Gái)');
+        }
+        if (! empty($extraData['bride_mother'])) {
+            $extraData['bride_mother'] = $this->validateAndSanitizeName($extraData['bride_mother'], 'Họ tên Mẹ (Nhà Gái)');
+        }
+
+        // Tối ưu và sanitize các trường nhập khác chống hack & XSS
+        if (! empty($extraData['event_party_address'])) {
+            $extraData['event_party_address'] = mb_substr(trim(strip_tags((string) $extraData['event_party_address'])), 0, 255);
+        }
+        if (! empty($extraData['event_party_time'])) {
+            $extraData['event_party_time'] = mb_substr(trim(strip_tags((string) $extraData['event_party_time'])), 0, 30);
+        }
+        if (! empty($extraData['groom_bank_account'])) {
+            $extraData['groom_bank_account'] = preg_replace('/[^a-zA-Z0-9]/', '', (string) $extraData['groom_bank_account']);
+        }
+        if (! empty($extraData['bride_bank_account'])) {
+            $extraData['bride_bank_account'] = preg_replace('/[^a-zA-Z0-9]/', '', (string) $extraData['bride_bank_account']);
+        }
+        $rawWedding['extra_data'] = $extraData;
+
+        // Tự động ghép tên phụ mẫu Nhà Trai & Nhà Gái từ các trường cha mẹ riêng lẻ nếu có
         if (empty($rawWedding['groom_parents']) && (! empty($extraData['groom_father']) || ! empty($extraData['groom_mother']))) {
             $father = trim((string) ($extraData['groom_father'] ?? ''));
             $mother = trim((string) ($extraData['groom_mother'] ?? ''));
@@ -366,5 +403,42 @@ class InvitationEditorController extends Controller
         }
 
         return response()->json($result, 200);
+    }
+
+    /**
+     * Validate và sanitize họ tên con người (tối đa 4 từ, tối đa 30 ký tự, chỉ chữ cái và khoảng trắng, chống XSS).
+     */
+    protected function validateAndSanitizeName(?string $name, string $fieldLabel): string
+    {
+        if ($name === null || trim($name) === '') {
+            return '';
+        }
+
+        // Chống hack: loại bỏ toàn bộ thẻ HTML / tags và chuẩn hóa khoảng trắng
+        $clean = trim(preg_replace('/\s+/u', ' ', strip_tags($name)));
+
+        // Kiểm tra độ dài tối đa 30 ký tự tính cả dấu cách
+        if (mb_strlen($clean) > 30) {
+            throw ValidationException::withMessages([
+                $fieldLabel => "{$fieldLabel} không được vượt quá 30 ký tự (hiện tại: ".mb_strlen($clean).' ký tự).',
+            ]);
+        }
+
+        // Tách từ và kiểm tra không quá 4 từ
+        $words = array_values(array_filter(preg_split('/\s+/u', $clean)));
+        if (count($words) > 4) {
+            throw ValidationException::withMessages([
+                $fieldLabel => "{$fieldLabel} chỉ được tối đa 4 từ (hiện tại: ".count($words).' từ).',
+            ]);
+        }
+
+        // Kiểm tra không chứa ký tự đặc biệt hoặc số (chỉ cho phép chữ cái tiếng Việt/Latin và khoảng trắng)
+        if (! preg_match('/^[\p{L}\s]+$/u', $clean)) {
+            throw ValidationException::withMessages([
+                $fieldLabel => "{$fieldLabel} chỉ được chứa chữ cái và khoảng trắng, không chứa số hoặc ký tự đặc biệt.",
+            ]);
+        }
+
+        return $clean;
     }
 }

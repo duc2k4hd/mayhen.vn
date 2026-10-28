@@ -11530,7 +11530,6 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     }
     .ladi-wraper {
         width: 420px !important;
-        max-width: 420px !important;
         transform-origin: top center !important;
         transform: scale(calc(100vw / 420)) !important;
         margin: 0 auto !important;
@@ -12259,4 +12258,207 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   TỐI ƯU TYPOGRAPHY & CHỐNG TRÀN VỠ CHO TÊN TIẾNG VIỆT ĐẾN 4 CHỮ (30 KÝ TỰ)
+   Quiet Luxury Auto-fit Typography - Tuyệt đối không đè chữ, không vỡ layout
+   ========================================================================== */
+
+/* 1. Màn hình mở thiệp (#POPUP8 #HEADLINE338) */
+#POPUP8 #HEADLINE338 {
+    width: 380px !important;
+    max-width: 90% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 395px !important;
+    text-align: center !important;
+    height: auto !important;
+}
+
+#POPUP8 #HEADLINE338 h3 {
+    font-size: clamp(14px, 4vw, 18px) !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
+}
+
+/* 2. Section 1: Đôi uyên ương (#GROUP94, #HEADLINE3, #HEADLINE282, #HEADLINE283) */
+/* Chuyển sang bố cục Flexbox tự co giãn dòng và cỡ chữ - Không bị cắt chữ NGUY - ỄN */
+#GROUP94 {
+    width: 100% !important;
+    max-width: 420px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 550px !important;
+    height: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 10 !important;
+}
+
+#GROUP94 > .ladi-group {
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px 12px !important;
+    flex-wrap: wrap !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+}
+
+#HEADLINE3,
+#HEADLINE283 {
+    position: static !important;
+    width: auto !important;
+    max-width: 44% !important;
+    height: auto !important;
+    flex: 1 1 auto !important;
+}
+
+#HEADLINE3 > .ladi-headline,
+#HEADLINE283 > .ladi-headline {
+    font-size: clamp(18px, 4.8vw, 30px) !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-transform: uppercase !important;
+}
+
+#HEADLINE3 > .ladi-headline {
+    text-align: right !important;
+}
+
+#HEADLINE283 > .ladi-headline {
+    text-align: left !important;
+}
+
+#HEADLINE282 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+}
+
+#HEADLINE282 > .ladi-headline {
+    font-size: clamp(20px, 5.2vw, 32px) !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+/* 3. Section 6: Giới thiệu Chú rể (#HEADLINE300) & Cô dâu (#HEADLINE304) */
+/* Hạ font-size từ 75px xuống mức thanh lịch để không đè vào đoạn văn miêu tả phía dưới */
+#HEADLINE300,
+#HEADLINE304 {
+    width: 380px !important;
+    max-width: 90% !important;
+    left: 20px !important;
+    height: auto !important;
+}
+
+#HEADLINE300 > .ladi-headline,
+#HEADLINE304 > .ladi-headline {
+    font-size: clamp(28px, 7vw, 38px) !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+#PARAGRAPH70,
+#PARAGRAPH76 {
+    top: 560px !important;
+    position: absolute !important;
+}
+
+/* 4. Section 4 & 13: Thiệp mời trang trọng (#HEADLINE69, #HEADLINE71, #HEADLINE70) */
+/* Cân chỉnh lại tọa độ và cỡ chữ phân tầng nhịp nhàng - Chống đè chữ triệt để */
+#HEADLINE69 {
+    top: 275px !important;
+    width: 380px !important;
+    max-width: 92% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    height: auto !important;
+}
+
+#HEADLINE69 > .ladi-headline {
+    font-size: clamp(28px, 7vw, 40px) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+#HEADLINE71 {
+    top: 380px !important;
+    width: 120px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+#HEADLINE71 > .ladi-headline {
+    font-size: clamp(24px, 5.5vw, 32px) !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+#HEADLINE70 {
+    top: 425px !important;
+    width: 380px !important;
+    max-width: 92% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    height: auto !important;
+}
+
+#HEADLINE70 > .ladi-headline {
+    font-size: clamp(28px, 7vw, 40px) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+/* 5. Khối tên lưu bút và ngân hàng (#GROUP12, #HEADLINE318, #HEADLINE319) */
+#GROUP12 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+}
+
+#HEADLINE12,
+#HEADLINE13 {
+    position: static !important;
+    width: auto !important;
+    max-width: 44% !important;
+}
+
+#HEADLINE12 > .ladi-headline,
+#HEADLINE13 > .ladi-headline {
+    font-size: clamp(18px, 5vw, 28px) !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+#HEADLINE14 {
+    position: static !important;
+    width: auto !important;
+}
+
+#HEADLINE318 > .ladi-headline,
+#HEADLINE319 > .ladi-headline {
+    font-size: clamp(13px, 3.6vw, 16px) !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
 }

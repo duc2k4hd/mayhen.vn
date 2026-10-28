@@ -500,6 +500,16 @@
 
                                     @else
                                         {{-- Trường Text / Date / Time thông thường --}}
+                                        @php
+                                            $isNameField = in_array($fieldKey, [
+                                                'wedding.groom_name',
+                                                'wedding.bride_name',
+                                                'wedding.extra_data.groom_father',
+                                                'wedding.extra_data.groom_mother',
+                                                'wedding.extra_data.bride_father',
+                                                'wedding.extra_data.bride_mother',
+                                            ]);
+                                        @endphp
                                         <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label" for="{{ $fieldId }}">
                                                 {{ $label }}
@@ -510,11 +520,21 @@
                                             <input type="{{ $type === 'date' ? 'date' : 'text' }}" 
                                                    id="{{ $fieldId }}" 
                                                    name="{{ $inputName }}" 
-                                                   class="mayhen_client_form_input" 
+                                                   class="mayhen_client_form_input {{ $isNameField ? 'mayhen_validate_human_name' : '' }}" 
                                                    data-sync-key="{{ $fieldKey }}" 
                                                    value="{{ is_string($val) ? $val : '' }}" 
                                                    placeholder="{{ $field['placeholder'] ?? '' }}"
+                                                   @if ($isNameField)
+                                                       maxlength="30"
+                                                       data-max-words="4"
+                                                       autocomplete="off"
+                                                   @endif
                                                    {{ $isRequired ? 'required' : '' }}>
+                                            @if ($isNameField)
+                                                <div class="mayhen_editor_input_help" style="font-size: 0.72rem; color: #a8a29e;">
+                                                    Tối đa 4 chữ, không quá 30 ký tự, không chứa số hoặc ký tự đặc biệt.
+                                                </div>
+                                            @endif
                                         </div>
                                     @endif
                                 @endforeach
