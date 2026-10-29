@@ -1452,12 +1452,13 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Đăng ký CSDL & Seeder**: Đã cấu hình và cập nhật `InvitationTemplateSeeder.php` với slug `dau-an-thoi-gian`, category `luxury`, gói MIỄN PHÍ `tier: 'free'`, badge miễn phí 100%, chạy seed CSDL thành công.
                 - **Kiểm thử chất lượng**: Kiểm thử tính năng bằng Pest (`tests/Feature/InvitationDauAnThoiGianTest.php`) đạt `2 passed, 9 assertions (100%)`. Code được chuẩn hóa định dạng bằng Laravel Pint.
 
-            30. **Cấu Hình Remote & Sao Lưu Dự Án Lên Google Drive (`mayhen.git`)**:
-                - **Khởi tạo Bare Git Repository trên Google Drive**:
-                  * Tạo repository Git Bare tại `G:\My Drive\Mây Hẹn (mayhen.vn)\Project\mayhen.git`.
-                  * Cấu hình Git remote `gdrive` trỏ chính xác về thư mục Google Drive.
-                  * Đẩy toàn bộ nhánh `main` và `tags` lên Google Drive an toàn, bảo vệ nguyên vẹn 100% lịch sử commit mà không gây nghẽn đồng bộ file rác (`vendor/`, `node_modules/`).
-                - **Lệnh đồng bộ định kỳ**: `git push gdrive main`.
+            30. **Hệ Thống Đồng Bộ Toàn Bộ Code Dự Án Lên Google Drive (`mayhen.vn`)**:
+                - **Cấu trúc lưu trữ**: Tạo thư mục mã nguồn đầy đủ trực quan tại `G:\My Drive\Mây Hẹn (mayhen.vn)\Project\mayhen.vn`.
+                  * Chứa trọn vẹn toàn bộ các file code: `app/`, `bootstrap/`, `config/`, `database/`, `docs/`, `public/`, `resources/`, `routes/`, `tests/`, `composer.json`, `artisan`, v.v.
+                  * Tuân thủ 100% `.gitignore` & `.gitattributes`: Loại bỏ triệt để `vendor/`, `node_modules/`, file bí mật `.env` và các tệp cache/log rác, chống nghẽn đường truyền và bảo mật an toàn tuyệt đối.
+                - **Công cụ đồng bộ tự động 1 click**:
+                  * Tạo script `sync-drive.ps1` tự động dò tìm thư mục Google Drive thông minh (hỗ trợ xử lý chuẩn encoding tên thư mục tiếng Việt có dấu trên Windows PowerShell).
+                  * Tích hợp lệnh Composer: `composer sync-drive` giúp người dùng chỉ cần gõ 1 lệnh duy nhất là toàn bộ mã nguồn mới nhất trên máy tính lập tức được cập nhật sang Google Drive.
 
 ---
 
