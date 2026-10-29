@@ -1,0 +1,194 @@
+{
+  "slug": "dau-an-thoi-gian",
+  "version": "v1",
+  "name": "Dấu Ấn Thời Gian",
+  "tier": "free",
+  "complexity": "standard",
+  "setup_time": "5 phút",
+  "sections": [
+    {
+      "id": "couple",
+      "title": "Thông Tin Cô Dâu & Chú Rể",
+      "icon": "heart",
+      "description": "Tên đôi uyên ương và phụ mẫu hai bên gia đình",
+      "fields": [
+        {
+          "key": "wedding.groom_name",
+          "label": "Họ và tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Minh Tuấn",
+          "placeholder": "Ví dụ: Minh Tuấn",
+          "max": 100
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Họ và tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Thu Hà",
+          "placeholder": "Ví dụ: Thu Hà",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Họ tên Cha (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Ông Nguyễn Văn Hùng",
+          "placeholder": "Ví dụ: Ông Nguyễn Văn Hùng",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Họ tên Mẹ (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Bà Lê Thị Thu",
+          "placeholder": "Ví dụ: Bà Lê Thị Thu",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_parents_address",
+          "label": "Địa chỉ Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Đống Đa, Hà Nội",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Ông Trần Quốc Bảo",
+          "placeholder": "Ví dụ: Ông Trần Quốc Bảo",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Họ tên Mẹ (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Bà Phạm Thị Mai",
+          "placeholder": "Ví dụ: Bà Phạm Thị Mai",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_parents_address",
+          "label": "Địa chỉ Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Ba Đình, Hà Nội",
+          "max": 200
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Thông Tin Lễ Cưới & Tiệc Mừng",
+      "icon": "calendar",
+      "description": "Thời gian và địa điểm tổ chức Lễ thành hôn và Tiệc cưới",
+      "fields": [
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cưới (YYYY-MM-DD)",
+          "type": "date",
+          "default": "2026-12-20"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch",
+          "type": "text",
+          "default": "12 tháng 11 năm Bính Ngọ"
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ tổ chức tiệc cưới",
+          "type": "text",
+          "default": "18:00"
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên nơi tổ chức tiệc cưới",
+          "type": "text",
+          "default": "Trung tâm Tiệc cưới Ngân Hà"
+        },
+        {
+          "key": "wedding.extra_data.event_party_address",
+          "label": "Địa chỉ nơi tổ chức tiệc cưới",
+          "type": "text",
+          "default": "Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ Lễ Vu Quy (Nhà Gái)",
+          "type": "text",
+          "default": "08:00"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_address",
+          "label": "Địa chỉ Lễ Vu Quy",
+          "type": "text",
+          "default": "Tại tư gia nhà gái - Ba Đình, Hà Nội"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_time",
+          "label": "Giờ Lễ Thành Hôn (Nhà Trai)",
+          "type": "text",
+          "default": "10:00"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_address",
+          "label": "Địa chỉ Lễ Thành Hôn",
+          "type": "text",
+          "default": "Tại tư gia nhà trai - Đống Đa, Hà Nội"
+        }
+      ]
+    },
+    {
+      "id": "banking",
+      "title": "Hộp Mừng Cưới & Chuyển Khoản",
+      "icon": "gift",
+      "description": "Số tài khoản và mã QR mừng cưới dành cho khách phương xa",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Ngân hàng Chú rể",
+          "type": "text",
+          "default": "Vietcombank"
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "default": "0123 456 789"
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Tên chủ thẻ Chú rể",
+          "type": "text",
+          "default": "NGUYEN MINH TUAN"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Ngân hàng Cô dâu",
+          "type": "text",
+          "default": "Techcombank"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "default": "1903 5555 8888"
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Tên chủ thẻ Cô dâu",
+          "type": "text",
+          "default": "TRAN THU HA"
+        }
+      ]
+    }
+  ]
+}

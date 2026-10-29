@@ -1442,6 +1442,16 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Đăng ký CSDL & Seeder**: Đã thêm bản ghi vào `InvitationTemplateSeeder.php` với slug `dau-ky-tram-nam`, category `luxury`, tier `pro`, complexity `deluxe` và chạy seed thành công.
                 - **Kiểm thử chất lượng**: Toàn bộ 3 ca kiểm thử tính năng (Preview route `200 OK`, asset CSS `200 OK`, asset JS `200 OK`) đều vượt qua 100%. Đã format code bằng Laravel Pint.
 
+            29. **Tích Hợp & Chuẩn Hóa Mẫu Thiệp Cưới Miễn Phí (Free) "Dấu Ấn Thời Gian" (`dau-an-thoi-gian`) Vào Hệ Thống Mây Hẹn**:
+                - **Cấu trúc module độc lập chuẩn hóa**: `resources/views/client/invitations/dau-an-thoi-gian/`
+                  * `template.blade.php`: Kế thừa layout `@extends('client.layouts.invitation')`, đồng bộ chuẩn hóa 100% 5 nguyên tắc template Mây Hẹn: gắn đầy đủ `data-sync-target` cho tất cả các trường dữ liệu cưới, phòng vệ nhúng Studio Editor (`$isEmbed = true`), fallback asset qua `$resolveAsset`, tích hợp mã QR VietQR động (Vietcombank & Techcombank), tích hợp Lightbox Modal xem ảnh cưới phóng to sắc nét.
+                  * `styles.css`: Scoped 100% với tiền tố bắt buộc `mayhen_invitation_ladoifji894yfv_*`. Tông màu Quiet Luxury thiên hà (Navy đậm `#050814`, Vàng Champagne `#fce39e`, Bụi sao kim cương). Thanh điều hướng album ảnh nổi bật `z-index: 300` không che lấp, modal xem ảnh phóng to toàn màn hình.
+                  * `script.js`: Native JavaScript xử lý chuyển động không gian vũ trụ 3D chân thực bằng Three.js 60fps (Mặt Trời, Trái Đất, dải thiên hà ngàn sao, sao băng tương tác); hiệu ứng mở thiệp Hyperspace Warp Drive tăng tốc vào chiều sâu không gian; album 3D Coverflow vuốt chạm mượt mà; form RSVP & Sổ lời chúc gửi AJAX bảo mật kèm `CSRF-TOKEN`; tự động mở thiệp và hiển thị hộp quà mừng cưới khi nhúng trong iframe Studio Editor.
+                  * `schema.json`: Đầy đủ các trường cấu hình chuẩn hóa (`general`, `couple`, `events`, `banking`, `gallery`), khai báo gói `tier: 'free'`, `complexity: 'standard'`.
+                  * `assets/`: Tự chứa toàn bộ thư viện Three.js, `textures.js` (base64 offline không CORS), ảnh thiên văn và bản đồ Trái Đất / Mặt Trời cục bộ.
+                - **Đăng ký CSDL & Seeder**: Đã cấu hình và cập nhật `InvitationTemplateSeeder.php` với slug `dau-an-thoi-gian`, category `luxury`, gói MIỄN PHÍ `tier: 'free'`, badge miễn phí 100%, chạy seed CSDL thành công.
+                - **Kiểm thử chất lượng**: Kiểm thử tính năng bằng Pest (`tests/Feature/InvitationDauAnThoiGianTest.php`) đạt `2 passed, 9 assertions (100%)`. Code được chuẩn hóa định dạng bằng Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
