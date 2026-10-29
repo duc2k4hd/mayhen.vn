@@ -4792,49 +4792,86 @@ body {
     box-shadow: 0 8px 25px rgba(138, 21, 38, 0.5);
 }
 
-/* Floating Bottom Nav sang trọng */
+/* Floating Bottom Nav - Quiet Luxury Pill Dock */
 .mayhen_invitation_jeowinids483fr_cta-menu {
     position: fixed;
-    bottom: 16px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 90;
+    z-index: 1000;
     display: flex;
-    gap: 7px;
-    max-width: calc(100% - 24px);
-    padding: 8px 12px;
-    background: rgba(255, 253, 249, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1.2px solid rgba(212, 175, 55, 0.6);
+    align-items: center;
+    justify-content: space-between;
+    gap: 3px;
+    width: calc(100% - 24px);
+    max-width: 384px;
+    height: 44px;
+    padding: 4px;
+    background: rgba(255, 253, 249, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.5);
     border-radius: 100px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 10px 30px -4px rgba(44, 40, 36, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    box-sizing: border-box;
     white-space: nowrap;
 }
+
 .mayhen_invitation_jeowinids483fr_cta-menu button {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 36px;
     border: 0;
-    background: #8a1526;
-    color: #fffdf8;
+    background: transparent;
+    color: #4A423B;
     border-radius: 100px;
-    padding: 8px 14px;
-    font:
-        600 11.5px/1 Jura,
-        Arial;
-    letter-spacing: 0.5px;
-    transition: all 0.25s ease;
+    padding: 0 2px;
+    font: 600 11px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-user-select: none;
 }
+
+.mayhen_invitation_jeowinids483fr_cta-menu button:hover,
+.mayhen_invitation_jeowinids483fr_cta-menu button.mayhen_active {
+    background: #8A1526;
+    color: #FFFDF8;
+    box-shadow: 0 2px 8px rgba(138, 21, 38, 0.22);
+}
+
 .mayhen_invitation_jeowinids483fr_cta-menu button:hover {
-    background: #a81b32;
+    background: #A0192E;
     transform: translateY(-1px);
 }
-@media (max-width: 420px) {
+
+/* Nút Mừng cưới tạo điểm nhấn đặc biệt */
+.mayhen_invitation_jeowinids483fr_cta-menu button[data-menu="gift"] {
+    background: linear-gradient(135deg, #8A1526 0%, #A31B30 100%);
+    color: #FFFDF8;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(138, 21, 38, 0.28);
+}
+
+.mayhen_invitation_jeowinids483fr_cta-menu button[data-menu="gift"]:hover {
+    background: linear-gradient(135deg, #A0192E 0%, #B82038 100%);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 360px) {
     .mayhen_invitation_jeowinids483fr_cta-menu {
-        bottom: 10px;
-        gap: 4px;
-        padding: 6px 8px;
+        bottom: 8px;
+        gap: 2px;
+        padding: 3px;
+        height: 40px;
     }
     .mayhen_invitation_jeowinids483fr_cta-menu button {
-        padding: 8px 9px;
+        height: 34px;
         font-size: 10px;
     }
 }

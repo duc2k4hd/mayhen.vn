@@ -672,7 +672,12 @@
         );
         if (!node) return;
         const go = node.closest("[data-go]");
-        if (go) return goTo(go.dataset.go);
+        if (go) {
+            const menuBtns = document.querySelectorAll("." + P + "cta-menu button[data-go]");
+            menuBtns.forEach(b => b.classList.remove("mayhen_active"));
+            go.classList.add("mayhen_active");
+            return goTo(go.dataset.go);
+        }
         const gift = node.closest('[data-menu="gift"]');
         if (gift) return openGift();
         const person = node.closest("[data-person]");

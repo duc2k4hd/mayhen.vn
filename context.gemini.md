@@ -1544,6 +1544,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Tên rất dài (>= 22 ký tự): `34px`.
                 - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
 
+            37. **Tái Thiết Kế Thanh Điều Hướng Dưới Đáy (Quiet Luxury Floating Dock) Cho Mẫu "Dấu Ký Trăm Năm"**:
+                - **Vấn đề phát sinh**: Thanh dock điều hướng `.mayhen_invitation_jeowinids483fr_cta-menu` trên mobile hiển thị 5 nút màu đỏ Bordeaux bệt dính sát vào nhau; do tổng chiều rộng các nút (395px) vượt quá khung màn hình (360px - 375px), nút cuối cùng *"Mừng cưới"* bị tràn ra ngoài viền thanh dock và bị cắt cụt chữ.
+                - **Giải pháp xử lý triệt để**:
+                  * *`template.blade.php`*: Đặt mặc định nút đầu tiên *"Thiệp mời"* mang class `mayhen_active`.
+                  * *`styles.css` & `assets/styles.css`*:
+                    + Tinh chỉnh khung dock: `width: calc(100% - 24px); max-width: 384px; height: 44px; padding: 4px;` với hiệu ứng ngọc trai kính mờ `rgba(255, 253, 249, 0.94)`, viền chỉ vàng kim `1px solid rgba(212, 175, 55, 0.5)` và bóng đổ sâu `box-shadow: 0 10px 30px -4px rgba(44, 40, 36, 0.18)`.
+                    + Phân bổ 5 nút đều tăm tắp 100% không gian với `flex: 1 1 0; min-width: 0;`, loại bỏ hoàn toàn hiện tượng tràn viền.
+                    + Phân cấp thị giác Quiet Luxury: các tab thông thường có nền trong suốt, chữ than ấm `#4A423B`, khi active chuyển nền đỏ Bordeaux nhung `#8A1526` và chữ trắng kem `#FFFDF8`. Nút *"Mừng cưới"* là điểm nhấn Call to Action đặc biệt với gradient đỏ nhung sang trọng và bóng phát sáng nhẹ.
+                  * *`script.js` & `assets/script.js`*: Thêm logic chuyển đổi trạng thái `mayhen_active` mượt mà khi người dùng nhấn vào bất kỳ mục điều hướng nào trên thanh dock.
+                - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

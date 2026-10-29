@@ -2048,7 +2048,7 @@
       aria-label="Điều hướng thiệp cưới"
       class="mayhen_invitation_jeowinids483fr_cta-menu"
     >
-      <button data-go="section26" type="button">Thiệp mời</button>
+      <button class="mayhen_active" data-go="section26" type="button">Thiệp mời</button>
       <button data-go="section27" type="button">Lịch trình</button>
       <button data-go="section28" type="button">Album</button>
       <button data-go="section29" type="button">Xác nhận</button>
