@@ -225,37 +225,30 @@
             <div class="mayhen_invitation_ladjihe38udhd_card_corner mayhen_invitation_ladjihe38udhd_cc_bl"></div>
             <div class="mayhen_invitation_ladjihe38udhd_card_corner mayhen_invitation_ladjihe38udhd_cc_br"></div>
 
-            <div class="mayhen_invitation_ladjihe38udhd_card_crest">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C5A880" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2l2.4 5 5.6.8-4 4 1 5.5-5-2.7-5 2.7 1-5.5-4-4 5.6-.8z"/>
-                </svg>
-            </div>
             <div class="mayhen_invitation_ladjihe38udhd_card_badge">WEDDING INVITATION</div>
-            <div class="mayhen_invitation_ladjihe38udhd_card_sub">THE WEDDING CELEBRATION</div>
-            <h1 class="mayhen_invitation_ladjihe38udhd_card_names">{{ $groomName }} <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span> {{ $brideName }}</h1>
-            <div class="mayhen_invitation_ladjihe38udhd_card_divider">
-                <span class="mayhen_invitation_ladjihe38udhd_divider_diamond">✦</span>
-            </div>
+            <div class="mayhen_invitation_ladjihe38udhd_card_save_date">SAVE OUR DATE</div>
+            <h1 class="mayhen_invitation_ladjihe38udhd_card_names" data-sync-target="groom_name_bride_name">{{ $groomName }} <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span> {{ $brideName }}</h1>
+            <p class="mayhen_invitation_ladjihe38udhd_card_date" data-sync-target="wedding_date">{{ $weddingDay }} . {{ $weddingMonth }} . {{ $weddingYear }}</p>
             <p class="mayhen_invitation_ladjihe38udhd_card_guest_label">Trân trọng kính mời</p>
-            <div class="mayhen_invitation_ladjihe38udhd_card_guest">{{ $guestName }}</div>
-            <p class="mayhen_invitation_ladjihe38udhd_card_date">{{ $weddingDayOfWeek }}, {{ $coverDateFormatted }}</p>
+            <div class="mayhen_invitation_ladjihe38udhd_card_guest_pill" data-sync-target="guest_name">{{ $guestName }}</div>
+
+            <!-- Con dấu sáp đỏ mận hoàng gia (Royal Wax Seal) — nằm trong card -->
+            <div class="mayhen_invitation_ladjihe38udhd_wax_seal_wrap" id="mayhen-wax-seal" role="button" tabindex="0" title="Chạm để mở cánh cửa tình yêu">
+                <div class="mayhen_invitation_ladjihe38udhd_wax_seal_glow"></div>
+                <div class="mayhen_invitation_ladjihe38udhd_wax_seal">
+                    <div class="mayhen_invitation_ladjihe38udhd_wax_rim">
+                        <div class="mayhen_invitation_ladjihe38udhd_wax_monogram">{{ $groomInitial }}<span class="mayhen_invitation_ladjihe38udhd_monogram_amp">&amp;</span>{{ $brideInitial }}</div>
+                    </div>
+                </div>
+                <div class="mayhen_invitation_ladjihe38udhd_wax_ribbon mayhen_invitation_ladjihe38udhd_ribbon_left"></div>
+                <div class="mayhen_invitation_ladjihe38udhd_wax_ribbon mayhen_invitation_ladjihe38udhd_ribbon_right"></div>
+            </div>
         </div>
 
-        <!-- Con dấu sáp đỏ mận hoàng gia (Royal Wax Seal) -->
-        <div class="mayhen_invitation_ladjihe38udhd_wax_seal_wrap" id="mayhen-wax-seal" role="button" tabindex="0" title="Chạm để mở cánh cửa tình yêu">
-            <div class="mayhen_invitation_ladjihe38udhd_wax_seal_glow"></div>
-            <!-- Dải ruy băng lụa buông nhẹ sau con dấu -->
-            <div class="mayhen_invitation_ladjihe38udhd_wax_ribbon mayhen_invitation_ladjihe38udhd_ribbon_left"></div>
-            <div class="mayhen_invitation_ladjihe38udhd_wax_ribbon mayhen_invitation_ladjihe38udhd_ribbon_right"></div>
-            <div class="mayhen_invitation_ladjihe38udhd_wax_seal">
-                <div class="mayhen_invitation_ladjihe38udhd_wax_rim">
-                    <div class="mayhen_invitation_ladjihe38udhd_wax_monogram">{{ $groomInitial }}<span class="mayhen_invitation_ladjihe38udhd_monogram_amp">&amp;</span>{{ $brideInitial }}</div>
-                </div>
-            </div>
-            <div class="mayhen_invitation_ladjihe38udhd_open_hint">
-                <span class="mayhen_invitation_ladjihe38udhd_hint_icon">✨</span>
-                <span class="mayhen_invitation_ladjihe38udhd_hint_text">Chạm để mở cánh cửa tình yêu</span>
-            </div>
+        <!-- Nút gợi ý mở thiệp phía dưới card -->
+        <div class="mayhen_invitation_ladjihe38udhd_open_hint" id="mayhen-open-hint" role="button" tabindex="0">
+            <span class="mayhen_invitation_ladjihe38udhd_hint_icon">✨</span>
+            <span class="mayhen_invitation_ladjihe38udhd_hint_text">Chạm để mở cánh cửa tình yêu</span>
         </div>
     </div>
 
