@@ -1452,6 +1452,13 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Đăng ký CSDL & Seeder**: Đã cấu hình và cập nhật `InvitationTemplateSeeder.php` với slug `dau-an-thoi-gian`, category `luxury`, gói MIỄN PHÍ `tier: 'free'`, badge miễn phí 100%, chạy seed CSDL thành công.
                 - **Kiểm thử chất lượng**: Kiểm thử tính năng bằng Pest (`tests/Feature/InvitationDauAnThoiGianTest.php`) đạt `2 passed, 9 assertions (100%)`. Code được chuẩn hóa định dạng bằng Laravel Pint.
 
+            30. **Cấu Hình Remote & Sao Lưu Dự Án Lên Google Drive (`mayhen.git`)**:
+                - **Khởi tạo Bare Git Repository trên Google Drive**:
+                  * Tạo repository Git Bare tại `G:\My Drive\Mây Hẹn (mayhen.vn)\Project\mayhen.git`.
+                  * Cấu hình Git remote `gdrive` trỏ chính xác về thư mục Google Drive.
+                  * Đẩy toàn bộ nhánh `main` và `tags` lên Google Drive an toàn, bảo vệ nguyên vẹn 100% lịch sử commit mà không gây nghẽn đồng bộ file rác (`vendor/`, `node_modules/`).
+                - **Lệnh đồng bộ định kỳ**: `git push gdrive main`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
