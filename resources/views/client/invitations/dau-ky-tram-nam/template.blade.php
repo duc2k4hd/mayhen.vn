@@ -163,7 +163,7 @@
 
 @section('content')
 {{-- 2 CÁNH CỬA TÌNH YÊU HOÀNG GIA MỞ SANG 2 BÊN (ROYAL 3D DOUBLE GATE OPENING) --}}
-<div id="mayhen-door-stage" class="mayhen_invitation_jeowinids483fr_door_stage {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}" aria-label="Cánh cửa tình yêu">
+<div id="mayhen-door-stage" class="mayhen_invitation_jeowinids483fr_door_stage {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}" style="{{ $isEmbed ? 'display: none !important;' : '' }}" aria-label="Cánh cửa tình yêu">
     <!-- Cánh cửa bên trái -->
     <div class="mayhen_invitation_jeowinids483fr_door mayhen_invitation_jeowinids483fr_door_left">
         <div class="mayhen_invitation_jeowinids483fr_door_surface">

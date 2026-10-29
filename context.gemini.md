@@ -1635,6 +1635,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Toàn bộ 34/34 tests trong test suite pass 100% (381 assertions).
                   * Mã nguồn định dạng chuẩn bằng Laravel Pint.
 
+            42. **Khắc Phục Triệt Để Lỗi Còn Nút Mở Thiệp (#POPUP8) & Lỗi Mẫu Thiệp Chỉ Hiện Mỗi Màu Nền**:
+                - **Hiện trạng & Triệu chứng người dùng phản ánh**:
+                  * Mẫu *"Hắc Bạch Trao Duyên 2"* khi hiển thị trên Showcase vẫn còn nút *"Ấn vào để Xem"* (nút mở thiệp).
+                  * Nhiều mẫu thiệp (như *"Dấu Ký Trăm Năm"*, *"Lưu Bút Ngày Chung Đôi"*, *"Nét Mực Tình Yêu"*) chỉ hiển thị mỗi màu nền trơn (màu đỏ Ruby, màu xanh rêu, màu trắng sữa) mà không thấy nội dung thiệp mời, ảnh hay chữ đâu.
+                - **Nguyên nhân gốc rễ**:
+                  * *Nút "Ấn vào để Xem" (`hac-bach-trao-duyen-2`)*: Nằm trong container `#POPUP8` mang class `.ladi-popup`. Selector chung trước đó không bắt ID `#POPUP8`, khiến popup mở đầu vẫn hiển thị che phủ toàn bộ thiệp cưới.
+                  * *Mẫu chỉ hiện màu đỏ Ruby (`dau-ky-tram-nam`) và màu xanh rêu (`luu-but-ngay-chung-doi`)*: Cả 2 mẫu này có 2 cánh cửa 3D hoàng gia `#mayhen-door-stage` với CSS `z-index: 999999 !important`. Khi server render thiếu thuộc tính ẩn cứng `style="display: none !important;"`, 2 cánh cửa này vẫn đóng kín che toàn bộ màn hình, người xem chỉ thấy màu nền bề mặt cánh cửa (đỏ Ruby hoặc xanh rêu) chứ không thấy thiệp bên trong.
+                  * *Mẫu chỉ hiện màu trắng sữa (`net-muc-tinh-yeu`)*: Do selector toàn cục trước đó dùng `[class*="_cover"]` quá rộng, vô tình ẩn luôn Section 1 chính (`.mayhen_invitation_dhsuudushi9428r_cover`) của mẫu này.
+                - **Giải pháp xử lý triệt để**:
+                  * *`hac-bach-trao-duyen-2/template.blade.php`*: Gắn CSS cưỡng chế `#POPUP8 { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }` khi `$isEmbed = true`.
+                  * *`dau-ky-tram-nam/template.blade.php` & `luu-but-ngay-chung-doi/template.blade.php`*: Bổ sung cưỡng chế `style="{{ $isEmbed ? 'display: none !important;' : '' }}"` và class `opened mayhen_door_hidden` trực tiếp vào thẻ HTML `#mayhen-door-stage` ngay từ server-render, đảm bảo 2 cánh cửa không bao giờ che khuất màn hình thiệp.
+                  * *`editor-bridge.blade.php`*:
+                    + Loại bỏ selector nguy hiểm `[class*="_cover"]`. Định danh chính xác 100% các lớp mở đầu của từng mẫu: `#mayhen-door-stage`, `#POPUP8`, `.ladi-popup:has(#BUTTON18)`, `#mayhen_invitation_ladjihe38udhd_opening`, `.mayhen_invitation_ksnvo949dudf_opening`, `.mayhen_invitation_djcvhwiuo9w9_opening-sides`, `.mayhen_invitation_ladoifji894yfv_cover`, `.mayhen_invitation_dhsuudushi9428r_open_cta`.
+                    + Với mẫu *"Nét Mực Tình Yêu"*: Giữ nguyên Section 1, tự động mở nắp phong bì và đẩy lá thư lên (`transform: translateY(-95px) scale(1.02)`), ẩn nút mở thiệp, để lộ ảnh cưới và tên cô dâu chú rể.
+                    + Bổ sung script tự động kích hoạt hàm mở của từng mẫu và trigger click nếu còn nút mở sót.
+                - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

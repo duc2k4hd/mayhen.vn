@@ -125,6 +125,15 @@
                 -webkit-overflow-scrolling: touch !important;
             }
 
+            #POPUP8,
+            .ladi-popup:has(#BUTTON18),
+            .mayhen_embed_mode #POPUP8 {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+
             .mayhen_invitation_ladjihe38udhd_box_anim {
                 opacity: 1 !important;
                 transform: none !important;

@@ -27,60 +27,59 @@
         height: 0 !important;
     }
 
-    /* 2. Cưỡng chế ẩn triệt để 100% tất cả các màn che, cánh cửa 3D, phong bì, con dấu sáp mở đầu của MỌI template */
+    /* 2. Cưỡng chế ẩn triệt để 100% tất cả các màn che, cánh cửa 3D, popup nút bấm mở đầu của MỌI template */
+    .mayhen_embed_mode #mayhen-door-stage,
     .mayhen_embed_mode [id*="door-stage"],
     .mayhen_embed_mode [class*="door_stage"],
-    .mayhen_embed_mode [id*="door-center"],
-    .mayhen_embed_mode [class*="door_center"],
-    .mayhen_embed_mode [class*="door_left"],
-    .mayhen_embed_mode [class*="door_right"],
-    .mayhen_embed_mode [id*="wax-seal"],
-    .mayhen_embed_mode [class*="wax_seal_wrap"],
-    .mayhen_embed_mode [class*="wax_seal"],
-    .mayhen_embed_mode [class*="_cover"],
-    .mayhen_embed_mode [class*="intro_cover"],
-    .mayhen_embed_mode [class*="cover_overlay"],
-    .mayhen_embed_mode [class*="_envelope_stage"],
-    .mayhen_embed_mode [class*="envelope_wrap"],
-    .mayhen_embed_mode [class*="envelope_wrapper"],
-    .mayhen_embed_mode [class*="_opening_sides"],
-    .mayhen_embed_mode [class*="opening_overlay"],
-    .mayhen_embed_mode [class*="_intro_wrapper"],
-    .mayhen_embed_mode [class*="_modal_intro"],
-    .mayhen_embed_mode [id*="opening_sides"],
-    .mayhen_embed_mode [id*="opening"],
-    .mayhen_embed_mode [id*="intro_cover"],
-    .mayhen_embed_mode [id*="mayhen_envelope"],
+    .mayhen_embed_mode #POPUP8,
+    .mayhen_embed_mode .ladi-popup:has(#BUTTON18),
+    .mayhen_embed_mode #mayhen_invitation_ladjihe38udhd_opening,
+    .mayhen_embed_mode .mayhen_invitation_ksnvo949dudf_opening,
+    .mayhen_embed_mode .mayhen_invitation_djcvhwiuo9w9_opening-sides,
+    .mayhen_embed_mode .mayhen_invitation_ladoifji894yfv_cover,
+    .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_open_cta,
+    .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_scroll_down,
+    .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_wax_seal,
     .mayhen_embed_mode [class*="open_hint"],
     .mayhen_embed_mode [id*="open-hint"],
-    .mayhen_embed_mode [class*="door_particles"],
-    .mayhen_embed_mode [class*="modal-backdrop"],
-    .mayhen_embed_mode [class*="section_popup"] {
+    .mayhen_embed_mode [class*="door_particles"] {
         display: none !important;
         opacity: 0 !important;
         visibility: hidden !important;
         pointer-events: none !important;
     }
 
-    /* 3. Cưỡng chế hiển thị nội dung chính của thiệp cưới và bỏ bóng đổ thừa */
+    /* 3. Tự động mở phong bì cho nét mực tình yêu khi nhúng iframe */
+    .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_envelope_letter {
+        transform: translateY(-95px) scale(1.02) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25) !important;
+        z-index: 2 !important;
+    }
+    .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_envelope_stage {
+        margin: 160px auto 18px auto !important;
+    }
+
+    /* 4. Cưỡng chế hiển thị nội dung chính của thiệp cưới và bỏ bóng đổ thừa */
     .mayhen_embed_mode .mayhen_invitation_wrapper,
     .mayhen_embed_mode [class*="_shell"],
-    .mayhen_embed_mode [class*="_stage"],
-    .mayhen_embed_mode [class*="_stage-spacer"],
-    .mayhen_embed_mode [class*="_ladi-wraper"],
+    .mayhen_embed_mode .mayhen_invitation_jeowinids483fr_stage,
+    .mayhen_embed_mode .mayhen_invitation_jeowinids483fr_stage-spacer,
+    .mayhen_embed_mode .mayhen_invitation_ladjihe38udhd_ladi-wraper,
+    .mayhen_embed_mode .ladi-wraper,
     .mayhen_embed_mode [class*="_card-wrapper"],
-    .mayhen_embed_mode #mayhen_invitation_main_content,
-    .mayhen_embed_mode [id*="stage"] {
+    .mayhen_embed_mode #mayhen_invitation_main_content {
         display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
         box-shadow: none !important;
     }
 
-    /* 4. Cưỡng chế các animation khởi đầu hiển thị ngay lập tức để không bị mảng trắng khi iframe nạp */
+    /* 5. Cưỡng chế các animation khởi đầu hiển thị ngay lập tức (không bị ẩn trắng khi chưa cuộn) */
+    .mayhen_embed_mode .ladi-animation-hidden,
     .mayhen_embed_mode [class*="ladi-animation-hidden"],
     .mayhen_embed_mode [class*="_rv"],
-    .mayhen_embed_mode [class*="ladi-animation"] {
+    .mayhen_embed_mode .mayhen_invitation_ladjihe38udhd_box_anim,
+    .mayhen_embed_mode .mayhen_invitation_ladoifji894yfv_sr_hien {
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
@@ -122,11 +121,19 @@
                 document.body.style.overflow = 'auto';
             }
 
-            // Đánh dấu đã mở lên các container mở đầu
-            var doorStages = document.querySelectorAll('[id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], [id*="opening_sides"]');
+            // Đánh dấu đã mở và ẩn các container mở đầu
+            var doorStages = document.querySelectorAll('#mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], [id*="opening_sides"], #POPUP8, #mayhen_invitation_ladjihe38udhd_opening, .mayhen_invitation_ksnvo949dudf_opening, .mayhen_invitation_ladoifji894yfv_cover');
             doorStages.forEach(function(el) {
                 el.classList.add('opened', 'mayhen_door_hidden');
-                el.style.display = 'none';
+                el.style.setProperty('display', 'none', 'important');
+            });
+
+            // Tự click nút mở phong bì hoặc nút mở thiệp nếu có
+            var openTriggers = document.querySelectorAll(
+                '#mayhen_open_invitation_btn, #BUTTON18, [data-action="true"]#BUTTON18, [id*="open_btn"], [class*="open_btn"]'
+            );
+            openTriggers.forEach(function(btn) {
+                try { btn.click(); } catch(e) {}
             });
 
             // Gọi các hàm mở thiệp của từng template nếu có
@@ -144,6 +151,10 @@
             }
             if (typeof window.triggerInitialAnimations === 'function') {
                 try { window.triggerInitialAnimations(); } catch(e) {}
+            }
+            if (typeof window.syncStage === 'function') {
+                try { window.syncStage(); } catch(e) {}
+            }
             }
         };
 
