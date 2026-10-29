@@ -148,11 +148,11 @@
                         @php
                             $shortTitle = $section['short_title'] ?? match ($section['id'] ?? '') {
                                 'couple' => 'Đôi Uyên Ương',
-                                'bride_events' => 'Nhà Gái',
-                                'groom_events' => 'Nhà Trai',
-                                'gallery_and_photos' => 'Ảnh Cưới',
-                                'story_and_timeline' => 'Lịch Trình',
-                                'gift_and_music' => 'Mừng Cưới',
+                                'groom_family', 'groom_events' => 'Nhà Trai',
+                                'bride_family', 'bride_events' => 'Nhà Gái',
+                                'album', 'gallery', 'gallery_and_photos' => 'Ảnh Cưới',
+                                'timeline', 'story_and_timeline' => 'Lịch Trình',
+                                'gift', 'banking', 'gift_and_music' => 'Mừng Cưới',
                                 default => \Illuminate\Support\Str::limit($section['title'], 18)
                             };
                         @endphp
@@ -228,6 +228,16 @@
                                                         $editingVal = trim($m[1]);
                                                     } elseif ($extraSub === "bride_mother" && preg_match("/BÀ:\s*(.+)$/ui", $bParents, $m)) {
                                                         $editingVal = trim($m[1]);
+                                                    } elseif ($extraSub === "groom_bank_holder") {
+                                                        $editingVal = $editingInvitation->wedding->extra_data['groom_account_name'] ?? ($editingInvitation->wedding->bank_account_name ?? null);
+                                                    } elseif ($extraSub === "bride_bank_holder") {
+                                                        $editingVal = $editingInvitation->wedding->extra_data['bride_account_name'] ?? null;
+                                                    } elseif ($extraSub === "groom_bank_account") {
+                                                        $editingVal = $editingInvitation->wedding->extra_data['groom_account_number'] ?? ($editingInvitation->wedding->bank_account_number ?? null);
+                                                    } elseif ($extraSub === "bride_bank_account") {
+                                                        $editingVal = $editingInvitation->wedding->extra_data['bride_account_number'] ?? null;
+                                                    } elseif ($extraSub === "groom_party_address") {
+                                                        $editingVal = $editingInvitation->wedding->extra_data['event_party_address'] ?? ($editingInvitation->wedding->venue_address ?? null);
                                                     }
                                                 }
                                             } else {

@@ -1705,6 +1705,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Bổ sung bộ nhận tin nhắn `MAYHEN_SCROLL_TOP` và hàm `resetScrollToTop()` để đồng bộ đưa vị trí cuộn về `0px` ngay từ bên trong iframe.
                 - **Kiểm thử & Định dạng**: Chạy Pest test suite đạt 34/34 tests passed 100%, Pint định dạng chuẩn.
 
+            46. **Tái Cấu Trúc Toàn Diện Bộ Khung 6 Phần Chuẩn Hóa Của Hệ Thống Mẫu Thiệp & Màn Tạo Thiệp (/tao-thiep)**:
+                - **Yêu cầu người dùng**:
+                  * Tất cả mẫu thiệp sẽ có **tối đa đúng 6 phần chuẩn hóa**:
+                    1. **Đôi uyên ương** (`couple`): Chú rể, cô dâu, ngày cưới, ảnh bìa, lời ngỏ / câu chuyện tình yêu.
+                    2. **Nhà trai** (`groom_family`): Bố mẹ chú rể, địa chỉ sảnh tiệc / tư gia, giờ tổ chức, ngày tổ chức, ngày âm lịch Nhà Trai.
+                    3. **Nhà gái** (`bride_family`): Bố mẹ cô dâu, địa chỉ sảnh tiệc / tư gia, giờ tổ chức, ngày tổ chức, ngày âm lịch Nhà Gái.
+                    4. **Ảnh cưới (Album)** (`album`): Chuẩn đúng **10 ảnh cưới**.
+                    5. **Lịch trình** (`timeline`): Các mốc thời gian sự kiện trong ngày cưới (repeater).
+                    6. **Mừng cưới** (`gift`): Thông tin ngân hàng Chú rể, ngân hàng Cô dâu, mã QR mừng cưới.
+                  * Quy tắc cốt lõi: **Được phép thiếu phần nhưng tuyệt đối KHÔNG ĐƯỢC THỪA**. Loại bỏ toàn bộ các section và dữ liệu thừa thãi (`general`, `appearance`, `events`,...).
+                  * Dữ liệu các trường chung giữa mọi mẫu thiệp giống hệt nhau 100%, giúp chuyển đổi giữa các mẫu mượt mà không bao giờ mất thông tin.
+                  * Có cơ chế nhận diện trong file `schema.json` để màn hình tạo thiệp (`/tao-thiep`) tự động nhận biết mẫu đó hỗ trợ những phần nào và **chỉ hiển thị các phần cần sửa**, stepper pills và form panels chỉ hiển thị các bước thực tế của mẫu đó, không thừa bất cứ trường nào.
+                - **Giải pháp kỹ thuật chuẩn mực**:
+                  * *`app/Services/InvitationTemplateService.php`*:
+                    + Khai báo hằng số chuẩn `CANONICAL_SECTION_ORDER = ['couple', 'groom_family', 'bride_family', 'album', 'timeline', 'gift']`.
+                    + Xây dựng hàm `getCanonicalSections()`: Định nghĩa chi tiết và chuẩn mực cho toàn bộ 6 phần với bộ khóa (keys) 100% đồng nhất.
+                    + Xây dựng hàm `normalizeSchema(array $rawSchema)`: Đọc `supported_sections` hoặc danh sách `sections` trong file `schema.json`. Tự động lọc bỏ toàn bộ các section lạ/thừa ngoài 6 phần chuẩn, sắp xếp thứ tự logic tuần tự 1->6, đồng thời kế thừa các giá trị mặc định (`default`) và `placeholder` mang phong cách thiết kế đặc trưng của từng mẫu.
+                    + Nâng cấp `getSchema()`: Luôn chuẩn hóa schema qua `normalizeSchema()` trước khi trả về cho Controller và Blade.
+                    + Nâng cấp `generateFallbackSchema()`: Trả về đầy đủ 6 canonical sections.
+                  * *Refactor đồng bộ toàn bộ 9 file `schema.json` trong `resources/views/client/invitations/`*:
+                    + Cả 9 mẫu (`dau-an-thoi-gian`, `dau-ky-tram-nam`, `giua-muon-ngan-vi-sao`, `hac-bach-trao-duyen`, `hac-bach-trao-duyen-2`, `luu-but-ngay-chung-doi`, `net-muc-tinh-yeu`, `thuoc-phim-tinh-yeu`, `tung-trang-hanh-phuc`) đều được cấu trúc lại hoàn toàn theo thuộc tính `supported_sections` và danh sách `sections` chuẩn 6 phần.
+                    + Riêng mẫu `luu-but-ngay-chung-doi` không có lịch trình sự kiện nên `supported_sections` chỉ gồm đúng 5 phần: `['couple', 'groom_family', 'bride_family', 'album', 'gift']`. Màn hình `/tao-thiep` khi nạp mẫu này chỉ hiển thị đúng 5 bước, hoàn toàn không xuất hiện bước Lịch trình thừa!
+                    + Chuẩn hóa bộ trường Album ảnh: Sử dụng cố định đúng 10 ảnh cưới (`max_items: 10`).
+                  * *`resources/views/client/pages/editor.blade.php`*:
+                    + Cập nhật stepper pills: Map các section ID chuẩn (`couple`, `groom_family`, `bride_family`, `album`, `timeline`, `gift`).
+                    + Stepper pills và form panels chỉ render lặp qua `$schema['sections']`. Mẫu nào có bao nhiêu phần thì chỉ hiển thị đúng bấy nhiêu tab và panel (5 hoặc 6 bước), không sinh tab thừa.
+                    + Bổ sung logic fallback thông minh khi sửa thiệp cũ: Tự động ánh xạ `groom_bank_holder` &larr; `groom_account_name`, `groom_party_address` &larr; `event_party_address` / `venue_address`...
+                  * *`public/assets/client/js/editor/template-switcher.js` & `resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung ánh xạ đồng bộ cho `groom_bank_holder` & `bride_bank_holder`. Chuyển đổi giữa các mẫu bảo toàn 100% dữ liệu cưới.
+                  * *`tests/Feature/CanonicalTemplateSectionsTest.php`*:
+                    + Tạo mới test case tự động xác thực toàn bộ 9 mẫu thiệp tuân thủ đúng kiến trúc tối đa 6 phần, không vượt quá 6 phần, không có section thừa, thứ tự logic đúng chuẩn, và mẫu `luu-but-ngay-chung-doi` có đúng 5 phần.
+                - **Kiểm thử & Định dạng**: Chạy Pest test suite đạt 35/35 tests passed 100% (499 assertions in 1.1s), Laravel Pint định dạng chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

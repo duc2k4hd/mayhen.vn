@@ -5,12 +5,21 @@
   "tier": "free",
   "complexity": "standard",
   "setup_time": "5 phút",
+  "supported_sections": [
+    "couple",
+    "groom_family",
+    "bride_family",
+    "album",
+    "timeline",
+    "gift"
+  ],
   "sections": [
     {
       "id": "couple",
-      "title": "Thông Tin Cô Dâu & Chú Rể",
+      "title": "Đôi Uyên Ương",
+      "short_title": "Đôi Uyên Ương",
       "icon": "heart",
-      "description": "Tên đôi uyên ương và phụ mẫu hai bên gia đình",
+      "description": "Thông tin cô dâu, chú rể, ngày cưới và ảnh đại diện",
       "fields": [
         {
           "key": "wedding.groom_name",
@@ -31,6 +40,40 @@
           "max": 100
         },
         {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-12-20",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện thiệp",
+          "type": "image",
+          "required": false,
+          "default": "assets/images/cover.jpg",
+          "placeholder": "Đường dẫn ảnh bìa"
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Lời ngỏ / Thông điệp tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Thời gian có thể trôi, nhưng tình yêu chúng mình trao nhau sẽ mãi là dấu ấn vĩnh cửu.",
+          "placeholder": "Chia sẻ ngắn gọn lời ngỏ gửi đến quan khách...",
+          "max": 500
+        }
+      ]
+    },
+    {
+      "id": "groom_family",
+      "title": "Nhà Trai",
+      "short_title": "Nhà Trai",
+      "icon": "home",
+      "description": "Thông tin phụ mẫu, ngày giờ và địa chỉ hôn lễ nhà trai",
+      "fields": [
+        {
           "key": "wedding.extra_data.groom_father",
           "label": "Họ tên Cha (Nhà Trai)",
           "type": "text",
@@ -49,13 +92,49 @@
           "max": 100
         },
         {
-          "key": "wedding.extra_data.groom_parents_address",
-          "label": "Địa chỉ Nhà Trai",
+          "key": "wedding.extra_data.groom_party_time",
+          "label": "Giờ tổ chức hôn lễ / tiệc Nhà Trai",
           "type": "text",
           "required": false,
-          "default": "Đống Đa, Hà Nội",
-          "max": 200
+          "default": "10:00",
+          "placeholder": "Ví dụ: 10:00 hoặc 11:30",
+          "max": 50
         },
+        {
+          "key": "wedding.extra_data.groom_party_date",
+          "label": "Ngày tổ chức hôn lễ Nhà Trai",
+          "type": "date",
+          "required": false,
+          "default": "2026-12-20",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.groom_party_lunar",
+          "label": "Ngày âm lịch Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Ngày 12 tháng 11 năm Bính Ngọ",
+          "placeholder": "Ví dụ: Ngày 12 tháng 11 năm Bính Ngọ",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_party_address",
+          "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Trai",
+          "type": "textarea",
+          "required": false,
+          "default": "Tư gia Nhà Trai - Đống Đa, Hà Nội",
+          "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Trai",
+          "max": 300
+        }
+      ]
+    },
+    {
+      "id": "bride_family",
+      "title": "Nhà Gái",
+      "short_title": "Nhà Gái",
+      "icon": "home",
+      "description": "Thông tin phụ mẫu, ngày giờ và địa chỉ hôn lễ nhà gái",
+      "fields": [
         {
           "key": "wedding.extra_data.bride_father",
           "label": "Họ tên Cha (Nhà Gái)",
@@ -75,118 +154,150 @@
           "max": 100
         },
         {
-          "key": "wedding.extra_data.bride_parents_address",
-          "label": "Địa chỉ Nhà Gái",
+          "key": "wedding.extra_data.bride_party_time",
+          "label": "Giờ tổ chức hôn lễ / tiệc Nhà Gái",
           "type": "text",
           "required": false,
-          "default": "Ba Đình, Hà Nội",
-          "max": 200
+          "default": "08:00",
+          "placeholder": "Ví dụ: 08:00 hoặc 09:00",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.bride_party_date",
+          "label": "Ngày tổ chức hôn lễ Nhà Gái",
+          "type": "date",
+          "required": false,
+          "default": "2026-12-20",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.bride_party_lunar",
+          "label": "Ngày âm lịch Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Ngày 12 tháng 11 năm Bính Ngọ",
+          "placeholder": "Ví dụ: Ngày 12 tháng 11 năm Bính Ngọ",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_party_address",
+          "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Gái",
+          "type": "textarea",
+          "required": false,
+          "default": "Tư gia Nhà Gái - Ba Đình, Hà Nội",
+          "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Gái",
+          "max": 300
         }
       ]
     },
     {
-      "id": "events",
-      "title": "Thông Tin Lễ Cưới & Tiệc Mừng",
-      "icon": "calendar",
-      "description": "Thời gian và địa điểm tổ chức Lễ thành hôn và Tiệc cưới",
+      "id": "album",
+      "title": "Ảnh Cưới (10 Ảnh)",
+      "short_title": "Ảnh Cưới",
+      "icon": "image",
+      "description": "Bộ sưu tập 10 ảnh cưới ngọt ngào và đáng nhớ",
       "fields": [
         {
-          "key": "wedding.wedding_date",
-          "label": "Ngày cưới (YYYY-MM-DD)",
-          "type": "date",
-          "default": "2026-12-20"
-        },
-        {
-          "key": "wedding.extra_data.wedding_lunar_date",
-          "label": "Ngày âm lịch",
-          "type": "text",
-          "default": "12 tháng 11 năm Bính Ngọ"
-        },
-        {
-          "key": "wedding.extra_data.party_time",
-          "label": "Giờ tổ chức tiệc cưới",
-          "type": "text",
-          "default": "18:00"
-        },
-        {
-          "key": "wedding.extra_data.party_venue",
-          "label": "Tên nơi tổ chức tiệc cưới",
-          "type": "text",
-          "default": "Trung tâm Tiệc cưới Ngân Hà"
-        },
-        {
-          "key": "wedding.extra_data.event_party_address",
-          "label": "Địa chỉ nơi tổ chức tiệc cưới",
-          "type": "text",
-          "default": "Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội"
-        },
-        {
-          "key": "wedding.extra_data.ceremony_time",
-          "label": "Giờ Lễ Vu Quy (Nhà Gái)",
-          "type": "text",
-          "default": "08:00"
-        },
-        {
-          "key": "wedding.extra_data.ceremony_address",
-          "label": "Địa chỉ Lễ Vu Quy",
-          "type": "text",
-          "default": "Tại tư gia nhà gái - Ba Đình, Hà Nội"
-        },
-        {
-          "key": "wedding.extra_data.ceremony_groom_time",
-          "label": "Giờ Lễ Thành Hôn (Nhà Trai)",
-          "type": "text",
-          "default": "10:00"
-        },
-        {
-          "key": "wedding.extra_data.ceremony_groom_address",
-          "label": "Địa chỉ Lễ Thành Hôn",
-          "type": "text",
-          "default": "Tại tư gia nhà trai - Đống Đa, Hà Nội"
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
+          "required": false,
+          "max_items": 10
         }
       ]
     },
     {
-      "id": "banking",
-      "title": "Hộp Mừng Cưới & Chuyển Khoản",
+      "id": "timeline",
+      "title": "Lịch Trình Hôn Lễ",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian diễn ra hôn lễ và tiệc mừng",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
+          "required": false,
+          "max_items": 6,
+          "default": [
+            { "time": "08:00", "title": "Lễ Vu Quy (Nhà Gái)" },
+            { "time": "10:00", "title": "Lễ Thành Hôn (Nhà Trai)" },
+            { "time": "18:00", "title": "Khai Tiệc Mừng Cưới" },
+            { "time": "19:30", "title": "Chụp Ảnh Kỷ Niệm" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "text" },
+            { "key": "title", "label": "Nội dung", "type": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Hộp Mừng Cưới",
+      "short_title": "Mừng Cưới",
       "icon": "gift",
-      "description": "Số tài khoản và mã QR mừng cưới dành cho khách phương xa",
+      "description": "Số tài khoản ngân hàng và mã QR mừng cưới",
       "fields": [
         {
           "key": "wedding.extra_data.groom_bank_name",
           "label": "Ngân hàng Chú rể",
           "type": "text",
-          "default": "Vietcombank"
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank"
         },
         {
           "key": "wedding.extra_data.groom_bank_account",
           "label": "Số tài khoản Chú rể",
           "type": "text",
-          "default": "0123 456 789"
+          "required": false,
+          "default": "0123 456 789",
+          "placeholder": "Nhập số tài khoản Chú rể"
         },
         {
-          "key": "wedding.extra_data.groom_account_name",
-          "label": "Tên chủ thẻ Chú rể",
+          "key": "wedding.extra_data.groom_bank_holder",
+          "label": "Tên chủ tài khoản (Chú rể)",
           "type": "text",
-          "default": "NGUYEN MINH TUAN"
+          "required": false,
+          "default": "NGUYEN MINH TUAN",
+          "placeholder": "Ví dụ: NGUYEN MINH TUAN"
+        },
+        {
+          "key": "wedding.extra_data.qr_groom_image",
+          "label": "Mã QR Mừng Cưới Chú Rể",
+          "type": "image",
+          "required": false
         },
         {
           "key": "wedding.extra_data.bride_bank_name",
           "label": "Ngân hàng Cô dâu",
           "type": "text",
-          "default": "Techcombank"
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank"
         },
         {
           "key": "wedding.extra_data.bride_bank_account",
           "label": "Số tài khoản Cô dâu",
           "type": "text",
-          "default": "1903 5555 8888"
+          "required": false,
+          "default": "1903 5555 8888",
+          "placeholder": "Nhập số tài khoản Cô dâu"
         },
         {
-          "key": "wedding.extra_data.bride_account_name",
-          "label": "Tên chủ thẻ Cô dâu",
+          "key": "wedding.extra_data.bride_bank_holder",
+          "label": "Tên chủ tài khoản (Cô dâu)",
           "type": "text",
-          "default": "TRAN THU HA"
+          "required": false,
+          "default": "TRAN THU HA",
+          "placeholder": "Ví dụ: TRAN THU HA"
+        },
+        {
+          "key": "wedding.extra_data.qr_bride_image",
+          "label": "Mã QR Mừng Cưới Cô Dâu",
+          "type": "image",
+          "required": false
         }
       ]
     }

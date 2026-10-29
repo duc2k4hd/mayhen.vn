@@ -1,206 +1,306 @@
 {
-  "name": "Dấu Ký Trăm Năm",
   "slug": "dau-ky-tram-nam",
   "version": "2.0.0",
+  "name": "Dấu Ký Trăm Năm",
   "author": "Mây Hẹn Studio",
   "description": "Mẫu thiệp cưới phong cách Hoàng Gia Hiện Đại với cánh cửa tình yêu 3D mở sang hai bên, con dấu sáp đỏ Bordeaux dập nổi, bão hoa hồng nhung rơi và bộ đếm ngược hạnh phúc.",
   "category": "luxury",
   "tier": "pro",
   "complexity": "deluxe",
   "thumbnail": "assets/preview_1440.png",
+  "supported_sections": [
+    "couple",
+    "groom_family",
+    "bride_family",
+    "album",
+    "timeline",
+    "gift"
+  ],
   "sections": [
     {
-      "id": "general",
-      "title": "Cài đặt chung & Phong cách",
-      "fields": [
-        {
-          "key": "wedding.extra_data.accent_color",
-          "name": "accent_color",
-          "label": "Màu điểm nhấn",
-          "type": "color",
-          "default": "#8A1526"
-        },
-        {
-          "key": "wedding.music_url",
-          "name": "music_url",
-          "label": "Nhạc nền MP3",
-          "type": "audio",
-          "default": "/mau-thiep/dau-ky-tram-nam/assets/wedding-song.mp3"
-        }
-      ]
-    },
-    {
       "id": "couple",
-      "title": "Thông tin Cặp đôi & Gia đình",
+      "title": "Đôi Uyên Ương",
+      "short_title": "Đôi Uyên Ương",
+      "icon": "heart",
+      "description": "Thông tin cô dâu, chú rể, ngày cưới và ảnh đại diện",
       "fields": [
         {
           "key": "wedding.groom_name",
-          "name": "groom_name",
-          "label": "Tên Chú rể",
+          "label": "Họ và tên Chú rể",
           "type": "text",
+          "required": true,
           "default": "Quốc Thái",
-          "required": true
+          "placeholder": "Ví dụ: Quốc Thái",
+          "max": 100
         },
         {
           "key": "wedding.bride_name",
-          "name": "bride_name",
-          "label": "Tên Cô dâu",
+          "label": "Họ và tên Cô dâu",
           "type": "text",
+          "required": true,
           "default": "Thuý Ngân",
-          "required": true
+          "placeholder": "Ví dụ: Thuý Ngân",
+          "max": 100
         },
         {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-03-21",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện thiệp",
+          "type": "image",
+          "required": false,
+          "default": "assets/muslims-hero-bg-20231207085803-t1lex.jpg",
+          "placeholder": "Đường dẫn ảnh bìa"
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Lời ngỏ / Thông điệp tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Trăm năm một chữ đồng, trọn đời chung một lối yêu thương.",
+          "placeholder": "Chia sẻ ngắn gọn lời ngỏ gửi đến quan khách...",
+          "max": 500
+        }
+      ]
+    },
+    {
+      "id": "groom_family",
+      "title": "Nhà Trai",
+      "short_title": "Nhà Trai",
+      "icon": "home",
+      "description": "Thông tin phụ mẫu, ngày giờ và địa chỉ hôn lễ nhà trai",
+      "fields": [
+        {
           "key": "wedding.extra_data.groom_father",
-          "name": "groom_father",
-          "label": "Bố Chú rể",
+          "label": "Họ tên Cha (Nhà Trai)",
           "type": "text",
-          "default": "Trần Văn Quân"
+          "required": false,
+          "default": "Trần Văn Quân",
+          "placeholder": "Ví dụ: Trần Văn Quân",
+          "max": 100
         },
         {
           "key": "wedding.extra_data.groom_mother",
-          "name": "groom_mother",
-          "label": "Mẹ Chú rể",
+          "label": "Họ tên Mẹ (Nhà Trai)",
           "type": "text",
-          "default": "Lâm Thị Quyên"
+          "required": false,
+          "default": "Lâm Thị Quyên",
+          "placeholder": "Ví dụ: Lâm Thị Quyên",
+          "max": 100
         },
         {
-          "key": "wedding.extra_data.bride_father",
-          "name": "bride_father",
-          "label": "Bố Cô dâu",
+          "key": "wedding.extra_data.groom_party_time",
+          "label": "Giờ tổ chức hôn lễ / tiệc Nhà Trai",
           "type": "text",
-          "default": "Lư Xùng Mừng"
+          "required": false,
+          "default": "10:00",
+          "placeholder": "Ví dụ: 10:00 hoặc 11:30",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.groom_party_date",
+          "label": "Ngày tổ chức hôn lễ Nhà Trai",
+          "type": "date",
+          "required": false,
+          "default": "2026-03-21",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.groom_party_lunar",
+          "label": "Ngày âm lịch Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Ngày 03 tháng 02 năm Bính Ngọ",
+          "placeholder": "Ví dụ: Ngày 03 tháng 02 năm Bính Ngọ",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_party_address",
+          "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Trai",
+          "type": "textarea",
+          "required": false,
+          "default": "Tư gia Nhà Trai - Khóm An Tài, Phường An Bình, Tỉnh Đồng Tháp",
+          "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Trai",
+          "max": 300
+        }
+      ]
+    },
+    {
+      "id": "bride_family",
+      "title": "Nhà Gái",
+      "short_title": "Nhà Gái",
+      "icon": "home",
+      "description": "Thông tin phụ mẫu, ngày giờ và địa chỉ hôn lễ nhà gái",
+      "fields": [
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Lư Xùng Mừng",
+          "placeholder": "Ví dụ: Lư Xùng Mừng",
+          "max": 100
         },
         {
           "key": "wedding.extra_data.bride_mother",
-          "name": "bride_mother",
-          "label": "Mẹ Cô dâu",
+          "label": "Họ tên Mẹ (Nhà Gái)",
           "type": "text",
-          "default": "Nguyễn Thị Lệ Hằng"
+          "required": false,
+          "default": "Nguyễn Thị Lệ Hằng",
+          "placeholder": "Ví dụ: Nguyễn Thị Lệ Hằng",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_party_time",
+          "label": "Giờ tổ chức hôn lễ / tiệc Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "08:30",
+          "placeholder": "Ví dụ: 08:30 hoặc 09:00",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.bride_party_date",
+          "label": "Ngày tổ chức hôn lễ Nhà Gái",
+          "type": "date",
+          "required": false,
+          "default": "2026-03-21",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.bride_party_lunar",
+          "label": "Ngày âm lịch Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Ngày 03 tháng 02 năm Bính Ngọ",
+          "placeholder": "Ví dụ: Ngày 03 tháng 02 năm Bính Ngọ",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_party_address",
+          "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Gái",
+          "type": "textarea",
+          "required": false,
+          "default": "Tư gia Nhà Gái - Phường An Bình, Tỉnh Đồng Tháp",
+          "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Gái",
+          "max": 300
         }
       ]
     },
     {
-      "id": "events",
-      "title": "Sự kiện & Tiệc cưới",
+      "id": "album",
+      "title": "Ảnh Cưới (10 Ảnh)",
+      "short_title": "Ảnh Cưới",
+      "icon": "image",
+      "description": "Bộ sưu tập 10 ảnh cưới ngọt ngào và đáng nhớ",
       "fields": [
         {
-          "key": "wedding.wedding_date",
-          "name": "wedding_date",
-          "label": "Ngày giờ cưới chính",
-          "type": "datetime",
-          "default": "2026-03-21T10:00:00",
-          "required": true
-        },
-        {
-          "key": "wedding.extra_data.event_party_address",
-          "name": "event_party_address",
-          "label": "Địa chỉ tổ chức tiệc cưới",
-          "type": "text",
-          "default": "Khóm An Tài, Phường An Bình, Tỉnh Đồng Tháp",
-          "required": true
-        },
-        {
-          "key": "wedding.extra_data.event_party_lunar",
-          "name": "event_party_lunar",
-          "label": "Ngày âm lịch",
-          "type": "text",
-          "default": "Ngày 03 tháng 02 năm Bính Ngọ"
-        },
-        {
-          "key": "wedding.extra_data.event_party_map_url",
-          "name": "event_party_map_url",
-          "label": "Link Google Maps",
-          "type": "url",
-          "default": "https://maps.google.com"
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
+          "required": false,
+          "max_items": 10
         }
       ]
     },
     {
-      "id": "banking",
-      "title": "Mừng cưới & Ngân hàng",
+      "id": "timeline",
+      "title": "Lịch Trình Hôn Lễ",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian diễn ra hôn lễ và tiệc mừng",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
+          "required": false,
+          "max_items": 6,
+          "default": [
+            { "time": "08:30", "title": "Đón Khách Nhà Gái" },
+            { "time": "10:00", "title": "Lễ Thành Hôn Nhà Trai" },
+            { "time": "11:30", "title": "Khai Tiệc Mừng Cưới" },
+            { "time": "13:00", "title": "Chụp Ảnh Kỷ Niệm" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "text" },
+            { "key": "title", "label": "Nội dung", "type": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Hộp Mừng Cưới",
+      "short_title": "Mừng Cưới",
+      "icon": "gift",
+      "description": "Số tài khoản ngân hàng và mã QR mừng cưới",
       "fields": [
         {
           "key": "wedding.extra_data.groom_bank_name",
-          "name": "groom_bank_name",
           "label": "Ngân hàng Chú rể",
           "type": "text",
-          "default": "Vietcombank"
-        },
-        {
-          "key": "wedding.extra_data.groom_account_name",
-          "name": "groom_account_name",
-          "label": "Tên chủ tài khoản Chú rể",
-          "type": "text",
-          "default": "TRẦN QUỐC THÁI"
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank"
         },
         {
           "key": "wedding.extra_data.groom_bank_account",
-          "name": "groom_bank_account",
           "label": "Số tài khoản Chú rể",
           "type": "text",
-          "default": "1012345678"
+          "required": false,
+          "default": "1012345678",
+          "placeholder": "Nhập số tài khoản Chú rể"
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_holder",
+          "label": "Tên chủ tài khoản (Chú rể)",
+          "type": "text",
+          "required": false,
+          "default": "TRAN QUOC THAI",
+          "placeholder": "Ví dụ: TRAN QUOC THAI"
         },
         {
           "key": "wedding.extra_data.qr_groom_image",
-          "name": "qr_groom_image",
-          "label": "Ảnh QR Chú rể",
+          "label": "Mã QR Mừng Cưới Chú Rể",
           "type": "image",
-          "default": ""
+          "required": false
         },
         {
           "key": "wedding.extra_data.bride_bank_name",
-          "name": "bride_bank_name",
           "label": "Ngân hàng Cô dâu",
           "type": "text",
-          "default": "Techcombank"
-        },
-        {
-          "key": "wedding.extra_data.bride_account_name",
-          "name": "bride_account_name",
-          "label": "Tên chủ tài khoản Cô dâu",
-          "type": "text",
-          "default": "LƯ THUÝ NGÂN"
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank"
         },
         {
           "key": "wedding.extra_data.bride_bank_account",
-          "name": "bride_bank_account",
           "label": "Số tài khoản Cô dâu",
           "type": "text",
-          "default": "190398765432"
+          "required": false,
+          "default": "190398765432",
+          "placeholder": "Nhập số tài khoản Cô dâu"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_holder",
+          "label": "Tên chủ tài khoản (Cô dâu)",
+          "type": "text",
+          "required": false,
+          "default": "LU THUY NGAN",
+          "placeholder": "Ví dụ: LU THUY NGAN"
         },
         {
           "key": "wedding.extra_data.qr_bride_image",
-          "name": "qr_bride_image",
-          "label": "Ảnh QR Cô dâu",
+          "label": "Mã QR Mừng Cưới Cô Dâu",
           "type": "image",
-          "default": ""
-        }
-      ]
-    },
-    {
-      "id": "gallery",
-      "title": "Album Ảnh Kỷ Niệm",
-      "fields": [
-        {
-          "key": "wedding.cover_photo_url",
-          "name": "cover_photo_url",
-          "label": "Ảnh bìa chính",
-          "type": "image",
-          "default": "/mau-thiep/dau-ky-tram-nam/assets/muslims-hero-bg-20231207085803-t1lex.jpg"
-        },
-        {
-          "key": "wedding.extra_data.hero_photo_url",
-          "name": "hero_photo_url",
-          "label": "Ảnh mở đầu Hero",
-          "type": "image",
-          "default": "/mau-thiep/dau-ky-tram-nam/assets/hip_0956-20250417154149-1cpow.jpg"
-        },
-        {
-          "key": "wedding.extra_data.gallery",
-          "name": "gallery",
-          "label": "Danh sách ảnh cưới Album",
-          "type": "gallery",
-          "default": []
+          "required": false
         }
       ]
     }
