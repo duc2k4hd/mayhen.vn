@@ -388,14 +388,17 @@
         [brideEl, groomEl].forEach(el => {
             if (!el) return;
             const text = (el.textContent || '').trim();
-            if (text.length > 18) {
-                el.style.setProperty('font-size', '25px', 'important');
-            } else if (text.length > 13) {
-                el.style.setProperty('font-size', '30px', 'important');
-            } else if (text.length > 9) {
+            const len = text.length;
+            if (len >= 22) {
                 el.style.setProperty('font-size', '34px', 'important');
+            } else if (len >= 17) {
+                el.style.setProperty('font-size', '38px', 'important');
+            } else if (len >= 12) {
+                el.style.setProperty('font-size', '44px', 'important');
+            } else if (len >= 8) {
+                el.style.setProperty('font-size', '48px', 'important');
             } else {
-                el.style.removeProperty('font-size');
+                el.style.setProperty('font-size', '52px', 'important');
             }
         });
     };

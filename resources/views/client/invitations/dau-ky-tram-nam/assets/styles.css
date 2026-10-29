@@ -5045,16 +5045,16 @@ body {
    ========================================================================== */
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper {
     position: absolute !important;
-    top: 380px !important;
+    top: 360px !important;
     left: 0 !important;
     width: 100% !important;
     max-width: 420px !important;
-    height: 245px !important;
+    height: 270px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 2px !important;
     z-index: 10 !important;
     pointer-events: auto !important;
     padding: 0 15px !important;
@@ -5078,24 +5078,24 @@ body {
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline110 > .mayhen_invitation_jeowinids483fr_ladi-headline,
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline111 > .mayhen_invitation_jeowinids483fr_ladi-headline {
     font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg, cursive, sans-serif !important;
-    font-size: clamp(24px, 6vw, 38px) !important;
-    line-height: 1.25 !important;
+    font-size: clamp(34px, 8.5vw, 48px) !important;
+    line-height: 1.2 !important;
     color: rgb(35, 35, 35) !important;
     text-align: center !important;
     white-space: nowrap !important;
     overflow: visible !important;
     display: block !important;
-    padding: 2px 0 !important;
+    padding: 0 !important;
     word-break: keep-all !important;
     text-overflow: clip !important;
 }
 
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline112 > .mayhen_invitation_jeowinids483fr_ladi-headline {
     font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg, cursive, sans-serif !important;
-    font-size: 24px !important;
+    font-size: 32px !important;
     line-height: 1 !important;
     color: rgb(35, 35, 35) !important;
     text-align: center !important;
     display: block !important;
-    margin: -2px 0 !important;
+    margin: 0 !important;
 }
