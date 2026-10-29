@@ -76,20 +76,34 @@
     };
 
     // 3. Mừng cưới & Ngân hàng
-    $qrGroom = $resolveAsset($extraData['qr_groom_image'] ?? null, '');
-    $qrBride = $resolveAsset($extraData['qr_bride_image'] ?? null, '');
+    $cleanGroomAcc = preg_replace('/[^0-9A-Za-z]/', '', $extraData['groom_bank_account'] ?? '1012345678');
+    $cleanBrideAcc = preg_replace('/[^0-9A-Za-z]/', '', $extraData['bride_bank_account'] ?? '190398765432');
+    $groomBankName = $extraData['groom_bank_name'] ?? 'Vietcombank';
+    $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
+
+    $qrGroom = !empty($extraData['qr_groom_image']) 
+        ? $resolveAsset($extraData['qr_groom_image'], '')
+        : (!empty($groomBankName) && !empty($cleanGroomAcc) 
+            ? 'https://img.vietqr.io/image/' . urlencode(strtolower(str_replace(' ', '', $groomBankName))) . '-' . $cleanGroomAcc . '-compact2.png?amount=0&addInfo=' . urlencode('Mung cuoi ' . $groomName) . '&accountName=' . urlencode($extraData['groom_account_name'] ?? 'TRAN QUOC THAI')
+            : '');
+
+    $qrBride = !empty($extraData['qr_bride_image']) 
+        ? $resolveAsset($extraData['qr_bride_image'], '')
+        : (!empty($brideBankName) && !empty($cleanBrideAcc) 
+            ? 'https://img.vietqr.io/image/' . urlencode(strtolower(str_replace(' ', '', $brideBankName))) . '-' . $cleanBrideAcc . '-compact2.png?amount=0&addInfo=' . urlencode('Mung cuoi ' . $brideName) . '&accountName=' . urlencode($extraData['bride_account_name'] ?? 'LU THUY NGAN')
+            : '');
 
     $groomBankInfo = [
-        'bank' => $extraData['groom_bank_name'] ?? 'Vietcombank',
-        'name' => $extraData['groom_bank_name'] ?? 'Vietcombank',
+        'bank' => $groomBankName,
+        'name' => $groomBankName,
         'holder' => $extraData['groom_account_name'] ?? 'TRẦN QUỐC THÁI',
         'account' => $extraData['groom_bank_account'] ?? '1012345678',
         'number' => $extraData['groom_bank_account'] ?? '1012345678',
         'qr' => $qrGroom,
     ];
     $brideBankInfo = [
-        'bank' => $extraData['bride_bank_name'] ?? 'Techcombank',
-        'name' => $extraData['bride_bank_name'] ?? 'Techcombank',
+        'bank' => $brideBankName,
+        'name' => $brideBankName,
         'holder' => $extraData['bride_account_name'] ?? 'LƯ THUÝ NGÂN',
         'account' => $extraData['bride_bank_account'] ?? '190398765432',
         'number' => $extraData['bride_bank_account'] ?? '190398765432',
@@ -2029,13 +2043,22 @@
         </button>
       </div>
       <p class="mayhen_invitation_jeowinids483fr_gift-note">
-        Thông tin chuyển khoản chưa được cấu hình. Vui lòng cập nhật trong
-        <code>assets/js/config.js</code> trước khi phát hành thiệp.
+        Thông tin chuyển khoản chưa được cấu hình.
       </p>
       <div
         class="mayhen_invitation_jeowinids483fr_gift-details"
         hidden=""
-      ></div>
+      >
+        <div class="mayhen_invitation_jeowinids483fr_gift_qr_wrap">
+          <img class="mayhen_invitation_jeowinids483fr_gift_qr_img" src="" alt="Mã QR mừng cưới" />
+        </div>
+        <div class="mayhen_invitation_jeowinids483fr_gift_bank_name"></div>
+        <div class="mayhen_invitation_jeowinids483fr_gift_holder"></div>
+        <div class="mayhen_invitation_jeowinids483fr_gift_acc_row">
+          <span class="mayhen_invitation_jeowinids483fr_gift_account"></span>
+          <button type="button" class="mayhen_invitation_jeowinids483fr_gift_copy_btn">Sao chép</button>
+        </div>
+      </div>
     </div>
     <button
       aria-label="Đóng hộp thoại"

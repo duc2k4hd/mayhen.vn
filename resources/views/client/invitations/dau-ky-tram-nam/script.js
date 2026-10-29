@@ -337,12 +337,35 @@
         const bank = (C.bank && C.bank[person]) || {};
         const details = one("gift-details");
         const note = one("gift-note");
-        const configured = Boolean(bank.holder && bank.account && bank.name);
+        const configured = Boolean((bank.account || bank.number) && (bank.holder || bank.name));
+
         if (details) {
             details.hidden = !configured;
-            details.textContent = configured
-                ? `${bank.name}\n${bank.holder}\n${bank.account}`
-                : "";
+            if (configured) {
+                const cleanAcc = (bank.account || bank.number || '').replace(/[^0-9A-Za-z]/g, '');
+                const bankName = bank.name || bank.bank || '';
+                const qrUrl = bank.qr || (bankName && cleanAcc
+                    ? `https://img.vietqr.io/image/${encodeURIComponent(bankName.toLowerCase().replace(/\s+/g, ''))}-${cleanAcc}-compact2.png?amount=0&addInfo=Mung%20cuoi&accountName=${encodeURIComponent(bank.holder || '')}`
+                    : '');
+
+                const qrWrap = details.querySelector('.' + P + 'gift_qr_wrap');
+                const qrImg = details.querySelector('.' + P + 'gift_qr_img');
+                const bNameEl = details.querySelector('.' + P + 'gift_bank_name');
+                const holderEl = details.querySelector('.' + P + 'gift_holder');
+                const accEl = details.querySelector('.' + P + 'gift_account');
+
+                if (qrImg) {
+                    if (qrUrl) {
+                        qrImg.src = qrUrl;
+                        if (qrWrap) qrWrap.style.display = 'flex';
+                    } else {
+                        if (qrWrap) qrWrap.style.display = 'none';
+                    }
+                }
+                if (bNameEl) bNameEl.textContent = bankName;
+                if (holderEl) holderEl.textContent = bank.holder || '';
+                if (accEl) accEl.textContent = bank.account || bank.number || '';
+            }
         }
         if (note) note.hidden = configured;
     };
@@ -406,6 +429,42 @@
     window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'MAYHEN_SYNC_INPUT') {
             setTimeout(fitCoupleNames, 30);
+
+            const k = (e.data.key || '').replace(/^wedding\./, '').replace(/^extra_data\./, '');
+            const v = e.data.value || '';
+            if (C.bank) {
+                if (k === 'groom_bank_name') { C.bank.groom.name = C.bank.groom.bank = v; }
+                if (k === 'groom_bank_account') { C.bank.groom.account = C.bank.groom.number = v; }
+                if (k === 'groom_account_name') { C.bank.groom.holder = v; }
+                if (k === 'qr_groom_image') { C.bank.groom.qr = v; }
+
+                if (k === 'bride_bank_name') { C.bank.bride.name = C.bank.bride.bank = v; }
+                if (k === 'bride_bank_account') { C.bank.bride.account = C.bank.bride.number = v; }
+                if (k === 'bride_account_name') { C.bank.bride.holder = v; }
+                if (k === 'qr_bride_image') { C.bank.bride.qr = v; }
+
+                const selectedTab = document.querySelector('.' + P + 'gift-tab.' + P + 'selected');
+                const currentPerson = selectedTab ? selectedTab.dataset.person : 'bride';
+                updateGift(currentPerson);
+            }
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        const copyBtn = e.target.closest('.' + P + 'gift_copy_btn');
+        if (copyBtn) {
+            const accEl = document.querySelector('.' + P + 'gift_account');
+            if (accEl && accEl.textContent) {
+                navigator.clipboard.writeText(accEl.textContent.trim()).then(() => {
+                    const original = copyBtn.textContent;
+                    copyBtn.textContent = 'Đã chép!';
+                    copyBtn.classList.add(P + 'copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = original;
+                        copyBtn.classList.remove(P + 'copied');
+                    }, 2000);
+                }).catch(() => {});
+            }
         }
     });
 

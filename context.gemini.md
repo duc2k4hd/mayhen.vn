@@ -1555,6 +1555,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *`script.js` & `assets/script.js`*: Thêm logic chuyển đổi trạng thái `mayhen_active` mượt mà khi người dùng nhấn vào bất kỳ mục điều hướng nào trên thanh dock.
                 - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
 
+            38. **Tích Hợp Mã QR & Nút Sao Chép Tài Khoản Hộp Mừng Cưới (Mẫu "Dấu Ký Trăm Năm")**:
+                - **Vấn đề phát sinh**: Khi người dùng cấu hình xong thông tin ngân hàng và bấm nút *"Mừng cưới"* trên thiệp, popup hiển thị thông tin ngân hàng nhưng hoàn toàn **không có hình ảnh mã QR** (trước đó hàm JS chỉ in chuỗi text thuần `bank.name\nbank.holder\nbank.account`), khiến khách mời không thể quét mã VietQR để chuyển tiền chúc phúc.
+                - **Giải pháp xử lý triệt để**:
+                  * *`template.blade.php`*:
+                    + Tự động sinh link ảnh VietQR thông minh từ tên ngân hàng và số tài khoản (`https://img.vietqr.io/image/{bank}-{account}-compact2.png`) khi người dùng chưa upload ảnh riêng, hoặc ưu tiên hiển thị ảnh QR do người dùng tải lên (`qr_groom_image`, `qr_bride_image`).
+                    + Bổ sung cấu trúc HTML hộp thoại: khung ảnh QR `.gift_qr_wrap`, tên ngân hàng, tên chủ tài khoản in hoa đậm, và dòng số tài khoản kèm nút bấm *"Sao chép"* tiện lợi.
+                  * *`styles.css` & `assets/styles.css`*: Thiết kế khung mã QR bo góc 14px tinh tế viền vàng kim `rgba(212, 175, 55, 0.35)`, kích thước 168x168px chuẩn quét camera, cùng khối số tài khoản nét đứt sang trọng kèm nút sao chép chuyển màu xanh khi copy thành công.
+                  * *`script.js` & `assets/script.js`*:
+                    + Nâng cấp hàm `updateGift(person)` hiển thị ảnh QR tức thời và đồng bộ dữ liệu theo tab Cô dâu / Chú rể.
+                    + Tích hợp Clipboard API cho nút *"Sao chép"* tự động sao chép số tài khoản vào khay nhớ tạm.
+                    + Lắng nghe sự kiện Live Sync `MAYHEN_SYNC_INPUT` để cập nhật mã QR và số tài khoản ngay khi người dùng gõ vào form Studio Editor.
+                - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
