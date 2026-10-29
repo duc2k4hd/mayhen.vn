@@ -1460,6 +1460,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Tạo script `sync-drive.ps1` tự động dò tìm thư mục Google Drive thông minh (hỗ trợ xử lý chuẩn encoding tên thư mục tiếng Việt có dấu trên Windows PowerShell).
                   * Tích hợp lệnh Composer: `composer sync-drive` giúp người dùng chỉ cần gõ 1 lệnh duy nhất là toàn bộ mã nguồn mới nhất trên máy tính lập tức được cập nhật sang Google Drive.
 
+            31. **Tích Hợp & Chuẩn Hóa Toàn Diện Mẫu Thiệp Cưới "Giữa Muôn Ngàn Vì Sao" (`giua-muon-ngan-vi-sao`)**:
+                - **Nguồn gốc & Thiết kế**: Chuyển giao từ thư mục `Mẫu thiệp\Giữa Muôn Ngàn Vì Sao`, đưa vào hệ thống Mây Hẹn với phong cách Celestial Deepspace & Shooting Stars lãng mạn, kỳ ảo.
+                - **Cấu trúc module độc lập chuẩn hóa**: `resources/views/client/invitations/giua-muon-ngan-vi-sao/`
+                  * `template.blade.php`: Kế thừa `@extends('client.layouts.invitation')`. Chuẩn hóa đầy đủ 14 section: Màn mở đầu sao rơi lấp lánh (Canvas Particle Dissolve), Hero Section tinh tế, Hai bên gia đình, Lời mời tiệc cưới, Nghi lễ Vu Quy & Thành Hôn, Đồng hồ đếm ngược thiên hà theo thời gian thực, Lịch cưới Google Calendar, Timeline lịch trình tình yêu, Bản đồ mở cánh 3D độc bản dẫn đường Google Maps, Album 3D Coverflow kèm Lightbox phóng to Retina, Sổ lưu bút điện tử kèm bảng ký tên tay công nghệ cảm ứng, Form xác nhận tham dự (RSVP) trực tuyến, Hộp mừng cưới 3D mở bung tia sáng sao kèm mã VietQR tự động, Lời cảm ơn và nhạc nền lãng mạn.
+                  * **Hợp đồng Live Sync**: Gắn đầy đủ `data-sync-target` cho toàn bộ các trường dữ liệu (`groom_name`, `bride_name`, `wedding_date`, `groom_father`, `groom_mother`, `bride_father`, `bride_mother`, `event_party_address`, `groom_bank_account`, `bride_bank_account`), không hardcode bất kỳ văn bản nào.
+                  * **Phòng vệ Studio Editor (`$isEmbed = true`)**: Tự động mở màn che, bỏ lớp khoá cuộn và đưa các khối giao diện về trạng thái sẵn sàng chỉnh sửa mà không bị màn hình trắng trơn.
+                  * `styles.css`: Scoped 100% tiền tố `mayhen_invitation_ladoifji894yfv_*`. Loại bỏ toàn bộ `!important` trên `background-image` của album và ảnh CDCR để không đè lên ảnh tùy chỉnh của người dùng trong Studio Editor. Bổ sung khối CSS phòng vệ nhúng `.mayhen_invitation_ladoifji894yfv_embed_mode`.
+                  * `script.js`: Native ES module tích hợp WebGL Canvas sao rơi (`SlideTemplates['sao-roi']`), hiệu ứng tan biến hạt khi mở thiệp, bản đồ cánh mở 3D, album 3D Coverflow, Lightbox, bảng ký tên tay canvas, và gửi AJAX bảo mật kèm CSRF token cho RSVP và Sổ lưu bút.
+                  * `schema.json`: Chuẩn hóa 5 section (`couple`, `events`, `gallery` gồm 10 ảnh, `banking`) sẵn sàng cho Studio Editor.
+                  * `assets/`: Lưu trữ thumbnail và tài nguyên hình ảnh cục bộ độc lập.
+                - **Đăng ký CSDL & Seeder**: Đã thêm bản ghi vào `InvitationTemplateSeeder.php` với slug `giua-muon-ngan-vi-sao`, category `luxury`, tier `free`, complexity `deluxe` và chạy seed CSDL thành công.
+                - **Kiểm thử chất lượng**: Tạo Feature Test `tests/Feature/GiuaMuonNganViSaoTemplateTest.php` kiểm tra toàn diện preview, data-sync-target, static assets, embed defense và schema.json (4/4 tests passed, 29 assertions). Chạy toàn bộ test suite đạt 32/32 tests passed (360 assertions). Code được định dạng chuẩn bằng Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
