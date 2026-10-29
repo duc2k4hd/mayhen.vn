@@ -14,16 +14,18 @@
       "title": "Cài đặt chung & Phong cách",
       "fields": [
         {
+          "key": "wedding.extra_data.accent_color",
           "name": "accent_color",
           "label": "Màu điểm nhấn",
           "type": "color",
           "default": "#8A1526"
         },
         {
+          "key": "wedding.music_url",
           "name": "music_url",
           "label": "Nhạc nền MP3",
           "type": "audio",
-          "default": ""
+          "default": "/mau-thiep/dau-ky-tram-nam/assets/wedding-song.mp3"
         }
       ]
     },
@@ -32,6 +34,7 @@
       "title": "Thông tin Cặp đôi & Gia đình",
       "fields": [
         {
+          "key": "wedding.groom_name",
           "name": "groom_name",
           "label": "Tên Chú rể",
           "type": "text",
@@ -39,6 +42,7 @@
           "required": true
         },
         {
+          "key": "wedding.bride_name",
           "name": "bride_name",
           "label": "Tên Cô dâu",
           "type": "text",
@@ -46,24 +50,28 @@
           "required": true
         },
         {
+          "key": "wedding.extra_data.groom_father",
           "name": "groom_father",
           "label": "Bố Chú rể",
           "type": "text",
           "default": "Trần Văn Quân"
         },
         {
+          "key": "wedding.extra_data.groom_mother",
           "name": "groom_mother",
           "label": "Mẹ Chú rể",
           "type": "text",
           "default": "Lâm Thị Quyên"
         },
         {
+          "key": "wedding.extra_data.bride_father",
           "name": "bride_father",
           "label": "Bố Cô dâu",
           "type": "text",
           "default": "Lư Xùng Mừng"
         },
         {
+          "key": "wedding.extra_data.bride_mother",
           "name": "bride_mother",
           "label": "Mẹ Cô dâu",
           "type": "text",
@@ -76,6 +84,7 @@
       "title": "Sự kiện & Tiệc cưới",
       "fields": [
         {
+          "key": "wedding.wedding_date",
           "name": "wedding_date",
           "label": "Ngày giờ cưới chính",
           "type": "datetime",
@@ -83,6 +92,7 @@
           "required": true
         },
         {
+          "key": "wedding.extra_data.event_party_address",
           "name": "event_party_address",
           "label": "Địa chỉ tổ chức tiệc cưới",
           "type": "text",
@@ -90,12 +100,14 @@
           "required": true
         },
         {
+          "key": "wedding.extra_data.event_party_lunar",
           "name": "event_party_lunar",
           "label": "Ngày âm lịch",
           "type": "text",
           "default": "Ngày 03 tháng 02 năm Bính Ngọ"
         },
         {
+          "key": "wedding.extra_data.event_party_map_url",
           "name": "event_party_map_url",
           "label": "Link Google Maps",
           "type": "url",
@@ -108,48 +120,56 @@
       "title": "Mừng cưới & Ngân hàng",
       "fields": [
         {
+          "key": "wedding.extra_data.groom_bank_name",
           "name": "groom_bank_name",
           "label": "Ngân hàng Chú rể",
           "type": "text",
           "default": "Vietcombank"
         },
         {
+          "key": "wedding.extra_data.groom_account_name",
           "name": "groom_account_name",
           "label": "Tên chủ tài khoản Chú rể",
           "type": "text",
           "default": "TRẦN QUỐC THÁI"
         },
         {
+          "key": "wedding.extra_data.groom_bank_account",
           "name": "groom_bank_account",
           "label": "Số tài khoản Chú rể",
           "type": "text",
           "default": "1012345678"
         },
         {
+          "key": "wedding.extra_data.qr_groom_image",
           "name": "qr_groom_image",
           "label": "Ảnh QR Chú rể",
           "type": "image",
           "default": ""
         },
         {
+          "key": "wedding.extra_data.bride_bank_name",
           "name": "bride_bank_name",
           "label": "Ngân hàng Cô dâu",
           "type": "text",
           "default": "Techcombank"
         },
         {
+          "key": "wedding.extra_data.bride_account_name",
           "name": "bride_account_name",
           "label": "Tên chủ tài khoản Cô dâu",
           "type": "text",
           "default": "LƯ THUÝ NGÂN"
         },
         {
+          "key": "wedding.extra_data.bride_bank_account",
           "name": "bride_bank_account",
           "label": "Số tài khoản Cô dâu",
           "type": "text",
           "default": "190398765432"
         },
         {
+          "key": "wedding.extra_data.qr_bride_image",
           "name": "qr_bride_image",
           "label": "Ảnh QR Cô dâu",
           "type": "image",
@@ -162,18 +182,21 @@
       "title": "Album Ảnh Kỷ Niệm",
       "fields": [
         {
+          "key": "wedding.cover_photo_url",
           "name": "cover_photo_url",
           "label": "Ảnh bìa chính",
           "type": "image",
-          "default": "assets/images/cover.jpg"
+          "default": "/mau-thiep/dau-ky-tram-nam/assets/muslims-hero-bg-20231207085803-t1lex.jpg"
         },
         {
+          "key": "wedding.extra_data.hero_photo_url",
           "name": "hero_photo_url",
           "label": "Ảnh mở đầu Hero",
           "type": "image",
-          "default": "assets/images/hero.jpg"
+          "default": "/mau-thiep/dau-ky-tram-nam/assets/hip_0956-20250417154149-1cpow.jpg"
         },
         {
+          "key": "wedding.extra_data.gallery",
           "name": "gallery",
           "label": "Danh sách ảnh cưới Album",
           "type": "gallery",
@@ -183,4 +206,3 @@
     }
   ]
 }
-

@@ -1487,6 +1487,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Kết quả rà soát tự động**: Quét toàn bộ kho mã nguồn `resources/views/client/invitations/` đạt **0 URL tài nguyên ngoại vi** trên toàn bộ 9 mẫu thiệp của hệ thống.
                 - **Nâng cấp chuẩn hóa**: Cập nhật Nguyên tắc số 6 trong Quy chuẩn tạo mẫu thiệp cưới bắt buộc 100% Localized Assets cho mọi mẫu thiệp tương lai.
 
+            33. **Khắc Phục Triệt Để Lỗi 500 "Undefined array key key" Trong Trình Tạo Thiệp (`/tao-thiep`)**:
+                - **Nguyên nhân cốt lõi**:
+                  * Trong file giao diện trình tạo thiệp `resources/views/client/pages/editor.blade.php:196`, code cũ truy cập trực tiếp `$fieldKey = $field['key'];` mà không có phòng vệ fallback.
+                  * Hai file `schema.json` của mẫu `dau-ky-tram-nam` và `luu-but-ngay-chung-doi` khai báo dạng `name` thay vì chuẩn `key` (`wedding.groom_name`...). Khi người dùng truy cập `/tao-thiep?template=dau-ky-tram-nam`, hệ thống ném ngoại lệ `500 ErrorException`.
+                - **Giải pháp xử lý hai lớp**:
+                  * *Lớp phòng vệ tầng View (`editor.blade.php`)*: Bổ sung fallback `$fieldKey = $field['key'] ?? $field['name'] ?? null;`. Nếu không tìm thấy key thì bỏ qua (`continue`). Tự động tiền tố namespace chuẩn (`wedding.` cho các trường thông tin chính hoặc `wedding.extra_data.` cho trường mở rộng) nếu gặp field dạng cũ không có dấu chấm.
+                  * *Lớp chuẩn hóa Schema (`dau-ky-tram-nam` & `luu-but-ngay-chung-doi`)*: Cập nhật toàn bộ các trường `fields` có `key` chuẩn hóa 100% theo Nguyên tắc số 1 (`wedding.groom_name`, `wedding.bride_name`, `wedding.extra_data.groom_father`...).
+                - **Kiểm thử tự động**: Viết test tự động duyệt qua toàn bộ các template đang hoạt động trong hệ thống khi mở `/tao-thiep?template={slug}` (`tests/Feature/InvitationEditorDataSyncTest.php`), kết quả 100% trả về `HTTP 200 OK` (33/33 tests passed).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

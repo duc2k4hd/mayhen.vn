@@ -14,16 +14,18 @@
       "title": "Cài đặt chung & Phong cách",
       "fields": [
         {
+          "key": "wedding.extra_data.accent_color",
           "name": "accent_color",
           "label": "Màu điểm nhấn",
           "type": "color",
           "default": "#3B5E4F"
         },
         {
+          "key": "wedding.music_url",
           "name": "music_url",
           "label": "Nhạc nền MP3",
           "type": "audio",
-          "default": ""
+          "default": "/mau-thiep/luu-but-ngay-chung-doi/assets/wedding-song.mp3"
         }
       ]
     },
@@ -32,6 +34,7 @@
       "title": "Thông tin Cặp đôi & Gia đình",
       "fields": [
         {
+          "key": "wedding.groom_name",
           "name": "groom_name",
           "label": "Tên Chú rể",
           "type": "text",
@@ -39,6 +42,7 @@
           "required": true
         },
         {
+          "key": "wedding.bride_name",
           "name": "bride_name",
           "label": "Tên Cô dâu",
           "type": "text",
@@ -46,24 +50,28 @@
           "required": true
         },
         {
+          "key": "wedding.extra_data.groom_father",
           "name": "groom_father",
           "label": "Bố Chú rể",
           "type": "text",
           "default": "Nguyễn Văn Nam"
         },
         {
+          "key": "wedding.extra_data.groom_mother",
           "name": "groom_mother",
           "label": "Mẹ Chú rể",
           "type": "text",
           "default": "Trần Thị Mai"
         },
         {
+          "key": "wedding.extra_data.bride_father",
           "name": "bride_father",
           "label": "Bố Cô dâu",
           "type": "text",
           "default": "Lê Văn Hùng"
         },
         {
+          "key": "wedding.extra_data.bride_mother",
           "name": "bride_mother",
           "label": "Mẹ Cô dâu",
           "type": "text",
@@ -76,6 +84,7 @@
       "title": "Sự kiện & Tiệc cưới",
       "fields": [
         {
+          "key": "wedding.wedding_date",
           "name": "wedding_date",
           "label": "Ngày giờ cưới chính",
           "type": "datetime",
@@ -83,36 +92,42 @@
           "required": true
         },
         {
+          "key": "wedding.extra_data.bride_event_title",
           "name": "bride_event_title",
           "label": "Tiêu đề Tiệc Nhà Gái",
           "type": "text",
           "default": "Tiệc Cưới Nhà Gái"
         },
         {
+          "key": "wedding.extra_data.bride_event_address",
           "name": "bride_event_address",
           "label": "Địa chỉ Nhà Gái",
           "type": "textarea",
           "default": "Đường Nguyễn Tất Thành, Văn Phú, Lào Cai"
         },
         {
+          "key": "wedding.extra_data.bride_map_link",
           "name": "bride_map_link",
           "label": "Link Google Maps Nhà Gái",
           "type": "url",
           "default": "https://www.google.com/maps"
         },
         {
+          "key": "wedding.extra_data.groom_event_title",
           "name": "groom_event_title",
           "label": "Tiêu đề Tiệc Nhà Trai",
           "type": "text",
           "default": "Tiệc Cưới Nhà Trai"
         },
         {
+          "key": "wedding.extra_data.groom_event_address",
           "name": "groom_event_address",
           "label": "Địa chỉ Nhà Trai",
           "type": "textarea",
           "default": "Phố Hoàng Liên, Cốc Lếu, Lào Cai"
         },
         {
+          "key": "wedding.extra_data.groom_map_link",
           "name": "groom_map_link",
           "label": "Link Google Maps Nhà Trai",
           "type": "url",
@@ -125,6 +140,7 @@
       "title": "Album ảnh cưới (Tối đa 12 ảnh)",
       "fields": [
         {
+          "key": "wedding.extra_data.gallery",
           "name": "gallery",
           "label": "Danh sách ảnh kỷ niệm",
           "type": "image_gallery",
@@ -138,48 +154,56 @@
       "title": "Hộp mừng cưới & Mã QR",
       "fields": [
         {
+          "key": "wedding.extra_data.groom_bank_name",
           "name": "groom_bank_name",
           "label": "Ngân hàng Chú rể",
           "type": "text",
           "default": "Techcombank"
         },
         {
+          "key": "wedding.extra_data.groom_account_name",
           "name": "groom_account_name",
           "label": "Tên chủ TK Chú rể",
           "type": "text",
           "default": "NGUYEN NGOC SON"
         },
         {
-          "name": "groom_account_number",
+          "key": "wedding.extra_data.groom_bank_account",
+          "name": "groom_bank_account",
           "label": "Số tài khoản Chú rể",
           "type": "text",
           "default": "190368888888"
         },
         {
+          "key": "wedding.extra_data.qr_groom_image",
           "name": "qr_groom_image",
           "label": "Mã QR Chú rể",
           "type": "image",
           "default": ""
         },
         {
+          "key": "wedding.extra_data.bride_bank_name",
           "name": "bride_bank_name",
           "label": "Ngân hàng Cô dâu",
           "type": "text",
           "default": "Vietcombank"
         },
         {
+          "key": "wedding.extra_data.bride_account_name",
           "name": "bride_account_name",
           "label": "Tên chủ TK Cô dâu",
           "type": "text",
           "default": "LE THUY QUYNH"
         },
         {
-          "name": "bride_account_number",
+          "key": "wedding.extra_data.bride_bank_account",
+          "name": "bride_bank_account",
           "label": "Số tài khoản Cô dâu",
           "type": "text",
           "default": "998877665544"
         },
         {
+          "key": "wedding.extra_data.qr_bride_image",
           "name": "qr_bride_image",
           "label": "Mã QR Cô dâu",
           "type": "image",
@@ -189,4 +213,3 @@
     }
   ]
 }
-

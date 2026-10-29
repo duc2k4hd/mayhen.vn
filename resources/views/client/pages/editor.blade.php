@@ -193,7 +193,17 @@
 
                                 @foreach ($fields as $field)
                                     @php
-                                        $fieldKey = $field['key'];
+                                        $fieldKey = $field['key'] ?? $field['name'] ?? null;
+                                        if (empty($fieldKey)) {
+                                            continue;
+                                        }
+                                        if (!str_contains($fieldKey, '.')) {
+                                            if (in_array($fieldKey, ['groom_name', 'bride_name', 'wedding_date', 'groom_parents', 'bride_parents', 'cover_photo_url', 'music_url'])) {
+                                                $fieldKey = 'wedding.' . $fieldKey;
+                                            } else {
+                                                $fieldKey = 'wedding.extra_data.' . $fieldKey;
+                                            }
+                                        }
                                         $inputName = $formatInputName($fieldKey);
                                         $oldKey = $formatOldKey($inputName);
                                         $fieldId = str_replace('.', '_', $fieldKey);
