@@ -17,6 +17,7 @@ class HomeController extends Controller
         $rawFeatured = Cache::remember('mayhen_home_featured_templates', 3600, function () {
             return InvitationTemplate::query()
                 ->where('is_active', true)
+                ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
                 ->orderByDesc('is_featured')
                 ->take(20)
                 ->get()

@@ -5,7 +5,7 @@
 
 {{-- QUY TẮC TOÀN CỤC: TỰ ĐỘNG MỞ SẴN NỘI DUNG THIỆP MỜI TRONG IFRAME (ZERO-FRICTION AUTO-OPENED PROTOCOL) --}}
 <style id="mayhen_global_auto_opened_styles">
-    /* 1. Mở khóa cuộn toàn trang khi nhúng trong iframe (Showcase trang chủ, Studio Editor, Preview) */
+    /* 1. Mở khóa cuộn toàn trang và ẨN HOÀN TOÀN thanh scrollbar thô kệch trong iframe */
     html.mayhen_embed_mode,
     body.mayhen_embed_mode,
     html.mayhen_template_auto_opened,
@@ -14,6 +14,17 @@
         overflow-x: hidden !important;
         height: auto !important;
         position: static !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    html.mayhen_embed_mode::-webkit-scrollbar,
+    body.mayhen_embed_mode::-webkit-scrollbar,
+    html.mayhen_template_auto_opened::-webkit-scrollbar,
+    body.mayhen_template_auto_opened::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
     }
 
     /* 2. Cưỡng chế ẩn triệt để 100% tất cả các màn che, cánh cửa 3D, phong bì, con dấu sáp mở đầu của MỌI template */
@@ -394,7 +405,56 @@
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
+
+        // 6. Tự động cuộn mượt mà khi hover vào Showcase Card trên trang chủ
+        if (data.type === 'MAYHEN_AUTOSCROLL_START') {
+            startSmoothScroll();
+        } else if (data.type === 'MAYHEN_AUTOSCROLL_STOP') {
+            stopSmoothScroll();
+        }
     });
+
+    // Hàm hỗ trợ tự cuộn chậm rãi mượt mà bên trong iframe
+    var autoScrollRaf = null;
+    var isScrolling = false;
+
+    function startSmoothScroll() {
+        if (isScrolling) return;
+        isScrolling = true;
+        cancelAnimationFrame(autoScrollRaf);
+
+        var speed = 1.35; // Tốc độ trôi êm ái (~80px/s chuẩn mắt nhìn Quiet Luxury)
+        function step() {
+            if (!isScrolling) return;
+            var maxScroll = Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight
+            ) - window.innerHeight;
+
+            if (window.scrollY >= maxScroll - 4) {
+                isScrolling = false;
+                return;
+            }
+
+            window.scrollBy(0, speed);
+            autoScrollRaf = requestAnimationFrame(step);
+        }
+        autoScrollRaf = requestAnimationFrame(step);
+    }
+
+    function stopSmoothScroll() {
+        isScrolling = false;
+        cancelAnimationFrame(autoScrollRaf);
+        try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (e) {
+            window.scrollTo(0, 0);
+        }
+    }
+
+    // Đưa ra window để trang cha có thể gọi trực tiếp
+    window.__mayhenStartSmoothScroll = startSmoothScroll;
+    window.__mayhenStopSmoothScroll = stopSmoothScroll;
 
     // Bắt tay 2 chiều: Thông báo cho Studio Editor biết Iframe đã nạp xong và sẵn sàng nhận dữ liệu
     var notifyParentReady = function() {

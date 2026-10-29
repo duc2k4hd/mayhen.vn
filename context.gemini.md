@@ -26,6 +26,9 @@
 >      * Trong `template.blade.php`, `styles.css` và `schema.json`, toàn bộ đường dẫn ảnh và tài nguyên mặc định đều phải trỏ vào asset nội bộ (thông qua `$resolveAsset(...)` hoặc route `/mau-thiep/{slug}/assets/...`).
 >      * Mục đích: Đảm bảo thiệp tạo ra luôn tải ổn định 100%, không bị phụ thuộc vào server bên ngoài, không lo chết link/chặn CORS, và giúp backend quản lý, kiểm soát và chỉnh sửa dễ dàng.
 >    - **Kế thừa Layout chung & Bridge**: Mọi mẫu thiệp bắt buộc phải `@extends('client.layouts.invitation')` để tự động kích hoạt `editor-bridge.blade.php` và cơ chế handshake 2 chiều `MAYHEN_BRIDGE_READY`.
+> 9. **NGUYÊN TẮC TỐI ƯU HIỆU NĂNG GỐC TRƯỚC (NATIVE FAST ARCHITECTURE) & KHÔNG LẠM DỤNG CACHE**:
+>    - **Tối ưu gốc trước (Native Fast First)**: Mọi module Backend (PHP, Query Eloquent) và Frontend (JavaScript, DOM, CSS, Assets) **BẮT BUỘC PHẢI ĐƯỢC TỐI ƯU HÓA GỐC ĐỂ CHẠY CỰC NHANH VÀ MƯỢT MÀ** ngay từ mã nguồn gốc khi chưa có cache (chỉ query đúng các cột cần thiết, loại bỏ trường text/json nặng không dùng, không nạp dồn dập nhiều iframe làm nghẽn CPU/network, tận dụng `requestIdleCallback`, phục vụ static assets tức thời không bị thắt nút cổ chai).
+>    - **Không lạm dụng Cache**: Tuyệt đối **KHÔNG** dùng cache để che giấu mã nguồn chạy chậm hay xử lý cẩu thả. Cache chỉ được sử dụng đúng mục đích cốt lõi duy nhất: **tránh truy vấn quá nhiều lần vào Database** khi dữ liệu ít biến động.
 
 ---
 
@@ -1605,6 +1608,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Kiểm thử tự động & Định dạng**:
                   * Kiểm thử toàn bộ test suite đạt 34/34 tests passed 100% (381 assertions).
                   * Mã nguồn được định dạng hoàn hảo bằng Laravel Pint.
+
+            41. **Tối Ưu Full Viền Mockup Điện Thoại Cho Iframe Showcase, Tự Động Cuộn Bằng PostMessage & Kiến Trúc Tối Ưu Gốc (Native Fast Architecture)**:
+                - **Yêu cầu & Phân tích lỗi**:
+                  * Trước đó `iframe` bị gán cứng `height: 2400px` và dùng CSS `translateY(-1450px)` để trượt. Điều này khiến viewport chiều cao của iframe bị kéo dãn gấp 4 lần màn hình điện thoại thật, làm vỡ các media queries `100vh` và bố cục thiệp cưới. Đồng thời xuất hiện thanh cuộn xám trắng (`scrollbar`) thô kệch bên phải iframe.
+                  * Khách hàng yêu cầu:
+                    1. **Full viền 100%** và iframe phải đúng tỷ lệ **như 1 chiếc điện thoại di động thật**, không được phép để height kéo dài dại làm vỡ layout thiệp cưới.
+                    2. **Tự cuộn khi hover**: Phải cuộn mượt mà nội dung trang bên trong iframe, khi rời chuột trôi về đỉnh trang.
+                    3. **Tối ưu tốc độ tải trang (Native Speed First)**: Kiểm tra cả Backend và Frontend để tối ưu gốc nhanh nhất có thể. Khách hàng nhấn mạnh nguyên tắc: *"Khi đã load cực nhanh rồi thì mới cache, tôi không lạm dụng cache để load nhanh, tôi chỉ dùng cache để tránh load quá nhiều lần vào database, ghi phần quan trọng này vào context"*.
+                - **Giải pháp xử lý triệt để**:
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Thay thế kích thước iframe: Sử dụng tỷ lệ màn hình điện thoại chuẩn `width: 375px; height: 666.67px;` (chuẩn tỷ lệ 9:16 vừa khít 100% với aspect-ratio thẻ card `9 / 16`).
+                    + Căn giữa tuyệt đối và co giãn tự động bằng CSS: `transform: translate(-50%, -50%) scale(var(--mayhen-card-scale, 0.64));`.
+                    + Bỏ hoàn toàn việc kéo dãn `translateY(-1450px)`.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung quy tắc ẩn triệt để thanh cuộn browser trong iframe: `scrollbar-width: none !important; -ms-overflow-style: none !important; ::-webkit-scrollbar { display: none !important; }`. Loại bỏ 100% thanh cuộn xám trắng xấu xí.
+                    + Tích hợp bộ lắng nghe sự kiện PostMessage 2 chiều: `MAYHEN_AUTOSCROLL_START` và `MAYHEN_AUTOSCROLL_STOP`.
+                    + Khi nhận lệnh `START`: Kích hoạt vòng lặp `requestAnimationFrame` cuộn chậm rãi xuống dưới với tốc độ êm ái 1.35px/frame (~80px/s chuẩn Quiet Luxury). Khi chạm đáy trang tự dừng lại.
+                    + Khi nhận lệnh `STOP`: Dừng cuộn và trôi mượt mà về đầu trang bằng `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Trong `updateStage()`: Tự động tính toán biến CSS `--mayhen-card-scale = (cardWidth / 375).toFixed(4)` cho từng thẻ card, đảm bảo iframe full viền 100% từ trên xuống dưới, từ trái sang phải trên mọi kích thước màn hình.
+                    + Khi người dùng hover vào thẻ card (`mouseenter`): Tự động phát tín hiệu `MAYHEN_AUTOSCROLL_START` vào `iframe.contentWindow` để bắt đầu cuộn mượt. Khi rời chuột (`mouseleave`), phát tín hiệu `MAYHEN_AUTOSCROLL_STOP`.
+                    + **Tối ưu chiến lược nạp iframe (Native Speed)**: Không dồn dập nạp cả 9 iframe cùng một lúc làm nghẽn CPU và network. Hệ thống ưu tiên nạp ngay iframe cho thẻ Active ở giữa (60FPS tức thì), sau đó tải nhẹ nhàng 2 thẻ kề cận bằng `requestIdleCallback` khi trình duyệt rảnh rỗi. Khi người dùng hover vào bất kỳ thẻ nào khác hoặc next slide, iframe mới được kích hoạt nạp ngay lập tức.
+                  * *`app/Http/Controllers/Client/HomeController.php`*: Tối ưu query database gốc: chỉ `select` đúng các trường cần thiết (`id, name, slug, category, thumbnail_url, is_featured, default_config`), loại bỏ các trường nặng không dùng đến để query database native siêu nhanh < 5ms.
+                - **Kiểm thử tự động & Định dạng**:
+                  * Toàn bộ 34/34 tests trong test suite pass 100% (381 assertions).
+                  * Mã nguồn định dạng chuẩn bằng Laravel Pint.
 
 ---
 

@@ -194,6 +194,10 @@ function initShowcaseCoverflow() {
             card.style.opacity = opacity;
             card.style.zIndex = zIndex;
             card.style.pointerEvents = (opacity > 0) ? 'auto' : 'none';
+
+            // Tự động căn chỉnh tỷ lệ iframe khít 100% full viền card điện thoại
+            const cardWidth = card.clientWidth || 240;
+            card.style.setProperty('--mayhen-card-scale', (cardWidth / 375).toFixed(4));
         });
 
         // Update pagination dots
@@ -548,8 +552,8 @@ function initShowcaseCoverflow() {
 
 /**
  * Lazy load Iframe Showcase thông minh 300px trước khi cuộn tới
- * Nạp iframe cho TẤT CẢ các thẻ thiệp đang hiển thị và sắp hiển thị trên track
- * Tối ưu tuyệt đối SEO (ảnh poster + thẻ alt) và Trải nghiệm người dùng (live iframe 60FPS)
+ * Nạp iframe theo ưu tiên tối thượng cho thẻ Active và nạp thông minh khi hover
+ * Tự động kích hoạt tính năng cuộn mượt mà nội dung bên trong iframe điện thoại
  */
 function initShowcaseLazyIframe() {
     const stage = document.querySelector('.mayhen_home_showcase_stage');
@@ -557,7 +561,6 @@ function initShowcaseLazyIframe() {
 
     const cards = Array.from(stage.querySelectorAll('.mayhen_home_showcase_card'));
     let isNearShowcase = false;
-    let allLoaded = false;
 
     function loadCardIframe(card) {
         if (!card) return;
@@ -568,35 +571,64 @@ function initShowcaseLazyIframe() {
         if (dataSrc && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href)) {
             iframe.onload = () => {
                 card.classList.add('is-iframe-loaded');
+                // Nếu người dùng đang hover sẵn trên thẻ khi iframe vừa nạp xong, bắt đầu cuộn ngay
+                if (card.matches && card.matches(':hover')) {
+                    triggerAutoScrollStart(card);
+                }
             };
             iframe.src = dataSrc;
+        } else if (card.classList.contains('is-iframe-loaded') && card.matches && card.matches(':hover')) {
+            triggerAutoScrollStart(card);
         }
     }
 
-    function loadAllTrackIframes() {
-        if (!isNearShowcase || allLoaded) return;
-        allLoaded = true;
+    function triggerAutoScrollStart(card) {
+        if (!card) return;
+        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
+        if (!iframe || !iframe.contentWindow) return;
+        try {
+            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_START' }, '*');
+            if (typeof iframe.contentWindow.__mayhenStartSmoothScroll === 'function') {
+                iframe.contentWindow.__mayhenStartSmoothScroll();
+            }
+        } catch (e) {}
+    }
 
+    function triggerAutoScrollStop(card) {
+        if (!card) return;
+        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
+        if (!iframe || !iframe.contentWindow) return;
+        try {
+            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
+            if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
+                iframe.contentWindow.__mayhenStopSmoothScroll();
+            }
+        } catch (e) {}
+    }
+
+    function loadActiveCardIframe() {
+        if (!isNearShowcase) return;
         const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
-        const activeIndex = cards.indexOf(activeCard);
-
-        // 1. Nạp ngay thẻ active và 2 thẻ 2 bên ngay lập tức để trải nghiệm mượt mà không delay
-        if (activeCard) loadCardIframe(activeCard);
-
-        if (activeIndex !== -1) {
-            const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
-            const nextCard = cards[(activeIndex + 1) % cards.length];
-            if (prevCard) loadCardIframe(prevCard);
-            if (nextCard) loadCardIframe(nextCard);
+        if (activeCard) {
+            loadCardIframe(activeCard);
         }
 
-        // 2. Nạp tuần tự tất cả các thẻ còn lại trên track (stagger 150ms) để không nghẽn băng thông
-        cards.forEach((card, idx) => {
-            if (card === activeCard) return;
-            setTimeout(() => {
-                loadCardIframe(card);
-            }, 200 + idx * 150);
-        });
+        // Tải trước nhẹ nhàng 2 thẻ lân cận khi browser rảnh rỗi (idle) để không nghẽn băng thông
+        const scheduleNeighborLoad = () => {
+            const activeIndex = cards.indexOf(activeCard);
+            if (activeIndex !== -1) {
+                const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
+                const nextCard = cards[(activeIndex + 1) % cards.length];
+                if (prevCard) loadCardIframe(prevCard);
+                if (nextCard) loadCardIframe(nextCard);
+            }
+        };
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(scheduleNeighborLoad, { timeout: 1500 });
+        } else {
+            setTimeout(scheduleNeighborLoad, 600);
+        }
     }
 
     // IntersectionObserver: Kích hoạt khi cuộn cách Showcase 300px
@@ -605,7 +637,7 @@ function initShowcaseLazyIframe() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     isNearShowcase = true;
-                    loadAllTrackIframes();
+                    loadActiveCardIframe();
                 }
             });
         }, {
@@ -615,21 +647,22 @@ function initShowcaseLazyIframe() {
 
         observer.observe(stage);
     } else {
-        // Fallback cho trình duyệt cũ
         isNearShowcase = true;
-        loadAllTrackIframes();
+        loadActiveCardIframe();
     }
 
-    // Đăng ký toàn cục để updateStage() gọi khi chuyển slide
-    window.__mayhenLoadShowcaseIframe = () => {
-        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active');
-        if (activeCard) loadCardIframe(activeCard);
-    };
+    // Đăng ký toàn cục để updateStage() gọi ngay khi chuyển slide
+    window.__mayhenLoadShowcaseIframe = loadActiveCardIframe;
 
-    // Hover bất kỳ thẻ nào: Tự động nạp iframe ngay nếu chưa nạp
+    // Gắn sự kiện Hover: Nạp iframe tức thì và tự động cuộn mượt mà nội dung bên trong
     cards.forEach(card => {
         card.addEventListener('mouseenter', () => {
             loadCardIframe(card);
+            triggerAutoScrollStart(card);
+        }, { passive: true });
+
+        card.addEventListener('mouseleave', () => {
+            triggerAutoScrollStop(card);
         }, { passive: true });
     });
 }
