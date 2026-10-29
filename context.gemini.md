@@ -1584,6 +1584,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Khi hover vào thẻ active: iframe tự động cuộn chậm rãi xuống dưới (`translateY(-1450px)`) trong 14 giây êm ái (`linear`), khách hàng ngắm trọn vẹn từng phần thiệp cưới lộng lẫy. Khi rời chuột (`mouseleave`), iframe trôi ngược về đầu trang trong 1.2 giây.
                 - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
 
+            40. **Chuẩn Hóa Cơ Chế Tự Động Mở Sẵn Thiệp Mời Toàn Cục (Zero-Friction Auto-Opened Protocol) & Tự Động Chuyển Mẫu 5s Trên Showcase**:
+                - **Yêu cầu & Thực trạng**:
+                  * Nhiều mẫu thiệp cưới có phần mở đầu (2 cánh cửa 3D hoàng gia, phong bì gấp nếp, con dấu sáp, màn intro bấm nút *"Mở thiệp"*...). Khi nhúng iframe trên Showcase trang chủ hoặc Studio Editor, nếu chưa bấm mở mà cho tự động cuộn (autoscroll) thì iframe cuộn mỗi cái bìa đóng kín, nhìn rất vô lý và làm xấu trải nghiệm người dùng.
+                  * Khách hàng yêu cầu tạo một **class hoặc cơ chế dùng chung tiện lợi và có thể tích hợp và dùng được về sau**, đảm bảo khi load iframe thì sẽ hiển thị thiệp mời trực tiếp không cần người dùng phải bấm mở.
+                  * Đồng thời yêu cầu nạp iframe cho **tất cả các mẫu đang hiển thị và sắp hiển thị** trên track trang chủ (thay vì chỉ nạp 1 mẫu ở giữa) khi cuộn tới gần 300px, và thiết lập thời gian tự động next slide đều đặn mỗi **5 giây**.
+                - **Giải pháp xử lý toàn cục & bền vững**:
+                  * *`resources/views/client/layouts/invitation.blade.php`*:
+                    + Chuẩn hóa biến nhúng: `$isEmbed = ($isEmbed ?? false) || request()->boolean('embed') || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);`.
+                    + Khi `$isEmbed === true`, tự động gắn bộ class toàn cục `mayhen_embed_mode mayhen_template_auto_opened` lên cả thẻ `<html>` và `<body>`, đồng thời truyền cờ `window.__MAYHEN_IS_EMBED = true;` cho JavaScript.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Nhúng khối CSS toàn cục `#mayhen_global_auto_opened_styles`: Mở khóa cuộn body (`overflow-y: auto !important; height: auto !important;`), cưỡng chế ẩn triệt để 100% tất cả các màn che, cánh cửa 3D (`[id*="door-stage"]`, `[class*="door_stage"]`, `[id*="door-center"]`, `[class*="door_center"]`), phong bì (`[class*="envelope_wrap"]`, `[id*="opening"]`, `[class*="opening_overlay"]`), con dấu sáp (`[id*="wax-seal"]`, `[class*="wax_seal_wrap"]`), và cưỡng chế hiển thị nội dung thiệp mời chính cùng các hiệu ứng animation khởi đầu ngay lập tức.
+                    + Bổ sung logic JavaScript tự nhận diện môi trường nhúng (`window.self !== window.top` hoặc `embed=1` hoặc `mode=...`), tự động xóa class khóa cuộn, gắn trạng thái `.opened .mayhen_door_hidden` và kích hoạt toàn bộ hàm mở thiệp của từng template (`openWeddingCeremony()`, `openWeddingDoors()`, `openInvitation()`, `openIntro()`). Vì đặt ở Layout & Bridge dùng chung nên **áp dụng tự động 100% cho toàn bộ 9 mẫu thiệp hiện tại và bất kỳ mẫu thiệp mới nào được tạo về sau**.
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Mở rộng quy tắc ẩn ảnh poster `.mayhen_home_showcase_card.is-iframe-loaded .mayhen_home_showcase_card_img` cho tất cả các card trên track khi iframe tải xong, giúp toàn bộ các slide hiển thị thiệp mời thực tế trực quan.
+                    + Hỗ trợ hiệu ứng tự động cuộn chậm rãi (`translateY(-1450px)` trong 14s) cho bất kỳ thẻ thiệp nào trên track khi người dùng rê chuột vào (`:hover`).
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Cập nhật chu kỳ chuyển slide tự động `startAutoplay()` từ 2s sang chuẩn xác **5 giây** (`5000ms`), tạm dừng khi người dùng đang rê chuột trên card và tự động tiếp tục khi rời chuột.
+                    + Nâng cấp hàm lazy load `initShowcaseLazyIframe()`: Khi người dùng cuộn cách Showcase 300px, hệ thống nạp ngay iframe cho thẻ active và 2 thẻ lân cận, đồng thời kích hoạt nạp tuần tự (stagger 150ms) cho **toàn bộ các mẫu thiệp còn lại trên track**, sẵn sàng cho người dùng lướt xem không độ trễ.
+                - **Kiểm thử tự động & Định dạng**:
+                  * Kiểm thử toàn bộ test suite đạt 34/34 tests passed 100% (381 assertions).
+                  * Mã nguồn được định dạng hoàn hảo bằng Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

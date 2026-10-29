@@ -2044,7 +2044,7 @@
     will-change: opacity;
 }
 
-.mayhen_home_showcase_card.is-active.is-iframe-loaded .mayhen_home_showcase_card_img,
+.mayhen_home_showcase_card.is-iframe-loaded .mayhen_home_showcase_card_img,
 .mayhen_home_showcase_card:hover .mayhen_home_showcase_card_img,
 .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_img {
     opacity: 0;
@@ -2079,9 +2079,9 @@
     will-change: transform;
 }
 
-/* Khi hover vào thẻ active: Tự động cuộn chậm rãi mẫu thiệp từ đầu đến cuối */
-.mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
-.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+/* Khi hover vào bất kỳ thẻ nào trên track: Tự động cuộn chậm rãi mẫu thiệp từ đầu đến cuối */
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_iframe,
+.mayhen_home_showcase_card .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
     transform: scale(0.64) translateY(-1450px);
     transition: transform 14s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -2090,8 +2090,8 @@
     .mayhen_home_showcase_card_iframe {
         transform: scale(0.52) translateY(0);
     }
-    .mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
-    .mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+    .mayhen_home_showcase_card:hover .mayhen_home_showcase_card_iframe,
+    .mayhen_home_showcase_card .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
         transform: scale(0.52) translateY(-1450px);
     }
 }
@@ -2100,8 +2100,8 @@
     .mayhen_home_showcase_card_iframe {
         transform: scale(0.46) translateY(0);
     }
-    .mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
-    .mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+    .mayhen_home_showcase_card:hover .mayhen_home_showcase_card_iframe,
+    .mayhen_home_showcase_card .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
         transform: scale(0.46) translateY(-1450px);
     }
 }

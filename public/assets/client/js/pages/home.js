@@ -478,7 +478,7 @@ function initShowcaseCoverflow() {
         }
     }
 
-    // Autoplay Engine: Tự động chuyển mẫu sau mỗi 2s, CHỈ DỪNG khi rê chuột vào thẻ
+    // Autoplay Engine: Tự động chuyển mẫu sau mỗi 5s, CHỈ DỪNG khi rê chuột vào thẻ
     function startAutoplay() {
         stopAutoplay();
         autoplayTimer = setInterval(() => {
@@ -486,7 +486,7 @@ function initShowcaseCoverflow() {
                 return;
             }
             goNext();
-        }, 2000);
+        }, 5000);
     }
 
     function stopAutoplay() {
@@ -548,6 +548,7 @@ function initShowcaseCoverflow() {
 
 /**
  * Lazy load Iframe Showcase thông minh 300px trước khi cuộn tới
+ * Nạp iframe cho TẤT CẢ các thẻ thiệp đang hiển thị và sắp hiển thị trên track
  * Tối ưu tuyệt đối SEO (ảnh poster + thẻ alt) và Trải nghiệm người dùng (live iframe 60FPS)
  */
 function initShowcaseLazyIframe() {
@@ -556,6 +557,7 @@ function initShowcaseLazyIframe() {
 
     const cards = Array.from(stage.querySelectorAll('.mayhen_home_showcase_card'));
     let isNearShowcase = false;
+    let allLoaded = false;
 
     function loadCardIframe(card) {
         if (!card) return;
@@ -571,23 +573,30 @@ function initShowcaseLazyIframe() {
         }
     }
 
-    function loadActiveCardIframe() {
-        if (!isNearShowcase) return;
-        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active');
-        if (activeCard) {
-            loadCardIframe(activeCard);
+    function loadAllTrackIframes() {
+        if (!isNearShowcase || allLoaded) return;
+        allLoaded = true;
 
-            // Nạp trước nhẹ nhàng 2 thẻ kế cận sau 1.2s để khi chuyển slide không bị giật
-            setTimeout(() => {
-                const activeIndex = cards.indexOf(activeCard);
-                if (activeIndex !== -1) {
-                    const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
-                    const nextCard = cards[(activeIndex + 1) % cards.length];
-                    if (prevCard) loadCardIframe(prevCard);
-                    if (nextCard) loadCardIframe(nextCard);
-                }
-            }, 1200);
+        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
+        const activeIndex = cards.indexOf(activeCard);
+
+        // 1. Nạp ngay thẻ active và 2 thẻ 2 bên ngay lập tức để trải nghiệm mượt mà không delay
+        if (activeCard) loadCardIframe(activeCard);
+
+        if (activeIndex !== -1) {
+            const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
+            const nextCard = cards[(activeIndex + 1) % cards.length];
+            if (prevCard) loadCardIframe(prevCard);
+            if (nextCard) loadCardIframe(nextCard);
         }
+
+        // 2. Nạp tuần tự tất cả các thẻ còn lại trên track (stagger 150ms) để không nghẽn băng thông
+        cards.forEach((card, idx) => {
+            if (card === activeCard) return;
+            setTimeout(() => {
+                loadCardIframe(card);
+            }, 200 + idx * 150);
+        });
     }
 
     // IntersectionObserver: Kích hoạt khi cuộn cách Showcase 300px
@@ -596,7 +605,7 @@ function initShowcaseLazyIframe() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     isNearShowcase = true;
-                    loadActiveCardIframe();
+                    loadAllTrackIframes();
                 }
             });
         }, {
@@ -608,11 +617,14 @@ function initShowcaseLazyIframe() {
     } else {
         // Fallback cho trình duyệt cũ
         isNearShowcase = true;
-        loadActiveCardIframe();
+        loadAllTrackIframes();
     }
 
     // Đăng ký toàn cục để updateStage() gọi khi chuyển slide
-    window.__mayhenLoadShowcaseIframe = loadActiveCardIframe;
+    window.__mayhenLoadShowcaseIframe = () => {
+        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active');
+        if (activeCard) loadCardIframe(activeCard);
+    };
 
     // Hover bất kỳ thẻ nào: Tự động nạp iframe ngay nếu chưa nạp
     cards.forEach(card => {

@@ -1,5 +1,10 @@
+@php
+    $isEmbed = ($isEmbed ?? false) 
+        || request()->boolean('embed') 
+        || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+@endphp
 <!DOCTYPE html>
-<html lang="vi" class="@yield('html_class')">
+<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -29,7 +34,7 @@
     {{-- Extra Styles / Code nhúng trong thẻ head --}}
     @yield('head_extra')
 </head>
-<body class="@yield('body_class')" @yield('body_attributes')>
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" @yield('body_attributes')>
     {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}
     @yield('content')
 
@@ -46,6 +51,7 @@
 
     {{-- Cấu hình JavaScript toàn cục chuẩn hóa --}}
     <script>
+        window.__MAYHEN_IS_EMBED = {{ ($isEmbed ?? false) ? 'true' : 'false' }};
         window.__MAYHEN_IS_PREVIEW = {{ ($isPreview ?? false) ? 'true' : 'false' }};
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>

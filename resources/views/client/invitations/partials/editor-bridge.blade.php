@@ -3,9 +3,146 @@
     Bộ kết nối chuẩn hóa 2 chiều giữa Studio Editor V2 và tất cả các Template thiệp cưới (Native Vanilla JS).
 --}}
 
+{{-- QUY TẮC TOÀN CỤC: TỰ ĐỘNG MỞ SẴN NỘI DUNG THIỆP MỜI TRONG IFRAME (ZERO-FRICTION AUTO-OPENED PROTOCOL) --}}
+<style id="mayhen_global_auto_opened_styles">
+    /* 1. Mở khóa cuộn toàn trang khi nhúng trong iframe (Showcase trang chủ, Studio Editor, Preview) */
+    html.mayhen_embed_mode,
+    body.mayhen_embed_mode,
+    html.mayhen_template_auto_opened,
+    body.mayhen_template_auto_opened {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        height: auto !important;
+        position: static !important;
+    }
+
+    /* 2. Cưỡng chế ẩn triệt để 100% tất cả các màn che, cánh cửa 3D, phong bì, con dấu sáp mở đầu của MỌI template */
+    .mayhen_embed_mode [id*="door-stage"],
+    .mayhen_embed_mode [class*="door_stage"],
+    .mayhen_embed_mode [id*="door-center"],
+    .mayhen_embed_mode [class*="door_center"],
+    .mayhen_embed_mode [class*="door_left"],
+    .mayhen_embed_mode [class*="door_right"],
+    .mayhen_embed_mode [id*="wax-seal"],
+    .mayhen_embed_mode [class*="wax_seal_wrap"],
+    .mayhen_embed_mode [class*="wax_seal"],
+    .mayhen_embed_mode [class*="_cover"],
+    .mayhen_embed_mode [class*="intro_cover"],
+    .mayhen_embed_mode [class*="cover_overlay"],
+    .mayhen_embed_mode [class*="_envelope_stage"],
+    .mayhen_embed_mode [class*="envelope_wrap"],
+    .mayhen_embed_mode [class*="envelope_wrapper"],
+    .mayhen_embed_mode [class*="_opening_sides"],
+    .mayhen_embed_mode [class*="opening_overlay"],
+    .mayhen_embed_mode [class*="_intro_wrapper"],
+    .mayhen_embed_mode [class*="_modal_intro"],
+    .mayhen_embed_mode [id*="opening_sides"],
+    .mayhen_embed_mode [id*="opening"],
+    .mayhen_embed_mode [id*="intro_cover"],
+    .mayhen_embed_mode [id*="mayhen_envelope"],
+    .mayhen_embed_mode [class*="open_hint"],
+    .mayhen_embed_mode [id*="open-hint"],
+    .mayhen_embed_mode [class*="door_particles"],
+    .mayhen_embed_mode [class*="modal-backdrop"],
+    .mayhen_embed_mode [class*="section_popup"] {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* 3. Cưỡng chế hiển thị nội dung chính của thiệp cưới và bỏ bóng đổ thừa */
+    .mayhen_embed_mode .mayhen_invitation_wrapper,
+    .mayhen_embed_mode [class*="_shell"],
+    .mayhen_embed_mode [class*="_stage"],
+    .mayhen_embed_mode [class*="_stage-spacer"],
+    .mayhen_embed_mode [class*="_ladi-wraper"],
+    .mayhen_embed_mode [class*="_card-wrapper"],
+    .mayhen_embed_mode #mayhen_invitation_main_content,
+    .mayhen_embed_mode [id*="stage"] {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Cưỡng chế các animation khởi đầu hiển thị ngay lập tức để không bị mảng trắng khi iframe nạp */
+    .mayhen_embed_mode [class*="ladi-animation-hidden"],
+    .mayhen_embed_mode [class*="_rv"],
+    .mayhen_embed_mode [class*="ladi-animation"] {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+    }
+</style>
+
 <script>
 (function() {
     'use strict';
+
+    // Nhận diện trạng thái nhúng (Showcase, Editor, Preview iframe)
+    var inIframe = false;
+    try {
+        inIframe = window.self !== window.top;
+    } catch (e) {
+        inIframe = true;
+    }
+
+    var isEmbed = Boolean(
+        window.__MAYHEN_IS_EMBED || 
+        inIframe || 
+        new URLSearchParams(window.location.search).get('embed') === '1' ||
+        ['editor', 'showcase', 'home', 'preview_card', 'iframe'].indexOf(new URLSearchParams(window.location.search).get('mode')) !== -1
+    );
+
+    if (isEmbed) {
+        window.__MAYHEN_IS_EMBED = true;
+        document.documentElement.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
+        if (document.body) {
+            document.body.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
+            document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+            document.body.style.overflow = 'auto';
+        }
+
+        var autoOpenInvitation = function() {
+            if (document.body) {
+                document.body.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
+                document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Đánh dấu đã mở lên các container mở đầu
+            var doorStages = document.querySelectorAll('[id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], [id*="opening_sides"]');
+            doorStages.forEach(function(el) {
+                el.classList.add('opened', 'mayhen_door_hidden');
+                el.style.display = 'none';
+            });
+
+            // Gọi các hàm mở thiệp của từng template nếu có
+            if (typeof window.openWeddingCeremony === 'function') {
+                try { window.openWeddingCeremony(); } catch(e) {}
+            }
+            if (typeof window.openWeddingDoors === 'function') {
+                try { window.openWeddingDoors(); } catch(e) {}
+            }
+            if (typeof window.openInvitation === 'function') {
+                try { window.openInvitation(); } catch(e) {}
+            }
+            if (typeof window.openIntro === 'function') {
+                try { window.openIntro(); } catch(e) {}
+            }
+            if (typeof window.triggerInitialAnimations === 'function') {
+                try { window.triggerInitialAnimations(); } catch(e) {}
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', autoOpenInvitation);
+        } else {
+            autoOpenInvitation();
+        }
+        window.addEventListener('load', autoOpenInvitation);
+    }
 
     window.__MAYHEN_LOCAL_STATE = window.__MAYHEN_LOCAL_STATE || {
         groom_name: "{{ addslashes($groomName ?? '') }}",
