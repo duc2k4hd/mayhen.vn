@@ -378,8 +378,8 @@
         if (target) target.textContent = guest;
     }
     const cardNames = one("card_names");
-    if (cardNames && C.groom && C.bride) {
-        cardNames.innerHTML = `${C.groom} <span>&amp;</span> ${C.bride}`;
+    if (cardNames && C.groom && C.bride && !cardNames.querySelector('[data-sync-target="groom_name"]')) {
+        cardNames.innerHTML = `<span data-sync-target="groom_name">${C.groom}</span> <span>&amp;</span> <span data-sync-target="bride_name">${C.bride}</span>`;
     }
 
     const audio = C.music ? new Audio(C.music) : null;

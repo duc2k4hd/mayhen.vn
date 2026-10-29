@@ -1507,6 +1507,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *`styles.css` & `assets/styles.css`*: Bổ sung quy tắc phòng vệ cưỡng chế hiển thị `.stage-spacer { overflow: visible !important; min-height: 100vh !important; }` và `.ladi-animation-hidden { opacity: 1 !important; visibility: visible !important; }`. Đồng bộ hoàn toàn giữa hai tệp styles và scripts.
                 - **Kiểm thử**: Viết test kiểm tra `dau-ky-tram-nam` ở chế độ nhúng (`?embed=1&mode=editor`) tự động mở cửa và render toàn bộ nội dung, đạt 34/34 tests passed 100%.
 
+            35. **Khắc Phục Lỗi Dữ Liệu Không Đồng Bộ Thời Gian Thực (Live Sync) Cho Mẫu "Dấu Ký Trăm Năm"**:
+                - **Hiện trạng & Triệu chứng**: Khi tạo thiệp tại `/tao-thiep?template=dau-ky-tram-nam`, người dùng nhập tên Chú rể ("Nguyễn Minh Đức") và Cô dâu ("Nguyễn Minh Anh"), nhưng trên màn hình mockup điện thoại bên phải vẫn hiển thị cứng chữ "Thúy Ngân & Quốc Thái" và không thay đổi theo thời gian thực khi gõ phím. Đồng thời phụ mẫu Nhà gái và Nhà trai bị đảo ngược thông tin, địa chỉ tiệc cưới bị hardcode tĩnh.
+                - **Nguyên nhân gốc rễ**:
+                  * Trong `resources/views/client/invitations/dau-ky-tram-nam/template.blade.php`:
+                    + Dòng 1031 & 1040 (Section 26 - Khối thiệp chính hiển thị to đè màn hình): Hardcode chuỗi tĩnh `Thuý Ngân` và `Quốc Thái<br />` thay vì in biến Blade và thiếu thuộc tính `data-sync-target="bride_name"` / `data-sync-target="groom_name"`.
+                    + Dòng 944 & 968: Phần hiển thị phụ mẫu bị gán ngược hoàn toàn (Nhà gái lại gán `$groomFather`/`$groomMother`, Nhà trai lại gán `$brideFather`/`$brideMother`).
+                    + Dòng 1069-1070: Địa chỉ tiệc cưới bị hardcode tĩnh `Khóm An Tài - Phường An Bình...` không in biến `$eventAddress` và thiếu `data-sync-target="event_party_address"`.
+                    + Dòng 1093: Link Google Maps bị hardcode tĩnh thay vì biến `$mapUrl`.
+                    + Mảng `$groomBankInfo` và `$brideBankInfo`: Thiếu các alias key `holder`, `account` theo đúng kỳ vọng của script popup mừng cưới.
+                  * Trong `resources/views/client/invitations/dau-ky-tram-nam/assets/script.js`: Đoạn mã khởi tạo `cardNames.innerHTML = \`\${C.groom} <span>&amp;</span> \${C.bride}\`` ghi đè toàn bộ HTML, làm vô hiệu hóa thẻ `data-sync-target` đã khai báo ở Blade.
+                - **Giải pháp xử lý triệt để**:
+                  * *`template.blade.php`*:
+                    + Bọc tên Cô dâu và Chú rể trong `<span data-sync-target="bride_name">{{ $brideName }}</span>` và `<span data-sync-target="groom_name">{{ $groomName }}</span>`.
+                    + Đảo lại đúng chuẩn Nhà gái (Bố: `$brideFather`, Mẹ: `$brideMother` kèm target `bride_father`, `bride_mother`) và Nhà trai (Bố: `$groomFather`, Mẹ: `$groomMother` kèm target `groom_father`, `groom_mother`).
+                    + Thay địa chỉ thành `<span data-sync-target="event_party_address">{{ $eventAddress }}</span>` và link bản đồ thành `href="{{ $mapUrl }}" data-sync-target="event_party_map_url"`.
+                    + Bổ sung đầy đủ các key alias `holder`, `account`, `bank`, `name`, `number` cho mảng dữ liệu tài khoản ngân hàng.
+                  * *`script.js`*: Thêm điều kiện bảo vệ `!cardNames.querySelector('[data-sync-target="groom_name"]')` để không bao giờ ghi đè thẻ HTML hợp đồng Live Sync.
+                - **Kiểm thử tự động & Định dạng**:
+                  * Cập nhật test trong `tests/Feature/InvitationEditorDataSyncTest.php` kiểm tra toàn diện cả 8 target đồng bộ (`groom_name`, `bride_name`, `groom_father`, `groom_mother`, `bride_father`, `bride_mother`, `event_party_address`, `wedding_date`).
+                  * Bộ test suite 34/34 tests passed (381 assertions) 100%. Mã nguồn được định dạng chuẩn bằng Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

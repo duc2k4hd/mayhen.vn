@@ -81,13 +81,17 @@
 
     $groomBankInfo = [
         'bank' => $extraData['groom_bank_name'] ?? 'Vietcombank',
-        'name' => $extraData['groom_account_name'] ?? 'TRẦN QUỐC THÁI',
+        'name' => $extraData['groom_bank_name'] ?? 'Vietcombank',
+        'holder' => $extraData['groom_account_name'] ?? 'TRẦN QUỐC THÁI',
+        'account' => $extraData['groom_bank_account'] ?? '1012345678',
         'number' => $extraData['groom_bank_account'] ?? '1012345678',
         'qr' => $qrGroom,
     ];
     $brideBankInfo = [
         'bank' => $extraData['bride_bank_name'] ?? 'Techcombank',
-        'name' => $extraData['bride_account_name'] ?? 'LƯ THUÝ NGÂN',
+        'name' => $extraData['bride_bank_name'] ?? 'Techcombank',
+        'holder' => $extraData['bride_account_name'] ?? 'LƯ THUÝ NGÂN',
+        'account' => $extraData['bride_bank_account'] ?? '190398765432',
         'number' => $extraData['bride_bank_account'] ?? '190398765432',
         'qr' => $qrBride,
     ];
@@ -941,7 +945,7 @@
                         <div
                           class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                         >
-                          Ông: <span data-sync-target="groom_father">{{ $groomFather }}</span><br />Bà: <span data-sync-target="groom_mother">{{ $groomMother }}</span><br />
+                          Ông: <span data-sync-target="bride_father">{{ $brideFather }}</span><br />Bà: <span data-sync-target="bride_mother">{{ $brideMother }}</span><br />
                         </div>
                       </div>
                     </div>
@@ -965,7 +969,7 @@
                         <div
                           class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                         >
-                          Ông: <span data-sync-target="bride_father">{{ $brideFather }}</span><br />Bà: <span data-sync-target="bride_mother">{{ $brideMother }}</span><br />
+                          Ông: <span data-sync-target="groom_father">{{ $groomFather }}</span><br />Bà: <span data-sync-target="groom_mother">{{ $groomMother }}</span><br />
                         </div>
                       </div>
                     </div>
@@ -1028,7 +1032,7 @@
                 <h3
                   class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  Thuý Ngân
+                  <span data-sync-target="bride_name">{{ $brideName }}</span>
                 </h3>
               </div>
               <div
@@ -1037,7 +1041,7 @@
                 <h3
                   class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  Quốc Thái<br />
+                  <span data-sync-target="groom_name">{{ $groomName }}</span><br />
                 </h3>
               </div>
               <div
@@ -1065,9 +1069,7 @@
                 <div
                   class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  <span style="font-weight: 400"
-                    >Khóm An Tài - Phường An Bình<br /></span
-                  >Tỉnh Đồng Tháp<br />
+                  <span data-sync-target="event_party_address">{{ $eventAddress }}</span>
                 </div>
               </div>
               <div
@@ -1090,7 +1092,8 @@
               </div>
               <a
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_button23"
-                href="https://maps.app.goo.gl/y4s7zQVXaU4tMR6E6"
+                href="{{ $mapUrl }}"
+                data-sync-target="event_party_map_url"
                 role="button"
                 tabindex="0"
                 target="_blank"
