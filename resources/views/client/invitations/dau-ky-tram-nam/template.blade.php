@@ -1026,32 +1026,34 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline110"
-              >
-                <h3
-                  class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+              <div class="mayhen_invitation_jeowinids483fr_couple_names_wrapper">
+                <div
+                  class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline110"
                 >
-                  <span data-sync-target="bride_name">{{ $brideName }}</span>
-                </h3>
-              </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline111"
-              >
-                <h3
-                  class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+                  <h3
+                    class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+                  >
+                    <span data-sync-target="bride_name">{{ $brideName }}</span>
+                  </h3>
+                </div>
+                <div
+                  class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline112"
                 >
-                  <span data-sync-target="groom_name">{{ $groomName }}</span><br />
-                </h3>
-              </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline112"
-              >
-                <h3
-                  class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+                  <h3
+                    class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+                  >
+                    &amp;
+                  </h3>
+                </div>
+                <div
+                  class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline111"
                 >
-                  &amp;
-                </h3>
+                  <h3
+                    class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
+                  >
+                    <span data-sync-target="groom_name">{{ $groomName }}</span>
+                  </h3>
+                </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_paragraph66"

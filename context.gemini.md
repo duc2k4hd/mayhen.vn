@@ -1528,6 +1528,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Cập nhật test trong `tests/Feature/InvitationEditorDataSyncTest.php` kiểm tra toàn diện cả 8 target đồng bộ (`groom_name`, `bride_name`, `groom_father`, `groom_mother`, `bride_father`, `bride_mother`, `event_party_address`, `wedding_date`).
                   * Bộ test suite 34/34 tests passed (381 assertions) 100%. Mã nguồn được định dạng chuẩn bằng Laravel Pint.
 
+            36. **Tối Ưu Layout Khối Tên Đôi Uyên Ương & Auto-Fit Font Size Chống Đè Chữ (Mẫu "Dấu Ký Trăm Năm")**:
+                - **Vấn đề phát sinh**: Khi người dùng nhập tên cô dâu chú rể có 3 - 4 từ (như "Nguyễn Minh Đức", "Nguyễn Minh Anh"), font chữ nghệ thuật DFVN Boheme Floral cỡ `57px` cố định trong khung absolute hẹp (`302px`) khiến tên bị gãy rớt dòng cộc lốc (dòng 1: "Nguyễn Minh", dòng 2: "Anh"/"Đức"). Các dòng chữ rớt xuống đè trực tiếp lên dấu `&` và đè nát khối ngày giờ "VÀO LÚC 10 GIỜ 00" ở phía dưới.
+                - **Giải pháp xử lý triệt để**:
+                  * *`template.blade.php`*: Gom cụm `headline110` (Cô dâu), `headline112` (&) và `headline111` (Chú rể) vào container thống nhất `.mayhen_invitation_jeowinids483fr_couple_names_wrapper`.
+                  * *`styles.css` & `assets/styles.css`*:
+                    + Thiết lập layout Flexbox dọc (`display: flex; flex-direction: column; justify-content: center; align-items: center;`) với chiều cao `245px` tại `top: 380px` căn đều chính giữa khoảng trống thiệp.
+                    + Cưỡng chế `white-space: nowrap !important; word-break: keep-all !important;` để toàn bộ tên cô dâu chú rể luôn nằm trọn vẹn, kiêu sa trên 1 dòng duy nhất, không bao giờ bị cắt vụn bẻ đôi.
+                    + Tinh chỉnh font chữ bằng `clamp(24px, 6vw, 38px)` kèm `line-height: 1.25` thanh lịch.
+                  * *`script.js` & `assets/script.js`*: Tích hợp logic Auto-fit Font Size thông minh (`fitCoupleNames`). Khi tên dài (> 13 hoặc > 18 ký tự), tự động hạ font-size xuống `30px` hoặc `25px`, kích hoạt tức thì khi load trang hoặc khi nhận tin nhắn Live Sync `MAYHEN_SYNC_INPUT`.
+                - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

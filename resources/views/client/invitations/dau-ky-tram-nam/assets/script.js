@@ -382,6 +382,30 @@
         cardNames.innerHTML = `<span data-sync-target="groom_name">${C.groom}</span> <span>&amp;</span> <span data-sync-target="bride_name">${C.bride}</span>`;
     }
 
+    const fitCoupleNames = () => {
+        const brideEl = document.querySelector('.mayhen_invitation_jeowinids483fr_headline110 .mayhen_invitation_jeowinids483fr_ladi-headline');
+        const groomEl = document.querySelector('.mayhen_invitation_jeowinids483fr_headline111 .mayhen_invitation_jeowinids483fr_ladi-headline');
+        [brideEl, groomEl].forEach(el => {
+            if (!el) return;
+            const text = (el.textContent || '').trim();
+            if (text.length > 18) {
+                el.style.setProperty('font-size', '25px', 'important');
+            } else if (text.length > 13) {
+                el.style.setProperty('font-size', '30px', 'important');
+            } else if (text.length > 9) {
+                el.style.setProperty('font-size', '34px', 'important');
+            } else {
+                el.style.removeProperty('font-size');
+            }
+        });
+    };
+    fitCoupleNames();
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'MAYHEN_SYNC_INPUT') {
+            setTimeout(fitCoupleNames, 30);
+        }
+    });
+
     const audio = C.music ? new Audio(C.music) : null;
     if (audio) {
         audio.loop = true;
