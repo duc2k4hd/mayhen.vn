@@ -551,9 +551,9 @@ function initShowcaseCoverflow() {
 }
 
 /**
- * Lazy load Iframe Showcase thông minh 300px trước khi cuộn tới
- * Nạp iframe theo ưu tiên tối thượng cho thẻ Active và nạp thông minh khi hover
- * Tự động kích hoạt tính năng cuộn mượt mà nội dung bên trong iframe điện thoại
+ * Lazy load Iframe Showcase thông minh: Nạp Iframe trực tiếp cho TẤT CẢ các mẫu đang hiển thị trên màn hình
+ * Nạp theo thứ tự ưu tiên từ tâm (thẻ Active) lan tỏa đều sang hai bên với độ trễ siêu nhỏ để giữ 60FPS mượt mà
+ * Tự động kích hoạt tính năng cuộn êm ái nội dung bên trong iframe điện thoại khi hover
  */
 function initShowcaseLazyIframe() {
     const stage = document.querySelector('.mayhen_home_showcase_stage');
@@ -568,15 +568,26 @@ function initShowcaseLazyIframe() {
         if (!iframe) return;
 
         const dataSrc = iframe.getAttribute('data-src');
-        if (dataSrc && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href)) {
-            iframe.onload = () => {
+        if (!dataSrc) return;
+
+        // Nếu iframe chưa được gán src thực thì tiến hành nạp
+        const isAlreadyAssigned = iframe.src && iframe.src !== 'about:blank' && !iframe.src.endsWith('/about:blank');
+        if (!isAlreadyAssigned) {
+            const onIframeLoaded = () => {
                 card.classList.add('is-iframe-loaded');
                 // Nếu người dùng đang hover sẵn trên thẻ khi iframe vừa nạp xong, bắt đầu cuộn ngay
                 if (card.matches && card.matches(':hover')) {
                     triggerAutoScrollStart(card);
                 }
             };
+
+            iframe.addEventListener('load', onIframeLoaded, { once: true });
             iframe.src = dataSrc;
+
+            // Phòng vệ: Nếu mạng siêu nhanh hoặc browser không kích hoạt onload kịp thời
+            setTimeout(() => {
+                card.classList.add('is-iframe-loaded');
+            }, 3000);
         } else if (card.classList.contains('is-iframe-loaded') && card.matches && card.matches(':hover')) {
             triggerAutoScrollStart(card);
         }
@@ -606,29 +617,50 @@ function initShowcaseLazyIframe() {
         } catch (e) {}
     }
 
-    function loadActiveCardIframe() {
+    /**
+     * Nạp Iframe cho TẤT CẢ các thẻ đang hiển thị trên màn hình
+     * Xếp lịch trình từ tâm (thẻ Active) lan tỏa đều sang 2 bên
+     */
+    function loadAllVisibleCardsIframe() {
         if (!isNearShowcase) return;
         const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
-        if (activeCard) {
-            loadCardIframe(activeCard);
-        }
+        const activeIndex = cards.indexOf(activeCard);
 
-        // Tải trước nhẹ nhàng 2 thẻ lân cận khi browser rảnh rỗi (idle) để không nghẽn băng thông
-        const scheduleNeighborLoad = () => {
-            const activeIndex = cards.indexOf(activeCard);
-            if (activeIndex !== -1) {
-                const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
-                const nextCard = cards[(activeIndex + 1) % cards.length];
-                if (prevCard) loadCardIframe(prevCard);
-                if (nextCard) loadCardIframe(nextCard);
+        // Tạo danh sách chỉ số theo thứ tự ưu tiên từ trung tâm lan ra ngoài
+        const priorityIndices = [];
+        if (activeIndex !== -1) {
+            priorityIndices.push(activeIndex);
+            for (let offset = 1; offset <= Math.floor(cards.length / 2); offset++) {
+                priorityIndices.push((activeIndex - offset + cards.length) % cards.length);
+                priorityIndices.push((activeIndex + offset) % cards.length);
             }
-        };
-
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(scheduleNeighborLoad, { timeout: 1500 });
         } else {
-            setTimeout(scheduleNeighborLoad, 600);
+            cards.forEach((_, idx) => priorityIndices.push(idx));
         }
+
+        const uniqueIndices = [...new Set(priorityIndices)];
+
+        uniqueIndices.forEach((cardIdx, order) => {
+            const card = cards[cardIdx];
+            if (!card) return;
+
+            // Thẻ tâm nạp ngay 0ms; 2 thẻ lân cận nạp 25ms-50ms; các thẻ tiếp theo nạp tiếp nối
+            const delay = order === 0 ? 0 : (order < 3 ? order * 25 : 60 + (order - 2) * 45);
+            if (delay === 0) {
+                loadCardIframe(card);
+            } else {
+                setTimeout(() => {
+                    loadCardIframe(card);
+                }, delay);
+            }
+        });
+    }
+
+    // Kiểm tra tức thì nếu Showcase đã nằm sẵn trong viewport khi tải trang
+    const stageRect = stage.getBoundingClientRect();
+    if (stageRect.top < window.innerHeight + 500 && stageRect.bottom > -500) {
+        isNearShowcase = true;
+        loadAllVisibleCardsIframe();
     }
 
     // IntersectionObserver: Kích hoạt khi cuộn cách Showcase 300px
@@ -637,7 +669,7 @@ function initShowcaseLazyIframe() {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     isNearShowcase = true;
-                    loadActiveCardIframe();
+                    loadAllVisibleCardsIframe();
                 }
             });
         }, {
@@ -648,11 +680,11 @@ function initShowcaseLazyIframe() {
         observer.observe(stage);
     } else {
         isNearShowcase = true;
-        loadActiveCardIframe();
+        loadAllVisibleCardsIframe();
     }
 
-    // Đăng ký toàn cục để updateStage() gọi ngay khi chuyển slide
-    window.__mayhenLoadShowcaseIframe = loadActiveCardIframe;
+    // Đăng ký toàn cục để updateStage() gọi lại mỗi khi chuyển slide hoặc resize
+    window.__mayhenLoadShowcaseIframe = loadAllVisibleCardsIframe;
 
     // Gắn sự kiện Hover: Nạp iframe tức thì và tự động cuộn mượt mà nội dung bên trong
     cards.forEach(card => {

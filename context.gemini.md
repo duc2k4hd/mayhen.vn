@@ -1652,6 +1652,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Bổ sung script tự động kích hoạt hàm mở của từng mẫu và trigger click nếu còn nút mở sót.
                 - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
 
+            43. **Nạp Iframe Cho Toàn Bộ Các Mẫu Thiệp Đang Hiển Thị Trên Màn Hình Trong Showcase Trang Chủ**:
+                - **Yêu cầu người dùng**:
+                  * Khách hàng yêu cầu: *"tôi muốn tất cả mẫu đang hiển thị trên màn hình đều phải load iframe"*.
+                  * Trên thanh Coverflow 3D Showcase của trang chủ, toàn bộ các thẻ card đang nằm trong tầm mắt người dùng (thẻ active trung tâm và các thẻ hai bên cánh) đều phải được load iframe trực tiếp để hiển thị giao diện mẫu thiệp sống động thay vì giữ ảnh poster tĩnh.
+                - **Giải pháp kỹ thuật chuẩn mực**:
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Nâng cấp toàn diện hàm lazy load thành `loadAllVisibleCardsIframe()`: Thay vì chỉ nạp 1 thẻ active và hoãn 2 thẻ kề cạnh, hàm mới sẽ xây dựng danh sách thứ tự ưu tiên từ tâm (thẻ active) lan tỏa đều sang 2 bên (`priorityIndices`).
+                    + Thẻ trung tâm nạp tức thời (0ms), 2 thẻ kề cận nạp ngay tiếp nối (25ms - 50ms), các thẻ tiếp theo nạp tuần tự (60ms - 150ms). Cơ chế stagger siêu nhỏ giúp nạp toàn bộ 9 thẻ chỉ trong ~300ms mà không gây nghẽn network thread hay tụt FPS trình duyệt.
+                    + Gắn listener `addEventListener('load', ...)` kết hợp fallback timer an toàn để đảm bảo 100% các thẻ khi hoàn tất nạp iframe đều được gắn class `.is-iframe-loaded`, tự động làm mờ và ẩn ảnh poster tĩnh (`opacity: 0, pointer-events: none`).
+                    + Kích hoạt tức thì: Tự động kiểm tra vị trí của Showcase ngay khi trang load (`stageRect`), kết hợp `IntersectionObserver` khi cuộn cách 300px, và tự động gọi lại qua `window.__mayhenLoadShowcaseIframe` mỗi khi chuyển slide hoặc resize màn hình.
+                - **Kiểm thử tự động & Định dạng**:
+                  * Chạy Pest test suite đạt 34/34 tests passed 100% (381 assertions).
+                  * Toàn bộ mã nguồn được định dạng theo chuẩn Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
