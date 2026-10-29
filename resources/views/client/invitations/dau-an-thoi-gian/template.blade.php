@@ -4,20 +4,29 @@
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Dấu Ấn Thời Gian';
 
-    // 1. Dữ liệu Cô dâu & Chú rể
+    // 1. Phần 1: Đôi Uyên Ương (couple)
     $groomName = $wedding->groom_name ?? 'Minh Tuấn';
     $brideName = $wedding->bride_name ?? 'Thu Hà';
     $extraData = $wedding->extra_data ?? [];
+    $coupleQuote = $extraData['couple_quote'] ?? 'Thời gian có thể trôi, nhưng tình yêu chúng mình trao nhau sẽ mãi là dấu ấn vĩnh cửu.';
 
+    // 2. Phần 2: Nhà Trai (groom_family)
     $groomFather = $extraData['groom_father'] ?? ($wedding->groom_parents ?? 'Ông Nguyễn Văn Hùng');
     $groomMother = $extraData['groom_mother'] ?? 'Bà Lê Thị Thu';
-    $groomParentsAddress = $extraData['groom_parents_address'] ?? 'Đống Đa, Hà Nội';
+    $groomPartyTime = $extraData['groom_party_time'] ?? ($extraData['ceremony_groom_time'] ?? '10:00');
+    $groomPartyDate = $extraData['groom_party_date'] ?? null;
+    $groomPartyLunar = $extraData['groom_party_lunar'] ?? ($extraData['wedding_lunar_date'] ?? 'Ngày 12 tháng 11 năm Bính Ngọ');
+    $groomPartyAddress = $extraData['groom_party_address'] ?? ($extraData['ceremony_groom_address'] ?? ($extraData['groom_parents_address'] ?? 'Tư gia Nhà Trai - Đống Đa, Hà Nội'));
 
+    // 3. Phần 3: Nhà Gái (bride_family)
     $brideFather = $extraData['bride_father'] ?? ($wedding->bride_parents ?? 'Ông Trần Quốc Bảo');
     $brideMother = $extraData['bride_mother'] ?? 'Bà Phạm Thị Mai';
-    $brideParentsAddress = $extraData['bride_parents_address'] ?? 'Ba Đình, Hà Nội';
+    $bridePartyTime = $extraData['bride_party_time'] ?? ($extraData['ceremony_time'] ?? '08:00');
+    $bridePartyDate = $extraData['bride_party_date'] ?? null;
+    $bridePartyLunar = $extraData['bride_party_lunar'] ?? ($extraData['wedding_lunar_date'] ?? 'Ngày 12 tháng 11 năm Bính Ngọ');
+    $bridePartyAddress = $extraData['bride_party_address'] ?? ($extraData['ceremony_address'] ?? ($extraData['bride_parents_address'] ?? 'Tư gia Nhà Gái - Ba Đình, Hà Nội'));
 
-    // 2. Ngày giờ và sự kiện cưới
+    // Ngày giờ hôn lễ chính
     $weddingDate = isset($wedding->wedding_date)
         ? \Carbon\Carbon::parse($wedding->wedding_date)
         : \Carbon\Carbon::create(2026, 12, 20, 18, 0, 0);
@@ -35,18 +44,10 @@
     $partyAddress = $extraData['event_party_address'] ?? ($extraData['party_address'] ?? 'Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội');
     $partyMapLink = 'https://maps.google.com/maps?q=' . urlencode($partyVenue . ', ' . $partyAddress) . '&z=16&output=embed';
 
-    // Lễ Vu Quy (Nhà Gái)
-    $ceremonyTime = $extraData['ceremony_time'] ?? '08:00';
-    $ceremonyAddress = $extraData['ceremony_address'] ?? 'Tại tư gia nhà gái - Ba Đình, Hà Nội';
-
-    // Lễ Thành Hôn (Nhà Trai)
-    $ceremonyGroomTime = $extraData['ceremony_groom_time'] ?? '10:00';
-    $ceremonyGroomAddress = $extraData['ceremony_groom_address'] ?? 'Tại tư gia nhà trai - Đống Đa, Hà Nội';
-
     // Khách mời
     $guestName = $invitation->guest_name ?? 'Quý Khách';
 
-    // 3. Hàm chuẩn hóa asset ảnh
+    // Hàm chuẩn hóa asset ảnh
     $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
         $val = trim((string) $path);
         if (str_starts_with($val, 'blob:')) {
@@ -65,13 +66,13 @@
         return $assetBase . '/' . ltrim($val, '/');
     };
 
-    // Ảnh chính
-    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, 'hero.jpg');
+    // Ảnh đại diện & chân dung
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'hero.jpg');
     $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'groom.jpg');
     $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'bride.jpg');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'savedate.jpg');
 
-    // Album ảnh cưới 7 bức
+    // 4. Phần 4: Ảnh cưới (Album) chuẩn 10 ảnh (album)
     $defaultGallery = [
         'gallery_1.jpg',
         'savedate.jpg',
@@ -80,17 +81,28 @@
         'gallery_4.jpg',
         'gallery_5.jpg',
         'gallery_6.jpg',
+        'hero.jpg',
+        'groom.jpg',
+        'bride.jpg',
     ];
     $rawGallery = $extraData['gallery'] ?? [];
     $gallery = [];
-    for ($i = 0; $i < 7; $i++) {
-        $gallery[] = !empty($rawGallery[$i]) ? $resolveAsset($rawGallery[$i], $defaultGallery[$i]) : $defaultGallery[$i];
+    for ($i = 0; $i < 10; $i++) {
+        $gallery[] = !empty($rawGallery[$i]) ? $resolveAsset($rawGallery[$i], $defaultGallery[$i]) : $resolveAsset($defaultGallery[$i]);
     }
 
-    // 4. Mừng cưới QR & Ngân hàng
+    // 5. Phần 5: Lịch trình (timeline)
+    $timelineItems = $extraData['timeline'] ?? [
+        ['time' => '08:00', 'title' => 'Lễ Vu Quy (Nhà Gái)'],
+        ['time' => '10:00', 'title' => 'Lễ Thành Hôn (Nhà Trai)'],
+        ['time' => '18:00', 'title' => 'Khai Tiệc Mừng Cưới'],
+        ['time' => '19:30', 'title' => 'Chụp Ảnh Kỷ Niệm'],
+    ];
+
+    // 6. Phần 6: Mừng cưới (gift)
     $groomBankName = $extraData['groom_bank_name'] ?? 'Vietcombank';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123 456 789';
-    $groomAccountName = $extraData['groom_account_name'] ?? 'NGUYEN MINH TUAN';
+    $groomBankHolder = $extraData['groom_bank_holder'] ?? ($extraData['groom_account_name'] ?? 'NGUYEN MINH TUAN');
     $cleanGroomAcc = preg_replace('/\s+/', '', $groomBankAccount);
     $qrGroomUrl = $resolveAsset(
         $extraData['qr_groom_image'] ?? null,
@@ -99,7 +111,7 @@
 
     $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '1903 5555 8888';
-    $brideAccountName = $extraData['bride_account_name'] ?? 'TRAN THU HA';
+    $brideBankHolder = $extraData['bride_bank_holder'] ?? ($extraData['bride_account_name'] ?? 'TRAN THU HA');
     $cleanBrideAcc = preg_replace('/\s+/', '', $brideBankAccount);
     $qrBrideUrl = $resolveAsset(
         $extraData['qr_bride_image'] ?? null,
@@ -185,14 +197,14 @@
  <div class="mayhen_invitation_ladoifji894yfv_orbit mayhen_invitation_ladoifji894yfv_rv">
   <span class="mayhen_invitation_ladoifji894yfv_ring"></span>
   <svg class="mayhen_invitation_ladoifji894yfv_spin" width="16" height="16" viewBox="0 0 20 20" style="position:absolute;width:16px;height:16px;top:-8px;left:50%;margin-left:-8px;z-index:3;pointer-events:none;"><use href="#mayhen_invitation_ladoifji894yfv_star"/></svg>
-  <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round" style="background-image: url('{{ $heroPhotoUrl }}')" data-sync-target="hero_photo_url"></div>
+  <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round" style="background-image: url('{{ $heroPhotoUrl }}')" data-sync-target="cover_photo_url"></div>
  </div>
  <h1 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_big mayhen_invitation_ladoifji894yfv_rv" data-sync-target="groom_name">{{ $groomName }}</h1>
  <span class="mayhen_invitation_ladoifji894yfv_amp mayhen_invitation_ladoifji894yfv_rv">&amp;</span>
  <h1 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_big mayhen_invitation_ladoifji894yfv_rv" data-sync-target="bride_name">{{ $brideName }}</h1>
  <p class="mayhen_invitation_ladoifji894yfv_pill mayhen_invitation_ladoifji894yfv_rv" data-sync-target="wedding_date_digits">{{ $weddingDateDigits }}</p>
  <p class="mayhen_invitation_ladoifji894yfv_note mayhen_invitation_ladoifji894yfv_rv" data-sync-target="wedding_lunar_date">{{ $weddingLunar }}</p>
- <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv">Giữa muôn vàn vì sao,<br>chúng ta đã tìm thấy nhau</p>
+ <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv" data-sync-target="couple_quote">{!! nl2br(e($coupleQuote)) !!}</p>
 </section>
 
 <div class="mayhen_invitation_ladoifji894yfv_divider"></div>
@@ -204,13 +216,13 @@
   <div>
    <p class="mayhen_invitation_ladoifji894yfv_label">Nhà Trai</p>
    <p><span data-sync-target="groom_father">{{ $groomFather }}</span><br><span data-sync-target="groom_mother">{{ $groomMother }}</span></p>
-   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="groom_parents_address">{{ $groomParentsAddress }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
   </div>
   <i class="mayhen_invitation_ladoifji894yfv_vline"></i>
   <div>
    <p class="mayhen_invitation_ladoifji894yfv_label">Nhà Gái</p>
    <p><span data-sync-target="bride_father">{{ $brideFather }}</span><br><span data-sync-target="bride_mother">{{ $brideMother }}</span></p>
-   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="bride_parents_address">{{ $brideParentsAddress }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
   </div>
  </div>
  <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv">Trân trọng báo tin lễ thành hôn<br>của con chúng tôi</p>
@@ -262,15 +274,15 @@
  <div class="mayhen_invitation_ladoifji894yfv_rites">
   <article class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_arch mayhen_invitation_ladoifji894yfv_rv">
    <span class="mayhen_invitation_ladoifji894yfv_icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/><path d="M9 4.5l1.5-2h3L15 4.5l-3 3z"/></svg></span>
-   <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Vu Quy</h3>
-   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="ceremony_time">{{ $ceremonyTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
-   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="ceremony_address">{{ $ceremonyAddress }}</p>
+   <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Vu Quy (Nhà Gái)</h3>
+   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
   </article>
   <article class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_arch mayhen_invitation_ladoifji894yfv_rv">
    <span class="mayhen_invitation_ladoifji894yfv_icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg></span>
-   <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Thành Hôn</h3>
-   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="ceremony_groom_time">{{ $ceremonyGroomTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
-   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="ceremony_groom_address">{{ $ceremonyGroomAddress }}</p>
+   <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Thành Hôn (Nhà Trai)</h3>
+   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
   </article>
  </div>
 </section>
@@ -305,10 +317,13 @@
 <section class="mayhen_invitation_ladoifji894yfv_sec">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Timeline<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Lịch Trình Buổi Tiệc</h2></header>
  <ol class="mayhen_invitation_ladoifji894yfv_timeline mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_rv">
-  <li><time>17:30</time><i class="mayhen_invitation_ladoifji894yfv_dot"></i><span>Đón khách</span></li>
-  <li><time>18:00</time><i class="mayhen_invitation_ladoifji894yfv_dot"></i><span>Cử hành hôn lễ</span></li>
-  <li><time>18:30</time><i class="mayhen_invitation_ladoifji894yfv_dot"></i><span>Khai tiệc mừng</span></li>
-  <li><time>20:00</time><i class="mayhen_invitation_ladoifji894yfv_dot"></i><span>Giao lưu &amp; chụp ảnh</span></li>
+  @foreach ($timelineItems as $tIdx => $tItem)
+   <li>
+     <time data-sync-target="timeline.{{ $tIdx }}.time">{{ $tItem['time'] ?? '' }}</time>
+     <i class="mayhen_invitation_ladoifji894yfv_dot"></i>
+     <span data-sync-target="timeline.{{ $tIdx }}.title">{{ $tItem['title'] ?? '' }}</span>
+   </li>
+  @endforeach
  </ol>
 </section>
 
@@ -331,7 +346,7 @@
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Album<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Khoảnh Khắc</h2></header>
  <div class="mayhen_invitation_ladoifji894yfv_flow mayhen_invitation_ladoifji894yfv_rv">
   @foreach ($gallery as $idx => $photoItem)
-   <div class="mayhen_invitation_ladoifji894yfv_flow_item mayhen_invitation_ladoifji894yfv_photo" style="background-image: url('{{ $photoItem }}')" data-full="{{ $photoItem }}"></div>
+   <div class="mayhen_invitation_ladoifji894yfv_flow_item mayhen_invitation_ladoifji894yfv_photo" style="background-image: url('{{ $photoItem }}')" data-full="{{ $photoItem }}" data-sync-target="gallery.{{ $idx }}"></div>
   @endforeach
   <button class="mayhen_invitation_ladoifji894yfv_flow_nav mayhen_invitation_ladoifji894yfv_prev" type="button" aria-label="Ảnh trước">‹</button>
   <button class="mayhen_invitation_ladoifji894yfv_flow_nav mayhen_invitation_ladoifji894yfv_next" type="button" aria-label="Ảnh sau">›</button>
@@ -396,14 +411,14 @@
     <div class="mayhen_invitation_ladoifji894yfv_qr_img">
       <img src="{{ $qrGroomUrl }}" alt="Mã QR Chú Rể {{ $groomBankName }}" loading="lazy" data-sync-target="qr_groom_image">
     </div>
-    <p class="mayhen_invitation_ladoifji894yfv_soft"><span data-sync-target="groom_bank_name">{{ $groomBankName }}</span><br><b data-sync-target="groom_bank_account">{{ $groomBankAccount }}</b><br><span data-sync-target="groom_account_name">{{ $groomAccountName }}</span></p>
+    <p class="mayhen_invitation_ladoifji894yfv_soft"><span data-sync-target="groom_bank_name">{{ $groomBankName }}</span><br><b data-sync-target="groom_bank_account">{{ $groomBankAccount }}</b><br><span data-sync-target="groom_bank_holder">{{ $groomBankHolder }}</span></p>
    </div>
    <div class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_qr">
     <p class="mayhen_invitation_ladoifji894yfv_label">Cô Dâu</p>
     <div class="mayhen_invitation_ladoifji894yfv_qr_img">
       <img src="{{ $qrBrideUrl }}" alt="Mã QR Cô Dâu {{ $brideBankName }}" loading="lazy" data-sync-target="qr_bride_image">
     </div>
-    <p class="mayhen_invitation_ladoifji894yfv_soft"><span data-sync-target="bride_bank_name">{{ $brideBankName }}</span><br><b data-sync-target="bride_bank_account">{{ $brideBankAccount }}</b><br><span data-sync-target="bride_account_name">{{ $brideAccountName }}</span></p>
+    <p class="mayhen_invitation_ladoifji894yfv_soft"><span data-sync-target="bride_bank_name">{{ $brideBankName }}</span><br><b data-sync-target="bride_bank_account">{{ $brideBankAccount }}</b><br><span data-sync-target="bride_bank_holder">{{ $brideBankHolder }}</span></p>
    </div>
   </div>
  </div>
@@ -435,7 +450,7 @@
   <div class="mayhen_invitation_ladoifji894yfv_lightbox_wrap">
    <img class="mayhen_invitation_ladoifji894yfv_lightbox_img" src="" alt="Ảnh cưới phóng to">
   </div>
-  <p class="mayhen_invitation_ladoifji894yfv_lightbox_counter">1 / 7</p>
+  <p class="mayhen_invitation_ladoifji894yfv_lightbox_counter">1 / {{ count($gallery) }}</p>
  </div>
 </div>
 

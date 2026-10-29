@@ -1738,6 +1738,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Tạo mới test case tự động xác thực toàn bộ 9 mẫu thiệp tuân thủ đúng kiến trúc tối đa 6 phần, không vượt quá 6 phần, không có section thừa, thứ tự logic đúng chuẩn, và mẫu `luu-but-ngay-chung-doi` có đúng 5 phần.
                 - **Kiểm thử & Định dạng**: Chạy Pest test suite đạt 35/35 tests passed 100% (499 assertions in 1.1s), Laravel Pint định dạng chuẩn.
 
+            47. **Chuẩn Hóa Toàn Diện Mẫu Thiệp "Dấu Ấn Thời Gian" (`dau-an-thoi-gian`) Theo Kiến Trúc 6 Phần & Hợp Đồng Live Sync**:
+                - **Mục tiêu**: Đồng bộ 100% từ khóa `schema.json`, biến Blade trong `template.blade.php`, hiệu ứng coverflow 3D và hợp đồng `data-sync-target` phục vụ live-typing từ Studio Editor không bị sai lệch, không nhầm lẫn bất kỳ trường nào.
+                - **Các công việc đã thực hiện**:
+                  * *`dau-an-thoi-gian/schema.json`*:
+                    + Chuẩn hóa `supported_sections`: `['couple', 'groom_family', 'bride_family', 'album', 'timeline', 'gift']`.
+                    + Khối `couple`: Dùng chuẩn `cover_photo_url`, `groom_name`, `bride_name`, `wedding_date`, `couple_quote`.
+                    + Khối `groom_family`: `groom_father`, `groom_mother`, `groom_party_time`, `groom_party_date`, `groom_party_lunar`, `groom_party_address`.
+                    + Khối `bride_family`: `bride_father`, `bride_mother`, `bride_party_time`, `bride_party_date`, `bride_party_lunar`, `bride_party_address`.
+                    + Khối `album`: Cấu hình đúng chuẩn 10 ảnh cưới (`max_items: 10`) với fallback 100% ảnh nội bộ có sẵn trong `assets/`.
+                    + Khối `timeline`: Chuẩn hóa 4 mốc thời gian động (`time`, `title`).
+                    + Khối `gift`: Chuẩn hóa `groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `qr_groom_image`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`, `qr_bride_image`.
+                  * *`dau-an-thoi-gian/template.blade.php`*:
+                    + Chuẩn hóa khối biến PHP đầu trang: Khai báo mảng `$gallery` 10 ảnh cưới từ fallback cục bộ (`['gallery_1.jpg', 'savedate.jpg', 'gallery_2.jpg', 'gallery_3.jpg', 'gallery_4.jpg', 'gallery_5.jpg', 'gallery_6.jpg', 'hero.jpg', 'groom.jpg', 'bride.jpg']`), mảng `$timelineItems`, biến `$groomBankHolder`, `$brideBankHolder`.
+                    + Gắn đầy đủ `data-sync-target` cho từng phần:
+                      - Hero / Đôi uyên ương: `cover_photo_url`, `couple_quote`, `groom_name`, `bride_name`, `wedding_date`.
+                      - Phụ mẫu hai bên & Nghi lễ: `groom_father`, `groom_mother`, `groom_party_time`, `groom_party_address`, `bride_father`, `bride_mother`, `bride_party_time`, `bride_party_address`.
+                      - Lịch trình (Timeline): Chuyển thành vòng lặp Blade `@foreach ($timelineItems as $tIdx => $tItem)` với `data-sync-target="timeline.{{ $tIdx }}.time"` và `data-sync-target="timeline.{{ $tIdx }}.title"`.
+                      - Album (Khoảnh khắc): Vòng lặp `@foreach ($gallery as $idx => $photoItem)` gắn `data-sync-target="gallery.{{ $idx }}"`. Tương thích tự động với coverflow 3D và Lightbox modal đếm `1 / {{ count($gallery) }}` (10 ảnh).
+                      - Hộp Mừng Cưới: Gắn đúng `groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `qr_groom_image`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`, `qr_bride_image`.
+                    + Dọn sạch thẻ đóng PHP trùng lặp ở đầu trang.
+                - **Kiểm thử & Định dạng**: Chạy Pest Feature Test tự động xác thực toàn bộ các thẻ `data-sync-target` trên trang xem thử `/xem-thu/dau-an-thoi-gian?embed=1&mode=editor` đạt 22/22 assertions; toàn bộ test suite đạt 35/35 tests passed; Laravel Pint hoàn toàn sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
