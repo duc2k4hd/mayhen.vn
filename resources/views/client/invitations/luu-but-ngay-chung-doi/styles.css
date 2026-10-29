@@ -12412,7 +12412,7 @@ body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
 }
 
 /* ==========================================================================
-   TRUNG TÂM: TẤM THIỆP MỜI VÀ TEM SÁP HOÀNG GIA (WAX SEAL)
+   TRUNG TÂM: TẤM THIỆP MỜI VÀ TEM SÁP HOÀNG GIA (QUIET LUXURY WAX SEAL CARD)
    ========================================================================== */
 .mayhen_invitation_ladjihe38udhd_door_center {
     position: absolute;
@@ -12424,79 +12424,119 @@ body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
     flex-direction: column;
     align-items: center;
     width: 90%;
-    max-width: 360px;
+    max-width: 385px;
     text-align: center;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: auto;
 }
 
-/* Khi mở: Card mờ dần và bay lên nhẹ */
+/* Khi mở: Card mờ dần và bay nhẹ lên */
 .mayhen_invitation_ladjihe38udhd_door_stage.opened .mayhen_invitation_ladjihe38udhd_door_center {
     opacity: 0;
     transform: translate(-50%, -55%) scale(1.08);
     pointer-events: none;
 }
 
-/* Tấm thiệp nền ngà ấm áp */
+/* Tấm thiệp giấy mỹ thuật Ivory vân lụa cao cấp */
 .mayhen_invitation_ladjihe38udhd_door_card {
-    background: #FAF7F2;
-    border: 1px solid #D8C4A7;
-    border-radius: 12px;
-    padding: 24px 20px 20px;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(197, 168, 128, 0.2);
+    background: linear-gradient(155deg, #FFFDFB 0%, #FAF6EE 55%, #F2EBDE 100%);
+    border: 1.5px solid rgba(197, 168, 128, 0.75);
+    border-radius: 18px;
+    padding: 30px 24px 34px;
+    box-shadow: 
+        0 24px 55px -8px rgba(0, 0, 0, 0.6),
+        0 8px 24px rgba(18, 38, 29, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
     width: 100%;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
 }
+
+/* Khung chỉ vàng bên trong */
 .mayhen_invitation_ladjihe38udhd_door_card::before {
     content: '';
     position: absolute;
-    inset: 5px;
-    border: 1px solid rgba(197, 168, 128, 0.4);
-    border-radius: 8px;
+    inset: 7px;
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    border-radius: 12px;
     pointer-events: none;
+}
+
+/* 4 góc hoa văn cổ điển mạ vàng */
+.mayhen_invitation_ladjihe38udhd_card_corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: #C5A880;
+    border-style: solid;
+    pointer-events: none;
+}
+.mayhen_invitation_ladjihe38udhd_card_corner.mayhen_invitation_ladjihe38udhd_cc_tl {
+    top: 11px; left: 11px; border-width: 1.5px 0 0 1.5px;
+}
+.mayhen_invitation_ladjihe38udhd_card_corner.mayhen_invitation_ladjihe38udhd_cc_tr {
+    top: 11px; right: 11px; border-width: 1.5px 1.5px 0 0;
+}
+.mayhen_invitation_ladjihe38udhd_card_corner.mayhen_invitation_ladjihe38udhd_cc_bl {
+    bottom: 11px; left: 11px; border-width: 0 0 1.5px 1.5px;
+}
+.mayhen_invitation_ladjihe38udhd_card_corner.mayhen_invitation_ladjihe38udhd_cc_br {
+    bottom: 11px; right: 11px; border-width: 0 1.5px 1.5px 0;
+}
+
+/* Biểu tượng ánh sao tình yêu trên đỉnh thiệp */
+.mayhen_invitation_ladjihe38udhd_card_crest {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
+    opacity: 0.9;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_badge {
     font-size: 10px;
-    letter-spacing: 3px;
+    letter-spacing: 3.5px;
     text-transform: uppercase;
-    color: #8C7355;
+    color: #9C7A4A;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    font-family: 'Philosopher', sans-serif;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_sub {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    font-size: 9px;
+    letter-spacing: 2.8px;
     text-transform: uppercase;
-    color: #6B7B73;
-    margin-bottom: 10px;
+    color: #7B8F84;
+    margin-bottom: 12px;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_names {
-    font-family: 'Philosopher', 'Times New Roman', serif;
+    font-family: 'Philosopher', 'Times New Roman', Georgia, serif;
     font-size: 26px;
     font-weight: 700;
-    color: #1F382B;
-    margin: 0 0 12px;
+    color: #153023;
+    margin: 0 0 10px;
     line-height: 1.3;
+    letter-spacing: 0.3px;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_names .mayhen_invitation_ladjihe38udhd_amp {
+    font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
     color: #C5A880;
     font-weight: 400;
-    margin: 0 4px;
+    font-size: 25px;
+    margin: 0 5px;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_divider {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 8px auto 14px;
-    width: 60%;
+    margin: 6px auto 12px;
+    width: 65%;
 }
 .mayhen_invitation_ladjihe38udhd_card_divider::before,
 .mayhen_invitation_ladjihe38udhd_card_divider::after {
@@ -12505,40 +12545,44 @@ body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
     height: 1px;
     background: linear-gradient(90deg, transparent, #C5A880, transparent);
 }
-.mayhen_invitation_ladjihe38udhd_card_divider span {
+.mayhen_invitation_ladjihe38udhd_card_divider .mayhen_invitation_ladjihe38udhd_divider_diamond {
     font-size: 11px;
     color: #C5A880;
     padding: 0 8px;
+    line-height: 1;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_guest_label {
-    font-size: 12px;
-    color: #7D8882;
-    margin: 0 0 4px;
+    font-size: 12.5px;
+    color: #738078;
+    margin: 0 0 3px;
     font-style: italic;
+    font-family: 'Philosopher', Georgia, serif;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_guest {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 700;
-    color: #1A3025;
+    color: #122B1E;
     font-family: 'Philosopher', Georgia, serif;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding: 0 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    letter-spacing: 0.2px;
 }
 
 .mayhen_invitation_ladjihe38udhd_card_date {
     font-size: 12.5px;
-    color: #5C6E65;
-    letter-spacing: 0.5px;
+    color: #55665C;
+    letter-spacing: 0.6px;
     margin: 0;
-    font-weight: 500;
+    font-weight: 600;
+    padding-bottom: 4px;
 }
 
-/* CON DẤU TEM SÁP ĐỎ MẬN HOÀNG GIA (WAX SEAL) */
+/* CON DẤU TEM SÁP ĐỎ MẬN HOÀNG GIA (REALISTIC 3D WAX SEAL STAMP) */
 .mayhen_invitation_ladjihe38udhd_wax_seal_wrap {
     margin-top: -24px;
     position: relative;
@@ -12566,8 +12610,8 @@ body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90px;
-    height: 90px;
+    width: 95px;
+    height: 95px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(197, 168, 128, 0.45) 0%, rgba(197, 168, 128, 0) 70%);
     animation: mayhen_seal_pulse 2.2s infinite ease-in-out;
@@ -12575,89 +12619,116 @@ body.mayhen_invitation_ladjihe38udhd_locked #mayhen-w18-overlay {
 }
 
 @keyframes mayhen_seal_pulse {
-    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.35; }
     50% { transform: translate(-50%, -50%) scale(1.35); opacity: 0.85; }
-    100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.35; }
 }
 
-/* Con dấu sáp đỏ mận gợn sóng tự nhiên */
+/* Dải ruy băng lụa đỏ mận buông nhẹ bên dưới con dấu */
+.mayhen_invitation_ladjihe38udhd_wax_ribbon {
+    position: absolute;
+    top: 42px;
+    width: 14px;
+    height: 38px;
+    background: linear-gradient(135deg, #8E1F34 0%, #5E0F20 100%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+.mayhen_invitation_ladjihe38udhd_ribbon_left {
+    left: 50%;
+    transform: translateX(-16px) rotate(14deg);
+    transform-origin: top center;
+}
+.mayhen_invitation_ladjihe38udhd_ribbon_right {
+    right: 50%;
+    transform: translateX(16px) rotate(-14deg);
+    transform-origin: top center;
+}
+
+/* Con dấu sáp đỏ mận gợn sóng tự nhiên thủ công */
 .mayhen_invitation_ladjihe38udhd_wax_seal {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #b2324e 0%, #831d34 60%, #570e20 100%);
+    width: 76px;
+    height: 76px;
+    border-radius: 48% 52% 49% 51% / 51% 48% 52% 49%;
+    background: radial-gradient(circle at 35% 30%, #A31E35 0%, #7A1224 55%, #4F0816 100%);
     box-shadow: 
-        0 6px 18px rgba(0, 0, 0, 0.45),
-        inset 0 3px 6px rgba(255, 255, 255, 0.35),
-        inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        inset 0 3px 6px rgba(255, 255, 255, 0.4),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    z-index: 2;
 }
 
 .mayhen_invitation_ladjihe38udhd_wax_rim {
-    width: 56px;
-    height: 56px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    border: 1.5px dashed rgba(245, 222, 179, 0.6);
+    border: 1.5px dashed rgba(245, 222, 179, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 70%);
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 70%);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 .mayhen_invitation_ladjihe38udhd_wax_monogram {
-    font-family: 'Philosopher', serif;
-    font-size: 22px;
+    font-family: 'Philosopher', Georgia, serif;
+    font-size: 23px;
     font-weight: 700;
     color: #F8ECD5;
     text-shadow: 
-        0 1px 2px rgba(0, 0, 0, 0.8),
-        0 -1px 1px rgba(255, 255, 255, 0.4);
+        0 1px 2px rgba(0, 0, 0, 0.85),
+        0 -1px 1px rgba(255, 255, 255, 0.45);
     letter-spacing: 1px;
 }
 
 .mayhen_invitation_ladjihe38udhd_monogram_amp {
-    font-size: 14px;
+    font-size: 15px;
     font-style: italic;
     color: #E2C293;
     margin: 0 1px;
 }
 
-/* Lời gợi ý mở thiệp */
+/* Lời gợi ý mở thiệp tinh xảo */
 .mayhen_invitation_ladjihe38udhd_open_hint {
-    margin-top: 14px;
+    margin-top: 18px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(26, 48, 37, 0.85);
-    border: 1px solid rgba(197, 168, 128, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 7px 18px;
-    border-radius: 24px;
-    color: #F5EFE6;
-    font-size: 12.5px;
+    gap: 7px;
+    background: linear-gradient(135deg, rgba(23, 48, 37, 0.94) 0%, rgba(14, 30, 23, 0.96) 100%);
+    border: 1.5px solid rgba(212, 175, 55, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 8px 22px;
+    border-radius: 26px;
+    color: #FAF6EE;
+    font-size: 13px;
     font-weight: 500;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-    animation: mayhen_hint_bounce 2s infinite ease-in-out;
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    animation: mayhen_hint_bounce 2.4s infinite ease-in-out;
 }
 
 @keyframes mayhen_hint_bounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+    50% { transform: translateY(-3px); }
 }
 
 .mayhen_invitation_ladjihe38udhd_hint_icon {
     font-size: 14px;
-    animation: mayhen_sparkle_spin 3s infinite linear;
+    animation: mayhen_sparkle_spin 3.5s infinite linear;
 }
 
 @keyframes mayhen_sparkle_spin {
     0% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.25) rotate(180deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
     100% { transform: scale(1) rotate(360deg); }
 }
 

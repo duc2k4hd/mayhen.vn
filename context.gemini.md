@@ -1402,6 +1402,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   3. *Footer Section lời cảm ơn (`.mayhen_invitation_ladjihe38udhd_footer_names` - dòng 897-901)*: Tách thành 3 dòng tương tự với `clamp(18px, 4.5vw, 24px)`.
                 - **CSS & Live Sync**: Cấu hình Flexbox column căn giữa tinh tế, cỡ chữ co giãn phản hồi mượt mà; hoàn thiện cơ chế phòng vệ trong `editor-bridge.blade.php` để bảo vệ các thẻ con `groom_name` / `bride_name` không bị ghi đè thành 1 dòng khi gõ phím real-time. Toàn bộ 28/28 Pest tests Passed 100%.
 
+            26. **Tối Ưu & Refactor Giao Diện Thiệp Cưới "Lưu Bút Ngày Chung Đôi" (`luu-but-ngay-chung-doi`)**:
+                - **Refactor phần mở đầu cánh cửa 3D (`.mayhen_invitation_ladjihe38udhd_door_center`) chuẩn Quiet Luxury**:
+                  * *Tấm thiệp chính*: Nâng cấp chất liệu giấy mỹ thuật Ivory vân lụa cao cấp `linear-gradient(155deg, #FFFDFB 0%, #FAF6EE 55%, #F2EBDE 100%)`, viền kép ép kim hoàng gia dát vàng `1.5px solid rgba(197, 168, 128, 0.75)`, 4 góc hoa văn cổ điển mạ vàng `card_corner` và crest biểu tượng ánh sao trang trọng.
+                  * *Typography & Khoảng cách*: Badge dãn chữ `letter-spacing: 3.5px`, tên đôi uyên ương màu xanh ngọc bích sang trọng `#153023` phối ký tự `&` nghiêng vàng kim, dải phân cách đính kim cương `✦`, khoảng cách ngày cưới được nới rộng thoáng đãng.
+                  * *Tem sáp niêm phong 3D (Royal Wax Seal)*: Viền sáp chảy lượn sóng tự nhiên thủ công, đa tầng ánh sáng màu đỏ mận Bordeaux Ruby sâu thẳm, 2 dải ruy băng lụa buông nhẹ bên dưới, chữ lồng Monogram `S&Q` mạ vàng nhũ nổi 3D, không còn tình trạng đè lên ngày cưới.
+                  * *Nút mở thiệp*: Kính mờ xanh rừng sâu phối viền vàng kim, hiệu ứng hạt sao lấp lánh và nhịp thở êm ái.
+                - **Khắc phục lỗi hiển thị & bố cục trên toàn trang**:
+                  * *Modal Album Kỷ Niệm*: Giới hạn chiều cao ảnh `clamp(200px, 48vh, 430px)`, toolbar điều hướng prev/next và bộ đếm số ảnh luôn nằm trọn vẹn 100% trong khung nhìn màn hình, không bị cắt mép đáy.
+                  * *Nút "NHẤN ĐỂ KÝ TÊN"*: Ẩn triệt để toàn bộ khung ký tên inline cũ (`#GROUP13`, `#BOX10`, `#wrapCanvas`, `#HTML_CODE2`), tăng chiều cao bảo vệ của `#SECTION7` giúp nút đứng độc lập, nổi bật, không bị bất kỳ khung nào đè lấn.
+                  * *Thanh điều hướng đáy (`bottom-nav`)*: Tự động trượt ẩn khi cuộn xuống (`scrolled-hide`) giúp người dùng ngắm trọn vẹn toàn bộ thiệp cưới, bổ sung nút thu gọn / mở rộng linh hoạt, đồng thời nâng toạ độ cụm tên cô dâu chú rể ở Hero Section để không bao giờ bị thanh dock che khuất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
