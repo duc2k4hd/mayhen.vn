@@ -1,0 +1,5040 @@
+/* Dấu Ký Trăm Năm · HTML/CSS thuần · scoped theo template Mây Hẹn. */
+@import url("https://fonts.googleapis.com/css2?family=Jura:wght@400;500;600;700&family=Philosopher:wght@400;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap");
+:root {
+    --mayhen-monochrome: #8a1526;
+    --mayhen-ruby-deep: #5e0b19;
+    --mayhen-ruby-bright: #a81b32;
+    --mayhen-gold-main: #d4af37;
+    --mayhen-gold-light: #f7e8aa;
+    --mayhen-gold-dark: #996515;
+    --mayhen-gold-gradient: linear-gradient(
+        135deg,
+        #ffe082 0%,
+        #d4af37 50%,
+        #996515 100%
+    );
+    --mayhen-bg-pearl: #faf7f2;
+    --mayhen-text-charcoal: #2a1810;
+    --mayhen-stage-scale: 1;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    margin: 0;
+    background: #f5efe6;
+    color: #2a1810;
+    font:
+        14px/1.55 Jura,
+        Arial,
+        sans-serif;
+    -webkit-text-size-adjust: 100%;
+}
+body * {
+    box-sizing: border-box;
+}
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+}
+button {
+    cursor: pointer;
+}
+.mayhen_invitation_jeowinids483fr_shell {
+    width: min(420px, 100%);
+    margin: 0 auto;
+    background: #fff;
+    position: relative;
+    overflow: clip;
+    min-height: 100vh;
+    box-shadow: 0 14px 60px #00000013;
+}
+.mayhen_invitation_jeowinids483fr_stage-spacer {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 420px;
+    transform: scale(var(--mayhen-stage-scale));
+    transform-origin: top left;
+}
+.mayhen_invitation_jeowinids483fr_ladi-section {
+    width: 420px;
+    margin: 0 auto;
+    position: relative;
+}
+.mayhen_invitation_jeowinids483fr_ladi-section-background {
+    position: absolute;
+    inset: 0;
+    background-repeat: repeat;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-container {
+    position: relative;
+    width: 420px;
+    margin: 0 auto;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-element {
+    position: absolute;
+}
+.mayhen_invitation_jeowinids483fr_ladi-group,
+.mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_ladi-shape,
+.mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_ladi-button,
+.mayhen_invitation_jeowinids483fr_ladi-countdown,
+.mayhen_invitation_jeowinids483fr_ladi-form {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-image {
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-position: left top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    margin: 0;
+    display: block;
+    width: 100%;
+    word-break: break-word;
+}
+.mayhen_invitation_jeowinids483fr_ladi-line-container {
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button {
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button-background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button-headline {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button-headline
+    .mayhen_invitation_jeowinids483fr_ladi-headline {
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown {
+    display: flex;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    > .mayhen_invitation_jeowinids483fr_ladi-element {
+    position: relative;
+    display: inline-block;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown-text {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+.mayhen_invitation_jeowinids483fr_ladi-popup {
+    position: absolute;
+    inset: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-popup-background {
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-item {
+    position: absolute;
+    inset: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-control {
+    width: 100%;
+    height: 100%;
+    padding: 8px 12px;
+    border: 0;
+    background: transparent;
+    min-width: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-item-background {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-checkbox-box-item {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form-control-select {
+    appearance: auto;
+}
+.mayhen_invitation_jeowinids483fr_ladi-transition {
+    transition:
+        transform 0.25s,
+        opacity 0.25s,
+        filter 0.25s;
+}
+.mayhen_invitation_jeowinids483fr_ladi-element[data-mayhen-gallery] {
+    cursor: zoom-in;
+}
+.mayhen_invitation_jeowinids483fr_ladi-element[data-mayhen-gallery]:focus-visible {
+    outline: 3px solid #111;
+    outline-offset: 4px;
+}
+.mayhen_invitation_jeowinids483fr_ladi-hidden {
+    display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+/* Source style_ladi: relevant rules */
+@keyframes ladi-loading {
+    0%,
+    100%,
+    20%,
+    80% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.5);
+    }
+}
+.mayhen_invitation_jeowinids483fr_ladi-transition {
+    transition: all 150ms linear 0s;
+}
+.mayhen_invitation_jeowinids483fr_ladi-container {
+    position: relative;
+    margin: 0 auto;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-element {
+    position: absolute;
+}
+.mayhen_invitation_jeowinids483fr_ladi-section {
+    margin: 0 auto;
+    position: relative;
+}
+.mayhen_invitation_jeowinids483fr_ladi-section[data-tab-id] {
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-section
+    .mayhen_invitation_jeowinids483fr_ladi-section-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-box {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    .mayhen_invitation_jeowinids483fr_ladi-container {
+    z-index: 90000070;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    .mayhen_invitation_jeowinids483fr_ladi-container
+    > .mayhen_invitation_jeowinids483fr_ladi-element {
+    z-index: 90000070;
+    position: fixed;
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    .mayhen_invitation_jeowinids483fr_ladi-container
+    > .mayhen_invitation_jeowinids483fr_ladi-element[data-fixed-close="true"] {
+    position: relative !important;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    .mayhen_invitation_jeowinids483fr_popup-close {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 9000000080;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 10px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url("data:image/svg+xml;utf8, %3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22%23000%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M23.4144%202.00015L2.00015%2023.4144L0.585938%2022.0002L22.0002%200.585938L23.4144%202.00015Z%22%3E%3C%2Fpath%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M2.00015%200.585938L23.4144%2022.0002L22.0002%2023.4144L0.585938%202.00015L2.00015%200.585938Z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+}
+.mayhen_invitation_jeowinids483fr_ladi-popup {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-popup
+    .mayhen_invitation_jeowinids483fr_ladi-popup-background {
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    .mayhen_invitation_jeowinids483fr_ladi-countdown-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+    display: table;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    .mayhen_invitation_jeowinids483fr_ladi-countdown-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-decoration: inherit;
+    display: table;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    .mayhen_invitation_jeowinids483fr_ladi-countdown-text
+    span {
+    display: table-cell;
+    vertical-align: middle;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    > .mayhen_invitation_jeowinids483fr_ladi-element {
+    text-decoration: inherit;
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+    position: relative;
+    display: inline-block;
+}
+.mayhen_invitation_jeowinids483fr_ladi-countdown
+    > .mayhen_invitation_jeowinids483fr_ladi-element:last-child {
+    margin-right: 0px !important;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button:active {
+    transform: translateY(2px);
+    transition: transform 0.2s linear;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button
+    .mayhen_invitation_jeowinids483fr_ladi-button-background {
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    transition: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-headline,
+.mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-shape {
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: table;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-shape
+    .mayhen_invitation_jeowinids483fr_ladi-shape {
+    margin: auto;
+    top: 0;
+    bottom: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-headline
+    .mayhen_invitation_jeowinids483fr_ladi-headline {
+    display: table-cell;
+    vertical-align: middle;
+}
+@keyframes loading {
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+.mayhen_invitation_jeowinids483fr_ladi-form,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span[data-checked="true"],
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control:not(
+        .mayhen_invitation_jeowinids483fr_ladi-form-control-select
+    ) {
+    text-transform: inherit;
+    text-decoration: inherit;
+    text-align: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-headline {
+    color: initial;
+    font-size: initial;
+    font-weight: initial;
+    text-transform: initial;
+    text-decoration: initial;
+    font-style: initial;
+    text-align: initial;
+    letter-spacing: initial;
+    line-height: initial;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    [data-form-checkout-item="bump_offer"]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > [data-quantity="true"]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    text-transform: inherit;
+    text-decoration: inherit;
+    text-align: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-background {
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-size: 9px 6px !important;
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    padding-right: 24px;
+    text-transform: inherit;
+    text-align: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span[data-checked="false"] {
+    text-transform: inherit;
+    text-align: inherit;
+    letter-spacing: inherit;
+    background-size: inherit;
+    background-attachment: inherit;
+    background-origin: inherit;
+    color: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control-select
+    option {
+    color: initial;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control-select:not(
+        [data-selected=""]
+    ) {
+    text-decoration: inherit;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item {
+    text-decoration: inherit;
+    vertical-align: middle;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-box-item {
+    display: inline-block;
+    width: fit-content;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox {
+    height: auto;
+    padding: 0 5px;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control {
+    background-color: transparent;
+    min-width: 100%;
+    min-height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    padding: 0 5px;
+    color: inherit;
+    font-size: inherit;
+    border: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox.mayhen_invitation_jeowinids483fr_ladi-form-checkbox-horizontal
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item {
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 10px !important;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    position: relative;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    input {
+    margin-right: 5px;
+    display: block;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span {
+    cursor: default;
+    word-break: break-word;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    textarea.mayhen_invitation_jeowinids483fr_ladi-form-control {
+    resize: none;
+    padding: 5px;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-button {
+    cursor: pointer;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-button
+    .mayhen_invitation_jeowinids483fr_ladi-headline {
+    cursor: pointer;
+    user-select: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    [data-variant="true"]
+    select
+    option[disabled] {
+    background: #fff;
+    color: #b8b8b8 !important;
+}
+.mayhen_invitation_jeowinids483fr_ladi-element[data-form-checkout-item] {
+    padding: 0;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-element[data-form-checkout-item]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-element[data-form-checkout-item]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    height: auto !important;
+    position: unset !important;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    [data-form-checkout-item="payment"]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    display: table;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    [data-form-checkout-item="total_price"] {
+    display: flex;
+    flex-flow: column;
+    gap: 3px;
+    justify-content: center;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    [data-form-checkout-item="coupon_code"]
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.mayhen_invitation_jeowinids483fr_ladi-form
+    > .mayhen_invitation_jeowinids483fr_ladi-element
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control-select {
+    background-image: url("data:image/svg+xml;utf8, %3Csvg%20width%3D%2232%22%20height%3D%2224%22%20viewBox%3D%220%200%2032%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpolygon%20points%3D%220%2C0%2032%2C0%2016%2C24%22%20style%3D%22fill%3A%20rgb(0%2C%200%2C%200)%22%3E%3C%2Fpolygon%3E%3C%2Fsvg%3E");
+}
+.mayhen_invitation_jeowinids483fr_ladi-group {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-shape {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_ladi-image
+    .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: cover;
+    background-attachment: scroll;
+    background-origin: content-box;
+    position: absolute;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-headline {
+    width: 100%;
+    display: inline-block;
+    word-break: break-word;
+    background-size: cover;
+    background-position: center center;
+}
+.mayhen_invitation_jeowinids483fr_ladi-headline a {
+    text-decoration: underline;
+}
+.mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    width: 100%;
+    display: inline-block;
+    word-break: break-word;
+}
+.mayhen_invitation_jeowinids483fr_ladi-paragraph a {
+    text-decoration: underline;
+}
+.mayhen_invitation_jeowinids483fr_ladi-line {
+    position: relative;
+}
+.mayhen_invitation_jeowinids483fr_ladi-line
+    .mayhen_invitation_jeowinids483fr_ladi-line-container {
+    border-bottom: 0 !important;
+    border-right: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_ladi-hidden {
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_ladi-animation-hidden {
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+/* Source style_page: relevant rules */
+body {
+    direction: ltr;
+}
+@font-face {
+    font-family: "TWFMTdfREZWTiBJbmRbGdlIFNjcmlwdCvdGY";
+    src: url("https://w.ladicdn.com/6446a909ce8883001284c7a2/mau17_dfvn-indulge-script-20250328143031-tpgin.otf");
+}
+@font-face {
+    font-family: "REZWTiBCbhlbWUgRmxvcmFsLmZg";
+    src: url("https://w.ladicdn.com/6446a909ce8883001284c7a2/dfvn-boheme-floral-20231216035421-pr2ds.otf");
+}
+@font-face {
+    font-family: "RmxldXJEZUxlYWgtUmVndWxhcidGY";
+    src: url("https://w.ladicdn.com/6446a909ce8883001284c7a2/fleurdeleah-regular-20231219141658-bijfj.ttf")
+        format("truetype");
+}
+body {
+    font-family: Jura, sans-serif;
+}
+/* Source style_element: relevant rules */
+.mayhen_invitation_jeowinids483fr_popup10
+    > .mayhen_invitation_jeowinids483fr_ladi-popup
+    > .mayhen_invitation_jeowinids483fr_ladi-popup-background {
+    background-image: url("https://iili.io/qnzyut4.jpg");
+    background-size: cover;
+    background-origin: content-box;
+    background-position: center top;
+    background-repeat: repeat;
+    background-attachment: scroll;
+}
+.mayhen_invitation_jeowinids483fr_image51
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image210
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_box86,
+.mayhen_invitation_jeowinids483fr_image52
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image211
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_headline190,
+.mayhen_invitation_jeowinids483fr_headline197,
+.mayhen_invitation_jeowinids483fr_headline204,
+.mayhen_invitation_jeowinids483fr_headline211,
+.mayhen_invitation_jeowinids483fr_headline218,
+.mayhen_invitation_jeowinids483fr_headline225,
+.mayhen_invitation_jeowinids483fr_group151,
+.mayhen_invitation_jeowinids483fr_headline233,
+.mayhen_invitation_jeowinids483fr_image213,
+.mayhen_invitation_jeowinids483fr_image213
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_box89,
+.mayhen_invitation_jeowinids483fr_image226
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image225
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image222
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_group107,
+.mayhen_invitation_jeowinids483fr_paragraph34,
+.mayhen_invitation_jeowinids483fr_paragraph36,
+.mayhen_invitation_jeowinids483fr_button_shape23,
+.mayhen_invitation_jeowinids483fr_image224
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image223
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image245
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image227,
+.mayhen_invitation_jeowinids483fr_image227
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_group174,
+.mayhen_invitation_jeowinids483fr_image228
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image229
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image244
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image232
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image237
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image238
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image246
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image248
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image249
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image251
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image252
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_form3,
+.mayhen_invitation_jeowinids483fr_box96,
+.mayhen_invitation_jeowinids483fr_headline357,
+.mayhen_invitation_jeowinids483fr_image148
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image149
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image144
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image145
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image146
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_box58,
+.mayhen_invitation_jeowinids483fr_popup10,
+.mayhen_invitation_jeowinids483fr_image160
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image206
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image207
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    top: 0px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_box86
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_image213
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_box89
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_image227
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    border-radius: 0px;
+}
+.mayhen_invitation_jeowinids483fr_box89
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    -webkit-background-clip: initial;
+}
+.mayhen_invitation_jeowinids483fr_box86
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_image52:hover
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline190
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline191
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline192
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline193
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline194
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline195
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline196
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline197
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline198
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline199
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline200
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline201
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline202
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline203
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline204
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline205
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline206
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline207
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline208
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline209
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline210
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline211
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline212
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline213
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline214
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline215
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline216
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline217
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline218
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline219
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline220
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline221
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline222
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline223
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline224
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline225
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline226
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline227
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline228
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline229
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline230
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline231
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline232
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline233
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline234
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline235
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline236
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline237
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline238
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline239
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_shape18:hover
+    > .mayhen_invitation_jeowinids483fr_ladi-shape,
+.mayhen_invitation_jeowinids483fr_box89
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_paragraph34
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph35
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph36
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph37
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_headline107
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_paragraph33
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_headline108
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline110
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline111
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline112
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_paragraph66
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph67
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph68
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_paragraph69
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_box94
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_button7
+    > .mayhen_invitation_jeowinids483fr_ladi-button:hover,
+.mayhen_invitation_jeowinids483fr_button_text7
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline62
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_box96
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box97
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box98
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box99
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_paragraph81
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph:hover,
+.mayhen_invitation_jeowinids483fr_headline357
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline358
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline359
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_headline360
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_box45
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box44
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box58
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_box59
+    > .mayhen_invitation_jeowinids483fr_ladi-box:hover,
+.mayhen_invitation_jeowinids483fr_headline84
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover {
+    opacity: 1;
+}
+.mayhen_invitation_jeowinids483fr_box89 {
+    width: 420px;
+    height: 270px;
+}
+.mayhen_invitation_jeowinids483fr_box89
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-image: linear-gradient(rgb(84, 84, 84), rgba(234, 237, 238, 0));
+    background-color: initial;
+    background-size: initial;
+    background-origin: initial;
+    background-position: initial;
+    background-repeat: initial;
+    background-attachment: initial;
+}
+.mayhen_invitation_jeowinids483fr_section3 {
+    height: 1125.8px;
+}
+.mayhen_invitation_jeowinids483fr_section3
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_section25
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_section26
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_section27
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_section29
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_section30
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background {
+    background-image: url("https://iili.io/qnzyut4.jpg");
+    background-size: 100%;
+    background-origin: content-box;
+    background-position: center top;
+    background-repeat: repeat;
+    background-attachment: scroll;
+}
+.mayhen_invitation_jeowinids483fr_image51,
+.mayhen_invitation_jeowinids483fr_image51
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 277.994px;
+    height: 303.657px;
+}
+.mayhen_invitation_jeowinids483fr_image51 {
+    top: 62.034px;
+    left: 70.1071px;
+}
+.mayhen_invitation_jeowinids483fr_image51
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzyz9s.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image51
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image52
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    border-radius: 20px;
+}
+.mayhen_invitation_jeowinids483fr_image51.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image52.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline353.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_image232.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image237.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image238.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image246.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image247.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image248.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image249.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline357.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image210,
+.mayhen_invitation_jeowinids483fr_image210
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 177.228px;
+    height: 182.706px;
+}
+.mayhen_invitation_jeowinids483fr_image210 {
+    top: 62.034px;
+    left: 12.376px;
+}
+.mayhen_invitation_jeowinids483fr_image210
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image245
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzplTv.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image210
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image209
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image211
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image226
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image225
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image222
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image224
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image223
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_box96
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box97
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box98
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box99
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    border-radius: 15px;
+}
+.mayhen_invitation_jeowinids483fr_image210.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_paragraph59.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph61.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_box86.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_image209.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image213.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline107.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_paragraph66.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph67.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph68.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph69.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_image227.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_form3.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-form,
+.mayhen_invitation_jeowinids483fr_headline62.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_paragraph79.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph81.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_headline58.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_image160.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline133.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInDown;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_paragraph59,
+.mayhen_invitation_jeowinids483fr_paragraph61 {
+    width: 299px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph59 {
+    top: 401.28px;
+    left: 59.6041px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph59
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph61
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph79
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph61 {
+    top: 502.766px;
+    left: 60.6421px;
+}
+.mayhen_invitation_jeowinids483fr_group134,
+.mayhen_invitation_jeowinids483fr_box86 {
+    width: 207.021px;
+    height: 216.155px;
+}
+.mayhen_invitation_jeowinids483fr_group134 {
+    top: 85.862px;
+    left: 106.632px;
+}
+.mayhen_invitation_jeowinids483fr_box86
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-color: rgb(248, 248, 248);
+    box-shadow: rgb(0, 0, 0) 0px 6px 20px -15px;
+}
+.mayhen_invitation_jeowinids483fr_image209 {
+    width: 177.228px;
+    height: 160.81px;
+    top: 12.9582px;
+    left: 14.8963px;
+}
+.mayhen_invitation_jeowinids483fr_image209
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 177.859px;
+    height: 266.788px;
+    top: -39px;
+    left: 0px;
+    background-image: url("https://iili.io/qnTdQKQ.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image52 {
+    width: 279.525px;
+    height: 178.122px;
+    top: 194.158px;
+    left: 70.3796px;
+}
+.mayhen_invitation_jeowinids483fr_image52
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 282.145px;
+    height: 178.122px;
+    background-image: url("https://iili.io/qnzyncX.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image211,
+.mayhen_invitation_jeowinids483fr_image211
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 213.632px;
+    height: 171.279px;
+}
+.mayhen_invitation_jeowinids483fr_image211 {
+    top: 244.74px;
+    left: 189.604px;
+}
+.mayhen_invitation_jeowinids483fr_image211
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image207
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzpYva.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image211.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInUp;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_line14 {
+    height: 68px;
+    top: 627.28px;
+    left: 201px;
+}
+.mayhen_invitation_jeowinids483fr_line14
+    > .mayhen_invitation_jeowinids483fr_ladi-line
+    > .mayhen_invitation_jeowinids483fr_ladi-line-container {
+    border-top: 0px !important;
+    border-right: 2px solid rgb(35, 35, 35);
+    border-bottom: 2px solid rgb(35, 35, 35);
+    border-left: 2px solid rgb(35, 35, 35);
+}
+.mayhen_invitation_jeowinids483fr_line14.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_headline232.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline233.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline234.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline235.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline236.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline237.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline238.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_image222.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_paragraph34.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph35.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph36.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph37.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_line47.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_line48.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_line49.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_group55.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-group,
+.mayhen_invitation_jeowinids483fr_box96.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_line14
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_line47
+    > .mayhen_invitation_jeowinids483fr_ladi-line {
+    height: 100%;
+    padding: 0px 8px;
+}
+.mayhen_invitation_jeowinids483fr_group172 {
+    width: 402px;
+    height: 271.3px;
+    top: 827.78px;
+    left: 9.1422px;
+}
+.mayhen_invitation_jeowinids483fr_group145,
+.mayhen_invitation_jeowinids483fr_group146,
+.mayhen_invitation_jeowinids483fr_group147,
+.mayhen_invitation_jeowinids483fr_group148,
+.mayhen_invitation_jeowinids483fr_group149,
+.mayhen_invitation_jeowinids483fr_group150 {
+    width: 388.5px;
+    height: 29px;
+}
+.mayhen_invitation_jeowinids483fr_group145 {
+    top: 202.4px;
+    left: 6.1px;
+}
+.mayhen_invitation_jeowinids483fr_headline190,
+.mayhen_invitation_jeowinids483fr_headline191,
+.mayhen_invitation_jeowinids483fr_headline192,
+.mayhen_invitation_jeowinids483fr_headline193,
+.mayhen_invitation_jeowinids483fr_headline194,
+.mayhen_invitation_jeowinids483fr_headline195,
+.mayhen_invitation_jeowinids483fr_headline196,
+.mayhen_invitation_jeowinids483fr_headline197,
+.mayhen_invitation_jeowinids483fr_headline198,
+.mayhen_invitation_jeowinids483fr_headline199,
+.mayhen_invitation_jeowinids483fr_headline200,
+.mayhen_invitation_jeowinids483fr_headline201,
+.mayhen_invitation_jeowinids483fr_headline202,
+.mayhen_invitation_jeowinids483fr_headline203,
+.mayhen_invitation_jeowinids483fr_headline204,
+.mayhen_invitation_jeowinids483fr_headline205,
+.mayhen_invitation_jeowinids483fr_headline206,
+.mayhen_invitation_jeowinids483fr_headline207,
+.mayhen_invitation_jeowinids483fr_headline208,
+.mayhen_invitation_jeowinids483fr_headline209,
+.mayhen_invitation_jeowinids483fr_headline210,
+.mayhen_invitation_jeowinids483fr_headline211,
+.mayhen_invitation_jeowinids483fr_headline212,
+.mayhen_invitation_jeowinids483fr_headline213,
+.mayhen_invitation_jeowinids483fr_headline214,
+.mayhen_invitation_jeowinids483fr_headline215,
+.mayhen_invitation_jeowinids483fr_headline216,
+.mayhen_invitation_jeowinids483fr_headline217,
+.mayhen_invitation_jeowinids483fr_headline218,
+.mayhen_invitation_jeowinids483fr_headline219,
+.mayhen_invitation_jeowinids483fr_headline220,
+.mayhen_invitation_jeowinids483fr_headline221,
+.mayhen_invitation_jeowinids483fr_headline222,
+.mayhen_invitation_jeowinids483fr_headline223,
+.mayhen_invitation_jeowinids483fr_headline224,
+.mayhen_invitation_jeowinids483fr_headline225,
+.mayhen_invitation_jeowinids483fr_headline226,
+.mayhen_invitation_jeowinids483fr_headline227,
+.mayhen_invitation_jeowinids483fr_headline228,
+.mayhen_invitation_jeowinids483fr_headline229,
+.mayhen_invitation_jeowinids483fr_headline230,
+.mayhen_invitation_jeowinids483fr_headline231 {
+    width: 53px;
+}
+.mayhen_invitation_jeowinids483fr_headline190
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline191
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline192
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline193
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline194
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline195
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline196
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline197
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline198
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline199
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline200
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline201
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline202
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline203
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline204
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline205
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline206
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline207
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline208
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline209
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline210
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline211
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline212
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline213
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline214
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline215
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline216
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline217
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline218
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline219
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline220
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline221
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline222
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline223
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline224
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline225
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline226
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline227
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline228
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline229
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline230
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline231
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: Philosopher, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline190.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline191.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline192.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline193.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline194.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline195.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline196.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline197.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline198.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline199.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline200.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline201.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline202.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline203.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline204.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline205.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline206.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline207.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline208.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline209.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline210.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline211.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline212.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline213.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline214.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline215.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline216.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline217.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline218.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline219.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline220.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline221.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline222.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline223.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline224.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline225.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline226.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline227.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline228.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline229.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline230.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline231.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: flipInY;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline191,
+.mayhen_invitation_jeowinids483fr_headline198,
+.mayhen_invitation_jeowinids483fr_headline205,
+.mayhen_invitation_jeowinids483fr_headline212,
+.mayhen_invitation_jeowinids483fr_headline219,
+.mayhen_invitation_jeowinids483fr_headline226 {
+    top: 0px;
+    left: 55.9167px;
+}
+.mayhen_invitation_jeowinids483fr_headline192,
+.mayhen_invitation_jeowinids483fr_headline199,
+.mayhen_invitation_jeowinids483fr_headline206,
+.mayhen_invitation_jeowinids483fr_headline213,
+.mayhen_invitation_jeowinids483fr_headline220,
+.mayhen_invitation_jeowinids483fr_headline227 {
+    top: 0px;
+    left: 111.833px;
+}
+.mayhen_invitation_jeowinids483fr_headline193,
+.mayhen_invitation_jeowinids483fr_headline200,
+.mayhen_invitation_jeowinids483fr_headline207,
+.mayhen_invitation_jeowinids483fr_headline214,
+.mayhen_invitation_jeowinids483fr_headline221,
+.mayhen_invitation_jeowinids483fr_headline228 {
+    top: 0px;
+    left: 167.75px;
+}
+.mayhen_invitation_jeowinids483fr_headline194,
+.mayhen_invitation_jeowinids483fr_headline201,
+.mayhen_invitation_jeowinids483fr_headline208,
+.mayhen_invitation_jeowinids483fr_headline215,
+.mayhen_invitation_jeowinids483fr_headline222,
+.mayhen_invitation_jeowinids483fr_headline229 {
+    top: 0px;
+    left: 223.667px;
+}
+.mayhen_invitation_jeowinids483fr_headline195,
+.mayhen_invitation_jeowinids483fr_headline202,
+.mayhen_invitation_jeowinids483fr_headline209,
+.mayhen_invitation_jeowinids483fr_headline216,
+.mayhen_invitation_jeowinids483fr_headline223,
+.mayhen_invitation_jeowinids483fr_headline230 {
+    top: 0px;
+    left: 279.583px;
+}
+.mayhen_invitation_jeowinids483fr_headline196,
+.mayhen_invitation_jeowinids483fr_headline203,
+.mayhen_invitation_jeowinids483fr_headline210,
+.mayhen_invitation_jeowinids483fr_headline217,
+.mayhen_invitation_jeowinids483fr_headline224,
+.mayhen_invitation_jeowinids483fr_headline231 {
+    top: 0px;
+    left: 335.5px;
+}
+.mayhen_invitation_jeowinids483fr_group146 {
+    top: 162.3px;
+    left: 6.1px;
+}
+.mayhen_invitation_jeowinids483fr_group147 {
+    top: 42px;
+    left: 6.1px;
+}
+.mayhen_invitation_jeowinids483fr_group148 {
+    top: 82.1px;
+    left: 6.1px;
+}
+.mayhen_invitation_jeowinids483fr_group149 {
+    top: 122.2px;
+    left: 6.1px;
+}
+.mayhen_invitation_jeowinids483fr_group150 {
+    top: 242.3px;
+    left: 6.0118px;
+}
+.mayhen_invitation_jeowinids483fr_group151 {
+    width: 402px;
+    height: 22px;
+}
+.mayhen_invitation_jeowinids483fr_headline232,
+.mayhen_invitation_jeowinids483fr_headline357,
+.mayhen_invitation_jeowinids483fr_headline358,
+.mayhen_invitation_jeowinids483fr_headline359,
+.mayhen_invitation_jeowinids483fr_headline360 {
+    width: 74px;
+}
+.mayhen_invitation_jeowinids483fr_headline232 {
+    top: 0px;
+    left: 328px;
+}
+.mayhen_invitation_jeowinids483fr_headline232
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline233
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline234
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline235
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline236
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline237
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline238
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: Philosopher, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-transform: uppercase;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline233,
+.mayhen_invitation_jeowinids483fr_headline234,
+.mayhen_invitation_jeowinids483fr_headline235,
+.mayhen_invitation_jeowinids483fr_headline236,
+.mayhen_invitation_jeowinids483fr_headline237,
+.mayhen_invitation_jeowinids483fr_headline238 {
+    width: 55px;
+}
+.mayhen_invitation_jeowinids483fr_headline234 {
+    top: 0px;
+    left: 55px;
+}
+.mayhen_invitation_jeowinids483fr_headline235 {
+    top: 0px;
+    left: 110px;
+}
+.mayhen_invitation_jeowinids483fr_headline236 {
+    top: 0px;
+    left: 168px;
+}
+.mayhen_invitation_jeowinids483fr_headline237 {
+    top: 0px;
+    left: 223px;
+}
+.mayhen_invitation_jeowinids483fr_headline238 {
+    top: 0px;
+    left: 278px;
+}
+.mayhen_invitation_jeowinids483fr_headline239 {
+    width: 222px;
+    top: 734.28px;
+    left: 98.1041px;
+}
+.mayhen_invitation_jeowinids483fr_headline239
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: RmxldXJEZUxlYWgtUmVndWxhcidGY;
+    font-size: 42px;
+    line-height: 1.1;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline239.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_paragraph33.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_headline108.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline110.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInDown;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline240 {
+    width: 144px;
+    top: 296.28px;
+    left: 137.104px;
+}
+.mayhen_invitation_jeowinids483fr_headline240
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: TWFMTdfREZWTiBJbmRbGdlIFNjcmlwdCvdGY;
+    font-size: 28.75px;
+    line-height: 1.6;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline240.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline293.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: bounceInLeft;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_shape18 {
+    width: 50.9998px;
+    height: 50.9998px;
+    top: 981.78px;
+    left: 295.5px;
+}
+.mayhen_invitation_jeowinids483fr_shape18.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-shape {
+    animation-name: pulse;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+.mayhen_invitation_jeowinids483fr_shape18 svg:last-child {
+    fill: url("#SHAPE18_mobile_gradient");
+}
+.mayhen_invitation_jeowinids483fr_section25 {
+    height: 630px;
+}
+.mayhen_invitation_jeowinids483fr_image213,
+.mayhen_invitation_jeowinids483fr_image213
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 420px;
+    height: 630px;
+}
+.mayhen_invitation_jeowinids483fr_image213
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnTdrNe.jpg");
+}
+.mayhen_invitation_jeowinids483fr_headline293,
+.mayhen_invitation_jeowinids483fr_headline294 {
+    width: 223px;
+}
+.mayhen_invitation_jeowinids483fr_headline293 {
+    top: 29.98px;
+    left: 15.154px;
+}
+.mayhen_invitation_jeowinids483fr_headline293
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline294
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(255, 255, 254);
+    letter-spacing: 0px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline294 {
+    top: 106.98px;
+    left: 188.142px;
+}
+.mayhen_invitation_jeowinids483fr_headline294.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline295.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline352.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline354.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: bounceInRight;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline295 {
+    width: 161px;
+    top: 48.98px;
+    left: 129.642px;
+}
+.mayhen_invitation_jeowinids483fr_headline295
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: RmxldXJEZUxlYWgtUmVndWxhcidGY;
+    font-size: 60px;
+    line-height: 1.6;
+    color: rgb(255, 255, 254);
+    letter-spacing: 0px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_section26 {
+    height: 943.8px;
+}
+.mayhen_invitation_jeowinids483fr_image226,
+.mayhen_invitation_jeowinids483fr_image226
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 310.83px;
+    height: 310.83px;
+}
+.mayhen_invitation_jeowinids483fr_image226 {
+    top: 245.866px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image226
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image251
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzpSGS.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image226.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image224.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInUp;
+    animation-delay: 4s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image225,
+.mayhen_invitation_jeowinids483fr_image225
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 191.958px;
+    height: 163.786px;
+}
+.mayhen_invitation_jeowinids483fr_image225 {
+    top: 837.48px;
+    left: 69.0058px;
+}
+.mayhen_invitation_jeowinids483fr_image225
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzpwyG.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image225.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline84.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 3s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image222,
+.mayhen_invitation_jeowinids483fr_image222
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 65.9575px;
+    height: 104.327px;
+}
+.mayhen_invitation_jeowinids483fr_image222 {
+    top: 16.075px;
+    left: 177.021px;
+}
+.mayhen_invitation_jeowinids483fr_image222
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzptnV.jpg");
+}
+.mayhen_invitation_jeowinids483fr_group106 {
+    width: 339.5px;
+    height: 62.0729px;
+    top: 126.96px;
+    left: 40.25px;
+}
+.mayhen_invitation_jeowinids483fr_group107 {
+    width: 165px;
+    height: 62.0729px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph34,
+.mayhen_invitation_jeowinids483fr_paragraph35,
+.mayhen_invitation_jeowinids483fr_paragraph36 {
+    width: 165px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph34
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph36
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-transform: uppercase;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph35,
+.mayhen_invitation_jeowinids483fr_paragraph37 {
+    top: 26.0729px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph35
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph37
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgb(93, 93, 93);
+    text-transform: uppercase;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_group108 {
+    width: 169px;
+    height: 62.0729px;
+    top: 0px;
+    left: 170.5px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph37 {
+    width: 169px;
+}
+.mayhen_invitation_jeowinids483fr_group104 {
+    width: 396px;
+    height: 136.448px;
+    top: 219.152px;
+    left: 12px;
+}
+.mayhen_invitation_jeowinids483fr_headline107 {
+    width: 396px;
+    top: 42.262px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_headline107
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 19px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline107
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover,
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span[data-checked="false"],
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control::placeholder,
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    select.mayhen_invitation_jeowinids483fr_ladi-form-control[data-selected=""],
+.mayhen_invitation_jeowinids483fr_headline84
+    > .mayhen_invitation_jeowinids483fr_ladi-headline:hover {
+    color: rgb(35, 35, 35);
+}
+.mayhen_invitation_jeowinids483fr_paragraph33 {
+    width: 339px;
+    top: 85.448px;
+    left: 29.5232px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph33
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgb(115, 115, 115);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline108 {
+    width: 345px;
+    top: 0px;
+    left: 26.5058px;
+}
+.mayhen_invitation_jeowinids483fr_headline108
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 23px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline110,
+.mayhen_invitation_jeowinids483fr_headline111 {
+    width: 302px;
+}
+.mayhen_invitation_jeowinids483fr_headline110 {
+    top: 382.048px;
+    left: 58.9998px;
+}
+.mayhen_invitation_jeowinids483fr_headline110
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline111
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg;
+    font-size: 57px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline111 {
+    top: 502.084px;
+    left: 58.9998px;
+}
+.mayhen_invitation_jeowinids483fr_headline111.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline112 {
+    width: 98px;
+    top: 473.048px;
+    left: 161px;
+}
+.mayhen_invitation_jeowinids483fr_headline112
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg;
+    font-size: 25px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline112.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: rotateIn;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_paragraph66 {
+    width: 347px;
+    top: 642.533px;
+    left: 36.4998px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph66
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph67 {
+    width: 336px;
+    top: 767.48px;
+    left: 41.9998px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph67
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgb(93, 93, 93);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph68 {
+    width: 241px;
+    top: 693.533px;
+    left: 89.4998px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph68
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgb(93, 93, 93);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph69 {
+    width: 211px;
+    top: 733.48px;
+    left: 104.5px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph69
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 21.24px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(93, 93, 93);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_button23 {
+    width: 160px;
+    height: 40px;
+    top: 828.48px;
+    left: 130px;
+}
+.mayhen_invitation_jeowinids483fr_button23
+    > .mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-background,
+.mayhen_invitation_jeowinids483fr_section28
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background,
+.mayhen_invitation_jeowinids483fr_button7
+    > .mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-background,
+.mayhen_invitation_jeowinids483fr_box96
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box97
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box98
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box99
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box59
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_button14
+    > .mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-button-background {
+    background-color: rgb(35, 35, 35);
+}
+.mayhen_invitation_jeowinids483fr_button23
+    > .mayhen_invitation_jeowinids483fr_ladi-button {
+    border-radius: 100px;
+}
+.mayhen_invitation_jeowinids483fr_button23.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-button {
+    animation-name: pulse;
+    animation-delay: 1s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_button_shape23
+    > .mayhen_invitation_jeowinids483fr_ladi-shape {
+    width: 18.9021px;
+    height: 20px;
+}
+.mayhen_invitation_jeowinids483fr_button_shape23
+    > .mayhen_invitation_jeowinids483fr_ladi-shape {
+    left: 20px;
+}
+.mayhen_invitation_jeowinids483fr_button_shape23 svg:last-child,
+.mayhen_invitation_jeowinids483fr_shape10 svg:last-child,
+.mayhen_invitation_jeowinids483fr_shape11 svg:last-child {
+    fill: rgb(255, 255, 255);
+}
+.mayhen_invitation_jeowinids483fr_button_text23 {
+    width: 160px;
+}
+.mayhen_invitation_jeowinids483fr_button_text23,
+.mayhen_invitation_jeowinids483fr_button_text14 {
+    top: 9px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_button_text23
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_button_text7
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_image224,
+.mayhen_invitation_jeowinids483fr_image224
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 89.83px;
+    height: 223.228px;
+}
+.mayhen_invitation_jeowinids483fr_image224 {
+    top: 788.279px;
+    left: 323.17px;
+}
+.mayhen_invitation_jeowinids483fr_image224
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image149
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzpjvs.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image223,
+.mayhen_invitation_jeowinids483fr_image223
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 88.7643px;
+    height: 148.414px;
+}
+.mayhen_invitation_jeowinids483fr_image223 {
+    top: 837.48px;
+    left: -19.7585px;
+}
+.mayhen_invitation_jeowinids483fr_image223
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzphan.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image223.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_headline83.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 2s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_section27 {
+    height: 776px;
+}
+.mayhen_invitation_jeowinids483fr_image245,
+.mayhen_invitation_jeowinids483fr_image245
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 124.77px;
+    height: 128.627px;
+}
+.mayhen_invitation_jeowinids483fr_image245 {
+    top: 367.274px;
+    left: 5.145px;
+}
+.mayhen_invitation_jeowinids483fr_image245.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInUp;
+    animation-delay: 1s;
+    animation-duration: 4s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_box94 {
+    width: 301px;
+    height: 293px;
+    top: 416.98px;
+    left: 59.5px;
+}
+.mayhen_invitation_jeowinids483fr_box94
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    border-radius: 74px;
+}
+.mayhen_invitation_jeowinids483fr_box94
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-color: rgb(255, 255, 255);
+}
+.mayhen_invitation_jeowinids483fr_image227,
+.mayhen_invitation_jeowinids483fr_image227
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 420px;
+    height: 280px;
+}
+.mayhen_invitation_jeowinids483fr_image227
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnT2nbn.jpg");
+}
+.mayhen_invitation_jeowinids483fr_headline352 {
+    width: 199px;
+    top: 315.98px;
+    left: 106px;
+}
+.mayhen_invitation_jeowinids483fr_headline352
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline354
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: RmxldXJEZUxlYWgtUmVndWxhcidGY;
+    font-size: 48.2px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    letter-spacing: 0px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_group173 {
+    width: 219.204px;
+    height: 197px;
+    top: 464.98px;
+    left: 100.398px;
+}
+.mayhen_invitation_jeowinids483fr_line47 {
+    height: 197px;
+    top: 0px;
+    left: 101.102px;
+}
+.mayhen_invitation_jeowinids483fr_line47
+    > .mayhen_invitation_jeowinids483fr_ladi-line
+    > .mayhen_invitation_jeowinids483fr_ladi-line-container {
+    border-top: 0px !important;
+    border-right: 1px solid rgb(217, 217, 217);
+    border-bottom: 1px solid rgb(217, 217, 217);
+    border-left: 1px solid rgb(217, 217, 217);
+}
+.mayhen_invitation_jeowinids483fr_group174 {
+    width: 219.204px;
+    height: 67px;
+}
+.mayhen_invitation_jeowinids483fr_line48,
+.mayhen_invitation_jeowinids483fr_line49 {
+    width: 36px;
+}
+.mayhen_invitation_jeowinids483fr_line48 {
+    top: 25.0002px;
+    left: 74.671px;
+}
+.mayhen_invitation_jeowinids483fr_line48
+    > .mayhen_invitation_jeowinids483fr_ladi-line
+    > .mayhen_invitation_jeowinids483fr_ladi-line-container,
+.mayhen_invitation_jeowinids483fr_line49
+    > .mayhen_invitation_jeowinids483fr_ladi-line
+    > .mayhen_invitation_jeowinids483fr_ladi-line-container {
+    border-top: 1px solid rgb(217, 217, 217);
+    border-right: 1px solid rgb(217, 217, 217);
+    border-bottom: 1px solid rgb(217, 217, 217);
+    border-left: 0px !important;
+}
+.mayhen_invitation_jeowinids483fr_line48
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_line49
+    > .mayhen_invitation_jeowinids483fr_ladi-line {
+    width: 100%;
+    padding: 8px 0px;
+}
+.mayhen_invitation_jeowinids483fr_image228 {
+    width: 63.1387px;
+    height: 53.5792px;
+    top: 6.7104px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image228
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 66.8762px;
+    height: 53.5792px;
+    background-image: url("https://w.ladicdn.com/s400x400/6446a909ce8883001284c7a2/w31_icon5-20240324143948-l5hxp.png");
+}
+.mayhen_invitation_jeowinids483fr_image228.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image229.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: swing;
+    animation-delay: 0s;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+.mayhen_invitation_jeowinids483fr_paragraph70,
+.mayhen_invitation_jeowinids483fr_paragraph71 {
+    width: 97px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph70 {
+    top: 0px;
+    left: 122.204px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph70
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph71
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 16px;
+    line-height: 1.4;
+    color: rgb(0, 0, 0);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_paragraph70.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph71.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    animation-name: fadeInUp;
+    animation-delay: 1.5s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_group175 {
+    width: 219.204px;
+    height: 63.1387px;
+    top: 111.146px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image229,
+.mayhen_invitation_jeowinids483fr_image229
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 63.1387px;
+    height: 63.1387px;
+}
+.mayhen_invitation_jeowinids483fr_image229 {
+    top: 0px;
+    left: 156.065px;
+}
+.mayhen_invitation_jeowinids483fr_image229
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://w.ladicdn.com/s400x400/6446a909ce8883001284c7a2/timeline3-20240323075615-el-qz.png");
+}
+.mayhen_invitation_jeowinids483fr_line49 {
+    top: 23.069px;
+    left: 108.533px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph71 {
+    top: 9.069px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image244,
+.mayhen_invitation_jeowinids483fr_image244
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 115.832px;
+    height: 270.382px;
+}
+.mayhen_invitation_jeowinids483fr_image244 {
+    top: 592.289px;
+    left: 299.023px;
+}
+.mayhen_invitation_jeowinids483fr_image244
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzy3tR.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image244.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: bounceInUp;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_section28 {
+    height: 1507px;
+}
+.mayhen_invitation_jeowinids483fr_headline353 {
+    width: 208px;
+    top: 20.493px;
+    left: 106px;
+}
+.mayhen_invitation_jeowinids483fr_headline353
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg;
+    font-size: 50px;
+    line-height: 1.6;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_image232,
+.mayhen_invitation_jeowinids483fr_image232
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 409.71px;
+    height: 614.565px;
+}
+.mayhen_invitation_jeowinids483fr_image232 {
+    top: 124.493px;
+    left: 5.145px;
+}
+.mayhen_invitation_jeowinids483fr_image232
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnT2KUN.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image237,
+.mayhen_invitation_jeowinids483fr_image237
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image238,
+.mayhen_invitation_jeowinids483fr_image238
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image246,
+.mayhen_invitation_jeowinids483fr_image246
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image247
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image248,
+.mayhen_invitation_jeowinids483fr_image248
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 201.937px;
+    height: 302.906px;
+}
+.mayhen_invitation_jeowinids483fr_image237 {
+    top: 1192.19px;
+    left: 4.645px;
+}
+.mayhen_invitation_jeowinids483fr_image237
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnT20zu.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image238 {
+    top: 1192.19px;
+    left: 213.418px;
+}
+.mayhen_invitation_jeowinids483fr_image238
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnT21Wb.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image246 {
+    top: 744.227px;
+    left: 4.645px;
+}
+.mayhen_invitation_jeowinids483fr_image246
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnTdgR9.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image247,
+.mayhen_invitation_jeowinids483fr_image249,
+.mayhen_invitation_jeowinids483fr_image249
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 201.937px;
+    height: 134.625px;
+}
+.mayhen_invitation_jeowinids483fr_image247 {
+    top: 744.227px;
+    left: 213.418px;
+}
+.mayhen_invitation_jeowinids483fr_image247
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    top: -108px;
+    left: 1px;
+    background-image: url("https://iili.io/qnTdbHP.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image248 {
+    top: 884.227px;
+    left: 213.418px;
+}
+.mayhen_invitation_jeowinids483fr_image248
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnTdiVj.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image249 {
+    top: 1052.51px;
+    left: 4.645px;
+}
+.mayhen_invitation_jeowinids483fr_image249
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnT2BRt.jpg");
+}
+.mayhen_invitation_jeowinids483fr_section29 {
+    height: 574px;
+}
+.mayhen_invitation_jeowinids483fr_image251,
+.mayhen_invitation_jeowinids483fr_image251
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image252,
+.mayhen_invitation_jeowinids483fr_image252
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 400.31px;
+    height: 400.31px;
+}
+.mayhen_invitation_jeowinids483fr_image251 {
+    top: 9.68px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image251
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image252
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    opacity: 0.6;
+}
+.mayhen_invitation_jeowinids483fr_image251.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInLeft;
+    animation-delay: 1s;
+    animation-duration: 4s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image252 {
+    top: 187.525px;
+    left: 19.69px;
+}
+.mayhen_invitation_jeowinids483fr_image252
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzp4ae.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image252.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInRight;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline354 {
+    width: 316px;
+    top: 32.98px;
+    left: 51.9997px;
+}
+.mayhen_invitation_jeowinids483fr_group55 {
+    width: 374.001px;
+    height: 329.101px;
+    top: 203px;
+    left: 22.9993px;
+}
+.mayhen_invitation_jeowinids483fr_form3 {
+    width: 373.909px;
+    height: 329.101px;
+}
+.mayhen_invitation_jeowinids483fr_form3
+    > .mayhen_invitation_jeowinids483fr_ladi-form {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item
+    .mayhen_invitation_jeowinids483fr_ladi-form-control-select {
+    background-image: url("data:image/svg+xml;utf8, %3Csvg%20width%3D%2232%22%20height%3D%2224%22%20viewBox%3D%220%200%2032%2024%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpolygon%20points%3D%220%2C0%2032%2C0%2016%2C24%22%20style%3D%22fill%3A%20rgb(77%2C%2088%2C%2023)%22%3E%3C%2Fpolygon%3E%3C%2Fsvg%3E");
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    border-width: 2px;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(35, 35, 35);
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-background {
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+.mayhen_invitation_jeowinids483fr_form_item13 {
+    width: 165px;
+    height: 41px;
+    top: 113.641px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_form_item13
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 7px !important;
+}
+.mayhen_invitation_jeowinids483fr_form_item13
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.mayhen_invitation_jeowinids483fr_form_item13
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    input {
+    width: 13px;
+    height: 13px;
+}
+.mayhen_invitation_jeowinids483fr_form_item13
+    .mayhen_invitation_jeowinids483fr_ladi-form-item.mayhen_invitation_jeowinids483fr_ladi-form-checkbox
+    .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item
+    span {
+    width: calc(100% - 17px);
+}
+.mayhen_invitation_jeowinids483fr_form_item13
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_form_item8
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_form_item9
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_form_item10
+    .mayhen_invitation_jeowinids483fr_ladi-form-item,
+.mayhen_invitation_jeowinids483fr_form_item14
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    background-image: none !important;
+}
+.mayhen_invitation_jeowinids483fr_button7 {
+    width: 267.898px;
+    height: 42.1661px;
+    top: 286.935px;
+    left: 53.2295px;
+}
+.mayhen_invitation_jeowinids483fr_button7
+    > .mayhen_invitation_jeowinids483fr_ladi-button {
+    border-radius: 64px;
+}
+.mayhen_invitation_jeowinids483fr_button_text7 {
+    width: 268px;
+    top: 8.13737px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_form_item8 {
+    width: 373.461px;
+    height: 40px;
+    top: 0px;
+    left: 0.44774px;
+}
+.mayhen_invitation_jeowinids483fr_form_item9 {
+    width: 373.461px;
+    height: 103.633px;
+    top: 165.302px;
+    left: 0.44774px;
+}
+.mayhen_invitation_jeowinids483fr_form_item9
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container
+    .mayhen_invitation_jeowinids483fr_ladi-form-item {
+    padding: 10px;
+}
+.mayhen_invitation_jeowinids483fr_form_item10 {
+    width: 373.131px;
+    height: 40px;
+    top: 50.319px;
+    left: 0.467577px;
+}
+.mayhen_invitation_jeowinids483fr_form_item14 {
+    width: 201.314px;
+    height: 40px;
+    top: 114.141px;
+    left: 172.595px;
+}
+.mayhen_invitation_jeowinids483fr_headline62 {
+    width: 374px;
+    top: 95.879px;
+    left: 0.000723px;
+}
+.mayhen_invitation_jeowinids483fr_headline62
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: left;
+}
+.mayhen_invitation_jeowinids483fr_paragraph79 {
+    width: 366px;
+    top: 115.68px;
+    left: 26.9997px;
+}
+.mayhen_invitation_jeowinids483fr_section30 {
+    height: 253px;
+}
+.mayhen_invitation_jeowinids483fr_group184 {
+    width: 365.067px;
+    height: 55.8662px;
+    top: 108.838px;
+    left: 27.4523px;
+}
+.mayhen_invitation_jeowinids483fr_box96,
+.mayhen_invitation_jeowinids483fr_box97,
+.mayhen_invitation_jeowinids483fr_box98,
+.mayhen_invitation_jeowinids483fr_box99 {
+    width: 74.0133px;
+    height: 55.8662px;
+}
+.mayhen_invitation_jeowinids483fr_box97 {
+    top: 0px;
+    left: 97.0183px;
+}
+.mayhen_invitation_jeowinids483fr_box97.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 1.3s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_box98 {
+    top: 0px;
+    left: 194.036px;
+}
+.mayhen_invitation_jeowinids483fr_box98.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 1.6s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_box99 {
+    top: 0px;
+    left: 291.054px;
+}
+.mayhen_invitation_jeowinids483fr_box99.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 1.9s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_paragraph81 {
+    width: 400px;
+    top: 17.613px;
+    left: 9.98595px;
+}
+.mayhen_invitation_jeowinids483fr_paragraph81
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-family: RmxldXJEZUxlYWgtUmVndWxhcidGY;
+    font-size: 55px;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_group185 {
+    width: 365.096px;
+    height: 26px;
+    top: 167.777px;
+    left: 27.4523px;
+}
+.mayhen_invitation_jeowinids483fr_headline357
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline358
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline359
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_headline360
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline358 {
+    top: 0px;
+    left: 97.0319px;
+}
+.mayhen_invitation_jeowinids483fr_headline358.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 1.3s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline359 {
+    top: 0px;
+    left: 194.064px;
+}
+.mayhen_invitation_jeowinids483fr_headline359.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 1.6s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline360 {
+    top: 0px;
+    left: 291.096px;
+}
+.mayhen_invitation_jeowinids483fr_headline360.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInUp;
+    animation-delay: 1.9s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_countdown4 {
+    width: 365.067px;
+    height: 29.485px;
+    top: 120.029px;
+    left: 27.4523px;
+}
+.mayhen_invitation_jeowinids483fr_countdown4
+    > .mayhen_invitation_jeowinids483fr_ladi-countdown {
+    font-size: 32px;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_countdown4
+    > .mayhen_invitation_jeowinids483fr_ladi-countdown
+    > .mayhen_invitation_jeowinids483fr_ladi-element {
+    width: calc(25% - 20.25px);
+    height: 100%;
+    margin-right: 27px;
+}
+.mayhen_invitation_jeowinids483fr_section12 {
+    height: 772.122px;
+}
+.mayhen_invitation_jeowinids483fr_section12
+    > .mayhen_invitation_jeowinids483fr_ladi-section-background {
+    background-image: url("https://iili.io/qnT2uf4.jpg");
+    background-size: cover;
+    background-origin: content-box;
+    background-position: center center;
+    background-repeat: repeat;
+    background-attachment: scroll;
+}
+.mayhen_invitation_jeowinids483fr_image148,
+.mayhen_invitation_jeowinids483fr_image148
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 181px;
+    height: 234.214px;
+}
+.mayhen_invitation_jeowinids483fr_image148 {
+    top: 6px;
+    left: 239px;
+}
+.mayhen_invitation_jeowinids483fr_image148
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzpOuf.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image148
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image149
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    opacity: 0.6;
+    filter: brightness(400%);
+}
+.mayhen_invitation_jeowinids483fr_image148.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: shake;
+    animation-delay: 0s;
+    animation-duration: 20s;
+    animation-iteration-count: infinite;
+}
+.mayhen_invitation_jeowinids483fr_image149,
+.mayhen_invitation_jeowinids483fr_image149
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 118.31px;
+    height: 294px;
+}
+.mayhen_invitation_jeowinids483fr_image149 {
+    top: 6px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_box45 {
+    width: 386px;
+    height: 549px;
+    top: 57.533px;
+    left: 16.7505px;
+}
+.mayhen_invitation_jeowinids483fr_box45
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    border-width: 1px;
+    border-radius: 1000px 1000px 0px 0px;
+    border-style: solid;
+    border-color: rgb(255, 255, 255);
+}
+.mayhen_invitation_jeowinids483fr_box45
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box44
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-color: rgba(242, 243, 244, 0);
+}
+.mayhen_invitation_jeowinids483fr_box45.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 2s;
+    animation-duration: 4s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_box44 {
+    width: 364px;
+    height: 527px;
+    top: 68.533px;
+    left: 27.7505px;
+}
+.mayhen_invitation_jeowinids483fr_box44
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    border-width: 2px;
+    border-radius: 1000px 1000px 0px 0px;
+    border-style: solid;
+    border-color: rgb(255, 255, 255);
+}
+.mayhen_invitation_jeowinids483fr_box44.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 1.5s;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image144 {
+    width: 343.75px;
+    height: 503.625px;
+    top: 79.908px;
+    left: 37.8755px;
+}
+.mayhen_invitation_jeowinids483fr_image144
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 343.75px;
+    height: 515.625px;
+    background-image: url("https://iili.io/qnT2uf4.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image144
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    border-radius: 1000px 1000px 10px 10px;
+    box-shadow: rgb(0, 0, 0) 0px 5px 42px -4px;
+}
+.mayhen_invitation_jeowinids483fr_image144.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: bounceIn;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline57 {
+    width: 265px;
+    top: 433.533px;
+    left: 77.968px;
+}
+.mayhen_invitation_jeowinids483fr_headline57
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-family: TWFMTdfREZWTiBJbmRbGdlIFNjcmlwdCvdGY;
+    font-size: 66.25px;
+    line-height: 1;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    text-shadow: rgb(0, 0, 0) 1px 2px 3px;
+}
+.mayhen_invitation_jeowinids483fr_headline57.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInDown;
+    animation-delay: 2s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline58 {
+    width: 258px;
+    top: 621.41px;
+    left: 81.468px;
+}
+.mayhen_invitation_jeowinids483fr_headline58
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_image145,
+.mayhen_invitation_jeowinids483fr_image145
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background,
+.mayhen_invitation_jeowinids483fr_image146,
+.mayhen_invitation_jeowinids483fr_image146
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 105.901px;
+    height: 59.3611px;
+}
+.mayhen_invitation_jeowinids483fr_image145 {
+    top: 649.011px;
+    left: 297.566px;
+}
+.mayhen_invitation_jeowinids483fr_image145
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://w.ladicdn.com/s450x400/6446a909ce8883001284c7a2/5-20250330102513-clhop.png");
+}
+.mayhen_invitation_jeowinids483fr_image145
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image146
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    filter: brightness(400%);
+}
+.mayhen_invitation_jeowinids483fr_image145.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: rotateInUpLeft;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image146 {
+    top: 649.011px;
+    left: 17.4685px;
+}
+.mayhen_invitation_jeowinids483fr_image146
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://w.ladicdn.com/s450x400/6446a909ce8883001284c7a2/4-20250330102513-asmzq.png");
+}
+.mayhen_invitation_jeowinids483fr_image146.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: rotateInUpRight;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_group72,
+.mayhen_invitation_jeowinids483fr_box58 {
+    width: 63.5822px;
+    height: 63.5822px;
+}
+.mayhen_invitation_jeowinids483fr_group72 {
+    top: auto;
+    left: 5px;
+    right: auto;
+    bottom: 5px;
+    position: fixed;
+    z-index: 90000050;
+    margin-left: calc(50% - 210px);
+}
+.mayhen_invitation_jeowinids483fr_box58
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_box59
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_button14
+    > .mayhen_invitation_jeowinids483fr_ladi-button {
+    border-width: 1px;
+    border-radius: 100px;
+    border-style: solid;
+    border-color: rgb(255, 255, 255);
+}
+.mayhen_invitation_jeowinids483fr_box58
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-color: rgba(77, 89, 23, 0.4);
+}
+.mayhen_invitation_jeowinids483fr_box59 {
+    width: 51.7089px;
+    height: 51.7089px;
+    top: 5.93665px;
+    left: 5.93665px;
+}
+.mayhen_invitation_jeowinids483fr_box59.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box {
+    animation-name: bounceIn;
+    animation-delay: 0s;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+.mayhen_invitation_jeowinids483fr_group73 {
+    width: 53px;
+    height: 48px;
+    top: 7.79108px;
+    left: 5.2911px;
+}
+.mayhen_invitation_jeowinids483fr_shape10,
+.mayhen_invitation_jeowinids483fr_shape11 {
+    width: 48px;
+    height: 48px;
+}
+.mayhen_invitation_jeowinids483fr_shape10 {
+    top: 3e-5px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_shape11 {
+    top: 0px;
+    left: 5px;
+}
+.mayhen_invitation_jeowinids483fr_section_popup {
+    height: 0px;
+}
+.mayhen_invitation_jeowinids483fr_popup10 {
+    right: 0px;
+    bottom: 0px;
+    margin: auto;
+}
+.mayhen_invitation_jeowinids483fr_popup10 {
+    width: 420px;
+    height: 526px;
+}
+.mayhen_invitation_jeowinids483fr_popup10
+    > .mayhen_invitation_jeowinids483fr_ladi-popup
+    > .mayhen_invitation_jeowinids483fr_ladi-popup-background {
+    filter: blur(2px);
+}
+.mayhen_invitation_jeowinids483fr_popup10
+    .mayhen_invitation_jeowinids483fr_popup-close {
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_group86 {
+    width: 438.053px;
+    height: 462px;
+    top: -14px;
+    left: -10.112px;
+}
+.mayhen_invitation_jeowinids483fr_headline134,
+.mayhen_invitation_jeowinids483fr_headline133 {
+    width: 318px;
+}
+.mayhen_invitation_jeowinids483fr_headline134 {
+    top: 432px;
+    left: 67.046px;
+}
+.mayhen_invitation_jeowinids483fr_headline134
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 19px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    letter-spacing: 2px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline134.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    animation-name: fadeInDown;
+    animation-delay: 2s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_image160,
+.mayhen_invitation_jeowinids483fr_image160
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 367.37px;
+    height: 258.38px;
+}
+.mayhen_invitation_jeowinids483fr_image160 {
+    top: 112.666px;
+    left: 36.559px;
+}
+.mayhen_invitation_jeowinids483fr_image160
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzyTNf.jpg");
+}
+.mayhen_invitation_jeowinids483fr_headline133 {
+    top: 398px;
+    left: 67.178px;
+}
+.mayhen_invitation_jeowinids483fr_headline133
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 19px;
+    font-style: italic;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    letter-spacing: 9px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_image206,
+.mayhen_invitation_jeowinids483fr_image206
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 179.112px;
+    height: 128.627px;
+}
+.mayhen_invitation_jeowinids483fr_image206 {
+    top: 78.473px;
+    left: 0px;
+}
+.mayhen_invitation_jeowinids483fr_image206
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    background-image: url("https://iili.io/qnzp53F.jpg");
+}
+.mayhen_invitation_jeowinids483fr_image206.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInDown;
+    animation-delay: 1s;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_headline83 {
+    width: 341px;
+    top: 0px;
+    left: 49.612px;
+}
+.mayhen_invitation_jeowinids483fr_headline83
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 23px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(35, 35, 35);
+    text-transform: uppercase;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_headline84 {
+    width: 351px;
+    top: 49.473px;
+    left: 44.612px;
+}
+.mayhen_invitation_jeowinids483fr_headline84
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.6;
+    color: rgb(234, 165, 60);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_image207,
+.mayhen_invitation_jeowinids483fr_image207
+    > .mayhen_invitation_jeowinids483fr_ladi-image
+    > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 216.787px;
+    height: 173.808px;
+}
+.mayhen_invitation_jeowinids483fr_image207 {
+    top: 242.865px;
+    left: 221.266px;
+}
+.mayhen_invitation_jeowinids483fr_image207.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image {
+    animation-name: fadeInUp;
+    animation-delay: 2s;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+}
+.mayhen_invitation_jeowinids483fr_button14 {
+    width: 94px;
+    height: 94px;
+    top: 230px;
+    left: 173.112px;
+}
+.mayhen_invitation_jeowinids483fr_button14
+    > .mayhen_invitation_jeowinids483fr_ladi-button
+    > .mayhen_invitation_jeowinids483fr_ladi-overlay {
+    background-image: url("https://iili.io/qnzy98g.jpg");
+    background-size: cover;
+    background-origin: content-box;
+    background-position: center top;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    opacity: 0.1;
+}
+.mayhen_invitation_jeowinids483fr_button14.mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-button {
+    animation-name: pulse;
+    animation-delay: 1s;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+.mayhen_invitation_jeowinids483fr_button_text14 {
+    width: 92px;
+}
+.mayhen_invitation_jeowinids483fr_button_text14
+    > .mayhen_invitation_jeowinids483fr_ladi-headline {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: rgb(248, 248, 248);
+    text-transform: uppercase;
+    text-align: center;
+}
+/* Original animation choreography */
+
+@-webkit-keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        -ms-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-webkit-keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(-20px);
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(-20px);
+        -ms-transform: translateY(-20px);
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-webkit-keyframes bounceIn {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0.3);
+        transform: scale(0.3);
+    }
+
+    50% {
+        opacity: 1;
+        -webkit-transform: scale(1.05);
+        transform: scale(1.05);
+    }
+
+    70% {
+        -webkit-transform: scale(0.9);
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0.3);
+        -ms-transform: scale(0.3);
+        transform: scale(0.3);
+    }
+
+    50% {
+        opacity: 1;
+        -webkit-transform: scale(1.05);
+        -ms-transform: scale(1.05);
+        transform: scale(1.05);
+    }
+
+    70% {
+        -webkit-transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+
+    50% {
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -webkit-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+    }
+
+    50% {
+        -webkit-transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@-webkit-keyframes rotateInUpLeft {
+    0% {
+        -webkit-transform-origin: left bottom;
+        transform-origin: left bottom;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: left bottom;
+        transform-origin: left bottom;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes rotateInUpLeft {
+    0% {
+        -webkit-transform-origin: left bottom;
+        -ms-transform-origin: left bottom;
+        transform-origin: left bottom;
+        -webkit-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: left bottom;
+        -ms-transform-origin: left bottom;
+        transform-origin: left bottom;
+        -webkit-transform: rotate(0);
+        -ms-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes rotateInUpRight {
+    0% {
+        -webkit-transform-origin: right bottom;
+        transform-origin: right bottom;
+        -webkit-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: right bottom;
+        transform-origin: right bottom;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes rotateInUpRight {
+    0% {
+        -webkit-transform-origin: right bottom;
+        -ms-transform-origin: right bottom;
+        transform-origin: right bottom;
+        -webkit-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: right bottom;
+        -ms-transform-origin: right bottom;
+        transform-origin: right bottom;
+        -webkit-transform: rotate(0);
+        -ms-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes flipInY {
+    0% {
+        -webkit-transform: perspective(400px) rotateY(90deg);
+        transform: perspective(400px) rotateY(90deg);
+        opacity: 0;
+    }
+
+    40% {
+        -webkit-transform: perspective(400px) rotateY(-10deg);
+        transform: perspective(400px) rotateY(-10deg);
+    }
+
+    70% {
+        -webkit-transform: perspective(400px) rotateY(10deg);
+        transform: perspective(400px) rotateY(10deg);
+    }
+
+    100% {
+        -webkit-transform: perspective(400px) rotateY(0);
+        transform: perspective(400px) rotateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes flipInY {
+    0% {
+        -webkit-transform: perspective(400px) rotateY(90deg);
+        -ms-transform: perspective(400px) rotateY(90deg);
+        transform: perspective(400px) rotateY(90deg);
+        opacity: 0;
+    }
+
+    40% {
+        -webkit-transform: perspective(400px) rotateY(-10deg);
+        -ms-transform: perspective(400px) rotateY(-10deg);
+        transform: perspective(400px) rotateY(-10deg);
+    }
+
+    70% {
+        -webkit-transform: perspective(400px) rotateY(10deg);
+        -ms-transform: perspective(400px) rotateY(10deg);
+        transform: perspective(400px) rotateY(10deg);
+    }
+
+    100% {
+        -webkit-transform: perspective(400px) rotateY(0);
+        -ms-transform: perspective(400px) rotateY(0);
+        transform: perspective(400px) rotateY(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes bounceInLeft {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(-2000px);
+        transform: translateX(-2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateX(30px);
+        transform: translateX(30px);
+    }
+
+    80% {
+        -webkit-transform: translateX(-10px);
+        transform: translateX(-10px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounceInLeft {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(-2000px);
+        -ms-transform: translateX(-2000px);
+        transform: translateX(-2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateX(30px);
+        -ms-transform: translateX(30px);
+        transform: translateX(30px);
+    }
+
+    80% {
+        -webkit-transform: translateX(-10px);
+        -ms-transform: translateX(-10px);
+        transform: translateX(-10px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes shake {
+    0%,
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        -webkit-transform: translateX(-10px);
+        transform: translateX(-10px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        -webkit-transform: translateX(10px);
+        transform: translateX(10px);
+    }
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        -webkit-transform: translateX(-10px);
+        -ms-transform: translateX(-10px);
+        transform: translateX(-10px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        -webkit-transform: translateX(10px);
+        -ms-transform: translateX(10px);
+        transform: translateX(10px);
+    }
+}
+
+@-webkit-keyframes rotateIn {
+    0% {
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transform: rotate(-200deg);
+        transform: rotate(-200deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes rotateIn {
+    0% {
+        -webkit-transform-origin: center center;
+        -ms-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transform: rotate(-200deg);
+        -ms-transform: rotate(-200deg);
+        transform: rotate(-200deg);
+        opacity: 0;
+    }
+
+    100% {
+        -webkit-transform-origin: center center;
+        -ms-transform-origin: center center;
+        transform-origin: center center;
+        -webkit-transform: rotate(0);
+        -ms-transform: rotate(0);
+        transform: rotate(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes bounceInRight {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(2000px);
+        transform: translateX(2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateX(-30px);
+        transform: translateX(-30px);
+    }
+
+    80% {
+        -webkit-transform: translateX(10px);
+        transform: translateX(10px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounceInRight {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(2000px);
+        -ms-transform: translateX(2000px);
+        transform: translateX(2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateX(-30px);
+        -ms-transform: translateX(-30px);
+        transform: translateX(-30px);
+    }
+
+    80% {
+        -webkit-transform: translateX(10px);
+        -ms-transform: translateX(10px);
+        transform: translateX(10px);
+    }
+
+    100% {
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes swing {
+    20% {
+        -webkit-transform: rotate(15deg);
+        transform: rotate(15deg);
+    }
+
+    40% {
+        -webkit-transform: rotate(-10deg);
+        transform: rotate(-10deg);
+    }
+
+    60% {
+        -webkit-transform: rotate(5deg);
+        transform: rotate(5deg);
+    }
+
+    80% {
+        -webkit-transform: rotate(-5deg);
+        transform: rotate(-5deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+}
+
+@keyframes swing {
+    20% {
+        -webkit-transform: rotate(15deg);
+        -ms-transform: rotate(15deg);
+        transform: rotate(15deg);
+    }
+
+    40% {
+        -webkit-transform: rotate(-10deg);
+        -ms-transform: rotate(-10deg);
+        transform: rotate(-10deg);
+    }
+
+    60% {
+        -webkit-transform: rotate(5deg);
+        -ms-transform: rotate(5deg);
+        transform: rotate(5deg);
+    }
+
+    80% {
+        -webkit-transform: rotate(-5deg);
+        -ms-transform: rotate(-5deg);
+        transform: rotate(-5deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(0);
+        -ms-transform: rotate(0);
+        transform: rotate(0);
+    }
+}
+
+@-webkit-keyframes bounceInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(2000px);
+        transform: translateY(2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    80% {
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px);
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceInUp {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(2000px);
+        -ms-transform: translateY(2000px);
+        transform: translateY(2000px);
+    }
+
+    60% {
+        opacity: 1;
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    80% {
+        -webkit-transform: translateY(10px);
+        -ms-transform: translateY(10px);
+        transform: translateY(10px);
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-webkit-keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(-20px);
+        transform: translateX(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(-20px);
+        -ms-transform: translateX(-20px);
+        transform: translateX(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes fadeInRight {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(20px);
+        transform: translateX(20px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateX(40px);
+        -ms-transform: translateX(40px);
+        transform: translateX(40px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+
+/* Responsive page scaling and overlay behavior - VIP Wedding Modern Luxury */
+.mayhen_invitation_jeowinids483fr_shell
+    .mayhen_invitation_jeowinids483fr_ladi-section-background {
+    filter: none;
+}
+.mayhen_invitation_jeowinids483fr_shell
+    .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    filter: none;
+    border-radius: 6px;
+    transition: transform 0.4s ease;
+}
+.mayhen_invitation_jeowinids483fr_shell
+    .mayhen_invitation_jeowinids483fr_ladi-image:hover
+    .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    transform: scale(1.02);
+}
+
+.mayhen_invitation_jeowinids483fr_section_popup {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: 99999 !important;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    > .mayhen_invitation_jeowinids483fr_ladi-container {
+    width: 100%;
+    height: 100%;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    > .mayhen_invitation_jeowinids483fr_ladi-container
+    > .mayhen_invitation_jeowinids483fr_ladi-element {
+    display: none !important;
+    position: fixed !important;
+    z-index: 100000;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    > .mayhen_invitation_jeowinids483fr_ladi-container
+    > .mayhen_invitation_jeowinids483fr_ladi-element.mayhen_invitation_jeowinids483fr_modal-active {
+    display: block !important;
+    pointer-events: auto;
+}
+.mayhen_invitation_jeowinids483fr_section_popup
+    .mayhen_invitation_jeowinids483fr_popup10.mayhen_invitation_jeowinids483fr_modal-active {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+}
+.mayhen_invitation_jeowinids483fr_popup10
+    .mayhen_invitation_jeowinids483fr_ladi-popup-background {
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_popup10
+    .mayhen_invitation_jeowinids483fr_popup-close {
+    display: none !important;
+}
+
+/* ==========================================================================
+   MÀN MỞ THIỆP 3D HOÀNG GIA LỘNG LẪY (ROYAL 3D GATE & WAX SEAL)
+   ========================================================================== */
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    perspective: 1400px;
+    perspective-origin: center center;
+    overflow: hidden;
+    z-index: 100001;
+    background: #1a0508;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto !important;
+    transition:
+        opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0.8s;
+}
+
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper.mayhen_invitation_jeowinids483fr_hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none !important;
+}
+
+/* 2 Cánh cửa hoàng gia 3D */
+.mayhen_invitation_jeowinids483fr_royal_door {
+    position: absolute;
+    top: 0;
+    width: 50.5%;
+    height: 100%;
+    z-index: 2;
+    transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.25, 1, 0.35, 1);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85);
+}
+
+.mayhen_invitation_jeowinids483fr_door_left {
+    left: 0;
+    transform-origin: left center;
+    border-right: 2px solid rgba(212, 175, 55, 0.7);
+}
+
+.mayhen_invitation_jeowinids483fr_door_right {
+    right: 0;
+    transform-origin: right center;
+    border-left: 2px solid rgba(212, 175, 55, 0.7);
+}
+
+.mayhen_invitation_jeowinids483fr_door_panel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: radial-gradient(
+        circle at 50% 40%,
+        #8a1526 0%,
+        #5e0b19 50%,
+        #38030b 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Họa tiết phào chỉ dát vàng trên cánh cửa */
+.mayhen_invitation_jeowinids483fr_door_moulding {
+    position: absolute;
+    inset: 30px 20px;
+    border: 2px solid rgba(212, 175, 55, 0.35);
+    border-radius: 12px;
+    pointer-events: none;
+    box-shadow:
+        inset 0 0 15px rgba(212, 175, 55, 0.15),
+        0 0 10px rgba(0, 0, 0, 0.5);
+}
+.mayhen_invitation_jeowinids483fr_door_moulding::after {
+    content: "";
+    position: absolute;
+    inset: 15px 10px;
+    border: 1px dashed rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+}
+
+.mayhen_invitation_jeowinids483fr_door_arch {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 90px;
+    border: 1.5px solid rgba(212, 175, 55, 0.3);
+    border-bottom: none;
+    border-radius: 90px 90px 0 0;
+    pointer-events: none;
+}
+
+/* Tay nắm cửa hoàng gia mạ vàng - hiển thị cân đối */
+.mayhen_invitation_jeowinids483fr_door_knob {
+    position: absolute;
+    top: calc(50% + 225px);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 35% 35%,
+        #fff0c2 0%,
+        #d4af37 55%,
+        #85580c 100%
+    );
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.8);
+    border: 1.5px solid #ffecb3;
+    z-index: 5;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_knob_left {
+    right: 16px;
+}
+.mayhen_invitation_jeowinids483fr_knob_right {
+    left: 16px;
+}
+
+/* Canvas bão cánh hoa hồng nhung & bụi sao vàng */
+.mayhen_invitation_jeowinids483fr_petals_canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Thẻ thiệp ngọc trai trung tâm */
+.mayhen_invitation_jeowinids483fr_center_card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(340px, calc(100vw - 36px));
+    background: #fffdf9;
+    border-radius: 20px;
+    padding: 32px 22px 28px;
+    text-align: center;
+    z-index: 10;
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.65),
+        0 0 0 1.5px rgba(212, 175, 55, 0.5);
+    transition:
+        transform 1s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 0.8s ease;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Viền vàng kép dập nổi */
+.mayhen_invitation_jeowinids483fr_card_gold_border {
+    position: absolute;
+    inset: 10px;
+    border: 1.5px solid #d4af37;
+    border-radius: 14px;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_card_gold_border::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 0.8px dashed rgba(212, 175, 55, 0.5);
+    border-radius: 10px;
+}
+
+/* 4 góc hoa văn vintage cổ điển mạ vàng */
+.mayhen_invitation_jeowinids483fr_corner {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 2;
+}
+.mayhen_invitation_jeowinids483fr_corner_tl {
+    top: 12px;
+    left: 12px;
+}
+.mayhen_invitation_jeowinids483fr_corner_tr {
+    top: 12px;
+    right: 12px;
+    transform: rotate(90deg);
+}
+.mayhen_invitation_jeowinids483fr_corner_bl {
+    bottom: 12px;
+    left: 12px;
+    transform: rotate(-90deg);
+}
+.mayhen_invitation_jeowinids483fr_corner_br {
+    bottom: 12px;
+    right: 12px;
+    transform: rotate(180deg);
+}
+
+/* Nội dung thiệp mời */
+.mayhen_invitation_jeowinids483fr_card_header {
+    margin-bottom: 14px;
+    width: 100%;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_card_sub {
+    display: block;
+    font:
+        700 11px/1.2 Jura,
+        sans-serif;
+    letter-spacing: 4px;
+    color: #9b732a;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_card_title {
+    margin: 0 0 10px;
+    font:
+        italic 600 24px/1.2 "Playfair Display",
+        Georgia,
+        serif;
+    color: #8a1526;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_card_names {
+    font:
+        700 27px/1.25 "Cormorant Garamond",
+        Georgia,
+        serif;
+    background: linear-gradient(135deg, #8a1526 0%, #a81b32 50%, #5e0b19 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_card_names span {
+    font:
+        italic 400 22px "Playfair Display",
+        serif;
+    color: #d4af37;
+    -webkit-text-fill-color: #d4af37;
+    margin: 0 4px;
+}
+.mayhen_invitation_jeowinids483fr_card_date {
+    font:
+        600 13px/1 Jura,
+        sans-serif;
+    letter-spacing: 3px;
+    color: #82653b;
+    text-align: center;
+}
+
+/* Khách mời */
+.mayhen_invitation_jeowinids483fr_card_guest_wrap {
+    margin: 12px 0 16px;
+    width: 100%;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_guest_label {
+    display: block;
+    font:
+        italic 400 13px/1.4 "Playfair Display",
+        Georgia,
+        serif;
+    color: #706050;
+    margin-bottom: 6px;
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_guest_badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    background: #faf5ee;
+    border: 1px solid #e5d6be;
+    font:
+        700 15px/1.3 "Cormorant Garamond",
+        Georgia,
+        serif;
+    color: #2a1810;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Tem sáp 3D Bordeaux nhung dập nổi - Căn giữa 100% */
+.mayhen_invitation_jeowinids483fr_wax_seal_wrap {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 12px auto 14px !important;
+    width: 68px !important;
+    height: 68px !important;
+    cursor: pointer !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_ribbon {
+    position: absolute;
+    top: 30px;
+    width: 14px;
+    height: 40px;
+    background: linear-gradient(to bottom, #8a1526, #5e0b19);
+    z-index: 1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_ribbon_left {
+    left: calc(50% - 15px);
+    transform: rotate(18deg);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+}
+.mayhen_invitation_jeowinids483fr_ribbon_right {
+    right: calc(50% - 15px);
+    transform: rotate(-18deg);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+}
+
+.mayhen_invitation_jeowinids483fr_wax_seal {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 35% 35%,
+        #b32438 0%,
+        #8a1526 50%,
+        #520814 100%
+    );
+    box-shadow:
+        0 10px 24px rgba(94, 11, 25, 0.55),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mayhen_invitation_jeowinids483fr_wax_seal_wrap:hover
+    .mayhen_invitation_jeowinids483fr_wax_seal {
+    transform: scale(1.08);
+}
+
+.mayhen_invitation_jeowinids483fr_wax_inner {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255, 218, 140, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+.mayhen_invitation_jeowinids483fr_wax_text {
+    font:
+        700 16px/1 "Playfair Display",
+        Georgia,
+        serif;
+    color: #ffedb8;
+    letter-spacing: 1px;
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.8),
+        0 -1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.mayhen_invitation_jeowinids483fr_wax_aura {
+    position: absolute;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(212, 175, 55, 0.35) 0%,
+        rgba(212, 175, 55, 0) 70%
+    );
+    animation: mayhenAuraPulse 2.4s infinite ease-in-out;
+    pointer-events: none;
+}
+@keyframes mayhenAuraPulse {
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(1.25);
+        opacity: 0.85;
+    }
+}
+
+/* Nút bấm sang trọng viền vàng lấp lánh - Cưỡng chế vị trí & kích thước */
+.mayhen_invitation_jeowinids483fr_open_btn,
+.mayhen_invitation_jeowinids483fr_center_card
+    .mayhen_invitation_jeowinids483fr_button14 {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 10px auto 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 12px 24px !important;
+    border-radius: 30px !important;
+    background: linear-gradient(
+        135deg,
+        #8a1526 0%,
+        #a81b32 50%,
+        #6e0e1d 100%
+    ) !important;
+    color: #fffdf8 !important;
+    font:
+        600 13px/1 Jura,
+        sans-serif !important;
+    letter-spacing: 1px !important;
+    box-shadow:
+        0 8px 24px rgba(138, 21, 38, 0.45),
+        0 0 0 1.5px rgba(212, 175, 55, 0.85) !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    z-index: 6 !important;
+}
+.mayhen_invitation_jeowinids483fr_open_btn:hover,
+.mayhen_invitation_jeowinids483fr_center_card
+    .mayhen_invitation_jeowinids483fr_button14:hover {
+    transform: translateY(-2px) !important;
+    box-shadow:
+        0 12px 30px rgba(138, 21, 38, 0.55),
+        0 0 0 2px #d4af37 !important;
+}
+.mayhen_invitation_jeowinids483fr_open_btn_glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transform: skewX(-25deg);
+    animation: mayhenShimmerSweep 3s infinite;
+    pointer-events: none;
+}
+@keyframes mayhenShimmerSweep {
+    0% {
+        left: -100%;
+    }
+    50%,
+    100% {
+        left: 160%;
+    }
+}
+.mayhen_invitation_jeowinids483fr_open_btn_icon {
+    font-size: 14px;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_open_btn_text {
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ANIMATION MỞ CÁNH CỬA TÌNH YÊU 3D */
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper.mayhen_invitation_jeowinids483fr_opening
+    .mayhen_invitation_jeowinids483fr_door_left {
+    transform: rotateY(-112deg);
+}
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper.mayhen_invitation_jeowinids483fr_opening
+    .mayhen_invitation_jeowinids483fr_door_right {
+    transform: rotateY(112deg);
+}
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper.mayhen_invitation_jeowinids483fr_opening
+    .mayhen_invitation_jeowinids483fr_center_card {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0;
+    pointer-events: none;
+}
+.mayhen_invitation_jeowinids483fr_royal_gate_wrapper.mayhen_invitation_jeowinids483fr_opening
+    .mayhen_invitation_jeowinids483fr_wax_aura {
+    transform: scale(2.5);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+/* ==========================================================================
+   TỐI ƯU HÓA TỐC ĐỘ PHẢN HỒI ANIMATION: LƯỚT TỚI ĐÂU CHUYỂN ĐỘNG NGAY TỚI ĐÓ
+   Loại bỏ triệt để độ trễ delay lê thê 1s-4s của Ladipage gốc, chuyển động tức thì
+   ========================================================================== */
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-headline,
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-box,
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-line,
+.mayhen_invitation_jeowinids483fr_stage
+    .mayhen_invitation_jeowinids483fr_ladi-animation
+    > .mayhen_invitation_jeowinids483fr_ladi-form {
+    animation-delay: 0s !important;
+    animation-duration: 0.75s !important;
+    animation-fill-mode: both !important;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ==========================================================================
+   NÂNG CẤP VISUAL THIỆP CƯỚI: MÀU SẮC, COUNTDOWN, LỊCH CƯỚI, RSVP, MENU
+   ========================================================================== */
+/* Trái tim ngày cưới nhấp nháy nhịp đập tình yêu */
+.mayhen_invitation_jeowinids483fr_group146
+    .mayhen_invitation_jeowinids483fr_headline202 {
+    position: relative;
+}
+.mayhen_invitation_jeowinids483fr_group146
+    .mayhen_invitation_jeowinids483fr_headline202
+    .mayhen_invitation_jeowinids483fr_ladi-headline {
+    color: #fff !important;
+    background: #8a1526;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(138, 21, 38, 0.4);
+    animation: mayhenHeartbeat 1.6s infinite ease-in-out;
+}
+@keyframes mayhenHeartbeat {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.15);
+    }
+    40% {
+        transform: scale(1.05);
+    }
+    60% {
+        transform: scale(1.18);
+    }
+}
+
+/* Countdown 4 ô: Hiệu ứng thẻ số mạ vàng quý phái */
+.mayhen_invitation_jeowinids483fr_countdown4
+    .mayhen_invitation_jeowinids483fr_ladi-countdown-item {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #d4af37;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(138, 21, 38, 0.08);
+    overflow: hidden;
+}
+.mayhen_invitation_jeowinids483fr_countdown4
+    .mayhen_invitation_jeowinids483fr_ladi-countdown-text
+    span {
+    font:
+        700 24px/1 "Cormorant Garamond",
+        Georgia,
+        serif;
+    color: #8a1526;
+}
+
+/* Form RSVP: Thư mời tình yêu sang trọng */
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-item-container {
+    border: 1.2px solid #d4af37;
+    border-radius: 10px;
+    background: #fffdfb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-control {
+    color: #2a1810;
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_ladi-form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.5);
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_button7 {
+    background: linear-gradient(
+        135deg,
+        #8a1526 0%,
+        #a81b32 50%,
+        #6e0e1d 100%
+    ) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 6px 20px rgba(138, 21, 38, 0.35);
+    color: #fffdf8 !important;
+    font-weight: 700 !important;
+    transition: all 0.3s ease;
+}
+.mayhen_invitation_jeowinids483fr_form3
+    .mayhen_invitation_jeowinids483fr_button7:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(138, 21, 38, 0.5);
+}
+
+/* Floating Bottom Nav sang trọng */
+.mayhen_invitation_jeowinids483fr_cta-menu {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 90;
+    display: flex;
+    gap: 7px;
+    max-width: calc(100% - 24px);
+    padding: 8px 12px;
+    background: rgba(255, 253, 249, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.2px solid rgba(212, 175, 55, 0.6);
+    border-radius: 100px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+    white-space: nowrap;
+}
+.mayhen_invitation_jeowinids483fr_cta-menu button {
+    border: 0;
+    background: #8a1526;
+    color: #fffdf8;
+    border-radius: 100px;
+    padding: 8px 14px;
+    font:
+        600 11.5px/1 Jura,
+        Arial;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+}
+.mayhen_invitation_jeowinids483fr_cta-menu button:hover {
+    background: #a81b32;
+    transform: translateY(-1px);
+}
+@media (max-width: 420px) {
+    .mayhen_invitation_jeowinids483fr_cta-menu {
+        bottom: 10px;
+        gap: 4px;
+        padding: 6px 8px;
+    }
+    .mayhen_invitation_jeowinids483fr_cta-menu button {
+        padding: 8px 9px;
+        font-size: 10px;
+    }
+}
+
+/* Hộp quà mừng cưới Gift Dialog */
+.mayhen_invitation_jeowinids483fr_gift-dialog {
+    position: fixed;
+    z-index: 100010;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(390px, calc(100vw - 30px));
+    background: #fffdf9;
+    padding: 38px 26px;
+    border-radius: 16px;
+    border: 1.2px solid #d4af37;
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+.mayhen_invitation_jeowinids483fr_gift-dialog[hidden] {
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_gift-dialog h2 {
+    font:
+        46px/1.2 "Playfair Display",
+        Georgia,
+        serif;
+    font-style: italic;
+    color: #8a1526;
+    margin: 10px 0 25px;
+}
+.mayhen_invitation_jeowinids483fr_gift-eyebrow {
+    font:
+        12px/1.2 Jura,
+        Arial;
+    letter-spacing: 4px;
+    color: #9b732a;
+}
+.mayhen_invitation_jeowinids483fr_gift-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.mayhen_invitation_jeowinids483fr_gift-tab {
+    background: #fff;
+    color: #8a1526;
+    border: 1.2px solid #d4af37;
+    border-radius: 30px;
+    padding: 9px 22px;
+    font-weight: 600;
+}
+.mayhen_invitation_jeowinids483fr_gift-tab.mayhen_invitation_jeowinids483fr_selected {
+    background: #8a1526;
+    color: #fff;
+}
+.mayhen_invitation_jeowinids483fr_gift-note {
+    color: #6e5848;
+    font-size: 13px;
+}
+.mayhen_invitation_jeowinids483fr_gift-details {
+    margin-top: 18px;
+    white-space: pre-line;
+    line-height: 1.8;
+    color: #2a1810;
+}
+.mayhen_invitation_jeowinids483fr_gift-close {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    font: 26px Arial;
+    background: none;
+    border: none;
+    color: #8a1526;
+    cursor: pointer;
+}
+
+/* Lightbox & Toast */
+.mayhen_invitation_jeowinids483fr_modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 99990;
+    display: none;
+    backdrop-filter: blur(4px);
+}
+.mayhen_invitation_jeowinids483fr_modal-backdrop.mayhen_invitation_jeowinids483fr_visible {
+    display: block;
+}
+.mayhen_invitation_jeowinids483fr_modal-close {
+    position: fixed;
+    z-index: 100012;
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #d4af37;
+    border-radius: 50%;
+    display: none;
+    background: #fff;
+    color: #8a1526;
+    font-size: 25px;
+    line-height: 1;
+}
+.mayhen_invitation_jeowinids483fr_modal-close.mayhen_invitation_jeowinids483fr_visible {
+    display: grid;
+    place-items: center;
+}
+.mayhen_invitation_jeowinids483fr_lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100020;
+    background: rgba(10, 5, 6, 0.94);
+    display: none;
+    place-items: center;
+    padding: 60px 20px;
+}
+.mayhen_invitation_jeowinids483fr_lightbox.mayhen_invitation_jeowinids483fr_visible {
+    display: grid;
+}
+.mayhen_invitation_jeowinids483fr_lightbox-photo {
+    max-width: 100%;
+    max-height: calc(100dvh - 120px);
+    object-fit: contain;
+    border: 3px solid #fffdf8;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+}
+.mayhen_invitation_jeowinids483fr_lightbox button {
+    position: absolute;
+    background: #fff;
+    color: #8a1526;
+    border: 1px solid #d4af37;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 25px;
+}
+.mayhen_invitation_jeowinids483fr_lightbox-close {
+    top: 16px;
+    right: 16px;
+}
+.mayhen_invitation_jeowinids483fr_lightbox-prev {
+    left: 12px;
+    top: 50%;
+}
+.mayhen_invitation_jeowinids483fr_lightbox-next {
+    right: 12px;
+    top: 50%;
+}
+.mayhen_invitation_jeowinids483fr_toast {
+    position: fixed;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #8a1526;
+    color: #fffdf8;
+    z-index: 100030;
+    max-width: calc(100vw - 24px);
+    text-align: center;
+    padding: 11px 22px;
+    border-radius: 30px;
+    font-size: 13px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    border: 1px solid #d4af37;
+    display: none;
+}
+.mayhen_invitation_jeowinids483fr_toast.mayhen_invitation_jeowinids483fr_visible {
+    display: block;
+}
+
+/* ==========================================================================
+   PHÒNG VỆ STUDIO EDITOR TRONG IFRAME (?embed=1) & TOPBAR
+   ========================================================================== */
+.mayhen_invitation_jeowinids483fr_embed_mode
+    .mayhen_invitation_jeowinids483fr_section_popup,
+.mayhen_invitation_jeowinids483fr_embed_mode
+    .mayhen_invitation_jeowinids483fr_royal_gate_wrapper,
+.mayhen_invitation_jeowinids483fr_embed_mode
+    .mayhen_invitation_jeowinids483fr_modal-backdrop {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+.mayhen_invitation_jeowinids483fr_embed_mode,
+.mayhen_invitation_jeowinids483fr_embed_mode body {
+    overflow: auto !important;
+    height: auto !important;
+}
+.mayhen_invitation_jeowinids483fr_embed_mode
+    .mayhen_invitation_jeowinids483fr_shell {
+    box-shadow: none !important;
+}
+.mayhen_invitation_jeowinids483fr_embed_mode
+    .mayhen_invitation_jeowinids483fr_ladi-animation {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}

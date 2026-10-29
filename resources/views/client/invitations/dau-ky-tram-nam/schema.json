@@ -1,0 +1,186 @@
+{
+  "name": "Dấu Ký Trăm Năm",
+  "slug": "dau-ky-tram-nam",
+  "version": "2.0.0",
+  "author": "Mây Hẹn Studio",
+  "description": "Mẫu thiệp cưới phong cách Hoàng Gia Hiện Đại với cánh cửa tình yêu 3D mở sang hai bên, con dấu sáp đỏ Bordeaux dập nổi, bão hoa hồng nhung rơi và bộ đếm ngược hạnh phúc.",
+  "category": "luxury",
+  "tier": "pro",
+  "complexity": "deluxe",
+  "thumbnail": "assets/preview_1440.png",
+  "sections": [
+    {
+      "id": "general",
+      "title": "Cài đặt chung & Phong cách",
+      "fields": [
+        {
+          "name": "accent_color",
+          "label": "Màu điểm nhấn",
+          "type": "color",
+          "default": "#8A1526"
+        },
+        {
+          "name": "music_url",
+          "label": "Nhạc nền MP3",
+          "type": "audio",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "id": "couple",
+      "title": "Thông tin Cặp đôi & Gia đình",
+      "fields": [
+        {
+          "name": "groom_name",
+          "label": "Tên Chú rể",
+          "type": "text",
+          "default": "Quốc Thái",
+          "required": true
+        },
+        {
+          "name": "bride_name",
+          "label": "Tên Cô dâu",
+          "type": "text",
+          "default": "Thuý Ngân",
+          "required": true
+        },
+        {
+          "name": "groom_father",
+          "label": "Bố Chú rể",
+          "type": "text",
+          "default": "Trần Văn Quân"
+        },
+        {
+          "name": "groom_mother",
+          "label": "Mẹ Chú rể",
+          "type": "text",
+          "default": "Lâm Thị Quyên"
+        },
+        {
+          "name": "bride_father",
+          "label": "Bố Cô dâu",
+          "type": "text",
+          "default": "Lư Xùng Mừng"
+        },
+        {
+          "name": "bride_mother",
+          "label": "Mẹ Cô dâu",
+          "type": "text",
+          "default": "Nguyễn Thị Lệ Hằng"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Sự kiện & Tiệc cưới",
+      "fields": [
+        {
+          "name": "wedding_date",
+          "label": "Ngày giờ cưới chính",
+          "type": "datetime",
+          "default": "2026-03-21T10:00:00",
+          "required": true
+        },
+        {
+          "name": "event_party_address",
+          "label": "Địa chỉ tổ chức tiệc cưới",
+          "type": "text",
+          "default": "Khóm An Tài, Phường An Bình, Tỉnh Đồng Tháp",
+          "required": true
+        },
+        {
+          "name": "event_party_lunar",
+          "label": "Ngày âm lịch",
+          "type": "text",
+          "default": "Ngày 03 tháng 02 năm Bính Ngọ"
+        },
+        {
+          "name": "event_party_map_url",
+          "label": "Link Google Maps",
+          "type": "url",
+          "default": "https://maps.google.com"
+        }
+      ]
+    },
+    {
+      "id": "banking",
+      "title": "Mừng cưới & Ngân hàng",
+      "fields": [
+        {
+          "name": "groom_bank_name",
+          "label": "Ngân hàng Chú rể",
+          "type": "text",
+          "default": "Vietcombank"
+        },
+        {
+          "name": "groom_account_name",
+          "label": "Tên chủ tài khoản Chú rể",
+          "type": "text",
+          "default": "TRẦN QUỐC THÁI"
+        },
+        {
+          "name": "groom_bank_account",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "default": "1012345678"
+        },
+        {
+          "name": "qr_groom_image",
+          "label": "Ảnh QR Chú rể",
+          "type": "image",
+          "default": ""
+        },
+        {
+          "name": "bride_bank_name",
+          "label": "Ngân hàng Cô dâu",
+          "type": "text",
+          "default": "Techcombank"
+        },
+        {
+          "name": "bride_account_name",
+          "label": "Tên chủ tài khoản Cô dâu",
+          "type": "text",
+          "default": "LƯ THUÝ NGÂN"
+        },
+        {
+          "name": "bride_bank_account",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "default": "190398765432"
+        },
+        {
+          "name": "qr_bride_image",
+          "label": "Ảnh QR Cô dâu",
+          "type": "image",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "id": "gallery",
+      "title": "Album Ảnh Kỷ Niệm",
+      "fields": [
+        {
+          "name": "cover_photo_url",
+          "label": "Ảnh bìa chính",
+          "type": "image",
+          "default": "assets/images/cover.jpg"
+        },
+        {
+          "name": "hero_photo_url",
+          "label": "Ảnh mở đầu Hero",
+          "type": "image",
+          "default": "assets/images/hero.jpg"
+        },
+        {
+          "name": "gallery",
+          "label": "Danh sách ảnh cưới Album",
+          "type": "gallery",
+          "default": []
+        }
+      ]
+    }
+  ]
+}
+

@@ -1413,18 +1413,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *Nút "NHẤN ĐỂ KÝ TÊN"*: Ẩn triệt để toàn bộ khung ký tên inline cũ (`#GROUP13`, `#BOX10`, `#wrapCanvas`, `#HTML_CODE2`), tăng chiều cao bảo vệ của `#SECTION7` giúp nút đứng độc lập, nổi bật, không bị bất kỳ khung nào đè lấn.
                   * *Thanh điều hướng đáy (`bottom-nav`)*: Tự động trượt ẩn khi cuộn xuống (`scrolled-hide`) giúp người dùng ngắm trọn vẹn toàn bộ thiệp cưới, bổ sung nút thu gọn / mở rộng linh hoạt, đồng thời nâng toạ độ cụm tên cô dâu chú rể ở Hero Section để không bao giờ bị thanh dock che khuất.
 
+            27. **Refactor Toàn Diện Mẫu Thiệp VIP "Dấu Ký Trăm Năm" (`D:\File\Templates Mây Hẹn\Dấu Ký Trăm Năm`)**:
+                - **Màn Mở Thiệp 3D Hoàng Gia Siêu Lộng Lẫy (Grand 3D Opening Gate Ceremony)**:
+                  * *Cánh cửa tình yêu 3D kép*: 2 cánh cửa vòm chạm trổ phào chỉ dát vàng mạ nổi (`door_left`, `door_right`), màu đỏ rượu vang Ruby Velvet hoàng gia (`#8A1526` -> `#5E0B19` -> `#38030B`), tay nắm kim loại dát vàng óng ánh, mở xoay đa chiều (`rotateY(-112deg)` và `rotateY(112deg)` với perspective 1400px).
+                  * *Thẻ thiệp ngọc trai trung tâm*: Giấy mỹ thuật lụa ngọc trai cao cấp `#FFFDF9`, viền kép ép kim vàng `card_gold_border`, 4 góc chạm hoa văn vintage mạ vàng vector SVG tinh xảo.
+                  * *Căn chỉnh trục giữa hoàn hảo 100%*: Thiết lập `.mayhen_invitation_jeowinids483fr_center_card` sử dụng Flexbox column căn giữa, override triệt để vị trí cứng tuyệt đối của `button14` từ Ladipage cũ, đưa con dấu sáp đỏ Bordeaux 3D và nút "Chạm để mở cánh cửa tình yêu" về chính giữa thẻ thiệp, không còn bị lệch sang trái hay mất nút.
+                  * *Kích hoạt đa điểm chạm*: Gắn lắng nghe sự kiện `click` và `touchend` trực tiếp lên cả tấm thiệp trung tâm, con dấu sáp và nút mở thiệp, loại bỏ rào cản chặn sự kiện delegation, đảm bảo người dùng chạm bất kỳ vị trí nào ở màn mở đầu đều kích hoạt hiệu ứng xoay cửa 3D và mưa hoa rơi ngay lập tức 100%.
+                  * *Hiệu ứng Cánh Hoa Hồng Nhung Rơi & Bụi Sao Vàng Kim*: Canvas HTML5 thuần 60fps siêu mượt, tự động bung nở pháo hoa cánh hoa khi chạm mở thiệp (`triggerPetalsBurst`) và tự giải phóng tài nguyên CPU khi vào thiệp chính.
+                - **Tối Ưu Hóa Trải Nghiệm Animation (Lướt đến đâu animation đến đó, Mở thiệp có chuyển động ngay)**:
+                  * *Kích hoạt tức thì khi mở thiệp (`triggerInitialAnimations`)*: Ngay khi 2 cánh cửa 3D bắt đầu hé mở, toàn bộ các phần tử ở section đầu tiên (`section3` - ảnh cưới, lời tựa, tên dâu rể) được kích hoạt chuyển động ngay lập tức theo dạng stagger 50ms mượt mà, giúp người dùng vừa mở thiệp là thấy ngay chuyển động sống động, không bị đứng trơ.
+                  * *Triệt tiêu độ trễ delay lê thê*: Override triệt để các `animation-delay: 1s -> 4s` và `animation-duration: 2s -> 3s` của Ladipage cũ về `animation-delay: 0s !important` và `animation-duration: 0.75s !important` với đường cong `cubic-bezier(0.16, 1, 0.3, 1)`. Vẫn giữ nguyên 100% các kiểu animation cũ (`fadeInUp`, `fadeInDown`, `bounceIn`, `flipIn`...) nhưng lướt tới đâu là phần tử xuất hiện chuyển động dứt khoát, mượt mà tới đó.
+                  * *Đón đầu cuộn trang*: Mở rộng vùng quét `rootMargin: '80px 0px 80px 0px', threshold: 0.01` trong `IntersectionObserver`, kích hoạt trước khi mắt người dùng cuộn tới mép phần tử, chấm dứt hoàn toàn cảm giác khó chịu "lướt qua rồi mới bắt đầu chuyển động".
+                - **Nâng Cấp Visual & Bảng Màu Thiệp Cưới VIP**:
+                  * Gạt bỏ 100% bộ lọc grayscale xám xịt, khôi phục màu sắc ảnh cưới tươi tắn, chân thực, rạng rỡ và sắc nét.
+                  * Đổi biến chủ đạo từ đen xám sang bảng màu Đỏ Ruby Velvet (`#8A1526`), Vàng Kim Hoàng Gia (`#D4AF37`) trên nền lụa ngọc trai (`#FAF7F2`).
+                  * *Lịch cưới*: Ô ngày cưới 21 có trái tim đỏ nhung nhấp nháy nhịp đập yêu thương chân thật (`mayhenHeartbeat`).
+                  * *Countdown 4 ô*: Hộp số thẻ kính mờ viền vàng dập nổi sang trọng, con số đỏ ruby nổi bật.
+                  * *Form RSVP*: Thư mời tình yêu viền vàng mỏng tinh tế, nút gửi RSVP màu đỏ ruby viền vàng kim có bóng đổ 3D.
+                  * *Floating Bottom Nav*: Bo cong kính mờ viền vàng Champagne, nút đỏ nhung quý phái, hiển thị sắc nét trên cả desktop và mobile.
+
+            28. **Tích Hợp Hoàn Chỉnh Mẫu Thiệp Cưới "Dấu Ký Trăm Năm" (`dau-ky-tram-nam`) Vào Hệ Thống Mây Hẹn**:
+                - **Cấu trúc module độc lập chuẩn hóa**: `resources/views/client/invitations/dau-ky-tram-nam/`
+                  * `template.blade.php`: Kế thừa layout `@extends('client.layouts.invitation')`, tích hợp hợp đồng `data-sync-target` cho mọi vị trí (tên dâu rể, bố mẹ, ngày cưới, địa chỉ, ngày âm), tự động kết nối `editor-bridge.blade.php`, hỗ trợ Topbar xem thử và quản trị viên.
+                  * `styles.css`: Scoped 100% với tiền tố `mayhen_invitation_jeowinids483fr_*`, bổ sung lớp phòng vệ cho iframe editor `mayhen_invitation_jeowinids483fr_embed_mode`.
+                  * `script.js`: Native ES module xử lý animation cửa mở 3D, bão hoa hồng rơi canvas, countdown, lightbox, AJAX RSVP & lời chúc, phòng vệ embed editor.
+                  * `schema.json`: Đầy đủ 5 section chuẩn (`general`, `couple`, `events`, `banking`, `gallery`) cho trình tạo thiệp Live Studio Editor.
+                  * `assets/`: Lưu trữ toàn bộ font chữ, icon và assets đồ họa cục bộ, không dùng CDN ngoại.
+                - **Đăng ký CSDL & Seeder**: Đã thêm bản ghi vào `InvitationTemplateSeeder.php` với slug `dau-ky-tram-nam`, category `luxury`, tier `pro`, complexity `deluxe` và chạy seed thành công.
+                - **Kiểm thử chất lượng**: Toàn bộ 3 ca kiểm thử tính năng (Preview route `200 OK`, asset CSS `200 OK`, asset JS `200 OK`) đều vượt qua 100%. Đã format code bằng Laravel Pint.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
-
-
-
-
-
-
-
-
-
-
-
-
