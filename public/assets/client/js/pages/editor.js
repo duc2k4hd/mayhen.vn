@@ -10,7 +10,7 @@ import { TemplateSwitcher } from '../editor/template-switcher.js';
 import { SectionDnDManager } from '../editor/dnd-section.js';
 import { ThemeController } from '../editor/theme-controller.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+const initEditor = () => {
     const mainForm = $('#mayhen_editor_form');
     const previewIframe = $('#mayhen_editor_preview_iframe');
     const mobileIframe = $('#mayhen_editor_mobile_preview_iframe');
@@ -1207,4 +1207,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Khởi chạy dock
     updateDockNames();
-});
+
+    // Đồng bộ ngay lập tức toàn bộ dữ liệu form sang iframes
+    setTimeout(() => {
+        syncAllFieldsToIframe(previewIframe);
+        syncAllFieldsToIframe(mobileIframe);
+    }, 150);
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEditor);
+} else {
+    initEditor();
+}

@@ -182,7 +182,7 @@
   <h2 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_names mayhen_invitation_ladoifji894yfv_a" style="--d:.6s" data-sync-target="groom_name">{{ $groomName }}</h2>
   <span class="mayhen_invitation_ladoifji894yfv_amp mayhen_invitation_ladoifji894yfv_a" style="--d:.85s">&amp;</span>
   <h2 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_names mayhen_invitation_ladoifji894yfv_a" style="--d:1s" data-sync-target="bride_name">{{ $brideName }}</h2>
-  <p class="mayhen_invitation_ladoifji894yfv_cover_date mayhen_invitation_ladoifji894yfv_a" style="--d:1.4s" data-sync-target="wedding_date_digits">{{ $weddingDateDigits }}</p>
+  <p class="mayhen_invitation_ladoifji894yfv_cover_date mayhen_invitation_ladoifji894yfv_a" style="--d:1.4s" data-sync-target="wedding_date">{{ $weddingDateDigits }}</p>
   <p class="mayhen_invitation_ladoifji894yfv_small mayhen_invitation_ladoifji894yfv_a" style="--d:1.6s">Kính mời</p>
   <p class="mayhen_invitation_ladoifji894yfv_guest mayhen_invitation_ladoifji894yfv_a" style="--d:1.6s">{{ $guestName }}</p>
   <button class="mayhen_invitation_ladoifji894yfv_btn mayhen_invitation_ladoifji894yfv_open mayhen_invitation_ladoifji894yfv_a" style="--d:1.8s" type="button">Mở thiệp</button>
@@ -202,7 +202,7 @@
  <h1 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_big mayhen_invitation_ladoifji894yfv_rv" data-sync-target="groom_name">{{ $groomName }}</h1>
  <span class="mayhen_invitation_ladoifji894yfv_amp mayhen_invitation_ladoifji894yfv_rv">&amp;</span>
  <h1 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_big mayhen_invitation_ladoifji894yfv_rv" data-sync-target="bride_name">{{ $brideName }}</h1>
- <p class="mayhen_invitation_ladoifji894yfv_pill mayhen_invitation_ladoifji894yfv_rv" data-sync-target="wedding_date_digits">{{ $weddingDateDigits }}</p>
+ <p class="mayhen_invitation_ladoifji894yfv_pill mayhen_invitation_ladoifji894yfv_rv" data-sync-target="wedding_date">{{ $weddingDateDigits }}</p>
  <p class="mayhen_invitation_ladoifji894yfv_note mayhen_invitation_ladoifji894yfv_rv" data-sync-target="wedding_lunar_date">{{ $weddingLunar }}</p>
  <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv" data-sync-target="couple_quote">{!! nl2br(e($coupleQuote)) !!}</p>
 </section>
@@ -253,12 +253,12 @@
   <p class="mayhen_invitation_ladoifji894yfv_note">Vào lúc</p>
   <p class="mayhen_invitation_ladoifji894yfv_time" data-sync-target="party_time">{{ $partyTime }}</p>
   <div class="mayhen_invitation_ladoifji894yfv_dateblock">
-   <span>{{ $weddingDate->locale('vi')->isoFormat('dddd') }}</span>
-   <b>{{ $weddingDay }}</b>
-   <span>Tháng {{ $weddingMonth }}</span>
+   <span data-sync-target="wedding_weekday">{{ $weddingDate->locale('vi')->isoFormat('dddd') }}</span>
+   <b data-sync-target="wedding_day">{{ $weddingDay }}</b>
+   <span data-sync-target="wedding_month">Tháng {{ $weddingMonth }}</span>
   </div>
-  <p class="mayhen_invitation_ladoifji894yfv_label">{{ $weddingYear }}</p>
-  <p class="mayhen_invitation_ladoifji894yfv_note">({{ $weddingLunar }})</p>
+  <p class="mayhen_invitation_ladoifji894yfv_label" data-sync-target="wedding_year">{{ $weddingYear }}</p>
+  <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="wedding_lunar_date">({{ $weddingLunar }})</p>
   <p class="mayhen_invitation_ladoifji894yfv_label mayhen_invitation_ladoifji894yfv_gap">Tại</p>
   <p class="mayhen_invitation_ladoifji894yfv_venue_s">Trung tâm Tiệc cưới</p>
   <p class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_venue" data-sync-target="party_venue">{{ $partyVenue }}</p>
@@ -275,13 +275,13 @@
   <article class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_arch mayhen_invitation_ladoifji894yfv_rv">
    <span class="mayhen_invitation_ladoifji894yfv_icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/><path d="M9 4.5l1.5-2h3L15 4.5l-3 3z"/></svg></span>
    <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Vu Quy (Nhà Gái)</h3>
-   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span> · <span data-sync-target="wedding_date_full">{{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</span></p>
    <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
   </article>
   <article class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_arch mayhen_invitation_ladoifji894yfv_rv">
    <span class="mayhen_invitation_ladoifji894yfv_icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg></span>
    <h3 class="mayhen_invitation_ladoifji894yfv_rite">Lễ Thành Hôn (Nhà Trai)</h3>
-   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span> · {{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</p>
+   <p class="mayhen_invitation_ladoifji894yfv_rite_time"><span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span> · <span data-sync-target="wedding_date_full">{{ $weddingDate->locale('vi')->isoFormat('dddd D.M.Y') }}</span></p>
    <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
   </article>
  </div>

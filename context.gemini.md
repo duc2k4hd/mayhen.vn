@@ -1760,6 +1760,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Dọn sạch thẻ đóng PHP trùng lặp ở đầu trang.
                 - **Kiểm thử & Định dạng**: Chạy Pest Feature Test tự động xác thực toàn bộ các thẻ `data-sync-target` trên trang xem thử `/xem-thu/dau-an-thoi-gian?embed=1&mode=editor` đạt 22/22 assertions; toàn bộ test suite đạt 35/35 tests passed; Laravel Pint hoàn toàn sạch sẽ.
 
+            48. **Khắc Phục Toàn Diện Lỗi Không Thay Đổi Bản Xem Trước Trong Studio Editor (/tao-thiep)**:
+                - **Nguyên nhân cốt lõi phát hiện**:
+                  * *Cú pháp lỗi SyntaxError trong `editor-bridge.blade.php`*: Phát hiện dấu đóng ngoặc `}` thừa ở dòng 168 (ngay sau `window.syncStage`) khiến thẻ `<script>` của `editor-bridge` bị `Uncaught SyntaxError: Unexpected token '}'` và crash ngay lập tức khi iframe tải xong &rarr; Không một `window.addEventListener('message', ...)` nào được đăng ký, khiến iframe hoàn toàn bị "điếc" trước mọi tin nhắn `MAYHEN_SYNC_INPUT` từ trang cha.
+                  * *`editor.js` bị trôi sự kiện `DOMContentLoaded`*: Do script nạp dạng `<script type="module">` (deferred), khi trình duyệt phân tích xong DOM trước khi module graph tải xong, `document.readyState` chuyển sang `'interactive'` hoặc `'complete'`. Việc bọc toàn bộ code trong `document.addEventListener('DOMContentLoaded', ...)` khiến callback không bao giờ được gọi &rarr; `mainForm` không nhận sự kiện `input`/`change`, không gửi bất kỳ tin nhắn `postMessage` nào sang iframe.
+                  * *Lệch mục tiêu ngày cưới*: Trong `template.blade.php`, các thẻ ngày cưới mang `data-sync-target="wedding_date_digits"` trong khi `editor-bridge.blade.php` chỉ tìm kiếm `[data-sync-target="wedding_date"]`.
+                  * *Thiếu target các thành phần ngày cưới động*: Khối lịch cưới ngày/tháng/năm/thứ (`wedding_day`, `wedding_month`, `wedding_year`, `wedding_weekday`, `wedding_date_full`) trong Thư mời tiệc cưới chính và Nghi lễ gia tiên bị tĩnh, không có thẻ đồng bộ.
+                  * *Thiếu alias hai chiều trong `editor-bridge.blade.php`*: `groom_party_time` / `bride_party_time` chưa ánh xạ tới `party_time`, `wedding_date_digits` chưa ánh xạ tới `wedding_date`, và trường ảnh Album (`gallery.*`) bị rơi vào nhánh `textContent` làm in chuỗi URL thay vì đổi `background-image`.
+                  * *Thiếu sinh tự động VietQR khi sửa số tài khoản*: Khi sửa số tài khoản hoặc ngân hàng, ảnh QR tĩnh không tự cập nhật lại link SVG VietQR mới.
+                - **Giải pháp xử lý triệt để**:
+                  * *`public/assets/client/js/pages/editor.js`*:
+                    + Chuyển sang cơ chế khởi tạo an toàn: Kiểm tra `document.readyState === 'loading'` thì mới `addEventListener('DOMContentLoaded')`, còn lại chạy `initEditor()` ngay lập tức.
+                    + Tự động kích hoạt `syncAllFieldsToIframe()` sau 150ms để đồng bộ tức thời toàn bộ giá trị có sẵn trên form sang iframe ngay khi mở trang.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung đầy đủ 2 chiều alias: `groom_party_time`, `bride_party_time`, `party_time`, `wedding_date_digits`, `event_party_lunar`, `wedding_lunar_date`, `couple_quote`.
+                    + Nâng cấp bộ nhận ảnh: Hỗ trợ tự động cập nhật `background-image` cho các trường `gallery.*` và `album.*`.
+                    + Nâng cấp bộ định dạng ngày cưới: Khi `wedding_date` thay đổi, tự động bóc tách ngày (`wedding_day`), tháng (`wedding_month`), năm (`wedding_year`), thứ trong tuần tiếng Việt (`wedding_weekday`) và ngày đầy đủ (`wedding_date_full`).
+                    + Tự động sinh mã VietQR theo chuẩn mới (`https://img.vietqr.io/image/{bank}-{acc}-compact2.svg`) mỗi khi người dùng thay đổi số tài khoản hoặc tên ngân hàng của Chú Rể hoặc Cô Dâu.
+                  * *`dau-an-thoi-gian/template.blade.php`*:
+                    + Chuẩn hóa đồng bộ các thẻ `wedding_date`, `wedding_day`, `wedding_month`, `wedding_year`, `wedding_weekday`, `wedding_date_full`, `wedding_lunar_date`.
+                - **Kiểm thử & Định dạng**: Chạy full test suite đạt 35/35 tests passed 100%, Laravel Pint hoàn toàn sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

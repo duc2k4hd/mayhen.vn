@@ -165,7 +165,6 @@
             if (typeof window.syncStage === 'function') {
                 try { window.syncStage(); } catch(e) {}
             }
-            }
         };
 
         if (document.readyState === 'loading') {
@@ -220,17 +219,24 @@
                 'bride_bank_holder': ['bride_account_name'],
                 'bride_account_name': ['bride_bank_holder'],
                 'event_party_address': ['party_address', 'ceremony_address', 'groom_party_address', 'bride_party_address'],
-                'party_address': ['event_party_address', 'groom_party_address'],
+                'party_address': ['event_party_address', 'groom_party_address', 'bride_party_address'],
                 'ceremony_address': ['event_party_address', 'groom_ceremony_address'],
                 'groom_party_address': ['event_party_address', 'party_address'],
                 'bride_party_address': ['event_party_address', 'party_address'],
                 'event_party_time': ['party_time', 'ceremony_time', 'groom_party_time', 'bride_party_time'],
-                'party_time': ['event_party_time', 'groom_party_time'],
+                'party_time': ['event_party_time', 'groom_party_time', 'bride_party_time'],
+                'groom_party_time': ['party_time', 'event_party_time'],
+                'bride_party_time': ['party_time', 'event_party_time'],
                 'event_party_date': ['wedding_date', 'groom_party_date', 'bride_party_date'],
-                'wedding_date': ['event_party_date', 'groom_party_date', 'bride_party_date'],
-                'event_party_lunar': ['groom_party_lunar', 'bride_party_lunar', 'bride_ceremony_lunar'],
+                'wedding_date': ['event_party_date', 'groom_party_date', 'bride_party_date', 'wedding_date_digits'],
+                'wedding_date_digits': ['wedding_date', 'event_party_date'],
+                'event_party_lunar': ['groom_party_lunar', 'bride_party_lunar', 'bride_ceremony_lunar', 'wedding_lunar_date'],
+                'wedding_lunar_date': ['event_party_lunar', 'groom_party_lunar', 'bride_party_lunar'],
                 'hero_photo_url': ['cover_photo_url'],
-                'cover_photo_url': ['hero_photo_url']
+                'cover_photo_url': ['hero_photo_url'],
+                'couple_quote': ['quote', 'story', 'love_quote'],
+                'quote': ['couple_quote'],
+                'story': ['couple_quote']
             };
 
             if (aliasesMap[cleanKey]) {
@@ -263,7 +269,7 @@
                 } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     el.value = val;
                 } else {
-                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1) {
+                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1) {
                         if (val) {
                             var bgUrl = resolveUrl(val);
                             if (bgUrl) el.style.setProperty('background-image', 'url("' + bgUrl + '")', 'important');
@@ -282,16 +288,45 @@
                         var d = String(parsedDate.getDate()).padStart(2, '0');
                         var m = String(parsedDate.getMonth() + 1).padStart(2, '0');
                         var y = parsedDate.getFullYear();
-                        document.querySelectorAll('[data-sync-target="wedding_date"]').forEach(function(el) {
+                        var weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                        var wName = weekdays[parsedDate.getDay()] || 'Chủ Nhật';
+
+                        document.querySelectorAll('[data-sync-target="wedding_date"], [data-sync-target="wedding_date_digits"]').forEach(function(el) {
                             var cur = el.textContent || '';
-                            if (cur.indexOf('.') !== -1) {
-                                el.textContent = d + ' . ' + m + ' . ' + y;
-                            } else if (cur.indexOf('/') !== -1) {
+                            if (cur.indexOf('/') !== -1) {
                                 el.textContent = d + '/' + m + '/' + y;
+                            } else {
+                                el.textContent = d + ' . ' + m + ' . ' + y;
                             }
+                        });
+
+                        document.querySelectorAll('[data-sync-target="wedding_day"]').forEach(function(el) { el.textContent = d; });
+                        document.querySelectorAll('[data-sync-target="wedding_month"]').forEach(function(el) { el.textContent = m; });
+                        document.querySelectorAll('[data-sync-target="wedding_year"]').forEach(function(el) { el.textContent = y; });
+                        document.querySelectorAll('[data-sync-target="wedding_weekday"]').forEach(function(el) { el.textContent = wName; });
+                        document.querySelectorAll('[data-sync-target="wedding_date_full"]').forEach(function(el) {
+                            el.textContent = wName + ' ' + d + '.' + m + '.' + y;
                         });
                     }
                 } catch (e) {}
+            }
+
+            // Tự động làm mới VietQR nếu thay đổi số tài khoản hoặc ngân hàng
+            if (cleanKey === 'groom_bank_account' || cleanKey === 'groom_bank_name') {
+                var bName = (window.__MAYHEN_LOCAL_STATE['groom_bank_name'] || 'vietcombank').toLowerCase().replace(/\s+/g, '');
+                var bAcc = (window.__MAYHEN_LOCAL_STATE['groom_bank_account'] || '').replace(/\s+/g, '');
+                var qrEl = document.querySelector('[data-sync-target="qr_groom_image"]');
+                if (qrEl && bAcc) {
+                    qrEl.src = 'https://img.vietqr.io/image/' + encodeURIComponent(bName) + '-' + encodeURIComponent(bAcc) + '-compact2.svg';
+                }
+            }
+            if (cleanKey === 'bride_bank_account' || cleanKey === 'bride_bank_name') {
+                var bName = (window.__MAYHEN_LOCAL_STATE['bride_bank_name'] || 'techcombank').toLowerCase().replace(/\s+/g, '');
+                var bAcc = (window.__MAYHEN_LOCAL_STATE['bride_bank_account'] || '').replace(/\s+/g, '');
+                var qrEl = document.querySelector('[data-sync-target="qr_bride_image"]');
+                if (qrEl && bAcc) {
+                    qrEl.src = 'https://img.vietqr.io/image/' + encodeURIComponent(bName) + '-' + encodeURIComponent(bAcc) + '-compact2.svg';
+                }
             }
 
             // Đồng bộ tên đôi uyên ương gộp (couple_names / opening_names)
