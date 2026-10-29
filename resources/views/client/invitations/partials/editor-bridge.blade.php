@@ -427,11 +427,13 @@
             }
         }
 
-        // 6. Tự động cuộn mượt mà khi hover vào Showcase Card trên trang chủ
+        // 6. Tự động cuộn mượt mà khi hiển thị trên Showcase Card trang chủ
         if (data.type === 'MAYHEN_AUTOSCROLL_START') {
             startSmoothScroll();
         } else if (data.type === 'MAYHEN_AUTOSCROLL_STOP') {
             stopSmoothScroll();
+        } else if (data.type === 'MAYHEN_SCROLL_TOP') {
+            resetScrollToTop();
         }
     });
 
@@ -439,6 +441,19 @@
     var autoScrollRaf = null;
     var isScrolling = false;
     var currentScrollPos = 0;
+
+    function resetScrollToTop() {
+        isScrolling = false;
+        cancelAnimationFrame(autoScrollRaf);
+        currentScrollPos = 0;
+        try {
+            document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+            if (document.body) document.body.style.setProperty('scroll-behavior', 'auto', 'important');
+        } catch (e) {}
+        window.scrollTo(0, 0);
+        if (document.documentElement) document.documentElement.scrollTop = 0;
+        if (document.body) document.body.scrollTop = 0;
+    }
 
     function startSmoothScroll() {
         if (isScrolling) return;

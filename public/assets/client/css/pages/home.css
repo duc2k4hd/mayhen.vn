@@ -2199,26 +2199,27 @@
     transform: scale(1.25) rotate(12deg);
 }
 
-/* Rich Slide-Up Hover Overlay (ChungDoi style) — Nhẹ nhàng ở chân thẻ để lộ 85% không gian cho thiệp cưới cuộn sống động */
+/* Rich Information Overlay — Tự động hiển thị trên thẻ to nhất (Active Card) và khi hover */
 .mayhen_home_showcase_card_hover_overlay {
     position: absolute;
     inset: 0;
     z-index: 25;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 18%, transparent 32%);
+    background: linear-gradient(to top, rgba(15, 12, 10, 0.94) 0%, rgba(15, 12, 10, 0.76) 28%, rgba(15, 12, 10, 0.22) 50%, transparent 68%);
     opacity: 0;
     visibility: hidden;
     pointer-events: none !important;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 10px 10px 14px 10px;
+    padding: 12px 12px 16px 12px;
     border-radius: 20px;
     box-sizing: border-box;
 }
 
-/* Chỉ hiển thị overlay chi tiết và nút khi hover vào thẻ active */
-.mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_hover_overlay,
+/* Tự động hiển thị thông tin trên thẻ to nhất (Active Card) và khi rê chuột */
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_hover_overlay,
+.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_hover_overlay,
 .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_hover_overlay {
     opacity: 1;
     visibility: visible;
@@ -2231,14 +2232,6 @@
     pointer-events: none !important;
     width: 100%;
     box-sizing: border-box;
-}
-
-/* Ẩn bớt mô tả và tags dày đặc để không che khuất màn hình thiệp cưới đang cuộn */
-.mayhen_home_showcase_card_hover_cat,
-.mayhen_home_showcase_card_hover_title,
-.mayhen_home_showcase_card_hover_desc,
-.mayhen_home_showcase_card_hover_tags {
-    display: none !important;
 }
 
 .mayhen_home_showcase_card_hover_cat {

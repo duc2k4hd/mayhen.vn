@@ -1688,6 +1688,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Tinh giản bảng đen hover (`.mayhen_home_showcase_card_hover_overlay`): Giảm gradient xuống chỉ chiếm ~20% ở chân thẻ, ẩn các dòng mô tả và tag dày đặc che khuất màn hình, để lộ trọn vẹn 85% không gian cho thiệp cưới cuộn sống động mà người dùng có thể chiêm ngưỡng trực tiếp.
                 - **Kiểm thử & Định dạng**: Toàn bộ 34/34 tests passed, Pint định dạng chuẩn.
 
+            45. **Cơ Chế Tự Động Hiển Thị Thông Tin & Tự Cuộn Khi Chuyển Sang Thẻ To Nhất, Tự Động Reset Về Đỉnh Cho Các Thẻ Phụ**:
+                - **Yêu cầu người dùng**:
+                  * Khôi phục đầy đủ thông tin mẫu thiệp (thể loại, tên mẫu, mô tả, các tags tính năng, nút Xem mẫu và Chọn mẫu).
+                  * Thay đổi cơ chế trải nghiệm: Không cần người dùng hover, mỗi khi slide tự chuyển sang thẻ to nhất (Active Card ở giữa) thì **tự động cuộn thiệp cưới và tự động hiển thị thông tin**.
+                  * Khi các slide không còn làm thẻ chính nữa (trôi sang 2 bên) thì **phải tự động cuộn về đầu trang ngay lập tức**, tránh trường hợp dừng ở lưng chừng gây mất thẩm mỹ.
+                - **Giải pháp kỹ thuật chuẩn mực**:
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Cho phép `.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_hover_overlay` tự động hiển thị (`opacity: 1; visibility: visible;`).
+                    + Khôi phục đầy đủ thông tin thể loại (`hover_cat`), tên mẫu (`hover_title`), mô tả ngắn (`hover_desc`), tags tính năng (`hover_tags`) và 2 nút hành động `[👁 Xem Mẫu]` & `[Chọn Mẫu &rarr;]`.
+                    + Thiết kế nền gradient Quiet Luxury mờ nhẹ nửa dưới để người dùng vừa đọc trọn vẹn thông tin vừa nhìn thấy thiệp cưới đang cuộn êm đềm xuyên qua phía sau.
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Xây dựng hàm `autoScrollActiveCard()`: Kích hoạt tự động cuộn cho thẻ to nhất ngay trong `updateStage()`.
+                    + Xây dựng hàm `resetCardScrollToTop(card)`: Mỗi khi một thẻ không còn là thẻ chính (`!isCenter`), lập tức dừng mọi vòng lặp cuộn và cưỡng chế đưa vị trí cuộn về đỉnh trang (`win.scrollTo(0, 0); scrollEl.scrollTop = 0;`), đảm bảo các thẻ nằm ở 2 bên cánh luôn hiển thị trang bìa đầu tiên ngay ngắn, chỉn chu 100%.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung bộ nhận tin nhắn `MAYHEN_SCROLL_TOP` và hàm `resetScrollToTop()` để đồng bộ đưa vị trí cuộn về `0px` ngay từ bên trong iframe.
+                - **Kiểm thử & Định dạng**: Chạy Pest test suite đạt 34/34 tests passed 100%, Pint định dạng chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
