@@ -53,6 +53,7 @@
     const intro = one("popup10");
     const giftDialog = one("gift-dialog");
     const royalGate = one("royal_gate_wrapper");
+    const doorStage = document.getElementById("mayhen-door-stage") || one("door_stage");
     let modal = null;
     let isOpening = false;
     let petalsAnimationId = null;
@@ -218,6 +219,11 @@
 
         triggerPetalsBurst();
 
+        const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
+        if (stageEl) {
+            stageEl.classList.add("opened");
+        }
+
         const gate = royalGate || one("royal_gate_wrapper");
         if (gate) {
             gate.classList.add(P + "opening");
@@ -225,13 +231,15 @@
         triggerInitialAnimations();
 
         setTimeout(() => {
+            if (stageEl) {
+                stageEl.classList.add("mayhen_door_hidden");
+            }
             if (gate) {
                 gate.classList.add(P + "hidden");
             }
-            setTimeout(() => {
-                closeModal();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 600);
+            closeModal();
+            document.body.style.overflow = "";
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }, 1100);
     };
 
@@ -256,18 +264,22 @@
     };
 
     const bindOpeningTriggers = () => {
-        const card = one("center_card");
-        const seal = one("wax_seal_wrap");
-        const btn = one("open_btn");
+        const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
+        const card = document.getElementById("mayhen-door-center") || one("door_center") || one("center_card");
+        const seal = document.getElementById("mayhen-wax-seal") || one("wax_seal_wrap");
+        const btn = one("open_hint") || one("open_btn");
         const legacyBtn = one("button14");
 
-        [card, seal, btn, legacyBtn].filter(Boolean).forEach((el) => {
-            el.style.cursor = "pointer";
-            const handleOpen = (e) => {
+        const handleOpen = (e) => {
+            if (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                openWeddingCeremony();
-            };
+            }
+            openWeddingCeremony();
+        };
+
+        [stageEl, card, seal, btn, legacyBtn].filter(Boolean).forEach((el) => {
+            el.style.cursor = "pointer";
             el.addEventListener("click", handleOpen);
             el.addEventListener("touchend", handleOpen, { passive: false });
         });
@@ -275,7 +287,19 @@
 
     const openIntro = () => {
         if (isEmbed) {
+            const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
+            if (stageEl) {
+                stageEl.classList.add("opened", "mayhen_door_hidden");
+            }
             triggerInitialAnimations();
+            return;
+        }
+        const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
+        if (stageEl) {
+            stageEl.classList.remove("opened", "mayhen_door_hidden");
+            document.body.style.overflow = "hidden";
+            initPetals();
+            bindOpeningTriggers();
             return;
         }
         if (!intro) return;
@@ -554,6 +578,33 @@
     });
 
     document.addEventListener("click", (event) => {
+        const doorStageEl = document.getElementById("mayhen-door-stage") || one("door_stage");
+        if (doorStageEl && !doorStageEl.classList.contains("opened") && !doorStageEl.classList.contains("mayhen_door_hidden")) {
+            const openTrigger = event.target.closest(
+                "#mayhen-door-stage, #mayhen-wax-seal, #mayhen-door-center, ." +
+                    P +
+                    "door_stage, ." +
+                    P +
+                    "door_center, ." +
+                    P +
+                    "wax_seal_wrap, ." +
+                    P +
+                    "open_hint, ." +
+                    P +
+                    "open_btn, ." +
+                    P +
+                    "center_card, ." +
+                    P +
+                    "button14",
+            );
+            if (openTrigger) {
+                event.preventDefault();
+                event.stopPropagation();
+                openWeddingCeremony();
+                return;
+            }
+        }
+
         if (
             modal === "intro" ||
             intro?.classList.contains(P + "modal-active")
@@ -598,13 +649,19 @@
         if (pic) return showPhoto(galleryElements.indexOf(pic));
         if (
             node.closest(
-                "." +
+                "#mayhen-wax-seal, #mayhen-door-center, ." +
                     P +
-                    "button14, ." +
+                    "door_stage, ." +
+                    P +
+                    "door_center, ." +
                     P +
                     "wax_seal_wrap, ." +
                     P +
-                    "open_btn",
+                    "open_hint, ." +
+                    P +
+                    "open_btn, ." +
+                    P +
+                    "button14",
             )
         ) {
             openWeddingCeremony();

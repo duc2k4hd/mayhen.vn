@@ -2,7 +2,7 @@
 
 > **⚠️ BẮT BUỘC ĐỐI VỚI MỌI AI AGENT (GEMINI, CLAUDE, GPT, CURSOR, COPILOT...):**
 > 1. **ĐỌC FILE NÀY ĐẦU TIÊN** trước khi phân tích hoặc viết bất kỳ dòng code nào trong repository này!
-> 2. **CẬP NHẬT FILE NÀY SAU MỖI LẦN CODE**: Bất kỳ khi nào hoàn thành hoặc thay đổi tính năng, cấu trúc, route, UI/UX hay database, AI **bắt buộc phải cập nhật lại file này** để giữ context luôn mới nhất trên Git.
+> 2. **CẬP NHẬT FILE NÀY SAU MỖI LẦN CODE TRONG DỰ ÁN**: Bất kỳ khi nào hoàn thành hoặc thay đổi tính năng, cấu trúc, route, UI/UX hay database bên trong kho mã nguồn dự án, AI **bắt buộc phải cập nhật lại file này** để giữ context luôn mới nhất trên Git. **LƯU Ý QUAN TRỌNG**: Khi chỉnh sửa file hoặc thư mục **ở bên ngoài dự án** (ví dụ file mẫu tải về ở ổ đĩa khác như `D:\...`, file tài liệu tạm bên ngoài...), thì **TUYỆT ĐỐI KHÔNG CẦN LƯU VÀO CONTEXT NÀY** để tránh làm rác và phình to tài liệu context của dự án.
 > 3. Viết cho tôi commit Tiếng Việt có dấu có mở đầu mang ý nghĩa chính xác (ví dụ: fix(), refactor(),...) để tôi gửi commit, bạn không được phép tự gửi lệnh, viết git chi tiết mức độ vừa, đủ để đọc hiểu
 > 4. **TUÂN THỦ 100% CÁC NGUYÊN TẮC CỐT LÕI**: Không tự ý thêm thư viện ngoài, không phá vỡ quy ước đặt tên CSS prefix và kiến trúc pure vanilla.
 > 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
@@ -1432,11 +1432,11 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *Form RSVP*: Thư mời tình yêu viền vàng mỏng tinh tế, nút gửi RSVP màu đỏ ruby viền vàng kim có bóng đổ 3D.
                   * *Floating Bottom Nav*: Bo cong kính mờ viền vàng Champagne, nút đỏ nhung quý phái, hiển thị sắc nét trên cả desktop và mobile.
 
-            28. **Tích Hợp Hoàn Chỉnh Mẫu Thiệp Cưới "Dấu Ký Trăm Năm" (`dau-ky-tram-nam`) Vào Hệ Thống Mây Hẹn**:
+            28. **Tích Hợp & Chuẩn Hóa Toàn Diện Mẫu Thiệp Cưới "Dấu Ký Trăm Năm" (`dau-ky-tram-nam`) Vào Hệ Thống Mây Hẹn**:
                 - **Cấu trúc module độc lập chuẩn hóa**: `resources/views/client/invitations/dau-ky-tram-nam/`
-                  * `template.blade.php`: Kế thừa layout `@extends('client.layouts.invitation')`, tích hợp hợp đồng `data-sync-target` cho mọi vị trí (tên dâu rể, bố mẹ, ngày cưới, địa chỉ, ngày âm), tự động kết nối `editor-bridge.blade.php`, hỗ trợ Topbar xem thử và quản trị viên.
-                  * `styles.css`: Scoped 100% với tiền tố `mayhen_invitation_jeowinids483fr_*`, bổ sung lớp phòng vệ cho iframe editor `mayhen_invitation_jeowinids483fr_embed_mode`.
-                  * `script.js`: Native ES module xử lý animation cửa mở 3D, bão hoa hồng rơi canvas, countdown, lightbox, AJAX RSVP & lời chúc, phòng vệ embed editor.
+                  * `template.blade.php`: Kế thừa layout `@extends('client.layouts.invitation')`, chuyển đổi component cánh cửa mở đầu thành `#mayhen-door-stage` độc lập ở đầu trang (tách biệt hoàn toàn khỏi layout Ladipage, giải quyết triệt để lỗi xung đột tọa độ `button14`), tích hợp hợp đồng `data-sync-target` cho mọi vị trí, tự động kết nối `editor-bridge.blade.php`.
+                  * `styles.css`: Scoped 100% với tiền tố `mayhen_invitation_jeowinids483fr_*`. Chuẩn hóa thiết kế màn mở đầu hoàng gia theo chuẩn tỷ lệ vàng của mẫu chuẩn (Ảnh 1): Tấm thiệp ngọc trai lụa bo cong 18px với viền vàng kép và hoa văn 4 góc, con dấu sáp 3D Bordeaux dập nổi đè đúng 50% lên mép dưới thẻ thiệp, nút viên thuốc (pill) viền vàng kim lấp lánh `Chạm để mở cánh cửa tình yêu` nằm cân đối ngay bên dưới, cánh cửa đỏ Ruby Velvet với các đường chỉ kẻ vàng dọc và họa tiết chấm hạt sao mạ vàng mờ chìm.
+                  * `script.js`: Native ES module xử lý animation cửa mở 3D (`opened` xoay `-112deg`/`112deg`), bão hoa hồng rơi canvas 60fps, countdown, lightbox, AJAX RSVP & lời chúc, phòng vệ embed editor tức thì.
                   * `schema.json`: Đầy đủ 5 section chuẩn (`general`, `couple`, `events`, `banking`, `gallery`) cho trình tạo thiệp Live Studio Editor.
                   * `assets/`: Lưu trữ toàn bộ font chữ, icon và assets đồ họa cục bộ, không dùng CDN ngoại.
                 - **Đăng ký CSDL & Seeder**: Đã thêm bản ghi vào `InvitationTemplateSeeder.php` với slug `dau-ky-tram-nam`, category `luxury`, tier `pro`, complexity `deluxe` và chạy seed thành công.

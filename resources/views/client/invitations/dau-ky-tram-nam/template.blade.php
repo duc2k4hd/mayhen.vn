@@ -144,6 +144,83 @@
 @endpush
 
 @section('content')
+{{-- 2 CÁNH CỬA TÌNH YÊU HOÀNG GIA MỞ SANG 2 BÊN (ROYAL 3D DOUBLE GATE OPENING) --}}
+<div id="mayhen-door-stage" class="mayhen_invitation_jeowinids483fr_door_stage" aria-label="Cánh cửa tình yêu">
+    <!-- Cánh cửa bên trái -->
+    <div class="mayhen_invitation_jeowinids483fr_door mayhen_invitation_jeowinids483fr_door_left">
+        <div class="mayhen_invitation_jeowinids483fr_door_surface">
+            <div class="mayhen_invitation_jeowinids483fr_door_frame">
+                <div class="mayhen_invitation_jeowinids483fr_door_inner_frame">
+                    <div class="mayhen_invitation_jeowinids483fr_door_corner mayhen_invitation_jeowinids483fr_tl"></div>
+                    <div class="mayhen_invitation_jeowinids483fr_door_corner mayhen_invitation_jeowinids483fr_bl"></div>
+                    <div class="mayhen_invitation_jeowinids483fr_door_filigree"></div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_jeowinids483fr_door_handle mayhen_invitation_jeowinids483fr_door_handle_left"></div>
+        </div>
+    </div>
+
+    <!-- Cánh cửa bên phải -->
+    <div class="mayhen_invitation_jeowinids483fr_door mayhen_invitation_jeowinids483fr_door_right">
+        <div class="mayhen_invitation_jeowinids483fr_door_surface">
+            <div class="mayhen_invitation_jeowinids483fr_door_frame">
+                <div class="mayhen_invitation_jeowinids483fr_door_inner_frame">
+                    <div class="mayhen_invitation_jeowinids483fr_door_corner mayhen_invitation_jeowinids483fr_tr"></div>
+                    <div class="mayhen_invitation_jeowinids483fr_door_corner mayhen_invitation_jeowinids483fr_br"></div>
+                    <div class="mayhen_invitation_jeowinids483fr_door_filigree"></div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_jeowinids483fr_door_handle mayhen_invitation_jeowinids483fr_door_handle_right"></div>
+        </div>
+    </div>
+
+    <!-- Trung tâm: Thiệp mời & Con dấu sáp hoàng gia -->
+    <div class="mayhen_invitation_jeowinids483fr_door_center" id="mayhen-door-center">
+        <div class="mayhen_invitation_jeowinids483fr_door_card">
+            <!-- 4 góc hoa văn cổ điển mạ vàng -->
+            <div class="mayhen_invitation_jeowinids483fr_card_corner mayhen_invitation_jeowinids483fr_cc_tl"></div>
+            <div class="mayhen_invitation_jeowinids483fr_card_corner mayhen_invitation_jeowinids483fr_cc_tr"></div>
+            <div class="mayhen_invitation_jeowinids483fr_card_corner mayhen_invitation_jeowinids483fr_cc_bl"></div>
+            <div class="mayhen_invitation_jeowinids483fr_card_corner mayhen_invitation_jeowinids483fr_cc_br"></div>
+
+            <div class="mayhen_invitation_jeowinids483fr_card_crest">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l2.4 5 5.6.8-4 4 1 5.5-5-2.7-5 2.7 1-5.5-4-4 5.6-.8z"/>
+                </svg>
+            </div>
+            <div class="mayhen_invitation_jeowinids483fr_card_badge">WEDDING INVITATION</div>
+            <div class="mayhen_invitation_jeowinids483fr_card_sub">THE WEDDING CELEBRATION</div>
+            <h1 class="mayhen_invitation_jeowinids483fr_card_names"><span data-sync-target="groom_name">{{ $groomName }}</span> <span class="mayhen_invitation_jeowinids483fr_amp">&amp;</span> <span data-sync-target="bride_name">{{ $brideName }}</span></h1>
+            <div class="mayhen_invitation_jeowinids483fr_card_divider">
+                <span class="mayhen_invitation_jeowinids483fr_divider_diamond">✦</span>
+            </div>
+            <p class="mayhen_invitation_jeowinids483fr_card_guest_label">Trân trọng kính mời</p>
+            <div class="mayhen_invitation_jeowinids483fr_card_guest" data-sync-target="guest_name">{{ $guestName }}</div>
+            <p class="mayhen_invitation_jeowinids483fr_card_date" data-sync-target="wedding_date">{{ $coverDateFormatted }}</p>
+        </div>
+
+        <!-- Con dấu sáp đỏ Bordeaux hoàng gia (Royal Wax Seal) -->
+        <div class="mayhen_invitation_jeowinids483fr_wax_seal_wrap" id="mayhen-wax-seal" role="button" tabindex="0" title="Chạm để mở cánh cửa tình yêu">
+            <div class="mayhen_invitation_jeowinids483fr_wax_seal_glow"></div>
+            <!-- Dải ruy băng lụa buông nhẹ sau con dấu -->
+            <div class="mayhen_invitation_jeowinids483fr_wax_ribbon mayhen_invitation_jeowinids483fr_ribbon_left"></div>
+            <div class="mayhen_invitation_jeowinids483fr_wax_ribbon mayhen_invitation_jeowinids483fr_ribbon_right"></div>
+            <div class="mayhen_invitation_jeowinids483fr_wax_seal">
+                <div class="mayhen_invitation_jeowinids483fr_wax_rim">
+                    <div class="mayhen_invitation_jeowinids483fr_wax_monogram">{{ $groomInitial }}<span class="mayhen_invitation_jeowinids483fr_monogram_amp">&amp;</span>{{ $brideInitial }}</div>
+                </div>
+            </div>
+            <div class="mayhen_invitation_jeowinids483fr_open_hint">
+                <span class="mayhen_invitation_jeowinids483fr_hint_icon">✨</span>
+                <span class="mayhen_invitation_jeowinids483fr_hint_text">Chạm để mở cánh cửa tình yêu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lớp cánh hoa rơi & bụi sao vàng kim lộng lẫy -->
+    <div id="mayhen-door-particles" class="mayhen_invitation_jeowinids483fr_door_particles" aria-hidden="true"></div>
+</div>
+
 <div class="mayhen_invitation_jeowinids483fr_shell">
       <div
         aria-label="Nội dung thiệp cưới"
@@ -1906,213 +1983,7 @@
       <div
         class="mayhen_invitation_jeowinids483fr_ladi-section-background"
       ></div>
-      <div class="mayhen_invitation_jeowinids483fr_ladi-container">
-        <div
-          class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_popup10"
-          style="height: 100%; margin: 0px"
-        >
-          <div class="mayhen_invitation_jeowinids483fr_ladi-popup">
-            <div
-              class="mayhen_invitation_jeowinids483fr_ladi-popup-background"
-            ></div>
-
-            <!-- Màn Mở Thiệp 3D Hoàng Gia Siêu Lộng Lẫy (Royal 3D Gate & Wax Seal) -->
-            <div class="mayhen_invitation_jeowinids483fr_royal_gate_wrapper">
-              <!-- Cánh cửa 3D bên trái -->
-              <div
-                class="mayhen_invitation_jeowinids483fr_royal_door mayhen_invitation_jeowinids483fr_door_left"
-              >
-                <div class="mayhen_invitation_jeowinids483fr_door_panel">
-                  <div class="mayhen_invitation_jeowinids483fr_door_arch"></div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_door_moulding"
-                  ></div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_door_knob mayhen_invitation_jeowinids483fr_knob_left"
-                  ></div>
-                </div>
-              </div>
-
-              <!-- Cánh cửa 3D bên phải -->
-              <div
-                class="mayhen_invitation_jeowinids483fr_royal_door mayhen_invitation_jeowinids483fr_door_right"
-              >
-                <div class="mayhen_invitation_jeowinids483fr_door_panel">
-                  <div class="mayhen_invitation_jeowinids483fr_door_arch"></div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_door_moulding"
-                  ></div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_door_knob mayhen_invitation_jeowinids483fr_knob_right"
-                  ></div>
-                </div>
-              </div>
-
-              <!-- Canvas hiệu ứng cánh hoa hồng nhung rơi & bụi sao vàng -->
-              <canvas
-                class="mayhen_invitation_jeowinids483fr_petals_canvas"
-              ></canvas>
-
-              <!-- Thẻ thiệp ngọc trai trung tâm với tem sáp 3D Bordeaux -->
-              <div class="mayhen_invitation_jeowinids483fr_center_card">
-                <div
-                  class="mayhen_invitation_jeowinids483fr_card_gold_border"
-                ></div>
-
-                <!-- 4 góc hoa văn vintage cổ điển dát vàng -->
-                <svg
-                  class="mayhen_invitation_jeowinids483fr_corner mayhen_invitation_jeowinids483fr_corner_tl"
-                  viewBox="0 0 40 40"
-                >
-                  <path
-                    d="M2,38 L2,10 A8,8 0 0,1 10,2 L38,2"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="1.8"
-                  />
-                  <path
-                    d="M6,38 L6,14 A8,8 0 0,1 14,6 L38,6"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="0.8"
-                    opacity="0.6"
-                  />
-                  <circle cx="10" cy="10" r="2.5" fill="#D4AF37" />
-                </svg>
-                <svg
-                  class="mayhen_invitation_jeowinids483fr_corner mayhen_invitation_jeowinids483fr_corner_tr"
-                  viewBox="0 0 40 40"
-                >
-                  <path
-                    d="M2,38 L2,10 A8,8 0 0,1 10,2 L38,2"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="1.8"
-                  />
-                  <path
-                    d="M6,38 L6,14 A8,8 0 0,1 14,6 L38,6"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="0.8"
-                    opacity="0.6"
-                  />
-                  <circle cx="10" cy="10" r="2.5" fill="#D4AF37" />
-                </svg>
-                <svg
-                  class="mayhen_invitation_jeowinids483fr_corner mayhen_invitation_jeowinids483fr_corner_bl"
-                  viewBox="0 0 40 40"
-                >
-                  <path
-                    d="M2,38 L2,10 A8,8 0 0,1 10,2 L38,2"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="1.8"
-                  />
-                  <path
-                    d="M6,38 L6,14 A8,8 0 0,1 14,6 L38,6"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="0.8"
-                    opacity="0.6"
-                  />
-                  <circle cx="10" cy="10" r="2.5" fill="#D4AF37" />
-                </svg>
-                <svg
-                  class="mayhen_invitation_jeowinids483fr_corner mayhen_invitation_jeowinids483fr_corner_br"
-                  viewBox="0 0 40 40"
-                >
-                  <path
-                    d="M2,38 L2,10 A8,8 0 0,1 10,2 L38,2"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="1.8"
-                  />
-                  <path
-                    d="M6,38 L6,14 A8,8 0 0,1 14,6 L38,6"
-                    fill="none"
-                    stroke="#D4AF37"
-                    stroke-width="0.8"
-                    opacity="0.6"
-                  />
-                  <circle cx="10" cy="10" r="2.5" fill="#D4AF37" />
-                </svg>
-
-                <div class="mayhen_invitation_jeowinids483fr_card_header">
-                  <span class="mayhen_invitation_jeowinids483fr_card_sub"
-                    >WEDDING INVITATION</span
-                  >
-                  <h4 class="mayhen_invitation_jeowinids483fr_card_title">
-                    SAVE OUR DATE
-                  </h4>
-                  <div class="mayhen_invitation_jeowinids483fr_card_names">
-                    <span data-sync-target="groom_name">{{ $groomName }}</span> <span>&amp;</span> <span data-sync-target="bride_name">{{ $brideName }}</span>
-                  </div>
-                  <div class="mayhen_invitation_jeowinids483fr_card_date">
-                    <span data-sync-target="wedding_date">{{ $coverDateFormatted }}</span>
-                  </div>
-                </div>
-
-                <div class="mayhen_invitation_jeowinids483fr_card_guest_wrap">
-                  <span class="mayhen_invitation_jeowinids483fr_guest_label"
-                    >Trân trọng kính mời</span
-                  >
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_class_tenkhachmoi mayhen_invitation_jeowinids483fr_guest_badge"
-                  >
-                    <span><span data-sync-target="guest_name">{{ $guestName }}</span></span>
-                  </div>
-                </div>
-
-                <!-- Tem sáp 3D Bordeaux nhung dập nổi -->
-                <div
-                  class="mayhen_invitation_jeowinids483fr_wax_seal_wrap"
-                  role="button"
-                  tabindex="0"
-                  title="Chạm để mở thiệp"
-                  style="margin: 12px auto 14px !important; display: flex !important; justify-content: center !important; align-items: center !important; cursor: pointer !important;"
-                >
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ribbon mayhen_invitation_jeowinids483fr_ribbon_left"
-                  ></div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ribbon mayhen_invitation_jeowinids483fr_ribbon_right"
-                  ></div>
-                  <div class="mayhen_invitation_jeowinids483fr_wax_seal">
-                    <div class="mayhen_invitation_jeowinids483fr_wax_inner">
-                      <span class="mayhen_invitation_jeowinids483fr_wax_text"
-                        >{{ $groomInitial }}&amp;{{ $brideInitial }}</span
-                      >
-                    </div>
-                  </div>
-                  <div class="mayhen_invitation_jeowinids483fr_wax_aura"></div>
-                </div>
-
-                <!-- Nút mở thiệp viền vàng lấp lánh sang trọng -->
-                <div
-                  class="mayhen_invitation_jeowinids483fr_open_btn mayhen_invitation_jeowinids483fr_button14"
-                  role="button"
-                  tabindex="0"
-                  style="position: relative !important; margin: 6px auto 0 !important; display: inline-flex !important; cursor: pointer !important;"
-                >
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_open_btn_glow"
-                  ></div>
-                  <span class="mayhen_invitation_jeowinids483fr_open_btn_icon"
-                    >✨</span
-                  >
-                  <span class="mayhen_invitation_jeowinids483fr_open_btn_text"
-                    >Chạm để mở cánh cửa tình yêu</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="mayhen_invitation_jeowinids483fr_popup-close"
-            style="right: 15px; top: 0px; position: fixed"
-          ></div>
-        </div>
-      </div>
+      <div class="mayhen_invitation_jeowinids483fr_ladi-container"></div>
     </div>
     <div
       aria-hidden="true"
