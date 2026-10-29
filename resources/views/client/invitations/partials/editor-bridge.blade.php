@@ -452,17 +452,43 @@
             });
         }
 
-        // 5. Cuộn tới Section
+        // 5. Cuộn tới Section theo Tab Stepper đang chọn
         if (data.type === 'MAYHEN_SCROLL_TO_SECTION') {
-            var openingSides = document.getElementById('mayhen_invitation_djcvhwiuo9w9_opening_sides');
-            if (openingSides && !openingSides.classList.contains('mayhen_invitation_djcvhwiuo9w9_opened')) {
-                openingSides.classList.add('mayhen_invitation_djcvhwiuo9w9_opened');
+            document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+            if (document.body) {
+                document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+                document.body.style.overflow = 'auto';
             }
-            document.body.classList.remove('mayhen_invitation_scroll_locked');
 
-            var target = document.querySelector('[data-mayhen-section="' + data.section_id + '"]');
+            var secId = data.section_id || '';
+            if (secId === 'couple') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            var target = null;
+            // 1. Tìm bằng thuộc tính section trực tiếp
+            target = document.querySelector('[data-mayhen-section="' + secId + '"], [data-mayhen-section*="' + secId + '"]');
+
+            // 2. Smart selector mapping đại diện cho 6 phần chuẩn nếu mẫu chưa gắn data-mayhen-section
+            if (!target) {
+                if (secId === 'groom_family') {
+                    target = document.querySelector('[data-sync-target="groom_father"], [data-sync-target="groom_party_address"], [data-sync-target="groom_party_time"], [class*="groom_family"]');
+                } else if (secId === 'bride_family') {
+                    target = document.querySelector('[data-sync-target="bride_father"], [data-sync-target="bride_party_address"], [data-sync-target="bride_party_time"], [class*="bride_family"]');
+                } else if (secId === 'album') {
+                    target = document.querySelector('[data-sync-target="gallery.0"], [data-sync-target*="gallery"], [class*="flow"], [class*="gallery"], [class*="album"]');
+                } else if (secId === 'timeline') {
+                    target = document.querySelector('[data-sync-target="timeline.0.time"], [data-sync-target*="timeline"], [class*="timeline"], [class*="schedule"]');
+                } else if (secId === 'gift') {
+                    target = document.querySelector('[data-sync-target="qr_groom_image"], [data-sync-target="groom_bank_holder"], [data-sync-target="groom_bank_account"], [class*="gift"], [class*="qr"]');
+                }
+            }
+
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Ưu tiên cuộn tới khối section hoặc card cha để hiển thị đẹp mắt
+                var scrollEl = target.closest('section, article, [class*="_sec"], [class*="_card"], [class*="_flow"]') || target;
+                scrollEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 

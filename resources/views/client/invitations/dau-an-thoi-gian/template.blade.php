@@ -192,7 +192,7 @@
 <main class="mayhen_invitation_ladoifji894yfv_page">
 
 {{-- 1. HERO SECTION --}}
-<section class="mayhen_invitation_ladoifji894yfv_sec mayhen_invitation_ladoifji894yfv_hero">
+<section class="mayhen_invitation_ladoifji894yfv_sec mayhen_invitation_ladoifji894yfv_hero" data-mayhen-section="couple">
  <p class="mayhen_invitation_ladoifji894yfv_tag mayhen_invitation_ladoifji894yfv_rv"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Lễ Thành Hôn<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p>
  <div class="mayhen_invitation_ladoifji894yfv_orbit mayhen_invitation_ladoifji894yfv_rv">
   <span class="mayhen_invitation_ladoifji894yfv_ring"></span>
@@ -210,16 +210,16 @@
 <div class="mayhen_invitation_ladoifji894yfv_divider"></div>
 
 {{-- 2. HAI BÊN GIA ĐÌNH & CÔ DÂU CHÚ RỂ --}}
-<section class="mayhen_invitation_ladoifji894yfv_sec">
+<section class="mayhen_invitation_ladoifji894yfv_sec" data-mayhen-section="groom_family,bride_family">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Hai Họ<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Hai Bên Gia Đình</h2></header>
  <div class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_families mayhen_invitation_ladoifji894yfv_rv">
-  <div>
+  <div data-mayhen-section="groom_family">
    <p class="mayhen_invitation_ladoifji894yfv_label">Nhà Trai</p>
    <p><span data-sync-target="groom_father">{{ $groomFather }}</span><br><span data-sync-target="groom_mother">{{ $groomMother }}</span></p>
    <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="groom_party_address">{{ $groomPartyAddress }}</p>
   </div>
   <i class="mayhen_invitation_ladoifji894yfv_vline"></i>
-  <div>
+  <div data-mayhen-section="bride_family">
    <p class="mayhen_invitation_ladoifji894yfv_label">Nhà Gái</p>
    <p><span data-sync-target="bride_father">{{ $brideFather }}</span><br><span data-sync-target="bride_mother">{{ $brideMother }}</span></p>
    <p class="mayhen_invitation_ladoifji894yfv_note" data-sync-target="bride_party_address">{{ $bridePartyAddress }}</p>
@@ -314,7 +314,7 @@
 <div class="mayhen_invitation_ladoifji894yfv_divider"></div>
 
 {{-- 7. LỊCH TRÌNH BUỔI TIỆC --}}
-<section class="mayhen_invitation_ladoifji894yfv_sec">
+<section class="mayhen_invitation_ladoifji894yfv_sec" data-mayhen-section="timeline">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Timeline<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Lịch Trình Buổi Tiệc</h2></header>
  <ol class="mayhen_invitation_ladoifji894yfv_timeline mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_rv">
   @foreach ($timelineItems as $tIdx => $tItem)
@@ -342,7 +342,7 @@
 <div class="mayhen_invitation_ladoifji894yfv_divider"></div>
 
 {{-- 9. ALBUM COVERFLOW 3D KHOẢNH KHẮC --}}
-<section class="mayhen_invitation_ladoifji894yfv_sec">
+<section class="mayhen_invitation_ladoifji894yfv_sec" data-mayhen-section="album">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Album<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Khoảnh Khắc</h2></header>
  <div class="mayhen_invitation_ladoifji894yfv_flow mayhen_invitation_ladoifji894yfv_rv">
   @foreach ($gallery as $idx => $photoItem)
@@ -399,7 +399,7 @@
 <div class="mayhen_invitation_ladoifji894yfv_divider"></div>
 
 {{-- 12. HỘP MỪNG CƯỚI & VIETQR --}}
-<section class="mayhen_invitation_ladoifji894yfv_sec">
+<section class="mayhen_invitation_ladoifji894yfv_sec" data-mayhen-section="gift">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Mừng Cưới<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Hộp Mừng Cưới</h2></header>
  <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv">Cảm ơn tấm lòng của bạn dành cho chúng mình</p>
  <div class="mayhen_invitation_ladoifji894yfv_gift mayhen_invitation_ladoifji894yfv_rv">

@@ -1781,6 +1781,25 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Chuẩn hóa đồng bộ các thẻ `wedding_date`, `wedding_day`, `wedding_month`, `wedding_year`, `wedding_weekday`, `wedding_date_full`, `wedding_lunar_date`.
                 - **Kiểm thử & Định dạng**: Chạy full test suite đạt 35/35 tests passed 100%, Laravel Pint hoàn toàn sạch sẽ.
 
+            49. **Tính Năng Tự Động Cuộn Màn Xem Trước Tới Đúng Vị Trí Section Khi Chuyển Tab (Tab-Driven Section Auto-Scroll)**:
+                - **Yêu cầu người dùng**: Khi người dùng nhấn chuyển giữa các tab nhập liệu (Đôi Uyên Ương, Nhà Trai, Nhà Gái, Ảnh Cưới, Lịch Trình, Mừng Cưới) hoặc bấm "Tiếp Tục", màn xem trước (iframe điện thoại bên phải) phải tự động cuộn mượt (smooth scroll) đến đúng vị trí của phần đó trên thiệp cưới.
+                - **Giải pháp kỹ thuật chuẩn mực**:
+                  * *`dau-an-thoi-gian/template.blade.php`*:
+                    + Gắn đầy đủ thuộc tính định danh `data-mayhen-section="{section_id}"` cho tất cả 6 phần chuẩn hóa:
+                      - Đôi Uyên Ương: `data-mayhen-section="couple"` (Hero section).
+                      - Nhà Trai: `data-mayhen-section="groom_family"` (Khối thông tin phụ mẫu và tiệc cưới Nhà Trai).
+                      - Nhà Gái: `data-mayhen-section="bride_family"` (Khối thông tin phụ mẫu và tiệc cưới Nhà Gái).
+                      - Ảnh Cưới: `data-mayhen-section="album"` (Khối Album Coverflow 3D).
+                      - Lịch Trình: `data-mayhen-section="timeline"` (Khối timeline lịch trình buổi tiệc).
+                      - Mừng Cưới: `data-mayhen-section="gift"` (Khối Hộp mừng cưới & VietQR).
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Nâng cấp bộ nhận lệnh `MAYHEN_SCROLL_TO_SECTION`:
+                      - Mở khóa cuộn `scroll_locked`, `no-scroll` trên cả `html` và `body`.
+                      - Với tab `couple`: Tự động cuộn êm ái lên đỉnh trang `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+                      - Với các tab khác: Tìm kiếm theo `data-mayhen-section`. Nếu mẫu thiệp chưa gắn (fallback), tự động nhận diện thông minh qua các thẻ `data-sync-target` đại diện của phần đó (`groom_father`, `bride_father`, `gallery.0`, `timeline.0.time`, `qr_groom_image`...).
+                      - Lấy khối section hoặc card bao bọc cha (`closest('section, article, [class*="_sec"], [class*="_card"]')`) và gọi `scrollIntoView({ behavior: 'smooth', block: 'start' })`.
+                - **Kiểm thử & Định dạng**: Chạy Feature Test tự động xác thực toàn bộ các target section hoạt động chính xác; toàn bộ 35/35 tests passed; Laravel Pint hoàn toàn sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
