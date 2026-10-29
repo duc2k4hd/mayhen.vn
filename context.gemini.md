@@ -1568,6 +1568,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Lắng nghe sự kiện Live Sync `MAYHEN_SYNC_INPUT` để cập nhật mã QR và số tài khoản ngay khi người dùng gõ vào form Studio Editor.
                 - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
 
+            39. **Kiến Trúc Live Iframe Showcase Thông Minh Kết Hợp SEO Poster Fallback (Trang Chủ)**:
+                - **Yêu cầu & Phân tích giải pháp**:
+                  * *Vấn đề hiệu năng nếu load toàn bộ iframe*: Nếu tải cùng lúc 9 iframe trang thiệp khi vừa vào trang chủ sẽ gây nghẽn băng thông (30–50MB), tắc luồng CPU và phá vỡ chỉ số Core Web Vitals (LCP, TBT, INP) của Google.
+                  * *Giải pháp Hybrid tối thượng*: Giữ nguyên thẻ ảnh poster WebP kèm thuộc tính `alt` trong mã nguồn HTML tĩnh để Googlebot và Bingbot lập chỉ mục SEO 100%. Đồng thời áp dụng cơ chế Lazy Load thông minh bằng `IntersectionObserver` kích hoạt trước **300px** (`rootMargin: '300px 0px'`).
+                - **Cơ chế hoạt động**:
+                  * *`home.blade.php`*: Nhúng khung iframe với `data-src="{{ route('templates.preview', $tpl['slug']) }}?embed=1&mode=showcase"` và `src="about:blank"` cùng lớp kính bảo vệ `mayhen_home_showcase_card_iframe_shield`. Thẻ ảnh `<img>` hiển thị phủ lên trên.
+                  * *`home.js` (`initShowcaseLazyIframe`)*:
+                    + Khi người dùng cuộn cách khu vực Showcase 300px, hệ thống bắt đầu nạp iframe cho thẻ trung tâm (`.is-active`).
+                    + Khi iframe tải xong (`onload`), card được gắn class `.is-iframe-loaded`, ảnh poster mờ dần mềm mại (`opacity: 0`) để lộ giao diện thiệp cưới thật hoạt động trực tiếp 60FPS.
+                    + Tự động nạp trước cho 2 thẻ kề cận sau 1.2s để chuyển slide không giật lag.
+                    + Khi hover vào thẻ bất kỳ, lập tức nạp iframe cho thẻ đó.
+                  * *`home.css`*:
+                    + Iframe thiết kế tỉ lệ 375px co giãn bằng CSS transform (`scale(0.64)` trên desktop, `scale(0.52)` trên tablet, `scale(0.46)` trên mobile) vừa khít 100% khung viền mockup điện thoại.
+                    + Khi hover vào thẻ active: iframe tự động cuộn chậm rãi xuống dưới (`translateY(-1450px)`) trong 14 giây êm ái (`linear`), khách hàng ngắm trọn vẹn từng phần thiệp cưới lộng lẫy. Khi rời chuột (`mouseleave`), iframe trôi ngược về đầu trang trong 1.2 giây.
+                - **Kiểm thử**: Toàn bộ 34/34 tests passed 100%. Code định dạng Pint chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

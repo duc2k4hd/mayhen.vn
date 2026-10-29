@@ -2030,7 +2030,7 @@
     background: #FAF7F2;
 }
 
-/* Ảnh đại diện của mẫu thiệp: Mặc định hiển thị phủ lên thẻ; khi hover sẽ fade out để lộ mẫu thiệp đang cuộn */
+/* Ảnh đại diện của mẫu thiệp: Mặc định hiển thị phủ lên thẻ; khi thẻ active tải xong iframe hoặc khi hover sẽ fade out để lộ mẫu thiệp sống động */
 .mayhen_home_showcase_card_img {
     position: absolute;
     inset: 0;
@@ -2040,10 +2040,11 @@
     object-position: center;
     z-index: 3;
     opacity: 1;
-    transition: opacity 0.45s ease;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity;
 }
 
+.mayhen_home_showcase_card.is-active.is-iframe-loaded .mayhen_home_showcase_card_img,
 .mayhen_home_showcase_card:hover .mayhen_home_showcase_card_img,
 .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_img {
     opacity: 0;
@@ -2067,7 +2068,7 @@
 /* Trang mẫu thiệp cưới (375px mobile scale to fit card) */
 .mayhen_home_showcase_card_iframe {
     width: 375px;
-    height: 1400px;
+    height: 2400px;
     border: none;
     transform-origin: top center;
     transform: scale(0.64) translateY(0);
@@ -2078,11 +2079,31 @@
     will-change: transform;
 }
 
-/* Khi hover vào thẻ: Tự động cuộn chậm rãi mẫu thiệp từ đầu đến cuối */
-.mayhen_home_showcase_card:hover .mayhen_home_showcase_card_iframe,
-.mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
-    transform: scale(0.64) translateY(calc(-100% + 667px));
-    transition: transform 9s cubic-bezier(0.25, 1, 0.5, 1);
+/* Khi hover vào thẻ active: Tự động cuộn chậm rãi mẫu thiệp từ đầu đến cuối */
+.mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
+.mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+    transform: scale(0.64) translateY(-1450px);
+    transition: transform 14s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@media (max-width: 768px) {
+    .mayhen_home_showcase_card_iframe {
+        transform: scale(0.52) translateY(0);
+    }
+    .mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
+    .mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+        transform: scale(0.52) translateY(-1450px);
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_home_showcase_card_iframe {
+        transform: scale(0.46) translateY(0);
+    }
+    .mayhen_home_showcase_card.is-active:hover .mayhen_home_showcase_card_iframe,
+    .mayhen_home_showcase_card.is-active .mayhen_home_showcase_card_inner:hover .mayhen_home_showcase_card_iframe {
+        transform: scale(0.46) translateY(-1450px);
+    }
 }
 
 .mayhen_home_showcase_card_iframe_shield {

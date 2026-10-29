@@ -204,6 +204,11 @@ function initShowcaseCoverflow() {
 
         // Update Curator Suite info
         updateCuratorInfo();
+
+        // Lazy load iframe cho thẻ Active mới
+        if (typeof window.__mayhenLoadShowcaseIframe === 'function') {
+            window.__mayhenLoadShowcaseIframe();
+        }
     }
 
     /**
@@ -534,10 +539,87 @@ function initShowcaseCoverflow() {
     initRomanticAudio();
     initLivePreviewModalEvents();
     initCardImageHoverScroll();
+    initShowcaseLazyIframe();
 
     // Start
     updateStage();
     startAutoplay();
+}
+
+/**
+ * Lazy load Iframe Showcase thông minh 300px trước khi cuộn tới
+ * Tối ưu tuyệt đối SEO (ảnh poster + thẻ alt) và Trải nghiệm người dùng (live iframe 60FPS)
+ */
+function initShowcaseLazyIframe() {
+    const stage = document.querySelector('.mayhen_home_showcase_stage');
+    if (!stage) return;
+
+    const cards = Array.from(stage.querySelectorAll('.mayhen_home_showcase_card'));
+    let isNearShowcase = false;
+
+    function loadCardIframe(card) {
+        if (!card) return;
+        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
+        if (!iframe) return;
+
+        const dataSrc = iframe.getAttribute('data-src');
+        if (dataSrc && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href)) {
+            iframe.onload = () => {
+                card.classList.add('is-iframe-loaded');
+            };
+            iframe.src = dataSrc;
+        }
+    }
+
+    function loadActiveCardIframe() {
+        if (!isNearShowcase) return;
+        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active');
+        if (activeCard) {
+            loadCardIframe(activeCard);
+
+            // Nạp trước nhẹ nhàng 2 thẻ kế cận sau 1.2s để khi chuyển slide không bị giật
+            setTimeout(() => {
+                const activeIndex = cards.indexOf(activeCard);
+                if (activeIndex !== -1) {
+                    const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
+                    const nextCard = cards[(activeIndex + 1) % cards.length];
+                    if (prevCard) loadCardIframe(prevCard);
+                    if (nextCard) loadCardIframe(nextCard);
+                }
+            }, 1200);
+        }
+    }
+
+    // IntersectionObserver: Kích hoạt khi cuộn cách Showcase 300px
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    isNearShowcase = true;
+                    loadActiveCardIframe();
+                }
+            });
+        }, {
+            rootMargin: '300px 0px 300px 0px',
+            threshold: 0
+        });
+
+        observer.observe(stage);
+    } else {
+        // Fallback cho trình duyệt cũ
+        isNearShowcase = true;
+        loadActiveCardIframe();
+    }
+
+    // Đăng ký toàn cục để updateStage() gọi khi chuyển slide
+    window.__mayhenLoadShowcaseIframe = loadActiveCardIframe;
+
+    // Hover bất kỳ thẻ nào: Tự động nạp iframe ngay nếu chưa nạp
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            loadCardIframe(card);
+        }, { passive: true });
+    });
 }
 
 /**

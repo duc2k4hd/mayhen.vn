@@ -666,13 +666,24 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Ảnh đại diện mẫu thiệp lụa nghệ thuật -->
+                                    <!-- Card Media: Live Iframe Streamer & SEO Poster Fallback -->
                                     <div class="mayhen_home_showcase_card_media">
+                                        <div class="mayhen_home_showcase_card_frame_wrap" data-mayhen-showcase-frame-wrap>
+                                            <iframe class="mayhen_home_showcase_card_iframe"
+                                                    data-src="{{ route('templates.preview', $tpl['slug']) }}?embed=1&mode=showcase"
+                                                    src="about:blank"
+                                                    loading="lazy"
+                                                    title="Mẫu thiệp cưới online cao cấp {{ $tpl['name'] }}"
+                                                    tabindex="-1"
+                                                    aria-hidden="true"></iframe>
+                                            <div class="mayhen_home_showcase_card_iframe_shield" aria-hidden="true"></div>
+                                        </div>
+
                                         @if (!empty($tpl['image']))
                                             <img src="{{ $tpl['image'] }}"
                                                  alt="{{ $tpl['name'] }}"
                                                  class="mayhen_home_showcase_card_img"
-                                                 loading="{{ $index < 4 ? 'eager' : 'lazy' }}"
+                                                 loading="{{ $index < 2 ? 'eager' : 'lazy' }}"
                                                  decoding="async">
                                         @endif
                                     </div>
