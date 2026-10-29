@@ -770,18 +770,18 @@
 
     let doorOpened = false;
 
-    // Sinh cánh hoa bay và bụi sao vàng lấp lánh (Falling Petals & Golden Stardust)
+    // Sinh cánh hoa bay và bụi sao vàng lấp lánh (Falling Red Petals & Golden Stardust)
     function spawnCelebrationParticles() {
         if (!particlesLayer) return;
         particlesLayer.innerHTML = '';
 
         const petalColors = [
-            'radial-gradient(ellipse at 30% 20%, #FFF8FA 0%, #FDD7E4 60%, #E89CAE 100%)',
-            'radial-gradient(ellipse at 30% 20%, #F7FFF9 0%, #D4EADB 60%, #9BC4A7 100%)',
-            'radial-gradient(ellipse at 30% 20%, #FFFDF8 0%, #F5E8D3 60%, #D8C3A5 100%)'
+            'radial-gradient(ellipse at 30% 20%, #C41E3A 0%, #8B1226 60%, #4D0613 100%)',
+            'radial-gradient(ellipse at 30% 20%, #A81B34 0%, #750D20 60%, #3D040E 100%)',
+            'radial-gradient(ellipse at 30% 20%, #8E1B32 0%, #5E0C1C 60%, #260208 100%)'
         ];
 
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 35; i++) {
             const petal = document.createElement('div');
             petal.className = P + 'petal';
             const size = Math.floor(Math.random() * 12 + 14);
