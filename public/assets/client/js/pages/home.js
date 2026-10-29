@@ -593,28 +593,112 @@ function initShowcaseLazyIframe() {
         }
     }
 
+    let cardScrollRaf = null;
+    let scrollingIframe = null;
+    let cardScrollPos = 0;
+
     function triggerAutoScrollStart(card) {
         if (!card) return;
         const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-        if (!iframe || !iframe.contentWindow) return;
+        if (!iframe) return;
+
+        // Dừng cuộn cũ nếu có
+        triggerAutoScrollStop(card);
+
+        scrollingIframe = iframe;
+        cardScrollPos = 0;
+
+        // Thử lấy vị trí cuộn hiện tại của iframe
         try {
-            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_START' }, '*');
-            if (typeof iframe.contentWindow.__mayhenStartSmoothScroll === 'function') {
-                iframe.contentWindow.__mayhenStartSmoothScroll();
+            const win = iframe.contentWindow;
+            const doc = iframe.contentDocument || (win ? win.document : null);
+            if (win && doc) {
+                cardScrollPos = win.scrollY || (doc.documentElement ? doc.documentElement.scrollTop : 0) || 0;
             }
         } catch (e) {}
+
+        // Gửi thông báo postMessage đồng thời
+        try {
+            if (iframe.contentWindow) {
+                iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_START' }, '*');
+                if (typeof iframe.contentWindow.__mayhenStartSmoothScroll === 'function') {
+                    iframe.contentWindow.__mayhenStartSmoothScroll();
+                }
+            }
+        } catch (e) {}
+
+        // Vòng lặp cuộn trực tiếp từ trang cha bằng requestAnimationFrame (đảm bảo 100% cuộn mượt mà không bao giờ bị nghẽn)
+        function step() {
+            if (!scrollingIframe || scrollingIframe !== iframe) return;
+
+            try {
+                const win = iframe.contentWindow;
+                const doc = iframe.contentDocument || (win ? win.document : null);
+                if (win && doc) {
+                    if (doc.documentElement) {
+                        doc.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+                    }
+                    if (doc.body) {
+                        doc.body.style.setProperty('scroll-behavior', 'auto', 'important');
+                        doc.body.style.setProperty('overflow-y', 'auto', 'important');
+                    }
+
+                    const scrollEl = doc.scrollingElement || doc.documentElement || doc.body;
+                    const docH = Math.max(
+                        doc.body ? doc.body.scrollHeight : 0,
+                        doc.documentElement ? doc.documentElement.scrollHeight : 0,
+                        scrollEl ? scrollEl.scrollHeight : 0
+                    );
+                    const winH = win.innerHeight || 667;
+                    const maxScroll = Math.max(0, docH - winH);
+
+                    // Tốc độ trôi êm ái, rõ nét 2.0px/frame (~120px/giây)
+                    cardScrollPos += 2.0;
+
+                    if (maxScroll > 50 && cardScrollPos >= maxScroll - 6) {
+                        // Khi đã cuộn tới cuối trang thiệp thì giữ nguyên
+                        return;
+                    }
+
+                    win.scrollTo(0, cardScrollPos);
+                    if (scrollEl) scrollEl.scrollTop = cardScrollPos;
+                }
+            } catch (err) {}
+
+            cardScrollRaf = requestAnimationFrame(step);
+        }
+
+        cardScrollRaf = requestAnimationFrame(step);
     }
 
     function triggerAutoScrollStop(card) {
-        if (!card) return;
-        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-        if (!iframe || !iframe.contentWindow) return;
-        try {
-            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
-            if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
-                iframe.contentWindow.__mayhenStopSmoothScroll();
-            }
-        } catch (e) {}
+        if (cardScrollRaf) {
+            cancelAnimationFrame(cardScrollRaf);
+            cardScrollRaf = null;
+        }
+
+        const iframe = card ? card.querySelector('.mayhen_home_showcase_card_iframe') : scrollingIframe;
+        if (iframe) {
+            // Trôi êm ái ngược về đỉnh trang
+            try {
+                const win = iframe.contentWindow;
+                if (win) {
+                    win.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (err) {}
+
+            try {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
+                    if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
+                        iframe.contentWindow.__mayhenStopSmoothScroll();
+                    }
+                }
+            } catch (e) {}
+        }
+
+        scrollingIframe = null;
+        cardScrollPos = 0;
     }
 
     /**
@@ -688,12 +772,23 @@ function initShowcaseLazyIframe() {
 
     // Gắn sự kiện Hover: Nạp iframe tức thì và tự động cuộn mượt mà nội dung bên trong
     cards.forEach(card => {
+        let isHovered = false;
+
         card.addEventListener('mouseenter', () => {
+            isHovered = true;
             loadCardIframe(card);
             triggerAutoScrollStart(card);
         }, { passive: true });
 
+        card.addEventListener('mousemove', () => {
+            if (!isHovered) {
+                isHovered = true;
+                triggerAutoScrollStart(card);
+            }
+        }, { passive: true });
+
         card.addEventListener('mouseleave', () => {
+            isHovered = false;
             triggerAutoScrollStop(card);
         }, { passive: true });
     });

@@ -132,7 +132,7 @@
 
 @section('title', $pageTitle)
 @section('meta_description', 'Trân trọng kính mời ' . $guestName . ' tới dự lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
-@section('body_class', 'mayhen_invitation_ladoifji894yfv_sr_khoa ' . ($isEmbed ? 'mayhen_invitation_ladoifji894yfv_embed_mode' : ''))
+@section('body_class', ($isEmbed ? 'mayhen_invitation_ladoifji894yfv_embed_mode' : 'mayhen_invitation_ladoifji894yfv_sr_khoa'))
 
 @push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,7 +174,7 @@
     <canvas class="mayhen_invitation_ladoifji894yfv_sr_hat" aria-hidden="true"></canvas>
 
     <!-- ===================== MÀN MỞ: MÀN SAO RƠI ===================== -->
-    <div class="mayhen_invitation_ladoifji894yfv_sr_cua" data-thoi-gian="2200" role="dialog" aria-label="Thiệp mời cưới">
+    <div class="mayhen_invitation_ladoifji894yfv_sr_cua {{ $isEmbed ? 'mayhen_invitation_ladoifji894yfv_da_mo' : '' }}" style="{{ $isEmbed ? 'display: none !important;' : '' }}" data-thoi-gian="2200" role="dialog" aria-label="Thiệp mời cưới">
         <div class="mayhen_invitation_ladoifji894yfv_sr_man">
             <div class="mayhen_invitation_ladoifji894yfv_sr_kicker">
                 <i class="mayhen_invitation_ladoifji894yfv_sr_orn"></i>

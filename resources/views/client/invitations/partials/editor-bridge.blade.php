@@ -5,7 +5,15 @@
 
 {{-- QUY TẮC TOÀN CỤC: TỰ ĐỘNG MỞ SẴN NỘI DUNG THIỆP MỜI TRONG IFRAME (ZERO-FRICTION AUTO-OPENED PROTOCOL) --}}
 <style id="mayhen_global_auto_opened_styles">
-    /* 1. Mở khóa cuộn toàn trang và ẨN HOÀN TOÀN thanh scrollbar thô kệch trong iframe */
+    /* 1. Mở khóa cuộn toàn trang, tắt scroll-behavior smooth để JS cuộn mượt và ẨN HOÀN TOÀN thanh scrollbar trong iframe */
+    html.mayhen_embed_mode,
+    body.mayhen_embed_mode,
+    html.mayhen_template_auto_opened,
+    body.mayhen_template_auto_opened,
+    .mayhen_embed_mode * {
+        scroll-behavior: auto !important;
+    }
+
     html.mayhen_embed_mode,
     body.mayhen_embed_mode,
     html.mayhen_template_auto_opened,
@@ -37,6 +45,8 @@
     .mayhen_embed_mode .mayhen_invitation_ksnvo949dudf_opening,
     .mayhen_embed_mode .mayhen_invitation_djcvhwiuo9w9_opening-sides,
     .mayhen_embed_mode .mayhen_invitation_ladoifji894yfv_cover,
+    .mayhen_embed_mode .mayhen_invitation_ladoifji894yfv_sr_cua,
+    .mayhen_embed_mode [class*="_sr_cua"],
     .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_open_cta,
     .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_scroll_down,
     .mayhen_embed_mode .mayhen_invitation_dhsuudushi9428r_wax_seal,
@@ -122,9 +132,9 @@
             }
 
             // Đánh dấu đã mở và ẩn các container mở đầu
-            var doorStages = document.querySelectorAll('#mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], [id*="opening_sides"], #POPUP8, #mayhen_invitation_ladjihe38udhd_opening, .mayhen_invitation_ksnvo949dudf_opening, .mayhen_invitation_ladoifji894yfv_cover');
+            var doorStages = document.querySelectorAll('#mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], [id*="opening_sides"], #POPUP8, #mayhen_invitation_ladjihe38udhd_opening, .mayhen_invitation_ksnvo949dudf_opening, .mayhen_invitation_ladoifji894yfv_cover, .mayhen_invitation_ladoifji894yfv_sr_cua, [class*="_sr_cua"]');
             doorStages.forEach(function(el) {
-                el.classList.add('opened', 'mayhen_door_hidden');
+                el.classList.add('opened', 'mayhen_door_hidden', 'mayhen_invitation_ladoifji894yfv_da_mo');
                 el.style.setProperty('display', 'none', 'important');
             });
 
@@ -428,26 +438,43 @@
     // Hàm hỗ trợ tự cuộn chậm rãi mượt mà bên trong iframe
     var autoScrollRaf = null;
     var isScrolling = false;
+    var currentScrollPos = 0;
 
     function startSmoothScroll() {
         if (isScrolling) return;
         isScrolling = true;
         cancelAnimationFrame(autoScrollRaf);
 
-        var speed = 1.35; // Tốc độ trôi êm ái (~80px/s chuẩn mắt nhìn Quiet Luxury)
+        try {
+            document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+            if (document.body) document.body.style.setProperty('scroll-behavior', 'auto', 'important');
+        } catch (e) {}
+
+        currentScrollPos = window.scrollY || (document.documentElement ? document.documentElement.scrollTop : 0) || (document.body ? document.body.scrollTop : 0) || 0;
+        var speed = 2.2; // Tốc độ trôi êm ái, rõ ràng (~130px/s)
+
         function step() {
             if (!isScrolling) return;
-            var maxScroll = Math.max(
-                document.body.scrollHeight,
-                document.documentElement.scrollHeight
-            ) - window.innerHeight;
 
-            if (window.scrollY >= maxScroll - 4) {
+            var docH = Math.max(
+                document.body ? document.body.scrollHeight : 0,
+                document.documentElement ? document.documentElement.scrollHeight : 0,
+                document.body ? document.body.offsetHeight : 0
+            );
+            var winH = window.innerHeight || 667;
+            var maxScroll = Math.max(0, docH - winH);
+
+            // Nếu trang có nội dung dài hơn màn hình (maxScroll > 60) và vị trí hiện tại đã tới sát đáy trang
+            if (maxScroll > 60 && currentScrollPos >= maxScroll - 6) {
                 isScrolling = false;
                 return;
             }
 
-            window.scrollBy(0, speed);
+            currentScrollPos += speed;
+            window.scrollTo(0, currentScrollPos);
+            if (document.documentElement) document.documentElement.scrollTop = currentScrollPos;
+            if (document.body) document.body.scrollTop = currentScrollPos;
+
             autoScrollRaf = requestAnimationFrame(step);
         }
         autoScrollRaf = requestAnimationFrame(step);
@@ -457,10 +484,15 @@
         isScrolling = false;
         cancelAnimationFrame(autoScrollRaf);
         try {
+            document.documentElement.style.removeProperty('scroll-behavior');
+            if (document.body) document.body.style.removeProperty('scroll-behavior');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (e) {
             window.scrollTo(0, 0);
+            if (document.documentElement) document.documentElement.scrollTop = 0;
+            if (document.body) document.body.scrollTop = 0;
         }
+        currentScrollPos = 0;
     }
 
     // Đưa ra window để trang cha có thể gọi trực tiếp

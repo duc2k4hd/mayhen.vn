@@ -1666,6 +1666,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Chạy Pest test suite đạt 34/34 tests passed 100% (381 assertions).
                   * Toàn bộ mã nguồn được định dạng theo chuẩn Laravel Pint.
 
+            44. **Khắc Phục Triệt Để Lỗi Không Tự Cuộn Khi Rê Chuột (Hover) Vào Mẫu Thiệp Trên Showcase**:
+                - **Nguyên nhân cốt lõi**:
+                  * *Xung đột `scroll-behavior: smooth` của CSS*: Trong các template thiệp cưới (`dau-ky-tram-nam`, `dau-an-thoi-gian`, `hac-bach-trao-duyen`, `thuoc-phim-tinh-yeu`...), phần tử `html` hoặc `body` có thuộc tính `scroll-behavior: smooth`. Khi `startSmoothScroll` chạy qua `requestAnimationFrame` (60 lần/giây), mỗi frame gọi `scrollBy` lại kích hoạt một smooth animation mới làm hủy bỏ frame trước đó, dẫn đến vị trí cuộn bị đứng yên tại chỗ (0px).
+                  * *Điều kiện dừng `maxScroll` bị thỏa mãn tức thì*: Phép tính `maxScroll = Math.max(doc.scrollHeight) - window.innerHeight` nếu tài nguyên ảnh chưa load xong hoặc `scrollHeight` chưa ổn định sẽ trả về `<= 0`. Khi kiểm tra `if (window.scrollY >= maxScroll - 4)` thì `0 >= -4` luôn đúng, khiến hàm cuộn tự hủy (`return`) ngay frame đầu tiên.
+                  * *Màn che mở đầu `position: fixed` che phủ toàn bộ thiệp cưới (`giua-muon-ngan-vi-sao`)*: Mẫu "Giữa Muôn Ngàn Vì Sao" có màn mở đầu sao rơi `.mayhen_invitation_ladoifji894yfv_sr_cua` mang CSS `position: fixed; inset: 0; z-index: 100`. Vì class này bị lệch tên so với bộ selector cũ trong `editor-bridge.blade.php`, màn mở đầu này không bị ẩn đi khi nhúng iframe. Dù trang web bên dưới có cuộn thì người dùng vẫn nhìn thấy màn sao rơi cố định ở `inset: 0`, tạo cảm giác thiệp bị đứng yên không cuộn. Đồng thời `body` của mẫu này bị gắn class `mayhen_invitation_ladoifji894yfv_sr_khoa` gây `overflow: hidden;` khóa cứng thanh cuộn.
+                - **Giải pháp xử lý triệt để**:
+                  * *`resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`*:
+                    + Xóa class khóa cuộn `mayhen_invitation_ladoifji894yfv_sr_khoa` khỏi `body_class` khi `$isEmbed = true`.
+                    + Gắn cưỡng chế `style="{{ $isEmbed ? 'display: none !important;' : '' }}"` và class `mayhen_invitation_ladoifji894yfv_da_mo` trực tiếp vào thẻ HTML `.mayhen_invitation_ladoifji894yfv_sr_cua` ngay từ server-render để màn mở đầu không bao giờ che khuất nội dung thiệp trong iframe.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung selector ẩn `.mayhen_embed_mode .mayhen_invitation_ladoifji894yfv_sr_cua, .mayhen_embed_mode [class*="_sr_cua"]`.
+                    + Thêm quy tắc CSS toàn cục: `html.mayhen_embed_mode, body.mayhen_embed_mode, .mayhen_embed_mode * { scroll-behavior: auto !important; }` để tắt hoàn toàn hiệu ứng smooth scroll cản trở animation cuộn của JS trong iframe.
+                    + Cập nhật `startSmoothScroll()`: Lưu trạng thái cuộn thực `currentScrollPos`, tăng đều theo tốc độ lý tưởng 2.2px/frame (~130px/giây chuẩn Quiet Luxury). Đồng bộ gán trực tiếp lên cả `window.scrollTo`, `document.documentElement.scrollTop` và `document.body.scrollTop`.
+                    + Sửa điều kiện dừng an toàn: Chỉ dừng khi `maxScroll > 60` và `currentScrollPos >= maxScroll - 6`.
+                    + Khi dừng hover (`stopSmoothScroll`): Khôi phục mượt mà về đỉnh trang bằng `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Chuyển đổi sang **Kiến Trúc Cuộn Trực Tiếp 2 Lớp (Direct-Control Dual-Engine Scroll Architecture)**: Trang cha không còn phụ thuộc thụ động vào postMessage bên trong iframe. Thay vào đó, trang cha trực tiếp quản lý vòng lặp `requestAnimationFrame`, truy cập cùng origin vào `iframe.contentWindow` và `iframe.contentDocument`, cưỡng chế mở khóa cuộn và tăng dần `currentScrollPos += 2.0px/frame` trực tiếp lên `win.scrollTo(0, y)` và `scrollingElement.scrollTop = y`.
+                    + Khi rời chuột (`mouseleave`), trang cha lập tức hủy RAF và gọi `win.scrollTo({ top: 0, behavior: 'smooth' })`, đưa nội dung trôi êm ái về đỉnh trang.
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Tinh giản bảng đen hover (`.mayhen_home_showcase_card_hover_overlay`): Giảm gradient xuống chỉ chiếm ~20% ở chân thẻ, ẩn các dòng mô tả và tag dày đặc che khuất màn hình, để lộ trọn vẹn 85% không gian cho thiệp cưới cuộn sống động mà người dùng có thể chiêm ngưỡng trực tiếp.
+                - **Kiểm thử & Định dạng**: Toàn bộ 34/34 tests passed, Pint định dạng chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
