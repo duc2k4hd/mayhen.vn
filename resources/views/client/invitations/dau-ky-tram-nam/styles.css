@@ -5008,52 +5008,34 @@ body {
 /* ==========================================================================
    PHÒNG VỆ STUDIO EDITOR TRONG IFRAME (?embed=1) & TOPBAR
    ========================================================================== */
-.mayhen_invitation_jeowinids483fr_embed_mode
-    .mayhen_invitation_jeowinids483fr_door_stage,
-.mayhen_invitation_jeowinids483fr_embed_mode
-    .mayhen_invitation_jeowinids483fr_section_popup,
-.mayhen_invitation_jeowinids483fr_embed_mode
-    .mayhen_invitation_jeowinids483fr_modal-backdrop {
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_door_stage,
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_section_popup,
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_royal_gate_wrapper,
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_modal-backdrop {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
 .mayhen_invitation_jeowinids483fr_embed_mode,
 .mayhen_invitation_jeowinids483fr_embed_mode body {
     overflow: auto !important;
     height: auto !important;
 }
-.mayhen_invitation_jeowinids483fr_embed_mode
-    .mayhen_invitation_jeowinids483fr_shell {
+
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_shell {
     box-shadow: none !important;
+    overflow: visible !important;
 }
-.mayhen_invitation_jeowinids483fr_embed_mode
-    .mayhen_invitation_jeowinids483fr_ladi-animation {
+
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_stage-spacer {
+    overflow: visible !important;
+    min-height: 100vh !important;
+}
+
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation,
+.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation-hidden {
     opacity: 1 !important;
     visibility: visible !important;
     transform: none !important;
-}
-
-/* ==========================================================================
-   PHÒNG VỆ STUDIO EDITOR TRONG IFRAME (?embed=1) & TOPBAR
-   ========================================================================== */
-.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_section_popup,
-.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_royal_gate_wrapper,
-.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_modal-backdrop{
-  display:none !important;
-  visibility:hidden !important;
-  pointer-events:none !important;
-}
-.mayhen_invitation_jeowinids483fr_embed_mode,
-.mayhen_invitation_jeowinids483fr_embed_mode body{
-  overflow:auto !important;
-  height:auto !important;
-}
-.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_shell{
-  box-shadow:none !important;
-}
-.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation{
-  opacity:1 !important;
-  visibility:visible !important;
-  transform:none !important;
 }

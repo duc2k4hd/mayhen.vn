@@ -408,7 +408,7 @@
                                                        data-sync-key="{{ $fieldKey }}" 
                                                        value="{{ is_string($val) ? $val : '' }}">
                                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-size: 0.75rem; color: #10B981; font-weight: 500;">✓ Tự động tạo mã VietQR NAPAS bảo mật chuẩn 100%</span>
+                                                    <span style="font-size: 0.75rem; color: #10B981; font-weight: 500;">✓ Tự động tạo mã VietQR</span>
                                                     <button type="button" class="mayhen_cropper_btn_tool mayhen_btn_gen_vietqr" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}" style="padding: 4px 12px; font-size: 11px;">
                                                         ⚡ Cập nhật mã VietQR
                                                     </button>

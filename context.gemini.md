@@ -1496,6 +1496,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * *Lớp chuẩn hóa Schema (`dau-ky-tram-nam` & `luu-but-ngay-chung-doi`)*: Cập nhật toàn bộ các trường `fields` có `key` chuẩn hóa 100% theo Nguyên tắc số 1 (`wedding.groom_name`, `wedding.bride_name`, `wedding.extra_data.groom_father`...).
                 - **Kiểm thử tự động**: Viết test tự động duyệt qua toàn bộ các template đang hoạt động trong hệ thống khi mở `/tao-thiep?template={slug}` (`tests/Feature/InvitationEditorDataSyncTest.php`), kết quả 100% trả về `HTTP 200 OK` (33/33 tests passed).
 
+            34. **Khắc Phục Lỗi Màn Hình Trắng (White Screen) Khi Nhúng Mẫu "Dấu Ký Trăm Năm" Trong Trình Tạo Thiệp**:
+                - **Nguyên nhân gốc rễ**:
+                  * Trong file `script.js` của `dau-ky-tram-nam`, hàm `syncStage()` chứa đoạn kiểm tra `if (isEmbed) { stage.style.removeProperty('--mayhen-stage-scale'); spacer.style.height = 'auto'; return; }`. Do thẻ `.stage` có `position: absolute`, khi gán `spacer.style.height = 'auto'` thì phần tử cha `.stage-spacer` bị sập chiều cao về `0px` kết hợp với `overflow: hidden`, dẫn đến toàn bộ nội dung thiệp bị ẩn trắng trơn (chỉ còn thanh bottom-nav nổi lên).
+                  * Đồng thời, sự kiện khởi tạo chỉ lắng nghe `DOMContentLoaded`, khi script tải ở chế độ `defer` thì `readyState` có thể đã chuyển sang `interactive`/`complete` khiến logic mở cánh cửa và render giao diện không được kích hoạt.
+                  * Khối CSS phòng vệ trong `styles.css` thiếu ghi đè class `.mayhen_invitation_jeowinids483fr_ladi-animation-hidden`.
+                - **Giải pháp xử lý triệt để**:
+                  * *`script.js`*: Loại bỏ điều kiện chặn `isEmbed`, cho phép `syncStage()` luôn tính toán chiều cao chính xác và gán `spacer.style.height` theo tỷ lệ co giãn của mockup điện thoại. Bổ sung kiểm tra `document.readyState === 'loading'` để tự kích hoạt `initApp()` ngay lập tức nếu DOM đã sẵn sàng.
+                  * *`template.blade.php`*: Gắn sẵn class `opened mayhen_door_hidden` lên `#mayhen-door-stage` ngay khi `$isEmbed = true` từ tầng render server.
+                  * *`styles.css` & `assets/styles.css`*: Bổ sung quy tắc phòng vệ cưỡng chế hiển thị `.stage-spacer { overflow: visible !important; min-height: 100vh !important; }` và `.ladi-animation-hidden { opacity: 1 !important; visibility: visible !important; }`. Đồng bộ hoàn toàn giữa hai tệp styles và scripts.
+                - **Kiểm thử**: Viết test kiểm tra `dau-ky-tram-nam` ở chế độ nhúng (`?embed=1&mode=editor`) tự động mở cửa và render toàn bộ nội dung, đạt 34/34 tests passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

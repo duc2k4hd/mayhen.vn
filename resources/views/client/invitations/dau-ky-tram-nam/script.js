@@ -28,21 +28,22 @@
     const spacer = one("stage-spacer");
     const syncStage = () => {
         if (!stage || !spacer) return;
-        if (isEmbed) {
-            stage.style.removeProperty("--mayhen-stage-scale");
-            spacer.style.height = "auto";
-            return;
-        }
-        const scale = Math.min(1, spacer.clientWidth / 420);
+        const clientWidth = spacer.clientWidth || stage.parentElement?.clientWidth || window.innerWidth || 420;
+        const scale = Math.min(1, clientWidth / 420);
         stage.style.setProperty("--mayhen-stage-scale", scale);
         const sections = [...stage.children].filter((x) =>
             x.classList.contains(P + "ladi-section"),
         );
         const totalHeight = sections.reduce(
-            (sum, s) => sum + s.getBoundingClientRect().height / scale,
+            (sum, s) => {
+                const h = parseFloat(window.getComputedStyle(s).height) || s.offsetHeight || (scale > 0 ? s.getBoundingClientRect().height / scale : 0);
+                return sum + h;
+            },
             0,
         );
-        spacer.style.height = Math.ceil(totalHeight * scale) + "px";
+        if (totalHeight > 0) {
+            spacer.style.height = Math.ceil(totalHeight * scale) + "px";
+        }
     };
     window.addEventListener("resize", syncStage, { passive: true });
     if ("ResizeObserver" in window && spacer)
@@ -346,18 +347,22 @@
         if (note) note.hidden = configured;
     };
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        () => {
-            syncStage();
-            openIntro();
-            if (isEmbed) {
-                document.body.classList.remove(P + "locked");
-                document.documentElement.classList.remove(P + "locked");
-            }
-        },
-        { once: true },
-    );
+    const initApp = () => {
+        syncStage();
+        openIntro();
+        if (isEmbed) {
+            document.body.classList.remove(P + "locked");
+            document.documentElement.classList.remove(P + "locked");
+            triggerInitialAnimations();
+        }
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initApp, { once: true });
+    } else {
+        initApp();
+    }
+    window.addEventListener("load", syncStage, { passive: true });
 
     const params = new URLSearchParams(location.search);
     const guest = (
