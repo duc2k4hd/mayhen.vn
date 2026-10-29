@@ -26,8 +26,13 @@ Hãy đọc kỹ các nguyên tắc cốt lõi dưới đây và thực hiện t
    - KHÔNG dùng Vue, React, Angular, Alpine.js, jQuery.
    - KHÔNG dùng thư viện hiệu ứng ngoài: Swiper.js, Slick Slider, GSAP, Anime.js, AOS.
    - 100% code phải là **Pure HTML5 + Vanilla CSS + Native ES JavaScript**.
-2. **CẤM CDN NGOẠI:**
-   - Toàn bộ ảnh, font, texture, icon, audio MP3 phải được lưu trữ và nạp cục bộ trong repository.
+2. **CẤM CDN & SERVER TÀI NGUYÊN NGOẠI (ZERO EXTERNAL ASSETS PROTOCOL):**
+   - **BẮT BUỘC 100% CỤC BỘ**: Toàn bộ ảnh demo, ảnh cưới CDCR, ảnh album, texture nền giấy, font chữ (OTF/TTF/WOFF2), chữ ký mẫu, icon sự kiện và file nhạc nền MP3 **phải được tải hết về thư mục `assets/`** của mẫu đó trong repository.
+   - **TUYỆT ĐỐI KHÔNG** để lại bất kỳ đường dẫn ảnh/audio nào trỏ sang server bên thứ 3 (như `builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`...).
+   - Trong `template.blade.php`, mọi hàm `$resolveAsset` phải fallback về file ảnh có thật trong `assets/`.
+   - Trong `styles.css`, mọi thuộc tính `background-image` phải trỏ đường dẫn tương đối nội bộ `url('assets/...')` hoặc `url('...')`.
+   - Trong `schema.json`, mọi giá trị mặc định cho ảnh (`default`) phải dùng đường dẫn nội bộ `/mau-thiep/{template-slug}/assets/...`.
+   - **Mục đích cốt lõi**: Giúp quá trình tạo thiệp (`/tao-thiep`) và chỉnh sửa trong Studio Editor hoạt động chính xác 100% như mong muốn, backend kiểm soát toàn diện dữ liệu, không bị lỗi ảnh vỡ hay chết link do máy chủ ngoài.
 3. **MÃ HÓA & FILE:**
    - Tất cả các file phải lưu bằng mã hóa **UTF-8**, hỗ trợ đầy đủ tiếng Việt có dấu.
 4. **QUY ƯỚC TIỀN TỐ CSS CLASS (MANDATORY PREFIX):**

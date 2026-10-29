@@ -66,26 +66,26 @@
     };
 
     // Ảnh chính của mẫu
-    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/7da1e3a6d59c1a98.webp');
-    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/b058b38c28460637.webp');
-    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/307b8d7ea14424b9.webp');
-    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/c3655bd60267c1b2.webp');
-    $kyPhotoUrl = $resolveAsset($extraData['ky_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/40f8fb60afcb59af.webp');
-    $xnPhotoUrl = $resolveAsset($extraData['xn_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/686ca1bfd6d65f13.webp');
-    $ketPhotoUrl = $resolveAsset($extraData['ket_photo_url'] ?? null, 'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/f5cbab06395d882b.webp');
+    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, '7da1e3a6d59c1a98.webp');
+    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'b058b38c28460637.webp');
+    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, '307b8d7ea14424b9.webp');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'c3655bd60267c1b2.webp');
+    $kyPhotoUrl = $resolveAsset($extraData['ky_photo_url'] ?? null, '40f8fb60afcb59af.webp');
+    $xnPhotoUrl = $resolveAsset($extraData['xn_photo_url'] ?? null, '686ca1bfd6d65f13.webp');
+    $ketPhotoUrl = $resolveAsset($extraData['ket_photo_url'] ?? null, 'f5cbab06395d882b.webp');
 
     // 10 ảnh album cưới mặc định
     $defaultGallery = [
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/c3655bd60267c1b2.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/a5a53978e8384d26.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/7da1e3a6d59c1a98.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/40f8fb60afcb59af.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/4d93c5df689bbae4.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/872462fa026e4df9.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/14325e164a136da2.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/f5cbab06395d882b.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/686ca1bfd6d65f13.webp',
-        'https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/fbf493cec2de5fdc.webp',
+        'c3655bd60267c1b2.webp',
+        'a5a53978e8384d26.webp',
+        '7da1e3a6d59c1a98.webp',
+        '40f8fb60afcb59af.webp',
+        '4d93c5df689bbae4.webp',
+        '872462fa026e4df9.webp',
+        '14325e164a136da2.webp',
+        'f5cbab06395d882b.webp',
+        '686ca1bfd6d65f13.webp',
+        'fbf493cec2de5fdc.webp',
     ];
     $rawGallery = $extraData['gallery'] ?? [];
     $gallery = [];
@@ -799,10 +799,10 @@
                         <div class="mayhen_invitation_ladoifji894yfv_wb_sig_root">
                             <div class="mayhen_invitation_ladoifji894yfv_wb_sig_display">
                                 <div class="mayhen_invitation_ladoifji894yfv_wb_sig_display_inner">
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item" style="left: 3%; top: 29%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="https://builder.27biggroup.com/image/_signatures/202610/a11c6335c8ee2696f05c0396.png" alt="Chữ ký"></div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item" style="left: 72%; top: 13%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="https://builder.27biggroup.com/image/_signatures/202610/245bbfd464823f730341c092.png" alt="Chữ ký"></div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item mayhen_invitation_ladoifji894yfv_wb_sig_idle_pop" style="left: 5%; top: 5%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="https://builder.27biggroup.com/image/_signatures/202610/aa9010161d1437a659d69d04.png" alt="Chữ ký"></div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item mayhen_invitation_ladoifji894yfv_wb_sig_idle_pop" style="left: 72%; top: 32%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="https://builder.27biggroup.com/image/_signatures/202610/b488c34121e081709c4173a2.png" alt="Chữ ký"></div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item" style="left: 3%; top: 29%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="{{ $assetBase }}/sig_1.png" alt="Chữ ký"></div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item" style="left: 72%; top: 13%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="{{ $assetBase }}/sig_2.png" alt="Chữ ký"></div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item mayhen_invitation_ladoifji894yfv_wb_sig_idle_pop" style="left: 5%; top: 5%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="{{ $assetBase }}/sig_3.png" alt="Chữ ký"></div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_sig_item mayhen_invitation_ladoifji894yfv_wb_sig_idle_pop" style="left: 72%; top: 32%; filter: drop-shadow(rgba(0, 0, 0, 0.25) 0px 2px 8px);"><img src="{{ $assetBase }}/sig_4.png" alt="Chữ ký"></div>
                                 </div>
                             </div>
                             <div class="mayhen_invitation_ladoifji894yfv_wb_sig_spacer"></div>
@@ -1176,7 +1176,7 @@
     </div>
 
     <!-- ===================== NHẠC NỀN & NÚT NHẠC NỔI ===================== -->
-    <audio class="mayhen_invitation_ladoifji894yfv_audio_music" style="display: none;" loop src="https://builder.27biggroup.com/image/_shared_music/3fe96bbc3ebc8973d31afbb5d6f1cfd60514486b39970f5a5715c8a6c61c0b43.mp3?v=145"></audio>
+    <audio class="mayhen_invitation_ladoifji894yfv_audio_music" style="display: none;" loop src="{{ $assetBase }}/wedding-song.mp3"></audio>
     <div class="mayhen_invitation_ladoifji894yfv_wb_music_btn" role="button" tabindex="0" aria-label="Bật / Tắt nhạc nền">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>

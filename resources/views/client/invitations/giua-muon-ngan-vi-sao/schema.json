@@ -164,25 +164,25 @@
           "key": "wedding.extra_data.hero_photo_url",
           "label": "Ảnh Đại Diện Đầu Thiệp",
           "type": "image",
-          "default": "https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/7da1e3a6d59c1a98.webp"
+          "default": "/mau-thiep/giua-muon-ngan-vi-sao/assets/7da1e3a6d59c1a98.webp"
         },
         {
           "key": "wedding.extra_data.groom_photo_url",
           "label": "Ảnh Chú Rể",
           "type": "image",
-          "default": "https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/b058b38c28460637.webp"
+          "default": "/mau-thiep/giua-muon-ngan-vi-sao/assets/b058b38c28460637.webp"
         },
         {
           "key": "wedding.extra_data.bride_photo_url",
           "label": "Ảnh Cô Dâu",
           "type": "image",
-          "default": "https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/307b8d7ea14424b9.webp"
+          "default": "/mau-thiep/giua-muon-ngan-vi-sao/assets/307b8d7ea14424b9.webp"
         },
         {
           "key": "wedding.extra_data.save_date_photo_url",
           "label": "Ảnh Thư Mời Tiệc",
           "type": "image",
-          "default": "https://builder.27biggroup.com/image/68d1f79f3093d67a81f8eaa8060019b3/c3655bd60267c1b2.webp"
+          "default": "/mau-thiep/giua-muon-ngan-vi-sao/assets/c3655bd60267c1b2.webp"
         },
         {
           "key": "wedding.extra_data.gallery",

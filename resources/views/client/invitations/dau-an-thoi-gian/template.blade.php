@@ -66,20 +66,20 @@
     };
 
     // Ảnh chính
-    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80');
-    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80');
-    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80');
-    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=85');
+    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, 'hero.jpg');
+    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'groom.jpg');
+    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'bride.jpg');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'savedate.jpg');
 
     // Album ảnh cưới 7 bức
     $defaultGallery = [
-        'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=85',
+        'gallery_1.jpg',
+        'savedate.jpg',
+        'gallery_2.jpg',
+        'gallery_3.jpg',
+        'gallery_4.jpg',
+        'gallery_5.jpg',
+        'gallery_6.jpg',
     ];
     $rawGallery = $extraData['gallery'] ?? [];
     $gallery = [];

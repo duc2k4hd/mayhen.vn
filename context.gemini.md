@@ -8,7 +8,7 @@
 > 5. **SỬA FILE TRỰC TIẾP (TRANSPARENT DIFF)**: Bắt buộc sửa file trực tiếp bằng công cụ sửa file để người dùng theo dõi chính xác từng dòng khác biệt (diff trực quan). Tuyệt đối **KHÔNG** dùng script lệnh chạy ngầm (python/shell/powershell) để sửa file làm người dùng không biết mã nguồn bị thay đổi như thế nào.
 > 6. **QUY ĐỊNH VỀ TỆP KIỂM THỬ (TESTING & TEST FILES)**: Khi viết file test, **BẮT BUỘC PHẢI ĐẶT TRONG THƯ MỤC `tests/`** (ví dụ: `tests/Feature/` hoặc `tests/Unit/`). Tuyệt đối không tạo file test hoặc script kiểm tra bừa bãi ở thư mục gốc hay các thư mục khác ngoài `tests/`. Mỗi lần code xong, nếu file test đó chỉ phục vụ tạm thời và không còn dùng nữa thì **có thể xóa đi** để giữ kho mã nguồn luôn tinh gọn và sạch sẽ.
 > 7. **NGHIÊN CỨU TRƯỚC KHI BẮT ĐẦU (RESEARCH FIRST — KHÔNG VIẾT TỪ CON SỐ 0)**: Đối với những chức năng chưa quen thuộc, **đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm**. Điều này giúp chắt lọc kiến trúc tối ưu, tránh lỗi tiềm ẩn và bám sát các tiêu chuẩn thực tế tốt nhất.
-> 8. **QUY CHUẨN BẮT BUỘC KHI TẠO MẪU THIỆP CƯỚI (TEMPLATE CREATION LOGIC & ZERO-FRICTION STANDARDS)**: Để quá trình tạo thiệp (`/tao-thiep`) diễn ra trơn tru, mượt mà 100%, chuyển đổi giữa các mẫu không bị lệch tên, lỗi ảnh hay hỏng giao diện, và **tránh tuyệt đối việc phải sửa đi sửa lại tốn thời gian**, MỌI MẪU THIỆP MỚI HOẶC CHỈNH SỬA MẪU CŨ BẮT BUỘC PHẢI TUÂN THỦ ĐÚNG 5 NGUYÊN TẮC SAU:
+> 8. **QUY CHUẨN BẮT BUỘC KHI TẠO MẪU THIỆP CƯỚI (TEMPLATE CREATION LOGIC & ZERO-FRICTION STANDARDS)**: Để quá trình tạo thiệp (`/tao-thiep`) diễn ra trơn tru, mượt mà 100%, chuyển đổi giữa các mẫu không bị lệch tên, lỗi ảnh hay hỏng giao diện, và **tránh tuyệt đối việc phải sửa đi sửa lại tốn thời gian**, MỌI MẪU THIỆP MỚI HOẶC CHỈNH SỬA MẪU CŨ BẮT BUỘC PHẢI TUÂN THỦ ĐÚNG 6 NGUYÊN TẮC SAU:
 >    - **Chuẩn hóa 100% Bộ Khóa Schema (`schema.json`)**: Các trường thông tin chung giữa các mẫu thiệp bắt buộc phải dùng đúng key chuẩn:
 >      * Đôi uyên ương: `wedding.groom_name`, `wedding.bride_name`.
 >      * Phụ mẫu hai bên: `wedding.extra_data.groom_father`, `wedding.extra_data.groom_mother`, `wedding.extra_data.bride_father`, `wedding.extra_data.bride_mother`.
@@ -20,6 +20,11 @@
 >      * Khi nhúng trong iframe trình tạo thiệp (`?embed=1`), bắt buộc phải mở sẵn cánh thiệp (`.opened`), không được gắn class khóa cuộn `no-scroll` hay `scroll_locked` vào `html`/`body`, và cưỡng chế `.card-wrapper { display: block !important; }` để tránh thiệp bị màn hình trắng trơn.
 >      * Toàn bộ phần tử hiệu ứng (reveal/motion) phải hiển thị tức thì (`is-visible`) trong iframe để khách hàng nhìn thấy nội dung ngay lập tức.
 >    - **Phòng vệ Ảnh Lỗi (Asset Fallback Defense)**: Mọi lời gọi `$resolveAsset($path, $fallback)` luôn phải có fallback chỉ đến file ảnh có thật trong thư mục `assets/` của mẫu đó. Tuyệt đối không bao giờ để xuất hiện icon ảnh vỡ hoặc URL rỗng.
+>    - **Tự Chứa 100% Tài Nguyên Cục Bộ (100% Localized Assets & Zero External URLs)**:
+>      * Tuyệt đối **CẤM** sử dụng URL ảnh, font, chữ ký, icon hay file nhạc MP3 từ server bên thứ ba ngoài hệ thống (như `builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`...).
+>      * Toàn bộ tài nguyên phục vụ hiển thị mẫu và làm giá trị khởi tạo mặc định bắt buộc phải được tải về và đặt trực tiếp trong thư mục `resources/views/client/invitations/{template-slug}/assets/`.
+>      * Trong `template.blade.php`, `styles.css` và `schema.json`, toàn bộ đường dẫn ảnh và tài nguyên mặc định đều phải trỏ vào asset nội bộ (thông qua `$resolveAsset(...)` hoặc route `/mau-thiep/{slug}/assets/...`).
+>      * Mục đích: Đảm bảo thiệp tạo ra luôn tải ổn định 100%, không bị phụ thuộc vào server bên ngoài, không lo chết link/chặn CORS, và giúp backend quản lý, kiểm soát và chỉnh sửa dễ dàng.
 >    - **Kế thừa Layout chung & Bridge**: Mọi mẫu thiệp bắt buộc phải `@extends('client.layouts.invitation')` để tự động kích hoạt `editor-bridge.blade.php` và cơ chế handshake 2 chiều `MAYHEN_BRIDGE_READY`.
 
 ---
@@ -1472,6 +1477,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * `assets/`: Lưu trữ thumbnail và tài nguyên hình ảnh cục bộ độc lập.
                 - **Đăng ký CSDL & Seeder**: Đã thêm bản ghi vào `InvitationTemplateSeeder.php` với slug `giua-muon-ngan-vi-sao`, category `luxury`, tier `free`, complexity `deluxe` và chạy seed CSDL thành công.
                 - **Kiểm thử chất lượng**: Tạo Feature Test `tests/Feature/GiuaMuonNganViSaoTemplateTest.php` kiểm tra toàn diện preview, data-sync-target, static assets, embed defense và schema.json (4/4 tests passed, 29 assertions). Chạy toàn bộ test suite đạt 32/32 tests passed (360 assertions). Code được định dạng chuẩn bằng Laravel Pint.
+
+            32. **Bản Địa Hóa 100% Toàn Bộ Tài Nguyên Mẫu Thiệp (Zero External Assets Protocol)**:
+                - **Mục tiêu & Thực trạng**: Trước đây một số mẫu thiệp (`giua-muon-ngan-vi-sao`, `dau-an-thoi-gian`, `dau-ky-tram-nam`) còn dùng URL ảnh, font, icon, audio từ server bên ngoài (`builder.27biggroup.com`, `unsplash.com`, `ladicdn.com`, `iili.io`), tiềm ẩn rủi ro chết link, chặn CORS hoặc không đồng bộ được ảnh mặc định trong Studio Editor.
+                - **Thực thi bản địa hóa triệt để**:
+                  * *`giua-muon-ngan-vi-sao`*: Tải toàn bộ 12 ảnh album/CDCR WebP, 4 chữ ký mẫu PNG, và file nhạc `wedding-song.mp3` về trực tiếp `assets/`. Cập nhật `template.blade.php`, `styles.css`, `schema.json` để tham chiếu 100% asset nội bộ.
+                  * *`dau-an-thoi-gian`*: Tải toàn bộ 10 ảnh cưới Unsplash chất lượng cao (hero, groom, bride, savedate, gallery 1-6) về trực tiếp `assets/`. Quy chuẩn fallback sang các file cục bộ (`hero.jpg`, `groom.jpg`, v.v.).
+                  * *`dau-ky-tram-nam`*: Tải toàn bộ 3 font OTF/TTF, các icon timeline/sự kiện PNG từ LadiCDN, và 18 ảnh cưới từ iili.io về `assets/`. Thay thế toàn bộ URL tuyệt đối trong `styles.css` và `assets/styles.css` sang đường dẫn tương đối cục bộ.
+                - **Kết quả rà soát tự động**: Quét toàn bộ kho mã nguồn `resources/views/client/invitations/` đạt **0 URL tài nguyên ngoại vi** trên toàn bộ 9 mẫu thiệp của hệ thống.
+                - **Nâng cấp chuẩn hóa**: Cập nhật Nguyên tắc số 6 trong Quy chuẩn tạo mẫu thiệp cưới bắt buộc 100% Localized Assets cho mọi mẫu thiệp tương lai.
 
 ---
 
