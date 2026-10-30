@@ -2077,6 +2077,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Artisan optimize:clear: Hoàn tất.
 
+            69. **Khắc Phục Nút "Mở Bản Đồ" Bị Lệch Sang Góc Phải Dưới Khi Rê Chuột (Hover Transform Bug)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Trong mẫu thiệp `dau-an-thoi-gian`, nút "MỞ BẢN ĐỒ" (`.mayhen_invitation_ladoifji894yfv_door_btn`) ở phần "Đường Tới Hôn Lễ" khi hover vào thì bị giật văng lệch hẳn sang góc phải dưới của khung bản đồ.
+                - **Nguyên nhân cốt lõi**:
+                  * Nút `.mayhen_invitation_ladoifji894yfv_door_btn` được căn giữa tuyệt đối bằng `position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);`.
+                  * Tuy nhiên, class cha chung `.mayhen_invitation_ladoifji894yfv_btn:hover` lại định nghĩa `transform: translateY(-2px) scale(1.04);`.
+                  * Khi hover vào nút, thuộc tính này ghi đè hoàn toàn `transform`, làm mất giá trị `translate(-50%, -50%)`. Khiến góc trên bên trái của nút bị dời về chính tâm tọa độ `left: 50%; top: 50%`, dẫn đến nút bị lệch hẳn sang một bên. Đồng thời nút bị ảnh hưởng bởi `margin-top` mặc định của button chung.
+                - **Giải pháp hoàn thiện**:
+                  * Cập nhật CSS cho `.mayhen_invitation_ladoifji894yfv_door_btn`:
+                    + Gắn `margin: 0 !important;` loại bỏ độ lệch margin.
+                    + Bổ sung `.mayhen_invitation_ladoifji894yfv_door_btn:hover` với `transform: translate(-50%, calc(-50% - 2px)) scale(1.04) !important;` bảo toàn 100% việc căn giữa theo trục X (`-50%`), tạo hiệu ứng nhấc nhẹ và nở to tự nhiên.
+                    + Bổ sung `.mayhen_invitation_ladoifji894yfv_door_btn:active` với `transform: translate(-50%, calc(-50% + 1px)) scale(0.97) !important;`.
+                - **Xác thực chất lượng**:
+                  * Đã xác thực trên CSS `dau-an-thoi-gian/styles.css`.
+                  * Tự động làm mới cache với `?v=filemtime` trong `template.blade.php`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
