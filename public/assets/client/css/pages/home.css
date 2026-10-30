@@ -2702,11 +2702,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 16px;
+    justify-content: flex-start;
+    padding: 16px 16px 24px 16px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_showcase_modal::-webkit-scrollbar {
+    display: none;
 }
 
 .mayhen_home_showcase_modal.is-open {
@@ -2973,8 +2980,8 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-height: calc(100vh - 100px);
-    margin-top: 48px;
+    max-height: calc(100vh - 110px);
+    margin-top: 72px;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2983,7 +2990,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     position: relative;
     width: 380px;
     max-width: calc(100vw - 32px);
-    height: min(730px, calc(100vh - 180px));
+    height: min(680px, calc(100vh - 215px));
     background: #000000;
     border-radius: 46px;
     padding: 10px;
@@ -3017,7 +3024,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 .mayhen_home_showcase_modal.is-desktop-mode .mayhen_home_showcase_modal_phone_bezel {
     width: 1060px;
     max-width: calc(100vw - 40px);
-    height: min(760px, calc(100vh - 180px));
+    height: min(720px, calc(100vh - 215px));
     border-radius: 18px;
     padding: 8px;
     box-shadow: 0 28px 70px rgba(0, 0, 0, 0.7),

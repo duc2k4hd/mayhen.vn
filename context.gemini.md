@@ -1878,6 +1878,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Bổ sung JavaScript phát hiện `window.self !== window.top`: Tự động gọi `remove()` loại bỏ ngay lập tức phần tử `.mayhen_client_bottom_nav_wrapper` nếu xuất hiện trong DOM iframe.
                 - **Kết quả**: Màn hình điện thoại iPhone trong popup xem mẫu hoàn toàn sạch sẽ, không còn thanh điều hướng dock bên trong, hiển thị trọn vẹn 100% nội dung thiệp cưới.
 
+            57. **Khắc Phục Lỗi Thanh Top Bar Bị Đè Che Mép Trong Modal Xem Mẫu**:
+                - **Hiện tượng**: Thanh điều khiển trên cùng `mayhen_home_showcase_modal_top_bar` (các nút Mobile, Desktop, Mở tab mới, Tải lại) bị mép trên của khung mockup iPhone lấn lên che mất cạnh dưới thanh tab do modal dùng `justify-content: center` và khoảng cách `margin-top: 48px` quá ngắn trên màn hình laptop có chiều cao hạn chế.
+                - **Khắc phục**:
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Chuyển `.mayhen_home_showcase_modal` sang `justify-content: flex-start; overflow-y: auto;` để bố cục mở rộng tự nhiên từ trên xuống dưới.
+                    + Tăng khoảng cách `margin-top` của `.mayhen_home_showcase_modal_container` lên `72px` (tạo vùng đệm an toàn >26px phía dưới thanh top bar).
+                    + Tinh chỉnh chiều cao `phone_bezel` xuống `min(680px, calc(100vh - 215px))` (Mobile) và `min(720px, calc(100vh - 215px))` (Desktop) để vừa vặn hoàn hảo trong mọi kích thước màn hình mà không bao giờ chạm hay che lấp thanh top bar.
+                - **Kết quả**: Thanh top bar hiển thị độc lập, thoáng đãng, sắc nét 100% không bị bất kỳ phần tử nào che khuất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
