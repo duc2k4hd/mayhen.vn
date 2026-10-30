@@ -76,8 +76,8 @@
     };
 
     // Ảnh chính & Lời tựa
-    $coverPhoto = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'muslims-hero-bg-20231207085803-t1lex.jpg');
-    $saveDatePhoto = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'hip_1854-20250417154226-mql7h.jpg');
+    $coverPhoto = $resolveAsset($wedding->cover_photo_url ?? ($extraData['save_date_photo_url'] ?? ($extraData['hero_photo_url'] ?? null)), 'iili_qnTdQKQ.jpg');
+    $saveDatePhoto = $coverPhoto;
     $groomPhoto = $resolveAsset($extraData['groom_photo_url'] ?? null, 'hip_1854-20250417154226-mql7h.jpg');
     $bridePhoto = $resolveAsset($extraData['bride_photo_url'] ?? null, 'hip_2374-20250417154254-fetzp.jpg');
     $partyTime = $extraData['party_time'] ?? $weddingTimeFormatted;
@@ -294,30 +294,30 @@
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
             ></div>
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
+              {{-- Lưng phong bì xanh rêu hoàng gia --}}
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image51"
-                data-sync-target="cover_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                    data-sync-target="cover_photo_url"
-                    style="background-image: url('{{ $coverPhoto }}');"
+                    style="background-image: url('{{ $resolveAsset('iili_qnzyz9s.jpg', 'iili_qnzyz9s.jpg') }}');"
                   ></div>
                 </div>
               </div>
+              {{-- Bó hoa linh lan trang trí bên trái phong bì --}}
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image210"
-                data-sync-target="save_date_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                    data-sync-target="save_date_photo_url"
-                    style="background-image: url('{{ $saveDatePhoto }}');"
+                    style="background-image: url('{{ $resolveAsset('iili_qnzplTv.jpg', 'iili_qnzplTv.jpg') }}');"
                   ></div>
                 </div>
               </div>
+              {{-- Thẻ ẩn phòng vệ tương thích hợp đồng live-sync --}}
+              <div style="display:none;" data-sync-target="save_date_photo_url"></div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_paragraph59"
               >
@@ -335,6 +335,7 @@
                   hạnh phúc.
                 </div>
               </div>
+              {{-- Tấm ảnh Polaroid của cặp đôi nhô cao từ phong bì thư --}}
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group134"
               >
@@ -352,6 +353,8 @@
                     <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                       <div
                         class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                        data-sync-target="cover_photo_url"
+                        style="background-image: url('{{ $coverPhoto }}');"
                       ></div>
                     </div>
                   </div>

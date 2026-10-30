@@ -5517,11 +5517,46 @@ body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483
 }
 
 /* === SECTION 3: POLAROID PHOTO & ENVELOPE FRAMING === */
-.mayhen_invitation_jeowinids483fr_group134 {
-    top: 30px !important;
+.mayhen_invitation_jeowinids483fr_image210 {
+    top: 62px !important;
+    left: 12px !important;
+    z-index: 1 !important;
 }
 .mayhen_invitation_jeowinids483fr_image51 {
-    top: 48px !important;
+    top: 50px !important;
+    left: 70px !important;
+    z-index: 2 !important;
+}
+.mayhen_invitation_jeowinids483fr_group134 {
+    top: 30px !important;
+    left: 106px !important;
+    z-index: 3 !important;
+}
+.mayhen_invitation_jeowinids483fr_box86 > .mayhen_invitation_jeowinids483fr_ladi-box {
+    background-color: #FFFFFF !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+.mayhen_invitation_jeowinids483fr_image209 {
+    overflow: hidden !important;
+    border-radius: 10px !important;
+}
+.mayhen_invitation_jeowinids483fr_image209 > .mayhen_invitation_jeowinids483fr_ladi-image > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+}
+.mayhen_invitation_jeowinids483fr_image52 {
+    top: 194px !important;
+    left: 70px !important;
+    z-index: 4 !important;
+}
+.mayhen_invitation_jeowinids483fr_image211 {
+    z-index: 5 !important;
 }
 
 /* === SECTION 27: EXPANDED 4-ITEM DYNAMIC TIMELINE === */

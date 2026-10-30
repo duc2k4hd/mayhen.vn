@@ -2293,6 +2293,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
                   * Laravel Pint: Clean 100%.
 
+            81. **Xử Lý Dứt Điểm Lỗi Chồng Chéo Ảnh & Thừa Trường "Save The Date" Mẫu Dấu Ký Trăm Năm (`dau-ky-tram-nam`)**:
+                - **Giải mã bản chất đồ họa phong bì Section 3 & Nguyên nhân gây lỗi chồng chéo**:
+                  * Section 3 là thiết kế nghệ thuật **Phong Bì Thư Cưới Mở Ra**:
+                    - `image51`: Lưng phong bì xanh rêu (`iili_qnzyz9s.jpg`).
+                    - `image210`: Bó hoa linh lan trắng (`iili_qnzplTv.jpg`) trang trí bên trái lưng phong bì.
+                    - `group134` (gồm `box86` và `image209`): Tấm ảnh cưới Polaroid của cặp đôi nhô cao từ miệng phong bì.
+                    - `image52`: Vạt túi phía trước của phong bì với dòng chữ "Our Story" (`iili_qnzyncX.jpg`).
+                    - `image211`: Nhành hoa linh lan nhỏ trang trí góc phải phía trước.
+                  * Code cũ trước đây đã gán nhầm:
+                    1. Gán `cover_photo_url` vào `image51` (vốn là lưng phong bì xanh rêu) -> Khiến ảnh đại diện đè nát họa tiết phong bì.
+                    2. Gán `save_date_photo_url` vào `image210` (vốn là bó hoa linh lan bên trái) -> Khiến một ảnh cưới thứ hai lồi ra lệch trái sau lưng phong bì.
+                    3. Trong khi tấm ảnh cưới Polaroid thực sự nằm trong miệng phong bì (`image209`) lại bị bỏ quên không gán `data-sync-target="cover_photo_url"`.
+                    4. Dẫn đến có tới 3 bức ảnh chồng chéo, va đập lên nhau gây vỡ nát bố cục.
+                - **Khắc phục cấu trúc Blade & Schema**:
+                  * Khôi phục `image51` về 100% đồ họa lưng phong bì xanh rêu gốc (`iili_qnzyz9s.jpg`).
+                  * Khôi phục `image210` về 100% đồ họa bó hoa linh lan nước nghệ thuật (`iili_qnzplTv.jpg`).
+                  * Gán chính xác hợp đồng `data-sync-target="cover_photo_url"` vào `image209` bên trong khung ảnh Polaroid `group134`. Cấu hình `background-size: cover; background-position: center; border-radius: 10px;` để bất kỳ ảnh nào người dùng tải lên đều vừa vặn hoàn hảo trong khung Polaroid.
+                  * Loại bỏ trường thừa `wedding.extra_data.save_date_photo_url` khỏi `schema.json` (vì trong mẫu này thiệp cưới chỉ có 1 tấm ảnh Polaroid duy nhất lồng trong phong bì thư). Người dùng chỉ còn thấy 1 trường upload duy nhất: **"Ảnh bìa đại diện thiệp"** (`cover_photo_url`).
+                  * Thiết lập thứ tự xếp lớp `z-index` nghiêm ngặt: Hoa linh lan (`z-index: 1`) -> Lưng phong bì (`z-index: 2`) -> Thẻ Polaroid dâu rể (`z-index: 3`) -> Túi phong bì "Our Story" (`z-index: 4`) -> Nhành hoa trước (`z-index: 5`). Hiệu ứng 3D phong bì thư mở ra mượt mà, sâu thẳm và chuẩn xác tuyệt đối.
+                - **Kiểm thử & Định dạng**:
+                  * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
+                  * Laravel Pint: Clean 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

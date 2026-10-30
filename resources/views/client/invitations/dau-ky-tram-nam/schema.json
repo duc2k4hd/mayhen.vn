@@ -80,7 +80,7 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "muslims-hero-bg-20231207085803-t1lex.jpg",
+          "default": "iili_qnTdQKQ.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {
@@ -109,14 +109,6 @@
           "default": "Khóm An Tài, Phường An Bình, Tỉnh Đồng Tháp",
           "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia...",
           "max": 300
-        },
-        {
-          "key": "wedding.extra_data.save_date_photo_url",
-          "label": "Ảnh thiệp mời tiệc cưới (Save The Date)",
-          "type": "image",
-          "required": false,
-          "default": "hip_1055-20250417154150-fnhf7.jpg",
-          "placeholder": "Đường dẫn ảnh thiệp tiệc cưới"
         },
         {
           "key": "wedding.extra_data.couple_quote",
