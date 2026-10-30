@@ -1986,12 +1986,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
 
-            62. **Tối Ưu CSS Khung Ảnh Mẫu Dấu Ấn Thời Gian (`mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round`)**:
-                - **Yêu cầu & Tinh chỉnh thực hiện**:
-                  * Canh giữa trọng tâm hình ảnh (`background-position: center center !important; background-size: cover !important; background-repeat: no-repeat !important;`).
-                  * Chiều rộng bung full 100% viền ngang của khung chứa (`width: 100% !important; max-width: 100% !important;`).
-                  * Đảm bảo hiển thị vuông vắn chuẩn xác (`aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 20px !important;`).
-                  * Mở rộng khung `.mayhen_invitation_ladoifji894yfv_orbit` và vòng hào quang thiên hà xoay quanh ôm khít khung ảnh vuông bo góc viền vàng kim Antique Gold đẳng cấp.
+            62. **Tối Ưu CSS Hiển Thị Ảnh Mẫu Dấu Ấn Thời Gian (`mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round`)**:
+                - **Khắc phục & Giữ nguyên cấu trúc giao diện mẫu**:
+                  * Bảo toàn 100% cấu trúc giao diện vòng tròn thiên hà orbit nguyên bản (`border-radius: 50%`, vòng hào quang ring, sao quay, kích thước chuẩn). Tuyệt đối không thay đổi kiểu dáng của mẫu.
+                  * Tinh chỉnh cách co dãn hiển thị ảnh: `background-position: center center !important; background-size: cover !important; background-repeat: no-repeat !important;` giúp ảnh căn đúng tâm giữa và phủ kín viền ngang của khung tròn.
                   * Cập nhật `$resolveAsset` trong `template.blade.php` chấp nhận chuỗi `data:` base64 trực tiếp.
                 - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
 
