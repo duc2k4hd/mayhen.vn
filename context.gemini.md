@@ -2115,6 +2115,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            71. **Tự Động Hóa 100% Ngày Âm Lịch Theo Ngày Dương Lịch (Zero-Friction Auto Lunar Calendar)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng yêu cầu *"Tất cả những phần âm lịch tự động theo dương lịch, không cần phải chọn như này"*, gửi ảnh chụp ô text input bắt người dùng phải nhập ngày âm lịch thủ công.
+                - **Nguyên nhân & Trải nghiệm người dùng**:
+                  * Trước đây các trường `wedding_lunar_date`, `groom_party_lunar`, `bride_party_lunar` được render thành các ô `input[type="text"]` độc lập trên form, bắt người dùng phải tự gõ/chọn ngày âm lịch, gây bất tiện và dễ nhập sai.
+                - **Giải pháp hoàn thiện**:
+                  * **Ẩn toàn bộ ô nhập liệu Âm Lịch**: Trong `editor.blade.php`, toàn bộ các trường chứa khóa `lunar` được tự động chuyển thành `<input type="hidden">` để giữ trọn vẹn dữ liệu POST lên backend nhưng loại bỏ hoàn toàn ô nhập thủ công khỏi màn hình.
+                  * **Huy Hiệu Âm Lịch Tự Động Dưới Ô Ngày Dương Lịch**: Mỗi ô `input[type="date"]` (Ngày cử hành hôn lễ, Ngày Nhà Trai, Ngày Nhà Gái) được tích hợp một huy hiệu thanh lịch `.mayhen_editor_lunar_badge`:
+                    `🌙 Âm lịch: Nhằm ngày ... (TỰ ĐỘNG)`.
+                  * **Thuật Toán Tính Âm Lịch Realtime (`editor.js`)**:
+                    + Khi trang vừa mở lên hoặc khi người dùng chọn bất kỳ ngày dương lịch nào, hệ thống tự động tính toán chính xác ngày, tháng (kèm tháng nhuận) và năm Can Chi theo lịch thiên văn học Việt Nam.
+                    + Tự động cập nhật tức thì nhãn hiển thị và giá trị hidden input.
+                    + Đồng bộ ngay lập tức sang iframe preview thiệp cưới thời gian thực mà người dùng không cần phải gõ hay chọn bất kỳ thao tác nào.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

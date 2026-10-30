@@ -543,6 +543,37 @@ const initEditor = () => {
         dockNames.textContent = `${g || 'Chú Rể'} • ${b || 'Cô Dâu'}`;
     };
 
+    // Tự động tính Âm lịch Việt Nam từ ô ngày Dương lịch
+    const updateAutoLunarFromDateInput = (dateInput) => {
+        if (!dateInput) return;
+        const solarVal = dateInput.value;
+        const lunarTargetId = dateInput.getAttribute('data-lunar-target');
+        if (!lunarTargetId) return;
+
+        const lunarInput = document.getElementById(lunarTargetId);
+        const lunarTextEl = document.getElementById('text_' + lunarTargetId);
+
+        if (!solarVal) return;
+        const lunarCalculated = calcVietnameseLunar(solarVal);
+        if (!lunarCalculated) return;
+
+        if (lunarTextEl) {
+            lunarTextEl.textContent = lunarCalculated;
+        }
+        if (lunarInput) {
+            lunarInput.value = lunarCalculated;
+            const lKey = lunarInput.getAttribute('data-sync-key');
+            if (lKey) {
+                store.dispatch({
+                    type: ActionTypes.UPDATE_FIELD,
+                    payload: { key: lKey, value: lunarCalculated }
+                });
+                sendSyncMessage(lKey, lunarCalculated);
+                sendSyncMessage('wedding_lunar_date', lunarCalculated);
+            }
+        }
+    };
+
     if (mainForm) {
         const handleInputEvent = (e) => {
             const target = e.target;
@@ -590,29 +621,9 @@ const initEditor = () => {
                 updateDockNames();
             }
 
-            // Tự động tính toán ngày Âm lịch khi thay đổi ngày cử hành hôn lễ
-            if (key === 'wedding.wedding_date' || key === 'wedding.extra_data.event_party_date') {
-                const lunarCalculated = calcVietnameseLunar(val);
-                if (lunarCalculated) {
-                    const lunarInputs = [
-                        document.querySelector('[data-sync-key="wedding.extra_data.wedding_lunar_date"]'),
-                        document.querySelector('[data-sync-key="wedding.extra_data.groom_party_lunar"]'),
-                        document.querySelector('[data-sync-key="wedding.extra_data.bride_party_lunar"]')
-                    ];
-                    lunarInputs.forEach(lInp => {
-                        if (lInp) {
-                            lInp.value = lunarCalculated;
-                            const lKey = lInp.getAttribute('data-sync-key');
-                            store.dispatch({
-                                type: ActionTypes.UPDATE_FIELD,
-                                payload: { key: lKey, value: lunarCalculated }
-                            });
-                            sendSyncMessage(lKey, lunarCalculated);
-                        }
-                    });
-                    sendSyncMessage('wedding.extra_data.wedding_lunar_date', lunarCalculated);
-                    sendSyncMessage('wedding_lunar_date', lunarCalculated);
-                }
+            // Tự động tính toán ngày Âm lịch nếu là ô ngày dương lịch
+            if (target && target.classList && target.classList.contains('mayhen_date_with_auto_lunar')) {
+                updateAutoLunarFromDateInput(target);
             }
 
             // Đồng bộ sang Iframe
@@ -1433,6 +1444,14 @@ const initEditor = () => {
 
     // Khởi chạy dock
     updateDockNames();
+
+    // Khởi tạo Âm lịch tự động cho toàn bộ ô ngày dương lịch ngay khi mở trang
+    const autoDateInputs = $$('.mayhen_date_with_auto_lunar');
+    autoDateInputs.forEach(dInp => {
+        updateAutoLunarFromDateInput(dInp);
+        on(dInp, 'input', () => updateAutoLunarFromDateInput(dInp));
+        on(dInp, 'change', () => updateAutoLunarFromDateInput(dInp));
+    });
 
     // Đồng bộ ngay lập tức toàn bộ dữ liệu form sang iframes
     setTimeout(() => {

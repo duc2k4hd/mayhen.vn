@@ -661,6 +661,42 @@ body.mayhen_editor_body_fullscreen {
     line-height: 1.4;
 }
 
+/* Huy hiệu hiển thị Âm lịch tự động theo Dương lịch */
+.mayhen_editor_lunar_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 5px 10px;
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #4A453E;
+    line-height: 1.4;
+    transition: all 0.25s ease;
+}
+
+.mayhen_editor_lunar_badge .mayhen_editor_lunar_icon {
+    font-size: 0.82rem;
+}
+
+.mayhen_editor_lunar_badge .mayhen_editor_lunar_val {
+    font-weight: 600;
+    color: #9C7A4A;
+}
+
+.mayhen_editor_lunar_badge .mayhen_editor_lunar_tag {
+    font-size: 0.62rem;
+    background: #EFE8DD;
+    color: #78716C;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+}
+
 /* Form Card Container (Gom nhóm form) */
 .mayhen_client_form_card {
     background-color: #FAF9F6;

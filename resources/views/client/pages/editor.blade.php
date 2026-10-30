@@ -259,7 +259,16 @@
                                         $groupClass = 'mayhen_client_form_group' . ($isFullWidth ? ' is-full-width' : '');
                                     @endphp
 
-                                    @if ($type === 'repeater')
+                                    @if (str_contains($fieldKey, 'lunar'))
+                                        {{-- Trường Ngày Âm lịch: Tự động tính toán theo Dương lịch 100%, ẩn ô nhập liệu để người dùng không phải chọn thủ công --}}
+                                        <input type="hidden" 
+                                               id="{{ $fieldId }}" 
+                                               name="{{ $inputName }}" 
+                                               data-sync-key="{{ $fieldKey }}" 
+                                               value="{{ is_string($val) ? $val : '' }}"
+                                               class="mayhen_auto_lunar_input">
+
+                                    @elseif ($type === 'repeater')
                                         {{-- Trường dạng danh sách repeater (Ví dụ Timeline) --}}
                                         <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
@@ -514,8 +523,49 @@
                                             </div>
                                         </div>
 
+                                    @elseif ($type === 'date')
+                                        {{-- Trường Date: Tự động tính toán Âm lịch và gắn thẻ thông tin tự động dưới ô chọn ngày --}}
+                                        @php
+                                            $lunarFieldId = match($fieldKey) {
+                                                'wedding.wedding_date', 'wedding_date' => 'wedding_extra_data_wedding_lunar_date',
+                                                'wedding.extra_data.groom_party_date', 'groom_party_date' => 'wedding_extra_data_groom_party_lunar',
+                                                'wedding.extra_data.bride_party_date', 'bride_party_date' => 'wedding_extra_data_bride_party_lunar',
+                                                default => 'wedding_extra_data_wedding_lunar_date',
+                                            };
+                                            $lunarInitVal = '';
+                                            if (isset($editingInvitation) && $editingInvitation->wedding) {
+                                                $lunarSub = str_replace(['wedding_extra_data_', 'wedding_'], '', $lunarFieldId);
+                                                $lunarInitVal = $editingInvitation->wedding->extra_data[$lunarSub] ?? '';
+                                            }
+                                            if (empty($lunarInitVal)) {
+                                                $lunarInitVal = 'Tự động tính theo ngày cử hành';
+                                            }
+                                        @endphp
+                                        <div class="{{ $groupClass }}">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            <input type="date" 
+                                                   id="{{ $fieldId }}" 
+                                                   name="{{ $inputName }}" 
+                                                   class="mayhen_client_form_input mayhen_date_with_auto_lunar" 
+                                                   data-sync-key="{{ $fieldKey }}" 
+                                                   data-lunar-target="{{ $lunarFieldId }}"
+                                                   value="{{ is_string($val) ? $val : '' }}" 
+                                                   {{ $isRequired ? 'required' : '' }}>
+                                            <div class="mayhen_editor_lunar_badge" id="badge_{{ $lunarFieldId }}">
+                                                <span class="mayhen_editor_lunar_icon">🌙</span>
+                                                <span>Âm lịch:</span>
+                                                <span class="mayhen_editor_lunar_val" id="text_{{ $lunarFieldId }}">{{ $lunarInitVal }}</span>
+                                                <span class="mayhen_editor_lunar_tag">Tự động</span>
+                                            </div>
+                                        </div>
+
                                     @else
-                                        {{-- Trường Text / Date / Time thông thường --}}
+                                        {{-- Trường Text thông thường --}}
                                         @php
                                             $isNameField = in_array($fieldKey, [
                                                 'wedding.groom_name',
@@ -533,7 +583,7 @@
                                                     <span style="color: var(--mayhen-color-danger);">*</span>
                                                 @endif
                                             </label>
-                                            <input type="{{ $type === 'date' ? 'date' : 'text' }}" 
+                                            <input type="text" 
                                                    id="{{ $fieldId }}" 
                                                    name="{{ $inputName }}" 
                                                    class="mayhen_client_form_input {{ $isNameField ? 'mayhen_validate_human_name' : '' }}" 
