@@ -2133,6 +2133,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            72. **Bắt Buộc Chọn Thời Gian Chuẩn 24H Và Ngày Tháng Năm Qua Picker — Cấm Nhập Tay 100% (Strict 24H Time & Date Selection)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng yêu cầu: *"Tất cả thời gian 24h, ngày tháng năm đều bắt buộc phải chọn, không được nhập tay"*.
+                  * Loại bỏ hoàn toàn khả năng người dùng gõ phím tự do, nhập sai định dạng hoặc paste văn bản lạ vào các trường thời gian và ngày tháng.
+                - **Giải pháp hoàn thiện**:
+                  * **Chuẩn hóa trường dữ liệu Time 24h**:
+                    + Cập nhật `schema.json` của mẫu thiệp (`dau-an-thoi-gian`) và `InvitationTemplateService.php`: đổi kiểu dữ liệu của `party_time`, `groom_party_time`, `bride_party_time` và trường `time` trong repeater lịch trình hôn lễ sang `"type": "time"`.
+                    + Trong `editor.blade.php`, tự động render các trường thời gian thành `<input type="time">` chuẩn HTML5 24h (`HH:mm`), tự động format dữ liệu an toàn qua hàm xử lý `strtotime` và `date('H:i', ...)`.
+                  * **Cơ chế Chặn Nhập Tay Tuyệt Đối (Keyboard & Clipboard Lock)**:
+                    + Gắn thuộc tính và class nhận diện `mayhen_picker_must_select` lên tất cả các ô `input[type="date"]`, `input[type="time"]` và các input trong repeater.
+                    + Chặn sự kiện bàn phím: Bất kỳ phím gõ nào (ký tự, số, backspace, delete...) đều bị `preventDefault()` chặn đứng, ngoại trừ các phím điều hướng hợp lệ (`Tab`, `Enter`, `Escape`).
+                    + Chặn sự kiện dán: Gắn `onpaste="return false;"` và capture listener chặn paste clipboard.
+                  * **Tự động mở Popup Bộ Chọn (One-Click Auto showPicker)**:
+                    + Tích hợp Web API `this.showPicker()` khi người dùng nhấp chuột vào bất kỳ vị trí nào trên ô input, mở ngay lập tức bảng lịch hoặc đồng hồ chọn giờ 24h bản địa mượt mà trên cả máy tính lẫn điện thoại.
+                    + Cơ chế Event Delegation ở mức `document` trong `editor.js` đảm bảo áp dụng 100% cho cả các phần tử tĩnh lẫn các dòng mới được thêm động trong repeater.
+                  * **Giao diện tinh chỉnh**:
+                    + Bổ sung CSS trong `editor-v2.css` với `cursor: pointer !important;`, `user-select: none;`, đổi màu indicator hover tinh tế.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

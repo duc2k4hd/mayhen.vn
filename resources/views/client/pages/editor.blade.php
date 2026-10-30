@@ -278,11 +278,12 @@
                                                 @endphp
                                                 @foreach ($items as $rIdx => $rItem)
                                                     <div class="mayhen_editor_repeater_item">
-                                                        <input type="text" 
+                                                        <input type="time" 
                                                                name="{{ $inputName }}[{{ $rIdx }}][time]" 
-                                                               class="mayhen_client_form_input" 
-                                                               value="{{ $rItem['time'] ?? '' }}" 
-                                                               placeholder="07:00"
+                                                               class="mayhen_client_form_input mayhen_time_picker_input mayhen_picker_must_select" 
+                                                               value="{{ $rItem['time'] ?? '08:00' }}" 
+                                                               onkeydown="if(event.key!=='Tab'&&event.key!=='Enter'&&event.key!=='Escape')return false;"
+                                                               onpaste="return false;"
                                                                data-sync-key="{{ $fieldKey }}.{{ $rIdx }}.time">
                                                         <input type="text" 
                                                                name="{{ $inputName }}[{{ $rIdx }}][title]" 
@@ -551,10 +552,12 @@
                                             <input type="date" 
                                                    id="{{ $fieldId }}" 
                                                    name="{{ $inputName }}" 
-                                                   class="mayhen_client_form_input mayhen_date_with_auto_lunar" 
+                                                   class="mayhen_client_form_input mayhen_date_with_auto_lunar mayhen_picker_must_select" 
                                                    data-sync-key="{{ $fieldKey }}" 
                                                    data-lunar-target="{{ $lunarFieldId }}"
                                                    value="{{ is_string($val) ? $val : '' }}" 
+                                                   onkeydown="if(event.key!=='Tab'&&event.key!=='Enter'&&event.key!=='Escape')return false;"
+                                                   onpaste="return false;"
                                                    {{ $isRequired ? 'required' : '' }}>
                                             <div class="mayhen_editor_lunar_badge" id="badge_{{ $lunarFieldId }}">
                                                 <span class="mayhen_editor_lunar_icon">🌙</span>
@@ -562,6 +565,37 @@
                                                 <span class="mayhen_editor_lunar_val" id="text_{{ $lunarFieldId }}">{{ $lunarInitVal }}</span>
                                                 <span class="mayhen_editor_lunar_tag">Tự động</span>
                                             </div>
+                                        </div>
+
+                                    @elseif ($type === 'time' || str_ends_with($fieldKey, '_time') || str_contains($fieldKey, 'party_time'))
+                                        {{-- Trường Time 24h: Bắt buộc chọn từ bộ chọn thời gian 24h, cấm nhập tay --}}
+                                        <div class="{{ $groupClass }}">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                {{ $label }}
+                                                @if ($isRequired)
+                                                    <span style="color: var(--mayhen-color-danger);">*</span>
+                                                @endif
+                                            </label>
+                                            @php
+                                                $timeVal = '18:00';
+                                                if (!empty($val) && is_string($val)) {
+                                                    $ts = strtotime(trim($val));
+                                                    $timeVal = ($ts !== false) ? date('H:i', $ts) : trim($val);
+                                                } elseif (!empty($field['default']) && is_string($field['default'])) {
+                                                    $ts = strtotime(trim($field['default']));
+                                                    $timeVal = ($ts !== false) ? date('H:i', $ts) : trim($field['default']);
+                                                }
+                                            @endphp
+                                            <input type="time" 
+                                                   id="{{ $fieldId }}" 
+                                                   name="{{ $inputName }}" 
+                                                   class="mayhen_client_form_input mayhen_time_picker_input mayhen_picker_must_select" 
+                                                   data-sync-key="{{ $fieldKey }}" 
+                                                   value="{{ $timeVal }}" 
+                                                   onkeydown="if(event.key!=='Tab'&&event.key!=='Enter'&&event.key!=='Escape')return false;"
+                                                   onpaste="return false;"
+                                                   {{ $isRequired ? 'required' : '' }}>
+                                            <div class="mayhen_editor_input_help">Định dạng 24h, bấm để chọn giờ và phút (không cho phép nhập tay)</div>
                                         </div>
 
                                     @else

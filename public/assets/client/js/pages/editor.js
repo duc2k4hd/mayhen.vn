@@ -1453,6 +1453,33 @@ const initEditor = () => {
         on(dInp, 'change', () => updateAutoLunarFromDateInput(dInp));
     });
 
+    // Bắt buộc chọn Ngày tháng năm và Thời gian 24h, cấm nhập tay (hỗ trợ cả các trường sinh động)
+    document.addEventListener('keydown', (e) => {
+        if (e.target && e.target.matches && e.target.matches('input[type="date"], input[type="time"], .mayhen_picker_must_select')) {
+            if (e.key !== 'Tab' && e.key !== 'Enter' && e.key !== 'Escape') {
+                e.preventDefault();
+                return false;
+            }
+        }
+    }, true);
+
+    document.addEventListener('paste', (e) => {
+        if (e.target && e.target.matches && e.target.matches('input[type="date"], input[type="time"], .mayhen_picker_must_select')) {
+            e.preventDefault();
+            return false;
+        }
+    }, true);
+
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.matches && e.target.matches('input[type="date"], input[type="time"], .mayhen_picker_must_select')) {
+            try {
+                if (typeof e.target.showPicker === 'function') {
+                    e.target.showPicker();
+                }
+            } catch (err) {}
+        }
+    }, true);
+
     // Đồng bộ ngay lập tức toàn bộ dữ liệu form sang iframes
     setTimeout(() => {
         syncAllFieldsToIframe(previewIframe);

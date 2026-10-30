@@ -104,10 +104,10 @@ class InvitationTemplateService
                     [
                         'key' => 'wedding.extra_data.party_time',
                         'label' => 'Giờ tổ chức tiệc cưới chính',
-                        'type' => 'text',
+                        'type' => 'time',
                         'required' => false,
                         'default' => '18:00',
-                        'placeholder' => 'Ví dụ: 18:00 hoặc 11:30',
+                        'placeholder' => 'Ví dụ: 18:00',
                         'max' => 50,
                     ],
                     [
@@ -175,10 +175,10 @@ class InvitationTemplateService
                     [
                         'key' => 'wedding.extra_data.groom_party_time',
                         'label' => 'Giờ tổ chức hôn lễ / tiệc Nhà Trai',
-                        'type' => 'text',
+                        'type' => 'time',
                         'required' => false,
                         'default' => '11:00',
-                        'placeholder' => 'Ví dụ: 11:00 hoặc 11:30',
+                        'placeholder' => 'Ví dụ: 11:00',
                         'max' => 50,
                     ],
                     [
@@ -237,10 +237,10 @@ class InvitationTemplateService
                     [
                         'key' => 'wedding.extra_data.bride_party_time',
                         'label' => 'Giờ tổ chức hôn lễ / tiệc Nhà Gái',
-                        'type' => 'text',
+                        'type' => 'time',
                         'required' => false,
                         'default' => '09:00',
-                        'placeholder' => 'Ví dụ: 09:00 hoặc 09:30',
+                        'placeholder' => 'Ví dụ: 09:00',
                         'max' => 50,
                     ],
                     [
@@ -307,7 +307,7 @@ class InvitationTemplateService
                             ['time' => '11:30', 'title' => 'Chụp Ảnh Kỷ Niệm'],
                         ],
                         'item_structure' => [
-                            ['key' => 'time', 'label' => 'Giờ', 'type' => 'text'],
+                            ['key' => 'time', 'label' => 'Giờ', 'type' => 'time'],
                             ['key' => 'title', 'label' => 'Nội dung', 'type' => 'text'],
                         ],
                     ],

@@ -697,6 +697,32 @@ body.mayhen_editor_body_fullscreen {
     font-weight: 500;
 }
 
+/* Ô chọn Ngày và Giờ 24h: Bắt buộc chọn từ bảng chọn, cấm nhập tay */
+.mayhen_client_form_input[type="date"],
+.mayhen_client_form_input[type="time"],
+.mayhen_picker_must_select {
+    cursor: pointer !important;
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: #1C1917;
+}
+
+.mayhen_client_form_input[type="date"]::-webkit-calendar-picker-indicator,
+.mayhen_client_form_input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.35);
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.mayhen_client_form_input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.mayhen_client_form_input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
 /* Form Card Container (Gom nhóm form) */
 .mayhen_client_form_card {
     background-color: #FAF9F6;
