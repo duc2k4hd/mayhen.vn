@@ -1837,6 +1837,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Lớp phủ `.mayhen_home_showcase_card_hover_overlay`: Hiển thị đầy đủ 100% các thông tin trên thẻ chính giữa bao gồm Danh mục (`hover_cat`), Tên mẫu thiệp (`hover_title`), Lời giới thiệu ngắn (`hover_desc`), Hệ thống Tag tính năng (`hover_tags`) và Bộ nút thao tác `[Xem Mẫu] [Chọn Mẫu]`. Nền gradient cao cấp chuyển màu êm ái, đảm bảo vừa hiển thị trọn vẹn thông tin vừa nhìn thấy ảnh nền và hiệu ứng thiệp cuộn trôi.
                 - **Xác thực**: Feature tests `Feature/` passed 100%, Laravel Pint sạch sẽ, cache trang chủ được làm mới hoàn toàn.
 
+            53. **Phân Tách Rõ Ràng & Chuẩn Hóa: Ảnh Đại Diện (Thumbnail) vs Ảnh Full-Page Cuộn (Full-Page Preview)**:
+                - **Vấn đề giải quyết**:
+                  * Trước đó khi cập nhật trường `thumbnail_url` thành file ảnh full page siêu dài (`13.971px`) khiến phần **Bộ Sưu Tập Hình Ảnh (Gallery Thiệp Cưới)** bên dưới bị ảnh hưởng, hiển thị ảnh dài ngoằng bị cắt khúc gây mất cân đối giao diện.
+                  * Cần phân định 2 khái niệm ảnh hoàn toàn độc lập:
+                    1. **Ảnh đại diện (`thumbnail_url`)**: Ảnh poster/bìa chuẩn tỉ lệ dùng cho Gallery, trang danh mục `/mau-thiep` và danh sách tìm kiếm.
+                    2. **Ảnh full-page (`full_page_preview`)**: Ảnh chụp toàn bộ chiều dài thiệp cưới từ đầu đến chân dùng cho hiệu ứng cuộn tự động (Auto-Pan) trong 3D Coverflow và trong màn hình điện thoại iPhone của Modal Xem Mẫu.
+                - **Giải pháp thực hiện**:
+                  * *Database*: Khôi phục `thumbnail_url` của mẫu `luu-but-ngay-chung-doi` về đúng ảnh đại diện chuẩn `/mau-thiep/luu-but-ngay-chung-doi/assets/preview_1440.png`.
+                  * *`app/Models/InvitationTemplate.php`*: Bổ sung Accessor `fullPagePreview` tự động nhận diện ảnh cuộn full-page cục bộ (`assets/images/{slug}.webp` hoặc `assets/{slug}.webp`), và fallback an toàn về `thumbnail_url` nếu mẫu đó chưa có ảnh full page.
+                  * *`resources/views/client/pages/home.blade.php`*:
+                    + Phần **3D Coverflow Showcase** và **Modal Xem Mẫu**: Sử dụng `$tpl['full_page_preview']` để tự động cuộn (Auto-Pan) và cuộn xem toàn bộ thiệp.
+                    + Phần **Bộ Sưu Tập Hình Ảnh (Gallery)**: Sử dụng `$tpl->thumbnail_url` để hiển thị ảnh đại diện chuẩn form, cân đối, sắc nét và không bị vỡ giao diện.
+                - **Xác thực**: Kiểm tra dữ liệu trả về chuẩn xác: Gallery nhận ảnh đại diện `preview_1440.png`, Coverflow/Modal nhận ảnh full page `luu-but-ngay-chung-doi.webp`. Laravel Pint passed, Feature tests passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

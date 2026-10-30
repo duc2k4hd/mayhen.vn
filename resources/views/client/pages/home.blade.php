@@ -653,6 +653,8 @@
                                 data-features="{{ json_encode($tpl['features']) }}"
                                 data-preview-url="{{ route('templates.preview', $tpl['slug']) }}"
                                 data-create-url="{{ route('templates.show', $tpl['slug']) }}"
+                                data-image="{{ $tpl['full_page_preview'] ?? $tpl['image'] }}"
+                                data-thumb-image="{{ $tpl['image'] }}"
                                 role="group"
                                 aria-roledescription="slide"
                                 aria-label="{{ $tpl['name'] }}"
@@ -668,13 +670,14 @@
 
                                     <!-- Card Media: Ultra HD WebP Artwork Poster with Auto Pan Scroll -->
                                     @php
+                                        $fullPageImg = $tpl['full_page_preview'] ?? $tpl['image'];
                                         $initialPanY = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '-9370px' : '-400px';
                                         $initialPanDur = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
                                     @endphp
                                     <div class="mayhen_home_showcase_card_media">
                                         <div class="mayhen_home_showcase_pan_wrap hover-pan" data-mayhen-pan-wrap style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
-                                            @if (!empty($tpl['image']))
-                                                <img src="{{ $tpl['image'] }}"
+                                            @if (!empty($fullPageImg))
+                                                <img src="{{ $fullPageImg }}"
                                                      alt="{{ $tpl['name'] }}"
                                                      class="mayhen_home_showcase_pan_img"
                                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"

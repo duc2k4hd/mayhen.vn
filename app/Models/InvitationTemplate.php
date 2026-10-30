@@ -67,6 +67,29 @@ class InvitationTemplate extends Model
         );
     }
 
+    protected function fullPagePreview(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (! empty($this->default_config['full_page_preview'])) {
+                    return $this->default_config['full_page_preview'];
+                }
+
+                $localImageWebp = "views/client/invitations/{$this->slug}/assets/images/{$this->slug}.webp";
+                if (file_exists(resource_path($localImageWebp))) {
+                    return "/mau-thiep/{$this->slug}/assets/images/{$this->slug}.webp";
+                }
+
+                $localAssetWebp = "views/client/invitations/{$this->slug}/assets/{$this->slug}.webp";
+                if (file_exists(resource_path($localAssetWebp))) {
+                    return "/mau-thiep/{$this->slug}/assets/{$this->slug}.webp";
+                }
+
+                return $this->thumbnail_url;
+            },
+        );
+    }
+
     protected function badge(): Attribute
     {
         return Attribute::make(
