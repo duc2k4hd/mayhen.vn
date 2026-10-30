@@ -5515,3 +5515,66 @@ body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483
     font-weight: 600;
     letter-spacing: 0.5px;
 }
+
+/* === SECTION 3: POLAROID PHOTO & ENVELOPE FRAMING === */
+.mayhen_invitation_jeowinids483fr_group134 {
+    top: 30px !important;
+}
+.mayhen_invitation_jeowinids483fr_image51 {
+    top: 48px !important;
+}
+
+/* === SECTION 27: EXPANDED 4-ITEM DYNAMIC TIMELINE === */
+.mayhen_invitation_jeowinids483fr_box94 {
+    height: 360px !important;
+    top: 395px !important;
+}
+.mayhen_invitation_jeowinids483fr_group173 {
+    height: 310px !important;
+    top: 420px !important;
+}
+.mayhen_invitation_jeowinids483fr_line47 {
+    height: 305px !important;
+}
+.mayhen_invitation_jeowinids483fr_image244 {
+    top: 660px !important;
+}
+
+/* === SECTION 29: RSVP FORM CHECKBOXES & TEXTAREA FIX === */
+.mayhen_invitation_jeowinids483fr_form_item13 .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-box-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    height: 100% !important;
+}
+.mayhen_invitation_jeowinids483fr_form_item13 .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    width: auto !important;
+    white-space: nowrap !important;
+    cursor: pointer;
+}
+.mayhen_invitation_jeowinids483fr_form_item13 .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item input {
+    margin: 0 4px 0 0 !important;
+    width: 15px !important;
+    height: 15px !important;
+    flex-shrink: 0 !important;
+}
+.mayhen_invitation_jeowinids483fr_form_item13 .mayhen_invitation_jeowinids483fr_ladi-form-checkbox-item span {
+    width: auto !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+}
+.mayhen_invitation_jeowinids483fr_form_item9 {
+    top: 170px !important;
+}
+.mayhen_invitation_jeowinids483fr_button7 {
+    top: 290px !important;
+}
+.mayhen_invitation_jeowinids483fr_group55 {
+    height: 350px !important;
+}

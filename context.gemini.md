@@ -2275,6 +2275,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
                   * Laravel Pint: Clean 100%.
 
+            80. **Khắc Phục 3 Lỗi Bố Cục Chồng Chéo & Đồng Bộ Toàn Diện Timeline 4 Mốc Mẫu Dấu Ký Trăm Năm (`dau-ky-tram-nam`)**:
+                - **Sửa lỗi Phong bì Section 3 che khuất hơn nửa ảnh cưới (Screenshot 1)**:
+                  * Tấm ảnh cưới dạng Polaroid card (`group134`) trước đây bị đặt ở tọa độ `top: 85.862px`, khiến vạt phong bì xanh rêu "Our Story" (`image52` ở `top: 194.158px`) che lấp hơn một nửa ảnh, cắt mất bó hoa cưới, tay và trang phục dâu rể.
+                  * Đã nâng cao tọa độ thẻ Polaroid `group134` lên `top: 30px !important;` và lưng phong bì `image51` lên `top: 48px !important;`. Tấm ảnh nhô cao thanh thoát 55px, khoe trọn vẹn gương mặt, nụ cười, bó hoa cưới trắng và âu phục thanh lịch của cặp đôi.
+                - **Đồng bộ toàn diện 4 mốc thời gian Timeline Section 27 với `schema.json` (Screenshot 2)**:
+                  * Trước đây `template.blade.php` chỉ hardcode 2 nhóm tĩnh (`group174`, `group175`) với 2 mốc mặc định, làm rơi rụng 2 mốc quan trọng ("11:30 Khai Tiệc Mừng Cưới" và "13:00 Chụp Ảnh Kỷ Niệm") đã được định nghĩa trong `schema.json`.
+                  * Chuyển đổi sang vòng lặp động `@foreach($timelineList as $tIdx => $tItem)` tự động sinh các hàng ziczac sole tuyệt đẹp: Hàng chẵn (Icon trái | Đường nối tâm | Giờ & Tiêu đề phải) và Hàng lẻ (Giờ & Tiêu đề trái | Đường nối tâm | Icon phải).
+                  * Tích hợp 4 biểu tượng PNG nội bộ 100% từ thư mục `assets/` cho 4 mốc: `w31_icon5-20240324143948-l5hxp.png` (Máy ảnh - Đón khách), `nhan-20231213014544-ritpg.png` (Cặp nhẫn cưới - Lễ thành hôn), `timeline3-20240323075615-el-qz.png` (Ly rượu mừng - Khai tiệc), `icontiec2-20231213014753-naxdk.png` (Bữa tiệc - Chụp ảnh kỷ niệm).
+                  * Mở rộng chiều cao hộp bo góc trắng `box94` lên `360px` và đẩy nhánh hoa `image244` xuống `top: 660px`, ôm khít và cân đối hoàn hảo cả 4 mốc lịch trình.
+                  * Gắn đầy đủ hợp đồng live-sync `data-sync-target="timeline.{index}.time"` và `timeline.{index}.title` cho mọi mốc thời gian.
+                - **Khắc phục lỗi Checkbox & Ô Ghi Chú Chồng Chéo trong Form RSVP Section 29 (Screenshot 3)**:
+                  * Thuộc tính `span { width: calc(100% - 17px) }` trong CSS cũ ép ô checkbox "Cô dâu" chiếm toàn bộ chiều ngang 165px, đẩy checkbox "Chú rể" rớt xuống dòng 2 (vượt quá chiều cao 41px). Ô nhập ghi chú `form_item9` ("Gửi lời chúc...") ở `top: 165px` bị đè chèn trực tiếp lên checkbox "Chú rể".
+                  * Đã tái cấu trúc CSS cho `form_item13`: sử dụng `display: flex !important; flex-direction: row; gap: 12px` với `white-space: nowrap; width: auto;`, giúp cả 2 lựa chọn "[ ] Cô dâu" và "[ ] Chú rể" nằm gọn gàng, ngay ngắn trên 1 hàng duy nhất trong khung 165px.
+                  * Đẩy ô textarea `form_item9` xuống `top: 170px !important;`, nút bấm `button7` xuống `top: 290px !important;` và tăng chiều cao khung form `group55` lên `350px !important;`, tạo khoảng cách thông thoáng, không còn bất kỳ sự giao thoa hay chồng chéo nào.
+                - **Kiểm thử & Chất lượng**:
+                  * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
+                  * Laravel Pint: Clean 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

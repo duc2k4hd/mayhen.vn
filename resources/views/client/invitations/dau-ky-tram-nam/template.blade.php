@@ -153,11 +153,14 @@
     }
 
     // Lịch trình timeline
-    $rawTimeline = $extraData['timeline'] ?? [];
-    $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : [
-        ['time' => '10:00', 'title' => 'Đón khách & Chụp ảnh'],
-        ['time' => '11:00', 'title' => 'Khai Tiệc Mừng Cưới'],
+    $defaultTimeline = [
+        ['time' => '08:30', 'title' => 'Đón Khách Nhà Gái'],
+        ['time' => '10:00', 'title' => 'Lễ Thành Hôn Nhà Trai'],
+        ['time' => '11:30', 'title' => 'Khai Tiệc Mừng Cưới'],
+        ['time' => '13:00', 'title' => 'Chụp Ảnh Kỷ Niệm'],
     ];
+    $rawTimeline = $extraData['timeline'] ?? [];
+    $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : $defaultTimeline;
 
     // 6. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
@@ -790,87 +793,114 @@
                       ></div>
                     </div>
                   </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group174"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
+                  @php
+                    $timelineIcons = [
+                      0 => 'w31_icon5-20240324143948-l5hxp.png',
+                      1 => 'nhan-20231213014544-ritpg.png',
+                      2 => 'timeline3-20240323075615-el-qz.png',
+                      3 => 'icontiec2-20231213014753-naxdk.png',
+                    ];
+                  @endphp
+                  @foreach($timelineList as $tIdx => $tItem)
+                    @php
+                      $tIconFile = $timelineIcons[$tIdx % 4];
+                      $tIconUrl = $resolveAsset($tIconFile, $tIconFile);
+                      $tTime = $tItem['time'] ?? '';
+                      $tTitle = $tItem['title'] ?? ($tItem['desc'] ?? '');
+                      $isOdd = ($tIdx % 2 === 1);
+                      $topOffset = $tIdx * 76;
+                    @endphp
+                    @if(!$isOdd)
+                      {{-- Even row: Icon Left, Line Center, Text Right --}}
                       <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_line48"
+                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group174"
+                        style="position: absolute; top: {{ $topOffset }}px; left: 0px;"
                       >
-                        <div class="mayhen_invitation_jeowinids483fr_ladi-line">
+                        <div class="mayhen_invitation_jeowinids483fr_ladi-group">
                           <div
-                            class="mayhen_invitation_jeowinids483fr_ladi-line-container"
-                          ></div>
-                        </div>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image228"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-image"
-                        >
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_line48"
+                          >
+                            <div class="mayhen_invitation_jeowinids483fr_ladi-line">
+                              <div
+                                class="mayhen_invitation_jeowinids483fr_ladi-line-container"
+                              ></div>
+                            </div>
+                          </div>
                           <div
-                            class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                          ></div>
-                        </div>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph70"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
-                        >
-                          <span style="font-weight: 700"
-                            ><span
-                              style="
-                                color: rgb(77, 88, 23);
-                              "
-                              data-sync-target="timeline.0.time"
-                              >{{ $timelineList[0]['time'] ?? '10:00' }}</span
-                            ><br /></span
-                          ><span data-sync-target="timeline.0.title">{{ $timelineList[0]['title'] ?? ($timelineList[0]['desc'] ?? 'Đón khách & Chụp ảnh') }}</span><br />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group175"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image229"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-image"
-                        >
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image228"
+                          >
+                            <div
+                              class="mayhen_invitation_jeowinids483fr_ladi-image"
+                            >
+                              <div
+                                class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                                style="background-image: url('{{ $tIconUrl }}');"
+                              ></div>
+                            </div>
+                          </div>
                           <div
-                            class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                          ></div>
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph70"
+                          >
+                            <div
+                              class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
+                            >
+                              <span style="font-weight: 700"
+                                ><span
+                                  style="
+                                    color: rgb(77, 88, 23);
+                                  "
+                                  data-sync-target="timeline.{{ $tIdx }}.time"
+                                  >{{ $tTime }}</span
+                                ><br /></span
+                              ><span data-sync-target="timeline.{{ $tIdx }}.title">{{ $tTitle }}</span><br />
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    @else
+                      {{-- Odd row: Text Left, Line Center, Icon Right --}}
                       <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_line49"
+                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group175"
+                        style="position: absolute; top: {{ $topOffset }}px; left: 0px;"
                       >
-                        <div class="mayhen_invitation_jeowinids483fr_ladi-line">
+                        <div class="mayhen_invitation_jeowinids483fr_ladi-group">
                           <div
-                            class="mayhen_invitation_jeowinids483fr_ladi-line-container"
-                          ></div>
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image229"
+                          >
+                            <div
+                              class="mayhen_invitation_jeowinids483fr_ladi-image"
+                            >
+                              <div
+                                class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                                style="background-image: url('{{ $tIconUrl }}');"
+                              ></div>
+                            </div>
+                          </div>
+                          <div
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_line49"
+                          >
+                            <div class="mayhen_invitation_jeowinids483fr_ladi-line">
+                              <div
+                                class="mayhen_invitation_jeowinids483fr_ladi-line-container"
+                              ></div>
+                            </div>
+                          </div>
+                          <div
+                            class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph71"
+                          >
+                            <div
+                              class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
+                            >
+                              <span style="font-weight: 700"
+                                ><span style="color: rgb(77, 88, 23)" data-sync-target="timeline.{{ $tIdx }}.time">{{ $tTime }}</span
+                                ><br /></span
+                              ><span data-sync-target="timeline.{{ $tIdx }}.title">{{ $tTitle }}</span><br />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph71"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
-                        >
-                          <span style="font-weight: 700"
-                            ><span style="color: rgb(77, 88, 23)" data-sync-target="timeline.1.time">{{ $timelineList[1]['time'] ?? '11:00' }}</span
-                            ><br /></span
-                          ><span data-sync-target="timeline.1.title">{{ $timelineList[1]['title'] ?? ($timelineList[1]['desc'] ?? 'Khai Tiệc Mừng') }}</span><br />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    @endif
+                  @endforeach
                 </div>
               </div>
               <div
