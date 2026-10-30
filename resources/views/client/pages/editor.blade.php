@@ -313,16 +313,14 @@
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
                                                                  onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
-                                                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-                                                                <input type="text" 
+                                                            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                                                                <input type="hidden" 
                                                                        id="{{ $gId }}"
                                                                        name="{{ $inputName }}[{{ $gIdx }}]" 
-                                                                       class="mayhen_client_form_input" 
                                                                        value="{{ $gVal }}" 
-                                                                       placeholder="Ảnh {{ $gIdx + 1 }}..."
                                                                        data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
-                                                                <div style="display: flex; align-items: center; gap: 6px;">
-                                                                    <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh lên">
+                                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                                    <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh lên (tự động chuyển data:image)">
                                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                                         </svg>
@@ -439,7 +437,7 @@
                                                 @php
                                                     $imagePreviewSrc = $selectedTemplate->thumbnail_url;
                                                     if (!empty($val) && is_string($val)) {
-                                                        if (str_starts_with($val, 'http') || str_starts_with($val, '/')) {
+                                                        if (str_starts_with($val, 'http') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) {
                                                             $imagePreviewSrc = $val;
                                                         } else {
                                                             $imagePreviewSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($val, '/'));
@@ -451,22 +449,30 @@
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"
                                                      onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
-                                                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                                                    <input type="text" 
+                                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                                    <input type="hidden" 
                                                            id="{{ $fieldId }}" 
                                                            name="{{ $inputName }}" 
-                                                           class="mayhen_client_form_input" 
                                                            data-sync-key="{{ $fieldKey }}" 
-                                                           value="{{ is_string($val) ? $val : '' }}" 
-                                                           placeholder="{{ $field['placeholder'] ?? 'Dán link hoặc bấm nút tải ảnh...' }}"
-                                                           {{ $isRequired ? 'required' : '' }}>
-                                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại">
+                                                           value="{{ is_string($val) ? $val : '' }}">
+                                                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại (tự động nén data:image)">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                             </svg>
                                                             <span>Chọn ảnh</span>
                                                         </label>
+                                                        @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo'))
+                                                            <button type="button" 
+                                                                    class="mayhen_editor_crop_reopen_btn" 
+                                                                    data-crop-target-input="{{ $fieldId }}"
+                                                                    title="Căn chỉnh khung hình chuẩn 3/4">
+                                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                    <path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>
+                                                                </svg>
+                                                                <span>Căn chỉnh 3/4</span>
+                                                            </button>
+                                                        @endif
                                                         <input type="file" 
                                                                id="upload_{{ $fieldId }}" 
                                                                class="mayhen_editor_file_uploader" 

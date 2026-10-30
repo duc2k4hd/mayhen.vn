@@ -538,10 +538,47 @@ const initEditor = () => {
                       document.querySelector('input[name="_token"]')?.value || '';
 
     // ----------------------------------------------------
-    // 3. Quản lý Ảnh: Lưu trữ Client-side, Kiểm tra tỷ lệ 3/4 & Cropper Canvas
+    // 3. Quản lý Ảnh: Tự động chuyển đổi 100% data:image, Kiểm tra tỷ lệ 3/4 & Cropper Canvas
+    // Không lưu file vào server, không tải file vật lý, tốc độ siêu nhanh
     // ----------------------------------------------------
-    const pendingUploadBlobs = new Map(); // targetInputId -> Blob / File
     let activeCropperTarget = null; // { input, thumb, status, file, img, scale, rotate, offsetX, offsetY }
+
+    /**
+     * Tự động nén và chuyển đổi file ảnh thành chuỗi data:image/jpeg;base64 tối ưu
+     * Đảm bảo hiển thị sắc nét trên điện thoại, dung lượng gọn nhẹ (< 200KB), không lưu file vào server
+     */
+    const compressImageToDataUrl = (file, maxWidth = 1200, maxHeight = 1600, quality = 0.85) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let w = img.naturalWidth;
+                    let h = img.naturalHeight;
+
+                    // Giới hạn kích thước tối đa giữ nguyên tỷ lệ
+                    if (w > maxWidth || h > maxHeight) {
+                        const ratio = Math.min(maxWidth / w, maxHeight / h);
+                        w = Math.round(w * ratio);
+                        h = Math.round(h * ratio);
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(dataUrl);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
 
     const cropperModal = $('#mayhen_cropper_modal');
     const cropperCanvas = $('#mayhen_cropper_canvas');
@@ -686,7 +723,7 @@ const initEditor = () => {
         });
     }
 
-    // Xác nhận cắt ảnh và xuất ra đúng tỷ lệ 3/4
+    // Xác nhận cắt ảnh và xuất ra đúng tỷ lệ 3/4 dạng data:image
     if (cropperConfirmBtn) {
         on(cropperConfirmBtn, 'click', () => {
             if (!activeCropperTarget || !activeCropperTarget.img) return;
@@ -712,28 +749,25 @@ const initEditor = () => {
             outCtx.drawImage(activeCropperTarget.img, -activeCropperTarget.img.naturalWidth / 2, -activeCropperTarget.img.naturalHeight / 2);
             outCtx.restore();
 
-            outCanvas.toBlob((blob) => {
-                if (!blob) return;
-                const croppedUrl = URL.createObjectURL(blob);
-                const targetInput = activeCropperTarget.input;
-                const targetThumb = activeCropperTarget.thumb;
-                const statusEl = activeCropperTarget.status;
+            // Lấy chuỗi data:image/jpeg trực tiếp, không lưu file vào server
+            const dataUrl = outCanvas.toDataURL('image/jpeg', 0.88);
+            const targetInput = activeCropperTarget.input;
+            const targetThumb = activeCropperTarget.thumb;
+            const statusEl = activeCropperTarget.status;
 
-                if (targetThumb) targetThumb.src = croppedUrl;
-                if (targetInput) {
-                    targetInput.value = croppedUrl;
-                    pendingUploadBlobs.set(targetInput.id, blob);
-                    const syncKey = targetInput.getAttribute('data-sync-key');
-                    if (syncKey) sendSyncMessage(syncKey, croppedUrl);
-                }
+            if (targetThumb) targetThumb.src = dataUrl;
+            if (targetInput) {
+                targetInput.value = dataUrl;
+                const syncKey = targetInput.getAttribute('data-sync-key');
+                if (syncKey) sendSyncMessage(syncKey, dataUrl);
+            }
 
-                if (statusEl) {
-                    statusEl.textContent = '✓ Đã căn chỉnh 3/4 chuẩn xác';
-                    statusEl.style.color = '#10B981';
-                }
+            if (statusEl) {
+                statusEl.textContent = '✓ Đã căn chỉnh 3/4 (data:image)';
+                statusEl.style.color = '#10B981';
+            }
 
-                closeCropperModal();
-            }, 'image/jpeg', 0.92);
+            closeCropperModal();
         });
     }
 
@@ -754,7 +788,7 @@ const initEditor = () => {
 
             // Kiểm tra kích thước và tỷ lệ ảnh
             const tempImg = new Image();
-            tempImg.onload = () => {
+            tempImg.onload = async () => {
                 const ratio = tempImg.naturalWidth / tempImg.naturalHeight;
                 const isThreeFourRatio = Math.abs(ratio - 0.75) <= 0.04; // Tỷ lệ 3/4 = 0.75
 
@@ -767,21 +801,49 @@ const initEditor = () => {
                         file: file,
                     });
                 } else {
-                    // Tỷ lệ hợp lệ hoặc ảnh phụ -> Lưu blob ở client chờ bấm Tạo Thiệp
-                    pendingUploadBlobs.set(targetInputId, file);
-                    if (targetThumb) targetThumb.src = objectUrl;
-                    if (targetInput) {
-                        targetInput.value = objectUrl;
-                        const syncKey = targetInput.getAttribute('data-sync-key');
-                        if (syncKey) sendSyncMessage(syncKey, objectUrl);
-                    }
-                    if (statusEl) {
-                        statusEl.textContent = '✓ Đã chọn (sẽ lưu khi tạo thiệp)';
-                        statusEl.style.color = 'var(--mayhen-color-primary)';
+                    // Tỷ lệ hợp lệ hoặc ảnh phụ -> Tự động nén sang data:image trực tiếp
+                    try {
+                        if (statusEl) statusEl.textContent = 'Đang nén ảnh...';
+                        const dataUrl = await compressImageToDataUrl(file);
+                        if (targetThumb) targetThumb.src = dataUrl;
+                        if (targetInput) {
+                            targetInput.value = dataUrl;
+                            const syncKey = targetInput.getAttribute('data-sync-key');
+                            if (syncKey) sendSyncMessage(syncKey, dataUrl);
+                        }
+                        if (statusEl) {
+                            statusEl.textContent = '✓ Đã sẵn sàng (data:image)';
+                            statusEl.style.color = '#10B981';
+                        }
+                    } catch (err) {
+                        console.error('Lỗi chuyển ảnh sang data:image:', err);
                     }
                 }
             };
             tempImg.src = objectUrl;
+        });
+    });
+
+    // Mở lại Cropper Modal cho ảnh chính khi bấm nút Căn chỉnh 3/4
+    $$('.mayhen_editor_crop_reopen_btn').forEach(btn => {
+        on(btn, 'click', (e) => {
+            e.preventDefault();
+            const inputId = btn.getAttribute('data-crop-target-input');
+            const targetInput = document.getElementById(inputId);
+            const targetThumb = document.getElementById('preview_thumb_' + inputId);
+            const statusEl = document.getElementById('status_' + inputId);
+
+            const currentSrc = targetThumb?.src || targetInput?.value;
+            if (currentSrc && currentSrc !== 'about:blank') {
+                openCropperModal(currentSrc, {
+                    input: targetInput,
+                    thumb: targetThumb,
+                    status: statusEl,
+                });
+            } else {
+                const fileInput = document.getElementById('upload_' + inputId);
+                if (fileInput) fileInput.click();
+            }
         });
     });
 
@@ -949,79 +1011,16 @@ const initEditor = () => {
     });
 
     // ----------------------------------------------------
-    // 3.3 Submit Form: Tải các ảnh blob thực sự lên server khi bấm Tạo Thiệp
+    // 3.3 Submit Form: Toàn bộ ảnh đã được lưu trực tiếp dạng data:image, submit tức thì
     // ----------------------------------------------------
     const submitFormWithPendingUploads = async () => {
         const submitBtns = $$('[data-mayhen-action="trigger-submit"]');
         submitBtns.forEach(btn => {
             btn.disabled = true;
-            btn.innerHTML = '<span>Đang chuẩn bị lưu thiệp cưới...</span>';
+            btn.innerHTML = '<span>Đang xuất bản thiệp cưới...</span>';
         });
 
-        const templateSlug = window.__MAYHEN_TEMPLATE_SLUG || document.getElementById('template_id')?.value || 'net-muc-tinh-yeu';
-        const csrfToken = window.__MAYHEN_CSRF_TOKEN || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
-        const uploadUrl = window.__MAYHEN_UPLOAD_URL || '/tao-thiep/upload-asset';
-
-        // 1. Tải toàn bộ các file ảnh blob lên server
-        if (pendingUploadBlobs.size > 0) {
-            submitBtns.forEach(btn => {
-                btn.innerHTML = '<span>Đang tải ảnh cưới lên hệ thống...</span>';
-            });
-
-            const uploadPromises = [];
-            for (const [inputId, blobOrFile] of pendingUploadBlobs.entries()) {
-                const targetInput = document.getElementById(inputId);
-                const fileUploader = document.querySelector(`input[type="file"][data-target-input="${inputId}"]`);
-                const actualSlug = fileUploader?.getAttribute('data-template-slug') || templateSlug;
-                const statusEl = document.getElementById('status_' + inputId);
-                if (statusEl) statusEl.textContent = 'Đang lưu ảnh...';
-
-                const formData = new FormData();
-                formData.append('file', blobOrFile, 'wedding_photo.jpg');
-                formData.append('template_slug', actualSlug);
-                formData.append('_token', csrfToken);
-
-                const uploadPromise = fetch(uploadUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    body: formData,
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.file_url) {
-                        if (targetInput) targetInput.value = data.file_url;
-                        if (statusEl) {
-                            statusEl.textContent = '✓ Đã lưu ảnh';
-                            statusEl.style.color = '#10B981';
-                        }
-                    }
-                })
-                .catch(err => {
-                    console.error('Lỗi tải ảnh:', err);
-                });
-
-                uploadPromises.push(uploadPromise);
-            }
-
-            try {
-                await Promise.all(uploadPromises);
-            } catch (err) {
-                console.error('Một số ảnh chưa kịp lưu:', err);
-            }
-        }
-
-        // 2. Bảo vệ chống rò rỉ URL dạng blob: vào database
         if (mainForm) {
-            const allInputs = mainForm.querySelectorAll('input');
-            allInputs.forEach(inp => {
-                if (typeof inp.value === 'string' && inp.value.startsWith('blob:')) {
-                    inp.value = ''; // Xóa sạch URL blob tạm thời để backend tự fallback về ảnh mẫu
-                }
-            });
-
             // Cập nhật custom_config (bố cục, bảng màu, tem sáp) mới nhất vào input form
             const customConfigInput = document.getElementById('invitation_custom_config');
             if (customConfigInput) {
@@ -1034,10 +1033,6 @@ const initEditor = () => {
             if (templateInput && currentTemplateId) {
                 templateInput.value = currentTemplateId;
             }
-
-            submitBtns.forEach(btn => {
-                btn.innerHTML = '<span>Đang xuất bản thiệp cưới...</span>';
-            });
 
             mainForm.submit();
         }

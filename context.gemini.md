@@ -1935,6 +1935,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Tối ưu giao diện Mobile-First (< 768px): Padding, kích thước chữ và nút xếp dọc vừa khít mọi màn hình điện thoại.
                 - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
 
+            60. **Chuyển Đổi Toàn Bộ Ảnh Tải Lên / Cắt Ghép Trong Trình Tạo Thiệp Sang Chuẩn `data:image`, Ẩn Hoàn Toàn Link Text**:
+                - **Yêu cầu & Mục tiêu**:
+                  * Khách hàng muốn toàn bộ ảnh của thiệp cưới do người dùng upload/cắt ghép (ảnh chính, ảnh album cưới) được lưu trực tiếp dạng `data:image` (base64) để đơn giản, tiện lợi, không phải lưu file vật lý vào server gây nặng bộ nhớ và khó kiểm soát.
+                  * Ngoại trừ ảnh đại diện (`thumbnail_url`) và ảnh full page (`full_page_preview`) của mẫu thiệp (phục vụ danh mục và SEO) thì vẫn giữ nguyên file URL chuẩn.
+                  * Trong Studio Tạo Thiệp / Chỉnh sửa (`/tao-thiep`), loại bỏ hoàn toàn ô input text hiển thị đường dẫn `assets/...` thô kệch, chỉ hiển thị ảnh xem trước trực quan + nút Chọn ảnh / Căn chỉnh 3/4.
+                - **Giải pháp & Tác động kỹ thuật**:
+                  * *Lược đồ cơ sở dữ liệu (Database Schema Impact)*:
+                    + Tạo migration `2026_10_30_041510_change_cover_photo_url_to_longtext_in_weddings_table.php`: Chuyển đổi cột `cover_photo_url` trong bảng `weddings` từ `VARCHAR(500)` sang `LONGTEXT`.
+                    + Tác động: Cho phép lưu trữ chuỗi `data:image/jpeg;base64,...` trực tiếp trong database mà không bị lỗi cắt bớt dữ liệu hay lỗi `Data too long for column`. Dữ liệu cũ (nếu có URL cũ) vẫn được bảo toàn 100%.
+                  * *Backend Validation (`app/Services/InvitationTemplateService.php`)*:
+                    + Cập nhật rule `wedding.cover_photo_url` và `wedding.extra_data.gallery.*` từ `nullable|url|max:500` thành `nullable|string` để chấp nhận cả URL thông thường và chuỗi `data:image/...`.
+                  * *Giao diện Studio Tạo Thiệp (`resources/views/client/pages/editor.blade.php` & `editor-v2.css`)*:
+                    + Chuyển toàn bộ các ô input link ảnh sang `type="hidden"`, không để lộ đường dẫn text.
+                    + Hiển thị khung ảnh xem trước sắc nét 64x64px, nút `[Chọn ảnh]` và nút `[Căn chỉnh 3/4]` (dành cho ảnh chính).
+                  * *Xử lý Client-Side (`public/assets/client/js/pages/editor.js`)*:
+                    + Bổ sung hàm `compressImageToDataUrl()`: Tự động scale và nén ảnh về độ phân giải chuẩn (tối đa 1200x1600px, quality 0.85) xuất ra `data:image/jpeg;base64,...` siêu nhẹ (~80-200KB).
+                    + Cropper Modal xuất trực tiếp `outCanvas.toDataURL('image/jpeg', 0.88)`.
+                    + Đồng bộ tức thì qua iframe postMessage `sendSyncMessage()`.
+                    + Xóa bỏ hoàn toàn việc gọi Ajax upload file lên server `/tao-thiep/upload-asset` khi bấm Tạo thiệp, giúp quá trình xuất bản thiệp diễn ra **tức thì (0 giây chờ đợi)**.
+                - **Xác thực chất lượng**:
+                  * Migration chạy thành công 100%.
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+                  * Laravel Pint: Passed.
+                  * JS Syntax check (`node -c`): Passed.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

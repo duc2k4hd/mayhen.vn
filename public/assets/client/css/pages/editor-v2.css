@@ -684,16 +684,21 @@ body.mayhen_editor_body_fullscreen {
 .mayhen_editor_image_field_row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+    padding: 10px 14px;
+    background: #FAF8F5;
+    border: 1px solid rgba(197, 168, 128, 0.28);
+    border-radius: 12px;
 }
 
 .mayhen_editor_image_field_preview {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     border-radius: 10px;
     object-fit: cover;
     background-color: #EFECE6;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
 }
 
@@ -701,21 +706,43 @@ body.mayhen_editor_body_fullscreen {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 7px 14px;
+    padding: 8px 14px;
     background-color: #ffffff;
-    border: 1px solid #E5DCCD;
+    border: 1px solid #D8CEBD;
     border-radius: 8px;
-    font-size: 0.75rem;
+    font-size: 0.775rem;
     font-weight: 600;
-    color: #1C1917;
+    color: #2C2824;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     transition: all 0.2s ease;
 }
 
 .mayhen_editor_upload_btn:hover {
-    border-color: #B45309;
-    color: #B45309;
-    background-color: #FAF4EB;
+    border-color: #C5A880;
+    color: #8C6D3F;
+    background-color: #FFFDF9;
+    box-shadow: 0 3px 8px rgba(197, 168, 128, 0.18);
+}
+
+.mayhen_editor_crop_reopen_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    background: rgba(197, 168, 128, 0.1);
+    border: 1px dashed rgba(197, 168, 128, 0.5);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8C6D3F;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_crop_reopen_btn:hover {
+    background: rgba(197, 168, 128, 0.2);
+    border-color: #8C6D3F;
 }
 
 .mayhen_editor_upload_btn_sm {
