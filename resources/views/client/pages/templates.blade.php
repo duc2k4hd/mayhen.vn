@@ -344,9 +344,25 @@
         {{-- Templates Grid --}}
         <div class="mayhen_templates_grid">
             @forelse ($templates as $tpl)
-                <article class="mayhen_home_template_card">
-                    <div class="mayhen_home_template_card_img_wrap">
-                        <img src="{{ $tpl->image }}" alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}" class="mayhen_home_template_card_img" loading="lazy" decoding="async">
+                @php
+                    $fullPageImg = $tpl->full_page_preview ?? $tpl->image;
+                    $initialPanY = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '-9370px' : '-500px';
+                    $initialPanDur = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
+                @endphp
+                <article class="mayhen_home_template_card"
+                         data-slug="{{ $tpl->slug }}"
+                         data-name="{{ $tpl->name }}"
+                         data-category="{{ $tpl->category_label }}"
+                         data-preview-url="{{ route('templates.preview', $tpl->slug) }}"
+                         data-create-url="{{ route('templates.show', $tpl->slug) }}">
+                    <div class="mayhen_home_template_card_img_wrap" data-mayhen-showcase-peek-btn style="cursor: pointer;" title="Bấm để xem thử trực tiếp mẫu thiệp {{ $tpl->name }}">
+                        <div class="mayhen_home_showcase_pan_wrap hover-pan" data-mayhen-pan-wrap style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
+                            <img src="{{ $fullPageImg }}"
+                                 alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}"
+                                 class="mayhen_home_showcase_pan_img"
+                                 loading="lazy"
+                                 decoding="async">
+                        </div>
                         <div class="mayhen_home_template_card_badge_group">
                             <span class="mayhen_home_template_card_tier_badge {{ $tpl->tier_badge_class }}">
                                 {{ $tpl->tier_label }}
@@ -367,11 +383,17 @@
                         </div>
 
                         <div class="mayhen_home_template_card_footer">
-                            <a href="{{ route('templates.preview', $tpl->slug) }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm" title="Xem live mẫu thiệp cưới {{ $tpl->name }}">
-                                Xem Live
-                            </a>
-                            <a href="{{ route('templates.show', $tpl->slug) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm" title="Sử dụng mẫu thiệp cưới {{ $tpl->name }}">
-                                Dùng Mẫu
+                            <button type="button"
+                                    class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm"
+                                    data-mayhen-showcase-peek-btn
+                                    title="Xem trải nghiệm thực tế mẫu thiệp cưới {{ $tpl->name }}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span>Xem Mẫu</span>
+                            </button>
+                            <a href="{{ route('templates.show', $tpl->slug) }}"
+                               class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm"
+                               title="Sử dụng mẫu thiệp cưới {{ $tpl->name }}">
+                                <span>Dùng Mẫu</span>
                             </a>
                         </div>
                     </div>
@@ -680,6 +702,9 @@
             </div>
 
         </section>
+
+        {{-- Luxury Live Preview Modal in Smartphone Frame --}}
+        @include('client.components.showcase-preview-modal')
 
     </div>
 @endsection

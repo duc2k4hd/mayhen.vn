@@ -1887,6 +1887,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Tinh chỉnh chiều cao `phone_bezel` xuống `min(680px, calc(100vh - 215px))` (Mobile) và `min(720px, calc(100vh - 215px))` (Desktop) để vừa vặn hoàn hảo trong mọi kích thước màn hình mà không bao giờ chạm hay che lấp thanh top bar.
                 - **Kết quả**: Thanh top bar hiển thị độc lập, thoáng đãng, sắc nét 100% không bị bất kỳ phần tử nào che khuất.
 
+            58. **Đồng Bộ Chức Năng Tự Cuộn (Hover-Pan) Và Popup Xem Mẫu Mockup iPhone Vào Trang Danh Mục Mẫu Thiệp (`/mau-thiep`)**:
+                - **Yêu cầu & Mục tiêu**:
+                  * Áp dụng hiệu ứng tự động cuộn dài (Auto-Pan / Hover-Pan bằng 100% GPU transform) trên toàn bộ các thẻ trong lưới `mayhen_templates_grid` tại trang `/mau-thiep`, sử dụng ảnh full page WebP tương tự trang chủ.
+                  * Tích hợp Popup xem mẫu trực tiếp (Live Demo Preview Modal) trong mockup điện thoại iPhone tương tác thực tế với `<iframe>`, có đầy đủ toolbar (Mobile, Desktop, Mở tab mới, Tải lại, Sao chép link kèm Toast thông báo).
+                  * Tự động ẩn thanh điều hướng nhanh `mayhen_client_bottom_nav_wrapper` ở cả trang cha và bên trong iframe bằng tham số `hide_nav=1&in_modal=1` để không che vướng màn hình điện thoại.
+                  * Đảm bảo kiến trúc chuẩn xác, module hóa một lần dùng chung bền vững (Zero duplication).
+                - **Các giải pháp kỹ thuật đã triển khai**:
+                  * *Tạo Component Dùng Chung (`resources/views/client/components/showcase-preview-modal.blade.php`)*:
+                    + Tách toàn bộ markup Modal Xem Mẫu sang component độc lập để cả `home.blade.php` và `templates.blade.php` cùng `@include('client.components.showcase-preview-modal')`.
+                    + Đảm bảo tính nhất quán 100% giữa các trang, dễ bảo trì và mở rộng trong tương lai.
+                  * *Cập nhật Blade (`resources/views/client/pages/templates.blade.php`)*:
+                    + Mỗi thẻ `<article class="mayhen_home_template_card">` được gắn đầy đủ `data-slug`, `data-name`, `data-category`, `data-preview-url`, `data-create-url`.
+                    + Khung ảnh sử dụng container `.mayhen_home_showcase_pan_wrap.hover-pan` chứa `$tpl->full_page_preview ?? $tpl->image` với các biến CSS `--pan-y` và `--pan-dur`.
+                    + Nút "Xem Mẫu" (`data-mayhen-showcase-peek-btn`) và click vào ảnh đều mở trực tiếp Modal xem mẫu iPhone.
+                    + Nút "Dùng Mẫu" dẫn trực tiếp đến trình tạo thiệp (`templates.show`).
+                  * *Cập nhật CSS (`public/assets/client/css/pages/templates.css`)*:
+                    + Thiết lập style cho `.mayhen_home_showcase_pan_wrap` và `.mayhen_home_showcase_pan_img` với GPU transform `translateY(0)` -> `translateY(var(--pan-y))` khi hover vào card, và trở về đầu trang êm ái khi chuột rời ra.
+                  * *Cập nhật JS (`public/assets/client/js/pages/templates.js`)*:
+                    + Viết hàm `initTemplateCardHoverScroll()`: Tự động đo đạc tỷ lệ thực của ảnh và khung thẻ, tính toán khoảng cách trôi và tốc độ cuộn tối ưu (khoảng 180px/s, riêng `luu-but-ngay-chung-doi` cuộn 55s), tự động cập nhật khi ảnh tải xong hoặc khi đổi kích thước màn hình (`resize`).
+                    + Viết hàm `initLivePreviewModal()`: Lắng nghe sự kiện click xem mẫu, nạp iframe với query string `hide_nav=1&in_modal=1`, ẩn thanh `mayhen_client_bottom_nav_wrapper`, hỗ trợ phím Escape, click backdrop, đổi chế độ Mobile / Desktop, tải lại iframe, sao chép link chia sẻ.
+                  * *Viết Feature Test (`tests/Feature/TemplateGalleryTest.php`)*:
+                    + Kiểm tra trang `/mau-thiep` trả về status 200, hiển thị đầy đủ `mayhen_templates_grid`, container `mayhen_home_showcase_pan_wrap`, nút xem mẫu `data-mayhen-showcase-peek-btn`, modal `mayhen_home_showcase_modal` và iframe `mayhen_home_showcase_modal_iframe`.
+                - **Xác thực chất lượng**:
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+                  * Laravel Pint: Passed.
+                  * JS Syntax check (`node -c`): Passed không lỗi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
