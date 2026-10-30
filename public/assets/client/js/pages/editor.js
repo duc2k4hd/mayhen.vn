@@ -598,18 +598,30 @@ const initEditor = () => {
     let startDragX = 0;
     let startDragY = 0;
 
+    const getCropperDimensions = () => {
+        const stageW = (cropperStage && cropperStage.clientWidth) ? cropperStage.clientWidth : 580;
+        const stageH = (cropperStage && cropperStage.clientHeight) ? cropperStage.clientHeight : 380;
+        const cropBoxH = Math.min(stageH - 40, 310);
+        const cropBoxW = Math.round((cropBoxH * 3) / 4);
+        const cropBoxX = Math.round((stageW - cropBoxW) / 2);
+        const cropBoxY = Math.round((stageH - cropBoxH) / 2);
+
+        return { stageW, stageH, cropBoxW, cropBoxH, cropBoxX, cropBoxY };
+    };
+
     const renderCropper = () => {
-        if (!activeCropperTarget || !activeCropperTarget.img || !cropperCtx) return;
+        if (!activeCropperTarget || !activeCropperTarget.img || !cropperCtx || !cropperCanvas) return;
         const img = activeCropperTarget.img;
-        const width = 600;
-        const height = 400;
+        const { stageW, stageH, cropBoxW, cropBoxH, cropBoxX, cropBoxY } = getCropperDimensions();
 
-        cropperCanvas.width = width;
-        cropperCanvas.height = height;
+        if (cropperCanvas.width !== stageW || cropperCanvas.height !== stageH) {
+            cropperCanvas.width = stageW;
+            cropperCanvas.height = stageH;
+        }
 
-        cropperCtx.clearRect(0, 0, width, height);
+        cropperCtx.clearRect(0, 0, stageW, stageH);
         cropperCtx.save();
-        cropperCtx.translate(width / 2 + activeCropperTarget.offsetX, height / 2 + activeCropperTarget.offsetY);
+        cropperCtx.translate(stageW / 2 + activeCropperTarget.offsetX, stageH / 2 + activeCropperTarget.offsetY);
         cropperCtx.rotate((activeCropperTarget.rotate * Math.PI) / 180);
         cropperCtx.scale(activeCropperTarget.scale, activeCropperTarget.scale);
 
@@ -617,14 +629,9 @@ const initEditor = () => {
         cropperCtx.restore();
 
         // Kích thước khung 3:4 ở chính giữa
-        const cropBoxHeight = 320;
-        const cropBoxWidth = (cropBoxHeight * 3) / 4; // 240px
-        const cropBoxX = (width - cropBoxWidth) / 2;
-        const cropBoxY = (height - cropBoxHeight) / 2;
-
         if (cropperOverlay) {
-            cropperOverlay.style.width = cropBoxWidth + 'px';
-            cropperOverlay.style.height = cropBoxHeight + 'px';
+            cropperOverlay.style.width = cropBoxW + 'px';
+            cropperOverlay.style.height = cropBoxH + 'px';
             cropperOverlay.style.left = cropBoxX + 'px';
             cropperOverlay.style.top = cropBoxY + 'px';
         }
@@ -640,18 +647,21 @@ const initEditor = () => {
                 rotate: 0,
                 offsetX: 0,
                 offsetY: 0,
+                confirmed: false,
             };
-
-            // Tính scale khởi đầu để ảnh vừa ít nhất khớp với khung 3/4
-            const minScaleW = 240 / img.naturalWidth;
-            const minScaleH = 320 / img.naturalHeight;
-            activeCropperTarget.scale = Math.max(minScaleW, minScaleH, 0.4);
 
             if (cropperModal) {
                 cropperModal.classList.add('mayhen_editor_modal_open');
                 document.body.style.overflow = 'hidden';
             }
-            renderCropper();
+
+            requestAnimationFrame(() => {
+                const { cropBoxW, cropBoxH } = getCropperDimensions();
+                const minScaleW = cropBoxW / img.naturalWidth;
+                const minScaleH = cropBoxH / img.naturalHeight;
+                activeCropperTarget.scale = Math.max(minScaleW, minScaleH, 0.35);
+                renderCropper();
+            });
         };
         img.src = imageSource;
     };
@@ -659,6 +669,17 @@ const initEditor = () => {
     const closeCropperModal = () => {
         if (cropperModal) cropperModal.classList.remove('mayhen_editor_modal_open');
         document.body.style.overflow = '';
+
+        // Nếu người dùng đóng mà chưa xác nhận cắt ảnh, không cho phép lưu ảnh chưa chuẩn 3/4
+        if (activeCropperTarget && !activeCropperTarget.confirmed) {
+            if (activeCropperTarget.uploader) {
+                activeCropperTarget.uploader.value = '';
+            }
+            if (activeCropperTarget.status) {
+                activeCropperTarget.status.textContent = 'Đã hủy (ảnh bìa bắt buộc tỉ lệ 3:4)';
+                activeCropperTarget.status.style.color = '#EF4444';
+            }
+        }
         activeCropperTarget = null;
     };
 
@@ -667,7 +688,7 @@ const initEditor = () => {
 
     if (cropperZoomIn) on(cropperZoomIn, 'click', () => {
         if (!activeCropperTarget) return;
-        activeCropperTarget.scale = Math.min(3, activeCropperTarget.scale * 1.15);
+        activeCropperTarget.scale = Math.min(4, activeCropperTarget.scale * 1.15);
         renderCropper();
     });
 
@@ -691,42 +712,74 @@ const initEditor = () => {
 
     if (cropperReset) on(cropperReset, 'click', () => {
         if (!activeCropperTarget || !activeCropperTarget.img) return;
-        activeCropperTarget.scale = Math.max(240 / activeCropperTarget.img.naturalWidth, 320 / activeCropperTarget.img.naturalHeight, 0.4);
+        const { cropBoxW, cropBoxH } = getCropperDimensions();
+        activeCropperTarget.scale = Math.max(cropBoxW / activeCropperTarget.img.naturalWidth, cropBoxH / activeCropperTarget.img.naturalHeight, 0.35);
         activeCropperTarget.rotate = 0;
         activeCropperTarget.offsetX = 0;
         activeCropperTarget.offsetY = 0;
         renderCropper();
     });
 
-    // Kéo di chuyển ảnh trong khung cắt
+    // Kéo di chuyển ảnh trong khung cắt (hỗ trợ cả chuột và cảm ứng điện thoại, lăn chuột zoom)
     if (cropperStage) {
-        on(cropperStage, 'mousedown', (e) => {
+        const handleDragStart = (x, y) => {
             isDraggingStage = true;
-            startDragX = e.clientX;
-            startDragY = e.clientY;
-        });
+            startDragX = x;
+            startDragY = y;
+        };
 
-        window.addEventListener('mousemove', (e) => {
+        const handleDragMove = (x, y) => {
             if (!isDraggingStage || !activeCropperTarget) return;
-            const dx = e.clientX - startDragX;
-            const dy = e.clientY - startDragY;
-            startDragX = e.clientX;
-            startDragY = e.clientY;
+            const dx = x - startDragX;
+            const dy = y - startDragY;
+            startDragX = x;
+            startDragY = y;
 
             activeCropperTarget.offsetX += dx;
             activeCropperTarget.offsetY += dy;
             renderCropper();
-        });
+        };
 
-        window.addEventListener('mouseup', () => {
+        const handleDragEnd = () => {
             isDraggingStage = false;
-        });
+        };
+
+        // Chuột
+        on(cropperStage, 'mousedown', (e) => handleDragStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => handleDragMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', handleDragEnd);
+
+        // Cảm ứng điện thoại
+        cropperStage.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', handleDragEnd);
+
+        // Lăn chuột để phóng to / thu nhỏ
+        cropperStage.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (!activeCropperTarget) return;
+            const delta = e.deltaY < 0 ? 1.08 : 0.92;
+            activeCropperTarget.scale = Math.max(0.1, Math.min(4, activeCropperTarget.scale * delta));
+            renderCropper();
+        }, { passive: false });
     }
 
-    // Xác nhận cắt ảnh và xuất ra đúng tỷ lệ 3/4 dạng data:image
+    // Xác nhận cắt ảnh và xuất ra đúng tỷ lệ 3/4 dạng data:image chất lượng cao
     if (cropperConfirmBtn) {
         on(cropperConfirmBtn, 'click', () => {
             if (!activeCropperTarget || !activeCropperTarget.img) return;
+
+            const { cropBoxW } = getCropperDimensions();
 
             // Xuất ra canvas chất lượng cao độ phân giải chuẩn 3/4: 900x1200
             const outW = 900;
@@ -736,11 +789,7 @@ const initEditor = () => {
             outCanvas.height = outH;
             const outCtx = outCanvas.getContext('2d');
 
-            const stageW = 600;
-            const stageH = 400;
-            const cropBoxW = 240;
-            const cropBoxH = 320;
-            const scaleFactor = outW / cropBoxW; // 900 / 240 = 3.75
+            const scaleFactor = outW / cropBoxW; // Phóng to theo tỷ lệ khung cắt thực tế
 
             outCtx.save();
             outCtx.translate(outW / 2 + activeCropperTarget.offsetX * scaleFactor, outH / 2 + activeCropperTarget.offsetY * scaleFactor);
@@ -767,6 +816,7 @@ const initEditor = () => {
                 statusEl.style.color = '#10B981';
             }
 
+            activeCropperTarget.confirmed = true;
             closeCropperModal();
         });
     }
@@ -784,26 +834,38 @@ const initEditor = () => {
             const targetThumb = document.getElementById(targetThumbId);
             const statusEl = document.getElementById('status_' + targetInputId);
 
+            if (statusEl) {
+                statusEl.textContent = 'Đang kiểm tra ảnh...';
+                statusEl.style.color = 'var(--mayhen-color-text-muted)';
+            }
+
             const objectUrl = URL.createObjectURL(file);
 
             // Kiểm tra kích thước và tỷ lệ ảnh
             const tempImg = new Image();
             tempImg.onload = async () => {
                 const ratio = tempImg.naturalWidth / tempImg.naturalHeight;
-                const isThreeFourRatio = Math.abs(ratio - 0.75) <= 0.04; // Tỷ lệ 3/4 = 0.75
+                // Chuẩn 3/4 = 0.75. Ngưỡng dung sai cực nhỏ 0.02
+                const isExactThreeFour = Math.abs(ratio - 0.75) <= 0.02;
 
-                if (isMainPhoto && !isThreeFourRatio) {
-                    // Nếu là ảnh chính và không đúng tỷ lệ 3/4 -> Mở popup cắt ảnh ngay
+                // Quy tắc: Không tin tưởng người dùng.
+                // Nếu là ảnh bìa chính (bắt buộc 3/4) mà tỷ lệ chưa chuẩn 3/4 -> BẮT BUỘC BẬT POPUP CẮT ẢNH NGAY
+                if (isMainPhoto && !isExactThreeFour) {
+                    if (statusEl) {
+                        statusEl.textContent = 'Cần căn chỉnh tỉ lệ 3:4...';
+                        statusEl.style.color = '#D97706';
+                    }
                     openCropperModal(objectUrl, {
                         input: targetInput,
                         thumb: targetThumb,
                         status: statusEl,
                         file: file,
+                        uploader: uploader,
                     });
                 } else {
-                    // Tỷ lệ hợp lệ hoặc ảnh phụ -> Tự động nén sang data:image trực tiếp
+                    // Ảnh đã chuẩn 3/4 hoặc là ảnh gallery không bắt buộc -> Tự động nén sang data:image trực tiếp
                     try {
-                        if (statusEl) statusEl.textContent = 'Đang nén ảnh...';
+                        if (statusEl) statusEl.textContent = 'Đang tối ưu ảnh...';
                         const dataUrl = await compressImageToDataUrl(file);
                         if (targetThumb) targetThumb.src = dataUrl;
                         if (targetInput) {
@@ -817,33 +879,20 @@ const initEditor = () => {
                         }
                     } catch (err) {
                         console.error('Lỗi chuyển ảnh sang data:image:', err);
+                        if (statusEl) {
+                            statusEl.textContent = 'Lỗi xử lý ảnh';
+                            statusEl.style.color = '#EF4444';
+                        }
                     }
                 }
             };
+            tempImg.onerror = () => {
+                if (statusEl) {
+                    statusEl.textContent = 'Không thể đọc tệp ảnh';
+                    statusEl.style.color = '#EF4444';
+                }
+            };
             tempImg.src = objectUrl;
-        });
-    });
-
-    // Mở lại Cropper Modal cho ảnh chính khi bấm nút Căn chỉnh 3/4
-    $$('.mayhen_editor_crop_reopen_btn').forEach(btn => {
-        on(btn, 'click', (e) => {
-            e.preventDefault();
-            const inputId = btn.getAttribute('data-crop-target-input');
-            const targetInput = document.getElementById(inputId);
-            const targetThumb = document.getElementById('preview_thumb_' + inputId);
-            const statusEl = document.getElementById('status_' + inputId);
-
-            const currentSrc = targetThumb?.src || targetInput?.value;
-            if (currentSrc && currentSrc !== 'about:blank') {
-                openCropperModal(currentSrc, {
-                    input: targetInput,
-                    thumb: targetThumb,
-                    status: statusEl,
-                });
-            } else {
-                const fileInput = document.getElementById('upload_' + inputId);
-                if (fileInput) fileInput.click();
-            }
         });
     });
 

@@ -456,23 +456,12 @@
                                                            data-sync-key="{{ $fieldKey }}" 
                                                            value="{{ is_string($val) ? $val : '' }}">
                                                     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại (tự động nén data:image)">
+                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại (hệ thống tự động căn chỉnh và chuyển đổi)">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                             </svg>
                                                             <span>Chọn ảnh</span>
                                                         </label>
-                                                        @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo'))
-                                                            <button type="button" 
-                                                                    class="mayhen_editor_crop_reopen_btn" 
-                                                                    data-crop-target-input="{{ $fieldId }}"
-                                                                    title="Căn chỉnh khung hình chuẩn 3/4">
-                                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                                    <path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>
-                                                                </svg>
-                                                                <span>Căn chỉnh 3/4</span>
-                                                            </button>
-                                                        @endif
                                                         <input type="file" 
                                                                id="upload_{{ $fieldId }}" 
                                                                class="mayhen_editor_file_uploader" 

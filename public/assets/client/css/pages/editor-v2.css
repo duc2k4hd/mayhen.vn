@@ -1294,12 +1294,11 @@ body.mayhen_editor_body_fullscreen {
 }
 
 /* ==========================================================================
-   6. MODAL SYSTEM (Template Switcher, Music Picker, Cropper)
+   6. MODAL SYSTEM (Template Switcher, Music Picker)
    ========================================================================== */
 
 .mayhen_editor_template_modal,
 .mayhen_music_picker_modal,
-.mayhen_cropper_modal,
 .mayhen_editor_modal_preview {
     position: fixed;
     top: 0;
@@ -1311,7 +1310,7 @@ body.mayhen_editor_body_fullscreen {
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 9999;
     padding: 16px;
 }
 
@@ -1326,8 +1325,7 @@ body.mayhen_editor_body_fullscreen {
 }
 
 .mayhen_editor_template_modal_box,
-.mayhen_music_picker_box,
-.mayhen_cropper_box {
+.mayhen_music_picker_box {
     background: #ffffff;
     border-radius: 18px;
     width: 100%;
@@ -1337,6 +1335,210 @@ body.mayhen_editor_body_fullscreen {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
+}
+
+/* ==========================================================================
+   6.1. MODAL CẮT ẢNH 3/4 THÔNG MINH (PURE CANVAS CROPPER)
+   ========================================================================== */
+.mayhen_cropper_modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(14, 12, 11, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.mayhen_cropper_modal.mayhen_editor_modal_open {
+    display: flex !important;
+}
+
+.mayhen_cropper_box {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 640px;
+    max-height: 92vh;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(229, 220, 205, 0.8);
+    animation: mayhen_cropper_scale_in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhen_cropper_scale_in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.mayhen_cropper_header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #EFE8DD;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAF8F5;
+}
+
+.mayhen_cropper_header_title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_cropper_header_title svg {
+    color: #9C7A4A;
+}
+
+.mayhen_cropper_body {
+    padding: 18px 20px;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    overflow: hidden;
+}
+
+.mayhen_cropper_stage {
+    width: 100%;
+    height: 380px;
+    background: #141210;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.mayhen_cropper_stage:active {
+    cursor: grabbing;
+}
+
+.mayhen_cropper_canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.mayhen_cropper_overlay {
+    position: absolute;
+    pointer-events: none;
+    border: 2px solid #C5A880;
+    box-shadow: 0 0 0 9999px rgba(10, 9, 8, 0.68);
+    border-radius: 6px;
+    transition: width 0.15s ease, height 0.15s ease;
+}
+
+.mayhen_cropper_overlay::after {
+    content: "Tỉ lệ chuẩn 3:4";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(20, 18, 16, 0.85);
+    color: #FAF8F5;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    letter-spacing: 0.3px;
+}
+
+.mayhen_cropper_controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 4px 0;
+}
+
+.mayhen_cropper_btn_tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: #FAF8F5;
+    border: 1px solid #E5DCCD;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1F1D1A;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_cropper_btn_tool:hover {
+    background: #FFFFFF;
+    border-color: #9C7A4A;
+    color: #9C7A4A;
+}
+
+.mayhen_cropper_footer {
+    padding: 14px 20px;
+    border-top: 1px solid #EFE8DD;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #FAF8F5;
+}
+
+.mayhen_cropper_btn_cancel {
+    padding: 9px 20px;
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666055;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_cropper_btn_cancel:hover {
+    background: #F3EFEA;
+    color: #1F1D1A;
+}
+
+.mayhen_cropper_btn_confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 22px;
+    background: #1F1D1A;
+    border: none;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #FAF8F5;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(31, 29, 26, 0.25);
+    transition: all 0.2s ease;
+}
+
+.mayhen_cropper_btn_confirm:hover {
+    background: #9C7A4A;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(156, 122, 74, 0.35);
 }
 
 .mayhen_editor_modal_header {

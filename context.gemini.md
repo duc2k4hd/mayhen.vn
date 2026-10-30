@@ -1960,6 +1960,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * JS Syntax check (`node -c`): Passed.
 
+            61. **Khắc Phục Toàn Diện Giao Diện Popup Cắt Ảnh 3/4 (`mayhen_cropper_modal`) & Cơ Chế Bắt Buộc Cắt Ảnh ("Zero-Trust User Logic")**:
+                - **Vấn đề đã xử lý**:
+                  * Popup cắt ảnh trong Studio Editor (`editor-v2.css`) trước đó bị lỗi layout nặng: Hộp cropper bị gán nhầm thuộc tính chung `overflow-y: auto` làm xuất hiện thanh cuộn màu cam dọc khung; thiếu toàn bộ hệ thống CSS của stage hiển thị, canvas, khung overlay 3:4, thanh công cụ zoom/xoay và footer xác nhận/hủy, khiến popup bị vỡ và lệch góc.
+                  * Nút "Căn chỉnh 3/4" ngoài form gây dư thừa và tạo kẽ hở cho người dùng bỏ qua bước chuẩn hóa ảnh.
+                - **Giải pháp & Kiến trúc hoàn thiện**:
+                  * *`resources/views/client/pages/editor.blade.php`*:
+                    + Xóa bỏ hoàn toàn nút bấm thủ công `.mayhen_editor_crop_reopen_btn` ngoài form. Người dùng chỉ tương tác với nút `[Chọn ảnh]`.
+                  * *`public/assets/client/css/pages/editor-v2.css`*:
+                    + Tách riêng `.mayhen_cropper_modal` với `position: fixed; inset: 0; z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);`.
+                    + Thiết kế khung `.mayhen_cropper_box` bo góc 20px, bóng đổ đa tầng sang trọng, triệt tiêu hoàn toàn scrollbar màu cam.
+                    + Khung sân khấu `.mayhen_cropper_stage` nền đen tinh tế `#141210`, shadow inset, cursor grab/grabbing.
+                    + Khung cắt `.mayhen_cropper_overlay` có viền mạ vàng kim Antique Gold `#C5A880`, bóng mờ 9999px chuẩn, badge tỉ lệ 3:4 trang nhã.
+                    + Bộ công cụ zoom in, zoom out, xoay trái, xoay phải, đặt lại dạng pill mờ thanh lịch.
+                    + Footer gồm nút Hủy bỏ và nút Xác nhận `[✓ Cắt & Sử Dụng Ảnh Này]` nổi bật chuẩn Quiet Luxury.
+                  * *`public/assets/client/js/pages/editor.js`*:
+                    + Cập nhật hàm tính toán khung cắt linh hoạt `getCropperDimensions()` tự động khớp với kích thước stage trên cả máy tính lẫn màn hình điện thoại.
+                    + Bổ sung hỗ trợ thao tác kéo thả đa nền tảng: Chuột (`mousedown`/`mousemove`), Cảm ứng di động (`touchstart`/`touchmove`), và Lăn chuột (`wheel`) để phóng to/thu nhỏ nhanh chóng.
+                    + **Triển khai cơ chế Zero-Trust User Logic**: Khi người dùng tải ảnh lên, hệ thống tự động kiểm tra tỷ lệ ảnh thực tế. Nếu là ảnh bìa chính (`isMainPhoto`) mà tỷ lệ chưa chuẩn 3:4 (sai số > 0.02), hệ thống **BẮT BUỘC BẬT POPUP CẮT ẢNH NGAY LẬP TỨC**, ép người dùng căn chỉnh góc ảnh đẹp nhất.
+                    + Nếu người dùng hủy bỏ hoặc đóng popup mà chưa xác nhận cắt ảnh, hệ thống tự động xóa file tạm (`uploader.value = ''`), reset thông báo và từ chối lưu ảnh sai tỷ lệ vào form.
+                    + Khi xác nhận cắt ảnh: Canvas xuất trực tiếp độ phân giải cao chuẩn 3:4 (900x1200px) dưới dạng chuỗi `data:image/jpeg;base64,...` đưa vào hidden input và live sync tức thì sang iframe.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
