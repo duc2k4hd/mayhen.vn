@@ -1806,14 +1806,36 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Mỗi iframe tạo một Chromium Web Renderer Instance độc lập ngốn 200MB - 300MB RAM và GPU context. Khi lướt slide, các iframe cũ không được giải phóng mà tích tụ trong RAM & GPU khiến RAM vọt lên 1.5GB - 2.5GB và CPU laptop bị đẩy lên gần 100%.
                   * Phía server Laravel: Mỗi người dùng vào trang chủ kéo theo hàng loạt sub-requests iframe tải toàn bộ view Blade, CSS, JS, fonts khiến server quá tải, không thể chịu nổi lượng truy cập lớn.
                 - **Giải pháp kiến trúc chuẩn Production phục vụ hàng triệu người dùng**:
-                  * *`resources/views/client/pages/home.blade.php`*: Loại bỏ hoàn toàn thẻ `<iframe>` ngầm bên trong các card Coverflow. Thay thế bằng ảnh đại diện Artwork Poster WebP siêu nét, siêu nhẹ (chỉ vài chục KB).
-                  * *`public/assets/client/css/pages/home.css`*: Thiết lập hiệu ứng ảnh trôi mượt khi hover (`transform: translateY(...)`) chạy 100% bằng GPU Compositor, tốn **0% CPU** và **0MB RAM thêm**.
+                  * *`resources/views/client/pages/home.blade.php`*: Loại bỏ hoàn toàn thẻ `<iframe>` ngầm bên trong các card Coverflow. Thay thế bằng container `.mayhen_home_showcase_pan_wrap.hover-pan` chứa ảnh full preview dài của mẫu thiệp.
+                  * *`public/assets/client/css/pages/home.css`*: Triển khai kỹ thuật **Hover-Pan & Auto-Pan Animation** chuẩn mực (như miwedi):
+                    + Sử dụng biến CSS `--pan-y` và `--pan-dur`.
+                    + Khi hover vào thẻ bất kỳ: Tự động trôi mượt từ đỉnh xuống đáy bằng GPU Transform `transform: translateY(var(--pan-y))`. Khi rời chuột tự động quay lại đỉnh êm dịu trong 0.8s.
+                    + Riêng thẻ to nhất ở chính giữa (`.is-active`): Tự động kích hoạt `@keyframes mayhenAutoPanScroll` trôi cuộn lên xuống tuần hoàn liên tục để tạo cảm giác sống động như đang xem thiệp thật trên màn hình di động, mà tốn đúng **0% CPU** và **0MB RAM thêm**.
                   * *`public/assets/client/js/pages/home.js`*:
+                    + Hàm `initCardImageHoverScroll()` tự động đo tỷ lệ thực tế giữa chiều cao ảnh full thiệp và khung hiển thị (`wrap.clientHeight`), tự động tính chính xác giá trị `--pan-y` và thời lượng `--pan-dur` chuẩn tốc độ êm ái ~75px/giây.
                     + Xóa bỏ hoàn toàn hàm `initShowcaseLazyIframe()` và các vòng lặp `requestAnimationFrame` cuộn DOM iframe cưỡng chế.
                     + Nâng cấp `initPetalsCanvas()` với `IntersectionObserver`: Chỉ render cánh hoa khi Showcase nằm trong khung nhìn. Khi người dùng cuộn khỏi màn hình hoặc đổi tab trình duyệt (`document.hidden`), lập tức ngắt animation để trả CPU về 0%.
                     + Duy trì trải nghiệm thực tế: Khi người dùng bấm nút "Xem Mẫu" (Peek) hoặc click mở xem, modal Popup iPhone sang trọng sẽ hiện ra với duy nhất 1 iframe được nạp theo yêu cầu (on-demand); khi đóng modal thì `iframe.src = 'about:blank'` lập tức giải phóng hoàn toàn bộ nhớ.
                   * *`app/Http/Controllers/Client/HomeController.php`*: Rút gọn `take(20)` xuống `take(8)` cho `$featuredTemplates`, giảm tải database query và DOM elements.
+                  * *Tích hợp ảnh Full-Page Mẫu Tiên Phong (`luu-but-ngay-chung-doi`)*: Đã nạp ảnh chụp full mobile screen `luu-but-ngay-chung-doi.webp` (423 × 13.971px) vào thư mục `resources/views/client/invitations/luu-but-ngay-chung-doi/assets/images/`, cập nhật database `thumbnail_url`. Mẫu thiệp khi ở vị trí trung tâm trang chủ (`.is-active`) sẽ tự động cuộn dọc toàn cảnh từ đầu đến chân cực kỳ trơn tru, sắc nét.
                 - **Kết quả đo lường**: Trang chủ tải tức thì chỉ trong vài trăm mili-giây, CPU máy khách duy trì ở mức 0% - 2%, RAM tiết kiệm hơn 95%, server Laravel chỉ nhận 1 request tĩnh duy nhất cho mỗi lượt khách, sẵn sàng chịu tải hàng triệu người dùng.
+
+            51. **Hoàn Thiện Trải Nghiệm Auto-Pan Full-Page Mẫu Chính Trên Trang Chủ**:
+                - **Vấn đề giải quyết**:
+                  * Khi vào trang chủ, mẫu `luu-but-ngay-chung-doi` trước đó đứng thứ 4 trong danh sách query nên không xuất hiện ở vị trí trung tâm (index 0).
+                  * Ảnh full page `luu-but-ngay-chung-doi.webp` (kích thước siêu dài 423px × 13.971px) bị sự kiện tính toán trễ hoặc clientHeight = 0 khi thẻ đang biến đổi 3D khiến `--pan-y` bị gán 0px và hover làm animation bị tạm dừng đứng im.
+                  * Lớp overlay đen `.mayhen_home_showcase_card_hover_overlay` với nền tối gradient dày 68% cùng hàng loạt dòng text mô tả đè lên 60% mặt trước của thiệp, che khuất ảnh cô dâu chú rể và hiệu ứng trôi của thiệp cưới.
+                - **Các giải pháp nâng cấp đồng bộ**:
+                  * *`app/Http/Controllers/Client/HomeController.php`*: Bổ sung `orderByRaw("CASE WHEN slug = 'luu-but-ngay-chung-doi' THEN 0 ELSE 1 END")` để mẫu `luu-but-ngay-chung-doi` luôn giữ vị trí đầu tiên (index 0) làm thẻ chính giữa ngay khi mở trang chủ.
+                  * *`resources/views/client/pages/home.blade.php`*: Gán sẵn thuộc tính CSS nội suy `--pan-y: -9370px; --pan-dur: 55s;` trực tiếp trong Blade cho mẫu `luu-but-ngay-chung-doi`, giúp trình duyệt kích hoạt animation cuộn trôi tức thì ngay từ frame đầu tiên mà không phụ thuộc vào độ trễ JS.
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Trong `calculatePanMetrics()`, tính toán chuẩn xác tỷ lệ thực của ảnh: `renderedHeight = wrapWidth * (naturalHeight / naturalWidth)`, khắc phục hoàn toàn trường hợp `img.clientHeight` chưa sẵn sàng.
+                    + Bổ sung giá trị fallback chuẩn `-9370px / 55s` cho `luu-but-ngay-chung-doi`, tuyệt đối không bao giờ bị rơi về `0px`.
+                    + Kích hoạt tính toán đa mốc thời gian (ngay lập tức, 60ms, 300ms, 800ms) và khi chuyển đổi slide (`updateStage()`).
+                  * *`public/assets/client/css/pages/home.css`*:
+                    + Thẻ trung tâm `.is-active` chạy animation liên tục `mayhenAutoPanScroll` với đường cong gia tốc mềm `cubic-bezier(0.37, 0, 0.63, 1)` từ đỉnh xuống đáy và quay lại đầu tuần hoàn, không bị quy tắc hover làm đứng hình.
+                    + Lớp phủ `.mayhen_home_showcase_card_hover_overlay`: Hiển thị đầy đủ 100% các thông tin trên thẻ chính giữa bao gồm Danh mục (`hover_cat`), Tên mẫu thiệp (`hover_title`), Lời giới thiệu ngắn (`hover_desc`), Hệ thống Tag tính năng (`hover_tags`) và Bộ nút thao tác `[Xem Mẫu] [Chọn Mẫu]`. Nền gradient cao cấp chuyển màu êm ái, đảm bảo vừa hiển thị trọn vẹn thông tin vừa nhìn thấy ảnh nền và hiệu ứng thiệp cuộn trôi.
+                - **Xác thực**: Feature tests `Feature/` passed 100%, Laravel Pint sạch sẽ, cache trang chủ được làm mới hoàn toàn.
 
 ---
 

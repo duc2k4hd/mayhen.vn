@@ -209,6 +209,11 @@ function initShowcaseCoverflow() {
 
         // Update Curator Suite info
         updateCuratorInfo();
+
+        // Kích hoạt cập nhật độ dài cuộn cho mẫu chính
+        if (typeof window.__mayhenUpdatePanMetrics === 'function') {
+            window.__mayhenUpdatePanMetrics();
+        }
     }
 
     /**
@@ -486,7 +491,7 @@ function initShowcaseCoverflow() {
                 return;
             }
             goNext();
-        }, 5000);
+        }, 10000);
     }
 
     function stopAutoplay() {
@@ -546,41 +551,87 @@ function initShowcaseCoverflow() {
 }
 
 /**
- * Tính toán độ cuộn của ảnh đại diện mẫu thiệp khi hover
+ * Tính toán độ cuộn của ảnh mẫu thiệp tự động (Chuẩn miwedi: hover-pan bằng GPU Transform)
+ * Tự động đo độ dài thực tế của ảnh so với khung thẻ và áp dụng tốc độ trôi êm ái
  */
 function initCardImageHoverScroll() {
-    const images = document.querySelectorAll('.mayhen_home_showcase_card_img');
-    images.forEach(img => {
-        function calculateDelta() {
-            const media = img.closest('.mayhen_home_showcase_card_media');
-            if (!media) return;
-            const mediaHeight = media.clientHeight;
-            const imgHeight = img.clientHeight;
-            if (imgHeight > mediaHeight) {
-                const delta = imgHeight - mediaHeight;
-                img.style.setProperty('--mayhen-scroll-delta', `-${delta}px`);
-                const duration = Math.min(12, Math.max(6.5, (delta / 100) * 1.8));
-                img.style.setProperty('--mayhen-scroll-duration', `${duration}s`);
+    const cards = document.querySelectorAll('.mayhen_home_showcase_card');
+    if (!cards.length) return;
+
+    function calculatePanMetrics() {
+        cards.forEach(card => {
+            const wrap = card.querySelector('[data-mayhen-pan-wrap]') || card.querySelector('.mayhen_home_showcase_pan_wrap') || card.querySelector('.mayhen_home_showcase_card_media');
+            const img = card.querySelector('.mayhen_home_showcase_pan_img') || card.querySelector('.mayhen_home_showcase_card_img');
+            if (!wrap || !img) return;
+
+            const wrapWidth = wrap.clientWidth || 300;
+            const wrapHeight = wrap.clientHeight || 530;
+
+            let imgHeight = img.clientHeight;
+            if ((!imgHeight || imgHeight <= wrapHeight + 10) && img.naturalWidth > 0 && img.naturalHeight > 0) {
+                imgHeight = wrapWidth * (img.naturalHeight / img.naturalWidth);
             }
-        }
 
-        if (img.complete && img.naturalHeight > 0) {
-            calculateDelta();
-        } else {
-            img.addEventListener('load', calculateDelta);
-        }
-    });
+            const slug = card.getAttribute('data-slug') || '';
 
-    window.addEventListener('resize', () => {
-        images.forEach(img => {
-            const media = img.closest('.mayhen_home_showcase_card_media');
-            if (!media) return;
-            const delta = img.clientHeight - media.clientHeight;
-            if (delta > 0) {
-                img.style.setProperty('--mayhen-scroll-delta', `-${delta}px`);
+            if (imgHeight > wrapHeight + 10) {
+                const delta = Math.round(imgHeight - wrapHeight);
+                // Tốc độ trôi êm dịu thông minh theo độ dài ảnh
+                const speed = delta > 5000 ? 160 : (delta > 2000 ? 110 : 70);
+                const duration = Math.max(10, Math.min(75, delta / speed));
+
+                card.style.setProperty('--pan-y', `-${delta}px`);
+                card.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
+                wrap.style.setProperty('--pan-y', `-${delta}px`);
+                wrap.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
+                img.style.setProperty('--pan-y', `-${delta}px`);
+                img.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
+            } else if (slug === 'luu-but-ngay-chung-doi') {
+                // Giá trị dự phòng chuẩn xác cho mẫu Lưu Bút Ngày Chung Đôi
+                const fallbackDelta = 9370;
+                card.style.setProperty('--pan-y', `-${fallbackDelta}px`);
+                card.style.setProperty('--pan-dur', '55s');
+                wrap.style.setProperty('--pan-y', `-${fallbackDelta}px`);
+                wrap.style.setProperty('--pan-dur', '55s');
+                img.style.setProperty('--pan-y', `-${fallbackDelta}px`);
+                img.style.setProperty('--pan-dur', '55s');
+            } else {
+                card.style.setProperty('--pan-y', '-240px');
+                card.style.setProperty('--pan-dur', '12s');
+                wrap.style.setProperty('--pan-y', '-240px');
+                wrap.style.setProperty('--pan-dur', '12s');
+                img.style.setProperty('--pan-y', '-240px');
+                img.style.setProperty('--pan-dur', '12s');
             }
         });
+    }
+
+    window.__mayhenUpdatePanMetrics = calculatePanMetrics;
+
+    // Chạy ngay lần đầu và các khoảng trễ để bắt trúng layout
+    calculatePanMetrics();
+    setTimeout(calculatePanMetrics, 60);
+    setTimeout(calculatePanMetrics, 300);
+    setTimeout(calculatePanMetrics, 800);
+
+    // Lắng nghe onload của từng ảnh để đo đạc ngay khi ảnh hiển thị
+    cards.forEach(card => {
+        const img = card.querySelector('.mayhen_home_showcase_pan_img') || card.querySelector('.mayhen_home_showcase_card_img');
+        if (!img) return;
+
+        if (img.complete && img.naturalHeight > 0) {
+            calculatePanMetrics();
+        } else {
+            img.addEventListener('load', calculatePanMetrics, { once: true });
+        }
     });
+
+    // Cập nhật lại khi thay đổi kích thước cửa sổ
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(calculatePanMetrics, 120);
+    }, { passive: true });
 }
 
 /**
@@ -791,7 +842,7 @@ function initRomanticAudio() {
 }
 
 /**
- * Instant Live Preview Modal Drawer (ChungDoi-inspired Phone & Desktop Experience)
+ * Instant Live Preview Modal Drawer
  */
 function openLivePreviewModal(card) {
     const modal = document.getElementById('mayhen_home_showcase_modal');

@@ -666,15 +666,22 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Ultra HD WebP Artwork Poster -->
+                                    <!-- Card Media: Ultra HD WebP Artwork Poster with Auto Pan Scroll -->
+                                    @php
+                                        $initialPanY = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '-9370px' : '-400px';
+                                        $initialPanDur = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
+                                    @endphp
                                     <div class="mayhen_home_showcase_card_media">
-                                        @if (!empty($tpl['image']))
-                                            <img src="{{ $tpl['image'] }}"
-                                                 alt="{{ $tpl['name'] }}"
-                                                 class="mayhen_home_showcase_card_img"
-                                                 loading="{{ $index < 2 ? 'eager' : 'lazy' }}"
-                                                 decoding="async">
-                                        @endif
+                                        <div class="mayhen_home_showcase_pan_wrap hover-pan" data-mayhen-pan-wrap style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
+                                            @if (!empty($tpl['image']))
+                                                <img src="{{ $tpl['image'] }}"
+                                                     alt="{{ $tpl['name'] }}"
+                                                     class="mayhen_home_showcase_pan_img"
+                                                     style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"
+                                                     loading="{{ $index < 2 ? 'eager' : 'lazy' }}"
+                                                     decoding="async">
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <!-- Persistent Bottom Name Label Bar -->

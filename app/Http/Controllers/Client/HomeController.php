@@ -18,6 +18,7 @@ class HomeController extends Controller
             return InvitationTemplate::query()
                 ->where('is_active', true)
                 ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
+                ->orderByRaw("CASE WHEN slug = 'luu-but-ngay-chung-doi' THEN 0 ELSE 1 END")
                 ->orderByDesc('is_featured')
                 ->take(8)
                 ->get()
