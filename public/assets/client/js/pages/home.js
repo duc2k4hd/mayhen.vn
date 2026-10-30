@@ -71,41 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Cuộn một thẻ về đầu trang ngay lập tức (dùng khi thẻ không còn là thẻ chính)
- */
-function resetCardScrollToTop(card) {
-    if (!card) return;
-    const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-    if (!iframe) return;
-
-    try {
-        const win = iframe.contentWindow;
-        const doc = iframe.contentDocument || (win ? win.document : null);
-        if (win && doc) {
-            if (doc.documentElement) {
-                doc.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
-                doc.documentElement.scrollTop = 0;
-            }
-            if (doc.body) {
-                doc.body.style.setProperty('scroll-behavior', 'auto', 'important');
-                doc.body.scrollTop = 0;
-            }
-            win.scrollTo(0, 0);
-        }
-    } catch (e) {}
-
-    try {
-        if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
-            iframe.contentWindow.postMessage({ type: 'MAYHEN_SCROLL_TOP' }, '*');
-            if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
-                iframe.contentWindow.__mayhenStopSmoothScroll();
-            }
-        }
-    } catch (e) {}
-}
-
-/**
  * HAUTE COUTURE 3D COVERFLOW INVITATION SHOWCASE CONTROLLER
  * Native Vanilla ES Modules — Zero External Libraries — 60FPS Hardware Accelerated
  */
@@ -167,11 +132,6 @@ function initShowcaseCoverflow() {
 
             card.classList.toggle('is-active', isCenter);
             card.setAttribute('aria-hidden', isCenter ? 'false' : 'true');
-
-            // Khi slide không còn là thẻ chính ở giữa nữa, tự động cuộn về đầu trang ngay lập tức
-            if (!isCenter) {
-                resetCardScrollToTop(card);
-            }
 
             let xPercent = 0;
             let rotYDeg = 0;
@@ -249,16 +209,6 @@ function initShowcaseCoverflow() {
 
         // Update Curator Suite info
         updateCuratorInfo();
-
-        // Lazy load iframe cho thẻ Active mới và toàn bộ các thẻ hiển thị
-        if (typeof window.__mayhenLoadShowcaseIframe === 'function') {
-            window.__mayhenLoadShowcaseIframe();
-        }
-
-        // Tự động cuộn thiệp cưới cho thẻ to nhất (Active Card) mỗi khi chuyển sang mẫu đó
-        if (typeof window.__mayhenAutoScrollActiveCard === 'function') {
-            window.__mayhenAutoScrollActiveCard();
-        }
     }
 
     /**
@@ -589,258 +539,10 @@ function initShowcaseCoverflow() {
     initRomanticAudio();
     initLivePreviewModalEvents();
     initCardImageHoverScroll();
-    initShowcaseLazyIframe();
 
     // Start
     updateStage();
     startAutoplay();
-}
-
-/**
- * Lazy load Iframe Showcase thông minh: Nạp Iframe trực tiếp cho TẤT CẢ các mẫu đang hiển thị trên màn hình
- * Nạp theo thứ tự ưu tiên từ tâm (thẻ Active) lan tỏa đều sang hai bên với độ trễ siêu nhỏ để giữ 60FPS mượt mà
- * Tự động kích hoạt tính năng cuộn êm ái nội dung bên trong iframe điện thoại khi hover
- */
-function initShowcaseLazyIframe() {
-    const stage = document.querySelector('.mayhen_home_showcase_stage');
-    if (!stage) return;
-
-    const cards = Array.from(stage.querySelectorAll('.mayhen_home_showcase_card'));
-    let isNearShowcase = false;
-
-    function loadCardIframe(card) {
-        if (!card) return;
-        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-        if (!iframe) return;
-
-        const dataSrc = iframe.getAttribute('data-src');
-        if (!dataSrc) return;
-
-        // Nếu iframe chưa được gán src thực thì tiến hành nạp
-        const isAlreadyAssigned = iframe.src && iframe.src !== 'about:blank' && !iframe.src.endsWith('/about:blank');
-        if (!isAlreadyAssigned) {
-            const onIframeLoaded = () => {
-                card.classList.add('is-iframe-loaded');
-                // Nếu đây là thẻ Active to nhất đang hiển thị ở giữa, tự động bắt đầu cuộn ngay lập tức
-                if (card.classList.contains('is-active')) {
-                    triggerAutoScrollStart(card);
-                } else if (card.matches && card.matches(':hover')) {
-                    triggerAutoScrollStart(card);
-                }
-            };
-
-            iframe.addEventListener('load', onIframeLoaded, { once: true });
-            iframe.src = dataSrc;
-
-            // Phòng vệ: Nếu mạng siêu nhanh hoặc browser không kích hoạt onload kịp thời
-            setTimeout(() => {
-                card.classList.add('is-iframe-loaded');
-                if (card.classList.contains('is-active') && !scrollingIframe) {
-                    triggerAutoScrollStart(card);
-                }
-            }, 2500);
-        } else if (card.classList.contains('is-iframe-loaded')) {
-            if (card.classList.contains('is-active') && (!scrollingIframe || scrollingIframe !== iframe)) {
-                triggerAutoScrollStart(card);
-            } else if (card.matches && card.matches(':hover')) {
-                triggerAutoScrollStart(card);
-            }
-        }
-    }
-
-    let cardScrollRaf = null;
-    let scrollingIframe = null;
-    let cardScrollPos = 0;
-
-    function triggerAutoScrollStart(card) {
-        if (!card) return;
-        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-        if (!iframe) return;
-
-        // Dừng cuộn cũ nếu có
-        triggerAutoScrollStop(card);
-
-        scrollingIframe = iframe;
-        cardScrollPos = 0;
-
-        // Thử lấy vị trí cuộn hiện tại của iframe
-        try {
-            const win = iframe.contentWindow;
-            const doc = iframe.contentDocument || (win ? win.document : null);
-            if (win && doc) {
-                cardScrollPos = win.scrollY || (doc.documentElement ? doc.documentElement.scrollTop : 0) || 0;
-            }
-        } catch (e) {}
-
-        // Gửi thông báo postMessage đồng thời
-        try {
-            if (iframe.contentWindow) {
-                iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_START' }, '*');
-                if (typeof iframe.contentWindow.__mayhenStartSmoothScroll === 'function') {
-                    iframe.contentWindow.__mayhenStartSmoothScroll();
-                }
-            }
-        } catch (e) {}
-
-        // Vòng lặp cuộn trực tiếp từ trang cha bằng requestAnimationFrame (đảm bảo 100% cuộn mượt mà không bao giờ bị nghẽn)
-        function step() {
-            if (!scrollingIframe || scrollingIframe !== iframe) return;
-
-            try {
-                const win = iframe.contentWindow;
-                const doc = iframe.contentDocument || (win ? win.document : null);
-                if (win && doc) {
-                    if (doc.documentElement) {
-                        doc.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
-                    }
-                    if (doc.body) {
-                        doc.body.style.setProperty('scroll-behavior', 'auto', 'important');
-                        doc.body.style.setProperty('overflow-y', 'auto', 'important');
-                    }
-
-                    const scrollEl = doc.scrollingElement || doc.documentElement || doc.body;
-                    const docH = Math.max(
-                        doc.body ? doc.body.scrollHeight : 0,
-                        doc.documentElement ? doc.documentElement.scrollHeight : 0,
-                        scrollEl ? scrollEl.scrollHeight : 0
-                    );
-                    const winH = win.innerHeight || 667;
-                    const maxScroll = Math.max(0, docH - winH);
-
-                    // Tốc độ trôi êm ái, rõ nét 2.0px/frame (~120px/giây)
-                    cardScrollPos += 2.0;
-
-                    if (maxScroll > 50 && cardScrollPos >= maxScroll - 6) {
-                        // Khi đã cuộn tới cuối trang thiệp thì giữ nguyên
-                        return;
-                    }
-
-                    win.scrollTo(0, cardScrollPos);
-                    if (scrollEl) scrollEl.scrollTop = cardScrollPos;
-                }
-            } catch (err) {}
-
-            cardScrollRaf = requestAnimationFrame(step);
-        }
-
-        cardScrollRaf = requestAnimationFrame(step);
-    }
-
-    function triggerAutoScrollStop(card) {
-        if (cardScrollRaf) {
-            cancelAnimationFrame(cardScrollRaf);
-            cardScrollRaf = null;
-        }
-
-        const iframe = card ? card.querySelector('.mayhen_home_showcase_card_iframe') : scrollingIframe;
-        if (iframe) {
-            const cardEl = iframe.closest('.mayhen_home_showcase_card') || card;
-            resetCardScrollToTop(cardEl);
-        }
-
-        scrollingIframe = null;
-        cardScrollPos = 0;
-    }
-
-    let idlePreloadTimer = null;
-
-    /**
-     * Nạp Iframe thông minh (Smart Lazy Loading):
-     * - Chỉ nạp thẻ Active ở giữa ngay tức thì để trang chủ tải nhanh gấp 10 lần, tiết kiệm CPU và mạng
-     * - Khi trình duyệt nhàn rỗi (idle), nạp trước 2 thẻ lân cận để sẵn sàng cho chuyển slide mượt mà
-     * - Các thẻ ở xa hiển thị ảnh poster webp tĩnh sắc nét, chỉ nạp iframe khi người dùng hover hoặc trượt tới
-     */
-    function loadAllVisibleCardsIframe() {
-        if (!isNearShowcase) return;
-        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
-        if (!activeCard) return;
-
-        // 1. Nạp ngay lập tức duy nhất thẻ Active ở giữa
-        loadCardIframe(activeCard);
-
-        // 2. Trì hoãn nạp 2 thẻ liền kề khi nhàn rỗi (1.2s), tránh nghẽn luồng xử lý lúc mới vào trang
-        clearTimeout(idlePreloadTimer);
-        idlePreloadTimer = setTimeout(() => {
-            const activeIndex = cards.indexOf(activeCard);
-            if (activeIndex === -1) return;
-            const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
-            const nextCard = cards[(activeIndex + 1) % cards.length];
-            if (prevCard) loadCardIframe(prevCard);
-            if (nextCard) loadCardIframe(nextCard);
-        }, 1200);
-    }
-
-    // Kiểm tra tức thì nếu Showcase đã nằm sẵn trong viewport khi tải trang
-    const stageRect = stage.getBoundingClientRect();
-    if (stageRect.top < window.innerHeight + 500 && stageRect.bottom > -500) {
-        isNearShowcase = true;
-        loadAllVisibleCardsIframe();
-    }
-
-    // IntersectionObserver: Kích hoạt khi cuộn cách Showcase 300px
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    isNearShowcase = true;
-                    loadAllVisibleCardsIframe();
-                }
-            });
-        }, {
-            rootMargin: '300px 0px 300px 0px',
-            threshold: 0
-        });
-
-        observer.observe(stage);
-    } else {
-        isNearShowcase = true;
-        loadAllVisibleCardsIframe();
-    }
-
-    // Hàm tự động cuộn thiệp cưới cho thẻ to nhất (Active Card) mỗi khi chuyển slide
-    function autoScrollActiveCard() {
-        const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
-
-        // Dừng cuộn các thẻ khác và reset về đỉnh
-        cards.forEach(c => {
-            if (c !== activeCard) {
-                triggerAutoScrollStop(c);
-            }
-        });
-
-        if (activeCard) {
-            loadCardIframe(activeCard);
-            // Bắt đầu tự động cuộn sau khi animation chuyển thẻ hoàn tất
-            setTimeout(() => {
-                const currentActive = stage.querySelector('.mayhen_home_showcase_card.is-active');
-                if (currentActive === activeCard) {
-                    triggerAutoScrollStart(activeCard);
-                }
-            }, 350);
-        }
-    }
-
-    // Đăng ký toàn cục để updateStage() gọi lại mỗi khi chuyển slide hoặc resize
-    window.__mayhenLoadShowcaseIframe = loadAllVisibleCardsIframe;
-    window.__mayhenAutoScrollActiveCard = autoScrollActiveCard;
-
-    // Gắn sự kiện Hover: Nạp iframe tức thì và tự động cuộn mượt mà nội dung bên trong
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            loadCardIframe(card);
-            triggerAutoScrollStart(card);
-        }, { passive: true });
-
-        card.addEventListener('mouseleave', () => {
-            // Nếu không phải thẻ Active thì dừng cuộn
-            if (!card.classList.contains('is-active')) {
-                triggerAutoScrollStop(card);
-            }
-        }, { passive: true });
-    });
-
-    // Kích hoạt cuộn ngay lập tức cho thẻ to nhất ban đầu
-    autoScrollActiveCard();
 }
 
 /**
@@ -916,8 +618,25 @@ function initPetalsCanvas() {
         });
     }
 
+    let isVisible = true;
+
+    function startAnimation() {
+        if (!isActive || !isVisible || animationId) return;
+        renderPetals();
+    }
+
+    function stopAnimation() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    }
+
     function renderPetals() {
-        if (!isActive) return;
+        if (!isActive || !isVisible) {
+            animationId = null;
+            return;
+        }
         ctx.clearRect(0, 0, width, height);
 
         petals.forEach(p => {
@@ -942,12 +661,35 @@ function initPetalsCanvas() {
         animationId = requestAnimationFrame(renderPetals);
     }
 
+    // IntersectionObserver: Chỉ chạy hiệu ứng canvas khi Showcase nằm trong khung nhìn (0% CPU khi cuộn đi)
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                isVisible = entry.isIntersecting;
+                if (isVisible) {
+                    startAnimation();
+                } else {
+                    stopAnimation();
+                }
+            });
+        }, { threshold: 0.05 });
+        observer.observe(canvas);
+    } else {
+        startAnimation();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopAnimation();
+        } else if (isVisible) {
+            startAnimation();
+        }
+    });
+
     window.addEventListener('resize', () => {
         width = canvas.width = canvas.offsetWidth;
         height = canvas.height = canvas.offsetHeight;
     });
-
-    renderPetals();
 
     if (toggleBtn) {
         toggleBtn.addEventListener('click', (e) => {
@@ -959,8 +701,8 @@ function initPetalsCanvas() {
             if (textSpan) {
                 textSpan.textContent = isActive ? 'Cánh Hoa Bay: Đang Bật' : 'Cánh Hoa Bay: Đã Tắt';
             }
-            if (isActive) renderPetals();
-            else if (animationId) cancelAnimationFrame(animationId);
+            if (isActive) startAnimation();
+            else stopAnimation();
         });
     }
 }

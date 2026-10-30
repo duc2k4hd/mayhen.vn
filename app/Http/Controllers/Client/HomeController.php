@@ -19,7 +19,7 @@ class HomeController extends Controller
                 ->where('is_active', true)
                 ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
                 ->orderByDesc('is_featured')
-                ->take(20)
+                ->take(8)
                 ->get()
                 ->map->getAttributes()
                 ->all();

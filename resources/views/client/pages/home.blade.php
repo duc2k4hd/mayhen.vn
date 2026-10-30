@@ -666,19 +666,8 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Live Iframe Streamer & SEO Poster Fallback -->
+                                    <!-- Card Media: Ultra HD WebP Artwork Poster -->
                                     <div class="mayhen_home_showcase_card_media">
-                                        <div class="mayhen_home_showcase_card_frame_wrap" data-mayhen-showcase-frame-wrap>
-                                            <iframe class="mayhen_home_showcase_card_iframe"
-                                                    data-src="{{ route('templates.preview', $tpl['slug']) }}?embed=1&mode=showcase"
-                                                    src="about:blank"
-                                                    loading="lazy"
-                                                    title="Mẫu thiệp cưới online cao cấp {{ $tpl['name'] }}"
-                                                    tabindex="-1"
-                                                    aria-hidden="true"></iframe>
-                                            <div class="mayhen_home_showcase_card_iframe_shield" aria-hidden="true"></div>
-                                        </div>
-
                                         @if (!empty($tpl['image']))
                                             <img src="{{ $tpl['image'] }}"
                                                  alt="{{ $tpl['name'] }}"
@@ -831,7 +820,7 @@
         </div>
 
         <!-- ========================================================
-             LUXURY LIVE DEMO PREVIEW MODAL (ChungDoi-inspired Phone Experience)
+             LUXURY LIVE DEMO PREVIEW MODAL
              ======================================================== -->
         <div class="mayhen_home_showcase_modal" id="mayhen_home_showcase_modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Xem mẫu thiệp cưới trực tiếp">
             <!-- Dark Frosted Glass Backdrop -->
