@@ -71,7 +71,16 @@ export class TemplateSwitcher {
         inputs.forEach((inp) => {
             const key = inp.getAttribute('data-sync-key');
             if (key && inp.value !== undefined) {
-                draftData[key] = inp.value;
+                const val = inp.value;
+                const isPhoto = key.includes('photo') || key.includes('cover') || key.includes('image') || key.includes('gallery') || key.includes('album');
+                // Nếu là trường ảnh, chỉ giữ lại nếu người dùng đã tự upload (data:image hoặc http), không mang asset mặc định của mẫu cũ sang mẫu mới
+                if (isPhoto) {
+                    if (typeof val === 'string' && (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://'))) {
+                        draftData[key] = val;
+                    }
+                } else {
+                    draftData[key] = val;
+                }
             }
         });
 
@@ -79,8 +88,15 @@ export class TemplateSwitcher {
         const weddingState = state.wedding || {};
         Object.keys(weddingState).forEach((wKey) => {
             const val = weddingState[wKey];
+            const isPhoto = wKey.includes('photo') || wKey.includes('cover') || wKey.includes('image') || wKey.includes('gallery') || wKey.includes('album');
             if (val && typeof val === 'string' && !draftData[`wedding.${wKey}`]) {
-                draftData[`wedding.${wKey}`] = val;
+                if (isPhoto) {
+                    if (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://')) {
+                        draftData[`wedding.${wKey}`] = val;
+                    }
+                } else {
+                    draftData[`wedding.${wKey}`] = val;
+                }
             }
         });
 
@@ -103,9 +119,7 @@ export class TemplateSwitcher {
             'wedding_date': 'event_party_date',
             'event_party_time': 'party_time',
             'party_time': 'event_party_time',
-            'groom_party_time': 'event_party_time',
-            'hero_photo_url': 'cover_photo_url',
-            'cover_photo_url': 'hero_photo_url'
+            'groom_party_time': 'event_party_time'
         };
 
         Object.keys(fieldAliases).forEach((fromKey) => {

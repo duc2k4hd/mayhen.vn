@@ -52,7 +52,7 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "assets/images/cover.jpg",
+          "default": "7da1e3a6d59c1a98.webp",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {

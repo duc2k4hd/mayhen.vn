@@ -29,7 +29,10 @@ export class Autosaver {
     }
 
     getDraftKey(state) {
-        return `mayhen_draft_${state.invitation_id || 'new'}`;
+        if (state.invitation_id) {
+            return `mayhen_draft_${state.invitation_id}`;
+        }
+        return `mayhen_draft_new_${state.template_slug || 'default'}`;
     }
 
     /**
@@ -56,10 +59,14 @@ export class Autosaver {
     /**
      * Đọc bản nháp từ LocalStorage nếu có
      */
-    getLocalDraft(invitationId) {
+    getLocalDraft(invitationId, templateSlug = '') {
         try {
-            const key = `mayhen_draft_${invitationId || 'new'}`;
-            const raw = localStorage.getItem(key);
+            let key = invitationId ? `mayhen_draft_${invitationId}` : `mayhen_draft_new_${templateSlug || 'default'}`;
+            let raw = localStorage.getItem(key);
+            // Fallback bản nháp cũ mayhen_draft_new nếu chưa có theo slug
+            if (!raw && !invitationId) {
+                raw = localStorage.getItem('mayhen_draft_new');
+            }
             if (!raw) return null;
             return JSON.parse(raw);
         } catch (err) {
@@ -71,10 +78,11 @@ export class Autosaver {
     /**
      * Xóa bản nháp LocalStorage sau khi đã tạo thiệp thành công
      */
-    clearLocalDraft(invitationId) {
+    clearLocalDraft(invitationId, templateSlug = '') {
         try {
-            const key = `mayhen_draft_${invitationId || 'new'}`;
+            const key = invitationId ? `mayhen_draft_${invitationId}` : `mayhen_draft_new_${templateSlug || 'default'}`;
             localStorage.removeItem(key);
+            localStorage.removeItem('mayhen_draft_new');
         } catch (err) {
             // Ignore
         }

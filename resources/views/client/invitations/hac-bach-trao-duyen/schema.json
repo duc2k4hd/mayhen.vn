@@ -52,7 +52,7 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "assets/images/cover.jpg",
+          "default": "hip_2307-20250417154245-1n-2l.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {

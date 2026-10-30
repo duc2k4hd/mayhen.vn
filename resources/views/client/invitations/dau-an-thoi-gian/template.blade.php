@@ -67,7 +67,7 @@
     };
 
     // Ảnh đại diện & chân dung
-    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'hero.jpg');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'sun_earth.jpg');
     $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'groom.jpg');
     $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'bride.jpg');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'savedate.jpg');
@@ -228,12 +228,12 @@
  <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv">Trân trọng báo tin lễ thành hôn<br>của con chúng tôi</p>
  <div class="mayhen_invitation_ladoifji894yfv_couple mayhen_invitation_ladoifji894yfv_rv">
   <div>
-   <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round" style="background-image: url('{{ $groomPhotoUrl }}')" data-sync-target="groom_photo_url"></div>
+   <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_portrait" style="background-image: url('{{ $groomPhotoUrl }}')" data-sync-target="groom_photo_url"></div>
    <p class="mayhen_invitation_ladoifji894yfv_label">Chú Rể</p>
    <p class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_half" data-sync-target="groom_name">{{ $groomName }}</p>
   </div>
   <div>
-   <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round" style="background-image: url('{{ $bridePhotoUrl }}')" data-sync-target="bride_photo_url"></div>
+   <div class="mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_portrait" style="background-image: url('{{ $bridePhotoUrl }}')" data-sync-target="bride_photo_url"></div>
    <p class="mayhen_invitation_ladoifji894yfv_label">Cô Dâu</p>
    <p class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_half" data-sync-target="bride_name">{{ $brideName }}</p>
   </div>

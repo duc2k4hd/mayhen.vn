@@ -57,6 +57,129 @@ const initEditor = () => {
     const dndManager = new SectionDnDManager(store, { previewIframe, mobileIframe });
     const themeController = new ThemeController(store, { previewIframe, mobileIframe });
 
+    // Thuật toán chuyển đổi ngày Dương Lịch sang Âm Lịch Việt Nam chuẩn thiên văn (Hồ Ngọc Đức - GMT+7)
+    const calcVietnameseLunar = (solarDateStr) => {
+        if (!solarDateStr) return '';
+        const parts = solarDateStr.toString().trim().split('-');
+        if (parts.length !== 3) return '';
+        const yy = parseInt(parts[0], 10);
+        const mm = parseInt(parts[1], 10);
+        const dd = parseInt(parts[2], 10);
+        if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return '';
+
+        function INT(d) { return Math.floor(d); }
+        function jdFromDate(d, m, y) {
+            const a = INT((14 - m) / 12);
+            const y1 = y + 4800 - a;
+            const m1 = m + 12 * a - 3;
+            return d + INT((153 * m1 + 2) / 5) + 365 * y1 + INT(y1 / 4) - INT(y1 / 100) + INT(y1 / 400) - 32045;
+        }
+        function getNewMoonDay(k, tz) {
+            const T = k / 1236.85;
+            const T2 = T * T;
+            const T3 = T2 * T;
+            const dr = Math.PI / 180;
+            const Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+            const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+            const Mprime = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+            const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+            const C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M)
+                   - 0.4068 * Math.sin(Mprime * dr) + 0.0161 * Math.sin(2 * dr * Mprime)
+                   - 0.0004 * Math.sin(3 * dr * Mprime) + 0.0104 * Math.sin(2 * dr * F)
+                   - 0.0051 * Math.sin(dr * (M + Mprime)) - 0.0074 * Math.sin(dr * (M - Mprime))
+                   + 0.0004 * Math.sin(dr * (2 * F + M)) - 0.0004 * Math.sin(dr * (2 * F - M))
+                   - 0.0006 * Math.sin(dr * (2 * F + Mprime)) + 0.001 * Math.sin(dr * (2 * F - Mprime))
+                   + 0.0005 * Math.sin(dr * (M + 2 * Mprime));
+            return INT(Jd1 + C1 + 0.5 + tz / 24);
+        }
+        function getSunLongitude(jdn, tz) {
+            const T = (jdn - 2451545.0 + 0.5 - tz / 24) / 36525;
+            const dr = Math.PI / 180;
+            const M = 357.5291 + 35999.0503 * T - 0.0001559 * T * T - 0.00000048 * T * T * T;
+            const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T * T;
+            const DL = (1.9146 - 0.004817 * T - 0.000014 * T * T) * Math.sin(dr * M)
+                   + (0.019993 - 0.000101 * T) * Math.sin(2 * dr * M) + 0.00029 * Math.sin(3 * dr * M);
+            const L = (L0 + DL) * dr;
+            return INT((L - Math.PI * 2 * INT(L / (Math.PI * 2))) / (Math.PI / 6));
+        }
+        function getLunarMonth11(y, tz) {
+            const off = jdFromDate(31, 12, y) - 2415021;
+            const k = INT(off / 29.530588853);
+            const nm = getNewMoonDay(k, tz);
+            return getSunLongitude(nm, tz) >= 9 ? getNewMoonDay(k - 1, tz) : nm;
+        }
+        function getLeapOffset(a11, tz) {
+            const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+            let last = 0, i = 1, arc = getSunLongitude(getNewMoonDay(k + i, tz), tz);
+            do {
+                last = arc;
+                i++;
+                arc = getSunLongitude(getNewMoonDay(k + i, tz), tz);
+            } while (arc !== last && i < 14);
+            return i - 1;
+        }
+
+        const tz = 7;
+        const dayNumber = jdFromDate(dd, mm, yy);
+        const k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+        let monthStart = getNewMoonDay(k + 1, tz);
+        if (monthStart > dayNumber) {
+            monthStart = getNewMoonDay(k, tz);
+        }
+        let a11 = getLunarMonth11(yy, tz);
+        let b11 = a11;
+        let lunarYear = yy;
+        if (a11 >= monthStart) {
+            lunarYear = yy - 1;
+            a11 = getLunarMonth11(yy - 1, tz);
+        } else {
+            b11 = getLunarMonth11(yy + 1, tz);
+        }
+        const lunarDay = dayNumber - monthStart + 1;
+        const diff = INT((monthStart - a11) / 29);
+        let lunarLeap = 0;
+        let lunarMonth = diff + 11;
+        if (b11 - a11 > 365) {
+            const leapDiff = getLeapOffset(a11, tz);
+            if (diff >= leapDiff) {
+                lunarMonth = diff + 10;
+                if (diff === leapDiff) lunarLeap = 1;
+            }
+        }
+        if (lunarMonth > 12) lunarMonth -= 12;
+        if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+
+        const canList = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+        const chiList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+        const canChiYearNum = (lunarMonth >= 11) ? (lunarYear + 1) : lunarYear;
+        const canYear = canList[(canChiYearNum + 6) % 10];
+        const chiYear = chiList[(canChiYearNum + 8) % 12];
+        const leapText = lunarLeap === 1 ? ' nhuận' : '';
+
+        const dStr = lunarDay < 10 ? '0' + lunarDay : '' + lunarDay;
+        const mStr = lunarMonth < 10 ? '0' + lunarMonth : '' + lunarMonth;
+
+        return `Nhằm ngày ${dStr} tháng ${mStr}${leapText} năm ${canYear} ${chiYear}`;
+    };
+
+    // Hàm kiểm tra xem một key có phải trường ảnh/album không
+    const isImageKey = (k) => {
+        const lower = (k || '').toLowerCase();
+        return lower.includes('photo') || lower.includes('cover') || lower.includes('image') || lower.includes('gallery') || lower.includes('album');
+    };
+
+    // Hàm kiểm tra và loại bỏ các URL ảnh rác từ bên ngoài (motdoi, ladicdn, 27biggroup...)
+    const isBannedExternalUrl = (urlStr) => {
+        if (typeof urlStr !== 'string') return false;
+        const lower = urlStr.toLowerCase();
+        return lower.includes('motdoi.com') ||
+               lower.includes('ladicdn.com') ||
+               lower.includes('27biggroup.com') ||
+               lower.includes('unsplash.com') ||
+               lower.includes('iili.io');
+    };
+
     // Kiểm tra và phục hồi bản nháp (Ưu tiên bản nháp vừa chuyển mẫu transferred_draft)
     let draftWeddingData = null;
     const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
@@ -71,11 +194,26 @@ const initEditor = () => {
     }
 
     if (!draftWeddingData) {
-        const localDraft = store.autosaver.getLocalDraft(invitationId);
+        const localDraft = store.autosaver.getLocalDraft(invitationId, templateSlug);
         if (localDraft && localDraft.wedding) {
+            const isDifferentTemplate = localDraft.template_slug && templateSlug && localDraft.template_slug !== templateSlug;
             const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
             if (hasData && !invitationId) {
-                draftWeddingData = localDraft.wedding;
+                if (isDifferentTemplate) {
+                    // Nếu là nháp của mẫu khác, chỉ giữ lại text (tên, ngày cưới, phụ mẫu...), loại bỏ ảnh asset mặc định của mẫu cũ
+                    const filtered = {};
+                    Object.keys(localDraft.wedding).forEach(k => {
+                        const val = localDraft.wedding[k];
+                        if (!isImageKey(k)) {
+                            filtered[k] = val;
+                        } else if (typeof val === 'string' && val.startsWith('data:image') && !isBannedExternalUrl(val)) {
+                            filtered[k] = val;
+                        }
+                    });
+                    draftWeddingData = filtered;
+                } else {
+                    draftWeddingData = localDraft.wedding;
+                }
             }
         }
     }
@@ -89,7 +227,26 @@ const initEditor = () => {
                             document.querySelector(`[data-sync-key="wedding.${key}"]`) ||
                             document.querySelector(`[data-sync-key="wedding.extra_data.${key}"]`);
             if (inputEl) {
+                // Nếu là trường ảnh, loại bỏ asset ảo hoặc link rác bên ngoài (motdoi, ladicdn...)
+                if (isImageKey(key) && typeof val === 'string') {
+                    if (isBannedExternalUrl(val) || (val.startsWith('assets/') && !val.startsWith('data:image'))) {
+                        return;
+                    }
+                }
+
                 inputEl.value = val;
+
+                // Đồng bộ thẻ xem trước ảnh bên trái (preview thumb)
+                if (inputEl.id) {
+                    const thumb = document.getElementById('preview_thumb_' + inputEl.id);
+                    if (thumb && val && !isBannedExternalUrl(val)) {
+                        if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('data:')) {
+                            thumb.src = val;
+                        } else if (templateSlug) {
+                            thumb.src = `/mau-thiep/${templateSlug}/assets/${val}`;
+                        }
+                    }
+                }
             }
 
             store.dispatch({
@@ -431,6 +588,31 @@ const initEditor = () => {
             // Cập nhật tên đôi uyên ương trên mobile dock
             if (key === 'wedding.groom_name' || key === 'wedding.bride_name') {
                 updateDockNames();
+            }
+
+            // Tự động tính toán ngày Âm lịch khi thay đổi ngày cử hành hôn lễ
+            if (key === 'wedding.wedding_date' || key === 'wedding.extra_data.event_party_date') {
+                const lunarCalculated = calcVietnameseLunar(val);
+                if (lunarCalculated) {
+                    const lunarInputs = [
+                        document.querySelector('[data-sync-key="wedding.extra_data.wedding_lunar_date"]'),
+                        document.querySelector('[data-sync-key="wedding.extra_data.groom_party_lunar"]'),
+                        document.querySelector('[data-sync-key="wedding.extra_data.bride_party_lunar"]')
+                    ];
+                    lunarInputs.forEach(lInp => {
+                        if (lInp) {
+                            lInp.value = lunarCalculated;
+                            const lKey = lInp.getAttribute('data-sync-key');
+                            store.dispatch({
+                                type: ActionTypes.UPDATE_FIELD,
+                                payload: { key: lKey, value: lunarCalculated }
+                            });
+                            sendSyncMessage(lKey, lunarCalculated);
+                        }
+                    });
+                    sendSyncMessage('wedding.extra_data.wedding_lunar_date', lunarCalculated);
+                    sendSyncMessage('wedding_lunar_date', lunarCalculated);
+                }
             }
 
             // Đồng bộ sang Iframe

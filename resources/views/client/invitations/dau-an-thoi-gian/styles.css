@@ -543,7 +543,7 @@ html, body {
   background: linear-gradient(180deg, transparent, var(--mayhen_invitation_ladoifji894yfv_gold_border), transparent);
 }
 
-/* CÔ DÂU & CHÚ RỂ: CÂN ĐỐI 2 BÊN, KHÔNG BAO GIỜ BỊ DỌC HAY QUÁ TO */
+/* CÔ DÂU & CHÚ RỂ: CÂN ĐỐI 2 BÊN, KHUNG ẢNH CHÂN DUNG 3/4 CHUẨN QUIET LUXURY */
 .mayhen_invitation_ladoifji894yfv_couple {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -563,16 +563,35 @@ html, body {
   align-items: center;
 }
 
-.mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_photo {
-  width: clamp(110px, 26vw, 140px) !important;
-  height: clamp(110px, 26vw, 140px) !important;
-  aspect-ratio: 1 / 1 !important;
-  border-radius: 50% !important;
-  margin-bottom: 14px;
+/* Ảnh đại diện Chú Rể & Cô Dâu tỉ lệ chuẩn 3/4 */
+.mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_photo,
+.mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_portrait {
+  width: clamp(120px, 34vw, 155px) !important;
+  max-width: 100% !important;
+  aspect-ratio: 3 / 4 !important;
+  height: auto !important;
+  border-radius: 16px !important;
+  margin: 0 auto 14px !important;
+  display: block !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  box-shadow:
+    0 0 0 1.5px var(--mayhen_invitation_ladoifji894yfv_gold),
+    0 0 0 4px rgba(8, 14, 34, 0.85),
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(252, 227, 158, 0.3) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_photo:hover,
+.mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_portrait:hover {
+  transform: translateY(-3px) scale(1.02);
   box-shadow:
     0 0 0 2px var(--mayhen_invitation_ladoifji894yfv_gold),
-    0 0 0 5px rgba(8, 14, 34, 0.85),
-    0 0 24px rgba(252, 227, 158, 0.4);
+    0 0 0 5px rgba(8, 14, 34, 0.9),
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 26px rgba(252, 227, 158, 0.45) !important;
 }
 
 .mayhen_invitation_ladoifji894yfv_half {

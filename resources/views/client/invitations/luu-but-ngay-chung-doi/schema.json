@@ -54,7 +54,7 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "assets/images/cover.jpg",
+          "default": "luu-but-ngay-chung-doi.webp",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {
