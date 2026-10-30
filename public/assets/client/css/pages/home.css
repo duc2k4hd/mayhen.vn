@@ -1849,7 +1849,7 @@
     100% { transform: scaleY(1); }
 }
 
-/* 3D Stage Container (1000px perspective like ChungDoi) */
+/* 3D Stage Container */
 .mayhen_home_showcase_stage {
     position: relative;
     z-index: 3;
@@ -1897,7 +1897,7 @@
     z-index: 1;
 }
 
-/* 3D Individual Invitation Card (ChungDoi-inspired 3D Cylinder geometry) */
+/* 3D Individual Invitation Card */
 .mayhen_home_showcase_card {
     position: absolute;
     width: clamp(165px, 30vw, 240px);
@@ -2417,7 +2417,7 @@
     pointer-events: none;
 }
 
-/* Navigation Buttons (Round floating, z-index 250 like ChungDoi) */
+/* Navigation Buttons */
 .mayhen_home_showcase_nav_btn {
     position: absolute;
     top: 50%;
@@ -2693,7 +2693,7 @@
 }
 
 /* ========================================================
-   LUXURY LIVE DEMO PREVIEW MODAL (ChungDoi-inspired Phone & Desktop Experience)
+   LUXURY LIVE DEMO PREVIEW MODAL
    ======================================================== */
 .mayhen_home_showcase_modal {
     position: fixed;
@@ -2712,6 +2712,15 @@
 .mayhen_home_showcase_modal.is-open {
     opacity: 1;
     visibility: visible;
+}
+
+/* Khi Modal Xem Mẫu đang mở: Ẩn hoàn toàn Bottom Navigation Dock của trang chủ để không bị che vướng */
+body.mayhen_preview_modal_active .mayhen_client_bottom_nav_wrapper,
+body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 .mayhen_home_showcase_modal_backdrop {

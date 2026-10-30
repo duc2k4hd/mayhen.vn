@@ -1851,6 +1851,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + Phần **Bộ Sưu Tập Hình Ảnh (Gallery)**: Sử dụng `$tpl->thumbnail_url` để hiển thị ảnh đại diện chuẩn form, cân đối, sắc nét và không bị vỡ giao diện.
                 - **Xác thực**: Kiểm tra dữ liệu trả về chuẩn xác: Gallery nhận ảnh đại diện `preview_1440.png`, Coverflow/Modal nhận ảnh full page `luu-but-ngay-chung-doi.webp`. Laravel Pint passed, Feature tests passed 100%.
 
+            54. **Ẩn Triệt Để Thanh Điều Hướng Chân Trang (Bottom Nav) Khi Mở Modal Xem Mẫu**:
+                - **Vấn đề**: Khi mở Modal xem thử thiệp cưới trên trang chủ (`.mayhen_home_showcase_modal.is-open`), thanh dock điều hướng nhanh chân trang `.mayhen_client_bottom_nav_wrapper` (5 nút Trang chủ, Mẫu thiệp, Tạo thiệp, Yêu thích, Trợ lý AI) vẫn nổi cố định ở giữa đáy màn hình, đè vướng lên nửa dưới khung mockup điện thoại.
+                - **Giải pháp xử lý (Phòng vệ 2 lớp)**:
+                  * *`public/assets/client/css/pages/home.css`*: Bổ sung quy tắc ẩn triệt để:
+                    `body.mayhen_preview_modal_active .mayhen_client_bottom_nav_wrapper, body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }`
+                  * *`public/assets/client/js/pages/home.js`*:
+                    + Trong `openLivePreviewModal`: Gắn class `document.body.classList.add('mayhen_preview_modal_active')` và ẩn trực tiếp `bottomNav.style.display = 'none'`.
+                    + Trong `closeLivePreviewModal`: Gỡ class và khôi phục `bottomNav.style.display = ''`.
+                - **Hiệu quả**: Khung điện thoại iPhone trong popup hiển thị hoàn toàn sạch sẽ, không còn bất kỳ thanh dock hay phần tử nào che vướng nội dung thiệp cưới.
+
+            55. **Khôi Phục Trải Nghiệm Tương Tác Thật Bằng Iframe Trong Modal Xem Mẫu & Ẩn Bottom Nav**:
+                - **Làm rõ yêu cầu & Kiến trúc chuẩn**:
+                  * Trong **3D Coverflow Showcase trang chủ**: Sử dụng ảnh full-page cuộn GPU (Auto-Pan) để trang chủ siêu nhẹ, không load dồn dập iframe.
+                  * Trong **Popup xem mẫu (Live Preview Modal)**: Khôi phục hoàn toàn thẻ `<iframe class="mayhen_home_showcase_modal_iframe">` để khách hàng tương tác thực tế với thiệp cưới (mở phong thư, phát nhạc nền, hiệu ứng hoạt cảnh, xem bản đồ...).
+                  * Thanh **Bottom Nav (`mayhen_client_bottom_nav_wrapper`)**: Được tự động ẩn hoàn toàn khi mở popup xem thử để không đè vướng lên màn hình điện thoại, và tự động hiện lại khi đóng popup.
+                - **Xác thực**: Kiểm tra hoạt động modal tải mượt mà đúng link previewUrl, không còn lỗi màn hình đen xì, Feature tests passed 100%, Laravel Pint sạch sẽ.
+
+            56. **Ẩn Triệt Để Thanh Bottom Nav Bên Trong Iframe Xem Mẫu**:
+                - **Hiện tượng**: Khi tải trang xem thử `/xem-thu/{slug}` bên trong thẻ `<iframe>` của Popup modal trên trang chủ, layout `invitation.blade.php` vẫn nạp `@include('client.components.bottom-nav')`, khiến thanh dock 5 nút (`mayhen_client_bottom_nav_wrapper`) xuất hiện ngay bên trong màn hình điện thoại iPhone trong popup.
+                - **Giải pháp xử lý triệt để 4 tầng phòng vệ**:
+                  * *`resources/views/client/layouts/invitation.blade.php`*: Kiểm tra biến `$hideBottomNav = ($isEmbed ?? false) || request()->boolean('embed') || request()->has('hide_nav') || request()->has('in_modal') || request()->has('popup');` => Ngăn chặn hoàn toàn việc render `@include('client.components.bottom-nav')` vào trang thiệp khi chạy trong iframe.
+                  * *`public/assets/client/js/pages/home.js`*: Khi gán `iframe.src`, tự động gắn thêm tham số `hide_nav=1&in_modal=1`.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung CSS cưỡng chế ẩn: `.mayhen_embed_mode .mayhen_client_bottom_nav_wrapper, [data-in-iframe="true"] .mayhen_client_bottom_nav_wrapper { display: none !important; }`.
+                    + Bổ sung JavaScript phát hiện `window.self !== window.top`: Tự động gọi `remove()` loại bỏ ngay lập tức phần tử `.mayhen_client_bottom_nav_wrapper` nếu xuất hiện trong DOM iframe.
+                - **Kết quả**: Màn hình điện thoại iPhone trong popup xem mẫu hoàn toàn sạch sẽ, không còn thanh điều hướng dock bên trong, hiển thị trọn vẹn 100% nội dung thiệp cưới.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -26,8 +26,12 @@
     {{-- Stylesheets của từng mẫu thiệp --}}
     @stack('styles')
 
-    {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử) --}}
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
+    @php
+        $hideBottomNav = ($isEmbed ?? false) || request()->boolean('embed') || request()->has('hide_nav') || request()->has('in_modal') || request()->has('popup');
+    @endphp
+
+    {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập) --}}
+    @if (($isPreview ?? false) && !$hideBottomNav)
         <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
     @endif
 
@@ -41,8 +45,8 @@
     {{-- Modals / Lightbox / Popups nếu có --}}
     @yield('modals')
 
-    {{-- Thanh điều hướng chân trang (tự động nạp khi xem thử) --}}
-    @if (($isPreview ?? false) && !($isEmbed ?? false))
+    {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập ngoài trình duyệt) --}}
+    @if (($isPreview ?? false) && !$hideBottomNav)
         @include('client.components.bottom-nav')
     @endif
 

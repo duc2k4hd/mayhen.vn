@@ -842,7 +842,7 @@ function initRomanticAudio() {
 }
 
 /**
- * Instant Live Preview Modal Drawer
+ * Instant Live Preview Modal Drawer (Live Interactive Iframe)
  */
 function openLivePreviewModal(card) {
     const modal = document.getElementById('mayhen_home_showcase_modal');
@@ -863,22 +863,41 @@ function openLivePreviewModal(card) {
     if (titleEl) titleEl.textContent = name;
     if (headerTitleEl) headerTitleEl.textContent = name;
     if (catEl) catEl.textContent = cat;
-    if (iframe && previewUrl) iframe.src = previewUrl;
+    if (iframe && previewUrl) {
+        // Tự động thêm tham số hide_nav=1&in_modal=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav
+        const sep = previewUrl.includes('?') ? '&' : '?';
+        iframe.src = `${previewUrl}${sep}hide_nav=1&in_modal=1`;
+    }
     if (newtabLink) newtabLink.href = previewUrl;
     if (createLink) createLink.href = createUrl;
 
     modal.setAttribute('data-current-preview-url', previewUrl);
     modal.classList.add('is-open');
+    document.body.classList.add('mayhen_preview_modal_active');
     document.body.style.overflow = 'hidden';
+
+    // Ẩn thanh bottom nav dock chân trang để không bị che vướng khung xem mẫu
+    const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
 }
 
 function closeLivePreviewModal() {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
     modal.classList.remove('is-open');
+    document.body.classList.remove('mayhen_preview_modal_active');
     document.body.style.overflow = '';
+
     const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
     if (iframe) iframe.src = 'about:blank';
+
+    // Khôi phục hiển thị thanh bottom nav dock
+    const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
+    if (bottomNav) {
+        bottomNav.style.display = '';
+    }
 }
 
 function initLivePreviewModalEvents() {

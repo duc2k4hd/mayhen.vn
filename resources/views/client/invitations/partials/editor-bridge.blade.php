@@ -94,6 +94,16 @@
         visibility: visible !important;
         transform: none !important;
     }
+
+    /* 6. Ẩn tuyệt đối 100% thanh điều hướng bottom nav dock khi nhúng trong iframe xem mẫu hoặc editor */
+    .mayhen_embed_mode .mayhen_client_bottom_nav_wrapper,
+    body.mayhen_embed_mode .mayhen_client_bottom_nav_wrapper,
+    [data-in-iframe="true"] .mayhen_client_bottom_nav_wrapper {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
 </style>
 
 <script>
@@ -136,6 +146,12 @@
             doorStages.forEach(function(el) {
                 el.classList.add('opened', 'mayhen_door_hidden', 'mayhen_invitation_ladoifji894yfv_da_mo');
                 el.style.setProperty('display', 'none', 'important');
+            });
+
+            // Ẩn triệt để và gỡ bỏ thanh bottom nav dock chân trang bên trong iframe
+            var internalBottomNav = document.querySelectorAll('.mayhen_client_bottom_nav_wrapper');
+            internalBottomNav.forEach(function(el) {
+                el.remove();
             });
 
             // Tự click nút mở phong bì hoặc nút mở thiệp nếu có
