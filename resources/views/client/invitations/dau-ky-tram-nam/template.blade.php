@@ -124,7 +124,7 @@
     // 4. Nhạc nền
     $musicUrl = $resolveAsset($wedding->music_url ?? null, '');
 
-    // 5. Album ảnh cưới
+    // 5. Album ảnh cưới (10 ảnh fallback chuẩn file cục bộ có thật)
     $rawGallery = $wedding->extra_data['gallery'] ?? [];
     $validGallery = is_array($rawGallery)
         ? array_filter(
@@ -136,21 +136,28 @@
 
     $defaultGallery = [
         'muslims-hero-bg-20231207085803-t1lex.jpg',
+        'hip_1055-20250417154150-fnhf7.jpg',
+        'hip_0956-20250417154149-1cpow.jpg',
+        'hip_0991-20250418032446-bi00o.jpg',
+        'hip_1314-20250417154153-ezy7i.jpg',
         'hip_1854-20250417154226-mql7h.jpg',
         'hip_2374-20250417154254-fetzp.jpg',
-        'hip_1055-20250417154150-fnhf7.jpg',
-        'hip_1876-20250417154238-q5n3p.jpg',
-        'hip_1863-20250417154231-k2a7r.jpg',
-        'hip_1848-20250417154220-d3j4s.jpg',
-        'hip_1834-20250417154209-w9k2l.jpg',
-        'hip_1821-20250417154200-m7x4n.jpg',
-        'hip_1811-20250417154155-p4b8c.jpg',
+        'hip_1350-20250417154155-wsx2n.jpg',
+        'hip_1524-20250418032309-dzaln.jpg',
+        'hip_1629-20250417154214-bay2t.jpg',
     ];
     $albumPhotos = [];
     for ($ai = 0; $ai < 10; $ai++) {
         $p = $validGallery[$ai] ?? ($defaultGallery[$ai] ?? 'muslims-hero-bg-20231207085803-t1lex.jpg');
         $albumPhotos[$ai] = $resolveAsset($p, $defaultGallery[$ai] ?? 'muslims-hero-bg-20231207085803-t1lex.jpg');
     }
+
+    // Lịch trình timeline
+    $rawTimeline = $extraData['timeline'] ?? [];
+    $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : [
+        ['time' => '10:00', 'title' => 'Đón khách & Chụp ảnh'],
+        ['time' => '11:00', 'title' => 'Khai Tiệc Mừng Cưới'],
+    ];
 
     // 6. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
@@ -245,6 +252,7 @@
             <p class="mayhen_invitation_jeowinids483fr_card_guest_label">Trân trọng kính mời</p>
             <div class="mayhen_invitation_jeowinids483fr_card_guest" data-sync-target="guest_name">{{ $guestName }}</div>
             <p class="mayhen_invitation_jeowinids483fr_card_date" data-sync-target="wedding_date">{{ $coverDateFormatted }}</p>
+            <p class="mayhen_invitation_jeowinids483fr_card_lunar" data-sync-target="wedding_lunar_date" style="display:none;">{{ $lunarDate }}</p>
         </div>
 
         <!-- Con dấu sáp đỏ Bordeaux hoàng gia (Royal Wax Seal) -->
@@ -283,16 +291,6 @@
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
             ></div>
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
-              <div class="mayhen_invitation_jeowinids483fr_hero_head">
-                <p class="mayhen_invitation_jeowinids483fr_hero_badge">WEDDING INVITATION</p>
-                <h1 class="mayhen_invitation_jeowinids483fr_hero_title">
-                  <span data-sync-target="groom_name">{{ $groomName }}</span>
-                  <span class="mayhen_invitation_jeowinids483fr_hero_amp">&amp;</span>
-                  <span data-sync-target="bride_name">{{ $brideName }}</span>
-                </h1>
-                <p class="mayhen_invitation_jeowinids483fr_hero_date" data-sync-target="wedding_date">{{ $coverDateFormatted }}</p>
-                <p class="mayhen_invitation_jeowinids483fr_hero_lunar" data-sync-target="wedding_lunar_date">{{ $lunarDate }}</p>
-              </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image51"
                 data-sync-target="cover_photo_url"
@@ -471,27 +469,23 @@
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
             ></div>
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
+              <span data-sync-target="groom_photo_url" data-photo="{{ $groomPhoto }}" style="display:none;"></span>
+              <span data-sync-target="bride_photo_url" data-photo="{{ $bridePhoto }}" style="display:none;"></span>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image226"
-                data-sync-target="groom_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                    data-sync-target="groom_photo_url"
-                    style="background-image: url('{{ $groomPhoto }}');"
                   ></div>
                 </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image225"
-                data-sync-target="bride_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
-                    data-sync-target="bride_photo_url"
-                    style="background-image: url('{{ $bridePhoto }}');"
                   ></div>
                 </div>
               </div>
@@ -664,7 +658,14 @@
                 <div
                   class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  (Tức ngày <span data-sync-target="event_party_lunar">{{ $lunarDate }}</span>)
+                  @php
+                    $cleanLunar = trim((string) $lunarDate);
+                    $lunarDisplay = (!str_starts_with($cleanLunar, 'Nhằm') && !str_starts_with($cleanLunar, 'Tức'))
+                        ? ('Nhằm ngày ' . $cleanLunar)
+                        : $cleanLunar;
+                  @endphp
+                  (<span data-sync-target="event_party_lunar">{{ $lunarDisplay }}</span>)
+                  <span data-sync-target="wedding_lunar_date" style="display:none;">{{ $lunarDate }}</span>
                 </div>
               </div>
               <div
@@ -814,7 +815,7 @@
                         </div>
                       </div>
                       <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_paragraph70"
+                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph70"
                       >
                         <div
                           class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
@@ -822,12 +823,12 @@
                           <span style="font-weight: 700"
                             ><span
                               style="
-                                background-color: rgba(77, 89, 23, 0);
                                 color: rgb(77, 88, 23);
                               "
-                              >10:00</span
+                              data-sync-target="timeline.0.time"
+                              >{{ $timelineList[0]['time'] ?? '10:00' }}</span
                             ><br /></span
-                          >Đón khách<br />Chụp ảnh<br />
+                          ><span data-sync-target="timeline.0.title">{{ $timelineList[0]['title'] ?? ($timelineList[0]['desc'] ?? 'Đón khách & Chụp ảnh') }}</span><br />
                         </div>
                       </div>
                     </div>
@@ -848,7 +849,7 @@
                         </div>
                       </div>
                       <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_line49"
+                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_line49"
                       >
                         <div class="mayhen_invitation_jeowinids483fr_ladi-line">
                           <div
@@ -857,15 +858,15 @@
                         </div>
                       </div>
                       <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_paragraph71"
+                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_paragraph71"
                       >
                         <div
                           class="mayhen_invitation_jeowinids483fr_ladi-paragraph"
                         >
                           <span style="font-weight: 700"
-                            ><span style="color: rgb(77, 88, 23)">10:00</span
+                            ><span style="color: rgb(77, 88, 23)" data-sync-target="timeline.1.time">{{ $timelineList[1]['time'] ?? '11:00' }}</span
                             ><br /></span
-                          >Khai Tiệc<br />
+                          ><span data-sync-target="timeline.1.title">{{ $timelineList[1]['title'] ?? ($timelineList[1]['desc'] ?? 'Khai Tiệc Mừng') }}</span><br />
                         </div>
                       </div>
                     </div>
@@ -915,7 +916,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image237"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image246"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -930,7 +931,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image238"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image247"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -945,7 +946,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image246"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image248"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -960,7 +961,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image247"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image249"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -975,7 +976,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image248"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image237"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -990,7 +991,7 @@
               </div>
               <div
                 aria-label="Xem ảnh cưới lớn"
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image249"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image238"
                 data-mayhen-gallery="true"
                 role="button"
                 tabindex="0"
@@ -1000,6 +1001,51 @@
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
                     data-sync-target="gallery.6"
                     style="background-image: url('{{ $albumPhotos[6] }}');"
+                  ></div>
+                </div>
+              </div>
+              <div
+                aria-label="Xem ảnh cưới lớn"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_gallery_extra mayhen_invitation_jeowinids483fr_gallery_extra_0"
+                data-mayhen-gallery="true"
+                role="button"
+                tabindex="0"
+              >
+                <div class="mayhen_invitation_jeowinids483fr_ladi-image">
+                  <div
+                    class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.7"
+                    style="background-image: url('{{ $albumPhotos[7] }}');"
+                  ></div>
+                </div>
+              </div>
+              <div
+                aria-label="Xem ảnh cưới lớn"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_gallery_extra mayhen_invitation_jeowinids483fr_gallery_extra_1"
+                data-mayhen-gallery="true"
+                role="button"
+                tabindex="0"
+              >
+                <div class="mayhen_invitation_jeowinids483fr_ladi-image">
+                  <div
+                    class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.8"
+                    style="background-image: url('{{ $albumPhotos[8] }}');"
+                  ></div>
+                </div>
+              </div>
+              <div
+                aria-label="Xem ảnh cưới lớn"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_gallery_extra mayhen_invitation_jeowinids483fr_gallery_extra_2"
+                data-mayhen-gallery="true"
+                role="button"
+                tabindex="0"
+              >
+                <div class="mayhen_invitation_jeowinids483fr_ladi-image">
+                  <div
+                    class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.9"
+                    style="background-image: url('{{ $albumPhotos[9] }}');"
                   ></div>
                 </div>
               </div>

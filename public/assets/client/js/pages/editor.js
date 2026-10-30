@@ -1096,7 +1096,9 @@ const initEditor = () => {
     // ----------------------------------------------------
     // 3.1 Tự động tạo mã VietQR Ngân Hàng An Toàn Tuyệt Đối
     // ----------------------------------------------------
-    const updateVietQr = (side) => {
+    const qrRequestTokens = { groom_qr: 0, bride_qr: 0 };
+    const qrUpdateTimers = new Map();
+    const updateVietQr = async (side) => {
         const bankSelect = $(`.mayhen_vietqr_bank_select[data-qr-side="${side}"]`);
         const accInput = $(`.mayhen_vietqr_acc_input[data-qr-side="${side}"]`);
         const nameInput = $(`.mayhen_vietqr_name_input[data-qr-side="${side}"]`);
@@ -1109,40 +1111,82 @@ const initEditor = () => {
         const targetInputId = bankSelect.getAttribute('data-target-input');
         const targetInput = document.getElementById(targetInputId);
         const targetThumb = document.getElementById('preview_thumb_' + targetInputId);
+        const statusEl = document.getElementById('status_' + targetInputId);
+        const requestToken = ++qrRequestTokens[side];
 
         if (!bankCode || !accountNo) return;
 
-        // Sinh link VietQR chuẩn NAPAS an toàn 100%
-        let qrUrl = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.jpg`;
+        // Tải mã QR rồi lưu vào dữ liệu thiệp dưới dạng PNG nội tuyến để thiệp không phụ thuộc máy chủ ảnh bên ngoài.
+        let qrUrl = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.svg`;
         if (accountName) {
             qrUrl += `?accountName=${encodeURIComponent(accountName)}`;
         }
 
-        if (targetThumb) targetThumb.src = qrUrl;
-        if (targetInput) {
-            targetInput.value = qrUrl;
-            const syncKey = targetInput.getAttribute('data-sync-key');
-            if (syncKey) {
-                store.dispatch({
-                    type: ActionTypes.UPDATE_FIELD,
-                    payload: { key: syncKey, value: qrUrl }
-                });
-                sendSyncMessage(syncKey, qrUrl);
+        try {
+            const response = await fetch(qrUrl, { mode: 'cors' });
+            if (!response.ok) throw new Error('Không thể tạo mã QR');
+            if (requestToken !== qrRequestTokens[side]) return;
+
+            const qrBitmap = await createImageBitmap(await response.blob());
+            if (requestToken !== qrRequestTokens[side]) {
+                qrBitmap.close();
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = qrBitmap.width;
+            canvas.height = qrBitmap.height;
+            canvas.getContext('2d').drawImage(qrBitmap, 0, 0);
+            qrBitmap.close();
+            const localQrData = canvas.toDataURL('image/png');
+            if (statusEl) {
+                statusEl.textContent = '✓ Đã cập nhật mã QR';
+                statusEl.style.color = '#10B981';
+            }
+
+            if (targetThumb) targetThumb.src = localQrData;
+            if (targetInput) {
+                targetInput.value = localQrData;
+                const syncKey = targetInput.getAttribute('data-sync-key');
+                if (syncKey) {
+                    store.dispatch({
+                        type: ActionTypes.UPDATE_FIELD,
+                        payload: { key: syncKey, value: localQrData }
+                    });
+                    sendSyncMessage(syncKey, localQrData);
+                }
+            }
+        } catch (error) {
+            if (requestToken !== qrRequestTokens[side]) return;
+            console.error('Không thể tạo ảnh QR cục bộ:', error);
+            if (statusEl) {
+                statusEl.textContent = 'Không tạo được QR. Kiểm tra ngân hàng và số tài khoản.';
+                statusEl.style.color = '#EF4444';
             }
         }
     };
 
     $$('.mayhen_vietqr_bank_select, .mayhen_vietqr_acc_input, .mayhen_vietqr_name_input').forEach(el => {
-        on(el, 'input', () => {
+        const updateQrAfterPause = () => {
             const side = el.getAttribute('data-qr-side');
-            if (side) updateVietQr(side);
-        });
+            if (!side) return;
+            window.clearTimeout(qrUpdateTimers.get(side));
+            qrUpdateTimers.set(side, window.setTimeout(() => updateVietQr(side), 450));
+        };
+        if (el.tagName === 'SELECT') {
+            on(el, 'change', updateQrAfterPause);
+        } else {
+            on(el, 'input', updateQrAfterPause);
+            on(el, 'change', updateQrAfterPause);
+        }
     });
 
     $$('.mayhen_btn_gen_vietqr').forEach(btn => {
         on(btn, 'click', () => {
             const side = btn.getAttribute('data-qr-side');
-            if (side) updateVietQr(side);
+            if (side) {
+                window.clearTimeout(qrUpdateTimers.get(side));
+                updateVietQr(side);
+            }
         });
     });
 

@@ -2255,6 +2255,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Chạy Pest Feature Test: 38/38 tests pass 100% (563 assertions).
                   * Format Pint: pass hoàn toàn. Đã xóa sạch test file tạm theo quy chuẩn.
 
+            79. **Khắc Phục Toàn Diện 5 Lỗi Giao Diện & Bố Cục Mẫu Dấu Ký Trăm Năm (`dau-ky-tram-nam`)**:
+                - **Sửa lỗi Section 3 đè chữ lên phong bì ảnh cưới (Screenshot 1)**:
+                  * Gỡ bỏ hoàn toàn khối `.mayhen_invitation_jeowinids483fr_hero_head` (tiêu đề "WEDDING INVITATION" và tên dâu rể tự chèn) bị định vị tuyệt đối `top: 15px` đè chèn qua ảnh bìa `image51` và phong bì `image210` / `image213`.
+                  * Tên dâu rể và ngày cưới được bảo lưu trọn vẹn tại mặt tem sáp niêm phong hoàng gia và thiệp mời chính thức ở Section 26.
+                - **Sửa lỗi Section 26 đè chữ lên ảnh cưới & lặp ngày âm lịch (Screenshots 2 & 3)**:
+                  * Khôi phục `image226` và `image225` về đúng bản chất đồ họa gốc: họa tiết hoa cúc chì mờ (`iili_qnzpSGS.jpg`) và hoa linh lan (`iili_qnzpwyG.jpg`) trang trí các góc trang nhã. Loại bỏ việc ép ảnh cưới cô dâu chú rể màu đậm vào vị trí nền văn bản khiến chữ "TRÂN TRỌNG KÍNH MỜI", tên khách mời và tên thư pháp của dâu rể bị đè nát trên mặt và ngực nhân vật.
+                  * Khôi phục căn lề cân đối hai cột 169px chuẩn cho họ tên phụ mẫu hai bên (`paragraph35`, `paragraph37`), gỡ bỏ rule ghi đè co cụm 102px lệch trái.
+                  * Khắc phục triệt để lỗi lặp từ "(Tức ngày Nhằm ngày...)" bằng bộ lọc tiền tố thông minh: tự động chuẩn hóa hiển thị thành `(Nhằm ngày...)` trang trọng.
+                  * Bảo lưu đầy đủ hợp đồng `data-sync-target` (`groom_photo_url`, `bride_photo_url`, `wedding_lunar_date`, `event_party_lunar`) qua các thẻ ẩn phòng vệ để bộ kiểm thử và cơ chế handshake của Studio Editor hoạt động hoàn hảo.
+                - **Khôi phục hiển thị Lịch Trình Hôn Lễ trong Section 27 (Screenshot 4)**:
+                  * Gỡ bỏ hoàn toàn các rule CSS `display: none !important;` vô tình ẩn mất `.group173`, `.paragraph70` và `.paragraph71`.
+                  * Cưỡng chế hiển thị rõ nét (`display: block !important; opacity: 1 !important; z-index: 5`) danh sách mốc thời gian ("10:00 Đón khách & Chụp ảnh", "11:00 Khai Tiệc Mừng Cưới") bên trong thẻ bo góc trắng `box94` với màu chữ tương phản cao `#2C2824` và điểm nhấn xanh oliu `#4D5817`.
+                - **Lấp đầy khoảng trống đen trong Album ảnh cưới Section 28 (Screenshot 5)**:
+                  * Khắc phục nguyên nhân gây khoảng trống đen ~450px: danh sách fallback album trước đây sử dụng các tên file ảo không tồn tại trên đĩa (`hip_1876...`, `hip_1863...`) khiến ảnh bị lỗi 404 và background đen tuyền lộ ra.
+                  * Thay thế 100% bằng 10 file ảnh cưới thật có sẵn trong thư mục `assets/` của mẫu thiệp.
+                  * Chuẩn hóa thứ tự hiển thị tuần tự từ trên xuống dưới theo tọa độ thực tế: `image232` (top 124px) -> `image246` & `image247` (top 744px) -> `image248` (top 884px) -> `image249` (top 1052px) -> `image237` & `image238` (top 1192px) -> `gallery_extra_0`, `1`, `2` (top 1507px - 1810px) kết thúc bằng ảnh toàn cảnh 410px. Tạo thành bố cục tạp chí sang trọng liền mạch, không một khe hở chết.
+                - **Kiểm thử & Chất lượng**:
+                  * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
+                  * Laravel Pint: Clean 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

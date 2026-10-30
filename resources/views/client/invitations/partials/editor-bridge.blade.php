@@ -96,9 +96,9 @@
     }
 
     /* 6. Ẩn tuyệt đối 100% thanh điều hướng bottom nav dock khi nhúng trong iframe xem mẫu hoặc editor */
-    .mayhen_embed_mode .mayhen_client_bottom_nav_wrapper,
-    body.mayhen_embed_mode .mayhen_client_bottom_nav_wrapper,
-    [data-in-iframe="true"] .mayhen_client_bottom_nav_wrapper {
+    .mayhen_embed_mode [class*="bottom_nav_wrapper"],
+    body.mayhen_embed_mode [class*="bottom_nav_wrapper"],
+    [data-in-iframe="true"] [class*="bottom_nav_wrapper"] {
         display: none !important;
         opacity: 0 !important;
         visibility: hidden !important;
@@ -149,7 +149,7 @@
             });
 
             // Ẩn triệt để và gỡ bỏ thanh bottom nav dock chân trang bên trong iframe
-            var internalBottomNav = document.querySelectorAll('.mayhen_client_bottom_nav_wrapper');
+            var internalBottomNav = document.querySelectorAll('[class*="bottom_nav_wrapper"]');
             internalBottomNav.forEach(function(el) {
                 el.remove();
             });
@@ -394,6 +394,11 @@
                         var resolved = resolveUrl(val);
                         if (resolved) el.src = resolved;
                     }
+                } else if (el.tagName === 'A' && cleanKey.indexOf('map_url') !== -1) {
+                    try {
+                        var mapUrl = new URL(val, window.location.origin);
+                        if (mapUrl.protocol === 'https:' || mapUrl.protocol === 'http:') el.href = mapUrl.href;
+                    } catch (e) {}
                 } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     el.value = val;
                 } else {
@@ -492,23 +497,7 @@
                 } catch (e) {}
             }
 
-            // Tự động làm mới VietQR nếu thay đổi số tài khoản hoặc ngân hàng
-            if (cleanKey === 'groom_bank_account' || cleanKey === 'groom_bank_name') {
-                var bName = (window.__MAYHEN_LOCAL_STATE['groom_bank_name'] || 'vietcombank').toLowerCase().replace(/\s+/g, '');
-                var bAcc = (window.__MAYHEN_LOCAL_STATE['groom_bank_account'] || '').replace(/\s+/g, '');
-                var qrEl = document.querySelector('[data-sync-target="qr_groom_image"]');
-                if (qrEl && bAcc) {
-                    qrEl.src = 'https://img.vietqr.io/image/' + encodeURIComponent(bName) + '-' + encodeURIComponent(bAcc) + '-compact2.svg';
-                }
-            }
-            if (cleanKey === 'bride_bank_account' || cleanKey === 'bride_bank_name') {
-                var bName = (window.__MAYHEN_LOCAL_STATE['bride_bank_name'] || 'techcombank').toLowerCase().replace(/\s+/g, '');
-                var bAcc = (window.__MAYHEN_LOCAL_STATE['bride_bank_account'] || '').replace(/\s+/g, '');
-                var qrEl = document.querySelector('[data-sync-target="qr_bride_image"]');
-                if (qrEl && bAcc) {
-                    qrEl.src = 'https://img.vietqr.io/image/' + encodeURIComponent(bName) + '-' + encodeURIComponent(bAcc) + '-compact2.svg';
-                }
-            }
+            // QR is supplied by a locally stored wedding asset; never fetch it from a remote image service.
 
             // Đồng bộ tên đôi uyên ương gộp (couple_names / opening_names)
             if (cleanKey === 'groom_name' || cleanKey === 'bride_name') {
