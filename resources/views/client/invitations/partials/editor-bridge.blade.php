@@ -436,6 +436,45 @@
                             el.textContent = wName + ' ' + d + '.' + m + '.' + y;
                         });
 
+                        // Tự động vẽ lại Lịch Cưới tương ứng tháng/năm/ngày đã chọn (Realtime Calendar Sync)
+                        if (typeof window.renderMayhenWeddingCalendar === 'function') {
+                            window.renderMayhenWeddingCalendar(parsedDate);
+                        } else {
+                            var calGrid = document.querySelector('.mayhen_invitation_ladoifji894yfv_cal_days') || document.querySelector('[data-sync-target="wedding_calendar"]');
+                            if (calGrid) {
+                                var yr = parsedDate.getFullYear();
+                                var mo = parsedDate.getMonth();
+                                var tgt = parsedDate.getDate();
+                                var tot = new Date(yr, mo + 1, 0).getDate();
+                                var fst = new Date(yr, mo, 1).getDay();
+                                var emp = (fst === 0) ? 6 : (fst - 1);
+                                calGrid.innerHTML = '';
+                                for (var ei = 0; ei < emp; ei++) {
+                                    var spEmp = document.createElement('span');
+                                    spEmp.className = 'mayhen_invitation_ladoifji894yfv_cal_empty';
+                                    calGrid.appendChild(spEmp);
+                                }
+                                for (var di = 1; di <= tot; di++) {
+                                    var spDay = document.createElement('span');
+                                    spDay.textContent = di;
+                                    if (di === tgt) {
+                                        spDay.className = 'mayhen_invitation_ladoifji894yfv_cal_target';
+                                    }
+                                    calGrid.appendChild(spDay);
+                                }
+                                calGrid.dataset.date = yr + '-' + String(mo + 1).padStart(2, '0') + '-' + String(tgt).padStart(2, '0');
+                            }
+                            var calMonth = document.querySelector('.mayhen_invitation_ladoifji894yfv_cal_month');
+                            if (calMonth) {
+                                calMonth.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + m + '</span> · <span data-sync-target="wedding_year">' + y + '</span>';
+                            }
+                        }
+
+                        // Cập nhật đồng hồ đếm ngược (Countdown)
+                        if (typeof window.updateMayhenCountdown === 'function') {
+                            window.updateMayhenCountdown(parsedDate);
+                        }
+
                         // Tự động tính và đồng bộ ngày Âm lịch nếu có thay đổi ngày cưới
                         var calculatedLunar = calcVietnameseLunar(val);
                         if (calculatedLunar) {

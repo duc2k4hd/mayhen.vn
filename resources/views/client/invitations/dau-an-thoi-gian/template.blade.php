@@ -293,9 +293,9 @@
 <section class="mayhen_invitation_ladoifji894yfv_sec">
  <header class="mayhen_invitation_ladoifji894yfv_head mayhen_invitation_ladoifji894yfv_rv"><p class="mayhen_invitation_ladoifji894yfv_tag"><i class="mayhen_invitation_ladoifji894yfv_orn"></i>Save The Date<i class="mayhen_invitation_ladoifji894yfv_orn"></i></p><h2 class="mayhen_invitation_ladoifji894yfv_title">Lịch Cưới</h2></header>
  <div class="mayhen_invitation_ladoifji894yfv_card mayhen_invitation_ladoifji894yfv_cal mayhen_invitation_ladoifji894yfv_rv">
-  <p class="mayhen_invitation_ladoifji894yfv_cal_month">Tháng {{ $weddingMonth }} · {{ $weddingYear }}</p>
+  <p class="mayhen_invitation_ladoifji894yfv_cal_month" data-sync-target="calendar_month_year">Tháng <span data-sync-target="wedding_month">{{ $weddingMonth }}</span> · <span data-sync-target="wedding_year">{{ $weddingYear }}</span></p>
   <div class="mayhen_invitation_ladoifji894yfv_cal_grid mayhen_invitation_ladoifji894yfv_cal_week"><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span></div>
-  <div class="mayhen_invitation_ladoifji894yfv_cal_grid mayhen_invitation_ladoifji894yfv_cal_days"></div>
+  <div class="mayhen_invitation_ladoifji894yfv_cal_grid mayhen_invitation_ladoifji894yfv_cal_days" data-sync-target="wedding_calendar" data-date="{{ $weddingDate->format('Y-m-d') }}"></div>
  </div>
  <a class="mayhen_invitation_ladoifji894yfv_btn mayhen_invitation_ladoifji894yfv_rv" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/u/0/r/eventedit?text={{ urlencode('Lễ cưới ' . $groomName . ' & ' . $brideName) }}&dates={{ $weddingDate->format('Ymd\THis\Z') }}/{{ $weddingDate->copy()->addHours(4)->format('Ymd\THis\Z') }}&location={{ urlencode($partyVenue . ', ' . $partyAddress) }}">Thêm vào lịch</a>
 </section>

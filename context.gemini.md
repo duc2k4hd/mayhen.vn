@@ -2093,6 +2093,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Đã xác thực trên CSS `dau-an-thoi-gian/styles.css`.
                   * Tự động làm mới cache với `?v=filemtime` trong `template.blade.php`.
 
+            70. **Khắc Phục Lịch Cưới Không Tự Cập Nhật Theo Ngày Hôn Lễ Được Chọn (Dynamic Realtime Calendar & Countdown)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng gửi ảnh cho thấy trên form đã chọn ngày cử hành hôn lễ là `12/03/2027`, nhưng trên khung thiệp phần "Lịch Cưới" vẫn hiển thị cố định "Tháng 12 · 2026" và khoanh tròn ngày 20.
+                - **Nguyên nhân cốt lõi**:
+                  * Trong `dau-an-thoi-gian/script.js` và `assets/script.js`, đoạn mã vẽ lịch cưới được viết hardcode tĩnh cứng ngắc với `totalDays = 31`, `startDayOfWeek = 2` và `d === 20` dành riêng cho tháng 12/2026.
+                  * Trong `template.blade.php`, tiêu đề tháng/năm và lưới ngày tháng không gắn thuộc tính `data-sync-target` hay `data-date` động.
+                  * Trong `editor-bridge.blade.php`, khi nhận event sync `wedding_date` từ Studio Editor, chưa có lệnh kích hoạt vẽ lại cấu trúc bảng lịch ngày cưới.
+                - **Giải pháp hoàn thiện**:
+                  * **Hàm Thuật Toán Lịch Cưới Động (`renderWeddingCalendar`)**:
+                    + Tự động tính chính xác số ngày trong tháng (`new Date(year, month + 1, 0).getDate()`).
+                    + Tự động tính số ô trống theo thứ đầu tuần bắt đầu từ Thứ Hai (`(firstDayOfWeek === 0) ? 6 : (firstDayOfWeek - 1)`).
+                    + Tạo động các ô ngày và khoanh tròn đúng ngày đích `cal_target` tương ứng ngày cử hành hôn lễ.
+                    + Tự động cập nhật tiêu đề `Tháng MM · YYYY`.
+                  * **Tích hợp Realtime Bridge Sync (`editor-bridge.blade.php`)**:
+                    + Khi người dùng thay đổi ngày cưới trên form hoặc nạp bản nháp, bridge tự động gọi `window.renderMayhenWeddingCalendar(parsedDate)` và fallback vẽ trực tiếp DOM nếu template chưa có hàm.
+                    + Cập nhật đồng thời đồng hồ đếm ngược (`updateMayhenCountdown`) và liên kết thêm vào Google Calendar theo đúng mốc thời gian mới.
+                  * **Đồng bộ hóa Public View**: Gắn `data-date="{{ $weddingDate->format('Y-m-d') }}"` vào thẻ lịch trong `template.blade.php` giúp trang xem thiệp thực tế luôn nạp đúng lịch ngày cưới lưu trong DB.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

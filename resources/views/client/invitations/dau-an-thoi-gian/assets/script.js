@@ -516,14 +516,44 @@
         rvEls.forEach(el => el.classList.add(P + 'in'));
     }
 
-    /* Lịch cưới Tháng 12/2026 */
-    (() => {
+    /* Lịch cưới thông minh tự động thích ứng với bất kỳ ngày cưới nào */
+    function renderWeddingCalendar(dateInput) {
         const grid = $('cal_days');
         if (!grid) return;
-        const totalDays = 31;
-        const startDayOfWeek = 2;
 
-        for (let i = 1; i < startDayOfWeek; i++) {
+        let dateObj = null;
+        if (dateInput instanceof Date && !isNaN(dateInput.getTime())) {
+            dateObj = dateInput;
+        } else if (typeof dateInput === 'string' && dateInput.trim()) {
+            dateObj = new Date(dateInput);
+        } else if (grid.dataset.date) {
+            dateObj = new Date(grid.dataset.date);
+        }
+
+        if (!dateObj || isNaN(dateObj.getTime())) {
+            dateObj = new Date('2026-12-20T00:00:00');
+        }
+
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+        const targetDay = dateObj.getDate();
+
+        // Cập nhật tiêu đề tháng/năm trên lịch cưới
+        const monthTitle = $('cal_month');
+        if (monthTitle) {
+            monthTitle.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + String(month + 1).padStart(2, '0') + '</span> · <span data-sync-target="wedding_year">' + year + '</span>';
+        }
+
+        // Tính số ngày trong tháng
+        const totalDays = new Date(year, month + 1, 0).getDate();
+
+        // Thứ 2 là cột 1 (0 ô trống), Chủ Nhật là cột 7 (6 ô trống)
+        const firstDayOfWeek = new Date(year, month, 1).getDay();
+        const emptyDays = (firstDayOfWeek === 0) ? 6 : (firstDayOfWeek - 1);
+
+        grid.innerHTML = '';
+
+        for (let i = 0; i < emptyDays; i++) {
             const empty = document.createElement('span');
             empty.className = P + 'cal_empty';
             grid.appendChild(empty);
@@ -532,22 +562,36 @@
         for (let d = 1; d <= totalDays; d++) {
             const dayEl = document.createElement('span');
             dayEl.textContent = d;
-            if (d === 20) {
+            if (d === targetDay) {
                 dayEl.classList.add(P + 'cal_target');
             }
             grid.appendChild(dayEl);
         }
-    })();
 
-    /* Đồng hồ đếm ngược */
-    (() => {
+        grid.dataset.date = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(targetDay).padStart(2, '0');
+    }
+
+    renderWeddingCalendar();
+    window.renderMayhenWeddingCalendar = renderWeddingCalendar;
+
+    /* Đồng hồ đếm ngược thông minh */
+    let countdownInterval = null;
+    function updateCountdownTarget(newDate) {
         const countBox = $('count');
         if (!countBox) return;
-        const target = new Date(countBox.dataset.end || '2026-12-20T18:00:00').getTime();
+
+        let targetTime = null;
+        if (newDate instanceof Date && !isNaN(newDate.getTime())) {
+            targetTime = newDate.getTime();
+        } else if (typeof newDate === 'string' && newDate.trim()) {
+            targetTime = new Date(newDate).getTime();
+        } else {
+            targetTime = new Date(countBox.dataset.end || '2026-12-20T18:00:00').getTime();
+        }
 
         function updateCountdown() {
             const now = Date.now();
-            const diff = Math.max(0, target - now);
+            const diff = Math.max(0, targetTime - now);
             const sec = Math.floor(diff / 1000);
 
             const d = Math.floor(sec / 86400);
@@ -565,9 +609,14 @@
             if (elM) elM.textContent = String(m).padStart(2, '0');
             if (elS) elS.textContent = String(s).padStart(2, '0');
         }
+
         updateCountdown();
-        setInterval(updateCountdown, 1000);
-    })();
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    updateCountdownTarget();
+    window.updateMayhenCountdown = updateCountdownTarget;
 
     /* Cửa mở bản đồ */
     const doorBtn = $('door_btn');
