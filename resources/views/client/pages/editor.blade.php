@@ -141,7 +141,7 @@
             <!-- Zone 2: Contextual Drawer Subpanel (520px) -->
             <div class="mayhen_editor_drawer_panel" id="mayhen_drawer_panel">
                 <!-- Subpanel 1: Form Nhập Liệu Nội Dung -->
-                <div class="mayhen_editor_subpanel" data-panel-name="content" style="display: block;">
+                <div class="mayhen_editor_subpanel" data-panel-name="content" style="display: flex;">
                     <!-- Stepper Navigation Pills -->
                     <nav class="mayhen_editor_stepper_nav" aria-label="Các bước nhập liệu">
                     @foreach ($sections as $index => $section)

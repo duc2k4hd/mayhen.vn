@@ -381,7 +381,7 @@ const initEditor = () => {
 
             subpanels.forEach(p => {
                 if (p.getAttribute('data-panel-name') === tabName) {
-                    p.style.display = 'block';
+                    p.style.display = tabName === 'content' ? 'flex' : 'block';
                 } else {
                     p.style.display = 'none';
                 }
@@ -472,6 +472,10 @@ const initEditor = () => {
         }
 
         // Cuộn mượt form về đầu khi chuyển bước
+        const formEl = $('#mayhen_editor_form');
+        if (formEl) {
+            formEl.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         const drawerPanel = $('#mayhen_drawer_panel');
         if (drawerPanel) {
             drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1387,7 +1391,7 @@ const initEditor = () => {
 
             subpanels.forEach(p => {
                 if (p.getAttribute('data-panel-name') === tabName) {
-                    p.style.display = 'block';
+                    p.style.display = tabName === 'content' ? 'flex' : 'block';
                 } else {
                     p.style.display = 'none';
                 }

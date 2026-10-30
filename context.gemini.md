@@ -2155,6 +2155,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            73. **Cố Định Chân Drawer Footer Luôn Luôn Dính Ở Dưới Đáy Màn Hình (Fixed-to-Bottom Drawer Footer)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng yêu cầu: *"mayhen_editor_drawer_footer luôn luôn dính ở dưới bottom tránh cứ bị cuộn lên dễ bị bấm nhầm và khó nhìn"*.
+                  * Trước đó thanh footer điều hướng (Quay lại / Bước x / Tiếp tục) sử dụng `position: sticky; bottom: 0;` bên trong container có `padding-bottom: 90px;`. Khi cuộn trang xuống đáy, thanh footer bị đẩy ngược lên trên theo padding; khi bước nhập liệu có ít trường, footer bị trôi nổi lưng chừng giữa màn hình gây khó chịu và dễ bấm nhầm.
+                - **Giải pháp hoàn thiện**:
+                  * **Tái Cấu Trúc Khung Drawer Theo Mô Hình Flex 3 Tầng Chuẩn Quốc Tế**:
+                    + `.mayhen_editor_drawer_panel`: Đặt `overflow: hidden;` chống cuộn tràn toàn bộ khung thanh bên ngoài.
+                    + `.mayhen_editor_subpanel[data-panel-name="content"]`: Thiết lập `display: flex !important; flex-direction: column; height: 100%; max-height: 100%; overflow: hidden; padding: 0;`.
+                    + **Tầng 1 (Đầu)**: Thanh chuyển bước `.mayhen_editor_stepper_nav` cố định ở đỉnh (`flex-shrink: 0;`), luôn nhìn rõ số bước và có thể chuyển nhanh giữa các mục.
+                    + **Tầng 2 (Giữa)**: Toàn bộ form nhập liệu `#mayhen_editor_form` chiếm trọn không gian còn lại (`flex: 1; overflow-y: auto;`), cuộn mượt độc lập bên trong mà không làm xê dịch thanh điều hướng.
+                    + **Tầng 3 (Đáy)**: `.mayhen_editor_drawer_footer` cố định vĩnh viễn ở đáy ngăn kéo (`flex-shrink: 0; position: relative; margin-top: 0; z-index: 30;`).
+                  * **Bảo toàn 100% Vị Trí Cố Định**:
+                    + Footer luôn luôn nằm đúng sát cạnh đáy màn hình bất kể nội dung form ngắn hay dài.
+                    + Khi cuộn form nhập liệu, footer không bao giờ bị cuộn lên, không bị giật lag, loại bỏ hoàn toàn nguy cơ bấm nhầm.
+                  * **Đồng bộ Cuộn Mượt Khi Chuyển Bước**:
+                    + Trong `editor.js`: hàm `goToStep` cuộn mượt `#mayhen_editor_form` về đỉnh (`top: 0`) khi chuyển bước, đảm bảo người dùng luôn bắt đầu từ đầu form mới.
+                  * **Tương Thích Responsive Mobile & Desktop**:
+                    + Loại bỏ padding dư thừa trên mobile, giữ footer luôn nằm sát đáy thanh thao tác dễ dàng bằng một ngón tay.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
