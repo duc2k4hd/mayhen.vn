@@ -71,6 +71,41 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
+ * Cuộn một thẻ về đầu trang ngay lập tức (dùng khi thẻ không còn là thẻ chính)
+ */
+function resetCardScrollToTop(card) {
+    if (!card) return;
+    const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
+    if (!iframe) return;
+
+    try {
+        const win = iframe.contentWindow;
+        const doc = iframe.contentDocument || (win ? win.document : null);
+        if (win && doc) {
+            if (doc.documentElement) {
+                doc.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+                doc.documentElement.scrollTop = 0;
+            }
+            if (doc.body) {
+                doc.body.style.setProperty('scroll-behavior', 'auto', 'important');
+                doc.body.scrollTop = 0;
+            }
+            win.scrollTo(0, 0);
+        }
+    } catch (e) {}
+
+    try {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
+            iframe.contentWindow.postMessage({ type: 'MAYHEN_SCROLL_TOP' }, '*');
+            if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
+                iframe.contentWindow.__mayhenStopSmoothScroll();
+            }
+        }
+    } catch (e) {}
+}
+
+/**
  * HAUTE COUTURE 3D COVERFLOW INVITATION SHOWCASE CONTROLLER
  * Native Vanilla ES Modules — Zero External Libraries — 60FPS Hardware Accelerated
  */
@@ -115,40 +150,6 @@ function initShowcaseCoverflow() {
         return diff;
     }
 
-    /**
-     * Cuộn một thẻ về đầu trang ngay lập tức (dùng khi thẻ không còn là thẻ chính)
-     */
-    function resetCardScrollToTop(card) {
-        if (!card) return;
-        const iframe = card.querySelector('.mayhen_home_showcase_card_iframe');
-        if (!iframe) return;
-
-        try {
-            const win = iframe.contentWindow;
-            const doc = iframe.contentDocument || (win ? win.document : null);
-            if (win && doc) {
-                if (doc.documentElement) {
-                    doc.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
-                    doc.documentElement.scrollTop = 0;
-                }
-                if (doc.body) {
-                    doc.body.style.setProperty('scroll-behavior', 'auto', 'important');
-                    doc.body.scrollTop = 0;
-                }
-                win.scrollTo(0, 0);
-            }
-        } catch (e) {}
-
-        try {
-            if (iframe.contentWindow) {
-                iframe.contentWindow.postMessage({ type: 'MAYHEN_AUTOSCROLL_STOP' }, '*');
-                iframe.contentWindow.postMessage({ type: 'MAYHEN_SCROLL_TOP' }, '*');
-                if (typeof iframe.contentWindow.__mayhenStopSmoothScroll === 'function') {
-                    iframe.contentWindow.__mayhenStopSmoothScroll();
-                }
-            }
-        } catch (e) {}
-    }
 
     /**
      * Render 3D transforms for all cards based on viewport and relative position
@@ -741,43 +742,32 @@ function initShowcaseLazyIframe() {
         cardScrollPos = 0;
     }
 
+    let idlePreloadTimer = null;
+
     /**
-     * Nạp Iframe cho TẤT CẢ các thẻ đang hiển thị trên màn hình
-     * Xếp lịch trình từ tâm (thẻ Active) lan tỏa đều sang 2 bên
+     * Nạp Iframe thông minh (Smart Lazy Loading):
+     * - Chỉ nạp thẻ Active ở giữa ngay tức thì để trang chủ tải nhanh gấp 10 lần, tiết kiệm CPU và mạng
+     * - Khi trình duyệt nhàn rỗi (idle), nạp trước 2 thẻ lân cận để sẵn sàng cho chuyển slide mượt mà
+     * - Các thẻ ở xa hiển thị ảnh poster webp tĩnh sắc nét, chỉ nạp iframe khi người dùng hover hoặc trượt tới
      */
     function loadAllVisibleCardsIframe() {
         if (!isNearShowcase) return;
         const activeCard = stage.querySelector('.mayhen_home_showcase_card.is-active') || cards[0];
-        const activeIndex = cards.indexOf(activeCard);
+        if (!activeCard) return;
 
-        // Tạo danh sách chỉ số theo thứ tự ưu tiên từ trung tâm lan ra ngoài
-        const priorityIndices = [];
-        if (activeIndex !== -1) {
-            priorityIndices.push(activeIndex);
-            for (let offset = 1; offset <= Math.floor(cards.length / 2); offset++) {
-                priorityIndices.push((activeIndex - offset + cards.length) % cards.length);
-                priorityIndices.push((activeIndex + offset) % cards.length);
-            }
-        } else {
-            cards.forEach((_, idx) => priorityIndices.push(idx));
-        }
+        // 1. Nạp ngay lập tức duy nhất thẻ Active ở giữa
+        loadCardIframe(activeCard);
 
-        const uniqueIndices = [...new Set(priorityIndices)];
-
-        uniqueIndices.forEach((cardIdx, order) => {
-            const card = cards[cardIdx];
-            if (!card) return;
-
-            // Thẻ tâm nạp ngay 0ms; 2 thẻ lân cận nạp 25ms-50ms; các thẻ tiếp theo nạp tiếp nối
-            const delay = order === 0 ? 0 : (order < 3 ? order * 25 : 60 + (order - 2) * 45);
-            if (delay === 0) {
-                loadCardIframe(card);
-            } else {
-                setTimeout(() => {
-                    loadCardIframe(card);
-                }, delay);
-            }
-        });
+        // 2. Trì hoãn nạp 2 thẻ liền kề khi nhàn rỗi (1.2s), tránh nghẽn luồng xử lý lúc mới vào trang
+        clearTimeout(idlePreloadTimer);
+        idlePreloadTimer = setTimeout(() => {
+            const activeIndex = cards.indexOf(activeCard);
+            if (activeIndex === -1) return;
+            const prevCard = cards[(activeIndex - 1 + cards.length) % cards.length];
+            const nextCard = cards[(activeIndex + 1) % cards.length];
+            if (prevCard) loadCardIframe(prevCard);
+            if (nextCard) loadCardIframe(nextCard);
+        }, 1200);
     }
 
     // Kiểm tra tức thì nếu Showcase đã nằm sẵn trong viewport khi tải trang

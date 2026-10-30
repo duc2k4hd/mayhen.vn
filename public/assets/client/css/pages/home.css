@@ -29,14 +29,13 @@
             rgba(240, 233, 222, 0.52) 72%, 
             rgba(215, 195, 175, 0.42) 100%
         ),
-        /* Lớp veil làm dịu ánh sáng gắt của ảnh banner */
+        /* Lớp veil làm dịu ánh sáng gắt */
         linear-gradient(180deg, 
             rgba(45, 38, 30, 0.12) 0%, 
             rgba(28, 25, 23, 0.04) 25%, 
             rgba(38, 30, 24, 0.1) 40%, 
             rgba(38, 30, 24, 0) 60%
-        ),
-        url('/storage/images/client/banners/banner-home.webp');
+        );
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
