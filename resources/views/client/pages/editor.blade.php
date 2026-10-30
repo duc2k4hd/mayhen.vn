@@ -320,7 +320,7 @@
                                                                        value="{{ $gVal }}" 
                                                                        data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
                                                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                                                    <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh lên (tự động chuyển data:image)">
+                                                                    <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh từ máy tính hoặc điện thoại">
                                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                                         </svg>
@@ -341,7 +341,7 @@
                                                     </div>
                                                 @endfor
                                             </div>
-                                            <div class="mayhen_editor_input_help">Tải trực tiếp ảnh từ thiết bị để lưu vào assets của mẫu</div>
+                                            <div class="mayhen_editor_input_help">Tải ảnh kỷ niệm cưới từ máy tính hoặc điện thoại của bạn</div>
                                         </div>
 
                                     @elseif ($fieldKey === 'wedding.music_url')
@@ -456,7 +456,7 @@
                                                            data-sync-key="{{ $fieldKey }}" 
                                                            value="{{ is_string($val) ? $val : '' }}">
                                                     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại (hệ thống tự động căn chỉnh và chuyển đổi)">
+                                                        <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                                                             </svg>
@@ -476,7 +476,7 @@
                                                 </div>
                                             </div>
                                             @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo'))
-                                                <div class="mayhen_editor_input_help">Ảnh chính mở thiệp bắt buộc tỉ lệ đứng 3/4. Hệ thống sẽ tự động hỗ trợ căn chỉnh và cắt ảnh cho bạn.</div>
+                                                <div class="mayhen_editor_input_help">Ảnh bìa thiệp cưới sẽ được tự động căn chỉnh khung hình dọc đẹp nhất</div>
                                             @endif
                                         </div>
 
@@ -809,7 +809,7 @@
                 <div class="mayhen_cropper_header">
                     <div class="mayhen_cropper_header_title">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
-                        <span>Cắt ảnh bìa chính (Tỉ lệ chuẩn 3:4)</span>
+                        <span>Căn chỉnh ảnh bìa thiệp cưới</span>
                     </div>
                     <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_cropper_close_btn" aria-label="Hủy cắt ảnh">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

@@ -1447,7 +1447,7 @@ body.mayhen_editor_body_fullscreen {
 }
 
 .mayhen_cropper_overlay::after {
-    content: "Tỉ lệ chuẩn 3:4";
+    content: "Khung ảnh bìa";
     position: absolute;
     top: 8px;
     left: 8px;

@@ -1980,6 +1980,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     + **Triển khai cơ chế Zero-Trust User Logic**: Khi người dùng tải ảnh lên, hệ thống tự động kiểm tra tỷ lệ ảnh thực tế. Nếu là ảnh bìa chính (`isMainPhoto`) mà tỷ lệ chưa chuẩn 3:4 (sai số > 0.02), hệ thống **BẮT BUỘC BẬT POPUP CẮT ẢNH NGAY LẬP TỨC**, ép người dùng căn chỉnh góc ảnh đẹp nhất.
                     + Nếu người dùng hủy bỏ hoặc đóng popup mà chưa xác nhận cắt ảnh, hệ thống tự động xóa file tạm (`uploader.value = ''`), reset thông báo và từ chối lưu ảnh sai tỷ lệ vào form.
                     + Khi xác nhận cắt ảnh: Canvas xuất trực tiếp độ phân giải cao chuẩn 3:4 (900x1200px) dưới dạng chuỗi `data:image/jpeg;base64,...` đưa vào hidden input và live sync tức thì sang iframe.
+                    + **Chuẩn hóa ngôn ngữ thông báo thân thiện (Friendly User-Facing Messages)**: Loại bỏ triệt để các thuật ngữ kỹ thuật khó hiểu (`data:image`, `cắt 3/4 (data:image)`, `assets của mẫu`). Thay bằng các thông điệp tự nhiên, gần gũi với cô dâu chú rể: `✓ Tải ảnh thành công`, `Đang tải ảnh...`, `Đang mở căn chỉnh...`, `Đã hủy chọn ảnh`, và tiêu đề popup là `Căn chỉnh ảnh bìa thiệp cưới`.
                 - **Xác thực chất lượng**:
                   * JS Syntax check (`node -c`): 100% Passed.
                   * Laravel Pint: Passed.

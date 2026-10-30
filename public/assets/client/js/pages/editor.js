@@ -676,8 +676,8 @@ const initEditor = () => {
                 activeCropperTarget.uploader.value = '';
             }
             if (activeCropperTarget.status) {
-                activeCropperTarget.status.textContent = 'Đã hủy (ảnh bìa bắt buộc tỉ lệ 3:4)';
-                activeCropperTarget.status.style.color = '#EF4444';
+                activeCropperTarget.status.textContent = 'Đã hủy chọn ảnh';
+                activeCropperTarget.status.style.color = 'var(--mayhen-color-text-muted)';
             }
         }
         activeCropperTarget = null;
@@ -812,7 +812,7 @@ const initEditor = () => {
             }
 
             if (statusEl) {
-                statusEl.textContent = '✓ Đã căn chỉnh 3/4 (data:image)';
+                statusEl.textContent = '✓ Tải ảnh thành công';
                 statusEl.style.color = '#10B981';
             }
 
@@ -835,7 +835,7 @@ const initEditor = () => {
             const statusEl = document.getElementById('status_' + targetInputId);
 
             if (statusEl) {
-                statusEl.textContent = 'Đang kiểm tra ảnh...';
+                statusEl.textContent = 'Đang tải ảnh...';
                 statusEl.style.color = 'var(--mayhen-color-text-muted)';
             }
 
@@ -852,8 +852,8 @@ const initEditor = () => {
                 // Nếu là ảnh bìa chính (bắt buộc 3/4) mà tỷ lệ chưa chuẩn 3/4 -> BẮT BUỘC BẬT POPUP CẮT ẢNH NGAY
                 if (isMainPhoto && !isExactThreeFour) {
                     if (statusEl) {
-                        statusEl.textContent = 'Cần căn chỉnh tỉ lệ 3:4...';
-                        statusEl.style.color = '#D97706';
+                        statusEl.textContent = 'Đang mở căn chỉnh...';
+                        statusEl.style.color = '#9C7A4A';
                     }
                     openCropperModal(objectUrl, {
                         input: targetInput,
@@ -865,7 +865,7 @@ const initEditor = () => {
                 } else {
                     // Ảnh đã chuẩn 3/4 hoặc là ảnh gallery không bắt buộc -> Tự động nén sang data:image trực tiếp
                     try {
-                        if (statusEl) statusEl.textContent = 'Đang tối ưu ảnh...';
+                        if (statusEl) statusEl.textContent = 'Đang tải ảnh...';
                         const dataUrl = await compressImageToDataUrl(file);
                         if (targetThumb) targetThumb.src = dataUrl;
                         if (targetInput) {
@@ -874,13 +874,13 @@ const initEditor = () => {
                             if (syncKey) sendSyncMessage(syncKey, dataUrl);
                         }
                         if (statusEl) {
-                            statusEl.textContent = '✓ Đã sẵn sàng (data:image)';
+                            statusEl.textContent = '✓ Tải ảnh thành công';
                             statusEl.style.color = '#10B981';
                         }
                     } catch (err) {
                         console.error('Lỗi chuyển ảnh sang data:image:', err);
                         if (statusEl) {
-                            statusEl.textContent = 'Lỗi xử lý ảnh';
+                            statusEl.textContent = 'Không thể tải ảnh này';
                             statusEl.style.color = '#EF4444';
                         }
                     }
