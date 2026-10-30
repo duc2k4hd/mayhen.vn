@@ -60,7 +60,7 @@
                 ? $fb
                 : $assetBase . '/' . ltrim($fb, '/');
         }
-        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) {
             return $val;
         }
         return $assetBase . '/' . ltrim($val, '/');

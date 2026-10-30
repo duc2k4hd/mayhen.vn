@@ -1986,6 +1986,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
 
+            62. **Tối Ưu CSS Khung Ảnh Mẫu Dấu Ấn Thời Gian (`mayhen_invitation_ladoifji894yfv_photo mayhen_invitation_ladoifji894yfv_round`)**:
+                - **Yêu cầu & Tinh chỉnh thực hiện**:
+                  * Canh giữa trọng tâm hình ảnh (`background-position: center center !important; background-size: cover !important; background-repeat: no-repeat !important;`).
+                  * Chiều rộng bung full 100% viền ngang của khung chứa (`width: 100% !important; max-width: 100% !important;`).
+                  * Đảm bảo hiển thị vuông vắn chuẩn xác (`aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 20px !important;`).
+                  * Mở rộng khung `.mayhen_invitation_ladoifji894yfv_orbit` và vòng hào quang thiên hà xoay quanh ôm khít khung ảnh vuông bo góc viền vàng kim Antique Gold đẳng cấp.
+                  * Cập nhật `$resolveAsset` trong `template.blade.php` chấp nhận chuỗi `data:` base64 trực tiếp.
+                - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

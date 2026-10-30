@@ -344,10 +344,10 @@ html, body {
    ========================================================================= */
 .mayhen_invitation_ladoifji894yfv_orbit {
   position: relative;
-  width: clamp(180px, 45vw, 220px);
-  height: clamp(180px, 45vw, 220px);
+  width: 100%;
+  max-width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 50%;
+  border-radius: 20px;
   margin: clamp(20px, 5vw, 32px) auto clamp(18px, 4.5vw, 26px);
   display: flex;
   align-items: center;
@@ -357,8 +357,8 @@ html, body {
 .mayhen_invitation_ladoifji894yfv_orbit::before {
   content: "";
   position: absolute;
-  inset: -12px;
-  border-radius: 50%;
+  inset: -10px;
+  border-radius: 26px;
   border: 1px dashed rgba(103, 232, 249, 0.45);
   animation: mayhen_spin 45s linear infinite;
   pointer-events: none;
@@ -366,8 +366,8 @@ html, body {
 
 .mayhen_invitation_ladoifji894yfv_ring {
   position: absolute;
-  inset: -6px;
-  border-radius: 50%;
+  inset: -5px;
+  border-radius: 23px;
   background: conic-gradient(from var(--mayhen_invitation_ladoifji894yfv_a),
     transparent 0%,
     var(--mayhen_invitation_ladoifji894yfv_gold) 20%,
@@ -405,25 +405,31 @@ html, body {
 }
 
 .mayhen_invitation_ladoifji894yfv_photo {
-  background: 
-    radial-gradient(circle, rgba(14, 26, 60, 0.25) 0%, rgba(6, 12, 30, 0.75) 100%),
-    url('hero.jpg') center/cover no-repeat;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
   position: relative;
   overflow: hidden;
 }
 
-/* Ảnh tròn bên trong orbit của Hero & Thank You */
+/* Ảnh hiển thị giữa ảnh, full viền ngang, đảm bảo hiển thị vuông ảnh */
+.mayhen_invitation_ladoifji894yfv_photo.mayhen_invitation_ladoifji894yfv_round,
 .mayhen_invitation_ladoifji894yfv_orbit .mayhen_invitation_ladoifji894yfv_round {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
+  width: 100% !important;
+  max-width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  border-radius: 20px !important;
   flex-shrink: 0;
-  display: block;
+  display: block !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  box-sizing: border-box !important;
   box-shadow:
-    0 0 0 2px var(--mayhen_invitation_ladoifji894yfv_gold),
-    0 0 0 5px rgba(8, 14, 34, 0.8),
-    0 0 30px rgba(103, 232, 249, 0.35);
+    0 0 0 1.5px var(--mayhen_invitation_ladoifji894yfv_gold),
+    0 0 0 5px rgba(8, 14, 34, 0.85),
+    0 0 32px rgba(103, 232, 249, 0.35) !important;
 }
 
 .mayhen_invitation_ladoifji894yfv_big {
@@ -561,14 +567,18 @@ html, body {
 }
 
 .mayhen_invitation_ladoifji894yfv_couple .mayhen_invitation_ladoifji894yfv_photo {
-  width: clamp(110px, 26vw, 140px) !important;
-  height: clamp(110px, 26vw, 140px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
   aspect-ratio: 1 / 1 !important;
-  border-radius: 50% !important;
+  height: auto !important;
+  border-radius: 18px !important;
   margin-bottom: 14px;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
   box-shadow:
-    0 0 0 2px var(--mayhen_invitation_ladoifji894yfv_gold),
-    0 0 0 5px rgba(8, 14, 34, 0.85),
+    0 0 0 1.5px var(--mayhen_invitation_ladoifji894yfv_gold),
+    0 0 0 4px rgba(8, 14, 34, 0.85),
     0 0 24px rgba(252, 227, 158, 0.4);
 }
 
