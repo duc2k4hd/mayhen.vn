@@ -689,15 +689,54 @@
 
             {{-- Block 6: Bottom CTA --}}
             <div class="mayhen_templates_cta_box">
-                <h2 class="mayhen_templates_cta_title">Chọn Mẫu Thiệp Cưới Đẹp & Bắt Đầu Tạo Ngay Hôm Nay</h2>
-                <p class="mayhen_templates_cta_desc">
-                    Trải nghiệm tự tạo thiệp cưới online miễn phí trong 2 phút. Dễ dàng xem trước kết quả trực tiếp trên điện thoại của bạn.
-                </p>
-                <div>
-                    <a href="{{ route('invitation.create') }}" class="mayhen_templates_cta_btn">
-                        <span>Bắt Đầu Tạo Thiệp Miễn Phí</span>
-                        <span>&rarr;</span>
-                    </a>
+                <div class="mayhen_templates_cta_glow" aria-hidden="true"></div>
+                <div class="mayhen_templates_cta_inner">
+                    <div class="mayhen_templates_cta_badge_wrap">
+                        <span class="mayhen_templates_cta_badge">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                                <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z"/>
+                            </svg>
+                            Khởi Tạo Tác Phẩm Độc Bản
+                        </span>
+                        <span class="mayhen_templates_cta_sub">MÂY HẸN • QUIET LUXURY</span>
+                    </div>
+
+                    <h2 class="mayhen_templates_cta_title">Chọn Mẫu Thiệp Cưới Yêu Thích &amp; Tự Tạo Trong 2 Phút</h2>
+                    <p class="mayhen_templates_cta_desc">
+                        Trải nghiệm tự thiết kế thiệp cưới online cao cấp hoàn toàn miễn phí. Dễ dàng đổi ảnh, thay đổi nội dung câu chữ và xem trước sống động ngay trên điện thoại của hai bạn.
+                    </p>
+
+                    {{-- 3 Cam kết Quiet Luxury --}}
+                    <div class="mayhen_templates_cta_perks" role="list">
+                        <div class="mayhen_templates_cta_perk_item" role="listitem">
+                            <span class="mayhen_templates_cta_perk_icon">⚡</span>
+                            <span class="mayhen_templates_cta_perk_label">Setup siêu nhanh 2 phút</span>
+                        </div>
+                        <div class="mayhen_templates_cta_perk_item" role="listitem">
+                            <span class="mayhen_templates_cta_perk_icon">📱</span>
+                            <span class="mayhen_templates_cta_perk_label">Xem live trên điện thoại</span>
+                        </div>
+                        <div class="mayhen_templates_cta_perk_item" role="listitem">
+                            <span class="mayhen_templates_cta_perk_icon">✨</span>
+                            <span class="mayhen_templates_cta_perk_label">Miễn phí tạo &amp; xem thử</span>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_templates_cta_actions">
+                        <a href="{{ route('invitation.create') }}" class="mayhen_templates_cta_btn_primary">
+                            <span>Bắt Đầu Tạo Thiệp Miễn Phí</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="{{ route('pricing') }}" class="mayhen_templates_cta_btn_secondary">
+                            <span>Xem Bảng Giá Gói Dịch Vụ</span>
+                        </a>
+                    </div>
+
+                    <p class="mayhen_templates_cta_note">
+                        ✨ Không yêu cầu thẻ tín dụng &bull; Chỉ thanh toán khi hai bạn hoàn toàn ưng ý
+                    </p>
                 </div>
             </div>
 

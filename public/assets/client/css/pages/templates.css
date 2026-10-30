@@ -1106,49 +1106,187 @@
     margin: 0;
 }
 
-/* CTA Box */
+/* ========================================================
+   QUIET LUXURY BOTTOM CTA BANNER
+   Style: Fine Art Paper Card, Muted Gold Accents, Warm Glow
+   ======================================================== */
 .mayhen_templates_cta_box {
-    background: radial-gradient(circle at 50% 50%, #2A2623 0%, #171513 100%);
-    color: #FFFFFF;
-    border-radius: var(--mayhen-radius-2xl);
-    padding: var(--mayhen-space-3xl) var(--mayhen-space-xl);
+    position: relative;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAF7F2 45%, #F4EFE6 100%);
+    border: 1px solid rgba(197, 168, 128, 0.42);
+    border-radius: 28px;
+    padding: 56px 36px 46px;
     text-align: center;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
-    margin-top: var(--mayhen-space-2xl);
+    box-shadow: 
+        0 24px 60px -20px rgba(42, 37, 33, 0.08),
+        0 4px 16px rgba(197, 168, 128, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+    margin-top: 56px;
+    margin-bottom: 72px;
+    overflow: hidden;
+}
+
+/* Ánh sáng ấm lan tỏa nghệ thuật phía sau */
+.mayhen_templates_cta_glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse at center, rgba(197, 168, 128, 0.22) 0%, rgba(250, 247, 242, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mayhen_templates_cta_inner {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.mayhen_templates_cta_badge_wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.mayhen_templates_cta_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    letter-spacing: 0.03em;
+    border: 1px solid rgba(197, 168, 128, 0.28);
+}
+
+.mayhen_templates_cta_sub {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #8A8175;
 }
 
 .mayhen_templates_cta_title {
     font-family: var(--mayhen-font-serif);
-    font-size: var(--mayhen-font-size-h2);
-    margin-bottom: var(--mayhen-space-sm);
-    color: #FFFFFF;
-    font-weight: 600;
+    font-size: clamp(1.75rem, 3.2vw, 2.45rem);
+    line-height: 1.25;
+    color: #23201C;
+    margin-bottom: 14px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
 }
 
 .mayhen_templates_cta_desc {
-    font-size: var(--mayhen-font-size-lead);
-    color: #D8D2CA;
-    max-width: 640px;
-    margin: 0 auto var(--mayhen-space-xl);
-    line-height: 1.6;
+    color: #5C5650;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 620px;
+    margin: 0 auto 24px;
 }
 
-.mayhen_templates_cta_btn {
-    background-color: var(--mayhen-color-primary);
-    color: #1C1917;
-    font-weight: 600;
-    padding: 14px 32px;
-    border-radius: var(--mayhen-radius-md);
-    text-decoration: none;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+/* 3 Cam kết dạng Chips */
+.mayhen_templates_cta_perks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 18px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.mayhen_templates_cta_perk_item {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(226, 218, 206, 0.95);
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
-.mayhen_templates_cta_btn:hover {
-    background-color: #D8BD98;
+.mayhen_templates_cta_perk_icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.mayhen_templates_cta_perk_label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #38322B;
+}
+
+/* Nút CTA Suite */
+.mayhen_templates_cta_actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.mayhen_templates_cta_btn_primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #B8935D 0%, #A8834D 100%);
+    color: #FFFFFF;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 14px 34px;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 8px 24px -6px rgba(168, 131, 77, 0.45);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_templates_cta_btn_primary:hover {
+    background: linear-gradient(135deg, #C5A16B 0%, #B8935D 100%);
     transform: translateY(-2px);
+    box-shadow: 0 12px 30px -6px rgba(168, 131, 77, 0.55);
+    color: #FFFFFF;
+}
+
+.mayhen_templates_cta_btn_secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.85);
+    color: #38322B;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 13px 26px;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid rgba(197, 168, 128, 0.38);
+    transition: all 0.25s ease;
+}
+
+.mayhen_templates_cta_btn_secondary:hover {
+    background: #FFFFFF;
+    border-color: #B8935D;
+    color: #B8935D;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_templates_cta_note {
+    font-size: 0.8125rem;
+    color: #7A7267;
+    margin: 0;
 }
 
 /* ==========================================================================
@@ -1512,25 +1650,51 @@
     }
 
     .mayhen_templates_cta_box {
-        padding: 24px 16px;
-        margin: 16px 0;
-        border-radius: 16px;
+        padding: 32px 18px 28px;
+        margin-top: 32px;
+        margin-bottom: 44px;
+        border-radius: 20px;
     }
 
     .mayhen_templates_cta_title {
-        font-size: 1.25rem;
-        margin-bottom: 6px;
+        font-size: 1.35rem;
+        margin-bottom: 10px;
     }
 
     .mayhen_templates_cta_desc {
-        font-size: 0.8125rem;
-        line-height: 1.5;
-        margin-bottom: 14px;
+        font-size: 0.825rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
     }
 
-    .mayhen_templates_cta_btn {
-        padding: 10px 22px;
-        font-size: 0.8125rem;
+    .mayhen_templates_cta_perks {
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .mayhen_templates_cta_perk_item {
+        padding: 5px 11px;
+    }
+
+    .mayhen_templates_cta_perk_label {
+        font-size: 0.725rem;
+    }
+
+    .mayhen_templates_cta_actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .mayhen_templates_cta_btn_primary,
+    .mayhen_templates_cta_btn_secondary {
+        width: 100%;
+        padding: 12px 18px;
+        font-size: 0.875rem;
+    }
+
+    .mayhen_templates_cta_note {
+        font-size: 0.725rem;
     }
 }
 

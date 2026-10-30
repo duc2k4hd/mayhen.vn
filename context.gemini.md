@@ -1914,6 +1914,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * JS Syntax check (`node -c`): Passed không lỗi.
 
+            59. **Tái Thiết Kế Hộp Kêu Gọi Hành Động Cuối Trang Mẫu Thiệp (`mayhen_templates_cta_box`) Theo Chuẩn Quiet Luxury**:
+                - **Vấn đề đã khắc phục**:
+                  * Trước đó, `mayhen_templates_cta_box` dùng nền màu đen đặc (`#171513` - `#2A2623`) nằm ngay cạnh dải thanh tính năng của Footer cũng có màu đen (`#1A1816`), khiến toàn bộ nửa dưới chân trang bị dính bệt thành một mảng đen khổng lồ, thô kệch và mất cân đối.
+                  * Thiết kế hộp cũ quá đơn điệu, tương phản gắt với tông màu kem ngà của toàn bộ trang web, thiếu các yếu tố thẩm mỹ Quiet Luxury và thiếu các điểm nhấn giá trị chuyển đổi.
+                - **Kiến trúc & Thẩm mỹ mới**:
+                  * *`resources/views/client/pages/templates.blade.php`*:
+                    + Bổ sung cấu trúc ánh sáng nền nghệ thuật `.mayhen_templates_cta_glow` và container `.mayhen_templates_cta_inner`.
+                    + Kicker Badge cao cấp: `✨ Khởi Tạo Tác Phẩm Độc Bản • MÂY HẸN QUIET LUXURY`.
+                    + Tiêu đề chuẩn Serif: `Chọn Mẫu Thiệp Cưới Yêu Thích & Tự Tạo Trong 2 Phút`.
+                    + Mô tả thanh lịch, truyền cảm hứng.
+                    + Bổ sung 3 cam kết giá trị dạng Chips: `⚡ Setup siêu nhanh 2 phút`, `📱 Xem live trên điện thoại`, `✨ Miễn phí tạo & xem thử`.
+                    + Bộ nút hành động kép: Nút Primary Quiet Luxury mạ vàng Antique Gold (`#B8935D`) và Nút Secondary viền kem mờ (`Xem Bảng Giá Gói Dịch Vụ`).
+                    + Dòng cam kết an tâm: `✨ Không yêu cầu thẻ tín dụng • Chỉ thanh toán khi hai bạn hoàn toàn ưng ý`.
+                  * *`public/assets/client/css/pages/templates.css`*:
+                    + Nền chuyển sang **Fine Art Warm Cream Gradient** (`linear-gradient(135deg, #FFFFFF 0%, #FAF7F2 45%, #F4EFE6 100%)`).
+                    + Viền kép sang trọng mạ vàng kim Antique Gold `rgba(197, 168, 128, 0.42)` kết hợp viền sáng nội vi `inset 0 0 0 1px rgba(255, 255, 255, 0.85)`.
+                    + Đổ bóng đa tầng cao cấp `box-shadow: 0 24px 60px -20px rgba(42, 37, 33, 0.08), 0 4px 16px rgba(197, 168, 128, 0.12)`.
+                    + Tăng khoảng cách `margin-top: 56px; margin-bottom: 72px;` giúp tạo khoảng thở rộng rãi, tách biệt hoàn toàn với Footer đen phía dưới.
+                    + Tối ưu giao diện Mobile-First (< 768px): Padding, kích thước chữ và nút xếp dọc vừa khít mọi màn hình điện thoại.
+                - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
