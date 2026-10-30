@@ -207,7 +207,118 @@
         if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('/') || s.startsWith('blob:') || s.startsWith('data:')) {
             return s;
         }
-        return assetBase ? (assetBase.replace(/\/+$/, '') + '/' + s.replace(/^\/+/, '')) : s;
+        var cleanPath = s.replace(/^assets\//, '').replace(/^\/+/, '');
+        return assetBase ? (assetBase.replace(/\/+$/, '') + '/' + cleanPath) : s;
+    };
+
+    // Thuật toán chuyển đổi ngày Dương Lịch sang Âm Lịch Việt Nam chuẩn thiên văn (Hồ Ngọc Đức - GMT+7)
+    var calcVietnameseLunar = function(solarDateStr) {
+        if (!solarDateStr) return '';
+        var parts = solarDateStr.toString().trim().split('-');
+        if (parts.length !== 3) return '';
+        var yy = parseInt(parts[0], 10);
+        var mm = parseInt(parts[1], 10);
+        var dd = parseInt(parts[2], 10);
+        if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return '';
+
+        function INT(d) { return Math.floor(d); }
+        function jdFromDate(d, m, y) {
+            var a = INT((14 - m) / 12);
+            var y1 = y + 4800 - a;
+            var m1 = m + 12 * a - 3;
+            return d + INT((153 * m1 + 2) / 5) + 365 * y1 + INT(y1 / 4) - INT(y1 / 100) + INT(y1 / 400) - 32045;
+        }
+        function getNewMoonDay(k, tz) {
+            var T = k / 1236.85;
+            var T2 = T * T;
+            var T3 = T2 * T;
+            var dr = Math.PI / 180;
+            var Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+            var M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+            var Mprime = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+            var F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+            var C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M)
+                   - 0.4068 * Math.sin(Mprime * dr) + 0.0161 * Math.sin(2 * dr * Mprime)
+                   - 0.0004 * Math.sin(3 * dr * Mprime) + 0.0104 * Math.sin(2 * dr * F)
+                   - 0.0051 * Math.sin(dr * (M + Mprime)) - 0.0074 * Math.sin(dr * (M - Mprime))
+                   + 0.0004 * Math.sin(dr * (2 * F + M)) - 0.0004 * Math.sin(dr * (2 * F - M))
+                   - 0.0006 * Math.sin(dr * (2 * F + Mprime)) + 0.001 * Math.sin(dr * (2 * F - Mprime))
+                   + 0.0005 * Math.sin(dr * (M + 2 * Mprime));
+            return INT(Jd1 + C1 + 0.5 + tz / 24);
+        }
+        function getSunLongitude(jdn, tz) {
+            var T = (jdn - 2451545.0 + 0.5 - tz / 24) / 36525;
+            var dr = Math.PI / 180;
+            var M = 357.5291 + 35999.0503 * T - 0.0001559 * T * T - 0.00000048 * T * T * T;
+            var L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T * T;
+            var DL = (1.9146 - 0.004817 * T - 0.000014 * T * T) * Math.sin(dr * M)
+                   + (0.019993 - 0.000101 * T) * Math.sin(2 * dr * M) + 0.00029 * Math.sin(3 * dr * M);
+            var L = (L0 + DL) * dr;
+            L = L - Math.PI * 2 * INT(L / (Math.PI * 2));
+            return INT(L / (Math.PI / 6));
+        }
+        function getLunarMonth11(y, tz) {
+            var off = jdFromDate(31, 12, y) - 2415021;
+            var k = INT(off / 29.530588853);
+            var nm = getNewMoonDay(k, tz);
+            if (getSunLongitude(nm, tz) >= 9) {
+                nm = getNewMoonDay(k - 1, tz);
+            }
+            return nm;
+        }
+        function getLeapOffset(a11, tz) {
+            var k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+            var last = 0, i = 1, arc = getSunLongitude(getNewMoonDay(k + i, tz), tz);
+            do {
+                last = arc;
+                i++;
+                arc = getSunLongitude(getNewMoonDay(k + i, tz), tz);
+            } while (arc !== last && i < 14);
+            return i - 1;
+        }
+
+        var tz = 7;
+        var dayNumber = jdFromDate(dd, mm, yy);
+        var k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+        var monthStart = getNewMoonDay(k + 1, tz);
+        if (monthStart > dayNumber) {
+            monthStart = getNewMoonDay(k, tz);
+        }
+        var a11 = getLunarMonth11(yy, tz);
+        var b11 = a11;
+        var lunarYear = yy;
+        if (a11 >= monthStart) {
+            lunarYear = yy - 1;
+            a11 = getLunarMonth11(yy - 1, tz);
+        } else {
+            b11 = getLunarMonth11(yy + 1, tz);
+        }
+        var lunarDay = dayNumber - monthStart + 1;
+        var diff = INT((monthStart - a11) / 29);
+        var lunarLeap = 0;
+        var lunarMonth = diff + 11;
+        if (b11 - a11 > 365) {
+            var leapDiff = getLeapOffset(a11, tz);
+            if (diff >= leapDiff) {
+                lunarMonth = diff + 10;
+                if (diff === leapDiff) lunarLeap = 1;
+            }
+        }
+        if (lunarMonth > 12) lunarMonth -= 12;
+        if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+
+        var canList = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+        var chiList = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+
+        var canChiYearNum = (lunarMonth >= 11) ? (lunarYear + 1) : lunarYear;
+        var canYear = canList[(canChiYearNum + 6) % 10];
+        var chiYear = chiList[(canChiYearNum + 8) % 12];
+        var leapText = lunarLeap === 1 ? ' nhuận' : '';
+
+        var dStr = lunarDay < 10 ? '0' + lunarDay : '' + lunarDay;
+        var mStr = lunarMonth < 10 ? '0' + lunarMonth : '' + lunarMonth;
+
+        return 'Nhằm ngày ' + dStr + ' tháng ' + mStr + leapText + ' năm ' + canYear + ' ' + chiYear;
     };
 
     window.addEventListener('message', function(event) {
@@ -234,15 +345,16 @@
                 'groom_account_name': ['groom_bank_holder'],
                 'bride_bank_holder': ['bride_account_name'],
                 'bride_account_name': ['bride_bank_holder'],
-                'event_party_address': ['party_address', 'ceremony_address', 'groom_party_address', 'bride_party_address'],
-                'party_address': ['event_party_address', 'groom_party_address', 'bride_party_address'],
-                'ceremony_address': ['event_party_address', 'groom_ceremony_address'],
-                'groom_party_address': ['event_party_address', 'party_address'],
-                'bride_party_address': ['event_party_address', 'party_address'],
-                'event_party_time': ['party_time', 'ceremony_time', 'groom_party_time', 'bride_party_time'],
-                'party_time': ['event_party_time', 'groom_party_time', 'bride_party_time'],
-                'groom_party_time': ['party_time', 'event_party_time'],
-                'bride_party_time': ['party_time', 'event_party_time'],
+                'event_party_address': ['party_address'],
+                'party_address': ['event_party_address'],
+                'party_venue': ['event_party_venue'],
+                'event_party_venue': ['party_venue'],
+                'event_party_time': ['party_time'],
+                'party_time': ['event_party_time'],
+                'groom_party_time': ['groom_ceremony_time'],
+                'bride_party_time': ['bride_ceremony_time'],
+                'groom_party_address': ['groom_ceremony_address'],
+                'bride_party_address': ['bride_ceremony_address'],
                 'event_party_date': ['wedding_date', 'groom_party_date', 'bride_party_date'],
                 'wedding_date': ['event_party_date', 'groom_party_date', 'bride_party_date', 'wedding_date_digits'],
                 'wedding_date_digits': ['wedding_date', 'event_party_date'],
@@ -278,7 +390,7 @@
                 var displayVal = isUppercase ? (val || '').toUpperCase() : val;
 
                 if (el.tagName === 'IMG') {
-                    if (val) {
+                    if (val && val.indexOf('motdoi.com') === -1 && val.indexOf('ladicdn.com') === -1) {
                         var resolved = resolveUrl(val);
                         if (resolved) el.src = resolved;
                     }
@@ -286,7 +398,7 @@
                     el.value = val;
                 } else {
                     if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1) {
-                        if (val) {
+                        if (val && val.indexOf('motdoi.com') === -1 && val.indexOf('ladicdn.com') === -1) {
                             var bgUrl = resolveUrl(val);
                             if (bgUrl) el.style.setProperty('background-image', 'url("' + bgUrl + '")', 'important');
                         }
@@ -323,6 +435,20 @@
                         document.querySelectorAll('[data-sync-target="wedding_date_full"]').forEach(function(el) {
                             el.textContent = wName + ' ' + d + '.' + m + '.' + y;
                         });
+
+                        // Tự động tính và đồng bộ ngày Âm lịch nếu có thay đổi ngày cưới
+                        var calculatedLunar = calcVietnameseLunar(val);
+                        if (calculatedLunar) {
+                            window.__MAYHEN_LOCAL_STATE['wedding_lunar_date'] = calculatedLunar;
+                            document.querySelectorAll('[data-sync-target="wedding_lunar_date"], [data-sync-target="event_party_lunar"]').forEach(function(el) {
+                                var curText = el.textContent || '';
+                                if (curText.trim().startsWith('(') && curText.trim().endsWith(')')) {
+                                    el.textContent = '(' + calculatedLunar + ')';
+                                } else {
+                                    el.textContent = calculatedLunar;
+                                }
+                            });
+                        }
                     }
                 } catch (e) {}
             }

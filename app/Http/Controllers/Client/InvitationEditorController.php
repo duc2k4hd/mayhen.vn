@@ -143,6 +143,12 @@ class InvitationEditorController extends Controller
         if (! empty($extraData['event_party_address'])) {
             $extraData['event_party_address'] = mb_substr(trim(strip_tags((string) $extraData['event_party_address'])), 0, 255);
         }
+        if (! empty($extraData['party_venue'])) {
+            $extraData['party_venue'] = mb_substr(trim(strip_tags((string) $extraData['party_venue'])), 0, 150);
+        }
+        if (! empty($extraData['party_time'])) {
+            $extraData['party_time'] = mb_substr(trim(strip_tags((string) $extraData['party_time'])), 0, 30);
+        }
         if (! empty($extraData['event_party_time'])) {
             $extraData['event_party_time'] = mb_substr(trim(strip_tags((string) $extraData['event_party_time'])), 0, 30);
         }

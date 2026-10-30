@@ -2061,6 +2061,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Pest Feature Test: 100% PASSED (1 passed, 6 assertions).
 
+            68. **Bổ Sung Trường Nhập Liệu Thư Mời Tiệc Cưới Chính (Save The Date, Giờ Tiệc, Nơi Tổ Chức & Địa Chỉ Sảnh Tiệc) & Tách Biệt Alias Bridge**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng gửi 2 ảnh chụp phần "Thư Mời Tiệc Cưới Chính" trên thiệp mẫu (gồm ảnh Save The Date, giờ tổ chức 18:00, Tên nơi tổ chức "Trung tâm Tiệc cưới Ngân Hà" và Địa chỉ tiệc cưới) và hỏi *"Những dữ liệu này không sửa được à?"*.
+                  * Nguyên nhân: Trước đây trong `schema.json` và canonical schema của `InvitationTemplateService`, các trường này chưa được cấu hình vào form nhập liệu. Đồng thời trong `editor-bridge.blade.php`, bảng alias mapping gộp chung `groom_party_address` và `bride_party_address` sang `event_party_address`, khiến địa chỉ tư gia Nhà Gái tự động đè lên địa chỉ Trung tâm Tiệc Cưới.
+                - **Giải pháp hoàn thiện**:
+                  * **Bổ sung các trường Tiệc Cưới Chính vào Schema**:
+                    + `wedding.extra_data.party_time`: Giờ tổ chức tiệc cưới chính (mặc định 18:00).
+                    + `wedding.extra_data.party_venue`: Tên nơi tổ chức / Trung tâm tiệc cưới (mặc định "Trung tâm Tiệc cưới Ngân Hà").
+                    + `wedding.extra_data.event_party_address`: Địa chỉ nơi tổ chức tiệc cưới chính (mặc định "Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội").
+                    + `wedding.extra_data.save_date_photo_url`: Ảnh thiệp mời tiệc cưới (Save The Date) (mặc định `savedate.jpg`).
+                  * **Tách biệt Alias Mapping trong `editor-bridge.blade.php`**: Xóa bỏ hoàn toàn việc gộp `groom_party_address` và `bride_party_address` sang `event_party_address` / `party_address`. Giữ độc lập địa chỉ tư gia Nhà Trai, địa chỉ tư gia Nhà Gái và địa chỉ Trung tâm Tiệc Cưới.
+                  * **Sanitize Backend Controller**: Thêm quy chuẩn làm sạch XSS và giới hạn độ dài cho `party_venue` (tối đa 150 ký tự) và `party_time` (tối đa 30 ký tự) trong `InvitationEditorController.php`.
+                - **Xác thực chất lượng**:
+                  * Laravel Pint: Passed.
+                  * Artisan optimize:clear: Hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
