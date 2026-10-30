@@ -69,6 +69,31 @@ class InvitationTemplateService
                         'placeholder' => 'YYYY-MM-DD',
                     ],
                     [
+                        'key' => 'wedding.extra_data.wedding_lunar_date',
+                        'label' => 'Ngày âm lịch cử hành hôn lễ',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Nhằm ngày 12 tháng 11 năm Bính Ngọ',
+                        'placeholder' => 'Ví dụ: Nhằm ngày 12 tháng 11 năm Bính Ngọ',
+                        'max' => 100,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.groom_photo_url',
+                        'label' => 'Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => 'assets/images/groom.webp',
+                        'placeholder' => 'Đường dẫn ảnh Chú rể',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_photo_url',
+                        'label' => 'Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => 'assets/images/bride.webp',
+                        'placeholder' => 'Đường dẫn ảnh Cô dâu',
+                    ],
+                    [
                         'key' => 'wedding.cover_photo_url',
                         'label' => 'Ảnh bìa đại diện thiệp',
                         'type' => 'image',
@@ -407,18 +432,29 @@ class InvitationTemplateService
                     }
                 }
 
-                foreach ($secDef['fields'] as $fIdx => $fDef) {
+                $processedKeys = [];
+                $mergedFields = [];
+
+                foreach ($secDef['fields'] as $fDef) {
                     $fKey = $fDef['key'];
+                    $processedKeys[] = $fKey;
                     if (isset($rawFieldsByKey[$fKey])) {
                         $rf = $rawFieldsByKey[$fKey];
-                        if (isset($rf['default'])) {
-                            $secDef['fields'][$fIdx]['default'] = $rf['default'];
-                        }
-                        if (isset($rf['placeholder'])) {
-                            $secDef['fields'][$fIdx]['placeholder'] = $rf['placeholder'];
-                        }
+                        $fDef = array_merge($fDef, $rf);
+                    }
+                    $mergedFields[] = $fDef;
+                }
+
+                // Bảo tồn toàn bộ các fields riêng do mẫu thiệp định nghĩa mà canonical chưa có
+                foreach ($rawSec['fields'] ?? [] as $rf) {
+                    $k = $rf['key'] ?? $rf['name'] ?? null;
+                    if ($k && ! in_array($k, $processedKeys, true)) {
+                        $mergedFields[] = $rf;
+                        $processedKeys[] = $k;
                     }
                 }
+
+                $secDef['fields'] = $mergedFields;
             }
 
             $normalizedSections[] = $secDef;

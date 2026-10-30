@@ -250,7 +250,8 @@
                                         $type = $field['type'] ?? 'text';
                                         $label = $field['label'] ?? $fieldKey;
                                         $isRequired = !empty($field['required']);
-                                        $isFullWidth = in_array($type, ['repeater', 'gallery', 'textarea', 'color', 'image'])
+                                        $isFullWidth = in_array($type, ['repeater', 'gallery', 'textarea', 'color'])
+                                            || ($type === 'image' && !str_contains($fieldKey, 'groom_photo') && !str_contains($fieldKey, 'bride_photo'))
                                             || str_contains($fieldKey, 'extra_data.qr_')
                                             || str_contains($fieldKey, 'music_url')
                                             || str_contains($fieldKey, 'map_')
@@ -468,15 +469,15 @@
                                                                data-target-input="{{ $fieldId }}"
                                                                data-target-thumb="preview_thumb_{{ $fieldId }}"
                                                                data-template-slug="{{ $selectedTemplate->slug }}"
-                                                               data-is-main-photo="{{ str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo') ? '1' : '0' }}"
+                                                               data-is-main-photo="{{ str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo') || str_contains($fieldKey, 'groom_photo') || str_contains($fieldKey, 'bride_photo') ? '1' : '0' }}"
                                                                accept="image/*" 
                                                                style="display: none;">
                                                         <span class="mayhen_editor_upload_status" id="status_{{ $fieldId }}" style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);"></span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo'))
-                                                <div class="mayhen_editor_input_help">Ảnh bìa thiệp cưới sẽ được tự động căn chỉnh khung hình dọc đẹp nhất</div>
+                                            @if (str_contains($fieldKey, 'cover_photo') || str_contains($fieldKey, 'hero_photo') || str_contains($fieldKey, 'groom_photo') || str_contains($fieldKey, 'bride_photo'))
+                                                <div class="mayhen_editor_input_help">Ảnh chân dung / đại diện sẽ được tự động căn chỉnh khung hình dọc tỉ lệ chuẩn 3:4 đẹp nhất</div>
                                             @endif
                                         </div>
 

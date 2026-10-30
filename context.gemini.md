@@ -1993,6 +1993,74 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Cập nhật `$resolveAsset` trong `template.blade.php` chấp nhận chuỗi `data:` base64 trực tiếp.
                 - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
 
+            63. **Khắc Phục Lệch Ảnh Mặc Định Giữa Form Tạo Thiệp & Iframe Preview (`schema.json` cover_photo_url default)**:
+                - **Nguyên nhân cốt lõi**:
+                  * Trong `schema.json` của mẫu `dau-an-thoi-gian` (và các mẫu `giua-muon-ngan-vi-sao`, `hac-bach-trao-duyen`, `luu-but-ngay-chung-doi`), trường `wedding.cover_photo_url` được thiết lập giá trị mặc định là `"assets/images/cover.jpg"`.
+                  * Đường dẫn này không có thật trên server (404), khiến thẻ `<img>` xem trước ở form kích hoạt sự kiện `onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'"`, dẫn đến ô xem trước bên trái hiển thị ảnh đại diện catalog của mẫu (`sun_earth.jpg` - hình Mặt Trời).
+                  * Trong khi đó, ở iframe xem trước thiệp bên phải, template lấy fallback là file `hero.jpg` có sẵn trong thư mục asset của mẫu (hình cô dâu chú rể). Do đó hai ảnh hoàn toàn trái ngược và không đồng bộ với nhau.
+                - **Giải pháp hoàn thiện**:
+                  * Cập nhật chính xác giá trị `"default"` trong `schema.json` của từng mẫu trỏ đúng về file asset ảnh cưới mặc định có thật của mẫu đó (`hero.jpg`, `7da1e3a6d59c1a98.webp`, `hip_2307-20250417154245-1n-2l.jpg`, `luu-but-ngay-chung-doi.webp`).
+                  * Kết quả: Cả ô xem trước ở form tạo thiệp bên trái và khung thiệp cưới bên phải đều nạp cùng 1 file ảnh cưới mặc định, đồng bộ 100% hình ảnh ngay từ khi mở trang.
+                - **Xác thực**: Pint passed, Pest Feature tests passed 100%.
+
+            64. **Khắc Phục Hiện Tượng Iframe Preview Tự Động Nhảy Ảnh Khác Khi Tải Trang Xong (Autosave & Template Switching Isolation)**:
+                - **Nguyên nhân cốt lõi**:
+                  * Cơ chế tự động khôi phục bản nháp LocalStorage (`store.autosaver.getLocalDraft`) trước đây sử dụng khóa chung `mayhen_draft_new` cho mọi mẫu thiệp khi tạo mới mà không phân biệt theo `template_slug`.
+                  * Khi người dùng đã từng mở hoặc thử nghiệm một mẫu thiệp khác (hoặc đổi mẫu thiệp), bản nháp trong LocalStorage lưu các trường ảnh (`cover_photo_url`, `hero_photo_url`, `gallery`) với đường dẫn asset riêng của mẫu cũ.
+                  * Khi trang tạo thiệp mới tải xong, sự kiện `MAYHEN_BRIDGE_READY` kích hoạt `syncAllFieldsToIframe`. Hàm này gửi toàn bộ input (đã bị gán đè bởi bản nháp cũ) sang iframe, khiến vòng tròn thiên hà orbit trong preview tự động bị đè bởi ảnh của mẫu cũ. Trong khi đó, thẻ `<img>` ô xem trước (`preview_thumb`) bên trái không được cập nhật tương ứng, dẫn đến tình trạng hai bên lệch ảnh và preview tự nhảy sang ảnh khác dù người dùng chưa thao tác chỉnh sửa gì.
+                - **Giải pháp hoàn thiện**:
+                  * **Cô lập bản nháp theo mẫu**: Cập nhật `autosaver.js` lưu khóa bản nháp theo `mayhen_draft_new_{template_slug}` khi tạo mới, ngăn chặn tuyệt đối việc bản nháp mẫu này lây lan hoặc ghi đè sang mẫu khác.
+                  * **Lọc bỏ asset mặc định khi chuyển mẫu**: Trong `template-switcher.js` và `editor.js`, khi nạp nháp từ một mẫu thiệp khác, hệ thống chỉ giữ lại các trường văn bản (tên đôi uyên ương, ngày cưới, phụ mẫu, lời chúc...), tự động loại bỏ mọi đường dẫn asset ảnh cục bộ của mẫu cũ (`assets/...`), chỉ giữ lại ảnh nếu do người dùng tự tải lên (`data:image` hoặc `http`).
+                  * **Đồng bộ toàn diện Preview Thumb**: Bất kỳ khi nào nạp dữ liệu từ bản nháp vào hidden input ảnh, hệ thống cập nhật đồng thời thẻ `#preview_thumb_{id}` bên trái tương ứng, đảm bảo ô xem trước bên trái và preview iframe bên phải luôn đồng bộ 100%.
+                  * **Tối ưu hàm resolveUrl trong editor-bridge**: Tự động dọn dẹp các tiền tố dư thừa `assets/` tránh sinh đường dẫn lỗi trùng lặp `assets/assets/...`.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed trên cả 3 file `autosaver.js`, `template-switcher.js`, `editor.js`.
+                  * Laravel Pint: Passed.
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+
+            65. **Tự Động Chuyển Đổi Ngày Âm Lịch & Chuẩn Hóa Ảnh Đại Diện Đôi Uyên Ương Tỉ Lệ 3/4**:
+                - **Yêu cầu & Vấn đề**:
+                  * Khi chọn ngày hôn lễ (`wedding_date`), dòng ghi chú ngày âm lịch (`mayhen_invitation_ladoifji894yfv_note` mang `data-sync-target="wedding_lunar_date"`) không tự thay đổi theo đúng ngày đã chọn.
+                  * Phần Đôi Uyên Ương (Chú Rể & Cô Dâu) chưa có khung ảnh riêng biệt theo tỉ lệ đứng 3/4 và thiếu trường tải ảnh chân dung trong form studio tạo thiệp.
+                - **Giải pháp hoàn thiện**:
+                  * **Thuật toán Âm Lịch Thiên Văn Học (Hồ Ngọc Đức - GMT+7)**: Tích hợp hàm tính âm lịch Việt Nam chuẩn xác vào `editor-bridge.blade.php` và `editor.js`. Khi người dùng thay đổi ngày cử hành hôn lễ trên form hoặc gửi sang iframe, hệ thống tự động tính ngày, tháng (kèm tháng nhuận nếu có) và năm Can Chi chuẩn xác, tự động cập nhật lập tức lên thẻ ghi chú `[data-sync-target="wedding_lunar_date"]` và tự điền vào input ngày âm lịch trên form.
+                  * **Chuẩn hóa ảnh đại diện Chú Rể & Cô Dâu tỉ lệ 3/4**:
+                    + Trong `styles.css`: Thiết lập class `.mayhen_invitation_ladoifji894yfv_portrait` tỉ lệ chuẩn `aspect-ratio: 3 / 4 !important;`, bo góc mềm 16px, viền kim loại vàng Antique Gold và bóng đổ thiên hà 3D sang trọng.
+                    + Trong `dau-an-thoi-gian/schema.json`: Bổ sung 3 trường mới gồm `wedding.extra_data.wedding_lunar_date` (ngày âm lịch), `wedding.extra_data.groom_photo_url` (Ảnh chân dung Chú rể 3:4) và `wedding.extra_data.bride_photo_url` (Ảnh chân dung Cô dâu 3:4).
+                    + Trong `editor.blade.php`: Gắn `data-is-main-photo="1"` cho cả `groom_photo_url` và `bride_photo_url`, đảm bảo khi tải ảnh lên nếu chưa đúng tỉ lệ 3:4 sẽ tự động mở popup bắt buộc cắt ảnh chuẩn 3:4.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+
+            66. **Đồng Bộ Tuyệt Đối Thumbnail Mẫu & Ảnh Đại Diện Thiệp Chuẩn `sun_earth.jpg` (Zero External Assets Enforced)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Trong database (`invitation_templates`), mẫu `dau-an-thoi-gian` có `thumbnail_url` là `/mau-thiep/dau-an-thoi-gian/assets/sun_earth.jpg` (ảnh Mặt Trời và Trái Đất vũ trụ Three.js).
+                  * Tuy nhiên trong `schema.json` và `template.blade.php`, trường `cover_photo_url` trước đây lại trỏ nhầm về `hero.jpg`.
+                  * Đồng thời, trong trình duyệt của người dùng còn tồn lưu link ảnh bên ngoài từ các đợt thử nghiệm trước (`https://assets.motdoi.com.vn/images/3351253e...`), khiến khi tải trang tạo thiệp thì thẻ xem trước và iframe bị đè bởi link bên ngoài này.
+                - **Giải pháp hoàn thiện**:
+                  * Cập nhật `"default": "sun_earth.jpg"` trong `dau-an-thoi-gian/schema.json` và `$heroPhotoUrl` trong `template.blade.php` fallback đúng về `sun_earth.jpg`. Đảm bảo trang danh sách mẫu, ô xem trước form tạo thiệp và khung orbit xem trước thiệp đều hiển thị đồng nhất 100% cùng 1 file ảnh `sun_earth.jpg`.
+                  * Triển khai hàm phòng vệ `isBannedExternalUrl` trong `editor.js` và `editor-bridge.blade.php` ngăn chặn và loại bỏ triệt để mọi đường dẫn ảnh rác bên ngoài (`motdoi.com.vn`, `ladicdn.com`, `27biggroup.com`...), tuân thủ nghiêm ngặt nguyên tắc Zero External Assets.
+                - **Xác thực chất lượng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Passed.
+                  * Pest Feature Tests: 100% PASSED (3 passed, 15 assertions).
+
+            67. **Khắc Phục Trường Ảnh Chú Rể & Cô Dâu Không Hiển Thị Trên Form Mục 1. Đôi Uyên Ương (Canonical Schema & Form Layout Alignment)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng phản ánh trên form studio tạo thiệp (`/tao-thiep?template=dau-an-thoi-gian`), mục "1. Đôi Uyên Ương" chỉ hiển thị Họ tên Chú rể, Họ tên Cô dâu, Ngày cử hành hôn lễ mà hoàn toàn không có trường tải ảnh Chú rể và ảnh Cô dâu.
+                - **Nguyên nhân cốt lõi**:
+                  * Trong `app/Services/InvitationTemplateService.php`, hàm `getCanonicalSections()` ở section `couple` chỉ định nghĩa cứng 5 trường (`groom_name`, `bride_name`, `wedding_date`, `cover_photo_url`, `couple_quote`), hoàn toàn thiếu `wedding.extra_data.groom_photo_url`, `wedding.extra_data.bride_photo_url` và `wedding.extra_data.wedding_lunar_date`.
+                  * Khi `normalizeSchema()` xử lý, hàm này chỉ lặp qua danh sách fields của canonical và lọc bỏ tất cả các fields mở rộng riêng trong `schema.json` của template mà canonical chưa có. Do đó, các trường ảnh Chú rể, ảnh Cô dâu và ngày âm lịch bị nuốt mất trước khi truyền sang view `editor.blade.php`.
+                - **Giải pháp hoàn thiện**:
+                  * **Chuẩn hóa Canonical Section `couple`**: Bổ sung đầy đủ `wedding.extra_data.wedding_lunar_date`, `wedding.extra_data.groom_photo_url` và `wedding.extra_data.bride_photo_url` vào cấu trúc chuẩn mực của `InvitationTemplateService::getCanonicalSections()`.
+                  * **Hợp nhất Schema an toàn (`normalizeSchema`)**: Cập nhật hàm `normalizeSchema()` để không chỉ map thông tin từ canonical mà còn bảo lưu trọn vẹn 100% các trường mở rộng riêng do bất kỳ template nào khai báo trong `schema.json`.
+                  * **Bố cục 2 Cột Đối Xứng Song Song (`editor.blade.php`)**: Cập nhật biến `$isFullWidth` trong `editor.blade.php` loại trừ `groom_photo_url` và `bride_photo_url` khỏi class `is-full-width`, giúp 2 ô tải ảnh Chú rể và Cô dâu hiển thị song song 2 cột cạnh nhau cực kỳ trực quan, cân đối và thẩm mỹ.
+                  * **Xóa cache ứng dụng**: Chạy `php artisan optimize:clear` để toàn bộ view cache, config và compiled routes được làm mới tức thì.
+                - **Xác thực chất lượng**:
+                  * Laravel Pint: Passed.
+                  * Pest Feature Test: 100% PASSED (1 passed, 6 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
