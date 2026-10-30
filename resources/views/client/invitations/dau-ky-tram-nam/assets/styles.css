@@ -1,5 +1,4 @@
 /* Dấu Ký Trăm Năm · HTML/CSS thuần · scoped theo template Mây Hẹn. */
-@import url("https://fonts.googleapis.com/css2?family=Jura:wght@400;500;600;700&family=Philosopher:wght@400;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap");
 :root {
     --mayhen-monochrome: #8a1526;
     --mayhen-ruby-deep: #5e0b19;
@@ -5211,4 +5210,427 @@ body {
     text-align: center !important;
     display: block !important;
     margin: 0 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_section28 .mayhen_invitation_jeowinids483fr_gallery_extra {
+    position: absolute;
+    width: 201.937px;
+    height: 302.906px;
+    overflow: hidden;
+}
+
+.mayhen_invitation_jeowinids483fr_section28 {
+    height: 2115px;
+}
+
+.mayhen_invitation_jeowinids483fr_section28 .mayhen_invitation_jeowinids483fr_gallery_extra .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_section28 .mayhen_invitation_jeowinids483fr_gallery_extra .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+
+.mayhen_invitation_jeowinids483fr_gallery_extra_0 {
+    top: 1507px;
+    left: 4.645px;
+}
+
+.mayhen_invitation_jeowinids483fr_gallery_extra_1 {
+    top: 1507px;
+    left: 213.418px;
+}
+
+.mayhen_invitation_jeowinids483fr_gallery_extra_2 {
+    top: 1810px;
+    left: 4.645px;
+}
+
+.mayhen_invitation_jeowinids483fr_section27 .mayhen_invitation_jeowinids483fr_group173 {
+    display: none;
+}
+
+.mayhen_invitation_jeowinids483fr_timeline_list {
+    position: absolute;
+    top: 464.98px;
+    left: 100.398px;
+    display: flex;
+    width: 219.204px;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_invitation_jeowinids483fr_section27 .mayhen_invitation_jeowinids483fr_paragraph70,
+.mayhen_invitation_jeowinids483fr_section27 .mayhen_invitation_jeowinids483fr_paragraph71 {
+    display: none;
+}
+
+.mayhen_invitation_jeowinids483fr_timeline_item {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+    color: #263512;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.mayhen_invitation_jeowinids483fr_timeline_item > :first-child {
+    font-weight: 700;
+}
+
+.mayhen_invitation_jeowinids483fr_family_event_details {
+    position: absolute;
+    top: 560px;
+    left: 0;
+    display: flex;
+    width: 165px;
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 10px;
+    border-top: 1px solid #c5a880;
+    color: #4a453e;
+    font-size: 10px;
+    line-height: 1.45;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.mayhen_invitation_jeowinids483fr_family_event_details > span:first-child {
+    color: #85182a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mayhen_invitation_jeowinids483fr_family_photo {
+    position: absolute;
+    top: 27px;
+    left: 5px;
+    width: 48px;
+    height: 64px;
+    overflow: hidden;
+    border: 1px solid #c5a880;
+    border-radius: 24px 24px 4px 4px;
+    background: #f3ece3;
+}
+
+.mayhen_invitation_jeowinids483fr_family_photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph35,
+.mayhen_invitation_jeowinids483fr_paragraph37 {
+    left: 58px;
+    width: 102px;
+    text-align: left;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph35 > .mayhen_invitation_jeowinids483fr_ladi-paragraph,
+.mayhen_invitation_jeowinids483fr_paragraph37 > .mayhen_invitation_jeowinids483fr_ladi-paragraph {
+    font-size: 9px;
+    line-height: 1.45;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.mayhen_invitation_jeowinids483fr_lightbox_counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    color: #fff;
+    font-size: 14px;
+    transform: translateX(-50%);
+}
+
+html.mayhen_invitation_jeowinids483fr_embed_mode,
+body.mayhen_invitation_jeowinids483fr_embed_mode {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+body.mayhen_invitation_jeowinids483fr_embed_mode #mayhen-door-stage,
+body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_door_stage {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation-hidden {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}
+
+/* ==========================================================================
+   MAYHEN STANDARDIZED SECTIONS & LIVE PREVIEW DEFENSE
+   ========================================================================== */
+
+/* 1. Embed Mode Defenses */
+body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_cta-menu,
+.mayhen_embed_mode .mayhen_invitation_jeowinids483fr_cta-menu {
+    display: none !important;
+}
+
+/* 2. Hero Head Section 3 */
+.mayhen_invitation_jeowinids483fr_hero_head {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    right: 10px;
+    z-index: 5;
+    text-align: center;
+    padding: 10px;
+    pointer-events: none;
+}
+
+.mayhen_invitation_jeowinids483fr_hero_badge {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #9C7A4A;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.mayhen_invitation_jeowinids483fr_hero_title {
+    font-size: 26px;
+    line-height: 1.25;
+    font-family: 'Great Vibes', 'Cormorant Garamond', Georgia, serif;
+    color: #2C2824;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+}
+
+.mayhen_invitation_jeowinids483fr_hero_amp {
+    color: #9C7A4A;
+    font-style: italic;
+    padding: 0 4px;
+}
+
+.mayhen_invitation_jeowinids483fr_hero_date {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #4A453E;
+    margin: 0 0 2px 0;
+}
+
+.mayhen_invitation_jeowinids483fr_hero_lunar {
+    font-size: 11px;
+    font-style: italic;
+    color: #7A7265;
+    margin: 0;
+}
+
+/* 3. Dynamic Wedding Calendar Card */
+.mayhen_invitation_jeowinids483fr_calendar_card {
+    position: absolute;
+    top: 700px;
+    left: 20px;
+    width: 380px;
+    z-index: 6;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 16px 14px 20px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_month {
+    font-family: 'Great Vibes', 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    color: #2C2824;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #7A7265;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(197, 168, 128, 0.25);
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px 2px;
+    text-align: center;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_days .mayhen_cal_blank,
+.mayhen_invitation_jeowinids483fr_calendar_days .mayhen_invitation_ladoifji894yfv_cal_empty {
+    display: block;
+    height: 32px;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_days .mayhen_cal_day,
+.mayhen_invitation_jeowinids483fr_calendar_days span:not(.mayhen_cal_blank):not(.mayhen_invitation_ladoifji894yfv_cal_empty) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    margin: 0 auto;
+    font-size: 13px;
+    color: #333333;
+    font-weight: 500;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.mayhen_invitation_jeowinids483fr_calendar_days .mayhen_cal_day.mayhen_cal_active,
+.mayhen_invitation_jeowinids483fr_calendar_days .mayhen_invitation_ladoifji894yfv_cal_target {
+    background: #8B1E2D !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(139, 30, 45, 0.4) !important;
+    transform: scale(1.08);
+}
+
+/* 4. In-Page Gift Section (Hộp mừng cưới nội trang) */
+.mayhen_invitation_jeowinids483fr_gift_section {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 40px 16px;
+    box-sizing: border-box;
+    background: #FDFBF7;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_container {
+    width: 100%;
+    max-width: 388px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_badge {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #9C7A4A;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_title {
+    font-size: 26px;
+    font-family: 'Great Vibes', 'Cormorant Garamond', Georgia, serif;
+    color: #2C2824;
+    margin: 0 0 8px 0;
+    font-weight: 700;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_subtitle {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #666666;
+    margin: 0 auto;
+    max-width: 320px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px 16px;
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_card_role {
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #9C7A4A;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_card_name {
+    font-size: 18px;
+    color: #2C2824;
+    margin: 0 0 14px 0;
+    font-weight: 600;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_qr_box {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 14px auto;
+    background: #FAFAFA;
+    border-radius: 12px;
+    border: 1px solid #EFE8DD;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_qr_image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_bank_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed rgba(229, 220, 205, 0.6);
+}
+
+.mayhen_invitation_jeowinids483fr_gift_bank_row:last-child {
+    border-bottom: none;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_bank_label {
+    color: #777777;
+    font-size: 12px;
+}
+
+.mayhen_invitation_jeowinids483fr_gift_bank_value {
+    color: #2C2824;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }

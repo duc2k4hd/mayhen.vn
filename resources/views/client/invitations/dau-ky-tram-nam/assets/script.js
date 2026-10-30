@@ -4,7 +4,9 @@
     const P = "mayhen_invitation_jeowinids483fr_";
     const C = window.MAYHEN_INVITATION_CONFIG || {};
     const isEmbed = Boolean(
-        C.isEmbed || new URLSearchParams(location.search).get("embed") === "1",
+        window.__MAYHEN_IS_EMBED === true ||
+        C.isEmbed ||
+        new URLSearchParams(location.search).get("embed") === "1",
     );
     const one = (name, root = document) => root.querySelector(`.${P}${name}`);
     const all = (name, root = document) => [
@@ -288,6 +290,10 @@
 
     const openIntro = () => {
         if (isEmbed) {
+            document.documentElement.classList.remove("no-scroll", "scroll_locked");
+            document.body.classList.remove("no-scroll", "scroll_locked");
+            document.documentElement.style.overflowY = "auto";
+            document.body.style.overflowY = "auto";
             const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
             if (stageEl) {
                 stageEl.classList.add("opened", "mayhen_door_hidden");
@@ -344,15 +350,14 @@
             if (configured) {
                 const cleanAcc = (bank.account || bank.number || '').replace(/[^0-9A-Za-z]/g, '');
                 const bankName = bank.name || bank.bank || '';
-                const qrUrl = bank.qr || (bankName && cleanAcc
-                    ? `https://img.vietqr.io/image/${encodeURIComponent(bankName.toLowerCase().replace(/\s+/g, ''))}-${cleanAcc}-compact2.png?amount=0&addInfo=Mung%20cuoi&accountName=${encodeURIComponent(bank.holder || '')}`
-                    : '');
+                const qrUrl = bank.qr || '';
 
                 const qrWrap = details.querySelector('.' + P + 'gift_qr_wrap');
                 const qrImg = details.querySelector('.' + P + 'gift_qr_img');
                 const bNameEl = details.querySelector('.' + P + 'gift_bank_name');
                 const holderEl = details.querySelector('.' + P + 'gift_holder');
                 const accEl = details.querySelector('.' + P + 'gift_account');
+                const qrKey = person === 'groom' ? 'qr_groom_image' : 'qr_bride_image';
 
                 if (qrImg) {
                     if (qrUrl) {
@@ -365,6 +370,10 @@
                 if (bNameEl) bNameEl.textContent = bankName;
                 if (holderEl) holderEl.textContent = bank.holder || '';
                 if (accEl) accEl.textContent = bank.account || bank.number || '';
+                if (bNameEl) bNameEl.dataset.syncTarget = person + '_bank_name';
+                if (holderEl) holderEl.dataset.syncTarget = person + '_bank_holder';
+                if (accEl) accEl.dataset.syncTarget = person + '_bank_account';
+                if (qrImg) qrImg.dataset.syncTarget = qrKey;
             }
         }
         if (note) note.hidden = configured;
@@ -372,6 +381,10 @@
 
     const initApp = () => {
         syncStage();
+        const saveDatePhoto = one("ladi-image-background", one("image210"));
+        if (saveDatePhoto && C.saveDatePhoto) {
+            saveDatePhoto.style.backgroundImage = `url("${C.saveDatePhoto}")`;
+        }
         openIntro();
         if (isEmbed) {
             document.body.classList.remove(P + "locked");
@@ -432,15 +445,25 @@
 
             const k = (e.data.key || '').replace(/^wedding\./, '').replace(/^extra_data\./, '');
             const v = e.data.value || '';
+            const galleryMatch = k.match(/^gallery\.(\d+)$/);
+            if (galleryMatch) {
+                const galleryIndex = Number(galleryMatch[1]);
+                requestAnimationFrame(() => {
+                    const imageLayer = one("ladi-image-background", galleryElements[galleryIndex]);
+                    const backgroundImage = imageLayer ? getComputedStyle(imageLayer).backgroundImage : "none";
+                    const imageUrl = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                    if (imageUrl) photos[galleryIndex] = imageUrl[1];
+                });
+            }
             if (C.bank) {
                 if (k === 'groom_bank_name') { C.bank.groom.name = C.bank.groom.bank = v; }
                 if (k === 'groom_bank_account') { C.bank.groom.account = C.bank.groom.number = v; }
-                if (k === 'groom_account_name') { C.bank.groom.holder = v; }
+                if (k === 'groom_bank_holder') { C.bank.groom.holder = v; }
                 if (k === 'qr_groom_image') { C.bank.groom.qr = v; }
 
                 if (k === 'bride_bank_name') { C.bank.bride.name = C.bank.bride.bank = v; }
                 if (k === 'bride_bank_account') { C.bank.bride.account = C.bank.bride.number = v; }
-                if (k === 'bride_account_name') { C.bank.bride.holder = v; }
+                if (k === 'bride_bank_holder') { C.bank.bride.holder = v; }
                 if (k === 'qr_bride_image') { C.bank.bride.qr = v; }
 
                 const selectedTab = document.querySelector('.' + P + 'gift-tab.' + P + 'selected');
@@ -567,6 +590,13 @@
     const galleryElements = [
         ...(stage ? stage.querySelectorAll("[data-mayhen-gallery]") : []),
     ];
+    galleryElements.forEach((element, index) => {
+        const imageLayer = one("ladi-image-background", element);
+        const galleryImage = C.gallery?.[index];
+        if (imageLayer && galleryImage) {
+            imageLayer.style.backgroundImage = `url("${galleryImage}")`;
+        }
+    });
     const photos = galleryElements.map((el) => {
         const layer = one("ladi-image-background", el);
         const bg = layer ? getComputedStyle(layer).backgroundImage : "none";
@@ -576,6 +606,7 @@
     let photoIndex = 0;
     const box = one("lightbox");
     const photo = one("lightbox-photo");
+    const photoCounter = one("lightbox_counter");
     const navigatePhoto = (delta) => {
         if (!photos.length) return;
         for (let attempt = 0; attempt < photos.length; attempt++) {
@@ -583,11 +614,13 @@
             if (photos[photoIndex]) break;
         }
         if (photo) photo.src = photos[photoIndex] || "";
+        if (photoCounter) photoCounter.textContent = `${photoIndex + 1} / ${photos.length}`;
     };
     const showPhoto = (i) => {
         photoIndex = i;
         if (!photos[i]) return showMessage("Ảnh chưa được cấu hình.");
         photo.src = photos[i];
+        if (photoCounter) photoCounter.textContent = `${i + 1} / ${photos.length}`;
         box?.classList.add(P + "visible");
         document.body.style.overflow = "hidden";
     };
@@ -825,4 +858,62 @@
             showPhoto(galleryElements.indexOf(photoNode));
         }
     });
+
+    /* ==========================================================================
+       MAYHEN STANDARDIZED WEDDING CALENDAR ENGINE
+       ========================================================================== */
+    function renderWeddingCalendar(dateInput) {
+        const grid = document.querySelector('[data-sync-target="wedding_calendar"]') ||
+                     document.querySelector('.' + P + 'calendar_days');
+        if (!grid) return;
+
+        let dateObj = null;
+        if (dateInput instanceof Date && !isNaN(dateInput.getTime())) {
+            dateObj = dateInput;
+        } else if (typeof dateInput === 'string' && dateInput.trim()) {
+            dateObj = new Date(dateInput);
+        } else {
+            const raw = grid.getAttribute('data-date') || '2026-03-21';
+            dateObj = new Date(raw);
+        }
+        if (isNaN(dateObj.getTime())) {
+            dateObj = new Date('2026-03-21');
+        }
+
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth();
+        const targetDay = dateObj.getDate();
+
+        // Cập nhật tiêu đề tháng/năm
+        const monthTitle = document.querySelector('.' + P + 'calendar_month') ||
+                           document.querySelector('[data-sync-target="calendar_month_year"]');
+        if (monthTitle) {
+            monthTitle.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + String(month + 1).padStart(2, '0') + '</span> · <span data-sync-target="wedding_year">' + year + '</span>';
+        }
+
+        // Tính ngày trong tháng
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        const firstDayOfWeek = new Date(year, month, 1).getDay();
+        const emptyDays = (firstDayOfWeek === 0) ? 6 : (firstDayOfWeek - 1);
+
+        grid.innerHTML = '';
+
+        for (let i = 0; i < emptyDays; i++) {
+            const empty = document.createElement('span');
+            empty.className = 'mayhen_cal_blank mayhen_invitation_ladoifji894yfv_cal_empty';
+            grid.appendChild(empty);
+        }
+
+        for (let d = 1; d <= totalDays; d++) {
+            const dayEl = document.createElement('span');
+            dayEl.textContent = d;
+            dayEl.className = 'mayhen_cal_day' + (d === targetDay ? ' mayhen_cal_active mayhen_invitation_ladoifji894yfv_cal_target' : '');
+            grid.appendChild(dayEl);
+        }
+
+        grid.dataset.date = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(targetDay).padStart(2, '0');
+    }
+
+    renderWeddingCalendar();
+    window.renderMayhenWeddingCalendar = renderWeddingCalendar;
 })();

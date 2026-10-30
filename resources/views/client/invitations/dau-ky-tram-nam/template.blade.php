@@ -75,6 +75,17 @@
         return $assetBase . '/' . ltrim($val, '/');
     };
 
+    // Ảnh chính & Lời tựa
+    $coverPhoto = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'muslims-hero-bg-20231207085803-t1lex.jpg');
+    $saveDatePhoto = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'hip_1854-20250417154226-mql7h.jpg');
+    $groomPhoto = $resolveAsset($extraData['groom_photo_url'] ?? null, 'hip_1854-20250417154226-mql7h.jpg');
+    $bridePhoto = $resolveAsset($extraData['bride_photo_url'] ?? null, 'hip_2374-20250417154254-fetzp.jpg');
+    $partyTime = $extraData['party_time'] ?? $weddingTimeFormatted;
+    $partyVenue = $extraData['party_venue'] ?? 'Tư gia';
+    $coupleQuote = !empty($extraData['couple_quote'])
+        ? $extraData['couple_quote']
+        : 'Tình yêu của anh và em là một hành trình kỳ diệu, vượt qua bao thử thách để cùng nhau bước đến ngày trọng đại đám cưới của chúng mình.';
+
     // 3. Mừng cưới & Ngân hàng
     $cleanGroomAcc = preg_replace('/[^0-9A-Za-z]/', '', $extraData['groom_bank_account'] ?? '1012345678');
     $cleanBrideAcc = preg_replace('/[^0-9A-Za-z]/', '', $extraData['bride_bank_account'] ?? '190398765432');
@@ -121,6 +132,25 @@
             fn($item) => !empty(trim((string) $item)) && !str_starts_with((string) $item, 'blob:'),
         )
         : [];
+    $validGallery = array_values($validGallery);
+
+    $defaultGallery = [
+        'muslims-hero-bg-20231207085803-t1lex.jpg',
+        'hip_1854-20250417154226-mql7h.jpg',
+        'hip_2374-20250417154254-fetzp.jpg',
+        'hip_1055-20250417154150-fnhf7.jpg',
+        'hip_1876-20250417154238-q5n3p.jpg',
+        'hip_1863-20250417154231-k2a7r.jpg',
+        'hip_1848-20250417154220-d3j4s.jpg',
+        'hip_1834-20250417154209-w9k2l.jpg',
+        'hip_1821-20250417154200-m7x4n.jpg',
+        'hip_1811-20250417154155-p4b8c.jpg',
+    ];
+    $albumPhotos = [];
+    for ($ai = 0; $ai < 10; $ai++) {
+        $p = $validGallery[$ai] ?? ($defaultGallery[$ai] ?? 'muslims-hero-bg-20231207085803-t1lex.jpg');
+        $albumPhotos[$ai] = $resolveAsset($p, $defaultGallery[$ai] ?? 'muslims-hero-bg-20231207085803-t1lex.jpg');
+    }
 
     // 6. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
@@ -247,36 +277,51 @@
         <div class="mayhen_invitation_jeowinids483fr_stage">
           <div
             class="mayhen_invitation_jeowinids483fr_ladi-section mayhen_invitation_jeowinids483fr_section3"
+            data-mayhen-section="couple"
           >
             <div
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
             ></div>
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
+              <div class="mayhen_invitation_jeowinids483fr_hero_head">
+                <p class="mayhen_invitation_jeowinids483fr_hero_badge">WEDDING INVITATION</p>
+                <h1 class="mayhen_invitation_jeowinids483fr_hero_title">
+                  <span data-sync-target="groom_name">{{ $groomName }}</span>
+                  <span class="mayhen_invitation_jeowinids483fr_hero_amp">&amp;</span>
+                  <span data-sync-target="bride_name">{{ $brideName }}</span>
+                </h1>
+                <p class="mayhen_invitation_jeowinids483fr_hero_date" data-sync-target="wedding_date">{{ $coverDateFormatted }}</p>
+                <p class="mayhen_invitation_jeowinids483fr_hero_lunar" data-sync-target="wedding_lunar_date">{{ $lunarDate }}</p>
+              </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image51"
+                data-sync-target="cover_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="cover_photo_url"
+                    style="background-image: url('{{ $coverPhoto }}');"
                   ></div>
                 </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image210"
+                data-sync-target="save_date_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="save_date_photo_url"
+                    style="background-image: url('{{ $saveDatePhoto }}');"
                   ></div>
                 </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_paragraph59"
               >
-                <div class="mayhen_invitation_jeowinids483fr_ladi-paragraph">
-                  Tình yêu của anh và em là một hành trình kỳ diệu, vượt qua bao
-                  thử thách để cùng nhau bước đến ngày trọng đại đám cưới của
-                  chúng mình.
+                <div class="mayhen_invitation_jeowinids483fr_ladi-paragraph" data-sync-target="couple_quote">
+                  {{ $coupleQuote }}
                 </div>
               </div>
               <div
@@ -340,481 +385,28 @@
                   ></div>
                 </div>
               </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group172"
-              >
-                <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group145"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline190"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          23
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline191"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          24
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline192"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          25
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline193"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          26
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline194"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          27
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline195"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          28
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline196"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          29
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group146"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline197"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          16
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline198"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          17
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline199"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          18
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline200"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          19
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline201"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          20
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline202"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          21
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline203"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          22
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group147"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline204"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline205"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline206"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline207"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline208"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline209"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline210"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          1
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group148"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline211"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          2
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline212"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          3
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline213"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          4
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline214"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          5
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline215"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          6
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline216"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          7
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline217"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          8
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group149"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline218"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          9
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline219"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          10
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline220"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          11
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline221"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          12
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline222"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          13
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline223"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          14
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline224"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          15
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group150"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline225"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          30
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline226"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          31
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline227"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline228"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline229"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline230"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline231"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        ></h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group151"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline232"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          sun
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline233"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          mon
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline234"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          tue
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline235"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          wed
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline236"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          thur
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline237"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          fri
-                        </h3>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline238"
-                      >
-                        <h3
-                          class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                        >
-                          sat
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
+              <div class="mayhen_invitation_jeowinids483fr_calendar_card">
+                <div class="mayhen_invitation_jeowinids483fr_calendar_header">
+                  <h3 class="mayhen_invitation_jeowinids483fr_calendar_month" data-sync-target="calendar_month_year">
+                    Tháng <span data-sync-target="wedding_month">{{ $weddingMonth }}</span> · <span data-sync-target="wedding_year">{{ $weddingYear }}</span>
+                  </h3>
                 </div>
-              </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline239"
-              >
-                <h3
-                  class="mayhen_invitation_jeowinids483fr_ladi-headline mayhen_invitation_jeowinids483fr_ladi-transition"
-                >
-                  Tháng 03
-                </h3>
+                <div class="mayhen_invitation_jeowinids483fr_calendar_weekdays">
+                  <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+                </div>
+                <div class="mayhen_invitation_jeowinids483fr_calendar_days" data-sync-target="wedding_calendar" data-date="{{ $weddingDate->format('Y-m-d') }}">
+                  @php
+                    $daysInMonth = (int) $weddingDate->daysInMonth;
+                    $startDayOfWeek = ($weddingDate->copy()->startOfMonth()->dayOfWeekIso - 1);
+                    $curDay = (int) $weddingDay;
+                  @endphp
+                  @for ($b = 0; $b < $startDayOfWeek; $b++)
+                    <span class="mayhen_cal_blank mayhen_invitation_ladoifji894yfv_cal_empty"></span>
+                  @endfor
+                  @for ($d = 1; $d <= $daysInMonth; $d++)
+                    <span class="mayhen_cal_day {{ $d === $curDay ? 'mayhen_cal_active mayhen_invitation_ladoifji894yfv_cal_target' : '' }}">{{ $d }}</span>
+                  @endfor
+                </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_headline240"
@@ -822,37 +414,6 @@
                 <h1 class="mayhen_invitation_jeowinids483fr_ladi-headline">
                   Our Story
                 </h1>
-              </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_shape18"
-              >
-                <div
-                  class="mayhen_invitation_jeowinids483fr_ladi-shape mayhen_invitation_jeowinids483fr_ladi-transition"
-                >
-                  <svg
-                    class=""
-                    fill='url("#SHAPE18_mobile_gradient")'
-                    height="100%"
-                    preserveaspectratio="none"
-                    viewbox="0 -960 960 960"
-                    width="100%"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <defs class="mayhen_invitation_jeowinids483fr_shape18_defs">
-                      <lineargradient>
-                        <stop></stop>
-                        <stop></stop>
-                      </lineargradient>
-                      <lineargradient>
-                        <stop></stop>
-                        <stop></stop>
-                      </lineargradient>
-                    </defs>
-                    <path
-                      d="m480-121-41-37q-105.77-97.12-174.88-167.56Q195-396 154-451.5T96.5-552Q80-597 80-643q0-90.15 60.5-150.58Q201-854 290-854q57 0 105.5 27t84.5 78q42-54 89-79.5T670-854q89 0 149.5 60.42Q880-733.15 880-643q0 46-16.5 91T806-451.5Q765-396 695.88-325.56 626.77-255.12 521-158l-41 37Zm0-79q101.24-93 166.62-159.5Q712-426 750.5-476t54-89.14q15.5-39.13 15.5-77.72 0-66.14-42-108.64T670.22-794q-51.52 0-95.37 31.5T504-674h-49q-26-56-69.85-88-43.85-32-95.37-32Q224-794 182-751.5t-42 108.82q0 38.68 15.5 78.18 15.5 39.5 54 90T314-358q66 66 166 158Zm0-297Z"
-                    ></path>
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
@@ -904,26 +465,33 @@
           </div>
           <div
             class="mayhen_invitation_jeowinids483fr_ladi-section mayhen_invitation_jeowinids483fr_section26"
+            data-mayhen-section="groom_family,bride_family"
           >
             <div
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
             ></div>
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
               <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image226"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image226"
+                data-sync-target="groom_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="groom_photo_url"
+                    style="background-image: url('{{ $groomPhoto }}');"
                   ></div>
                 </div>
               </div>
               <div
                 class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation-hidden mayhen_invitation_jeowinids483fr_image225"
+                data-sync-target="bride_photo_url"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="bride_photo_url"
+                    style="background-image: url('{{ $bridePhoto }}');"
                   ></div>
                 </div>
               </div>
@@ -942,6 +510,7 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-group">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group107"
+                    data-mayhen-section="bride_family"
                   >
                     <div class="mayhen_invitation_jeowinids483fr_ladi-group">
                       <div
@@ -966,6 +535,7 @@
                   </div>
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group108"
+                    data-mayhen-section="groom_family"
                   >
                     <div class="mayhen_invitation_jeowinids483fr_ladi-group">
                       <div
@@ -1075,7 +645,7 @@
                 <div
                   class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  <span style="font-size: 18px">VÀO LÚC <span data-sync-target="wedding_time">{{ $weddingTimeFormatted }}</span><br /></span
+                  <span style="font-size: 18px">VÀO LÚC <span data-sync-target="party_time">{{ $partyTime }}</span><br /></span
                   >{{ $weddingDayOfWeek }}, NGÀY <span data-sync-target="wedding_date">{{ $weddingDayFormatted }}</span><br />
                 </div>
               </div>
@@ -1103,7 +673,7 @@
                 <div
                   class="mayhen_invitation_jeowinids483fr_ladi-paragraph mayhen_invitation_jeowinids483fr_ladi-transition"
                 >
-                  TẠI TƯ GIA
+                  TẠI <span data-sync-target="party_venue">{{ $partyVenue }}</span>
                 </div>
               </div>
               <a
@@ -1168,6 +738,7 @@
           </div>
           <div
             class="mayhen_invitation_jeowinids483fr_ladi-section mayhen_invitation_jeowinids483fr_section27"
+            data-mayhen-section="timeline"
           >
             <div
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
@@ -1314,6 +885,7 @@
           </div>
           <div
             class="mayhen_invitation_jeowinids483fr_ladi-section mayhen_invitation_jeowinids483fr_section28"
+            data-mayhen-section="album"
           >
             <div
               class="mayhen_invitation_jeowinids483fr_ladi-section-background"
@@ -1336,6 +908,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.0"
+                    style="background-image: url('{{ $albumPhotos[0] }}');"
                   ></div>
                 </div>
               </div>
@@ -1349,6 +923,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.1"
+                    style="background-image: url('{{ $albumPhotos[1] }}');"
                   ></div>
                 </div>
               </div>
@@ -1362,6 +938,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.2"
+                    style="background-image: url('{{ $albumPhotos[2] }}');"
                   ></div>
                 </div>
               </div>
@@ -1375,6 +953,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.3"
+                    style="background-image: url('{{ $albumPhotos[3] }}');"
                   ></div>
                 </div>
               </div>
@@ -1388,6 +968,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.4"
+                    style="background-image: url('{{ $albumPhotos[4] }}');"
                   ></div>
                 </div>
               </div>
@@ -1401,6 +983,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.5"
+                    style="background-image: url('{{ $albumPhotos[5] }}');"
                   ></div>
                 </div>
               </div>
@@ -1414,6 +998,8 @@
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
                     class="mayhen_invitation_jeowinids483fr_ladi-image-background"
+                    data-sync-target="gallery.6"
+                    style="background-image: url('{{ $albumPhotos[6] }}');"
                   ></div>
                 </div>
               </div>
@@ -1993,6 +1579,76 @@
               </div>
             </div>
           </div>
+          <!-- SECTION 6: HỘP MỪNG CƯỚI (GIFT / BANK INFO) -->
+          <div
+            class="mayhen_invitation_jeowinids483fr_ladi-section mayhen_invitation_jeowinids483fr_gift_section"
+            data-mayhen-section="gift"
+          >
+            <div class="mayhen_invitation_jeowinids483fr_ladi-section-background"></div>
+            <div class="mayhen_invitation_jeowinids483fr_gift_container">
+              <div class="mayhen_invitation_jeowinids483fr_gift_header">
+                <span class="mayhen_invitation_jeowinids483fr_gift_badge">WEDDING GIFT</span>
+                <h2 class="mayhen_invitation_jeowinids483fr_gift_title">Hộp Mừng Cưới</h2>
+                <p class="mayhen_invitation_jeowinids483fr_gift_subtitle">
+                  Sự hiện diện và lời chúc phúc của Quý khách là món quà ý nghĩa nhất dành cho chúng tôi.
+                </p>
+              </div>
+
+              <div class="mayhen_invitation_jeowinids483fr_gift_cards">
+                <!-- Thẻ mừng cưới Chú Rể -->
+                <div class="mayhen_invitation_jeowinids483fr_gift_card">
+                  <div class="mayhen_invitation_jeowinids483fr_gift_card_role">MỪNG CƯỚI CHÚ RỂ</div>
+                  <h4 class="mayhen_invitation_jeowinids483fr_gift_card_name" data-sync-target="groom_name">{{ $groomName }}</h4>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_qr_box">
+                    <img
+                      src="{{ $qrGroom }}"
+                      alt="Mã QR Chú rể"
+                      class="mayhen_invitation_jeowinids483fr_gift_qr_image"
+                      data-sync-target="qr_groom_image"
+                    />
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Ngân hàng:</span>
+                    <strong class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="groom_bank_name">{{ $groomBankName }}</strong>
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Số TK:</span>
+                    <strong class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="groom_bank_account">{{ $groomBankInfo['account'] }}</strong>
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Chủ TK:</span>
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="groom_bank_holder">{{ $groomBankInfo['holder'] }}</span>
+                  </div>
+                </div>
+
+                <!-- Thẻ mừng cưới Cô Dâu -->
+                <div class="mayhen_invitation_jeowinids483fr_gift_card">
+                  <div class="mayhen_invitation_jeowinids483fr_gift_card_role">MỪNG CƯỚI CÔ DÂU</div>
+                  <h4 class="mayhen_invitation_jeowinids483fr_gift_card_name" data-sync-target="bride_name">{{ $brideName }}</h4>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_qr_box">
+                    <img
+                      src="{{ $qrBride }}"
+                      alt="Mã QR Cô dâu"
+                      class="mayhen_invitation_jeowinids483fr_gift_qr_image"
+                      data-sync-target="qr_bride_image"
+                    />
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Ngân hàng:</span>
+                    <strong class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="bride_bank_name">{{ $brideBankName }}</strong>
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Số TK:</span>
+                    <strong class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="bride_bank_account">{{ $brideBankInfo['account'] }}</strong>
+                  </div>
+                  <div class="mayhen_invitation_jeowinids483fr_gift_bank_row">
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_label">Chủ TK:</span>
+                    <span class="mayhen_invitation_jeowinids483fr_gift_bank_value" data-sync-target="bride_bank_holder">{{ $brideBankInfo['holder'] }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2070,6 +1726,7 @@
     <nav
       aria-label="Điều hướng thiệp cưới"
       class="mayhen_invitation_jeowinids483fr_cta-menu"
+      style="{{ $isEmbed ? 'display: none !important;' : '' }}"
     >
       <button class="mayhen_active" data-go="section26" type="button">Thiệp mời</button>
       <button data-go="section27" type="button">Lịch trình</button>

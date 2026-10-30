@@ -2195,6 +2195,66 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            75. **Nâng Cấp Toàn Diện Skill Chuẩn Hóa Mẫu Thiệp Cưới (`mayhen-invitation-templates`)**:
+                - **Yêu cầu người dùng**:
+                  * Đóng gói toàn bộ bộ quy chuẩn, bảng tra cứu contract live sync và quy trình 6 bước chuẩn hóa thành một Skill chính thức trong hệ thống (`.agents/skills/mayhen-invitation-templates/SKILL.md`).
+                  * Lần sau chỉ cần gọi skill hoặc gửi tên slug mẫu thiệp (ví dụ: `dau-ky-tram-nam`), bất kỳ AI nào đọc dự án cũng sẽ tự động hiểu và chuẩn hóa chính xác 100% từ schema, template Blade, CSS, JS, live-sync, auto-scroll và testing.
+                - **Nội dung skill đã đóng gói hoàn thiện**:
+                  * **Mẫu chuẩn tham chiếu vàng (Gold Standard)**: Trỏ trực tiếp tới `dau-an-thoi-gian` làm tiêu chuẩn đối sánh.
+                  * **Kiến trúc tối đa 6 phần**: Bảng định nghĩa chi tiết cho `couple`, `groom_family`, `bride_family`, `album` (10 ảnh), `timeline`, `gift`.
+                  * **Bảng tra cứu hợp đồng Live Sync (Contract Matrix)**: Liệt kê đầy đủ 100% các thẻ `data-sync-target` và `data-mayhen-section` cho từng trường thông tin.
+                  * **Quy trình 6 bước chuẩn hóa nghiêm ngặt**:
+                    + Bước 1: Khảo sát mã nguồn & assets hiện tại.
+                    + Bước 2: Chuẩn hóa `schema.json`.
+                    + Bước 3: Chuẩn hóa `template.blade.php`.
+                    + Bước 4: Phòng vệ chế độ nhúng `$isEmbed`.
+                    + Bước 5: Kiểm thử tự động với Pest Feature Test & dọn sạch file test tạm.
+                    + Bước 6: Cập nhật `context.gemini.md` & đề xuất commit.
+                  * **Bộ phòng tránh lỗi (Antipatterns)**: SyntaxError, ảnh fallback vỡ, hardcode text tĩnh, màn hình trắng trong iframe.
+                - **Xác thực chất lượng**:
+                  * Skill Markdown: Đầy đủ Frontmatter metadata và cấu trúc chuẩn quốc tế.
+                  * Test suite: 35/35 tests passed.
+
+            76. **Chuẩn Hóa Mẫu Thiệp Dấu Ký Trăm Năm (`dau-ky-tram-nam`) Theo Hợp Đồng 6 Phần**:
+                - **Schema & dữ liệu mẫu**:
+                  * Giữ đúng sáu section chuẩn `couple`, `groom_family`, `bride_family`, `album`, `timeline`, `gift`.
+                  * Chuẩn hóa dữ liệu lời ngỏ, tên chủ tài khoản theo `groom_bank_holder` / `bride_bank_holder`, album 10 ảnh fallback nội bộ và mảng timeline.
+                - **Blade & Studio Embed**:
+                  * Bổ sung `data-mayhen-section` cho đôi uyên ương, hai gia đình, lịch trình, album và hộp mừng cưới; thêm live sync cho lời ngỏ, ảnh bìa, timeline và 10 ảnh album.
+                  * Trong embed, ẩn phần mở màn, mở sẵn nội dung, gỡ class khóa cuộn và hiển thị các phần tử animation ngay lập tức.
+                  * QR mừng cưới chỉ dùng ảnh do người dùng cấu hình; không gọi dịch vụ tạo ảnh VietQR bên ngoài.
+                - **Tài nguyên cục bộ & đồng bộ chung**:
+                  * Gỡ Google Fonts khỏi Blade/CSS mẫu; giữ font assets được đóng gói tại thư mục mẫu.
+                  * Bỏ cơ chế tự tạo URL VietQR từ `editor-bridge.blade.php` để không ghi đè QR nội bộ bằng URL dịch vụ ngoài.
+                - **Tệp đã cập nhật**: `resources/views/client/invitations/dau-ky-tram-nam/{template.blade.php,styles.css,script.js,assets/}`, `resources/views/client/invitations/partials/editor-bridge.blade.php`.
+                - **Kiểm thử**: Feature test tạm thời cho preview embed xác nhận section, album 10 ảnh và không có URL Google Fonts/VietQR bên ngoài; targeted test passed.
+
+            77. **Đồng Bộ Schema, Studio Preview Và Dữ Liệu Mẫu Dấu Ký Trăm Năm**:
+                - **Schema theo giao diện thực**: Bổ sung các trường Studio đang dùng cho ảnh chân dung, ảnh save-the-date, giờ/địa điểm tiệc, ngày âm lịch và liên kết bản đồ; sửa đường dẫn mặc định ảnh bìa để không lặp tiền tố `assets/`.
+                - **Live Sync trong iframe**: Gắn target cho ảnh chân dung, ảnh save-the-date, giờ tiệc, nơi tổ chức và ngày âm lịch; hỗ trợ cập nhật an toàn thuộc tính `href` cho liên kết bản đồ.
+                - **Ảnh QR và ảnh tải lên**: Studio chuyển ảnh QR VietQR thành PNG data URL sau khi tải, lưu cùng dữ liệu thiệp và đồng bộ trực tiếp vào iframe. `$resolveAsset` nhận các data URL raster an toàn để ảnh QR/ảnh tải lên còn hiển thị sau khi mở lại thiệp.
+                - **Bố cục**: Thêm ảnh chân dung vào thẻ gia đình, dời thông tin giờ/địa chỉ khỏi vùng lời mời đang chồng chữ và ẩn nhãn timeline cũ bị lặp với repeater mới.
+                - **Kiểm chứng**: Bổ sung assertion hồi quy cho schema, sáu section và data-sync-target. Test suite: 35/35 passed; `node --check` và Pint đạt.
+
+            78. **Sửa Lỗi Lịch Cưới Động, Khắc Phục Menu Đè Và Hoàn Thiện Live Sync 6 Phần Cho Mẫu Dấu Ký Trăm Năm (`dau-ky-tram-nam`)**:
+                - **Khắc phục lỗi lịch cưới bị đơ / hiển thị tĩnh "Tháng 03"**:
+                  * Loại bỏ hoàn toàn hơn 500 dòng HTML hardcode tĩnh của Ladipage cũ (`headline189` - "Tháng 03", `headline190`...`headline238`, và `shape18` vòng tròn đỏ tĩnh).
+                  * Thay thế bằng card lịch cưới động chuẩn `.mayhen_invitation_jeowinids483fr_calendar_card` với header tháng/năm, weekday Mon-Sun, và các ngày trong tháng tự động sinh theo ngày cử hành hôn lễ `$weddingDate`.
+                  * Xây dựng hàm `window.renderMayhenWeddingCalendar(date)` trong cả `script.js` và `assets/script.js` để kết nối trực tiếp với `editor-bridge.blade.php`. Khi người dùng thay đổi ngày cưới trên Studio Editor, lịch tự động tính lại ngày đầu tháng, vẽ lại lưới ngày và khoanh tròn đỏ mận (`#8B1E2D`) nổi bật theo thời gian thực 100%.
+                - **Khắc phục menu đỏ che khuất nội dung xem trước**:
+                  * Trong chế độ nhúng Studio (`$isEmbed = true`), cưỡng chế ẩn hoàn toàn thanh dock menu di động `.mayhen_invitation_jeowinids483fr_cta-menu` (`display: none !important;`) cả bằng inline style phòng vệ lẫn quy tắc CSS chuyên dụng trong `styles.css` và `assets/styles.css`, giúp màn hình iPhone mockup luôn thoáng đãng, nhìn thấy toàn bộ nội dung thiệp.
+                - **Bổ sung Hero Header nổi bật đầu trang**:
+                  * Thêm `.mayhen_invitation_jeowinids483fr_hero_head` ở đỉnh Section 3 với typography phong cách Quiet Luxury, gắn đầy đủ hợp đồng `data-sync-target` cho `groom_name`, `bride_name`, `wedding_date`, `wedding_lunar_date` để người dùng nhìn thấy ngay tên hai bạn khi mở trình tạo thiệp.
+                - **Đồng bộ chuẩn 6 Section & Cuộn mượt mà (Auto-Scroll)**:
+                  * Gắn đúng `data-mayhen-section`: `couple` (Section 3), `groom_family` (Nhà trai), `bride_family` (Nhà gái), `timeline` (Section 27), `album` (Section 28), và `gift` (Section hộp mừng cưới). Khi người dùng nhấp vào từng tab trên stepper Studio Editor, iframe tự động cuộn chính xác tới vị trí của section đó.
+                - **Section Mừng Cưới nội trang trực tiếp (In-Page Gift Section)**:
+                  * Thay vì chỉ ẩn trong dialog popup, đã tích hợp thêm một Section Hộp Mừng Cưới sang trọng ngay trong trang thiệp với thẻ tài khoản và mã QR cho cả Chú Rể lẫn Cô Dâu, gắn đầy đủ `data-sync-target` cho ngân hàng, STK, chủ tài khoản và ảnh QR để xem trước và cập nhật live.
+                - **Album ảnh cưới 10 ảnh**:
+                  * Gắn `data-sync-target="gallery.0"` đến `gallery.6` cùng fallback 10 ảnh chuẩn local từ thư mục `assets/`, đồng bộ ngay lập tức khi người dùng thay đổi ảnh trong album.
+                - **Kiểm thử & Định dạng**:
+                  * Chạy Pest Feature Test: 38/38 tests pass 100% (563 assertions).
+                  * Format Pint: pass hoàn toàn. Đã xóa sạch test file tạm theo quy chuẩn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -51,12 +51,72 @@
           "placeholder": "YYYY-MM-DD"
         },
         {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch cử hành hôn lễ",
+          "type": "text",
+          "required": false,
+          "default": "Nhằm ngày 03 tháng 02 năm Bính Ngọ",
+          "placeholder": "Ví dụ: Nhằm ngày 03 tháng 02 năm Bính Ngọ",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "hip_1854-20250417154226-mql7h.jpg",
+          "placeholder": "Đường dẫn ảnh Chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "hip_2374-20250417154254-fetzp.jpg",
+          "placeholder": "Đường dẫn ảnh Cô dâu"
+        },
+        {
           "key": "wedding.cover_photo_url",
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "assets/muslims-hero-bg-20231207085803-t1lex.jpg",
+          "default": "muslims-hero-bg-20231207085803-t1lex.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ tổ chức tiệc cưới chính",
+          "type": "time",
+          "required": false,
+          "default": "18:00",
+          "placeholder": "Ví dụ: 18:00 hoặc 11:30",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên nơi tổ chức / Trung tâm tiệc cưới",
+          "type": "text",
+          "required": false,
+          "default": "Tư gia",
+          "placeholder": "Ví dụ: Tư gia",
+          "max": 150
+        },
+        {
+          "key": "wedding.extra_data.event_party_address",
+          "label": "Địa chỉ nơi tổ chức tiệc cưới",
+          "type": "textarea",
+          "required": false,
+          "default": "Khóm An Tài, Phường An Bình, Tỉnh Đồng Tháp",
+          "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh thiệp mời tiệc cưới (Save The Date)",
+          "type": "image",
+          "required": false,
+          "default": "hip_1055-20250417154150-fnhf7.jpg",
+          "placeholder": "Đường dẫn ảnh thiệp tiệc cưới"
         },
         {
           "key": "wedding.extra_data.couple_quote",
@@ -97,7 +157,7 @@
         {
           "key": "wedding.extra_data.groom_party_time",
           "label": "Giờ tổ chức hôn lễ / tiệc Nhà Trai",
-          "type": "text",
+          "type": "time",
           "required": false,
           "default": "10:00",
           "placeholder": "Ví dụ: 10:00 hoặc 11:30",
@@ -159,7 +219,7 @@
         {
           "key": "wedding.extra_data.bride_party_time",
           "label": "Giờ tổ chức hôn lễ / tiệc Nhà Gái",
-          "type": "text",
+          "type": "time",
           "required": false,
           "default": "08:30",
           "placeholder": "Ví dụ: 08:30 hoặc 09:00",
@@ -229,7 +289,7 @@
             { "time": "13:00", "title": "Chụp Ảnh Kỷ Niệm" }
           ],
           "item_structure": [
-            { "key": "time", "label": "Giờ", "type": "text" },
+            { "key": "time", "label": "Giờ", "type": "time" },
             { "key": "title", "label": "Nội dung", "type": "text" }
           ]
         }
