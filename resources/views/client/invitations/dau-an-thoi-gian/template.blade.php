@@ -434,7 +434,11 @@
  </div>
  <h2 class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_thanks mayhen_invitation_ladoifji894yfv_rv">Thank You</h2>
  <p class="mayhen_invitation_ladoifji894yfv_quote mayhen_invitation_ladoifji894yfv_rv">Sự hiện diện của Quý khách là niềm vinh hạnh cho gia đình chúng tôi.</p>
- <p class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_sign mayhen_invitation_ladoifji894yfv_rv"><span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span></p>
+ <p class="mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_sign mayhen_invitation_ladoifji894yfv_rv">
+  <span class="mayhen_invitation_ladoifji894yfv_sign_name" data-sync-target="groom_name">{{ $groomName }}</span>
+  <span class="mayhen_invitation_ladoifji894yfv_amp mayhen_invitation_ladoifji894yfv_sign_amp">&amp;</span>
+  <span class="mayhen_invitation_ladoifji894yfv_sign_name" data-sync-target="bride_name">{{ $brideName }}</span>
+ </p>
 </section>
 </main>
 @endsection

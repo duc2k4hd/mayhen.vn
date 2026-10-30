@@ -2178,6 +2178,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Passed.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            74. **Định Dạng Tên Cặp Đôi Ở Đoạn Kết Lời Cảm Ơn Thành 3 Hàng Tách Biệt Cân Xứng (3-Line Balanced Signature)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng yêu cầu *"css đoạn cuối cho thành 3 hàng để cho nó đẹp: mayhen_invitation_ladoifji894yfv_script mayhen_invitation_ladoifji894yfv_sign mayhen_invitation_ladoifji894yfv_rv mayhen_invitation_ladoifji894yfv_in"*, kèm ảnh chụp màn hình tên bị ngắt dòng lệch (hàng trên "Nguyễn Minh Đức & Ngọc", hàng dưới chỉ có chữ "Phượng").
+                - **Giải pháp hoàn thiện**:
+                  * **Tái cấu trúc HTML & CSS cho `.mayhen_invitation_ladoifji894yfv_sign`**:
+                    + Thiết lập `display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 2px !important;`.
+                    + **Hàng 1**: Tên Chú Rể (`<span class="mayhen_invitation_ladoifji894yfv_sign_name" data-sync-target="groom_name">`).
+                    + **Hàng 2**: Ký tự kết nối `&` (`<span class="mayhen_invitation_ladoifji894yfv_amp mayhen_invitation_ladoifji894yfv_sign_amp">&amp;</span>`) với phong cách font Serif Garamond nghiêng cổ điển trang nhã.
+                    + **Hàng 3**: Tên Cô Dâu (`<span class="mayhen_invitation_ladoifji894yfv_sign_name" data-sync-target="bride_name">`).
+                  * **Đảm bảo Đồng Bộ Dữ Liệu Thời Gian Thực**:
+                    + Giữ nguyên các thuộc tính `data-sync-target="groom_name"` và `data-sync-target="bride_name"` giúp chữ ký ở cuối thiệp vẫn nhận 100% cập nhật live khi gõ trên form Studio Editor.
+                  * **Bust Cache Tự Động**:
+                    + File `styles.css` có versioning động `?v=filemtime` giúp giao diện cập nhật ngay lập tức mà không bị dính cache trình duyệt.
+                - **Xác thực chất lượng**:
+                  * Laravel Pint: Passed.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

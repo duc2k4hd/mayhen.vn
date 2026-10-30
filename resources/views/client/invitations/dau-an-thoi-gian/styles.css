@@ -1516,10 +1516,38 @@ html, body {
 }
 
 .mayhen_invitation_ladoifji894yfv_sign {
-  font-size: clamp(32px, 8vw, 40px);
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  font-size: clamp(32px, 8vw, 42px) !important;
   color: var(--mayhen_invitation_ladoifji894yfv_gold_bright);
-  margin-top: 16px;
-  text-shadow: 0 0 12px rgba(252, 227, 158, 0.4);
+  margin-top: 18px;
+  text-shadow: 0 0 14px rgba(252, 227, 158, 0.45);
+  line-height: 1.25;
+  text-align: center;
+}
+
+.mayhen_invitation_ladoifji894yfv_sign .mayhen_invitation_ladoifji894yfv_sign_name,
+.mayhen_invitation_ladoifji894yfv_sign [data-sync-target="groom_name"],
+.mayhen_invitation_ladoifji894yfv_sign [data-sync-target="bride_name"] {
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+.mayhen_invitation_ladoifji894yfv_sign .mayhen_invitation_ladoifji894yfv_sign_amp,
+.mayhen_invitation_ladoifji894yfv_sign .mayhen_invitation_ladoifji894yfv_amp {
+  display: block;
+  font-family: var(--mayhen_invitation_ladoifji894yfv_serif);
+  font-size: clamp(20px, 5vw, 26px);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--mayhen_invitation_ladoifji894yfv_gold);
+  line-height: 1;
+  margin: 4px 0 2px;
+  text-shadow: 0 0 12px var(--mayhen_invitation_ladoifji894yfv_gold_glow);
 }
 
 /* =========================================================================
