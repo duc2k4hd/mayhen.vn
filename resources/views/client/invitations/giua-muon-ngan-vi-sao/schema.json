@@ -248,10 +248,10 @@
           "required": false,
           "max_items": 6,
           "default": [
-            { "time": "08:00", "title": "Lễ Vu Quy (Nhà Gái)" },
-            { "time": "10:00", "title": "Lễ Thành Hôn (Nhà Trai)" },
-            { "time": "18:00", "title": "Khai Tiệc Mừng Cưới" },
-            { "time": "19:30", "title": "Chụp Ảnh Kỷ Niệm" }
+            { "time": "17:30", "title": "Đón khách" },
+            { "time": "18:00", "title": "Cử hành hôn lễ" },
+            { "time": "18:30", "title": "Khai tiệc" },
+            { "time": "20:00", "title": "Giao lưu & chụp ảnh" }
           ],
           "item_structure": [
             { "key": "time", "label": "Giờ", "type": "text" },

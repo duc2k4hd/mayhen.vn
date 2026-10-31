@@ -584,22 +584,8 @@ const initEditor = () => {
             const key = target.getAttribute('data-sync-key');
             if (!key) return;
 
-            // Kiểm tra và khử ký tự đặc biệt cho các trường họ tên (chống hack, chống phá, tối đa 4 từ và 30 ký tự)
-            if (target.classList && target.classList.contains('mayhen_validate_human_name')) {
-                let cleaned = target.value.replace(/[^\p{L}\s]/gu, ''); // Chỉ giữ chữ cái tiếng Việt/Latin và khoảng trắng
-                cleaned = cleaned.replace(/\s{2,}/g, ' '); // Khử khoảng trắng kép
-                if (cleaned.length > 30) {
-                    cleaned = cleaned.slice(0, 30);
-                }
-                const words = cleaned.trim().split(/\s+/).filter(Boolean);
-                if (words.length > 4) {
-                    cleaned = words.slice(0, 4).join(' ');
-                }
-                if (target.value !== cleaned) {
-                    target.value = cleaned;
-                }
-            }
-
+            // TUYỆT ĐỐI KHÔNG can thiệp hoặc gán đè target.value trong sự kiện input
+            // để bảo vệ trọn vẹn bộ gõ tiếng Việt (Unikey/EVKey/Windows IME) không bị nuốt chữ hay nhảy con trỏ.
             const val = target.value;
 
             // Dispatch vào State Store
@@ -634,8 +620,42 @@ const initEditor = () => {
             sendSyncMessage(key, val);
         };
 
+        // Chuẩn hóa và làm sạch họ tên chỉ khi người dùng đã gõ xong và rời khỏi ô nhập liệu (blur)
+        // Không can thiệp lúc đang gõ để tránh xung đột với bộ gõ tiếng Việt Unikey/EVKey
+        const handleBlurSanitize = (e) => {
+            const target = e.target;
+            if (!target || !target.classList) return;
+
+            if (target.classList.contains('mayhen_validate_human_name')) {
+                let cleaned = target.value.replace(/[^\p{L}\s]/gu, ''); // Chỉ giữ chữ cái tiếng Việt/Latin và khoảng trắng
+                cleaned = cleaned.replace(/\s{2,}/g, ' ').trim(); // Khử khoảng trắng kép và khoảng trắng thừa đầu cuối
+                if (cleaned.length > 30) {
+                    cleaned = cleaned.slice(0, 30);
+                }
+                const words = cleaned.split(/\s+/).filter(Boolean);
+                if (words.length > 4) {
+                    cleaned = words.slice(0, 4).join(' ');
+                }
+                if (target.value !== cleaned) {
+                    target.value = cleaned;
+                    const key = target.getAttribute('data-sync-key');
+                    if (key) {
+                        store.dispatch({
+                            type: ActionTypes.UPDATE_FIELD,
+                            payload: { key, value: cleaned }
+                        });
+                        sendSyncMessage(key, cleaned);
+                        if (key === 'wedding.groom_name' || key === 'wedding.bride_name') {
+                            updateDockNames();
+                        }
+                    }
+                }
+            }
+        };
+
         on(mainForm, 'input', handleInputEvent);
         on(mainForm, 'change', handleInputEvent);
+        mainForm.addEventListener('blur', handleBlurSanitize, true);
     }
 
     // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form, bảng màu và thứ tự bố cục sang iframe

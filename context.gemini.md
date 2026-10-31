@@ -2438,6 +2438,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Dọn cache: `php artisan optimize:clear` hoàn tất.
 
+            87. **Khắc Phục Triệt Để Lỗi Bộ Gõ Tiếng Việt Bị Nhảy Chữ, Nuốt Chữ ("Nguyễn" Bị Thành "Ngễn") Trong Studio Editor**:
+                - **Hiện trạng & Triệu chứng người dùng phản ánh**:
+                  * Người dùng gõ tên chú rể hoặc cô dâu trên bàn phím: *"Sao tôi nhập tên nhập các thứ chứ cứ bị nhảy rồi biến mất vậy, tôi nhập chữ Nguyễn nó nhảy sang chữ Ngễn?"*.
+                - **Nguyên nhân gốc rễ**:
+                  * Trong `public/assets/client/js/pages/editor.js`, sự kiện `input` (chạy sau mỗi phím gõ) có đoạn mã lọc ký tự đặc biệt và giới hạn từ (`mayhen_validate_human_name`) can thiệp trực tiếp bằng lệnh: `target.value = cleaned;`.
+                  * Khi người dùng gõ tiếng Việt có dấu (Telex/VNI qua Unikey, EVKey hoặc Windows/macOS IME), bộ gõ gửi chuỗi ký tự tạm thời và phím ảo để ghép vần (composition).
+                  * Lệnh gán đè `target.value = cleaned` ngay trong sự kiện `input` đã reset vị trí con trỏ (caret) và phá hủy bộ nhớ đệm IME của bộ gõ. Khi Unikey gửi lệnh Backspace để ghép dấu nguyên âm `ê` hay dấu ngã `~`, do vị trí con trỏ bị giật, phím Backspace ăn lấn sang nguyên âm `uy` phía trước, biến `Nguyễn` thành `Ngễn` và làm biến mất các ký tự vừa gõ.
+                - **Giải pháp hoàn thiện**:
+                  * Trong sự kiện `input`: Loại bỏ hoàn toàn hành vi can thiệp hay gán đè `target.value`. Để người dùng gõ phím tiếng Việt tự nhiên 100%, không bị ngắt kết nối composition với Unikey/EVKey.
+                  * Chuyển toàn bộ logic chuẩn hóa, dọn khoảng trắng thừa và giới hạn từ của `mayhen_validate_human_name` sang sự kiện **`blur`** (khi người dùng gõ xong và rời chuột ra khỏi ô nhập liệu). Lúc này người dùng đã kết thúc quá trình gõ nên việc chuẩn hóa diễn ra hoàn toàn êm ái, không bao giờ ảnh hưởng đến bộ gõ.
+                - **Kiểm thử & Định dạng**:
+                  * JS Syntax check (`node -c`): Passed 100%.
+                  * Pest feature tests: 3/3 passed.
+                  * Laravel Pint: Clean 100%.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
+            88. **Khắc Phục Lỗi Cuộn Tab Lịch Trình Và Đồng Bộ Hóa Thời Gian Thực (Live Sync Timeline) Mẫu "Giữa Muôn Ngàn Vì Sao"**:
+                - **Hiện trạng & Triệu chứng người dùng phản ánh**:
+                  * Khi người dùng bấm tab "5. Lịch Trình" ở thanh điều hướng form bên trái của Studio Tạo Thiệp (`/tao-thiep?template=giua-muon-ngan-vi-sao`), iframe thiệp bên phải không cuộn đến đúng phần "Lịch Trình Buổi Tiệc".
+                  * Dữ liệu thời gian trên form mẫu hiển thị lệch hoàn toàn so với nội dung trong thiệp (Form hiển thị 08:00 Lễ Vu Quy, 10:00 Lễ Thành Hôn, 18:00 Khai Tiệc; trong khi thiệp lại hiển thị 17:30 Đón khách, 18:00 Cử hành hôn lễ, 18:30 Khai tiệc, 20:00 Giao lưu). Đồng thời khi người dùng chỉnh sửa giờ/nội dung trên form thì thiệp không cập nhật trực tiếp (không Live Sync).
+                - **Nguyên nhân gốc rễ**:
+                  * **Lỗi cuộn tab**: Trong `editor-bridge.blade.php`, cơ chế cuộn mượt dựa vào lệnh `MAYHEN_SCROLL_TO_SECTION` tìm phần tử `[data-mayhen-section="{section_id}"]`. File `template.blade.php` của mẫu `giua-muon-ngan-vi-sao` hoàn toàn chưa được gắn các thuộc tính `data-mayhen-section="..."`, dẫn đến bridge không tìm thấy phần tử mục tiêu để cuộn tới.
+                  * **Lỗi dữ liệu không khớp**: Trong `schema.json` của mẫu, trường `wedding.extra_data.timeline` có giá trị `"default"` là lịch trình ban ngày cũ (08:00, 10:00, 18:00, 19:30), trong khi layout thiệp là tiệc tối (17:30, 18:00, 18:30, 20:00).
+                  * **Lỗi Live Sync**: Phần hiển thị Timeline trong `template.blade.php` bị viết cứng (hardcode tĩnh 4 khối HTML), không lặp qua mảng `$timelineList` và không có các thuộc tính hợp đồng đồng bộ `data-sync-target="timeline.{index}.time"` và `data-sync-target="timeline.{index}.title"`.
+                - **Giải pháp hoàn thiện**:
+                  * *`schema.json`*: Cập nhật mảng `"default"` của `wedding.extra_data.timeline` khớp 100% với 4 mốc thời gian tiệc tối của mẫu: 17:30 (Đón khách), 18:00 (Cử hành hôn lễ), 18:30 (Khai tiệc), 20:00 (Giao lưu & chụp ảnh).
+                  * *`template.blade.php`*:
+                    1. Khởi tạo mảng timeline động: `$timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : $defaultTimeline;`.
+                    2. Gắn đầy đủ `data-mayhen-section` cho toàn bộ 6 canonical sections của mẫu: `couple`, `groom_family,bride_family`, `album`, `timeline`, `gift`.
+                    3. Chuyển cấu trúc Timeline sang vòng lặp `@foreach($timelineList as $tIdx => $tItem)`, gắn đầy đủ `data-sync-target="timeline.{{ $tIdx }}.time"` và `data-sync-target="timeline.{{ $tIdx }}.title"`, ánh xạ xoay vòng 4 biểu tượng SVG vector tiệc cưới và đường kẻ kết nối (`@if(!$loop->last)`).
+                  * *Seeder & Database*: Bổ sung `'timeline'` mặc định vào `default_config` của `giua-muon-ngan-vi-sao` trong `InvitationTemplateSeeder.php` và chạy re-seed database.
+                - **Kiểm thử & Định dạng**:
+                  * Viết Feature Test chuyên biệt `tests/Feature/GiuaMuonNganViSaoTimelineTest.php`: Xác thực 100% việc render đúng thuộc tính `data-mayhen-section`, hợp đồng `data-sync-target` và giá trị mặc định form/thiệp. Test passed 2/2. Toàn bộ 5/5 Feature Tests pass.
+                  * Laravel Pint: Clean 100%.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

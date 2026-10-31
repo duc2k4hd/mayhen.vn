@@ -117,6 +117,16 @@
         'https://img.vietqr.io/image/' . strtolower($brideBankName) . '-' . $cleanBrideAcc . '-compact2.png?amount=0&addInfo=' . urlencode('Mung cuoi ' . $brideName)
     );
 
+    // 5. Lịch trình timeline
+    $defaultTimeline = [
+        ['time' => '17:30', 'title' => 'Đón khách'],
+        ['time' => '18:00', 'title' => 'Cử hành hôn lễ'],
+        ['time' => '18:30', 'title' => 'Khai tiệc'],
+        ['time' => '20:00', 'title' => 'Giao lưu & chụp ảnh'],
+    ];
+    $rawTimeline = $extraData['timeline'] ?? ($wedding->extra_data['timeline'] ?? []);
+    $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : $defaultTimeline;
+
     // Tiêu đề & URLs
     $pageTitle = $isPreview
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
@@ -212,7 +222,7 @@
     <div class="mayhen_invitation_ladoifji894yfv_ladi_wraper mayhen_invitation_ladoifji894yfv_sr">
 
         <!-- 1. PHẦN ĐẦU THIỆP -->
-        <section class="mayhen_invitation_ladoifji894yfv_sr_phan mayhen_invitation_ladoifji894yfv_sr_dau">
+        <section class="mayhen_invitation_ladoifji894yfv_sr_phan mayhen_invitation_ladoifji894yfv_sr_dau" data-mayhen-section="couple">
             <div class="mayhen_invitation_ladoifji894yfv_ladi_section_background"></div>
             <div class="mayhen_invitation_ladoifji894yfv_sr_kicker mayhen_invitation_ladoifji894yfv_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_ladoifji894yfv_sr_orn"></i>
@@ -258,7 +268,7 @@
         <div class="mayhen_invitation_ladoifji894yfv_sr_vach" aria-hidden="true"></div>
 
         <!-- 2. HAI BÊN GIA ĐÌNH -->
-        <section class="mayhen_invitation_ladoifji894yfv_sr_phan">
+        <section class="mayhen_invitation_ladoifji894yfv_sr_phan" data-mayhen-section="groom_family,bride_family">
             <div class="mayhen_invitation_ladoifji894yfv_ladi_section_background"></div>
             <div class="mayhen_invitation_ladoifji894yfv_sr_dau_muc">
                 <div class="mayhen_invitation_ladoifji894yfv_sr_kicker mayhen_invitation_ladoifji894yfv_sr_hien" data-hieu-ung="len">
@@ -280,7 +290,7 @@
                     <svg class="mayhen_invitation_ladoifji894yfv_chom mayhen_invitation_ladoifji894yfv_c2"><use href="#mayhen_invitation_ladoifji894yfv_sr_chom_sao"></use></svg>
                     <i class="mayhen_invitation_ladoifji894yfv_huy"><svg><use href="#mayhen_invitation_ladoifji894yfv_sr_sao"></use></svg></i>
                 </span>
-                <div class="mayhen_invitation_ladoifji894yfv_ben" data-ben="trai">
+                <div class="mayhen_invitation_ladoifji894yfv_ben" data-ben="trai" data-mayhen-section="groom_family">
                     <div class="mayhen_invitation_ladoifji894yfv_ClientEditText mayhen_invitation_ladoifji894yfv_ho"><p class="mayhen_invitation_ladoifji894yfv_ladi_headline">Nhà Trai</p></div>
                     <div class="mayhen_invitation_ladoifji894yfv_ClientEditText mayhen_invitation_ladoifji894yfv_bo_me">
                         <p class="mayhen_invitation_ladoifji894yfv_ladi_paragraph">
@@ -293,7 +303,7 @@
                     </div>
                 </div>
                 <div class="mayhen_invitation_ladoifji894yfv_giua" aria-hidden="true"></div>
-                <div class="mayhen_invitation_ladoifji894yfv_ben" data-ben="phai">
+                <div class="mayhen_invitation_ladoifji894yfv_ben" data-ben="phai" data-mayhen-section="bride_family">
                     <div class="mayhen_invitation_ladoifji894yfv_ClientEditText mayhen_invitation_ladoifji894yfv_ho"><p class="mayhen_invitation_ladoifji894yfv_ladi_headline">Nhà Gái</p></div>
                     <div class="mayhen_invitation_ladoifji894yfv_ClientEditText mayhen_invitation_ladoifji894yfv_bo_me">
                         <p class="mayhen_invitation_ladoifji894yfv_ladi_paragraph">
@@ -592,7 +602,7 @@
         <div class="mayhen_invitation_ladoifji894yfv_sr_vach" aria-hidden="true"></div>
 
         <!-- 7. LỊCH TRÌNH BUỔI TIỆC -->
-        <section class="mayhen_invitation_ladoifji894yfv_sr_phan">
+        <section class="mayhen_invitation_ladoifji894yfv_sr_phan" data-mayhen-section="timeline">
             <div class="mayhen_invitation_ladoifji894yfv_ladi_section_background"></div>
             <div class="mayhen_invitation_ladoifji894yfv_sr_dau_muc">
                 <div class="mayhen_invitation_ladoifji894yfv_sr_kicker mayhen_invitation_ladoifji894yfv_sr_hien" data-hieu-ung="len">
@@ -608,57 +618,33 @@
                 <div class="mayhen_invitation_ladoifji894yfv_edit_Timeline">
                     <div class="mayhen_invitation_ladoifji894yfv_ladi_html_code">
                         <div class="mayhen_invitation_ladoifji894yfv_wb_tl">
-                            <div class="mayhen_invitation_ladoifji894yfv_wb_tl_row">
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_time">17:30</div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_col">
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_dot">
-                                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M322,185.1h-88.3c-2.8,0-5,2.2-5,5s2.2,5,5,5H322c2.8,0,5-2.2,5-5S324.7,185.1,322,185.1z"></path>
-                                            <path d="M162.5,195.1h41.2c2.8,0,5-2.2,5-5s-2.2-5-5-5h-41.2c-2.8,0-5,2.2-5,5S159.8,195.1,162.5,195.1z"></path>
-                                            <path d="M354.5,225.6c0-2.8-2.2-5-5-5h-187c-2.8,0-5,2.2-5,5s2.2,5,5,5h187C352.2,230.6,354.5,228.3,354.5,225.6z"></path>
-                                            <path d="M162.5,159.6h145.5c2.8,0,5-2.2,5-5s-2.2-5-5-5H162.5c-2.8,0-5,2.2-5,5S159.8,159.6,162.5,159.6z"></path>
-                                            <path d="M354.5,109.1V93.6c0-8.3-6.7-15-15-15h-167c-8.3,0-15,6.7-15,15v15.5c0,8.3,6.7,15,15,15h167C347.8,124.1,354.5,117.3,354.5,109.1z"></path>
-                                        </svg>
+                            @php
+                                $timelineSvgs = [
+                                    0 => '<svg width="22" height="22" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M322,185.1h-88.3c-2.8,0-5,2.2-5,5s2.2,5,5,5H322c2.8,0,5-2.2,5-5S324.7,185.1,322,185.1z"></path><path d="M162.5,195.1h41.2c2.8,0,5-2.2,5-5s-2.2-5-5-5h-41.2c-2.8,0-5,2.2-5,5S159.8,195.1,162.5,195.1z"></path><path d="M354.5,225.6c0-2.8-2.2-5-5-5h-187c-2.8,0-5,2.2-5,5s2.2,5,5,5h187C352.2,230.6,354.5,228.3,354.5,225.6z"></path><path d="M162.5,159.6h145.5c2.8,0,5-2.2,5-5s-2.2-5-5-5H162.5c-2.8,0-5,2.2-5,5S159.8,159.6,162.5,159.6z"></path><path d="M354.5,109.1V93.6c0-8.3-6.7-15-15-15h-167c-8.3,0-15,6.7-15,15v15.5c0,8.3,6.7,15,15,15h167C347.8,124.1,354.5,117.3,354.5,109.1z"></path></svg>',
+                                    1 => '<svg width="22" height="22" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M354.079,186.547c-37.031,0-71.12,12.818-98.079,34.241c-26.959-21.424-61.048-34.241-98.079-34.241C70.842,186.547,0,257.389,0,344.467s70.842,157.921,157.921,157.921c37.031,0,71.12-12.818,98.079-34.241c26.959,21.424,61.048,34.241,98.079,34.241c87.078,0,157.921-70.843,157.921-157.921S441.158,186.547,354.079,186.547z"></path></svg>',
+                                    2 => '<svg width="22" height="22" fill="currentColor" viewBox="0 0 354.662 354.662" xmlns="http://www.w3.org/2000/svg"><path d="M180.502,58.058c-65.766,0-119.271,53.506-119.271,119.275c0,65.764,53.506,119.27,119.271,119.27c65.768,0,119.272-53.506,119.272-119.27C299.774,111.564,246.27,58.058,180.502,58.058z"></path></svg>',
+                                    3 => '<svg width="22" height="22" fill="currentColor" viewBox="0 0 233.978 233.978" xmlns="http://www.w3.org/2000/svg"><path d="M185.489,90.978v-28h-9.134c7.751-6.556,12.686-16.343,12.686-27.267C189.041,16.02,173.021,0,153.33,0c-14.637,0-27.24,8.855-32.748,21.487C115.073,8.855,102.471,0,87.833,0C68.142,0,52.123,16.02,52.123,35.711c0,10.923,4.935,20.711,12.686,27.267h-11.32v23.494l-27-4.623v61.912l27-4.623v22.84h42.467l-32.547,72h22.286l22.794-51.161v51.161h21v-55.585l25.461,55.585h22.286l-32.548-72h40.801v-26h22v-45H185.489z"></path></svg>',
+                                ];
+                            @endphp
+                            @foreach($timelineList as $tIdx => $tItem)
+                                @php
+                                    $tTime = $tItem['time'] ?? '';
+                                    $tTitle = $tItem['title'] ?? ($tItem['desc'] ?? '');
+                                    $svgIcon = $timelineSvgs[$tIdx % 4] ?? $timelineSvgs[0];
+                                @endphp
+                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_row">
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_time" data-sync-target="timeline.{{ $tIdx }}.time">{{ $tTime }}</div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_col">
+                                        <div class="mayhen_invitation_ladoifji894yfv_wb_tl_dot">
+                                            {!! $svgIcon !!}
+                                        </div>
+                                        @if(!$loop->last)
+                                            <div class="mayhen_invitation_ladoifji894yfv_wb_tl_line"></div>
+                                        @endif
                                     </div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_line"></div>
+                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_lbl" data-sync-target="timeline.{{ $tIdx }}.title">{{ $tTitle }}</div>
                                 </div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_lbl">Đón khách</div>
-                            </div>
-                            <div class="mayhen_invitation_ladoifji894yfv_wb_tl_row">
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_time">{{ $partyTime }}</div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_col">
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_dot">
-                                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M354.079,186.547c-37.031,0-71.12,12.818-98.079,34.241c-26.959-21.424-61.048-34.241-98.079-34.241C70.842,186.547,0,257.389,0,344.467s70.842,157.921,157.921,157.921c37.031,0,71.12-12.818,98.079-34.241c26.959,21.424,61.048,34.241,98.079,34.241c87.078,0,157.921-70.843,157.921-157.921S441.158,186.547,354.079,186.547z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_line"></div>
-                                </div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_lbl">Cử hành hôn lễ</div>
-                            </div>
-                            <div class="mayhen_invitation_ladoifji894yfv_wb_tl_row">
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_time">18:30</div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_col">
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_dot">
-                                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 354.662 354.662" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M180.502,58.058c-65.766,0-119.271,53.506-119.271,119.275c0,65.764,53.506,119.27,119.271,119.27c65.768,0,119.272-53.506,119.272-119.27C299.774,111.564,246.27,58.058,180.502,58.058z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_line"></div>
-                                </div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_lbl">Khai tiệc</div>
-                            </div>
-                            <div class="mayhen_invitation_ladoifji894yfv_wb_tl_row">
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_time">20:00</div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_col">
-                                    <div class="mayhen_invitation_ladoifji894yfv_wb_tl_dot">
-                                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 233.978 233.978" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M185.489,90.978v-28h-9.134c7.751-6.556,12.686-16.343,12.686-27.267C189.041,16.02,173.021,0,153.33,0c-14.637,0-27.24,8.855-32.748,21.487C115.073,8.855,102.471,0,87.833,0C68.142,0,52.123,16.02,52.123,35.711c0,10.923,4.935,20.711,12.686,27.267h-11.32v23.494l-27-4.623v61.912l27-4.623v22.84h42.467l-32.547,72h22.286l22.794-51.161v51.161h21v-55.585l25.461,55.585h22.286l-32.548-72h40.801v-26h22v-45H185.489z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="mayhen_invitation_ladoifji894yfv_wb_tl_lbl">Giao lưu &amp; chụp ảnh</div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -730,7 +716,7 @@
         <div class="mayhen_invitation_ladoifji894yfv_sr_vach" aria-hidden="true"></div>
 
         <!-- 9. ALBUM ẢNH (3D COVERFLOW) -->
-        <section class="mayhen_invitation_ladoifji894yfv_sr_phan">
+        <section class="mayhen_invitation_ladoifji894yfv_sr_phan" data-mayhen-section="album">
             <div class="mayhen_invitation_ladoifji894yfv_ladi_section_background"></div>
             <div class="mayhen_invitation_ladoifji894yfv_sr_dau_muc">
                 <div class="mayhen_invitation_ladoifji894yfv_sr_kicker mayhen_invitation_ladoifji894yfv_sr_hien" data-hieu-ung="len">
@@ -1026,7 +1012,7 @@
         <div class="mayhen_invitation_ladoifji894yfv_sr_vach" aria-hidden="true"></div>
 
         <!-- 13. MỪNG CƯỚI (HỘP QUÀ & QR) -->
-        <section class="mayhen_invitation_ladoifji894yfv_sr_phan">
+        <section class="mayhen_invitation_ladoifji894yfv_sr_phan" data-mayhen-section="gift">
             <div class="mayhen_invitation_ladoifji894yfv_ladi_section_background"></div>
             <div class="mayhen_invitation_ladoifji894yfv_sr_dau_muc">
                 <div class="mayhen_invitation_ladoifji894yfv_sr_kicker mayhen_invitation_ladoifji894yfv_sr_hien" data-hieu-ung="len">

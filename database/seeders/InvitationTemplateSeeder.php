@@ -385,6 +385,12 @@ class InvitationTemplateSeeder extends Seeder
                         'Tối ưu hóa 100% trên điện thoại di động, tự động đồng bộ Live Sync trong Studio Editor',
                         'Hoàn toàn MIỄN PHÍ (Free) dành tặng các cặp đôi của Mây Hẹn',
                     ],
+                    'timeline' => [
+                        ['time' => '17:30', 'title' => 'Đón khách'],
+                        ['time' => '18:00', 'title' => 'Cử hành hôn lễ'],
+                        ['time' => '18:30', 'title' => 'Khai tiệc'],
+                        ['time' => '20:00', 'title' => 'Giao lưu & chụp ảnh'],
+                    ],
                     'gallery' => [
                         'c3655bd60267c1b2.webp',
                         'a5a53978e8384d26.webp',
