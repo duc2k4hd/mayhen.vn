@@ -11301,6 +11301,7 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked {
     overscroll-behavior: none !important;
 }
 
+body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_hacbach2_music_dock,
 body.mayhen_invitation_ladjihe38udhd_scroll_locked .mayhen_invitation_ladjihe38udhd_music_dock {
     visibility: hidden !important;
     pointer-events: none !important;
@@ -11943,42 +11944,51 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 }
 
 /* Floating Audio Controller */
+.mayhen_invitation_hacbach2_music_dock,
 .mayhen_invitation_ladjihe38udhd_music_dock {
     position: fixed !important;
     top: 16px !important;
-    left: max(16px, calc(50% - 210px + 16px)) !important;
+    right: 16px !important;
+    left: auto !important;
     bottom: auto !important;
-    right: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: 48px !important;
     z-index: 1001 !important;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(18, 18, 20, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    padding: 6px 14px 6px 6px;
-    border-radius: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-    transition: opacity 0.5s ease, transform 0.3s ease;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: rgba(18, 18, 22, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(212, 175, 55, 0.45) !important;
+    padding: 5px 12px 5px 5px !important;
+    border-radius: 40px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 14px rgba(212, 175, 55, 0.15) !important;
+    transition: opacity 0.5s ease, transform 0.3s ease !important;
+    box-sizing: border-box !important;
 }
 
 @media (max-width: 480px) {
+    .mayhen_invitation_hacbach2_music_dock,
     .mayhen_invitation_ladjihe38udhd_music_dock {
-        top: 16px !important;
-        left: 16px !important;
+        top: 14px !important;
+        right: 14px !important;
+        left: auto !important;
         bottom: auto !important;
-        right: auto !important;
+        width: auto !important;
+        height: auto !important;
+        max-height: 42px !important;
         padding: 4px 10px 4px 4px !important;
         gap: 8px !important;
     }
     .mayhen_invitation_ladjihe38udhd_vinyl_wrap {
-        width: 36px !important;
-        height: 36px !important;
+        width: 34px !important;
+        height: 34px !important;
     }
     .mayhen_invitation_ladjihe38udhd_vinyl_center {
-        width: 15px !important;
-        height: 15px !important;
+        width: 14px !important;
+        height: 14px !important;
     }
 }
 

@@ -2632,6 +2632,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
                      - Laravel cache: Cleared.
 
+            96. **Sửa Triệt Để Lỗi Cột Đen Kéo Dài Kéo Giãn Che Mặt Chú Rể Ở Nút Đĩa Than Âm Nhạc (`music_dock`)**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khi hiển thị trên thiết bị di động hoặc chế độ xem trước có Bottom Navigation (`max-width: 859px`), xuất hiện một cột xám đen dài ngoằng (chiếm gần 80% chiều cao màn hình) ở bên trái che kín khuôn mặt và người của Chú rể.
+                  * *Nguyên nhân cốt lõi*: Trong `bottom-nav.css`, selector `body:has(.mayhen_client_bottom_nav_wrapper) .mayhen_invitation_ladjihe38udhd_music_dock` vô tình gán `bottom: calc(76px + ...) !important;`. Trong khi đó `hac-bach-trao-duyen-2` lại có `top: 16px !important;`. Sự xung đột giữa `top` và `bottom` đồng thời không có `height` cố định khiến trình duyệt tự động stretch (kéo giãn) chiều cao của dock nhạc từ đỉnh xuống đáy!
+                - **Giải pháp hoàn thiện**:
+                  1. *`template.blade.php`*: Bổ sung class độc lập `mayhen_invitation_hacbach2_music_dock` cho thẻ `<aside>`.
+                  2. *`bottom-nav.css`*: Thêm `:not(.mayhen_invitation_hacbach2_music_dock)` để ngăn chặn hoàn toàn việc gán `bottom` lên dock nhạc của mẫu thiệp này.
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Đưa nút đĩa than sang góc trên bên phải màn hình (`top: 16px !important; right: 16px !important; left: auto !important; bottom: auto !important;`).
+                     - Khóa chặt chiều cao `height: auto !important; max-height: 48px !important;` (mobile: `max-height: 42px !important;`).
+                     - Thiết kế bo tròn dạng viên thuốc mini cao cấp (`border-radius: 40px`), viền vàng kim, không bao giờ bị kéo giãn và không che khuất nhân vật trong ảnh cưới.
+                  4. *Kiểm thử & Định dạng*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

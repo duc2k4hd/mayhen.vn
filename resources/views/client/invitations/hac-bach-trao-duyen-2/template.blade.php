@@ -185,7 +185,7 @@
     </audio>
 
     <!-- Floating Audio Controller (Đĩa than Vinyl & Equalizer) -->
-    <aside class="mayhen_invitation_ladjihe38udhd_music_dock" aria-label="Điều khiển âm nhạc">
+    <aside class="mayhen_invitation_hacbach2_music_dock mayhen_invitation_ladjihe38udhd_music_dock" aria-label="Điều khiển âm nhạc">
         <div class="mayhen_invitation_ladjihe38udhd_vinyl_wrap" id="mayhen_invitation_ladjihe38udhd_vinyl_btn"
             title="Bật/Tắt nhạc">
             <div class="mayhen_invitation_ladjihe38udhd_vinyl_center">
