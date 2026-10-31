@@ -59,20 +59,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (audio.paused) {
       audio.play().then(() => {
         isPlaying = true;
-        vinylBtn.classList.add('playing');
+        if (vinylBtn) vinylBtn.classList.add('playing');
       }).catch(err => {
         console.warn('Tự động phát âm thanh bị chặn bởi chính sách trình duyệt:', err);
       });
     } else {
       audio.pause();
       isPlaying = false;
-      vinylBtn.classList.remove('playing');
+      if (vinylBtn) vinylBtn.classList.remove('playing');
     }
   }
 
   if (vinylBtn) {
     vinylBtn.addEventListener('click', toggleMusic);
   }
+
+  // Live Sync: Đổi bài hát nền thời gian thực từ Studio Editor
+  window.updateMayhenMusic = function(newUrl) {
+    if (!newUrl) return;
+    const a = document.getElementById('mayhen_invitation_ladjihe38udhd_audio') || audio;
+    const btn = document.getElementById('mayhen_invitation_ladjihe38udhd_vinyl_btn') || vinylBtn;
+    if (a) {
+      const wasPlaying = !a.paused;
+      a.pause();
+      a.src = newUrl;
+      a.load();
+      if (wasPlaying || window.__MAYHEN_IS_EMBED) {
+        a.play().then(() => {
+          isPlaying = true;
+          if (btn) btn.classList.add('playing');
+        }).catch(() => {});
+      }
+    }
+  };
 
   /* ==========================================================================
      3. OPENING ENVELOPE MODAL

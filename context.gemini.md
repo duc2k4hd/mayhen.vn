@@ -2474,6 +2474,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Dọn cache: `php artisan optimize:clear` hoàn tất.
 
+            89. **Chuẩn Hóa Toàn Diện Mẫu Thiệp "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`) Theo Bộ 8 Trụ Cột Bất Biến**:
+                - **Yêu cầu & Phạm vi thực hiện**:
+                  * Tiến hành chuẩn hóa mẫu thiệp cưới phong cách Hoàng Gia Ruby & Kim Cương `hac-bach-trao-duyen` tuân thủ 100% tiêu chuẩn trong `.agents/skills/mayhen-invitation-templates/SKILL.md`.
+                - **Các hạng mục đã chuẩn hóa**:
+                  1. *`schema.json`*:
+                     - Bổ sung 2 trường ảnh chân dung `wedding.extra_data.groom_photo_url` và `wedding.extra_data.bride_photo_url` vào section `couple`.
+                     - Bổ sung mảng `"default": [...]` chứa đúng 10 file ảnh cưới nội bộ có thật trong `assets/` vào trường `gallery`.
+                     - Đồng bộ 4 mốc thời gian mặc định của `wedding.extra_data.timeline`: 08:00 (Lễ Ăn Hỏi Nhà Gái), 10:30 (Lễ Rước Dâu), 11:30 (Tiệc Mừng & Lễ Thành Hôn Nhà Trai), 13:00 (Giao Lưu & Chụp Ảnh Kỷ Niệm).
+                  2. *`template.blade.php`*:
+                     - Kế thừa mảng `$defaultGallery` từ `$template->default_gallery ?? [...]`, lặp lấy 10 ảnh `$gallery` qua `$resolveAsset`.
+                     - Khởi tạo `$timelineList` động và render lặp qua vòng lặp `@foreach($timelineList as $tIdx => $tItem)`, gắn đầy đủ `data-sync-target="timeline.{{ $tIdx }}.time"` và `data-sync-target="timeline.{{ $tIdx }}.title"`.
+                     - Gắn đầy đủ `data-mayhen-section` cho toàn bộ 6 canonical sections: `couple`, `groom_family,bride_family` (kèm thẻ con `groom_family` và `bride_family`), `timeline`, `album`, `gift`.
+                     - Section Album: Thay thế 9 ảnh tĩnh bằng vòng lặp đúng 10 ảnh `$gallery`, gắn thẻ `data-sync-target="gallery.{{ $gIdx }}"` và phân lớp layout Pinterest đẹp mắt (`item_tall`, `item_wide`).
+                     - Thẻ `<audio>` gắn `data-sync-target="music_url"` với src lấy `$musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3')`.
+                     - Section Hộp Mừng Cưới: Đưa toàn bộ tài khoản ngân hàng và mã VietQR về động, gắn đầy đủ các thuộc tính Live Sync `qr_groom_image`, `groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `qr_bride_image`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`.
+                     - Phòng vệ nhúng Studio `$isEmbed = true`: Ẩn màn mở đầu `style="{{ $isEmbed ? 'display: none !important;' : '' }}"`, gắn class `opened mayhen_door_hidden`, không gắn class khóa cuộn `scroll_locked` lên html/body khi nhúng.
+                  3. *Âm nhạc & Nút đĩa than (`script.js` & `styles.css`)*:
+                     - Cung cấp hàm toàn cục `window.updateMayhenMusic` xử lý nạp bài hát mới thời gian thực khi khách chọn nhạc từ Studio.
+                     - Cố định nút đĩa than vinyl ở góc trên bên trái theo đúng chuẩn Mây Hẹn: `top: 16px !important; left: max(16px, calc(50% - 210px + 16px)) !important; position: fixed !important; z-index: 1001 !important;`. Ẩn đi khi chưa mở phong bì và hiện lên khi thiệp mở.
+                     - Nâng z-index màn mở đầu `.mayhen_invitation_ladjihe38udhd_opening_overlay` lên `9999999 !important;`.
+                     - Đồng bộ toàn bộ các cập nhật vào cả hai file con `assets/script.js` và `assets/styles.css`.
+                  4. *Seeder & Database*:
+                     - Bổ sung cấu hình `'gallery'` (10 ảnh) và `'timeline'` (4 mốc) vào `default_config` của `hac-bach-trao-duyen` trong `InvitationTemplateSeeder.php` và chạy re-seed cập nhật DB.
+                - **Kiểm thử & Định dạng**:
+                  * Cú pháp JS: `node -c script.js` passed 100%.
+                  * Viết Feature Test chuyên biệt `tests/Feature/HacBachTraoDuyenTemplateTest.php`: Kiểm tra xác thực 35 assertions gồm 6 sections, hợp đồng sync dâu rể, 10 ảnh album, timeline repeater, âm nhạc và form editor. Toàn bộ 7/7 Feature Tests (64 assertions) pass 100%.
+                  * Laravel Pint: Clean 100%.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
