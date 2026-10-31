@@ -1857,9 +1857,9 @@
                         </div>
                         <div id="HEADLINE320" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline'>
-                                CTK: <span data-sync-target="groom_bank_holder">{{ $extraData['groom_bank_holder'] ?? 'RANDY TRAN' }}</span><br>
-                                STK: <span data-sync-target="groom_bank_account">{{ $extraData['groom_bank_account'] ?? '1012345678' }}</span><br>
-                                NH: <span data-sync-target="groom_bank_name">{{ $extraData['groom_bank_name'] ?? 'Vietcombank' }}</span>
+                                CTK: <span data-sync-target="groom_bank_holder">{{ $extraData['groom_bank_holder'] ?? '' }}</span><br>
+                                STK: <span data-sync-target="groom_bank_account">{{ $extraData['groom_bank_account'] ?? '' }}</span><br>
+                                NH: <span data-sync-target="groom_bank_name">{{ $extraData['groom_bank_name'] ?? '' }}</span>
                             </h3>
                         </div>
                         <div id="HEADLINE321" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1885,9 +1885,9 @@
                         </div>
                         <div id="HEADLINE323" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline'>
-                                CTK: <span data-sync-target="bride_bank_holder">{{ $extraData['bride_bank_holder'] ?? 'MINH QUY NGUYEN' }}</span><br>
-                                STK: <span data-sync-target="bride_bank_account">{{ $extraData['bride_bank_account'] ?? '1903888899' }}</span><br>
-                                NH: <span data-sync-target="bride_bank_name">{{ $extraData['bride_bank_name'] ?? 'Techcombank' }}</span>
+                                CTK: <span data-sync-target="bride_bank_holder">{{ $extraData['bride_bank_holder'] ?? '' }}</span><br>
+                                STK: <span data-sync-target="bride_bank_account">{{ $extraData['bride_bank_account'] ?? '' }}</span><br>
+                                NH: <span data-sync-target="bride_bank_name">{{ $extraData['bride_bank_name'] ?? '' }}</span>
                             </h3>
                         </div>
                         <div id="HEADLINE324" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">

@@ -1185,8 +1185,49 @@ const initEditor = () => {
         }
     };
 
+    const syncVietQrHiddenField = (el) => {
+        const targetBankId = el.getAttribute('data-target-bank');
+        const targetAccId = el.getAttribute('data-target-acc');
+        const targetNameId = el.getAttribute('data-target-name');
+
+        if (targetBankId && el.tagName === 'SELECT') {
+            const targetEl = document.getElementById(targetBankId);
+            if (targetEl) {
+                const selVal = el.selectedIndex > 0 ? (el.options[el.selectedIndex].text.split(' - ')[0] || el.value) : '';
+                targetEl.value = selVal;
+                const syncKey = targetEl.getAttribute('data-sync-key');
+                if (syncKey) {
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: selVal } });
+                    sendSyncMessage(syncKey, selVal);
+                }
+            }
+        } else if (targetAccId) {
+            const targetEl = document.getElementById(targetAccId);
+            if (targetEl) {
+                targetEl.value = el.value.trim();
+                const syncKey = targetEl.getAttribute('data-sync-key');
+                if (syncKey) {
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: el.value.trim() } });
+                    sendSyncMessage(syncKey, el.value.trim());
+                }
+            }
+        } else if (targetNameId) {
+            const targetEl = document.getElementById(targetNameId);
+            if (targetEl) {
+                const valUpper = el.value.trim().toUpperCase();
+                targetEl.value = valUpper;
+                const syncKey = targetEl.getAttribute('data-sync-key');
+                if (syncKey) {
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: valUpper } });
+                    sendSyncMessage(syncKey, valUpper);
+                }
+            }
+        }
+    };
+
     $$('.mayhen_vietqr_bank_select, .mayhen_vietqr_acc_input, .mayhen_vietqr_name_input').forEach(el => {
         const updateQrAfterPause = () => {
+            syncVietQrHiddenField(el);
             const side = el.getAttribute('data-qr-side');
             if (!side) return;
             window.clearTimeout(qrUpdateTimers.get(side));
@@ -1204,9 +1245,81 @@ const initEditor = () => {
         on(btn, 'click', () => {
             const side = btn.getAttribute('data-qr-side');
             if (side) {
+                const bankSelect = $(`.mayhen_vietqr_bank_select[data-qr-side="${side}"]`);
+                const accInput = $(`.mayhen_vietqr_acc_input[data-qr-side="${side}"]`);
+                const nameInput = $(`.mayhen_vietqr_name_input[data-qr-side="${side}"]`);
+                if (bankSelect) syncVietQrHiddenField(bankSelect);
+                if (accInput) syncVietQrHiddenField(accInput);
+                if (nameInput) syncVietQrHiddenField(nameInput);
+
                 window.clearTimeout(qrUpdateTimers.get(side));
                 updateVietQr(side);
             }
+        });
+    });
+
+    // Xử lý tải ảnh QR cá nhân có sẵn từ thiết bị
+    $$('.mayhen_vietqr_file_input').forEach(fileInput => {
+        on(fileInput, 'change', () => {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+
+            const targetInputId = fileInput.getAttribute('data-target-input');
+            const targetInput = document.getElementById(targetInputId);
+            const targetThumb = document.getElementById('preview_thumb_' + targetInputId);
+            const statusEl = document.getElementById('status_' + targetInputId);
+
+            if (file.size > 10 * 1024 * 1024) {
+                if (statusEl) {
+                    statusEl.textContent = 'Tệp quá lớn, vui lòng chọn ảnh dưới 10MB';
+                    statusEl.style.color = '#EF4444';
+                }
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 800;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) {
+                            h = Math.round((h * maxDim) / w);
+                            w = maxDim;
+                        } else {
+                            w = Math.round((w * maxDim) / h);
+                            h = maxDim;
+                        }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const base64Data = canvas.toDataURL('image/png', 0.92);
+
+                    if (targetThumb) targetThumb.src = base64Data;
+                    if (targetInput) {
+                        targetInput.value = base64Data;
+                        const syncKey = targetInput.getAttribute('data-sync-key');
+                        if (syncKey) {
+                            store.dispatch({
+                                type: ActionTypes.UPDATE_FIELD,
+                                payload: { key: syncKey, value: base64Data }
+                            });
+                            sendSyncMessage(syncKey, base64Data);
+                        }
+                    }
+                    if (statusEl) {
+                        statusEl.textContent = '✓ Đã tải ảnh QR từ thiết bị';
+                        statusEl.style.color = '#10B981';
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         });
     });
 

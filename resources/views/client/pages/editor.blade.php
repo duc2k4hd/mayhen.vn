@@ -401,50 +401,102 @@
                                         </div>
 
                                     @elseif ($fieldKey === 'wedding.extra_data.qr_groom_image' || $fieldKey === 'wedding.extra_data.qr_bride_image')
-                                        {{-- Trường QR Mừng Cưới: Tạo VietQR ngân hàng an toàn tuyệt đối --}}
+                                        {{-- Trường QR Mừng Cưới: Tạo VietQR ngân hàng an toàn tuyệt đối hoặc Tải ảnh QR có sẵn --}}
                                         @php
                                             $isGroomQr = str_contains($fieldKey, 'groom');
                                             $prefixQr = $isGroomQr ? 'groom_qr' : 'bride_qr';
-                                            $sideLabel = $isGroomQr ? 'Nhà Trai' : 'Nhà Gái';
+                                            $sideLabel = $isGroomQr ? 'Nhà Trai (Chú Rể)' : 'Nhà Gái (Cô Dâu)';
+                                            $bankNameField = $isGroomQr ? 'groom_bank_name' : 'bride_bank_name';
+                                            $bankAccField = $isGroomQr ? 'groom_bank_account' : 'bride_bank_account';
+                                            $bankHolderField = $isGroomQr ? 'groom_bank_holder' : 'bride_bank_holder';
+
+                                            $curExtra = (isset($editingInvitation) && $editingInvitation->wedding && is_array($editingInvitation->wedding->extra_data)) 
+                                                ? $editingInvitation->wedding->extra_data 
+                                                : [];
+                                            $curBank = old('wedding.extra_data.' . $bankNameField, $curExtra[$bankNameField] ?? '');
+                                            $curAcc = old('wedding.extra_data.' . $bankAccField, $curExtra[$bankAccField] ?? ($curExtra[$isGroomQr ? 'groom_account_number' : 'bride_account_number'] ?? ''));
+                                            $curHolder = old('wedding.extra_data.' . $bankHolderField, $curExtra[$bankHolderField] ?? ($curExtra[$isGroomQr ? 'groom_account_name' : 'bride_account_name'] ?? ''));
                                         @endphp
                                         <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_vietqr_box">
                                                 <div class="mayhen_vietqr_preview_wrap">
-                                                    <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
-                                                         alt="Mã QR {{ $sideLabel }}" 
-                                                         class="mayhen_vietqr_img" 
-                                                         id="preview_thumb_{{ $fieldId }}"
-                                                         onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                    <div class="mayhen_vietqr_img_wrapper" style="position: relative; flex-shrink: 0;">
+                                                        <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
+                                                             alt="Mã QR {{ $sideLabel }}" 
+                                                             class="mayhen_vietqr_img" 
+                                                             id="preview_thumb_{{ $fieldId }}"
+                                                             onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                    </div>
                                                     <div class="mayhen_vietqr_fields">
-                                                        <select class="mayhen_client_form_input mayhen_vietqr_bank_select" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}">
+                                                        <select class="mayhen_client_form_input mayhen_vietqr_bank_select" 
+                                                                data-qr-side="{{ $prefixQr }}" 
+                                                                data-target-input="{{ $fieldId }}"
+                                                                data-target-bank="input_{{ $bankNameField }}">
                                                             <option value="">-- Chọn ngân hàng thụ hưởng --</option>
                                                             @foreach ($banks as $b)
-                                                                <option value="{{ $b['code'] }}">{{ $b['short_name'] }} - {{ $b['name'] }}</option>
+                                                                <option value="{{ $b['code'] }}" {{ (strtoupper((string) $curBank) === strtoupper((string) $b['code']) || strtoupper((string) $curBank) === strtoupper((string) $b['short_name'])) ? 'selected' : '' }}>
+                                                                    {{ $b['short_name'] }} - {{ $b['name'] }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                         <input type="text" 
                                                                class="mayhen_client_form_input mayhen_vietqr_acc_input" 
                                                                data-qr-side="{{ $prefixQr }}" 
                                                                data-target-input="{{ $fieldId }}"
+                                                               data-target-acc="input_{{ $bankAccField }}"
+                                                               value="{{ $curAcc }}"
                                                                placeholder="Số tài khoản ngân hàng...">
                                                         <input type="text" 
                                                                class="mayhen_client_form_input mayhen_vietqr_name_input" 
                                                                data-qr-side="{{ $prefixQr }}" 
                                                                data-target-input="{{ $fieldId }}"
+                                                               data-target-name="input_{{ $bankHolderField }}"
+                                                               value="{{ $curHolder }}"
                                                                placeholder="Tên chủ tài khoản (không dấu)...">
                                                     </div>
                                                 </div>
+
+                                                {{-- Hidden inputs lưu trữ đồng bộ dữ liệu vào DB --}}
                                                 <input type="hidden" 
                                                        id="{{ $fieldId }}" 
                                                        name="{{ $inputName }}" 
                                                        data-sync-key="{{ $fieldKey }}" 
                                                        value="{{ is_string($val) ? $val : '' }}">
-                                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-size: 0.75rem; color: #10B981; font-weight: 500;">✓ Tự động tạo mã VietQR</span>
-                                                    <button type="button" class="mayhen_cropper_btn_tool mayhen_btn_gen_vietqr" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}" style="padding: 4px 12px; font-size: 11px;">
-                                                        ⚡ Cập nhật mã VietQR
-                                                    </button>
+                                                <input type="hidden" 
+                                                       id="input_{{ $bankNameField }}" 
+                                                       name="wedding[extra_data][{{ $bankNameField }}]" 
+                                                       data-sync-key="wedding.extra_data.{{ $bankNameField }}" 
+                                                       value="{{ $curBank }}">
+                                                <input type="hidden" 
+                                                       id="input_{{ $bankAccField }}" 
+                                                       name="wedding[extra_data][{{ $bankAccField }}]" 
+                                                       data-sync-key="wedding.extra_data.{{ $bankAccField }}" 
+                                                       value="{{ $curAcc }}">
+                                                <input type="hidden" 
+                                                       id="input_{{ $bankHolderField }}" 
+                                                       name="wedding[extra_data][{{ $bankHolderField }}]" 
+                                                       data-sync-key="wedding.extra_data.{{ $bankHolderField }}" 
+                                                       value="{{ $curHolder }}">
+
+                                                {{-- Input file ẩn để tải ảnh mã QR cá nhân từ máy --}}
+                                                <input type="file" 
+                                                       id="upload_qr_{{ $fieldId }}" 
+                                                       accept="image/*" 
+                                                       style="display: none;" 
+                                                       class="mayhen_vietqr_file_input" 
+                                                       data-target-input="{{ $fieldId }}">
+
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 6px;">
+                                                    <span id="status_{{ $fieldId }}" style="font-size: 0.75rem; color: #10B981; font-weight: 500;">✓ Tự động tạo mã VietQR</span>
+                                                    <div style="display: flex; gap: 6px;">
+                                                        <button type="button" class="mayhen_cropper_btn_tool" onclick="document.getElementById('upload_qr_{{ $fieldId }}').click();" style="padding: 4px 10px; font-size: 11px; background: rgba(0,0,0,0.05); color: #333;" title="Chọn ảnh mã QR từ thiết bị của bạn">
+                                                            📷 Tải ảnh QR có sẵn
+                                                        </button>
+                                                        <button type="button" class="mayhen_cropper_btn_tool mayhen_btn_gen_vietqr" data-qr-side="{{ $prefixQr }}" data-target-input="{{ $fieldId }}" style="padding: 4px 12px; font-size: 11px;">
+                                                            ⚡ Cập nhật mã VietQR
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

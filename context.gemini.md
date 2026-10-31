@@ -2760,6 +2760,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
                      - Cache hệ thống: Cleared.
 
+            103. **Tối Giản Hóa Hộp Mừng Cưới Trong Studio Tạo Thiệp (Chỉ Cần Mã QR, Không Bắt Nhập Tay Thừa Thãi)**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi ảnh Studio Editor (`media_1793433448263_222728e5.png`) phản hồi: "Sửa lại mừng cưới của cô dâu và chú rể chỉ cần phần mã QR mừng cưới là đủ không cần phải nhập bằng tay lắm thế".
+                  * *Nguyên nhân*: Trong `schema.json`, tab `gift` (Hộp Mừng Cưới) đang bắt buộc hiển thị 6 trường text nhập tay rời rạc (`groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`), trong khi ngay bên dưới đã có component tạo VietQR (`mayhen_vietqr_box`) cũng yêu cầu chọn ngân hàng, nhập STK và tên CTK. Việc này làm khách hàng bị bắt nhập lặp lại 2 lần gây phiền toái.
+                - **Giải pháp hoàn thiện**:
+                  1. *`schema.json`*:
+                     - Tinh gọn tab `gift`, chỉ giữ lại 2 trường cốt lõi: `wedding.extra_data.qr_groom_image` ("Mã QR Mừng Cưới Chú Rể") và `wedding.extra_data.qr_bride_image` ("Mã QR Mừng Cưới Cô Dâu").
+                     - Loại bỏ hoàn toàn 6 trường nhập tay thừa thãi khỏi giao diện Studio Editor.
+                  2. *`resources/views/client/pages/editor.blade.php`*:
+                     - Bổ sung logic tự động prefill thông tin ngân hàng, số tài khoản, tên tài khoản đã lưu vào component VietQR để tránh mất dữ liệu khi tải lại trang.
+                     - Thêm các hidden inputs ngầm (`groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`) tự động nhận giá trị khi người dùng thao tác trong khối VietQR để backend vẫn lưu trữ đầy đủ.
+                     - Tích hợp thêm tính năng "📷 Tải ảnh QR có sẵn" (file input ẩn) cho phép người dùng có thể tải trực tiếp ảnh chụp QR từ máy cá nhân lên mà không cần tạo qua VietQR.
+                  3. *`public/assets/client/js/pages/editor.js`*:
+                     - Hàm `syncVietQrHiddenField`: Tự động đồng bộ tên ngân hàng, STK, tên chủ TK từ khối VietQR sang hidden inputs và dispatch Live Sync `sendSyncMessage`.
+                     - Xử lý sự kiện `change` của `.mayhen_vietqr_file_input`: Đọc ảnh QR từ thiết bị qua `FileReader` và Canvas, tự động nén và gán Base64 vào input, gửi Live Sync sang thiệp cưới ngay lập tức.
+                  4. *`template.blade.php`*:
+                     - Xóa bỏ chuỗi fallback thông tin tài khoản mẫu rác trong `POPUP2` và `POPUP3`.
+                  5. *Kiểm thử*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
+                     - Laravel Pint: Passed.
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
