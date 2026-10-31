@@ -3227,7 +3227,7 @@ body {
     right: auto !important;
     left: max(16px, calc(50% - 210px + 16px)) !important;
     position: fixed !important;
-    z-index: 90000050 !important;
+    z-index: 1001 !important;
     margin-left: 0 !important;
     cursor: pointer !important;
     transition: transform 0.25s ease, filter 0.25s ease;

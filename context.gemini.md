@@ -2377,6 +2377,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            84. **Điều Chỉnh Nút Bật/Tắt Nhạc Nền Hiển Thị Dưới Cánh Cửa Mở Thiệp (`dau-ky-tram-nam`)**:
+                - **Yêu cầu & Triệu chứng**:
+                  * Người dùng phản ánh: *"nút mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group72 phải hiển thị dưới cánh cửa mở thiệp"*.
+                  * Khi người xem truy cập link thiệp trực tiếp (`/xem-thu/dau-ky-tram-nam`), hai cánh cửa đỏ Ruby 3D đang đóng kín (`#mayhen-door-stage`), nhưng nút nhạc `group72` lại nổi đè lên trên bề mặt cánh cửa ở góc trên bên trái do có `z-index: 90000050 !important;` (lớn hơn `z-index: 9999999` của cánh cửa).
+                - **Nguyên nhân & Giải pháp**:
+                  * Hạ `z-index` của `.mayhen_invitation_jeowinids483fr_group72` từ `90000050` xuống `1001 !important;` trong cả 2 tệp `styles.css` và `assets/styles.css`.
+                  * Khi cánh cửa chưa mở: `#mayhen-door-stage` (`z-index: 9999999`) che kín toàn bộ màn hình, nút nhạc nằm dưới cánh cửa và không bị lộ ra.
+                  * Khi người xem chạm vào mở cánh cửa: Hai cánh cửa mở ra và tự động ẩn đi, nút nhạc lộ ra mượt mà và ghim cố định ở góc trên bên trái viewport.
+                  * Trên nội dung thiệp: `z-index: 1001` đảm bảo nút nhạc luôn nổi trên các section nội dung khi cuộn trang, nhưng vẫn nằm dưới các popup hộp quà mừng / lightbox phóng to ảnh (`z-index: 100000+`).
+                - **Kiểm thử & Định dạng**:
+                  * Code CSS chuẩn xác, đồng bộ cả 2 file `styles.css`.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

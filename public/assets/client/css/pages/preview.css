@@ -7,6 +7,10 @@ html {
     background-color: #161310;
 }
 
+.mayhen_client_bottom_nav_wrapper {
+    display: none !important;
+}
+
 .mayhen_invitation_wrapper {
     background-color: #F8F6F0;
     min-height: 100vh;
