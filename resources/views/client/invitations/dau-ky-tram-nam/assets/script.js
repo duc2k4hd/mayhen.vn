@@ -492,21 +492,35 @@
     });
 
     const audio = C.music ? new Audio(C.music) : null;
+    const syncMusicBtnState = () => {
+        const musicBtn = document.querySelector("." + P + "group72");
+        if (!musicBtn) return;
+        if (audio && !audio.paused) {
+            musicBtn.classList.add(P + "playing");
+        } else {
+            musicBtn.classList.remove(P + "playing");
+        }
+    };
     if (audio) {
         audio.loop = true;
         audio.preload = "none";
+        audio.addEventListener("play", syncMusicBtnState);
+        audio.addEventListener("pause", syncMusicBtnState);
+        audio.addEventListener("ended", syncMusicBtnState);
     }
     const toggleMusic = async () => {
         if (!audio) return showMessage("Chưa cấu hình bài hát nền.");
         if (audio.paused) {
             try {
                 await audio.play();
+                syncMusicBtnState();
                 showMessage("Đã bật nhạc nền.");
             } catch {
                 showMessage("Trình duyệt chặn tự động phát nhạc.");
             }
         } else {
             audio.pause();
+            syncMusicBtnState();
             showMessage("Đã tắt nhạc nền.");
         }
     };
@@ -822,7 +836,7 @@
                     encodeURIComponent(C.address || "Đồng Tháp, Việt Nam");
             window.open(url, "_blank", "noopener,noreferrer");
         }
-        if (node.closest("." + P + "shape10, ." + P + "shape11"))
+        if (node.closest("." + P + "shape10, ." + P + "shape11, ." + P + "group72"))
             return toggleMusic();
     });
     dialogBackdrop?.addEventListener("click", closeModal);

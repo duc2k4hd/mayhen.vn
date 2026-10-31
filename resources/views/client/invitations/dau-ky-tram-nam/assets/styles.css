@@ -3222,13 +3222,34 @@ body {
     height: 63.5822px;
 }
 .mayhen_invitation_jeowinids483fr_group72 {
-    top: auto;
-    left: 5px;
-    right: auto;
-    bottom: 5px;
-    position: fixed;
-    z-index: 90000050;
-    margin-left: calc(50% - 210px);
+    top: 16px !important;
+    bottom: auto !important;
+    right: auto !important;
+    left: max(16px, calc(50% - 210px + 16px)) !important;
+    position: fixed !important;
+    z-index: 90000050 !important;
+    margin-left: 0 !important;
+    cursor: pointer !important;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+.mayhen_invitation_jeowinids483fr_group72:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.3));
+}
+.mayhen_invitation_jeowinids483fr_group72:active {
+    transform: scale(0.95);
+}
+.mayhen_invitation_jeowinids483fr_on_speaker {
+    display: none !important;
+}
+.mayhen_invitation_jeowinids483fr_off_speaker {
+    display: block !important;
+}
+.mayhen_invitation_jeowinids483fr_group72.mayhen_invitation_jeowinids483fr_playing .mayhen_invitation_jeowinids483fr_on_speaker {
+    display: block !important;
+}
+.mayhen_invitation_jeowinids483fr_group72.mayhen_invitation_jeowinids483fr_playing .mayhen_invitation_jeowinids483fr_off_speaker {
+    display: none !important;
 }
 .mayhen_invitation_jeowinids483fr_box58
     > .mayhen_invitation_jeowinids483fr_ladi-box,

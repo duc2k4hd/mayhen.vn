@@ -1553,109 +1553,6 @@
                   ></div>
                 </div>
               </div>
-              <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group72"
-              >
-                <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_box58"
-                  >
-                    <div
-                      class="mayhen_invitation_jeowinids483fr_ladi-box mayhen_invitation_jeowinids483fr_ladi-transition"
-                    ></div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_box59"
-                  >
-                    <div
-                      class="mayhen_invitation_jeowinids483fr_ladi-box mayhen_invitation_jeowinids483fr_ladi-transition"
-                    ></div>
-                  </div>
-                  <div
-                    class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group73"
-                  >
-                    <div class="mayhen_invitation_jeowinids483fr_ladi-group">
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_off_speaker mayhen_invitation_jeowinids483fr_shape10"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-shape"
-                        >
-                          <svg
-                            class=""
-                            fill="rgba(255, 255, 255, 1)"
-                            height="100%"
-                            preserveaspectratio="none"
-                            viewbox="206 206 100 100"
-                            width="100%"
-                            x="0px"
-                            xmlns="http://www.w3.org/2000/svg"
-                            y="0px"
-                          >
-                            <g>
-                              <path
-                                d="M226.473,243.243h-3.415c-1.665,0-3.014,1.349-3.014,3.014v19.486c0,1.664,1.349,3.014,3.014,3.014h3.415h0.201h6.228   v-25.514h-6.228H226.473z"
-                              ></path>
-                              <g>
-                                <polygon
-                                  points="268.26,301 268.26,252.234 243.876,276.617   "
-                                ></polygon>
-                                <polygon
-                                  points="268.26,211 236.116,243.143 236.116,266.194 268.26,234.051   "
-                                ></polygon>
-                                <rect
-                                  height="6.428"
-                                  transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 617.6146 254.9795)"
-                                  width="119.156"
-                                  x="196.422"
-                                  y="252.187"
-                                ></rect>
-                              </g>
-                            </g>
-                          </svg>
-                        </div>
-                      </div>
-                      <div
-                        class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_on_speaker mayhen_invitation_jeowinids483fr_shape11"
-                      >
-                        <div
-                          class="mayhen_invitation_jeowinids483fr_ladi-shape"
-                        >
-                          <svg
-                            class=""
-                            fill="rgba(255, 255, 255, 1)"
-                            height="100%"
-                            preserveaspectratio="none"
-                            viewbox="206 206 100 100"
-                            width="100%"
-                            x="0px"
-                            xmlns="http://www.w3.org/2000/svg"
-                            y="0px"
-                          >
-                            <g>
-                              <path
-                                d="M217.4,243.3H214c-1.657,0-3,1.343-3,3v19.4c0,1.657,1.343,3,3,3h3.4h0.2h6.2v-25.4h-6.2H217.4z"
-                              ></path>
-                              <polygon
-                                points="227,268.8 259,300.801 259,211.199 227,243.2  "
-                              ></polygon>
-                              <path
-                                d="M270.031,244.424l-4.631,4.63c3.83,3.83,3.83,10.062,0,13.891l4.631,4.63C276.414,261.191,276.414,250.808,270.031,244.424   z"
-                              ></path>
-                              <path
-                                d="M279.291,235.163l-4.629,4.631c8.936,8.936,8.936,23.476,0,32.412l4.631,4.631   C290.781,265.348,290.781,246.653,279.291,235.163z"
-                              ></path>
-                              <path
-                                d="M288.553,225.903l-4.631,4.63c14.043,14.042,14.043,36.892,0,50.935l4.631,4.63   C305.148,269.503,305.148,242.499,288.553,225.903z"
-                              ></path>
-                            </g>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <!-- SECTION 6: HỘP MỪNG CƯỚI (GIFT / BANK INFO) -->
@@ -1795,6 +1692,116 @@
         </div>
       </div>
     </div>
+
+    {{-- NÚT BẬT/TẮT NHẠC DÍNH GÓC TRÊN BÊN TRÁI --}}
+    <div
+      class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group72"
+      role="button"
+      tabindex="0"
+      aria-label="Bật/Tắt nhạc nền"
+      title="Bật/Tắt nhạc nền"
+    >
+      <div class="mayhen_invitation_jeowinids483fr_ladi-group">
+        <div
+          class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_box58"
+        >
+          <div
+            class="mayhen_invitation_jeowinids483fr_ladi-box mayhen_invitation_jeowinids483fr_ladi-transition"
+          ></div>
+        </div>
+        <div
+          class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_box59"
+        >
+          <div
+            class="mayhen_invitation_jeowinids483fr_ladi-box mayhen_invitation_jeowinids483fr_ladi-transition"
+          ></div>
+        </div>
+        <div
+          class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group73"
+        >
+          <div class="mayhen_invitation_jeowinids483fr_ladi-group">
+            <div
+              class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_off_speaker mayhen_invitation_jeowinids483fr_shape10"
+            >
+              <div
+                class="mayhen_invitation_jeowinids483fr_ladi-shape"
+              >
+                <svg
+                  class=""
+                  fill="rgba(255, 255, 255, 1)"
+                  height="100%"
+                  preserveaspectratio="none"
+                  viewbox="206 206 100 100"
+                  width="100%"
+                  x="0px"
+                  xmlns="http://www.w3.org/2000/svg"
+                  y="0px"
+                >
+                  <g>
+                    <path
+                      d="M226.473,243.243h-3.415c-1.665,0-3.014,1.349-3.014,3.014v19.486c0,1.664,1.349,3.014,3.014,3.014h3.415h0.201h6.228   v-25.514h-6.228H226.473z"
+                    ></path>
+                    <g>
+                      <polygon
+                        points="268.26,301 268.26,252.234 243.876,276.617   "
+                      ></polygon>
+                      <polygon
+                        points="268.26,211 236.116,243.143 236.116,266.194 268.26,234.051   "
+                      ></polygon>
+                      <rect
+                        height="6.428"
+                        transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 617.6146 254.9795)"
+                        width="119.156"
+                        x="196.422"
+                        y="252.187"
+                      ></rect>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div
+              class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_on_speaker mayhen_invitation_jeowinids483fr_shape11"
+            >
+              <div
+                class="mayhen_invitation_jeowinids483fr_ladi-shape"
+              >
+                <svg
+                  class=""
+                  fill="rgba(255, 255, 255, 1)"
+                  height="100%"
+                  preserveaspectratio="none"
+                  viewbox="206 206 100 100"
+                  width="100%"
+                  x="0px"
+                  xmlns="http://www.w3.org/2000/svg"
+                  y="0px"
+                >
+                  <g>
+                    <path
+                      d="M217.4,243.3H214c-1.657,0-3,1.343-3,3v19.4c0,1.657,1.343,3,3,3h3.4h0.2h6.2v-25.4h-6.2H217.4z"
+                    ></path>
+                    <polygon
+                      points="227,268.8 259,300.801 259,211.199 227,243.2  "
+                    ></polygon>
+                    <path
+                      d="M270.031,244.424l-4.631,4.63c3.83,3.83,3.83,10.062,0,13.891l4.631,4.63C276.414,261.191,276.414,250.808,270.031,244.424   z"
+                    ></path>
+                    <path
+                      d="M279.291,235.163l-4.629,4.631c8.936,8.936,8.936,23.476,0,32.412l4.631,4.631   C290.781,265.348,290.781,246.653,279.291,235.163z"
+                    ></path>
+                    <path
+                      d="M288.553,225.903l-4.631,4.63c14.043,14.042,14.043,36.892,0,50.935l4.631,4.63   C305.148,269.503,305.148,242.499,288.553,225.903z"
+                    ></path>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <button
       aria-label="Đóng hộp thoại"
       class="mayhen_invitation_jeowinids483fr_modal-close"

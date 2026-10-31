@@ -2316,6 +2316,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Pest Feature Test: 35/35 tests pass 100% (521 assertions).
                   * Laravel Pint: Clean 100%.
 
+            82. **Cố Định Nút Bật/Tắt Nhạc Nền Dính Góc Trên Bên Trái Mẫu Dấu Ký Trăm Năm (`dau-ky-tram-nam`)**:
+                - **Yêu cầu & Vấn đề**:
+                  * Người dùng yêu cầu: *"để nút bật nhạc dính trên góc trên bên trái: mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_group72"*.
+                  * Trước đó `group72` nằm trong Section 5 bên trong `.mayhen_invitation_jeowinids483fr_stage` (vốn có `transform: scale(...)`), khiến thuộc tính `position: fixed` bị trap trong khung cục bộ của stage, không dính được vào viewport khi cuộn trang, đồng thời bị định vị ở góc dưới bên trái (`bottom: 5px;`) gây chèn đè lên thanh điều hướng `.mayhen_invitation_jeowinids483fr_cta-menu`.
+                - **Giải pháp hoàn thiện**:
+                  * **Đưa `group72` Ra Ngoài Stage & Đính Cố Định Vào Viewport**:
+                    + Di chuyển thẻ `group72` trong `template.blade.php` ra ngoài thẻ `shell` / `stage`, đặt ngang hàng với các widget toàn cục như `cta-menu`, `gift-dialog`, `lightbox`.
+                    + CSS ghim cố định góc trên bên trái:
+                      ```css
+                      .mayhen_invitation_jeowinids483fr_group72 {
+                          top: 16px !important;
+                          bottom: auto !important;
+                          right: auto !important;
+                          left: max(16px, calc(50% - 210px + 16px)) !important;
+                          position: fixed !important;
+                          z-index: 90000050 !important;
+                          margin-left: 0 !important;
+                          cursor: pointer !important;
+                          transition: transform 0.25s ease, filter 0.25s ease;
+                      }
+                      ```
+                    + Công thức `left: max(16px, calc(50% - 210px + 16px))` đảm bảo trên màn hình máy tính (khung thiệp 420px căn giữa) nút nằm gọn ghẽ 16px bên trong mép trái thiệp; trên điện thoại (màn hình <= 420px) nút luôn cách mép trái màn hình đúng 16px, không bao giờ bị tràn lề hay lệch khung.
+                  * **Hiệu Ứng Trạng Thái Phát / Tắt Nhạc Chuẩn Xác**:
+                    + Trong `script.js`: bổ sung các listener `play`, `pause`, `ended` trên đối tượng Audio để tự động gắn class `.mayhen_invitation_jeowinids483fr_playing` khi nhạc phát.
+                    + Bổ sung CSS hiển thị icon sóng âm (`on_speaker`) khi nhạc đang chạy và icon gạch chéo (`off_speaker`) khi tắt nhạc.
+                    + Mở rộng bắt sự kiện click trên toàn bộ khối `group72` giúp chạm vào bất kỳ đâu trên nút đều bật/tắt nhạc mượt mà.
+                  * **Đồng Bộ Asset Files**: Cập nhật đồng bộ cả hai tệp `styles.css` và `script.js` trong thư mục gốc và thư mục `assets/` của mẫu thiệp.
+                - **Kiểm thử & Định dạng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Clean 100%.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
