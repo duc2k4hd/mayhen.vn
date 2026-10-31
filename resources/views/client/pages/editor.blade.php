@@ -262,7 +262,8 @@
                                             || str_contains($fieldKey, 'extra_data.qr_')
                                             || str_contains($fieldKey, 'music_url')
                                             || str_contains($fieldKey, 'map_')
-                                            || str_contains($fieldKey, 'address');
+                                            || str_contains($fieldKey, 'address')
+                                            || $fieldKey === 'wedding.wedding_date';
                                         $groupClass = 'mayhen_client_form_group' . ($isFullWidth ? ' is-full-width' : '');
                                     @endphp
 
@@ -578,6 +579,9 @@
                                                 <span class="mayhen_editor_lunar_val" id="text_{{ $lunarFieldId }}">{{ $lunarInitVal }}</span>
                                                 <span class="mayhen_editor_lunar_tag">Tự động</span>
                                             </div>
+                                            @if ($fieldKey === 'wedding.wedding_date')
+                                                <div class="mayhen_editor_input_help">Ngày cử hành hôn lễ chính thức (Dương lịch & tự động đối soát Âm lịch)</div>
+                                            @endif
                                         </div>
 
                                     @elseif ($type === 'time' || str_ends_with($fieldKey, '_time') || str_contains($fieldKey, 'party_time'))

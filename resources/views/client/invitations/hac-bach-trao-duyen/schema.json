@@ -40,22 +40,6 @@
           "max": 100
         },
         {
-          "key": "wedding.wedding_date",
-          "label": "Ngày cử hành hôn lễ",
-          "type": "date",
-          "required": true,
-          "default": "2025-12-20",
-          "placeholder": "YYYY-MM-DD"
-        },
-        {
-          "key": "wedding.cover_photo_url",
-          "label": "Ảnh bìa đại diện thiệp",
-          "type": "image",
-          "required": false,
-          "default": "hip_2307-20250417154245-1n-2l.jpg",
-          "placeholder": "Đường dẫn ảnh bìa"
-        },
-        {
           "key": "wedding.extra_data.groom_photo_url",
           "label": "Ảnh Chân Dung Chú Rể",
           "type": "image",
@@ -70,6 +54,22 @@
           "required": false,
           "default": "hip_2374-20250417154254-fetzp.jpg",
           "placeholder": "Ảnh chân dung cô dâu"
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2025-12-20",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện thiệp",
+          "type": "image",
+          "required": false,
+          "default": "hip_2307-20250417154245-1n-2l.jpg",
+          "placeholder": "Đường dẫn ảnh bìa"
         },
         {
           "key": "wedding.extra_data.hero_photo_url",

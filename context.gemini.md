@@ -2523,6 +2523,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Toàn bộ 7/7 Feature Tests (78 assertions) pass 100%.
                      - Laravel Pint: Passed. Cache Laravel: Cleared.
 
+            91. **Thiết Kế Lại Bố Cục Studio Tạo Thiệp: Cân Đối Song Song Chú Rể & Cô Dâu, Đưa Ngày Hôn Lễ Xuống Dưới (`is-full-width`)**:
+                - **Yêu cầu & Mục tiêu**:
+                  * Người dùng yêu cầu bố cục lại Bước 1 ("1. Đôi Uyên Ương") trong Studio Tạo Thiệp: Đưa Ngày cử hành hôn lễ xuống dưới để Chú rể và Cô dâu nằm ngang bằng nhau cân xứng, trực quan, khách hàng dễ hiểu và dễ thao tác nhất.
+                - **Các điểm đã hoàn thiện**:
+                  1. *`editor.blade.php`*:
+                     - Bổ sung `$fieldKey === 'wedding.wedding_date'` vào danh sách `$isFullWidth`, giúp trường Ngày cử hành hôn lễ chiếm trọn 2 cột (`grid-column: 1 / -1`) nằm tách biệt phía dưới.
+                     - Thêm dòng trợ giúp hướng dẫn rõ ràng: *"Ngày cử hành hôn lễ chính thức (Dương lịch & tự động đối soát Âm lịch)"*.
+                  2. *`InvitationTemplateService.php` (`getCanonicalSections`)*:
+                     - Sắp xếp lại thứ tự trường chuẩn:
+                       * Hàng 1: Họ tên Chú rể (Cột 1) — Họ tên Cô dâu (Cột 2)
+                       * Hàng 2: Ảnh Chân Dung Chú Rể (Cột 1) — Ảnh Chân Dung Cô Dâu (Cột 2)
+                       * Hàng 3: Ngày cử hành hôn lễ (Full width) kèm đối soát Âm lịch tự động.
+                       * Hàng 4 trở đi: Ảnh bìa thiệp, ảnh kỷ niệm, lời ngỏ...
+                  3. *Đồng bộ `schema.json`*:
+                     - Đồng bộ thứ tự này trên các mẫu thiệp cưới: `hac-bach-trao-duyen`, `dau-ky-tram-nam`, `giua-muon-ngan-vi-sao`, `dau-an-thoi-gian`.
+                  4. *`editor-v2.css`*:
+                     - Bổ sung `min-height: 86px; box-sizing: border-box;` cho `.mayhen_editor_image_field_row` để 2 ô ảnh Chú rể và Cô dâu khi đặt cạnh nhau luôn thẳng hàng và bằng nhau từng pixel.
+                  5. *Kiểm thử & Định dạng*:
+                     - Chạy lại Seeder `InvitationTemplateSeeder`.
+                     - 7/7 Feature Tests (78 assertions) pass 100%.
+                     - Laravel Pint: Passed. Dọn cache hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -792,6 +792,8 @@ body.mayhen_editor_body_fullscreen {
     background: #FAF8F5;
     border: 1px solid rgba(197, 168, 128, 0.28);
     border-radius: 12px;
+    min-height: 86px;
+    box-sizing: border-box;
 }
 
 .mayhen_editor_image_field_preview {

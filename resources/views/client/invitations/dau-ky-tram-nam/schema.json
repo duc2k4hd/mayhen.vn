@@ -43,6 +43,22 @@
           "max": 100
         },
         {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "hip_1854-20250417154226-mql7h.jpg",
+          "placeholder": "Đường dẫn ảnh Chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "hip_2374-20250417154254-fetzp.jpg",
+          "placeholder": "Đường dẫn ảnh Cô dâu"
+        },
+        {
           "key": "wedding.wedding_date",
           "label": "Ngày cử hành hôn lễ",
           "type": "date",
@@ -58,22 +74,6 @@
           "default": "Nhằm ngày 03 tháng 02 năm Bính Ngọ",
           "placeholder": "Ví dụ: Nhằm ngày 03 tháng 02 năm Bính Ngọ",
           "max": 100
-        },
-        {
-          "key": "wedding.extra_data.groom_photo_url",
-          "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
-          "type": "image",
-          "required": false,
-          "default": "hip_1854-20250417154226-mql7h.jpg",
-          "placeholder": "Đường dẫn ảnh Chú rể"
-        },
-        {
-          "key": "wedding.extra_data.bride_photo_url",
-          "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
-          "type": "image",
-          "required": false,
-          "default": "hip_2374-20250417154254-fetzp.jpg",
-          "placeholder": "Đường dẫn ảnh Cô dâu"
         },
         {
           "key": "wedding.cover_photo_url",

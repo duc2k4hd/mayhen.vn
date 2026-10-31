@@ -40,22 +40,6 @@
           "max": 30
         },
         {
-          "key": "wedding.wedding_date",
-          "label": "Ngày cử hành hôn lễ",
-          "type": "date",
-          "required": true,
-          "default": "2026-12-20",
-          "placeholder": "YYYY-MM-DD"
-        },
-        {
-          "key": "wedding.cover_photo_url",
-          "label": "Ảnh bìa đại diện thiệp",
-          "type": "image",
-          "required": false,
-          "default": "7da1e3a6d59c1a98.webp",
-          "placeholder": "Đường dẫn ảnh bìa"
-        },
-        {
           "key": "wedding.extra_data.groom_photo_url",
           "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
           "type": "image",
@@ -70,6 +54,22 @@
           "required": false,
           "default": "307b8d7ea14424b9.webp",
           "placeholder": "Đường dẫn ảnh Cô dâu"
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-12-20",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện thiệp",
+          "type": "image",
+          "required": false,
+          "default": "7da1e3a6d59c1a98.webp",
+          "placeholder": "Đường dẫn ảnh bìa"
         },
         {
           "key": "wedding.extra_data.couple_quote",
