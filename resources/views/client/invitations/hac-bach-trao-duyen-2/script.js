@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     3. TỰ ĐỘNG SCALE CHUẨN XÁC TRÊN MỌI THIẾT BỊ
+     3. TỰ ĐỘNG SCALE CHUẨN XÁC TRÊN MỌI THIẾT BỊ & TRIỆT TIÊU KHOẢNG TRẮNG ĐÁY
      ========================================================================== */
   function autoScaleMobile() {
     const screenWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -129,18 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
       wraper.style.setProperty('width', '420px', 'important');
       wraper.style.setProperty('margin-left', 'auto', 'important');
       wraper.style.setProperty('margin-right', 'auto', 'important');
+      wraper.style.setProperty('margin-top', '0px', 'important');
 
-      // Bù chiều cao chính xác để cuộn mượt và không bị hở đáy
+      // Bù chiều cao bằng margin-bottom âm để triệt tiêu hoàn toàn khoảng trắng thừa ở cuối trang
       const naturalHeight = wraper.scrollHeight || wraper.offsetHeight;
       if (naturalHeight > 0) {
-        document.body.style.minHeight = `${Math.ceil(naturalHeight * scale)}px`;
-        document.body.style.height = `${Math.ceil(naturalHeight * scale)}px`;
+        const scaledHeight = Math.ceil(naturalHeight * scale);
+        const excess = naturalHeight - scaledHeight;
+        wraper.style.setProperty('margin-bottom', `-${excess}px`, 'important');
+        document.body.style.setProperty('min-height', `${scaledHeight}px`, 'important');
+        document.body.style.setProperty('max-height', `${scaledHeight}px`, 'important');
       }
     } else if (screenWidth >= 768 && screenWidth < 960) {
       const scale = screenWidth / 960;
+      wraper.style.setProperty('transform-origin', 'top center', 'important');
+      wraper.style.setProperty('transform', `scale(${scale})`, 'important');
+      wraper.style.setProperty('width', '960px', 'important');
+      wraper.style.setProperty('margin-left', 'auto', 'important');
+      wraper.style.setProperty('margin-right', 'auto', 'important');
       const naturalHeight = wraper.scrollHeight || wraper.offsetHeight;
       if (naturalHeight > 0) {
-        document.body.style.minHeight = `${Math.ceil(naturalHeight * scale)}px`;
+        const scaledHeight = Math.ceil(naturalHeight * scale);
+        const excess = naturalHeight - scaledHeight;
+        wraper.style.setProperty('margin-bottom', `-${excess}px`, 'important');
+        document.body.style.setProperty('min-height', `${scaledHeight}px`, 'important');
       }
     } else {
       wraper.style.transform = '';
@@ -148,14 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
       wraper.style.width = '';
       wraper.style.marginLeft = '';
       wraper.style.marginRight = '';
+      wraper.style.marginBottom = '';
       document.body.style.minHeight = '';
+      document.body.style.maxHeight = '';
       document.body.style.height = '';
     }
   }
 
   window.addEventListener('resize', autoScaleMobile);
   window.addEventListener('orientationchange', autoScaleMobile);
+  window.addEventListener('load', autoScaleMobile);
   autoScaleMobile();
+  setTimeout(autoScaleMobile, 300);
+  setTimeout(autoScaleMobile, 1000);
 
   // Lắng nghe sự kiện mở lại thiệp nếu cần từ Studio Editor
   window.addEventListener('message', (e) => {

@@ -11759,12 +11759,15 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     html, body {
         overflow-x: hidden !important;
         width: 100% !important;
+        background-color: #FAF8F5 !important;
     }
     .ladi-wraper {
         width: 420px !important;
         transform-origin: top center !important;
         transform: scale(calc(100vw / 420)) !important;
-        margin: 0 auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-top: 0 !important;
     }
     .ladi-section .ladi-container {
         width: 420px !important;
@@ -13128,4 +13131,35 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     .mayhen_hacbach2_parent_name {
         font-size: 17.5px !important;
     }
+}
+
+/* ========================================================
+   TRIỆT TIÊU KHOẢNG TRẮNG THỪA Ở CUỐI TRANG (#SECTION26 & #SECTION_POPUP)
+   ======================================================== */
+html, body {
+    background-color: #FAF8F5 !important;
+}
+
+#SECTION26 {
+    height: auto !important;
+    min-height: 640px !important;
+    padding-bottom: 25px !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+#SECTION26 .ladi-container {
+    height: auto !important;
+    min-height: 620px !important;
+}
+
+#SECTION_POPUP {
+    height: 0px !important;
+    min-height: 0px !important;
+    max-height: 0px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    display: block !important;
 }

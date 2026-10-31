@@ -2723,6 +2723,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
                      - Cache hệ thống: Cleared.
 
+            101. **Triệt Tiêu Hoàn Toàn Khoảng Trắng Thừa Ở Cuối Trang (#SECTION26 & Mobile Scale Overflow)**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi ảnh chụp màn hình (`media_1793432028610_3594ba22.jpg`): Sau dòng "Chân thành cảm ơn!" xuất hiện một khoảng trắng xóa rất dài ở đáy màn hình.
+                  * *Nguyên nhân cốt lõi*:
+                    1. *CSS Transform Scale Mobile*: Khi màn hình nhỏ (`width < 420px`), `.ladi-wraper` được co nhỏ lại bằng `transform: scale(calc(100vw / 420))`. Theo chuẩn CSS W3C, `transform` chỉ thu nhỏ phần hiển thị thị giác (visual) mà không thay đổi kích thước hộp layout DOM. Do đó, phần tử con vẫn chiếm đủ ~9000px chiều cao gốc, trong khi nội dung hiển thị chỉ cao ~8000px, tạo ra gần 1000px khoảng trống layout trắng tinh ở đáy trang!
+                    2. *Chiều cao #SECTION26*: Section cuối cùng bị gán cứng `height: 761px`, trong khi cụm nội dung cảm ơn (`#GROUP128`) chỉ cao khoảng 620px, làm thừa thêm 140px khoảng trống.
+                    3. *Màu nền body*: `body` cũ mang màu `#ffffff` (trắng toát) đối chọi hoàn toàn với nền giấy kem ấm áp của mẫu thiệp.
+                - **Giải pháp hoàn thiện**:
+                  1. *`script.js` & `assets/script.js`*:
+                     - Cập nhật hàm `autoScaleMobile()` tính toán `excess = naturalHeight - scaledHeight` và gán trực tiếp `margin-bottom: -${excess}px !important;` lên `.ladi-wraper`.
+                     - Cơ chế này ép hộp layout DOM của wrapper co lại chính xác 100% bằng chiều cao visual thực tế, triệt tiêu sạch sẽ 100% khoảng trắng thừa!
+                     - Lắng nghe thêm sự kiện `load` và kích hoạt tự động để bắt đúng chiều cao sau khi ảnh tải xong.
+                  2. *`styles.css` & `assets/styles.css`*:
+                     - Sửa `@media (max-width: 419.98px)`: Bỏ `margin: 0 auto !important;` ghi đè, cho phép `margin-bottom` âm của JS hoạt động trơn tru.
+                     - Tối ưu `#SECTION26` với `height: auto !important; min-height: 640px !important; padding-bottom: 25px !important;` ôm khít nội dung cảm ơn.
+                     - Khóa chặt `#SECTION_POPUP` với `height: 0px !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;`.
+                     - Đồng bộ màu nền toàn cục `html, body { background-color: #FAF8F5 !important; }` theo chuẩn thương hiệu Quiet Luxury.
+                  3. *Kiểm thử*:
+                     - Cú pháp JS `node -c`: Passed.
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
