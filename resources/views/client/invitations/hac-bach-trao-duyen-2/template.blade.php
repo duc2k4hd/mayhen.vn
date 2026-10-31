@@ -44,7 +44,13 @@
     $targetTimestamp = $weddingDate->timestamp * 1000;
     $calendarMonth = $weddingDate->format('m');
     $calendarYear = $weddingDate->format('Y');
-    $calendarDay = $weddingDate->day;
+    $calendarDay = (int) $weddingDate->day;
+    $daysInMonth = (int) $weddingDate->daysInMonth;
+    $firstDayOfWeek = (int) $weddingDate->copy()->startOfMonth()->dayOfWeek; // 0: Sun, 1: Mon...
+    $calCells = array_fill(0, 35, '');
+    for ($d = 1; $d <= $daysInMonth && ($firstDayOfWeek + $d - 1) < 35; $d++) {
+        $calCells[$firstDayOfWeek + $d - 1] = $d;
+    }
 
     // Sự kiện Lễ Cưới & Tiệc Cưới
     $eventPartyTime = $extraData['event_party_time'] ?? '16:00';
@@ -335,7 +341,8 @@
                 </div>
                 <div id="IMAGE88" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="save_date_photo_url"
+                            style="background-image: url('{{ $resolveAsset($extraData['save_date_photo_url'] ?? null, 'pch07126-1-20250612144528-nbkc_.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="GROUP71" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -357,35 +364,35 @@
                 <div id="GROUP89" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
                         <div id="HEADLINE276" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>09</h3>
+                            <h3 class='ladi-headline' data-sync-target="wedding_date_day">{{ $weddingDate->format('d') }}</h3>
                         </div>
                         <div id="BOX51" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-box ladi-transition'></div>
                         </div>
                         <div id="HEADLINE277" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>Chủ Nhật</h3>
+                            <h3 class='ladi-headline' data-sync-target="wedding_date_weekday">{{ $weddingDate->translatedFormat('l') }}</h3>
                         </div>
                         <div id="HEADLINE278" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>16:00</h3>
+                            <h3 class='ladi-headline' data-sync-target="event_party_time">{{ $eventPartyTime }}</h3>
                         </div>
                         <div id="HEADLINE279" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>Tháng mười</h3>
+                            <h3 class='ladi-headline' data-sync-target="wedding_date_month">{{ 'Tháng ' . $weddingDate->format('m') }}</h3>
                         </div>
                         <div id="HEADLINE280" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>2025</h3>
+                            <h3 class='ladi-headline' data-sync-target="wedding_date_year">{{ $weddingDate->format('Y') }}</h3>
                         </div>
                     </div>
                 </div>
                 <div id="GROUP95" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-group'>
                         <div id="HEADLINE284" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>r</h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="groom_initial">{{ mb_strtoupper(mb_substr($groomName, 0, 1)) }}</h3>
                         </div>
                         <div id="HEADLINE285" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline ladi-transition'>&amp;<br></h3>
                         </div>
                         <div id="HEADLINE286" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>q</h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="bride_initial">{{ mb_strtoupper(mb_substr($brideName, 0, 1)) }}</h3>
                         </div>
                     </div>
                 </div>
@@ -431,125 +438,125 @@
                         <div id="GROUP83" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE238" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[0] }}</h3>
                                 </div>
                                 <div id="HEADLINE239" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[1] }}</h3>
                                 </div>
                                 <div id="HEADLINE240" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[2] }}</h3>
                                 </div>
                                 <div id="HEADLINE241" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'></h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[3] }}</h3>
                                 </div>
                                 <div id="HEADLINE242" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>1</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[4] }}</h3>
                                 </div>
                                 <div id="HEADLINE243" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>2</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[5] }}</h3>
                                 </div>
                                 <div id="HEADLINE244" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>3</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[6] }}</h3>
                                 </div>
                             </div>
                         </div>
                         <div id="GROUP84" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE245" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>4</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[7] }}</h3>
                                 </div>
                                 <div id="HEADLINE246" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>5</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[8] }}</h3>
                                 </div>
                                 <div id="HEADLINE247" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>6</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[9] }}</h3>
                                 </div>
                                 <div id="HEADLINE248" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>7</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[10] }}</h3>
                                 </div>
                                 <div id="HEADLINE249" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>8</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[11] }}</h3>
                                 </div>
                                 <div id="HEADLINE250" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>9</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[12] }}</h3>
                                 </div>
                                 <div id="HEADLINE251" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>10</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[13] }}</h3>
                                 </div>
                             </div>
                         </div>
                         <div id="GROUP85" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE252" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>11</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[14] }}</h3>
                                 </div>
                                 <div id="HEADLINE253" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>12</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[15] }}</h3>
                                 </div>
                                 <div id="HEADLINE254" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>13</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[16] }}</h3>
                                 </div>
                                 <div id="HEADLINE255" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>14</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[17] }}</h3>
                                 </div>
                                 <div id="HEADLINE256" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>15</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[18] }}</h3>
                                 </div>
                                 <div id="HEADLINE257" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>16</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[19] }}</h3>
                                 </div>
                                 <div id="HEADLINE258" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>17</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[20] }}</h3>
                                 </div>
                             </div>
                         </div>
                         <div id="GROUP86" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE259" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>18</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[21] }}</h3>
                                 </div>
                                 <div id="HEADLINE260" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>19</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[22] }}</h3>
                                 </div>
                                 <div id="HEADLINE261" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>20</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[23] }}</h3>
                                 </div>
                                 <div id="HEADLINE262" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>21</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[24] }}</h3>
                                 </div>
                                 <div id="HEADLINE263" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>22</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[25] }}</h3>
                                 </div>
                                 <div id="HEADLINE264" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>23</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[26] }}</h3>
                                 </div>
                                 <div id="HEADLINE265" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>24</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[27] }}</h3>
                                 </div>
                             </div>
                         </div>
                         <div id="GROUP87" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="HEADLINE266" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>25</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[28] }}</h3>
                                 </div>
                                 <div id="HEADLINE267" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>26</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[29] }}</h3>
                                 </div>
                                 <div id="HEADLINE268" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>27</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[30] }}</h3>
                                 </div>
                                 <div id="HEADLINE269" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>28</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[31] }}</h3>
                                 </div>
                                 <div id="HEADLINE270" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>29</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[32] }}</h3>
                                 </div>
                                 <div id="HEADLINE271" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>30</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[33] }}</h3>
                                 </div>
                                 <div id="HEADLINE272" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                                    <h3 class='ladi-headline ladi-transition'>31</h3>
+                                    <h3 class='ladi-headline ladi-transition'>{{ $calCells[34] }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -626,12 +633,12 @@
                     </div>
                 </div>
                 <div id="HEADLINE273" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>Tháng Mười</h3>
+                    <h3 class='ladi-headline ladi-transition' id="mayhen_hacbach2_cal_month">{{ 'Tháng ' . $weddingDate->format('m') }}</h3>
                 </div>
                 <div id="HEADLINE274" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <h3 class='ladi-headline ladi-transition'>2025</h3>
+                    <h3 class='ladi-headline ladi-transition' id="mayhen_hacbach2_cal_year">{{ $calendarYear }}</h3>
                 </div>
-                <div id="SHAPE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                <div id="SHAPE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" data-cal-day="{{ $calendarDay }}" data-cal-index="{{ $firstDayOfWeek + $calendarDay - 1 }}">
                     <div class='ladi-shape ladi-transition'><svg xmlns="http://www.w3.org/2000/svg" height="100%"
                             viewBox="0 -960 960 960" width="100%" preserveAspectRatio="none" class=""
                             fill="url(&quot;#SHAPE14_desktop_gradient&quot;)">
@@ -646,7 +653,7 @@
                             </path>
                         </svg></div>
                 </div><a
-                    href="https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBubmE5Y2QyNmFxZm9oOGxrNWI0c29qNXAgMjdiaWdncm91cEBt&tmsrc=27biggroup%40gmail.com"
+                    href="{{ 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' . urlencode('Lễ Cưới: ' . $groomName . ' & ' . $brideName) . '&dates=' . $weddingDate->format('Ymd\THis\Z') . '/' . $weddingDate->copy()->addHours(4)->format('Ymd\THis\Z') . '&details=' . urlencode('Trân trọng kính mời tham dự lễ thành hôn của ' . $groomName . ' & ' . $brideName . ' tại ' . $eventPartyAddress) . '&location=' . urlencode($eventPartyAddress) }}"
                     target="_blank" id="BUTTON10" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-button'>
                         <div class="ladi-button-background"></div>

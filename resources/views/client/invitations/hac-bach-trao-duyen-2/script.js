@@ -216,10 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     6. COUNTDOWN TIMER (SECTION 22)
+     6. COUNTDOWN TIMER (SECTION 22 & 6) & WEDDING CALENDAR (SECTION 24)
      ========================================================================== */
   const targetDateStr = document.body.getAttribute('data-target-date') || '2025-10-09T16:00:00';
-  const targetTime = Number(targetDateStr) || new Date(targetDateStr).getTime() || new Date(2025, 9, 9, 16, 0, 0).getTime();
+  let targetTime = Number(targetDateStr) || new Date(targetDateStr).getTime() || new Date(2025, 9, 9, 16, 0, 0).getTime();
 
   function updateCountdown() {
     const now = Date.now();
@@ -249,8 +249,88 @@ document.addEventListener('DOMContentLoaded', () => {
     if (secsEl) secsEl.textContent = String(s).padStart(2, '0');
   }
 
+  window.updateMayhenCountdown = function(newDate) {
+    const parsed = new Date(newDate).getTime();
+    if (!isNaN(parsed)) {
+      targetTime = parsed;
+      updateCountdown();
+    }
+  };
+
   setInterval(updateCountdown, 1000);
   updateCountdown();
+
+  // Hàm toàn cục render lịch tháng chuẩn xác & di chuyển trái tim SHAPE14
+  window.renderMayhenWeddingCalendar = function(dateInput) {
+    let dObj = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    if (isNaN(dObj.getTime())) return;
+    const year = dObj.getFullYear();
+    const month = dObj.getMonth() + 1; // 1..12
+    const day = dObj.getDate();
+
+    const monthHeading = document.getElementById('mayhen_hacbach2_cal_month');
+    if (monthHeading) monthHeading.textContent = 'Tháng ' + String(month).padStart(2, '0');
+    const yearHeading = document.getElementById('mayhen_hacbach2_cal_year');
+    if (yearHeading) yearHeading.textContent = String(year);
+
+    const firstDay = new Date(year, month - 1, 1).getDay(); // 0..6
+    const totalDays = new Date(year, month, 0).getDate();
+
+    for (let i = 0; i < 35; i++) {
+      const cellId = 'HEADLINE' + (238 + i);
+      const cellEl = document.getElementById(cellId);
+      if (!cellEl) continue;
+      const h3 = cellEl.querySelector('.ladi-headline') || cellEl;
+      const cellDay = i - firstDay + 1;
+      if (cellDay >= 1 && cellDay <= totalDays) {
+        h3.textContent = String(cellDay);
+      } else {
+        h3.textContent = '';
+      }
+    }
+
+    // Di chuyển trái tim SHAPE14
+    const activeIndex = firstDay + day - 1;
+    const shape14 = document.getElementById('SHAPE14');
+    if (shape14 && activeIndex >= 0 && activeIndex < 35) {
+      const targetCell = document.getElementById('HEADLINE' + (238 + activeIndex));
+      if (targetCell) {
+        const rowGroup = targetCell.closest('.ladi-group');
+        const container = document.querySelector('#SECTION24 .ladi-container');
+        if (targetCell && container) {
+          const rectTarget = targetCell.getBoundingClientRect();
+          const rectContainer = container.getBoundingClientRect();
+          shape14.style.position = 'absolute';
+          shape14.style.top = (rectTarget.top - rectContainer.top - (shape14.offsetHeight - targetCell.offsetHeight) / 2) + 'px';
+          shape14.style.left = (rectTarget.left - rectContainer.left - (shape14.offsetWidth - targetCell.offsetWidth) / 2) + 'px';
+          shape14.style.display = 'block';
+        }
+      }
+    }
+
+    // Cập nhật các trường Save Date ở SECTION22
+    const dayEl = document.querySelector('[data-sync-target="wedding_date_day"]');
+    if (dayEl) dayEl.textContent = String(day).padStart(2, '0');
+    const monthEl = document.querySelector('[data-sync-target="wedding_date_month"]');
+    if (monthEl) monthEl.textContent = 'Tháng ' + String(month).padStart(2, '0');
+    const yearEl = document.querySelector('[data-sync-target="wedding_date_year"]');
+    if (yearEl) yearEl.textContent = String(year);
+
+    const weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+    const weekdayEl = document.querySelector('[data-sync-target="wedding_date_weekday"]');
+    if (weekdayEl) weekdayEl.textContent = weekdays[dObj.getDay()];
+
+    if (window.updateMayhenCountdown) {
+      window.updateMayhenCountdown(dObj);
+    }
+  };
+
+  // Căn chỉnh trái tim SHAPE14 lần đầu sau khi layout ổn định
+  setTimeout(() => {
+    if (window.renderMayhenWeddingCalendar) {
+      window.renderMayhenWeddingCalendar(new Date(targetTime));
+    }
+  }, 400);
 
   /* ==========================================================================
      7. ALBUM ẢNH CƯỚI & POPUP LIGHTBOX PHÓNG TO SẮC NÉT

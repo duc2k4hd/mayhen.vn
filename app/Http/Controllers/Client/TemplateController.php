@@ -149,7 +149,7 @@ class TemplateController extends Controller
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
-                'noNavBottom' => true
+                'noNavBottom' => true,
             ]);
         }
 

@@ -11347,6 +11347,8 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
 }
 
 #POPUP8.closed {
@@ -11359,14 +11361,15 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 #POPUP8 > .ladi-popup {
     position: relative !important;
     width: 440px !important;
-    max-width: 90vw !important;
     height: 560px !important;
-    max-height: 86vh !important;
     margin: auto !important;
     border-radius: 28px !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     border: 1.5px solid rgba(212, 175, 55, 0.5) !important;
     box-shadow: 0 35px 100px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 40px rgba(212, 175, 55, 0.06) !important;
+    transform-origin: center center !important;
+    transform: scale(min(1, calc(min((100vw - 32px) / 440, (100dvh - 36px) / 560)))) !important;
+    flex-shrink: 0 !important;
 }
 
 #POPUP8 > .ladi-popup > .ladi-popup-background {
@@ -11416,7 +11419,7 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 }
 
 #POPUP8 #BUTTON18 {
-    top: 474px !important;
+    top: 462px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     cursor: pointer !important;
@@ -11474,7 +11477,8 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     right: 0 !important;
 }
 
-@media (min-width: 768px) {
+/* 1. Màn hình máy tính lớn / Desktop & Laptop (>= 960px) */
+@media (min-width: 960px) {
     .ladi-section .ladi-container {
         width: 960px !important;
         max-width: 960px !important;
@@ -11487,9 +11491,30 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     }
 }
 
-@media (max-width: 767px) {
+/* 2. Màn hình máy tính bảng / Tablet (768px <= width < 960px) */
+@media (min-width: 768px) and (max-width: 959.98px) {
+    .ladi-wraper {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    .ladi-section {
+        overflow: hidden !important;
+    }
+    .ladi-section .ladi-container {
+        width: 960px !important;
+        max-width: none !important;
+        transform-origin: top center !important;
+        transform: scale(calc(100vw / 960)) !important;
+        margin-bottom: calc(960px * (calc(100vw / 960) - 1)) !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+/* 3. Màn hình điện thoại lớn / Phablet & Foldables (420px <= width < 768px) */
+@media (min-width: 420px) and (max-width: 767.98px) {
     .ladi-section .ladi-container {
         width: 420px !important;
+        max-width: 420px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         position: relative !important;
@@ -11497,15 +11522,25 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     }
 }
 
-@media (max-width: 420px) {
-    body {
+/* 4. Màn hình điện thoại nhỏ & chuẩn / Small & Standard Mobile (< 420px) */
+@media (max-width: 419.98px) {
+    html, body {
         overflow-x: hidden !important;
+        width: 100% !important;
     }
     .ladi-wraper {
         width: 420px !important;
-        max-width: none !important;
         transform-origin: top center !important;
+        transform: scale(calc(100vw / 420)) !important;
         margin: 0 auto !important;
+    }
+    .ladi-section .ladi-container {
+        width: 420px !important;
+        max-width: 420px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        position: relative !important;
+        flex-shrink: 0 !important;
     }
 }
 
@@ -11705,6 +11740,14 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
         right: auto !important;
         padding: 4px 10px 4px 4px !important;
         gap: 8px !important;
+    }
+    .mayhen_invitation_ladjihe38udhd_vinyl_wrap {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    .mayhen_invitation_ladjihe38udhd_vinyl_center {
+        width: 15px !important;
+        height: 15px !important;
     }
 }
 
@@ -12039,6 +12082,17 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     scrollbar-color: rgba(212, 175, 55, 0.4) transparent;
 }
 
+@media (max-width: 480px) {
+    .mayhen_hacbach2_signature_wall {
+        padding: 14px !important;
+        border-radius: 18px !important;
+    }
+    .mayhen_hacbach2_signature_list {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+
 .mayhen_hacbach2_signature_list::-webkit-scrollbar {
     width: 5px;
 }
@@ -12208,4 +12262,287 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   TỐI ƯU TYPOGRAPHY & CHỐNG TRÀN VỠ CHO TÊN TIẾNG VIỆT ĐẾN 4 CHỮ (30 KÝ TỰ)
+   Quiet Luxury Auto-fit Typography - Tuyệt đối không đè chữ, không vỡ layout
+   ========================================================================== */
+
+/* 1. Màn hình mở thiệp (#POPUP8 #HEADLINE338) */
+#POPUP8 #HEADLINE338 {
+    width: 380px !important;
+    max-width: 90% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 395px !important;
+    text-align: center !important;
+    height: auto !important;
+}
+
+#POPUP8 #HEADLINE338 h3 {
+    font-size: clamp(14px, 4vw, 18px) !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
+}
+
+/* 2. Section 1: Đôi uyên ương (#GROUP94, #HEADLINE3, #HEADLINE282, #HEADLINE283) */
+/* Chuyển sang bố cục Flexbox tự co giãn dòng và cỡ chữ - Không bị cắt chữ NGUY - ỄN */
+#GROUP94 {
+    width: 100% !important;
+    max-width: 420px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 550px !important;
+    height: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 10 !important;
+}
+
+#GROUP94 > .ladi-group {
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px 12px !important;
+    flex-wrap: wrap !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
+}
+
+#HEADLINE3,
+#HEADLINE283 {
+    position: static !important;
+    width: auto !important;
+    max-width: 44% !important;
+    height: auto !important;
+    flex: 1 1 auto !important;
+}
+
+#HEADLINE3 > .ladi-headline,
+#HEADLINE283 > .ladi-headline {
+    font-size: clamp(18px, 4.8vw, 30px) !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-transform: uppercase !important;
+}
+
+#HEADLINE3 > .ladi-headline {
+    text-align: right !important;
+}
+
+#HEADLINE283 > .ladi-headline {
+    text-align: left !important;
+}
+
+#HEADLINE282 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+}
+
+#HEADLINE282 > .ladi-headline {
+    font-size: clamp(20px, 5.2vw, 32px) !important;
+    line-height: 1 !important;
+    text-align: center !important;
+}
+
+/* 3. Section 4: Giới thiệu Chú rể (#HEADLINE300) & Cô dâu (#HEADLINE304) */
+#HEADLINE300,
+#HEADLINE304 {
+    width: 380px !important;
+    max-width: 90% !important;
+    left: 20px !important;
+    height: auto !important;
+}
+
+#HEADLINE300 > .ladi-headline,
+#HEADLINE304 > .ladi-headline {
+    font-size: clamp(28px, 7vw, 38px) !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+@media (max-width: 767px) {
+    #SECTION4 {
+        height: 1720px !important;
+        min-height: 1720px !important;
+        padding-bottom: 40px !important;
+    }
+
+    #GROUP125 {
+        top: 38px !important;
+        height: auto !important;
+        min-height: 720px !important;
+    }
+
+    #PARAGRAPH70 {
+        top: 535px !important;
+        width: 349px !important;
+        position: absolute !important;
+    }
+
+    #GROUP126 {
+        top: 860px !important;
+        height: auto !important;
+        min-height: 720px !important;
+    }
+
+    #PARAGRAPH76 {
+        top: 535px !important;
+        width: 349px !important;
+        position: absolute !important;
+    }
+
+    /* 4. Section 13: Thiệp mời trang trọng (#HEADLINE69, #HEADLINE71, #HEADLINE70) */
+    /* Sắp xếp nhịp nhàng, chống đè chữ CỦA CHÚNG TÔI triệt để */
+    #SECTION13 {
+        height: 1350px !important;
+        min-height: 1350px !important;
+    }
+
+    #PARAGRAPH59 {
+        top: 235px !important;
+        width: 340px !important;
+        max-width: 92% !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+    }
+
+    #HEADLINE69 {
+        top: 315px !important;
+        width: 380px !important;
+        max-width: 92% !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: auto !important;
+    }
+
+    #HEADLINE69 > .ladi-headline {
+        font-size: clamp(26px, 7vw, 38px) !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    #HEADLINE71 {
+        top: 380px !important;
+        width: 80px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    #HEADLINE71 > .ladi-headline {
+        font-size: clamp(20px, 5vw, 28px) !important;
+        line-height: 1 !important;
+        text-align: center !important;
+    }
+
+    #HEADLINE70 {
+        top: 420px !important;
+        width: 380px !important;
+        max-width: 92% !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: auto !important;
+    }
+
+    #HEADLINE70 > .ladi-headline {
+        font-size: clamp(26px, 7vw, 38px) !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    #GROUP39 {
+        top: 550px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 278px !important;
+        height: 474px !important;
+    }
+
+    #PARAGRAPH23 {
+        top: 1065px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 360px !important;
+        max-width: 92% !important;
+        text-align: center !important;
+    }
+
+    #PARAGRAPH25 {
+        top: 1118px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 340px !important;
+        max-width: 90% !important;
+        text-align: center !important;
+    }
+
+    #PARAGRAPH24 {
+        top: 1150px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 360px !important;
+        max-width: 92% !important;
+        text-align: center !important;
+    }
+
+    #BUTTON9 {
+        top: 1225px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+/* 5. Khối tên lưu bút và ngân hàng (#GROUP12, #HEADLINE318, #HEADLINE319) */
+#GROUP12 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+}
+
+#HEADLINE12,
+#HEADLINE13 {
+    position: static !important;
+    width: auto !important;
+    max-width: 44% !important;
+}
+
+#HEADLINE12 > .ladi-headline,
+#HEADLINE13 > .ladi-headline {
+    font-size: clamp(18px, 5vw, 28px) !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+#HEADLINE14 {
+    position: static !important;
+    width: auto !important;
+}
+
+#HEADLINE318 > .ladi-headline,
+#HEADLINE319 > .ladi-headline {
+    font-size: clamp(13px, 3.6vw, 16px) !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
 }

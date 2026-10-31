@@ -56,6 +56,14 @@
           "placeholder": "Đường dẫn ảnh chân dung cô dâu"
         },
         {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh Đôi Save The Date",
+          "type": "image",
+          "required": false,
+          "default": "pch07126-1-20250612144528-nbkc_.jpg",
+          "placeholder": "Đường dẫn ảnh Save The Date cặp đôi"
+        },
+        {
           "key": "wedding.wedding_date",
           "label": "Ngày cử hành hôn lễ",
           "type": "date",

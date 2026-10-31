@@ -2588,6 +2588,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Viết Feature Test chuyên biệt `tests/Feature/HacBachTraoDuyen2TemplateTest.php` xác thực 3 test cases (render sections, live sync album/timeline/gift, embed mode mở cuộn trang, studio editor) với 49 assertions pass 100%.
                      - Laravel Pint: Passed. Dọn sạch cache toàn hệ thống.
 
+            94. **Khắc Phục Toàn Diện Bố Cục, Lưới Lịch Động Và Ảnh Đôi Save The Date Cho "Hắc Bạch Trao Duyên 2" (`hac-bach-trao-duyen-2`)**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Ảnh Save The Date lớn (`IMAGE88`) phong cách tạp chí cặp đôi chưa có trong `schema.json` khiến người dùng không thể đổi ảnh riêng.
+                  * Cụm Monogram `R & Q` và ngày giờ dưới ảnh bìa tạp chí bị hardcode.
+                  * Khung lịch cưới "Tháng Mười 2025" và lưới ngày bị cố định theo tháng 10/2025, trái tim `SHAPE14` bị neo cứng ngày 9.
+                  * Khối Chú rể & Cô dâu (`SECTION4`) bị vỡ layout: Phụ mẫu nhà trai đè lên ảnh cô dâu, cô dâu bị che cụt nửa trên và bị `SECTION13` che cắt ngang thân.
+                  * Thiệp mời (`SECTION13`) bị đè chữ: Tên chú rể đè lên chữ "CỦA CHÚNG TÔI", chữ "and" và "Thuý Ngân" xô lệch.
+                - **Các điểm kỹ thuật đã hoàn thành**:
+                  1. *`schema.json`*:
+                     - Bổ sung trường `wedding.extra_data.save_date_photo_url` vào section `couple` với fallback `pch07126-1-20250612144528-nbkc_.jpg`.
+                  2. *`template.blade.php`*:
+                     - Gán `data-sync-target="save_date_photo_url"` cho ảnh `#IMAGE88`.
+                     - Đồng bộ động Monogram `data-sync-target="groom_initial"` & `bride_initial`, và các ô `wedding_date_day`, `wedding_date_month`, `wedding_date_year`, `wedding_date_dow` trong `SECTION22`.
+                     - Khởi tạo mảng 35 ô lịch `$calCells` dựa trên `$daysInMonth` và `$firstDayOfWeek` của ngày cưới thực tế.
+                     - Điền số ngày động vào 35 ô `HEADLINE238..272` trong `GROUP82` của `SECTION24`, gắn `id="mayhen_hacbach2_cal_month"` và `id="mayhen_hacbach2_cal_year"`, gán `data-cal-day` và `data-cal-index` cho trái tim `SHAPE14`.
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Sửa triệt để CSS đè chữ ở `SECTION4`: Tăng chiều cao lên `1720px`, dời `#GROUP126` (Cô dâu) xuống `top: 860px`, gỡ bỏ `top: 560px` ép cứng cho dòng phụ mẫu.
+                     - Sửa triệt để CSS ở `SECTION13`: Tăng chiều cao lên `1350px`, phân tầng nhịp nhàng: `#PARAGRAPH59` (top 235px) -> `#HEADLINE69` (top 315px) -> `#HEADLINE71` (top 380px) -> `#HEADLINE70` (top 420px) -> `#GROUP39` (top 550px) -> `#PARAGRAPH23..25` (top 1065px..1150px) -> `#BUTTON9` (top 1225px).
+                  4. *`script.js` & `assets/script.js`*:
+                     - Triển khai hàm toàn cục `window.renderMayhenWeddingCalendar(dateInput)`: Tự động tính toán lại lịch tháng/năm và di chuyển trái tim `SHAPE14` chính xác vào ô ngày cưới được chọn.
+                     - Triển khai hàm toàn cục `window.updateMayhenCountdown(newDate)`: Cập nhật đếm ngược thời gian thực.
+                  5. *Kiểm thử & Định dạng*:
+                     - Kiểm tra cú pháp JS `node -c`: Passed 100%.
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
+                     - Laravel Pint & Cache Clear: Hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
