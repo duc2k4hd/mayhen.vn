@@ -2390,6 +2390,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Code CSS chuẩn xác, đồng bộ cả 2 file `styles.css`.
                   * Dọn cache: `php artisan optimize:clear` hoàn tất.
 
+            85. **Đồng Bộ Ảnh Album Cưới Giữa Mẫu Thiệp Và Studio Tạo Thiệp Cho Phép Quản Lý Từ Admin (`dau-ky-tram-nam`)**:
+                - **Yêu cầu & Triệu chứng**:
+                  * Người dùng yêu cầu: *"Trong mẫu dau-ky-tram-nam tôi muốn ảnh trong ô đỏ giống với ảnh của mẫu thiệp, phải đồng bộ để sau này sửa ở bên admin sẽ được đồng bộ"*.
+                  * Trong Studio Tạo Thiệp (bước 4: Ảnh Cưới), 10 ô tải ảnh ("Tải ảnh 1" đến "Tải ảnh 10") hiển thị ảnh thumbnail trắng trơn hoặc placeholder mặc định, không hiển thị 10 ảnh cưới mẫu của template như trong khung xem thử bên phải.
+                - **Nguyên nhân cốt lõi**:
+                  1. Trường `wedding.extra_data.gallery` trong `schema.json` của mẫu thiệp chưa khai báo mảng `"default"` gồm 10 ảnh cưới bản địa có sẵn trong thư mục `assets/`.
+                  2. Model `InvitationTemplate` chưa có thuộc tính / accessor chuẩn hóa `default_gallery` để lấy danh sách ảnh album mặc định từ database (`default_config['gallery']`) hoặc fallback về `schema.json`.
+                  3. `template.blade.php` trước đây hardcode mảng `$defaultGallery = [...]` tĩnh trong view mà không đọc từ cấu hình Model của template, khiến template và Studio tách rời nhau.
+                  4. `editor.blade.php` khi render các ô gallery, nếu `$val` rỗng thì fallback thẳng về `$selectedTemplate->thumbnail_url` thay vì hiển thị ảnh thứ `i` trong danh sách ảnh mặc định của mẫu.
+                - **Giải pháp hoàn thiện**:
+                  * *`app/Models/InvitationTemplate.php`*:
+                    + Bổ sung method `getDefaultGallery(): array` và accessor `defaultGallery`: Ưu tiên đọc từ `default_config['gallery']` (do Admin cập nhật trong database) -> Kế thừa từ `schema.json` của mẫu. Đây là Single Source of Truth tập trung.
+                  * *`resources/views/client/invitations/dau-ky-tram-nam/schema.json`*:
+                    + Khai báo danh sách 10 ảnh mẫu vào thuộc tính `"default"` của trường `wedding.extra_data.gallery`.
+                  * *`resources/views/client/invitations/dau-ky-tram-nam/template.blade.php`*:
+                    + Chuyển `$defaultGallery` sang ưu tiên lấy `$template->default_gallery`, tự động đồng bộ khi Admin thay đổi ảnh mẫu trong DB hoặc schema.
+                  * *`resources/views/client/pages/editor.blade.php`*:
+                    + Trong vòng lặp render 10 ô gallery: Tự động lấy `$defaultImg = $defaultGalleryList[$gIdx]` khi chưa có ảnh upload riêng.
+                    + Ô xem trước hiển thị đúng ảnh thứ `i` của template qua URL `/mau-thiep/{slug}/assets/{file}`.
+                    + Trường input ẩn `name="wedding[extra_data][gallery][i]"` tự động giữ giá trị ảnh mặc định tương ứng.
+                  * *`database/seeders/InvitationTemplateSeeder.php` & Database*:
+                    + Bổ sung `'gallery'` vào `default_config` của mẫu `dau-ky-tram-nam`. Cập nhật bản ghi database thực tế và xóa cache template.
+                - **Kiểm thử & Định dạng**:
+                  * Test render Blade template: 10/10 ảnh trong Studio Editor hiển thị chính xác 10 ảnh mẫu tương ứng.
+                  * Pest feature tests: 3/3 passed (15 assertions).
+                  * Laravel Pint: Clean 100%.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -134,18 +134,20 @@
         : [];
     $validGallery = array_values($validGallery);
 
-    $defaultGallery = [
-        'muslims-hero-bg-20231207085803-t1lex.jpg',
-        'hip_1055-20250417154150-fnhf7.jpg',
-        'hip_0956-20250417154149-1cpow.jpg',
-        'hip_0991-20250418032446-bi00o.jpg',
-        'hip_1314-20250417154153-ezy7i.jpg',
-        'hip_1854-20250417154226-mql7h.jpg',
-        'hip_2374-20250417154254-fetzp.jpg',
-        'hip_1350-20250417154155-wsx2n.jpg',
-        'hip_1524-20250418032309-dzaln.jpg',
-        'hip_1629-20250417154214-bay2t.jpg',
-    ];
+    $defaultGallery = (! empty($template) && ! empty($template->default_gallery))
+        ? $template->default_gallery
+        : [
+            'muslims-hero-bg-20231207085803-t1lex.jpg',
+            'hip_1055-20250417154150-fnhf7.jpg',
+            'hip_0956-20250417154149-1cpow.jpg',
+            'hip_0991-20250418032446-bi00o.jpg',
+            'hip_1314-20250417154153-ezy7i.jpg',
+            'hip_1854-20250417154226-mql7h.jpg',
+            'hip_2374-20250417154254-fetzp.jpg',
+            'hip_1350-20250417154155-wsx2n.jpg',
+            'hip_1524-20250418032309-dzaln.jpg',
+            'hip_1629-20250417154214-bay2t.jpg',
+        ];
     $albumPhotos = [];
     for ($ai = 0; $ai < 10; $ai++) {
         $p = $validGallery[$ai] ?? ($defaultGallery[$ai] ?? 'muslims-hero-bg-20231207085803-t1lex.jpg');

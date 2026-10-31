@@ -37,6 +37,17 @@
 
     {{-- Extra Styles / Code nhúng trong thẻ head --}}
     @yield('head_extra')
+
+    @if(isset($noNavBottom) && $noNavBottom == true) 
+        <style>
+            .mayhen_client_bottom_nav_wrapper {
+                display: none !important;
+            }
+        </style>
+    @endif
+
+    {{-- Favicon --}}
+    @include('client.components.favicon')
 </head>
 <body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" @yield('body_attributes')>
     {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}

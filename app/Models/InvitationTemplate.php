@@ -60,6 +60,42 @@ class InvitationTemplate extends Model
         return $this->hasMany(Invitation::class, 'template_id');
     }
 
+    /**
+     * Lấy danh sách ảnh album mặc định của mẫu thiệp (ưu tiên DB config -> schema.json).
+     * Đảm bảo đồng bộ 100% giữa Admin, Studio Tạo Thiệp và Trang xem thiệp.
+     *
+     * @return array<int, string>
+     */
+    public function getDefaultGallery(): array
+    {
+        // 1. Ưu tiên gallery cấu hình trong DB (được Admin cập nhật qua trang quản lý)
+        if (! empty($this->default_config['gallery']) && is_array($this->default_config['gallery'])) {
+            return array_values($this->default_config['gallery']);
+        }
+
+        // 2. Kế thừa từ schema.json của mẫu thiệp
+        $schemaPath = resource_path("views/client/invitations/{$this->slug}/schema.json");
+        if (file_exists($schemaPath)) {
+            $rawSchema = json_decode(file_get_contents($schemaPath), true) ?? [];
+            foreach ($rawSchema['sections'] ?? [] as $sec) {
+                foreach ($sec['fields'] ?? [] as $f) {
+                    if (($f['key'] ?? '') === 'wedding.extra_data.gallery' && ! empty($f['default']) && is_array($f['default'])) {
+                        return array_values($f['default']);
+                    }
+                }
+            }
+        }
+
+        return [];
+    }
+
+    protected function defaultGallery(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->getDefaultGallery(),
+        );
+    }
+
     protected function image(): Attribute
     {
         return Attribute::make(

@@ -309,23 +309,29 @@
                                         <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_editor_gallery_grid">
+                                                @php
+                                                    $defaultGalleryList = !empty($field['default']) && is_array($field['default'])
+                                                        ? $field['default']
+                                                        : ($selectedTemplate->default_gallery ?? []);
+                                                @endphp
                                                 @for ($gIdx = 0; $gIdx < ($field['max_items'] ?? 10); $gIdx++)
                                                     @php
-                                                        $gVal = is_array($val) && isset($val[$gIdx]) ? $val[$gIdx] : '';
+                                                        $defaultImg = $defaultGalleryList[$gIdx] ?? '';
+                                                        $gVal = is_array($val) && isset($val[$gIdx]) && !empty($val[$gIdx])
+                                                            ? $val[$gIdx]
+                                                            : $defaultImg;
                                                         $gId = "gallery_photo_{$gIdx}";
+                                                        $galleryThumbSrc = $selectedTemplate->thumbnail_url;
+                                                        if (!empty($gVal) && is_string($gVal)) {
+                                                            if (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/') || str_starts_with($gVal, 'data:')) {
+                                                                $galleryThumbSrc = $gVal;
+                                                            } else {
+                                                                $galleryThumbSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($gVal, '/'));
+                                                            }
+                                                        }
                                                     @endphp
                                                     <div class="mayhen_editor_gallery_item_box">
                                                         <div class="mayhen_editor_image_field_row">
-                                                            @php
-                                                                $galleryThumbSrc = $selectedTemplate->thumbnail_url;
-                                                                if (!empty($gVal) && is_string($gVal)) {
-                                                                    if (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/')) {
-                                                                        $galleryThumbSrc = $gVal;
-                                                                    } else {
-                                                                        $galleryThumbSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($gVal, '/'));
-                                                                    }
-                                                                }
-                                                            @endphp
                                                             <img src="{{ $galleryThumbSrc }}" 
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
