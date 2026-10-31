@@ -2348,6 +2348,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Cache: `php artisan optimize:clear` hoàn tất.
 
+            83. **Khắc Phục Lỗi Chọn Nhạc Trong Studio Editor Nhưng Iframe Báo "Chưa cấu hình bài hát nền"**:
+                - **Hiện trạng & Triệu chứng**:
+                  * Trong Studio Tạo Thiệp (tab Âm Nhạc), khi người dùng chọn một bài hát từ modal (ví dụ: *"Ánh Nắng Của Anh"*), giao diện Studio hiển thị bài hát đã chọn nhưng trong iframe xem thử của mẫu thiệp (ví dụ: `dau-ky-tram-nam`), khi bấm nút loa góc trên bên trái, hệ thống vẫn bật toast thông báo: *"Chưa cấu hình bài hát nền."* và không phát nhạc.
+                - **Nguyên nhân gốc rễ**:
+                  1. *Thiếu input lưu trữ trong form Studio (`editor.blade.php`)*: Tab Âm Nhạc chỉ hiển thị card thông tin và nút mở modal, hoàn toàn không có trường `<input type="hidden" name="wedding[music_url]" id="wedding_music_url">`. Khi người dùng click bài hát, `document.getElementById('wedding_music_url')` trả về `null`, dẫn đến hàm `sendSyncMessage` không bao giờ được gọi và giá trị URL bài hát không được gửi sang iframe.
+                  2. *Cầu nối Live Sync (`editor-bridge.blade.php`) chưa hỗ trợ `music_url`*: Cầu nối `editor-bridge` chỉ xử lý text, ảnh cưới và ngày tháng, chưa có nhánh bắt các key `music_url` / `wedding_music_url` / `music` để cập nhật đối tượng âm thanh trong iframe.
+                  3. *Fallback rỗng trong template thiệp (`dau-ky-tram-nam/template.blade.php`)*: Biến `$musicUrl` được khởi tạo bằng `$resolveAsset($wedding->music_url ?? null, '')` trả về chuỗi rỗng khi `$wedding` rỗng (lúc xem thử template mẫu), khiến `window.MAYHEN_INVITATION_CONFIG.music` rỗng.
+                  4. *Đối tượng âm thanh không thể thay đổi động (`dau-ky-tram-nam/script.js`)*: Biến `audio` được khai báo bằng `const` một lần duy nhất lúc tải trang. Nếu ban đầu `C.music` rỗng thì `audio` là `null` vĩnh viễn và không có hàm nào để gán lại URL nhạc mới khi người dùng đổi bài hát từ Studio.
+                - **Giải pháp hoàn thiện**:
+                  * *`resources/views/client/pages/editor.blade.php`*:
+                    + Bổ sung trường input ẩn chuẩn trong `<form id="mayhen_editor_form">`:
+                      `<input type="hidden" name="wedding[music_url]" id="wedding_music_url" data-sync-key="wedding.music_url" value="{{ $currentMusicUrl }}">`.
+                    + Thiết lập fallback mặc định tự động trỏ về file nhạc cưới chuẩn nội bộ (`assets/wedding-song.mp3`).
+                  * *`public/assets/client/js/pages/editor.js`*:
+                    + Trong listener chọn nhạc `.mayhen_music_select_btn`: Tự động tìm hoặc tạo thẻ input `wedding_music_url`, cập nhật `musicInput.value = audioUrl`, đồng thời phát ngay 2 tín hiệu Live Sync postMessage `sendSyncMessage('wedding.music_url', audioUrl)` và `sendSyncMessage('music_url', audioUrl)` sang iframe.
+                  * *`resources/views/client/invitations/partials/editor-bridge.blade.php`*:
+                    + Bổ sung nhánh xử lý `cleanKey === 'music_url' || cleanKey === 'wedding_music_url' || cleanKey === 'music'`.
+                    + Cập nhật `window.MAYHEN_INVITATION_CONFIG.music = val`, gọi hàm đổi nhạc thời gian thực `window.updateMayhenMusic(val)` nếu template hỗ trợ, và cập nhật thuộc tính `src` cho tất cả thẻ `<audio>`.
+                  * *`resources/views/client/invitations/dau-ky-tram-nam/template.blade.php`*:
+                    + Thay đổi fallback cho `$musicUrl` từ `''` sang `'wedding-song.mp3'` (luôn có sẵn trong thư mục `assets/` của mẫu thiệp).
+                  * *`resources/views/client/invitations/dau-ky-tram-nam/script.js` & `assets/script.js`*:
+                    + Chuyển `const audio` thành `let audio = C.music ? new Audio(C.music) : null;`.
+                    + Khai báo hàm toàn cục `window.updateMayhenMusic = (newUrl) => { ... }`: Tự động dừng bài hát cũ, cập nhật `C.music = newUrl`, khởi tạo `new Audio(newUrl)` mới và gắn đầy đủ sự kiện âm thanh.
+                    + Trong `toggleMusic()`: Tự động khởi tạo lại `Audio(C.music)` nếu ban đầu `audio` chưa tồn tại.
+                - **Kiểm thử & Định dạng**:
+                  * JS Syntax check (`node -c`): 100% Passed.
+                  * Laravel Pint: Clean 100%.
+                  * Cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

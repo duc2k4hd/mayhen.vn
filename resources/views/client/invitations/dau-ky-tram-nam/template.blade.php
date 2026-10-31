@@ -122,7 +122,7 @@
     ];
 
     // 4. Nhạc nền
-    $musicUrl = $resolveAsset($wedding->music_url ?? null, '');
+    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3');
 
     // 5. Album ảnh cưới (10 ảnh fallback chuẩn file cục bộ có thật)
     $rawGallery = $wedding->extra_data['gallery'] ?? [];

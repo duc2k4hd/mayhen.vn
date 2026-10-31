@@ -1273,10 +1273,27 @@ const initEditor = () => {
             musicListContainer.querySelectorAll('.mayhen_music_select_btn').forEach(btn => {
                 on(btn, 'click', () => {
                     const audioUrl = btn.getAttribute('data-audio-url');
-                    const musicInput = document.getElementById('wedding_music_url') || $('[data-sync-key="wedding.music_url"]');
+                    const audioTitle = btn.getAttribute('data-audio-title') || btn.closest('.mayhen_music_item')?.querySelector('.mayhen_music_title')?.textContent || 'Bài hát cưới đã chọn';
+                    let musicInput = document.getElementById('wedding_music_url') || $('[data-sync-key="wedding.music_url"]');
+                    if (!musicInput) {
+                        const form = document.getElementById('mayhen_editor_form');
+                        if (form) {
+                            musicInput = document.createElement('input');
+                            musicInput.type = 'hidden';
+                            musicInput.name = 'wedding[music_url]';
+                            musicInput.id = 'wedding_music_url';
+                            musicInput.setAttribute('data-sync-key', 'wedding.music_url');
+                            form.appendChild(musicInput);
+                        }
+                    }
                     if (musicInput) {
                         musicInput.value = audioUrl;
-                        sendSyncMessage('wedding.music_url', audioUrl);
+                    }
+                    sendSyncMessage('wedding.music_url', audioUrl);
+                    sendSyncMessage('music_url', audioUrl);
+                    const activeTitle = $('#mayhen_active_music_title');
+                    if (activeTitle) {
+                        activeTitle.textContent = audioTitle;
                     }
                     closeMusicModal();
                 });

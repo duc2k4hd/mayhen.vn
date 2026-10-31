@@ -491,7 +491,7 @@
         }
     });
 
-    const audio = C.music ? new Audio(C.music) : null;
+    let audio = C.music ? new Audio(C.music) : null;
     const syncMusicBtnState = () => {
         const musicBtn = document.querySelector("." + P + "group72");
         if (!musicBtn) return;
@@ -501,15 +501,36 @@
             musicBtn.classList.remove(P + "playing");
         }
     };
+    const attachAudioListeners = (a) => {
+        if (!a) return;
+        a.loop = true;
+        a.preload = "none";
+        a.addEventListener("play", syncMusicBtnState);
+        a.addEventListener("pause", syncMusicBtnState);
+        a.addEventListener("ended", syncMusicBtnState);
+    };
     if (audio) {
-        audio.loop = true;
-        audio.preload = "none";
-        audio.addEventListener("play", syncMusicBtnState);
-        audio.addEventListener("pause", syncMusicBtnState);
-        audio.addEventListener("ended", syncMusicBtnState);
+        attachAudioListeners(audio);
     }
+    window.updateMayhenMusic = (newUrl) => {
+        if (!newUrl) return;
+        C.music = newUrl;
+        const wasPlaying = audio && !audio.paused;
+        if (audio) {
+            audio.pause();
+        }
+        audio = new Audio(newUrl);
+        attachAudioListeners(audio);
+        if (wasPlaying) {
+            audio.play().catch(() => {});
+        }
+        syncMusicBtnState();
+    };
     const toggleMusic = async () => {
-        if (!audio) return showMessage("Chưa cấu hình bài hát nền.");
+        if (!audio && C.music) {
+            window.updateMayhenMusic(C.music);
+        }
+        if (!audio || !C.music) return showMessage("Chưa cấu hình bài hát nền.");
         if (audio.paused) {
             try {
                 await audio.play();

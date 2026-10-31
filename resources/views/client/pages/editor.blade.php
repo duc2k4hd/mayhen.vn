@@ -174,6 +174,13 @@
                         <input type="hidden" name="invitation_id" id="invitation_id" value="{{ $editingInvitation->id }}">
                     @endif
                     <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode($editingInvitation->custom_config ?? []) }}">
+                    @php
+                        $currentMusicUrl = old('wedding.music_url', $editingInvitation->wedding->music_url ?? ($selectedTemplate->default_config['music_url'] ?? ''));
+                        if (empty($currentMusicUrl)) {
+                            $currentMusicUrl = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/wedding-song.mp3');
+                        }
+                    @endphp
+                    <input type="hidden" name="wedding[music_url]" id="wedding_music_url" data-sync-key="wedding.music_url" value="{{ $currentMusicUrl }}">
 
                     @foreach ($sections as $index => $section)
                         <div class="mayhen_editor_step_content {{ $index === 0 ? 'mayhen_editor_step_active' : '' }}" data-step-panel="{{ $index + 1 }}" data-section-id="{{ $section['id'] }}">

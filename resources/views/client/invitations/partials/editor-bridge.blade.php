@@ -497,6 +497,21 @@
                 } catch (e) {}
             }
 
+            // Đồng bộ nhạc nền hôn lễ (music_url)
+            if (cleanKey === 'music_url' || cleanKey === 'wedding_music_url' || cleanKey === 'music') {
+                if (window.MAYHEN_INVITATION_CONFIG) {
+                    window.MAYHEN_INVITATION_CONFIG.music = val;
+                }
+                if (typeof window.updateMayhenMusic === 'function') {
+                    window.updateMayhenMusic(val);
+                }
+                document.querySelectorAll('audio, [data-sync-target="music_url"], [data-sync-target="wedding.music_url"]').forEach(function(a) {
+                    if (a.tagName === 'AUDIO') {
+                        a.src = val;
+                    }
+                });
+            }
+
             // QR is supplied by a locally stored wedding asset; never fetch it from a remote image service.
 
             // Đồng bộ tên đôi uyên ương gộp (couple_names / opening_names)
