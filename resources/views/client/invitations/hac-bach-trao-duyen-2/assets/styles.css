@@ -7219,7 +7219,9 @@
 
             #IMAGE134>.ladi-image>.ladi-image-background,
             #IMAGE135>.ladi-image>.ladi-image-background {
-                background-image: url("assets/qr-code-styling-20241031160420--fwgj.png");
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
             }
 
             #HEADLINE318,
@@ -9781,7 +9783,9 @@
 
             #IMAGE134>.ladi-image>.ladi-image-background,
             #IMAGE135>.ladi-image>.ladi-image-background {
-                background-image: url("assets/qr-code-styling-20241031160420--fwgj.png");
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
             }
 
             #HEADLINE318,
@@ -13162,4 +13166,11 @@ html, body {
     margin: 0 !important;
     border: none !important;
     display: block !important;
+}
+
+/* Căn giữa mã QR nếu chỉ có 1 bên điền mã QR */
+#SECTION27:has(#GROUP130[style*="display: none"]) #GROUP131,
+#SECTION27:has(#GROUP131[style*="display: none"]) #GROUP130 {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
 }

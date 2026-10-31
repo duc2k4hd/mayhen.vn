@@ -127,6 +127,11 @@
         'mau-18-hoa-2-3-20250613161852-jhmsq.png',
     ];
 
+    // Mã QR Mừng Cưới (chỉ hiển thị khi người dùng tải hoặc điền mã QR)
+    $groomQr = !empty($extraData['qr_groom_image']) ? $resolveAsset($extraData['qr_groom_image']) : null;
+    $brideQr = !empty($extraData['qr_bride_image']) ? $resolveAsset($extraData['qr_bride_image']) : null;
+    $hasAnyQr = !empty($groomQr) || !empty($brideQr);
+
     // Âm nhạc
     $musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3');
 
@@ -1586,7 +1591,7 @@
                 </div>
             </div>
         </div>
-        <div id="SECTION27" class='ladi-section' data-mayhen-section="gift">
+        <div id="SECTION27" class='ladi-section' data-mayhen-section="gift" style="{{ $hasAnyQr ? '' : 'display: none !important;' }}">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE132" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1618,12 +1623,13 @@
                         </div>
                     </div>
                 </div>
-                <div id="GROUP130" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                <div id="GROUP130" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" style="{{ $brideQr ? '' : 'display: none !important;' }}">
                     <div class='ladi-group'>
                         <div data-action="true" id="IMAGE134"
                             class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background" data-sync-target="bride_bank_account"></div>
+                                <div class="ladi-image-background" data-sync-target="qr_bride_image"
+                                    @if($brideQr) style="background-image: url('{{ $brideQr }}');" @endif></div>
                             </div>
                         </div>
                         <div id="HEADLINE318" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1631,12 +1637,13 @@
                         </div>
                     </div>
                 </div>
-                <div id="GROUP131" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                <div id="GROUP131" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" style="{{ $groomQr ? '' : 'display: none !important;' }}">
                     <div class='ladi-group'>
                         <div data-action="true" id="IMAGE135"
                             class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background" data-sync-target="groom_bank_account"></div>
+                                <div class="ladi-image-background" data-sync-target="qr_groom_image"
+                                    @if($groomQr) style="background-image: url('{{ $groomQr }}');" @endif></div>
                             </div>
                         </div>
                         <div id="HEADLINE319" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1842,10 +1849,10 @@
                         <div id="BOX72" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-box ladi-transition'></div>
                         </div>
-                        <div id="IMAGE136" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="IMAGE136" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" style="{{ $groomQr ? '' : 'display: none !important;' }}">
                             <div class='ladi-image'>
                                 <div class="ladi-image-background" data-sync-target="qr_groom_image"
-                                    style="background-image: url('{{ $resolveAsset($extraData['qr_groom_image'] ?? null, 'qr-code-styling-20241031160420--fwgj.png') }}');"></div>
+                                    @if($groomQr) style="background-image: url('{{ $groomQr }}');" @endif></div>
                             </div>
                         </div>
                         <div id="HEADLINE320" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1870,10 +1877,10 @@
                         <div id="BOX73" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-box ladi-transition'></div>
                         </div>
-                        <div id="IMAGE137" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                        <div id="IMAGE137" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" style="{{ $brideQr ? '' : 'display: none !important;' }}">
                             <div class='ladi-image'>
                                 <div class="ladi-image-background" data-sync-target="qr_bride_image"
-                                    style="background-image: url('{{ $resolveAsset($extraData['qr_bride_image'] ?? null, 'qr-code-styling-20241031160420--fwgj.png') }}');"></div>
+                                    @if($brideQr) style="background-image: url('{{ $brideQr }}');" @endif></div>
                             </div>
                         </div>
                         <div id="HEADLINE323" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">

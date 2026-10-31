@@ -402,10 +402,25 @@
                 } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     el.value = val;
                 } else {
-                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1) {
+                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1 || cleanKey.indexOf('qr') !== -1) {
                         if (val && val.indexOf('motdoi.com') === -1 && val.indexOf('ladicdn.com') === -1) {
                             var bgUrl = resolveUrl(val);
-                            if (bgUrl) el.style.setProperty('background-image', 'url("' + bgUrl + '")', 'important');
+                            if (bgUrl) {
+                                el.style.setProperty('background-image', 'url("' + bgUrl + '")', 'important');
+                                el.style.removeProperty('display');
+                                var parentEl = el.closest('.ladi-element');
+                                if (parentEl) parentEl.style.removeProperty('display');
+                                var parentGrp = el.closest('[id*="GROUP"]');
+                                if (parentGrp) parentGrp.style.removeProperty('display');
+                                var giftSection = document.querySelector('[data-mayhen-section="gift"], #SECTION27');
+                                if (giftSection) giftSection.style.removeProperty('display');
+                            }
+                        } else if (!val && cleanKey.indexOf('qr') !== -1) {
+                            el.style.setProperty('background-image', 'none', 'important');
+                            var parentEl = el.closest('.ladi-element');
+                            if (parentEl) parentEl.style.setProperty('display', 'none', 'important');
+                            var parentGrp = el.closest('[id*="GROUP"]');
+                            if (parentGrp) parentGrp.style.setProperty('display', 'none', 'important');
                         }
                     } else {
                         el.textContent = displayVal;

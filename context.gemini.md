@@ -2745,6 +2745,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
                      - Cache hệ thống: Cleared.
 
+            102. **Bỏ Hoàn Toàn Ảnh Mã QR Gốc Hardcode & Chỉ Hiển Thị Khi Người Dùng Điền / Tải Mã QR**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi ảnh Studio Editor (`media_1793432941836_d3c62f9d.jpg`) yêu cầu: "Hộp mừng cưới bỏ ảnh mã QR gốc đi, không điền mã QR thì thôi, còn nếu điền thì mới hiển thị lên".
+                  * *Nguyên nhân*: Trong `styles.css`, `#IMAGE134` và `#IMAGE135` bị gán cứng `background-image: url("assets/qr-code-styling-20241031160420--fwgj.png")` mang logo và tên của bên thứ ba (27BigGroup / Minh Đức / Thúy Ngân). Trong `template.blade.php`, `#POPUP2` và `#POPUP3` cũng bị fallback cứng ảnh này, và `#SECTION27` không có logic ẩn khi chưa có QR.
+                - **Giải pháp hoàn thiện**:
+                  1. *`styles.css` & `assets/styles.css`*: Xóa bỏ triệt để 2 quy tắc `background-image: url("assets/qr-code-styling...")` gán cứng. Bổ sung CSS tự động căn giữa mã QR nếu chỉ có 1 bên điền mã (`#SECTION27:has(#GROUP130[style*="display: none"]) #GROUP131`).
+                  2. *`template.blade.php`*:
+                     - Bỏ vĩnh viễn fallback ảnh QR gốc trong `POPUP2` (`#IMAGE136`) và `POPUP3` (`#IMAGE137`), ẩn phần tử khi chưa có QR (`style="display: none !important;"`).
+                     - Gán đúng hợp đồng `data-sync-target="qr_groom_image"` cho `#IMAGE135` và `data-sync-target="qr_bride_image"` cho `#IMAGE134`.
+                     - Ẩn `#SECTION27` khi cả hai bên đều chưa có mã QR (`$hasAnyQr ? '' : 'display: none !important;'`), ẩn từng khối riêng lẻ (`#GROUP131`, `#GROUP130`) khi bên đó chưa có QR.
+                  3. *`editor-bridge.blade.php`*: Bổ sung logic Live Sync khi nhận `qr_groom_image` hoặc `qr_bride_image`: tự động gán `background-image` và gỡ bỏ `display: none` khỏi phần tử cha, khối nhóm và `#SECTION27` ngay lập tức; khi xóa QR thì tự động ẩn đi.
+                  4. *Kiểm thử*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
