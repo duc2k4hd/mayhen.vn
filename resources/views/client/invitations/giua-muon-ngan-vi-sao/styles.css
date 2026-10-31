@@ -641,7 +641,7 @@ body.mayhen_invitation_ladoifji894yfv_sr_khoa .mayhen_invitation_ladoifji894yfv_
 .mayhen_invitation_ladoifji894yfv_sr_cua {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 9999999 !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -688,7 +688,7 @@ body.mayhen_invitation_ladoifji894yfv_sr_khoa .mayhen_invitation_ladoifji894yfv_
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 101;
+    z-index: 10000000 !important;
     pointer-events: none;
     display: none;
 }
@@ -3012,9 +3012,10 @@ body.mayhen_invitation_ladoifji894yfv_sr_khoa .mayhen_invitation_ladoifji894yfv_
 
 /* ================= NÚT NHẠC NỔI ================= */
 .mayhen_invitation_ladoifji894yfv_wb_music_btn {
-    position: fixed;
-    bottom: 24px;
-    left: 16px;
+    position: fixed !important;
+    top: 16px !important;
+    bottom: auto !important;
+    left: max(16px, calc(50% - 210px + 16px)) !important;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -3025,7 +3026,7 @@ body.mayhen_invitation_ladoifji894yfv_sr_khoa .mayhen_invitation_ladoifji894yfv_
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 9999990;
+    z-index: 1001 !important;
     box-shadow: 0 0 0 4px rgba(7, 13, 34, 0.8), 0 0 24px rgba(252, 227, 158, 0.65), 0 6px 18px rgba(0, 0, 0, 0.6) !important;
     transition: transform 0.15s;
     user-select: none;

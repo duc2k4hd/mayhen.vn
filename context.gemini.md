@@ -2418,6 +2418,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Dọn cache: `php artisan optimize:clear` hoàn tất.
 
+            86. **Đúc Kết Bộ 8 Trụ Cột Chuẩn Hóa Mẫu Thiệp Cưới (Skill & Master Prompt) & Chuẩn Hóa Mẫu Giữa Muôn Ngàn Vì Sao (`giua-muon-ngan-vi-sao`)**:
+                - **Yêu cầu**:
+                  * Đúc kết kinh nghiệm làm việc từ 2 mẫu `dau-an-thoi-gian` và `dau-ky-tram-nam` để viết Master Prompt và Skill chuẩn hóa mẫu thiệp cưới (`mayhen-invitation-templates`).
+                  * Áp dụng ngay bộ chuẩn hóa lên mẫu đầu tiên: `giua-muon-ngan-vi-sao`.
+                - **Xây dựng Skill & Master Prompt**:
+                  * Khởi tạo `.agents/skills/mayhen-invitation-templates/SKILL.md` gồm đầy đủ 8 Trụ Cột Bất Biến: Khóa Schema Canonical, Hợp đồng Live Sync, Phòng vệ nhúng iframe (`$isEmbed`), Tự chứa 100% Zero External Assets, Âm nhạc Live Audio Handshake, Phân lớp Z-Index chuẩn, Đồng bộ Admin qua Model Single Source of Truth, Kế thừa Layout chung.
+                  * Soạn Master Prompt hoàn chỉnh cho phép AI hoặc Developer chuẩn hóa bất kỳ mẫu thiệp nào tự động mà không gặp lỗi.
+                - **Chuẩn hóa mẫu `giua-muon-ngan-vi-sao`**:
+                  * *`schema.json`*: Bổ sung 2 trường `groom_photo_url` và `bride_photo_url` vào section `couple`. Bổ sung `"default": [...]` 10 ảnh cưới nội bộ vào trường `gallery`.
+                  * *`template.blade.php`*: Kế thừa `$defaultGallery` từ `$template->default_gallery`, ánh xạ `$heroPhotoUrl`, `$groomPhotoUrl`, `$bridePhotoUrl` theo cả `wedding` và `extraData`. Cập nhật `$musicUrl` động và gắn `data-sync-target="music_url"` lên `<audio>`.
+                  * *`styles.css`*: Nâng z-index màn mở đầu `.sr_cua` lên `9999999 !important;`. Chuyển nút nhạc `.wb_music_btn` lên góc trên bên trái cố định với `z-index: 1001 !important;` (nằm dưới màn mở đầu khi chưa mở, lộ ra sau khi mở thiệp).
+                  * *`script.js`*: Thêm hàm `window.updateMayhenMusic` cho phép thay đổi nhạc nền thời gian thực.
+                  * *Seeder & Database*: Thêm `'gallery'` vào `default_config` của mẫu `giua-muon-ngan-vi-sao`. Cập nhật database và xóa cache.
+                - **Kiểm thử & Định dạng**:
+                  * Test render Blade Studio: 10/10 ảnh gallery và ảnh dâu rể hiển thị chuẩn xác.
+                  * JS Syntax check (`node -c`): Passed 100%.
+                  * Pest feature tests: 3/3 passed.
+                  * Laravel Pint: Clean 100%.
+                  * Dọn cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

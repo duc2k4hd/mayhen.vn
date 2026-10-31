@@ -66,32 +66,37 @@
     };
 
     // Ảnh chính của mẫu
-    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, '7da1e3a6d59c1a98.webp');
-    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'b058b38c28460637.webp');
-    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, '307b8d7ea14424b9.webp');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), '7da1e3a6d59c1a98.webp');
+    $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'b058b38c28460637.webp');
+    $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), '307b8d7ea14424b9.webp');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'c3655bd60267c1b2.webp');
     $kyPhotoUrl = $resolveAsset($extraData['ky_photo_url'] ?? null, '40f8fb60afcb59af.webp');
     $xnPhotoUrl = $resolveAsset($extraData['xn_photo_url'] ?? null, '686ca1bfd6d65f13.webp');
     $ketPhotoUrl = $resolveAsset($extraData['ket_photo_url'] ?? null, 'f5cbab06395d882b.webp');
 
     // 10 ảnh album cưới mặc định
-    $defaultGallery = [
-        'c3655bd60267c1b2.webp',
-        'a5a53978e8384d26.webp',
-        '7da1e3a6d59c1a98.webp',
-        '40f8fb60afcb59af.webp',
-        '4d93c5df689bbae4.webp',
-        '872462fa026e4df9.webp',
-        '14325e164a136da2.webp',
-        'f5cbab06395d882b.webp',
-        '686ca1bfd6d65f13.webp',
-        'fbf493cec2de5fdc.webp',
-    ];
-    $rawGallery = $extraData['gallery'] ?? [];
+    $defaultGallery = (! empty($template) && ! empty($template->default_gallery))
+        ? $template->default_gallery
+        : [
+            'c3655bd60267c1b2.webp',
+            'a5a53978e8384d26.webp',
+            '7da1e3a6d59c1a98.webp',
+            '40f8fb60afcb59af.webp',
+            '4d93c5df689bbae4.webp',
+            '872462fa026e4df9.webp',
+            '14325e164a136da2.webp',
+            'f5cbab06395d882b.webp',
+            '686ca1bfd6d65f13.webp',
+            'fbf493cec2de5fdc.webp',
+        ];
+    $rawGallery = $wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? []);
     $gallery = [];
     for ($i = 0; $i < 10; $i++) {
-        $gallery[] = !empty($rawGallery[$i]) ? $resolveAsset($rawGallery[$i], $defaultGallery[$i]) : $defaultGallery[$i];
+        $p = ! empty($rawGallery[$i]) ? $rawGallery[$i] : ($defaultGallery[$i] ?? 'c3655bd60267c1b2.webp');
+        $gallery[] = $resolveAsset($p, $defaultGallery[$i] ?? 'c3655bd60267c1b2.webp');
     }
+
+    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3');
 
     // 4. Mừng cưới QR & Ngân hàng
     $groomBankName = $extraData['groom_bank_name'] ?? 'Vietcombank';
@@ -1176,7 +1181,7 @@
     </div>
 
     <!-- ===================== NHẠC NỀN & NÚT NHẠC NỔI ===================== -->
-    <audio class="mayhen_invitation_ladoifji894yfv_audio_music" style="display: none;" loop src="{{ $assetBase }}/wedding-song.mp3"></audio>
+    <audio class="mayhen_invitation_ladoifji894yfv_audio_music" style="display: none;" loop src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
     <div class="mayhen_invitation_ladoifji894yfv_wb_music_btn" role="button" tabindex="0" aria-label="Bật / Tắt nhạc nền">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>

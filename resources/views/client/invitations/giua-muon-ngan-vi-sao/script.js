@@ -1555,19 +1555,44 @@
     var musicBtn = document.querySelector('.' + P + 'wb_music_btn');
 
     function phatNhac() {
+        if (!audio) {
+            audio = document.querySelector('.' + P + 'audio_music');
+        }
         if (!audio) return;
         audio.play().then(function () {
             if (musicBtn) musicBtn.classList.add(P + 'playing');
         }).catch(function () {});
     }
 
-    if (musicBtn && audio) {
-        musicBtn.addEventListener('click', function () {
-            if (audio.paused) {
+    // Live Sync: Đổi bài hát nền thời gian thực từ Studio Editor
+    window.updateMayhenMusic = function(newUrl) {
+        if (!newUrl) return;
+        if (!audio) {
+            audio = document.querySelector('.' + P + 'audio_music');
+        }
+        if (audio) {
+            var wasPlaying = !audio.paused;
+            audio.pause();
+            audio.src = newUrl;
+            audio.load();
+            if (wasPlaying || window.__MAYHEN_IS_EMBED) {
                 phatNhac();
-            } else {
-                audio.pause();
-                musicBtn.classList.remove(P + 'playing');
+            }
+        }
+    };
+
+    if (musicBtn) {
+        musicBtn.addEventListener('click', function () {
+            if (!audio) {
+                audio = document.querySelector('.' + P + 'audio_music');
+            }
+            if (audio) {
+                if (audio.paused) {
+                    phatNhac();
+                } else {
+                    audio.pause();
+                    musicBtn.classList.remove(P + 'playing');
+                }
             }
         });
     }
