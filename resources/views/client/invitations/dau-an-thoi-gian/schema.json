@@ -297,61 +297,13 @@
       "title": "Hộp Mừng Cưới",
       "short_title": "Mừng Cưới",
       "icon": "gift",
-      "description": "Số tài khoản ngân hàng và mã QR mừng cưới",
+      "description": "Mã QR mừng cưới ngân hàng tiện lợi và an toàn",
       "fields": [
-        {
-          "key": "wedding.extra_data.groom_bank_name",
-          "label": "Ngân hàng Chú rể",
-          "type": "text",
-          "required": false,
-          "default": "Vietcombank",
-          "placeholder": "Ví dụ: Vietcombank"
-        },
-        {
-          "key": "wedding.extra_data.groom_bank_account",
-          "label": "Số tài khoản Chú rể",
-          "type": "text",
-          "required": false,
-          "default": "0123 456 789",
-          "placeholder": "Nhập số tài khoản Chú rể"
-        },
-        {
-          "key": "wedding.extra_data.groom_bank_holder",
-          "label": "Tên chủ tài khoản (Chú rể)",
-          "type": "text",
-          "required": false,
-          "default": "NGUYEN MINH TUAN",
-          "placeholder": "Ví dụ: NGUYEN MINH TUAN"
-        },
         {
           "key": "wedding.extra_data.qr_groom_image",
           "label": "Mã QR Mừng Cưới Chú Rể",
           "type": "image",
           "required": false
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_name",
-          "label": "Ngân hàng Cô dâu",
-          "type": "text",
-          "required": false,
-          "default": "Techcombank",
-          "placeholder": "Ví dụ: Techcombank"
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_account",
-          "label": "Số tài khoản Cô dâu",
-          "type": "text",
-          "required": false,
-          "default": "1903 5555 8888",
-          "placeholder": "Nhập số tài khoản Cô dâu"
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_holder",
-          "label": "Tên chủ tài khoản (Cô dâu)",
-          "type": "text",
-          "required": false,
-          "default": "TRAN THU HA",
-          "placeholder": "Ví dụ: TRAN THU HA"
         },
         {
           "key": "wedding.extra_data.qr_bride_image",

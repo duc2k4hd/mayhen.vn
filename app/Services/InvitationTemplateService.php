@@ -318,61 +318,13 @@ class InvitationTemplateService
                 'title' => 'Hộp Mừng Cưới',
                 'short_title' => 'Mừng Cưới',
                 'icon' => 'gift',
-                'description' => 'Số tài khoản ngân hàng và mã QR mừng cưới',
+                'description' => 'Mã QR mừng cưới ngân hàng tiện lợi và an toàn',
                 'fields' => [
-                    [
-                        'key' => 'wedding.extra_data.groom_bank_name',
-                        'label' => 'Ngân hàng Chú rể',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => 'Vietcombank',
-                        'placeholder' => 'Ví dụ: Vietcombank',
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.groom_bank_account',
-                        'label' => 'Số tài khoản Chú rể',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => '1012345678',
-                        'placeholder' => 'Nhập số tài khoản Chú rể',
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.groom_bank_holder',
-                        'label' => 'Tên chủ tài khoản (Chú rể)',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => 'NGUYEN TRANG DUC',
-                        'placeholder' => 'Ví dụ: NGUYEN TRANG DUC',
-                    ],
                     [
                         'key' => 'wedding.extra_data.qr_groom_image',
                         'label' => 'Mã QR Mừng Cưới Chú Rể',
                         'type' => 'image',
                         'required' => false,
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.bride_bank_name',
-                        'label' => 'Ngân hàng Cô dâu',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => 'Techcombank',
-                        'placeholder' => 'Ví dụ: Techcombank',
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.bride_bank_account',
-                        'label' => 'Số tài khoản Cô dâu',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => '1903888899',
-                        'placeholder' => 'Nhập số tài khoản Cô dâu',
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.bride_bank_holder',
-                        'label' => 'Tên chủ tài khoản (Cô dâu)',
-                        'type' => 'text',
-                        'required' => false,
-                        'default' => 'LE NGOC PHUONG',
-                        'placeholder' => 'Ví dụ: LE NGOC PHUONG',
                     ],
                     [
                         'key' => 'wedding.extra_data.qr_bride_image',
@@ -436,6 +388,22 @@ class InvitationTemplateService
             }
         }
 
+        // Danh sách các trường text ngân hàng thủ công cũ cần loại bỏ triệt để (thay bằng khối QR)
+        $legacyBankFields = [
+            'wedding.extra_data.groom_bank_name',
+            'wedding.extra_data.groom_bank_account',
+            'wedding.extra_data.groom_bank_holder',
+            'wedding.extra_data.bride_bank_name',
+            'wedding.extra_data.bride_bank_account',
+            'wedding.extra_data.bride_bank_holder',
+            'groom_bank_name',
+            'groom_bank_account',
+            'groom_bank_holder',
+            'bride_bank_name',
+            'bride_bank_account',
+            'bride_bank_holder',
+        ];
+
         // Dựng danh sách sections chuẩn theo đúng thứ tự logic (1 -> 6)
         $normalizedSections = [];
         foreach ($validSupported as $sectionId) {
@@ -462,7 +430,7 @@ class InvitationTemplateService
                 $rawFieldsByKey = [];
                 foreach ($rawSec['fields'] ?? [] as $rf) {
                     $k = $rf['key'] ?? $rf['name'] ?? null;
-                    if ($k) {
+                    if ($k && ! in_array($k, $legacyBankFields, true)) {
                         $rawFieldsByKey[$k] = $rf;
                     }
                 }
@@ -483,7 +451,7 @@ class InvitationTemplateService
                 // Bảo tồn toàn bộ các fields riêng do mẫu thiệp định nghĩa mà canonical chưa có
                 foreach ($rawSec['fields'] ?? [] as $rf) {
                     $k = $rf['key'] ?? $rf['name'] ?? null;
-                    if ($k && ! in_array($k, $processedKeys, true)) {
+                    if ($k && ! in_array($k, $processedKeys, true) && ! in_array($k, $legacyBankFields, true)) {
                         $mergedFields[] = $rf;
                         $processedKeys[] = $k;
                     }

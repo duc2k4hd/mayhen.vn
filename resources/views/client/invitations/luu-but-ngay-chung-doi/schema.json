@@ -213,61 +213,13 @@
       "title": "Hộp Mừng Cưới",
       "short_title": "Mừng Cưới",
       "icon": "gift",
-      "description": "Số tài khoản ngân hàng và mã QR mừng cưới",
+      "description": "Mã QR mừng cưới ngân hàng tiện lợi và an toàn",
       "fields": [
-        {
-          "key": "wedding.extra_data.groom_bank_name",
-          "label": "Ngân hàng Chú rể",
-          "type": "text",
-          "required": false,
-          "default": "Techcombank",
-          "placeholder": "Ví dụ: Techcombank"
-        },
-        {
-          "key": "wedding.extra_data.groom_bank_account",
-          "label": "Số tài khoản Chú rể",
-          "type": "text",
-          "required": false,
-          "default": "190368888888",
-          "placeholder": "Nhập số tài khoản Chú rể"
-        },
-        {
-          "key": "wedding.extra_data.groom_bank_holder",
-          "label": "Tên chủ tài khoản (Chú rể)",
-          "type": "text",
-          "required": false,
-          "default": "NGUYEN NGOC SON",
-          "placeholder": "Ví dụ: NGUYEN NGOC SON"
-        },
         {
           "key": "wedding.extra_data.qr_groom_image",
           "label": "Mã QR Mừng Cưới Chú Rể",
           "type": "image",
           "required": false
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_name",
-          "label": "Ngân hàng Cô dâu",
-          "type": "text",
-          "required": false,
-          "default": "Vietcombank",
-          "placeholder": "Ví dụ: Vietcombank"
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_account",
-          "label": "Số tài khoản Cô dâu",
-          "type": "text",
-          "required": false,
-          "default": "998877665544",
-          "placeholder": "Nhập số tài khoản Cô dâu"
-        },
-        {
-          "key": "wedding.extra_data.bride_bank_holder",
-          "label": "Tên chủ tài khoản (Cô dâu)",
-          "type": "text",
-          "required": false,
-          "default": "LE THUY QUYNH",
-          "placeholder": "Ví dụ: LE THUY QUYNH"
         },
         {
           "key": "wedding.extra_data.qr_bride_image",
