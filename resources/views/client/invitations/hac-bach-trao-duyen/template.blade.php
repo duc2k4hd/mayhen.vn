@@ -313,7 +313,7 @@
         
         <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
           <span class="mayhen_invitation_ladjihe38udhd_subheading">SAVE THE DATE</span>
-          <h2 class="mayhen_invitation_ladjihe38udhd_heading" data-sync-target="wedding_date">Tháng {{ $calendarMonth }} - {{ $calendarYear }}</h2>
+          <h2 class="mayhen_invitation_ladjihe38udhd_heading" id="mayhen_invitation_ladjihe38udhd_month_heading">Tháng {{ $calendarMonth }} - {{ $calendarYear }}</h2>
           <div class="mayhen_invitation_ladjihe38udhd_divider">
             <span class="mayhen_invitation_ladjihe38udhd_divider_line"></span>
             <span class="mayhen_invitation_ladjihe38udhd_divider_icon">✦</span>
@@ -331,9 +331,9 @@
         <!-- Wedding Calendar (Tháng {{ $calendarMonth }} / {{ $calendarYear }}) -->
         <div class="mayhen_invitation_ladjihe38udhd_calendar_box mayhen_invitation_ladjihe38udhd_box_anim">
           <div class="mayhen_invitation_ladjihe38udhd_calendar_header">
-            <span data-sync-target="wedding_date">{{ strtoupper($weddingDate->translatedFormat('F Y')) }}</span>
+            <span id="mayhen_invitation_ladjihe38udhd_calendar_en_heading">{{ strtoupper($weddingDate->translatedFormat('F Y')) }}</span>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_calendar_grid" data-sync-target="wedding_date">
+          <div class="mayhen_invitation_ladjihe38udhd_calendar_grid" id="mayhen_invitation_ladjihe38udhd_calendar_grid">
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">SUN</div>
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">MON</div>
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">TUE</div>

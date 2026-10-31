@@ -2545,6 +2545,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - 7/7 Feature Tests (78 assertions) pass 100%.
                      - Laravel Pint: Passed. Dọn cache hoàn tất.
 
+            92. **Khắc Phục Lỗi Vỡ Lịch Cưới & Ghi Đè Dữ Liệu Live Sync Trên Mẫu "Hắc Bạch Trao Duyên"**:
+                - **Hiện tượng**:
+                  * Khung lịch cưới (Wedding Calendar) bị lỗi giao diện: Mất toàn bộ các ô ngày (SUN, MON, 1..31), bên trong khung bị chèn đè chuỗi ngày tháng `20 . 03 . 2026` ngắt thành 3 dòng, làm giao diện bị xấu và trống trơn.
+                - **Nguyên nhân cốt lõi**:
+                  * Trong `template.blade.php`, thẻ `<div class="mayhen_invitation_ladjihe38udhd_calendar_grid">` và thẻ tiêu đề tháng bị gán nhầm thuộc tính `data-sync-target="wedding_date"`.
+                  * Khi người dùng nhập/chọn ngày cưới trên Studio, `editor-bridge.blade.php` tìm toàn bộ các phần tử có `data-sync-target="wedding_date"` và gán thẳng chuỗi văn bản `"20 . 03 . 2026"` vào đó. Vì `calendar_grid` có `display: grid; grid-template-columns: repeat(7, 1fr)`, chuỗi chữ này xóa sạch lưới ngày và bị ép xuống dòng từng từ một!
+                - **Giải pháp hoàn thiện**:
+                  1. *`template.blade.php`*:
+                     - Gỡ bỏ thuộc tính `data-sync-target="wedding_date"` khỏi thẻ `<h2 id="mayhen_invitation_ladjihe38udhd_month_heading">`, `<span id="mayhen_invitation_ladjihe38udhd_calendar_en_heading">` và `<div id="mayhen_invitation_ladjihe38udhd_calendar_grid">`.
+                  2. *`script.js` & `assets/script.js`*:
+                     - Triển khai hàm toàn cục `window.renderMayhenWeddingCalendar(dateObj)`: Tự động tính toán thứ bắt đầu, số ngày trong tháng và vẽ lại đầy đủ lưới lịch 7 cột (SUN..SAT), tô điểm ngày cưới thật bằng màu đỏ hoàng gia và trái tim vàng kim `♥`.
+                     - Triển khai hàm toàn cục `window.updateMayhenCountdown(newDateObj)` cập nhật đồng hồ đếm ngược thời gian thực.
+                  3. *Kiểm thử & Định dạng*:
+                     - Cú pháp JS `node -c`: Passed.
+                     - 7/7 Feature Tests (78 assertions) pass 100%.
+                     - Cache Laravel: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

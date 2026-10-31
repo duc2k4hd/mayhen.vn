@@ -468,4 +468,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ==========================================================================
+     12. REALTIME WEDDING CALENDAR SYNC (MAYHEN BRIDGE CONTRACT)
+     ========================================================================== */
+  window.renderMayhenWeddingCalendar = function(dateObj) {
+    if (!dateObj || isNaN(dateObj.getTime())) return;
+    const d = dateObj.getDate();
+    const m = dateObj.getMonth();
+    const y = dateObj.getFullYear();
+    const monthStr = String(m + 1).padStart(2, '0');
+
+    // Cập nhật tiêu đề tiếng Việt: Tháng MM - YYYY
+    const h2Month = document.getElementById('mayhen_invitation_ladjihe38udhd_month_heading');
+    if (h2Month) {
+      h2Month.textContent = 'Tháng ' + monthStr + ' - ' + y;
+    }
+
+    // Cập nhật tiêu đề tiếng Anh: MONTH YYYY
+    const enHeading = document.getElementById('mayhen_invitation_ladjihe38udhd_calendar_en_heading');
+    if (enHeading) {
+      const monthNamesEn = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+      enHeading.textContent = (monthNamesEn[m] || 'WEDDING') + ' ' + y;
+    }
+
+    // Cập nhật lưới lịch
+    const grid = document.getElementById('mayhen_invitation_ladjihe38udhd_calendar_grid');
+    if (grid) {
+      const firstDay = new Date(y, m, 1).getDay(); // 0 (Sun) - 6 (Sat)
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+      let html = '';
+      const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      dayNames.forEach(name => {
+        html += '<div class="mayhen_invitation_ladjihe38udhd_cal_day_name">' + name + '</div>';
+      });
+
+      for (let e = 0; e < firstDay; e++) {
+        html += '<div class="mayhen_invitation_ladjihe38udhd_cal_cell empty"></div>';
+      }
+
+      for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+        if (dayNum === d) {
+          html += '<div class="mayhen_invitation_ladjihe38udhd_cal_cell special_day" title="Ngày Hạnh Phúc">' +
+                    '<span>' + dayNum + '</span>' +
+                    '<span class="mayhen_invitation_ladjihe38udhd_heart_pin">♥</span>' +
+                  '</div>';
+        } else {
+          html += '<div class="mayhen_invitation_ladjihe38udhd_cal_cell">' + dayNum + '</div>';
+        }
+      }
+      grid.innerHTML = html;
+    }
+  };
+
+  /* ==========================================================================
+     13. REALTIME COUNTDOWN SYNC
+     ========================================================================== */
+  window.updateMayhenCountdown = function(newDateObj) {
+    if (!newDateObj || isNaN(newDateObj.getTime())) return;
+    targetDate = newDateObj.getTime();
+    updateCountdown();
+  };
+
 });
