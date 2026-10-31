@@ -219,7 +219,7 @@
                         <div class='ladi-button'>
                             <div class="ladi-button-background"></div>
                             <div id="BUTTON_TEXT18" class="ladi-element ladi-button-headline ">
-                                <p class='ladi-headline'>Ấn vào để Xem</p>
+                                <p class='ladi-headline'>MỞ THIỆP CƯỚI</p>
                             </div>
                         </div>
                     </div>

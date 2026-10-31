@@ -2614,6 +2614,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
                      - Laravel Pint & Cache Clear: Hoàn tất.
 
+            95. **Thiết Kế Lại Toàn Diện Giao Diện Mở Thiệp Hoàng Gia (#POPUP8) Mẫu "Hắc Bạch Trao Duyên 2" Chuẩn Quiet Luxury**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khung oval cổng vòm mở thiệp quá nhỏ và bị đè chữ: Cụm "Thân gửi", "Bạn và Gia Đình" và tên dâu rể "RANDY & MINH QUÝ" bị nhồi nhét đè lên 1/3 thân dưới bức ảnh cưới chân dung, làm bẩn và che khuất ảnh.
+                  * Chữ thư pháp màu trắng đè lên váy cưới trắng của cô dâu gây chìm nghỉm, cực kỳ khó đọc.
+                  * Tên cặp đôi bị viền oval cắt ngang nửa trong nửa ngoài, nút bấm "Ấn vào để Xem" thô kệch.
+                - **Giải pháp hoàn thiện**:
+                  1. *`styles.css` & `assets/styles.css`*:
+                     - Tái cấu trúc kích thước Card mở thiệp chuẩn tỷ lệ hoàng gia `380px x 610px` kèm hệ số co giãn responsive đa thiết bị `scale(min(1, calc(min((100vw - 28px) / 380, (100dvh - 28px) / 610))))`.
+                     - Tách biệt hoàn toàn Khung Cổng Vòm Oval (`#GROUP145`) lên nửa trên: Kích thước `215px x 325px`, viền kép vàng gold ánh kim (`#BOX78`, `#BOX79`), hiển thị trọn vẹn bức ảnh đôi sắc nét không tì vết.
+                     - Đưa tên Cô Dâu Chú Rể (`#HEADLINE338`) xuống dưới khung oval (`top: 372px`), font serif hoa màu vàng gold `#e6c88b` sang trọng, đẳng cấp.
+                     - Tách cụm Thân Gửi & Tên Khách Mời (`#GROUP140`) xuống dòng riêng (`top: 412px`), ẩn bỏ background gradient xám cũ (`#BOX77`), chữ "Thân gửi" màu đồng thanh lịch, tên khách "Bạn và Gia Đình" font Great Vibes trắng ngọc trai đổ bóng nghệ thuật nổi bật trên nền đen huyền bí.
+                     - Nâng cấp Nút Mở Thiệp (`#BUTTON18`) tại `top: 504px`: Thiết kế viên ngọc bo tròn hoàn hảo (`border-radius: 999px`), viền vàng gold, hiệu ứng pulse breathing sang trọng, đổi text thành `"MỞ THIỆP CƯỚI"`.
+                  2. *`template.blade.php`*:
+                     - Cập nhật text nút bấm sang `"MỞ THIỆP CƯỚI"`.
+                  3. *Kiểm thử*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
+                     - Laravel cache: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

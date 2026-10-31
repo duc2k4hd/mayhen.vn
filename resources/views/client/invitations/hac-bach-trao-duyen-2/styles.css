@@ -11327,7 +11327,10 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     transform: translateY(20px) !important;
 }
 
-/* MÀN HÌNH MỞ PHONG BÌ HOÀNG GIA (#POPUP8) - QUIET LUXURY / BLACK & GOLD */
+/* ==========================================================================
+   MÀN HÌNH MỞ THIỆP HOÀNG GIA (#POPUP8) - QUIET LUXURY / BLACK & GOLD EDITORIAL
+   Thiết kế Cổng Vòm Oval Tôn Vinh Bức Ảnh Cưới - Tách Biệt Chữ & Nút Bấm Sang Trọng
+   ========================================================================== */
 #POPUP8 {
     position: fixed !important;
     top: 0 !important;
@@ -11339,9 +11342,9 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: radial-gradient(circle at center, rgba(30, 30, 34, 0.96) 0%, rgba(10, 10, 12, 0.98) 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    background: radial-gradient(circle at 50% 35%, rgba(28, 28, 34, 0.98) 0%, rgba(12, 12, 15, 0.99) 70%, rgba(5, 5, 7, 1) 100%) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
     transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s ease, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
     overflow: hidden !important;
     opacity: 1 !important;
@@ -11360,15 +11363,16 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 
 #POPUP8 > .ladi-popup {
     position: relative !important;
-    width: 440px !important;
-    height: 560px !important;
+    width: 380px !important;
+    height: 610px !important;
     margin: auto !important;
-    border-radius: 28px !important;
+    border-radius: 32px !important;
     overflow: hidden !important;
-    border: 1.5px solid rgba(212, 175, 55, 0.5) !important;
-    box-shadow: 0 35px 100px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 40px rgba(212, 175, 55, 0.06) !important;
+    border: 1px solid rgba(212, 175, 55, 0.55) !important;
+    background: linear-gradient(175deg, #1a1a1f 0%, #111115 50%, #08080a 100%) !important;
+    box-shadow: 0 35px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(212, 175, 55, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
     transform-origin: center center !important;
-    transform: scale(min(1, calc(min((100vw - 32px) / 440, (100dvh - 36px) / 560)))) !important;
+    transform: scale(min(1, calc(min((100vw - 28px) / 380, (100dvh - 28px) / 610)))) !important;
     flex-shrink: 0 !important;
 }
 
@@ -11377,76 +11381,303 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    border-radius: 26px !important;
-    background: linear-gradient(160deg, #1f1f23 0%, #131316 55%, #0a0a0c 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 31px !important;
+    background: radial-gradient(circle at 50% 25%, rgba(45, 45, 55, 0.6) 0%, rgba(15, 15, 18, 0.98) 75%) !important;
+    border: none !important;
 }
 
 #POPUP8 #GROUP149 {
     position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 420px !important;
-    max-width: 100% !important;
-    height: 540px !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    left: 0 !important;
+    top: 0 !important;
 }
 
-#POPUP8 #HEADLINE335 h3 {
-    font-family: Philosopher, 'Playfair Display', serif !important;
-    color: #c5a880 !important;
-    letter-spacing: 1.5px !important;
+/* Hoa văn mảnh trang trí 2 góc đối xứng */
+#POPUP8 #IMAGE158 {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    left: auto !important;
+    width: 105px !important;
+    height: 155px !important;
+    opacity: 0.28 !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
 }
 
-#POPUP8 #HEADLINE336 h3 {
-    color: #fff !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+#POPUP8 #IMAGE159 {
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    top: auto !important;
+    width: 105px !important;
+    height: 155px !important;
+    opacity: 0.28 !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
 }
 
-#POPUP8 #HEADLINE338 h3 {
-    font-family: Philosopher, 'Playfair Display', serif !important;
-    color: #e6c88b !important;
-    font-size: 22px !important;
-    letter-spacing: 2px !important;
-    font-weight: 700 !important;
-    text-shadow: 0 2px 14px rgba(212, 175, 55, 0.45) !important;
-}
-
-/* Đảm bảo toàn bộ element con trong POPUP8 luôn hiển thị sắc nét */
-#POPUP8 .ladi-element {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-#POPUP8 #BUTTON18 {
-    top: 462px !important;
+/* 1. KHUNG CỔNG VÒM OVAL VÀ ẢNH CHÂN DUNG CẶP ĐÔI (GROUP145) */
+#POPUP8 #GROUP145 {
+    position: absolute !important;
+    top: 28px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
+    width: 215px !important;
+    height: 325px !important;
+    z-index: 2 !important;
+}
+
+#POPUP8 #GROUP145 > .ladi-group {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+}
+
+/* Viền ngoài mảnh của oval (BOX78) */
+#POPUP8 #BOX78 {
+    position: absolute !important;
+    top: -5px !important;
+    left: -5px !important;
+    width: calc(100% + 10px) !important;
+    height: calc(100% + 10px) !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(212, 175, 55, 0.4) !important;
+    background: transparent !important;
+    pointer-events: none !important;
+    z-index: 3 !important;
+}
+
+#POPUP8 #BOX78 > .ladi-box {
+    border: none !important;
+    background: transparent !important;
+}
+
+/* Viền trong nổi khối vàng gold của oval (BOX79) */
+#POPUP8 #BOX79 {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 999px !important;
+    border: 2px solid rgba(212, 175, 55, 0.85) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), inset 0 0 20px rgba(0, 0, 0, 0.4) !important;
+    background: transparent !important;
+    pointer-events: none !important;
+    z-index: 3 !important;
+}
+
+#POPUP8 #BOX79 > .ladi-box {
+    border: none !important;
+    background: transparent !important;
+}
+
+/* Ảnh cô dâu chú rể lấp đầy khung oval (IMAGE157) */
+#POPUP8 #IMAGE157 {
+    position: absolute !important;
+    inset: 2px !important;
+    width: calc(100% - 4px) !important;
+    height: calc(100% - 4px) !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+}
+
+#POPUP8 #IMAGE157 > .ladi-image {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 999px !important;
+}
+
+#POPUP8 #IMAGE157 > .ladi-image > .ladi-image-background {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: center 20% !important;
+    background-repeat: no-repeat !important;
+    border-radius: 999px !important;
+    transform: none !important;
+}
+
+/* 2. TÊN CÔ DÂU CHÚ RỂ (HEADLINE338) - ĐẶT NGAY DƯỚI KHUNG OVAL */
+#POPUP8 #HEADLINE338 {
+    position: absolute !important;
+    top: 372px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 340px !important;
+    max-width: 90% !important;
+    height: auto !important;
+    text-align: center !important;
+    z-index: 4 !important;
+}
+
+#POPUP8 #HEADLINE338 h3,
+#POPUP8 #HEADLINE338 .ladi-headline {
+    font-family: 'Playfair Display', Philosopher, serif !important;
+    font-size: 16.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: 3.5px !important;
+    line-height: 1.35 !important;
+    text-transform: uppercase !important;
+    color: #e6c88b !important;
+    text-shadow: 0 2px 12px rgba(212, 175, 55, 0.45), 0 0 20px rgba(0, 0, 0, 0.8) !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 3. KHỐI THÂN GỬI & TÊN KHÁCH MỜI (GROUP140) */
+#POPUP8 #GROUP140 {
+    position: absolute !important;
+    top: 412px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 320px !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 4 !important;
+}
+
+#POPUP8 #GROUP140 > .ladi-group {
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: static !important;
+}
+
+/* Ẩn bỏ background đen xám đục cũ đè lên ảnh (BOX77) */
+#POPUP8 #BOX77 {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Dòng chữ THÂN GỬI (HEADLINE335) */
+#POPUP8 #HEADLINE335 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 auto !important;
+}
+
+#POPUP8 #HEADLINE335 h3,
+#POPUP8 #HEADLINE335 .ladi-headline {
+    font-family: Philosopher, 'Playfair Display', serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase !important;
+    color: #c5a880 !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8) !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Tên khách mời BẠN VÀ GIA ĐÌNH (HEADLINE336) */
+#POPUP8 #HEADLINE336 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 3px auto 0 !important;
+}
+
+#POPUP8 #HEADLINE336 h3,
+#POPUP8 #HEADLINE336 .ladi-headline {
+    font-family: 'Great Vibes', 'Playfair Display', cursive, serif !important;
+    font-size: 25px !important;
+    font-weight: 400 !important;
+    line-height: 1.25 !important;
+    color: #ffffff !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 0 12px rgba(255, 255, 255, 0.25) !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 4. NÚT MỞ THIỆP CƯỚI (BUTTON18) */
+#POPUP8 #BUTTON18 {
+    position: absolute !important;
+    top: 504px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 200px !important;
+    height: 48px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
-    border-radius: 30px !important;
-    border: 1.5px solid rgba(212, 175, 55, 0.8) !important;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(184, 147, 93, 0.15) 100%) !important;
-    box-shadow: 0 0 22px rgba(212, 175, 55, 0.4), inset 0 0 14px rgba(212, 175, 55, 0.15) !important;
-    animation: mayhen_hacbach2_pulse 2.4s ease-in-out infinite !important;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+    border-radius: 999px !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.85) !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.35) 0%, rgba(184, 147, 93, 0.18) 100%) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 22px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2) !important;
+    animation: mayhen_hacbach2_pulse 2.2s ease-in-out infinite !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    z-index: 5 !important;
 }
 
 #POPUP8 #BUTTON18:hover {
-    transform: translateX(-50%) scale(1.06) !important;
-    box-shadow: 0 0 35px rgba(212, 175, 55, 0.75) !important;
+    transform: translateX(-50%) scale(1.05) !important;
+    border-color: rgba(255, 223, 128, 1) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 32px rgba(212, 175, 55, 0.75), inset 0 0 16px rgba(212, 175, 55, 0.35) !important;
 }
 
 #POPUP8 #BUTTON18:active {
     transform: translateX(-50%) scale(0.97) !important;
 }
 
+#POPUP8 #BUTTON18 > .ladi-button {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 999px !important;
+}
+
+#POPUP8 #BUTTON18 .ladi-button-background {
+    display: none !important;
+}
+
+#POPUP8 #BUTTON_TEXT18 {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#POPUP8 #BUTTON_TEXT18 p,
+#POPUP8 #BUTTON_TEXT18 .ladi-headline {
+    font-family: Philosopher, 'Playfair Display', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+}
+
 @keyframes mayhen_hacbach2_pulse {
     0%, 100% {
-        box-shadow: 0 0 18px rgba(212, 175, 55, 0.35), inset 0 0 12px rgba(212, 175, 55, 0.12);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 18px rgba(212, 175, 55, 0.35), inset 0 0 10px rgba(212, 175, 55, 0.15);
     }
     50% {
-        box-shadow: 0 0 32px rgba(212, 175, 55, 0.7), inset 0 0 20px rgba(212, 175, 55, 0.25);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 32px rgba(212, 175, 55, 0.65), inset 0 0 18px rgba(212, 175, 55, 0.28);
     }
 }
 
@@ -12271,17 +12502,19 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 
 /* 1. Màn hình mở thiệp (#POPUP8 #HEADLINE338) */
 #POPUP8 #HEADLINE338 {
-    width: 380px !important;
+    width: 340px !important;
     max-width: 90% !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    top: 395px !important;
+    top: 372px !important;
     text-align: center !important;
     height: auto !important;
+    z-index: 4 !important;
 }
 
-#POPUP8 #HEADLINE338 h3 {
-    font-size: clamp(14px, 4vw, 18px) !important;
+#POPUP8 #HEADLINE338 h3,
+#POPUP8 #HEADLINE338 .ladi-headline {
+    font-size: clamp(14px, 4vw, 17px) !important;
     line-height: 1.35 !important;
     white-space: normal !important;
     word-break: break-word !important;
