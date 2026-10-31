@@ -12789,3 +12789,10 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     word-break: break-word !important;
     text-align: center !important;
 }
+
+/* Căn chỉnh mượt mà trái tim chỉ ngày cưới (SHAPE14) */
+#SHAPE14 {
+    pointer-events: none !important;
+    z-index: 10 !important;
+    transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), top 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}

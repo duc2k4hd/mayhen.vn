@@ -46,11 +46,19 @@
     $calendarYear = $weddingDate->format('Y');
     $calendarDay = (int) $weddingDate->day;
     $daysInMonth = (int) $weddingDate->daysInMonth;
-    $firstDayOfWeek = (int) $weddingDate->copy()->startOfMonth()->dayOfWeek; // 0: Sun, 1: Mon...
+    // Bảng lịch bắt đầu bằng Thứ Hai (MON): 0: Mon, 1: Tue, 2: Wed, 3: Thu, 4: Fri, 5: Sat, 6: Sun
+    $rawDayOfWeek = (int) $weddingDate->copy()->startOfMonth()->dayOfWeek; // 0: Sun, 1: Mon...
+    $firstDayOfWeek = ($rawDayOfWeek + 6) % 7;
     $calCells = array_fill(0, 35, '');
     for ($d = 1; $d <= $daysInMonth && ($firstDayOfWeek + $d - 1) < 35; $d++) {
         $calCells[$firstDayOfWeek + $d - 1] = $d;
     }
+
+    $activeCalIndex = $firstDayOfWeek + $calendarDay - 1;
+    $calRow = (int) floor($activeCalIndex / 7);
+    $calCol = $activeCalIndex % 7;
+    $heartLeftMobile = 19.85 + $calCol * 55.9167;
+    $heartTopMobile = 140.333 + $calRow * 40.1;
 
     // Sự kiện Lễ Cưới & Tiệc Cưới
     $eventPartyTime = $extraData['event_party_time'] ?? '16:00';
@@ -638,7 +646,7 @@
                 <div id="HEADLINE274" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <h3 class='ladi-headline ladi-transition' id="mayhen_hacbach2_cal_year">{{ $calendarYear }}</h3>
                 </div>
-                <div id="SHAPE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" data-cal-day="{{ $calendarDay }}" data-cal-index="{{ $firstDayOfWeek + $calendarDay - 1 }}">
+                <div id="SHAPE14" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" data-cal-day="{{ $calendarDay }}" data-cal-index="{{ $activeCalIndex }}" style="left: {{ $heartLeftMobile }}px; top: {{ $heartTopMobile }}px;">
                     <div class='ladi-shape ladi-transition'><svg xmlns="http://www.w3.org/2000/svg" height="100%"
                             viewBox="0 -960 960 960" width="100%" preserveAspectRatio="none" class=""
                             fill="url(&quot;#SHAPE14_desktop_gradient&quot;)">

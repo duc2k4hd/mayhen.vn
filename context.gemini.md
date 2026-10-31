@@ -2647,6 +2647,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (51 assertions).
                      - Cache hệ thống: Cleared.
 
+            97. **Sửa Triệt Để Lỗi Lưới Lịch Bắt Đầu Bằng Thứ Hai (MON) & Định Vị Trái Tim (#SHAPE14) Chuẩn Xác Tuyệt Đối 100%**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Bảng lưới lịch cưới của mẫu thiệp có hàng tiêu đề bắt đầu bằng `MON` (Thứ Hai) đến `SUN` (Chủ Nhật). Tuy nhiên, công thức cũ tính theo chuẩn US (`0 = Sunday`) khiến toàn bộ các ngày bị lệch sang phải 1 cột (ví dụ ngày 1 tháng 10 rơi vào THUR thay vì WED, ngày 9 tháng 10 rơi vào FRI thay vì THUR).
+                  * Trái tim `#SHAPE14` bị tính bằng `getBoundingClientRect()` runtime không ổn định, dẫn đến bị lệch nằm lơ lửng giữa dòng 16 và 23.
+                - **Giải pháp hoàn thiện**:
+                  1. *`template.blade.php`*:
+                     - Chuyển đổi công thức tính thứ bắt đầu của tháng sang Monday-based: `$firstDayOfWeek = ($rawDayOfWeek + 6) % 7;` (0: Mon, 1: Tue ... 6: Sun).
+                     - Ngày 1 tháng 10 năm 2025 rơi chuẩn xác vào cột WED (Thứ Tư), ngày 9 tháng 10 năm 2025 rơi chuẩn xác vào cột THUR (Thứ Năm).
+                     - Tính sẵn tọa độ tĩnh trong PHP Blade `$heartLeftMobile` (`19.85 + col * 55.9167`) và `$heartTopMobile` (`140.333 + row * 40.1`) gán trực tiếp vào style `#SHAPE14`.
+                  2. *`script.js` & `assets/script.js`*:
+                     - Tính `firstDay = (rawDay + 6) % 7;` chuẩn Monday-based.
+                     - Căn chỉnh trái tim `#SHAPE14` trực tiếp từ ma trận tọa độ LadiPage (bước nhảy `55.9167px` theo cột, `40.1px` theo hàng trên mobile; `123.2px` và `76.35px` trên desktop) thay vì `getBoundingClientRect`.
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Thêm `transition: left 0.35s, top 0.35s` để trái tim lướt êm ái khi đổi ngày trên Studio Editor.
+                  4. *Kiểm thử*:
+                     - Syntax JS `node -c`: Passed.
+                     - Feature Test: Passed 3/3 (51 assertions). Cache cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

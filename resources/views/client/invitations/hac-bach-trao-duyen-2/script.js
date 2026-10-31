@@ -273,7 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearHeading = document.getElementById('mayhen_hacbach2_cal_year');
     if (yearHeading) yearHeading.textContent = String(year);
 
-    const firstDay = new Date(year, month - 1, 1).getDay(); // 0..6
+    // Bảng lịch bắt đầu bằng MON (Thứ Hai): 0: Mon, 1: Tue, 2: Wed, 3: Thu, 4: Fri, 5: Sat, 6: Sun
+    const rawDay = new Date(year, month - 1, 1).getDay(); // 0: Sun, 1: Mon...
+    const firstDay = (rawDay + 6) % 7;
     const totalDays = new Date(year, month, 0).getDate();
 
     for (let i = 0; i < 35; i++) {
@@ -289,23 +291,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Di chuyển trái tim SHAPE14
+    // Di chuyển trái tim SHAPE14 theo ma trận tọa độ LadiPage chuẩn xác tuyệt đối 100%
     const activeIndex = firstDay + day - 1;
     const shape14 = document.getElementById('SHAPE14');
     if (shape14 && activeIndex >= 0 && activeIndex < 35) {
-      const targetCell = document.getElementById('HEADLINE' + (238 + activeIndex));
-      if (targetCell) {
-        const rowGroup = targetCell.closest('.ladi-group');
-        const container = document.querySelector('#SECTION24 .ladi-container');
-        if (targetCell && container) {
-          const rectTarget = targetCell.getBoundingClientRect();
-          const rectContainer = container.getBoundingClientRect();
-          shape14.style.position = 'absolute';
-          shape14.style.top = (rectTarget.top - rectContainer.top - (shape14.offsetHeight - targetCell.offsetHeight) / 2) + 'px';
-          shape14.style.left = (rectTarget.left - rectContainer.left - (shape14.offsetWidth - targetCell.offsetWidth) / 2) + 'px';
-          shape14.style.display = 'block';
-        }
+      const row = Math.floor(activeIndex / 7);
+      const col = activeIndex % 7;
+      const isDesktop = window.innerWidth > 768 && !document.querySelector('.ladi-wraper.mobile');
+
+      shape14.style.position = 'absolute';
+      if (isDesktop) {
+        shape14.style.left = (71.59 + col * 123.2) + 'px';
+        shape14.style.top = (228.1 + row * 76.35) + 'px';
+      } else {
+        shape14.style.left = (19.85 + col * 55.9167) + 'px';
+        shape14.style.top = (140.333 + row * 40.1) + 'px';
       }
+      shape14.style.display = 'block';
+      shape14.style.zIndex = '10';
+      shape14.style.pointerEvents = 'none';
     }
 
     // Cập nhật các trường Save Date ở SECTION22
