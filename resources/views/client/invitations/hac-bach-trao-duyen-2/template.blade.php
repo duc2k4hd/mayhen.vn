@@ -826,12 +826,21 @@
                             <div class='ladi-paragraph ladi-transition'>Chú rể là một chàng trai điềm đạm, chân thành và
                                 luôn sống hết lòng vì gia đình và những người thân yêu. Với trái tim ấm áp và sự chín
                                 chắn trong suy nghĩ, anh đã và đang là chỗ dựa vững chắc cho cô dâu cũng như là người
-                                bạn đồng hành lý tưởng trong chặng đường hôn nhân sắp tới.<br></div>
-                            <div class="mayhen_invitation_ladjihe38udhd_parents_box"
-                                style="margin-top: 10px; font-size: 13px; color: #78716c;"
-                                data-sync-target="groom_parents"><strong>Nhà Trai:</strong> Ông <span
-                                    data-sync-target="groom_father">{{ $groomFather }}</span> &amp; Bà <span
-                                    data-sync-target="groom_mother">{{ $groomMother }}</span></div>
+                                bạn đồng hành lý tưởng trong chặng đường hôn nhân sắp tới.</div>
+                            <div class="mayhen_hacbach2_parents_card">
+                                <span class="mayhen_hacbach2_parents_tag">NHÀ TRAI</span>
+                                <div class="mayhen_hacbach2_parents_row">
+                                    <span class="mayhen_hacbach2_parent_item">
+                                        <span class="mayhen_hacbach2_parent_role">ÔNG:</span>
+                                        <strong class="mayhen_hacbach2_parent_name" data-sync-target="groom_father">{{ $groomFather }}</strong>
+                                    </span>
+                                    <span class="mayhen_hacbach2_parent_dot">·</span>
+                                    <span class="mayhen_hacbach2_parent_item">
+                                        <span class="mayhen_hacbach2_parent_role">BÀ:</span>
+                                        <strong class="mayhen_hacbach2_parent_name" data-sync-target="groom_mother">{{ $groomMother }}</strong>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -861,12 +870,21 @@
                             <div class='ladi-paragraph ladi-transition'>Cô dâu là một người con gái dịu dàng, tinh tế và
                                 luôn mang đến năng lượng tích cực cho những người xung quanh. Với nụ cười ấm áp và trái
                                 tim chân thành, cô không chỉ là niềm tự hào của gia đình mà còn là người bạn đời lý
-                                tưởng, đồng hành cùng chú rể trong hành trình xây dựng hạnh phúc.<br></div>
-                            <div class="mayhen_invitation_ladjihe38udhd_parents_box"
-                                style="margin-top: 10px; font-size: 13px; color: #78716c;"
-                                data-sync-target="bride_parents"><strong>Nhà Gái:</strong> Ông <span
-                                    data-sync-target="bride_father">{{ $brideFather }}</span> &amp; Bà <span
-                                    data-sync-target="bride_mother">{{ $brideMother }}</span></div>
+                                tưởng, đồng hành cùng chú rể trong hành trình xây dựng hạnh phúc.</div>
+                            <div class="mayhen_hacbach2_parents_card">
+                                <span class="mayhen_hacbach2_parents_tag">NHÀ GÁI</span>
+                                <div class="mayhen_hacbach2_parents_row">
+                                    <span class="mayhen_hacbach2_parent_item">
+                                        <span class="mayhen_hacbach2_parent_role">ÔNG:</span>
+                                        <strong class="mayhen_hacbach2_parent_name" data-sync-target="bride_father">{{ $brideFather }}</strong>
+                                    </span>
+                                    <span class="mayhen_hacbach2_parent_dot">·</span>
+                                    <span class="mayhen_hacbach2_parent_item">
+                                        <span class="mayhen_hacbach2_parent_role">BÀ:</span>
+                                        <strong class="mayhen_hacbach2_parent_name" data-sync-target="bride_mother">{{ $brideMother }}</strong>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

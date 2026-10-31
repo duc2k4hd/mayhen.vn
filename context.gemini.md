@@ -2686,6 +2686,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Pint format: Passed.
                      - Cache hệ thống: Cleared.
 
+            99. **Nâng Cấp Khối Thông Tin Phụ Mẫu (Ông Bà) Nổi Bật, Trang Trọng & Tối Ưu Độ Cách Dòng Gọn Gàng**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi ảnh chụp màn hình chỉ ra: "đoạn Ông Bà để bé và xấu quá, cho nổi bật chút, chữ bé quá và cách dòng nhiều quá".
+                  * *Chữ bé và xấu*: Đoạn phụ mẫu (`Nhà Trai: Ông... & Bà...`) chỉ có font 13px, màu xám nhạt `#78716c` dính sát đuôi text tự sự, làm giảm sự trang trọng của thông tin song thân phụ mẫu.
+                  * *Cách dòng nhiều quá*: Đoạn văn bản tự sự của Chú Rể / Cô Dâu (`#PARAGRAPH70`, `#PARAGRAPH76`) có `line-height: 1.6` đến `1.7` và kèm thẻ `<br>` thừa ở cuối, khiến các dòng chữ bị dãn quá rộng, rời rạc, loãng chữ.
+                - **Giải pháp hoàn thiện**:
+                  1. *`template.blade.php`*:
+                     - Bỏ thẻ `<br>` thừa ở cuối đoạn text tự sự.
+                     - Thiết kế lại khối phụ mẫu thành thẻ `.mayhen_hacbach2_parents_card`:
+                       * Dòng tag: `NHÀ TRAI` / `NHÀ GÁI` (chữ in hoa nhỏ gọn, nét thanh lịch).
+                       * Dòng tên: `ÔNG: ` `<strong data-sync-target="groom_father">...</strong>` ` · BÀ: ` `<strong data-sync-target="groom_mother">...</strong>`.
+                       * Tách biệt bằng đường viền phân cách `border-top` mảnh dẻ tinh tế.
+                  2. *`styles.css` & `assets/styles.css`*:
+                     - Giảm `line-height` của `#PARAGRAPH70` và `#PARAGRAPH76` từ 1.6 xuống `1.45 !important;` (desktop: 1.48), giúp đoạn văn bản khít lại gọn gàng, đọc liền mạch và trau chuốt.
+                     - Tăng font chữ phụ mẫu từ 13px lên `16px !important;` (desktop: 17.5px), tên bố mẹ `font-weight: 700`, màu đen than `#1a1a1a` nổi bật, rõ nét và trang trọng.
+                     - Layout flexbox tự động dàn 1 dòng cân đối hoặc xuống dòng mềm mại nếu tên dài, không đè chữ.
+                  3. *Kiểm thử*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (64 assertions).
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

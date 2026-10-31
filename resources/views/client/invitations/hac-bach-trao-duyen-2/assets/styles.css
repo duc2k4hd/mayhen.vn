@@ -12970,3 +12970,91 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
         padding-left: 18px !important;
     }
 }
+
+/* ========================================================
+   KHỐI THÔNG TIN PHỤ MẪU (ÔNG BÀ) NỔI BẬT & TRANG TRỌNG
+   ======================================================== */
+#PARAGRAPH70 > .ladi-paragraph,
+#PARAGRAPH76 > .ladi-paragraph {
+    line-height: 1.45 !important;
+    font-size: 15.5px !important;
+    color: #2c2824 !important;
+    letter-spacing: 0.2px !important;
+}
+
+.mayhen_hacbach2_parents_card {
+    margin-top: 14px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid rgba(26, 26, 26, 0.18) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+}
+
+.mayhen_hacbach2_parents_tag {
+    display: inline-block !important;
+    font-family: OCEkWhuqFuIHbEggYmdhcmFtbkLXJlZVsYXItMjAyNTAzMjAwNDAMzktcJucQudHRm, 'EB Garamond', 'Playfair Display', serif !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.6px !important;
+    text-transform: uppercase !important;
+    color: #78716c !important;
+}
+
+.mayhen_hacbach2_parents_row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: baseline !important;
+    gap: 6px 12px !important;
+    font-family: OCEkWhuqFuIHbEggYmdhcmFtbkLXJlZVsYXItMjAyNTAzMjAwNDAMzktcJucQudHRm, 'EB Garamond', 'Playfair Display', serif !important;
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    color: #1a1a1a !important;
+}
+
+.mayhen_hacbach2_parent_item {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+}
+
+.mayhen_hacbach2_parent_role {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #57534e !important;
+    letter-spacing: 0.5px !important;
+}
+
+.mayhen_hacbach2_parent_name {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    letter-spacing: 0.3px !important;
+}
+
+.mayhen_hacbach2_parent_dot {
+    color: #a8a29e !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+}
+
+@media (min-width: 768px) {
+    #PARAGRAPH70 > .ladi-paragraph,
+    #PARAGRAPH76 > .ladi-paragraph {
+        line-height: 1.48 !important;
+        font-size: 16.5px !important;
+    }
+
+    .mayhen_hacbach2_parents_tag {
+        font-size: 13px !important;
+    }
+
+    .mayhen_hacbach2_parents_row {
+        font-size: 17px !important;
+        gap: 8px 18px !important;
+    }
+
+    .mayhen_hacbach2_parent_name {
+        font-size: 17.5px !important;
+    }
+}
