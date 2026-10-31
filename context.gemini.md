@@ -2562,6 +2562,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - 7/7 Feature Tests (78 assertions) pass 100%.
                      - Cache Laravel: Cleared.
 
+            93. **Chuẩn Hóa Toàn Diện Mẫu Thiệp Cưới "Hắc Bạch Trao Duyên 2" (`hac-bach-trao-duyen-2`) Theo Kỹ Năng Bất Biến 8 Trụ Cột**:
+                - **Yêu cầu & Mục tiêu**:
+                  * Chuẩn hóa toàn bộ mẫu thiệp `hac-bach-trao-duyen-2` theo đúng 8 trụ cột chuẩn hóa trong `.agents/skills/mayhen-invitation-templates/SKILL.md`.
+                  * Đảm bảo mọi thông tin cá nhân (ảnh chân dung dâu rể, album 10 ảnh, timeline, STK, ngân hàng, mã QR) đều đồng bộ thời gian thực 2 chiều với Studio Tạo Thiệp và Admin, không còn bất kỳ dữ liệu nào bị hardcode.
+                - **Các điểm kỹ thuật đã hoàn thành**:
+                  1. *`schema.json`*:
+                     - Khai báo đầy đủ 6 canonical sections (`couple`, `groom_family`, `bride_family`, `album`, `timeline`, `gift`).
+                     - Thêm trường `wedding.extra_data.groom_photo_url` và `wedding.extra_data.bride_photo_url` với fallback ảnh chân dung nội bộ chất lượng cao.
+                     - Sắp xếp thứ tự trường Bước 1 chuẩn hóa: Tên dâu rể -> Ảnh dâu rể -> Ngày cử hành hôn lễ -> Ảnh bìa thiệp.
+                     - Khai báo mảng `"default"` gồm 10 ảnh cưới nội bộ cho trường `wedding.extra_data.gallery`.
+                  2. *`template.blade.php`*:
+                     - Phòng vệ nhúng: Xóa class khóa cuộn `mayhen_invitation_ladjihe38udhd_scroll_locked` khi `$isEmbed = true`.
+                     - Khởi tạo `$galleryDefaults` (10 ảnh), `$timelineList` và `$musicUrl` với asset fallback nội bộ an toàn.
+                     - Thẻ `<audio>` gắn `data-sync-target="music_url"`.
+                     - Gắn đầy đủ thuộc tính điều hướng `data-mayhen-section` (`couple`, `groom_family,bride_family`, `groom_family`, `bride_family`, `timeline`, `album`, `gift`).
+                     - Cập nhật Live Sync cho album ảnh cưới: `data-sync-target="gallery.0"` đến `gallery.11` kèm fallback CSS động.
+                     - Cập nhật Live Sync cho timeline hôn lễ (`timeline.0.time`, `timeline.0.title`...).
+                     - Loại bỏ toàn bộ text hardcode trong POPUP2 & POPUP3 ngân hàng, thay bằng Live Sync: `groom_bank_holder`, `groom_bank_account`, `groom_bank_name`, `qr_groom_image` và `bride_*` tương ứng.
+                  3. *`script.js` & `assets/script.js`*:
+                     - Cung cấp hàm toàn cục `window.updateMayhenMusic(newUrl)` phục vụ Editor Bridge thay đổi bài hát tức thì.
+                     - Di chuyển và cố định đĩa than nhạc lên góc trên bên trái `top: 16px; left: max(16px, calc(50% - 210px + 16px)); z-index: 1001; position: fixed;` chuẩn hóa cho cả desktop và mobile, không bị che bởi khung viền iPhone.
+                  4. *Seeder, Định Dạng & Kiểm Thử*:
+                     - Bổ sung `gallery` mặc định vào `InvitationTemplateSeeder.php` và chạy re-seed cơ sở dữ liệu.
+                     - Viết Feature Test chuyên biệt `tests/Feature/HacBachTraoDuyen2TemplateTest.php` xác thực 3 test cases (render sections, live sync album/timeline/gift, embed mode mở cuộn trang, studio editor) với 49 assertions pass 100%.
+                     - Laravel Pint: Passed. Dọn sạch cache toàn hệ thống.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

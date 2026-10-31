@@ -11678,10 +11678,12 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 
 /* Floating Audio Controller */
 .mayhen_invitation_ladjihe38udhd_music_dock {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 999990;
+    position: fixed !important;
+    top: 16px !important;
+    left: max(16px, calc(50% - 210px + 16px)) !important;
+    bottom: auto !important;
+    right: auto !important;
+    z-index: 1001 !important;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -11693,6 +11695,17 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     border-radius: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     transition: opacity 0.5s ease, transform 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    .mayhen_invitation_ladjihe38udhd_music_dock {
+        top: 16px !important;
+        left: 16px !important;
+        bottom: auto !important;
+        right: auto !important;
+        padding: 4px 10px 4px 4px !important;
+        gap: 8px !important;
+    }
 }
 
 .mayhen_invitation_ladjihe38udhd_vinyl_wrap {

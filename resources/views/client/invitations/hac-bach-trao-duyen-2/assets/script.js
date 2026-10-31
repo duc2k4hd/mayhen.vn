@@ -76,6 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Cung cấp hàm toàn cục cho Editor Bridge cập nhật nhạc
+  window.updateMayhenMusic = function(newUrl) {
+    if (!audio) return;
+    audio.src = newUrl;
+    audio.load();
+    if (isPlaying) {
+      audio.play().catch(() => {});
+    }
+  };
+
   /* ==========================================================================
      2. ĐIỀU KHIỂN NÚT "KÉO XUỐNG" (#GROUP138)
      ========================================================================== */

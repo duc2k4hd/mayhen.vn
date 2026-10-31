@@ -40,6 +40,22 @@
           "max": 100
         },
         {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "randy-x-quy-44-20250613174641-csxug.jpg",
+          "placeholder": "Đường dẫn ảnh chân dung chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "randy-x-quy-57-20250613174642-mztxx.jpg",
+          "placeholder": "Đường dẫn ảnh chân dung cô dâu"
+        },
+        {
           "key": "wedding.wedding_date",
           "label": "Ngày cử hành hôn lễ",
           "type": "date",
@@ -52,7 +68,7 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "hip_2307-20250417154245-1n-2l.jpg",
+          "default": "pch06390-20250612143147-l_cdx.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {
@@ -202,7 +218,19 @@
           "label": "Album 10 Ảnh Cưới",
           "type": "gallery",
           "required": false,
-          "max_items": 10
+          "max_items": 10,
+          "default": [
+            "32-20250612143135-1dtbl.jpg",
+            "46-20250612143135-fhy_q.jpg",
+            "44-20250612104305-hasum.jpg",
+            "pch07317-2-20250612143149-kmgsv.jpg",
+            "pch07126-1-20250612144528-nbkc_.jpg",
+            "7-20250612143134-siosd.jpg",
+            "1-20250612143133-c7hjc.jpg",
+            "randy-x-quy-57-20250613174642-mztxx.jpg",
+            "randy-x-quy-44-20250613174641-csxug.jpg",
+            "40-20250615032725-lbbfw.jpg"
+          ]
         }
       ]
     },

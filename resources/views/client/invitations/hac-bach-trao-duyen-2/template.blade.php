@@ -75,6 +75,34 @@
         return $assetBase . '/' . ltrim($val, '/');
     };
 
+    // Album ảnh cưới 10 ảnh chuẩn hóa
+    $galleryDefaults = [
+        '32-20250612143135-1dtbl.jpg',
+        '46-20250612143135-fhy_q.jpg',
+        '44-20250612104305-hasum.jpg',
+        'pch07317-2-20250612143149-kmgsv.jpg',
+        'pch07126-1-20250612144528-nbkc_.jpg',
+        '7-20250612143134-siosd.jpg',
+        '1-20250612143133-c7hjc.jpg',
+        'randy-x-quy-57-20250613174642-mztxx.jpg',
+        'randy-x-quy-44-20250613174641-csxug.jpg',
+        '40-20250615032725-lbbfw.jpg',
+    ];
+    $gallery = $extraData['gallery'] ?? ($template->default_gallery ?? $galleryDefaults);
+    if (!is_array($gallery) || empty($gallery)) {
+        $gallery = $galleryDefaults;
+    }
+
+    // Lịch trình mốc thời gian chuẩn hóa
+    $timelineList = $extraData['timeline'] ?? [
+        ['time' => '16:00', 'title' => 'Đón Khách'],
+        ['time' => '16:30', 'title' => 'Nghi lễ'],
+        ['time' => '18:30', 'title' => 'Nhập tiệc'],
+    ];
+
+    // Âm nhạc
+    $musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3');
+
     // 4. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
     $wishSubmitUrl =
@@ -103,9 +131,9 @@
 @endphp
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('html_class', $isEmbed ? '' : 'mayhen_invitation_ladjihe38udhd_scroll_locked')
 @section('title', $pageTitle)
-@section('body_class', 'mayhen_invitation_ladjihe38udhd_body mayhen_invitation_ladjihe38udhd_scroll_locked')
+@section('body_class', 'mayhen_invitation_ladjihe38udhd_body ' . ($isEmbed ? '' : 'mayhen_invitation_ladjihe38udhd_scroll_locked'))
 @section('body_attributes', 'data-target-date=' . $targetTimestamp)
 
 @push('fonts')
@@ -146,9 +174,8 @@
 @section('content')
 
     <!-- Audio Player (Hidden) -->
-    <audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto">
-        <source src="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen-2', 'path' => 'wedding-song.mp3']) }}"
-            type="audio/mpeg">
+    <audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto" data-sync-target="music_url">
+        <source src="{{ $musicUrl }}" type="audio/mpeg">
     </audio>
 
     <!-- Floating Audio Controller (Đĩa than Vinyl & Equalizer) -->
@@ -200,7 +227,8 @@
                             </div>
                             <div id="IMAGE157" class="ladi-element ">
                                 <div class='ladi-image ladi-transition'>
-                                    <div class="ladi-image-background" data-sync-target="cover_photo_url"></div>
+                                    <div class="ladi-image-background" data-sync-target="cover_photo_url"
+                                        style="background-image: url('{{ $resolveAsset($wedding->cover_photo_url ?? null, 'pch06390-20250612143147-l_cdx.jpg') }}');"></div>
                                 </div>
                             </div>
                         </div>
@@ -235,12 +263,13 @@
             <div class='ladi-section-background'></div>
             <div class="ladi-container"></div>
         </div>
-        <div id="SECTION1" class='ladi-section'>
+        <div id="SECTION1" class='ladi-section' data-mayhen-section="couple">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE1" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image'>
-                        <div class="ladi-image-background" data-sync-target="hero_photo_url"></div>
+                        <div class="ladi-image-background" data-sync-target="hero_photo_url"
+                            style="background-image: url('{{ $resolveAsset($extraData['hero_photo_url'] ?? ($wedding->cover_photo_url ?? null), 'pch06390-20250612143147-l_cdx.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="BOX43" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -730,7 +759,7 @@
                 </div>
             </div>
         </div>
-        <div id="SECTION4" class='ladi-section'>
+        <div id="SECTION4" class='ladi-section' data-mayhen-section="groom_family,bride_family">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE117" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -743,13 +772,14 @@
                         <div class="ladi-image-background"></div>
                     </div>
                 </div>
-                <div id="GROUP125" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                <div id="GROUP125" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" data-mayhen-section="groom_family">
                     <div class='ladi-group'>
                         <div id="GROUP116" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="IMAGE115" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-image ladi-transition'>
-                                        <div class="ladi-image-background" data-sync-target="groom_photo_url"></div>
+                                        <div class="ladi-image-background" data-sync-target="groom_photo_url"
+                                            style="background-image: url('{{ $resolveAsset($extraData['groom_photo_url'] ?? null, 'randy-x-quy-44-20250613174641-csxug.jpg') }}');"></div>
                                     </div>
                                 </div>
                                 <div id="BOX60" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -777,13 +807,14 @@
                         </div>
                     </div>
                 </div>
-                <div id="GROUP126" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                <div id="GROUP126" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" data-mayhen-section="bride_family">
                     <div class='ladi-group'>
                         <div id="GROUP127" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-group'>
                                 <div id="IMAGE122" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                                     <div class='ladi-image ladi-transition'>
-                                        <div class="ladi-image-background" data-sync-target="bride_photo_url"></div>
+                                        <div class="ladi-image-background" data-sync-target="bride_photo_url"
+                                            style="background-image: url('{{ $resolveAsset($extraData['bride_photo_url'] ?? null, 'randy-x-quy-57-20250613174642-mztxx.jpg') }}');"></div>
                                     </div>
                                 </div>
                                 <div id="BOX67" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -847,7 +878,8 @@
                         </div>
                         <div id="IMAGE51" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image ladi-transition'>
-                                <div class="ladi-image-background"></div>
+                                <div class="ladi-image-background" data-sync-target="cover_photo_url"
+                                    style="background-image: url('{{ $resolveAsset($wedding->cover_photo_url ?? null, 'pch06390-20250612143147-l_cdx.jpg') }}');"></div>
                             </div>
                         </div>
                     </div>
@@ -906,7 +938,7 @@
                 </div>
             </div>
         </div>
-        <div id="SECTION16" class='ladi-section'>
+        <div id="SECTION16" class='ladi-section' data-mayhen-section="timeline">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE99" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -942,7 +974,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE73" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>16:00<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.0.time">{{ $timelineList[0]['time'] ?? '16:00' }}<br></h3>
                         </div>
                         <div id="IMAGE53" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
@@ -950,7 +982,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE341" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>Đón Khách<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.0.title">{{ $timelineList[0]['title'] ?? 'Đón Khách' }}<br></h3>
                         </div>
                     </div>
                 </div>
@@ -966,7 +998,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE342" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>16:30<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.1.time">{{ $timelineList[1]['time'] ?? '16:30' }}<br></h3>
                         </div>
                         <div id="IMAGE155" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
@@ -974,7 +1006,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE343" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>Nghi lễ<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.1.title">{{ $timelineList[1]['title'] ?? 'Nghi lễ' }}<br></h3>
                         </div>
                     </div>
                 </div>
@@ -990,7 +1022,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE344" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>18:30<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.2.time">{{ $timelineList[2]['time'] ?? '18:30' }}<br></h3>
                         </div>
                         <div id="IMAGE156" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
@@ -998,7 +1030,7 @@
                             </div>
                         </div>
                         <div id="HEADLINE345" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition'>Nhập tiệc<br></h3>
+                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.2.title">{{ $timelineList[2]['title'] ?? 'Nhập tiệc' }}<br></h3>
                         </div>
                     </div>
                 </div>
@@ -1181,42 +1213,49 @@
                 </div>
             </div>
         </div>
-        <div id="SECTION20" class='ladi-section'>
+        <div id="SECTION20" class='ladi-section' data-mayhen-section="album">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE60" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.0"
+                            style="background-image: url('{{ $resolveAsset($gallery[0] ?? null, '32-20250612143135-1dtbl.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE61" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.1"
+                            style="background-image: url('{{ $resolveAsset($gallery[1] ?? null, '46-20250612143135-fhy_q.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE62" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.2"
+                            style="background-image: url('{{ $resolveAsset($gallery[2] ?? null, '44-20250612104305-hasum.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE63" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.3"
+                            style="background-image: url('{{ $resolveAsset($gallery[3] ?? null, 'pch07317-2-20250612143149-kmgsv.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE64" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.4"
+                            style="background-image: url('{{ $resolveAsset($gallery[4] ?? null, 'pch07126-1-20250612144528-nbkc_.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE65" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.5"
+                            style="background-image: url('{{ $resolveAsset($gallery[5] ?? null, '7-20250612143134-siosd.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE66" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.6"
+                            style="background-image: url('{{ $resolveAsset($gallery[6] ?? null, '1-20250612143133-c7hjc.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="BOX42" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1240,27 +1279,32 @@
                 </div>
                 <div id="IMAGE109" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.7"
+                            style="background-image: url('{{ $resolveAsset($gallery[7] ?? null, 'randy-x-quy-57-20250613174642-mztxx.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE110" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.8"
+                            style="background-image: url('{{ $resolveAsset($gallery[8] ?? null, 'randy-x-quy-44-20250613174641-csxug.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE114" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.9"
+                            style="background-image: url('{{ $resolveAsset($gallery[9] ?? null, '40-20250615032725-lbbfw.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE119" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.10"
+                            style="background-image: url('{{ $resolveAsset($gallery[10] ?? ($gallery[0] ?? null), '509896653_2598833090322198_8798670800205250947_n-20250620145608-g0-qg.jpg') }}');"></div>
                     </div>
                 </div>
                 <div id="IMAGE120" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class='ladi-image ladi-transition'>
-                        <div class="ladi-image-background"></div>
+                        <div class="ladi-image-background" data-sync-target="gallery.11"
+                            style="background-image: url('{{ $resolveAsset($gallery[11] ?? ($gallery[1] ?? null), '506419264_1508483753462718_220614301588317422_n-20250620145608-lqpe0.jpg') }}');"></div>
                     </div>
                 </div>
             </div>
@@ -1532,7 +1576,7 @@
                 </div>
             </div>
         </div>
-        <div id="SECTION27" class='ladi-section'>
+        <div id="SECTION27" class='ladi-section' data-mayhen-section="gift">
             <div class='ladi-section-background'></div>
             <div class="ladi-container">
                 <div id="IMAGE132" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
@@ -1790,14 +1834,16 @@
                         </div>
                         <div id="IMAGE136" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
+                                <div class="ladi-image-background" data-sync-target="qr_groom_image"
+                                    style="background-image: url('{{ $resolveAsset($extraData['qr_groom_image'] ?? null, 'qr-code-styling-20241031160420--fwgj.png') }}');"></div>
                             </div>
                         </div>
                         <div id="HEADLINE320" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>CTK: .............................<span
-                                    style="font-weight: normal;"><br></span>STK: <span
-                                    style="font-weight: normal;">999999999999999</span><br>NH: <span
-                                    style="font-weight: normal;">Vietcombank</span><br></h3>
+                            <h3 class='ladi-headline'>
+                                CTK: <span data-sync-target="groom_bank_holder">{{ $extraData['groom_bank_holder'] ?? 'RANDY TRAN' }}</span><br>
+                                STK: <span data-sync-target="groom_bank_account">{{ $extraData['groom_bank_account'] ?? '1012345678' }}</span><br>
+                                NH: <span data-sync-target="groom_bank_name">{{ $extraData['groom_bank_name'] ?? 'Vietcombank' }}</span>
+                            </h3>
                         </div>
                         <div id="HEADLINE321" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline'>Mừng cưới</h3>
@@ -1816,14 +1862,16 @@
                         </div>
                         <div id="IMAGE137" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
+                                <div class="ladi-image-background" data-sync-target="qr_bride_image"
+                                    style="background-image: url('{{ $resolveAsset($extraData['qr_bride_image'] ?? null, 'qr-code-styling-20241031160420--fwgj.png') }}');"></div>
                             </div>
                         </div>
                         <div id="HEADLINE323" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline'>CTK: .............................<span
-                                    style="font-weight: normal;"><br></span>STK: <span
-                                    style="font-weight: normal;">999999999999999</span><br>NH: <span
-                                    style="font-weight: normal;">Vietcombank</span><br></h3>
+                            <h3 class='ladi-headline'>
+                                CTK: <span data-sync-target="bride_bank_holder">{{ $extraData['bride_bank_holder'] ?? 'MINH QUY NGUYEN' }}</span><br>
+                                STK: <span data-sync-target="bride_bank_account">{{ $extraData['bride_bank_account'] ?? '1903888899' }}</span><br>
+                                NH: <span data-sync-target="bride_bank_name">{{ $extraData['bride_bank_name'] ?? 'Techcombank' }}</span>
+                            </h3>
                         </div>
                         <div id="HEADLINE324" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                             <h3 class='ladi-headline'>Mừng cưới</h3>

@@ -211,6 +211,18 @@ class InvitationTemplateSeeder extends Seeder
                     'font_serif' => 'Philosopher, Playfair Display',
                     'animation' => 'envelope-editorial-black-white',
                     'style_layout' => 'black-and-white-editorial',
+                    'gallery' => [
+                        '32-20250612143135-1dtbl.jpg',
+                        '46-20250612143135-fhy_q.jpg',
+                        '44-20250612104305-hasum.jpg',
+                        'pch07317-2-20250612143149-kmgsv.jpg',
+                        'pch07126-1-20250612144528-nbkc_.jpg',
+                        '7-20250612143134-siosd.jpg',
+                        '1-20250612143133-c7hjc.jpg',
+                        'randy-x-quy-57-20250613174642-mztxx.jpg',
+                        'randy-x-quy-44-20250613174641-csxug.jpg',
+                        '40-20250615032725-lbbfw.jpg',
+                    ],
                     'required_inputs' => [
                         'basic_info',
                         'wedding_event',
