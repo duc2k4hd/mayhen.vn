@@ -108,10 +108,23 @@
     }
 
     // Lịch trình mốc thời gian chuẩn hóa
-    $timelineList = $extraData['timeline'] ?? [
-        ['time' => '16:00', 'title' => 'Đón Khách'],
-        ['time' => '16:30', 'title' => 'Nghi lễ'],
-        ['time' => '18:30', 'title' => 'Nhập tiệc'],
+    $defaultTimeline = [
+        ['time' => '09:00', 'title' => 'Lễ Vu Quy (Nhà Gái)'],
+        ['time' => '16:00', 'title' => 'Đón Khách Tại Sảnh Tiệc'],
+        ['time' => '17:30', 'title' => 'Cử Hành Hôn Lễ'],
+        ['time' => '18:30', 'title' => 'Khai Tiệc Mừng Cưới'],
+    ];
+    $timelineList = $extraData['timeline'] ?? ($template->default_config['timeline'] ?? $defaultTimeline);
+    if (!is_array($timelineList) || empty($timelineList)) {
+        $timelineList = $defaultTimeline;
+    }
+    $timelineIcons = [
+        'mau-18-hoa-2-1-20250613161852-1cvxp.png',
+        'mau-18-hoa-2-2-20250613161852-uifno.png',
+        'mau-18-hoa-2-3-20250613161852-jhmsq.png',
+        'mau-18-hoa-2-1-20250613161852-1cvxp.png',
+        'mau-18-hoa-2-2-20250613161852-uifno.png',
+        'mau-18-hoa-2-3-20250613161852-jhmsq.png',
     ];
 
     // Âm nhạc
@@ -967,7 +980,8 @@
                 <div id="HEADLINE72" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
                     <h3 class='ladi-headline ladi-transition'>Timeline</h3>
                 </div>
-                <div id="IMAGE55" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
+                {{-- Ảnh cưới to chiếm diện tích ở timeline đã được ẩn để nhường trọn không gian cho lịch trình thanh lịch --}}
+                <div id="IMAGE55" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim" style="display: none !important;">
                     <div class='ladi-image ladi-transition'>
                         <div class="ladi-image-background"></div>
                     </div>
@@ -977,77 +991,30 @@
                         <div class="ladi-image-background"></div>
                     </div>
                 </div>
-                <div id="GROUP142" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-group'>
-                        <div id="LINE16" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-line'>
-                                <div class="ladi-line-container"></div>
+
+                {{-- Khung Timeline Đồng Bộ Trực Tiếp Thời Gian Thực --}}
+                <div class="mayhen_hacbach2_timeline_container">
+                    @foreach($timelineList as $tIdx => $tItem)
+                        @php
+                            $tTime = $tItem['time'] ?? '';
+                            $tTitle = $tItem['title'] ?? '';
+                            $tIcon = $timelineIcons[$tIdx % count($timelineIcons)];
+                        @endphp
+                        <div class="mayhen_hacbach2_timeline_row">
+                            <div class="mayhen_hacbach2_timeline_time" data-sync-target="timeline.{{ $tIdx }}.time">
+                                {{ $tTime }}
+                            </div>
+                            <div class="mayhen_hacbach2_timeline_divider">
+                                <div class="mayhen_hacbach2_timeline_icon" style="background-image: url('{{ $resolveAsset($tIcon, $tIcon) }}');"></div>
+                                @if(!$loop->last)
+                                    <div class="mayhen_hacbach2_timeline_spine"></div>
+                                @endif
+                            </div>
+                            <div class="mayhen_hacbach2_timeline_title" data-sync-target="timeline.{{ $tIdx }}.title">
+                                {{ $tTitle }}
                             </div>
                         </div>
-                        <div id="PARAGRAPH30" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-paragraph ladi-transition'>Checkin với photobooth và gửi lời chúc đến CDCR
-                            </div>
-                        </div>
-                        <div id="HEADLINE73" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.0.time">{{ $timelineList[0]['time'] ?? '16:00' }}<br></h3>
-                        </div>
-                        <div id="IMAGE53" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
-                            </div>
-                        </div>
-                        <div id="HEADLINE341" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.0.title">{{ $timelineList[0]['title'] ?? 'Đón Khách' }}<br></h3>
-                        </div>
-                    </div>
-                </div>
-                <div id="GROUP143" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-group'>
-                        <div id="LINE81" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-line'>
-                                <div class="ladi-line-container"></div>
-                            </div>
-                        </div>
-                        <div id="PARAGRAPH81" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-paragraph ladi-transition'>Chứng kiến khoảnh khắc thiêng liêng cùng CDCR
-                            </div>
-                        </div>
-                        <div id="HEADLINE342" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.1.time">{{ $timelineList[1]['time'] ?? '16:30' }}<br></h3>
-                        </div>
-                        <div id="IMAGE155" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
-                            </div>
-                        </div>
-                        <div id="HEADLINE343" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.1.title">{{ $timelineList[1]['title'] ?? 'Nghi lễ' }}<br></h3>
-                        </div>
-                    </div>
-                </div>
-                <div id="GROUP144" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                    <div class='ladi-group'>
-                        <div id="LINE82" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-line'>
-                                <div class="ladi-line-container"></div>
-                            </div>
-                        </div>
-                        <div id="PARAGRAPH82" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-paragraph ladi-transition'>Cùng nhau khai tiệc và nâng ly chúc mừng CDCR
-                            </div>
-                        </div>
-                        <div id="HEADLINE344" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.2.time">{{ $timelineList[2]['time'] ?? '18:30' }}<br></h3>
-                        </div>
-                        <div id="IMAGE156" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class='ladi-image'>
-                                <div class="ladi-image-background"></div>
-                            </div>
-                        </div>
-                        <div id="HEADLINE345" class="ladi-element mayhen_invitation_ladjihe38udhd_box_anim">
-                            <h3 class='ladi-headline ladi-transition' data-sync-target="timeline.2.title">{{ $timelineList[2]['title'] ?? 'Nhập tiệc' }}<br></h3>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>

@@ -12796,3 +12796,177 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     z-index: 10 !important;
     transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1), top 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
+
+/* ========================================================
+   TIMELINE (LỊCH TRÌNH HÔN LỄ) CHUẨN QUIET LUXURY EDITORIAL
+   ======================================================== */
+#IMAGE55 {
+    display: none !important;
+}
+
+#SECTION16 {
+    height: auto !important;
+    min-height: 520px !important;
+    padding-top: 25px !important;
+    padding-bottom: 50px !important;
+    position: relative !important;
+}
+
+#SECTION16 .ladi-container {
+    height: auto !important;
+    min-height: inherit !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+#SECTION16 #BOX34 {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    width: calc(100% - 20px) !important;
+    height: calc(100% - 20px) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+
+#SECTION16 #BOX34 > .ladi-box {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#SECTION16 #HEADLINE72 {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+    margin-bottom: 30px !important;
+    z-index: 5 !important;
+}
+
+#SECTION16 #HEADLINE72 > .ladi-headline {
+    font-size: clamp(38px, 9vw, 56px) !important;
+    line-height: 1.2 !important;
+}
+
+/* Container các mốc timeline */
+.mayhen_hacbach2_timeline_container {
+    position: relative !important;
+    z-index: 10 !important;
+    width: 100% !important;
+    max-width: 370px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_container {
+        max-width: 560px !important;
+        gap: 28px !important;
+        padding: 0 20px !important;
+    }
+}
+
+.mayhen_hacbach2_timeline_row {
+    display: grid !important;
+    grid-template-columns: 82px 48px 1fr !important;
+    align-items: center !important;
+    position: relative !important;
+    min-height: 50px !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_row {
+        grid-template-columns: 110px 56px 1fr !important;
+    }
+}
+
+.mayhen_hacbach2_timeline_time {
+    font-family: OCEkWhuqFuIHbEggYmdhcmFtbkLXJlZVsYXItMjAyNTAzMjAwNDAMzktcJucQudHRm, 'EB Garamond', 'Playfair Display', serif !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    text-align: right !important;
+    padding-right: 12px !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1.2 !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_time {
+        font-size: 23px !important;
+        padding-right: 16px !important;
+    }
+}
+
+.mayhen_hacbach2_timeline_divider {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    height: 100% !important;
+    min-height: 48px !important;
+}
+
+.mayhen_hacbach2_timeline_icon {
+    width: 44px !important;
+    height: 44px !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    flex-shrink: 0 !important;
+    z-index: 2 !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_icon {
+        width: 52px !important;
+        height: 52px !important;
+    }
+}
+
+.mayhen_hacbach2_timeline_spine {
+    position: absolute !important;
+    top: 40px !important;
+    bottom: -26px !important;
+    width: 1px !important;
+    border-left: 1.5px dashed rgba(26, 26, 26, 0.35) !important;
+    z-index: 1 !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_spine {
+        top: 48px !important;
+        bottom: -32px !important;
+    }
+}
+
+.mayhen_hacbach2_timeline_title {
+    font-family: OCEkWhuqFuIHbEggYmdhcmFtbkLXJlZVsYXItMjAyNTAzMjAwNDAMzktcJucQudHRm, 'EB Garamond', 'Playfair Display', serif !important;
+    font-size: 15.5px !important;
+    font-weight: 600 !important;
+    color: #1a1a1a !important;
+    text-align: left !important;
+    padding-left: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_title {
+        font-size: 18px !important;
+        padding-left: 18px !important;
+    }
+}

@@ -2665,6 +2665,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Syntax JS `node -c`: Passed.
                      - Feature Test: Passed 3/3 (51 assertions). Cache cleared.
 
+            98. **Đồng Bộ Hoàn Chỉnh Lịch Trình Timeline Chuẩn Studio & Ẩn Bức Ảnh Cưới Thừa Ở SECTION16**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng phản hồi: "Lịch trình đang không khớp và thừa 1 ảnh" trong mẫu `hac-bach-trao-duyen-2`:
+                    1. *Thừa 1 ảnh*: Ở section Timeline (`#SECTION16`), có một bức ảnh cưới chụp đôi rất lớn (`#IMAGE55`) choán hết màn hình, đẩy nội dung lịch trình xuống sâu. Bức ảnh này bị hardcode tĩnh, trong Studio Tạo Thiệp (Bước 5) hoàn toàn không có trường tải ảnh cho mục Timeline.
+                    2. *Lịch trình không khớp*: Trong Studio Editor, Bước 5 định nghĩa 4 mốc (09:00 - Lễ Vu Quy, 16:00 - Đón Khách Tại Sảnh Tiệc, 17:30 - Cử Hành Hôn Lễ, 18:30 - Khai Tiệc Mừng Cưới). Nhưng mẫu thiệp chỉ hardcode 3 khối group tĩnh (`GROUP142`, `GROUP143`, `GROUP144`), làm mất hẳn mốc thứ 4. Ngoài ra, mỗi dòng cũ còn chứa text mô tả cố định lạc quẻ (`PARAGRAPH30` "Checkin với photobooth...", `PARAGRAPH81` "Chứng kiến khoảnh khắc...", `PARAGRAPH82` "Cùng nhau khai tiệc...").
+                - **Giải pháp hoàn thiện**:
+                  1. *`InvitationTemplateSeeder.php`*: Bổ sung mảng `timeline` gồm 4 mốc chuẩn vào `default_config` của mẫu thiệp `hac-bach-trao-duyen-2`. Đã chạy seeder cập nhật database.
+                  2. *`template.blade.php`*:
+                     - Cập nhật fallback `$defaultTimeline` đủ 4 mốc chuẩn đồng bộ với `schema.json`.
+                     - Ẩn triệt để ảnh thừa `#IMAGE55` (`display: none !important;`).
+                     - Thay thế toàn bộ cụm `GROUP142`, `GROUP143`, `GROUP144` và các đoạn text mô tả hardcode cũ bằng container timeline động `.mayhen_hacbach2_timeline_container` lặp qua `@foreach($timelineList as $tIdx => $tItem)`.
+                     - Mỗi mốc gồm: Cột giờ (`data-sync-target="timeline.{{ $tIdx }}.time"`), Icon hoa văn vẽ tay nghệ thuật ở giữa kèm spine nét đứt, và Tiêu đề mốc (`data-sync-target="timeline.{{ $tIdx }}.title"`).
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Thêm quy tắc CSS chuẩn Quiet Luxury Editorial cho `.mayhen_hacbach2_timeline_*`.
+                     - Căn chỉnh chiều cao `#SECTION16` linh hoạt (`height: auto !important; min-height: 520px;`) và viền nét đứt `#BOX34` tự động co giãn ôm trọn các mốc lịch trình.
+                     - Font chữ Garamond cổ điển quý phái, hiển thị đều đặn, sắc nét và cân đối trên cả Desktop và Mobile.
+                  4. *Kiểm thử & Định dạng*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (64 assertions).
+                     - Pint format: Passed.
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

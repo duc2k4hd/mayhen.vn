@@ -223,6 +223,12 @@ class InvitationTemplateSeeder extends Seeder
                         'randy-x-quy-44-20250613174641-csxug.jpg',
                         '40-20250615032725-lbbfw.jpg',
                     ],
+                    'timeline' => [
+                        ['time' => '09:00', 'title' => 'Lễ Vu Quy (Nhà Gái)'],
+                        ['time' => '16:00', 'title' => 'Đón Khách Tại Sảnh Tiệc'],
+                        ['time' => '17:30', 'title' => 'Cử Hành Hôn Lễ'],
+                        ['time' => '18:30', 'title' => 'Khai Tiệc Mừng Cưới'],
+                    ],
                     'required_inputs' => [
                         'basic_info',
                         'wedding_event',
