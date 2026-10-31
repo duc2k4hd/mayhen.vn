@@ -1010,29 +1010,39 @@
                     </div>
                 </div>
 
-                {{-- Khung Timeline Đồng Bộ Trực Tiếp Thời Gian Thực --}}
-                <div class="mayhen_hacbach2_timeline_container">
-                    @foreach($timelineList as $tIdx => $tItem)
-                        @php
-                            $tTime = $tItem['time'] ?? '';
-                            $tTitle = $tItem['title'] ?? '';
-                            $tIcon = $timelineIcons[$tIdx % count($timelineIcons)];
-                        @endphp
-                        <div class="mayhen_hacbach2_timeline_row">
-                            <div class="mayhen_hacbach2_timeline_time" data-sync-target="timeline.{{ $tIdx }}.time">
-                                {{ $tTime }}
+                {{-- Khung Bố Cục Timeline (Cột Trái Lịch Trình - Cột Phải Ảnh Cưới) Chuẩn Quiet Luxury Editorial --}}
+                <div class="mayhen_hacbach2_timeline_layout">
+                    <div class="mayhen_hacbach2_timeline_container">
+                        @foreach($timelineList as $tIdx => $tItem)
+                            @php
+                                $tTime = $tItem['time'] ?? '';
+                                $tTitle = $tItem['title'] ?? '';
+                                $tIcon = $timelineIcons[$tIdx % count($timelineIcons)];
+                            @endphp
+                            <div class="mayhen_hacbach2_timeline_row">
+                                <div class="mayhen_hacbach2_timeline_time" data-sync-target="timeline.{{ $tIdx }}.time">
+                                    {{ $tTime }}
+                                </div>
+                                <div class="mayhen_hacbach2_timeline_divider">
+                                    <div class="mayhen_hacbach2_timeline_icon" style="background-image: url('{{ $resolveAsset($tIcon, $tIcon) }}');"></div>
+                                    @if(!$loop->last)
+                                        <div class="mayhen_hacbach2_timeline_spine"></div>
+                                    @endif
+                                </div>
+                                <div class="mayhen_hacbach2_timeline_title" data-sync-target="timeline.{{ $tIdx }}.title">
+                                    {{ $tTitle }}
+                                </div>
                             </div>
-                            <div class="mayhen_hacbach2_timeline_divider">
-                                <div class="mayhen_hacbach2_timeline_icon" style="background-image: url('{{ $resolveAsset($tIcon, $tIcon) }}');"></div>
-                                @if(!$loop->last)
-                                    <div class="mayhen_hacbach2_timeline_spine"></div>
-                                @endif
-                            </div>
-                            <div class="mayhen_hacbach2_timeline_title" data-sync-target="timeline.{{ $tIdx }}.title">
-                                {{ $tTitle }}
-                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Bức ảnh cưới dọc nghệ thuật tô điểm không gian lịch trình --}}
+                    <div class="mayhen_hacbach2_timeline_photo_wrap">
+                        <div class="mayhen_hacbach2_timeline_photo"
+                             data-sync-target="timeline_photo_url"
+                             style="background-image: url('{{ $resolveAsset($extraData['timeline_photo_url'] ?? null, 'pch06204-20250612110330-deq-b.jpg') }}');">
                         </div>
-                    @endforeach
+                    </div>
                 </div>
             </div>
         </div>

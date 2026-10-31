@@ -265,6 +265,14 @@
             { "key": "time", "label": "Giờ", "type": "text" },
             { "key": "title", "label": "Nội dung", "type": "text" }
           ]
+        },
+        {
+          "key": "wedding.extra_data.timeline_photo_url",
+          "label": "Ảnh cưới bên cạnh lịch trình",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hac-bach-trao-duyen-2/assets/pch06204-20250612110330-deq-b.jpg",
+          "help": "Bức ảnh cưới dọc trang nhã xuất hiện bên cạnh lịch trình hôn lễ"
         }
       ]
     },

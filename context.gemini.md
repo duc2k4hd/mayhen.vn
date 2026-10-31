@@ -2706,6 +2706,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (64 assertions).
                      - Cache hệ thống: Cleared.
 
+            100. **Tái Thiết Kế Bố Cục Timeline 2 Cột Đối Xứng (Trái Lịch Trình - Phải Ảnh Cưới Dọc) Khắc Phục Hoàn Toàn Cảm Giác Trống Trải**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Người dùng gửi ảnh chụp màn hình máy tính/desktop (`media_1793431851518_d0ad4ad5.jpg`) phản hồi: "Lịch trình tôi thấy cứ trống trống, bản trước có 1 cái ảnh nằm bên phải cũng đẹp mà".
+                  * *Nguyên nhân*: Khi xem trên màn hình ngang (desktop 960px), nếu chỉ hiển thị 4 dòng timeline ở giữa thì hai bên trái và phải bị thừa rất nhiều khoảng trống. Trong bản gốc LadiPage trước đây, bên phải có một bức ảnh cưới dọc rất đẹp (`pch06204-20250612110330-deq-b.jpg`), giúp cân bằng thị giác hoàn hảo.
+                - **Giải pháp hoàn thiện**:
+                  1. *`schema.json`*: Bổ sung trường `wedding.extra_data.timeline_photo_url` vào section `timeline`, cho phép người dùng tùy chọn thay đổi ảnh cưới ở lịch trình hoặc dùng ảnh mặc định.
+                  2. *`template.blade.php`*:
+                     - Xây dựng bố cục 2 cột `.mayhen_hacbach2_timeline_layout`:
+                       * Cột bên trái: Danh sách các mốc thời gian (`.mayhen_hacbach2_timeline_container`) 4 mốc chuẩn, icon hoa văn vẽ tay, spine nét đứt, hỗ trợ Live Sync thời gian thực.
+                       * Cột bên phải: Khung ảnh cưới dọc nghệ thuật (`.mayhen_hacbach2_timeline_photo_wrap`) với ảnh bo tròn góc 20px, có `data-sync-target="timeline_photo_url"`.
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Desktop (`min-width: 768px`): Bố cục flex 2 cột ngang đối xứng (`left: Lịch trình 55%`, `right: Ảnh cưới 340px x 460px`), lấp đầy khung 960px cực kỳ sang trọng, ấm cúng và loại bỏ hoàn toàn cảm giác trống trải.
+                     - Mobile (`max-width: 767px`): Xếp theo chiều dọc tự nhiên — Lịch trình hiển thị trọn vẹn ở trên (không bị che khuất như bản cũ), và bức ảnh cưới nằm gọn gàng bên dưới bổ trợ cho trang thiệp thêm đầy đặn cảm xúc.
+                  4. *Kiểm thử*:
+                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

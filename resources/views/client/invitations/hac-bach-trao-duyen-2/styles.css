@@ -12806,9 +12806,9 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
 
 #SECTION16 {
     height: auto !important;
-    min-height: 520px !important;
+    min-height: 600px !important;
     padding-top: 25px !important;
-    padding-bottom: 50px !important;
+    padding-bottom: 40px !important;
     position: relative !important;
 }
 
@@ -12845,7 +12845,7 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     width: 100% !important;
     text-align: center !important;
     margin-top: 20px !important;
-    margin-bottom: 30px !important;
+    margin-bottom: 25px !important;
     z-index: 5 !important;
 }
 
@@ -12854,25 +12854,96 @@ body.mayhen_invitation_ladjihe38udhd_scroll_locked .button_keoXuong {
     line-height: 1.2 !important;
 }
 
-/* Container các mốc timeline */
+/* Bố cục Timeline 2 cột (Trái Lịch trình - Phải Ảnh cưới) */
+.mayhen_hacbach2_timeline_layout {
+    position: relative !important;
+    z-index: 10 !important;
+    width: 100% !important;
+    max-width: 390px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 28px !important;
+    padding: 0 10px 20px !important;
+    box-sizing: border-box !important;
+}
+
+@media (min-width: 768px) {
+    #SECTION16 {
+        min-height: 640px !important;
+        padding-bottom: 45px !important;
+    }
+
+    .mayhen_hacbach2_timeline_layout {
+        max-width: 880px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 40px !important;
+        padding: 0 25px 30px !important;
+    }
+}
+
+/* Cột danh sách các mốc timeline */
 .mayhen_hacbach2_timeline_container {
     position: relative !important;
     z-index: 10 !important;
     width: 100% !important;
-    max-width: 370px !important;
-    margin: 0 auto !important;
+    max-width: 360px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 22px !important;
-    padding: 0 10px !important;
     box-sizing: border-box !important;
 }
 
 @media (min-width: 768px) {
     .mayhen_hacbach2_timeline_container {
-        max-width: 560px !important;
+        flex: 1 1 55% !important;
+        max-width: 480px !important;
         gap: 28px !important;
-        padding: 0 20px !important;
+    }
+}
+
+/* Cột bức ảnh cưới bên cạnh lịch trình */
+.mayhen_hacbach2_timeline_photo_wrap {
+    width: 100% !important;
+    max-width: 340px !important;
+    height: 300px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 5px !important;
+}
+
+.mayhen_hacbach2_timeline_photo {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 18px !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(26, 26, 26, 0.08) !important;
+    transition: transform 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+.mayhen_hacbach2_timeline_photo:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12) !important;
+}
+
+@media (min-width: 768px) {
+    .mayhen_hacbach2_timeline_photo_wrap {
+        flex: 0 0 340px !important;
+        max-width: 360px !important;
+        height: 460px !important;
+        margin-top: 0 !important;
+    }
+
+    .mayhen_hacbach2_timeline_photo {
+        border-radius: 20px !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.1) !important;
     }
 }
 
