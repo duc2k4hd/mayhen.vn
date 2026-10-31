@@ -1118,6 +1118,79 @@ const initEditor = () => {
     // ----------------------------------------------------
     const qrRequestTokens = { groom_qr: 0, bride_qr: 0 };
     const qrUpdateTimers = new Map();
+    const nameNormalizeTimers = new Map();
+
+    /**
+     * Chuẩn hóa họ tên tiếng Việt: chuyển thành chữ HOA KHÔNG DẤU, loại bỏ ký tự lạ.
+     */
+    const normalizeVietnameseName = (str) => {
+        if (!str || typeof str !== 'string') return '';
+        let res = str;
+
+        res = res.replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a');
+        res = res.replace(/[èéẹẻẽêềếệểễ]/g, 'e');
+        res = res.replace(/[ìíịỉĩ]/g, 'i');
+        res = res.replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o');
+        res = res.replace(/[ùúụủũưừứựửữ]/g, 'u');
+        res = res.replace(/[ỳýỵỷỹ]/g, 'y');
+        res = res.replace(/đ/g, 'd');
+        res = res.replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'A');
+        res = res.replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'E');
+        res = res.replace(/[ÌÍỊỈĨ]/g, 'I');
+        res = res.replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'O');
+        res = res.replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'U');
+        res = res.replace(/[ỲÝỴỶỸ]/g, 'Y');
+        res = res.replace(/Đ/g, 'D');
+
+        res = res.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        res = res.replace(/[^a-zA-Z0-9\s]/g, ' ');
+        res = res.replace(/\s+/g, ' ').trim();
+
+        return res.toUpperCase();
+    };
+
+    /**
+     * Chuyển mã nguồn SVG từ API VietQR thành Data URL an toàn trên mọi trình duyệt.
+     * Khắc phục triệt để lỗi createImageBitmap không hỗ trợ SVG blob.
+     */
+    const renderSvgToDataUrl = (svgText) => {
+        return new Promise((resolve) => {
+            let fallbackDataUrl = '';
+            try {
+                fallbackDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgText)));
+            } catch (e) {
+                fallbackDataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgText);
+            }
+
+            const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+            const blobUrl = URL.createObjectURL(svgBlob);
+            const img = new Image();
+
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 600;
+                    canvas.height = img.naturalHeight || 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const pngData = canvas.toDataURL('image/png');
+                    URL.revokeObjectURL(blobUrl);
+                    resolve(pngData);
+                } catch (err) {
+                    URL.revokeObjectURL(blobUrl);
+                    resolve(fallbackDataUrl);
+                }
+            };
+
+            img.onerror = () => {
+                URL.revokeObjectURL(blobUrl);
+                resolve(fallbackDataUrl);
+            };
+
+            img.src = blobUrl;
+        });
+    };
+
     const updateVietQr = async (side) => {
         const bankSelect = $(`.mayhen_vietqr_bank_select[data-qr-side="${side}"]`);
         const accInput = $(`.mayhen_vietqr_acc_input[data-qr-side="${side}"]`);
@@ -1127,16 +1200,28 @@ const initEditor = () => {
 
         const bankCode = bankSelect.value.trim();
         const accountNo = accInput.value.trim();
-        const accountName = nameInput ? nameInput.value.trim().toUpperCase() : '';
+        const rawName = nameInput ? nameInput.value.trim() : '';
+        const accountName = normalizeVietnameseName(rawName);
+
         const targetInputId = bankSelect.getAttribute('data-target-input');
         const targetInput = document.getElementById(targetInputId);
         const targetThumb = document.getElementById('preview_thumb_' + targetInputId);
         const statusEl = document.getElementById('status_' + targetInputId);
         const requestToken = ++qrRequestTokens[side];
 
-        if (!bankCode || !accountNo) return;
+        if (!bankCode || !accountNo) {
+            if (statusEl) {
+                statusEl.textContent = 'Vui lòng chọn ngân hàng và số tài khoản';
+                statusEl.style.color = '#F59E0B';
+            }
+            return;
+        }
 
-        // Tải mã QR rồi lưu vào dữ liệu thiệp dưới dạng PNG nội tuyến để thiệp không phụ thuộc máy chủ ảnh bên ngoài.
+        if (statusEl) {
+            statusEl.textContent = 'Đang tạo mã VietQR...';
+            statusEl.style.color = '#3B82F6';
+        }
+
         let qrUrl = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.svg`;
         if (accountName) {
             qrUrl += `?accountName=${encodeURIComponent(accountName)}`;
@@ -1144,22 +1229,19 @@ const initEditor = () => {
 
         try {
             const response = await fetch(qrUrl, { mode: 'cors' });
-            if (!response.ok) throw new Error('Không thể tạo mã QR');
+            if (!response.ok) throw new Error('Không thể tải mã VietQR');
             if (requestToken !== qrRequestTokens[side]) return;
 
-            const qrBitmap = await createImageBitmap(await response.blob());
-            if (requestToken !== qrRequestTokens[side]) {
-                qrBitmap.close();
-                return;
+            const svgText = await response.text();
+            if (!svgText || !svgText.includes('<svg')) {
+                throw new Error('Định dạng ảnh VietQR không hợp lệ');
             }
-            const canvas = document.createElement('canvas');
-            canvas.width = qrBitmap.width;
-            canvas.height = qrBitmap.height;
-            canvas.getContext('2d').drawImage(qrBitmap, 0, 0);
-            qrBitmap.close();
-            const localQrData = canvas.toDataURL('image/png');
+
+            const localQrData = await renderSvgToDataUrl(svgText);
+            if (requestToken !== qrRequestTokens[side]) return;
+
             if (statusEl) {
-                statusEl.textContent = '✓ Đã cập nhật mã QR';
+                statusEl.textContent = '✓ Đã tạo mã VietQR thành công';
                 statusEl.style.color = '#10B981';
             }
 
@@ -1214,24 +1296,25 @@ const initEditor = () => {
         } else if (targetNameId) {
             const targetEl = document.getElementById(targetNameId);
             if (targetEl) {
-                const valUpper = el.value.trim().toUpperCase();
-                targetEl.value = valUpper;
+                const valNorm = normalizeVietnameseName(el.value);
+                targetEl.value = valNorm;
                 const syncKey = targetEl.getAttribute('data-sync-key');
                 if (syncKey) {
-                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: valUpper } });
-                    sendSyncMessage(syncKey, valUpper);
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: valNorm } });
+                    sendSyncMessage(syncKey, valNorm);
                 }
             }
         }
     };
 
-    $$('.mayhen_vietqr_bank_select, .mayhen_vietqr_acc_input, .mayhen_vietqr_name_input').forEach(el => {
+    // Lắng nghe sự kiện cho Ngân hàng và Số tài khoản
+    $$('.mayhen_vietqr_bank_select, .mayhen_vietqr_acc_input').forEach(el => {
         const updateQrAfterPause = () => {
             syncVietQrHiddenField(el);
             const side = el.getAttribute('data-qr-side');
             if (!side) return;
             window.clearTimeout(qrUpdateTimers.get(side));
-            qrUpdateTimers.set(side, window.setTimeout(() => updateVietQr(side), 450));
+            qrUpdateTimers.set(side, window.setTimeout(() => updateVietQr(side), 500));
         };
         if (el.tagName === 'SELECT') {
             on(el, 'change', updateQrAfterPause);
@@ -1241,6 +1324,58 @@ const initEditor = () => {
         }
     });
 
+    // Lắng nghe sự kiện cho Tên chủ tài khoản: chuẩn hóa tự động sau 5s nếu chưa không dấu viết hoa
+    $$('.mayhen_vietqr_name_input').forEach(nameInput => {
+        const side = nameInput.getAttribute('data-qr-side');
+
+        const applyNameNormalization = (forceUpdateQr = true) => {
+            const curVal = nameInput.value;
+            if (!curVal) return;
+            const normalized = normalizeVietnameseName(curVal);
+            // Nếu chưa viết hoa không dấu thì mới tự động chuyển đổi
+            if (curVal !== normalized) {
+                nameInput.value = normalized;
+                syncVietQrHiddenField(nameInput);
+                if (forceUpdateQr && side) {
+                    window.clearTimeout(qrUpdateTimers.get(side));
+                    updateVietQr(side);
+                }
+            }
+        };
+
+        on(nameInput, 'input', () => {
+            syncVietQrHiddenField(nameInput);
+            if (!side) return;
+
+            if (nameNormalizeTimers.has(side)) {
+                window.clearTimeout(nameNormalizeTimers.get(side));
+            }
+
+            const curVal = nameInput.value;
+            const normalized = normalizeVietnameseName(curVal);
+
+            // Nếu đã không dấu và viết hoa rồi thì thôi, tạo VietQR sau 500ms
+            if (curVal === normalized) {
+                window.clearTimeout(qrUpdateTimers.get(side));
+                qrUpdateTimers.set(side, window.setTimeout(() => updateVietQr(side), 500));
+            } else {
+                // Nếu chưa chuẩn hóa: tự chuẩn hóa khi nhập xong sau đúng 5s
+                const timer = window.setTimeout(() => {
+                    applyNameNormalization(true);
+                }, 5000);
+                nameNormalizeTimers.set(side, timer);
+            }
+        });
+
+        // Khi blur khỏi ô tên: chuẩn hóa ngay lập tức
+        on(nameInput, 'blur', () => {
+            if (nameNormalizeTimers.has(side)) {
+                window.clearTimeout(nameNormalizeTimers.get(side));
+            }
+            applyNameNormalization(true);
+        });
+    });
+
     $$('.mayhen_btn_gen_vietqr').forEach(btn => {
         on(btn, 'click', () => {
             const side = btn.getAttribute('data-qr-side');
@@ -1248,9 +1383,17 @@ const initEditor = () => {
                 const bankSelect = $(`.mayhen_vietqr_bank_select[data-qr-side="${side}"]`);
                 const accInput = $(`.mayhen_vietqr_acc_input[data-qr-side="${side}"]`);
                 const nameInput = $(`.mayhen_vietqr_name_input[data-qr-side="${side}"]`);
+
+                if (nameInput) {
+                    const curVal = nameInput.value;
+                    const normalized = normalizeVietnameseName(curVal);
+                    if (curVal !== normalized) {
+                        nameInput.value = normalized;
+                    }
+                    syncVietQrHiddenField(nameInput);
+                }
                 if (bankSelect) syncVietQrHiddenField(bankSelect);
                 if (accInput) syncVietQrHiddenField(accInput);
-                if (nameInput) syncVietQrHiddenField(nameInput);
 
                 window.clearTimeout(qrUpdateTimers.get(side));
                 updateVietQr(side);

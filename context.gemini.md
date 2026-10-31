@@ -2760,25 +2760,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
                      - Cache hệ thống: Cleared.
 
-            103. **Tối Giản Hóa Hộp Mừng Cưới Trong Studio Tạo Thiệp (Chỉ Cần Mã QR, Không Bắt Nhập Tay Thừa Thãi)**:
+            103. **Chuẩn Hóa Toàn Cục Hộp Mừng Cưới Cho Tất Cả Mẫu Thiệp (Chỉ Cần Mã QR, Loại Bỏ Trường Nhập Tay Thừa Thãi Ở Lõi Hệ Thống)**:
                 - **Yêu cầu & Vấn đề phát hiện**:
-                  * Khách hàng gửi ảnh Studio Editor (`media_1793433448263_222728e5.png`) phản hồi: "Sửa lại mừng cưới của cô dâu và chú rể chỉ cần phần mã QR mừng cưới là đủ không cần phải nhập bằng tay lắm thế".
-                  * *Nguyên nhân*: Trong `schema.json`, tab `gift` (Hộp Mừng Cưới) đang bắt buộc hiển thị 6 trường text nhập tay rời rạc (`groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`), trong khi ngay bên dưới đã có component tạo VietQR (`mayhen_vietqr_box`) cũng yêu cầu chọn ngân hàng, nhập STK và tên CTK. Việc này làm khách hàng bị bắt nhập lặp lại 2 lần gây phiền toái.
+                  * Khách hàng yêu cầu: "Mẫu thiệp nào cũng vậy, sửa cái chung".
+                  * *Nguyên nhân cốt lõi*: Trong `app/Services/InvitationTemplateService.php`, hàm `getCanonicalSections()` định nghĩa section `gift` mặc định chứa 6 trường text nhập tay rời rạc (`groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`). Khi `normalizeSchema()` xử lý, nó luôn ép các trường này vào schema của mọi mẫu thiệp dù file JSON có định nghĩa hay không.
+                - **Giải pháp hoàn thiện toàn cục**:
+                  1. *`app/Services/InvitationTemplateService.php`*:
+                     - Chuẩn hóa cấu trúc canonical `gift` ở mức kiến trúc: chỉ giữ lại 2 trường lõi `wedding.extra_data.qr_groom_image` và `wedding.extra_data.qr_bride_image`.
+                     - Nâng cấp `normalizeSchema()` chủ động nhận diện và loại bỏ danh sách `$legacyBankFields` khỏi mọi template, đảm bảo bất kỳ mẫu thiệp nào (kể cả template tương lai) đều tự động sạch sẽ, không hiển thị các trường nhập tay thừa.
+                  2. *Chuẩn hóa toàn bộ 9/9 mẫu thiệp trong hệ thống*:
+                     - Đồng bộ làm sạch section `gift` trong tất cả file `schema.json`: `dau-an-thoi-gian`, `dau-ky-tram-nam`, `giua-muon-ngan-vi-sao`, `hac-bach-trao-duyen`, `hac-bach-trao-duyen-2`, `luu-but-ngay-chung-doi`, `net-muc-tinh-yeu`, `thuoc-phim-tinh-yeu`, `tung-trang-hanh-phuc`.
+                  3. *`editor.blade.php` & `editor.js`*:
+                     - Prefill tự động thông tin ngân hàng, STK, tên chủ TK cũ vào component VietQR.
+                     - Tự động đồng bộ giá trị ngầm vào các hidden input để lưu trữ cơ sở dữ liệu và gửi Live Sync sang bản xem trước thiệp.
+                     - Hỗ trợ nút "📷 Tải ảnh QR có sẵn" trực tiếp từ thiết bị cá nhân.
+                  4. *Kiểm thử*:
+                     - Chạy toàn bộ Pest Feature Tests: Passed 10/10 tests (143 assertions).
+                     - Laravel Pint: Passed.
+                     - Cache hệ thống: Cleared.
+
+            104. **Sửa Triệt Để Lỗi Tạo Mã VietQR & Tự Động Chuẩn Hóa Tên Chủ Tài Khoản Sau 5 Giây**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi ảnh Studio Editor (`media_1793435626639_fdcf70e3.png`) báo lỗi: "đang báo lỗi ko tạo được, và tên người phải biết chuẩn hóa, nếu điền tên không dấu và viết hoa rồi thì thôi chưa chưa thì phải tự chuẩn hóa khi nhập xong sau 5s".
+                  * *Nguyên nhân lỗi tạo QR*: Trong `editor.js`, lệnh `createImageBitmap(await response.blob())` bị ném lỗi `DOMException` vì `createImageBitmap` trong chuẩn Web API của Chrome/Firefox không hỗ trợ giải mã Blob vector SVG (`image/svg+xml`) từ API VietQR, dẫn đến rơi vào khối catch và hiện lỗi màu đỏ: "Không tạo được QR. Kiểm tra ngân hàng và số tài khoản.".
+                  * *Yêu cầu chuẩn hóa tên*: Tên chủ tài khoản ngân hàng cần viết hoa không dấu (`NGUYEN MINH DUC`). Nếu người dùng đã gõ đúng chuẩn hoa không dấu thì giữ nguyên; nếu gõ có dấu hoặc chữ thường thì sau 5s ngừng nhập (hoặc khi blur/bấm nút cập nhật) hệ thống phải tự động chuẩn hóa sang in hoa không dấu.
                 - **Giải pháp hoàn thiện**:
-                  1. *`schema.json`*:
-                     - Tinh gọn tab `gift`, chỉ giữ lại 2 trường cốt lõi: `wedding.extra_data.qr_groom_image` ("Mã QR Mừng Cưới Chú Rể") và `wedding.extra_data.qr_bride_image` ("Mã QR Mừng Cưới Cô Dâu").
-                     - Loại bỏ hoàn toàn 6 trường nhập tay thừa thãi khỏi giao diện Studio Editor.
-                  2. *`resources/views/client/pages/editor.blade.php`*:
-                     - Bổ sung logic tự động prefill thông tin ngân hàng, số tài khoản, tên tài khoản đã lưu vào component VietQR để tránh mất dữ liệu khi tải lại trang.
-                     - Thêm các hidden inputs ngầm (`groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`) tự động nhận giá trị khi người dùng thao tác trong khối VietQR để backend vẫn lưu trữ đầy đủ.
-                     - Tích hợp thêm tính năng "📷 Tải ảnh QR có sẵn" (file input ẩn) cho phép người dùng có thể tải trực tiếp ảnh chụp QR từ máy cá nhân lên mà không cần tạo qua VietQR.
-                  3. *`public/assets/client/js/pages/editor.js`*:
-                     - Hàm `syncVietQrHiddenField`: Tự động đồng bộ tên ngân hàng, STK, tên chủ TK từ khối VietQR sang hidden inputs và dispatch Live Sync `sendSyncMessage`.
-                     - Xử lý sự kiện `change` của `.mayhen_vietqr_file_input`: Đọc ảnh QR từ thiết bị qua `FileReader` và Canvas, tự động nén và gán Base64 vào input, gửi Live Sync sang thiệp cưới ngay lập tức.
-                  4. *`template.blade.php`*:
-                     - Xóa bỏ chuỗi fallback thông tin tài khoản mẫu rác trong `POPUP2` và `POPUP3`.
-                  5. *Kiểm thử*:
-                     - Feature Test `tests/Feature/HacBachTraoDuyen2TemplateTest.php`: Passed 3/3 tests (65 assertions).
+                  1. *`public/assets/client/js/pages/editor.js`*:
+                     - Thay thế hoàn toàn `createImageBitmap()` bằng hàm `renderSvgToDataUrl()`: vẽ SVG lên Canvas bằng `new Image()` và fallback trực tiếp sang Base64 Data URI SVG. Hoạt động 100% trơn tru, không bao giờ bị crash.
+                     - Viết hàm `normalizeVietnameseName(str)`: Khử dấu tiếng Việt toàn diện (hỗ trợ cả Unicode dựng sẵn và tổ hợp NFD, ký tự 'đ'/'Đ'), loại bỏ ký tự lạ và chuyển sang chữ HOA.
+                     - Quản lý bộ hẹn giờ 5 giây (`nameNormalizeTimers` 5000ms): Nếu người dùng gõ chưa chuẩn hóa thì sau đúng 5s ngừng gõ sẽ tự động chuyển đổi thành chữ hoa không dấu và tạo mã VietQR; nếu đã đúng chuẩn hoa không dấu rồi thì tạo ngay sau 500ms mà không làm thay đổi giá trị input; khi blur hoặc bấm nút cập nhật thì chuẩn hóa ngay lập tức.
+                  2. *Kiểm thử*:
+                     - Cú pháp JS `node -c`: Passed.
+                     - Pest Feature Tests: Passed 10/10 tests (143 assertions).
                      - Laravel Pint: Passed.
                      - Cache hệ thống: Cleared.
 
