@@ -44,12 +44,15 @@
     $targetTimestamp = $weddingDate->timestamp * 1000;
     $calendarMonth = $weddingDate->format('m');
     $calendarYear = $weddingDate->format('Y');
-    $calendarDay = $weddingDate->day;
+    $calendarDay = (int) $weddingDate->format('j');
+    $firstDayOfWeek = (int) $weddingDate->copy()->startOfMonth()->dayOfWeek; // 0: Sun, 1: Mon...
+    $daysInMonth = (int) $weddingDate->daysInMonth;
 
     // Sự kiện Lễ Cưới & Tiệc Cưới
     $eventPartyTime = $extraData['event_party_time'] ?? '11:00';
     $eventPartyDate = $extraData['event_party_date'] ?? '20/12/2025';
     $eventPartyLunar = $extraData['event_party_lunar'] ?? '(Tức ngày 01 tháng 11 năm Ất Tỵ)';
+    $eventPartyVenue = $extraData['event_party_venue'] ?? 'TẠI TƯ GIA';
     $eventPartyAddress = $extraData['event_party_address'] ?? 'Thôn Tân Mỹ, Xã Quỳnh Ngọc, Huyện Quỳnh Phụ, Tỉnh Thái Bình';
     $eventPartyMap = $extraData['event_party_map'] ?? 'https://maps.google.com/?q=' . urlencode($eventPartyAddress);
 
@@ -95,6 +98,27 @@
         $p = !empty($rawGallery[$i]) ? $rawGallery[$i] : ($defaultGallery[$i] ?? 'hip_1314-20250417154153-ezy7i.jpg');
         $gallery[] = $resolveAsset($p, $defaultGallery[$i] ?? 'hip_1314-20250417154153-ezy7i.jpg');
     }
+
+    // 4.1. Ảnh đặc thù của mẫu Hắc Bạch Trao Duyên (Hero, Save the Date vòm, Thank You cuối thiệp)
+    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? ($wedding->cover_photo_url ?? null), 'hip_1524-20250418032309-dzaln.jpg');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, $gallery[0] ?? 'hip_2251jpg-ok-20250417154242-reh61.jpg');
+    $thankPhotoUrl = $resolveAsset($extraData['thank_photo_url'] ?? null, $gallery[1] ?? 'hip_2436-20250417154257-30xy0.jpg');
+
+    // 4.2. Câu chuyện tình yêu (Story 3 mốc)
+    $story1Date = $extraData['story_1_date'] ?? 'GIAI ĐOẠN 01';
+    $story1Title = $extraData['story_1_title'] ?? 'Lần Đầu Gặp Gỡ';
+    $story1Desc = $extraData['story_1_desc'] ?? 'Có ai tin vào tình yêu từ cái nhìn đầu tiên không? Một cô bé khá xinh xắn mà tôi tình cờ gặp trong lần đi chơi Noel cùng đám bạn. Chúng mình bắt đầu trò chuyện, chia sẻ những niềm vui giản dị mỗi ngày và nhận ra hai đứa sinh ra là để dành cho nhau.';
+    $story1PhotoUrl = $resolveAsset($extraData['story_1_photo'] ?? null, $gallery[2] ?? 'hip_0991-20250418032446-bi00o.jpg');
+
+    $story2Date = $extraData['story_2_date'] ?? 'GIAI ĐOẠN 02';
+    $story2Title = $extraData['story_2_title'] ?? 'Ngày Em Nhận Lời Yêu';
+    $story2Desc = $extraData['story_2_desc'] ?? 'Không cần đắn đo suy nghĩ gì thêm, tôi quyết định ngỏ lời trong một buổi chiều hoàng hôn bên bờ hồ. Thật may mắn khi lời tỏ tình chân thành đã được em mỉm cười đồng ý. Khoảnh khắc ấy, tôi biết mình là người đàn ông hạnh phúc nhất trên đời!';
+    $story2PhotoUrl = $resolveAsset($extraData['story_2_photo'] ?? null, $gallery[3] ?? 'hip_2050-20250418032310-_wmhg.jpg');
+
+    $story3Date = $extraData['story_3_date'] ?? 'GIAI ĐOẠN 03';
+    $story3Title = $extraData['story_3_title'] ?? 'Mãi Bên Nhau Nhé!';
+    $story3Desc = $extraData['story_3_desc'] ?? 'Suy cho cùng, mấy ai yêu mà chẳng mong được cùng nhau tiến tới ngưỡng cửa hôn nhân. Như trái xanh đủ ngày sẽ khắc chín, con chim đủ cánh sẽ khắc bay, tình yêu chúng mình cảm thấy yêu nhau đủ nhiều thì mình cưới nhau thôi.';
+    $story3PhotoUrl = $resolveAsset($extraData['story_3_photo'] ?? null, $gallery[4] ?? 'hip_1858-20250417154227-exs1m.jpg');
 
     // 5. Lịch trình timeline
     $defaultTimeline = [
@@ -289,7 +313,7 @@
         
         <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
           <span class="mayhen_invitation_ladjihe38udhd_subheading">SAVE THE DATE</span>
-          <h2 class="mayhen_invitation_ladjihe38udhd_heading">Tháng Mười Hai - 2025</h2>
+          <h2 class="mayhen_invitation_ladjihe38udhd_heading" data-sync-target="wedding_date">Tháng {{ $calendarMonth }} - {{ $calendarYear }}</h2>
           <div class="mayhen_invitation_ladjihe38udhd_divider">
             <span class="mayhen_invitation_ladjihe38udhd_divider_line"></span>
             <span class="mayhen_invitation_ladjihe38udhd_divider_icon">✦</span>
@@ -300,16 +324,16 @@
         <!-- Couple Arch Frame -->
         <div class="mayhen_invitation_ladjihe38udhd_arch_card mayhen_invitation_ladjihe38udhd_box_anim">
           <div class="mayhen_invitation_ladjihe38udhd_arch_photo_wrap">
-            <img src="{{ $resolveAsset('', 'hip_2251jpg-ok-20250417154242-reh61.jpg') }}" alt="Save the date couple" class="mayhen_invitation_ladjihe38udhd_arch_img">
+            <img src="{{ $saveDatePhotoUrl }}" alt="Save the date couple" class="mayhen_invitation_ladjihe38udhd_arch_img" data-sync-target="save_date_photo_url">
           </div>
         </div>
 
-        <!-- Wedding Calendar (Tháng 12 / 2025) -->
+        <!-- Wedding Calendar (Tháng {{ $calendarMonth }} / {{ $calendarYear }}) -->
         <div class="mayhen_invitation_ladjihe38udhd_calendar_box mayhen_invitation_ladjihe38udhd_box_anim">
           <div class="mayhen_invitation_ladjihe38udhd_calendar_header">
-            <span>DECEMBER 2025</span>
+            <span data-sync-target="wedding_date">{{ strtoupper($weddingDate->translatedFormat('F Y')) }}</span>
           </div>
-          <div class="mayhen_invitation_ladjihe38udhd_calendar_grid">
+          <div class="mayhen_invitation_ladjihe38udhd_calendar_grid" data-sync-target="wedding_date">
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">SUN</div>
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">MON</div>
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">TUE</div>
@@ -318,43 +342,22 @@
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">FRI</div>
             <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">SAT</div>
 
-            <!-- Empty slots for Sun-Thu before 1st Dec 2025 (1st Dec 2025 is Monday) -->
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell empty"></div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">1</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">2</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">3</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">4</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">5</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">6</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">7</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">8</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">9</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">10</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">11</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">12</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">13</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">14</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">15</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">16</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">17</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">18</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">19</div>
-            <!-- Special Highlighted Wedding Day 20 Dec 2025 -->
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell special_day" title="Ngày Hạnh Phúc">
-              <span>20</span>
-              <span class="mayhen_invitation_ladjihe38udhd_heart_pin">♥</span>
-            </div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">21</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">22</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">23</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">24</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">25</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">26</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">27</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">28</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">29</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">30</div>
-            <div class="mayhen_invitation_ladjihe38udhd_cal_cell">31</div>
+            {{-- Các ô trống đầu tháng --}}
+            @for ($e = 0; $e < $firstDayOfWeek; $e++)
+              <div class="mayhen_invitation_ladjihe38udhd_cal_cell empty"></div>
+            @endfor
+
+            {{-- Các ngày trong tháng --}}
+            @for ($d = 1; $d <= $daysInMonth; $d++)
+              @if ($d === $calendarDay)
+                <div class="mayhen_invitation_ladjihe38udhd_cal_cell special_day" title="Ngày Hạnh Phúc">
+                  <span>{{ $d }}</span>
+                  <span class="mayhen_invitation_ladjihe38udhd_heart_pin">♥</span>
+                </div>
+              @else
+                <div class="mayhen_invitation_ladjihe38udhd_cal_cell">{{ $d }}</div>
+              @endif
+            @endfor
           </div>
           
           <div class="mayhen_invitation_ladjihe38udhd_cal_action">
@@ -456,9 +459,9 @@
             <span class="mayhen_invitation_ladjihe38udhd_lunar" data-sync-target="event_party_lunar">{{ $eventPartyLunar ?? '(Tức ngày 16 tháng 08 năm Ất Tỵ)' }}</span>
           </div>
           <div class="mayhen_invitation_ladjihe38udhd_notice_place">
-            <p class="mayhen_invitation_ladjihe38udhd_place_name">TẠI TƯ GIA</p>
-            <p class="mayhen_invitation_ladjihe38udhd_place_address" data-sync-target="event_party_address">{{ $eventPartyAddress ?? '423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội' }}</p>
-            <a href="https://maps.google.com/?q={{ urlencode($eventPartyAddress ?? '423 An Dương Vương Phú Thượng Tây Hồ Hà Nội') }}" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_ladjihe38udhd_btn_map">
+            <p class="mayhen_invitation_ladjihe38udhd_place_name" data-sync-target="event_party_venue">{{ $eventPartyVenue }}</p>
+            <p class="mayhen_invitation_ladjihe38udhd_place_address" data-sync-target="event_party_address">{{ $eventPartyAddress }}</p>
+            <a href="https://maps.google.com/?q={{ urlencode($eventPartyAddress) }}" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_ladjihe38udhd_btn_map">
               <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
               <span>XEM VỊ TRÍ TRÊN BẢN ĐỒ</span>
             </a>
@@ -517,7 +520,7 @@
     </section>
 
     <!-- SECTION 3 & 4: CÂU CHUYỆN TÌNH YÊU (LOVE STORY) -->
-    <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_story_section" id="story">
+    <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_story_section" id="story" data-mayhen-section="story">
       <div class="mayhen_invitation_ladjihe38udhd_container">
 
         <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -535,42 +538,36 @@
           <!-- Story Milestone 1 -->
           <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-              <img src="{{ $resolveAsset('', 'hip_0991-20250418032446-bi00o.jpg') }}" alt="Lần đầu gặp gỡ" class="mayhen_invitation_ladjihe38udhd_story_img">
+              <img src="{{ $story1PhotoUrl }}" alt="{{ $story1Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_1_photo">
             </div>
             <div class="mayhen_invitation_ladjihe38udhd_story_text">
-              <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 01</span>
-              <h3 class="mayhen_invitation_ladjihe38udhd_story_title">Lần Đầu Gặp Gỡ</h3>
-              <p class="mayhen_invitation_ladjihe38udhd_story_desc">
-                Có ai tin vào tình yêu từ cái nhìn đầu tiên không? Một cô bé khá xinh xắn mà tôi tình cờ gặp trong lần đi chơi Noel cùng đám bạn. Chúng mình bắt đầu trò chuyện, chia sẻ những niềm vui giản dị mỗi ngày và nhận ra hai đứa sinh ra là để dành cho nhau.
-              </p>
+              <span class="mayhen_invitation_ladjihe38udhd_story_date" data-sync-target="story_1_date">{{ $story1Date }}</span>
+              <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_1_title">{{ $story1Title }}</h3>
+              <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_1_desc">{{ $story1Desc }}</p>
             </div>
           </article>
 
           <!-- Story Milestone 2 -->
           <article class="mayhen_invitation_ladjihe38udhd_story_item reverse mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-              <img src="{{ $resolveAsset('', 'hip_2050-20250418032310-_wmhg.jpg') }}" alt="Nhận lời yêu" class="mayhen_invitation_ladjihe38udhd_story_img">
+              <img src="{{ $story2PhotoUrl }}" alt="{{ $story2Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_2_photo">
             </div>
             <div class="mayhen_invitation_ladjihe38udhd_story_text">
-              <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 02</span>
-              <h3 class="mayhen_invitation_ladjihe38udhd_story_title">Ngày Em Nhận Lời Yêu</h3>
-              <p class="mayhen_invitation_ladjihe38udhd_story_desc">
-                Không cần đắn đo suy nghĩ gì thêm, tôi quyết định ngỏ lời trong một buổi chiều hoàng hôn bên bờ hồ. Thật may mắn khi lời tỏ tình chân thành đã được em mỉm cười đồng ý. Khoảnh khắc ấy, tôi biết mình là người đàn ông hạnh phúc nhất trên đời!
-              </p>
+              <span class="mayhen_invitation_ladjihe38udhd_story_date" data-sync-target="story_2_date">{{ $story2Date }}</span>
+              <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_2_title">{{ $story2Title }}</h3>
+              <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_2_desc">{{ $story2Desc }}</p>
             </div>
           </article>
 
           <!-- Story Milestone 3 -->
           <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-              <img src="{{ $resolveAsset('', 'hip_1858-20250417154227-exs1m.jpg') }}" alt="Về chung một nhà" class="mayhen_invitation_ladjihe38udhd_story_img">
+              <img src="{{ $story3PhotoUrl }}" alt="{{ $story3Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_3_photo">
             </div>
             <div class="mayhen_invitation_ladjihe38udhd_story_text">
-              <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 03</span>
-              <h3 class="mayhen_invitation_ladjihe38udhd_story_title">Mãi Bên Nhau Nhé!</h3>
-              <p class="mayhen_invitation_ladjihe38udhd_story_desc">
-                Suy cho cùng, mấy ai yêu mà chẳng mong được cùng nhau tiến tới ngưỡng cửa hôn nhân. Như trái xanh đủ ngày sẽ khắc chín, con chim đủ cánh sẽ khắc bay, tình yêu chúng mình cảm thấy yêu nhau đủ nhiều thì mình cưới nhau thôi.
-              </p>
+              <span class="mayhen_invitation_ladjihe38udhd_story_date" data-sync-target="story_3_date">{{ $story3Date }}</span>
+              <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_3_title">{{ $story3Title }}</h3>
+              <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_3_desc">{{ $story3Desc }}</p>
             </div>
           </article>
 
@@ -780,31 +777,53 @@
 
           <!-- Danh sách lời chúc -->
           <div class="mayhen_invitation_ladjihe38udhd_wish_list" id="mayhen_invitation_ladjihe38udhd_wish_list">
-            <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
-              <div class="mayhen_invitation_ladjihe38udhd_wish_author">
-                <span class="mayhen_invitation_ladjihe38udhd_avatar">T</span>
-                <div>
-                  <strong>Trần Minh Tuấn</strong>
-                  <time>Hôm nay</time>
+            @if ($wishes->count() > 0)
+              @foreach ($wishes as $wish)
+                <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
+                  <div class="mayhen_invitation_ladjihe38udhd_wish_author">
+                    <span class="mayhen_invitation_ladjihe38udhd_avatar">{{ mb_substr($wish->sender_name ?? 'K', 0, 1) }}</span>
+                    <div>
+                      <strong>{{ $wish->sender_name ?? 'Khách Mời' }}</strong>
+                      <time>{{ $wish->created_at ? $wish->created_at->diffForHumans() : 'Vừa xong' }}</time>
+                    </div>
+                  </div>
+                  <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
+                    {{ $wish->message }}
+                  </p>
                 </div>
+              @endforeach
+            @elseif ($isPreview)
+              {{-- Lời chúc mẫu chỉ hiển thị khi ở chế độ xem thử mẫu --}}
+              <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
+                <div class="mayhen_invitation_ladjihe38udhd_wish_author">
+                  <span class="mayhen_invitation_ladjihe38udhd_avatar">T</span>
+                  <div>
+                    <strong>Trần Minh Tuấn</strong>
+                    <time>Hôm nay</time>
+                  </div>
+                </div>
+                <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
+                  Chúc mừng hạnh phúc hai bạn! Chúc {{ $groomName }} & {{ $brideName }} trăm năm tình viên mãn, đầu bạc răng long, luôn yêu thương và thấu hiểu nhau như những ngày đầu!
+                </p>
               </div>
-              <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
-                Chúc mừng hạnh phúc hai bạn! Chúc {{ $groomName }} & {{ $brideName }} trăm năm tình viên mãn, đầu bạc răng long, luôn yêu thương và thấu hiểu nhau như những ngày đầu!
-              </p>
-            </div>
 
-            <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
-              <div class="mayhen_invitation_ladjihe38udhd_wish_author">
-                <span class="mayhen_invitation_ladjihe38udhd_avatar">L</span>
-                <div>
-                  <strong>Lê Ngọc Mai</strong>
-                  <time>Hôm qua</time>
+              <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
+                <div class="mayhen_invitation_ladjihe38udhd_wish_author">
+                  <span class="mayhen_invitation_ladjihe38udhd_avatar">L</span>
+                  <div>
+                    <strong>Lê Ngọc Mai</strong>
+                    <time>Hôm qua</time>
+                  </div>
                 </div>
+                <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
+                  Một đám cưới thật ngọt ngào và lãng mạn. Chúc đôi bạn trẻ sớm đón thêm thiên thần nhỏ, hạnh phúc ngập tràn mái ấm gia đình!
+                </p>
               </div>
-              <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
-                Một đám cưới thật ngọt ngào và lãng mạn. Chúc đôi bạn trẻ sớm đón thêm thiên thần nhỏ, hạnh phúc ngập tràn mái ấm gia đình!
-              </p>
-            </div>
+            @else
+              <div class="mayhen_invitation_ladjihe38udhd_wish_empty" style="text-align: center; padding: 24px 16px; color: var(--mayhen-text-sub); font-style: italic;">
+                <p>Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc phúc ngọt ngào tới {{ $groomName }} & {{ $brideName }}!</p>
+              </div>
+            @endif
           </div>
         </div>
 
@@ -879,14 +898,14 @@
             <span class="mayhen_invitation_ladjihe38udhd_divider_icon">✦</span>
             <span class="mayhen_invitation_ladjihe38udhd_divider_line"></span>
           </div>
-          <p class="mayhen_invitation_ladjihe38udhd_subtext">
-            423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội
+          <p class="mayhen_invitation_ladjihe38udhd_subtext" data-sync-target="event_party_address">
+            {{ $eventPartyAddress }}
           </p>
         </div>
 
         <div class="mayhen_invitation_ladjihe38udhd_map_frame mayhen_invitation_ladjihe38udhd_box_anim">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3732.20491324289!2d106.12422500000001!3d20.701902!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjDCsDQyJzA2LjkiTiAxMDbCsDA3JzI3LjIiRQ!5e0!3m2!1svi!2s!4v1707099260504!5m2!1svi!2s" 
+            src="https://maps.google.com/maps?q={{ urlencode($eventPartyAddress) }}&t=&z=14&ie=UTF8&iwloc=&output=embed" 
             width="100%" 
             height="320" 
             style="border:0;" 
@@ -904,7 +923,7 @@
       <div class="mayhen_invitation_ladjihe38udhd_container">
         <div class="mayhen_invitation_ladjihe38udhd_footer_content">
           <div class="mayhen_invitation_ladjihe38udhd_footer_photo_wrap mayhen_invitation_ladjihe38udhd_box_anim">
-            <img src="{{ $resolveAsset('', 'hip_2436-20250417154257-30xy0.jpg') }}" alt="Thank you couple" class="mayhen_invitation_ladjihe38udhd_footer_photo">
+            <img src="{{ $thankPhotoUrl }}" alt="Thank you couple" class="mayhen_invitation_ladjihe38udhd_footer_photo" data-sync-target="thank_photo_url">
           </div>
           <h2 class="mayhen_invitation_ladjihe38udhd_footer_title">Thank you!</h2>
           <p class="mayhen_invitation_ladjihe38udhd_footer_desc">

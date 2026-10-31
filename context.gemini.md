@@ -2503,6 +2503,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   * Laravel Pint: Clean 100%.
                   * Dọn cache: `php artisan optimize:clear` hoàn tất.
 
+            90. **Khắc Phục Triệt Để Toàn Bộ Dữ Liệu Tĩnh / Ảnh Người Khác Trên Mẫu "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`)**:
+                - **Yêu cầu & Phản ánh của người dùng**:
+                  * Người dùng phát hiện ngoài các thông tin cơ bản trên form tạo thiệp, trong thiệp thực tế còn rất nhiều phần dữ liệu và ảnh của người mẫu lạ (Our Story 3 mốc, ảnh vòm Save The Date, ảnh Thank You cuối thiệp, địa chỉ tĩnh Tây Hồ Hà Nội, 2 lời chúc mẫu của người lạ) mà form không có chỗ chỉnh sửa, dẫn đến thiệp cưới hạnh phúc của cặp đôi lại bị dính thông tin và ảnh của người khác.
+                - **Các hạng mục đã giải quyết triệt để**:
+                  1. *`schema.json`*:
+                     - Bổ sung trường `wedding.extra_data.hero_photo_url`, `wedding.extra_data.save_date_photo_url` (Ảnh vòm Save The Date) và `wedding.extra_data.thank_photo_url` (Ảnh Thank You cuối thiệp) vào section `couple`.
+                     - Bổ sung 3 mốc Câu Chuyện Tình Yêu (Love Story) trực tiếp vào section `timeline` ("5. Lịch Trình & Câu Chuyện Tình Yêu") gồm 12 trường: `story_1_date`, `story_1_title`, `story_1_desc`, `story_1_photo`, `story_2_date`, `story_2_title`, `story_2_desc`, `story_2_photo`, `story_3_date`, `story_3_title`, `story_3_desc`, `story_3_photo`. Giữ vững chuẩn hóa đúng 6 Canonical Sections của hệ thống.
+                  2. *`template.blade.php`*:
+                     - Thiết lập cơ chế fallback ảnh thông minh: Ảnh Save The Date fallback về `$gallery[0]`, ảnh Thank You fallback về `$gallery[1]`, 3 ảnh kỷ niệm Story fallback về `$gallery[2]`, `$gallery[3]`, `$gallery[4]` của chính album cặp đôi nếu chưa tải riêng. Đảm bảo cặp đôi không bao giờ bị xuất hiện ảnh người lạ.
+                     - Gắn đầy đủ hợp đồng `data-sync-target` cho toàn bộ các trường mới: `save_date_photo_url`, `thank_photo_url`, `story_1_date/title/desc/photo`, `story_2_date/title/desc/photo`, `story_3_date/title/desc/photo`.
+                     - Gắn `data-mayhen-section="story"` vào section Story để người dùng chuyển tab có thể cuộn tới mượt mà.
+                     - Lịch cưới động (Dynamic Wedding Calendar): Chuyển toàn bộ ma trận ngày lịch tháng từ hardcode 12/2025 sang vòng lặp động tính theo `$weddingDate`: tự động tính số ngày trong tháng `$daysInMonth`, ngày đầu tháng `$firstDayOfWeek`, và highlight trái tim đúng ngày cưới thật của cặp đôi.
+                     - Đồng bộ địa chỉ & bản đồ: Thay thế địa chỉ tĩnh "423 An Dương Vương..." bằng `$eventPartyAddress` và `$eventPartyVenue`, nhúng iframe bản đồ tìm kiếm theo địa chỉ tiệc cưới thật.
+                     - Phòng vệ Lời chúc mẫu (Guestbook): Lời chúc mẫu chỉ hiển thị khi xem thử (`$isPreview = true`). Khi là thiệp thật của cặp đôi (`!$isPreview`), nếu chưa có lời chúc sẽ hiển thị lời mời khách để lại lời chúc đầu tiên; tuyệt đối không để tên và lời chúc của người lạ ("Trần Minh Tuấn", "Lê Ngọc Mai") xuất hiện trên thiệp của cặp đôi.
+                  3. *Seeder, Pint & Tests*:
+                     - Chạy re-seed database từ file `schema.json` mới.
+                     - Cập nhật test `tests/Feature/HacBachTraoDuyenTemplateTest.php` xác thực toàn bộ các thuộc tính sync mới và form editor.
+                     - Toàn bộ 7/7 Feature Tests (78 assertions) pass 100%.
+                     - Laravel Pint: Passed. Cache Laravel: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

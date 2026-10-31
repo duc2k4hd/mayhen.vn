@@ -72,6 +72,30 @@
           "placeholder": "Ảnh chân dung cô dâu"
         },
         {
+          "key": "wedding.extra_data.hero_photo_url",
+          "label": "Ảnh nền mở đầu (Hero)",
+          "type": "image",
+          "required": false,
+          "default": "hip_1524-20250418032309-dzaln.jpg",
+          "placeholder": "Ảnh nền mở đầu trang thiệp"
+        },
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh Khung Vòm (Save The Date)",
+          "type": "image",
+          "required": false,
+          "default": "hip_2251jpg-ok-20250417154242-reh61.jpg",
+          "placeholder": "Ảnh đôi uyên ương trong khung vòm lịch cưới"
+        },
+        {
+          "key": "wedding.extra_data.thank_photo_url",
+          "label": "Ảnh Lời Cảm Ơn (Cuối Thiệp)",
+          "type": "image",
+          "required": false,
+          "default": "hip_2436-20250417154257-30xy0.jpg",
+          "placeholder": "Ảnh đôi uyên ương phần kết thiệp cảm ơn"
+        },
+        {
           "key": "wedding.extra_data.couple_quote",
           "label": "Lời ngỏ / Thông điệp tình yêu",
           "type": "textarea",
@@ -207,39 +231,11 @@
       ]
     },
     {
-      "id": "album",
-      "title": "Ảnh Cưới (10 Ảnh)",
-      "short_title": "Ảnh Cưới",
-      "icon": "image",
-      "description": "Bộ sưu tập 10 ảnh cưới ngọt ngào và đáng nhớ",
-      "fields": [
-        {
-          "key": "wedding.extra_data.gallery",
-          "label": "Album 10 Ảnh Cưới",
-          "type": "gallery",
-          "required": false,
-          "max_items": 10,
-          "default": [
-            "hip_1314-20250417154153-ezy7i.jpg",
-            "hip_1055-20250417154150-fnhf7.jpg",
-            "hip_1663-20250417154215-1gooa.jpg",
-            "hip_2035-20250417154231-lro9v.jpg",
-            "hip_1653-20250417154214-6m0kb.jpg",
-            "hip_2216-20250417154241-dok5k.jpg",
-            "hip_2450-20250417154258-ynmd_.jpg",
-            "hip_1350-20250417154155-wsx2n.jpg",
-            "hip_2226-20250417154242-utfbm.jpg",
-            "hip_2320-20250417154245-vfavc.jpg"
-          ]
-        }
-      ]
-    },
-    {
       "id": "timeline",
-      "title": "Lịch Trình Hôn Lễ",
+      "title": "Lịch Trình & Câu Chuyện Tình Yêu",
       "short_title": "Lịch Trình",
       "icon": "clock",
-      "description": "Các mốc thời gian diễn ra hôn lễ và tiệc mừng",
+      "description": "Lịch trình hôn lễ và 3 mốc câu chuyện tình yêu ngọt ngào của hai bạn",
       "fields": [
         {
           "key": "wedding.extra_data.timeline",
@@ -257,6 +253,99 @@
             { "key": "time", "label": "Giờ", "type": "text" },
             { "key": "title", "label": "Nội dung", "type": "text" }
           ]
+        },
+        {
+          "key": "wedding.extra_data.story_1_date",
+          "label": "Mốc 1 - Giai đoạn / Thời gian",
+          "type": "text",
+          "required": false,
+          "default": "GIAI ĐOẠN 01",
+          "placeholder": "Ví dụ: GIAI ĐOẠN 01 hoặc 2021"
+        },
+        {
+          "key": "wedding.extra_data.story_1_title",
+          "label": "Mốc 1 - Tiêu đề",
+          "type": "text",
+          "required": false,
+          "default": "Lần Đầu Gặp Gỡ",
+          "placeholder": "Ví dụ: Lần Đầu Gặp Gỡ"
+        },
+        {
+          "key": "wedding.extra_data.story_1_desc",
+          "label": "Mốc 1 - Nội dung kỷ niệm",
+          "type": "textarea",
+          "required": false,
+          "default": "Có ai tin vào tình yêu từ cái nhìn đầu tiên không? Một cô bé khá xinh xắn mà tôi tình cờ gặp trong lần đi chơi Noel cùng đám bạn. Chúng mình bắt đầu trò chuyện, chia sẻ những niềm vui giản dị mỗi ngày và nhận ra hai đứa sinh ra là để dành cho nhau.",
+          "placeholder": "Kể lại khoảnh khắc lần đầu hai bạn gặp nhau..."
+        },
+        {
+          "key": "wedding.extra_data.story_1_photo",
+          "label": "Mốc 1 - Ảnh kỷ niệm",
+          "type": "image",
+          "required": false,
+          "default": "hip_0991-20250418032446-bi00o.jpg"
+        },
+        {
+          "key": "wedding.extra_data.story_2_date",
+          "label": "Mốc 2 - Giai đoạn / Thời gian",
+          "type": "text",
+          "required": false,
+          "default": "GIAI ĐOẠN 02",
+          "placeholder": "Ví dụ: GIAI ĐOẠN 02 hoặc 2023"
+        },
+        {
+          "key": "wedding.extra_data.story_2_title",
+          "label": "Mốc 2 - Tiêu đề",
+          "type": "text",
+          "required": false,
+          "default": "Ngày Em Nhận Lời Yêu",
+          "placeholder": "Ví dụ: Ngày Em Nhận Lời Yêu"
+        },
+        {
+          "key": "wedding.extra_data.story_2_desc",
+          "label": "Mốc 2 - Nội dung kỷ niệm",
+          "type": "textarea",
+          "required": false,
+          "default": "Không cần đắn đo suy nghĩ gì thêm, tôi quyết định ngỏ lời trong một buổi chiều hoàng hôn bên bờ hồ. Thật may mắn khi lời tỏ tình chân thành đã được em mỉm cười đồng ý. Khoảnh khắc ấy, tôi biết mình là người đàn ông hạnh phúc nhất trên đời!",
+          "placeholder": "Kể lại khoảnh khắc lời tỏ tình..."
+        },
+        {
+          "key": "wedding.extra_data.story_2_photo",
+          "label": "Mốc 2 - Ảnh kỷ niệm",
+          "type": "image",
+          "required": false,
+          "default": "hip_2050-20250418032310-_wmhg.jpg"
+        },
+        {
+          "key": "wedding.extra_data.story_3_date",
+          "label": "Mốc 3 - Giai đoạn / Thời gian",
+          "type": "text",
+          "required": false,
+          "default": "GIAI ĐOẠN 03",
+          "placeholder": "Ví dụ: GIAI ĐOẠN 03 hoặc 2025"
+        },
+        {
+          "key": "wedding.extra_data.story_3_title",
+          "label": "Mốc 3 - Tiêu đề",
+          "type": "text",
+          "required": false,
+          "default": "Mãi Bên Nhau Nhé!",
+          "placeholder": "Ví dụ: Mãi Bên Nhau Nhé!"
+        },
+        {
+          "key": "wedding.extra_data.story_3_desc",
+          "label": "Mốc 3 - Nội dung kỷ niệm",
+          "type": "textarea",
+          "required": false,
+          "default": "Suy cho cùng, mấy ai yêu mà chẳng mong được cùng nhau tiến tới ngưỡng cửa hôn nhân. Như trái xanh đủ ngày sẽ khắc chín, con chim đủ cánh sẽ khắc bay, tình yêu chúng mình cảm thấy yêu nhau đủ nhiều thì mình cưới nhau thôi.",
+          "placeholder": "Lời ước hẹn trăm năm bên nhau..."
+        },
+        {
+          "key": "wedding.extra_data.story_3_photo",
+          "label": "Mốc 3 - Ảnh kỷ niệm",
+          "type": "image",
+          "required": false,
+          "default": "hip_1858-20250417154227-exs1m.jpg"
         }
       ]
     },
