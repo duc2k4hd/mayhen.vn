@@ -1,6 +1,8 @@
 @php
     $assetBase = url('/mau-thiep/dau-ky-tram-nam/assets');
-    $isEmbed = request()->boolean('embed');
+    $isEmbed = ($isEmbed ?? false)
+        || request()->boolean('embed')
+        || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
 
     // 1. Tên cô dâu chú rể & Khách mời
     $groomName = $wedding->groom_name ?? 'Quốc Thái';
@@ -1811,10 +1813,10 @@
     >
       ×
     </button>
+    @if (!$isEmbed)
     <nav
       aria-label="Điều hướng thiệp cưới"
       class="mayhen_invitation_jeowinids483fr_cta-menu"
-      style="{{ $isEmbed ? 'display: none !important;' : '' }}"
     >
       <button class="mayhen_active" data-go="section26" type="button">Thiệp mời</button>
       <button data-go="section27" type="button">Lịch trình</button>
@@ -1822,6 +1824,7 @@
       <button data-go="section29" type="button">Xác nhận</button>
       <button data-menu="gift" type="button">Mừng cưới</button>
     </nav>
+    @endif
     <div
       aria-label="Album ảnh cưới"
       aria-modal="true"

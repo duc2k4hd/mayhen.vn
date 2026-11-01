@@ -360,8 +360,9 @@
                 'wedding_date_digits': ['wedding_date', 'event_party_date'],
                 'event_party_lunar': ['groom_party_lunar', 'bride_party_lunar', 'bride_ceremony_lunar', 'wedding_lunar_date'],
                 'wedding_lunar_date': ['event_party_lunar', 'groom_party_lunar', 'bride_party_lunar'],
-                'hero_photo_url': ['cover_photo_url'],
-                'cover_photo_url': ['hero_photo_url'],
+                'hero_photo_url': ['cover_photo_url', 'save_date_photo_url'],
+                'cover_photo_url': ['hero_photo_url', 'save_date_photo_url'],
+                'save_date_photo_url': ['cover_photo_url', 'hero_photo_url'],
                 'couple_quote': ['quote', 'story', 'love_quote'],
                 'quote': ['couple_quote'],
                 'story': ['couple_quote']
@@ -431,11 +432,29 @@
             // Đồng bộ định dạng ngày cưới nếu là wedding_date hoặc event_party_date
             if (cleanKey === 'wedding_date' || cleanKey === 'event_party_date') {
                 try {
-                    var parsedDate = new Date(val);
-                    if (!isNaN(parsedDate.getTime())) {
-                        var d = String(parsedDate.getDate()).padStart(2, '0');
-                        var m = String(parsedDate.getMonth() + 1).padStart(2, '0');
-                        var y = parsedDate.getFullYear();
+                    var d, m, y, parsedDate;
+                    if (val && typeof val === 'string' && val.indexOf('-') !== -1) {
+                        var parts = val.trim().split('-');
+                        y = parseInt(parts[0], 10);
+                        m = String(parseInt(parts[1], 10)).padStart(2, '0');
+                        d = String(parseInt(parts[2], 10)).padStart(2, '0');
+                        parsedDate = new Date(y, parseInt(m, 10) - 1, parseInt(d, 10));
+                    } else if (val && typeof val === 'string' && val.indexOf('/') !== -1) {
+                        var parts = val.trim().split('/');
+                        d = String(parseInt(parts[0], 10)).padStart(2, '0');
+                        m = String(parseInt(parts[1], 10)).padStart(2, '0');
+                        y = parseInt(parts[2], 10);
+                        parsedDate = new Date(y, parseInt(m, 10) - 1, parseInt(d, 10));
+                    } else {
+                        parsedDate = new Date(val);
+                        if (!isNaN(parsedDate.getTime())) {
+                            d = String(parsedDate.getDate()).padStart(2, '0');
+                            m = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                            y = parsedDate.getFullYear();
+                        }
+                    }
+
+                    if (parsedDate && !isNaN(parsedDate.getTime())) {
                         var weekdays = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
                         var wName = weekdays[parsedDate.getDay()] || 'Chủ Nhật';
 
@@ -456,37 +475,38 @@
                             el.textContent = wName + ' ' + d + '.' + m + '.' + y;
                         });
 
+                        // Cập nhật toàn bộ các tiêu đề tháng/năm của lịch cưới
+                        document.querySelectorAll('[data-sync-target="calendar_month_year"], .mayhen_invitation_ladoifji894yfv_cal_month, .mayhen_invitation_jeowinids483fr_calendar_month, .mayhen_invitation_ladjihe38udhd_calendar_month').forEach(function(el) {
+                            el.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + m + '</span> · <span data-sync-target="wedding_year">' + y + '</span>';
+                        });
+
                         // Tự động vẽ lại Lịch Cưới tương ứng tháng/năm/ngày đã chọn (Realtime Calendar Sync)
                         if (typeof window.renderMayhenWeddingCalendar === 'function') {
                             window.renderMayhenWeddingCalendar(parsedDate);
                         } else {
-                            var calGrid = document.querySelector('.mayhen_invitation_ladoifji894yfv_cal_days') || document.querySelector('[data-sync-target="wedding_calendar"]');
+                            var calGrid = document.querySelector('[data-sync-target="wedding_calendar"]') ||
+                                          document.querySelector('.mayhen_invitation_jeowinids483fr_calendar_days') ||
+                                          document.querySelector('.mayhen_invitation_ladjihe38udhd_calendar_days') ||
+                                          document.querySelector('.mayhen_invitation_ladoifji894yfv_cal_days');
                             if (calGrid) {
                                 var yr = parsedDate.getFullYear();
                                 var mo = parsedDate.getMonth();
                                 var tgt = parsedDate.getDate();
                                 var tot = new Date(yr, mo + 1, 0).getDate();
-                                var fst = new Date(yr, mo, 1).getDay();
-                                var emp = (fst === 0) ? 6 : (fst - 1);
+                                var fst = (new Date(yr, mo, 1).getDay() + 6) % 7; // Chuẩn thứ Hai đầu tuần (Monday-first)
                                 calGrid.innerHTML = '';
-                                for (var ei = 0; ei < emp; ei++) {
+                                for (var ei = 0; ei < fst; ei++) {
                                     var spEmp = document.createElement('span');
-                                    spEmp.className = 'mayhen_invitation_ladoifji894yfv_cal_empty';
+                                    spEmp.className = 'mayhen_cal_blank mayhen_invitation_ladoifji894yfv_cal_empty';
                                     calGrid.appendChild(spEmp);
                                 }
                                 for (var di = 1; di <= tot; di++) {
                                     var spDay = document.createElement('span');
                                     spDay.textContent = di;
-                                    if (di === tgt) {
-                                        spDay.className = 'mayhen_invitation_ladoifji894yfv_cal_target';
-                                    }
+                                    spDay.className = 'mayhen_cal_day' + (di === tgt ? ' mayhen_cal_active mayhen_invitation_ladoifji894yfv_cal_target' : '');
                                     calGrid.appendChild(spDay);
                                 }
                                 calGrid.dataset.date = yr + '-' + String(mo + 1).padStart(2, '0') + '-' + String(tgt).padStart(2, '0');
-                            }
-                            var calMonth = document.querySelector('.mayhen_invitation_ladoifji894yfv_cal_month');
-                            if (calMonth) {
-                                calMonth.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + m + '</span> · <span data-sync-target="wedding_year">' + y + '</span>';
                             }
                         }
 
@@ -494,6 +514,7 @@
                         if (typeof window.updateMayhenCountdown === 'function') {
                             window.updateMayhenCountdown(parsedDate);
                         }
+                    }
 
                         // Tự động tính và đồng bộ ngày Âm lịch nếu có thay đổi ngày cưới
                         var calculatedLunar = calcVietnameseLunar(val);

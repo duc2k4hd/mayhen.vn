@@ -6,7 +6,8 @@
     const isEmbed = Boolean(
         window.__MAYHEN_IS_EMBED === true ||
         C.isEmbed ||
-        new URLSearchParams(location.search).get("embed") === "1",
+        new URLSearchParams(location.search).get("embed") === "1" ||
+        ["editor", "showcase", "home", "preview_card", "iframe"].includes(new URLSearchParams(location.search).get("mode"))
     );
     const one = (name, root = document) => root.querySelector(`.${P}${name}`);
     const all = (name, root = document) => [
@@ -225,6 +226,10 @@
         const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
         if (stageEl) {
             stageEl.classList.add("opened");
+            const centerCard = document.getElementById("mayhen-door-center") || one("door_center");
+            if (centerCard) {
+                centerCard.style.setProperty("display", "none", "important");
+            }
         }
 
         const gate = royalGate || one("royal_gate_wrapper");
@@ -297,6 +302,7 @@
             const stageEl = document.getElementById("mayhen-door-stage") || one("door_stage") || doorStage;
             if (stageEl) {
                 stageEl.classList.add("opened", "mayhen_door_hidden");
+                stageEl.style.setProperty("display", "none", "important");
             }
             triggerInitialAnimations();
             return;

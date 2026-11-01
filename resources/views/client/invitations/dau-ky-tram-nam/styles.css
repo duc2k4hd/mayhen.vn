@@ -4221,6 +4221,7 @@ body {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    display: none !important;
 }
 
 /* Cánh cửa 3D bên trái và phải */
@@ -4370,11 +4371,16 @@ body {
     pointer-events: auto;
 }
 
-/* Khi mở: Card mờ dần và bay nhẹ lên */
-.mayhen_invitation_jeowinids483fr_door_stage.opened .mayhen_invitation_jeowinids483fr_door_center {
-    opacity: 0;
-    transform: translate(-50%, -55%) scale(1.08);
-    pointer-events: none;
+/* Khi mở: Card mờ dần và ẩn hoàn toàn để không đè lên nội dung bên dưới */
+.mayhen_invitation_jeowinids483fr_door_stage.opened .mayhen_invitation_jeowinids483fr_door_center,
+.mayhen_invitation_jeowinids483fr_door_stage.opened .mayhen_invitation_jeowinids483fr_door_card,
+.mayhen_invitation_jeowinids483fr_door_stage.opened #mayhen-wax-seal,
+.mayhen_invitation_jeowinids483fr_door_stage.opened .mayhen_invitation_jeowinids483fr_wax_seal_wrap {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translate(-50%, -55%) scale(1.08) !important;
+    pointer-events: none !important;
+    display: none !important;
 }
 
 /* Tấm thiệp giấy mỹ thuật Ivory vân lụa cao cấp */
@@ -5174,24 +5180,98 @@ body {
 }
 
 /* ==========================================================================
-   Responsive Couple Names Block (Chống đè chữ, chống gãy dòng tên cô dâu chú rể)
+   Responsive Invitation Card Block (SECTION26: Chống đè chữ lên ảnh, căn giữa hoàn hảo)
    ========================================================================== */
+.mayhen_invitation_jeowinids483fr_section26 {
+    height: 1120px !important;
+}
+
+.mayhen_invitation_jeowinids483fr_group104 {
+    top: 195px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+/* Ảnh cặp đôi ở thiệp mời chính: Căn giữa sang trọng, kích thước chuẩn, viền mềm mại */
+.mayhen_invitation_jeowinids483fr_image226 {
+    top: 340px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 280px !important;
+    height: 280px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+    z-index: 2 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_image226 > .mayhen_invitation_jeowinids483fr_ladi-image,
+.mayhen_invitation_jeowinids483fr_image226 > .mayhen_invitation_jeowinids483fr_ladi-image > .mayhen_invitation_jeowinids483fr_ladi-image-background {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Cụm tên cô dâu chú rể chữ ký nghệ thuật: Nằm ngay ngắn bên dưới ảnh, không đè lên ngực cặp đôi */
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper {
     position: absolute !important;
-    top: 360px !important;
+    top: 635px !important;
     left: 0 !important;
     width: 100% !important;
     max-width: 420px !important;
-    height: 270px !important;
+    height: auto !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 2px !important;
-    z-index: 10 !important;
+    z-index: 5 !important;
     pointer-events: auto !important;
     padding: 0 15px !important;
     box-sizing: border-box !important;
+}
+
+/* Thời gian và địa điểm tổ chức tiệc: Xếp tầng ngay ngắn dưới cụm tên không bao giờ va chạm */
+.mayhen_invitation_jeowinids483fr_paragraph66 {
+    top: 730px !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph67 {
+    top: 775px !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph68 {
+    top: 825px !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph69 {
+    top: 875px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 380px !important;
+    text-align: center !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_button23 {
+    top: 980px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 6 !important;
 }
 
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline110,
@@ -5539,18 +5619,18 @@ body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483
 
 /* === SECTION 3: POLAROID PHOTO & ENVELOPE FRAMING === */
 .mayhen_invitation_jeowinids483fr_image210 {
-    top: 62px !important;
-    left: 12px !important;
-    z-index: 1 !important;
+    display: none !important;
 }
 .mayhen_invitation_jeowinids483fr_image51 {
     top: 50px !important;
-    left: 70px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     z-index: 2 !important;
 }
 .mayhen_invitation_jeowinids483fr_group134 {
     top: 30px !important;
-    left: 106px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     z-index: 3 !important;
 }
 .mayhen_invitation_jeowinids483fr_box86 > .mayhen_invitation_jeowinids483fr_ladi-box {
@@ -5573,7 +5653,8 @@ body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483
 }
 .mayhen_invitation_jeowinids483fr_image52 {
     top: 194px !important;
-    left: 70px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     z-index: 4 !important;
 }
 .mayhen_invitation_jeowinids483fr_image211 {
@@ -5581,19 +5662,22 @@ body.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483
 }
 
 /* === SECTION 27: EXPANDED 4-ITEM DYNAMIC TIMELINE === */
+.mayhen_invitation_jeowinids483fr_section27 {
+    height: 860px !important;
+}
 .mayhen_invitation_jeowinids483fr_box94 {
-    height: 360px !important;
+    height: 390px !important;
     top: 395px !important;
 }
 .mayhen_invitation_jeowinids483fr_group173 {
-    height: 310px !important;
+    height: 330px !important;
     top: 420px !important;
 }
 .mayhen_invitation_jeowinids483fr_line47 {
-    height: 305px !important;
+    height: 320px !important;
 }
 .mayhen_invitation_jeowinids483fr_image244 {
-    top: 660px !important;
+    top: 720px !important;
 }
 
 /* === SECTION 29: RSVP FORM CHECKBOXES & TEXTAREA FIX === */

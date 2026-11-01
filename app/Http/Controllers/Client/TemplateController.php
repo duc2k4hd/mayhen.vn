@@ -140,6 +140,9 @@ class TemplateController extends Controller
         $rsvpSubmitUrl = route('templates.preview.rsvp', $slug);
         $wishes = collect([]);
 
+        $isEmbed = $request->boolean('embed')
+            || in_array($request->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+
         $customView = "client.invitations.{$template->slug}.template";
         if (view()->exists($customView)) {
             return view($customView, [
@@ -150,11 +153,13 @@ class TemplateController extends Controller
                 'wishSubmitUrl' => $wishSubmitUrl,
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
                 'noNavBottom' => true,
+                'isEmbed' => $isEmbed,
             ]);
         }
 
         return view('client.pages.preview', [
             'template' => $template,
+            'isEmbed' => $isEmbed,
         ]);
     }
 
@@ -215,8 +220,8 @@ class TemplateController extends Controller
         $ifModifiedSince = request()->header('If-Modified-Since');
 
         // Phản hồi 304 Not Modified tức thì (0ms body transfer)
-        if (($ifNoneMatch && trim($ifNoneMatch) === $etag) ||
-            ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified)) {
+        if (! config('app.debug') && ((($ifNoneMatch && trim($ifNoneMatch) === $etag) ||
+            ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified)))) {
             return response('', 304, [
                 'ETag' => $etag,
                 'Last-Modified' => gmdate('D, d M Y H:i:s', $lastModified).' GMT',
@@ -225,9 +230,11 @@ class TemplateController extends Controller
         }
 
         $isStaticMedia = in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'svg', 'gif', 'woff', 'woff2', 'ttf', 'otf', 'mp3']);
-        $cacheControl = $isStaticMedia
-            ? 'public, max-age=31536000, immutable'
-            : 'public, max-age=86400, stale-while-revalidate=604800';
+        $cacheControl = config('app.debug')
+            ? 'no-cache, no-store, must-revalidate'
+            : ($isStaticMedia
+                ? 'public, max-age=31536000, immutable'
+                : 'public, max-age=86400, stale-while-revalidate=604800');
 
         $headers = [
             'Content-Type' => $mimeTypes[$extension] ?? 'application/octet-stream',

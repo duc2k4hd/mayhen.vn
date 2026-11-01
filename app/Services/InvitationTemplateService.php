@@ -129,14 +129,6 @@ class InvitationTemplateService
                         'max' => 300,
                     ],
                     [
-                        'key' => 'wedding.extra_data.save_date_photo_url',
-                        'label' => 'Ảnh thiệp mời tiệc cưới (Save The Date)',
-                        'type' => 'image',
-                        'required' => false,
-                        'default' => 'assets/images/savedate.webp',
-                        'placeholder' => 'Đường dẫn ảnh thiệp tiệc cưới',
-                    ],
-                    [
                         'key' => 'wedding.extra_data.couple_quote',
                         'label' => 'Lời ngỏ / Thông điệp tình yêu',
                         'type' => 'textarea',
