@@ -6,9 +6,104 @@
     'use strict';
 
     const P = 'mayhen_invitation_ladjihe38udhd_';
-    const DATA = window.MAYHEN_W18 || {};
     const $ = (q, base = document) => base.querySelector(q);
     const $$ = (q, base = document) => Array.from(base.querySelectorAll(q));
+    let DATA = {};
+    try {
+        DATA = JSON.parse($('[data-mayhen-config]')?.dataset.mayhenConfig || '{}');
+    } catch {
+        DATA = {};
+    }
+
+    function renderWeddingCalendar(inputDate) {
+        const parsedDate = inputDate instanceof Date ? inputDate : new Date(String(inputDate).slice(0, 10) + 'T00:00:00');
+        if (Number.isNaN(parsedDate.getTime())) return;
+
+        const calendarGroup = $('#GROUP82 > .' + P + 'ladi-group');
+        if (!calendarGroup) return;
+
+        let grid = $('.' + P + 'calendar_grid', calendarGroup);
+        if (!grid) {
+            grid = document.createElement('div');
+            grid.className = P + 'calendar_grid';
+            grid.setAttribute('data-sync-target', 'wedding_calendar');
+            calendarGroup.replaceChildren(grid);
+        }
+
+        const year = parsedDate.getFullYear();
+        const monthIndex = parsedDate.getMonth();
+        const selectedDay = parsedDate.getDate();
+        // Cột lịch bắt đầu từ Thứ 2 (MON = 0) đến Chủ Nhật (SUN = 6) khớp với tiêu đề HEADLINE231-237
+        const firstWeekday = (new Date(year, monthIndex, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const cellCount = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+        const fragment = document.createDocumentFragment();
+
+        for (let cellIndex = 0; cellIndex < cellCount; cellIndex++) {
+            const cell = document.createElement('span');
+            const dayNumber = cellIndex - firstWeekday + 1;
+            cell.className = P + 'calendar_day';
+
+            if (dayNumber > 0 && dayNumber <= daysInMonth) {
+                cell.textContent = String(dayNumber);
+                cell.setAttribute('aria-label', new Intl.DateTimeFormat('vi-VN', {
+                    dateStyle: 'long',
+                }).format(new Date(year, monthIndex, dayNumber)));
+                if (dayNumber === selectedDay) {
+                    cell.classList.add(P + 'calendar_day_selected');
+                    cell.setAttribute('aria-current', 'date');
+                }
+            } else {
+                cell.setAttribute('aria-hidden', 'true');
+            }
+
+            fragment.appendChild(cell);
+        }
+
+        grid.replaceChildren(fragment);
+        grid.setAttribute('data-date', [year, String(monthIndex + 1).padStart(2, '0'), String(selectedDay).padStart(2, '0')].join('-'));
+        $$('[data-sync-target="wedding_month"]').forEach(target => target.textContent = String(monthIndex + 1).padStart(2, '0'));
+        $$('[data-sync-target="wedding_year"]').forEach(target => target.textContent = String(year));
+        $$('[data-sync-target="calendar_month"]').forEach(target => target.textContent = String(monthIndex + 1).padStart(2, '0'));
+        $$('[data-sync-target="calendar_year"]').forEach(target => target.textContent = String(year));
+        $$('[data-sync-target="wedding_day"]').forEach(target => target.textContent = String(selectedDay).padStart(2, '0'));
+        $$('[data-sync-target="wedding_date"]').forEach(target => target.textContent = `${String(selectedDay).padStart(2, '0')} . ${String(monthIndex + 1).padStart(2, '0')} . ${year}`);
+        $$('[data-sync-target="wedding_weekday"]').forEach(target => target.textContent = new Intl.DateTimeFormat('vi-VN', { weekday: 'long' }).format(parsedDate));
+    }
+
+    window.renderMayhenWeddingCalendar = renderWeddingCalendar;
+
+    function getWeddingDateTime() {
+        const dateValue = String(DATA.weddingDate || new Date().toISOString());
+        const datePart = dateValue.slice(0, 10);
+        const timeValue = String(DATA.partyTime || '00:00').match(/^(\d{1,2}:\d{2})/)?.[1] || '00:00';
+        return new Date(`${datePart}T${timeValue}:00`);
+    }
+
+    function updateCountdown() {
+        const countdownTarget = getWeddingDateTime().getTime();
+        const sec = Math.max(0, Math.floor((countdownTarget - Date.now()) / 1000));
+        const vals = [Math.floor(sec / 86400), Math.floor(sec % 86400 / 3600), Math.floor(sec % 3600 / 60), sec % 60];
+        const nodes = $$('#COUNTDOWN1 .' + P + 'ladi-countdown-text span');
+        if (nodes.length >= 4) {
+            nodes.slice(0, 4).forEach((node, i) => node.textContent = String(vals[i]).padStart(2, '0'));
+        } else {
+            $$('#COUNTDOWN1 .' + P + 'ladi-countdown-text').slice(0, 4).forEach((node, i) => node.textContent = String(vals[i]).padStart(2, '0'));
+        }
+    }
+
+    if (DATA.weddingDate) renderWeddingCalendar(DATA.weddingDate);
+    [
+        ['cover_photo_url', DATA.coverPhotoUrl],
+        ['groom_photo_url', DATA.groomPhotoUrl],
+        ['bride_photo_url', DATA.bridePhotoUrl],
+        ['save_date_photo_url', DATA.saveDatePhotoUrl],
+    ].forEach(([key, value]) => {
+        const target = $('[data-sync-target="' + key + '"]');
+        if (target && value) {
+            target.style.backgroundImage = `url("${String(value).replace(/["\\]/g, '\\$&')}")`;
+        }
+    });
 
     const isPreview = Boolean(DATA.isPreview || window.__MAYHEN_IS_PREVIEW);
     const storeKey = DATA.storageKey || 'mayhen_lbcd_demo';
@@ -20,11 +115,111 @@
             history.scrollRestoration = 'manual';
         }
     } catch {}
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    document.documentElement.classList.add(P + 'locked');
-    document.body.classList.add(P + 'locked');
+    if (!DATA.isEmbed) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        document.documentElement.classList.add(P + 'locked');
+        document.body.classList.add(P + 'locked');
+    }
+
+    window.addEventListener('message', event => {
+        const data = event.data;
+        if (!data || data.type !== 'MAYHEN_SYNC_INPUT') return;
+
+        const key = String(data.key || '').replace(/^wedding\./, '').replace(/^extra_data\./, '');
+        const value = data.value == null ? '' : String(data.value);
+        if (['groom_name', 'bride_name', 'wedding_date', 'party_time', 'party_venue', 'event_party_address', 'groom_party_address', 'bride_party_address', 'groom_party_time', 'bride_party_time', 'groom_party_date', 'bride_party_date', 'groom_party_lunar', 'bride_party_lunar', 'wedding_lunar_date', 'groom_father', 'groom_mother', 'bride_father', 'bride_mother', 'couple_quote'].includes(key)) {
+            DATA[key] = value;
+        }
+        const imageConfigKeys = {
+            cover_photo_url: 'coverPhotoUrl',
+            groom_photo_url: 'groomPhotoUrl',
+            bride_photo_url: 'bridePhotoUrl',
+            save_date_photo_url: 'saveDatePhotoUrl',
+        };
+        if (imageConfigKeys[key]) {
+            DATA[imageConfigKeys[key]] = value;
+        }
+        if (key === 'groom_party_address') DATA.groomEventAddress = value;
+        if (key === 'bride_party_address') DATA.brideEventAddress = value;
+        if (key === 'event_party_address') {
+            DATA.eventPartyAddress = value;
+            DATA.groomEventAddress = DATA.groomPartyAddress || value;
+            DATA.brideEventAddress = DATA.bridePartyAddress || value;
+        }
+        if (key === 'groom_name') DATA.groom = value;
+        if (key === 'bride_name') DATA.bride = value;
+        if (key === 'groom_name' || key === 'bride_name') {
+            const words = value.trim().split(/\s+/).filter(Boolean);
+            const initial = words.length ? Array.from(words[0])[0].toLocaleLowerCase('vi') : '';
+            const initialTargets = key === 'groom_name'
+                ? ['#HEADLINE284 [data-sync-target="groom_name"]', '.' + P + 'wax_monogram [data-sync-target="groom_name"]']
+                : ['#HEADLINE286 [data-sync-target="bride_name"]', '.' + P + 'wax_monogram [data-sync-target="bride_name"]'];
+            initialTargets.forEach(selector => {
+                const initialElement = $(selector);
+                if (initialElement) initialElement.textContent = initial;
+            });
+        }
+        if (key === 'wedding_date' && value) {
+            DATA.weddingDate = value;
+            renderWeddingCalendar(value);
+            updateCountdown();
+        }
+        if (key === 'party_time') {
+            DATA.partyTime = value;
+            updateCountdown();
+        }
+        if (key === 'groom_name') {
+            DATA.groom = value;
+            const words = value.trim().split(/\s+/);
+            const initial = (words[words.length - 1] || 'S').charAt(0) || 'S';
+            $$('[data-sync-target="groom_initial"]').forEach(el => el.textContent = initial.toLowerCase());
+        }
+        if (key === 'bride_name') {
+            DATA.bride = value;
+            const words = value.trim().split(/\s+/);
+            const initial = (words[words.length - 1] || 'Q').charAt(0) || 'Q';
+            $$('[data-sync-target="bride_initial"]').forEach(el => el.textContent = initial.toLowerCase());
+        }
+        if (key === 'party_venue') DATA.partyVenue = value;
+        if (key === 'groom_party_address') DATA.groomPartyAddress = DATA.groomEventAddress = value || DATA.eventPartyAddress || '';
+        if (key === 'bride_party_address') DATA.bridePartyAddress = DATA.brideEventAddress = value || DATA.eventPartyAddress || '';
+        if (key === 'wedding_lunar_date') {
+            DATA.weddingLunarDate = value;
+            const lunarDate = $('#mayhen-wedding-lunar-date');
+            if (lunarDate) lunarDate.hidden = !value.trim();
+        }
+        if (key === 'qr_groom_image') DATA.gift.groom.qr = value;
+        if (key === 'qr_bride_image') DATA.gift.bride.qr = value;
+        if (key === 'bride_party_date') DATA.bridePartyDate = value;
+        if (key === 'groom_party_date') DATA.groomPartyDate = value;
+        if (key === 'bride_party_date' || key === 'groom_party_date' || key === 'wedding_date') {
+            const parsedDate = new Date(value);
+            if (!Number.isNaN(parsedDate.getTime())) {
+                const formattedDate = new Intl.DateTimeFormat('vi-VN').format(parsedDate);
+                const keys = key === 'wedding_date' ? ['bride_party_date', 'groom_party_date'] : [key];
+                keys.forEach(dateKey => {
+                    const target = $('[data-sync-target="' + dateKey + '"]');
+                    if (target) target.textContent = formattedDate;
+                });
+            }
+        }
+        const galleryMatch = key.match(/^gallery\.(\d+)$/);
+        if (galleryMatch) {
+            const galleryIndex = Number(galleryMatch[1]);
+            if (value) {
+                DATA.album[galleryIndex] = value;
+                photos[galleryIndex] = value;
+                const galleryTarget = $('[data-sync-target="' + key + '"]');
+                if (galleryTarget) {
+                    const bg = $('.' + P + 'ladi-image-background', galleryTarget);
+                    if (bg) bg.style.backgroundImage = 'url("' + value + '")';
+                    galleryTarget.hidden = false;
+                }
+            }
+        }
+    });
 
     const loadStorage = (type) => {
         try {
@@ -42,6 +237,7 @@
 
     const stage = $('#mayhen_w18_stage');
     const root = $('.' + P + 'ladi-wraper', stage);
+    $$('#HTML_CODE5 iframe, #HTML_CODE10 iframe').forEach(frame => frame.remove());
     const panel = $('#mayhen-w18-modal-body');
     const overlay = $('#mayhen-w18-overlay');
 
@@ -255,13 +451,17 @@
 
     // Bản đồ
     onActivate('#BUTTON9', () => {
-        const address = DATA.brideEventAddress || 'Lào Cai, Việt Nam';
+        const address = DATA.brideEventAddress || '';
+        if (!address) {
+            showToast('Vui lòng bổ sung địa chỉ Nhà Gái trước.');
+            return;
+        }
         window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address), '_blank', 'noopener');
     });
 
     // Thêm vào lịch ICS
     function saveCalendar() {
-        const dt = new Date(DATA.weddingDate || '2027-11-01T11:00:00+07:00');
+        const dt = getWeddingDateTime();
         const end = new Date(dt.getTime() + 3 * 3600000);
         const fmt = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
         const escapeIcs = s => String(s).replace(/[,;\\]/g, '\\$&').replace(/\n/g, '\\n');
@@ -274,18 +474,7 @@
     }
     onActivate('#BUTTON10', saveCalendar);
 
-    // Đếm ngược ngày cưới
-    const countdownTarget = new Date(DATA.weddingDate || '2027-11-01T11:00:00+07:00').getTime();
-    function updateCountdown() {
-        const sec = Math.max(0, Math.floor((countdownTarget - Date.now()) / 1000));
-        const vals = [Math.floor(sec / 86400), Math.floor(sec % 86400 / 3600), Math.floor(sec % 3600 / 60), sec % 60];
-        const nodes = $$('#COUNTDOWN1 .' + P + 'ladi-countdown-text span');
-        if (nodes.length >= 4) {
-            nodes.slice(0, 4).forEach((node, i) => node.textContent = String(vals[i]).padStart(2, '0'));
-        } else {
-            $$('#COUNTDOWN1 .' + P + 'ladi-countdown-text').slice(0, 4).forEach((node, i) => node.textContent = String(vals[i]).padStart(2, '0'));
-        }
-    }
+    // Đếm ngược dùng cùng ngày và giờ tiệc với dữ liệu thiệp.
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
@@ -297,11 +486,7 @@
             const title = k === 'groom' ? 'Chú rể (' + (DATA.groom || 'Chú rể') + ')' : 'Cô dâu (' + (DATA.bride || 'Cô dâu') + ')';
             return `<div style="padding:16px 8px;border-top:1px solid #e5e5e5;text-align:center">
                 <h3 style="font-size:20px;margin-bottom:8px;font-weight:600">${escapeHTML(title)}</h3>
-                <p style="margin:4px 0"><strong>${escapeHTML(item.bank || 'Ngân hàng')}</strong></p>
-                <p style="margin:4px 0">Chủ tài khoản: <strong>${escapeHTML(item.name || item.owner || '...')}</strong></p>
-                <p style="margin:4px 0">Số tài khoản: <strong style="font-size:17px;color:#111">${escapeHTML(item.number || item.account || '...')}</strong></p>
-                ${item.qr ? `<div style="margin:12px auto;max-width:200px"><img src="${escapeHTML(item.qr)}" alt="Mã QR" style="width:100%;border-radius:8px"></div>` : ''}
-                <button type="button" class="${P}dialog-action" data-copy="${escapeHTML(item.number || item.account || '')}" style="margin-top:8px">Sao chép số tài khoản</button>
+                ${item.qr ? `<div style="margin:12px auto;max-width:220px"><img src="${escapeHTML(item.qr)}" alt="Mã QR mừng cưới ${escapeHTML(title)}" style="width:100%;height:auto;border-radius:8px"></div>` : `<p>Chưa có mã QR mừng cưới.</p>`}
             </div>`;
         }).join('');
 
@@ -333,6 +518,23 @@
             return match?.[1] || '';
         }).filter(Boolean);
     }
+    $$('.' + P + 'photoBookImage').slice(10).forEach(el => { el.hidden = true; });
+
+    document.addEventListener('click', event => {
+        const mapButton = event.target.closest('[data-map-address]');
+        if (!mapButton) return;
+        event.preventDefault();
+        const addressType = mapButton.dataset.mapAddress;
+        const addressTarget = addressType === 'event'
+            ? 'event_party_address'
+            : (addressType === 'bride' ? 'bride_party_address' : 'groom_party_address');
+        const address = $('[data-sync-target="' + addressTarget + '"]')?.textContent.trim();
+        if (!address) {
+            showToast('Vui lòng bổ sung địa chỉ trước.');
+            return;
+        }
+        window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address), '_blank', 'noopener');
+    });
 
     function showPhoto(index) {
         if (!photos || !photos.length) {
@@ -768,20 +970,20 @@
     const doorCenter = $('#mayhen-door-center');
     const particlesLayer = $('#mayhen-door-particles');
 
-    let doorOpened = false;
+    let doorOpened = Boolean(DATA.isEmbed);
 
-    // Sinh cánh hoa bay và bụi sao vàng lấp lánh (Falling Red Petals & Golden Stardust)
+    // Sinh cánh hoa bay và bụi sao vàng lấp lánh (Falling Petals & Golden Stardust)
     function spawnCelebrationParticles() {
         if (!particlesLayer) return;
         particlesLayer.innerHTML = '';
 
         const petalColors = [
-            'radial-gradient(ellipse at 30% 20%, #C41E3A 0%, #8B1226 60%, #4D0613 100%)',
-            'radial-gradient(ellipse at 30% 20%, #A81B34 0%, #750D20 60%, #3D040E 100%)',
-            'radial-gradient(ellipse at 30% 20%, #8E1B32 0%, #5E0C1C 60%, #260208 100%)'
+            'radial-gradient(ellipse at 30% 20%, #FFF8FA 0%, #FDD7E4 60%, #E89CAE 100%)',
+            'radial-gradient(ellipse at 30% 20%, #F7FFF9 0%, #D4EADB 60%, #9BC4A7 100%)',
+            'radial-gradient(ellipse at 30% 20%, #FFFDF8 0%, #F5E8D3 60%, #D8C3A5 100%)'
         ];
 
-        for (let i = 0; i < 35; i++) {
+        for (let i = 0; i < 30; i++) {
             const petal = document.createElement('div');
             petal.className = P + 'petal';
             const size = Math.floor(Math.random() * 12 + 14);
@@ -868,9 +1070,12 @@
     }
 
     if (doorStage) {
-        // Đảm bảo cửa luôn hiển thị ở trạng thái sẵn sàng mở
-        doorStage.classList.remove('mayhen_door_hidden', 'opened');
-        doorStage.style.display = 'flex';
+        if (DATA.isEmbed) {
+            doorStage.classList.add('opened', 'mayhen_door_hidden');
+        } else {
+            doorStage.classList.remove('mayhen_door_hidden', 'opened');
+            doorStage.style.display = 'flex';
+        }
 
         // Bấm vào tem sáp hoặc tấm thiệp ở giữa hoặc cánh cửa để mở
         waxSeal?.addEventListener('click', (e) => {
@@ -895,9 +1100,9 @@
         });
     }
 
-    // Scroll reveal cho các khối section chính
-    const revealSections = $$('#SECTION4, #SECTION16, #SECTION13, #SECTION7, #SECTION20, #SECTION8, #SECTION9, #SECTION27, #SECTION17');
-    if ('IntersectionObserver' in window) {
+    // Scroll reveal cho các khối section chính (chỉ chạy khi xem trực tiếp ngoài iframe)
+    if (!isEmbed && 'IntersectionObserver' in window) {
+        const revealSections = $$('#SECTION4, #SECTION16, #SECTION13, #SECTION7, #SECTION20, #SECTION8, #SECTION9, #SECTION27, #SECTION17');
         const secObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {

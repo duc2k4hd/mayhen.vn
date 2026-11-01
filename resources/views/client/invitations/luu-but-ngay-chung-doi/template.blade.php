@@ -14,15 +14,15 @@
     $brideInitial = mb_substr(end($brideWords) ?: 'Q', 0, 1, 'UTF-8');
 
     // Bố mẹ hai bên
-    $groomFather = !empty($extraData['groom_father']) ? $extraData['groom_father'] : 'Nguyễn Văn Nam';
-    $groomMother = !empty($extraData['groom_mother']) ? $extraData['groom_mother'] : 'Trần Thị Mai';
-    $brideFather = !empty($extraData['bride_father']) ? $extraData['bride_father'] : 'Lê Văn Hùng';
-    $brideMother = !empty($extraData['bride_mother']) ? $extraData['bride_mother'] : 'Phạm Thị Lan';
+    $groomFather = $extraData['groom_father'] ?? '';
+    $groomMother = $extraData['groom_mother'] ?? '';
+    $brideFather = $extraData['bride_father'] ?? '';
+    $brideMother = $extraData['bride_mother'] ?? '';
 
     // 2. Ngày giờ và Sự kiện cưới
     $weddingDate = isset($wedding->wedding_date)
         ? \Carbon\Carbon::parse($wedding->wedding_date)
-        : \Carbon\Carbon::create(2027, 11, 1, 11, 0, 0);
+        : \Carbon\Carbon::create(2027, 11, 1, 0, 0, 0);
 
     $weddingDay = $weddingDate->format('d');
     $weddingMonth = $weddingDate->format('m');
@@ -43,21 +43,30 @@
     $weddingDayOfWeek = $dayNames[$weddingDate->format('l')] ?? 'Thứ Bảy';
 
     // Sự kiện & Địa chỉ
-    $brideEventAddress = !empty($extraData['bride_event_address'])
-        ? $extraData['bride_event_address']
-        : 'Đường Nguyễn Tất Thành, Văn Phú, Lào Cai';
+    $eventPartyAddress = $extraData['event_party_address'] ?? '';
+    $partyTime = $extraData['party_time'] ?? '';
+    $partyVenue = $extraData['party_venue'] ?? '';
+    $weddingLunarDate = $extraData['wedding_lunar_date'] ?? '';
+    $brideEventAddress = !empty($extraData['bride_party_address']) ? $extraData['bride_party_address'] : ($eventPartyAddress ?: 'Tư gia Nhà Gái');
+    $groomEventAddress = !empty($extraData['groom_party_address']) ? $extraData['groom_party_address'] : ($eventPartyAddress ?: 'Tư gia Nhà Trai');
+    $bridePartyTime = !empty($extraData['bride_party_time']) ? $extraData['bride_party_time'] : ($partyTime ?: '08:30');
+    $groomPartyTime = !empty($extraData['groom_party_time']) ? $extraData['groom_party_time'] : ($partyTime ?: '10:00');
+    $bridePartyDate = \Carbon\Carbon::parse(!empty($extraData['bride_party_date']) ? $extraData['bride_party_date'] : $weddingDate);
+    $groomPartyDate = \Carbon\Carbon::parse(!empty($extraData['groom_party_date']) ? $extraData['groom_party_date'] : $weddingDate);
+    $groomPartyDateFormatted = !empty($extraData['groom_party_date']) ? \Carbon\Carbon::parse($extraData['groom_party_date'])->format('d/m/Y') : $coverDateFormatted;
+    $bridePartyDateFormatted = !empty($extraData['bride_party_date']) ? \Carbon\Carbon::parse($extraData['bride_party_date'])->format('d/m/Y') : $coverDateFormatted;
+    $bridePartyLunar = !empty($extraData['bride_party_lunar']) ? $extraData['bride_party_lunar'] : $weddingLunarDate;
+    $groomPartyLunar = !empty($extraData['groom_party_lunar']) ? $extraData['groom_party_lunar'] : $weddingLunarDate;
+    $coupleQuote = $extraData['couple_quote'] ?? 'Lưu lại từng trang ký ức, vẽ nên trọn vẹn một hành trình chung đôi bình yên.';
+    $weddingDayOfWeek = $weddingDate->locale('vi')->isoFormat('dddd');
 
-    $groomEventAddress = !empty($extraData['groom_event_address'])
-        ? $extraData['groom_event_address']
-        : 'Phố Hoàng Liên, Cốc Lếu, Lào Cai';
-
-    $brideMapLink = !empty($extraData['bride_map_link'])
-        ? $extraData['bride_map_link']
-        : 'https://www.google.com/maps/search/?api=1&query=' . urlencode($brideEventAddress);
-
-    $groomMapLink = !empty($extraData['groom_map_link'])
-        ? $extraData['groom_map_link']
-        : 'https://www.google.com/maps/search/?api=1&query=' . urlencode($groomEventAddress);
+    // Lịch trình (timeline)
+    $timelineItems = $extraData['timeline'] ?? [
+        ['time' => $bridePartyTime ?: '08:30', 'title' => 'Lễ Vu Quy (Nhà Gái)', 'description' => $brideEventAddress ?: 'Tư gia Nhà Gái'],
+        ['time' => $groomPartyTime ?: '10:00', 'title' => 'Lễ Thành Hôn (Nhà Trai)', 'description' => $groomEventAddress ?: 'Tư gia Nhà Trai'],
+        ['time' => $partyTime ?: '18:00', 'title' => 'Tiệc Cưới Chung Vui', 'description' => $eventPartyAddress ?: 'Trung tâm tiệc cưới'],
+        ['time' => '19:30', 'title' => 'Chụp Ảnh Kỷ Niệm', 'description' => 'Sảnh tiệc cưới'],
+    ];
 
     // Hàm resolve asset chuẩn bảo mật
     $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
@@ -65,63 +74,79 @@
         if (str_starts_with($val, 'blob:')) {
             $val = '';
         }
+        if (str_starts_with($val, 'data:image/')) {
+            return $val;
+        }
+        if (preg_match('/^https?:\/\//i', $val)) {
+            $assetHost = parse_url($val, PHP_URL_HOST);
+            if ($assetHost === request()->getHost()) {
+                return $val;
+            }
+            $val = '';
+        } elseif (str_starts_with($val, '//') || str_contains($val, '../')) {
+            $val = '';
+        }
         if (empty($val)) {
             $fb = trim($fallback);
             if (empty($fb)) return '';
-            return str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/')
-                ? $fb
-                : $assetBase . '/' . ltrim($fb, '/');
+            $fallbackPath = resource_path('views/client/invitations/luu-but-ngay-chung-doi/assets/' . ltrim($fb, '/'));
+            return is_file($fallbackPath) ? $assetBase . '/' . ltrim($fb, '/') : '';
         }
-        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+        if (str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
             return $val;
         }
-        return $assetBase . '/' . ltrim($val, '/');
+        $assetPath = resource_path('views/client/invitations/luu-but-ngay-chung-doi/assets/' . ltrim($val, '/'));
+        if (is_file($assetPath)) {
+            return $assetBase . '/' . ltrim($val, '/');
+        }
+        if ($fallback !== '') {
+            $fallbackPath = resource_path('views/client/invitations/luu-but-ngay-chung-doi/assets/' . ltrim($fallback, '/'));
+            return is_file($fallbackPath) ? $assetBase . '/' . ltrim($fallback, '/') : '';
+        }
+
+        return '';
     };
 
     // 3. Mừng cưới QR & Ngân hàng
     $qrGroom = $resolveAsset($extraData['qr_groom_image'] ?? null, '');
     $qrBride = $resolveAsset($extraData['qr_bride_image'] ?? null, '');
+    $coverPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? $extraData['cover_photo_url'] ?? null, 'images/external/42bbe2b173fbd668dc032e4f.jpg');
+    $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'images/external/3901bfd3190f56014d895d1a.jpg');
+    $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'images/external/e9af36aeab2bdadab5cfa38a.jpg');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? $wedding->cover_photo_url ?? $extraData['cover_photo_url'] ?? null, 'images/external/5e2097a309453c729959a58c.jpg');
 
-    $groomBankInfo = [
-        'bank' => $extraData['groom_bank_name'] ?? 'Techcombank',
-        'name' => $extraData['groom_account_name'] ?? $groomName,
-        'number' => $extraData['groom_account_number'] ?? '190368888888',
-        'qr' => $qrGroom,
-    ];
-    $brideBankInfo = [
-        'bank' => $extraData['bride_bank_name'] ?? 'Vietcombank',
-        'name' => $extraData['bride_account_name'] ?? $brideName,
-        'number' => $extraData['bride_account_number'] ?? '998877665544',
-        'qr' => $qrBride,
-    ];
+    $groomBankInfo = ['qr' => $qrGroom];
+    $brideBankInfo = ['qr' => $qrBride];
 
     // 4. Nhạc nền
     $musicUrl = $resolveAsset($wedding->music_url ?? null, '');
 
-    // 5. Album ảnh cưới 12 ảnh
+    // 5. Album ảnh cưới tối đa 10 ảnh
     $defaultAlbum = [
-        $assetBase . '/images/external/3901bfd3190f56014d895d1a.jpg',
-        $assetBase . '/images/external/e9af36aeab2bdadab5cfa38a.jpg',
-        $assetBase . '/images/external/92a00aa5496c7a21b66e849c.jpg',
-        $assetBase . '/images/external/69415bc1a70fa6ab262a5a64.jpg',
-        $assetBase . '/images/external/26844409b0f13b3939a425ed.jpg',
-        $assetBase . '/images/external/6da36455f708e4ada496156b.jpg',
-        $assetBase . '/images/external/d186c382da25135ecdb84a26.jpg',
-        $assetBase . '/images/external/9a1368650f4a8f7d390b25fb.jpg',
-        $assetBase . '/images/external/0086c9a04b4db8dd38df1f73.jpg',
-        $assetBase . '/images/external/fd1e0117e9fae02cd4a4ce79.jpg',
-        $assetBase . '/images/external/ba3d1ab0162723fc4b2a42b8.jpg',
-        $assetBase . '/images/external/750ef46df6b267d9fe57e090.jpg',
+        'images/external/3901bfd3190f56014d895d1a.jpg',
+        'images/external/e9af36aeab2bdadab5cfa38a.jpg',
+        'images/external/92a00aa5496c7a21b66e849c.jpg',
+        'images/external/69415bc1a70fa6ab262a5a64.jpg',
+        'images/external/26844409b0f13b3939a425ed.jpg',
+        'images/external/6da36455f708e4ada496156b.jpg',
+        'images/external/d186c382da25135ecdb84a26.jpg',
+        'images/external/9a1368650f4a8f7d390b25fb.jpg',
+        'images/external/0086c9a04b4db8dd38df1f73.jpg',
+        'images/external/fd1e0117e9fae02cd4a4ce79.jpg',
+        'images/external/ba3d1ab0162723fc4b2a42b8.jpg',
     ];
     $rawGallery = $wedding->extra_data['gallery'] ?? [];
     $validGallery = is_array($rawGallery)
-        ? array_filter(
+        ? array_values(array_filter(
             $rawGallery,
             fn($item) => !empty(trim((string) $item)) && !str_starts_with((string) $item, 'blob:'),
-        )
+        ))
         : [];
-    $selectedAlbum = !empty($validGallery) ? array_values($validGallery) : $defaultAlbum;
-    $albumPhotos = array_map(fn($p) => $resolveAsset($p), $selectedAlbum);
+    $albumPhotos = [];
+    for ($i = 0; $i < 10; $i++) {
+        $photo = $validGallery[$i] ?? ($defaultAlbum[$i] ?? $defaultAlbum[0]);
+        $albumPhotos[$i] = $resolveAsset($photo, $defaultAlbum[$i] ?? $defaultAlbum[0]);
+    }
 
     // 6. Lời chúc & RSVP URLs
     $wishes = $wishes ?? collect([]);
@@ -135,6 +160,39 @@
 
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Lưu Bút Ngày Chung Đôi';
+    $clientConfig = [
+        'groom' => $groomName,
+        'bride' => $brideName,
+        'guest' => $guestName,
+        'weddingDate' => $weddingIso,
+        'coverPhotoUrl' => $coverPhotoUrl,
+        'groomPhotoUrl' => $groomPhotoUrl,
+        'bridePhotoUrl' => $bridePhotoUrl,
+        'saveDatePhotoUrl' => $saveDatePhotoUrl,
+        'partyTime' => $partyTime,
+        'partyVenue' => $partyVenue,
+        'eventPartyAddress' => $eventPartyAddress,
+        'weddingLunarDate' => $weddingLunarDate,
+        'groomPartyAddress' => $groomEventAddress,
+        'bridePartyAddress' => $brideEventAddress,
+        'groomPartyLunar' => $groomPartyLunar,
+        'bridePartyLunar' => $bridePartyLunar,
+        'brideEventAddress' => $brideEventAddress,
+        'groomEventAddress' => $groomEventAddress,
+        'bridePartyTime' => $bridePartyTime,
+        'groomPartyTime' => $groomPartyTime,
+        'bridePartyDate' => $bridePartyDate->toIso8601String(),
+        'groomPartyDate' => $groomPartyDate->toIso8601String(),
+        'coupleQuote' => $coupleQuote,
+        'gift' => ['groom' => $groomBankInfo, 'bride' => $brideBankInfo],
+        'album' => $albumPhotos,
+        'isPreview' => $isPreview,
+        'isEmbed' => $isEmbed,
+        'music' => $musicUrl,
+        'wishSubmitUrl' => $wishSubmitUrl,
+        'rsvpSubmitUrl' => $rsvpSubmitUrl,
+        'storageKey' => 'mayhen_lbcd_' . ($invitation->slug ?? 'demo'),
+    ];
     $pageTitle = $isPreview 
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
@@ -147,47 +205,18 @@
 
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_ladjihe38udhd_root mayhen_invitation_ladjihe38udhd_locked')
+@section('html_class', 'mayhen_invitation_ladjihe38udhd_root' . ($isEmbed ? '' : ' mayhen_invitation_ladjihe38udhd_locked'))
 @section('title', $pageTitle)
 @section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Thiệp cưới ' . $groomName . ' & ' . $brideName . ' – ngày ' . $coverDateFormatted . '.')
-@section('body_class', 'mayhen_invitation_wrapper mayhen_invitation_ladjihe38udhd_locked')
-
-@push('fonts')
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-@endpush
+@section('body_class', 'mayhen_invitation_wrapper' . ($isEmbed ? ' mayhen_invitation_ladjihe38udhd_embed' : ' mayhen_invitation_ladjihe38udhd_locked'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'luu-but-ngay-chung-doi', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
 @endpush
 
-@section('head_extra')
-    <script>
-        window.MAYHEN_W18 = {
-            groom: @json($groomName),
-            bride: @json($brideName),
-            guest: @json($guestName),
-            weddingDate: @json($weddingIso),
-            brideEventAddress: @json($brideEventAddress),
-            groomEventAddress: @json($groomEventAddress),
-            gift: {
-                groom: @json($groomBankInfo),
-                bride: @json($brideBankInfo)
-            },
-            album: @json($albumPhotos),
-            isPreview: {{ $isPreview ? 'true' : 'false' }},
-            music: @json($musicUrl),
-            wishSubmitUrl: @json($wishSubmitUrl),
-            rsvpSubmitUrl: @json($rsvpSubmitUrl),
-            storageKey: 'mayhen_lbcd_' + @json($invitation->slug ?? 'demo')
-        };
-    </script>
-@endsection
-
 @section('content')
 {{-- 2 CÁNH CỬA TÌNH YÊU MỞ SANG 2 BÊN (GRAND 3D DOUBLE GATE OPENING) --}}
-<div id="mayhen-door-stage" class="mayhen_invitation_ladjihe38udhd_door_stage {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}" style="{{ $isEmbed ? 'display: none !important;' : '' }}" aria-label="Cánh cửa tình yêu">
+<div id="mayhen-door-stage" class="mayhen_invitation_ladjihe38udhd_door_stage {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}" data-mayhen-section="couple" aria-label="Cánh cửa tình yêu">
     <!-- Cánh cửa bên trái -->
     <div class="mayhen_invitation_ladjihe38udhd_door mayhen_invitation_ladjihe38udhd_door_left">
         <div class="mayhen_invitation_ladjihe38udhd_door_surface">
@@ -227,8 +256,9 @@
 
             <div class="mayhen_invitation_ladjihe38udhd_card_badge">WEDDING INVITATION</div>
             <div class="mayhen_invitation_ladjihe38udhd_card_save_date">SAVE OUR DATE</div>
-            <h1 class="mayhen_invitation_ladjihe38udhd_card_names" data-sync-target="groom_name_bride_name">{{ $groomName }} <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span> {{ $brideName }}</h1>
+            <h1 class="mayhen_invitation_ladjihe38udhd_card_names"><span data-sync-target="groom_name">{{ $groomName }}</span> <span class="mayhen_invitation_ladjihe38udhd_amp">&amp;</span> <span data-sync-target="bride_name">{{ $brideName }}</span></h1>
             <p class="mayhen_invitation_ladjihe38udhd_card_date" data-sync-target="wedding_date">{{ $weddingDay }} . {{ $weddingMonth }} . {{ $weddingYear }}</p>
+            <p class="mayhen_invitation_ladjihe38udhd_card_guest_label" data-sync-target="couple_quote">{{ $coupleQuote }}</p>
             <p class="mayhen_invitation_ladjihe38udhd_card_guest_label">Trân trọng kính mời</p>
             <div class="mayhen_invitation_ladjihe38udhd_card_guest_pill" data-sync-target="guest_name">{{ $guestName }}</div>
 
@@ -237,7 +267,7 @@
                 <div class="mayhen_invitation_ladjihe38udhd_wax_seal_glow"></div>
                 <div class="mayhen_invitation_ladjihe38udhd_wax_seal">
                     <div class="mayhen_invitation_ladjihe38udhd_wax_rim">
-                        <div class="mayhen_invitation_ladjihe38udhd_wax_monogram">{{ $groomInitial }}<span class="mayhen_invitation_ladjihe38udhd_monogram_amp">&amp;</span>{{ $brideInitial }}</div>
+                    <div class="mayhen_invitation_ladjihe38udhd_wax_monogram"><span data-sync-target="groom_name">{{ $groomInitial }}</span><span class="mayhen_invitation_ladjihe38udhd_monogram_amp">&amp;</span><span data-sync-target="bride_name">{{ $brideInitial }}</span></div>
                     </div>
                 </div>
                 <div class="mayhen_invitation_ladjihe38udhd_wax_ribbon mayhen_invitation_ladjihe38udhd_ribbon_left"></div>
@@ -256,7 +286,7 @@
     <div id="mayhen-door-particles" class="mayhen_invitation_ladjihe38udhd_door_particles" aria-hidden="true"></div>
 </div>
 
-<div id="mayhen_w18_stage"><div class="mayhen_invitation_ladjihe38udhd_ladi-wraper">
+<div id="mayhen_w18_stage" data-mayhen-config='@json($clientConfig)'><div class="mayhen_invitation_ladjihe38udhd_ladi-wraper">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION28">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container"></div>
@@ -266,7 +296,7 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE1">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" data-sync-target="cover_photo_url" style="background-image: url('{{ $coverPhotoUrl }}');"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX43">
@@ -303,13 +333,13 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP94">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE3">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">sơn</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_name">{{ $groomName }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE282">
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">&amp;<br/></h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE283">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">quỳnh</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_name">{{ $brideName }}</h3>
 </div>
 </div>
 </div>
@@ -393,7 +423,7 @@
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE88">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" data-sync-target="cover_photo_url" style="background-image: url('{{ $saveDatePhotoUrl }}');"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP71">
@@ -417,27 +447,29 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX51">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-box mayhen_invitation_ladjihe38udhd_ladi-transition"></div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE276"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">{{ $weddingDay }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE276"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline" data-sync-target="wedding_day">{{ $weddingDay }}</h3>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE277"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">{{ $weddingDayOfWeek }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE277"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline" data-sync-target="wedding_weekday">{{ $weddingDayOfWeek }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE278">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline"><span class="mayhen_invitation_ladjihe38udhd_ladipage-animated-headline mayhen_invitation_ladjihe38udhd_scale mayhen_invitation_ladjihe38udhd_letters"><span class="mayhen_invitation_ladjihe38udhd_ladipage-animated-words-wrapper" data-word='["17:00"]' style="width: 74px;"><b class="mayhen_invitation_ladjihe38udhd_is-visible" style="opacity: 1;"><i class="mayhen_invitation_ladjihe38udhd_out">1</i><i class="mayhen_invitation_ladjihe38udhd_out">1</i><i class="mayhen_invitation_ladjihe38udhd_out">:</i><i class="mayhen_invitation_ladjihe38udhd_out">0</i><i class="mayhen_invitation_ladjihe38udhd_out">0</i></b><b style="opacity: 1;"><i class="mayhen_invitation_ladjihe38udhd_in">1</i><i class="mayhen_invitation_ladjihe38udhd_in">7</i><i class="mayhen_invitation_ladjihe38udhd_in">:</i><i class="mayhen_invitation_ladjihe38udhd_in">0</i><i class="mayhen_invitation_ladjihe38udhd_in">0</i></b></span></span><span class="mayhen_invitation_ladjihe38udhd_ladipage-animated-headline mayhen_invitation_ladjihe38udhd_scale mayhen_invitation_ladjihe38udhd_ladipage-animated-headline-duplicate"><span class="mayhen_invitation_ladjihe38udhd_ladipage-animated-words-wrapper" data-word='["17:00"]'>11:00</span></span></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline" data-sync-target="party_time">{{ $partyTime }}</h3>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE279"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">Tháng {{ $weddingMonth }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE279"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">Tháng <span data-sync-target="wedding_month">{{ $weddingMonth }}</span></h3>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE280"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">{{ $weddingYear }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE280"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline" data-sync-target="wedding_year">{{ $weddingYear }}</h3>
 </div>
 </div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_lunar_date" id="mayhen-wedding-lunar-date" {{ $weddingLunarDate === '' ? 'hidden' : '' }}><p class="mayhen_invitation_ladjihe38udhd_ladi-paragraph">Âm lịch: <span data-sync-target="wedding_lunar_date">{{ $weddingLunarDate }}</span></p>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP95">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE284"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">{{ mb_strtolower(mb_substr($groomName, 0, 1)) }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE284"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_initial">{{ mb_strtolower($groomInitial) }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE285">
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">&amp;<br/></h3>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE286"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">{{ mb_strtolower(mb_substr($brideName, 0, 1)) }}</h3>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE286"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_initial">{{ mb_strtolower($brideInitial) }}</h3>
 </div>
 </div>
 </div>
@@ -506,26 +538,26 @@
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP81">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE231">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">sun</h3>
-</div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE232">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">mon</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">MON</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE233">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">tue</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">TUE</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE234">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">wed</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">WED</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE235">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">thur</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">THUR</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE236">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">fri</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">FRI</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE237">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">sat</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">SAT</h3>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE231">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">SUN</h3>
 </div>
 </div>
 </div>
@@ -731,10 +763,10 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE273">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Tháng 11</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Tháng <span data-sync-target="calendar_month">{{ $weddingMonth }}</span></h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE274">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">2025</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="calendar_year">{{ $weddingYear }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="SHAPE14">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-shape mayhen_invitation_ladjihe38udhd_ladi-transition"><svg class="" fill='url("#SHAPE14_desktop_gradient")' height="100%" preserveaspectratio="none" viewbox="0 -960 960 960" width="100%" xmlns="http://www.w3.org/2000/svg">
@@ -873,7 +905,7 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE115">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" data-sync-target="groom_photo_url"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX60">
@@ -883,15 +915,12 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Chú rể</div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE300">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">NGỌC SƠN<br/></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_name">{{ $groomName }}</h3>
 </div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH70">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Chú rể là một chàng trai điềm đạm, chân thành và
-                                luôn sống hết lòng vì gia đình và những người thân yêu. Với trái tim ấm áp và sự chín
-                                chắn trong suy nghĩ, anh đã và đang là chỗ dựa vững chắc cho cô dâu cũng như là người
-                                bạn đồng hành lý tưởng trong chặng đường hôn nhân sắp tới.<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Chú rể là một chàng trai điềm đạm, chân thành và luôn sống hết lòng vì gia đình và những người thân yêu. Với trái tim ấm áp và sự chín chắn trong suy nghĩ, anh luôn là chỗ dựa vững chắc cho người bạn đời.<br/></div>
 </div>
 </div>
 </div>
@@ -901,7 +930,7 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE122">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" data-sync-target="bride_photo_url"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX67">
@@ -911,21 +940,18 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Cô dâu</div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE304">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">THÚY QUỲNH</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_name">{{ $brideName }}</h3>
 </div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH76">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Cô dâu là một người con gái dịu dàng, tinh tế và
-                                luôn mang đến năng lượng tích cực cho những người xung quanh. Với nụ cười ấm áp và trái
-                                tim chân thành, cô không chỉ là niềm tự hào của gia đình mà còn là người bạn đời lý
-                                tưởng, đồng hành cùng chú rể trong hành trình xây dựng hạnh phúc.<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Cô dâu là một người con gái dịu dàng, tinh tế và luôn mang đến năng lượng tích cực cho những người xung quanh. Với nụ cười ấm áp và trái tim chân thành, cô luôn là niềm tự hào và bến đỗ bình yên.<br/></div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION16">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION16" data-mayhen-section="timeline">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE99">
@@ -938,35 +964,12 @@
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE55">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" data-sync-target="cover_photo_url" style="background-image: url('{{ $coverPhotoUrl }}');"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE98">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP143">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-group">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="LINE81">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-line">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-line-container"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH81">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Ngày {{ $weddingDay }} - {{ $weddingMonth }} - {{ $weddingYear }}<br/><span style="text-transform: uppercase;">Tại tư gia nhà trai</span><br/></div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE342">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">10:00<br/></h3>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE155">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE343">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">lễ Thành hôn<br/></h3>
-</div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP160">
@@ -977,10 +980,10 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH93">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Ngày {{ $weddingDay }} - {{ $weddingMonth }} - {{ $weddingYear }}<br/><span style="text-transform: uppercase;">Tại tư gia nhà gái</span><br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Ngày <span data-sync-target="bride_party_date">{{ $bridePartyDateFormatted }}</span><br/><span data-sync-target="bride_party_address">{{ $brideEventAddress }}</span><br/></div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE357">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">08:30<br/></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.0.time">{{ $timelineItems[0]['time'] ?? $bridePartyTime }}<br/></h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE164">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image">
@@ -988,13 +991,88 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE358">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">lễ vu quy<br/></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.0.title">{{ $timelineItems[0]['title'] ?? 'Lễ Vu Quy' }}<br/></h3>
+</div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP143">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-group">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="LINE81">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line-container"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH81">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Ngày <span data-sync-target="groom_party_date">{{ $groomPartyDateFormatted }}</span><br/><span data-sync-target="groom_party_address">{{ $groomEventAddress }}</span><br/></div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE342">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.1.time">{{ $timelineItems[1]['time'] ?? $groomPartyTime }}<br/></h3>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE155">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE343">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.1.title">{{ $timelineItems[1]['title'] ?? 'Lễ Thành Hôn' }}<br/></h3>
+</div>
+</div>
+</div>
+@if(isset($timelineItems[2]))
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_timeline_extra_item" id="GROUP144">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-group">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="LINE88">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line-container"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH82">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span data-sync-target="timeline.2.description">{{ $timelineItems[2]['description'] ?? '' }}</span></div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE344">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.2.time">{{ $timelineItems[2]['time'] ?? '18:00' }}</h3>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE156">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE345">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.2.title">{{ $timelineItems[2]['title'] ?? 'Khai Tiệc Mừng Cưới' }}</h3>
+</div>
+</div>
+</div>
+@endif
+@if(isset($timelineItems[3]))
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_timeline_extra_item" id="GROUP145">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-group">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="LINE89">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-line-container"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH83">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span data-sync-target="timeline.3.description">{{ $timelineItems[3]['description'] ?? '' }}</span></div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE346">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.3.time">{{ $timelineItems[3]['time'] ?? '19:30' }}</h3>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE157">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE347">
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="timeline.3.title">{{ $timelineItems[3]['title'] ?? 'Chụp Ảnh Kỷ Niệm' }}</h3>
+</div>
+</div>
+</div>
+@endif
 </div>
 </div>
 </div>
 </div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION13">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION13" data-mayhen-section="groom_family">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE46">
@@ -1034,10 +1112,10 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE69">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Ngọc Sơn</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_name">{{ $groomName }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE70">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Thúy Quỳnh</h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_name">{{ $brideName }}</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE71">
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Và</h3>
@@ -1064,22 +1142,22 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Tới dự BUỔI TIỆC CHUNG VUI CÙNG GIA ĐÌNH chúng tôi<br/>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_class_tenKhachMoi" id="HEADLINE66"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition"><div style="display: inline-block;  padding:2px 20px;border-radius:15px; border:0px solid #ffffff;"><span style="display: block;  word-wrap: break-word; max-width: 100%;">Bạn và Gia Đình</span></div><br/></h3></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_class_tenKhachMoi" id="HEADLINE66"><h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition"><div style="display: inline-block;  padding:2px 20px;border-radius:15px; border:0px solid #ffffff;"><span style="display: block;  word-wrap: break-word; max-width: 100%;" data-sync-target="guest_name">{{ $guestName }}</span></div><br/></h3></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE67">
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">TRÂN TRỌNG KÍNH MỜI</h3>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP150">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP150" data-mayhen-section="bride_family">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH23">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span style="font-size: 18px;">VÀO LÚC 11 GIỜ 00
-                                    <br/></span>{{ mb_strtoupper($weddingDayOfWeek) }}, NGÀY {{ $weddingDay }} THÁNG {{ $weddingMonth }} NĂM {{ $weddingYear }}<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span style="font-size: 18px;">VÀO LÚC <span data-sync-target="bride_party_time">{{ $bridePartyTime }}</span>
+                                    <br/></span>NGÀY <span data-sync-target="bride_party_date">{{ $bridePartyDate->format('d/m/Y') }}</span><br/></div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH24">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">{!! nl2br(e($brideEventAddress)) !!}
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_party_address">{!! nl2br(e($brideEventAddress)) !!}
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH25">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">(Tức ngày 12 tháng 09 năm Ất Tỵ)</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_party_lunar">{{ $extraData['bride_party_lunar'] ?? '' }}</div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BUTTON19">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-button">
@@ -1090,21 +1168,21 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH83">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Trung tâm tiệc cưới<br/><span style="font-size: 28px;">HOÀNG GIA</span><br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span data-sync-target="party_venue">{{ $partyVenue }}</span><br/><span data-sync-target="event_party_address">{!! nl2br(e($eventPartyAddress)) !!}</span><br/><button type="button" data-map-address="event">Mở địa chỉ trên bản đồ</button></div>
 </div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP151">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH84">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span style="font-size: 18px;">VÀO LÚC 17 GIỜ 00
-                                    <br/></span>{{ mb_strtoupper($weddingDayOfWeek) }}, NGÀY {{ $weddingDay }} THÁNG {{ $weddingMonth }} NĂM {{ $weddingYear }}<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><span style="font-size: 18px;">VÀO LÚC <span data-sync-target="groom_party_time">{{ $groomPartyTime }}</span>
+                                    <br/></span>NGÀY <span data-sync-target="groom_party_date">{{ $groomPartyDate->format('d/m/Y') }}</span><br/></div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH85">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">{!! nl2br(e($groomEventAddress)) !!}</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_party_address">{!! nl2br(e($groomEventAddress)) !!}</div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH86">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">(Tức ngày 12 tháng 09 năm Ất Tỵ)</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_party_lunar">{{ $extraData['groom_party_lunar'] ?? '' }}</div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BUTTON20">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-button">
@@ -1115,7 +1193,7 @@
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH87">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition">Trung tâm tiệc cưới<br/><span style="font-size: 28px;">SUNRISE</span><br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph mayhen_invitation_ladjihe38udhd_ladi-transition"><button type="button" data-map-address="groom">Mở địa chỉ trên bản đồ</button></div>
 </div>
 </div>
 </div>
@@ -1127,7 +1205,7 @@
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">Nhà trai</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH88">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph">Ông: Tạ Duy Hiển<br/>Bà: Trần Thị Hòa<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph"><span>Ông: </span><span data-sync-target="groom_father">{{ $groomFather }}</span><br/><span>Bà: </span><span data-sync-target="groom_mother">{{ $groomMother }}</span><br/></div>
 </div>
 </div>
 </div>
@@ -1142,7 +1220,7 @@
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline">Nhà GÁi</h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="PARAGRAPH89">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph">Ông: Trần Hữu Ninh<br/>Bà: Ngô Thị Dung<br/></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-paragraph"><span>Ông: </span><span data-sync-target="bride_father">{{ $brideFather }}</span><br/><span>Bà: </span><span data-sync-target="bride_mother">{{ $brideMother }}</span><br/></div>
 </div>
 </div>
 </div>
@@ -1176,10 +1254,10 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="GROUP12">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-group">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE12">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Thúy Quỳnh<br/></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="bride_name">{{ $brideName }}<br/></h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE13">
-<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">Ngọc sơn<br/></h3>
+<h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition" data-sync-target="groom_name">{{ $groomName }}<br/></h3>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="HEADLINE14">
 <h3 class="mayhen_invitation_ladjihe38udhd_ladi-headline mayhen_invitation_ladjihe38udhd_ladi-transition">&amp;<br/></h3>
@@ -1282,42 +1360,42 @@
 </div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION20">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION20" data-mayhen-section="album">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE60" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE60" data-sync-target="gallery.0" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[0] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE61" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE61" data-sync-target="gallery.1" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[1] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE62" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE62" data-sync-target="gallery.2" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[2] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE63" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE63" data-sync-target="gallery.3" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[3] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE64" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE64" data-sync-target="gallery.4" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[4] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE65" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE65" data-sync-target="gallery.5" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[5] }}');"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE66" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE66" data-sync-target="gallery.6" style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[6] }}');"></div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="BOX42">
@@ -1339,27 +1417,27 @@
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE109" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE109" data-sync-target="gallery.7" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[7] }}');"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE110" data-sync-target="gallery.8" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[8] }}');"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE114" data-sync-target="gallery.9" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background" style="background-image: url('{{ $albumPhotos[9] }}');"></div>
+</div>
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE119" hidden style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE110" style="cursor: pointer;">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE114" style="cursor: pointer;">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE119" style="cursor: pointer;">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
-<div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
-</div>
-</div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE120" style="cursor: pointer;">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_photoBookImage" id="IMAGE120" hidden style="cursor: pointer;">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image mayhen_invitation_ladjihe38udhd_ladi-transition">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-image-background"></div>
 </div>
@@ -1590,7 +1668,11 @@
 </div>
 </div>
 </div>
-<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION27">
+<div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION27" data-mayhen-section="gift">
+<div hidden aria-hidden="true">
+    <img src="{{ $qrGroom ?: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' }}" alt="" data-sync-target="qr_groom_image">
+    <img src="{{ $qrBride ?: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' }}" alt="" data-sync-target="qr_bride_image">
+</div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
 <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE132">

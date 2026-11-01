@@ -2795,6 +2795,142 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Laravel Pint: Passed.
                      - Cache hệ thống: Cleared.
 
+            105. **Chuẩn Hóa Toàn Diện Mẫu "Lưu Bút Ngày Chung Đôi" (`luu-but-ngay-chung-doi`)**:
+                - **Kiến trúc & Schema (`schema.json`)**:
+                  * Duy trì cấu trúc 5 section chuẩn mực: `couple`, `groom_family`, `bride_family`, `album` (10 ảnh), `gift`.
+                  * Chuẩn hóa toàn bộ bộ khóa canonical (`wedding.groom_name`, `wedding.bride_name`, `wedding.extra_data.groom_father/mother`, `wedding.extra_data.bride_father/mother`, `wedding.wedding_date`, `wedding.extra_data.qr_groom_image`, `wedding.extra_data.qr_bride_image`).
+                  * Loại bỏ toàn bộ các default giả, text hardcode thừa, và đồng bộ kiểu dữ liệu giờ sang input time.
+                - **Khế ước Live Sync & Section Scroll (`template.blade.php`)**:
+                  * Gắn `data-mayhen-section` chuẩn xác (`couple` ở `#SECTION1`, `groom_family` ở `#SECTION13`, `bride_family` ở `#GROUP150`, `album` ở `#SECTION20`, `gift` ở `#SECTION27`) giúp Stepper Bar cuộn mượt mà đến đúng vị trí khi click tab.
+                  * Gắn đầy đủ `data-sync-target` cho 100% vị trí hiển thị (tên chú rể, tên cô dâu, tên khách mời, lời ngỏ, bố mẹ, giờ/ngày/âm lịch/địa chỉ hai nhà, 10 ảnh album cưới và mã QR mừng cưới).
+                  * Loại bỏ hardcode tĩnh tên chú rể "Ngọc sơn", tên khách mời "Bạn và Gia Đình", tháng tiệc.
+                - **Phòng vệ Embed & Tài nguyên nội bộ**:
+                  * Cưỡng chế ẩn màn phong bì/cánh cửa khi `$isEmbed = true`, mở khóa cuộn `html, body`, hiển thị tức thì các phần tử reveal.
+                  * 100% tài nguyên cục bộ: Loại bỏ các liên kết font/ảnh ngoài, fallback chỉ trỏ vào file có thật trong thư mục `assets/images/external/`.
+                  * Đồng bộ hóa hoàn toàn hai file `styles.css` và `script.js` sang `assets/styles.css` và `assets/script.js`.
+                - **Kiểm thử & Định dạng**:
+                  * Chạy Feature Test `LuuButNgayChungDoiStandardizationTest`: Passed 4/4 tests (31 assertions).
+                  * Dọn dẹp file test tạm thời theo đúng quy định.
+                  * Laravel Pint: Passed.
+
+            106. **Sửa Lỗi Chồng Chéo Chữ, Bổ Sung Lịch Trình & Tinh Chỉnh Giao Diện "Lưu Bút Ngày Chung Đôi"**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng phản hồi: "dữ liệu chưa khớp với giao diện, và giao diện nhiều chỗ rất xấu, chưa có lịch trình, vẫn còn nhiều phần giao diện rất xấu: mayhen_invitation_ladjihe38udhd_ladi-section mayhen_reveal_element mayhen_revealed".
+                  * Ảnh `media_1793527224761_2c694f9f.jpg`: Tên cô dâu và chú rể ở trang bìa (#GROUP94) bị `position: absolute` gán cứng tọa độ, khi gõ tên dài thì chữ "NGUYỄN MINH ĐỨC" đè thẳng lên chữ "NGUYỄN MINH ANH".
+                  * Ảnh `media_1793527252024_9445ccef.jpg`: Khối ngày âm lịch `#mayhen-wedding-lunar-date` bị đặt lồng bên trong `#GROUP89` (chiều cao chỉ 58px) đè nát lên ngày, thứ, tháng, năm cưới; monogram `#GROUP95` bị gán nhầm target `groom_name`/`bride_name` làm tên đầy đủ tràn vào chữ cái viết tắt.
+                  * Ảnh `media_1793527260490_9fa50173.jpg`: Số ngày trong bảng lịch tháng có màu chữ xám đậm `#493b34` trên nền đen tối mịt không nhìn thấy gì; số đếm ngược Countdown có màu xanh đậm `#133827` trên hộp đen tối khó đọc.
+                  * Ảnh `media_1793527267324_80a40c8b.jpg`: Đoạn mô tả Chú rể (`#PARAGRAPH70`) và Cô dâu (`#PARAGRAPH76`) bị gán nhầm `data-sync-target="couple_quote"`, khiến lời ngỏ tình yêu bị lặp lại 2 lần dưới cả 2 người.
+                  * Ảnh `media_1793527293956_3bd405cc.jpg`: Khối lịch trình tiệc cưới `#SECTION16` hiển thị cụt chữ "Ngày " khi trường ngày tiệc rỗng; chưa khai báo mục Lịch trình (`timeline`) trong schema của mẫu thiệp.
+                  * Lớp `mayhen_reveal_element`: Chạy hiệu ứng trễ trong iframe Studio gây cảm giác nhảy giật layout.
+                - **Giải pháp hoàn thiện**:
+                  1. *`schema.json`*: Bổ sung đầy đủ section `timeline` (Lịch Trình Hôn Lễ) dạng repeater động chuẩn hệ thống gồm giờ, tên sự kiện và ghi chú địa điểm. Nâng `supported_sections` lên đầy đủ 6 phần chuẩn.
+                  2. *`template.blade.php`*:
+                     - Gán `data-mayhen-section="timeline"` cho `#SECTION16` để thanh Stepper Bar của Studio Editor tự động cuộn đến đúng khối Lịch Trình.
+                     - Gán target `timeline.0.time`, `timeline.0.title`, `timeline.1.time`, `timeline.1.title` và fallback ngày tiệc an toàn (`$bridePartyDateFormatted`, `$groomPartyDateFormatted`), loại bỏ triệt để hiện tượng hiển thị chữ "Ngày " cụt ngủn.
+                     - Đưa `#mayhen-wedding-lunar-date` ra ngoài `#GROUP89` đặt ngay ngắn bên dưới khối ngày cưới.
+                     - Sửa target monogram ở `#GROUP95` thành `data-sync-target="groom_initial"` và `data-sync-target="bride_initial"`.
+                     - Khôi phục văn bản giới thiệu chân dung Chú rể & Cô dâu thanh lịch, gỡ bỏ binding nhầm `couple_quote`.
+                     - Gán đúng target `guest_name` cho `#HEADLINE66` và `groom_name` cho `#HEADLINE13` (xóa triệt để hardcode "Ngọc sơn").
+                  3. *`styles.css` & `assets/styles.css`*:
+                     - Chuyển `#GROUP94` sang Flexbox tự co giãn (`display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px;`), không bao giờ bị đè tên nhau dù tên ngắn hay dài.
+                     - Tinh chỉnh màu chữ bảng lịch sang trắng ngà `rgba(255, 255, 255, 0.88)`, ngày chọn nổi bật trên nền đỏ rượu vang `#a83a4b`.
+                     - Sửa màu số Countdown sang trắng sáng `#ffffff` kèm đổ bóng nhẹ, tiêu đề nhãn kem ấm sang trọng.
+                     - Định vị tuyệt đối ngày âm lịch ở vị trí chuẩn, tinh chỉnh font chữ tiêu đề hai nhà `#HEADLINE69`, `#HEADLINE70`.
+                     - Cưỡng chế `body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element { opacity: 1 !important; transform: none !important; }`.
+                  4. *`script.js` & `assets/script.js`*:
+                     - Không kích hoạt `mayhen_reveal_element` khi đang nhúng trong iframe (`isEmbed = true`).
+                     - Bổ sung đồng bộ Live Sync tức thì cho chữ cái đầu `groom_initial` và `bride_initial`.
+                  5. *Kiểm thử & Định dạng*:
+                     - Feature Test `LuuButNgayChungDoiRefinedTest` & `CanonicalTemplateSectionsTest`: Passed 100%.
+                     - Laravel Pint: Passed.
+                     - View cache: Cleared.
+
+            107. **Sửa Triệt Để Lỗi Chồng Chéo Chữ Lên Ảnh, Lệch Lịch Tháng, Trắng Album & Khử Thừa Trường Ảnh Save The Date**:
+                - **Yêu cầu & Vấn đề phát hiện**:
+                  * Khách hàng gửi loạt ảnh chụp màn hình cả 2 mẫu `luu-but-ngay-chung-doi` và `dau-ky-tram-nam`:
+                    1. Mẫu `luu-but-ngay-chung-doi`: Chữ "NGUYỄN MINH ĐỨC & NGUYỄN MINH ANH" đè thẳng lên chữ chìm "SƠN & QUỲNH" ở trang bìa; bảng lịch tháng bị lệch ngày (thứ 6 ngày 1/1 nhảy sang thứ 7, ngày Chủ nhật bị xén cụt lề phải, thanh thứ trắng chữ trên nền trắng, trái tim tĩnh SHAPE14 nằm lệch ngày); phần mô tả chú rể bị ngắt chữ "luôn" -> "luô"; album cưới 10 ảnh bị trắng xóa.
+                    2. Mẫu `dau-ky-tram-nam`: Cánh cửa/card phong bì sau khi mở vẫn đè mờ lên giao diện phong bì "Our Story"; ở thiệp mời chính SECTION26, tên khách mời, lời mời và chữ ký tên cô dâu chú rể đè nát lên ngực/mặt ảnh cặp đôi áo nâu đeo kính; form nhập liệu có tới 2 ô chọn ảnh gây hoang mang ("Ảnh bìa đại diện thiệp" và "Ảnh thiệp mời tiệc cưới (Save The Date)").
+                - **Giải pháp hoàn thiện**:
+                  1. *Khử trùng lặp trường ảnh ở lõi hệ thống (`app/Services/InvitationTemplateService.php`)*:
+                     - Loại bỏ trường thừa `wedding.extra_data.save_date_photo_url` khỏi Canonical couple fields. Form nhập liệu giờ đây chỉ còn 1 trường ảnh đại diện duy nhất `wedding.cover_photo_url`, giao diện gọn gàng, tăng trải nghiệm người dùng tối đa.
+                  2. *Cầu nối Live Sync (`editor-bridge.blade.php`)*:
+                     - Bổ sung ánh xạ alias 2 chiều `cover_photo_url <-> save_date_photo_url` và `hero_photo_url`. Khi người dùng tải ảnh bìa, toàn bộ các vị trí ảnh Save The Date hoặc ảnh bìa trên mọi mẫu thiệp đều cập nhật đồng bộ tức thời.
+                  3. *Chuẩn hóa mẫu "Lưu Bút Ngày Chung Đôi" (`luu-but-ngay-chung-doi`)*:
+                     - `schema.json`: Đổi default `wedding.cover_photo_url` từ file ảnh chụp dài `luu-but-ngay-chung-doi.webp` sang ảnh gốc sạch `images/external/42bbe2b173fbd668dc032e4f.jpg`, loại bỏ vĩnh viễn bóng chữ "SƠN & QUỲNH".
+                     - `template.blade.php`: Gán trực tiếp `background-image` cho `#IMAGE1`, `#IMAGE88`, `#IMAGE55` và toàn bộ 10 ảnh album cưới `#IMAGE60`-`#IMAGE66`, `#IMAGE109`, `#IMAGE110`, `#IMAGE114`.
+                     - `styles.css` & `assets/styles.css`: Đặt màu chữ thứ trong tuần `#GROUP81 h3` sang đen đậm `#202020` trên thanh trắng `#BOX50`; căn chỉnh khung lịch `#GROUP82` rộng 402px (left 9px) vừa khít thanh tiêu đề, không bao giờ bị cắt cột Chủ nhật; ẩn hình trái tim cố định `#SHAPE14`; căn giữa thẻ mô tả chú rể `#GROUP125`/`#GROUP126`, sửa ngắt dòng tự nhiên.
+                     - `script.js` & `assets/script.js`: Sửa công thức tính ngày đầu tháng sang chuẩn Thứ 2 đầu tuần `(new Date(year, monthIndex, 1).getDay() + 6) % 7` khớp 100% với các cột `MON TUE WED THUR FRI SAT SUN`.
+                  4. *Chuẩn hóa mẫu "Dấu Kỷ Trăm Năm" (`dau-ky-tram-nam`)*:
+                     - `styles.css` & `assets/styles.css`: Ẩn triệt để tấm card cửa `.opened .door_center` và `.mayhen_door_hidden` bằng `display: none !important;` khi cánh cửa mở, không bao giờ đè lên trang nội dung.
+                     - Tái cấu trúc phân tầng layout SECTION26: Căn giữa ảnh cặp đôi `image226` (width/height 300px, border-radius mềm mại, đổ bóng Quiet Luxury); khối mời `group104` đặt phía trên ảnh (top 195px); cụm chữ ký tên cô dâu chú rể `couple_names_wrapper` đặt ngay ngắn bên dưới ảnh (top 660px); khối thời gian địa điểm xếp gọn phía dưới (top 755px - 875px). Ảnh và chữ hoàn toàn tách bạch, không còn bất kỳ sự chồng chéo nào.
+                  5. *Kiểm thử & Định dạng*:
+                     - Viết Feature Test kiểm tra render giao diện, calendar math và album: Passed 3/3 tests (23 assertions).
+                     - Dọn dẹp file test tạm thời theo đúng quy định.
+                     - Laravel Pint: Passed.
+                     - View cache: Cleared.
+
+            108. **Khắc Phục Toàn Diện Lỗi Vỡ Layout, Đè Chữ & Đồng Bộ Lịch Cưới Thời Gian Thực Mẫu Dấu Ký Trăm Năm**:
+                - **Yêu cầu & Vấn đề xử lý**:
+                  * Người dùng gửi 4 ảnh chụp phản ánh giao diện bị vỡ:
+                    1. Màn hình điện thoại preview bị trượt xuống giữa trang, bảng lịch vẫn giữ "Tháng 03" khoanh ngày 21 trong khi form nhập ngày 09/01/2027 (lỗi không đồng bộ lịch thời gian thực); thanh dock điều hướng dưới đáy chen ngang nội dung.
+                    2. Chữ "WEDDING INVITATION" và "Nguyễn Minh Đức & Nguyễn Minh Anh" bay lơ lửng đè lên phong bì "Our Story".
+                    3. Khối SECTION26 thiệp mời: Tên khách mời, lời mời, ảnh cưới cặp đôi áo nâu và chữ ký tên cô dâu chú rể đè bẹp lên nhau.
+                    4. Khối phong bì SECTION3: Tấm ảnh rừng/thác nước cũ thừa `image210` nhô ra lệch lạc bên trái phong bì gây khó chịu.
+                    5. Khối timeline SECTION27: Hiển thị thiếu 2 mốc sự kiện (chỉ có 2/4 mốc) do chiều cao container LadiPage bị giới hạn.
+                - **Giải pháp hoàn thiện**:
+                  1. *Đồng bộ Lịch Cưới thời gian thực toàn diện (`editor-bridge.blade.php` & `dau-ky-tram-nam/script.js`)*:
+                     - Viết bộ parse ngày an toàn hỗ trợ cả định dạng `YYYY-MM-DD` và `DD/MM/YYYY`, chống lệch múi giờ UTC.
+                     - Cập nhật đồng loạt tiêu đề `[data-sync-target="calendar_month_year"]` và `.calendar_month` sang `Tháng MM · YYYY`.
+                     - Tự động vẽ lại toàn bộ lưới lịch cho mọi mẫu thiệp cưới (`.mayhen_cal_blank`, `.mayhen_cal_day`, `.mayhen_cal_active`), chuẩn hóa thứ Hai đầu tuần.
+                  2. *Phòng vệ nhúng Studio Editor & Ẩn Cánh Cửa (`dau-ky-tram-nam/template.blade.php`, `script.js`, `styles.css`)*:
+                     - `TemplateController.php`: Truyền rõ ràng `$isEmbed` cho view; chuyển cache asset sang `no-cache, must-revalidate` khi debug.
+                     - `template.blade.php`: Nhận diện đầy đủ các tham số embed/editor, ẩn hoàn toàn thẻ cánh cửa và thanh dock điều hướng dưới đáy khi nhúng iframe.
+                     - `script.js` & `styles.css`: Ẩn tức thì `display: none !important;` cho toàn bộ cánh cửa và tấm card tem sáp khi mở hoặc ở chế độ nhúng.
+                  3. *Sắp xếp phân tầng không gian tuyệt đối cho SECTION26 (`styles.css`)*:
+                     - Mở rộng chiều cao section lên `1120px`.
+                     - Lời mời và tên khách mời `group104` đặt tại `top: 195px`.
+                     - Ảnh cặp đôi `image226` căn giữa chuẩn mực `top: 340px` (280x280px).
+                     - Cụm chữ ký tên cô dâu chú rể `couple_names_wrapper` nằm ngay ngắn bên dưới ảnh tại `top: 635px`.
+                     - Thời gian, ngày tháng, âm lịch, địa điểm tổ chức tiệc và nút chỉ đường xếp tầng chuẩn mực từ `top: 730px` đến `980px`. Không còn bất kỳ phần tử nào chồng chéo.
+                  4. *Tinh chỉnh SECTION3 & SECTION27*:
+                     - Ẩn ảnh thừa `image210` ở bên trái phong bì, căn giữa toàn bộ cụm phong bì và ảnh Polaroid cặp đôi.
+                     - Mở rộng container timeline `box94` lên `390px` và `group173` lên `330px`, hiển thị đầy đủ, sắc nét toàn bộ 4 mốc thời gian theo đúng `schema.json`.
+                  5. *Kiểm thử & Định dạng*:
+                     - Pest Feature Tests `CanonicalTemplateSectionsTest` & `InvitationEditorDataSyncTest`: 8/8 tests passed (209 assertions).
+                     - Laravel Pint: Passed agent format.
+                     - Cache hệ thống: Cleared.
+
+            109. **Khắc Phục Triệt Để Lỗi UI Vỡ Layout, Đè Chữ & Trắng Khối Album Mẫu "Lưu Bút Ngày Chung Đôi"**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  1. *Khoảng trắng mênh mông ở Album Cưới (SECTION20)*: Do logic blade ẩn các phần tử `#IMAGE61`..`#IMAGE114` khi `$albumPhotos` có ít hơn 10 phần tử, cộng với script JS ẩn `galleryTarget.hidden = !value` làm cả hàng ảnh đầu tiên biến mất, để lại hố đen 300px dưới tiêu đề.
+                  2. *Chữ Chú rể tràn ra ngoài thẻ ở SECTION4*: Tên chú rể dài (ví dụ: "NGUYỄN MINH ĐỨC") với `font-size: 60px` ở `top: 438px` tràn 34px xuống đáy thẻ gradient tối `#BOX60`, đè lên chữ tiểu sử bên dưới.
+                  3. *Lệch cột tiêu đề Thứ (MON-SUN) và Ngày trên Lịch cưới (SECTION24)*: Tiêu đề `#GROUP81` dùng fixed left pixel trong khi lưới ngày tự sinh dùng CSS Grid 7 cột; ngoài ra hình trái tim cứng SVG `#SHAPE14` bị đặt lệch sang ngày khác.
+                  4. *Chữ mờ "SON & QUYNH" bị đè sau tên cặp đôi mới*: Hai phần tử `#IMAGE82` và `#IMAGE10` nạp ảnh PNG cố định từ template demo gốc nạp chữ "SON & QUYNH" đè bẹp lên tên cô dâu chú rể mới.
+                  5. *Lịch trình thiếu mốc sự kiện so với schema.json*: `schema.json` định nghĩa 4 mốc thời gian nhưng `SECTION16` chỉ render 2 mốc (`timeline.0` và `timeline.1`).
+                - **Giải pháp xử lý triệt để**:
+                  1. *Bảo đảm 100% 10 ảnh cưới Album (`template.blade.php`, `script.js`, `styles.css`)*:
+                     - Luôn sinh đủ 10 ảnh trong `$albumPhotos` với fallback về `$defaultAlbum[$i]`.
+                     - Loại bỏ toàn bộ thuộc tính `hidden` điều kiện trên `#IMAGE61`..`#IMAGE114`.
+                     - Trong `script.js` & `assets/script.js`: Khi đồng bộ live, không ẩn thẻ (`hidden = false`), cập nhật trực tiếp `background-image`.
+                     - Trong CSS: Khóa cưỡng chế `.mayhen_invitation_ladjihe38udhd_photoBookImage { display: block !important; }`.
+                  2. *Khắc phục tràn tên Chú rể & Cô dâu (`styles.css` & `assets/styles.css`)*:
+                     - Điều chỉnh `#HEADLINE300` và `#HEADLINE304` lên `top: 405px !important;`.
+                     - Áp dụng `font-size: clamp(22px, 5.2vw, 32px) !important; line-height: 1.15 !important;` với `word-break: keep-all; white-space: normal;`. Khắc phục 100% lỗi tràn thẻ gradient.
+                  3. *Chuẩn hóa Lưới Lịch & Tiêu đề Thứ (`template.blade.php`, `styles.css`, `assets/styles.css`)*:
+                     - Re-order các thẻ trong `#GROUP81` theo chuẩn Thứ Hai đến Chủ Nhật (`MON, TUE, WED, THUR, FRI, SAT, SUN`).
+                     - Cưỡng chế `#GROUP81 > .ladi-group` thành `display: grid !important; grid-template-columns: repeat(7, 1fr) !important;` khớp chuẩn xác 1:1 với `.calendar_grid` của `#GROUP82`.
+                     - Cưỡng chế ẩn hình trái tim cứng `#SHAPE14 { display: none !important; }`.
+                  4. *Loại bỏ triệt để Watermark Sơn & Quỳnh cũ*:
+                     - Ẩn hoàn toàn `#IMAGE82` và `#IMAGE10` (`display: none !important;`), loại bỏ chữ "SON & QUYNH" mờ sau tên.
+                     - Căn giữa hoàn hảo `#PARAGRAPH45` ("Together, we found home") và monogram initials `#GROUP95` (`đ & a`).
+                  5. *Đồng bộ toàn diện 4 Mốc Lịch Trình (SECTION16)*:
+                     - Thêm `GROUP144` (mốc 2: Khai Tiệc) và `GROUP145` (mốc 3: Chụp Ảnh) với đầy đủ `data-sync-target` cho time, title, description.
+                     - Tự động mở rộng chiều cao `#SECTION16` lên `720px` - `790px` khi có 3-4 mốc lịch trình, hiển thị cân đối, sang trọng.
+                  6. *Kiểm thử & Tiêu chuẩn*:
+                     - Pest Feature Tests `CanonicalTemplateSectionsTest` & `InvitationEditorDataSyncTest`: 8/8 tests passed (209 assertions).
+                     - Laravel Pint: Passed agent format.
+                     - Cache hệ thống: Cleared.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

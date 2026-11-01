@@ -13,6 +13,7 @@
     "groom_family",
     "bride_family",
     "album",
+    "timeline",
     "gift"
   ],
   "sections": [
@@ -54,8 +55,59 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "luu-but-ngay-chung-doi.webp",
+          "default": "images/external/42bbe2b173fbd668dc032e4f.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "images/external/3901bfd3190f56014d895d1a.jpg",
+          "placeholder": "Chọn ảnh chân dung chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "images/external/e9af36aeab2bdadab5cfa38a.jpg",
+          "placeholder": "Chọn ảnh chân dung cô dâu"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch hôn lễ",
+          "type": "text",
+          "required": false,
+          "default": "",
+          "placeholder": "Nhập ngày âm lịch chính xác",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ bắt đầu tiệc cưới",
+          "type": "time",
+          "required": false,
+          "default": "",
+          "placeholder": "Chọn giờ tổ chức"
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên địa điểm tổ chức tiệc",
+          "type": "text",
+          "required": false,
+          "default": "",
+          "placeholder": "Tên nhà hàng hoặc trung tâm tiệc cưới",
+          "max": 150
+        },
+        {
+          "key": "wedding.extra_data.event_party_address",
+          "label": "Địa chỉ địa điểm tổ chức tiệc",
+          "type": "textarea",
+          "required": false,
+          "default": "",
+          "placeholder": "Địa chỉ chi tiết địa điểm tổ chức",
+          "max": 300
         },
         {
           "key": "wedding.extra_data.couple_quote",
@@ -80,7 +132,7 @@
           "label": "Họ tên Cha (Nhà Trai)",
           "type": "text",
           "required": false,
-          "default": "Nguyễn Văn Nam",
+          "default": "",
           "placeholder": "Ví dụ: Nguyễn Văn Nam",
           "max": 100
         },
@@ -89,16 +141,16 @@
           "label": "Họ tên Mẹ (Nhà Trai)",
           "type": "text",
           "required": false,
-          "default": "Trần Thị Mai",
+          "default": "",
           "placeholder": "Ví dụ: Trần Thị Mai",
           "max": 100
         },
         {
           "key": "wedding.extra_data.groom_party_time",
           "label": "Giờ tổ chức hôn lễ / tiệc Nhà Trai",
-          "type": "text",
+          "type": "time",
           "required": false,
-          "default": "11:00",
+          "default": "",
           "placeholder": "Ví dụ: 11:00 hoặc 11:30",
           "max": 50
         },
@@ -107,7 +159,7 @@
           "label": "Ngày tổ chức hôn lễ Nhà Trai",
           "type": "date",
           "required": false,
-          "default": "2027-11-01",
+          "default": "",
           "placeholder": "YYYY-MM-DD"
         },
         {
@@ -115,7 +167,7 @@
           "label": "Ngày âm lịch Nhà Trai",
           "type": "text",
           "required": false,
-          "default": "Ngày 03 tháng 10 năm Đinh Mùi",
+          "default": "",
           "placeholder": "Ví dụ: Ngày 03 tháng 10 năm Đinh Mùi",
           "max": 100
         },
@@ -124,7 +176,7 @@
           "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Trai",
           "type": "textarea",
           "required": false,
-          "default": "Tư gia Nhà Trai - Phố Hoàng Liên, Cốc Lếu, Lào Cai",
+          "default": "",
           "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Trai",
           "max": 300
         }
@@ -142,7 +194,7 @@
           "label": "Họ tên Cha (Nhà Gái)",
           "type": "text",
           "required": false,
-          "default": "Lê Văn Hùng",
+          "default": "",
           "placeholder": "Ví dụ: Lê Văn Hùng",
           "max": 100
         },
@@ -151,16 +203,16 @@
           "label": "Họ tên Mẹ (Nhà Gái)",
           "type": "text",
           "required": false,
-          "default": "Phạm Thị Lan",
+          "default": "",
           "placeholder": "Ví dụ: Phạm Thị Lan",
           "max": 100
         },
         {
           "key": "wedding.extra_data.bride_party_time",
           "label": "Giờ tổ chức hôn lễ / tiệc Nhà Gái",
-          "type": "text",
+          "type": "time",
           "required": false,
-          "default": "09:00",
+          "default": "",
           "placeholder": "Ví dụ: 09:00 hoặc 09:30",
           "max": 50
         },
@@ -169,7 +221,7 @@
           "label": "Ngày tổ chức hôn lễ Nhà Gái",
           "type": "date",
           "required": false,
-          "default": "2027-11-01",
+          "default": "",
           "placeholder": "YYYY-MM-DD"
         },
         {
@@ -177,7 +229,7 @@
           "label": "Ngày âm lịch Nhà Gái",
           "type": "text",
           "required": false,
-          "default": "Ngày 03 tháng 10 năm Đinh Mùi",
+          "default": "",
           "placeholder": "Ví dụ: Ngày 03 tháng 10 năm Đinh Mùi",
           "max": 100
         },
@@ -186,7 +238,7 @@
           "label": "Địa chỉ hôn lễ / Tiệc cưới Nhà Gái",
           "type": "textarea",
           "required": false,
-          "default": "Tư gia Nhà Gái - Đường Nguyễn Tất Thành, Văn Phú, Lào Cai",
+          "default": "",
           "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc tư gia Nhà Gái",
           "max": 300
         }
@@ -205,6 +257,33 @@
           "type": "gallery",
           "required": false,
           "max_items": 10
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Hôn Lễ",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian diễn ra hôn lễ và tiệc mừng",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
+          "required": false,
+          "max_items": 6,
+          "default": [
+            { "time": "08:30", "title": "Lễ Vu Quy (Nhà Gái)", "description": "Tư gia Nhà Gái" },
+            { "time": "11:00", "title": "Lễ Thành Hôn (Nhà Trai)", "description": "Tư gia Nhà Trai" },
+            { "time": "18:00", "title": "Khai Tiệc Mừng Cưới", "description": "Trung tâm tiệc cưới" },
+            { "time": "19:30", "title": "Chụp Ảnh Kỷ Niệm", "description": "Sảnh tiệc" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "time" },
+            { "key": "title", "label": "Nội dung", "type": "text" },
+            { "key": "description", "label": "Địa điểm / Ghi chú", "type": "text" }
+          ]
         }
       ]
     },

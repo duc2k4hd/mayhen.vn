@@ -1,4 +1,4 @@
-﻿/* === page.css === */
+/* === page.css === */
 /* MAYHEN Wedding18-v2 / page - refactored from user-provided markup */
 
         body {
@@ -19,19 +19,19 @@
 
         @font-face {
             font-family: "NixZnRLXZpcCoYXNZWdpLTIwMjUwMzIzMDcNjMLXltemRLmZg";
-            src: url("fonts/6-1ftv-vip-hastegi-20250323075635-ymzdv-20250612082412-qvd3n.otf")
+            src: url("fonts/6-1ftv-vip-hastegi-20250323075635-ymzdv-20250612082412-qvd3n.otf");
             font-display: swap;
         }
 
         @font-face {
             font-family: "QnJvdgUVnYXIgLmZg";
-            src: url("fonts/brown-sugar--20250612170432-mrowu.otf")
+            src: url("fonts/brown-sugar--20250612170432-mrowu.otf");
             font-display: swap;
         }
 
         @font-face {
             font-family: "TWFMTdfREZWTiBJbmRbGdlIFNjcmlwdCvdGY";
-            src: url("fonts/mau17_dfvn-indulge-script-20250328143031-tpgin.otf")
+            src: url("fonts/mau17_dfvn-indulge-script-20250328143031-tpgin.otf");
             font-display: swap;
         }
 
@@ -49,7 +49,7 @@
 
         @font-face {
             font-family: "MTMtMWZdiaXAtbWuclldXItbGEtZGbGFpcUtcmVndWxhciyMDIMDIxOTExMzIyOScWttbivdGY";
-            src: url("fonts/13-1ftv-vip-monsieur-la-doulaise-regular-20250219113229-vqkmn-20250612152835-mmpxa.otf")
+            src: url("fonts/13-1ftv-vip-monsieur-la-doulaise-regular-20250219113229-vqkmn-20250612152835-mmpxa.otf");
             font-display: swap;
         }
 
@@ -67,7 +67,7 @@
 
         @font-face {
             font-family: "MTAtRXllctZSTYJpcHQubRm";
-            src: url("fonts/10-eyesome-script-20250612144924-htq6e.otf")
+            src: url("fonts/10-eyesome-script-20250612144924-htq6e.otf");
             font-display: swap;
         }
 
@@ -78,7 +78,7 @@
         }
 
         body {
-            font-family: Philosopher, sans-serif
+            font-family: Philosopher, sans-serif;
         }
     
 
@@ -11887,6 +11887,11 @@ textarea:focus-visible {
     text-align: center;
 }
 
+#HTML_CODE5,
+#HTML_CODE10 {
+    display: none !important;
+}
+
 .mayhen_invitation_ladjihe38udhd_dialog-panel h2 {
     font: normal clamp(26px, 5.5vw, 38px)/1.3 Philosopher, Georgia, serif !important;
     color: var(--mayhen-green-deep) !important;
@@ -12851,4 +12856,427 @@ body.mayhen_music_playing #mayhen-w18-music {
 .mayhen_reveal_element.mayhen_revealed {
     opacity: 1;
     transform: translateY(0);
+}
+
+body.mayhen_invitation_ladjihe38udhd_embed {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+}
+
+body.mayhen_invitation_ladjihe38udhd_embed #mayhen-door-stage {
+    display: none !important;
+}
+
+body.mayhen_invitation_ladjihe38udhd_embed .card-wrapper {
+    display: block !important;
+}
+
+body.mayhen_invitation_ladjihe38udhd_embed .mayhen_invitation_ladjihe38udhd_ladi-element,
+body.mayhen_invitation_ladjihe38udhd_embed .mayhen_invitation_ladjihe38udhd_ladi-section {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-panel {
+    max-height: min(88vh, 760px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.mayhen_invitation_ladjihe38udhd_dialog-panel img {
+    display: block;
+    max-width: min(100%, 220px);
+    margin: 12px auto;
+    object-fit: contain;
+}
+
+.mayhen_invitation_ladjihe38udhd_card_guest_label[data-sync-target="couple_quote"] {
+    max-width: 32rem;
+    margin: 12px auto;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+.mayhen_invitation_ladjihe38udhd_ladi-element [data-map-address] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid #a88a60;
+    border-radius: 999px;
+    background: #fffaf3;
+    color: #45372b;
+    font: inherit;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background-color 180ms ease, color 180ms ease;
+}
+
+.mayhen_invitation_ladjihe38udhd_ladi-element [data-map-address]:hover,
+.mayhen_invitation_ladjihe38udhd_ladi-element [data-map-address]:focus-visible {
+    background: #45372b;
+    color: #fffaf3;
+}
+
+/* Bảng tiêu đề thứ trong tuần trên thanh trắng BOX50 rõ ràng, tương phản cao */
+#GROUP81 h3,
+#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    color: #202020 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    opacity: 1 !important;
+}
+
+/* Khớp khung lịch GROUP82 với thanh tiêu đề GROUP80 (402px, left 9px), không bao giờ bị cắt cột Chủ Nhật */
+#GROUP82 {
+    width: 402px !important;
+    max-width: calc(100% - 18px) !important;
+    left: 9px !important;
+}
+
+#GROUP82 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Ẩn hình trái tim cố định SHAPE14 để tránh lệch vị trí với ngày cưới thật */
+#SHAPE14 {
+    display: none !important;
+}
+
+/* Căn giữa thẻ giới thiệu chú rể & cô dâu SECTION4, không bị đứt chữ hay cụt lề phải */
+#GROUP125,
+#GROUP126 {
+    width: min(350px, calc(100% - 32px)) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    overflow: visible !important;
+}
+
+#GROUP116,
+#GROUP127 {
+    width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+}
+
+#PARAGRAPH70,
+#PARAGRAPH76 {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+#PARAGRAPH70 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+#PARAGRAPH76 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    text-align: justify !important;
+    line-height: 1.6 !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_calendar_grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_ladjihe38udhd_calendar_day {
+    display: grid;
+    place-items: center;
+    width: min(30px, 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.88) !important;
+    font: 500 clamp(10px, 2.8vw, 14px)/1 Philosopher, Georgia, serif;
+}
+
+.mayhen_invitation_ladjihe38udhd_calendar_day_selected {
+    background: #a83a4b !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* Đếm ngược ngày cưới: Màu số trắng sáng rõ nét trên nền tối */
+#COUNTDOWN1 .mayhen_invitation_ladjihe38udhd_ladi-countdown-text {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45) !important;
+}
+
+#COUNTDOWN1 .mayhen_invitation_ladjihe38udhd_ladi-countdown-title {
+    color: #d8cebd !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* Fix tên cô dâu chú rể ở bìa chính SECTION1 không bị đè lên nhau */
+#GROUP94 {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    height: auto !important;
+}
+
+#GROUP94 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px 12px !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+}
+
+#HEADLINE3,
+#HEADLINE282,
+#HEADLINE283 {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    display: inline-block !important;
+}
+
+#HEADLINE3 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE283 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    white-space: normal !important;
+    word-break: keep-all !important;
+    text-align: center !important;
+    font-size: clamp(22px, 4.8vw, 36px) !important;
+    line-height: 1.25 !important;
+}
+
+#HEADLINE282 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    font-size: clamp(18px, 3.8vw, 28px) !important;
+    line-height: 1 !important;
+}
+
+/* Định vị ngày âm lịch ở SECTION22 nằm ngay ngắn dưới cụm ngày cưới */
+#mayhen-wedding-lunar-date {
+    position: absolute !important;
+    width: 100% !important;
+    left: 0 !important;
+    text-align: center !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
+}
+
+@media (min-width: 768px) {
+    #mayhen-wedding-lunar-date {
+        top: 1086px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    #mayhen-wedding-lunar-date {
+        top: 662px !important;
+    }
+}
+
+#mayhen-wedding-lunar-date p {
+    margin: 0 !important;
+    font-size: 13px !important;
+    font-style: italic !important;
+    color: #615243 !important;
+    letter-spacing: 0.02em !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_lunar_date:not([hidden]) {
+    display: block;
+}
+
+/* Chống tràn tên lớn ở SECTION13 */
+#HEADLINE69 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE70 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    font-size: clamp(34px, 7vw, 50px) !important;
+    line-height: 1.25 !important;
+    word-break: keep-all !important;
+}
+
+/* Phòng vệ Scroll Reveal khi chạy trong iframe Studio */
+body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+/* Tinh chỉnh ngày giờ lịch trình SECTION16 rõ nét, cân đối */
+#GROUP160,
+#GROUP143,
+#GROUP144,
+#GROUP145 {
+    max-width: calc(100% - 30px) !important;
+}
+
+#PARAGRAPH93,
+#PARAGRAPH81,
+#PARAGRAPH82,
+#PARAGRAPH83 {
+    line-height: 1.45 !important;
+}
+
+/* Ẩn watermark ảnh chứa chữ Sơn & Quỳnh cũ để tránh đè chữ lên tên mới */
+#IMAGE82,
+#IMAGE10 {
+    display: none !important;
+}
+
+/* Căn giữa chữ và monogram Save The Date ở SECTION22 */
+#PARAGRAPH45 {
+    left: 0 !important;
+    width: 100% !important;
+}
+#PARAGRAPH45 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+    text-align: center !important;
+}
+
+#GROUP95 {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(370px, calc(100% - 32px)) !important;
+}
+#GROUP95 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+#HEADLINE284,
+#HEADLINE285,
+#HEADLINE286 {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    text-align: center !important;
+}
+
+/* Khớp hoàn hảo thanh tiêu đề thứ trong tuần GROUP81 với lưới ngày GROUP82 */
+#GROUP81 {
+    width: 100% !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    height: auto !important;
+}
+#GROUP81 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100% !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-items: center !important;
+}
+#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-element {
+    position: static !important;
+    width: 100% !important;
+    left: auto !important;
+    top: auto !important;
+}
+#GROUP81 h3,
+#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    width: 100% !important;
+    text-align: center !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
+    color: #202020 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+/* Chống tràn tên chú rể & cô dâu ra khỏi hộp gradient ở SECTION4 */
+@media (max-width: 767px) {
+    #HEADLINE300,
+    #HEADLINE304 {
+        top: 405px !important;
+        height: auto !important;
+    }
+    #HEADLINE300 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE304 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: clamp(22px, 5.2vw, 32px) !important;
+        line-height: 1.15 !important;
+        white-space: normal !important;
+        word-break: keep-all !important;
+    }
+}
+
+/* Hiển thị mượt mà 4 mốc lịch trình cưới SECTION16 */
+#GROUP144,
+#GROUP145 {
+    width: 388.5px !important;
+    max-width: calc(100% - 30px) !important;
+    height: 54px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+@media (max-width: 767px) {
+    #GROUP144 {
+        top: 615px !important;
+    }
+    #GROUP145 {
+        top: 685px !important;
+    }
+    #SECTION16:has(#GROUP144) {
+        height: 720px !important;
+    }
+    #SECTION16:has(#GROUP145) {
+        height: 790px !important;
+    }
+}
+@media (min-width: 768px) {
+    #GROUP144,
+    #GROUP145 {
+        width: 506px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: 67px !important;
+    }
+    #GROUP144 {
+        top: 470px !important;
+    }
+    #GROUP145 {
+        top: 560px !important;
+    }
+    #SECTION16:has(#GROUP144) {
+        height: 720px !important;
+    }
+    #SECTION16:has(#GROUP145) {
+        height: 800px !important;
+    }
+}
+
+/* Đảm bảo toàn bộ 10 ảnh trong album cưới luôn hiển thị trọn vẹn không bị khoảng trắng */
+#SECTION20 .mayhen_invitation_ladjihe38udhd_photoBookImage {
+    display: block !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_invitation_ladjihe38udhd_door,
+    .mayhen_invitation_ladjihe38udhd_ladi-element,
+    .mayhen_invitation_ladjihe38udhd_ladi-section {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
 }
