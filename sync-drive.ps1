@@ -1,3 +1,7 @@
+# Lệnh để đồng bộ code từ máy local lên Google Drive
+# Kết quả: Kết quả sau khi chạy xong sẽ được đồng bộ lên Google Drive
+# git push gdrive main | .\sync-drive.ps1
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================" -ForegroundColor Cyan
