@@ -7668,7 +7668,7 @@
 
             #SECTION1 {
                 height: 630px;
-                display: none !important;
+                display: block !important;
             }
 
             #SECTION1>.mayhen_invitation_ladjihe38udhd_ladi-section-background {
@@ -11607,7 +11607,12 @@ textarea:focus-visible {
     padding-bottom: 95px !important;
 }
 
-@media(max-width: 767px) {
+/* BẢO ĐẢM BÌA THIỆP CHÍNH SECTION1 LUÔN HIỂN THỊ ĐẦU TIÊN TRÊN MỌI THIẾT BỊ */
+#SECTION1 {
+    display: block !important;
+}
+
+@media (max-width: 767px) {
     #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
         width: 420px;
         transform-origin: top left;
@@ -11618,7 +11623,7 @@ textarea:focus-visible {
     }
 }
 
-@media(min-width: 768px) {
+@media (min-width: 768px) {
     #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
         width: 100%;
         transform: none !important;
@@ -14141,4 +14146,8 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
     }
+}
+
+.mayhen_invitation_wrapper {
+    padding-bottom: 0 !important;
 }

@@ -3150,6 +3150,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
 
+            117. **Khắc Phục Lỗi Bị Lệch Cả 1 Trang Bìa (SECTION1 Bị Ẩn Trên Mobile Trong Preview Tạo Thiệp) Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng gửi 2 ảnh chụp so sánh:
+                    + Ảnh 1: Trang xem thử ngoài máy tính hiển thị rất đẹp, có trang bìa chính `#SECTION1` (ảnh cưới lớn, chữ "You are invited to the wedding celebration of NGỌC SƠN & THÚY QUỲNH").
+                    + Ảnh 2: Trong khung preview điện thoại của Studio Tạo Thiệp (`/tao-thiep`), trang bìa `#SECTION1` hoàn toàn biến mất, màn hình nhảy tột xuống trang 2 `#SECTION22` (Save the Date), và dòng chữ "Together, we found home" bị cắt lẹm một nửa vào notch Dynamic Island của iPhone.
+                  - *Nguyên nhân cốt lõi số 1 (CSS gốc ẩn bìa trên mobile)*:
+                    Tại dòng 7669 trong `styles.css` (và dòng 8706 trong `assets/styles.css`), một rule CSS cũ của LadiPage trong `@media (max-width: 767px)` đã đặt `#SECTION1 { height: 630px; display: none !important; }`. Khi iframe Studio có độ rộng màn hình 375px (thuộc media query mobile), `#SECTION1` bị cưỡng chế ẩn hoàn toàn. Do `#SECTION1` bị ẩn, `#SECTION22` bị trôi lên làm phần tử đầu tiên của trang, dẫn đến việc mất đứt cả 1 trang bìa và chữ đầu của `#SECTION22` bị tai thỏ cắt ngang.
+                  - *Nguyên nhân cốt lõi số 2 (Gán nhầm data-mayhen-section)*:
+                    Thuộc tính `data-mayhen-section="couple"` (đại diện cho tab bước 1 "Đôi Uyên Ương") trước đó lại gắn vào cánh cửa `#mayhen-door-stage`. Nhưng trong iframe Studio (`isEmbed = true`), `#mayhen-door-stage` đã bị ẩn (`display: none !important;`). Khi Studio gửi lệnh cuộn đến section `couple`, việc nhắm vào một phần tử bị ẩn dẫn đến hành vi cuộn trượt không mong muốn.
+                - **Giải pháp xử lý triệt để**:
+                  1. *Gỡ bỏ dứt điểm `display: none !important;` của `#SECTION1` trên Mobile*:
+                     - Chuyển thành `#SECTION1 { height: 630px; display: block !important; }` tại cả 2 vị trí media query mobile trong `styles.css` và `assets/styles.css`.
+                     - Thiết lập rule phòng vệ toàn cục `#SECTION1 { display: block !important; }` để bảo đảm trang bìa luôn luôn hiển thị 100% trên mọi thiết bị và trong iframe preview.
+                  2. *Gắn đúng ngữ cảnh `data-mayhen-section="couple"` cho `#SECTION1`*:
+                     - Gỡ `data-mayhen-section="couple"` khỏi `#mayhen-door-stage` và gắn trực tiếp vào `#SECTION1` trong `template.blade.php`.
+                     - Khi Studio gửi lệnh cuộn tới tab "Đôi Uyên Ương", iframe sẽ định vị chuẩn xác 100% vào trang bìa `#SECTION1`.
+                  3. *Đồng bộ tài nguyên & Clear cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Xóa cache Blade và route với `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

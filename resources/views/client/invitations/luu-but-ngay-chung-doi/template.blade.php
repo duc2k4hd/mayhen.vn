@@ -271,7 +271,7 @@
     {{-- 2 CÁNH CỬA TÌNH YÊU MỞ SANG 2 BÊN (GRAND 3D DOUBLE GATE OPENING) --}}
     <div id="mayhen-door-stage"
         class="mayhen_invitation_ladjihe38udhd_door_stage {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}"
-        data-mayhen-section="couple" aria-label="Cánh cửa tình yêu">
+        aria-label="Cánh cửa tình yêu">
         <!-- Cánh cửa bên trái -->
         <div class="mayhen_invitation_ladjihe38udhd_door mayhen_invitation_ladjihe38udhd_door_left">
             <div class="mayhen_invitation_ladjihe38udhd_door_surface">
@@ -361,7 +361,7 @@
                 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
                 <div class="mayhen_invitation_ladjihe38udhd_ladi-container"></div>
             </div>
-            <div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION1">
+            <div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION1" data-mayhen-section="couple">
                 <div class="mayhen_invitation_ladjihe38udhd_ladi-section-background"></div>
                 <div class="mayhen_invitation_ladjihe38udhd_ladi-container">
                     <div class="mayhen_invitation_ladjihe38udhd_ladi-element" id="IMAGE1">
