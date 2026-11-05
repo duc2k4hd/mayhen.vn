@@ -28,7 +28,7 @@ Thumbs.db
 
 
 # Ignore root directories only
-/.agents/
+# /.agents/
 /.codex/
 /tests/
 /storage/
