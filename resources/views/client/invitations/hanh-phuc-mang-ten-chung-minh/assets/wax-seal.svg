@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%">
+  <defs>
+    <radialGradient id="waxGrad" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#e3c687"/>
+      <stop offset="45%" stop-color="#c5a059"/>
+      <stop offset="85%" stop-color="#8c6928"/>
+      <stop offset="100%" stop-color="#694c18"/>
+    </radialGradient>
+    <radialGradient id="innerRing" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#b58d42"/>
+      <stop offset="80%" stop-color="#96712b"/>
+      <stop offset="100%" stop-color="#705118"/>
+    </radialGradient>
+  </defs>
+  <!-- Outer organic wax rim -->
+  <path d="M80,6 C96,5 110,11 124,19 C137,27 148,40 152,56 C156,72 153,89 148,105 C143,120 134,135 120,144 C106,153 90,155 74,154 C57,153 40,149 27,138 C15,127 8,111 6,94 C4,77 7,60 14,45 C21,30 33,18 48,11 C60,6 69,7 80,6 Z" fill="url(#waxGrad)"/>
+  <!-- Inner stamped recess -->
+  <circle cx="80" cy="80" r="56" fill="url(#innerRing)" stroke="#ecd39a" stroke-width="1.5" stroke-opacity="0.7"/>
+  <circle cx="80" cy="80" r="50" fill="none" stroke="#ecd39a" stroke-width="0.9" stroke-dasharray="3 2.5" stroke-opacity="0.8"/>
+  <!-- Botanical olive wreath inside seal -->
+  <g fill="none" stroke="#f7e7be" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <path d="M52,108 C38,94 38,66 54,50"/>
+    <path d="M108,108 C122,94 122,66 106,50"/>
+    <ellipse cx="44" cy="88" rx="6" ry="2.8" transform="rotate(-35 44 88)" fill="#f7e7be" fill-opacity="0.35"/>
+    <ellipse cx="43" cy="72" rx="6" ry="2.8" transform="rotate(-15 43 72)" fill="#f7e7be" fill-opacity="0.35"/>
+    <ellipse cx="50" cy="57" rx="6" ry="2.8" transform="rotate(15 50 57)" fill="#f7e7be" fill-opacity="0.35"/>
+    <ellipse cx="116" cy="88" rx="6" ry="2.8" transform="rotate(35 116 88)" fill="#f7e7be" fill-opacity="0.35"/>
+    <ellipse cx="117" cy="72" rx="6" ry="2.8" transform="rotate(15 117 72)" fill="#f7e7be" fill-opacity="0.35"/>
+    <ellipse cx="110" cy="57" rx="6" ry="2.8" transform="rotate(-15 110 57)" fill="#f7e7be" fill-opacity="0.35"/>
+  </g>
+  <!-- Double Happiness / Monogram Emblem -->
+  <path d="M80,66 C75,58 63,59 63,69 C63,78 80,88 80,96 C80,88 97,78 97,69 C97,59 85,58 80,66 Z" fill="#f7e7be" opacity="0.95"/>
+  <circle cx="80" cy="46" r="2.2" fill="#f7e7be"/>
+  <circle cx="80" cy="113" r="2.2" fill="#f7e7be"/>
+</svg>

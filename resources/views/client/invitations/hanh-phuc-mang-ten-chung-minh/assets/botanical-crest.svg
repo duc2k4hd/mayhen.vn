@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="100%" height="100%">
+  <g fill="none" stroke="#5f725a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20,95 C65,88 95,55 120,22 C145,55 175,88 220,95" stroke="#c5a059" stroke-width="1.4"/>
+    <path d="M55,86 C75,68 95,52 120,42 C145,52 165,68 185,86" stroke="#8a9a86" stroke-width="1.1" stroke-dasharray="3 3"/>
+    <!-- Left sage leaves -->
+    <path d="M68,78 C58,68 62,54 76,58 C78,66 74,74 68,78 Z" fill="#8a9a86" fill-opacity="0.35"/>
+    <path d="M90,62 C80,50 86,36 98,42 C100,50 95,58 90,62 Z" fill="#5f725a" fill-opacity="0.35"/>
+    <path d="M46,90 C36,82 38,70 50,72 C52,79 49,86 46,90 Z" fill="#8a9a86" fill-opacity="0.28"/>
+    <!-- Right sage leaves -->
+    <path d="M172,78 C182,68 178,54 164,58 C162,66 166,74 172,78 Z" fill="#8a9a86" fill-opacity="0.35"/>
+    <path d="M150,62 C160,50 154,36 142,42 C140,50 145,58 150,62 Z" fill="#5f725a" fill-opacity="0.35"/>
+    <path d="M194,90 C204,82 202,70 190,72 C188,79 191,86 194,90 Z" fill="#8a9a86" fill-opacity="0.28"/>
+    <!-- Center diamond & heart -->
+    <polygon points="120,12 126,22 120,32 114,22" fill="#c5a059" stroke="none"/>
+    <circle cx="120" cy="68" r="14" stroke="#c5a059" stroke-width="1.2" fill="#f6f5ef"/>
+    <path d="M120,64 C117,59 111,60 111,65 C111,70 120,75 120,79 C120,75 129,70 129,65 C129,60 123,59 120,64 Z" fill="#5f725a" stroke="none"/>
+  </g>
+</svg>

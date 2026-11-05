@@ -3541,6 +3541,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     - `.agents/prompts/CLONE_TEMPLATE_MASTER_PROMPT.md` (Tài liệu prompt chuẩn cho người dùng copy sang Claude, GPT-4o, Cursor...).
                     - Đăng ký Subagent `template-cloner` trong hệ thống session.
 
+              134. **Tích Hợp Hoàn Hảo Mẫu Thiệp Mới "Hạnh Phúc Mang Tên Chúng Mình" (`hanh-phuc-mang-ten-chung-minh`) Vào Hệ Thống Mây Hẹn**:
+                  - **Mục tiêu**: Tích hợp toàn diện mẫu thiệp cưới "Hạnh Phúc Mang Tên Chúng Mình" từ thư mục lưu trữ vào nền tảng Mây Hẹn (`resources/views/client/invitations/hanh-phuc-mang-ten-chung-minh/`), tuân thủ nghiêm ngặt 8 nguyên tắc chuẩn hóa cốt lõi và các quy định Quiet Luxury.
+                  - **Triển khai kỹ thuật chi tiết**:
+                    1. *Cấu trúc thư mục & 100% Local Assets*:
+                       - Sao chép toàn bộ 24 file tài nguyên nội bộ (`assets/`) bao gồm ảnh chân dung cặp đôi (`hero-couple.webp`, `bride-portrait.webp`, `groom-portrait.webp`, `banner-couple.webp`, `footer-couple.webp`), bộ 8 ảnh album (`gallery-1.webp` -> `gallery-8.webp`), bộ 3 ảnh thư mời (`story-1.webp` -> `story-3.webp`), hoa văn SVG (`botanical-crest.svg`, `floral-corner.svg`, `divider-ornament.svg`, `wax-seal.svg`), mã QR thanh toán (`qr-groom.webp`, `qr-bride.webp`) và file nhạc nền MP3 (`music.mp3`).
+                       - Phục vụ tĩnh tức thời thông qua route chuẩn hóa `/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/{path}`, tuyệt đối không dùng link máy chủ ngoài.
+                    2. *Thiết kế & Tông màu (Color Palette)*:
+                       - Tone màu chủ đạo: Xanh Xô Thơm & Xanh Rừng Đậm (`#a8b8a3`, `#233628`) kết hợp Vàng Cổ Điển Antique Gold (`#c5a059`) trên nền giấy mỹ thuật kem ấm (`#f8f6f0`).
+                       - Bố cục Flow Layout 100% Flexbox & CSS Grid, co giãn hoàn hảo trên mọi kích thước màn hình điện thoại (Mobile-First 480px).
+                    3. *Chuẩn hóa `template.blade.php`*:
+                       - Kế thừa layout chung `@extends('client.layouts.invitation')`.
+                       - Khởi tạo đầy đủ và đa tầng cho `$groomName` (Đình Sang), `$brideName` (Hoài Thương), `$coupleNames`, phụ mẫu hai bên, thời gian địa điểm hôn lễ, QR mừng cưới và ngân hàng.
+                       - Tiêu đề trang `$pageTitle` chuẩn mực Quiet Luxury: `Xem thử: "Hạnh Phúc Mang Tên Chúng Mình" | Mây Hẹn` hoặc `Thiệp mời cưới: "Đình Sang & Hoài Thương" | Mây Hẹn`.
+                       - Gắn đầy đủ hợp đồng `data-sync-target` cho toàn bộ các trường hiển thị văn bản và hình ảnh.
+                       - Gắn đầy đủ các thuộc tính định danh section `data-mayhen-section="hero,couple"`, `data-mayhen-section="parents,groom_family,bride_family"`, `data-mayhen-section="events,wedding_event"`, `data-mayhen-section="countdown_calendar"`, `data-mayhen-section="story"`, `data-mayhen-section="signature"`, `data-mayhen-section="rsvp,wishes"`, `data-mayhen-section="album,gallery"`, `data-mayhen-section="gift"`, `data-mayhen-section="ending"` để Studio Tạo Thiệp (`/tao-thiep`) và `editor-bridge.blade.php` tự động cuộn (auto-scroll) mượt mà đến đúng khối khi người dùng click từng bước trong bảng điều khiển.
+                       - Phòng vệ nhúng Editor (`$isEmbed = true`): Ẩn màn mở thiệp tức thì (`display: none !important;`), không khóa cuộn body, giải phóng khung hiển thị.
+                    4. *Tuyệt Đối Tuân Thủ Quy Tắc Ký Tên & RSVP (Zero Couple Photos)*:
+                       - Sổ ký tên (`Signature`): Canvas ký tên cảm ứng đa màu mực thuần khiết, nền giấy mỹ thuật kèm tem wax seal niêm phong hoàng gia, **tuyệt đối không chèn ảnh người**.
+                       - Xác nhận tham dự (`RSVP`): Khung form tương tác hiện đại kèm huy hiệu sáp niêm phong trang trọng, **tuyệt đối không chèn ảnh người**, giúp khách hàng tạo thiệp gửi cho quan khách không bị xuất hiện ảnh người lạ.
+                    5. *Đồng bộ thời gian thực trong `script.js`*:
+                       - Xuất bản hàm toàn cục `window.updateMayhenCountdown(targetDate)` và `window.renderMayhenWeddingCalendar(targetDate)`.
+                       - Hỗ trợ chuyển đổi lịch tháng động (Monday-first, đánh dấu ngày cưới với SVG trái tim) và đếm ngược tức thời theo thời gian thực khi chỉnh sửa trên Studio Tạo Thiệp.
+                       - Trình phát nhạc nền MP3 nội bộ và nút tự động cuộn (Auto-Scroll) êm ái 60FPS.
+                       - Lắng nghe sự kiện `message` hai chiều với Studio Editor.
+                    6. *Chuẩn hóa `schema.json`*:
+                       - Cấu trúc đầy đủ 10 Section chuẩn hóa theo đúng tiêu chuẩn hệ thống Mây Hẹn (`hero`, `story`, `parents`, `countdown_calendar`, `events`, `timeline`, `dresscode`, `album`, `gift`, `ending`), mapping chuẩn xác các key `wedding.*` và `wedding.extra_data.*`.
+                    7. *Cơ sở dữ liệu & Seeder (`InvitationTemplateSeeder`)*:
+                       - Thêm template `hanh-phuc-mang-ten-chung-minh` vào seeder: `category: modern`, `tier: free`, `accent_color: #233628`, `demo_url: /xem-thu/hanh-phuc-mang-ten-chung-minh`.
+                       - Chạy thành công `php artisan db:seed --class=InvitationTemplateSeeder`.
+                  - **Kiểm thử & Đảm bảo chất lượng**:
+                    - Viết mới bộ test Pest: `tests/Feature/HanhPhucMangTenChungMinhTemplateTest.php` với 5 bài test (52 assertions) bao phủ: trang xem thử, nạp assets tĩnh, phòng vệ iframe embed, xác thực schema 10 sections và khởi tạo trên Studio Tạo Thiệp -> **100% Passed**.
+                    - Chạy lại bài test `GiuaMuonNganViSaoTemplateTest.php` (4 tests, 35 assertions) -> **100% Passed**.
+                    - Code formatter Laravel Pint: `vendor/bin/pint --dirty --format agent` -> **Passed**.
+                    - Xóa sạch cache hệ thống: `php artisan view:clear; php artisan cache:clear`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
