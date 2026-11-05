@@ -697,7 +697,7 @@ const initEditor = () => {
         on(mainForm, 'change', handleInputEvent);
         mainForm.addEventListener('blur', handleBlurSanitize, true);
 
-        // Smart Scroll-on-Action: Khi click vào nút chọn/tải ảnh cưới bất kỳ
+        // Smart Scroll-on-Action: Khi click vào nút chọn/tải ảnh cưới bất kỳ hoặc click vào thumbnail xem trước ảnh
         document.addEventListener('click', (e) => {
             const uploadTrigger = e.target.closest('label[for^="upload_"], .mayhen_editor_upload_btn, .mayhen_editor_file_uploader_wrapper, [data-upload-trigger]');
             if (uploadTrigger) {
@@ -711,7 +711,7 @@ const initEditor = () => {
                     }
                 }
                 if (!targetInput) {
-                    const fieldBox = uploadTrigger.closest('.mayhen_editor_field_group, .mayhen_editor_field, .mayhen_editor_photo_slot');
+                    const fieldBox = uploadTrigger.closest('.mayhen_editor_field_group, .mayhen_editor_field, .mayhen_editor_photo_slot, .mayhen_editor_gallery_item_box');
                     const uploaderInBox = fieldBox?.querySelector('.mayhen_editor_file_uploader');
                     if (uploaderInBox) {
                         const targetInputId = uploaderInBox.getAttribute('data-target-input');
@@ -723,6 +723,20 @@ const initEditor = () => {
                     if (key) {
                         lastScrolledKey = key;
                         sendScrollToTarget(key, 'upload');
+                    }
+                }
+            }
+
+            // Click trực tiếp vào ảnh preview thumbnail bên cột nhập liệu
+            const thumbEl = e.target.closest('.mayhen_editor_image_field_preview, [id^="preview_thumb_"]');
+            if (thumbEl && thumbEl.id && thumbEl.id.startsWith('preview_thumb_')) {
+                const targetId = thumbEl.id.replace('preview_thumb_', '');
+                const targetInput = document.getElementById(targetId);
+                if (targetInput) {
+                    const key = targetInput.getAttribute('data-sync-key') || targetInput.getAttribute('name') || targetInput.id;
+                    if (key) {
+                        lastScrolledKey = key;
+                        sendScrollToTarget(key, 'thumb_click');
                     }
                 }
             }
