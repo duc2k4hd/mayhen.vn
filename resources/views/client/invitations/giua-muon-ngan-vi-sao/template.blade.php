@@ -240,7 +240,7 @@
     <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr">
 
         <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="couple">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="couple" data-section-name="hero">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_kicker mayhen_invitation_hero_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_sr_orn"></i>

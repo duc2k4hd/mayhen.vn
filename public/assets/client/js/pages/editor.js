@@ -196,24 +196,11 @@ const initEditor = () => {
     if (!draftWeddingData) {
         const localDraft = store.autosaver.getLocalDraft(invitationId, templateSlug);
         if (localDraft && localDraft.wedding) {
-            const isDifferentTemplate = localDraft.template_slug && templateSlug && localDraft.template_slug !== templateSlug;
+            // Chỉ nạp localDraft nếu đúng mẫu thiệp hiện tại hoặc đang chỉnh sửa thiệp đã lưu
+            const isSameTemplate = localDraft.template_slug === templateSlug;
             const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
-            if (hasData && !invitationId) {
-                if (isDifferentTemplate) {
-                    // Nếu là nháp của mẫu khác, chỉ giữ lại text (tên, ngày cưới, phụ mẫu...), loại bỏ ảnh asset mặc định của mẫu cũ
-                    const filtered = {};
-                    Object.keys(localDraft.wedding).forEach(k => {
-                        const val = localDraft.wedding[k];
-                        if (!isImageKey(k)) {
-                            filtered[k] = val;
-                        } else if (typeof val === 'string' && val.startsWith('data:image') && !isBannedExternalUrl(val)) {
-                            filtered[k] = val;
-                        }
-                    });
-                    draftWeddingData = filtered;
-                } else {
-                    draftWeddingData = localDraft.wedding;
-                }
+            if (hasData && (isSameTemplate || invitationId)) {
+                draftWeddingData = localDraft.wedding;
             }
         }
     }
@@ -454,21 +441,11 @@ const initEditor = () => {
             stepCurrentEl.textContent = `Bước ${currentStep}`;
         }
 
-        // Tự động cuộn Iframe preview đến đúng Section tương ứng
+        // Tự động cuộn Iframe preview đến đúng Section tương ứng (Cơ chế KÉP: Gọi Trực Tiếp + PostMessage)
         const activeTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
         const sectionId = activeTab ? activeTab.getAttribute('data-section-id') : null;
         if (sectionId) {
-            const scrollPayload = {
-                type: 'MAYHEN_SCROLL_TO_SECTION',
-                section_id: sectionId,
-                step: currentStep,
-            };
-            if (previewIframe && previewIframe.contentWindow) {
-                previewIframe.contentWindow.postMessage(scrollPayload, '*');
-            }
-            if (mobileIframe && mobileIframe.contentWindow) {
-                mobileIframe.contentWindow.postMessage(scrollPayload, '*');
-            }
+            sendScrollToSection(sectionId, currentStep);
         }
 
         // Cuộn mượt form về đầu khi chuyển bước
@@ -517,25 +494,48 @@ const initEditor = () => {
     goToStep(1);
 
     // ----------------------------------------------------
-    // 2. Realtime Iframe Communication Engine (PostMessage Sync)
+    // 2. Realtime Iframe Communication Engine (Dual Channel: Direct Call + PostMessage)
     // ----------------------------------------------------
-    const sendSyncMessage = (key, value) => {
-        const payload = {
-            type: 'MAYHEN_SYNC_INPUT',
-            key: key,
-            value: value,
-        };
+    const dispatchToIframes = (directFnName, directArgs, postPayload) => {
+        [previewIframe, mobileIframe].forEach(iframe => {
+            if (!iframe || !iframe.contentWindow) return;
 
-        try {
-            if (previewIframe && previewIframe.contentWindow) {
-                previewIframe.contentWindow.postMessage(payload, '*');
+            // Kênh 1: Gọi hàm trực tiếp trên cùng Origin (Tức thời 0ms, không trễ event loop)
+            try {
+                if (directFnName && typeof iframe.contentWindow[directFnName] === 'function') {
+                    iframe.contentWindow[directFnName].apply(iframe.contentWindow, directArgs);
+                }
+            } catch (e) {
+                // Safe cross-origin fallback
             }
-            if (mobileIframe && mobileIframe.contentWindow) {
-                mobileIframe.contentWindow.postMessage(payload, '*');
+
+            // Kênh 2: Gửi postMessage dự phòng chuẩn HTML5
+            try {
+                if (postPayload) {
+                    iframe.contentWindow.postMessage(postPayload, '*');
+                }
+            } catch (e) {
+                // Safe cross-origin fallback
             }
-        } catch (e) {
-            // Safe cross-origin fallback
-        }
+        });
+    };
+
+    const sendSyncMessage = (key, value) => {
+        dispatchToIframes(
+            '__mayhenSyncInput',
+            [key, value],
+            { type: 'MAYHEN_SYNC_INPUT', key, value }
+        );
+    };
+
+    // Cuộn tới Section theo ID hoặc Step (1..10)
+    const sendScrollToSection = (sectionId, step) => {
+        if (!sectionId && !step) return;
+        dispatchToIframes(
+            '__mayhenScrollToSection',
+            [sectionId, step],
+            { type: 'MAYHEN_SCROLL_TO_SECTION', section_id: sectionId, step }
+        );
     };
 
     // Smart Scroll-on-Action: Gửi thông điệp cuộn tới phần tử đích và Highlight vàng kim trong Preview
@@ -543,22 +543,11 @@ const initEditor = () => {
     let scrollDebounceTimer = null;
     const sendScrollToTarget = (key, action = 'focus') => {
         if (!key) return;
-        const payload = {
-            type: 'MAYHEN_SCROLL_TO_TARGET',
-            target: key,
-            action: action,
-        };
-
-        try {
-            if (previewIframe && previewIframe.contentWindow) {
-                previewIframe.contentWindow.postMessage(payload, '*');
-            }
-            if (mobileIframe && mobileIframe.contentWindow) {
-                mobileIframe.contentWindow.postMessage(payload, '*');
-            }
-        } catch (e) {
-            // Safe cross-origin fallback
-        }
+        dispatchToIframes(
+            '__mayhenScrollToTarget',
+            [key, action],
+            { type: 'MAYHEN_SCROLL_TO_TARGET', target: key, action }
+        );
     };
 
     const updateDockNames = () => {
@@ -602,16 +591,26 @@ const initEditor = () => {
     };
 
     if (mainForm) {
-        // Smart Scroll-on-Action: Khi người dùng focus vào bất kỳ ô nhập liệu nào
-        on(mainForm, 'focusin', (e) => {
-            const target = e.target;
+        // Smart Scroll-on-Action: Khi người dùng focus hoặc click vào bất kỳ ô nhập liệu nào (Toàn cục, Capture Phase)
+        const handleFieldInteraction = (e) => {
+            const target = e.target.closest('input, textarea, select');
             if (!target) return;
+            // Bỏ qua input ẩn hoặc nút bấm
+            if (target.type === 'file' || target.type === 'submit' || target.type === 'button') return;
             const key = target.getAttribute('data-sync-key') || target.getAttribute('name') || target.id;
             if (key) {
                 lastScrolledKey = key;
-                sendScrollToTarget(key, 'focus');
+                sendScrollToTarget(key, e.type);
             }
-        });
+        };
+
+        document.addEventListener('focusin', handleFieldInteraction, true);
+        document.addEventListener('click', (e) => {
+            // Nếu click trực tiếp vào ô input/textarea/select
+            if (e.target.matches('input:not([type="file"]):not([type="hidden"]), textarea, select')) {
+                handleFieldInteraction(e);
+            }
+        }, true);
 
         const handleInputEvent = (e) => {
             const target = e.target;
@@ -650,12 +649,12 @@ const initEditor = () => {
                 updateAutoLunarFromDateInput(target);
             }
 
-            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu, tự động cuộn sau khi gõ
+            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu, tự động cuộn sau khi gõ (180ms)
             lastScrolledKey = key;
             clearTimeout(scrollDebounceTimer);
             scrollDebounceTimer = setTimeout(() => {
                 sendScrollToTarget(key, 'type');
-            }, 250);
+            }, 180);
 
             // Đồng bộ sang Iframe
             sendSyncMessage(key, val);
@@ -737,12 +736,9 @@ const initEditor = () => {
         inputs.forEach(inp => {
             const key = inp.getAttribute('data-sync-key');
             const val = inp.value;
-            if (key) {
-                iframeEl.contentWindow.postMessage({
-                    type: 'MAYHEN_SYNC_INPUT',
-                    key: key,
-                    value: val !== undefined ? val : '',
-                }, '*');
+            // Chỉ gửi các trường có dữ liệu thực sự để tránh ghi đè chuỗi rỗng làm mất text mặc định của mẫu thiệp
+            if (key && val !== undefined && val !== null && String(val).trim() !== '') {
+                sendSyncMessage(key, val);
             }
         });
 
@@ -751,39 +747,47 @@ const initEditor = () => {
 
         // Đồng bộ Bảng màu (Theme Palette)
         if (customConfig.theme && customConfig.theme.palette_id) {
-            iframeEl.contentWindow.postMessage({
-                type: 'MAYHEN_CHANGE_THEME',
-                palette_id: customConfig.theme.palette_id,
-                palette: customConfig.theme,
-            }, '*');
+            dispatchToIframes(
+                null,
+                [],
+                {
+                    type: 'MAYHEN_CHANGE_THEME',
+                    palette_id: customConfig.theme.palette_id,
+                    palette: customConfig.theme,
+                }
+            );
         }
 
         // Đồng bộ Con dấu sáp (Wax Seal)
         if (customConfig.wax_seal) {
-            iframeEl.contentWindow.postMessage({
-                type: 'MAYHEN_UPDATE_WAX_SEAL',
-                wax_seal: customConfig.wax_seal,
-            }, '*');
+            dispatchToIframes(
+                null,
+                [],
+                {
+                    type: 'MAYHEN_UPDATE_WAX_SEAL',
+                    wax_seal: customConfig.wax_seal,
+                }
+            );
         }
 
         // Đồng bộ Thứ tự Bố cục (Section Order & Hidden)
         if (customConfig.sections_order || customConfig.sections_hidden) {
-            iframeEl.contentWindow.postMessage({
-                type: 'MAYHEN_REORDER_SECTIONS',
-                order: customConfig.sections_order || [],
-                sections_hidden: customConfig.sections_hidden || [],
-            }, '*');
+            dispatchToIframes(
+                null,
+                [],
+                {
+                    type: 'MAYHEN_REORDER_SECTIONS',
+                    order: customConfig.sections_order || [],
+                    sections_hidden: customConfig.sections_hidden || [],
+                }
+            );
         }
 
         // Cuộn đến section ban đầu tương ứng với bước đang mở
         const initialTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
         const initialSectionId = initialTab ? initialTab.getAttribute('data-section-id') : null;
         if (initialSectionId) {
-            iframeEl.contentWindow.postMessage({
-                type: 'MAYHEN_SCROLL_TO_SECTION',
-                section_id: initialSectionId,
-                step: currentStep,
-            }, '*');
+            sendScrollToSection(initialSectionId, currentStep);
         }
     };
 
@@ -1125,6 +1129,14 @@ const initEditor = () => {
             const targetInput = document.getElementById(targetInputId);
             const targetThumb = document.getElementById(targetThumbId);
             const statusEl = document.getElementById('status_' + targetInputId);
+
+            // Tự động cuộn Iframe xem trước đến đúng vị trí ảnh ngay khi người dùng chọn file
+            if (targetInput) {
+                const syncKey = targetInput.getAttribute('data-sync-key');
+                if (syncKey) {
+                    sendScrollToTarget(syncKey, 'upload');
+                }
+            }
 
             if (statusEl) {
                 statusEl.textContent = 'Đang tải ảnh...';

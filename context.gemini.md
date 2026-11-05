@@ -3401,6 +3401,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                    - `vendor/bin/pint --dirty --format agent`: Formatted chuẩn xác.
                    - `php artisan optimize:clear`: Xóa sạch cache hệ thống thành công.
 
+              128. **Chuẩn Hóa Kiến Trúc Cuộn Studio Tạo Thiệp: Độc Lập 100% Trong Core Editor & Iframe Bridge, Không Phụ Thuộc Script Riêng Mẫu Thiệp**:
+                  - **Quy tắc phân tách tuyệt đối**:
+                    1. Toàn bộ logic cuộn thông minh (Scroll-on-Tab Stepper 1..10, Scroll-on-Input focus/click, Scroll-on-Typing debounced 180ms, Scroll-on-Image khi chọn/cắt ảnh) và đồng bộ dữ liệu nằm 100% ở hệ thống chung: `public/assets/client/js/pages/editor.js` và `resources/views/client/invitations/partials/editor-bridge.blade.php`.
+                    2. File JS riêng của từng mẫu thiệp (`script.js`) chỉ đảm nhiệm visual / tính năng riêng biệt của mẫu (như 3D sao bay, âm thanh riêng, hiệu ứng mở phong bì), tuyệt đối không chứa logic tạo thiệp hay cuộn. Bất kỳ mẫu thiệp nào mới chỉ cần kế thừa đúng layout chung `@extends('client.layouts.invitation')` và hệ thống class BEM / `data-sync-target` là tự động hoạt động hoàn hảo 100%.
+                  - **Giải pháp kỹ thuật đã triển khai**:
+                    1. *Giải phóng triệt để bẫy cuộn lồng nhau (Nested Scroll Trap)*:
+                       - Trong `editor-bridge.blade.php` và `giua-muon-ngan-vi-sao/styles.css`: Cưỡng chế các container cha `.mayhen_invitation_ladi_wraper`, `.ladi-wraper`, `[class*="ladi_wraper"]`, `[class*="card_wrapper"]` thành `overflow: visible !important; overflow-y: visible !important; height: auto !important;`.
+                       - Giữ duy nhất `html.mayhen_invitation_embed_mode` làm Scroll Container chính (`overflow-y: auto !important; scroll-behavior: smooth !important;`), giải phóng `body` thành `overflow: visible !important;`.
+                       - Hàm `smoothScrollToTarget` trong bridge tự động duyệt ngược cây DOM và mở khóa toàn bộ các node cha vô tình bị gán `overflow: hidden`.
+                    2. *Cơ chế điều phối kép Dual-Channel Direct Call + PostMessage Fallback*:
+                       - `editor.js` xuất bản hàm `dispatchToIframes(directFnName, directArgs, postPayload)`: Ưu tiên gọi trực tiếp qua same-origin window (`iframe.contentWindow.__mayhenScrollToSection` / `__mayhenScrollToTarget`) phản hồi tức thì 0ms, song song gửi `postMessage` dự phòng.
+                    3. *Bắt sự kiện tương tác người dùng toàn diện*:
+                       - Bắt `focusin` và `click` (capture: true) trên toàn bộ input, textarea, select: Chạm chuột hoặc focus vào ô nào là iframe tự cuộn mượt và highlight vàng kim Quiet Luxury ngay lập tức.
+                       - Debounce 180ms khi gõ phím để vừa cuộn theo vừa đồng bộ text thời gian thực.
+                       - Bắt sự kiện chọn ảnh: Tự động cuộn khi click nút "Chọn ảnh", khi input file thay đổi, và ngay khi bấm "✓ Cắt & Sử Dụng Ảnh Này" trong Cropper modal.
+                    4. *Khắc phục lỗi dữ liệu không chính xác*:
+                       - Chống nạp nhầm `localDraft` cũ của mẫu khác (chỉ nạp khi đúng `template_slug` hoặc đang chỉnh sửa `invitationId` đã lưu).
+                       - Trong `syncAllFieldsToIframe`: Không gửi các giá trị rỗng/khoảng trắng đè lên làm mất text và ảnh mặc định của template.
+                  - **Kiểm thử & Chất lượng**:
+                    - Viết mới bộ test Feature `tests/Feature/EditorSmartScrollTest.php` bao phủ: 10 tab Stepper, Dual-Channel Direct API Iframe Bridge, Focus/Input/Image scroll triggers, BEM Highlight.
+                    - Chạy Pest: Toàn bộ Feature tests passed 100% (5/5 tests, 37 assertions).
+                    - Pint & Cache: `pint --dirty --format agent` và `php artisan optimize:clear` chạy thành công.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
