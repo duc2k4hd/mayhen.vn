@@ -7,7 +7,7 @@
 
 ```markdown
 Bạn là Antigravity — Chuyên gia phát triển Fullstack cao cấp của nền tảng thiệp cưới trực tuyến **Mây Hẹn (mayhen.vn)**.
-Hãy đọc kỹ các nguyên tắc cốt lõi dưới đây và thực hiện tích hợp trọn vẹn template thiệp cưới mới vào dự án mayhen.vn.
+Hãy đọc kỹ toàn bộ quy chuẩn kỹ thuật dưới đây và thực hiện tích hợp trọn vẹn template thiệp cưới mới vào hệ thống mayhen.vn theo đúng **Mô hình Tách Bạch Dữ Liệu & Bộ Áo (Data Contract vs Theme Skin)**.
 
 ---
 
@@ -15,8 +15,9 @@ Hãy đọc kỹ các nguyên tắc cốt lõi dưới đây và thực hiện t
 - **Phong cách chủ đạo:** Quiet Luxury, Editorial, Minimalist, Romantic, Modern.
 - **Tone màu thương hiệu:** Warm Cream, Soft Beige, Ivory White, Charcoal, Muted Gold, Dusty Rose, Sage Green.
 - **Tiêu chuẩn chất lượng:**
-  + Tinh tế, cảm xúc cao, chuyển động giấy mỹ thuật mượt mà, layout thoáng đãng, sang trọng.
-  + Chuẩn **Mobile-First 100%**: hiển thị hoàn hảo trên điện thoại thông minh, không bị vỡ layout, tràn màn hình hay giật lag.
+  + Tinh tế, cảm xúc cao, hiệu ứng chuyển động mượt mà, layout thoáng đãng, sang trọng.
+  + Chuẩn **Mobile-First 100%**: hiển thị hoàn hảo trên điện thoại thông minh, không tràn màn hình hay giật lag.
+  + **100% Flow Layout (Flexbox & CSS Grid)**: Tự co giãn theo nội dung, tuyệt đối **CẤM** dùng layout định vị tuyệt đối `position: absolute` kéo-thả kiểu LadiPage.
 
 ---
 
@@ -24,106 +25,178 @@ Hãy đọc kỹ các nguyên tắc cốt lõi dưới đây và thực hiện t
 1. **CẤM TUYỆT ĐỐI FRAMEWORK & THƯ VIỆN NGOÀI:**
    - KHÔNG dùng Tailwind CSS, Bootstrap, Bulma, Foundation.
    - KHÔNG dùng Vue, React, Angular, Alpine.js, jQuery.
-   - KHÔNG dùng thư viện hiệu ứng ngoài: Swiper.js, Slick Slider, GSAP, Anime.js, AOS.
+   - KHÔNG dùng thư viện ngoài: Swiper.js, Slick Slider, GSAP, Anime.js, AOS.
    - 100% code phải là **Pure HTML5 + Vanilla CSS + Native ES JavaScript**.
 2. **CẤM CDN & SERVER TÀI NGUYÊN NGOẠI (ZERO EXTERNAL ASSETS PROTOCOL):**
-   - **BẮT BUỘC 100% CỤC BỘ**: Toàn bộ ảnh demo, ảnh cưới CDCR, ảnh album, texture nền giấy, font chữ (OTF/TTF/WOFF2), chữ ký mẫu, icon sự kiện và file nhạc nền MP3 **phải được tải hết về thư mục `assets/`** của mẫu đó trong repository.
-   - **TUYỆT ĐỐI KHÔNG** để lại bất kỳ đường dẫn ảnh/audio nào trỏ sang server bên thứ 3 (như `builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`...).
+   - **BẮT BUỘC 100% CỤC BỘ**: Toàn bộ ảnh demo, texture nền, font chữ, chữ ký mẫu, icon và audio MP3 **phải nằm trực tiếp trong thư mục `assets/` của mẫu đó**.
+   - **TUYỆT ĐỐI KHÔNG** để lại bất kỳ URL ngoài nào (`builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`...).
    - Trong `template.blade.php`, mọi hàm `$resolveAsset` phải fallback về file ảnh có thật trong `assets/`.
-   - Trong `styles.css`, mọi thuộc tính `background-image` phải trỏ đường dẫn tương đối nội bộ `url('assets/...')` hoặc `url('...')`.
-   - Trong `schema.json`, mọi giá trị mặc định cho ảnh (`default`) phải dùng đường dẫn nội bộ `/mau-thiep/{template-slug}/assets/...`.
-   - **Mục đích cốt lõi**: Giúp quá trình tạo thiệp (`/tao-thiep`) và chỉnh sửa trong Studio Editor hoạt động chính xác 100% như mong muốn, backend kiểm soát toàn diện dữ liệu, không bị lỗi ảnh vỡ hay chết link do máy chủ ngoài.
-3. **MÃ HÓA & FILE:**
-   - Tất cả các file phải lưu bằng mã hóa **UTF-8**, hỗ trợ đầy đủ tiếng Việt có dấu.
-4. **QUY ƯỚC TIỀN TỐ CSS CLASS (MANDATORY PREFIX):**
-   - Mọi class CSS của template BẮT BUỘC phải có tiền tố duy nhất theo template id để chống xung đột style 100%:
-     `mayhen_invitation_{template_id}_*` (Ví dụ: `mayhen_invitation_wedding05_*`).
-   - Tuyệt đối không đặt class chung chung như `.btn`, `.title`, `.container`, `.active`.
+   - Trong `styles.css`, mọi `background-image` phải dùng đường dẫn nội bộ `assets/...`.
+   - Trong `schema.json`, mọi giá trị mặc định cho ảnh (`default`) phải dùng file ảnh có thật trong `assets/`.
+3. **MÃ HÓA & FILE:** Tất cả các file lưu bằng mã hóa **UTF-8**, hỗ trợ đầy đủ tiếng Việt có dấu.
+4. **HỆ THỐNG CLASS CHUẨN TOÀN CỤC BẤT BIẾN (`mayhen_invitation_*`):**
+   - Toàn bộ mẫu thiệp dùng chung một tiền tố class BEM `mayhen_invitation_*`.
+   - **KHÔNG chèn id mẫu vào class** (CẤM dùng kiểu `mayhen_invitation_{template_id}_*`).
+   - Tùy biến kiểu dáng theo mẫu bằng Modifier (Ví dụ: `.mayhen_invitation_hero.mayhen_invitation_hero--celestial`).
 
 ---
 
-### 📂 3. CẤU TRÚC THƯ MỤC CỦA TEMPLATE TRONG DỰ ÁN
+### 📋 3. BỘ 10 PHẦN CHÍNH BẮT BUỘC (THE 10 MANDATORY SECTIONS)
+Mọi mẫu thiệp cưới bắt buộc phải có đầy đủ 10 Section theo đúng thứ tự logic sau:
+
+#### G. THÀNH PHẦN TOÀN CỤC (GLOBAL WRAPPERS)
+- `mayhen_invitation_ladi_wraper`: Thẻ bao ngoài cùng toàn bộ thiệp.
+- `mayhen_invitation_music_dock` & `mayhen_invitation_music_btn`: Nút đĩa than điều khiển nhạc cố định góc trên bên trái (`top: 16px; z-index: 1001;`).
+- `mayhen_invitation_audio`: Thẻ `<audio>` chứa nhạc nền (`data-sync-target="music_url"`).
+- `mayhen_invitation_opening`: Màn mở đầu phong bì/cửa hoàng gia (`data-mayhen-section="opening"`). Bấm nút `mayhen_invitation_open_btn` để mở nhạc và lộ thiệp. Khi nhúng Editor (`$isEmbed = true`) tự động ẩn (`display: none !important;`).
+- `mayhen_invitation_divider`: Đường kẻ phân cách giữa các Section.
+
+#### SECTION 1: TRANG BÌA CHÍNH (HERO COVER)
+- Thẻ container: `<section class="mayhen_invitation_hero" data-mayhen-section="couple">`
+- `mayhen_invitation_ladi_headline_ceremony_type`: Tiêu đề loại lễ (`data-sync-target="ceremony_type"`: Lễ Thành Hôn / Vu Quy / Tân Hôn / Báo Hỷ).
+- `mayhen_invitation_hero_media` / `mayhen_invitation_ladi_image`: Ảnh cưới chính của dâu rể (`data-sync-target="hero_photo_url"`).
+- `mayhen_invitation_ladi_headline_name_groom`: Họ tên Chú Rể (`data-sync-target="groom_name"`).
+- `mayhen_invitation_hero_amp`: Ký tự kết nối (`&`, `✦`).
+- `mayhen_invitation_ladi_headline_name_bride`: Họ tên Cô Dâu (`data-sync-target="bride_name"`).
+- `mayhen_invitation_ladi_headline_wedding_day`: Ngày cưới dương lịch (`data-sync-target="wedding_date_digits"`).
+- `mayhen_invitation_ladi_paragraph_lunar_calendar`: Ngày cưới âm lịch (`data-sync-target="wedding_lunar_date"`).
+- `mayhen_invitation_ladi_paragraph_slogan`: Câu slogan / thông điệp tình yêu mở màn.
+
+#### SECTION 2: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE)
+- Thẻ container: `<section class="mayhen_invitation_story mayhen_invitation_quote" data-mayhen-section="couple">`
+- `mayhen_invitation_story_kicker`: Nhãn phụ ("Love Story").
+- `mayhen_invitation_ladi_headline_story`: Tiêu đề ("Chuyện Tình Yêu" / "Lời Ngỏ", `data-sync-target="story_title"`).
+- `mayhen_invitation_story_img`: Ảnh cưới kỷ niệm khung vòm nghệ thuật (`data-sync-target="save_date_photo_url"`).
+- `mayhen_invitation_story_subtitle`: Tiêu đề phụ câu chuyện (`data-sync-target="story_subtitle"`).
+- `mayhen_invitation_quote_text`: Câu quote trích dẫn tình yêu (`data-sync-target="couple_quote"`).
+- `mayhen_invitation_story_content`: Đoạn văn tâm sự tình yêu (`data-sync-target="story_content"`).
+- `mayhen_invitation_monogram`: Biểu tượng Monogram chữ cái đầu đôi uyên ương.
+
+#### SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE)
+- Thẻ container: `<section class="mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="groom_family,bride_family">`
+- `mayhen_invitation_family_kicker` & `mayhen_invitation_family_title`: Nhãn và Tiêu đề ("Hai Bên Gia Đình").
+- **Nhà Trai**:
+  + `mayhen_invitation_family_groom_father`: Họ tên Cha Chú Rể (`data-sync-target="groom_father"`).
+  + `mayhen_invitation_family_groom_mother`: Họ tên Mẹ Chú Rể (`data-sync-target="groom_mother"`).
+  + `mayhen_invitation_family_groom_address`: Địa chỉ tư gia Nhà Trai (`data-sync-target="groom_parents_address"`).
+- **Nhà Gái**:
+  + `mayhen_invitation_family_bride_father`: Họ tên Cha Cô Dâu (`data-sync-target="bride_father"`).
+  + `mayhen_invitation_family_bride_mother`: Họ tên Mẹ Cô Dâu (`data-sync-target="bride_mother"`).
+  + `mayhen_invitation_family_bride_address`: Địa chỉ tư gia Nhà Gái (`data-sync-target="bride_parents_address"`).
+- **Chân Dung & Bio Chú Rể**:
+  + `mayhen_invitation_groom_photo`: Ảnh chân dung Chú Rể (`data-sync-target="groom_photo_url"`).
+  + `mayhen_invitation_groom_name`: Tên Chú Rể (`data-sync-target="groom_name"`).
+  + `mayhen_invitation_groom_bio`: Lời tự bạch / giới thiệu Chú Rể (`data-sync-target="groom_bio"`).
+- **Chân Dung & Bio Cô Dâu**:
+  + `mayhen_invitation_bride_photo`: Ảnh chân dung Cô Dâu (`data-sync-target="bride_photo_url"`).
+  + `mayhen_invitation_bride_name`: Tên Cô Dâu (`data-sync-target="bride_name"`).
+  + `mayhen_invitation_bride_bio`: Lời tự bạch / giới thiệu Cô Dâu (`data-sync-target="bride_bio"`).
+
+#### SECTION 4: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR)
+- Thẻ container: `<section class="mayhen_invitation_countdown_calendar mayhen_invitation_countdown mayhen_invitation_calendar" data-mayhen-section="couple">`
+- **Đồng hồ đếm ngược**: `mayhen_invitation_countdown` với `data-countdown="{ISO_DATE}"`, gồm 4 ô:
+  + `mayhen_invitation_cd_day`: Ngày.
+  + `mayhen_invitation_cd_hour`: Giờ.
+  + `mayhen_invitation_cd_min`: Phút.
+  + `mayhen_invitation_cd_sec`: Giây.
+- **Tờ lịch tháng Save The Date**: `mayhen_invitation_calendar`, tiêu đề tháng năm `mayhen_invitation_calendar_month_year`, ô ngày cưới nổi bật `mayhen_invitation_calendar_selected_day`, nút `mayhen_invitation_add_calendar_btn` (link Google Calendar).
+
+#### SECTION 5: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS)
+- Thẻ container: `<section class="mayhen_invitation_events mayhen_invitation_maps" data-mayhen-section="wedding_event">`
+- **Thư Mời Tiệc Cưới Chính**: `mayhen_invitation_event_card_party`:
+  + `mayhen_invitation_guest_name`: Tên khách quý.
+  + `mayhen_invitation_party_photo`: Ảnh kỷ niệm kèm thư mời.
+  + `mayhen_invitation_party_time`: Giờ tiệc cưới (`data-sync-target="party_time"`).
+  + `mayhen_invitation_party_venue`: Tên sảnh cưới / Trung tâm tiệc cưới (`data-sync-target="party_venue"`).
+  + `mayhen_invitation_party_address`: Địa chỉ chính xác tổ chức tiệc (`data-sync-target="event_party_address"`).
+- **Nghi Lễ Gia Tiên**:
+  + Thẻ Lễ Vu Quy: `mayhen_invitation_ceremony_bride_card`, giờ `data-sync-target="ceremony_time"`, địa chỉ `data-sync-target="ceremony_address"`.
+  + Thẻ Lễ Thành Hôn: `mayhen_invitation_ceremony_groom_card`, giờ `data-sync-target="ceremony_groom_time"`, địa chỉ `data-sync-target="ceremony_groom_address"`.
+- **Bản Đồ Chỉ Đường 3D**:
+  + `mayhen_invitation_map_box`: Khung chứa cánh cửa tương tác và iframe Google Maps.
+  + `mayhen_invitation_map_toggle_btn`: Nút mở bản đồ.
+  + `mayhen_invitation_map_iframe`: Thẻ `<iframe>` Google Maps.
+  + `mayhen_invitation_map_address_text`: Dòng text hiển thị lại địa chỉ dưới bản đồ (`data-sync-target="event_party_address"`).
+
+#### SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE)
+- Thẻ container: `<section class="mayhen_invitation_timeline" data-mayhen-section="timeline">`
+- Danh sách mốc `mayhen_invitation_timeline_list`, từng mốc `mayhen_invitation_timeline_item`:
+  + `mayhen_invitation_timeline_time`: Giờ mốc (`data-sync-target="timeline.{index}.time"`).
+  + `mayhen_invitation_timeline_dot`: Chấm tròn / icon phát sáng.
+  + `mayhen_invitation_timeline_line`: Đường line nối dọc.
+  + `mayhen_invitation_timeline_text`: Nội dung mốc (`data-sync-target="timeline.{index}.title"`).
+
+#### SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE)
+- Thẻ container: `<section class="mayhen_invitation_dresscode" data-mayhen-section="dresscode">`
+- `mayhen_invitation_dresscode_icon`: Icon thời trang SVG.
+- `mayhen_invitation_dresscode_swatches`: Khung chứa các ô màu.
+- `mayhen_invitation_dresscode_item`: Từng ô màu gồm vòng tròn `mayhen_invitation_dresscode_circle` và nhãn tên `mayhen_invitation_dresscode_label`.
+- `mayhen_invitation_dresscode_note`: Lời dặn dò trang phục (`data-sync-target="dresscode_note"`).
+
+#### SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS)
+- Thẻ container: `<section class="mayhen_invitation_gallery" data-mayhen-section="album">`
+- Hiển thị đúng **10 ảnh cưới** (`gallery.0` đến `gallery.9`):
+  + Từng ảnh: `mayhen_invitation_gallery_item` chứa `mayhen_invitation_gallery_img` (`data-sync-target="gallery.{0..9}"`).
+  + Nút điều khiển: `mayhen_invitation_gallery_prev_btn`, `mayhen_invitation_gallery_next_btn`, dải chấm `mayhen_invitation_gallery_dots`.
+  + `mayhen_invitation_lightbox`: Cửa sổ Modal phóng to ảnh toàn màn hình khi chạm vào ảnh.
+
+#### SECTION 9: HỘP MỪNG CƯỚI (WEDDING GIFT & VIETQR)
+- Thẻ container: `<section class="mayhen_invitation_gift" data-mayhen-section="gift">`
+- `mayhen_invitation_gift_box`: Hộp quà 3D chạm để bung 2 mã QR.
+- **Thẻ Mừng Cưới Chú Rể** (`mayhen_invitation_gift_card_groom`):
+  + QR code: `mayhen_invitation_gift_qr_groom` (`data-sync-target="qr_groom_image"`).
+  + Tên ngân hàng: `mayhen_invitation_gift_bank_name_groom` (`data-sync-target="groom_bank_name"`).
+  + Số tài khoản: `mayhen_invitation_gift_account_number_groom` (`data-sync-target="groom_bank_account"`).
+  + Chủ tài khoản: `mayhen_invitation_gift_account_holder_groom` (`data-sync-target="groom_account_name"`).
+  + Nút sao chép STK: `mayhen_invitation_copy_btn` (`data-copy="{STK}"`).
+- **Thẻ Mừng Cưới Cô Dâu** (`mayhen_invitation_gift_card_bride`):
+  + QR code: `mayhen_invitation_gift_qr_bride` (`data-sync-target="qr_bride_image"`).
+  + Tên ngân hàng: `mayhen_invitation_gift_bank_name_bride` (`data-sync-target="bride_bank_name"`).
+  + Số tài khoản: `mayhen_invitation_gift_account_number_bride` (`data-sync-target="bride_bank_account"`).
+  + Chủ tài khoản: `mayhen_invitation_gift_account_holder_bride` (`data-sync-target="bride_account_name"`).
+  + Nút sao chép STK: `mayhen_invitation_copy_btn` (`data-copy="{STK}"`).
+
+#### SECTION 10: TƯƠNG TÁC, RSVP, LƯU BÚT & CẢM ƠN (INTERACTIVE, RSVP, WISHES & ENDING)
+- Thẻ container: `<section class="mayhen_invitation_interactive_ending mayhen_invitation_rsvp mayhen_invitation_wishes mayhen_invitation_ending" data-mayhen-section="rsvp,wishes">`
+- **10.1 Bảng Ký Tên Điện Tử**: `mayhen_invitation_signature`, nền tranh kỷ niệm `mayhen_invitation_signature_bg`, canvas ký tay `mayhen_invitation_signature_canvas`, nút mở `mayhen_invitation_signature_open_btn`, nút lưu `mayhen_invitation_signature_save_btn`.
+- **10.2 Xác Nhận Tham Dự**: `mayhen_invitation_rsvp`, form `mayhen_invitation_rsvp_form`, input tên `mayhen_invitation_rsvp_name_input`, chọn khách của ai `mayhen_invitation_rsvp_guest_of`, chọn tham dự `mayhen_invitation_rsvp_attendance`, đếm số khách `mayhen_invitation_rsvp_count`, nút bấm `mayhen_invitation_rsvp_submit_btn`.
+- **10.3 Sổ Lưu Bút Chúc Phúc**: `mayhen_invitation_wishes`, form `mayhen_invitation_wish_form`, input tên `mayhen_invitation_wish_name_input`, phạm vi thấy `mayhen_invitation_wish_visibility`, textarea `mayhen_invitation_wish_textarea`, nút gửi `mayhen_invitation_wish_submit_btn`, danh sách lời chúc `mayhen_invitation_wish_list`, từng lời chúc `mayhen_invitation_wish_item`.
+- **10.4 Lời Cảm Ơn Kết Thiệp**: `mayhen_invitation_ending`, ảnh tròn kết thiệp `mayhen_invitation_ending_photo` (`data-sync-target="hero_photo_url"`), tiêu đề `mayhen_invitation_ending_title` ("Thank You"), lời tri ân `mayhen_invitation_ending_text`, chữ ký đôi uyên ương `mayhen_invitation_ending_couple_name` (`data-sync-target="groom_name"` & `data-sync-target="bride_name"`).
+
+---
+
+### 📂 4. CẤU TRÚC THƯ MỤC CỦA MỖI TEMPLATE
 Mỗi template thiệp cưới độc lập nằm tại:
 `resources/views/client/invitations/{template-slug}/`
 
-Bao gồm đúng 4 file và 1 thư mục con:
-1. `template.blade.php`: File giao diện Blade hiển thị thiệp cưới hoàn chỉnh.
-2. `styles.css`: Toàn bộ CSS của thiệp (có tiền tố `mayhen_invitation_{template_id}_*`).
-3. `script.js`: Native JS xử lý toàn bộ logic tương tác (đếm ngược, mở rèm, chuyển tab, lightbox, sổ lưu bút, RSVP, popup mừng cưới, phát nhạc).
-4. `schema.json`: Schema cấu hình toàn bộ trường dữ liệu phục vụ trình chỉnh sửa thiệp cưới (Editor).
-5. `assets/`: Thư mục chứa toàn bộ assets cục bộ của template (texture nền giấy, ảnh demo, icon timeline, audio demo).
+Gồm đúng 4 file và 1 thư mục con:
+1. `template.blade.php`: File giao diện Blade kế thừa `@extends('client.layouts.invitation')`.
+2. `styles.css`: CSS thuần sử dụng class tiền tố `mayhen_invitation_*`.
+3. `script.js`: Native ES module JS xử lý toàn bộ logic tương tác (đếm ngược, mở rèm, lightbox, sổ lưu bút, RSVP, popup, nhạc).
+4. `schema.json`: Schema cấu hình toàn bộ trường dữ liệu 10 Section cho Studio Editor.
+5. `assets/`: Thư mục chứa 100% tài nguyên nội bộ của mẫu (ảnh demo, font chữ, audio MP3, icon SVG).
 
 ---
 
-### ⚙️ 4. TIÊU CHUẨN KỸ THUẬT CHO TỪNG FILE
-
-#### A. File `template.blade.php`
-- **Khối khởi tạo dữ liệu ở đầu file (`@php ... @endphp`)**:
-  + Nhận và xử lý các biến động: `$wedding`, `$invitation`, `$template`, `$isEmbed`, `$isPreview`, `$isOwner`.
-  + Tự động fallback dữ liệu demo mẫu nếu chưa có dữ liệu DB (tên CDCR, ngày cưới, gia đình 2 bên, địa chỉ, ảnh cưới...).
-  + Versioning CSS/JS theo timestamp (`filemtime`) để tránh dính cache trình duyệt: `?v={{ $cssVersion }}`.
-- **Thẻ `<head>` & Tiêu đề trang chuẩn (`$pageTitle`)**:
-  + **BẮT BUỘC dùng định dạng tiêu đề dùng chung, không viết tiêu đề riêng**:
-    ```php
-    $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
-    $templateName = $template->name ?? 'Tên Template';
-    $pageTitle = $isPreview 
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
-        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
-    ```
-  + Thẻ meta viewport chuẩn: `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`.
-  + Favicon: `@include('client.components.favicon')`.
-  + SEO Title: `<title>{{ $pageTitle }}</title>`.
-- **Topbar điều hướng**:
-  + `@if ($isPreview)`: Tự động hiển thị thanh Topbar Xem thử (`mayhen_preview_topbar`) với nút "Kho mẫu thiệp" và nút CTA "Tạo Thiệp Mẫu Này".
-  + `@if (isset($isOwner) && $isOwner)`: Hiển thị thanh Topbar Quản trị dành cho chủ thiệp.
-- **Hiệu ứng Mở Thiệp / Mở Rèm (Opening Cover - nếu template có)**:
-  + Mặc định khi vừa load trang: Khóa cuộn trang toàn diện (`overflow: hidden; touch-action: none;`), cuộn về đỉnh đầu trang (`window.scrollTo(0, 0)`).
-  + Khi người dùng bấm vào cánh thiệp hoặc con dấu sáp ở giữa: Kích hoạt hiệu ứng mở sang 2 bên mượt mà (1.2s - 1.4s), sau đó mở khóa cuộn trang (`bodyScrollLock(false)`).
-- **Thứ tự bố cục khối Sự kiện (Lễ cưới / Tiệc cưới)**:
-  + Tab chuyển đổi **Nhà gái / Nhà trai** (`mayhen_invitation_{id}_side-switch-wrap`).
-  + **NGAY BÊN DƯỚI TAB**: 2 khối sự kiện cưới (`mayhen_invitation_{id}_invitation-event-block`), khối đang chọn có class `selected-event`. Người dùng bấm tab nào là thông tin sự kiện đó (Lễ Vu Quy hoặc Tiệc Cưới: ngày giờ, địa chỉ, nút Google Maps) thay đổi ngay lập tức trước mắt.
-  + Sau khối sự kiện mới đến phần lời mời trang trọng: *"Thân mời Quý vị & Gia đình..."* và Tên Cô dâu & Chú rể.
-- **Các Module Chức Năng Bắt Buộc Có**:
-  1. **Đếm ngược ngày cưới**: Hiển thị Ngày - Giờ - Phút - Giây cập nhật theo từng giây.
-  2. **Album ảnh cưới & Lightbox**: Lưới ảnh click vào mở Modal Lightbox xem ảnh to, có nút Next / Prev / Close và vuốt cảm ứng di động.
-  3. **Lịch ngày cưới & Lịch trình (Timeline)**: Trái tim nổi bật ngày cưới, icon timeline dọc tinh tế.
-  4. **Sổ lưu bút & Gửi lời chúc**: Khung ký tên điện tử (HTML5 Canvas cảm ứng tay) + ô nhập lời chúc, kết nối submit AJAX lên route lưu lời chúc của hệ thống Mây Hẹn.
-  5. **Xác nhận tham dự (RSVP)**: Nút chọn "Tôi sẽ đến" / "Rất tiếc, tôi bận", bộ đếm số người (+/-), kết nối submit AJAX lên route RSVP của hệ thống.
-  6. **Hộp mừng cưới**: Bấm vào mở Modal chứa thông tin tài khoản ngân hàng và mã QR thanh toán của Chú rể & Cô dâu.
-  7. **Trình phát nhạc nền**: Nút đĩa than xoay phát nhạc MP3 kèm hiệu ứng sóng âm, tự động xử lý chính sách Autoplay của trình duyệt.
-
-#### B. File `schema.json`
-- Định nghĩa cấu trúc JSON chuẩn gồm các section:
-  + `general`: Font chữ, màu chủ đạo.
-  + `couple`: Thông tin Chú rể, Cô dâu, cha mẹ 2 bên.
-  + `events`: Danh sách sự kiện (Lễ Vu Quy, Lễ Thành Hôn, Tiệc Cưới: thời gian, địa điểm, link Google Maps).
-  + `timeline`: Các mốc thời gian trong ngày cưới.
-  + `album`: Mảng danh sách ảnh cưới và ảnh dải phim.
-  + `banking`: Thông tin số tài khoản, ngân hàng, ảnh QR của Chú rể và Cô dâu.
-  + `music`: Link nhạc nền MP3.
-
-#### C. Đăng ký Template vào Hệ Thống
-1. **Seeder CSDL (`database/seeders/InvitationTemplateSeeder.php`)**:
-   - Thêm bản ghi template với slug, name, category, thumbnail, price, tier (`free`/`pro`), complexity (`simple`/`standard`/`deluxe`).
-   - Chạy lệnh: `php artisan db:seed --class=InvitationTemplateSeeder`.
-2. **Kiểm tra Controller nạp Asset**:
-   - Đảm bảo `TemplateController::asset` có thể load đúng CSS, JS và ảnh từ thư mục template.
-3. **Format mã nguồn**:
-   - Chạy lệnh Laravel Pint: `vendor/bin/pint --dirty --format agent`.
-4. **Kiểm tra thực tế**:
-   - Kiểm tra HTTP Status `200 OK` qua route xem thử: `http://127.0.0.1:8000/xem-thu/{slug}`.
-5. **Cập nhật tài liệu**:
-   - Ghi nhận chi tiết template mới vào file `context.gemini.md`.
-6. **Lệnh Git Commit**:
-   - Viết sẵn lệnh git commit bằng Tiếng Việt có tiền tố chuẩn (ví dụ: `feat(template): tích hợp mẫu thiệp cưới ...`).
+### ⚙️ 5. TIÊU CHUẨN KỸ THUẬT & KIỂM THỬ BẮT BUỘC
+1. **Phòng vệ nhúng Studio Editor (`$isEmbed = true`)**:
+   - Khi nhúng trong iframe (`?embed=1`), bắt buộc ẩn màn mở đầu: `style="{{ $isEmbed ? 'display: none !important;' : '' }}"` và gắn class `opened mayhen_door_hidden`.
+   - Cấm gắn class khóa cuộn `no-scroll` lên `html`/`body`.
+2. **Kế thừa Layout chung & Bridge**:
+   - Bắt buộc `@extends('client.layouts.invitation')` để tích hợp `editor-bridge.blade.php` và cơ chế handshake 2 chiều `MAYHEN_BRIDGE_READY`.
+3. **Format & Kiểm thử**:
+   - Format mã nguồn: `vendor/bin/pint --dirty --format agent`.
+   - Chạy Feature Tests: `vendor/bin/pest tests/Feature`.
+   - Xóa cache: `php artisan optimize:clear`.
+4. **Cập nhật tài liệu**:
+   - Ghi nhận chi tiết vào `context.gemini.md`.
 
 ---
 
 ### 📋 [THÔNG TIN TEMPLATE CẦN TÍCH HỢP]
 - **Tên mẫu thiệp**: {{TÊN_MẪU}} (ví dụ: "Thước Phim Tình Yêu", "Bản Giao Hưởng", "Hương Mùa Thu")
 - **Slug**: {{SLUG}} (ví dụ: `ban-giao-huong`, `huong-mua-thu`)
-- **Template ID Prefix**: {{ID_PREFIX}} (ví dụ: `bgh2026`, `hmt8899`)
+- **Theme Modifier (nếu có)**: {{THEME_MODIFIER}} (ví dụ: `mayhen_invitation_hero--editorial`)
 - **Đường dẫn thư mục chứa template gốc (HTML/CSS/JS/Assets)**:
   {{ĐƯỜNG_DẪN_SOURCE}}
 - **Yêu cầu đặc biệt (nếu có)**:

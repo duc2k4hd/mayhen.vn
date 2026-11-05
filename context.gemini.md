@@ -3299,6 +3299,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - `vendor/bin/pest tests/Feature`: 3/3 passed.
                       - `php artisan optimize:clear`: Thành công.
 
+             123. **Khởi Tạo Skill Hệ Thống Mới `mayhen-invitation-standards` & Cập Nhật Agent Rules**:
+                 - **Mục tiêu**: Đóng gói toàn bộ tiêu chuẩn đặc tả 10 Section, danh sách class BEM `mayhen_invitation_*` bất biến và bảng ánh xạ Live Sync `data-sync-target` thành một Skill độc lập, chuẩn mực cho toàn bộ hệ thống Agent và Engine mẫu thiệp.
+                 - **Các công việc đã thực thi**:
+                   1. *Tạo Skill mới `.agents/skills/mayhen-invitation-standards/SKILL.md`*:
+                      - Định nghĩa rõ 5 nguyên tắc cốt lõi: Khung cấu trúc bất biến, Theme Skin Modifiers, Live Sync `data-sync-target`, Phòng vệ `$isEmbed = true`, và Zero External Assets.
+                      - Bảng quy chuẩn chi tiết cho Global Wrappers (G.1 -> G.7) và 10 Section (Section 1 đến Section 10).
+                      - Bảng phân loại từng class quy chuẩn, thẻ HTML khuyến nghị, thuộc tính `data-sync-target` và ý nghĩa dữ liệu.
+                   2. *Cập nhật Skill `.agents/skills/mayhen-invitation-templates/SKILL.md`*:
+                      - Bổ sung liên kết dẫn chiếu trực tiếp đến `mayhen-invitation-standards` và đồng bộ bảng 10 Section.
+                   3. *Cập nhật Agent Rules (`AGENTS.md`)*:
+                      - Thêm `mayhen-invitation-standards` vào bảng điều phối Skill (Skills Dispatch Table) dưới mục `Invitation 10 Sections & Classes Standards`.
+                   4. *Kiểm thử & Tối ưu*:
+                      - Chạy kiểm thử Pest: 3/3 tests passed.
+                      - Chạy `php artisan optimize:clear`: Thành công.
+
+             124. **Đồng Bộ & Viết Lại Toàn Diện Bộ 5 Tài Liệu Cốt Lõi Dự Án Theo Kiến Trúc 10 Section Chuẩn Hóa**:
+                 - **Bối cảnh & Mục tiêu**: Sau khi tái cấu trúc hoàn toàn hệ thống mẫu thiệp cưới (Mô hình Tách Bạch Dữ Liệu & Bộ Áo, loại bỏ vĩnh viễn định vị kéo-thả LadiPage, thiết lập khung 10 Section bất biến cùng hệ thống class BEM `mayhen_invitation_*`), toàn bộ 5 tài liệu/skill cốt lõi được rà soát và viết lại đồng bộ 100%:
+                   1. `PROMPT_INTEGRATE_TEMPLATE.md`: Viết lại từ đầu thành Prompt mẫu tích hợp template mới chuẩn mực, loại bỏ `{template_id}` prefix, quy định chi tiết 10 Section từ Hero Cover đến Interactive & Ending, kèm hợp đồng Live Sync `data-sync-target`, quy tắc Z-Index và Zero External Assets.
+                   2. `AGENTS.md`: Đồng bộ 7 nguyên tắc chuẩn hóa mẫu thiệp cưới (`TEMPLATE CREATION LOGIC`) và bổ sung Skill `mayhen-invitation-standards` vào bảng điều phối Agent (`Skills Dispatch Table`).
+                   3. `.agents/skills/mayhen-invitation-standards/SKILL.md`: Khởi tạo hoàn chỉnh bộ quy chuẩn đặc tả kỹ thuật chi tiết nhất của hệ thống thiệp Mây Hẹn (Global Wrappers G.1-G.7, chi tiết 10 Section với thẻ HTML, class BEM bắt buộc và thuộc tính `data-sync-target`).
+                   4. `.agents/skills/mayhen-invitation-templates/SKILL.md`: Viết lại để đồng bộ 100% với `mayhen-invitation-standards`, định hình quy trình tích hợp mẫu thiệp, chuẩn hóa schema, phòng vệ nhúng iframe và kiểm thử.
+                   5. `context.gemini.md`: Ghi nhận toàn bộ tiến trình thay đổi kiến trúc và cập nhật trạng thái mới nhất cho các phiên làm việc tiếp theo.
+                 - **Kiểm thử & Tối ưu**:
+                   - `vendor/bin/pint --dirty --format agent`: Đã định dạng chuẩn code style Laravel Pint.
+                   - `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
+                   - `php artisan optimize:clear`: Xóa sạch cache cấu hình, view, route.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

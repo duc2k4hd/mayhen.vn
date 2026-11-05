@@ -13,13 +13,14 @@ This application is a Laravel application running on PHP 8.5. Always use the API
 - **TRANSPARENT FILE EDITING**: Always edit files directly using `edit_file` so the user can inspect the visual diff for every single change. Never use hidden background scripts (python/powershell/bash) to modify source files without user visibility.
 - **RESEARCH FIRST (GITHUB / OPEN SOURCE)**: Đối với những chức năng chưa quen thuộc, đừng viết từ con số 0, hãy tìm kiếm các dự án mã nguồn mở trên GitHub để so sánh ý tưởng trước khi bắt tay vào làm.
 - **TEST FILES LOCATION**: Khi viết file test, bắt buộc phải đặt trong `tests/` (`tests/Feature/` hoặc `tests/Unit/`). Các file test tạm thời có thể xóa đi sau khi hoàn tất kiểm tra và code xong để giữ kho mã nguồn tinh gọn.
-- **TEMPLATE CREATION LOGIC**: Khi tạo mẫu thiệp mới hoặc sửa mẫu thiệp cũ, **BẮT BUỘC TUÂN THỦ ĐÚNG 6 NGUYÊN TẮC CHUẨN HÓA** để tạo thiệp trơn tru, mượt mà và chuyển mẫu không bị lỗi:
-  1. *Khóa Schema chung chuẩn*: Dùng đúng key `wedding.groom_name`, `wedding.bride_name`, `wedding.extra_data.groom_father/mother`, `wedding.extra_data.bride_father/mother`, `wedding.wedding_date`, `wedding.extra_data.event_party_address`, `wedding.extra_data.groom_bank_account/bride_bank_account`.
-  2. *Hợp đồng Live Sync*: Gắn đầy đủ `data-sync-target="{tên_trường}"` cho mọi vị trí hiển thị dữ liệu trong `template.blade.php`, tuyệt đối không hardcode tĩnh.
-  3. *Phòng vệ nhúng Studio Editor (`$isEmbed = true`)*: Tự động mở sẵn cánh thiệp (`opened`), không gắn class khóa cuộn `no-scroll` lên `html`/`body`, cưỡng chế `.card-wrapper { display: block !important; }` để không bao giờ bị màn hình trắng trơn.
-  4. *Phòng vệ ảnh lỗi (Asset Fallback)*: Mọi hàm `$resolveAsset` phải có fallback chỉ đến file ảnh có thật trong thư mục `assets/` của mẫu.
-  5. *Tự chứa 100% tài nguyên cục bộ (Zero External Assets)*: CẤM tuyệt đối dùng URL ảnh, font, icon, audio từ server bên ngoài (`builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`). Toàn bộ phải tải về và đặt trực tiếp trong `assets/` của mẫu đó; mọi tham chiếu trong Blade, CSS và schema đều trỏ về asset nội bộ.
-  6. *Kế thừa Layout chung*: Mọi mẫu thiệp bắt buộc `@extends('client.layouts.invitation')` để tích hợp tự động `editor-bridge.blade.php` và handshake 2 chiều `MAYHEN_BRIDGE_READY`.
+- **TEMPLATE CREATION LOGIC**: Khi tạo mẫu thiệp mới hoặc sửa mẫu thiệp cũ, **BẮT BUỘC TUÂN THỦ ĐÚNG 7 NGUYÊN TẮC CHUẨN HÓA** để tạo thiệp trơn tru, mượt mà và chuyển mẫu không bị lỗi:
+  1. *Khung 10 Section Tiêu Chuẩn*: Mọi mẫu thiệp bắt buộc có đủ 10 Section theo đúng thứ tự logic chuẩn hóa (1. Opening -> 2. Hero Cover -> 3. Love Story & Quote -> 4. Family & Couple -> 5. Countdown & Calendar -> 6. Events & Maps -> 7. Timeline -> 8. Dresscode -> 9. Album 10 Photos -> 10. Gift, Interactive & Ending). Chi tiết xem tại `.agents/skills/mayhen-invitation-standards/SKILL.md`.
+  2. *Hệ thống Class Chuẩn Toàn Cục (`mayhen_invitation_*`)*: 100% mẫu thiệp dùng chung hệ thống class BEM cốt lõi bất biến. Tùy biến kiểu dáng theo mẫu bằng Modifier (ví dụ: `mayhen_invitation_hero--celestial`).
+  3. *100% Flow Layout (Flexbox & CSS Grid)*: Tự co giãn theo nội dung, tuyệt đối CẤM layout định vị tuyệt đối `position: absolute` kéo-thả kiểu LadiPage.
+  4. *Hợp đồng Live Sync Tuyệt Đối*: Gắn đầy đủ `data-sync-target="{tên_trường}"` cho mọi vị trí hiển thị dữ liệu trong `template.blade.php`, tuyệt đối không hardcode tĩnh.
+  5. *Phòng vệ nhúng Studio Editor (`$isEmbed = true`)*: Tự động mở sẵn cánh thiệp (`opened`), ẩn màn mở đầu (`display: none !important;`), không gắn class khóa cuộn `no-scroll` lên `html`/`body`, cưỡng chế `.card-wrapper { display: block !important; }` để không bao giờ bị màn hình trắng trơn.
+  6. *Phòng vệ ảnh lỗi & 100% Local Assets*: Mọi hàm `$resolveAsset` phải có fallback chỉ đến file ảnh có thật trong thư mục `assets/` của mẫu. CẤM tuyệt đối dùng URL từ server bên ngoài (`builder.27biggroup.com`, `ladicdn.com`, `unsplash.com`, `iili.io`). Toàn bộ ảnh, font, icon, audio phải tải về và đặt trực tiếp trong `assets/` của mẫu đó.
+  7. *Kế thừa Layout chung*: Mọi mẫu thiệp bắt buộc `@extends('client.layouts.invitation')` để tích hợp tự động `editor-bridge.blade.php` và handshake 2 chiều `MAYHEN_BRIDGE_READY`.
 
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
@@ -208,6 +209,7 @@ Activate and read the corresponding skill in `.agents/skills/` before executing:
 - JavaScript & DOM -> `mayhen-javascript`
 - Invitation Animations -> `mayhen-animation`
 - Template Engine -> `mayhen-invitation-templates`
+- Invitation 10 Sections & Classes Standards -> `mayhen-invitation-standards`
 - Database & Migrations -> `mayhen-database`
 - Backend, Controllers, Services -> `mayhen-laravel-backend`
 - Auth, Security, Privacy -> `mayhen-auth-security`
