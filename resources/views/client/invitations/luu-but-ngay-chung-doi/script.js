@@ -333,29 +333,39 @@
         });
     }
 
-    // Co giãn Mobile Responsive
+    // Co giãn Mobile Responsive Căn Giữa Chuẩn Mọi Thiết Bị
     function responsive() {
         if (!root || !stage) return;
-        const mobile = innerWidth < 768;
+        const clientWidth = stage.parentElement?.clientWidth || window.innerWidth || 420;
+        const mobile = clientWidth < 768;
         if (mobile) {
-            const ratio = Math.min(1, innerWidth / 420);
+            const ratio = Math.min(1, clientWidth / 420);
             root.style.transform = `scale(${ratio})`;
+            root.style.transformOrigin = 'top center';
             stage.style.height = (root.scrollHeight * ratio) + 'px';
             stage.style.width = '100%';
         } else {
             root.style.transform = '';
+            root.style.transformOrigin = '';
             stage.style.height = '';
             stage.style.width = '100%';
         }
     }
+
+    responsive();
 
     let frame;
     function delayedResize() {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(responsive);
     }
-    addEventListener('resize', delayedResize);
-    addEventListener('orientationchange', delayedResize);
+    addEventListener('resize', delayedResize, { passive: true });
+    addEventListener('orientationchange', delayedResize, { passive: true });
+    if ('ResizeObserver' in window && stage.parentElement) {
+        try {
+            new ResizeObserver(delayedResize).observe(stage.parentElement);
+        } catch {}
+    }
 
     // Hiệu ứng cuộn IntersectionObserver
     const hidden = $$('.' + P + 'ladi-element').filter(n => n.id && /^(IMAGE|BOX|GROUP|HEADLINE|PARAGRAPH|FORM|BUTTON|HTML_CODE|LINE)/.test(n.id));

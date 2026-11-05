@@ -11599,12 +11599,17 @@ textarea:focus-visible {
 #GROUP138, #SHAPE15, #GROUP165 { display: none !important; }
 #HTML_CODE1 #deleteDialog { display: none !important; }
 
-/* BẢO ĐẢM KHÔNG BỊ BOTTOM NAV CHE KHUẤT DƯỚI ĐÁY TRANG */
+/* BẢO ĐẢM KHÔNG BỊ BOTTOM NAV CHE KHUẤT DƯỚI ĐÁY TRANG VÀ CĂN GIỮA HOÀN HẢO MỌI THIẾT BỊ */
 #mayhen_w18_stage {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100vw !important;
     height: auto;
     position: relative;
     padding-bottom: 95px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow-x: hidden !important;
 }
 
 /* BẢO ĐẢM BÌA THIỆP CHÍNH SECTION1 LUÔN HIỂN THỊ ĐẦU TIÊN TRÊN MỌI THIẾT BỊ */
@@ -11614,8 +11619,11 @@ textarea:focus-visible {
 
 @media (max-width: 767px) {
     #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
-        width: 420px;
-        transform-origin: top left;
+        width: 100% !important;
+        max-width: 520px !important;
+        margin: 0 auto !important;
+        transform-origin: top center !important;
+        position: relative !important;
     }
     #SECTION1 {
         display: block !important;
@@ -11626,6 +11634,7 @@ textarea:focus-visible {
 @media (min-width: 768px) {
     #mayhen_w18_stage > .mayhen_invitation_ladjihe38udhd_ladi-wraper {
         width: 100%;
+        margin: 0 auto !important;
         transform: none !important;
     }
 }
@@ -11855,6 +11864,19 @@ textarea:focus-visible {
 .mayhen_invitation_ladjihe38udhd_widget-nav button:hover {
     background: var(--mayhen-green-deep) !important;
     transform: scale(1.08);
+}
+
+@media (max-width: 767px) {
+    .mayhen_invitation_ladjihe38udhd_widget-nav {
+        right: 10px !important;
+        bottom: 80px !important;
+        gap: 8px !important;
+    }
+    .mayhen_invitation_ladjihe38udhd_widget-nav button {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 16px !important;
+    }
 }
 
 /* ========================================================
