@@ -3468,6 +3468,110 @@ html.mayhen_invitation_embed_mode {
 }
 
 /* ==========================================================================
+   SECTION 3: LOVE STORY & QUOTE (CELESTIAL ARCH CARD)
+   ========================================================================== */
+.mayhen_invitation_story {
+    position: relative;
+}
+
+.mayhen_invitation_story_img_wrap {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 20px;
+    padding: 6px;
+    border-radius: 140px 140px 18px 18px;
+    border: 1px solid rgba(245, 222, 165, 0.55);
+    background: radial-gradient(120% 80% at 50% 0%, rgba(252, 227, 158, 0.18), transparent 70%),
+                rgba(12, 20, 44, 0.65);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.65), 0 0 24px rgba(252, 227, 158, 0.25);
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_story_img {
+    width: 100%;
+    height: 280px;
+    border-radius: 134px 134px 14px 14px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 30px rgba(3, 7, 22, 0.5);
+}
+
+.mayhen_invitation_story_sub {
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_story_sub .mayhen_invitation_ladi_headline {
+    font-family: var(--f-than);
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muc);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+.mayhen_invitation_quote_text {
+    font-family: var(--f-than);
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.7;
+    color: var(--vang-kim);
+    text-shadow: 0 0 14px rgba(252, 227, 158, 0.5);
+    margin: 0 auto 16px;
+    padding: 0 10px;
+    max-width: 400px;
+}
+
+.mayhen_invitation_story_text {
+    font-family: var(--f-than);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--muc-mem);
+    margin: 0 auto 20px;
+    max-width: 410px;
+    opacity: 0.95;
+}
+
+.mayhen_invitation_monogram {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-family: var(--f-than);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    color: var(--vang-kim);
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-top: 1px solid rgba(245, 222, 165, 0.3);
+    border-bottom: 1px solid rgba(245, 222, 165, 0.3);
+}
+
+.mayhen_invitation_monogram span {
+    font-size: 11px;
+    color: #ffffff;
+    filter: drop-shadow(0 0 6px var(--vang-kim));
+}
+
+/* ==========================================================================
+   SECTION 4: COUPLE BIO STYLES
+   ========================================================================== */
+.mayhen_invitation_couple_bio {
+    font-family: var(--f-than);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muc-mem);
+    margin: 8px auto 0;
+    padding: 0 6px;
+    font-style: italic;
+    text-align: center;
+    opacity: 0.9;
+    max-width: 190px;
+}
+
+/* ==========================================================================
    SECTION 8: DRESSCODE & CANONICAL COMPONENT STYLES
    ========================================================================== */
 .mayhen_invitation_dresscode {
@@ -3475,33 +3579,63 @@ html.mayhen_invitation_embed_mode {
     padding: clamp(24px, 5vw, 44px) 16px;
 }
 
-.mayhen_invitation_dresscode_swatches {
+.mayhen_invitation_dresscode_icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
-    margin: 16px 0 20px;
+    color: var(--vang-kim);
+    filter: drop-shadow(0 0 10px rgba(252, 227, 158, 0.65));
+    margin-bottom: 8px;
+}
+
+.mayhen_invitation_dresscode_swatches {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 16px 0 22px;
     flex-wrap: wrap;
 }
 
+.mayhen_invitation_dresscode_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 66px;
+}
+
 .mayhen_invitation_dresscode_circle {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    border: 2px solid rgba(252, 227, 158, 0.85);
-    box-shadow: 0 0 14px rgba(252, 227, 158, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.25);
+    border: 2px solid rgba(252, 227, 158, 0.9);
+    box-shadow: 0 0 14px rgba(252, 227, 158, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: default;
 }
 
 .mayhen_invitation_dresscode_circle:hover {
     transform: scale(1.15) translateY(-2px);
-    box-shadow: 0 0 22px rgba(252, 227, 158, 0.7);
+    box-shadow: 0 0 22px rgba(252, 227, 158, 0.75);
+}
+
+.mayhen_invitation_dresscode_label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muc);
+    letter-spacing: 0.04em;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
 
 .mayhen_invitation_dresscode_note {
-    color: #E2E8F0;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0;
+    color: var(--muc-mem);
+    font-size: 15px;
+    line-height: 1.65;
+    font-style: italic;
+    margin: 0 auto;
+    max-width: 380px;
+    text-align: center;
 }

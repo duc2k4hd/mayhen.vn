@@ -73,6 +73,42 @@
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {
+          "key": "wedding.extra_data.groom_bio",
+          "label": "Giới thiệu / Lời tự bạch Chú rể",
+          "type": "textarea",
+          "required": false,
+          "default": "Một chàng trai điềm đạm, chân thành và luôn sống trọn vẹn vì tình yêu thương gia đình.",
+          "placeholder": "Vài dòng chia sẻ ngắn về chú rể...",
+          "max": 255
+        },
+        {
+          "key": "wedding.extra_data.bride_bio",
+          "label": "Giới thiệu / Lời tự bạch Cô dâu",
+          "type": "textarea",
+          "required": false,
+          "default": "Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.",
+          "placeholder": "Vài dòng chia sẻ ngắn về cô dâu...",
+          "max": 255
+        },
+        {
+          "key": "wedding.extra_data.story_title",
+          "label": "Tiêu đề mục Lời ngỏ",
+          "type": "text",
+          "required": false,
+          "default": "Chuyện Tình Yêu",
+          "placeholder": "Ví dụ: Chuyện Tình Yêu hoặc Love Story",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.story_subtitle",
+          "label": "Tiêu đề phụ câu chuyện",
+          "type": "text",
+          "required": false,
+          "default": "Hành Trình Gặp Gỡ Giữa Ngân Hà",
+          "placeholder": "Ví dụ: Hành Trình Gặp Gỡ Giữa Ngân Hà",
+          "max": 100
+        },
+        {
           "key": "wedding.extra_data.couple_quote",
           "label": "Lời ngỏ / Thông điệp tình yêu",
           "type": "textarea",
@@ -80,6 +116,15 @@
           "default": "Giữa muôn ngàn vì sao sáng trên bầu trời, em là ngôi sao duy nhất chiếu rọi trái tim anh.",
           "placeholder": "Chia sẻ ngắn gọn lời ngỏ gửi đến quan khách...",
           "max": 500
+        },
+        {
+          "key": "wedding.extra_data.story_content",
+          "label": "Đoạn tâm sự tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Vũ trụ bao la với hàng triệu vì tinh tú, nhưng định mệnh đã dẫn lối để hai tâm hồn đồng điệu tìm thấy nhau. Cảm ơn vì đã cùng nhau đi qua những năm tháng thanh xuân, và hôm nay, chúng ta cùng viết tiếp chương mới rạng rỡ nhất.",
+          "placeholder": "Kể ngắn gọn câu chuyện hoặc cảm xúc của hai bạn...",
+          "max": 1000
         }
       ]
     },

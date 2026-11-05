@@ -3278,6 +3278,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Chạy `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
                      - Chạy `php artisan optimize:clear`: Thành công 100%.
 
+             122. **Đồng Bộ Hoàn Chỉnh Visual 10 Section Cho Mẫu "Giữa Muôn Ngàn Vì Sao" (Celestial Deep Space & Golden Starlight)**:
+                 - **Vấn đề giải quyết**: Trước đó các section bị xếp lộn xộn (Section 6 bị xé lẻ và xếp trước Section 5, Bản đồ bị ngắt quãng, Section 3 và 8 còn sơ sài dạng inline CSS thô sơ, Section 4 thiếu lời tự bạch/bio của dâu rể).
+                 - **Các nâng cấp đã hoàn thành**:
+                   1. *Tổ chức lại thứ tự chuẩn xác 1 -> 10*:
+                      - **Section 1: Màn Mở Đầu (Opening / Envelope)**: Cửa vòm sao rơi dập nổi vàng kim, nút mở thiệp phát sáng.
+                      - **Section 2: Trang Bìa Chính (Hero Cover)**: Quỹ đạo 3D xoay quanh ảnh lớn, tên dâu rể Great Vibes, ngày dương và âm lịch.
+                      - **Section 3: Lời Ngỏ & Chuyện Tình Yêu (Love Story & Quote)**: Khung vòm sao nghệ thuật, ảnh kỷ niệm vòm thiên hà (`$saveDatePhotoUrl`), tiêu đề phụ `$storySubtitle`, câu trích dẫn chạm khắc vàng kim `couple_quote`, đoạn văn tâm sự tình yêu `story_content` và Monogram chữ cái đầu `✦ M & T ✦`.
+                      - **Section 4: Song Thân & Đôi Uyên Ương (Family & Couple)**: Thẻ song thân Nhà Trai & Nhà Gái chuẩn chỉnh, bổ sung thẻ Chú Rể & Cô Dâu kèm lời tự bạch (`groom_bio` & `bride_bio`) thanh lịch.
+                      - **Section 5: Đếm Ngược & Lịch Tháng (Countdown & Calendar)**: Gom đồng hồ đếm ngược 4 ô Ngày:Giờ:Phút:Giây và Tờ lịch cưới tháng sao rơi (ngày cưới pulse) cùng nút "Thêm vào lịch" Google Calendar vào 1 section lớn.
+                      - **Section 6: Thông Tin Sự Kiện & Bản Đồ (Events & Maps)**: Gom Thư Mời Tiệc Cưới hoàng gia, 2 thẻ Nghi Lễ Gia Tiên (Vu Quy & Thành Hôn) và Bản Đồ Chỉ Đường 3D hai cánh hé mở vào 1 section sự kiện liền mạch.
+                      - **Section 7: Lịch Trình Hôn Lễ (Wedding Timeline)**: 4 mốc thời gian nối sao SVG vàng kim.
+                      - **Section 8: Quy Định Trang Phục (Dresscode)**: Thẻ vòm sao sang trọng, biểu tượng trang phục hoàng gia SVG, 4 ô màu tròn viền vàng tỏa sáng ánh sao (`#FCE39E` Vàng Champagne, `#FFFFFF` Trắng Ánh Sao, `#1B2A4A` Xanh Đêm Sâu, `#0D1322` Đen Huyền Bí) kèm nhãn tên và ghi chú `dresscode_note`.
+                      - **Section 9: Khoảnh Khắc Hạnh Phúc (Album 10 Photos)**: 3D Coverflow 10 ảnh cưới sắc nét, chấm phân trang, Lightbox.
+                      - **Section 10: Mừng Cưới, RSVP, Lưu Bút & Cảm Ơn (Gift, Interactive & Ending)**: Gom Hộp mừng cưới VietQR 3D bung sao, Bảng ký tên điện tử canvas, Form xác nhận RSVP, Sổ lưu bút AJAX và Lời cảm ơn Thank You kết thiệp.
+                   2. *Đồng bộ CSS (`styles.css`)*: Viết toàn bộ styling chuyên nghiệp cho Section 3, Section 4 bio, Section 8 dresscode sử dụng biến màu nội bộ `--dem`, `--vang-kim`, `--muc`, `--vien`, loại bỏ 100% inline style tạm bợ.
+                   3. *Cập nhật Schema (`schema.json`)*: Bổ sung các key canonical `wedding.extra_data.groom_bio`, `wedding.extra_data.bride_bio`, `wedding.extra_data.story_title`, `wedding.extra_data.story_subtitle`, `wedding.extra_data.story_content`.
+                   4. *Kiểm thử & Định dạng*:
+                      - `vendor/bin/pint --dirty --format agent`: Passed.
+                      - `vendor/bin/pest tests/Feature`: 3/3 passed.
+                      - `php artisan optimize:clear`: Thành công.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
