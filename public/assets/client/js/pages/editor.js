@@ -607,7 +607,7 @@ const initEditor = () => {
             const target = e.target;
             if (!target) return;
             const key = target.getAttribute('data-sync-key') || target.getAttribute('name') || target.id;
-            if (key && key !== lastScrolledKey) {
+            if (key) {
                 lastScrolledKey = key;
                 sendScrollToTarget(key, 'focus');
             }
@@ -650,14 +650,12 @@ const initEditor = () => {
                 updateAutoLunarFromDateInput(target);
             }
 
-            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu
-            if (key !== lastScrolledKey) {
-                lastScrolledKey = key;
-                clearTimeout(scrollDebounceTimer);
-                scrollDebounceTimer = setTimeout(() => {
-                    sendScrollToTarget(key, 'type');
-                }, 120);
-            }
+            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu, tự động cuộn sau khi gõ
+            lastScrolledKey = key;
+            clearTimeout(scrollDebounceTimer);
+            scrollDebounceTimer = setTimeout(() => {
+                sendScrollToTarget(key, 'type');
+            }, 250);
 
             // Đồng bộ sang Iframe
             sendSyncMessage(key, val);

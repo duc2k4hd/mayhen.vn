@@ -5,20 +5,22 @@
 
 {{-- QUY TẮC TOÀN CỤC: TỰ ĐỘNG MỞ SẴN NỘI DUNG THIỆP MỜI TRONG IFRAME (ZERO-FRICTION AUTO-OPENED PROTOCOL) --}}
 <style id="mayhen_global_auto_opened_styles">
-    /* 1. Mở khóa cuộn toàn trang, tắt scroll-behavior smooth để JS cuộn mượt và ẨN HOÀN TOÀN thanh scrollbar trong iframe */
+    /* 1. Mở khóa cuộn mượt mà toàn trang cho html và ẨN HOÀN TOÀN thanh scrollbar trong iframe */
     html.mayhen_embed_mode,
-    body.mayhen_embed_mode,
-    html.mayhen_template_auto_opened,
-    body.mayhen_template_auto_opened,
-    .mayhen_embed_mode * {
-        scroll-behavior: auto !important;
+    html.mayhen_template_auto_opened {
+        scroll-behavior: smooth !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        height: auto !important;
+        position: static !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
     }
 
-    html.mayhen_embed_mode,
     body.mayhen_embed_mode,
-    html.mayhen_template_auto_opened,
     body.mayhen_template_auto_opened {
-        overflow-y: auto !important;
+        overflow: visible !important;
+        overflow-y: visible !important;
         overflow-x: hidden !important;
         height: auto !important;
         position: static !important;
@@ -700,48 +702,118 @@
             });
         }
 
+        // Helper 1: Tìm phần tử hiển thị thực tế (bỏ qua triệt để màn mở đầu / cánh cửa 3D bị ẩn)
+        var findVisibleTarget = function(selector) {
+            if (!selector) return null;
+            try {
+                var list = document.querySelectorAll(selector);
+                for (var i = 0; i < list.length; i++) {
+                    var el = list[i];
+                    if (el.closest('.mayhen_invitation_opening, .mayhen_invitation_sr_cua, #mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], [class*="opening_sides"], #POPUP8')) {
+                        continue;
+                    }
+                    var rect = el.getBoundingClientRect();
+                    var style = window.getComputedStyle(el);
+                    if (style.display !== 'none' && style.visibility !== 'hidden' && (rect.width > 0 || rect.height > 0 || el.getClientRects().length > 0)) {
+                        return el;
+                    }
+                }
+                for (var j = 0; j < list.length; j++) {
+                    if (!list[j].closest('.mayhen_invitation_opening, .mayhen_invitation_sr_cua, [class*="opening"], [class*="door_stage"]')) {
+                        return list[j];
+                    }
+                }
+                return list[0] || null;
+            } catch (e) {
+                return document.querySelector(selector);
+            }
+        };
+
+        // Helper 2: Cuộn mượt mà độc lập, tính toán pixel chính xác 100% trong Iframe
+        var smoothScrollToTarget = function(el, block) {
+            if (!el) return;
+            document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+            if (document.body) {
+                document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
+                document.body.style.overflow = 'visible';
+            }
+
+            var rect = el.getBoundingClientRect();
+            var currentScroll = window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || (document.body ? document.body.scrollTop : 0) || 0;
+            var targetY = currentScroll + rect.top;
+
+            if (block === 'center') {
+                var winH = window.innerHeight || (document.documentElement ? document.documentElement.clientHeight : 667);
+                targetY = targetY - (winH / 2) + (rect.height / 2);
+            } else {
+                targetY = Math.max(0, targetY - 24);
+            }
+
+            if (targetY < 0) targetY = 0;
+
+            try {
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+            } catch (e) {
+                window.scrollTo(0, targetY);
+            }
+
+            try {
+                if (document.documentElement) {
+                    document.documentElement.scrollTo({ top: targetY, behavior: 'smooth' });
+                }
+            } catch (e) {}
+
+            try {
+                el.scrollIntoView({ behavior: 'smooth', block: block || 'start', inline: 'nearest' });
+            } catch (e) {}
+        };
+
         // 5. Cuộn tới Section theo Tab Stepper đang chọn (10 Section Tiêu Chuẩn)
         if (data.type === 'MAYHEN_SCROLL_TO_SECTION') {
             document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
             if (document.body) {
                 document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow = 'visible';
             }
 
             var secId = data.section_id || '';
             var step = data.step ? parseInt(data.step, 10) : 0;
 
             if (secId === 'hero' || (secId === 'couple' && step <= 1) || step === 1) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                try {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } catch (e) {
+                    window.scrollTo(0, 0);
+                }
                 return;
             }
 
             var target = null;
             // 1. Tìm bằng thuộc tính section trực tiếp
-            target = document.querySelector('[data-mayhen-section="' + secId + '"], [data-mayhen-section*="' + secId + '"]');
+            target = findVisibleTarget('[data-mayhen-section="' + secId + '"], [data-mayhen-section*="' + secId + '"]');
 
             // 2. Smart selector mapping chuẩn hóa 10 Section tiêu chuẩn
             if (!target) {
                 if (secId === 'story') {
-                    target = document.querySelector('[data-mayhen-section="story"], .mayhen_invitation_story, [data-sync-target="couple_quote"], [data-sync-target="story_title"]');
+                    target = findVisibleTarget('[data-mayhen-section="story"], .mayhen_invitation_story, [data-sync-target="couple_quote"], [data-sync-target="story_title"]');
                 } else if (secId === 'parents' || (secId === 'couple' && step === 3)) {
-                    target = document.querySelector('[data-mayhen-section="parents"], .mayhen_invitation_parents, [data-mayhen-section="groom_family"], [data-sync-target="groom_father"]');
+                    target = findVisibleTarget('[data-mayhen-section="parents"], .mayhen_invitation_parents, [data-mayhen-section="groom_family"], [data-sync-target="groom_father"]');
                 } else if (secId === 'groom_family') {
-                    target = document.querySelector('[data-sync-target="groom_father"], [data-sync-target="groom_party_address"], [data-sync-target="groom_party_time"], [class*="groom_family"]');
+                    target = findVisibleTarget('[data-sync-target="groom_father"], [data-sync-target="groom_party_address"], [data-sync-target="groom_party_time"], [class*="groom_family"]');
                 } else if (secId === 'bride_family') {
-                    target = document.querySelector('[data-sync-target="bride_father"], [data-sync-target="bride_party_address"], [data-sync-target="bride_party_time"], [class*="bride_family"]');
+                    target = findVisibleTarget('[data-sync-target="bride_father"], [data-sync-target="bride_party_address"], [data-sync-target="bride_party_time"], [class*="bride_family"]');
                 } else if (secId === 'countdown_calendar') {
-                    target = document.querySelector('[data-mayhen-section="countdown_calendar"], .mayhen_invitation_countdown_calendar, [data-sync-target="wedding_calendar"], .mayhen_invitation_countdown');
+                    target = findVisibleTarget('[data-mayhen-section="countdown_calendar"], .mayhen_invitation_countdown_calendar, [data-sync-target="wedding_calendar"], .mayhen_invitation_countdown');
                 } else if (secId === 'events') {
-                    target = document.querySelector('[data-mayhen-section="events"], .mayhen_invitation_events, [data-sync-target="party_venue"], [data-sync-target="party_address"]');
+                    target = findVisibleTarget('[data-mayhen-section="events"], .mayhen_invitation_events, [data-sync-target="party_venue"], [data-sync-target="party_address"]');
                 } else if (secId === 'timeline') {
-                    target = document.querySelector('[data-mayhen-section="timeline"], .mayhen_invitation_timeline, [data-sync-target="timeline.0.time"], [data-sync-target*="timeline"]');
+                    target = findVisibleTarget('[data-mayhen-section="timeline"], .mayhen_invitation_timeline, [data-sync-target="timeline.0.time"], [data-sync-target*="timeline"]');
                 } else if (secId === 'dresscode') {
-                    target = document.querySelector('[data-mayhen-section="dresscode"], .mayhen_invitation_dresscode, [data-sync-target*="dresscode"]');
+                    target = findVisibleTarget('[data-mayhen-section="dresscode"], .mayhen_invitation_dresscode, [data-sync-target*="dresscode"]');
                 } else if (secId === 'album') {
-                    target = document.querySelector('[data-mayhen-section="album"], .mayhen_invitation_gallery, [data-sync-target="gallery.0"], [data-sync-target*="gallery"]');
+                    target = findVisibleTarget('[data-mayhen-section="album"], .mayhen_invitation_gallery, [data-sync-target="gallery.0"], [data-sync-target*="gallery"]');
                 } else if (secId === 'gift') {
-                    target = document.querySelector('[data-mayhen-section="gift"], .mayhen_invitation_gift, [data-sync-target="qr_groom_image"], [class*="gift"]');
+                    target = findVisibleTarget('[data-mayhen-section="gift"], .mayhen_invitation_gift, [data-sync-target="qr_groom_image"], [class*="gift"]');
                     // Tự động mở hộp quà nếu đang đóng
                     try {
                         var hopQuaBtn = document.querySelector('.mayhen_invitation_sr_hop_qua, [class*="hop_qua"]');
@@ -754,21 +826,27 @@
                         }
                     } catch (e) {}
                 } else if (secId === 'ending') {
-                    target = document.querySelector('[data-mayhen-section="ending"], .mayhen_invitation_interactive_ending, [data-sync-target="thank_you_title"], .mayhen_invitation_wishes');
+                    target = findVisibleTarget('[data-mayhen-section="ending"], [data-mayhen-section*="ending"], .mayhen_invitation_interactive_ending, [data-sync-target="thank_you_title"], .mayhen_invitation_wishes');
                 }
             }
 
             // 3. Fallback theo số thứ tự step (1..10)
             if (!target && step > 0) {
-                var allSecs = document.querySelectorAll('main > section, [data-mayhen-section], .mayhen_invitation_sr_phan, .ladi-wraper > section');
-                if (allSecs && allSecs[step - 1]) {
-                    target = allSecs[step - 1];
+                var allSecs = document.querySelectorAll('main > section, [data-mayhen-section], .mayhen_invitation_sr_phan, .mayhen_invitation_ladi_wraper > section, .ladi-wraper > section');
+                var visibleSecs = [];
+                allSecs.forEach(function(s) {
+                    if (!s.closest('.mayhen_invitation_opening, .mayhen_invitation_sr_cua, [class*="opening"], [class*="door_stage"]')) {
+                        visibleSecs.push(s);
+                    }
+                });
+                if (visibleSecs && visibleSecs[step - 1]) {
+                    target = visibleSecs[step - 1];
                 }
             }
 
             if (target) {
                 var scrollEl = target.closest('section, article, [class*="_sec"], [class*="_card"], [class*="_flow"]') || target;
-                scrollEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                smoothScrollToTarget(scrollEl, 'start');
             }
         }
 
@@ -777,7 +855,7 @@
             document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
             if (document.body) {
                 document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
-                document.body.style.overflow = 'auto';
+                document.body.style.overflow = 'visible';
             }
 
             var rawKey = (data.target || '').toString().trim();
@@ -788,20 +866,23 @@
 
             // Xử lý thông minh cho các trường dữ liệu
             if (cleanKey === 'groom_name') {
-                targetEl = document.querySelector('[data-sync-target="groom_name"], .mayhen_invitation_hero_groom, [data-sync-target="couple_names"]');
+                targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_groom, .mayhen_invitation_hero [data-sync-target="groom_name"], [data-sync-target="groom_name"], .mayhen_invitation_hero_groom, [data-sync-target="couple_names"]');
             } else if (cleanKey === 'bride_name') {
-                targetEl = document.querySelector('[data-sync-target="bride_name"], .mayhen_invitation_hero_bride, [data-sync-target="couple_names"]');
+                targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_bride, .mayhen_invitation_hero [data-sync-target="bride_name"], [data-sync-target="bride_name"], .mayhen_invitation_hero_bride, [data-sync-target="couple_names"]');
+            } else if (cleanKey === 'ceremony_type') {
+                targetEl = findVisibleTarget('[data-sync-target="ceremony_type"], .mayhen_invitation_hero_kicker, .mayhen_invitation_hero');
             } else if (cleanKey === 'cover_photo_url' || cleanKey === 'hero_photo_url') {
-                targetEl = document.querySelector('[data-sync-target="hero_photo_url"], [data-sync-target="cover_photo_url"], .mayhen_invitation_hero_img, [data-mayhen-section="hero"], [data-mayhen-section="couple"]');
+                targetEl = findVisibleTarget('[data-sync-target="hero_photo_url"], [data-sync-target="cover_photo_url"], .mayhen_invitation_hero_img, [data-mayhen-section="hero"], [data-mayhen-section="couple"]');
             } else if (cleanKey === 'save_date_photo_url') {
-                targetEl = document.querySelector('[data-sync-target="save_date_photo_url"], .mayhen_invitation_story_img');
+                targetEl = findVisibleTarget('[data-sync-target="save_date_photo_url"], .mayhen_invitation_story_img');
             } else if (cleanKey === 'groom_photo_url') {
-                targetEl = document.querySelector('[data-sync-target="groom_photo_url"], [data-ben="trai"] img, [data-ben="trai"] .mayhen_invitation_chan_dung, [data-ben="trai"]');
+                targetEl = findVisibleTarget('[data-sync-target="groom_photo_url"], [data-ben="trai"] img, [data-ben="trai"] .mayhen_invitation_chan_dung, [data-ben="trai"]');
             } else if (cleanKey === 'bride_photo_url') {
-                targetEl = document.querySelector('[data-sync-target="bride_photo_url"], [data-ben="phai"] img, [data-ben="phai"] .mayhen_invitation_chan_dung, [data-ben="phai"]');
-            } else if (cleanKey.indexOf('gallery.') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="bride_photo_url"], [data-ben="phai"] img, [data-ben="phai"] .mayhen_invitation_chan_dung, [data-ben="phai"]');
+            } else if (cleanKey.indexOf('gallery.') !== -1 || cleanKey.indexOf('album') !== -1) {
                 var gIdx = parseInt(cleanKey.split('.').pop(), 10);
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"]');
+                if (isNaN(gIdx)) gIdx = 0;
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-index="' + gIdx + '"]');
                 if (!targetEl) {
                     var galleryItems = document.querySelectorAll('.mayhen_invitation_gallery_col, .mayhen_invitation_gallery_item, [class*="gallery_item"], [class*="album_item"]');
                     if (galleryItems && galleryItems[gIdx]) {
@@ -809,10 +890,10 @@
                     }
                 }
                 if (!targetEl) {
-                    targetEl = document.querySelector('[data-mayhen-section="album"], .mayhen_invitation_gallery');
+                    targetEl = findVisibleTarget('[data-mayhen-section="album"], .mayhen_invitation_gallery');
                 }
             } else if (cleanKey.indexOf('timeline') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"]');
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"]');
                 if (!targetEl) {
                     var tm = cleanKey.match(/timeline\.(\d+)/);
                     var tIdx = tm ? parseInt(tm[1], 10) : 0;
@@ -822,18 +903,18 @@
                     }
                 }
                 if (!targetEl) {
-                    targetEl = document.querySelector('[data-mayhen-section="timeline"], .mayhen_invitation_timeline');
+                    targetEl = findVisibleTarget('[data-mayhen-section="timeline"], .mayhen_invitation_timeline');
                 }
             } else if (cleanKey.indexOf('dresscode') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"], [data-sync-target*="dresscode"], [data-mayhen-section="dresscode"], .mayhen_invitation_dresscode');
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target*="dresscode"], [data-mayhen-section="dresscode"], .mayhen_invitation_dresscode');
             } else if (cleanKey.indexOf('qr') !== -1 || cleanKey.indexOf('bank') !== -1 || cleanKey.indexOf('gift') !== -1) {
                 if (cleanKey.indexOf('groom') !== -1) {
-                    targetEl = document.querySelector('[data-sync-target="qr_groom_image"], [data-sync-target*="groom_bank"]');
+                    targetEl = findVisibleTarget('.mayhen_invitation_gift_card_groom, [data-sync-target="qr_groom_image"], [data-sync-target*="groom_bank"]');
                 } else if (cleanKey.indexOf('bride') !== -1) {
-                    targetEl = document.querySelector('[data-sync-target="qr_bride_image"], [data-sync-target*="bride_bank"]');
+                    targetEl = findVisibleTarget('.mayhen_invitation_gift_card_bride, [data-sync-target="qr_bride_image"], [data-sync-target*="bride_bank"]');
                 }
                 if (!targetEl) {
-                    targetEl = document.querySelector('[data-mayhen-section="gift"], .mayhen_invitation_gift');
+                    targetEl = findVisibleTarget('[data-mayhen-section="gift"], .mayhen_invitation_gift');
                 }
                 // Tự động mở hộp quà nếu đang đóng
                 try {
@@ -846,32 +927,28 @@
                         qrWrap.style.setProperty('visibility', 'visible', 'important');
                     }
                 } catch (e) {}
-            } else if (cleanKey === 'wedding_date' || cleanKey === 'event_party_date') {
-                targetEl = document.querySelector('[data-sync-target="wedding_calendar"], [data-sync-target="wedding_date"], [data-mayhen-section="countdown_calendar"]');
-            } else if (cleanKey.indexOf('groom_father') !== -1 || cleanKey.indexOf('groom_mother') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="groom_father"], [data-sync-target="groom_parents"], [data-ben="trai"]');
-            } else if (cleanKey.indexOf('bride_father') !== -1 || cleanKey.indexOf('bride_mother') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="bride_father"], [data-sync-target="bride_parents"], [data-ben="phai"]');
-            } else if (cleanKey.indexOf('party') !== -1 || cleanKey.indexOf('venue') !== -1 || cleanKey.indexOf('address') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"], [data-sync-target="party_venue"], [data-sync-target="party_address"], [data-mayhen-section="events"]');
+            } else if (cleanKey === 'wedding_date' || cleanKey === 'event_party_date' || cleanKey.indexOf('lunar') !== -1 || cleanKey.indexOf('wedding_date') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="wedding_calendar"], [data-mayhen-section="countdown_calendar"], .mayhen_invitation_hero [data-sync-target="wedding_date_digits"], [data-sync-target="wedding_date"]');
+            } else if (cleanKey.indexOf('groom_father') !== -1 || cleanKey.indexOf('groom_mother') !== -1 || cleanKey.indexOf('groom_parents') !== -1 || cleanKey.indexOf('groom_bio') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target="groom_father"], [data-sync-target="groom_parents"], [data-ben="trai"]');
+            } else if (cleanKey.indexOf('bride_father') !== -1 || cleanKey.indexOf('bride_mother') !== -1 || cleanKey.indexOf('bride_parents') !== -1 || cleanKey.indexOf('bride_bio') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target="bride_father"], [data-sync-target="bride_parents"], [data-ben="phai"]');
+            } else if (cleanKey.indexOf('party') !== -1 || cleanKey.indexOf('venue') !== -1 || cleanKey.indexOf('address') !== -1 || cleanKey.indexOf('ceremony') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target="party_venue"], [data-sync-target="party_address"], [data-mayhen-section="events"]');
             } else if (cleanKey.indexOf('story') !== -1 || cleanKey.indexOf('quote') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"], [data-sync-target="couple_quote"], [data-sync-target="story_title"], [data-mayhen-section="story"]');
-            } else if (cleanKey.indexOf('thank_you') !== -1 || cleanKey.indexOf('wishes') !== -1 || cleanKey.indexOf('rsvp') !== -1) {
-                targetEl = document.querySelector('[data-sync-target="' + cleanKey + '"], [data-sync-target="thank_you_title"], [data-mayhen-section="ending"]');
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target="couple_quote"], [data-sync-target="story_title"], [data-mayhen-section="story"]');
+            } else if (cleanKey.indexOf('thank_you') !== -1 || cleanKey.indexOf('wishes') !== -1 || cleanKey.indexOf('rsvp') !== -1 || cleanKey.indexOf('ending') !== -1) {
+                targetEl = findVisibleTarget('[data-sync-target="' + cleanKey + '"], [data-sync-target="thank_you_title"], [data-mayhen-section="ending"]');
             }
 
             // Fallback: Tìm bằng data-sync-target trực tiếp
             if (!targetEl) {
-                targetEl = document.querySelector('[data-sync-target="' + rawKey + '"], [data-sync-target="' + cleanKey + '"], [data-sync-target*="' + cleanKey + '"]');
+                targetEl = findVisibleTarget('[data-sync-target="' + rawKey + '"], [data-sync-target="' + cleanKey + '"], [data-sync-target*="' + cleanKey + '"]');
             }
 
             if (targetEl) {
                 // Cuộn mượt ra giữa màn hình
-                targetEl.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'nearest'
-                });
+                smoothScrollToTarget(targetEl, 'center');
 
                 // Gắn class highlight hiệu ứng vàng kim Quiet Luxury
                 document.querySelectorAll('.mayhen_editor_target_highlight').forEach(function(el) {

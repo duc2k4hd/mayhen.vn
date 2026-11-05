@@ -3378,6 +3378,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                    - `php artisan optimize:clear`: Xóa sạch cache hệ thống thành công.
                    - Toàn bộ visual của template (WebGL canvas, hiệu ứng lấp lánh, âm nhạc, animation nắp hộp quà mở ra, bảng vẽ ký tên canvas, slider ảnh coverflow 3D, popup lời hẹn) hoạt động 100% trơn tru không có bất kỳ lỗi console hay xung đột nào.
 
+             127. **Khắc Phục Toàn Diện Lỗi Cuộn Iframe Studio Editor: Tab Không Cuộn & Sửa Dữ Liệu Không Tự Cuộn Đến Đúng Vị Trí**:
+                 - **Nguyên nhân gốc rễ (Root Cause Analysis)**:
+                   1. *Xung đột CSS `scroll-behavior: auto !important` và `body` có `overflow-y: auto !important`*: Trong `editor-bridge.blade.php`, rule CSS trước đó vô tình áp dụng `scroll-behavior: auto !important` và đặt `overflow-y: auto !important` lên cả `body`. Khi `body` có `overflow-y: auto` nhưng `height: auto`, nó trở thành một Scroll Container lồng nhau rỗng, chặn đứng cơ chế `scrollIntoView()` của trình duyệt khiến trang không bao giờ cuộn được ra ngoài viewport.
+                   2. *Target bị trỏ nhầm vào Màn Mở Đầu bị ẩn (`display: none`)*: Trong các mẫu thiệp có màn mở đầu (như `giua-muon-ngan-vi-sao`), các thẻ `[data-sync-target="groom_name"]`, `[data-sync-target="bride_name"]`, `[data-sync-target="wedding_date_digits"]` xuất hiện ĐẦU TIÊN trong cánh cửa `.mayhen_invitation_sr_cua` (vốn đã bị ẩn `display: none` khi nhúng iframe). Khi `document.querySelector` lấy phần tử đầu tiên, nó chọn đúng thẻ bị ẩn này, dẫn đến tọa độ `getBoundingClientRect()` bằng 0 và không thể cuộn hoặc luôn giật về đỉnh trang (top: 0).
+                   3. *Bộ lọc `lastScrolledKey` trong `editor.js` chặn sự kiện gõ phím*: Trong `handleInputEvent`, điều kiện `key !== lastScrolledKey` luôn sai vì `focusin` đã gán `lastScrolledKey = key` ngay trước đó, khiến quá trình gõ phím hoàn toàn không gửi tín hiệu cuộn `MAYHEN_SCROLL_TO_TARGET`.
+                 - **Giải pháp đã thực thi**:
+                   1. *Khắc phục CSS Iframe (`editor-bridge.blade.php`)*:
+                      - Gỡ bỏ hoàn toàn `scroll-behavior: auto !important` trên `*`. Cưỡng chế `html.mayhen_embed_mode { scroll-behavior: smooth !important; }`.
+                      - Cưỡng chế `body.mayhen_embed_mode { overflow: visible !important; overflow-y: visible !important; }` để giải phóng toàn bộ ngữ cảnh cuộn cho `html`/`window`.
+                   2. *Hàm Tìm Kiếm Mục Tiêu Thông Minh `findVisibleTarget(selector)`*:
+                      - Loại trừ triệt để 100% các phần tử nằm trong màn mở đầu / cánh cửa 3D bị ẩn (`.mayhen_invitation_opening`, `.mayhen_invitation_sr_cua`, `#mayhen-door-stage`, `#POPUP8`...).
+                      - Luôn trả về phần tử hiển thị thực tế nằm trong thân thiệp chính.
+                   3. *Hàm Cuộn Mượt Trực Tiếp Theo Pixel `smoothScrollToTarget(el, block)`*:
+                      - Tính toán chính xác tọa độ viewport `targetY = currentScroll + rect.top` (có bù trừ đệm 24px cho `start` hoặc căn giữa cho `center`).
+                      - Kích hoạt song song `window.scrollTo`, `document.documentElement.scrollTo` và `el.scrollIntoView`.
+                   4. *Tối ưu Trình Bắt Sự Kiện `editor.js`*:
+                      - Xóa bỏ chặn `lastScrolledKey` trong `focusin`.
+                      - Kích hoạt cơ chế debounce 250ms trong `handleInputEvent` để khi người dùng gõ phím, preview tự động cuộn mượt đến đúng vị trí và phát sáng highlight vàng kim Quiet Luxury mà không gây giật lag.
+                 - **Kiểm thử**:
+                   - `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
+                   - `vendor/bin/pint --dirty --format agent`: Formatted chuẩn xác.
+                   - `php artisan optimize:clear`: Xóa sạch cache hệ thống thành công.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
