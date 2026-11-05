@@ -13162,111 +13162,144 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     text-align: center !important;
 }
 
-/* Khớp hoàn hảo thanh tiêu đề thứ trong tuần GROUP81 với lưới ngày GROUP82 */
-#GROUP81 {
-    width: 100% !important;
-    left: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    height: auto !important;
+/* ==========================================================================
+   SECTION24: LỊCH CƯỚI & KHUNG ẢNH KỶ NIỆM (SAVE OUR DATE) RESPONSIVE HOÀN HẢO
+   ========================================================================== */
+#SECTION24 {
+    overflow: hidden !important;
 }
+
+/* Thanh thứ trong tuần: Nền trắng sạch sẽ, căn giữa tuyệt đối */
+#GROUP80 {
+    overflow: hidden !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+#BOX50 {
+    display: none !important;
+}
+
+#GROUP81 {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    z-index: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 #GROUP81 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    position: relative !important;
     display: grid !important;
     grid-template-columns: repeat(7, 1fr) !important;
     width: 100% !important;
     height: 100% !important;
     align-items: center !important;
     justify-items: center !important;
-}
-#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-element {
-    position: static !important;
-    width: 100% !important;
-    left: auto !important;
-    top: auto !important;
-}
-#GROUP81 h3,
-#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline {
-    width: 100% !important;
-    text-align: center !important;
-    display: block !important;
+    top: 0 !important;
+    left: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 11px !important;
-    letter-spacing: 0.5px !important;
-    color: #202020 !important;
+}
+
+#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-element,
+#HEADLINE231,
+#HEADLINE232,
+#HEADLINE233,
+#HEADLINE234,
+#HEADLINE235,
+#HEADLINE236,
+#HEADLINE237 {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#GROUP81 h3,
+#GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE231 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE232 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE233 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE234 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE235 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE236 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE237 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    width: 100% !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: Philosopher, Georgia, serif !important;
+    font-size: 13px !important;
+    letter-spacing: 1px !important;
+    color: #1A2822 !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
+    line-height: 1 !important;
 }
 
-/* Chống tràn tên chú rể & cô dâu ra khỏi hộp gradient ở SECTION4 */
-@media (max-width: 767px) {
-    #HEADLINE300,
-    #HEADLINE304 {
-        top: 405px !important;
-        height: auto !important;
-    }
-    #HEADLINE300 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
-    #HEADLINE304 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: clamp(22px, 5.2vw, 32px) !important;
-        line-height: 1.15 !important;
-        white-space: normal !important;
-        word-break: keep-all !important;
-    }
+/* Lưới ngày cưới */
+#GROUP82 {
+    z-index: 3 !important;
 }
 
-/* Hiển thị mượt mà 4 mốc lịch trình cưới SECTION16 */
-#GROUP144,
-#GROUP145 {
-    width: 388.5px !important;
-    max-width: calc(100% - 30px) !important;
-    height: 54px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-}
-@media (max-width: 767px) {
-    #GROUP144 {
-        top: 615px !important;
-    }
-    #GROUP145 {
-        top: 685px !important;
-    }
-    #SECTION16:has(#GROUP144) {
-        height: 720px !important;
-    }
-    #SECTION16:has(#GROUP145) {
-        height: 790px !important;
-    }
-}
-@media (min-width: 768px) {
-    #GROUP144,
-    #GROUP145 {
-        width: 506px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        height: 67px !important;
-    }
-    #GROUP144 {
-        top: 470px !important;
-    }
-    #GROUP145 {
-        top: 560px !important;
-    }
-    #SECTION16:has(#GROUP144) {
-        height: 720px !important;
-    }
-    #SECTION16:has(#GROUP145) {
-        height: 800px !important;
-    }
+.mayhen_invitation_ladjihe38udhd_calendar_grid {
+    position: absolute !important;
+    inset: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-auto-rows: minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
-/* Đảm bảo toàn bộ 10 ảnh trong album cưới luôn hiển thị trọn vẹn không bị khoảng trắng */
-#SECTION20 .mayhen_invitation_ladjihe38udhd_photoBookImage {
-    display: block !important;
+.mayhen_invitation_ladjihe38udhd_calendar_day {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    aspect-ratio: 1 !important;
+    border-radius: 50% !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    font: 500 15px/1 Philosopher, Georgia, serif !important;
 }
 
-/* ==========================================================================
-   SECTION24: LỊCH CƯỚI & KHUNG ẢNH KỶ NIỆM (SAVE OUR DATE) RESPONSIVE HOÀN HẢO
-   ========================================================================== */
+.mayhen_invitation_ladjihe38udhd_calendar_day_selected {
+    background: #A83A4B !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(168, 58, 75, 0.55) !important;
+}
+
+/* Ẩn hình trái tim tĩnh SHAPE14 tránh sai lệch ngày */
+#SHAPE14 {
+    display: none !important;
+}
+
+/* Card Ảnh Lịch Cưới Save Our Date */
 .mayhen_invitation_ladjihe38udhd_calendar_photo_wrapper {
     display: block !important;
     pointer-events: auto !important;
@@ -13280,7 +13313,7 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     border-radius: 16px !important;
     overflow: hidden !important;
     border: 1.5px solid rgba(212, 175, 55, 0.45) !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 175, 55, 0.25) !important;
     background-color: #1A2822 !important;
 }
 
@@ -13299,17 +13332,17 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
 
 .mayhen_invitation_ladjihe38udhd_calendar_photo_badge {
     position: absolute !important;
-    bottom: 16px !important;
+    bottom: 18px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    background: rgba(26, 40, 34, 0.85) !important;
+    background: rgba(26, 40, 34, 0.88) !important;
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(212, 175, 55, 0.55) !important;
-    padding: 6px 18px !important;
+    border: 1px solid rgba(212, 175, 55, 0.6) !important;
+    padding: 7px 20px !important;
     border-radius: 30px !important;
     pointer-events: none !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
     white-space: nowrap !important;
 }
 
@@ -13322,73 +13355,66 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     text-transform: uppercase !important;
 }
 
-/* --- Bố cục Desktop & Tablet rộng (>= 768px): 2 Cột Cân Xứng Tuyệt Mỹ --- */
+/* --- Bố cục Desktop (>= 768px): 2 Cột Cân Xứng Tuyệt Mỹ, Chống Ngắt Dòng Năm 2027 --- */
 @media (min-width: 768px) {
     #SECTION24 {
-        height: 660px !important;
+        height: 520px !important;
         position: relative !important;
     }
     #SECTION24 > .mayhen_invitation_ladjihe38udhd_ladi-container {
         width: 960px !important;
         position: relative !important;
+        margin: 0 auto !important;
     }
 
     /* Tiêu đề Tháng và Năm bên Cột trái */
     #HEADLINE273 {
-        width: 260px !important;
-        top: 60px !important;
-        left: 30px !important;
+        width: 230px !important;
+        top: 35px !important;
+        left: 20px !important;
+        white-space: nowrap !important;
     }
     #HEADLINE273 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: 56px !important;
+        font-family: Philosopher, Georgia, serif !important;
+        font-size: 34px !important;
         line-height: 1.2 !important;
         text-align: left !important;
+        white-space: nowrap !important;
+        color: #F8F6F0 !important;
     }
     #HEADLINE274 {
-        width: 190px !important;
-        top: 35px !important;
-        left: 290px !important;
+        width: 210px !important;
+        top: 25px !important;
+        left: 270px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
     #HEADLINE274 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: 96px !important;
+        font-family: 'FleurDeLeah', cursive, serif !important;
+        font-size: 56px !important;
         line-height: 1 !important;
         text-align: right !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        display: block !important;
+        color: #F5E6C8 !important;
     }
 
-    /* Thanh Thứ trong tuần (Cột trái: rộng 450px) */
+    /* Thanh Thứ trong tuần (Cột trái: rộng 460px) */
     #GROUP80 {
-        width: 450px !important;
-        height: 52px !important;
-        top: 155px !important;
-        left: 30px !important;
-        border-radius: 12px !important;
-    }
-    #BOX50 {
-        width: 100% !important;
-        height: 100% !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
-    }
-    #GROUP81 {
-        width: 100% !important;
-        height: 100% !important;
-        top: 0 !important;
-        left: 0 !important;
-    }
-    #GROUP81 h3,
-    #GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: 13px !important;
-        letter-spacing: 1px !important;
-        color: #1A2822 !important;
-        font-weight: 700 !important;
+        width: 460px !important;
+        height: 44px !important;
+        top: 105px !important;
+        left: 20px !important;
+        border-radius: 10px !important;
     }
 
-    /* Lưới các ngày trong tháng (Cột trái: rộng 450px, khớp 100% với thanh Thứ) */
+    /* Lưới các ngày trong tháng (Cột trái: rộng 460px) */
     #GROUP82 {
-        width: 450px !important;
-        height: 310px !important;
-        top: 220px !important;
-        left: 30px !important;
+        width: 460px !important;
+        height: 250px !important;
+        top: 165px !important;
+        left: 20px !important;
     }
     .mayhen_invitation_ladjihe38udhd_calendar_day {
         width: 36px !important;
@@ -13396,21 +13422,21 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
         font-size: 16px !important;
     }
 
-    /* Nút Thêm vào lịch (Căn giữa Cột trái 450px) */
+    /* Nút Thêm vào lịch (Căn giữa Cột trái 460px: 20 + (460 - 210)/2 = 145px) */
     #BUTTON10 {
-        width: 220px !important;
-        height: 46px !important;
-        top: 555px !important;
+        width: 210px !important;
+        height: 44px !important;
+        top: 435px !important;
         left: 145px !important;
     }
 
-    /* Cột phải: Bức ảnh cưới Save Our Date lấp đầy mảng đen */
+    /* Cột phải: Bức ảnh cưới Save Our Date song song, thẳng hàng đáy với nút (đáy = 435 + 44 = 479px) */
     #SECTION24_PHOTO {
         position: absolute !important;
-        top: 55px !important;
-        left: 520px !important;
-        width: 410px !important;
-        height: 546px !important;
+        top: 35px !important;
+        left: 510px !important;
+        width: 430px !important;
+        height: 444px !important;
         z-index: 10 !important;
     }
 }
@@ -13418,7 +13444,7 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
 /* --- Bố cục Mobile (<= 767px): Căn Giữa Hoàn Hảo, Tích Hợp Card Ảnh Kỷ Niệm --- */
 @media (max-width: 767px) {
     #SECTION24 {
-        height: 770px !important;
+        height: 685px !important;
         position: relative !important;
     }
     #SECTION24 > .mayhen_invitation_ladjihe38udhd_ladi-container {
@@ -13430,60 +13456,66 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
 
     /* Tiêu đề Tháng và Năm */
     #HEADLINE273 {
-        width: 180px !important;
-        top: 25px !important;
-        left: 16px !important;
+        width: 170px !important;
+        top: 20px !important;
+        left: 20px !important;
+        white-space: nowrap !important;
     }
     #HEADLINE273 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: 38px !important;
+        font-family: Philosopher, Georgia, serif !important;
+        font-size: 28px !important;
         line-height: 1.2 !important;
         text-align: left !important;
+        white-space: nowrap !important;
+        color: #F8F6F0 !important;
     }
     #HEADLINE274 {
         width: 140px !important;
-        top: 15px !important;
-        right: 16px !important;
+        top: 12px !important;
+        right: 20px !important;
         left: auto !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
     }
     #HEADLINE274 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
-        font-size: 64px !important;
+        font-family: 'FleurDeLeah', cursive, serif !important;
+        font-size: 44px !important;
         line-height: 1 !important;
         text-align: right !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        display: block !important;
+        color: #F5E6C8 !important;
     }
 
     /* Thanh Thứ trong tuần */
     #GROUP80 {
-        width: min(390px, calc(100% - 24px)) !important;
-        height: 38px !important;
-        top: 85px !important;
+        width: min(390px, calc(100% - 32px)) !important;
+        height: 36px !important;
+        top: 72px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         border-radius: 8px !important;
     }
-    #BOX50 {
-        width: 100% !important;
-        height: 100% !important;
-        border-radius: 8px !important;
-    }
-    #GROUP81 {
-        width: 100% !important;
-        height: 100% !important;
-        top: 0 !important;
-        left: 0 !important;
-    }
+
     #GROUP81 h3,
-    #GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    #GROUP81 .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE231 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE232 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE233 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE234 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE235 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE236 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE237 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
         font-size: 11px !important;
         letter-spacing: 0.5px !important;
-        color: #1A2822 !important;
-        font-weight: 700 !important;
     }
 
     /* Lưới các ngày trong tháng */
     #GROUP82 {
-        width: min(390px, calc(100% - 24px)) !important;
-        height: 230px !important;
-        top: 130px !important;
+        width: min(390px, calc(100% - 32px)) !important;
+        height: 215px !important;
+        top: 120px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
     }
@@ -13495,9 +13527,9 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
 
     /* Nút Thêm vào lịch */
     #BUTTON10 {
-        width: 200px !important;
-        height: 42px !important;
-        top: 375px !important;
+        width: 190px !important;
+        height: 40px !important;
+        top: 350px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
     }
@@ -13505,11 +13537,11 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     /* Bức ảnh cưới Save Our Date bên dưới lịch */
     #SECTION24_PHOTO {
         position: absolute !important;
-        top: 435px !important;
+        top: 405px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: min(390px, calc(100% - 24px)) !important;
-        height: 270px !important;
+        width: min(390px, calc(100% - 32px)) !important;
+        height: 250px !important;
         z-index: 10 !important;
     }
 }

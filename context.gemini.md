@@ -2991,6 +2991,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Laravel Pint: Passed agent format.
                   - Cache view: Đã làm sạch với `php artisan view:clear`.
 
+            113. **Khắc Phục Lỗi Ngắt Dòng Năm "2027" & Cắt Chữ Thứ Thanh Trắng Khối Lịch Cưới Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng gửi hình ảnh phản ánh lỗi giao diện khối lịch cưới: Số năm "2027" bị rớt số 7 xuống dòng dưới ("202" ở dòng trên, số "7" ở dòng dưới đè lên góc phải thanh thứ trắng); chữ "MON TUE WED THUR FRI SAT SUN" bị cắt cụt một nửa trên và dính sát mép trên hộp trắng, phần dưới hộp trắng bị trống toạc; tỷ lệ bố cục tổng thể khối lịch chưa đạt chuẩn thẩm mỹ Quiet Luxury.
+                  - *Nguyên nhân ngắt dòng số năm*: `#HEADLINE274` dùng font thư pháp FleurDeLeah kích thước lớn (72px - 96px) nhưng container hẹp và thiếu `white-space: nowrap !important;`, dẫn tới việc chữ số cuối rơi xuống hàng tiếp theo.
+                  - *Nguyên nhân chữ thứ bị cắt cụt*: Hộp trắng `#BOX50` và nhóm chữ `#GROUP81` bị lệch tọa độ (`top: 15.5px` và `line-height: 1.6` với `font-size: 27px` từ stylesheet LadiPage gốc), khiến chữ bị đẩy trượt lên mép trên và bị `overflow: hidden` của `#GROUP80` cắt cụt một nửa.
+                - **Giải pháp xử lý triệt để (Chuẩn Quiet Luxury)**:
+                  1. *Thanh thứ trong tuần*:
+                     - Gán nền trắng sạch sẽ trực tiếp cho `#GROUP80` (`background: #FFFFFF !important; border-radius: 10px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;`), ẩn hoàn toàn hộp trung gian `#BOX50` (`display: none !important;`) để triệt tiêu vĩnh viễn việc lệch lớp nền.
+                     - Cấu hình `#GROUP81` và `> .ladi-group` thành CSS Grid 7 cột bằng nhau (`grid-template-columns: repeat(7, 1fr) !important;`), căn giữa hoàn hảo cả 2 chiều dọc - ngang.
+                     - Gán định dạng chuẩn cho từng thứ `#HEADLINE231` -> `#HEADLINE237`: `display: flex !important; align-items: center !important; justify-content: center !important; font-size: 13px !important; font-weight: 700 !important; color: #1A2822 !important; line-height: 1 !important;`, đảm bảo chữ luôn nằm chính xác ở tâm thanh trắng.
+                  2. *Chống ngắt dòng năm 2027 & Cân xứng tiêu đề*:
+                     - Bổ sung `white-space: nowrap !important; overflow: visible !important;` cho `#HEADLINE274` và chữ tiêu đề con.
+                     - Tinh chỉnh font-size "Tháng" là `34px` và "Năm" là `56px` (Desktop) / `28px` và `44px` (Mobile), mang lại tỷ lệ typography hài hòa, trang nhã.
+                  3. *Đồng bộ thẳng hàng đáy 2 cột Desktop*:
+                     - Cột trái: Header (top 35px) -> Thanh thứ (top 105px) -> Lưới ngày (top 165px) -> Nút "Thêm vào lịch" (top 435px, cao 44px, căn giữa cột). Đáy cột trái: `479px`.
+                     - Cột phải: Khung ảnh Save Our Date (top 35px, rộng 430px, cao 444px). Đáy cột phải: `35 + 444 = 479px`.
+                     - Hai cột thẳng hàng đáy tuyệt đối từng pixel, chiều cao section thu gọn về `520px` chuẩn sang trọng, không còn khoảng trống đen thừa thãi.
+                  4. *Đồng bộ tài nguyên & Clear cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Làm sạch cache Blade và route với `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
