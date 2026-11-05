@@ -52,8 +52,24 @@
           "label": "Ảnh bìa đại diện thiệp",
           "type": "image",
           "required": false,
-          "default": "assets/images/hero-art.svg",
+          "default": "images/hero-wedding.jpg",
           "placeholder": "Đường dẫn ảnh bìa"
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "images/groom.jpg",
+          "placeholder": "Đường dẫn ảnh chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "images/bride.jpg",
+          "placeholder": "Đường dẫn ảnh cô dâu"
         },
         {
           "key": "wedding.extra_data.couple_quote",
@@ -202,7 +218,19 @@
           "label": "Album 10 Ảnh Cưới",
           "type": "gallery",
           "required": false,
-          "max_items": 10
+          "max_items": 10,
+          "default": [
+            "images/gallery-01.jpg",
+            "images/gallery-02.jpg",
+            "images/gallery-03.jpg",
+            "images/gallery-04.jpg",
+            "images/gallery-05.jpg",
+            "images/gallery-06.jpg",
+            "images/hero-wedding.jpg",
+            "images/groom.jpg",
+            "images/bride.jpg",
+            "images/scene.jpg"
+          ]
         }
       ]
     },
@@ -237,19 +265,77 @@
       "title": "Hộp Mừng Cưới",
       "short_title": "Mừng Cưới",
       "icon": "gift",
-      "description": "Mã QR mừng cưới ngân hàng tiện lợi và an toàn",
+      "description": "Thông tin tài khoản ngân hàng và mã QR mừng cưới tiện lợi",
       "fields": [
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Tên Ngân hàng (Chú rể)",
+          "type": "text",
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank, MB Bank, Techcombank",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản (Chú rể)",
+          "type": "text",
+          "required": false,
+          "default": "1012345678",
+          "placeholder": "Ví dụ: 1012345678",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_holder",
+          "label": "Chủ tài khoản (Chú rể)",
+          "type": "text",
+          "required": false,
+          "default": "HOANG NAM",
+          "placeholder": "Ví dụ: NGUYEN HOANG NAM",
+          "max": 100
+        },
         {
           "key": "wedding.extra_data.qr_groom_image",
           "label": "Mã QR Mừng Cưới Chú Rể",
           "type": "image",
-          "required": false
+          "required": false,
+          "default": "images/qr-groom.jpg",
+          "placeholder": "Đường dẫn ảnh mã QR chú rể"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Tên Ngân hàng (Cô dâu)",
+          "type": "text",
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank, VPBank, ACB",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản (Cô dâu)",
+          "type": "text",
+          "required": false,
+          "default": "190123456789",
+          "placeholder": "Ví dụ: 190123456789",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_holder",
+          "label": "Chủ tài khoản (Cô dâu)",
+          "type": "text",
+          "required": false,
+          "default": "MINH ANH",
+          "placeholder": "Ví dụ: PHAM MINH ANH",
+          "max": 100
         },
         {
           "key": "wedding.extra_data.qr_bride_image",
           "label": "Mã QR Mừng Cưới Cô Dâu",
           "type": "image",
-          "required": false
+          "required": false,
+          "default": "images/qr-bride.jpg",
+          "placeholder": "Đường dẫn ảnh mã QR cô dâu"
         }
       ]
     }

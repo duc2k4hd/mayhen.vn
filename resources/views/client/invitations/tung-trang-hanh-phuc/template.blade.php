@@ -54,40 +54,49 @@
     };
 
     // 3. Ảnh cưới chất lượng cao Quiet Luxury
-    $heroPhotoUrl = $resolveAsset($extraData['hero_photo_url'] ?? null, 'images/hero-wedding.jpg');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'images/hero-wedding.jpg');
     $groomPhotoUrl = $resolveAsset($extraData['groom_photo_url'] ?? null, 'images/groom.jpg');
     $bridePhotoUrl = $resolveAsset($extraData['bride_photo_url'] ?? null, 'images/bride.jpg');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'images/scene.jpg');
 
-    $defaultGallery = [
-        'images/gallery-01.jpg',
-        'images/gallery-02.jpg',
-        'images/gallery-03.jpg',
-        'images/gallery-04.jpg',
-        'images/gallery-05.jpg',
-        'images/gallery-06.jpg',
-    ];
+    $defaultGallery = (!empty($template) && !empty($template->default_gallery))
+        ? $template->default_gallery
+        : [
+            'images/gallery-01.jpg',
+            'images/gallery-02.jpg',
+            'images/gallery-03.jpg',
+            'images/gallery-04.jpg',
+            'images/gallery-05.jpg',
+            'images/gallery-06.jpg',
+            'images/hero-wedding.jpg',
+            'images/groom.jpg',
+            'images/bride.jpg',
+            'images/scene.jpg',
+        ];
     $rawGallery = $extraData['gallery'] ?? [];
-    $validGallery = is_array($rawGallery) ? array_filter($rawGallery, fn($item) => !empty(trim((string)$item)) && !str_starts_with((string)$item, 'blob:')) : [];
-    $galleryList = !empty($validGallery) ? array_values($validGallery) : $defaultGallery;
-    $galleryPhotos = array_map(fn($p) => $resolveAsset($p), $galleryList);
+    $validGallery = is_array($rawGallery) ? array_values(array_filter($rawGallery, fn($item) => !empty(trim((string)$item)) && !str_starts_with((string)$item, 'blob:'))) : [];
+    $albumPhotos = [];
+    for ($i = 0; $i < 10; $i++) {
+        $photo = $validGallery[$i] ?? ($defaultGallery[$i] ?? $defaultGallery[0]);
+        $albumPhotos[$i] = $resolveAsset($photo, $defaultGallery[$i] ?? $defaultGallery[0]);
+    }
 
     // 4. Lời ngỏ
-    $storyText = $wedding->story ?? 'Tình yêu không chỉ là nhìn về nhau, mà là cùng nhau nhìn về một hướng. Sau những năm tháng cùng sẻ chia, chúng mình hạnh phúc thông báo ngày chung đôi và trân trọng kính mời bạn đến chung vui trong khoảnh khắc thiêng liêng này.';
+    $storyText = $extraData['couple_quote'] ?? ($wedding->story ?? 'Tình yêu không chỉ là nhìn về nhau, mà là cùng nhau nhìn về một hướng. Sau những năm tháng cùng sẻ chia, chúng mình hạnh phúc thông báo ngày chung đôi và trân trọng kính mời bạn đến chung vui trong khoảnh khắc thiêng liêng này.');
 
     // 5. Mừng cưới QR & Ngân hàng
     $qrGroom = $resolveAsset($extraData['qr_groom_image'] ?? null, 'images/qr-groom.jpg');
     $qrBride = $resolveAsset($extraData['qr_bride_image'] ?? null, 'images/qr-bride.jpg');
     $groomBankInfo = [
         'bank' => $extraData['groom_bank_name'] ?? 'Vietcombank',
-        'name' => $extraData['groom_account_name'] ?? 'HOANG NAM',
-        'number' => $extraData['groom_account_number'] ?? '1012345678',
+        'name' => $extraData['groom_bank_holder'] ?? ($extraData['groom_account_name'] ?? 'HOANG NAM'),
+        'number' => $extraData['groom_bank_account'] ?? ($extraData['groom_account_number'] ?? '1012345678'),
         'qr' => $qrGroom,
     ];
     $brideBankInfo = [
         'bank' => $extraData['bride_bank_name'] ?? 'Techcombank',
-        'name' => $extraData['bride_account_name'] ?? 'MINH ANH',
-        'number' => $extraData['bride_account_number'] ?? '190123456789',
+        'name' => $extraData['bride_bank_holder'] ?? ($extraData['bride_account_name'] ?? 'MINH ANH'),
+        'number' => $extraData['bride_bank_account'] ?? ($extraData['bride_account_number'] ?? '190123456789'),
         'qr' => $qrBride,
     ];
 
@@ -116,10 +125,10 @@
 @endphp
 @extends('client.layouts.invitation')
 
-@section('html_class', 'mayhen_invitation_ksnvo949dudf_scroll-lock')
+@section('html_class', $isEmbed ? '' : 'mayhen_invitation_ksnvo949dudf_scroll-lock')
 @section('title', $pageTitle)
 @section('meta_description', $isPreview ? 'Trải nghiệm xem thử mẫu thiệp cưới ' . $templateName . ' trên ' . config('app.name') : 'Trân trọng kính mời ' . $guestName . ' chung vui trong lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
-@section('body_class', 'mayhen_invitation_ksnvo949dudf_body mayhen_invitation_ksnvo949dudf_scroll-lock')
+@section('body_class', 'mayhen_invitation_ksnvo949dudf_body' . ($isEmbed ? ' mayhen_embed_mode mayhen_template_auto_opened' : ' mayhen_invitation_ksnvo949dudf_scroll-lock'))
 
 @push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -194,7 +203,7 @@
     </div>
 
     {{-- MÀN HÌNH MỞ ĐẦU — PHONG BÌ HOÀNG GIA RỰC RỠ & QUÝ PHÁI (GRAND ROYAL ENVELOPE) --}}
-    <div class="mayhen_invitation_ksnvo949dudf_opening" id="mayhen_invitation_ksnvo949dudf_opening" role="dialog" aria-label="Mở thiệp cưới hoàng gia" aria-modal="true">
+    <div class="mayhen_invitation_ksnvo949dudf_opening {{ $isEmbed ? 'opened mayhen_door_hidden' : '' }}" id="mayhen_invitation_ksnvo949dudf_opening" role="dialog" aria-label="Mở thiệp cưới hoàng gia" aria-modal="true" style="{{ $isEmbed ? 'display: none !important;' : '' }}">
         {{-- Vầng sáng hào quang ấm áp & Họa tiết góc hoàng gia --}}
         <div class="mayhen_invitation_ksnvo949dudf_opening-ambient" aria-hidden="true"></div>
         <div class="mayhen_invitation_ksnvo949dudf_corner-ornament top-left" aria-hidden="true">
@@ -217,12 +226,12 @@
                     <span class="mayhen_invitation_ksnvo949dudf_crest-monogram">{{ mb_substr($groomName, 0, 1) }} & {{ mb_substr($brideName, 0, 1) }}</span>
                 </div>
                 <span class="mayhen_invitation_ksnvo949dudf_crest-tag">✦ SAVE OUR DATE · THIỆP CƯỚI BÁO HỶ ✦</span>
-                <h1 class="mayhen_invitation_ksnvo949dudf_opening-couple-names" data-sync-target="couple_names">
-                    <span>{{ $groomName }}</span>
+                <h1 class="mayhen_invitation_ksnvo949dudf_opening-couple-names">
+                    <span data-sync-target="groom_name">{{ $groomName }}</span>
                     <em class="amp">&</em>
-                    <span>{{ $brideName }}</span>
+                    <span data-sync-target="bride_name">{{ $brideName }}</span>
                 </h1>
-                <p class="mayhen_invitation_ksnvo949dudf_opening-date-badge">{{ $weddingFullDate }}</p>
+                <p class="mayhen_invitation_ksnvo949dudf_opening-date-badge" data-sync-target="wedding_date">{{ $weddingFullDate }}</p>
             </div>
 
             {{-- PHONG BÌ HOÀNG GIA 3D KÍCH THƯỚC LỚN --}}
@@ -233,12 +242,12 @@
                 <div class="mayhen_invitation_ksnvo949dudf_envelope-letter">
                     <div class="mayhen_invitation_ksnvo949dudf_letter-card">
                         <div class="mayhen_invitation_ksnvo949dudf_letter-photo">
-                            <img src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} & {{ $brideName }}">
+                            <img src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} & {{ $brideName }}" data-sync-target="cover_photo_url">
                         </div>
                         <div class="mayhen_invitation_ksnvo949dudf_letter-details">
                             <span class="mayhen_invitation_ksnvo949dudf_letter-badge">TRÂN TRỌNG BÁO HỶ</span>
-                            <h3 class="mayhen_invitation_ksnvo949dudf_letter-names">{{ $groomName }} & {{ $brideName }}</h3>
-                            <p class="mayhen_invitation_ksnvo949dudf_letter-day">{{ $weddingDateDigits }}</p>
+                            <h3 class="mayhen_invitation_ksnvo949dudf_letter-names"><span data-sync-target="groom_name">{{ $groomName }}</span> & <span data-sync-target="bride_name">{{ $brideName }}</span></h3>
+                            <p class="mayhen_invitation_ksnvo949dudf_letter-day" data-sync-target="wedding_date">{{ $weddingDateDigits }}</p>
                         </div>
                     </div>
                 </div>
@@ -307,12 +316,12 @@
 
                 <div class="mayhen_invitation_ksnvo949dudf_hero-media">
                     <div class="mayhen_invitation_ksnvo949dudf_hero-frame">
-                        <img id="sync_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} & {{ $brideName }}" loading="eager">
+                        <img id="sync_hero_photo" src="{{ $heroPhotoUrl }}" alt="Ảnh cưới {{ $groomName }} & {{ $brideName }}" loading="eager" data-sync-target="cover_photo_url">
                     </div>
                 </div>
 
                 <div class="mayhen_invitation_ksnvo949dudf_hero-footer">
-                    <p class="mayhen_invitation_ksnvo949dudf_hero-quote">{{ $storyText }}</p>
+                    <p class="mayhen_invitation_ksnvo949dudf_hero-quote" data-sync-target="couple_quote">{{ $storyText }}</p>
                 </div>
             </div>
         </section>
@@ -373,7 +382,7 @@
                     {{-- Chú rể --}}
                     <div class="mayhen_invitation_ksnvo949dudf_person-card mayhen_invitation_ksnvo949dudf_box-anim">
                         <div class="mayhen_invitation_ksnvo949dudf_person-photo-frame">
-                            <img id="sync_groom_photo" src="{{ $groomPhotoUrl }}" alt="Chú rể {{ $groomName }}" loading="lazy">
+                            <img id="sync_groom_photo" src="{{ $groomPhotoUrl }}" alt="Chú rể {{ $groomName }}" loading="lazy" data-sync-target="groom_photo_url">
                         </div>
                         <div class="mayhen_invitation_ksnvo949dudf_person-info">
                             <span class="mayhen_invitation_ksnvo949dudf_person-role">CHÚ RỂ</span>
@@ -385,7 +394,7 @@
                     {{-- Cô dâu --}}
                     <div class="mayhen_invitation_ksnvo949dudf_person-card mayhen_invitation_ksnvo949dudf_box-anim">
                         <div class="mayhen_invitation_ksnvo949dudf_person-photo-frame">
-                            <img id="sync_bride_photo" src="{{ $bridePhotoUrl }}" alt="Cô dâu {{ $brideName }}" loading="lazy">
+                            <img id="sync_bride_photo" src="{{ $bridePhotoUrl }}" alt="Cô dâu {{ $brideName }}" loading="lazy" data-sync-target="bride_photo_url">
                         </div>
                         <div class="mayhen_invitation_ksnvo949dudf_person-info">
                             <span class="mayhen_invitation_ksnvo949dudf_person-role">CÔ DÂU</span>
@@ -509,10 +518,10 @@
                 </div>
 
                 <div class="mayhen_invitation_ksnvo949dudf_gallery-grid" id="mayhen_invitation_ksnvo949dudf_gallery">
-                    @foreach ($galleryPhotos as $idx => $photoUrl)
+                    @foreach ($albumPhotos as $idx => $photoUrl)
                         <div class="mayhen_invitation_ksnvo949dudf_gallery-item mayhen_invitation_ksnvo949dudf_box-anim" data-index="{{ $idx }}" role="button" tabindex="0" aria-label="Xem ảnh cưới {{ $idx + 1 }}">
                             <div class="mayhen_invitation_ksnvo949dudf_photo-frame">
-                                <img src="{{ $photoUrl }}" alt="Ảnh cưới {{ $idx + 1 }}" loading="lazy">
+                                <img src="{{ $photoUrl }}" alt="Ảnh cưới {{ $idx + 1 }}" loading="lazy" data-sync-target="gallery.{{ $idx }}">
                                 <div class="mayhen_invitation_ksnvo949dudf_photo-overlay">
                                     <span>Phóng to</span>
                                 </div>
@@ -539,13 +548,13 @@
                             <span class="mayhen_invitation_ksnvo949dudf_acc-tag">CHÚ RỂ</span>
                             <h4 data-sync-target="groom_name">{{ $groomName }}</h4>
                             <div class="mayhen_invitation_ksnvo949dudf_qr-wrap">
-                                <img src="{{ $groomBankInfo['qr'] }}" alt="Mã QR Chú rể" loading="lazy">
+                                <img src="{{ $groomBankInfo['qr'] }}" alt="Mã QR Chú rể" loading="lazy" data-sync-target="qr_groom_image">
                             </div>
-                            <p class="mayhen_invitation_ksnvo949dudf_bank-name">{{ $groomBankInfo['bank'] }}</p>
+                            <p class="mayhen_invitation_ksnvo949dudf_bank-name" data-sync-target="groom_bank_name">{{ $groomBankInfo['bank'] }}</p>
                             <p class="mayhen_invitation_ksnvo949dudf_account-num">
-                                <strong id="groom_acc_num">{{ $groomBankInfo['number'] }}</strong>
+                                <strong id="groom_acc_num" data-sync-target="groom_bank_account">{{ $groomBankInfo['number'] }}</strong>
                             </p>
-                            <p class="mayhen_invitation_ksnvo949dudf_account-owner">{{ $groomBankInfo['name'] }}</p>
+                            <p class="mayhen_invitation_ksnvo949dudf_account-owner" data-sync-target="groom_bank_holder">{{ $groomBankInfo['name'] }}</p>
                             <button class="mayhen_invitation_ksnvo949dudf_copy-btn" data-copy="{{ $groomBankInfo['number'] }}" type="button">
                                 Sao Chép Số Tài Khoản
                             </button>
@@ -556,13 +565,13 @@
                             <span class="mayhen_invitation_ksnvo949dudf_acc-tag">CÔ DÂU</span>
                             <h4 data-sync-target="bride_name">{{ $brideName }}</h4>
                             <div class="mayhen_invitation_ksnvo949dudf_qr-wrap">
-                                <img src="{{ $brideBankInfo['qr'] }}" alt="Mã QR Cô dâu" loading="lazy">
+                                <img src="{{ $brideBankInfo['qr'] }}" alt="Mã QR Cô dâu" loading="lazy" data-sync-target="qr_bride_image">
                             </div>
-                            <p class="mayhen_invitation_ksnvo949dudf_bank-name">{{ $brideBankInfo['bank'] }}</p>
+                            <p class="mayhen_invitation_ksnvo949dudf_bank-name" data-sync-target="bride_bank_name">{{ $brideBankInfo['bank'] }}</p>
                             <p class="mayhen_invitation_ksnvo949dudf_account-num">
-                                <strong id="bride_acc_num">{{ $brideBankInfo['number'] }}</strong>
+                                <strong id="bride_acc_num" data-sync-target="bride_bank_account">{{ $brideBankInfo['number'] }}</strong>
                             </p>
-                            <p class="mayhen_invitation_ksnvo949dudf_account-owner">{{ $brideBankInfo['name'] }}</p>
+                            <p class="mayhen_invitation_ksnvo949dudf_account-owner" data-sync-target="bride_bank_holder">{{ $brideBankInfo['name'] }}</p>
                             <button class="mayhen_invitation_ksnvo949dudf_copy-btn" data-copy="{{ $brideBankInfo['number'] }}" type="button">
                                 Sao Chép Số Tài Khoản
                             </button>
@@ -695,7 +704,7 @@
     </div>
 
     {{-- THẺ AUDIO NỀN NHẠC CƯỚI NATIVE --}}
-    <audio id="mayhen_invitation_ksnvo949dudf_audio" loop preload="auto">
+    <audio id="mayhen_invitation_ksnvo949dudf_audio" class="mayhen_invitation_tung-trang-hanh-phuc_audio_music" loop preload="auto" data-sync-target="music_url">
         <source src="{{ $musicUrl }}" type="audio/mpeg">
     </audio>
 
@@ -710,7 +719,8 @@
         window.__MAYHEN_WEDDING_TIMESTAMP = {{ (int) $targetTimestamp }};
         window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
         window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
-        window.__MAYHEN_GALLERY_PHOTOS = @json($galleryPhotos);
+        window.__MAYHEN_GALLERY_PHOTOS = @json($albumPhotos);
+        window.__MAYHEN_IS_EMBED = {{ $isEmbed ? 'true' : 'false' }};
     </script>
     <script src="{{ route('templates.asset', ['slug' => 'tung-trang-hanh-phuc', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 @endpush

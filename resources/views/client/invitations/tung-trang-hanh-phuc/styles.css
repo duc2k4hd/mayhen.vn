@@ -87,10 +87,11 @@ body.mayhen_invitation_ksnvo949dudf_scroll-lock .mayhen_invitation_ksnvo949dudf_
    NÚT ĐIỀU KHIỂN NHẠC ĐĨA THAN HOÀNG GIA (VINTAGE GOLD VINYL RECORD)
    ============================================================ */
 .mayhen_invitation_ksnvo949dudf_music-dock {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 1005;
+    position: fixed !important;
+    top: 16px !important;
+    left: max(16px, calc(50% - 210px + 16px)) !important;
+    right: auto !important;
+    z-index: 1001 !important;
 }
 
 .mayhen_invitation_ksnvo949dudf_music-btn {
@@ -297,7 +298,7 @@ body.mayhen_invitation_ksnvo949dudf_scroll-lock .mayhen_invitation_ksnvo949dudf_
 .mayhen_invitation_ksnvo949dudf_opening {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 9999999;
     background: radial-gradient(circle at 50% 38%, #FFFDF9 0%, #F8EFE2 50%, #ECE0CE 100%);
     display: flex;
     align-items: center;
@@ -1636,7 +1637,7 @@ body.mayhen_invitation_ksnvo949dudf_scroll-lock .mayhen_invitation_ksnvo949dudf_
 .mayhen_invitation_ksnvo949dudf_lightbox {
     position: fixed;
     inset: 0;
-    z-index: 1020;
+    z-index: 100000;
     background: rgba(18, 14, 12, 0.94);
     display: flex;
     align-items: center;
@@ -1703,6 +1704,7 @@ body.mayhen_invitation_ksnvo949dudf_scroll-lock .mayhen_invitation_ksnvo949dudf_
     bottom: 30px;
     left: 50%;
     transform: translate(-50%, 20px);
+    z-index: 100005;
     background: var(--mh-espresso);
     color: #FFFFFF;
     padding: 12px 24px;

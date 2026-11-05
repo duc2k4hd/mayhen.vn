@@ -106,10 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Tự động mở khi là embed Studio editor
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('embed') === '1') {
+    if (window.__MAYHEN_IS_EMBED || urlParams.get('embed') === '1') {
         htmlEl.classList.remove('mayhen_invitation_ksnvo949dudf_scroll-lock');
         bodyEl.classList.remove('mayhen_invitation_ksnvo949dudf_scroll-lock');
-        if (openingEl) openingEl.style.display = 'none';
+        if (openingEl) {
+            openingEl.classList.add('mayhen_invitation_ksnvo949dudf_opened', 'opened', 'mayhen_door_hidden');
+            openingEl.style.display = 'none';
+        }
         triggerInitialBoxAnimations();
     }
 
@@ -404,3 +407,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Cung cấp hàm Live Sync đổi nhạc cho Studio Editor (Hợp đồng Live Audio Handshake)
+window.updateMayhenMusic = function(newUrl) {
+    if (!newUrl) return;
+    const audio = document.getElementById('mayhen_invitation_ksnvo949dudf_audio') || document.querySelector('[data-sync-target="music_url"]');
+    if (audio) {
+        audio.src = newUrl;
+        audio.load();
+        audio.play().then(() => {
+            const btn = document.getElementById('mayhen_invitation_ksnvo949dudf_music');
+            if (btn) {
+                btn.classList.add('playing');
+                btn.setAttribute('aria-pressed', 'true');
+            }
+        }).catch(() => {});
+    }
+};

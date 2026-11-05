@@ -3186,6 +3186,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
 
+            119. **Chuẩn Hóa Toàn Diện Mẫu Thiệp "Từng Trang Hạnh Phúc" (tung-trang-hanh-phuc) Theo Đúng 8 Trụ Cột Bất Biến (Skill mayhen-invitation-templates)**:
+                - **Mục tiêu & Cơ sở kỹ thuật**:
+                  - Rà soát và nâng cấp toàn bộ cấu trúc file, schema, Blade template, CSS, JS và database của mẫu `tung-trang-hanh-phuc` để tương thích 100% với Studio Tạo Thiệp Trực Quan V2, đồng bộ hai chiều Live Sync và đảm bảo trải nghiệm người dùng hoàn hảo.
+                - **Các hạng mục đã chuẩn hóa cụ thể**:
+                  1. *Chuẩn hóa Schema (`schema.json`)*:
+                     - Đầy đủ 6 section chuẩn mực: `couple` (Đôi uyên ương), `groom_family` (Nhà trai), `bride_family` (Nhà gái), `album` (Khoảnh khắc hạnh phúc), `timeline` (Lịch trình & Địa điểm), `gift` (Hộp mừng cưới).
+                     - Áp dụng 100% key canonical chuẩn: `wedding.groom_name`, `wedding.bride_name`, `wedding.cover_photo_url`, `wedding.extra_data.groom_photo_url`, `wedding.extra_data.bride_photo_url`, `wedding.extra_data.couple_quote`, `wedding.extra_data.gallery`...
+                     - Trường `gallery` được trang bị mảng `"default"` gồm đủ 10 ảnh nội bộ có thật trong `assets/images/`.
+                     - Bổ sung đầy đủ canonical bank keys: `groom_bank_name`, `groom_bank_account`, `groom_bank_holder`, `qr_groom_image` (tương tự cho cô dâu).
+                  2. *Chuẩn hóa Blade Template (`template.blade.php`)*:
+                     - Kế thừa layout chuẩn `@extends('client.layouts.invitation')`.
+                     - Biến `$heroPhotoUrl` fallback ưu tiên từ `$wedding->cover_photo_url`.
+                     - Biến `$albumPhotos` khởi tạo đủ 10 ảnh từ `$template->default_gallery` hoặc danh sách fallback nội bộ (`gallery-01.jpg` đến `gallery-06.jpg`, `hero-wedding.jpg`, `groom.jpg`, `bride.jpg`, `scene.jpg`).
+                     - Gắn đầy đủ hợp đồng Live Sync (`data-sync-target`):
+                       + `cover_photo_url`, `couple_quote`
+                       + `groom_father`, `groom_mother`, `groom_name`, `groom_photo_url`
+                       + `bride_father`, `bride_mother`, `bride_name`, `bride_photo_url`
+                       + `ceremony_venue`, `ceremony_address`, `party_venue`, `party_address`
+                       + `gallery.0` đến `gallery.9` cho từng ảnh album
+                       + `qr_groom_image`, `groom_bank_name`, `groom_bank_account`, `groom_bank_holder`
+                       + `qr_bride_image`, `bride_bank_name`, `bride_bank_account`, `bride_bank_holder`
+                       + `music_url` trên thẻ `<audio>`
+                     - Phòng vệ Studio Editor & Showcase Reel (`$isEmbed = true`): Ẩn màn mở đầu `display: none !important;`, gắn class `opened mayhen_door_hidden`, không gắn class khóa cuộn `scroll-lock` lên thẻ `html`/`body`.
+                     - Thẻ `<audio>` gắn class chuẩn `mayhen_invitation_tung-trang-hanh-phuc_audio_music` và `data-sync-target="music_url"`.
+                  3. *Nâng cấp Script JS (`script.js` & `assets/script.js`)*:
+                     - Cung cấp hàm toàn cục Live Sync đổi nhạc `window.updateMayhenMusic = function(newUrl) { ... }` (Live Audio Handshake).
+                     - Nhận diện `window.__MAYHEN_IS_EMBED` để tự động mở phong bì và dỡ bỏ scroll lock.
+                     - Truyền danh sách 10 ảnh cưới đầy đủ `window.__MAYHEN_GALLERY_PHOTOS` cho chức năng Lightbox.
+                  4. *Nâng cấp Styling CSS (`styles.css` & `assets/styles.css`)*:
+                     - Đưa nút điều khiển nhạc `.mayhen_invitation_ksnvo949dudf_music-dock` về vị trí chuẩn góc trên bên trái: `position: fixed !important; top: 16px !important; left: max(16px, calc(50% - 210px + 16px)) !important; right: auto !important; z-index: 1001 !important;`.
+                     - Phân tầng Z-index tuyệt đối: Màn mở đầu `z-index: 9999999`, Lightbox `z-index: 100000`, Nút nhạc `z-index: 1001` (nằm dưới màn mở đầu khi chưa mở và nổi trên nội dung thiệp khi đã mở).
+                  5. *Đồng bộ Seeder & Database*:
+                     - Bổ sung cấu hình `'gallery' => [10 ảnh]` vào `default_config` của mẫu `tung-trang-hanh-phuc` trong `database/seeders/InvitationTemplateSeeder.php`.
+                     - Đồng bộ cập nhật trường `default_config` của mẫu trong bảng `invitation_templates` trên Database.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+                  - `php artisan optimize:clear`: Thành công 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
