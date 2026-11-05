@@ -5215,7 +5215,7 @@ body {
 /* Cụm tên cô dâu chú rể chữ ký nghệ thuật: Nằm ngay ngắn bên dưới ảnh, không đè lên ngực cặp đôi */
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper {
     position: absolute !important;
-    top: 635px !important;
+    top: 625px !important;
     left: 0 !important;
     width: 100% !important;
     max-width: 420px !important;
@@ -5224,7 +5224,7 @@ body {
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 2px !important;
+    gap: 0px !important;
     z-index: 5 !important;
     pointer-events: auto !important;
     padding: 0 15px !important;
@@ -5233,31 +5233,37 @@ body {
 
 /* Thời gian và địa điểm tổ chức tiệc: Xếp tầng ngay ngắn dưới cụm tên không bao giờ va chạm */
 .mayhen_invitation_jeowinids483fr_paragraph66 {
-    top: 730px !important;
-    left: 0 !important;
-    width: 100% !important;
-    text-align: center !important;
-    z-index: 5 !important;
-}
-
-.mayhen_invitation_jeowinids483fr_paragraph67 {
     top: 775px !important;
     left: 0 !important;
     width: 100% !important;
     text-align: center !important;
+    padding: 0 15px !important;
+    box-sizing: border-box !important;
+    z-index: 5 !important;
+}
+
+.mayhen_invitation_jeowinids483fr_paragraph67 {
+    top: 840px !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
     z-index: 5 !important;
 }
 
 .mayhen_invitation_jeowinids483fr_paragraph68 {
-    top: 825px !important;
+    top: 890px !important;
     left: 0 !important;
     width: 100% !important;
     text-align: center !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
     z-index: 5 !important;
 }
 
 .mayhen_invitation_jeowinids483fr_paragraph69 {
-    top: 875px !important;
+    top: 925px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: 90% !important;
@@ -5290,8 +5296,8 @@ body {
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline110 > .mayhen_invitation_jeowinids483fr_ladi-headline,
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline111 > .mayhen_invitation_jeowinids483fr_ladi-headline {
     font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg, cursive, sans-serif !important;
-    font-size: clamp(34px, 8.5vw, 48px) !important;
-    line-height: 1.2 !important;
+    font-size: clamp(32px, 8vw, 44px) !important;
+    line-height: 1.15 !important;
     color: rgb(35, 35, 35) !important;
     text-align: center !important;
     white-space: nowrap !important;
@@ -5304,12 +5310,12 @@ body {
 
 .mayhen_invitation_jeowinids483fr_couple_names_wrapper .mayhen_invitation_jeowinids483fr_headline112 > .mayhen_invitation_jeowinids483fr_ladi-headline {
     font-family: REZWTiBCbhlbWUgRmxvcmFsLmZg, cursive, sans-serif !important;
-    font-size: 32px !important;
+    font-size: 28px !important;
     line-height: 1 !important;
     color: rgb(35, 35, 35) !important;
     text-align: center !important;
     display: block !important;
-    margin: 0 !important;
+    margin: -2px 0 !important;
 }
 
 .mayhen_invitation_jeowinids483fr_section28 .mayhen_invitation_jeowinids483fr_gallery_extra {

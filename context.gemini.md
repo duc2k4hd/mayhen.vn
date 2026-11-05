@@ -2954,6 +2954,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Laravel Pint: Passed agent format.
                   - Cache view: Đã làm sạch với `php artisan view:clear`.
 
+            111. **Khắc Phục Lỗi Chữ Đè Lên Nhau Tại Thiệp Mời Chính Mẫu "Dấu Ký Trăm Năm" (dau-ky-tram-nam)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Tại khối thiệp mời chính (SECTION26), chữ ký thư pháp của chú rể ("Quốc Thái") nằm đè bẹp trực tiếp lên dòng thời gian "VÀO LÚC 10 GIỜ 00" và "THỨ BẢY, NGÀY 21 THÁNG 03 NĂM 2026", đồng thời dòng thời gian đè lên một phần địa chỉ tiệc.
+                  - *Nguyên nhân*: Cụm tên cô dâu chú rể (`.mayhen_invitation_jeowinids483fr_couple_names_wrapper`) gồm 3 dòng (Tên dâu, dấu &, Tên rể) cao ~135px được đặt ở `top: 635px`, kéo dài tới `top: 770px`. Trong khi đó, dòng thời gian (`.paragraph66`) lại được gán cứng ở `top: 730px !important;`, dẫn tới việc chữ "Quốc Thái" và dòng thời gian bị chèn đè lên nhau 40px.
+                - **Giải pháp xử lý**:
+                  - Điều chỉnh `top: 625px !important;` và tinh chỉnh `gap: 0px !important;`, `line-height: 1.15 !important;` cho `couple_names_wrapper` giúp 3 dòng tên liên kết gọn gàng và thẩm mỹ hơn.
+                  - Dời dòng thời gian (`.paragraph66`) xuống `top: 775px !important;`, tạo khoảng thở cách chân chữ thư pháp chú rể 25px an toàn, dứt điểm 100% tình trạng chữ đè lên nhau.
+                  - Tịnh tiến các khối bên dưới tương ứng:
+                    + Địa chỉ tiệc (`.paragraph67`): `top: 840px !important;` kèm padding hai bên chống tràn viền.
+                    + Ngày âm lịch (`.paragraph68`): `top: 890px !important;`.
+                    + Nơi tổ chức (`.paragraph69`): `top: 925px !important;`.
+                    + Nút xem bản đồ (`.button23`): `top: 980px !important;`.
+                  - Đồng bộ cả 2 file `styles.css` và `assets/styles.css`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Cache view: Đã làm sạch với `php artisan view:clear`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
