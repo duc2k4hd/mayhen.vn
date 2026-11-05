@@ -3581,8 +3581,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                          * Xóa bỏ hoàn toàn cụm nút trôi nổi to đùng `mayhen_invitation_floating_controls` che khuất màn hình di động.
                          * Chuyển nút điều khiển âm nhạc sang **Nút đĩa than tròn xoay cố định góc trên bên trái (`mayhen_invitation_music_dock`)** chuẩn phong cách Quiet Luxury.
                          * Tinh giản `script.js` để tránh xung đột với `editor-bridge.blade.php`.
+                    9. *Khắc Phục Triệt Để Trùng Lặp Trường Lịch Trình Tiệc Cưới (Fix Duplicate Timeline in Schema)*:
+                       - **Hiện tượng**: Tại Bước 6 "Lịch Trình Tiệc Cưới" trên Studio Tạo Thiệp (`/tao-thiep?template=hanh-phuc-mang-ten-chung-minh`), xuất hiện 2 cụm nhập liệu trùng nhau: cụm repeater phía trên và 8 ô text riêng lẻ ("Thời gian mốc 1", "Nội dung mốc 1"...) phía dưới.
+                       - **Nguyên nhân cốt lõi**: `InvitationTemplateService` tự động tiêm trường canonical `wedding.extra_data.timeline` (repeater), trong khi `schema.json` lại khai báo thủ công các trường text `wedding.extra_data.timeline.0.time`, `title`... Khi chuẩn hóa schema, cả hai đều được đưa vào form gây duplicate.
+                       - **Giải pháp xử lý**:
+                         * Chuẩn hóa `schema.json` của mẫu `hanh-phuc-mang-ten-chung-minh`: thay thế toàn bộ 8 trường con rời rạc bằng trường canonical duy nhất `wedding.extra_data.timeline` kiểu `repeater` (khớp chuẩn hệ thống và mẫu `giua-muon-ngan-vi-sao`).
+                         * Cập nhật `template.blade.php`: xử lý `$timelineList` nhận mảng từ `wedding.extra_data.timeline` kết hợp fallback thông minh theo từng phần tử.
+                         * Viết Pest test kiểm thử khẳng định không còn bất kỳ trường duplicate nào và Studio render sạch sẽ 100%.
                   - **Kiểm thử & Đảm bảo chất lượng**:
-                    - Pest Test: Kiểm tra toàn diện 10 Section, Timeline, Dresscode, Maps iframe, 10 ảnh Album, và Nút đĩa than -> **100% Passed**.
+                    - Pest Test: Kiểm tra toàn diện 10 Section, Timeline repeater duy nhất, Dresscode, Maps iframe, 10 ảnh Album, và Nút đĩa than -> **100% Passed**.
                     - Code formatter Laravel Pint: `vendor/bin/pint --dirty --format agent` -> **Passed**.
                     - Xóa sạch cache hệ thống: `php artisan view:clear; php artisan cache:clear`.
 

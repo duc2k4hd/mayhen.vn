@@ -75,20 +75,18 @@
     $groomBio = $data['groom_bio'] ?? ($extraData['groom_bio'] ?? 'Biết ơn Em về tất cả. Nguyện bên Em qua muôn nẻo đường phía trước, mình đồng hành cùng nhau đến mãi mãi về sau.');
     $brideBio = $data['bride_bio'] ?? ($extraData['bride_bio'] ?? 'Hành trình trưởng thành của em thật đẹp khi có sự xuất hiện của Anh. Cùng nhau chúng ta khám phá thế giới kỳ diệu này anh nhé.');
 
-    // 7. Lịch Trình Buổi Tiệc (Timeline 4 mốc chuẩn hóa)
+    // 7. Lịch Trình Buổi Tiệc (Timeline mốc chuẩn hóa)
     $defaultTimeline = [
         ['time' => '17:30', 'title' => 'Đón khách'],
         ['time' => '18:00', 'title' => 'Cử hành hôn lễ'],
         ['time' => '18:30', 'title' => 'Khai tiệc'],
-        ['time' => '20:00', 'title' => 'Giao lưu & Chụp ảnh'],
+        ['time' => '20:00', 'title' => 'Giao lưu & chụp ảnh'],
     ];
-    $rawTimeline = $extraData['timeline'] ?? ($data['timeline'] ?? []);
-    $timelineList = [];
-    for ($i = 0; $i < 4; $i++) {
-        $timelineList[] = [
-            'time' => $rawTimeline[$i]['time'] ?? ($data["timeline.{$i}.time"] ?? ($defaultTimeline[$i]['time'] ?? '')),
-            'title' => $rawTimeline[$i]['title'] ?? ($data["timeline.{$i}.title"] ?? ($defaultTimeline[$i]['title'] ?? '')),
-        ];
+    $rawTimeline = $extraData['timeline'] ?? ($wedding->extra_data['timeline'] ?? ($data['timeline'] ?? []));
+    $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : $defaultTimeline;
+    foreach ($timelineList as $tIdx => $tVal) {
+        $timelineList[$tIdx]['time'] = $tVal['time'] ?? ($data["timeline.{$tIdx}.time"] ?? ($defaultTimeline[$tIdx]['time'] ?? ''));
+        $timelineList[$tIdx]['title'] = $tVal['title'] ?? ($tVal['desc'] ?? ($data["timeline.{$tIdx}.title"] ?? ($defaultTimeline[$tIdx]['title'] ?? '')));
     }
 
     // 8. Quy Định Trang Phục (Dresscode)

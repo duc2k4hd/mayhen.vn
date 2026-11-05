@@ -368,72 +368,25 @@
       "id": "timeline",
       "title": "Lịch Trình Tiệc Cưới",
       "short_title": "Lịch Trình",
-      "icon": "list",
+      "icon": "clock",
       "description": "Các mốc thời gian diễn ra hôn lễ và đón khách",
       "fields": [
         {
-          "key": "wedding.extra_data.timeline.0.time",
-          "label": "Thời gian mốc 1",
-          "type": "text",
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
           "required": false,
-          "default": "17:30",
-          "max": 10
-        },
-        {
-          "key": "wedding.extra_data.timeline.0.title",
-          "label": "Nội dung mốc 1",
-          "type": "text",
-          "required": false,
-          "default": "Đón khách",
-          "max": 50
-        },
-        {
-          "key": "wedding.extra_data.timeline.1.time",
-          "label": "Thời gian mốc 2",
-          "type": "text",
-          "required": false,
-          "default": "18:00",
-          "max": 10
-        },
-        {
-          "key": "wedding.extra_data.timeline.1.title",
-          "label": "Nội dung mốc 2",
-          "type": "text",
-          "required": false,
-          "default": "Cử hành hôn lễ",
-          "max": 50
-        },
-        {
-          "key": "wedding.extra_data.timeline.2.time",
-          "label": "Thời gian mốc 3",
-          "type": "text",
-          "required": false,
-          "default": "18:30",
-          "max": 10
-        },
-        {
-          "key": "wedding.extra_data.timeline.2.title",
-          "label": "Nội dung mốc 3",
-          "type": "text",
-          "required": false,
-          "default": "Khai tiệc",
-          "max": 50
-        },
-        {
-          "key": "wedding.extra_data.timeline.3.time",
-          "label": "Thời gian mốc 4",
-          "type": "text",
-          "required": false,
-          "default": "20:00",
-          "max": 10
-        },
-        {
-          "key": "wedding.extra_data.timeline.3.title",
-          "label": "Nội dung mốc 4",
-          "type": "text",
-          "required": false,
-          "default": "Giao lưu & chụp ảnh",
-          "max": 50
+          "max_items": 6,
+          "default": [
+            { "time": "17:30", "title": "Đón khách" },
+            { "time": "18:00", "title": "Cử hành hôn lễ" },
+            { "time": "18:30", "title": "Khai tiệc" },
+            { "time": "20:00", "title": "Giao lưu & chụp ảnh" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "time" },
+            { "key": "title", "label": "Nội dung", "type": "text" }
+          ]
         }
       ]
     },
