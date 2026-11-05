@@ -3225,6 +3225,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Laravel Pint: Passed agent format.
                   - `php artisan optimize:clear`: Thành công 100%.
 
+            120. **Tái Cấu Trúc Toàn Bộ Kiến Trúc Mẫu Thiệp (Data Contract vs Theme Skin) & Dọn Dẹp Toàn Bộ Mẫu Thiệp Cũ**:
+                - **Bối cảnh & Yêu cầu từ người dùng**:
+                  - Người dùng yêu cầu dừng viết code chắp vá từng mẫu thiệp, bàn bạc và thống nhất công thức chuẩn hóa kiến trúc cốt lõi từ nay về sau:
+                    + Toàn bộ mẫu thiệp chỉ chứa đúng các phần (10 Section chuẩn) và đúng các key canonical quy định.
+                    + Sử dụng chung một tiền tố class BEM chuẩn `mayhen_invitation_*` cho toàn bộ các mẫu thiệp để 1 file JS lõi duy nhất có thể tự động bắt sự kiện và điều khiển mọi tương tác (Mở phong bì, Nhạc đĩa than, Đếm ngược, Album Lightbox, Copy STK, Gửi lời chúc và RSVP).
+                    + Loại bỏ hoàn toàn layout định vị tuyệt đối `position: absolute` kéo-thả kiểu LadiPage, cưỡng chế 100% Flexbox / Grid tự co giãn theo nội dung để không bao giờ bị lệch vỡ trên thiết bị di động.
+                    + Xóa toàn bộ các mẫu thiệp cũ, chỉ giữ lại duy nhất mẫu `giua-muon-ngan-vi-sao` để làm chuẩn kiểm thử (check test).
+                - **Các công việc đã thực thi**:
+                  1. *Nâng cấp Skill Kiến Trúc* (`.agents/skills/mayhen-invitation-templates/SKILL.md`):
+                     - Thiết lập Hợp đồng 10 Section Chuẩn (Opening, Hero Cover, Love Story, Family & Couple, Countdown & Calendar, Events & Maps, Wedding Timeline, Dresscode, Album 10 Photos, Gift & RSVP & Ending).
+                     - Ban hành bảng quy ước Class BEM Toàn Cục `mayhen_invitation_*` áp dụng cho mọi mẫu thiệp.
+                     - Cưỡng chế 6 quy tắc bất biến (Schema chuẩn, Live Sync `data-sync-target`, Phòng vệ `$isEmbed = true`, Zero External Assets, Vị trí nút nhạc góc trên bên trái, Z-Index hierarchy).
+                  2. *Xóa Bỏ Toàn Bộ 7 Mẫu Thiệp Cũ*:
+                     - Đã xóa sạch 7 thư mục mẫu thiệp khỏi `resources/views/client/invitations/`: `dau-an-thoi-gian`, `dau-ky-tram-nam`, `hac-bach-trao-duyen`, `hac-bach-trao-duyen-2`, `net-muc-tinh-yeu`, `thuoc-phim-tinh-yeu`, `tung-trang-hanh-phuc`.
+                     - Giữ lại duy nhất mẫu `giua-muon-ngan-vi-sao` và thư mục `partials` (chứa `editor-bridge.blade.php`).
+                  3. *Đồng bộ Database & Seeder*:
+                     - Viết lại `database/seeders/InvitationTemplateSeeder.php` chỉ còn duy nhất mẫu `giua-muon-ngan-vi-sao`.
+                     - Dọn dẹp Database bảng `invitation_templates`, chỉ giữ lại đúng bản ghi `giua-muon-ngan-vi-sao`.
+                  4. *Dọn dẹp Test Suite*:
+                     - Gỡ bỏ các file test của các mẫu đã xóa, giữ lại `GiuaMuonNganViSaoTimelineTest.php` và `TemplateGalleryTest.php`.
+                     - Chạy Pest Feature Tests: 3/3 tests passed (20 assertions).
+                     - Chạy Laravel Pint: Passed.
+                     - Dọn dẹp cache: `php artisan optimize:clear` hoàn tất.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
