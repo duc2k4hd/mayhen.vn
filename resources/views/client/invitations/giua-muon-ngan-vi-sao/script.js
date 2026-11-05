@@ -956,16 +956,29 @@
         document.fonts.ready.then(vuaMotDong);
     }
 
-    /* 5. Đếm ngược tới ngày cưới (20/12/2026 18:00:00) */
+    /* 5. Đếm ngược tới ngày cưới (Realtime Countdown Sync) */
     function batDemNguoc() {
-        var target = new Date('2026-12-20T18:00:00+07:00').getTime();
+        var cdContainer = document.querySelector('.' + P + 'countdown') || document.querySelector('[data-countdown]');
+        var initialIso = cdContainer ? cdContainer.getAttribute('data-countdown') : null;
+        var target = initialIso ? new Date(initialIso).getTime() : new Date('2026-12-20T18:00:00+07:00').getTime();
+        if (isNaN(target)) {
+            target = new Date('2026-12-20T18:00:00+07:00').getTime();
+        }
+
         var elDay = document.querySelector('.' + P + 'cd_day');
         var elHour = document.querySelector('.' + P + 'cd_hour');
         var elMin = document.querySelector('.' + P + 'cd_min');
         var elSec = document.querySelector('.' + P + 'cd_sec');
-        if (!elDay || !elHour || !elMin || !elSec) return;
 
         function capNhat() {
+            if (!elDay || !elHour || !elMin || !elSec) {
+                elDay = document.querySelector('.' + P + 'cd_day');
+                elHour = document.querySelector('.' + P + 'cd_hour');
+                elMin = document.querySelector('.' + P + 'cd_min');
+                elSec = document.querySelector('.' + P + 'cd_sec');
+            }
+            if (!elDay || !elHour || !elMin || !elSec) return;
+
             var now = Date.now();
             var diff = Math.max(0, Math.floor((target - now) / 1000));
             var d = Math.floor(diff / 86400);
@@ -977,9 +990,68 @@
             elMin.textContent = m;
             elSec.textContent = s;
         }
+
         capNhat();
         setInterval(capNhat, 1000);
+
+        window.updateMayhenCountdown = function (newTarget) {
+            if (!newTarget) return;
+            var parsed = (newTarget instanceof Date) ? newTarget.getTime() : new Date(newTarget).getTime();
+            if (!isNaN(parsed)) {
+                target = parsed;
+                capNhat();
+            }
+        };
     }
+
+    /* 5b. Tự động vẽ lại lịch cưới theo ngày đã chọn (Realtime Calendar Sync) */
+    window.renderMayhenWeddingCalendar = function (dateInput) {
+        if (!dateInput) return;
+        var targetDate = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+        if (isNaN(targetDate.getTime())) return;
+
+        var year = targetDate.getFullYear();
+        var month = targetDate.getMonth();
+        var day = targetDate.getDate();
+
+        var monthPadded = String(month + 1).padStart(2, '0');
+        var monthYearEls = document.querySelectorAll('.' + P + 'calendar_month_year, [data-sync-target="calendar_month_year"]');
+        monthYearEls.forEach(function (el) {
+            el.innerHTML = 'Tháng <span data-sync-target="wedding_month">' + monthPadded + '</span> · <span data-sync-target="wedding_year">' + year + '</span>';
+        });
+
+        var body = document.querySelector('.' + P + 'calendar_body') || document.querySelector('[data-sync-target="wedding_calendar"]');
+        if (!body) return;
+
+        var totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+        var totalDaysInPrevMonth = new Date(year, month, 0).getDate();
+        var firstDayOfWeek = (new Date(year, month, 1).getDay() + 6) % 7; // Thứ 2 là 0, CN là 6
+
+        var html = '';
+
+        for (var i = firstDayOfWeek - 1; i >= 0; i--) {
+            var prevDayNum = totalDaysInPrevMonth - i;
+            html += '<div class="' + P + 'calendar_day ' + P + 'empty">' + prevDayNum + '</div>';
+        }
+
+        for (var d = 1; d <= totalDaysInMonth; d++) {
+            var isSelected = (d === day);
+            var cls = P + 'calendar_day';
+            if (isSelected) {
+                cls += ' ' + P + 'selected ' + P + 'cal_selected_bob ' + P + 'calendar_selected_day';
+            }
+            html += '<div class="' + cls + '">' + d + '</div>';
+        }
+
+        var totalCells = firstDayOfWeek + totalDaysInMonth;
+        var remainder = totalCells % 7;
+        var nextDays = (remainder === 0) ? 0 : (7 - remainder);
+        for (var n = 1; n <= nextDays; n++) {
+            html += '<div class="' + P + 'calendar_day ' + P + 'empty">' + n + '</div>';
+        }
+
+        body.innerHTML = html;
+    };
 
     /* 6. Cổng sao Bản Đồ 3D */
     function cuaBanDo() {

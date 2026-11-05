@@ -753,14 +753,9 @@
     window.__mayhenFindFieldTarget = findFieldTarget;
     window.__mayhenFindSectionTarget = findSectionTarget;
 
-    window.addEventListener('message', function(event) {
-        if (!event.data || typeof event.data !== 'object') return;
-        var data = event.data;
-
-        // 1. Đồng bộ Input Text & Ảnh động (Live Typing Sync)
-        if (data.type === 'MAYHEN_SYNC_INPUT') {
-            var key = data.key || '';
-            var val = data.value !== undefined && data.value !== null ? data.value : '';
+    function handleSyncInput(key, val) {
+        if (key === undefined || key === null) return;
+        val = val !== undefined && val !== null ? val : '';
 
             // Chuẩn hóa key: loại bỏ wedding. hoặc extra_data.
             var cleanKey = key.replace(/^wedding\./, '').replace(/^extra_data\./, '');
@@ -862,7 +857,10 @@
             });
 
             // Đồng bộ định dạng ngày cưới nếu là wedding_date hoặc event_party_date
-            if (cleanKey === 'wedding_date' || cleanKey === 'event_party_date') {
+            var isDateKey = (cleanKey === 'wedding_date' || cleanKey === 'event_party_date');
+            var isTimeKey = (cleanKey === 'event_target_time' || cleanKey === 'party_time' || cleanKey === 'event_party_time');
+
+            if (isDateKey) {
                 try {
                     var d, m, y, parsedDate;
                     if (val && typeof val === 'string' && val.indexOf('-') !== -1) {
@@ -924,28 +922,26 @@
                                 var mo = parsedDate.getMonth();
                                 var tgt = parsedDate.getDate();
                                 var tot = new Date(yr, mo + 1, 0).getDate();
+                                var prevTot = new Date(yr, mo, 0).getDate();
                                 var fst = (new Date(yr, mo, 1).getDay() + 6) % 7; // Chuẩn thứ Hai đầu tuần (Monday-first)
-                                calGrid.innerHTML = '';
-                                for (var ei = 0; ei < fst; ei++) {
-                                    var spEmp = document.createElement('span');
-                                    spEmp.className = 'mayhen_cal_blank mayhen_invitation_empty';
-                                    calGrid.appendChild(spEmp);
+                                var calHtml = '';
+                                for (var ei = fst - 1; ei >= 0; ei--) {
+                                    calHtml += '<div class="mayhen_invitation_calendar_day mayhen_invitation_empty">' + (prevTot - ei) + '</div>';
                                 }
                                 for (var di = 1; di <= tot; di++) {
-                                    var spDay = document.createElement('span');
-                                    spDay.textContent = di;
-                                    spDay.className = 'mayhen_cal_day' + (di === tgt ? ' mayhen_cal_active mayhen_invitation_calendar_selected_day' : '');
-                                    calGrid.appendChild(spDay);
+                                    var cls = 'mayhen_invitation_calendar_day' + (di === tgt ? ' mayhen_invitation_selected mayhen_invitation_cal_selected_bob mayhen_invitation_calendar_selected_day' : '');
+                                    calHtml += '<div class="' + cls + '">' + di + '</div>';
                                 }
-                                calGrid.dataset.date = yr + '-' + String(mo + 1).padStart(2, '0') + '-' + String(tgt).padStart(2, '0');
+                                var totalCells = fst + tot;
+                                var rem = totalCells % 7;
+                                var nxt = rem === 0 ? 0 : 7 - rem;
+                                for (var ni = 1; ni <= nxt; ni++) {
+                                    calHtml += '<div class="mayhen_invitation_calendar_day mayhen_invitation_empty">' + ni + '</div>';
+                                }
+                                calGrid.innerHTML = calHtml;
+                                calGrid.dataset.date = yr + '-' + m + '-' + d;
                             }
                         }
-
-                        // Cập nhật đồng hồ đếm ngược (Countdown)
-                        if (typeof window.updateMayhenCountdown === 'function') {
-                            window.updateMayhenCountdown(parsedDate);
-                        }
-                    }
 
                         // Tự động tính và đồng bộ ngày Âm lịch nếu có thay đổi ngày cưới
                         var calculatedLunar = calcVietnameseLunar(val);
@@ -960,6 +956,68 @@
                                 }
                             });
                         }
+                    }
+                } catch (e) {}
+            }
+
+            // Đồng bộ đồng hồ đếm ngược khi thay đổi ngày cưới hoặc giờ mục tiêu đếm ngược (Realtime Countdown Sync)
+            if (isDateKey || isTimeKey) {
+                try {
+                    var curDateVal = window.__MAYHEN_LOCAL_STATE['wedding_date'] || window.__MAYHEN_LOCAL_STATE['event_party_date'];
+                    var curTimeVal = window.__MAYHEN_LOCAL_STATE['event_target_time'] || window.__MAYHEN_LOCAL_STATE['party_time'] || window.__MAYHEN_LOCAL_STATE['event_party_time'] || '18:00';
+
+                    var cdEl = document.querySelector('[data-countdown]');
+                    var baseTargetIso = cdEl ? cdEl.getAttribute('data-countdown') : null;
+
+                    var targetY, targetM, targetD, targetH = 18, targetMin = 0;
+                    if (curTimeVal && typeof curTimeVal === 'string' && curTimeVal.indexOf(':') !== -1) {
+                        var tP = curTimeVal.trim().split(':');
+                        targetH = parseInt(tP[0], 10) || 0;
+                        targetMin = parseInt(tP[1], 10) || 0;
+                    }
+
+                    if (curDateVal && typeof curDateVal === 'string') {
+                        if (curDateVal.indexOf('-') !== -1) {
+                            var dP = curDateVal.trim().split('-');
+                            targetY = parseInt(dP[0], 10);
+                            targetM = parseInt(dP[1], 10);
+                            targetD = parseInt(dP[2], 10);
+                        } else if (curDateVal.indexOf('/') !== -1) {
+                            var dP = curDateVal.trim().split('/');
+                            targetD = parseInt(dP[0], 10);
+                            targetM = parseInt(dP[1], 10);
+                            targetY = parseInt(dP[2], 10);
+                        }
+                    } else if (baseTargetIso) {
+                        var baseDate = new Date(baseTargetIso);
+                        if (!isNaN(baseDate.getTime())) {
+                            targetY = baseDate.getFullYear();
+                            targetM = baseDate.getMonth() + 1;
+                            targetD = baseDate.getDate();
+                        }
+                    }
+
+                    if (targetY && targetM && targetD) {
+                        var cdTargetDate = new Date(targetY, targetM - 1, targetD, targetH, targetMin, 0);
+                        if (!isNaN(cdTargetDate.getTime())) {
+                            if (cdEl) {
+                                cdEl.setAttribute('data-countdown', cdTargetDate.toISOString());
+                            }
+                            if (typeof window.updateMayhenCountdown === 'function') {
+                                window.updateMayhenCountdown(cdTargetDate);
+                            }
+                            var now = Date.now();
+                            var diff = Math.max(0, Math.floor((cdTargetDate.getTime() - now) / 1000));
+                            var cDays = Math.floor(diff / 86400);
+                            var cHours = Math.floor((diff % 86400) / 3600);
+                            var cMins = Math.floor((diff % 3600) / 60);
+                            var cSecs = diff % 60;
+                            document.querySelectorAll('.mayhen_invitation_cd_day, [data-sync-target="countdown_day"], .mayhen_cd_day').forEach(function(e) { e.textContent = cDays; });
+                            document.querySelectorAll('.mayhen_invitation_cd_hour, [data-sync-target="countdown_hour"], .mayhen_cd_hour').forEach(function(e) { e.textContent = cHours; });
+                            document.querySelectorAll('.mayhen_invitation_cd_min, [data-sync-target="countdown_min"], .mayhen_cd_min').forEach(function(e) { e.textContent = cMins; });
+                            document.querySelectorAll('.mayhen_invitation_cd_sec, [data-sync-target="countdown_sec"], .mayhen_cd_sec').forEach(function(e) { e.textContent = cSecs; });
+                        }
+                    }
                 } catch (e) {}
             }
 
@@ -1035,6 +1093,18 @@
                     });
                 }
             }
+    }
+
+    // Gắn NGAY LẬP TỨC lên window để trang Studio Editor cha gọi tức thời (Dual Channel Direct Call)
+    window.__mayhenSyncInput = handleSyncInput;
+
+    window.addEventListener('message', function(event) {
+        if (!event.data || typeof event.data !== 'object') return;
+        var data = event.data;
+
+        // 1. Đồng bộ Input Text & Ảnh động (Live Typing Sync)
+        if (data.type === 'MAYHEN_SYNC_INPUT') {
+            handleSyncInput(data.key, data.value);
         }
 
         // 2. Đồng bộ Bảng Màu (Theme Palette Live Switcher)

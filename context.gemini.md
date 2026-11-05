@@ -3466,6 +3466,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     - Pint Formatter: `vendor/bin/pint --dirty --format agent` passed.
                     - Cache: `php artisan view:clear; php artisan config:clear` dọn dẹp sạch sẽ.
 
+              131. **Khắc Phục Toàn Diện Lỗi Preview Thời Gian Thực Phần Đếm Ngược & Lịch Cưới (Countdown & Calendar Sync)**:
+                  - **Nguyên nhân gốc rễ phát hiện**:
+                    1. *Lỗi Hardcode Countdown trong mẫu `giua-muon-ngan-vi-sao/script.js`*: Hàm `batDemNguoc()` gán cứng `var target = new Date('2026-12-20T18:00:00+07:00').getTime()` trong closure cục bộ và chạy `setInterval(capNhat, 1000)` liên tục mỗi giây. Điều này khiến bất kỳ thay đổi ngày/giờ nào từ Studio Editor đều bị bộ đếm cũ tính toán theo ngày 20/12/2026 đè lại mỗi giây (luôn hiển thị cố định 44 ngày). Đồng thời không có hàm `window.updateMayhenCountdown`.
+                    2. *Thiếu đồng bộ Giờ Mục Tiêu (`event_target_time`)*: Trong `editor-bridge.blade.php`, logic chỉ bắt `cleanKey === 'wedding_date' || cleanKey === 'event_party_date'`, hoàn toàn bỏ qua `event_target_time` (hoặc `party_time`). Khi người dùng đổi giờ cử hành/giờ đếm ngược, không có sự kiện nào kích hoạt tính toán lại thời gian đích.
+                    3. *Lỗi Fallback Lịch Tháng không khớp class CSS BEM*: Bộ vẽ lịch fallback trong `editor-bridge.blade.php` tạo thẻ `span` với class `mayhen_cal_day`, không khớp với class BEM bắt buộc của hệ thống (`.mayhen_invitation_calendar_day`, `.mayhen_invitation_selected`, `.mayhen_invitation_cal_selected_bob`). Mẫu `giua-muon-ngan-vi-sao` cũng chưa cài đặt hàm chuẩn `window.renderMayhenWeddingCalendar`.
+                    4. *Lịch tháng ban đầu trong `template.blade.php` chưa dynamic*: Các ô ngày 1..31 được render cứng cho tháng 12/2026, đặt class chọn vào ngày 20 cố định thay vì tính toán động theo thứ trong tuần của ngày cưới.
+                  - **Giải pháp triển khai kỹ thuật**:
+                    1. *Nâng cấp `batDemNguoc()` trong `giua-muon-ngan-vi-sao/script.js`*:
+                       - Khởi tạo đọc thời gian đích từ thuộc tính `data-countdown` của `.mayhen_invitation_countdown` (hoặc fallback an toàn).
+                       - Xuất bản hàm toàn cục `window.updateMayhenCountdown = function(newTarget)` cho phép cập nhật thời gian đích ngay lập tức và tick lại tức thời 0ms mà không đợi chu kỳ 1s.
+                    2. *Cài đặt `window.renderMayhenWeddingCalendar(dateInput)` trong `script.js`*:
+                       - Tự động tính thứ Hai đầu tuần (Monday-first: `(getDay() + 6) % 7`), số ngày tháng trước, số ngày tháng hiện tại và số ngày tháng sau.
+                       - Tái tạo cấu trúc grid chuẩn BEM với class `.mayhen_invitation_calendar_day`, đánh dấu ngày cưới được chọn bằng `.mayhen_invitation_selected.mayhen_invitation_cal_selected_bob.mayhen_invitation_calendar_selected_day`.
+                       - Cập nhật tiêu đề tháng năm chuẩn Quiet Luxury: `Tháng MM · YYYY`.
+                    3. *Dynamic hóa Blade Template `giua-muon-ngan-vi-sao/template.blade.php`*:
+                       - Dùng PHP Carbon tính toán động thứ đầu tuần, ngày trong tháng và tự động điền các ngày rỗng trước/sau cùng ngày chọn `$weddingDay` động 100%.
+                       - Gắn hợp đồng `data-sync-target="calendar_month_year"` và `data-sync-target="wedding_calendar"`.
+                    4. *Đồng bộ 2 chiều hoàn hảo trong `editor-bridge.blade.php`*:
+                       - Bắt cả trường ngày (`wedding_date`, `event_party_date`) lẫn trường giờ (`event_target_time`, `party_time`, `event_party_time`).
+                       - Kết hợp cả ngày và giờ để tính toán `cdTargetDate` chính xác, cập nhật thuộc tính `data-countdown`, gọi `window.updateMayhenCountdown` và cập nhật tức thời 0ms lên DOM.
+                       - Nâng cấp fallback lịch tháng trong bridge khớp 100% class BEM `.mayhen_invitation_calendar_day` và `.mayhen_invitation_selected`.
+                       - Khai báo hàm `window.__mayhenSyncInput` ra window để Studio Editor có thể gọi trực tiếp 0ms qua kênh Direct Call.
+                  - **Kiểm thử & Xác thực**:
+                    - AST Syntax Check: `node -c` trên `script.js`, `editor-bridge.blade.php` và `editor.js` sạch 100% lỗi.
+                    - Pest Test: `vendor/bin/pest tests/Feature/GiuaMuonNganViSaoTemplateTest.php` 4/4 passed (35 assertions).
+                    - Pint: `vendor/bin/pint --dirty --format agent` passed.
+                    - Cache: Đã xóa view & config cache.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

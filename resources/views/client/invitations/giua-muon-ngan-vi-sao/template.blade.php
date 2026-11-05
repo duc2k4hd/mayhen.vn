@@ -474,50 +474,35 @@
                     <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                 </span>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_thang_lich">
-                    <p class="mayhen_invitation_ladi_headline mayhen_invitation_calendar_month_year">Tháng {{ $weddingMonth }} · {{ $weddingYear }}</p>
+                    <p class="mayhen_invitation_ladi_headline mayhen_invitation_calendar_month_year" data-sync-target="calendar_month_year">Tháng <span data-sync-target="wedding_month">{{ $weddingMonth }}</span> · <span data-sync-target="wedding_year">{{ $weddingYear }}</span></p>
                 </div>
-                <div class="mayhen_invitation_edit_Calendar mayhen_invitation_calendar">
+                <div class="mayhen_invitation_edit_Calendar mayhen_invitation_calendar" data-sync-target="wedding_calendar">
                     <div class="mayhen_invitation_ladi_html_code">
                         <div class="mayhen_invitation_calendar_wrapper">
                             <div class="mayhen_invitation_calendar_header">
                                 <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div>
                             </div>
                             <div class="mayhen_invitation_calendar_body">
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">30</div>
-                                <div class="mayhen_invitation_calendar_day">1</div>
-                                <div class="mayhen_invitation_calendar_day">2</div>
-                                <div class="mayhen_invitation_calendar_day">3</div>
-                                <div class="mayhen_invitation_calendar_day">4</div>
-                                <div class="mayhen_invitation_calendar_day">5</div>
-                                <div class="mayhen_invitation_calendar_day">6</div>
-                                <div class="mayhen_invitation_calendar_day">7</div>
-                                <div class="mayhen_invitation_calendar_day">8</div>
-                                <div class="mayhen_invitation_calendar_day">9</div>
-                                <div class="mayhen_invitation_calendar_day">10</div>
-                                <div class="mayhen_invitation_calendar_day">11</div>
-                                <div class="mayhen_invitation_calendar_day">12</div>
-                                <div class="mayhen_invitation_calendar_day">13</div>
-                                <div class="mayhen_invitation_calendar_day">14</div>
-                                <div class="mayhen_invitation_calendar_day">15</div>
-                                <div class="mayhen_invitation_calendar_day">16</div>
-                                <div class="mayhen_invitation_calendar_day">17</div>
-                                <div class="mayhen_invitation_calendar_day">18</div>
-                                <div class="mayhen_invitation_calendar_day">19</div>
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_selected mayhen_invitation_cal_selected_bob mayhen_invitation_calendar_selected_day">{{ $weddingDay }}</div>
-                                <div class="mayhen_invitation_calendar_day">21</div>
-                                <div class="mayhen_invitation_calendar_day">22</div>
-                                <div class="mayhen_invitation_calendar_day">23</div>
-                                <div class="mayhen_invitation_calendar_day">24</div>
-                                <div class="mayhen_invitation_calendar_day">25</div>
-                                <div class="mayhen_invitation_calendar_day">26</div>
-                                <div class="mayhen_invitation_calendar_day">27</div>
-                                <div class="mayhen_invitation_calendar_day">28</div>
-                                <div class="mayhen_invitation_calendar_day">29</div>
-                                <div class="mayhen_invitation_calendar_day">30</div>
-                                <div class="mayhen_invitation_calendar_day">31</div>
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">1</div>
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">2</div>
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">3</div>
+                                @php
+                                    $calDay = (int) $weddingDate->format('j');
+                                    $firstDayOfWeek = ($weddingDate->copy()->startOfMonth()->dayOfWeekIso - 1); // 0 = Mon, 6 = Sun
+                                    $daysInMonth = $weddingDate->daysInMonth;
+                                    $prevMonthDays = $weddingDate->copy()->subMonth()->daysInMonth;
+                                @endphp
+                                @for ($i = $firstDayOfWeek - 1; $i >= 0; $i--)
+                                    <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">{{ $prevMonthDays - $i }}</div>
+                                @endfor
+                                @for ($d = 1; $d <= $daysInMonth; $d++)
+                                    <div class="mayhen_invitation_calendar_day{{ $d === $calDay ? ' mayhen_invitation_selected mayhen_invitation_cal_selected_bob mayhen_invitation_calendar_selected_day' : '' }}">{{ $d }}</div>
+                                @endfor
+                                @php
+                                    $totalCells = $firstDayOfWeek + $daysInMonth;
+                                    $remainder = $totalCells % 7;
+                                    $nextDays = $remainder === 0 ? 0 : 7 - $remainder;
+                                @endphp
+                                @for ($n = 1; $n <= $nextDays; $n++)
+                                    <div class="mayhen_invitation_calendar_day mayhen_invitation_empty">{{ $n }}</div>
+                                @endfor
                             </div>
                         </div>
                     </div>
