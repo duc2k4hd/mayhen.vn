@@ -24,6 +24,10 @@ description: Bộ quy chuẩn kỹ thuật toàn diện về 10 Section tiêu ch
    - Cấm gắn class khóa cuộn `no-scroll` hay `overflow: hidden` lên `html`/`body` khi nhúng trong iframe.
 5. **Tự Chứa 100% Tài Nguyên Nội Bộ (Zero External Assets)**:
    - 100% font chữ, ảnh mẫu, audio MP3, icon SVG nằm trong thư mục nội bộ `assets/` của mẫu đó. Tuyệt đối không dùng URL từ bên ngoài.
+6. **Quy Tắc Bất Biến Về Sổ Ký Tên & Xác Nhận RSVP (Zero Couple Photos in Signature & RSVP)**:
+   - **Bắt buộc có mặt trong 100% mẫu thiệp**: Sổ Ký Tên Điện Tử (`Signature`) và Xác Nhận Tham Dự (`RSVP`) là 2 tính năng tương tác trọng tâm, mẫu nào cũng bắt buộc phải có.
+   - **TUYỆT ĐỐI CẤM DÙNG ẢNH NGƯỜI / ẢNH CẶP ĐÔI**: Không bao giờ được đặt ảnh chụp cặp đôi hay ảnh stock người trong 2 phần này (cả ảnh nền canvas ký tên và ảnh minh họa RSVP). Việc để ảnh ở 2 phần này khiến khách hàng không sửa được trên Studio và làm thiệp gửi cho khách mời xuất hiện ảnh của người khác.
+   - **CHỈ ĐƯỢC DÙNG HIỆU ỨNG, STICKER, TEM SEAL HOẶC HOA VĂN ĐỒ HỌA**: Dùng background canvas giấy mỹ thuật / galaxy / stardust, tem niêm phong sáp (wax seal), sticker SVG, đường viền hoa văn hoàng gia để làm đẹp thiệp.
 
 ---
 
@@ -251,8 +255,8 @@ description: Bộ quy chuẩn kỹ thuật toàn diện về 10 Section tiêu ch
 | Class quy chuẩn bắt buộc | Thẻ HTML khuyến nghị | Thuộc tính Live Sync | Ý nghĩa & Dữ liệu hiển thị |
 | :--- | :---: | :--- | :--- |
 | **10.1 Bảng Ký Tên Điện Tử (Signature Board)** | | | |
-| `mayhen_invitation_signature` | `<div>` | Không | Khung bảng ký tên điện tử. |
-| `mayhen_invitation_signature_bg` | `<div>` | Không | Ảnh nền kỷ niệm dùng để dán chữ ký của khách. |
+| `mayhen_invitation_signature` | `<div>` | Không | Khung bảng ký tên điện tử. Bắt buộc có trong mọi mẫu thiệp. |
+| `mayhen_invitation_signature_bg` | `<div>` | Không | Khung nền canvas nghệ thuật (dùng pure CSS gradient, stardust, sticker tem niêm phong seal, tuyệt đối CẤM chèn ảnh cặp đôi). |
 | `mayhen_invitation_signature_canvas` | `<canvas>` | Không | Bảng vẽ chữ ký trực tiếp bằng ngón tay / chuột. |
 | `mayhen_invitation_signature_open_btn` | `<button>` | Không | Nút "Ký tên của bạn". |
 | `mayhen_invitation_signature_save_btn` | `<button>` | Không | Nút "Lưu chữ ký". |

@@ -26,6 +26,11 @@
 >      * Trong `template.blade.php`, `styles.css` và `schema.json`, toàn bộ đường dẫn ảnh và tài nguyên mặc định đều phải trỏ vào asset nội bộ (thông qua `$resolveAsset(...)` hoặc route `/mau-thiep/{slug}/assets/...`).
 >      * Mục đích: Đảm bảo thiệp tạo ra luôn tải ổn định 100%, không bị phụ thuộc vào server bên ngoài, không lo chết link/chặn CORS, và giúp backend quản lý, kiểm soát và chỉnh sửa dễ dàng.
 >    - **Kế thừa Layout chung & Bridge**: Mọi mẫu thiệp bắt buộc phải `@extends('client.layouts.invitation')` để tự động kích hoạt `editor-bridge.blade.php` và cơ chế handshake 2 chiều `MAYHEN_BRIDGE_READY`.
+>    - **Bắt buộc có Ký tên & RSVP, TUYỆT ĐỐI CẤM chèn ảnh cặp đôi vào 2 phần này (Zero Couple Photos in Signature & RSVP)**:
+>      * Mọi mẫu thiệp bắt buộc phải có đủ Sổ Ký Tên Điện Tử (`Signature`) và Xác Nhận Tham Dự (`RSVP`).
+>      * Tuyệt đối **KHÔNG ĐƯỢC đặt ảnh chụp cặp đôi hay ảnh stock người vào 2 phần này** (kể cả ảnh nền canvas ký tên hay ảnh minh họa phía trên form RSVP).
+>      * Khách hàng tạo thiệp không có ô để tùy biến các ảnh này trong Studio, việc để ảnh ở 2 phần này sẽ khiến thiệp gửi cho khách mời xuất hiện ảnh của người lạ/ảnh mẫu cũ, gây phản cảm và sai lệch thông tin ngày cưới.
+>      * **CHỈ ĐƯỢC DÙNG NGHỆ THUẬT ĐỒ HỌA & HIỆU ỨNG THUẦN**: Sử dụng hiệu ứng CSS (stardust, glow, galaxy gradient, giấy mỹ thuật), sticker SVG, tem niêm phong sáp (wax seal), huy hiệu hoàng gia hoặc hoa văn cổ điển để trang trí làm đẹp thiệp.
 > 9. **NGUYÊN TẮC TỐI ƯU HIỆU NĂNG GỐC TRƯỚC (NATIVE FAST ARCHITECTURE) & KHÔNG LẠM DỤNG CACHE**:
 >    - **Tối ưu gốc trước (Native Fast First)**: Mọi module Backend (PHP, Query Eloquent) và Frontend (JavaScript, DOM, CSS, Assets) **BẮT BUỘC PHẢI ĐƯỢC TỐI ƯU HÓA GỐC ĐỂ CHẠY CỰC NHANH VÀ MƯỢT MÀ** ngay từ mã nguồn gốc khi chưa có cache (chỉ query đúng các cột cần thiết, loại bỏ trường text/json nặng không dùng, không nạp dồn dập nhiều iframe làm nghẽn CPU/network, tận dụng `requestIdleCallback`, phục vụ static assets tức thời không bị thắt nút cổ chai).
 >    - **Không lạm dụng Cache**: Tuyệt đối **KHÔNG** dùng cache để che giấu mã nguồn chạy chậm hay xử lý cẩu thả. Cache chỉ được sử dụng đúng mục đích cốt lõi duy nhất: **tránh truy vấn quá nhiều lần vào Database** khi dữ liệu ít biến động.
@@ -3493,6 +3498,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     - Pest Test: `vendor/bin/pest tests/Feature/GiuaMuonNganViSaoTemplateTest.php` 4/4 passed (35 assertions).
                     - Pint: `vendor/bin/pint --dirty --format agent` passed.
                     - Cache: Đã xóa view & config cache.
+
+              132. **Chuẩn Hóa Nguyên Tắc Cốt Lõi: CẤM Chèn Ảnh Cặp Đôi Trong Phần Ký Tên & RSVP — Chuyển Sang Hiệu Ứng & Sticker/Seal Thuần**:
+                  - **Quy tắc thiết kế mới**:
+                    1. *Phần Ký Tên (`Signature`) và Xác Nhận Tham Dự (`RSVP`) bắt buộc phải có trong 100% mẫu thiệp cưới*: Đây là hai module tương tác linh hồn của nền tảng thiệp cưới Mây Hẹn.
+                    2. *TUYỆT ĐỐI CẤM chèn ảnh cặp đôi hay ảnh stock người vào 2 phần này*:
+                       - Khách hàng tạo thiệp không có ô cấu hình ảnh riêng cho Signature và RSVP trên Studio Tạo Thiệp.
+                       - Nếu để ảnh cặp đôi hay ảnh stock, khách hàng thực tế không thể thay thế được và thiệp gửi cho khách mời sẽ xuất hiện ảnh của người lạ, gây phản cảm và sai lệch nghiêm trọng.
+                    3. *CHỈ ĐƯỢC DÙNG nghệ thuật đồ họa thuần*:
+                       - Hiệu ứng CSS: giấy mỹ thuật, canvas dải ngân hà, stardust particles, ánh sao phát sáng.
+                       - Sticker & Tem niêm phong sáp (Wax Seal): tem vàng kim dập nổi SVG, huy hiệu hoàng gia, khung viền hoa văn góc cổ điển.
+                  - **Cập nhật giao diện mẫu "Giữa Muôn Ngàn Vì Sao"**:
+                    1. *Ký tên chúc phúc (`Signature`)*:
+                       - Loại bỏ hoàn toàn `$kyPhotoUrl` (`40f8fb60afcb59af.webp`) và class `.mayhen_invitation_img_ky`.
+                       - Thiết kế canvas nền `.mayhen_invitation_sig_canvas_decor` với hiệu ứng gradient dải ngân hà huyền bí, bụi sao stardust nhiều tầng, tem dập nổi hoàng gia SVG `GUESTBOOK • MÂY HẸN` và hướng dẫn chạm để ký tên.
+                    2. *Xác nhận tham dự (`RSVP`)*:
+                       - Loại bỏ hoàn toàn `$xnPhotoUrl` (`686ca1bfd6d65f13.webp`) và khối ảnh `.mayhen_invitation_sr_anh_xn`.
+                       - Thay thế bằng huy hiệu tem niêm phong hoàng gia `.mayhen_invitation_rsvp_seal_badge` viền vàng kim `#FCE39E`, biểu tượng phong thư & ngôi sao hộ mệnh cùng nhãn `R.S.V.P • Vui Lòng Phản Hồi`.
+                    3. *Dọn dẹp mã nguồn*:
+                       - Xóa bỏ các quy tắc CSS hardcode ảnh `.mayhen_invitation_img_ky` và `.mayhen_invitation_img_xn` trong `styles.css`.
+                       - Cập nhật 3 bộ quy chuẩn skills: `mayhen-invitation-standards`, `mayhen-invitation-templates`, `mayhen-guest-rsvp`.
+                       - Cập nhật file nguyên tắc toàn cục `AGENTS.md` và `context.gemini.md`.
+                  - **Kiểm thử**:
+                    - Pest Test: 4/4 passed (35 assertions).
+                    - Pint Formatter: passed.
+                    - Cache: view & config cache cleared.
 
 ---
 

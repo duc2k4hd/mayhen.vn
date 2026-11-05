@@ -72,8 +72,6 @@
     $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'b058b38c28460637.webp');
     $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), '307b8d7ea14424b9.webp');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'c3655bd60267c1b2.webp');
-    $kyPhotoUrl = $resolveAsset($extraData['ky_photo_url'] ?? null, '40f8fb60afcb59af.webp');
-    $xnPhotoUrl = $resolveAsset($extraData['xn_photo_url'] ?? null, '686ca1bfd6d65f13.webp');
     $ketPhotoUrl = $resolveAsset($extraData['ket_photo_url'] ?? null, 'f5cbab06395d882b.webp');
     // 3. Lời ngỏ & Chuyện tình yêu (Love Story)
     $storyTitle = $extraData['story_title'] ?? 'Chuyện Tình Yêu';
@@ -945,10 +943,17 @@
             </div>
             <div class="mayhen_invitation_sr_khung_ky mayhen_invitation_signature mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <div class="mayhen_invitation_nen_ky mayhen_invitation_signature_bg">
-                    <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_ky">
-                        <div class="mayhen_invitation_ladi_image">
-                            <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $kyPhotoUrl }}');"></div>
+                    <div class="mayhen_invitation_sig_canvas_decor" aria-hidden="true">
+                        <div class="mayhen_invitation_sig_decor_stars"></div>
+                        <div class="mayhen_invitation_sig_decor_seal">
+                            <svg class="mayhen_invitation_sig_seal_svg" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="50" r="44" stroke="#FCE39E" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+                                <circle cx="50" cy="50" r="38" stroke="#FCE39E" stroke-width="1" opacity="0.6"/>
+                                <path d="M50 24 L53 38 L67 41 L56 50 L59 64 L50 56 L41 64 L44 50 L33 41 L47 38 Z" fill="#FCE39E" opacity="0.75"/>
+                            </svg>
+                            <span class="mayhen_invitation_sig_seal_text">GUESTBOOK • MÂY HẸN</span>
                         </div>
+                        <div class="mayhen_invitation_sig_decor_hint">Chạm nút bên dưới để ký tên chúc phúc</div>
                     </div>
                 </div>
                 <div class="mayhen_invitation_edit_signature">
@@ -1045,11 +1050,16 @@
                     <h2 class="mayhen_invitation_ladi_headline">Xác Nhận Tham Dự</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_sr_hien" data-hieu-ung="phong">
-                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_xn mayhen_invitation_sr_anh_xn">
-                    <div class="mayhen_invitation_ladi_image">
-                        <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $xnPhotoUrl }}');"></div>
-                    </div>
+            <div class="mayhen_invitation_rsvp_badge_wrap mayhen_invitation_sr_hien" data-hieu-ung="phong" aria-hidden="true">
+                <div class="mayhen_invitation_rsvp_seal_badge">
+                    <svg class="mayhen_invitation_rsvp_seal_icon" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="22" stroke="rgba(252, 227, 158, 0.6)" stroke-width="1.2" stroke-dasharray="3 3"/>
+                        <circle cx="24" cy="24" r="18" fill="rgba(252, 227, 158, 0.08)" stroke="#FCE39E" stroke-width="1"/>
+                        <path d="M14 17h20a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V19a2 2 0 0 1 2-2z" stroke="#FCE39E" stroke-width="1.5" fill="none"/>
+                        <polyline points="14 19 24 26 34 19" stroke="#FCE39E" stroke-width="1.5"/>
+                        <path d="M24 11l1.5 3.5 3.5 1-2.5 2.5.5 3.5-3-1.8-3 1.8.5-3.5-2.5-2.5 3.5-1z" fill="#FCE39E" opacity="0.9"/>
+                    </svg>
+                    <span class="mayhen_invitation_rsvp_seal_tag">R.S.V.P • Vui Lòng Phản Hồi</span>
                 </div>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_rsvp_desc mayhen_invitation_sr_hien" data-hieu-ung="len">

@@ -220,27 +220,6 @@ body.mayhen_invitation_sr_khoa .mayhen_invitation_ladi_wraper.mayhen_invitation_
     }
 }
 
-.mayhen_invitation_img_ky .mayhen_invitation_ladi_image_background {
-    background-image: url('40f8fb60afcb59af.webp');
-    background-size: 100% !important;
-    background-position: calc(50% + 0px) calc(50% + 0px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-
-.mayhen_invitation_img_xn .mayhen_invitation_ladi_image_background {
-    background-image: url('686ca1bfd6d65f13.webp');
-    background-size: 100% !important;
-    background-position: calc(50% - 7px) calc(50% + 81px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-@media (min-width: 768px) {
-    .mayhen_invitation_img_xn .mayhen_invitation_ladi_image_background {
-        background-size: 100% !important;
-        background-position: calc(50% - 4px) calc(50% + 93px) !important;
-    }
-}
 
 .mayhen_invitation_img_ket .mayhen_invitation_ladi_image_background {
     background-image: url('f5cbab06395d882b.webp');
@@ -2104,19 +2083,73 @@ body.mayhen_invitation_sr_khoa .mayhen_invitation_ladi_wraper.mayhen_invitation_
     height: 420px;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 0 0 1px var(--vien-dam), 0 20px 50px rgba(0, 0, 0, 0.55);
+    background: radial-gradient(circle at 50% 25%, rgba(22, 32, 64, 0.96) 0%, rgba(10, 15, 32, 0.98) 60%, rgba(5, 8, 20, 1) 100%);
+    box-shadow: 0 0 0 1px rgba(252, 227, 158, 0.22), 0 20px 50px rgba(0, 0, 0, 0.65);
 }
 
-.mayhen_invitation_sr_khung_ky .mayhen_invitation_nen_ky .mayhen_invitation_ClientEditImage {
+.mayhen_invitation_sig_canvas_decor {
     position: absolute;
     inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mayhen_invitation_sig_decor_stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(1px 1px at 25px 35px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 120px 85px, #FCE39E, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 260px 160px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 320px 50px, #FCE39E, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 45px 240px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 170px 300px, #FCE39E, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 290px 360px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 340px 420px;
+    opacity: 0.65;
+}
+
+.mayhen_invitation_sig_decor_seal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.42;
+    margin-top: -24px;
+}
+
+.mayhen_invitation_sig_seal_svg {
+    width: 64px;
+    height: 64px;
+    filter: drop-shadow(0 0 8px rgba(252, 227, 158, 0.4));
+}
+
+.mayhen_invitation_sig_seal_text {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: #FCE39E;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_sig_decor_hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.32);
+    font-style: italic;
+    margin-top: 14px;
+    letter-spacing: 0.04em;
 }
 
 .mayhen_invitation_sr_khung_ky .mayhen_invitation_nen_ky::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(4, 4, 4, 0.45), rgba(4, 4, 4, 0.65) 50%, rgba(4, 4, 4, 0.82));
+    background: radial-gradient(circle at center, transparent 40%, rgba(4, 4, 10, 0.65) 100%);
     pointer-events: none;
 }
 
@@ -2282,12 +2315,38 @@ body.mayhen_invitation_sr_khoa .mayhen_invitation_ladi_wraper.mayhen_invitation_
 }
 
 /* ================= 11 & 12. XÁC NHẬN (RSVP) & LỜI CHÚC ================= */
-.mayhen_invitation_sr_anh_xn {
-    aspect-ratio: 4 / 3;
-    max-width: 320px;
-    margin: 0 auto 24px;
-    border-radius: 12px;
-    box-shadow: 0 0 0 1px var(--vien-dam), 0 0 30px rgba(255, 255, 255, 0.2);
+.mayhen_invitation_rsvp_badge_wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.mayhen_invitation_rsvp_seal_badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 18px 8px 12px;
+    background: radial-gradient(circle at 30% 30%, rgba(28, 38, 72, 0.88), rgba(12, 17, 36, 0.96));
+    border: 1px solid rgba(252, 227, 158, 0.45);
+    border-radius: 999px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(252, 227, 158, 0.18);
+}
+
+.mayhen_invitation_rsvp_seal_icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(252, 227, 158, 0.5));
+}
+
+.mayhen_invitation_rsvp_seal_tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: #FCE39E;
+    text-transform: uppercase;
+    font-family: var(--f-than, sans-serif);
 }
 
 .mayhen_invitation_sr_khung_form {

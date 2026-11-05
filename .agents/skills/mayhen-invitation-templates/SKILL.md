@@ -55,7 +55,7 @@ Mọi mẫu thiệp bắt buộc tuân thủ đúng khung cấu trúc 10 Section
 
 ---
 
-## ⚡ 4. 7 QUY TẮC BẤT DI BẤT DỊCH KHI TẠO & SỬA MẪU THIỆP
+## ⚡ 4. 8 QUY TẮC BẤT DI BẤT DỊCH KHI TẠO & SỬA MẪU THIỆP
 
 1. **Khóa Schema chuẩn (`schema.json`)**: Đủ 10 sections, 100% canonical keys, mảng `gallery` có `"default": [10 ảnh nội bộ có thật]`.
 2. **Hợp đồng Live Sync (`data-sync-target`)**: Mọi phần tử hiển thị dữ liệu đều phải gắn `data-sync-target="{tên_trường}"`.
@@ -71,3 +71,7 @@ Mọi mẫu thiệp bắt buộc tuân thủ đúng khung cấu trúc 10 Section
    - Lightbox / Modal: `z-index: 100000`.
    - Nút nhạc: `z-index: 1001` (dưới màn mở đầu khi chưa mở, trên nội dung khi đã mở).
 7. **Kế thừa Layout chung**: Mọi mẫu thiệp bắt buộc `@extends('client.layouts.invitation')` để tích hợp tự động cầu nối `editor-bridge.blade.php`.
+8. **Bắt buộc có Ký tên & RSVP, CẤM tuyệt đối chèn ảnh cặp đôi vào 2 phần này**:
+   - Mọi mẫu thiệp đều phải có đủ Sổ ký tên chúc phúc (`Signature`) và Xác nhận tham dự (`RSVP`).
+   - Tuyệt đối **KHÔNG ĐƯỢC đặt ảnh chụp cặp đôi hay ảnh stock người vào 2 phần này** (kể cả ảnh nền canvas ký tên hay ảnh minh họa trên form RSVP).
+   - **Chỉ được phép dùng hiệu ứng thuần** (CSS gradient, stardust, giấy mỹ thuật), sticker SVG, tem niêm phong sáp (wax seal) hoặc hoa văn đồ họa hoàng gia để trang trí. Điều này ngăn chặn việc khách hàng không sửa được ảnh và thiệp mời của khách xuất hiện ảnh của người lạ.
