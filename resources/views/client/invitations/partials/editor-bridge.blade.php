@@ -411,19 +411,24 @@
             }
         }
 
-        // Fallback an toàn sau 40ms nếu vị trí không đổi (do scrollIntoView bị can thiệp)
+        // Dự phòng đa tầng cho mọi phiên bản trình duyệt (đặc biệt khi scrollIntoView bị can thiệp trong iframe)
         setTimeout(function() {
-            var newScroll = window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || 0;
             var currentRect = el.getBoundingClientRect();
-            var inView = currentRect.top >= 0 && currentRect.bottom <= (window.innerHeight || 667) + 80;
+            var inView = currentRect.top >= -50 && currentRect.top <= (window.innerHeight || 667) * 0.85;
             if (!inView) {
                 try {
                     window.scrollTo({ top: targetY, behavior: 'smooth' });
                 } catch (e) {
                     window.scrollTo(0, targetY);
                 }
+                if (document.documentElement) {
+                    try { document.documentElement.scrollTo({ top: targetY, behavior: 'smooth' }); } catch(e) { document.documentElement.scrollTop = targetY; }
+                }
+                if (document.body) {
+                    try { document.body.scrollTo({ top: targetY, behavior: 'smooth' }); } catch(e) { document.body.scrollTop = targetY; }
+                }
             }
-        }, 60);
+        }, 80);
     };
 
     // Helper 3: Tìm kiếm section mục tiêu theo ID hoặc Step (1..10) chuẩn 10 Section của SKILL.md
@@ -691,6 +696,12 @@
             } catch (e) {
                 window.scrollTo(0, 0);
             }
+            if (document.documentElement) {
+                try { document.documentElement.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { document.documentElement.scrollTop = 0; }
+            }
+            if (document.body) {
+                try { document.body.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { document.body.scrollTop = 0; }
+            }
             return;
         }
 
@@ -949,7 +960,6 @@
                                 }
                             });
                         }
-                    }
                 } catch (e) {}
             }
 
