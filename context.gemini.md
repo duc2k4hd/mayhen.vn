@@ -3173,6 +3173,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
 
+            118. **Gỡ Bỏ Hoàn Toàn Mẫu Thiệp "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi) Khỏi Toàn Bộ Hệ Thống**:
+                - **Yêu cầu & Phạm vi thực hiện**:
+                  - Người dùng yêu cầu xóa bỏ toàn bộ mã nguồn, tài nguyên và cấu hình liên quan đến mẫu thiệp `luu-but-ngay-chung-doi`.
+                  - Sau khi nhận được xác nhận xóa dứt khoát từ người dùng qua hệ thống tương tác, tiến hành loại bỏ toàn diện.
+                - **Các công việc đã thực thi**:
+                  1. *Xóa thư mục View & Assets*: Xóa vĩnh viễn toàn bộ thư mục `resources/views/client/invitations/luu-but-ngay-chung-doi/` (gồm `template.blade.php`, `styles.css`, `script.js`, `schema.json` và toàn bộ thư mục con `assets/` chứa ảnh, fonts, preview mockup).
+                  2. *Cập nhật Seeder Database*: Loại bỏ khối cấu hình mẫu thiệp `luu-but-ngay-chung-doi` khỏi `database/seeders/InvitationTemplateSeeder.php`.
+                  3. *Làm sạch Cơ sở dữ liệu*: Thực thi xóa bản ghi của `luu-but-ngay-chung-doi` trong bảng `invitation_templates` trên Database.
+                  4. *Dọn dẹp Cache*: Chạy `php artisan view:clear; php artisan route:clear; php artisan config:clear` để làm sạch toàn bộ cache hệ thống.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
