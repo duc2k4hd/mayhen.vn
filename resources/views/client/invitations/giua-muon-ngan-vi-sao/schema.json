@@ -293,7 +293,7 @@
           "required": false,
           "default": "Tầng 3, Sảnh Star Palace - 88 Phố Vọng, Hai Bà Trưng, Hà Nội",
           "placeholder": "Địa chỉ chi tiết sảnh tiệc hoặc nhà hàng tiệc cưới...",
-          "max: 300
+          "max": 300
         },
         {
           "key": "wedding.extra_data.ceremony_time",

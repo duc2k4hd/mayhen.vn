@@ -3447,6 +3447,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     - Pint: Passed agent formatting.
                     - Cache: `php artisan optimize:clear` chạy thành công.
 
+              130. **Khắc Phục Triệt Để Lỗi Cuộn Studio Editor & Chuẩn Hóa Toàn Diện Mẫu "Giữa Muôn Ngàn Vì Sao"**:
+                  - **Nguyên nhân cốt lõi được phát hiện & triệt tiêu**:
+                    1. *Lỗi cú pháp JSON (`schema.json`)*: Dòng 296 trong `giua-muon-ngan-vi-sao/schema.json` bị thiếu dấu ngoặc kép và dấu phẩy `"max: 300` làm `json_decode` bị lỗi cú pháp `Control character error`, khiến schema trả về null và form bị tê liệt. Đã sửa chuẩn thành `"max": 300,`.
+                    2. *Lỗi Temporal Dead Zone (TDZ) trong `editor.js`*: Trước đây `goToStep(1)` được gọi ở đầu script trong khi `sendScrollToSection` được khai báo bằng `const` ở phía dưới. Trình duyệt đã ném lỗi `ReferenceError: Cannot access 'sendScrollToSection' before initialization`, làm toàn bộ quá trình nạp JS của `editor.js` bị dừng đột ngột, khiến các sự kiện `click` tab, `focusin` ô input, chọn ảnh và đổi ngày không được đăng ký.
+                    3. *Xung đột Smooth Scroll Cancellation*: Việc gọi đồng thời nhiều lệnh cuộn làm trình duyệt W3C tự động hủy animation. Đã tối ưu hóa hàm `smoothScrollToTarget` ưu tiên `el.scrollIntoView({ behavior: 'smooth', block: 'center' })` kết hợp fallback an toàn.
+                    4. *Lỗi Direct Call Iframe Bridge*: Đưa toàn bộ các hàm helper (`findVisibleTarget`, `smoothScrollToTarget`, `findSectionTarget`, `findFieldTarget`, `executeScrollToSection`, `executeScrollToTarget`) ra root scope của IIFE trong `editor-bridge.blade.php` và gắn ngay tức khắc lên `window.__mayhenScrollToSection`, `window.__mayhenScrollToTarget`, `window.__mayhenSmoothScroll`.
+                  - **Giải pháp triển khai kỹ thuật**:
+                    1. Đưa toàn bộ bộ điều phối Iframe (`getActiveIframes`, `dispatchToIframes`, `sendSyncMessage`, `sendScrollToSection`, `sendScrollToTarget`) lên trước bộ điều hướng Stepper trong `editor.js`.
+                    2. Bổ sung tham số `triggerScroll = true` cho `goToStep(step, triggerScroll)` để khởi tạo ban đầu an toàn `goToStep(1, false)` mà không gây lỗi hoisting.
+                    3. Bổ sung tham số ngữ cảnh `step` vào hàm tìm kiếm mục tiêu `findFieldTarget(rawKey, step)`: Khi ở Step 4 (Lịch Cưới & Đếm Ngược) và chọn ngày cưới `wedding_date`, tự động cuộn đến tờ lịch tháng `.mayhen_invitation_calendar` thay vì cuộn ngược lên bìa thiệp Section 1.
+                    4. Tối ưu hóa sự kiện đổi ngày `change` và click nút chọn ảnh để cuộn tức thì đến đối tượng preview và phát sáng viền vàng kim Quiet Luxury.
+                    5. Chuẩn hóa thuộc tính `data-mayhen-section` trên `template.blade.php` của mẫu "Giữa Muôn Ngàn Vì Sao": Section 1 (`data-mayhen-section="hero,couple"`), Section 3 (`data-mayhen-section="parents,groom_family,bride_family"`), Section 8 (`data-mayhen-section="album,gallery"`).
+                  - **Kiểm thử & Định dạng**:
+                    - Pest Test: `vendor/bin/pest tests/Feature/GiuaMuonNganViSaoTemplateTest.php` passed 100% (4/4 tests, 35 assertions).
+                    - Cú pháp JS: `node -c public/assets/client/js/pages/editor.js` passed không có lỗi.
+                    - Pint Formatter: `vendor/bin/pint --dirty --format agent` passed.
+                    - Cache: `php artisan view:clear; php artisan config:clear` dọn dẹp sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

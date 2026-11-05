@@ -240,7 +240,7 @@
     <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr">
 
         <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="couple" data-section-name="hero">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="hero,couple" data-section-name="hero">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_kicker mayhen_invitation_hero_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_sr_orn"></i>
@@ -334,7 +334,7 @@
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="parents">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="parents,groom_family,bride_family">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_family_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -804,7 +804,7 @@
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_gallery" data-mayhen-section="album">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_gallery" data-mayhen-section="album,gallery">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_gallery_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">

@@ -396,108 +396,21 @@ const initEditor = () => {
     }
 
     // ----------------------------------------------------
-    // 1. Dynamic Stepper Navigation
+    // 1. Realtime Iframe Communication Engine (Dual Channel: Direct Call + PostMessage)
     // ----------------------------------------------------
     let currentStep = 1;
-    const stepTabs = $$('[data-mayhen-step]');
-    const stepPanels = $$('[data-step-panel]');
-    const totalSteps = stepPanels.length;
-    const btnPrev = $('#mayhen_btn_prev');
-    const btnNext = $('#mayhen_btn_next');
+    let lastScrolledKey = null;
+    let scrollDebounceTimer = null;
 
-    const goToStep = (step) => {
-        if (step < 1 || step > totalSteps) return;
-        currentStep = step;
-
-        // Cập nhật tab navigation pills
-        stepTabs.forEach(tab => {
-            const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
-            if (s === currentStep) {
-                tab.classList.add('mayhen_editor_stepper_tab_active');
-                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            } else {
-                tab.classList.remove('mayhen_editor_stepper_tab_active');
-            }
-        });
-
-        // Cập nhật step panels
-        stepPanels.forEach(panel => {
-            const p = parseInt(panel.getAttribute('data-step-panel'), 10);
-            if (p === currentStep) {
-                panel.classList.add('mayhen_editor_step_active');
-            } else {
-                panel.classList.remove('mayhen_editor_step_active');
-            }
-        });
-
-        // Cập nhật trạng thái nút Quay lại
-        if (btnPrev) {
-            btnPrev.disabled = currentStep === 1;
-        }
-
-        // Cập nhật chỉ số bước hiện tại
-        const stepCurrentEl = document.querySelector('.mayhen_step_current');
-        if (stepCurrentEl) {
-            stepCurrentEl.textContent = `Bước ${currentStep}`;
-        }
-
-        // Tự động cuộn Iframe preview đến đúng Section tương ứng (Cơ chế KÉP: Gọi Trực Tiếp + PostMessage)
-        const activeTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
-        const sectionId = activeTab ? activeTab.getAttribute('data-section-id') : null;
-        if (sectionId) {
-            sendScrollToSection(sectionId, currentStep);
-        }
-
-        // Cuộn mượt form về đầu khi chuyển bước
-        const formEl = $('#mayhen_editor_form');
-        if (formEl) {
-            formEl.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        const drawerPanel = $('#mayhen_drawer_panel');
-        if (drawerPanel) {
-            drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        if (btnNext) {
-            if (currentStep === totalSteps) {
-                btnNext.innerHTML = `<span>Xuất Bản Thiệp</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
-            } else {
-                btnNext.innerHTML = `<span>Tiếp Tục</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
-            }
-        }
+    const getActiveIframes = () => {
+        return [
+            document.getElementById('mayhen_editor_preview_iframe'),
+            document.getElementById('mayhen_editor_mobile_preview_iframe')
+        ].filter(Boolean);
     };
 
-    stepTabs.forEach(tab => {
-        on(tab, 'click', () => {
-            const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
-            goToStep(s);
-        });
-    });
-
-    if (btnPrev) {
-        on(btnPrev, 'click', () => {
-            goToStep(currentStep - 1);
-        });
-    }
-
-    if (btnNext) {
-        on(btnNext, 'click', () => {
-            if (currentStep < totalSteps) {
-                goToStep(currentStep + 1);
-            } else {
-                submitFormWithPendingUploads();
-            }
-        });
-    }
-
-    // Khởi tạo trạng thái ban đầu cho Stepper
-    goToStep(1);
-
-    // ----------------------------------------------------
-    // 2. Realtime Iframe Communication Engine (Dual Channel: Direct Call + PostMessage)
-    // ----------------------------------------------------
     const dispatchToIframes = (directFnName, directArgs, postPayload) => {
-        [previewIframe, mobileIframe].forEach(iframe => {
+        getActiveIframes().forEach(iframe => {
             if (!iframe || !iframe.contentWindow) return;
 
             // Kênh 1: Gọi hàm trực tiếp trên cùng Origin (Tức thời 0ms, không trễ event loop)
@@ -539,16 +452,113 @@ const initEditor = () => {
     };
 
     // Smart Scroll-on-Action: Gửi thông điệp cuộn tới phần tử đích và Highlight vàng kim trong Preview
-    let lastScrolledKey = null;
-    let scrollDebounceTimer = null;
     const sendScrollToTarget = (key, action = 'focus') => {
         if (!key) return;
         dispatchToIframes(
             '__mayhenScrollToTarget',
-            [key, action],
-            { type: 'MAYHEN_SCROLL_TO_TARGET', target: key, action }
+            [key, action, currentStep],
+            { type: 'MAYHEN_SCROLL_TO_TARGET', target: key, action, step: currentStep }
         );
     };
+
+    // ----------------------------------------------------
+    // 2. Dynamic Stepper Navigation
+    // ----------------------------------------------------
+    const stepTabs = $$('[data-mayhen-step]');
+    const stepPanels = $$('[data-step-panel]');
+    const totalSteps = stepPanels.length;
+    const btnPrev = $('#mayhen_btn_prev');
+    const btnNext = $('#mayhen_btn_next');
+
+    const goToStep = (step, triggerScroll = true) => {
+        if (step < 1 || step > totalSteps) return;
+        currentStep = step;
+
+        // Cập nhật tab navigation pills
+        stepTabs.forEach(tab => {
+            const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
+            if (s === currentStep) {
+                tab.classList.add('mayhen_editor_stepper_tab_active');
+                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            } else {
+                tab.classList.remove('mayhen_editor_stepper_tab_active');
+            }
+        });
+
+        // Cập nhật step panels
+        stepPanels.forEach(panel => {
+            const p = parseInt(panel.getAttribute('data-step-panel'), 10);
+            if (p === currentStep) {
+                panel.classList.add('mayhen_editor_step_active');
+            } else {
+                panel.classList.remove('mayhen_editor_step_active');
+            }
+        });
+
+        // Cập nhật trạng thái nút Quay lại
+        if (btnPrev) {
+            btnPrev.disabled = currentStep === 1;
+        }
+
+        // Cập nhật chỉ số bước hiện tại
+        const stepCurrentEl = document.querySelector('.mayhen_step_current');
+        if (stepCurrentEl) {
+            stepCurrentEl.textContent = `Bước ${currentStep}`;
+        }
+
+        // Tự động cuộn Iframe preview đến đúng Section tương ứng (Cơ chế KÉP: Gọi Trực Tiếp + PostMessage)
+        if (triggerScroll) {
+            const activeTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
+            const sectionId = activeTab ? activeTab.getAttribute('data-section-id') : null;
+            if (sectionId) {
+                sendScrollToSection(sectionId, currentStep);
+            }
+        }
+
+        // Cuộn mượt form về đầu khi chuyển bước
+        const formEl = $('#mayhen_editor_form');
+        if (formEl) {
+            formEl.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        const drawerPanel = $('#mayhen_drawer_panel');
+        if (drawerPanel) {
+            drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        if (btnNext) {
+            if (currentStep === totalSteps) {
+                btnNext.innerHTML = `<span>Xuất Bản Thiệp</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
+            } else {
+                btnNext.innerHTML = `<span>Tiếp Tục</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>`;
+            }
+        }
+    };
+
+    stepTabs.forEach(tab => {
+        on(tab, 'click', () => {
+            const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
+            goToStep(s, true);
+        });
+    });
+
+    if (btnPrev) {
+        on(btnPrev, 'click', () => {
+            goToStep(currentStep - 1, true);
+        });
+    }
+
+    if (btnNext) {
+        on(btnNext, 'click', () => {
+            if (currentStep < totalSteps) {
+                goToStep(currentStep + 1, true);
+            } else {
+                submitFormWithPendingUploads();
+            }
+        });
+    }
+
+    // Khởi tạo trạng thái ban đầu cho Stepper (không ép scroll iframe trước khi handshake)
+    goToStep(1, false);
 
     const updateDockNames = () => {
         if (!dockNames) return;
@@ -649,12 +659,16 @@ const initEditor = () => {
                 updateAutoLunarFromDateInput(target);
             }
 
-            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu, tự động cuộn sau khi gõ (180ms)
+            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu, tự động cuộn
             lastScrolledKey = key;
-            clearTimeout(scrollDebounceTimer);
-            scrollDebounceTimer = setTimeout(() => {
-                sendScrollToTarget(key, 'type');
-            }, 180);
+            if (e.type === 'change' || (target && target.type === 'date')) {
+                sendScrollToTarget(key, 'change');
+            } else {
+                clearTimeout(scrollDebounceTimer);
+                scrollDebounceTimer = setTimeout(() => {
+                    sendScrollToTarget(key, 'type');
+                }, 180);
+            }
 
             // Đồng bộ sang Iframe
             sendSyncMessage(key, val);

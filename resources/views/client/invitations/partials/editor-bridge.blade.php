@@ -337,6 +337,411 @@
         return 'Nhằm ngày ' + dStr + ' tháng ' + mStr + leapText + ' năm ' + canYear + ' ' + chiYear;
     };
 
+    // Helper 1: Tìm phần tử hiển thị thực tế (bỏ qua triệt để màn mở đầu / cánh cửa 3D bị ẩn)
+    var findVisibleTarget = function(selector) {
+        if (!selector) return null;
+        try {
+            var list = document.querySelectorAll(selector);
+            for (var i = 0; i < list.length; i++) {
+                var el = list[i];
+                if (el.closest('.mayhen_invitation_opening, .mayhen_invitation_envelope, #mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], #POPUP8, [class*="_sr_cua"]')) {
+                    continue;
+                }
+                var rect = el.getBoundingClientRect();
+                var style = window.getComputedStyle(el);
+                if (style.display !== 'none' && style.visibility !== 'hidden' && (rect.width > 0 || rect.height > 0 || el.getClientRects().length > 0)) {
+                    return el;
+                }
+            }
+            for (var j = 0; j < list.length; j++) {
+                if (!list[j].closest('.mayhen_invitation_opening, .mayhen_invitation_sr_cua, [class*="opening"], [class*="door_stage"]')) {
+                    return list[j];
+                }
+            }
+            return list[0] || null;
+        } catch (e) {
+            return document.querySelector(selector);
+        }
+    };
+
+    // Helper 2: Cuộn mượt mà độc lập, tính toán pixel chính xác 100% trong Iframe
+    var smoothScrollToTarget = function(el, block) {
+        if (!el) return;
+
+        // Phá bỏ mọi lớp khóa cuộn trên html và body
+        document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll', 'mayhen_invitation_sr_khoa');
+        if (document.body) {
+            document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll', 'mayhen_invitation_sr_khoa');
+            document.body.style.setProperty('overflow', 'visible', 'important');
+            document.body.style.setProperty('overflow-y', 'visible', 'important');
+        }
+
+        // Giải phóng triệt để overflow: hidden của bất kỳ container cha nào trên cây DOM
+        var p = el.parentElement;
+        while (p && p !== document.body && p !== document.documentElement) {
+            var cs = window.getComputedStyle(p);
+            if (cs.overflow === 'hidden' || cs.overflowY === 'hidden') {
+                p.style.setProperty('overflow', 'visible', 'important');
+                p.style.setProperty('overflow-y', 'visible', 'important');
+            }
+            p = p.parentElement;
+        }
+
+        var rect = el.getBoundingClientRect();
+        var currentScroll = window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || (document.body ? document.body.scrollTop : 0) || 0;
+        var targetY = currentScroll + rect.top;
+
+        if (block === 'center') {
+            var winH = window.innerHeight || (document.documentElement ? document.documentElement.clientHeight : 667);
+            targetY = targetY - (winH / 2) + (rect.height / 2);
+        } else {
+            targetY = Math.max(0, targetY - 24);
+        }
+
+        if (targetY < 0) targetY = 0;
+
+        // Ưu tiên scrollIntoView tự nhiên của trình duyệt
+        try {
+            el.scrollIntoView({ behavior: 'smooth', block: block || 'center', inline: 'nearest' });
+        } catch (e) {
+            try {
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+            } catch (err) {
+                window.scrollTo(0, targetY);
+            }
+        }
+
+        // Fallback an toàn sau 40ms nếu vị trí không đổi (do scrollIntoView bị can thiệp)
+        setTimeout(function() {
+            var newScroll = window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || 0;
+            var currentRect = el.getBoundingClientRect();
+            var inView = currentRect.top >= 0 && currentRect.bottom <= (window.innerHeight || 667) + 80;
+            if (!inView) {
+                try {
+                    window.scrollTo({ top: targetY, behavior: 'smooth' });
+                } catch (e) {
+                    window.scrollTo(0, targetY);
+                }
+            }
+        }, 60);
+    };
+
+    // Helper 3: Tìm kiếm section mục tiêu theo ID hoặc Step (1..10) chuẩn 10 Section của SKILL.md
+    var findSectionTarget = function(secId, step) {
+        secId = (secId || '').toString().toLowerCase().trim();
+        step = parseInt(step, 10) || 0;
+
+        // SECTION 1: TRANG BÌA CHÍNH (HERO COVER)
+        if (secId === 'hero' || (secId === 'couple' && step <= 1) || step === 1) {
+            return findVisibleTarget('.mayhen_invitation_hero, [data-mayhen-section*="hero"], [data-mayhen-section="couple"]');
+        }
+
+        var sectionMap = {
+            // Section 1: Hero Cover
+            'hero': ['.mayhen_invitation_hero', '[data-mayhen-section*="hero"]', '[data-mayhen-section="couple"]'],
+            // Section 2: Love Story & Quote
+            'story': ['.mayhen_invitation_story', '.mayhen_invitation_quote', '[data-mayhen-section*="story"]'],
+            // Section 3: Family & Couple
+            'parents': ['.mayhen_invitation_parents', '.mayhen_invitation_couple', '[data-mayhen-section*="parents"]', '[data-mayhen-section*="family"]'],
+            'groom_family': ['.mayhen_invitation_family_groom_title', '[data-mayhen-section="groom_family"]', '.mayhen_invitation_parents'],
+            'bride_family': ['.mayhen_invitation_family_bride_title', '[data-mayhen-section="bride_family"]', '.mayhen_invitation_parents'],
+            'couple': ['.mayhen_invitation_couple', '.mayhen_invitation_parents', '.mayhen_invitation_hero'],
+            // Section 4: Countdown & Calendar
+            'countdown_calendar': ['.mayhen_invitation_countdown_calendar', '.mayhen_invitation_countdown', '.mayhen_invitation_calendar', '[data-mayhen-section*="countdown_calendar"]'],
+            // Section 5: Events & Maps
+            'events': ['.mayhen_invitation_events', '.mayhen_invitation_maps', '[data-mayhen-section*="events"]', '[data-mayhen-section*="wedding_event"]'],
+            // Section 6: Wedding Timeline
+            'timeline': ['.mayhen_invitation_timeline', '[data-mayhen-section*="timeline"]'],
+            // Section 7: Dresscode
+            'dresscode': ['.mayhen_invitation_dresscode', '[data-mayhen-section*="dresscode"]'],
+            // Section 8: Album 10 Photos
+            'album': ['.mayhen_invitation_gallery', '[data-mayhen-section*="album"]', '[data-mayhen-section*="gallery"]'],
+            'gallery': ['.mayhen_invitation_gallery', '[data-mayhen-section*="gallery"]', '[data-mayhen-section*="album"]'],
+            // Section 9: Wedding Gift & VietQR
+            'gift': ['.mayhen_invitation_gift', '[data-mayhen-section*="gift"]'],
+            // Section 10: Interactive, RSVP, Wishes & Ending
+            'ending': ['.mayhen_invitation_interactive_ending', '.mayhen_invitation_ending', '.mayhen_invitation_rsvp', '.mayhen_invitation_wishes', '[data-mayhen-section*="ending"]', '[data-mayhen-section*="rsvp"]'],
+            'rsvp': ['.mayhen_invitation_rsvp', '.mayhen_invitation_interactive_ending'],
+            'wishes': ['.mayhen_invitation_wishes', '.mayhen_invitation_interactive_ending']
+        };
+
+        // 1. Tìm theo ánh xạ map
+        if (sectionMap[secId]) {
+            for (var i = 0; i < sectionMap[secId].length; i++) {
+                var el = findVisibleTarget(sectionMap[secId][i]);
+                if (el) return el;
+            }
+        }
+
+        // 2. Tìm theo data-mayhen-section trực tiếp
+        if (secId) {
+            var directEl = findVisibleTarget('[data-mayhen-section="' + secId + '"], [data-mayhen-section*="' + secId + '"]');
+            if (directEl) return directEl;
+        }
+
+        // 3. Fallback theo số thứ tự step (1..10)
+        var standardStepSelectors = [
+            '.mayhen_invitation_hero, [data-mayhen-section*="hero"], [data-mayhen-section="couple"]',
+            '.mayhen_invitation_story, [data-mayhen-section*="story"]',
+            '.mayhen_invitation_parents, [data-mayhen-section*="parents"], [data-mayhen-section*="family"]',
+            '.mayhen_invitation_countdown_calendar, .mayhen_invitation_countdown, .mayhen_invitation_calendar, [data-mayhen-section*="countdown_calendar"]',
+            '.mayhen_invitation_events, [data-mayhen-section*="events"], [data-mayhen-section*="wedding_event"]',
+            '.mayhen_invitation_timeline, [data-mayhen-section*="timeline"]',
+            '.mayhen_invitation_dresscode, [data-mayhen-section*="dresscode"]',
+            '.mayhen_invitation_gallery, [data-mayhen-section*="album"], [data-mayhen-section*="gallery"]',
+            '.mayhen_invitation_gift, [data-mayhen-section*="gift"]',
+            '.mayhen_invitation_interactive_ending, .mayhen_invitation_ending, .mayhen_invitation_rsvp, .mayhen_invitation_wishes, [data-mayhen-section*="ending"]'
+        ];
+
+        if (step >= 1 && step <= standardStepSelectors.length) {
+            var stepEl = findVisibleTarget(standardStepSelectors[step - 1]);
+            if (stepEl) return stepEl;
+        }
+
+        return null;
+    };
+
+    // Helper 4: Tìm kiếm phần tử theo Key dữ liệu (Chuẩn 100% Class BEM & data-sync-target của SKILL.md)
+    var findFieldTarget = function(rawKey, step) {
+        if (!rawKey) return null;
+        var cleanKey = (rawKey || '').toString().trim().replace(/^wedding\./, '').replace(/^extra_data\./, '');
+        step = parseInt(step, 10) || 0;
+        var targetEl = null;
+
+        // SECTION 1: TRANG BÌA CHÍNH (HERO COVER)
+        if (cleanKey === 'ceremony_type') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_ceremony_type, [data-sync-target="ceremony_type"]');
+        } else if (cleanKey === 'groom_name') {
+            targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_groom, .mayhen_invitation_groom_name, [data-sync-target="groom_name"]');
+        } else if (cleanKey === 'bride_name') {
+            targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_bride, .mayhen_invitation_bride_name, [data-sync-target="bride_name"]');
+        } else if (cleanKey === 'hero_photo_url' || cleanKey === 'cover_photo_url') {
+            targetEl = findVisibleTarget('.mayhen_invitation_hero_media, .mayhen_invitation_hero .mayhen_invitation_ladi_image, [data-sync-target="hero_photo_url"], [data-sync-target="cover_photo_url"]');
+        } else if (cleanKey === 'wedding_date' || cleanKey === 'wedding_date_digits') {
+            if (step === 4) {
+                targetEl = findVisibleTarget('.mayhen_invitation_calendar_selected_day, .mayhen_invitation_calendar, .mayhen_invitation_countdown_calendar');
+            } else if (step === 5) {
+                targetEl = findVisibleTarget('.mayhen_invitation_party_date, .mayhen_invitation_event_card_party');
+            }
+            if (!targetEl) {
+                targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_wedding_day, [data-sync-target="wedding_date_digits"], [data-sync-target="wedding_date"], .mayhen_invitation_calendar_selected_day');
+            }
+        } else if (cleanKey === 'wedding_lunar_date') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ladi_paragraph_lunar_calendar, [data-sync-target="wedding_lunar_date"]');
+        } else if (cleanKey === 'slogan') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ladi_paragraph_slogan');
+
+        // SECTION 2: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE)
+        } else if (cleanKey === 'story_title') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_story, [data-sync-target="story_title"]');
+        } else if (cleanKey === 'save_date_photo_url') {
+            targetEl = findVisibleTarget('.mayhen_invitation_story_img, [data-sync-target="save_date_photo_url"]');
+        } else if (cleanKey === 'story_subtitle') {
+            targetEl = findVisibleTarget('.mayhen_invitation_story_subtitle, [data-sync-target="story_subtitle"]');
+        } else if (cleanKey === 'couple_quote' || cleanKey === 'quote') {
+            targetEl = findVisibleTarget('.mayhen_invitation_quote_text, [data-sync-target="couple_quote"]');
+        } else if (cleanKey === 'story_content') {
+            targetEl = findVisibleTarget('.mayhen_invitation_story_content, [data-sync-target="story_content"]');
+
+        // SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE)
+        } else if (cleanKey === 'groom_father') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_groom_father, [data-sync-target="groom_father"]');
+        } else if (cleanKey === 'groom_mother') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_groom_mother, [data-sync-target="groom_mother"]');
+        } else if (cleanKey === 'groom_parents_address') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_groom_address, [data-sync-target="groom_parents_address"]');
+        } else if (cleanKey === 'bride_father') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_bride_father, [data-sync-target="bride_father"]');
+        } else if (cleanKey === 'bride_mother') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_bride_mother, [data-sync-target="bride_mother"]');
+        } else if (cleanKey === 'bride_parents_address') {
+            targetEl = findVisibleTarget('.mayhen_invitation_family_bride_address, [data-sync-target="bride_parents_address"]');
+        } else if (cleanKey === 'groom_photo_url') {
+            targetEl = findVisibleTarget('.mayhen_invitation_groom_photo, [data-sync-target="groom_photo_url"]');
+        } else if (cleanKey === 'groom_bio') {
+            targetEl = findVisibleTarget('.mayhen_invitation_groom_bio, [data-sync-target="groom_bio"]');
+        } else if (cleanKey === 'bride_photo_url') {
+            targetEl = findVisibleTarget('.mayhen_invitation_bride_photo, [data-sync-target="bride_photo_url"]');
+        } else if (cleanKey === 'bride_bio') {
+            targetEl = findVisibleTarget('.mayhen_invitation_bride_bio, [data-sync-target="bride_bio"]');
+
+        // SECTION 4: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR)
+        } else if (cleanKey === 'event_target_time' || cleanKey.indexOf('countdown') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_countdown, .mayhen_invitation_countdown_calendar');
+        } else if (cleanKey === 'calendar_month_year' || cleanKey.indexOf('calendar') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_calendar_month_year, .mayhen_invitation_calendar, [data-sync-target="calendar_month_year"]');
+
+        // SECTION 5: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS)
+        } else if (cleanKey === 'party_time') {
+            targetEl = findVisibleTarget('.mayhen_invitation_party_time, [data-sync-target="party_time"]');
+        } else if (cleanKey === 'party_venue') {
+            targetEl = findVisibleTarget('.mayhen_invitation_party_venue, [data-sync-target="party_venue"]');
+        } else if (cleanKey === 'event_party_address' || cleanKey === 'party_address') {
+            targetEl = findVisibleTarget('.mayhen_invitation_party_address, .mayhen_invitation_map_address_text, [data-sync-target="event_party_address"]');
+        } else if (cleanKey === 'ceremony_time') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ceremony_bride_time, [data-sync-target="ceremony_time"]');
+        } else if (cleanKey === 'ceremony_address') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ceremony_bride_address, [data-sync-target="ceremony_address"]');
+        } else if (cleanKey === 'ceremony_groom_time') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ceremony_groom_time, [data-sync-target="ceremony_groom_time"]');
+        } else if (cleanKey === 'ceremony_groom_address') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ceremony_groom_address, [data-sync-target="ceremony_groom_address"]');
+        } else if (cleanKey === 'event_party_map_link' || cleanKey.indexOf('map') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_map_box, .mayhen_invitation_map_iframe, .mayhen_invitation_map_toggle_btn');
+
+        // SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE)
+        } else if (cleanKey.indexOf('timeline') !== -1) {
+            var tMatch = cleanKey.match(/timeline\.(\d+)/);
+            var tIdx = tMatch ? parseInt(tMatch[1], 10) : null;
+            if (tIdx !== null) {
+                targetEl = findVisibleTarget('[data-sync-target="timeline.' + tIdx + '.time"], [data-sync-target="timeline.' + tIdx + '.title"]');
+                if (!targetEl) {
+                    var tlItems = document.querySelectorAll('.mayhen_invitation_timeline_item');
+                    if (tlItems && tlItems[tIdx]) targetEl = tlItems[tIdx];
+                }
+            }
+            if (!targetEl) {
+                targetEl = findVisibleTarget('.mayhen_invitation_timeline_list, .mayhen_invitation_timeline, [data-mayhen-section*="timeline"]');
+            }
+
+        // SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE)
+        } else if (cleanKey.indexOf('dresscode_colors') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_dresscode_swatches, .mayhen_invitation_dresscode');
+        } else if (cleanKey === 'dresscode_note' || cleanKey.indexOf('dresscode') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_dresscode_note, [data-sync-target="dresscode_note"], .mayhen_invitation_dresscode');
+
+        // SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS)
+        } else if (cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1) {
+            var gMatch = cleanKey.match(/(?:gallery|album|photo)[_.]?(\d+)/i);
+            var gIdx = gMatch ? parseInt(gMatch[1], 10) : null;
+            if (gIdx !== null) {
+                targetEl = findVisibleTarget('[data-sync-target="gallery.' + gIdx + '"], .mayhen_invitation_gallery_item[data-index="' + gIdx + '"]');
+                if (!targetEl) {
+                    var gItems = document.querySelectorAll('.mayhen_invitation_gallery_item');
+                    if (gItems && gItems[gIdx]) targetEl = gItems[gIdx];
+                }
+            }
+            if (!targetEl) {
+                targetEl = findVisibleTarget('.mayhen_invitation_gallery_wrap, .mayhen_invitation_gallery, [data-mayhen-section*="album"]');
+            }
+
+        // SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR)
+        } else if (cleanKey === 'qr_groom_image') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_qr_groom, [data-sync-target="qr_groom_image"]');
+        } else if (cleanKey === 'groom_bank_name') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_bank_name_groom, [data-sync-target="groom_bank_name"]');
+        } else if (cleanKey === 'groom_bank_account') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_account_number_groom, [data-sync-target="groom_bank_account"]');
+        } else if (cleanKey === 'groom_account_name' || cleanKey === 'groom_bank_holder') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_account_holder_groom, [data-sync-target="groom_account_name"]');
+        } else if (cleanKey === 'qr_bride_image') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_qr_bride, [data-sync-target="qr_bride_image"]');
+        } else if (cleanKey === 'bride_bank_name') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_bank_name_bride, [data-sync-target="bride_bank_name"]');
+        } else if (cleanKey === 'bride_bank_account') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_account_number_bride, [data-sync-target="bride_bank_account"]');
+        } else if (cleanKey === 'bride_account_name' || cleanKey === 'bride_bank_holder') {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_account_holder_bride, [data-sync-target="bride_account_name"]');
+        } else if (cleanKey.indexOf('gift') !== -1 || cleanKey.indexOf('banking') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_gift_box, .mayhen_invitation_gift, [data-mayhen-section*="gift"]');
+
+        // SECTION 10: TƯƠNG TÁC, RSVP, LƯU BÚT & CẢM ƠN
+        } else if (cleanKey === 'thank_you_title') {
+            targetEl = findVisibleTarget('.mayhen_invitation_ending_title, [data-sync-target="thank_you_title"]');
+        } else if (cleanKey === 'thank_you_quote' || cleanKey.indexOf('thank_you') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_ending_text, [data-sync-target="thank_you_quote"]');
+        } else if (cleanKey.indexOf('signature') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_signature, .mayhen_invitation_signature_open_btn');
+        } else if (cleanKey.indexOf('rsvp') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_rsvp_form, .mayhen_invitation_rsvp');
+        } else if (cleanKey.indexOf('wish') !== -1) {
+            targetEl = findVisibleTarget('.mayhen_invitation_wish_form, .mayhen_invitation_wishes');
+        }
+
+        // Tự động mở hộp quà nếu đang tìm kiếm thông tin mừng cưới
+        if (cleanKey.indexOf('qr') !== -1 || cleanKey.indexOf('bank') !== -1 || cleanKey.indexOf('gift') !== -1) {
+            try {
+                var giftBox = document.querySelector('.mayhen_invitation_gift_box, [class*="gift_box"], [class*="hop_qua"]');
+                if (giftBox) giftBox.click();
+                var qrWrap = document.querySelector('.mayhen_invitation_gift_card_groom, .mayhen_invitation_gift_card_bride, [class*="gift_card"], [class*="sr_qr"]');
+                if (qrWrap && qrWrap.parentElement) {
+                    qrWrap.parentElement.style.setProperty('display', 'flex', 'important');
+                    qrWrap.parentElement.style.setProperty('opacity', '1', 'important');
+                    qrWrap.parentElement.style.setProperty('visibility', 'visible', 'important');
+                }
+            } catch (e) {}
+        }
+
+        // Fallback: Tìm bằng data-sync-target trực tiếp
+        if (!targetEl) {
+            targetEl = findVisibleTarget('[data-sync-target="' + rawKey + '"], [data-sync-target="' + cleanKey + '"], [data-sync-target*="' + cleanKey + '"]');
+        }
+
+        return targetEl;
+    };
+
+    // Hàm thực thi Cuộn Section
+    var executeScrollToSection = function(secId, step) {
+        secId = (secId || '').toString().toLowerCase().trim();
+        step = parseInt(step, 10) || 0;
+
+        if (secId === 'hero' || (secId === 'couple' && step <= 1) || step === 1) {
+            try {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (e) {
+                window.scrollTo(0, 0);
+            }
+            return;
+        }
+
+        var target = findSectionTarget(secId, step);
+        if (target) {
+            if (secId === 'gift' || step === 9) {
+                try {
+                    var giftBoxEl = document.querySelector('.mayhen_invitation_gift_box, [class*="gift_box"], [class*="hop_qua"]');
+                    if (giftBoxEl) giftBoxEl.click();
+                    var qrWrapEl = document.querySelector('.mayhen_invitation_gift_card_groom, .mayhen_invitation_gift_card_bride, [class*="gift_card"], [class*="sr_qr"]');
+                    if (qrWrapEl && qrWrapEl.parentElement) {
+                        qrWrapEl.parentElement.style.setProperty('display', 'flex', 'important');
+                        qrWrapEl.parentElement.style.setProperty('opacity', '1', 'important');
+                        qrWrapEl.parentElement.style.setProperty('visibility', 'visible', 'important');
+                    }
+                } catch (e) {}
+            }
+            var scrollEl = target.closest('section, article, [class*="_sec"], [class*="_card"], [class*="_flow"]') || target;
+            smoothScrollToTarget(scrollEl, 'start');
+        }
+    };
+
+    // Hàm thực thi Cuộn Target và Highlight
+    var executeScrollToTarget = function(rawKey, action, step) {
+        if (!rawKey) return;
+        var targetEl = findFieldTarget(rawKey, step);
+
+        if (targetEl) {
+            smoothScrollToTarget(targetEl, 'center');
+
+            // Gắn class highlight hiệu ứng vàng kim Quiet Luxury
+            document.querySelectorAll('.mayhen_editor_target_highlight').forEach(function(el) {
+                el.classList.remove('mayhen_editor_target_highlight');
+            });
+            void targetEl.offsetWidth; // Force reflow
+            targetEl.classList.add('mayhen_editor_target_highlight');
+
+            setTimeout(function() {
+                targetEl.classList.remove('mayhen_editor_target_highlight');
+            }, 2000);
+        }
+    };
+
+    // Gắn NGAY LẬP TỨC lên window để trang Studio Editor cha gọi tức thời (Dual Channel Direct Call)
+    window.__mayhenScrollToSection = executeScrollToSection;
+    window.__mayhenScrollToTarget = executeScrollToTarget;
+    window.__mayhenSmoothScroll = smoothScrollToTarget;
+    window.__mayhenFindVisibleTarget = findVisibleTarget;
+    window.__mayhenFindFieldTarget = findFieldTarget;
+    window.__mayhenFindSectionTarget = findSectionTarget;
+
     window.addEventListener('message', function(event) {
         if (!event.data || typeof event.data !== 'object') return;
         var data = event.data;
@@ -685,397 +1090,6 @@
             });
         }
 
-        // Helper 1: Tìm phần tử hiển thị thực tế (bỏ qua triệt để màn mở đầu / cánh cửa 3D bị ẩn)
-        var findVisibleTarget = function(selector) {
-            if (!selector) return null;
-            try {
-                var list = document.querySelectorAll(selector);
-                for (var i = 0; i < list.length; i++) {
-                    var el = list[i];
-                    if (el.closest('.mayhen_invitation_opening, .mayhen_invitation_envelope, #mayhen-door-stage, [id*="door-stage"], [class*="door_stage"], #POPUP8, [class*="_sr_cua"]')) {
-                        continue;
-                    }
-                    var rect = el.getBoundingClientRect();
-                    var style = window.getComputedStyle(el);
-                    if (style.display !== 'none' && style.visibility !== 'hidden' && (rect.width > 0 || rect.height > 0 || el.getClientRects().length > 0)) {
-                        return el;
-                    }
-                }
-                for (var j = 0; j < list.length; j++) {
-                    if (!list[j].closest('.mayhen_invitation_opening, .mayhen_invitation_sr_cua, [class*="opening"], [class*="door_stage"]')) {
-                        return list[j];
-                    }
-                }
-                return list[0] || null;
-            } catch (e) {
-                return document.querySelector(selector);
-            }
-        };
-
-        // Helper 2: Cuộn mượt mà độc lập, tính toán pixel chính xác 100% trong Iframe
-        var smoothScrollToTarget = function(el, block) {
-            if (!el) return;
-
-            // Phá bỏ mọi lớp khóa cuộn trên html và body
-            document.documentElement.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll', 'mayhen_invitation_sr_khoa');
-            if (document.body) {
-                document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll', 'mayhen_invitation_sr_khoa');
-                document.body.style.setProperty('overflow', 'visible', 'important');
-                document.body.style.setProperty('overflow-y', 'visible', 'important');
-            }
-
-            // Giải phóng triệt để overflow: hidden của bất kỳ container cha nào trên cây DOM
-            var p = el.parentElement;
-            while (p && p !== document.body && p !== document.documentElement) {
-                var cs = window.getComputedStyle(p);
-                if (cs.overflow === 'hidden' || cs.overflowY === 'hidden') {
-                    p.style.setProperty('overflow', 'visible', 'important');
-                    p.style.setProperty('overflow-y', 'visible', 'important');
-                }
-                p = p.parentElement;
-            }
-
-            var rect = el.getBoundingClientRect();
-            var currentScroll = window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || (document.body ? document.body.scrollTop : 0) || 0;
-            var targetY = currentScroll + rect.top;
-
-            if (block === 'center') {
-                var winH = window.innerHeight || (document.documentElement ? document.documentElement.clientHeight : 667);
-                targetY = targetY - (winH / 2) + (rect.height / 2);
-            } else {
-                targetY = Math.max(0, targetY - 24);
-            }
-
-            if (targetY < 0) targetY = 0;
-
-            try {
-                window.scrollTo({ top: targetY, behavior: 'smooth' });
-            } catch (e) {
-                window.scrollTo(0, targetY);
-            }
-
-            try {
-                if (document.documentElement) {
-                    document.documentElement.scrollTo({ top: targetY, behavior: 'smooth' });
-                }
-            } catch (e) {}
-
-            try {
-                if (document.body) {
-                    document.body.scrollTo({ top: targetY, behavior: 'smooth' });
-                }
-            } catch (e) {}
-
-            try {
-                el.scrollIntoView({ behavior: 'smooth', block: block || 'start', inline: 'nearest' });
-            } catch (e) {}
-        };
-
-        // Helper 3: Tìm kiếm section mục tiêu theo ID hoặc Step (1..10) chuẩn 10 Section của SKILL.md
-        var findSectionTarget = function(secId, step) {
-            secId = (secId || '').toString().toLowerCase().trim();
-            step = parseInt(step, 10) || 0;
-
-            // SECTION 1: TRANG BÌA CHÍNH (HERO COVER)
-            if (secId === 'hero' || (secId === 'couple' && step <= 1) || step === 1) {
-                return findVisibleTarget('.mayhen_invitation_hero, [data-mayhen-section="couple"], [data-mayhen-section="hero"]');
-            }
-
-            var sectionMap = {
-                // Section 1: Hero Cover
-                'hero': ['.mayhen_invitation_hero', '[data-mayhen-section="hero"]', '[data-mayhen-section="couple"]'],
-                // Section 2: Love Story & Quote
-                'story': ['.mayhen_invitation_story', '.mayhen_invitation_quote', '[data-mayhen-section="story"]'],
-                // Section 3: Family & Couple
-                'parents': ['.mayhen_invitation_parents', '.mayhen_invitation_couple', '[data-mayhen-section*="parents"]', '[data-mayhen-section*="family"]'],
-                'groom_family': ['.mayhen_invitation_family_groom_title', '[data-mayhen-section="groom_family"]', '.mayhen_invitation_parents'],
-                'bride_family': ['.mayhen_invitation_family_bride_title', '[data-mayhen-section="bride_family"]', '.mayhen_invitation_parents'],
-                'couple': ['.mayhen_invitation_couple', '.mayhen_invitation_parents', '.mayhen_invitation_hero'],
-                // Section 4: Countdown & Calendar
-                'countdown_calendar': ['.mayhen_invitation_countdown_calendar', '.mayhen_invitation_countdown', '.mayhen_invitation_calendar', '[data-mayhen-section="countdown_calendar"]'],
-                // Section 5: Events & Maps
-                'events': ['.mayhen_invitation_events', '.mayhen_invitation_maps', '[data-mayhen-section="events"]', '[data-mayhen-section="wedding_event"]'],
-                // Section 6: Wedding Timeline
-                'timeline': ['.mayhen_invitation_timeline', '[data-mayhen-section="timeline"]'],
-                // Section 7: Dresscode
-                'dresscode': ['.mayhen_invitation_dresscode', '[data-mayhen-section="dresscode"]'],
-                // Section 8: Album 10 Photos
-                'album': ['.mayhen_invitation_gallery', '[data-mayhen-section="album"]', '[data-mayhen-section="gallery"]'],
-                'gallery': ['.mayhen_invitation_gallery', '[data-mayhen-section="gallery"]', '[data-mayhen-section="album"]'],
-                // Section 9: Wedding Gift & VietQR
-                'gift': ['.mayhen_invitation_gift', '[data-mayhen-section="gift"]'],
-                // Section 10: Interactive, RSVP, Wishes & Ending
-                'ending': ['.mayhen_invitation_interactive_ending', '.mayhen_invitation_ending', '.mayhen_invitation_rsvp', '.mayhen_invitation_wishes', '[data-mayhen-section="ending"]', '[data-mayhen-section*="rsvp"]'],
-                'rsvp': ['.mayhen_invitation_rsvp', '.mayhen_invitation_interactive_ending'],
-                'wishes': ['.mayhen_invitation_wishes', '.mayhen_invitation_interactive_ending']
-            };
-
-            // 1. Tìm theo ánh xạ map
-            if (sectionMap[secId]) {
-                for (var i = 0; i < sectionMap[secId].length; i++) {
-                    var el = findVisibleTarget(sectionMap[secId][i]);
-                    if (el) return el;
-                }
-            }
-
-            // 2. Tìm theo data-mayhen-section trực tiếp
-            if (secId) {
-                var directEl = findVisibleTarget('[data-mayhen-section="' + secId + '"], [data-mayhen-section*="' + secId + '"]');
-                if (directEl) return directEl;
-            }
-
-            // 3. Fallback theo số thứ tự step (1..10)
-            var standardStepSelectors = [
-                '.mayhen_invitation_hero, [data-mayhen-section="couple"], [data-mayhen-section="hero"]',
-                '.mayhen_invitation_story, [data-mayhen-section="story"]',
-                '.mayhen_invitation_parents, [data-mayhen-section="parents"], [data-mayhen-section*="family"]',
-                '.mayhen_invitation_countdown_calendar, .mayhen_invitation_countdown, .mayhen_invitation_calendar, [data-mayhen-section="countdown_calendar"]',
-                '.mayhen_invitation_events, [data-mayhen-section="events"], [data-mayhen-section="wedding_event"]',
-                '.mayhen_invitation_timeline, [data-mayhen-section="timeline"]',
-                '.mayhen_invitation_dresscode, [data-mayhen-section="dresscode"]',
-                '.mayhen_invitation_gallery, [data-mayhen-section="album"], [data-mayhen-section="gallery"]',
-                '.mayhen_invitation_gift, [data-mayhen-section="gift"]',
-                '.mayhen_invitation_interactive_ending, .mayhen_invitation_ending, .mayhen_invitation_rsvp, .mayhen_invitation_wishes, [data-mayhen-section="ending"]'
-            ];
-
-            if (step >= 1 && step <= standardStepSelectors.length) {
-                var stepEl = findVisibleTarget(standardStepSelectors[step - 1]);
-                if (stepEl) return stepEl;
-            }
-
-            return null;
-        };
-
-        // Helper 4: Tìm kiếm phần tử theo Key dữ liệu (Chuẩn 100% Class BEM & data-sync-target của SKILL.md)
-        var findFieldTarget = function(rawKey) {
-            if (!rawKey) return null;
-            var cleanKey = (rawKey || '').toString().trim().replace(/^wedding\./, '').replace(/^extra_data\./, '');
-            var targetEl = null;
-
-            // SECTION 1: TRANG BÌA CHÍNH (HERO COVER)
-            if (cleanKey === 'ceremony_type') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_ceremony_type, [data-sync-target="ceremony_type"]');
-            } else if (cleanKey === 'groom_name') {
-                targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_groom, .mayhen_invitation_groom_name, [data-sync-target="groom_name"]');
-            } else if (cleanKey === 'bride_name') {
-                targetEl = findVisibleTarget('.mayhen_invitation_hero .mayhen_invitation_ladi_headline_name_bride, .mayhen_invitation_bride_name, [data-sync-target="bride_name"]');
-            } else if (cleanKey === 'hero_photo_url' || cleanKey === 'cover_photo_url') {
-                targetEl = findVisibleTarget('.mayhen_invitation_hero_media, .mayhen_invitation_hero .mayhen_invitation_ladi_image, [data-sync-target="hero_photo_url"], [data-sync-target="cover_photo_url"]');
-            } else if (cleanKey === 'wedding_date' || cleanKey === 'wedding_date_digits') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_wedding_day, [data-sync-target="wedding_date_digits"], [data-sync-target="wedding_date"]');
-            } else if (cleanKey === 'wedding_lunar_date') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ladi_paragraph_lunar_calendar, [data-sync-target="wedding_lunar_date"]');
-            } else if (cleanKey === 'slogan') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ladi_paragraph_slogan');
-
-            // SECTION 2: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE)
-            } else if (cleanKey === 'story_title') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ladi_headline_story, [data-sync-target="story_title"]');
-            } else if (cleanKey === 'save_date_photo_url') {
-                targetEl = findVisibleTarget('.mayhen_invitation_story_img, [data-sync-target="save_date_photo_url"]');
-            } else if (cleanKey === 'story_subtitle') {
-                targetEl = findVisibleTarget('.mayhen_invitation_story_subtitle, [data-sync-target="story_subtitle"]');
-            } else if (cleanKey === 'couple_quote' || cleanKey === 'quote') {
-                targetEl = findVisibleTarget('.mayhen_invitation_quote_text, [data-sync-target="couple_quote"]');
-            } else if (cleanKey === 'story_content') {
-                targetEl = findVisibleTarget('.mayhen_invitation_story_content, [data-sync-target="story_content"]');
-
-            // SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE)
-            } else if (cleanKey === 'groom_father') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_groom_father, [data-sync-target="groom_father"]');
-            } else if (cleanKey === 'groom_mother') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_groom_mother, [data-sync-target="groom_mother"]');
-            } else if (cleanKey === 'groom_parents_address') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_groom_address, [data-sync-target="groom_parents_address"]');
-            } else if (cleanKey === 'bride_father') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_bride_father, [data-sync-target="bride_father"]');
-            } else if (cleanKey === 'bride_mother') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_bride_mother, [data-sync-target="bride_mother"]');
-            } else if (cleanKey === 'bride_parents_address') {
-                targetEl = findVisibleTarget('.mayhen_invitation_family_bride_address, [data-sync-target="bride_parents_address"]');
-            } else if (cleanKey === 'groom_photo_url') {
-                targetEl = findVisibleTarget('.mayhen_invitation_groom_photo, [data-sync-target="groom_photo_url"]');
-            } else if (cleanKey === 'groom_bio') {
-                targetEl = findVisibleTarget('.mayhen_invitation_groom_bio, [data-sync-target="groom_bio"]');
-            } else if (cleanKey === 'bride_photo_url') {
-                targetEl = findVisibleTarget('.mayhen_invitation_bride_photo, [data-sync-target="bride_photo_url"]');
-            } else if (cleanKey === 'bride_bio') {
-                targetEl = findVisibleTarget('.mayhen_invitation_bride_bio, [data-sync-target="bride_bio"]');
-
-            // SECTION 4: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR)
-            } else if (cleanKey === 'event_target_time' || cleanKey.indexOf('countdown') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_countdown, .mayhen_invitation_countdown_calendar');
-            } else if (cleanKey === 'calendar_month_year' || cleanKey.indexOf('calendar') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_calendar_month_year, .mayhen_invitation_calendar, [data-sync-target="calendar_month_year"]');
-
-            // SECTION 5: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS)
-            } else if (cleanKey === 'party_time') {
-                targetEl = findVisibleTarget('.mayhen_invitation_party_time, [data-sync-target="party_time"]');
-            } else if (cleanKey === 'party_venue') {
-                targetEl = findVisibleTarget('.mayhen_invitation_party_venue, [data-sync-target="party_venue"]');
-            } else if (cleanKey === 'event_party_address' || cleanKey === 'party_address') {
-                targetEl = findVisibleTarget('.mayhen_invitation_party_address, .mayhen_invitation_map_address_text, [data-sync-target="event_party_address"]');
-            } else if (cleanKey === 'ceremony_time') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ceremony_bride_time, [data-sync-target="ceremony_time"]');
-            } else if (cleanKey === 'ceremony_address') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ceremony_bride_address, [data-sync-target="ceremony_address"]');
-            } else if (cleanKey === 'ceremony_groom_time') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ceremony_groom_time, [data-sync-target="ceremony_groom_time"]');
-            } else if (cleanKey === 'ceremony_groom_address') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ceremony_groom_address, [data-sync-target="ceremony_groom_address"]');
-            } else if (cleanKey === 'event_party_map_link' || cleanKey.indexOf('map') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_map_box, .mayhen_invitation_map_iframe, .mayhen_invitation_map_toggle_btn');
-
-            // SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE)
-            } else if (cleanKey.indexOf('timeline') !== -1) {
-                var tMatch = cleanKey.match(/timeline\.(\d+)/);
-                var tIdx = tMatch ? parseInt(tMatch[1], 10) : null;
-                if (tIdx !== null) {
-                    targetEl = findVisibleTarget('[data-sync-target="timeline.' + tIdx + '.time"], [data-sync-target="timeline.' + tIdx + '.title"]');
-                    if (!targetEl) {
-                        var tlItems = document.querySelectorAll('.mayhen_invitation_timeline_item');
-                        if (tlItems && tlItems[tIdx]) targetEl = tlItems[tIdx];
-                    }
-                }
-                if (!targetEl) {
-                    targetEl = findVisibleTarget('.mayhen_invitation_timeline_list, .mayhen_invitation_timeline, [data-mayhen-section="timeline"]');
-                }
-
-            // SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE)
-            } else if (cleanKey.indexOf('dresscode_colors') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_dresscode_swatches, .mayhen_invitation_dresscode');
-            } else if (cleanKey === 'dresscode_note' || cleanKey.indexOf('dresscode') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_dresscode_note, [data-sync-target="dresscode_note"], .mayhen_invitation_dresscode');
-
-            // SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS)
-            } else if (cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1) {
-                var gMatch = cleanKey.match(/(?:gallery|album|photo)[_.]?(\d+)/i);
-                var gIdx = gMatch ? parseInt(gMatch[1], 10) : null;
-                if (gIdx !== null) {
-                    targetEl = findVisibleTarget('[data-sync-target="gallery.' + gIdx + '"], .mayhen_invitation_gallery_item[data-index="' + gIdx + '"]');
-                    if (!targetEl) {
-                        var gItems = document.querySelectorAll('.mayhen_invitation_gallery_item');
-                        if (gItems && gItems[gIdx]) targetEl = gItems[gIdx];
-                    }
-                }
-                if (!targetEl) {
-                    targetEl = findVisibleTarget('.mayhen_invitation_gallery_wrap, .mayhen_invitation_gallery, [data-mayhen-section="album"]');
-                }
-
-            // SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR)
-            } else if (cleanKey === 'qr_groom_image') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_qr_groom, [data-sync-target="qr_groom_image"]');
-            } else if (cleanKey === 'groom_bank_name') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_bank_name_groom, [data-sync-target="groom_bank_name"]');
-            } else if (cleanKey === 'groom_bank_account') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_account_number_groom, [data-sync-target="groom_bank_account"]');
-            } else if (cleanKey === 'groom_account_name' || cleanKey === 'groom_bank_holder') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_account_holder_groom, [data-sync-target="groom_account_name"]');
-            } else if (cleanKey === 'qr_bride_image') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_qr_bride, [data-sync-target="qr_bride_image"]');
-            } else if (cleanKey === 'bride_bank_name') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_bank_name_bride, [data-sync-target="bride_bank_name"]');
-            } else if (cleanKey === 'bride_bank_account') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_account_number_bride, [data-sync-target="bride_bank_account"]');
-            } else if (cleanKey === 'bride_account_name' || cleanKey === 'bride_bank_holder') {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_account_holder_bride, [data-sync-target="bride_account_name"]');
-            } else if (cleanKey.indexOf('gift') !== -1 || cleanKey.indexOf('banking') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_gift_box, .mayhen_invitation_gift, [data-mayhen-section="gift"]');
-
-            // SECTION 10: TƯƠNG TÁC, RSVP, LƯU BÚT & CẢM ƠN
-            } else if (cleanKey === 'thank_you_title') {
-                targetEl = findVisibleTarget('.mayhen_invitation_ending_title, [data-sync-target="thank_you_title"]');
-            } else if (cleanKey === 'thank_you_quote' || cleanKey.indexOf('thank_you') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_ending_text, [data-sync-target="thank_you_quote"]');
-            } else if (cleanKey.indexOf('signature') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_signature, .mayhen_invitation_signature_open_btn');
-            } else if (cleanKey.indexOf('rsvp') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_rsvp_form, .mayhen_invitation_rsvp');
-            } else if (cleanKey.indexOf('wish') !== -1) {
-                targetEl = findVisibleTarget('.mayhen_invitation_wish_form, .mayhen_invitation_wishes');
-            }
-
-            // Tự động mở hộp quà nếu đang tìm kiếm thông tin mừng cưới
-            if (cleanKey.indexOf('qr') !== -1 || cleanKey.indexOf('bank') !== -1 || cleanKey.indexOf('gift') !== -1) {
-                try {
-                    var giftBox = document.querySelector('.mayhen_invitation_gift_box, [class*="gift_box"], [class*="hop_qua"]');
-                    if (giftBox) giftBox.click();
-                    var qrWrap = document.querySelector('.mayhen_invitation_gift_card_groom, .mayhen_invitation_gift_card_bride, [class*="gift_card"], [class*="sr_qr"]');
-                    if (qrWrap && qrWrap.parentElement) {
-                        qrWrap.parentElement.style.setProperty('display', 'flex', 'important');
-                        qrWrap.parentElement.style.setProperty('opacity', '1', 'important');
-                        qrWrap.parentElement.style.setProperty('visibility', 'visible', 'important');
-                    }
-                } catch (e) {}
-            }
-
-            // Fallback: Tìm bằng data-sync-target trực tiếp
-            if (!targetEl) {
-                targetEl = findVisibleTarget('[data-sync-target="' + rawKey + '"], [data-sync-target="' + cleanKey + '"], [data-sync-target*="' + cleanKey + '"]');
-            }
-
-            return targetEl;
-        };
-
-        // Hàm thực thi Cuộn Section
-        var executeScrollToSection = function(secId, step) {
-            secId = (secId || '').toString().toLowerCase().trim();
-            step = parseInt(step, 10) || 0;
-
-            if (secId === 'hero' || (secId === 'couple' && step <= 1) || step === 1) {
-                try {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } catch (e) {
-                    window.scrollTo(0, 0);
-                }
-                return;
-            }
-
-            var target = findSectionTarget(secId, step);
-            if (target) {
-                if (secId === 'gift' || step === 9) {
-                    try {
-                        var giftBoxEl = document.querySelector('.mayhen_invitation_gift_box, [class*="gift_box"], [class*="hop_qua"]');
-                        if (giftBoxEl) giftBoxEl.click();
-                        var qrWrapEl = document.querySelector('.mayhen_invitation_gift_card_groom, .mayhen_invitation_gift_card_bride, [class*="gift_card"], [class*="sr_qr"]');
-                        if (qrWrapEl && qrWrapEl.parentElement) {
-                            qrWrapEl.parentElement.style.setProperty('display', 'flex', 'important');
-                            qrWrapEl.parentElement.style.setProperty('opacity', '1', 'important');
-                            qrWrapEl.parentElement.style.setProperty('visibility', 'visible', 'important');
-                        }
-                    } catch (e) {}
-                }
-                var scrollEl = target.closest('section, article, [class*="_sec"], [class*="_card"], [class*="_flow"]') || target;
-                smoothScrollToTarget(scrollEl, 'start');
-            }
-        };
-
-        // Hàm thực thi Cuộn Target và Highlight
-        var executeScrollToTarget = function(rawKey, action) {
-            if (!rawKey) return;
-            var targetEl = findFieldTarget(rawKey);
-
-            if (targetEl) {
-                smoothScrollToTarget(targetEl, 'center');
-
-                // Gắn class highlight hiệu ứng vàng kim Quiet Luxury
-                document.querySelectorAll('.mayhen_editor_target_highlight').forEach(function(el) {
-                    el.classList.remove('mayhen_editor_target_highlight');
-                });
-                void targetEl.offsetWidth; // Force reflow
-                targetEl.classList.add('mayhen_editor_target_highlight');
-
-                setTimeout(function() {
-                    targetEl.classList.remove('mayhen_editor_target_highlight');
-                }, 2000);
-            }
-        };
-
-        // Xuất trực tiếp ra Window để trang Studio Editor cha gọi tức thời (Dual Channel Direct Call)
-        window.__mayhenScrollToSection = executeScrollToSection;
-        window.__mayhenScrollToTarget = executeScrollToTarget;
-        window.__mayhenSmoothScroll = smoothScrollToTarget;
-
         // 5. Cuộn tới Section theo Tab Stepper đang chọn (10 Section Tiêu Chuẩn)
         if (data.type === 'MAYHEN_SCROLL_TO_SECTION') {
             executeScrollToSection(data.section_id, data.step);
@@ -1083,7 +1097,7 @@
 
         // 5.1. Smart Scroll-on-Action: Tự động cuộn đến đúng phần tử và Highlight vàng kim Quiet Luxury
         if (data.type === 'MAYHEN_SCROLL_TO_TARGET') {
-            executeScrollToTarget(data.target, data.action);
+            executeScrollToTarget(data.target, data.action, data.step);
         }
 
         // 6. Tự động cuộn mượt mà khi hiển thị trên Showcase Card trang chủ
