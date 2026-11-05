@@ -3570,9 +3570,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     7. *Cơ sở dữ liệu & Seeder (`InvitationTemplateSeeder`)*:
                        - Thêm template `hanh-phuc-mang-ten-chung-minh` vào seeder: `category: modern`, `tier: free`, `accent_color: #233628`, `demo_url: /xem-thu/hanh-phuc-mang-ten-chung-minh`.
                        - Chạy thành công `php artisan db:seed --class=InvitationTemplateSeeder`.
+                    8. *Tái cấu trúc sạch sẽ, bổ sung phần thiếu & loại bỏ triệt để phần thừa (Refactor & Clean Architecture)*:
+                       - **Bổ sung phần thiếu**:
+                         * Thêm đầy đủ **Section 6: Lịch Trình Buổi Tiệc (`timeline`)** với 4 mốc thời gian tinh tế (`data-sync-target="timeline.{index}.time"`, `timeline.{index}.title`), đường nối gradient và icon mốc sự kiện.
+                         * Thêm đầy đủ **Section 7: Gợi Ý Trang Phục (`dresscode`)** với các swatches màu sắc Xanh Sage, Xanh Rừng, Vàng Kim, Kem Ấm và lời dặn dò trang phục `data-sync-target="dresscode_note"`.
+                         * Bổ sung **Khung Bản Đồ Google Maps tương tác trực quan (`iframe`)** nhúng trực tiếp trong Section 5 Events, tự động trỏ đến địa điểm hôn lễ.
+                         * Mở rộng Album lên đủ **10 ảnh cưới chuẩn hóa** (`gallery.0` -> `gallery.9`) khớp hoàn hảo với payload tải ảnh của Studio Tạo Thiệp.
+                         * Bổ sung đầy đủ các target key đồng bộ: `groom_account_name`, `bride_account_name`, `ending_title`, `ending_text`.
+                       - **Loại bỏ phần thừa**:
+                         * Xóa bỏ hoàn toàn cụm nút trôi nổi to đùng `mayhen_invitation_floating_controls` che khuất màn hình di động.
+                         * Chuyển nút điều khiển âm nhạc sang **Nút đĩa than tròn xoay cố định góc trên bên trái (`mayhen_invitation_music_dock`)** chuẩn phong cách Quiet Luxury.
+                         * Tinh giản `script.js` để tránh xung đột với `editor-bridge.blade.php`.
                   - **Kiểm thử & Đảm bảo chất lượng**:
-                    - Viết mới bộ test Pest: `tests/Feature/HanhPhucMangTenChungMinhTemplateTest.php` với 5 bài test (52 assertions) bao phủ: trang xem thử, nạp assets tĩnh, phòng vệ iframe embed, xác thực schema 10 sections và khởi tạo trên Studio Tạo Thiệp -> **100% Passed**.
-                    - Chạy lại bài test `GiuaMuonNganViSaoTemplateTest.php` (4 tests, 35 assertions) -> **100% Passed**.
+                    - Pest Test: Kiểm tra toàn diện 10 Section, Timeline, Dresscode, Maps iframe, 10 ảnh Album, và Nút đĩa than -> **100% Passed**.
                     - Code formatter Laravel Pint: `vendor/bin/pint --dirty --format agent` -> **Passed**.
                     - Xóa sạch cache hệ thống: `php artisan view:clear; php artisan cache:clear`.
 

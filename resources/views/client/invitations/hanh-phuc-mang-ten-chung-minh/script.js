@@ -182,7 +182,7 @@
             var p = audioEl.play();
             if (p && typeof p.then === "function") {
                 p.then(function () {
-                    if (musicBtn) musicBtn.classList.add("mayhen_invitation_float_btn--playing");
+                    if (musicBtn) musicBtn.classList.add("mayhen_invitation_music_btn--playing");
                 }).catch(function () {});
             }
         }
@@ -190,7 +190,7 @@
         function pauseMusic() {
             if (!audioEl) return;
             audioEl.pause();
-            if (musicBtn) musicBtn.classList.remove("mayhen_invitation_float_btn--playing");
+            if (musicBtn) musicBtn.classList.remove("mayhen_invitation_music_btn--playing");
         }
 
         if (musicBtn && audioEl) {
@@ -703,6 +703,28 @@
         window.addEventListener("message", function (event) {
             var payload = event.data;
             if (!payload || typeof payload !== "object") return;
+
+            // Xử lý thông điệp Live Sync trực tiếp từ Studio Editor
+            if (payload.type === "MAYHEN_SYNC_INPUT" && payload.key) {
+                var singleKey = payload.key.replace(/^wedding\.(extra_data\.)?/, "");
+                var singleVal = payload.value;
+                var targets = document.querySelectorAll('[data-sync-target="' + singleKey + '"], [data-sync-target="' + payload.key + '"]');
+                targets.forEach(function (el) {
+                    if (el.tagName === "IMG") {
+                        el.src = String(singleVal);
+                    } else if (el.tagName === "A") {
+                        el.href = String(singleVal);
+                    } else {
+                        el.textContent = String(singleVal);
+                    }
+                });
+
+                if (singleKey === "wedding_date" || singleKey === "wedding_date_digits") {
+                    window.updateMayhenCountdown(singleVal);
+                    window.renderMayhenWeddingCalendar(singleVal);
+                }
+                return;
+            }
 
             var fields = payload.data || payload.fields || payload;
             if (!fields || typeof fields !== "object") return;

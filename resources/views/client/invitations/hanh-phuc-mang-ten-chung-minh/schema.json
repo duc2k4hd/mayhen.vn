@@ -526,6 +526,20 @@
           "type": "image",
           "required": false,
           "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-8.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery.8",
+          "label": "Ảnh cưới 9",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-9.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery.9",
+          "label": "Ảnh cưới 10",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-10.webp"
         }
       ]
     },
