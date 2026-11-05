@@ -3524,6 +3524,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                     - Pint Formatter: passed.
                     - Cache: view & config cache cleared.
 
+              133. **Xây Dựng Master Prompt Chuẩn & Skill/Agent Chuyên Trách Clone Mẫu Thiệp Mây Hẹn (`mayhen-template-cloner`)**:
+                  - **Mục tiêu**: Chuẩn hóa toàn bộ các yêu cầu khắt khe của dự án Mây Hẹn thành một Master Prompt hoàn hảo và một Agent Skill độc lập (`.agents/skills/mayhen-template-cloner/SKILL.md`, `.agents/prompts/CLONE_TEMPLATE_MASTER_PROMPT.md`) để có thể tái sử dụng bất cứ lúc nào khi cần clone mẫu từ web tham khảo.
+                  - **Nội dung chuẩn hóa trọng tâm trong Prompt**:
+                    1. *100% Pure Native Code*: HTML5, CSS3, Native JS ES Modules; cấm toàn bộ framework ngoài (Bootstrap, Tailwind, React, Vue, jQuery, GSAP, Swiper.js, AOS) và CDN ngoại.
+                    2. *Tiền tố BEM chuẩn toàn cục*: 100% class dùng `mayhen_invitation_*`, CẤM lạm dụng ID.
+                    3. *Flow Layout 100% tự co giãn (Mobile-First)*: Cấm layout định vị tuyệt đối `position: absolute` kiểu LadiPage với width/height pixel cứng làm hỏng giao diện trên nhiều kích thước màn hình.
+                    4. *Phân bổ Section linh hoạt, thông minh*: 10 Section không cần rập khuôn thứ tự mà bố trí hài hòa, thẩm mỹ theo thiết kế gốc; có thể bổ sung các khối trang trí nâng tầm cảm xúc nhưng không dùng ảnh lạ.
+                    5. *Animation Quiet Luxury*: Tự viết CSS keyframes mượt mà nếu mẫu gốc thiếu animation.
+                    6. *Quy tắc Vàng về Ký tên & RSVP*: Mẫu nào cũng bắt buộc có; TUYỆT ĐỐI CẤM chèn ảnh cặp đôi hay ảnh stock người vào 2 phần này (100% dùng hiệu ứng canvas, stardust, sticker SVG, tem wax seal niêm phong).
+                    7. *Tự chứa 100% Local Assets*: Tải toàn bộ ảnh, audio, icon về thư mục `assets/`, không dùng link ngoài.
+                    8. *Màn mở đầu phong bì / cánh cửa*: Chuẩn hóa class của dự án, có phòng vệ `$isEmbed` cho iframe Studio.
+                    9. *Lọc sạch rác & Đóng gói*: Loại bỏ watermark, chat widget, logo bên thứ ba; đóng gói trọn vẹn thành file ZIP (`template.blade.php`, `styles.css`, `script.js`, `schema.json`, `assets/`).
+                  - **File tạo mới**:
+                    - `.agents/skills/mayhen-template-cloner/SKILL.md` (Hệ thống Skill của Antigravity/Agent).
+                    - `.agents/prompts/CLONE_TEMPLATE_MASTER_PROMPT.md` (Tài liệu prompt chuẩn cho người dùng copy sang Claude, GPT-4o, Cursor...).
+                    - Đăng ký Subagent `template-cloner` trong hệ thống session.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
