@@ -721,7 +721,7 @@
 (function () {
     'use strict';
 
-    var P = 'mayhen_invitation_ladoifji894yfv_';
+    var P = 'mayhen_invitation_';
     var giam = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var cua = document.querySelector('.' + P + 'sr_cua');

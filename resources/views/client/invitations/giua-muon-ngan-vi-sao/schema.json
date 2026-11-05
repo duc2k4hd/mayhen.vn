@@ -9,8 +9,9 @@
     "couple",
     "groom_family",
     "bride_family",
-    "album",
     "timeline",
+    "dresscode",
+    "album",
     "gift"
   ],
   "sections": [
@@ -257,6 +258,32 @@
             { "key": "time", "label": "Giờ", "type": "text" },
             { "key": "title", "label": "Nội dung", "type": "text" }
           ]
+        }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Quy Định Trang Phục",
+      "short_title": "Trang Phục",
+      "icon": "palette",
+      "description": "Gợi ý bảng màu trang phục dự tiệc cưới cho khách quý",
+      "fields": [
+        {
+          "key": "wedding.extra_data.dresscode_colors",
+          "label": "Bảng màu trang phục gợi ý",
+          "type": "text",
+          "required": false,
+          "default": "#FCE39E,#FFFFFF,#1B2A4A,#0D1322",
+          "placeholder": "Mã màu hex cách nhau bởi dấu phẩy"
+        },
+        {
+          "key": "wedding.extra_data.dresscode_note",
+          "label": "Ghi chú trang phục",
+          "type": "textarea",
+          "required": false,
+          "default": "Khuyến khích trang phục thanh lịch mang tông màu ấm áp để những bức ảnh kỷ niệm thêm phần lung linh.",
+          "placeholder": "Ví dụ: Khuyến khích trang phục màu vàng gold, trắng hoặc đen...",
+          "max": 255
         }
       ]
     },

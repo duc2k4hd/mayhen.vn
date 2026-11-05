@@ -3249,6 +3249,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Chạy Laravel Pint: Passed.
                      - Dọn dẹp cache: `php artisan optimize:clear` hoàn tất.
 
+            121. **Chuẩn Hóa Đủ 10 Section & Refactor Class Theo Chuẩn Toàn Cục Cho Mẫu Kiểm Thử "Giữa Muôn Ngàn Vì Sao" (giua-muon-ngan-vi-sao)**:
+                - **Mục tiêu & Yêu cầu**:
+                  - Rà soát mẫu kiểm thử `giua-muon-ngan-vi-sao` đảm bảo chứa đủ 10 phần tiêu chuẩn theo Blueprint:
+                    + Phần 1: Màn Mở Đầu (`Opening / Envelope`)
+                    + Phần 2: Trang Bìa Chính (`Hero Cover`)
+                    + Phần 3: Lời Ngỏ & Chuyện Tình Yêu (`Love Story & Quote`)
+                    + Phần 4: Song Thân & Đôi Uyên Ương (`Family & Couple`)
+                    + Phần 5: Đếm Ngược & Lịch Tháng (`Countdown & Calendar`)
+                    + Phần 6: Thông Tin Sự Kiện & Bản Đồ (`Events & Maps`)
+                    + Phần 7: Lịch Trình Hôn Lễ (`Wedding Timeline`)
+                    + Phần 8: Quy Định Trang Phục (`Dresscode`) -> *Đã bổ sung mới*
+                    + Phần 9: Khoảnh Khắc Hạnh Phúc (`Album 10 Photos`)
+                    + Phần 10: Mừng Cưới, RSVP, Lưu Bút & Cảm Ơn (`Gift, Interactive & Ending`)
+                  - Refactor gắn song song các class chuẩn `mayhen_invitation_*` cho toàn bộ 10 section và các phần tử tương tác cốt lõi (`mayhen_invitation_opening`, `mayhen_invitation_open_btn`, `mayhen_invitation_hero`, `mayhen_invitation_story`, `mayhen_invitation_parents`, `mayhen_invitation_couple`, `mayhen_invitation_calendar`, `mayhen_invitation_countdown`, `mayhen_invitation_events`, `mayhen_invitation_maps`, `mayhen_invitation_timeline`, `mayhen_invitation_dresscode`, `mayhen_invitation_gallery`, `mayhen_invitation_signature`, `mayhen_invitation_rsvp`, `mayhen_invitation_wishes`, `mayhen_invitation_gift`, `mayhen_invitation_ending`, `mayhen_invitation_music_dock`, `mayhen_invitation_audio`).
+                  - Đảm bảo **100% không làm hỏng giao diện cũ** bằng phương pháp giữ nguyên class hiện tại và khai báo bổ sung đồng bộ qua cả Blade HTML, CSS và JavaScript.
+                - **Các công việc đã thực thi**:
+                  1. *Cập nhật Schema (`schema.json`)*: Bổ sung section `dresscode` vào danh sách `sections` và `supported_sections` với các trường `wedding.extra_data.dresscode_colors` và `wedding.extra_data.dresscode_note`.
+                  2. *Cập nhật Blade (`template.blade.php`)*:
+                     - Khai báo các biến `$coupleQuote`, `$dresscodeColors`, `$dresscodeNote`.
+                     - Tách bạch và chuẩn hóa Section 3 (Lời Ngỏ Tình Yêu) với `data-sync-target="couple_quote"`.
+                     - Bổ sung Section 8 (Quy Định Trang Phục - Dresscode) với các ô màu sắc ngân hà sang trọng (`#FCE39E`, `#FFFFFF`, `#1B2A4A`, `#0D1322`) viền kim tuyến và ghi chú đồng điệu.
+                     - Gắn các class chuẩn BEM `mayhen_invitation_*` song song cho toàn bộ 10 section.
+                  3. *Cập nhật CSS (`styles.css`)*:
+                     - Bổ sung các rule CSS cho `.mayhen_invitation_dresscode`, `.mayhen_invitation_dresscode_swatches`, `.mayhen_invitation_dresscode_circle` với hiệu ứng hover bóng sáng và viền kim tuyến vàng thiên hà.
+                  4. *Kiểm thử & Định dạng*:
+                     - Chạy `vendor/bin/pint --dirty --format agent`: Passed.
+                     - Chạy `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
+                     - Chạy `php artisan optimize:clear`: Thành công 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
