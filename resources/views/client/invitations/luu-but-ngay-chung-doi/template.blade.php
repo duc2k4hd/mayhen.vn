@@ -793,6 +793,19 @@
 </div>
 </div>
 </a>
+<div class="mayhen_invitation_ladjihe38udhd_ladi-element mayhen_invitation_ladjihe38udhd_calendar_photo_wrapper" id="SECTION24_PHOTO">
+<div class="mayhen_invitation_ladjihe38udhd_calendar_photo_inner">
+<div class="mayhen_invitation_ladjihe38udhd_calendar_photo_img"
+     data-sync-target="save_date_photo_url"
+     style="background-image: url('{{ $saveDatePhotoUrl }}');"
+     role="img"
+     aria-label="Ảnh kỷ niệm Save The Date">
+</div>
+<div class="mayhen_invitation_ladjihe38udhd_calendar_photo_badge">
+<span>SAVE OUR DATE</span>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="mayhen_invitation_ladjihe38udhd_ladi-section" id="SECTION6">

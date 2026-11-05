@@ -183,6 +183,13 @@
             $$('[data-sync-target="bride_initial"]').forEach(el => el.textContent = initial.toLowerCase());
         }
         if (key === 'party_venue') DATA.partyVenue = value;
+        if (key === 'save_date_photo_url' || key === 'wedding.extra_data.save_date_photo_url') {
+            $$('[data-sync-target="save_date_photo_url"]').forEach(el => {
+                if (value) {
+                    el.style.backgroundImage = 'url("' + value + '")';
+                }
+            });
+        }
         if (key === 'groom_party_address') DATA.groomPartyAddress = DATA.groomEventAddress = value || DATA.eventPartyAddress || '';
         if (key === 'bride_party_address') DATA.bridePartyAddress = DATA.brideEventAddress = value || DATA.eventPartyAddress || '';
         if (key === 'wedding_lunar_date') {

@@ -75,6 +75,14 @@
           "placeholder": "Chọn ảnh chân dung cô dâu"
         },
         {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh lịch cưới (Save The Date)",
+          "type": "image",
+          "required": false,
+          "default": "images/external/5e2097a309453c729959a58c.jpg",
+          "placeholder": "Chọn ảnh cưới hiển thị bên cạnh lịch"
+        },
+        {
           "key": "wedding.extra_data.wedding_lunar_date",
           "label": "Ngày âm lịch hôn lễ",
           "type": "text",

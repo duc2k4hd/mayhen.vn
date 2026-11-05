@@ -2971,6 +2971,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Cache view: Đã làm sạch với `php artisan view:clear`.
 
+            112. **Sửa Vỡ Layout Lịch Cưới & Bổ Sung Khung Ảnh Kỷ Niệm Cột Phải Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Tại khối Lịch ngày cưới (SECTION24), trên màn hình máy tính / desktop xuất hiện khoảng đen trống trải rất lớn ở nửa bên phải.
+                  - Đồng thời thanh thứ trắng (MON-SUN) rộng tới 878px nhưng các con số ngày lại co cụm ở 402px bên trái do một rule toàn cục ghi đè `#GROUP82 { width: 402px !important; }`, làm lệch hoàn toàn cột Thứ và Ngày.
+                  - Người dùng yêu cầu sửa lỗi giao diện, thêm 1 bức ảnh cưới đẹp mắt vào bên phải để lấp đầy khoảng trống, hiển thị responsive chuẩn trên mọi thiết bị và cho phép người dùng thay đổi ảnh này trong Studio Tạo Thiệp.
+                - **Giải pháp xử lý triệt để**:
+                  1. *Bổ sung trường vào `schema.json`*:
+                     - Thêm trường `wedding.extra_data.save_date_photo_url` ("Ảnh lịch cưới (Save The Date)") vào tab "Đôi Uyên Ương" với fallback chuẩn asset nội bộ `images/external/5e2097a309453c729959a58c.jpg`, giúp khách hàng dễ dàng tải ảnh hoặc chọn ảnh tùy biến trong Studio Tạo Thiệp.
+                  2. *Cập nhật Blade & Hợp đồng Live-Sync (`template.blade.php`, `script.js`, `assets/script.js`)*:
+                     - Khởi tạo phần tử `#SECTION24_PHOTO` với class `.mayhen_invitation_ladjihe38udhd_calendar_photo_wrapper`, gắn thẻ ảnh với `data-sync-target="save_date_photo_url"` cùng badge `SAVE OUR DATE` thanh lịch.
+                     - Bổ sung logic bắt sự kiện `save_date_photo_url` trong `applySyncData` của `script.js` và `assets/script.js`, đảm bảo khi người dùng tải ảnh trong Studio Tạo Thiệp ảnh sẽ tự động thay đổi mượt mà ngay trên khung điện thoại.
+                  3. *Thiết kế CSS Responsive Hoàn Mỹ (`styles.css` & `assets/styles.css`)*:
+                     - *Gỡ bỏ rule fixed width 402px ở phạm vi toàn cục*: Phân chia rõ ràng bằng Media Query.
+                     - *Trên Desktop (>= 768px)*: Bố cục 2 cột cân xứng tuyệt mỹ (Cột trái rộng 450px gồm Tiêu đề Tháng/Năm, thanh MON-SUN và lưới ngày khớp 100% từng cột thẳng hàng + Nút Thêm vào lịch; Cột phải rộng 410px là Khung Ảnh Save Our Date bo góc 16px, viền mạ vàng nhẹ, đổ bóng mờ sang trọng, lấp đầy hoàn hảo khoảng trống đen trước đó).
+                     - *Trên Mobile (<= 767px)*: Cột lịch căn giữa màn hình (rộng `min(390px, calc(100% - 24px))`), phía dưới nút bấm là Card ảnh Save Our Date cân đối, chiều cao section mở rộng tự động lên 770px không bị cắt góc.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+                  - Cache view: Đã làm sạch với `php artisan view:clear`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
