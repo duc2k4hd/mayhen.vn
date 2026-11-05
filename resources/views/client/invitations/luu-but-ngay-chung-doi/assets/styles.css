@@ -15598,6 +15598,26 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     }
 }
 
+/* ==========================================================================
+   SECTION20: TỐI ƯU CHIỀU CAO ALBUM 10 ẢNH CƯỚI (TRIỆT TIÊU KHOẢNG TRỐNG THỪA)
+   ========================================================================== */
+#IMAGE119,
+#IMAGE120 {
+    display: none !important;
+}
+
+@media (min-width: 768px) {
+    #SECTION20 {
+        height: 3120px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    #SECTION20 {
+        height: 2315px !important;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .mayhen_invitation_ladjihe38udhd_door,
     .mayhen_invitation_ladjihe38udhd_ladi-element,

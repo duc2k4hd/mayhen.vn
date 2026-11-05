@@ -3130,6 +3130,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
 
+            116. **Khắc Phục Khoảng Trống Thừa 780px Ở Cuối Khối Album Ảnh SECTION20 Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng gửi ảnh chụp màn hình thắc mắc: "sao đoạn cuối chỗ album ảnh này bị trống nhiều vậy?" (khoảng cách giữa ảnh cuối cùng của album và khối đen RSVP "Xác nhận và gửi lời chúc" quá lớn, trống huếch trống hoác).
+                  - *Nguyên nhân cốt lõi*:
+                    + Trong bản thiết kế LadiPage gốc, album có 12 ảnh nên chiều cao `#SECTION20` được đặt là `3852.12px` (Desktop) và `2614.85px` (Mobile).
+                    + Tuy nhiên, theo quy chuẩn chung của hệ thống schema Mây Hẹn (`schema.json`), album chỉ gồm **10 ảnh** (`gallery.0` đến `gallery.9`). Hai ảnh thứ 11 và 12 (`#IMAGE119` và `#IMAGE120`) đã được ẩn đi bằng thuộc tính `hidden`.
+                    + Bức ảnh cuối cùng hiển thị là `#IMAGE114` (kết thúc ở tọa độ `3071.11px` trên Desktop và `2279.91px` trên Mobile).
+                    + Do chiều cao của `#SECTION20` không được điều chỉnh lại sau khi ẩn 2 ảnh thừa, dẫn đến khoảng cách từ chân ảnh `#IMAGE114` đến hết section bị bỏ trống lên tới **781px trên Desktop** và **335px trên Mobile**.
+                - **Giải pháp xử lý triệt để**:
+                  1. *Cưỡng chế ẩn triệt để 2 ảnh thừa*: `#IMAGE119, #IMAGE120 { display: none !important; }`.
+                  2. *Thu gọn chiều cao SECTION20 vừa khít với Album 10 ảnh*:
+                     - Trên Desktop (`@media (min-width: 768px)`): Cưỡng chế `#SECTION20 { height: 3120px !important; }`, chừa khoảng đệm dưới chân ảnh `#IMAGE114` là 49px cực kỳ thanh nhã và cân đối, triệt tiêu hoàn toàn 732px khoảng trống thừa.
+                     - Trên Mobile (`@media (max-width: 767px)`): Cưỡng chế `#SECTION20 { height: 2315px !important; }`, chừa khoảng đệm dưới chân ảnh là 35px vừa vặn hoàn hảo, triệt tiêu 300px khoảng trống thừa.
+                  3. *Đồng bộ tài nguyên & Clear cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Làm sạch cache Blade và route với `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
