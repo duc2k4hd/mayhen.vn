@@ -300,7 +300,7 @@
             <div class="mayhen_invitation_jeowinids483fr_ladi-container">
               {{-- Lưng phong bì xanh rêu hoàng gia --}}
               <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image51"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image51"
               >
                 <div class="mayhen_invitation_jeowinids483fr_ladi-image">
                   <div
@@ -365,7 +365,7 @@
                 </div>
               </div>
               <div
-                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_ladi-animation mayhen_invitation_jeowinids483fr_image52"
+                class="mayhen_invitation_jeowinids483fr_ladi-element mayhen_invitation_jeowinids483fr_image52"
               >
                 <div
                   class="mayhen_invitation_jeowinids483fr_ladi-image mayhen_invitation_jeowinids483fr_ladi-transition"

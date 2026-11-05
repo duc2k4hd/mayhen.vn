@@ -2931,6 +2931,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Laravel Pint: Passed agent format.
                      - Cache hệ thống: Cleared.
 
+            110. **Khắc Phục Triệt Để Lỗi Lệch Phong Bì Đầu Thiệp Khi Preview Mẫu "Dấu Ký Trăm Năm" (dau-ky-tram-nam)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Khi xem thực tế ở ngoài (`isEmbed = false`), mẫu thiệp hiển thị bình thường.
+                  - Tuy nhiên khi Preview trong Studio Tạo Thiệp hoặc iframe (`isEmbed = true`), cụm phong bì xanh rêu (`.mayhen_invitation_jeowinids483fr_image51` và `.image52`) bị xô lệch hẳn sang nửa bên phải màn hình, trong khi ảnh Polaroid (`.group134`) vẫn nằm ở giữa.
+                  - *Nguyên nhân cốt lõi*: Trong `dau-ky-tram-nam/styles.css` và `assets/styles.css` tại dòng 5175 có rule:
+                    ```css
+                    .mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation,
+                    .mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation-hidden {
+                        opacity: 1 !important;
+                        visibility: visible !important;
+                        transform: none !important;
+                    }
+                    ```
+                    Độ đặc hiệu của rule này là (0, 2, 0) kèm `!important`. Nó đè bẹp rule `transform: translateX(-50%) !important;` (độ đặc hiệu chỉ 0, 1, 0) của `image51` và `image52`. Khi mất `translateX(-50%)` nhưng vẫn giữ `left: 50% !important;`, mép trái phong bì bắt đầu từ tọa độ 50% rồi kéo sang phải, làm phong bì trôi tuột sang nửa phải. Khung Polaroid (`group134`) do không có class `ladi-animation` nên không bị ảnh hưởng, dẫn tới tình trạng lệch trục.
+                - **Giải pháp xử lý triệt để (3 lớp phòng vệ)**:
+                  1. *Lớp 1 (`styles.css` & `assets/styles.css` dòng 5175)*: Gỡ bỏ `transform: none !important;` khỏi selector `.mayhen_invitation_jeowinids483fr_embed_mode .mayhen_invitation_jeowinids483fr_ladi-animation`, chỉ giữ `opacity: 1 !important; visibility: visible !important;`.
+                  2. *Lớp 2 (`styles.css` & `assets/styles.css` dòng 5623)*: Nâng cao độ đặc hiệu bảo vệ cho `image51`, `group134`, `image52` với selector bao gồm `.mayhen_invitation_jeowinids483fr_embed_mode`, `body.mayhen_invitation_jeowinids483fr_embed_mode`, `.mayhen_embed_mode` để bảo đảm thuộc tính `left: 50% !important; transform: translateX(-50%) !important;` luôn được áp dụng vững chắc trong mọi môi trường.
+                  3. *Lớp 3 (`template.blade.php` dòng 303 & 368)*: Gỡ bỏ class `mayhen_invitation_jeowinids483fr_ladi-animation` thừa khỏi `image51` và `image52`, đảm bảo cụm phong bì là phần tử nền móng hiển thị tức thì, không bị ảnh hưởng bởi bất kỳ animation nào.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+                  - Cache view: Đã làm sạch với `php artisan view:clear`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
