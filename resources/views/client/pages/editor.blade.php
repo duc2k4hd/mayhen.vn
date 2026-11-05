@@ -147,12 +147,19 @@
                     @foreach ($sections as $index => $section)
                         @php
                             $shortTitle = $section['short_title'] ?? match ($section['id'] ?? '') {
+                                'hero' => 'Trang Bìa',
+                                'story' => 'Lời Ngỏ',
+                                'parents' => 'Gia Đình',
                                 'couple' => 'Đôi Uyên Ương',
+                                'countdown_calendar' => 'Đếm Ngược',
+                                'events' => 'Sự Kiện',
                                 'groom_family', 'groom_events' => 'Nhà Trai',
                                 'bride_family', 'bride_events' => 'Nhà Gái',
-                                'album', 'gallery', 'gallery_and_photos' => 'Ảnh Cưới',
                                 'timeline', 'story_and_timeline' => 'Lịch Trình',
+                                'dresscode' => 'Trang Phục',
+                                'album', 'gallery', 'gallery_and_photos' => 'Ảnh Cưới',
                                 'gift', 'banking', 'gift_and_music' => 'Mừng Cưới',
+                                'ending' => 'Lời Chúc',
                                 default => \Illuminate\Support\Str::limit($section['title'], 18)
                             };
                         @endphp

@@ -239,7 +239,7 @@
     <!-- ===================== NỘI DUNG CHÍNH CỦA THIỆP ===================== -->
     <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr">
 
-        <!-- SECTION 2: TRANG BÌA CHÍNH (HERO COVER) -->
+        <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="couple">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -285,8 +285,8 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 3: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_story mayhen_invitation_quote" data-mayhen-section="couple">
+        <!-- ===================== SECTION 2: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_story mayhen_invitation_quote" data-mayhen-section="story,couple">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -333,8 +333,8 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 4: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="groom_family,bride_family">
+        <!-- ===================== SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="parents,groom_family,bride_family">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -415,8 +415,8 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 5: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_countdown_calendar mayhen_invitation_countdown mayhen_invitation_calendar" data-mayhen-section="couple">
+        <!-- ===================== SECTION 4: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_countdown_calendar mayhen_invitation_countdown mayhen_invitation_calendar" data-mayhen-section="countdown_calendar,couple">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -534,8 +534,8 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 6: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_events mayhen_invitation_maps" data-mayhen-section="wedding_event">
+        <!-- ===================== SECTION 5: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_events mayhen_invitation_maps" data-mayhen-section="events,wedding_event">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -696,7 +696,7 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 7: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE) ===================== -->
+        <!-- ===================== SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_timeline" data-mayhen-section="timeline">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
@@ -748,7 +748,7 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 8: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
+        <!-- ===================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_dresscode" data-mayhen-section="dresscode">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
@@ -802,7 +802,7 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 9: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS) ===================== -->
+        <!-- ===================== SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_gallery" data-mayhen-section="album">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
@@ -848,11 +848,10 @@
 
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
-        <!-- ===================== SECTION 10: MỪNG CƯỚI, RSVP, LƯU BÚT & CẢM ƠN (GIFT, INTERACTIVE & ENDING) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_gift_interactive_ending mayhen_invitation_gift mayhen_invitation_rsvp mayhen_invitation_wishes mayhen_invitation_ending" data-mayhen-section="gift">
+        <!-- ===================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_gift" data-mayhen-section="gift">
             <div class="mayhen_invitation_ladi_section_background"></div>
             
-            <!-- Phần 1: Hộp mừng cưới VietQR -->
             <div class="mayhen_invitation_sr_dau_muc">
                 <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
@@ -936,9 +935,13 @@
                 </div>
                 <div class="mayhen_invitation_sr_qr_goi_y">Chạm vào mã QR để phóng to</div>
             </div>
+        </section>
 
-            <!-- Phân tách nhẹ trong Section 10 -->
-            <div class="mayhen_invitation_sr_vach" aria-hidden="true" style="margin: 40px 0 30px;"></div>
+        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+
+        <!-- ===================== SECTION 10: TƯƠNG TÁC, RSVP, LƯU BÚT & CẢM ƠN (INTERACTIVE, RSVP, WISHES & ENDING) ===================== -->
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_interactive_ending mayhen_invitation_rsvp mayhen_invitation_wishes mayhen_invitation_ending" data-mayhen-section="ending,interactive,rsvp,wishes">
+            <div class="mayhen_invitation_ladi_section_background"></div>
 
             <!-- Phần 2: Ký tên chúc phúc -->
             <div class="mayhen_invitation_sr_dau_muc">

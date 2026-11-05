@@ -18,23 +18,467 @@ class InvitationTemplateService
     protected static array $schemaCache = [];
 
     /**
-     * Danh sách 6 Section chuẩn hóa của hệ thống Mây Hẹn (Tối đa 6 phần, không thừa).
+     * Danh sách 10 Section chuẩn hóa của hệ thống Mây Hẹn (Đầy đủ 10 phần tiêu chuẩn).
      */
     public const CANONICAL_SECTION_ORDER = [
-        'couple',
-        'groom_family',
-        'bride_family',
-        'album',
+        'hero',
+        'story',
+        'parents',
+        'countdown_calendar',
+        'events',
         'timeline',
+        'dresscode',
+        'album',
         'gift',
+        'ending',
     ];
 
     /**
-     * Định nghĩa chuẩn mực 6 phần của một mẫu thiệp cưới Mây Hẹn.
+     * Danh sách key Section legacy để tương thích ngược.
+     */
+    public const LEGACY_SECTION_KEYS = [
+        'couple',
+        'groom_family',
+        'bride_family',
+    ];
+
+    /**
+     * Định nghĩa chuẩn mực 10 phần của một mẫu thiệp cưới Mây Hẹn.
      */
     public static function getCanonicalSections(): array
     {
         return [
+            'hero' => [
+                'id' => 'hero',
+                'title' => 'Trang Bìa Chính',
+                'short_title' => 'Trang Bìa',
+                'icon' => 'sparkles',
+                'description' => 'Tên cô dâu chú rể, loại lễ và ảnh đại diện bìa thiệp',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.ceremony_type',
+                        'label' => 'Loại hình lễ cưới',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Lễ Thành Hôn',
+                        'placeholder' => 'Ví dụ: Lễ Thành Hôn, Lễ Vu Quy...',
+                        'max' => 50,
+                    ],
+                    [
+                        'key' => 'wedding.groom_name',
+                        'label' => 'Họ và tên Chú rể',
+                        'type' => 'text',
+                        'required' => true,
+                        'default' => 'Minh Tuấn',
+                        'placeholder' => 'Ví dụ: Minh Tuấn',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.bride_name',
+                        'label' => 'Họ và tên Cô dâu',
+                        'type' => 'text',
+                        'required' => true,
+                        'default' => 'Thu Hà',
+                        'placeholder' => 'Ví dụ: Thu Hà',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.wedding_date',
+                        'label' => 'Ngày cử hành hôn lễ',
+                        'type' => 'date',
+                        'required' => true,
+                        'default' => '2026-12-20',
+                        'placeholder' => 'YYYY-MM-DD',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.wedding_lunar_date',
+                        'label' => 'Ngày âm lịch cử hành hôn lễ',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Nhằm ngày 12 tháng 11 năm Bính Ngọ',
+                        'placeholder' => 'Ví dụ: Nhằm ngày 12 tháng 11 năm Bính Ngọ',
+                        'max' => 100,
+                    ],
+                    [
+                        'key' => 'wedding.cover_photo_url',
+                        'label' => 'Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => '7da1e3a6d59c1a98.webp',
+                        'placeholder' => 'Đường dẫn ảnh bìa',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.slogan',
+                        'label' => 'Câu slogan mở màn',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Giữa muôn ngàn vì sao, chúng ta đã tìm thấy nhau',
+                        'placeholder' => 'Câu thông điệp mở màn thiệp cưới...',
+                        'max' => 200,
+                    ],
+                ],
+            ],
+            'story' => [
+                'id' => 'story',
+                'title' => 'Lời Ngỏ & Chuyện Tình Yêu',
+                'short_title' => 'Lời Ngỏ',
+                'icon' => 'heart',
+                'description' => 'Ảnh kỷ niệm, câu trích dẫn lãng mạn và thông điệp tình yêu',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.save_date_photo_url',
+                        'label' => 'Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => '40f8fb60afcb59af.webp',
+                        'placeholder' => 'Đường dẫn ảnh kỷ niệm',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.story_title',
+                        'label' => 'Tiêu đề mục Lời ngỏ',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Chuyện Tình Yêu',
+                        'placeholder' => 'Ví dụ: Chuyện Tình Yêu hoặc Love Story',
+                        'max' => 50,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.story_subtitle',
+                        'label' => 'Tiêu đề phụ câu chuyện',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Hành Trình Gặp Gỡ Giữa Ngân Hà',
+                        'placeholder' => 'Ví dụ: Hành Trình Gặp Gỡ Giữa Ngân Hà',
+                        'max' => 100,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.couple_quote',
+                        'label' => 'Lời ngỏ / Thông điệp tình yêu',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Giữa muôn ngàn vì sao sáng trên bầu trời, em là ngôi sao duy nhất chiếu rọi trái tim anh.',
+                        'placeholder' => 'Chia sẻ ngắn gọn lời ngỏ gửi đến quan khách...',
+                        'max' => 500,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.story_content',
+                        'label' => 'Đoạn tâm sự tình yêu',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Vũ trụ bao la với hàng triệu vì tinh tú, nhưng định mệnh đã dẫn lối để hai tâm hồn đồng điệu tìm thấy nhau. Cảm ơn vì đã cùng nhau đi qua những năm tháng thanh xuân, và hôm nay, chúng ta cùng viết tiếp chương mới rạng rỡ nhất.',
+                        'placeholder' => 'Kể ngắn gọn câu chuyện hoặc cảm xúc của hai bạn...',
+                        'max' => 1000,
+                    ],
+                ],
+            ],
+            'parents' => [
+                'id' => 'parents',
+                'title' => 'Song Thân & Đôi Uyên Ương',
+                'short_title' => 'Gia Đình & Uyên Ương',
+                'icon' => 'home',
+                'description' => 'Thông tin phụ mẫu hai bên, chân dung và lời tự bạch của cô dâu chú rể',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.groom_father',
+                        'label' => 'Họ tên Cha (Nhà Trai)',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Ông Nguyễn Văn Hùng',
+                        'placeholder' => 'Ví dụ: Ông Nguyễn Văn Hùng',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.groom_mother',
+                        'label' => 'Họ tên Mẹ (Nhà Trai)',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Bà Lê Thị Thu',
+                        'placeholder' => 'Ví dụ: Bà Lê Thị Thu',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.groom_parents_address',
+                        'label' => 'Địa chỉ tư gia Nhà Trai',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Tư gia Nhà Trai - Đống Đa, Hà Nội',
+                        'placeholder' => 'Địa chỉ chi tiết tư gia Nhà Trai',
+                        'max' => 255,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_father',
+                        'label' => 'Họ tên Cha (Nhà Gái)',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Ông Trần Quốc Bảo',
+                        'placeholder' => 'Ví dụ: Ông Trần Quốc Bảo',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_mother',
+                        'label' => 'Họ tên Mẹ (Nhà Gái)',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Bà Phạm Thị Mai',
+                        'placeholder' => 'Ví dụ: Bà Phạm Thị Mai',
+                        'max' => 30,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_parents_address',
+                        'label' => 'Địa chỉ tư gia Nhà Gái',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Tư gia Nhà Gái - Ba Đình, Hà Nội',
+                        'placeholder' => 'Địa chỉ chi tiết tư gia Nhà Gái',
+                        'max' => 255,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.groom_photo_url',
+                        'label' => 'Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => 'b058b38c28460637.webp',
+                        'placeholder' => 'Đường dẫn ảnh Chú rể',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.groom_bio',
+                        'label' => 'Giới thiệu / Lời tự bạch Chú rể',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Một chàng trai điềm đạm, chân thành và luôn sống trọn vẹn vì tình yêu thương gia đình.',
+                        'placeholder' => 'Vài dòng chia sẻ ngắn về chú rể...',
+                        'max' => 255,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_photo_url',
+                        'label' => 'Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)',
+                        'type' => 'image',
+                        'required' => false,
+                        'default' => '307b8d7ea14424b9.webp',
+                        'placeholder' => 'Đường dẫn ảnh Cô dâu',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.bride_bio',
+                        'label' => 'Giới thiệu / Lời tự bạch Cô dâu',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.',
+                        'placeholder' => 'Vài dòng chia sẻ ngắn về cô dâu...',
+                        'max' => 255,
+                    ],
+                ],
+            ],
+            'countdown_calendar' => [
+                'id' => 'countdown_calendar',
+                'title' => 'Đếm Ngược & Lịch Tháng',
+                'short_title' => 'Đếm Ngược',
+                'icon' => 'calendar',
+                'description' => 'Đồng hồ đếm ngược thời gian thực và lịch tháng lưu ngày trọng đại',
+                'fields' => [
+                    [
+                        'key' => 'wedding.wedding_date',
+                        'label' => 'Ngày đếm ngược đến hôn lễ',
+                        'type' => 'date',
+                        'required' => true,
+                        'default' => '2026-12-20',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.event_target_time',
+                        'label' => 'Giờ mục tiêu đếm ngược',
+                        'type' => 'time',
+                        'required' => false,
+                        'default' => '18:00',
+                    ],
+                ],
+            ],
+            'events' => [
+                'id' => 'events',
+                'title' => 'Thông Tin Sự Kiện & Bản Đồ',
+                'short_title' => 'Sự Kiện & Bản Đồ',
+                'icon' => 'map-pin',
+                'description' => 'Chi tiết tiệc cưới chính, nghi lễ gia tiên và bản đồ Google Maps',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.party_time',
+                        'label' => 'Giờ tổ chức tiệc cưới chính',
+                        'type' => 'time',
+                        'required' => false,
+                        'default' => '18:00',
+                        'placeholder' => 'Ví dụ: 18:00',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.party_venue',
+                        'label' => 'Tên nơi tổ chức / Trung tâm tiệc cưới',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Trung Tâm Hội Nghị Tiệc Cưới Ngân Hà',
+                        'placeholder' => 'Ví dụ: Trung Tâm Hội Nghị Tiệc Cưới Ngân Hà',
+                        'max' => 150,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.event_party_address',
+                        'label' => 'Địa chỉ nơi tổ chức tiệc cưới',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Tầng 3, Sảnh Star Palace - 88 Phố Vọng, Hai Bà Trưng, Hà Nội',
+                        'placeholder' => 'Địa chỉ chi tiết sảnh tiệc hoặc nhà hàng tiệc cưới...',
+                        'max' => 300,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.ceremony_time',
+                        'label' => 'Giờ tổ chức Lễ Vu Quy (Nhà Gái)',
+                        'type' => 'time',
+                        'required' => false,
+                        'default' => '08:00',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.ceremony_address',
+                        'label' => 'Địa chỉ Lễ Vu Quy (Nhà Gái)',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Tư gia Nhà Gái - Ba Đình, Hà Nội',
+                        'max' => 255,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.ceremony_groom_time',
+                        'label' => 'Giờ tổ chức Lễ Thành Hôn (Nhà Trai)',
+                        'type' => 'time',
+                        'required' => false,
+                        'default' => '10:00',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.ceremony_groom_address',
+                        'label' => 'Địa chỉ Lễ Thành Hôn (Nhà Trai)',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Tư gia Nhà Trai - Đống Đa, Hà Nội',
+                        'max' => 255,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.event_party_map_link',
+                        'label' => 'Đường dẫn bản đồ Google Maps',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'https://maps.google.com',
+                        'placeholder' => 'https://maps.google.com/...',
+                    ],
+                ],
+            ],
+            'timeline' => [
+                'id' => 'timeline',
+                'title' => 'Lịch Trình Hôn Lễ',
+                'short_title' => 'Lịch Trình',
+                'icon' => 'clock',
+                'description' => 'Các mốc thời gian diễn ra hôn lễ và tiệc mừng',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.timeline',
+                        'label' => 'Lịch trình các mốc thời gian',
+                        'type' => 'repeater',
+                        'required' => false,
+                        'max_items' => 6,
+                        'default' => [
+                            ['time' => '17:30', 'title' => 'Đón khách'],
+                            ['time' => '18:00', 'title' => 'Cử hành hôn lễ'],
+                            ['time' => '18:30', 'title' => 'Khai tiệc'],
+                            ['time' => '20:00', 'title' => 'Giao lưu & chụp ảnh'],
+                        ],
+                        'item_structure' => [
+                            ['key' => 'time', 'label' => 'Giờ', 'type' => 'time'],
+                            ['key' => 'title', 'label' => 'Nội dung', 'type' => 'text'],
+                        ],
+                    ],
+                ],
+            ],
+            'dresscode' => [
+                'id' => 'dresscode',
+                'title' => 'Quy Định Trang Phục',
+                'short_title' => 'Trang Phục',
+                'icon' => 'palette',
+                'description' => 'Gợi ý bảng màu trang phục dự tiệc cưới cho khách quý',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.dresscode_colors',
+                        'label' => 'Bảng màu trang phục gợi ý (Mã HEX cách nhau bởi dấu phẩy)',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => '#FCE39E,#FFFFFF,#1B2A4A,#0D1322',
+                        'placeholder' => '#FCE39E,#FFFFFF,#1B2A4A,#0D1322',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.dresscode_note',
+                        'label' => 'Ghi chú trang phục',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Khuyến khích trang phục thanh lịch mang tông màu ấm áp để những bức ảnh kỷ niệm thêm phần lung linh.',
+                        'placeholder' => 'Ví dụ: Khuyến khích trang phục màu vàng gold, trắng hoặc đen...',
+                        'max' => 255,
+                    ],
+                ],
+            ],
+            'album' => [
+                'id' => 'album',
+                'title' => 'Khoảnh Khắc Hạnh Phúc (10 Ảnh Cưới)',
+                'short_title' => 'Ảnh Cưới',
+                'icon' => 'image',
+                'description' => 'Bộ sưu tập đúng 10 ảnh cưới ngọt ngào và đáng nhớ',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.gallery',
+                        'label' => 'Album 10 Ảnh Cưới',
+                        'type' => 'gallery',
+                        'required' => false,
+                        'max_items' => 10,
+                    ],
+                ],
+            ],
+            'gift' => [
+                'id' => 'gift',
+                'title' => 'Hộp Mừng Cưới & VietQR',
+                'short_title' => 'Mừng Cưới',
+                'icon' => 'gift',
+                'description' => 'Mã QR mừng cưới ngân hàng tiện lợi và an toàn',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.qr_groom_image',
+                        'label' => 'Mã QR Mừng Cưới Chú Rể',
+                        'type' => 'image',
+                        'required' => false,
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.qr_bride_image',
+                        'label' => 'Mã QR Mừng Cưới Cô Dâu',
+                        'type' => 'image',
+                        'required' => false,
+                    ],
+                ],
+            ],
+            'ending' => [
+                'id' => 'ending',
+                'title' => 'Tương Tác, Lời Chúc & Cảm Ơn',
+                'short_title' => 'Cảm Ơn',
+                'icon' => 'check-circle',
+                'description' => 'Xác nhận tham dự (RSVP), sổ lưu bút và lời cảm tạ chân thành',
+                'fields' => [
+                    [
+                        'key' => 'wedding.extra_data.thank_you_title',
+                        'label' => 'Tiêu đề lời tri ân kết thiệp',
+                        'type' => 'text',
+                        'required' => false,
+                        'default' => 'Thank You',
+                        'placeholder' => 'Thank You',
+                    ],
+                    [
+                        'key' => 'wedding.extra_data.thank_you_quote',
+                        'label' => 'Thông điệp cảm ơn gửi quan khách',
+                        'type' => 'textarea',
+                        'required' => false,
+                        'default' => 'Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!',
+                        'max' => 500,
+                    ],
+                ],
+            ],
+            // Khối legacy hỗ trợ tương thích ngược
             'couple' => [
                 'id' => 'couple',
                 'title' => 'Đôi Uyên Ương',
@@ -47,8 +491,8 @@ class InvitationTemplateService
                         'label' => 'Họ và tên Chú rể',
                         'type' => 'text',
                         'required' => true,
-                        'default' => 'Tràng Đức',
-                        'placeholder' => 'Ví dụ: Tràng Đức',
+                        'default' => 'Minh Tuấn',
+                        'placeholder' => 'Ví dụ: Minh Tuấn',
                         'max' => 100,
                     ],
                     [
@@ -56,8 +500,8 @@ class InvitationTemplateService
                         'label' => 'Họ và tên Cô dâu',
                         'type' => 'text',
                         'required' => true,
-                        'default' => 'Ngọc Phượng',
-                        'placeholder' => 'Ví dụ: Ngọc Phượng',
+                        'default' => 'Thu Hà',
+                        'placeholder' => 'Ví dụ: Thu Hà',
                         'max' => 100,
                     ],
                     [
@@ -81,7 +525,7 @@ class InvitationTemplateService
                         'label' => 'Ngày cử hành hôn lễ',
                         'type' => 'date',
                         'required' => true,
-                        'default' => '2027-03-07',
+                        'default' => '2026-12-20',
                         'placeholder' => 'YYYY-MM-DD',
                     ],
                     [
@@ -263,74 +707,11 @@ class InvitationTemplateService
                     ],
                 ],
             ],
-            'album' => [
-                'id' => 'album',
-                'title' => 'Ảnh Cưới (10 Ảnh)',
-                'short_title' => 'Ảnh Cưới',
-                'icon' => 'image',
-                'description' => 'Bộ sưu tập 10 ảnh cưới ngọt ngào và đáng nhớ',
-                'fields' => [
-                    [
-                        'key' => 'wedding.extra_data.gallery',
-                        'label' => 'Album 10 Ảnh Cưới',
-                        'type' => 'gallery',
-                        'required' => false,
-                        'max_items' => 10,
-                    ],
-                ],
-            ],
-            'timeline' => [
-                'id' => 'timeline',
-                'title' => 'Lịch Trình Hôn Lễ',
-                'short_title' => 'Lịch Trình',
-                'icon' => 'clock',
-                'description' => 'Các mốc thời gian diễn ra hôn lễ và tiệc mừng',
-                'fields' => [
-                    [
-                        'key' => 'wedding.extra_data.timeline',
-                        'label' => 'Lịch trình các mốc thời gian',
-                        'type' => 'repeater',
-                        'required' => false,
-                        'max_items' => 6,
-                        'default' => [
-                            ['time' => '08:30', 'title' => 'Đón Khách'],
-                            ['time' => '09:30', 'title' => 'Cử Hành Hôn Lễ'],
-                            ['time' => '10:30', 'title' => 'Khai Tiệc Mừng'],
-                            ['time' => '11:30', 'title' => 'Chụp Ảnh Kỷ Niệm'],
-                        ],
-                        'item_structure' => [
-                            ['key' => 'time', 'label' => 'Giờ', 'type' => 'time'],
-                            ['key' => 'title', 'label' => 'Nội dung', 'type' => 'text'],
-                        ],
-                    ],
-                ],
-            ],
-            'gift' => [
-                'id' => 'gift',
-                'title' => 'Hộp Mừng Cưới',
-                'short_title' => 'Mừng Cưới',
-                'icon' => 'gift',
-                'description' => 'Mã QR mừng cưới ngân hàng tiện lợi và an toàn',
-                'fields' => [
-                    [
-                        'key' => 'wedding.extra_data.qr_groom_image',
-                        'label' => 'Mã QR Mừng Cưới Chú Rể',
-                        'type' => 'image',
-                        'required' => false,
-                    ],
-                    [
-                        'key' => 'wedding.extra_data.qr_bride_image',
-                        'label' => 'Mã QR Mừng Cưới Cô Dâu',
-                        'type' => 'image',
-                        'required' => false,
-                    ],
-                ],
-            ],
         ];
     }
 
     /**
-     * Chuẩn hóa Schema đảm bảo tuân thủ đúng tối đa 6 phần (Không thừa, được phép thiếu).
+     * Chuẩn hóa Schema đảm bảo tuân thủ đầy đủ 10 Section tiêu chuẩn.
      */
     public function normalizeSchema(array $rawSchema, ?string $slug = null): array
     {
@@ -339,35 +720,12 @@ class InvitationTemplateService
 
         // Nếu chưa có supported_sections, lấy từ các section ids hiện có trong file JSON
         if (! is_array($supportedKeys) || empty($supportedKeys)) {
-            $existingSectionIds = array_column($rawSchema['sections'] ?? [], 'id');
-            // Ánh xạ các section cũ sang 6 key chuẩn
-            $supportedKeys = [];
-            foreach ($existingSectionIds as $sid) {
-                $mapped = match ($sid) {
-                    'couple' => 'couple',
-                    'groom_events', 'groom_family' => 'groom_family',
-                    'bride_events', 'bride_family' => 'bride_family',
-                    'events', 'event' => ['groom_family', 'bride_family'],
-                    'gallery', 'album', 'gallery_and_photos' => 'album',
-                    'timeline', 'story_and_timeline' => 'timeline',
-                    'banking', 'gift', 'gift_and_music' => 'gift',
-                    default => null,
-                };
-
-                if (is_array($mapped)) {
-                    foreach ($mapped as $m) {
-                        if (! in_array($m, $supportedKeys, true)) {
-                            $supportedKeys[] = $m;
-                        }
-                    }
-                } elseif ($mapped && ! in_array($mapped, $supportedKeys, true)) {
-                    $supportedKeys[] = $mapped;
-                }
-            }
+            $supportedKeys = array_column($rawSchema['sections'] ?? [], 'id');
         }
 
-        // Lọc chỉ giữ các section thuộc 6 canonical section IDs
-        $validSupported = array_values(array_intersect(self::CANONICAL_SECTION_ORDER, (array) $supportedKeys));
+        // Hỗ trợ cả 10 canonical sections và các key legacy tương thích ngược
+        $allowedKeys = array_merge(self::CANONICAL_SECTION_ORDER, self::LEGACY_SECTION_KEYS);
+        $validSupported = array_values(array_intersect((array) $supportedKeys, $allowedKeys));
         if (empty($validSupported)) {
             $validSupported = self::CANONICAL_SECTION_ORDER;
         }

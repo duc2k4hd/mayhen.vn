@@ -538,6 +538,29 @@ const initEditor = () => {
         }
     };
 
+    // Smart Scroll-on-Action: Gửi thông điệp cuộn tới phần tử đích và Highlight vàng kim trong Preview
+    let lastScrolledKey = null;
+    let scrollDebounceTimer = null;
+    const sendScrollToTarget = (key, action = 'focus') => {
+        if (!key) return;
+        const payload = {
+            type: 'MAYHEN_SCROLL_TO_TARGET',
+            target: key,
+            action: action,
+        };
+
+        try {
+            if (previewIframe && previewIframe.contentWindow) {
+                previewIframe.contentWindow.postMessage(payload, '*');
+            }
+            if (mobileIframe && mobileIframe.contentWindow) {
+                mobileIframe.contentWindow.postMessage(payload, '*');
+            }
+        } catch (e) {
+            // Safe cross-origin fallback
+        }
+    };
+
     const updateDockNames = () => {
         if (!dockNames) return;
         const groomInp = document.querySelector('[data-sync-key="wedding.groom_name"]');
@@ -579,6 +602,17 @@ const initEditor = () => {
     };
 
     if (mainForm) {
+        // Smart Scroll-on-Action: Khi người dùng focus vào bất kỳ ô nhập liệu nào
+        on(mainForm, 'focusin', (e) => {
+            const target = e.target;
+            if (!target) return;
+            const key = target.getAttribute('data-sync-key') || target.getAttribute('name') || target.id;
+            if (key && key !== lastScrolledKey) {
+                lastScrolledKey = key;
+                sendScrollToTarget(key, 'focus');
+            }
+        });
+
         const handleInputEvent = (e) => {
             const target = e.target;
             const key = target.getAttribute('data-sync-key');
@@ -614,6 +648,15 @@ const initEditor = () => {
             // Tự động tính toán ngày Âm lịch nếu là ô ngày dương lịch
             if (target && target.classList && target.classList.contains('mayhen_date_with_auto_lunar')) {
                 updateAutoLunarFromDateInput(target);
+            }
+
+            // Smart Scroll-on-Action: Khi người dùng đang nhập họ tên hoặc dữ liệu
+            if (key !== lastScrolledKey) {
+                lastScrolledKey = key;
+                clearTimeout(scrollDebounceTimer);
+                scrollDebounceTimer = setTimeout(() => {
+                    sendScrollToTarget(key, 'type');
+                }, 120);
             }
 
             // Đồng bộ sang Iframe
@@ -656,6 +699,37 @@ const initEditor = () => {
         on(mainForm, 'input', handleInputEvent);
         on(mainForm, 'change', handleInputEvent);
         mainForm.addEventListener('blur', handleBlurSanitize, true);
+
+        // Smart Scroll-on-Action: Khi click vào nút chọn/tải ảnh cưới bất kỳ
+        document.addEventListener('click', (e) => {
+            const uploadTrigger = e.target.closest('label[for^="upload_"], .mayhen_editor_upload_btn, .mayhen_editor_file_uploader_wrapper, [data-upload-trigger]');
+            if (uploadTrigger) {
+                const forAttr = uploadTrigger.getAttribute('for');
+                let targetInput = null;
+                if (forAttr) {
+                    const fileInp = document.getElementById(forAttr);
+                    if (fileInp) {
+                        const targetInputId = fileInp.getAttribute('data-target-input');
+                        if (targetInputId) targetInput = document.getElementById(targetInputId);
+                    }
+                }
+                if (!targetInput) {
+                    const fieldBox = uploadTrigger.closest('.mayhen_editor_field_group, .mayhen_editor_field, .mayhen_editor_photo_slot');
+                    const uploaderInBox = fieldBox?.querySelector('.mayhen_editor_file_uploader');
+                    if (uploaderInBox) {
+                        const targetInputId = uploaderInBox.getAttribute('data-target-input');
+                        if (targetInputId) targetInput = document.getElementById(targetInputId);
+                    }
+                }
+                if (targetInput) {
+                    const key = targetInput.getAttribute('data-sync-key') || targetInput.getAttribute('name') || targetInput.id;
+                    if (key) {
+                        lastScrolledKey = key;
+                        sendScrollToTarget(key, 'upload');
+                    }
+                }
+            }
+        });
     }
 
     // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form, bảng màu và thứ tự bố cục sang iframe
@@ -1025,7 +1099,10 @@ const initEditor = () => {
             if (targetInput) {
                 targetInput.value = dataUrl;
                 const syncKey = targetInput.getAttribute('data-sync-key');
-                if (syncKey) sendSyncMessage(syncKey, dataUrl);
+                if (syncKey) {
+                    sendSyncMessage(syncKey, dataUrl);
+                    sendScrollToTarget(syncKey, 'uploaded');
+                }
             }
 
             if (statusEl) {
@@ -1088,7 +1165,10 @@ const initEditor = () => {
                         if (targetInput) {
                             targetInput.value = dataUrl;
                             const syncKey = targetInput.getAttribute('data-sync-key');
-                            if (syncKey) sendSyncMessage(syncKey, dataUrl);
+                            if (syncKey) {
+                                sendSyncMessage(syncKey, dataUrl);
+                                sendScrollToTarget(syncKey, 'uploaded');
+                            }
                         }
                         if (statusEl) {
                             statusEl.textContent = '✓ Tải ảnh thành công';
@@ -1255,6 +1335,7 @@ const initEditor = () => {
                         payload: { key: syncKey, value: localQrData }
                     });
                     sendSyncMessage(syncKey, localQrData);
+                    sendScrollToTarget(syncKey, 'bank');
                 }
             }
         } catch (error) {

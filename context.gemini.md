@@ -3326,6 +3326,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                    - `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
                    - `php artisan optimize:clear`: Xóa sạch cache cấu hình, view, route.
 
+             125. **Chuẩn Hóa Logic Studio Tạo Thiệp V2 Với 10 Section & Giao Thức Smart Scroll-on-Action Tự Động Cuộn Xem Trước**:
+                 - **Bối cảnh & Yêu cầu**: Trình tạo thiệp (`/tao-thiep`) cần hoạt động ăn khớp với chuẩn 10 Section tiêu chuẩn. Khi người dùng bấm chuyển tab trên Stepper, hoặc tương tác với bất kỳ trường nhập liệu nào (gõ họ tên chú rể, cô dâu, ngày cưới, lời ngỏ...) hay click/chọn/tải ảnh cưới nào, màn hình Preview bên phải phải tự động cuộn đến đúng phần tử đó và phát sáng highlight vàng kim Quiet Luxury để người dùng quan sát trực quan nhất.
+                 - **Các công việc đã thực thi**:
+                   1. *Backend Service (`app/Services/InvitationTemplateService.php`)*:
+                      - Chuẩn hóa `CANONICAL_SECTION_ORDER` thành đúng 10 Section tiêu chuẩn (`hero`, `story`, `parents`, `countdown_calendar`, `events`, `timeline`, `dresscode`, `album`, `gift`, `ending`).
+                      - Cập nhật `getCanonicalSections()` định nghĩa đủ 10 Section chuẩn cùng các key legacy (`couple`, `groom_family`, `bride_family`).
+                      - Nâng cấp `normalizeSchema()` để luôn bảo tồn đủ 10 Section, không bị loại bỏ.
+                   2. *Template Bridge (`resources/views/client/invitations/partials/editor-bridge.blade.php`)*:
+                      - Nâng cấp `MAYHEN_SCROLL_TO_SECTION`: Hỗ trợ cuộn chuẩn xác cả 10 Section tiêu chuẩn theo ID và theo số thứ tự `step` (1..10). Tự động mở hộp quà nếu chuyển đến Section 9 (`gift`).
+                      - Bổ sung `MAYHEN_SCROLL_TO_TARGET`: Tìm kiếm phần tử mục tiêu thông minh (Smart Target Mapping), cuộn mượt ra giữa màn hình (`scrollIntoView({ behavior: 'smooth', block: 'center' })`), và kích hoạt hiệu ứng highlight vàng kim `.mayhen_editor_target_highlight`.
+                      - Định nghĩa animation `@keyframes mayhenTargetPulse` màu vàng kim Quiet Luxury (`#C5A880`) phát sáng nhẹ nhàng trong 1.8s.
+                   3. *Editor Frontend Controller (`public/assets/client/js/pages/editor.js`)*:
+                      - Bổ sung hàm `sendScrollToTarget(key, action)`.
+                      - Bắt sự kiện `focusin` trên `mainForm` để gửi tín hiệu cuộn ngay khi người dùng chọn một trường bất kỳ.
+                      - Bắt sự kiện `input` (debounced) để cuộn theo khi đang gõ họ tên, ngày cưới...
+                      - Lắng nghe sự kiện `click` trên tất cả các nút/nhãn upload ảnh (`label[for^="upload_"]`, `.mayhen_editor_upload_btn`) để gửi tín hiệu cuộn ngay khi bấm chọn ảnh.
+                      - Kích hoạt cuộn khi hoàn tất cắt ảnh (`cropperConfirmBtn`), nén ảnh (`fileUploaders`), hoặc cập nhật ngân hàng/STK VietQR (`updateVietQr`).
+                   4. *Editor Blade View (`resources/views/client/pages/editor.blade.php`)*:
+                      - Cập nhật tiêu đề rút gọn của Stepper Nav Pills cho cả 10 Section tiêu chuẩn (`Trang Bìa`, `Lời Ngỏ`, `Gia Đình`, `Đếm Ngược`, `Sự Kiện`, `Lịch Trình`, `Trang Phục`, `Ảnh Cưới`, `Mừng Cưới`, `Lời Chúc`).
+                   5. *Cập nhật Skill Agent (`.agents/skills/mayhen-visual-editor/SKILL.md`)*:
+                      - Viết lại chi tiết, toàn diện, rõ ràng từng nguyên tắc cốt lõi, ma trận ánh xạ mục tiêu (Smart Target Mapping Matrix), giao thức truyền thông 2 chiều qua `window.postMessage`, CSS highlight vàng kim Quiet Luxury, và tiêu chí Definition of Done (DoD).
+                 - **Kiểm thử & Định dạng**:
+                   - `vendor/bin/pest tests/Feature`: 3/3 tests passed (20 assertions).
+                   - `vendor/bin/pint --dirty --format agent`: Formatted chuẩn xác.
+                   - `php artisan optimize:clear`: Xóa sạch cache hệ thống thành công.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
