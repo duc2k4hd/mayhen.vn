@@ -242,9 +242,9 @@
         <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="couple">
             <div class="mayhen_invitation_ladi_section_background"></div>
-            <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_sr_kicker mayhen_invitation_hero_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_sr_orn"></i>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Lễ Thành Hôn</p></div>
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_name mayhen_invitation_ladi_headline_ceremony_type" data-sync-target="ceremony_type">Lễ Thành Hôn</p></div>
                 <i class="mayhen_invitation_sr_orn"></i>
             </div>
             <div class="mayhen_invitation_sr_quy_dao mayhen_invitation_sr_hien" data-hieu-ung="phong">
@@ -256,42 +256,42 @@
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l3" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l4" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l5" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
-                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_dau mayhen_invitation_anh_tron">
+                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_dau mayhen_invitation_anh_tron mayhen_invitation_hero_media">
                     <div class="mayhen_invitation_ladi_image">
-                        <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $heroPhotoUrl }}');" data-sync-target="hero_photo_url"></div>
+                        <div class="mayhen_invitation_ladi_image_background mayhen_invitation_ladi_image" style="background-image: url('{{ $heroPhotoUrl }}');" data-sync-target="hero_photo_url"></div>
                     </div>
                 </div>
                 <span class="mayhen_invitation_vet_sang" aria-hidden="true"></span>
             </div>
             <div class="mayhen_invitation_sr_ten_cap">
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ten mayhen_invitation_sr_hien" data-hieu-ung="trai">
-                    <h1 class="mayhen_invitation_ladi_headline" data-sync-target="groom_name">{{ $groomName }}</h1>
+                    <h1 class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_name_groom" data-sync-target="groom_name">{{ $groomName }}</h1>
                 </div>
-                <div class="mayhen_invitation_sr_va mayhen_invitation_sr_hien" data-hieu-ung="phong">&amp;</div>
+                <div class="mayhen_invitation_sr_va mayhen_invitation_hero_amp mayhen_invitation_sr_hien" data-hieu-ung="phong">&amp;</div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ten mayhen_invitation_sr_hien" data-hieu-ung="phai">
-                    <h1 class="mayhen_invitation_ladi_headline" data-sync-target="bride_name">{{ $brideName }}</h1>
+                    <h1 class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_name_bride" data-sync-target="bride_name">{{ $brideName }}</h1>
                 </div>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ngay_dau mayhen_invitation_sr_phat_sang mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_headline" data-sync-target="wedding_date_digits">{{ $weddingDateDigits }}</p>
+                <p class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_wedding_day" data-sync-target="wedding_date_digits">{{ $weddingDateDigits }}</p>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_am_dau mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph" data-sync-target="wedding_lunar_date">{{ $weddingLunar }}</p>
+                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ladi_paragraph_lunar_calendar" data-sync-target="wedding_lunar_date">{{ $weddingLunar }}</p>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_cau_dau mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph">Giữa muôn vàn vì sao,<br>chúng ta đã tìm thấy nhau</p>
+                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ladi_paragraph_slogan">Giữa muôn vàn vì sao,<br>chúng ta đã tìm thấy nhau</p>
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 2: LỜI NGỎ & CHUYỆN TÌNH YÊU (LOVE STORY & QUOTE) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_story mayhen_invitation_quote" data-mayhen-section="story,couple">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_story mayhen_invitation_quote" data-mayhen-section="story">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_story_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
-                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline" data-sync-target="story_title">{{ $storyTitle }}</p></div>
+                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_story" data-sync-target="story_title">{{ $storyTitle }}</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
@@ -314,14 +314,14 @@
                 </div>
 
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_story_sub">
-                    <h3 class="mayhen_invitation_ladi_headline" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
+                    <h3 class="mayhen_invitation_ladi_headline mayhen_invitation_story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
                 </div>
 
                 <blockquote class="mayhen_invitation_quote_text" data-sync-target="couple_quote">
                     “{{ $coupleQuote }}”
                 </blockquote>
 
-                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_story_text" data-sync-target="story_content">
+                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_story_text mayhen_invitation_story_content" data-sync-target="story_content">
                     {{ $storyContent }}
                 </p>
 
@@ -331,18 +331,18 @@
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 3: SONG THÂN & ĐÔI UYÊN ƯƠNG (FAMILY & COUPLE) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="parents,groom_family,bride_family">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_parents mayhen_invitation_couple" data-mayhen-section="parents">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_family_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Hai Họ</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_family_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Hai Bên Gia Đình</h2>
                 </div>
             </div>
@@ -357,58 +357,58 @@
                     <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                 </span>
                 <div class="mayhen_invitation_ben" data-ben="trai" data-mayhen-section="groom_family">
-                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_ho"><p class="mayhen_invitation_ladi_headline">Nhà Trai</p></div>
+                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_ho"><p class="mayhen_invitation_ladi_headline mayhen_invitation_family_groom_title">Nhà Trai</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_bo_me">
                         <p class="mayhen_invitation_ladi_paragraph">
-                            <span data-sync-target="groom_father">{{ $groomFather }}</span><br>
-                            <span data-sync-target="groom_mother">{{ $groomMother }}</span>
+                            <span class="mayhen_invitation_family_groom_father" data-sync-target="groom_father">{{ $groomFather }}</span><br>
+                            <span class="mayhen_invitation_family_groom_mother" data-sync-target="groom_mother">{{ $groomMother }}</span>
                         </p>
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_dc">
-                        <p class="mayhen_invitation_ladi_paragraph" data-sync-target="groom_parents_address">{{ $groomParentsAddress }}</p>
+                        <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_family_groom_address" data-sync-target="groom_parents_address">{{ $groomParentsAddress }}</p>
                     </div>
                 </div>
                 <div class="mayhen_invitation_giua" aria-hidden="true"></div>
                 <div class="mayhen_invitation_ben" data-ben="phai" data-mayhen-section="bride_family">
-                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_ho"><p class="mayhen_invitation_ladi_headline">Nhà Gái</p></div>
+                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_ho"><p class="mayhen_invitation_ladi_headline mayhen_invitation_family_bride_title">Nhà Gái</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_bo_me">
                         <p class="mayhen_invitation_ladi_paragraph">
-                            <span data-sync-target="bride_father">{{ $brideFather }}</span><br>
-                            <span data-sync-target="bride_mother">{{ $brideMother }}</span>
+                            <span class="mayhen_invitation_family_bride_father" data-sync-target="bride_father">{{ $brideFather }}</span><br>
+                            <span class="mayhen_invitation_family_bride_mother" data-sync-target="bride_mother">{{ $brideMother }}</span>
                         </p>
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_dc">
-                        <p class="mayhen_invitation_ladi_paragraph" data-sync-target="bride_parents_address">{{ $brideParentsAddress }}</p>
+                        <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_family_bride_address" data-sync-target="bride_parents_address">{{ $brideParentsAddress }}</p>
                     </div>
                 </div>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_bao_tin mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph">Trân trọng báo tin lễ thành hôn<br>của con chúng tôi</p>
+                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_family_notice">Trân trọng báo tin lễ thành hôn<br>của con chúng tôi</p>
             </div>
             <div class="mayhen_invitation_sr_doi">
                 <div class="mayhen_invitation_sr_hien" data-hieu-ung="trai">
-                    <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_chure mayhen_invitation_tron_nho">
+                    <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_chure mayhen_invitation_tron_nho mayhen_invitation_groom_photo">
                         <div class="mayhen_invitation_ladi_image">
                             <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $groomPhotoUrl }}');" data-sync-target="groom_photo_url"></div>
                         </div>
                     </div>
-                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai"><p class="mayhen_invitation_ladi_headline">Chú Rể</p></div>
+                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai mayhen_invitation_groom_role"><p class="mayhen_invitation_ladi_headline">Chú Rể</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ten_ben mayhen_invitation_sr_ten">
-                        <h3 class="mayhen_invitation_ladi_headline" data-sync-target="groom_name">{{ $groomName }}</h3>
+                        <h3 class="mayhen_invitation_ladi_headline mayhen_invitation_groom_name" data-sync-target="groom_name">{{ $groomName }}</h3>
                     </div>
-                    <p class="mayhen_invitation_couple_bio" data-sync-target="groom_bio">{{ $groomBio }}</p>
+                    <p class="mayhen_invitation_couple_bio mayhen_invitation_groom_bio" data-sync-target="groom_bio">{{ $groomBio }}</p>
                 </div>
                 <div class="mayhen_invitation_sr_hien" data-hieu-ung="phai">
-                    <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_codau mayhen_invitation_tron_nho">
+                    <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_codau mayhen_invitation_tron_nho mayhen_invitation_bride_photo">
                         <div class="mayhen_invitation_ladi_image">
                             <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $bridePhotoUrl }}');" data-sync-target="bride_photo_url"></div>
                         </div>
                     </div>
-                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai"><p class="mayhen_invitation_ladi_headline">Cô Dâu</p></div>
+                    <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai mayhen_invitation_bride_role"><p class="mayhen_invitation_ladi_headline">Cô Dâu</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ten_ben mayhen_invitation_sr_ten">
-                        <h3 class="mayhen_invitation_ladi_headline" data-sync-target="bride_name">{{ $brideName }}</h3>
+                        <h3 class="mayhen_invitation_ladi_headline mayhen_invitation_bride_name" data-sync-target="bride_name">{{ $brideName }}</h3>
                     </div>
-                    <p class="mayhen_invitation_couple_bio" data-sync-target="bride_bio">{{ $brideBio }}</p>
+                    <p class="mayhen_invitation_couple_bio mayhen_invitation_bride_bio" data-sync-target="bride_bio">{{ $brideBio }}</p>
                 </div>
             </div>
         </section>
@@ -416,25 +416,25 @@
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 4: ĐẾM NGƯỢC & LỊCH THÁNG (COUNTDOWN & CALENDAR) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_countdown_calendar mayhen_invitation_countdown mayhen_invitation_calendar" data-mayhen-section="countdown_calendar,couple">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_countdown_calendar mayhen_invitation_countdown mayhen_invitation_calendar" data-mayhen-section="countdown_calendar">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_countdown_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Save The Date</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_countdown_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Đếm Ngược &amp; Lịch Cưới</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_countdown_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Từng khoảnh khắc trôi qua là một nhịp đập tiến gần tới ngày chung đôi</p>
             </div>
 
             <!-- Khối 1: Đồng hồ đếm ngược thiên hà -->
             <div class="mayhen_invitation_sr_cho_dem mayhen_invitation_sr_hien" data-hieu-ung="phong">
-                <div class="mayhen_invitation_edit_countDown" data-countdown="{{ $weddingDate->toIso8601String() }}">
+                <div class="mayhen_invitation_edit_countDown mayhen_invitation_countdown" data-countdown="{{ $weddingDate->toIso8601String() }}">
                     <div class="mayhen_invitation_ladi_html_code">
                         <div class="mayhen_invitation_countdown_item">
                             <div class="mayhen_invitation_countdown_shape"><div class="mayhen_invitation_countdown_number mayhen_invitation_cd_day">0</div></div>
@@ -474,9 +474,9 @@
                     <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                 </span>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_thang_lich">
-                    <p class="mayhen_invitation_ladi_headline">Tháng {{ $weddingMonth }} · {{ $weddingYear }}</p>
+                    <p class="mayhen_invitation_ladi_headline mayhen_invitation_calendar_month_year">Tháng {{ $weddingMonth }} · {{ $weddingYear }}</p>
                 </div>
-                <div class="mayhen_invitation_edit_Calendar">
+                <div class="mayhen_invitation_edit_Calendar mayhen_invitation_calendar">
                     <div class="mayhen_invitation_ladi_html_code">
                         <div class="mayhen_invitation_calendar_wrapper">
                             <div class="mayhen_invitation_calendar_header">
@@ -503,7 +503,7 @@
                                 <div class="mayhen_invitation_calendar_day">17</div>
                                 <div class="mayhen_invitation_calendar_day">18</div>
                                 <div class="mayhen_invitation_calendar_day">19</div>
-                                <div class="mayhen_invitation_calendar_day mayhen_invitation_selected mayhen_invitation_cal_selected_bob">{{ $weddingDay }}</div>
+                                <div class="mayhen_invitation_calendar_day mayhen_invitation_selected mayhen_invitation_cal_selected_bob mayhen_invitation_calendar_selected_day">{{ $weddingDay }}</div>
                                 <div class="mayhen_invitation_calendar_day">21</div>
                                 <div class="mayhen_invitation_calendar_day">22</div>
                                 <div class="mayhen_invitation_calendar_day">23</div>
@@ -523,7 +523,7 @@
                     </div>
                 </div>
             </div>
-            <a class="mayhen_invitation_sr_nut mayhen_invitation_sr_hien" data-hieu-ung="len" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/u/0/r/eventedit?text={{ urlencode('Lễ cưới ' . $groomName . ' & ' . $brideName) }}&dates={{ $weddingDate->format('Ymd\THis\Z') }}/{{ $weddingDate->copy()->addHours(4)->format('Ymd\THis\Z') }}&details={{ urlencode('Trân trọng kính mời tham dự lễ cưới của chúng tôi.') }}&location={{ urlencode($partyVenue . ', ' . $partyAddress) }}">
+            <a class="mayhen_invitation_sr_nut mayhen_invitation_add_calendar_btn mayhen_invitation_sr_hien" data-hieu-ung="len" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/u/0/r/eventedit?text={{ urlencode('Lễ cưới ' . $groomName . ' & ' . $brideName) }}&dates={{ $weddingDate->format('Ymd\THis\Z') }}/{{ $weddingDate->copy()->addHours(4)->format('Ymd\THis\Z') }}&details={{ urlencode('Trân trọng kính mời tham dự lễ cưới của chúng tôi.') }}&location={{ urlencode($partyVenue . ', ' . $partyAddress) }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="5" width="18" height="16" rx="2"></rect>
                     <path d="M16 3v4M8 3v4M3 10h18M12 14v4M10 16h4"></path>
@@ -532,27 +532,27 @@
             </a>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 5: THÔNG TIN SỰ KIỆN & BẢN ĐỒ (EVENTS & MAPS) ===================== -->
-        <section class="mayhen_invitation_sr_phan mayhen_invitation_events mayhen_invitation_maps" data-mayhen-section="events,wedding_event">
+        <section class="mayhen_invitation_sr_phan mayhen_invitation_events mayhen_invitation_maps" data-mayhen-section="events">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_events_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Events &amp; Venue</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_mot_dong mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_events_title mayhen_invitation_sr_mot_dong mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Thông Tin Hôn Lễ</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_events_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Hân hạnh được đón tiếp Quý khách trong ngày trọng đại của chúng tôi</p>
             </div>
 
             <!-- Khối 1: Thẻ Thư Mời Tiệc Cưới Chính -->
-            <div class="mayhen_invitation_sr_thu mayhen_invitation_sr_the mayhen_invitation_kieu_ve mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_sr_thu mayhen_invitation_sr_the mayhen_invitation_kieu_ve mayhen_invitation_event_card_party mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_ve_lo mayhen_invitation_trai" aria-hidden="true"></i>
                 <i class="mayhen_invitation_ve_lo mayhen_invitation_phai" aria-hidden="true"></i>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -565,18 +565,18 @@
                     <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                 </span>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_trang_trong"><p class="mayhen_invitation_ladi_headline">Kính mời</p></div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_class_tenKhachMoi mayhen_invitation_khach mayhen_invitation_sr_ten"><h3 class="mayhen_invitation_ladi_headline">{{ $guestName }}</h3></div>
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_class_tenKhachMoi mayhen_invitation_khach mayhen_invitation_guest_name mayhen_invitation_sr_ten"><h3 class="mayhen_invitation_ladi_headline">{{ $guestName }}</h3></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_toi_du"><p class="mayhen_invitation_ladi_paragraph">tới dự bữa tiệc chung vui<br>cùng gia đình chúng tôi</p></div>
-                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_moi mayhen_invitation_anh_moi">
+                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_moi mayhen_invitation_anh_moi mayhen_invitation_party_photo">
                     <div class="mayhen_invitation_ladi_image">
                         <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $saveDatePhotoUrl }}');" data-sync-target="save_date_photo_url"></div>
                     </div>
                 </div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_vao_luc"><p class="mayhen_invitation_ladi_headline">Vào lúc</p></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_gio mayhen_invitation_sr_phat_sang">
-                    <p class="mayhen_invitation_ladi_headline" data-sync-target="party_time">{{ $partyTime }}</p>
+                    <p class="mayhen_invitation_ladi_headline mayhen_invitation_party_time" data-sync-target="party_time">{{ $partyTime }}</p>
                 </div>
-                <div class="mayhen_invitation_sr_ngay_moi">
+                <div class="mayhen_invitation_sr_ngay_moi mayhen_invitation_party_date">
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ben"><p class="mayhen_invitation_ladi_headline">{{ $weddingDayOfWeek }}</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_so"><p class="mayhen_invitation_ladi_headline">{{ $weddingDay }}</p></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ben"><p class="mayhen_invitation_ladi_headline">Tháng {{ $weddingMonth }}</p></div>
@@ -586,16 +586,16 @@
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_tai"><p class="mayhen_invitation_ladi_headline">Tại</p></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_noi mayhen_invitation_sr_phat_sang"><p class="mayhen_invitation_ladi_headline">Trung tâm Tiệc cưới</p></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_noi_ten mayhen_invitation_sr_ten">
-                    <p class="mayhen_invitation_ladi_headline" data-sync-target="party_venue">{{ $partyVenue }}</p>
+                    <p class="mayhen_invitation_ladi_headline mayhen_invitation_party_venue" data-sync-target="party_venue">{{ $partyVenue }}</p>
                 </div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_dia_chi">
-                    <p class="mayhen_invitation_ladi_paragraph" data-sync-target="event_party_address">{{ $partyAddress }}</p>
+                    <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_party_address" data-sync-target="event_party_address">{{ $partyAddress }}</p>
                 </div>
             </div>
 
             <!-- Khối 2: Nghi Lễ Gia Tiên (Vu Quy & Thành Hôn) -->
             <div class="mayhen_invitation_sr_ds_le" style="margin-top: 36px;">
-                <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_ceremony_bride_card mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -614,13 +614,13 @@
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ten_le"><h3 class="mayhen_invitation_ladi_headline">Lễ Vu Quy</h3></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_gio_le">
-                        <p class="mayhen_invitation_ladi_headline"><span data-sync-target="ceremony_time">{{ $ceremonyTime }}</span> · {{ $weddingDayOfWeek }} {{ $weddingDate->format('d.m.Y') }}</p>
+                        <p class="mayhen_invitation_ladi_headline mayhen_invitation_ceremony_bride_time"><span data-sync-target="ceremony_time">{{ $ceremonyTime }}</span> · {{ $weddingDayOfWeek }} {{ $weddingDate->format('d.m.Y') }}</p>
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_noi_le">
-                        <p class="mayhen_invitation_ladi_paragraph" data-sync-target="ceremony_address">{{ $ceremonyAddress }}</p>
+                        <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ceremony_bride_address" data-sync-target="ceremony_address">{{ $ceremonyAddress }}</p>
                     </div>
                 </div>
-                <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_ceremony_groom_card mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -638,16 +638,16 @@
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_ten_le"><h3 class="mayhen_invitation_ladi_headline">Lễ Thành Hôn</h3></div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_gio_le">
-                        <p class="mayhen_invitation_ladi_headline"><span data-sync-target="ceremony_groom_time">{{ $ceremonyGroomTime }}</span> · {{ $weddingDayOfWeek }} {{ $weddingDate->format('d.m.Y') }}</p>
+                        <p class="mayhen_invitation_ladi_headline mayhen_invitation_ceremony_groom_time"><span data-sync-target="ceremony_groom_time">{{ $ceremonyGroomTime }}</span> · {{ $weddingDayOfWeek }} {{ $weddingDate->format('d.m.Y') }}</p>
                     </div>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_noi_le">
-                        <p class="mayhen_invitation_ladi_paragraph" data-sync-target="ceremony_groom_address">{{ $ceremonyGroomAddress }}</p>
+                        <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ceremony_groom_address" data-sync-target="ceremony_groom_address">{{ $ceremonyGroomAddress }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Khối 3: Bản Đồ Chỉ Đường 3D -->
-            <div class="mayhen_invitation_sr_khung_bd mayhen_invitation_sr_the mayhen_invitation_kieu_cong mayhen_invitation_sr_hien" data-hieu-ung="len" style="margin-top: 36px;">
+            <div class="mayhen_invitation_sr_khung_bd mayhen_invitation_sr_the mayhen_invitation_kieu_cong mayhen_invitation_map_box mayhen_invitation_sr_hien" data-hieu-ung="len" style="margin-top: 36px;">
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -672,7 +672,7 @@
                         <i style="--g:95deg;--r:130px;--t:0.08s"></i><i style="--g:120deg;--r:85px;--t:0.12s"></i>
                     </div>
                     <div class="mayhen_invitation_loe" aria-hidden="true"></div>
-                    <button type="button" class="mayhen_invitation_nut_mo_bd">
+                    <button type="button" class="mayhen_invitation_nut_mo_bd mayhen_invitation_map_toggle_btn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"></path>
                             <circle cx="12" cy="10" r="2.5"></circle>
@@ -682,11 +682,11 @@
                 </div>
                 <div class="mayhen_invitation_edit_googleMap">
                     <div class="mayhen_invitation_ladi_html_code">
-                        <iframe src="{{ $partyMapLink }}" width="600" height="450" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ nơi tổ chức"></iframe>
+                        <iframe class="mayhen_invitation_map_iframe" src="{{ $partyMapLink }}" width="600" height="450" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ nơi tổ chức"></iframe>
                     </div>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_dia_chi_bd mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_dia_chi_bd mayhen_invitation_map_address_text mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph" data-sync-target="event_party_address">
                     <span data-sync-target="party_venue">{{ $partyVenue }}</span><br>
                     {{ $partyAddress }}
@@ -697,22 +697,23 @@
         <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE) ===================== -->
+        <!-- ===================== SECTION 6: LỊCH TRÌNH HÔN LỄ (WEDDING TIMELINE) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_timeline" data-mayhen-section="timeline">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_timeline_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Timeline</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_timeline_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Lịch Trình Buổi Tiệc</h2>
                 </div>
             </div>
             <div class="mayhen_invitation_sr_tl mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <div class="mayhen_invitation_edit_Timeline">
                     <div class="mayhen_invitation_ladi_html_code">
-                        <div class="mayhen_invitation_wb_tl">
+                        <div class="mayhen_invitation_wb_tl mayhen_invitation_timeline_list">
                             @php
                                 $timelineSvgs = [
                                     0 => '<svg width="22" height="22" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M322,185.1h-88.3c-2.8,0-5,2.2-5,5s2.2,5,5,5H322c2.8,0,5-2.2,5-5S324.7,185.1,322,185.1z"></path><path d="M162.5,195.1h41.2c2.8,0,5-2.2,5-5s-2.2-5-5-5h-41.2c-2.8,0-5,2.2-5,5S159.8,195.1,162.5,195.1z"></path><path d="M354.5,225.6c0-2.8-2.2-5-5-5h-187c-2.8,0-5,2.2-5,5s2.2,5,5,5h187C352.2,230.6,354.5,228.3,354.5,225.6z"></path><path d="M162.5,159.6h145.5c2.8,0,5-2.2,5-5s-2.2-5-5-5H162.5c-2.8,0-5,2.2-5,5S159.8,159.6,162.5,159.6z"></path><path d="M354.5,109.1V93.6c0-8.3-6.7-15-15-15h-167c-8.3,0-15,6.7-15,15v15.5c0,8.3,6.7,15,15,15h167C347.8,124.1,354.5,117.3,354.5,109.1z"></path></svg>',
@@ -727,17 +728,17 @@
                                     $tTitle = $tItem['title'] ?? ($tItem['desc'] ?? '');
                                     $svgIcon = $timelineSvgs[$tIdx % 4] ?? $timelineSvgs[0];
                                 @endphp
-                                <div class="mayhen_invitation_wb_tl_row">
-                                    <div class="mayhen_invitation_wb_tl_time" data-sync-target="timeline.{{ $tIdx }}.time">{{ $tTime }}</div>
+                                <div class="mayhen_invitation_wb_tl_row mayhen_invitation_timeline_item">
+                                    <div class="mayhen_invitation_wb_tl_time mayhen_invitation_timeline_time" data-sync-target="timeline.{{ $tIdx }}.time">{{ $tTime }}</div>
                                     <div class="mayhen_invitation_wb_tl_col">
-                                        <div class="mayhen_invitation_wb_tl_dot">
+                                        <div class="mayhen_invitation_wb_tl_dot mayhen_invitation_timeline_dot">
                                             {!! $svgIcon !!}
                                         </div>
                                         @if(!$loop->last)
-                                            <div class="mayhen_invitation_wb_tl_line"></div>
+                                            <div class="mayhen_invitation_wb_tl_line mayhen_invitation_timeline_line"></div>
                                         @endif
                                     </div>
-                                    <div class="mayhen_invitation_wb_tl_lbl" data-sync-target="timeline.{{ $tIdx }}.title">{{ $tTitle }}</div>
+                                    <div class="mayhen_invitation_wb_tl_lbl mayhen_invitation_timeline_text" data-sync-target="timeline.{{ $tIdx }}.title">{{ $tTitle }}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -746,22 +747,22 @@
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_dresscode" data-mayhen-section="dresscode">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_dresscode_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Dresscode</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_dresscode_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Gợi Ý Trang Phục</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_dresscode_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Trang phục thanh lịch hòa cùng sắc đêm ngân hà lung linh</p>
             </div>
             <div class="mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_sr_hien" data-hieu-ung="len" style="max-width: 480px; margin: 0 auto; padding: 32px 20px 28px; text-align: center;">
@@ -800,39 +801,39 @@
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_gallery" data-mayhen-section="album">
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_gallery_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Album</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_gallery_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Khoảnh Khắc</h2>
                 </div>
             </div>
             <div class="mayhen_invitation_tmx_album_cho mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <div class="mayhen_invitation_edit_galleryV2">
                     <div class="mayhen_invitation_ladi_html_code">
-                        <div class="mayhen_invitation_wbgv2 mayhen_invitation_wb_cf">
+                        <div class="mayhen_invitation_wbgv2 mayhen_invitation_wb_cf mayhen_invitation_gallery_wrap">
                             @foreach ($gallery as $k => $pic)
-                                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_album_img_{{ $k }} mayhen_invitation_wb_cf_it">
-                                    <div class="mayhen_invitation_ladi_image">
+                                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_album_img_{{ $k }} mayhen_invitation_wb_cf_it mayhen_invitation_gallery_item" data-index="{{ $k }}">
+                                    <div class="mayhen_invitation_ladi_image mayhen_invitation_gallery_img">
                                         <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $pic }}');" data-sync-target="gallery.{{ $k }}"></div>
                                     </div>
                                 </div>
                             @endforeach
-                            <button type="button" class="mayhen_invitation_wb_cf_nut mayhen_invitation_truoc" aria-label="Ảnh trước">
+                            <button type="button" class="mayhen_invitation_wb_cf_nut mayhen_invitation_gallery_prev_btn mayhen_invitation_truoc" aria-label="Ảnh trước">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
                             </button>
-                            <button type="button" class="mayhen_invitation_wb_cf_nut mayhen_invitation_sau" aria-label="Ảnh sau">
+                            <button type="button" class="mayhen_invitation_wb_cf_nut mayhen_invitation_gallery_next_btn mayhen_invitation_sau" aria-label="Ảnh sau">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transform: scaleX(-1);"><path d="M15 18l-6-6 6-6"></path></svg>
                             </button>
-                            <div class="mayhen_invitation_wb_cf_dots">
+                            <div class="mayhen_invitation_wb_cf_dots mayhen_invitation_gallery_dots">
                                 @foreach ($gallery as $idx => $p)
                                     <button type="button" aria-label="Ảnh {{ $idx + 1 }}" class="{{ $idx === 0 ? 'mayhen_invitation_on' : '' }}"></button>
                                 @endforeach
@@ -841,33 +842,33 @@
                     </div>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_album_cau mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_album_cau mayhen_invitation_gallery_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Mỗi khoảnh khắc bên nhau đều lấp lánh như sao trời</p>
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_gift" data-mayhen-section="gift">
             <div class="mayhen_invitation_ladi_section_background"></div>
             
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_gift_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Mừng Cưới</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_gift_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Hộp Mừng Cưới</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_gift_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Cảm ơn tấm lòng của bạn dành cho chúng mình</p>
             </div>
             <div class="mayhen_invitation_sr_qua_vung">
                 <div class="mayhen_invitation_sr_hop_lop">
-                    <div class="mayhen_invitation_sr_hop_qua mayhen_invitation_sr_hien" data-hieu-ung="phong" role="button" tabindex="0" aria-label="Mở hộp mừng cưới">
+                    <div class="mayhen_invitation_sr_hop_qua mayhen_invitation_gift_box mayhen_invitation_sr_hien" data-hieu-ung="phong" role="button" tabindex="0" aria-label="Mở hộp mừng cưới">
                         <span class="mayhen_invitation_hq_hao" aria-hidden="true"></span>
                         <span class="mayhen_invitation_hq_cot" aria-hidden="true"></span>
                         <span class="mayhen_invitation_hq_quy" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -884,7 +885,7 @@
                     <div class="mayhen_invitation_sr_goi_y_hop mayhen_invitation_sr_hien" data-hieu-ung="len">Chạm để mở hộp mừng cưới</div>
                 </div>
                 <div class="mayhen_invitation_sr_qr">
-                    <div class="mayhen_invitation_sr_the_qr mayhen_invitation_sr_the mayhen_invitation_kieu_bao_thu mayhen_invitation_tmx_qr">
+                    <div class="mayhen_invitation_sr_the_qr mayhen_invitation_gift_card_groom mayhen_invitation_sr_the mayhen_invitation_kieu_bao_thu mayhen_invitation_tmx_qr">
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -894,21 +895,21 @@
                             <svg class="mayhen_invitation_chom mayhen_invitation_c2"><use href="#mayhen_invitation_sr_chom_sao"></use></svg>
                             <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                         </span>
-                        <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai_qr mayhen_invitation_tmx_vai_qr"><p class="mayhen_invitation_ladi_headline">Chú Rể</p></div>
-                        <div class="mayhen_invitation_ClientEditImage mayhen_invitation_tmx_anh_trong mayhen_invitation_anh_qr">
+                        <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai_qr mayhen_invitation_gift_role_groom mayhen_invitation_tmx_vai_qr"><p class="mayhen_invitation_ladi_headline">Chú Rể</p></div>
+                        <div class="mayhen_invitation_ClientEditImage mayhen_invitation_tmx_anh_trong mayhen_invitation_gift_qr_groom mayhen_invitation_anh_qr">
                             <div class="mayhen_invitation_ladi_image">
                                 <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $qrGroomUrl }}');" data-sync-target="qr_groom_image"></div>
                             </div>
                         </div>
                         <div class="mayhen_invitation_ClientEditText mayhen_invitation_tk mayhen_invitation_tmx_chu_tk">
                             <p class="mayhen_invitation_ladi_paragraph">
-                                <span data-sync-target="groom_bank_name">{{ $groomBankName }}</span><br>
-                                <b data-sync-target="groom_bank_account">{{ $groomBankAccount }}</b><br>
-                                <span data-sync-target="groom_account_name">{{ $groomAccountName }}</span>
+                                <span class="mayhen_invitation_gift_bank_name_groom" data-sync-target="groom_bank_name">{{ $groomBankName }}</span><br>
+                                <b class="mayhen_invitation_gift_account_number_groom" data-sync-target="groom_bank_account">{{ $groomBankAccount }}</b><br>
+                                <span class="mayhen_invitation_gift_account_holder_groom" data-sync-target="groom_account_name">{{ $groomAccountName }}</span>
                             </p>
                         </div>
                     </div>
-                    <div class="mayhen_invitation_sr_the_qr mayhen_invitation_sr_the mayhen_invitation_kieu_bao_thu mayhen_invitation_tmx_qr">
+                    <div class="mayhen_invitation_sr_the_qr mayhen_invitation_gift_card_bride mayhen_invitation_sr_the mayhen_invitation_kieu_bao_thu mayhen_invitation_tmx_qr">
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                         <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -918,17 +919,17 @@
                             <svg class="mayhen_invitation_chom mayhen_invitation_c2"><use href="#mayhen_invitation_sr_chom_sao"></use></svg>
                             <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                         </span>
-                        <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai_qr mayhen_invitation_tmx_vai_qr"><p class="mayhen_invitation_ladi_headline">Cô Dâu</p></div>
-                        <div class="mayhen_invitation_ClientEditImage mayhen_invitation_tmx_anh_trong mayhen_invitation_anh_qr">
+                        <div class="mayhen_invitation_ClientEditText mayhen_invitation_vai_qr mayhen_invitation_gift_role_bride mayhen_invitation_tmx_vai_qr"><p class="mayhen_invitation_ladi_headline">Cô Dâu</p></div>
+                        <div class="mayhen_invitation_ClientEditImage mayhen_invitation_tmx_anh_trong mayhen_invitation_gift_qr_bride mayhen_invitation_anh_qr">
                             <div class="mayhen_invitation_ladi_image">
                                 <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $qrBrideUrl }}');" data-sync-target="qr_bride_image"></div>
                             </div>
                         </div>
                         <div class="mayhen_invitation_ClientEditText mayhen_invitation_tk mayhen_invitation_tmx_chu_tk">
                             <p class="mayhen_invitation_ladi_paragraph">
-                                <span data-sync-target="bride_bank_name">{{ $brideBankName }}</span><br>
-                                <b data-sync-target="bride_bank_account">{{ $brideBankAccount }}</b><br>
-                                <span data-sync-target="bride_account_name">{{ $brideAccountName }}</span>
+                                <span class="mayhen_invitation_gift_bank_name_bride" data-sync-target="bride_bank_name">{{ $brideBankName }}</span><br>
+                                <b class="mayhen_invitation_gift_account_number_bride" data-sync-target="bride_bank_account">{{ $brideBankAccount }}</b><br>
+                                <span class="mayhen_invitation_gift_account_holder_bride" data-sync-target="bride_account_name">{{ $brideAccountName }}</span>
                             </p>
                         </div>
                     </div>
@@ -937,7 +938,7 @@
             </div>
         </section>
 
-        <div class="mayhen_invitation_sr_vach" aria-hidden="true"></div>
+        <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 10: TƯƠNG TÁC, RSVP, LƯU BÚT & CẢM ƠN (INTERACTIVE, RSVP, WISHES & ENDING) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_interactive_ending mayhen_invitation_rsvp mayhen_invitation_wishes mayhen_invitation_ending" data-mayhen-section="ending,interactive,rsvp,wishes">
@@ -945,20 +946,20 @@
 
             <!-- Phần 2: Ký tên chúc phúc -->
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_signature_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Signature</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_signature_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Ký Tên Chúc Phúc</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_signature_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Để lại chữ ký của bạn và cùng chúng mình<br>lưu giữ kỷ niệm hạnh phúc này nhé!</p>
             </div>
-            <div class="mayhen_invitation_sr_khung_ky mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <div class="mayhen_invitation_nen_ky">
+            <div class="mayhen_invitation_sr_khung_ky mayhen_invitation_signature mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_nen_ky mayhen_invitation_signature_bg">
                     <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_ky">
                         <div class="mayhen_invitation_ladi_image">
                             <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $kyPhotoUrl }}');"></div>
@@ -978,7 +979,7 @@
                             </div>
                             <div class="mayhen_invitation_wb_sig_spacer"></div>
                             <div class="mayhen_invitation_wb_sig_btn_row">
-                                <button type="button" class="mayhen_invitation_wb_sig_open_btn mayhen_invitation_wb_sig_btn">
+                                <button type="button" class="mayhen_invitation_wb_sig_open_btn mayhen_invitation_signature_open_btn mayhen_invitation_wb_sig_btn">
                                     <svg class="mayhen_invitation_wb_sig_ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="m21 17-2.156-1.868A.5.5 0 0 0 18 15.5v.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1c0-2.545-3.991-3.97-8.5-4a1 1 0 0 0 0 5c4.153 0 4.745-11.295 5.708-13.5a2.5 2.5 0 1 1 3.31 3.284"></path>
                                         <path d="M3 21h18"></path>
@@ -994,7 +995,7 @@
                                     </svg>
                                     <span>Ký lại</span>
                                 </button>
-                                <button type="button" class="mayhen_invitation_wb_sig_btn_save mayhen_invitation_wb_sig_btn">
+                                <button type="button" class="mayhen_invitation_wb_sig_btn_save mayhen_invitation_signature_save_btn mayhen_invitation_wb_sig_btn">
                                     <svg class="mayhen_invitation_wb_sig_ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
                                         <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
@@ -1012,7 +1013,7 @@
                                         </svg>
                                         <span>Ký tên của bạn</span>
                                     </div>
-                                    <canvas class="mayhen_invitation_wb_sig_canvas" height="180"></canvas>
+                                    <canvas class="mayhen_invitation_wb_sig_canvas mayhen_invitation_signature_canvas" height="180"></canvas>
                                     <div class="mayhen_invitation_wb_sig_controls">
                                         <button type="button" class="mayhen_invitation_wb_sig_btn_clear mayhen_invitation_wb_sig_btn">
                                             <svg class="mayhen_invitation_wb_sig_ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1046,16 +1047,16 @@
             </div>
 
             <!-- Phân tách nhẹ trong Section 10 -->
-            <div class="mayhen_invitation_sr_vach" aria-hidden="true" style="margin: 40px 0 30px;"></div>
+            <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true" style="margin: 40px 0 30px;"></div>
 
             <!-- Phần 3: Xác nhận tham dự (RSVP) -->
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_rsvp_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">RSVP</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_rsvp_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Xác Nhận Tham Dự</h2>
                 </div>
             </div>
@@ -1066,10 +1067,10 @@
                     </div>
                 </div>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_mo_ta mayhen_invitation_rsvp_desc mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Hãy cho chúng mình biết bạn có thể tới chung vui<br>để gia đình chuẩn bị chu đáo hơn nhé!</p>
             </div>
-            <div class="mayhen_invitation_sr_khung_form mayhen_invitation_sr_the mayhen_invitation_kieu_sao_vien mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_sr_khung_form mayhen_invitation_rsvp mayhen_invitation_sr_the mayhen_invitation_kieu_sao_vien mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -1081,26 +1082,26 @@
                 </span>
                 <div class="mayhen_invitation_edit_RPSV">
                     <div class="mayhen_invitation_ladi_html_code">
-                        <div class="mayhen_invitation_wb_rsvp_form">
+                        <div class="mayhen_invitation_wb_rsvp_form mayhen_invitation_rsvp_form">
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Tên khách mời</label>
-                                <input type="text" class="mayhen_invitation_wb_form_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
+                                <input type="text" class="mayhen_invitation_wb_form_input mayhen_invitation_rsvp_name_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Bạn là khách của ai?</label>
-                                <div class="mayhen_invitation_wb_opt_group" data-name="guestOf">
+                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_guest_of" data-name="guestOf">
                                     <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="bride">Cô Dâu</label>
                                     <label class="mayhen_invitation_wb_opt_label" data-val="groom">Chú Rể</label>
                                 </div>
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Xác nhận tham dự</label>
-                                <div class="mayhen_invitation_wb_opt_group" data-name="attendance">
+                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_attendance" data-name="attendance">
                                     <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="yes">Sẽ tham dự</label>
                                     <label class="mayhen_invitation_wb_opt_label" data-val="no">Tiếc quá</label>
                                 </div>
                             </div>
-                            <div class="mayhen_invitation_wb_form_field mayhen_invitation_wb_guest_count_field">
+                            <div class="mayhen_invitation_wb_form_field mayhen_invitation_wb_guest_count_field mayhen_invitation_rsvp_count">
                                 <label class="mayhen_invitation_wb_form_label">Số lượng khách tham dự</label>
                                 <div class="mayhen_invitation_wb_counter">
                                     <button type="button" class="mayhen_invitation_wb_counter_btn mayhen_invitation_wb_dec">−</button>
@@ -1108,7 +1109,7 @@
                                     <button type="button" class="mayhen_invitation_wb_counter_btn mayhen_invitation_wb_inc">+</button>
                                 </div>
                             </div>
-                            <button class="mayhen_invitation_wb_submit_btn" type="button">Xác Nhận</button>
+                            <button class="mayhen_invitation_wb_submit_btn mayhen_invitation_rsvp_submit_btn" type="button">Xác Nhận</button>
                             <div class="mayhen_invitation_wb_feedback"></div>
                         </div>
                     </div>
@@ -1116,20 +1117,20 @@
             </div>
 
             <!-- Phân tách nhẹ trong Section 10 -->
-            <div class="mayhen_invitation_sr_vach" aria-hidden="true" style="margin: 40px 0 30px;"></div>
+            <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true" style="margin: 40px 0 30px;"></div>
 
             <!-- Phần 4: Gửi lời chúc (Guest Book) -->
             <div class="mayhen_invitation_sr_dau_muc">
-                <div class="mayhen_invitation_sr_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_sr_kicker mayhen_invitation_wish_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <i class="mayhen_invitation_sr_orn"></i>
                     <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline">Guest Book</p></div>
                     <i class="mayhen_invitation_sr_orn"></i>
                 </div>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_sr_hien" data-hieu-ung="len">
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_tieu_de mayhen_invitation_wish_title mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <h2 class="mayhen_invitation_ladi_headline">Gửi Lời Chúc</h2>
                 </div>
             </div>
-            <div class="mayhen_invitation_sr_khung_form mayhen_invitation_sr_the mayhen_invitation_kieu_trang mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_sr_khung_form mayhen_invitation_wishes mayhen_invitation_sr_the mayhen_invitation_kieu_trang mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                 <svg class="mayhen_invitation_sr_goc mayhen_invitation_bl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -1142,24 +1143,24 @@
                 <i class="mayhen_invitation_trang_khuyet" aria-hidden="true"></i>
                 <div class="mayhen_invitation_edit_sendMessage">
                     <div class="mayhen_invitation_ladi_html_code">
-                        <div class="mayhen_invitation_wb_msg_form">
+                        <div class="mayhen_invitation_wb_msg_form mayhen_invitation_wish_form">
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Tên của bạn</label>
-                                <input type="text" class="mayhen_invitation_wb_form_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
+                                <input type="text" class="mayhen_invitation_wb_form_input mayhen_invitation_wish_name_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Ai sẽ thấy lời nhắn này?</label>
-                                <div class="mayhen_invitation_wb_opt_group" data-name="visibility">
+                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_wish_visibility" data-name="visibility">
                                     <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="all">Tất cả mọi người</label>
                                     <label class="mayhen_invitation_wb_opt_label" data-val="private">Chỉ cô dâu, chú rể</label>
                                 </div>
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Lời nhắn của bạn</label>
-                                <textarea class="mayhen_invitation_wb_form_textarea" name="message" maxlength="1500" placeholder="Viết lời chúc của bạn..."></textarea>
+                                <textarea class="mayhen_invitation_wb_form_textarea mayhen_invitation_wish_textarea" name="message" maxlength="1500" placeholder="Viết lời chúc của bạn..."></textarea>
                                 <div class="mayhen_invitation_wb_char_count"><span class="mayhen_invitation_wb_char_num">0</span>/1500</div>
                             </div>
-                            <button class="mayhen_invitation_wb_submit_btn" type="button">Gửi lời chúc</button>
+                            <button class="mayhen_invitation_wb_submit_btn mayhen_invitation_wish_submit_btn" type="button">Gửi lời chúc</button>
                             <div class="mayhen_invitation_wb_feedback"></div>
                         </div>
                     </div>
@@ -1167,16 +1168,16 @@
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ds_loi_chuc mayhen_invitation_sr_ten">
                     <p class="mayhen_invitation_ladi_headline">Lời chúc từ mọi người</p>
                 </div>
-                <div class="mayhen_invitation_MessageBox">
+                <div class="mayhen_invitation_MessageBox mayhen_invitation_wish_list">
                     @if (isset($wishes) && $wishes->count() > 0)
                         @foreach ($wishes as $wish)
-                            <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first">
+                            <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item">
                                 <h2 class="mayhen_invitation_MessageBox_item_name">{{ $wish->guest_name }}</h2>
                                 <p class="mayhen_invitation_MessageBox_item_message">{{ $wish->message }}</p>
                             </div>
                         @endforeach
                     @else
-                        <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first">
+                        <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item">
                             <h2 class="mayhen_invitation_MessageBox_item_name">Mây Hẹn</h2>
                             <p class="mayhen_invitation_MessageBox_item_message">Chúc hai bạn trăm năm hạnh phúc, vẹn tròn yêu thương!</p>
                         </div>
@@ -1185,7 +1186,7 @@
             </div>
 
             <!-- Phân tách nhẹ trong Section 10 -->
-            <div class="mayhen_invitation_sr_vach" aria-hidden="true" style="margin: 40px 0 30px;"></div>
+            <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true" style="margin: 40px 0 30px;"></div>
 
             <!-- Phần 5: Lời cảm ơn (Ending) -->
             <div class="mayhen_invitation_sr_quy_dao mayhen_invitation_bau_duc mayhen_invitation_sr_hien" data-hieu-ung="phong">
@@ -1197,20 +1198,20 @@
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l3" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l4" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l5" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
-                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_ket mayhen_invitation_anh_tron">
+                <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_ket mayhen_invitation_ending_photo mayhen_invitation_anh_tron">
                     <div class="mayhen_invitation_ladi_image">
                         <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $ketPhotoUrl }}');" data-sync-target="hero_photo_url"></div>
                     </div>
                 </div>
                 <span class="mayhen_invitation_vet_sang" aria-hidden="true"></span>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_cam_on mayhen_invitation_sr_ten mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_cam_on mayhen_invitation_ending_title mayhen_invitation_sr_ten mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <h2 class="mayhen_invitation_ladi_headline">Thank You</h2>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_loi_ket mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_loi_ket mayhen_invitation_ending_text mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_paragraph">Sự hiện diện của Quý khách là niềm vinh hạnh cho gia đình chúng tôi.</p>
             </div>
-            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ky mayhen_invitation_sr_hien" data-hieu-ung="len">
+            <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ky mayhen_invitation_ending_couple_name mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_headline">
                     <span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span>
                 </p>
@@ -1220,7 +1221,7 @@
     </div>
 
     <!-- ===================== TRÌNH XEM ẢNH / PHÓNG TO QR (LIGHTBOX) ===================== -->
-    <div class="mayhen_invitation_tmx_xem" role="dialog" aria-label="Xem ảnh phóng to">
+    <div class="mayhen_invitation_tmx_xem mayhen_invitation_lightbox" role="dialog" aria-label="Xem ảnh phóng to">
         <div class="mayhen_invitation_tmx_dau">
             <span class="mayhen_invitation_tmx_so"></span>
             <button type="button" class="mayhen_invitation_tmx_dong" aria-label="Đóng">×</button>
@@ -1252,7 +1253,7 @@
 
     <!-- ===================== NHẠC NỀN & NÚT NHẠC NỔI ===================== -->
     <audio class="mayhen_invitation_audio mayhen_invitation_audio_music" style="display: none;" loop src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
-    <div class="mayhen_invitation_music_dock mayhen_invitation_wb_music_btn" role="button" tabindex="0" aria-label="Bật / Tắt nhạc nền">
+    <div class="mayhen_invitation_music_dock mayhen_invitation_music_btn mayhen_invitation_wb_music_btn" role="button" tabindex="0" aria-label="Bật / Tắt nhạc nền">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
         </svg>
