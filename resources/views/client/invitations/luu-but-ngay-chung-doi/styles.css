@@ -12941,26 +12941,113 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_invitation_ladjihe38udhd_ladi
     display: none !important;
 }
 
-/* Căn giữa thẻ giới thiệu chú rể & cô dâu SECTION4, không bị đứt chữ hay cụt lề phải */
-#GROUP125,
-#GROUP126 {
-    width: min(350px, calc(100% - 32px)) !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    overflow: visible !important;
+/* ==========================================================================
+   SECTION4: ĐÔI UYÊN ƯƠNG (CHÚ RỂ & CÔ DÂU) RESPONSIVE HOÀN HẢO
+   ========================================================================== */
+#SECTION4 {
+    overflow: hidden !important;
 }
 
+/* Base style cho khối thẻ chú rể & cô dâu */
 #GROUP116,
 #GROUP127 {
+    position: relative !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+#IMAGE115,
+#IMAGE122 {
+    position: absolute !important;
+    inset: 0 !important;
     width: 100% !important;
-    overflow: visible !important;
-    height: auto !important;
+    height: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    border-radius: inherit !important;
+    overflow: hidden !important;
+}
+
+#IMAGE115 > .mayhen_invitation_ladjihe38udhd_ladi-image,
+#IMAGE122 > .mayhen_invitation_ladjihe38udhd_ladi-image {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+    overflow: hidden !important;
+}
+
+#IMAGE115 .mayhen_invitation_ladjihe38udhd_ladi-image-background,
+#IMAGE122 .mayhen_invitation_ladjihe38udhd_ladi-image-background {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Hộp overlay mờ khớp 100% chiều rộng của ảnh, chống hoàn toàn lệch viền */
+#BOX60,
+#BOX67 {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    border-radius: 0 0 16px 16px !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+#BOX60 > .mayhen_invitation_ladjihe38udhd_ladi-box,
+#BOX67 > .mayhen_invitation_ladjihe38udhd_ladi-box {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+}
+
+#PARAGRAPH66,
+#PARAGRAPH75 {
+    position: absolute !important;
+    width: auto !important;
+    z-index: 5 !important;
+}
+
+#PARAGRAPH66 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+#PARAGRAPH75 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-family: Philosopher, Georgia, serif !important;
+    font-style: italic !important;
+    letter-spacing: 1px !important;
+}
+
+#HEADLINE300,
+#HEADLINE304 {
+    position: absolute !important;
+    z-index: 5 !important;
+}
+
+#HEADLINE300 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE304 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    color: #FFFFFF !important;
+    font-family: Philosopher, Georgia, serif !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 #PARAGRAPH70,
 #PARAGRAPH76 {
-    width: 100% !important;
-    max-width: 100% !important;
+    position: absolute !important;
     overflow: visible !important;
 }
 
@@ -12969,7 +13056,154 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_invitation_ladjihe38udhd_ladi
     word-break: normal !important;
     overflow-wrap: break-word !important;
     text-align: justify !important;
-    line-height: 1.6 !important;
+    line-height: 1.65 !important;
+    color: #4A453E !important;
+    font-size: 15px !important;
+}
+
+/* --- Bố cục Desktop (>= 768px): 2 Cột Chú Rể & Cô Dâu Song Song Cân Xứng --- */
+@media (min-width: 768px) {
+    #SECTION4 {
+        height: 920px !important;
+        position: relative !important;
+    }
+    #SECTION4 > .mayhen_invitation_ladjihe38udhd_ladi-container {
+        width: 960px !important;
+        position: relative !important;
+        margin: 0 auto !important;
+    }
+
+    #GROUP125 {
+        position: absolute !important;
+        width: 464px !important;
+        height: 840px !important;
+        top: 38px !important;
+        left: 0px !important;
+        transform: none !important;
+    }
+
+    #GROUP126 {
+        position: absolute !important;
+        width: 464px !important;
+        height: 840px !important;
+        top: 38px !important;
+        left: 496px !important;
+        transform: none !important;
+    }
+
+    #GROUP116,
+    #GROUP127 {
+        width: 464px !important;
+        height: 696px !important;
+    }
+
+    #BOX60,
+    #BOX67 {
+        height: 242px !important;
+    }
+
+    #PARAGRAPH66,
+    #PARAGRAPH75 {
+        left: 24px !important;
+        bottom: 110px !important;
+        top: auto !important;
+    }
+    #PARAGRAPH66 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH75 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+        font-size: 20px !important;
+    }
+
+    #HEADLINE300,
+    #HEADLINE304 {
+        left: 24px !important;
+        bottom: 24px !important;
+        top: auto !important;
+        width: calc(100% - 48px) !important;
+    }
+    #HEADLINE300 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE304 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 42px !important;
+    }
+
+    #PARAGRAPH70,
+    #PARAGRAPH76 {
+        top: 715px !important;
+        left: 0 !important;
+        width: 464px !important;
+    }
+}
+
+/* --- Bố cục Mobile (<= 767px): 1 Cột Căn Giữa Hoàn Hảo --- */
+@media (max-width: 767px) {
+    #SECTION4 {
+        height: 1540px !important;
+        position: relative !important;
+    }
+    #SECTION4 > .mayhen_invitation_ladjihe38udhd_ladi-container {
+        width: 100% !important;
+        max-width: 420px !important;
+        margin: 0 auto !important;
+        position: relative !important;
+    }
+
+    #GROUP125 {
+        position: absolute !important;
+        width: min(350px, calc(100% - 32px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 25px !important;
+    }
+
+    #GROUP126 {
+        position: absolute !important;
+        width: min(350px, calc(100% - 32px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 780px !important;
+    }
+
+    #GROUP116,
+    #GROUP127 {
+        width: 100% !important;
+        height: 524px !important;
+        border-radius: 14px !important;
+    }
+
+    #BOX60,
+    #BOX67 {
+        height: 182px !important;
+        border-radius: 0 0 14px 14px !important;
+    }
+
+    #PARAGRAPH66,
+    #PARAGRAPH75 {
+        left: 18px !important;
+        bottom: 85px !important;
+        top: auto !important;
+    }
+    #PARAGRAPH66 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH75 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+        font-size: 16px !important;
+    }
+
+    #HEADLINE300,
+    #HEADLINE304 {
+        left: 18px !important;
+        bottom: 18px !important;
+        top: auto !important;
+        width: calc(100% - 36px) !important;
+    }
+    #HEADLINE300 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE304 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 30px !important;
+    }
+
+    #PARAGRAPH70,
+    #PARAGRAPH76 {
+        top: 540px !important;
+        left: 0 !important;
+        width: 100% !important;
+    }
 }
 
 .mayhen_invitation_ladjihe38udhd_calendar_grid {
@@ -13111,19 +13345,352 @@ body.mayhen_invitation_ladjihe38udhd_embed .mayhen_reveal_element {
     transition: none !important;
 }
 
-/* Tinh chỉnh ngày giờ lịch trình SECTION16 rõ nét, cân đối */
+/* ==========================================================================
+   SECTION16: LỊCH TRÌNH CƯỚI (TIMELINE) RESPONSIVE & KHÔNG CHỒNG CHÉO
+   ========================================================================== */
+#SECTION16 {
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Ẩn các cành hoa trang trí thừa gây tràn mép nếu có */
+#IMAGE99,
+#IMAGE98 {
+    display: none !important;
+}
+
+/* Khung viền nét đứt thanh lịch */
+#BOX34 {
+    border-radius: 20px !important;
+    pointer-events: none !important;
+}
+
+#BOX34 > .mayhen_invitation_ladjihe38udhd_ladi-box {
+    border: 1.5px dashed rgba(26, 40, 34, 0.35) !important;
+    border-radius: inherit !important;
+}
+
+/* Ảnh cưới chính bên phải SECTION16 */
+#IMAGE55 {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+#IMAGE55 > .mayhen_invitation_ladjihe38udhd_ladi-image {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+    overflow: hidden !important;
+}
+
+#IMAGE55 .mayhen_invitation_ladjihe38udhd_ladi-image-background {
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Các đường line trang trí cũ bên trong từng mốc timeline */
+#LINE87,
+#LINE81,
+#LINE88,
+#LINE89 {
+    display: none !important;
+}
+
+/* Cấu trúc từng mốc Timeline */
 #GROUP160,
 #GROUP143,
 #GROUP144,
 #GROUP145 {
-    max-width: calc(100% - 30px) !important;
+    position: absolute !important;
+    overflow: visible !important;
 }
 
+#GROUP160 > .mayhen_invitation_ladjihe38udhd_ladi-group,
+#GROUP143 > .mayhen_invitation_ladjihe38udhd_ladi-group,
+#GROUP144 > .mayhen_invitation_ladjihe38udhd_ladi-group,
+#GROUP145 > .mayhen_invitation_ladjihe38udhd_ladi-group {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Giờ diễn ra sự kiện */
+#HEADLINE357,
+#HEADLINE342,
+#HEADLINE344,
+#HEADLINE346 {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#HEADLINE357 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE342 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE344 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE346 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    font-family: Philosopher, Georgia, serif !important;
+    font-weight: 700 !important;
+    color: #1A2822 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+}
+
+/* Icon nhẫn cưới */
+#IMAGE164,
+#IMAGE155,
+#IMAGE156,
+#IMAGE157 {
+    position: absolute !important;
+    top: 2px !important;
+}
+
+#IMAGE164 > .mayhen_invitation_ladjihe38udhd_ladi-image,
+#IMAGE155 > .mayhen_invitation_ladjihe38udhd_ladi-image,
+#IMAGE156 > .mayhen_invitation_ladjihe38udhd_ladi-image,
+#IMAGE157 > .mayhen_invitation_ladjihe38udhd_ladi-image {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Tiêu đề mốc lịch trình */
+#HEADLINE358,
+#HEADLINE343,
+#HEADLINE345,
+#HEADLINE347 {
+    position: absolute !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#HEADLINE358 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE343 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE345 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+#HEADLINE347 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+    font-family: Philosopher, Georgia, serif !important;
+    font-weight: 700 !important;
+    color: #1A2822 !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+}
+
+/* Địa điểm & Ngày tổ chức */
 #PARAGRAPH93,
 #PARAGRAPH81,
 #PARAGRAPH82,
 #PARAGRAPH83 {
-    line-height: 1.45 !important;
+    position: absolute !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#PARAGRAPH93 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+#PARAGRAPH81 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+#PARAGRAPH82 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+#PARAGRAPH83 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+    color: #5A544E !important;
+    line-height: 1.5 !important;
+    font-family: Philosopher, Georgia, serif !important;
+}
+
+/* --- Bố cục Desktop (>= 768px): 2 Cột Rộng Thoáng, Timeline Bên Trái, Ảnh Bên Phải --- */
+@media (min-width: 768px) {
+    #SECTION16 {
+        height: 640px !important;
+    }
+    #SECTION16 > .mayhen_invitation_ladjihe38udhd_ladi-container {
+        width: 960px !important;
+        position: relative !important;
+        margin: 0 auto !important;
+    }
+
+    #BOX34 {
+        width: 960px !important;
+        height: 590px !important;
+        top: 25px !important;
+        left: 0px !important;
+    }
+
+    #IMAGE55 {
+        width: 340px !important;
+        height: 470px !important;
+        top: 85px !important;
+        left: 565px !important;
+    }
+
+    /* Các mốc Timeline thẳng hàng, xếp từ trên xuống dưới */
+    #GROUP160 {
+        width: 480px !important;
+        height: 80px !important;
+        top: 75px !important;
+        left: 50px !important;
+    }
+    #GROUP143 {
+        width: 480px !important;
+        height: 80px !important;
+        top: 200px !important;
+        left: 50px !important;
+    }
+    #GROUP144 {
+        width: 480px !important;
+        height: 80px !important;
+        top: 325px !important;
+        left: 50px !important;
+    }
+    #GROUP145 {
+        width: 480px !important;
+        height: 80px !important;
+        top: 450px !important;
+        left: 50px !important;
+    }
+
+    /* Chi tiết vị trí trong từng mốc */
+    #HEADLINE357, #HEADLINE342, #HEADLINE344, #HEADLINE346 {
+        width: 85px !important;
+    }
+    #HEADLINE357 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE342 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE344 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE346 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 26px !important;
+    }
+
+    #IMAGE164, #IMAGE155, #IMAGE156, #IMAGE157 {
+        left: 100px !important;
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    #HEADLINE358, #HEADLINE343, #HEADLINE345, #HEADLINE347 {
+        left: 155px !important;
+        width: 320px !important;
+    }
+    #HEADLINE358 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE343 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE345 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE347 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 20px !important;
+    }
+
+    #PARAGRAPH93, #PARAGRAPH81, #PARAGRAPH82, #PARAGRAPH83 {
+        left: 155px !important;
+        top: 30px !important;
+        width: 320px !important;
+    }
+    #PARAGRAPH93 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH81 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH82 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH83 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+        font-size: 14px !important;
+    }
+}
+
+/* --- Bố cục Mobile (<= 767px): Ảnh Cưới Trên, Timeline Xếp Dưới Gọn Gàng --- */
+@media (max-width: 767px) {
+    #SECTION16 {
+        height: 780px !important;
+    }
+    #SECTION16 > .mayhen_invitation_ladjihe38udhd_ladi-container {
+        width: 100% !important;
+        max-width: 420px !important;
+        margin: 0 auto !important;
+        position: relative !important;
+    }
+
+    #BOX34 {
+        width: min(390px, calc(100% - 24px)) !important;
+        height: 740px !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    #IMAGE55 {
+        width: min(340px, calc(100% - 48px)) !important;
+        height: 250px !important;
+        top: 45px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    /* Các mốc Timeline trên Mobile */
+    #GROUP160 {
+        width: min(340px, calc(100% - 48px)) !important;
+        height: 75px !important;
+        top: 320px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    #GROUP143 {
+        width: min(340px, calc(100% - 48px)) !important;
+        height: 75px !important;
+        top: 425px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    #GROUP144 {
+        width: min(340px, calc(100% - 48px)) !important;
+        height: 75px !important;
+        top: 530px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    #GROUP145 {
+        width: min(340px, calc(100% - 48px)) !important;
+        height: 75px !important;
+        top: 635px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    #HEADLINE357, #HEADLINE342, #HEADLINE344, #HEADLINE346 {
+        width: 70px !important;
+    }
+    #HEADLINE357 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE342 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE344 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE346 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 20px !important;
+    }
+
+    #IMAGE164, #IMAGE155, #IMAGE156, #IMAGE157 {
+        left: 78px !important;
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    #HEADLINE358, #HEADLINE343, #HEADLINE345, #HEADLINE347 {
+        left: 115px !important;
+        width: calc(100% - 115px) !important;
+    }
+    #HEADLINE358 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE343 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE345 > .mayhen_invitation_ladjihe38udhd_ladi-headline,
+    #HEADLINE347 > .mayhen_invitation_ladjihe38udhd_ladi-headline {
+        font-size: 16px !important;
+    }
+
+    #PARAGRAPH93, #PARAGRAPH81, #PARAGRAPH82, #PARAGRAPH83 {
+        left: 115px !important;
+        top: 24px !important;
+        width: calc(100% - 115px) !important;
+    }
+    #PARAGRAPH93 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH81 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH82 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph,
+    #PARAGRAPH83 > .mayhen_invitation_ladjihe38udhd_ladi-paragraph {
+        font-size: 13px !important;
+    }
 }
 
 /* Ẩn watermark ảnh chứa chữ Sơn & Quỳnh cũ để tránh đè chữ lên tên mới */

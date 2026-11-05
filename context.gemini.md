@@ -2952,6 +2952,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Kiểm thử & Tiêu chuẩn**:
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
+
+            114. **Sửa Lỗi Lệch Lớp Phủ Xanh & Vỡ Bố Cục Chú Rể - Cô Dâu Khối SECTION4 Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng chụp ảnh DevTools tại trang xem thử trên máy tính: Khối thẻ Cô dâu "Cô dâu THÚY QUỲNH" (`#GROUP126`) có lớp phủ màu xanh gradient (`#BOX67`) chỉ che khoảng 70% bên trái bức ảnh cưới, trong khi 30% bên phải (khoảng 114px) của bức ảnh `#IMAGE122` bị lòi ra ngoài lớp phủ trần trụi. Đồng thời tên cô dâu bị ép lệch sang bên trái.
+                  - *Nguyên nhân cốt lõi*: Một rule CSS cũ tại dòng 12945 (`#GROUP125, #GROUP126 { width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important; overflow: visible !important; }`) được viết ở **phạm vi toàn cục (global scope)** mà không bọc trong Media Query Mobile (`@media (max-width: 767px)`).
+                  - Hậu quả: Trên Desktop (container rộng 960px), cả Chú rể và Cô dâu bị ép thu nhỏ thành 350px và căn giữa màn hình, làm vỡ hoàn toàn layout 2 cột song song của mẫu thiệp. Đồng thời, do `#GROUP126` bị giới hạn 350px nhưng ảnh `#IMAGE122` bên trong vẫn giữ nguyên kích thước Desktop 464px, kết hợp với `overflow: visible !important;`, 114px mép phải của ảnh đã trôi ra ngoài lớp phủ `#BOX67` (vốn chỉ rộng 350px).
+                - **Giải pháp xử lý triệt để**:
+                  1. *Tách biệt rõ ràng Desktop và Mobile*:
+                     - Gỡ bỏ hoàn toàn rule 350px toàn cục.
+                     - *Trên Desktop (`@media (min-width: 768px)`)*: Phục hồi bố cục 2 cột song song chuẩn Quiet Luxury của LadiPage: Chú rể (`#GROUP125`) rộng 464px ở `left: 0px`, Cô dâu (`#GROUP126`) rộng 464px ở `left: 496px`, `transform: none !important;`.
+                     - *Trên Mobile (`@media (max-width: 767px)`)*: Chú rể và Cô dâu xếp dọc căn giữa màn hình (`width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important;`).
+                  2. *Đồng bộ khớp 100% giữa Ảnh và Lớp phủ Overlay*:
+                     - Khung chứa (`#GROUP116`, `#GROUP127`): `position: relative !important; width: 100% !important; border-radius: 16px !important; overflow: hidden !important;`.
+                     - Ảnh cưới (`#IMAGE115`, `#IMAGE122`): `position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; border-radius: inherit !important; overflow: hidden !important;`.
+                     - Hộp overlay màu xanh (`#BOX60`, `#BOX67`): `position: absolute !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; width: 100% !important; border-radius: 0 0 16px 16px !important;`.
+                     - Đảm bảo 100% lớp phủ overlay xanh luôn bao trọn toàn bộ chiều rộng của ảnh, triệt tiêu vĩnh viễn hiện tượng lộ ảnh lòi ra ngoài mép phải.
+                  3. *Định dạng Typography & Bố cục nhãn*:
+                     - Chữ "Chú rể" / "Cô dâu" (`#PARAGRAPH66`, `#PARAGRAPH75`): Font Philosopher in nghiêng thanh nhã, căn lề trái an toàn bên trong lớp phủ.
+                     - Tên Chú rể / Cô dâu (`#HEADLINE300`, `#HEADLINE304`): Font Philosopher chữ in hoa sang trọng, cỡ chữ `42px` (Desktop) / `30px` (Mobile), không bị tràn viền.
+                     - Đoạn văn tiểu sử (`#PARAGRAPH70`, `#PARAGRAPH76`): Căn đều 2 bên (`text-align: justify`), khoảng cách thoáng đãng.
+                  4. *Đồng bộ mã nguồn & Dọn dẹp cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Chạy `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
                   - Cache view: Đã làm sạch với `php artisan view:clear`.
 
             111. **Khắc Phục Lỗi Chữ Đè Lên Nhau Tại Thiệp Mời Chính Mẫu "Dấu Ký Trăm Năm" (dau-ky-tram-nam)**:
@@ -2989,6 +3015,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                 - **Kiểm thử & Tiêu chuẩn**:
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
+
+            114. **Sửa Lỗi Lệch Lớp Phủ Xanh & Vỡ Bố Cục Chú Rể - Cô Dâu Khối SECTION4 Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng chụp ảnh DevTools tại trang xem thử trên máy tính: Khối thẻ Cô dâu "Cô dâu THÚY QUỲNH" (`#GROUP126`) có lớp phủ màu xanh gradient (`#BOX67`) chỉ che khoảng 70% bên trái bức ảnh cưới, trong khi 30% bên phải (khoảng 114px) của bức ảnh `#IMAGE122` bị lòi ra ngoài lớp phủ trần trụi. Đồng thời tên cô dâu bị ép lệch sang bên trái.
+                  - *Nguyên nhân cốt lõi*: Một rule CSS cũ tại dòng 12945 (`#GROUP125, #GROUP126 { width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important; overflow: visible !important; }`) được viết ở **phạm vi toàn cục (global scope)** mà không bọc trong Media Query Mobile (`@media (max-width: 767px)`).
+                  - Hậu quả: Trên Desktop (container rộng 960px), cả Chú rể và Cô dâu bị ép thu nhỏ thành 350px và căn giữa màn hình, làm vỡ hoàn toàn layout 2 cột song song của mẫu thiệp. Đồng thời, do `#GROUP126` bị giới hạn 350px nhưng ảnh `#IMAGE122` bên trong vẫn giữ nguyên kích thước Desktop 464px, kết hợp với `overflow: visible !important;`, 114px mép phải của ảnh đã trôi ra ngoài lớp phủ `#BOX67` (vốn chỉ rộng 350px).
+                - **Giải pháp xử lý triệt để**:
+                  1. *Tách biệt rõ ràng Desktop và Mobile*:
+                     - Gỡ bỏ hoàn toàn rule 350px toàn cục.
+                     - *Trên Desktop (`@media (min-width: 768px)`)*: Phục hồi bố cục 2 cột song song chuẩn Quiet Luxury của LadiPage: Chú rể (`#GROUP125`) rộng 464px ở `left: 0px`, Cô dâu (`#GROUP126`) rộng 464px ở `left: 496px`, `transform: none !important;`.
+                     - *Trên Mobile (`@media (max-width: 767px)`)*: Chú rể và Cô dâu xếp dọc căn giữa màn hình (`width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important;`).
+                  2. *Đồng bộ khớp 100% giữa Ảnh và Lớp phủ Overlay*:
+                     - Khung chứa (`#GROUP116`, `#GROUP127`): `position: relative !important; width: 100% !important; border-radius: 16px !important; overflow: hidden !important;`.
+                     - Ảnh cưới (`#IMAGE115`, `#IMAGE122`): `position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; border-radius: inherit !important; overflow: hidden !important;`.
+                     - Hộp overlay màu xanh (`#BOX60`, `#BOX67`): `position: absolute !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; width: 100% !important; border-radius: 0 0 16px 16px !important;`.
+                     - Đảm bảo 100% lớp phủ overlay xanh luôn bao trọn toàn bộ chiều rộng của ảnh, triệt tiêu vĩnh viễn hiện tượng lộ ảnh lòi ra ngoài mép phải.
+                  3. *Định dạng Typography & Bố cục nhãn*:
+                     - Chữ "Chú rể" / "Cô dâu" (`#PARAGRAPH66`, `#PARAGRAPH75`): Font Philosopher in nghiêng thanh nhã, căn lề trái an toàn bên trong lớp phủ.
+                     - Tên Chú rể / Cô dâu (`#HEADLINE300`, `#HEADLINE304`): Font Philosopher chữ in hoa sang trọng, cỡ chữ `42px` (Desktop) / `30px` (Mobile), không bị tràn viền.
+                     - Đoạn văn tiểu sử (`#PARAGRAPH70`, `#PARAGRAPH76`): Căn đều 2 bên (`text-align: justify`), khoảng cách thoáng đãng.
+                  4. *Đồng bộ mã nguồn & Dọn dẹp cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Chạy `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
                   - Cache view: Đã làm sạch với `php artisan view:clear`.
 
             113. **Khắc Phục Lỗi Ngắt Dòng Năm "2027" & Cắt Chữ Thứ Thanh Trắng Khối Lịch Cưới Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
@@ -3011,6 +3063,69 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                   4. *Đồng bộ tài nguyên & Clear cache*:
                      - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
                      - Làm sạch cache Blade và route với `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
+            114. **Sửa Lỗi Lệch Lớp Phủ Xanh & Vỡ Bố Cục Chú Rể - Cô Dâu Khối SECTION4 Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng chụp ảnh DevTools tại trang xem thử trên máy tính: Khối thẻ Cô dâu "Cô dâu THÚY QUỲNH" (`#GROUP126`) có lớp phủ màu xanh gradient (`#BOX67`) chỉ che khoảng 70% bên trái bức ảnh cưới, trong khi 30% bên phải (khoảng 114px) của bức ảnh `#IMAGE122` bị lòi ra ngoài lớp phủ trần trụi. Đồng thời tên cô dâu bị ép lệch sang bên trái.
+                  - *Nguyên nhân cốt lõi*: Một rule CSS cũ tại dòng 12945 (`#GROUP125, #GROUP126 { width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important; overflow: visible !important; }`) được viết ở **phạm vi toàn cục (global scope)** mà không bọc trong Media Query Mobile (`@media (max-width: 767px)`).
+                  - Hậu quả: Trên Desktop (container rộng 960px), cả Chú rể và Cô dâu bị ép thu nhỏ thành 350px và căn giữa màn hình, làm vỡ hoàn toàn layout 2 cột song song của mẫu thiệp. Đồng thời, do `#GROUP126` bị giới hạn 350px nhưng ảnh `#IMAGE122` bên trong vẫn giữ nguyên kích thước Desktop 464px, kết hợp với `overflow: visible !important;`, 114px mép phải của ảnh đã trôi ra ngoài lớp phủ `#BOX67` (vốn chỉ rộng 350px).
+                - **Giải pháp xử lý triệt để**:
+                  1. *Tách biệt rõ ràng Desktop và Mobile*:
+                     - Gỡ bỏ hoàn toàn rule 350px toàn cục.
+                     - *Trên Desktop (`@media (min-width: 768px)`)*: Phục hồi bố cục 2 cột song song chuẩn Quiet Luxury của LadiPage: Chú rể (`#GROUP125`) rộng 464px ở `left: 0px`, Cô dâu (`#GROUP126`) rộng 464px ở `left: 496px`, `transform: none !important;`.
+                     - *Trên Mobile (`@media (max-width: 767px)`)*: Chú rể và Cô dâu xếp dọc căn giữa màn hình (`width: min(350px, calc(100% - 32px)) !important; left: 50% !important; transform: translateX(-50%) !important;`).
+                  2. *Đồng bộ khớp 100% giữa Ảnh và Lớp phủ Overlay*:
+                     - Khung chứa (`#GROUP116`, `#GROUP127`): `position: relative !important; width: 100% !important; border-radius: 16px !important; overflow: hidden !important;`.
+                     - Ảnh cưới (`#IMAGE115`, `#IMAGE122`): `position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; border-radius: inherit !important; overflow: hidden !important;`.
+                     - Hộp overlay màu xanh (`#BOX60`, `#BOX67`): `position: absolute !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; width: 100% !important; border-radius: 0 0 16px 16px !important;`.
+                     - Đảm bảo 100% lớp phủ overlay xanh luôn bao trọn toàn bộ chiều rộng của ảnh, triệt tiêu vĩnh viễn hiện tượng lộ ảnh lòi ra ngoài mép phải.
+                  3. *Định dạng Typography & Bố cục nhãn*:
+                     - Chữ "Chú rể" / "Cô dâu" (`#PARAGRAPH66`, `#PARAGRAPH75`): Font Philosopher in nghiêng thanh nhã, căn lề trái an toàn bên trong lớp phủ.
+                     - Tên Chú rể / Cô dâu (`#HEADLINE300`, `#HEADLINE304`): Font Philosopher chữ in hoa sang trọng, cỡ chữ `42px` (Desktop) / `30px` (Mobile), không bị tràn viền.
+                     - Đoạn văn tiểu sử (`#PARAGRAPH70`, `#PARAGRAPH76`): Căn đều 2 bên (`text-align: justify`), khoảng cách thoáng đãng.
+                  4. *Đồng bộ mã nguồn & Dọn dẹp cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Chạy `php artisan view:clear; php artisan route:clear`.
+                - **Kiểm thử & Tiêu chuẩn**:
+                  - Pest Feature Tests: 10/10 tests passed (143 assertions).
+                  - Laravel Pint: Passed agent format.
+
+            115. **Khắc Phục Lỗi Vỡ Layout Đóng Nhầm Thẻ DOM & Tái Cấu Trúc Khối Lịch Trình Cưới SECTION16 Mẫu "Lưu Bút Ngày Chung Đôi" (luu-but-ngay-chung-doi)**:
+                - **Vấn đề phản ánh từ người dùng & phân tích nguyên nhân**:
+                  - Người dùng gửi ảnh chụp màn hình khối Lịch trình cưới (`SECTION16`) bị biến dạng nặng nề:
+                    + Có một bức ảnh hình vòm (viên thuốc) kèm dòng chữ "TIỆC CƯỚI NHÀ TRAI" đè thẳng lên giữa cột mốc thời gian bên trái.
+                    + Các mốc thời gian "CHỤP ẢNH KỶ NIỆM", "LỄ VU QUY", "LỄ THÀNH HÔN", "TIỆC CƯỚI" bị dồn cụm, đè bẹp lên nhau lộn xộn.
+                  - *Nguyên nhân cốt lõi số 1 (DOM Tree hỏng hóc nghiêm trọng)*:
+                    Tại `template.blade.php` dòng 1084-1087 (ngay sau `@endif` của `GROUP145`), xuất hiện **4 thẻ đóng `</div>` liên tiếp**, trong khi `SECTION16` chỉ có 2 thẻ cha (`SECTION16` và `.ladi-container`). Hai thẻ `</div>` thừa này đã **đóng sớm `.ladi-wraper` và `#mayhen_w18_stage`**! Hậu quả là toàn bộ các section phía sau (bao gồm `SECTION13` - Tiệc cưới Nhà trai có bức ảnh vòm `#IMAGE51` và `#GROUP39`) bị văng ra khỏi khung wrapper chính, mất ngữ cảnh xếp tầng và trôi ngược lên đè bẹp lên `SECTION16`.
+                  - *Nguyên nhân cốt lõi số 2 (Tọa độ CSS của timeline bị xung đột)*:
+                    Trong CSS gốc của LadiPage, `#GROUP145` (Chụp ảnh kỷ niệm) có tọa độ `top: 41.6px` (dòng 4896) nằm tít phía trên, trong khi `#GROUP160` (Lễ Vu Quy) ở `top: 240.7px`, `#GROUP143` ở `top: 358px` và `#GROUP144` không có định vị chuẩn, dẫn đến các mốc thời gian nhảy loạn xạ và đè lên nhau.
+                - **Giải pháp xử lý triệt để**:
+                  1. *Hàn gắn cây DOM sạch sẽ*:
+                     - Xóa bỏ dứt điểm 2 thẻ `</div>` thừa ở cuối `SECTION16` trong `template.blade.php`.
+                     - Kiểm tra và đảm bảo cây DOM toàn bộ file `template.blade.php` cân bằng tuyệt đối: 806 thẻ mở `<div>` và đúng 806 thẻ đóng `</div>`. Toàn bộ `SECTION13`, `SECTION14`... trở về đúng vị trí tuần tự bên dưới `SECTION16`, triệt tiêu hoàn toàn việc ảnh vòm trôi lên đè bẹp lịch trình.
+                  2. *Tái cấu trúc giao diện SECTION16 theo phong cách Quiet Luxury*:
+                     - Ẩn triệt để các cành hoa trang trí rườm rà thừa mép (`#IMAGE99, #IMAGE98`).
+                     - Khung viền nét đứt thanh nhã `#BOX34` bo góc 20px, viền dashed màu sage/charcoal nhẹ nhàng (`rgba(26, 40, 34, 0.35)`).
+                     - Ảnh cưới chính bên phải `#IMAGE55`: bo góc 16px, đổ bóng mềm mại `0 12px 35px rgba(0, 0, 0, 0.15)`.
+                     - Ẩn các đường gạch line trang trí cũ gây rối mắt (`#LINE87, #LINE81, #LINE88, #LINE89`).
+                  3. *Sắp xếp 4 mốc Timeline khoa học, cách đều, không chồng chéo*:
+                     - *Trên Desktop (`@media (min-width: 768px)`)*: Bố cục 2 cột. Ảnh cưới bên phải (rộng 340px, cao 470px). Bên trái xếp 4 mốc thẳng hàng từ trên xuống:
+                       * Lễ Vu Quy (`#GROUP160`): `top: 75px`
+                       * Lễ Thành Hôn (`#GROUP143`): `top: 200px`
+                       * Tiệc Cưới (`#GROUP144`): `top: 325px`
+                       * Chụp Ảnh Kỷ Niệm (`#GROUP145`): `top: 450px`
+                     - *Trên Mobile (`@media (max-width: 767px)`)*: Ảnh cưới xếp phía trên (cao 250px), 4 mốc timeline căn giữa xếp gọn bên dưới:
+                       * Lễ Vu Quy: `top: 320px`
+                       * Lễ Thành Hôn: `top: 425px`
+                       * Tiệc Cưới: `top: 530px`
+                       * Chụp Ảnh Kỷ Niệm: `top: 635px`
+                     - Định dạng Typography: Giờ diễn ra sự kiện nổi bật với font Philosopher (`26px`/`20px`), icon nhẫn cưới cách điệu ở giữa, tiêu đề mốc in hoa sắc nét (`20px`/`16px`), địa chỉ và ngày tháng màu xám ấm (`#5A544E`, `14px`/`13px`).
+                  4. *Đồng bộ tài nguyên & Clear cache*:
+                     - Đồng bộ 100% giữa `styles.css` và `assets/styles.css`.
+                     - Xóa cache Blade và route với `php artisan view:clear; php artisan route:clear`.
                 - **Kiểm thử & Tiêu chuẩn**:
                   - Pest Feature Tests: 10/10 tests passed (143 assertions).
                   - Laravel Pint: Passed agent format.
