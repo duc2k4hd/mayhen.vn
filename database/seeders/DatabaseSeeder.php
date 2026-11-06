@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MayHenInitialSeeder::class,
             InvitationTemplateSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

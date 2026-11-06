@@ -1,0 +1,456 @@
+/*
+  MÂY HẸN · Admin Wedding Atelier Login
+  Prefix: mayhen_admin_login_*
+  Strict Pure Vanilla CSS — Quiet Luxury
+*/
+:root {
+  --mayhen-admin-background: #faf7f3;
+  --mayhen-admin-paper: #fffefd;
+  --mayhen-admin-rose-paper: #f7eeea;
+  --mayhen-admin-rose-soft: #f0e1db;
+  --mayhen-admin-primary: #805052;
+  --mayhen-admin-primary-hover: #694143;
+  --mayhen-admin-primary-soft: #eee0dc;
+  --mayhen-admin-accent: #b58e6f;
+  --mayhen-admin-accent-soft: #d6bda6;
+  --mayhen-admin-text: #3b3132;
+  --mayhen-admin-text-muted: #807474;
+  --mayhen-admin-border: #e8dbd4;
+  --mayhen-admin-border-strong: #dac6bc;
+  --mayhen-admin-error: #ae4549;
+  --mayhen-admin-success: #39735d;
+  --mayhen-admin-shadow: 0 24px 80px rgba(90, 55, 52, .09), 0 3px 14px rgba(90, 55, 52, .035);
+  --mayhen-admin-font-body: "Segoe UI", "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --mayhen-admin-font-display: Georgia, "Times New Roman", "Playfair Display", serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body.mayhen_admin_login_body { margin: 0; padding: 0; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; }
+svg { display: block; }
+
+.mayhen_admin_login_page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 34px 38px;
+  color: var(--mayhen-admin-text);
+  font-family: var(--mayhen-admin-font-body);
+  background:
+    radial-gradient(ellipse at 5% 9%, rgba(221, 193, 182, .19), transparent 33%),
+    radial-gradient(ellipse at 95% 91%, rgba(221, 193, 182, .20), transparent 35%),
+    var(--mayhen-admin-background);
+}
+
+.mayhen_admin_login_page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: .28;
+  background-image: radial-gradient(#bba89e 0.6px, transparent .7px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom, #000, transparent 77%);
+}
+
+.mayhen_admin_login_outer_line {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  border: 1px solid rgba(181, 142, 111, .17);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+.mayhen_admin_login_outer_line_top { left: -208px; top: -165px; }
+.mayhen_admin_login_outer_line_bottom { right: -205px; bottom: -176px; }
+.mayhen_admin_login_outer_line::after {
+  content: "";
+  position: absolute;
+  inset: 19px;
+  border: 1px solid rgba(181, 142, 111, .15);
+  border-radius: inherit;
+}
+
+.mayhen_admin_login_shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(430px, .96fr);
+  width: min(1248px, 100%);
+  min-height: min(776px, calc(100dvh - 68px));
+  overflow: hidden;
+  border: 1px solid rgba(217, 195, 183, .66);
+  border-radius: 24px;
+  background: var(--mayhen-admin-paper);
+  box-shadow: var(--mayhen-admin-shadow);
+}
+
+/* Cột thiệp cưới nghệ thuật bên trái */
+.mayhen_admin_login_story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 43px 51px 37px;
+  min-width: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 48% 61%, rgba(255, 255, 255, .52), transparent 42%),
+    linear-gradient(142deg, #fbf4f0 2%, var(--mayhen-admin-rose-paper) 52%, #f3e4df 100%);
+}
+.mayhen_admin_login_story::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 17px;
+  border: 1px solid rgba(181, 142, 111, .33);
+  border-radius: 13px;
+}
+.mayhen_admin_login_story::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(181, 142, 111, .09);
+  border-radius: 50%;
+  left: 50%;
+  top: 49%;
+  transform: translate(-50%, -50%);
+}
+.mayhen_admin_login_story_header,
+.mayhen_admin_login_story_main,
+.mayhen_admin_login_story_footer { position: relative; z-index: 1; }
+
+.mayhen_admin_login_story_header { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.mayhen_admin_login_brand { display: flex; align-items: center; gap: 12px; }
+.mayhen_admin_login_brand_mark { width: 43px; height: 43px; color: var(--mayhen-admin-primary); }
+.mayhen_admin_login_brand_name {
+  font-family: var(--mayhen-admin-font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: .12em;
+  color: var(--mayhen-admin-primary);
+}
+.mayhen_admin_login_brand_subtitle {
+  display: block;
+  margin-top: 6px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .23em;
+  color: #a17d73;
+}
+.mayhen_admin_login_story_header_note {
+  font-family: var(--mayhen-admin-font-display);
+  font-size: 12px;
+  font-style: italic;
+  color: #a38879;
+  white-space: nowrap;
+}
+
+.mayhen_admin_login_story_main { text-align: center; margin-top: 5px; }
+.mayhen_admin_login_eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  color: var(--mayhen-admin-primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+.mayhen_admin_login_eyebrow::before,
+.mayhen_admin_login_eyebrow::after {
+  content: "";
+  width: 23px;
+  height: 1px;
+  background: var(--mayhen-admin-accent);
+  opacity: .7;
+}
+.mayhen_admin_login_story_title {
+  margin: 21px 0 16px;
+  font-family: var(--mayhen-admin-font-display);
+  font-size: clamp(37px, 3.4vw, 54px);
+  font-weight: 400;
+  line-height: 1.19;
+  letter-spacing: -.045em;
+  color: #49383a;
+}
+.mayhen_admin_login_story_title em {
+  font-weight: 400;
+  color: var(--mayhen-admin-primary);
+}
+.mayhen_admin_login_story_description {
+  max-width: 355px;
+  margin: 0 auto;
+  color: #857674;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.mayhen_admin_login_art {
+  width: min(400px, 100%);
+  margin: 14px auto 0;
+  color: var(--mayhen-admin-accent);
+}
+.mayhen_admin_login_art_svg { width: 100%; height: auto; overflow: visible; }
+.mayhen_admin_login_story_footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #aa8b7f;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.mayhen_admin_login_story_footer_line { flex: 1; height: 1px; background: rgba(181, 142, 111, .5); }
+.mayhen_admin_login_story_footer_symbol { font-family: var(--mayhen-admin-font-display); font-size: 18px; font-weight: 400; }
+
+/* Cột đăng nhập quản trị bên phải */
+.mayhen_admin_login_panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 42px clamp(36px, 5vw, 74px) 33px;
+  background: var(--mayhen-admin-paper);
+}
+.mayhen_admin_login_panel_header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  color: #b4a19b;
+  text-transform: uppercase;
+}
+.mayhen_admin_login_panel_header_dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--mayhen-admin-accent);
+}
+.mayhen_admin_login_form_area { width: min(408px, 100%); margin: 24px auto 40px; }
+.mayhen_admin_login_small_ornament { display: flex; justify-content: center; margin-bottom: 17px; }
+.mayhen_admin_login_small_ornament svg { width: 49px; height: 39px; color: var(--mayhen-admin-accent); }
+.mayhen_admin_login_welcome {
+  margin: 0 0 8px;
+  text-align: center;
+  font-family: var(--mayhen-admin-font-display);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--mayhen-admin-primary);
+}
+.mayhen_admin_login_title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--mayhen-admin-font-display);
+  font-size: clamp(34px, 3.1vw, 46px);
+  font-weight: 400;
+  letter-spacing: -.045em;
+  line-height: 1.17;
+  color: var(--mayhen-admin-text);
+}
+.mayhen_admin_login_subtitle {
+  margin: 13px 0 34px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--mayhen-admin-text-muted);
+}
+.mayhen_admin_login_field { margin-bottom: 20px; }
+.mayhen_admin_login_field_label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 12px;
+  font-weight: 650;
+  color: #5a4a49;
+}
+.mayhen_admin_login_input_wrap { position: relative; }
+.mayhen_admin_login_field_icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #ad958b;
+  pointer-events: none;
+}
+.mayhen_admin_login_input {
+  display: block;
+  width: 100%;
+  height: 52px;
+  padding: 0 47px 0 44px;
+  border: 1px solid var(--mayhen-admin-border);
+  border-radius: 10px;
+  outline: none;
+  color: var(--mayhen-admin-text);
+  background: #fffdfa;
+  font-size: 13px;
+  line-height: 52px;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.mayhen_admin_login_input::placeholder { color: #b3a4a0; }
+.mayhen_admin_login_input:hover { border-color: var(--mayhen-admin-border-strong); }
+.mayhen_admin_login_input:focus {
+  border-color: var(--mayhen-admin-primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(128, 80, 82, .10);
+}
+.mayhen_admin_login_input[aria-invalid="true"] { border-color: var(--mayhen-admin-error); }
+.mayhen_admin_login_field_error { display: none; padding-top: 7px; color: var(--mayhen-admin-error); font-size: 11px; line-height: 1.5; }
+.mayhen_admin_login_field_error:not(:empty) { display: block; }
+.mayhen_admin_login_password_toggle {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  color: #aa938b;
+  background: transparent;
+  transition: background .2s, color .2s;
+}
+.mayhen_admin_login_password_toggle:hover,
+.mayhen_admin_login_password_toggle:focus-visible { color: var(--mayhen-admin-primary); background: #f7eee9; outline: none; }
+.mayhen_admin_login_password_toggle svg { width: 19px; height: 19px; }
+.mayhen_admin_login_password_icon_hidden { display: none; }
+.mayhen_admin_login_password_toggle[data-visible="true"] .mayhen_admin_login_password_icon_visible { display: none; }
+.mayhen_admin_login_password_toggle[data-visible="true"] .mayhen_admin_login_password_icon_hidden { display: block; }
+
+.mayhen_admin_login_options { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 2px 0 26px; }
+.mayhen_admin_login_remember { display: inline-flex; gap: 9px; align-items: center; cursor: pointer; color: #746867; font-size: 12px; }
+.mayhen_admin_login_remember input { width: 16px; height: 16px; margin: 0; accent-color: var(--mayhen-admin-primary); cursor: pointer; }
+.mayhen_admin_login_forgot {
+  border: 0;
+  padding: 6px 0;
+  color: var(--mayhen-admin-primary);
+  background: transparent;
+  font-weight: 600;
+  font-size: 12px;
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+.mayhen_admin_login_forgot:hover { text-decoration: underline; }
+.mayhen_admin_login_forgot:focus-visible { outline: 2px solid var(--mayhen-admin-primary); outline-offset: 4px; border-radius: 3px; }
+
+.mayhen_admin_login_submit {
+  display: flex;
+  width: 100%;
+  height: 53px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 10px;
+  padding: 0 17px;
+  border: 1px solid var(--mayhen-admin-primary);
+  border-radius: 10px;
+  color: #fff;
+  background: var(--mayhen-admin-primary);
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .045em;
+  box-shadow: 0 7px 18px rgba(128, 80, 82, .16);
+  transition: transform .18s, box-shadow .18s, background-color .18s;
+}
+.mayhen_admin_login_submit:hover { background: var(--mayhen-admin-primary-hover); box-shadow: 0 9px 22px rgba(128, 80, 82, .19); transform: translateY(-1px); }
+.mayhen_admin_login_submit:active { transform: translateY(0); }
+.mayhen_admin_login_submit:focus-visible { outline: 3px solid var(--mayhen-admin-accent-soft); outline-offset: 3px; }
+.mayhen_admin_login_submit:disabled { opacity: .78; transform: none; }
+.mayhen_admin_login_submit_arrow { position: absolute; right: 18px; width: 18px; height: 18px; }
+.mayhen_admin_login_submit[data-loading="true"] .mayhen_admin_login_submit_arrow { animation: mayhen_admin_login_spin 1s linear infinite; }
+@keyframes mayhen_admin_login_spin { to { transform: rotate(360deg); } }
+.mayhen_admin_login_message { margin: 12px 0 0; font-size: 12px; line-height: 1.65; text-align: center; color: var(--mayhen-admin-text-muted); }
+.mayhen_admin_login_message:empty { display: none; }
+.mayhen_admin_login_message[data-type="error"] { color: var(--mayhen-admin-error); }
+.mayhen_admin_login_message[data-type="success"] { color: var(--mayhen-admin-success); }
+.mayhen_admin_login_message[data-type="info"] { color: #856404; }
+
+.mayhen_admin_login_quote { display: flex; gap: 12px; align-items: center; margin-top: 32px; }
+.mayhen_admin_login_quote::before,
+.mayhen_admin_login_quote::after { content: ""; flex: 1; height: 1px; background: var(--mayhen-admin-border); }
+.mayhen_admin_login_quote_text { flex: 0 1 auto; max-width: 235px; text-align: center; color: #a38b83; font-family: var(--mayhen-admin-font-display); font-style: italic; font-size: 12px; line-height: 1.5; }
+.mayhen_admin_login_panel_footer { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; text-align: center; color: #b2a39e; font-size: 10px; line-height: 1.7; }
+.mayhen_admin_login_panel_footer_sep { color: #d2c3bc; }
+
+@media (max-width: 1100px) {
+  .mayhen_admin_login_page { padding: 22px; }
+  .mayhen_admin_login_shell { grid-template-columns: minmax(0, 1fr) minmax(390px, 1fr); min-height: min(730px, calc(100dvh - 44px)); }
+  .mayhen_admin_login_story { padding: 40px 36px 34px; }
+  .mayhen_admin_login_panel { padding: 38px 37px 30px; }
+  .mayhen_admin_login_story_title { font-size: clamp(35px, 4vw, 49px); }
+}
+@media (max-width: 800px) {
+  .mayhen_admin_login_page { padding: 22px; }
+  .mayhen_admin_login_shell { width: min(580px, 100%); display: flex; flex-direction: column; min-height: auto; }
+  .mayhen_admin_login_story { gap: 15px; padding: 28px 35px 25px; }
+  .mayhen_admin_login_story::before { inset: 11px; }
+  .mayhen_admin_login_story_header_note { display: none; }
+  .mayhen_admin_login_brand_mark { width: 37px; height: 37px; }
+  .mayhen_admin_login_brand_name { font-size: 17px; }
+  .mayhen_admin_login_story_main { margin-top: 1px; }
+  .mayhen_admin_login_story_title { margin: 12px 0 8px; font-size: clamp(31px, 5vw, 40px); }
+  .mayhen_admin_login_story_description { font-size: 12px; }
+  .mayhen_admin_login_art { display: none; }
+  .mayhen_admin_login_story_footer { display: none; }
+  .mayhen_admin_login_panel { padding: 24px 38px 28px; }
+  .mayhen_admin_login_panel_header { display: none; }
+  .mayhen_admin_login_form_area { margin: 5px auto 26px; }
+  .mayhen_admin_login_small_ornament { margin-bottom: 6px; }
+  .mayhen_admin_login_small_ornament svg { height: 31px; }
+  .mayhen_admin_login_subtitle { margin-bottom: 25px; }
+}
+@media (max-width: 480px) {
+  .mayhen_admin_login_page { display: block; padding: 0; background: var(--mayhen-admin-paper); }
+  .mayhen_admin_login_outer_line { display: none; }
+  .mayhen_admin_login_shell { width: 100%; min-height: 100vh; min-height: 100dvh; border: 0; border-radius: 0; box-shadow: none; }
+  .mayhen_admin_login_story { padding: 24px 27px 25px; }
+  .mayhen_admin_login_story::before { inset: 8px; }
+  .mayhen_admin_login_brand { gap: 9px; }
+  .mayhen_admin_login_brand_mark { width: 33px; height: 33px; }
+  .mayhen_admin_login_brand_name { font-size: 16px; }
+  .mayhen_admin_login_brand_subtitle { font-size: 7px; }
+  .mayhen_admin_login_eyebrow { font-size: 8px; letter-spacing: .13em; gap: 7px; }
+  .mayhen_admin_login_eyebrow::before, .mayhen_admin_login_eyebrow::after { width: 15px; }
+  .mayhen_admin_login_story_title { font-size: clamp(29px, 9vw, 37px); }
+  .mayhen_admin_login_story_description { font-size: 11px; line-height: 1.65; }
+  .mayhen_admin_login_panel { flex: 1; padding: 23px 27px 23px; }
+  .mayhen_admin_login_form_area { width: 100%; margin: 2px auto 28px; }
+  .mayhen_admin_login_small_ornament { display: none; }
+  .mayhen_admin_login_welcome { font-size: 14px; }
+  .mayhen_admin_login_title { font-size: 35px; }
+  .mayhen_admin_login_subtitle { margin: 9px 0 25px; font-size: 12px; }
+  .mayhen_admin_login_field { margin-bottom: 18px; }
+  .mayhen_admin_login_input { height: 51px; font-size: 16px; }
+  .mayhen_admin_login_options { margin-bottom: 21px; }
+  .mayhen_admin_login_quote { margin-top: 27px; }
+  .mayhen_admin_login_panel_footer { font-size: 9px; }
+}
+@media (max-width: 350px) {
+  .mayhen_admin_login_panel { padding-right: 19px; padding-left: 19px; }
+  .mayhen_admin_login_story { padding-right: 18px; padding-left: 18px; }
+  .mayhen_admin_login_options { align-items: flex-start; }
+  .mayhen_admin_login_remember, .mayhen_admin_login_forgot { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+

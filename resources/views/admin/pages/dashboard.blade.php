@@ -5,7 +5,7 @@
 
 @section('content')
     <!-- 4 Key KPI Metrics -->
-    <div class="mayhen_admin_stats_grid">
+    <div class="mayhen_admin_stats_grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
         <div class="mayhen_admin_stat_card">
             <div class="mayhen_admin_stat_num" style="color: #0F5132;">{{ number_format($totalRevenue, 0, ',', '.') }}đ</div>
             <div class="mayhen_admin_stat_label">Doanh Thu Đã Thu</div>
@@ -19,6 +19,11 @@
         <div class="mayhen_admin_stat_card">
             <div class="mayhen_admin_stat_num">{{ $publishedInvitations }} / {{ $totalInvitations }}</div>
             <div class="mayhen_admin_stat_label">Thiệp Xuất Bản / Tổng Thiệp</div>
+        </div>
+
+        <div class="mayhen_admin_stat_card">
+            <div class="mayhen_admin_stat_num">{{ $totalGuests }}</div>
+            <div class="mayhen_admin_stat_label">Khách Mời & RSVP</div>
         </div>
 
         <div class="mayhen_admin_stat_card">

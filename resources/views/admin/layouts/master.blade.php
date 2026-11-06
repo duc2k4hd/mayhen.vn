@@ -37,6 +37,12 @@
                 <a href="{{ route('home') }}" class="mayhen_admin_nav_link" target="_blank" style="margin-top: auto;">
                     <span>&larr; Xem Trang Khách</span>
                 </a>
+                <form action="{{ route('admin.logout') }}" method="POST" style="margin-top: 8px;">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_nav_link" style="width: 100%; border: none; background: transparent; color: #DC3545; justify-content: flex-start; text-align: left;" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất khỏi quản trị?');">
+                        <span>Đăng Xuất (Thoát)</span>
+                    </button>
+                </form>
             </nav>
         </aside>
 
@@ -44,8 +50,16 @@
         <div class="mayhen_admin_main">
             <header class="mayhen_admin_topbar">
                 <div class="mayhen_admin_topbar_title">@yield('page_title', 'Bảng Điều Khiển')</div>
-                <div style="font-size: 0.875rem; color: #6C757D;">
-                    Hệ Thống Mây Hẹn (mayhen.vn) &bull; Phiên Bản 1.0
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="font-size: 0.875rem; color: #6C757D;">
+                        Xin chào, <strong style="color: #171513;">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</strong>
+                    </div>
+                    <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="mayhen_admin_btn_sm" style="color: #805052; border-color: #E8DBD4; background: #FAF7F3;">
+                            Đăng xuất
+                        </button>
+                    </form>
                 </div>
             </header>
 

@@ -3756,6 +3756,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 6/6 tests passed (73 assertions).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
 
+               137. **Thiết Lập Phân Hệ Quản Trị Admin Độc Lập: Trang Đăng Nhập Nghệ Thuật Thiệp Cưới, Điều Hướng Thông Minh & Admin Dashboard (/admin/dashboard)**:
+                    - **Bối cảnh & Yêu cầu cốt lõi**:
+                      1. Toàn bộ định tuyến admin được tách biệt và quản lý tập trung trong file `routes/admin.php`.
+                      2. Cơ chế điều hướng thông minh hai chiều:
+                         - Truy cập `/admin`: Nếu chưa đăng nhập admin -> Chuyển hướng về `/admin/login`; nếu đã đăng nhập admin -> Chuyển hướng về `/admin/dashboard`.
+                         - Truy cập `/admin/login`: Nếu đã đăng nhập admin -> Chuyển hướng về `/admin/dashboard`; nếu chưa đăng nhập -> Hiển thị trang đăng nhập.
+                         - Đăng nhập thành công -> Tự động chuyển hướng về `/admin/dashboard`.
+                         - Đăng xuất (`POST /admin/logout`) -> Hủy session an toàn và chuyển về `/admin/login`.
+                      3. Trang đăng nhập mang phong cách thiệp cưới sang trọng (Quiet Luxury Wedding Atelier) với hai cột đối xứng: Cột trái lời chào nghệ thuật kèm hoa văn letterpress dập nổi; Cột phải form đăng nhập quản trị tinh gọn với ẩn/hiện mật khẩu, ghi nhớ email, xác thực an toàn hỗ trợ cả AJAX JSON lẫn submit chuẩn.
+                      4. Trang Admin Dashboard hoàn thiện với 5 chỉ số KPI vận hành thời gian thực (Doanh thu đã thu, Đơn hàng thành công, Tỷ lệ thiệp xuất bản, Khách mời & RSVP, Tổng người dùng), danh sách mẫu thiệp cưới đang hoạt động và đơn hàng gần đây.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Middleware/AdminAuthenticate.php`: Middleware bảo vệ kiểm tra quyền `isAdmin()`, đăng ký alias `admin.auth` trong `bootstrap/app.php`.
+                      - `app/Http/Controllers/Admin/AuthController.php`: Xử lý điều hướng thông minh, form login, rate limiting chống brute-force và logout.
+                      - `routes/admin.php`: Tập trung toàn bộ 10 route quản trị admin (`admin.index`, `admin.login`, `admin.login.submit`, `admin.logout`, `admin.dashboard`, `admin.templates.*`, `admin.orders.*`).
+                      - `routes/web.php`: Kết nối trực tiếp `routes/admin.php` qua tiền tố `admin`.
+                      - `database/seeders/AdminUserSeeder.php`: Tạo tài khoản Quản trị viên mặc định (`admin@mayhen.vn`).
+                      - `public/assets/admin/css/pages/login.css`: CSS thuần cách ly hoàn toàn, chuẩn BEM prefix `mayhen_admin_login_*`.
+                      - `resources/views/admin/auth/login.blade.php`: Giao diện đăng nhập chuẩn Blade, tích hợp CSRF token, Blade directives `@error`, flash session.
+                      - `resources/views/admin/layouts/master.blade.php`: Nâng cấp Topbar hiển thị tên admin đăng nhập, nút đăng xuất an toàn.
+                      - `resources/views/admin/pages/dashboard.blade.php`: Nâng cấp lưới thẻ KPI linh hoạt kèm chỉ số Khách Mời & RSVP.
+                      - `tests/Feature/AdminAuthTest.php`: Bộ kiểm thử tự động 10 test cases bao phủ 100% các kịch bản xác thực và điều hướng admin.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 16/16 passed 100% (110 assertions).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

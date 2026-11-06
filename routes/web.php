@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
-use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\GuestController;
@@ -79,17 +76,4 @@ Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
 
 // Admin Management Panel
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-    Route::prefix('templates')->name('templates.')->group(function () {
-        Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
-        Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->name('toggle_active');
-        Route::post('/{id}/toggle-featured', [AdminTemplateController::class, 'toggleFeatured'])->name('toggle_featured');
-    });
-
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', [AdminOrderController::class, 'index'])->name('index');
-        Route::post('/{id}/mark-paid', [AdminOrderController::class, 'markPaid'])->name('mark_paid');
-    });
-});
+Route::prefix('admin')->name('admin.')->group(base_path('routes/admin.php'));
