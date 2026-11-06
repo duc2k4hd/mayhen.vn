@@ -1046,12 +1046,12 @@ class InvitationTemplateService
             $currentRevision = (int) ($currentInvitation->revision_id ?? 0);
 
             // Kiểm tra xung đột phiên bản (Optimistic Concurrency Check)
-            if ($clientRevision < $currentRevision) {
+            if ($clientRevision !== $currentRevision) {
                 return [
                     'success' => false,
                     'conflict' => true,
                     'current_revision' => $currentRevision,
-                    'message' => 'Phiên làm việc đã cũ hoặc đã được chỉnh sửa từ một tab khác. Vui lòng làm mới trang.',
+                    'message' => 'Phiên bản chỉnh sửa không khớp với máy chủ. Vui lòng kiểm tra bản nháp trước khi làm mới trang.',
                 ];
             }
 

@@ -134,6 +134,7 @@ export class Autosaver {
         }
         this.isSaving = true;
         const sentVersion = this.changeVersion;
+        const sentRevision = state.revision_id;
         let shouldFlush = false;
         this.store.setSaveStatus('saving');
 
@@ -150,7 +151,7 @@ export class Autosaver {
                 },
                 body: JSON.stringify({
                     invitation_id: state.invitation_id,
-                    revision_id: state.revision_id,
+                    revision_id: sentRevision,
                     draft_config: state.custom_config,
                     wedding_delta: state.wedding,
                 }),
@@ -176,10 +177,18 @@ export class Autosaver {
                 throw new Error(data.message || 'Lưu nháp máy chủ thất bại.');
             }
 
-            // Cập nhật revision_id mới
-            if (data.new_revision_id) {
-                this.store.updateRevision(data.new_revision_id);
+            if (!Number.isSafeInteger(sentRevision) || !Number.isSafeInteger(data.new_revision_id) || data.new_revision_id !== sentRevision + 1) {
+                this.hasConflict = true;
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
+                this.store.setSaveStatus('conflict', {
+                    message: 'Máy chủ trả về phiên bản lưu không hợp lệ. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
+                });
+                return;
             }
+            this.store.updateRevision(data.new_revision_id);
 
             this.saveToLocalStorage(this.store.getState());
             shouldFlush = this.changeVersion !== sentVersion;

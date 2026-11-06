@@ -99,3 +99,36 @@ test('an owner session for another wedding cannot manage guests', function () {
     $this->assertDatabaseHas('guests', ['id' => $otherGuest->id]);
     $this->assertDatabaseMissing('guests', ['wedding_id' => $otherInvitation->wedding_id, 'name' => 'Khách lạ']);
 });
+
+test('autosave rejects both older and newer revisions without changing data', function (int $revision) {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'revision-conflict');
+    $invitation->update(['revision_id' => 5, 'draft_config' => ['theme' => 'original']]);
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => $revision,
+        'draft_config' => ['theme' => 'changed'],
+        'wedding_delta' => ['groom_name' => 'Changed'],
+    ])->assertStatus(409)->assertJson(['conflict' => true, 'current_revision' => 5]);
+
+    expect($invitation->fresh()->draft_config)->toBe(['theme' => 'original']);
+    expect($invitation->fresh()->revision_id)->toBe(5);
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Minh');
+})->with([4, 6]);
+
+test('autosave accepts the current revision and increments it', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'revision-current');
+    $invitation->update(['revision_id' => 5]);
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => 5,
+        'draft_config' => ['theme' => 'updated'],
+        'wedding_delta' => ['groom_name' => 'Tuấn'],
+    ])->assertOk()->assertJson(['success' => true, 'new_revision_id' => 6]);
+
+    expect($invitation->fresh()->draft_config)->toBe(['theme' => 'updated']);
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
+});

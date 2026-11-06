@@ -125,3 +125,24 @@ test('keeps a failed save dirty with a local draft', async () => {
     assert.equal(store.state.ui.isDirty, true);
     assert.equal(JSON.parse(storage.get('mayhen_draft_42')).wedding.groom_name, 'Minh');
 });
+
+test('keeps changes and pauses when a successful response has no valid next revision', async () => {
+    for (const nextRevision of [undefined, 1, 3, '2']) {
+        const store = makeStore();
+        let requests = 0;
+        globalThis.fetch = async () => {
+            requests += 1;
+            return makeResponse(200, { success: true, new_revision_id: nextRevision });
+        };
+        const autosaver = new Autosaver(store, { debounceMs: 60000 });
+
+        autosaver.schedule();
+        await autosaver.syncToServer();
+        assert.equal(store.state.ui.saveStatus, 'conflict');
+        assert.equal(store.state.ui.isDirty, true);
+        assert.equal(store.state.revision_id, 1);
+        assert.equal(JSON.parse(storage.get('mayhen_draft_42')).wedding.groom_name, 'Minh');
+        await autosaver.syncToServer();
+        assert.equal(requests, 1);
+    }
+});
