@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -121,9 +122,16 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid transfer type'], 422);
         }
 
-        // 2. Extract content & amount
         $content = $request->input('content') ?? $request->input('description') ?? '';
-        $amount = (int) ($request->input('transferAmount') ?? $request->input('amount') ?? 0);
+        $rawAmount = $request->input('transferAmount') ?? $request->input('amount');
+        if (! is_string($content) || (! is_int($rawAmount) && ! is_string($rawAmount))) {
+            return response()->json(['success' => false, 'message' => 'Invalid payment data'], 422);
+        }
+
+        $amount = filter_var($rawAmount, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($amount === false) {
+            return response()->json(['success' => false, 'message' => 'Invalid payment data'], 422);
+        }
 
         // Find matching pending order code in transaction description
         preg_match('/MH[A-Z0-9]{8}/', strtoupper($content), $matches);
@@ -133,25 +141,30 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'No order code detected in description'], 200);
         }
 
-        $order = Order::where('order_code', $orderCode)->first();
+        return DB::transaction(function () use ($orderCode, $amount): JsonResponse {
+            $order = Order::where('order_code', $orderCode)->lockForUpdate()->first();
 
-        if (! $order) {
-            return response()->json(['success' => false, 'message' => 'Order not found'], 200);
-        }
+            if (! $order) {
+                return response()->json(['success' => false, 'message' => 'Order not found'], 200);
+            }
 
-        // 3. Idempotency Check: Don't process twice
-        if ($order->isPaid()) {
-            return response()->json(['success' => true, 'message' => 'Order already processed (idempotent)'], 200);
-        }
+            if ($order->isPaid()) {
+                return response()->json(['success' => true, 'message' => 'Order already processed (idempotent)'], 200);
+            }
 
-        // 4. Verify amount matches
-        if ($amount >= $order->amount) {
+            if ($order->status !== 'pending') {
+                return response()->json(['success' => false, 'message' => 'Order cannot be paid in its current status'], 409);
+            }
+
+            if ($amount !== $order->amount) {
+                return response()->json(['success' => false, 'message' => 'Payment amount mismatch'], 400);
+            }
+
             $order->update([
                 'status' => 'paid',
                 'paid_at' => now(),
             ]);
 
-            // Activate invitation entitlement if attached
             if ($order->invitation) {
                 $order->invitation->update([
                     'is_published' => true,
@@ -161,8 +174,6 @@ class CheckoutController extends Controller
             }
 
             return response()->json(['success' => true, 'message' => 'Payment confirmed and plan activated'], 200);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Insufficient payment amount'], 400);
+        });
     }
 }

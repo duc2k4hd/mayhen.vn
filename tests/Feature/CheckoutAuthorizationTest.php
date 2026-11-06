@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\Wedding;
+use Illuminate\Support\Facades\Event;
 
 function makeCheckoutOrder(): Order
 {
@@ -93,6 +94,91 @@ test('a correctly authenticated webhook can mark a matching order paid', functio
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'paid']);
 });
 
+test('a repeated webhook does not extend the invitation again', function () {
+    $invitation = makeCheckoutInvitation(User::factory()->create());
+    $order = makeCheckoutOrder();
+    $order->update(['invitation_id' => $invitation->id]);
+    config(['services.sepay.webhook_token' => 'test-secret']);
+    $payload = [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+    ];
+    $headers = ['Authorization' => 'Apikey test-secret'];
+
+    $this->postJson(route('webhook.payment'), $payload, $headers)->assertOk()->assertJson(['success' => true]);
+    $expiry = $invitation->fresh()->expires_at->toIso8601String();
+    $paidAt = $order->fresh()->paid_at->toIso8601String();
+
+    $this->travel(2)->days();
+    $this->postJson(route('webhook.payment'), $payload, $headers)->assertOk()->assertJson(['success' => true]);
+
+    expect($invitation->fresh()->expires_at->toIso8601String())->toBe($expiry);
+    expect($order->fresh()->paid_at->toIso8601String())->toBe($paidAt);
+});
+
+test('a webhook cannot mark a non-pending order paid', function (string $status) {
+    $order = makeCheckoutOrder();
+    $order->update(['status' => $status]);
+    config(['services.sepay.webhook_token' => 'test-secret']);
+
+    $this->postJson(route('webhook.payment'), [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(409);
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => $status, 'paid_at' => null]);
+})->with(['failed', 'refunded']);
+
+test('an insufficient transfer leaves the order pending', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_token' => 'test-secret']);
+
+    $this->postJson(route('webhook.payment'), [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount - 1,
+        'transferType' => 'in',
+    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(400);
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
+});
+
+test('an overpayment leaves the order pending for reconciliation', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_token' => 'test-secret']);
+
+    $this->postJson(route('webhook.payment'), [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount + 1,
+        'transferType' => 'in',
+    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(400);
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
+});
+
+test('an invitation update failure rolls back the payment status', function () {
+    $invitation = makeCheckoutInvitation(User::factory()->create());
+    $order = makeCheckoutOrder();
+    $order->update(['invitation_id' => $invitation->id]);
+    config(['services.sepay.webhook_token' => 'test-secret']);
+    $eventName = 'eloquent.updating: '.Invitation::class;
+    Event::listen($eventName, fn () => throw new RuntimeException('Simulated invitation update failure'));
+
+    try {
+        $this->postJson(route('webhook.payment'), [
+            'content' => $order->order_code,
+            'transferAmount' => $order->amount,
+            'transferType' => 'in',
+        ], ['Authorization' => 'Apikey test-secret'])->assertInternalServerError();
+    } finally {
+        Event::forget($eventName);
+    }
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
+    $this->assertDatabaseHas('invitations', ['id' => $invitation->id, 'is_published' => false]);
+});
+
 test('outgoing transfers do not mark an order paid', function () {
     $order = makeCheckoutOrder();
     config(['services.sepay.webhook_token' => 'test-secret']);
@@ -117,6 +203,25 @@ test('an authenticated webhook without a transfer type does not mark an order pa
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
+
+test('a webhook with invalid payment data does not mark an order paid', function (mixed $amount) {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_token' => 'test-secret']);
+
+    $this->postJson(route('webhook.payment'), [
+        'content' => $order->order_code,
+        'transferAmount' => $amount,
+        'transferType' => 'in',
+    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(422);
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
+})->with([
+    'missing amount' => [null],
+    'zero amount' => [0],
+    'boolean amount' => [true],
+    'decimal amount' => ['100000.50'],
+    'non-numeric amount' => ['invalid'],
+]);
 
 test('a customer cannot attach another owners invitation to an order', function () {
     $invitation = makeCheckoutInvitation(User::factory()->create());
