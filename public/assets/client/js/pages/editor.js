@@ -182,16 +182,16 @@ const initEditor = () => {
 
     // Kiểm tra và phục hồi bản nháp (Ưu tiên bản nháp vừa chuyển mẫu transferred_draft)
     let draftWeddingData = null;
-    const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
-    if (transferredDraftRaw) {
-        try {
+    try {
+        const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
+        if (transferredDraftRaw) {
             const parsed = JSON.parse(transferredDraftRaw);
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
+                sessionStorage.removeItem('mayhen_transferred_draft');
             }
-            sessionStorage.removeItem('mayhen_transferred_draft');
-        } catch (e) {}
-    }
+        }
+    } catch (e) {}
 
     if (!draftWeddingData) {
         const localDraft = store.autosaver.getLocalDraft(invitationId, templateSlug);
@@ -1750,6 +1750,10 @@ const initEditor = () => {
     // 3.3 Submit Form: Toàn bộ ảnh đã được lưu trực tiếp dạng data:image, submit tức thì
     // ----------------------------------------------------
     const submitFormWithPendingUploads = async () => {
+        if (store.autosaver.hasConflict) {
+            window.alert('Thiệp đang có xung đột phiên làm việc. Hãy giữ lại bản nháp và kiểm tra trước khi xuất bản.');
+            return;
+        }
         const submitBtns = $$('[data-mayhen-action="trigger-submit"]');
         submitBtns.forEach(btn => {
             btn.disabled = true;

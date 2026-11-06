@@ -1,7 +1,6 @@
 /**
  * MAYHEN.VN — INVITATION EDITOR V2
- * Zero-Loss Template Switcher
- * Chuyển đổi qua lại giữa các mẫu thiệp cưới tức thì không reload trang & bảo toàn 100% dữ liệu cưới
+ * Template Switcher: lưu dữ liệu chuyển tiếp trước khi tải lại mẫu mới
  * Strict: Pure Vanilla JavaScript ES Modules
  */
 
@@ -65,8 +64,18 @@ export class TemplateSwitcher {
             return;
         }
 
+        if (this.store.autosaver?.hasConflict) {
+            this.showToast('Thiệp đang có xung đột. Hãy kiểm tra bản nháp trước khi đổi mẫu.');
+            return;
+        }
+
         // 1. Thu thập toàn bộ dữ liệu người dùng đã nhập trên form hiện tại
         const draftData = {};
+        let hasPendingImages = false;
+        const isUserImage = (value) => typeof value === 'string' && (
+            value.startsWith('data:image') || value.startsWith('http://') || value.startsWith('https://') ||
+            value.startsWith('/storage/') || value.startsWith('/uploads/')
+        );
         const inputs = document.querySelectorAll('[data-sync-key]');
         inputs.forEach((inp) => {
             const key = inp.getAttribute('data-sync-key');
@@ -75,7 +84,9 @@ export class TemplateSwitcher {
                 const isPhoto = key.includes('photo') || key.includes('cover') || key.includes('image') || key.includes('gallery') || key.includes('album');
                 // Nếu là trường ảnh, chỉ giữ lại nếu người dùng đã tự upload (data:image hoặc http), không mang asset mặc định của mẫu cũ sang mẫu mới
                 if (isPhoto) {
-                    if (typeof val === 'string' && (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://'))) {
+                    if (typeof val === 'string' && val.startsWith('blob:')) {
+                        hasPendingImages = true;
+                    } else if (isUserImage(val)) {
                         draftData[key] = val;
                     }
                 } else {
@@ -91,7 +102,9 @@ export class TemplateSwitcher {
             const isPhoto = wKey.includes('photo') || wKey.includes('cover') || wKey.includes('image') || wKey.includes('gallery') || wKey.includes('album');
             if (val && typeof val === 'string' && !draftData[`wedding.${wKey}`]) {
                 if (isPhoto) {
-                    if (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://')) {
+                    if (val.startsWith('blob:')) {
+                        hasPendingImages = true;
+                    } else if (isUserImage(val)) {
                         draftData[`wedding.${wKey}`] = val;
                     }
                 } else {
@@ -99,6 +112,11 @@ export class TemplateSwitcher {
                 }
             }
         });
+
+        if (hasPendingImages) {
+            this.showToast('Ảnh đang được xử lý. Vui lòng đợi ảnh hoàn tất trước khi đổi mẫu.');
+            return;
+        }
 
         // Sinh thêm alias cho các trường tương đương để chuyển đổi giữa các mẫu khác nhau không bao giờ bị mất dữ liệu
         const fieldAliases = {
@@ -132,15 +150,22 @@ export class TemplateSwitcher {
 
         // Lưu vào sessionStorage để trang mẫu mới tự động khôi phục toàn vẹn dữ liệu
         try {
-            sessionStorage.setItem('mayhen_transferred_draft', JSON.stringify({
+            const transferredDraft = JSON.stringify({
                 wedding: draftData,
                 custom_config: state.custom_config || {},
                 timestamp: Date.now()
-            }));
-        } catch (e) {}
+            });
+            sessionStorage.setItem('mayhen_transferred_draft', transferredDraft);
+            if (sessionStorage.getItem('mayhen_transferred_draft') !== transferredDraft) {
+                throw new Error('Không thể đọc dữ liệu chuyển tiếp.');
+            }
+        } catch (error) {
+            this.showToast('Không thể lưu dữ liệu để đổi mẫu. Vui lòng giữ trang hiện tại và thử lại.');
+            return;
+        }
 
         this.closeModal();
-        this.showToast(`Đang chuyển sang mẫu "${name}". Dữ liệu của bạn được giữ nguyên 100%...`);
+        this.showToast(`Đang chuyển sang mẫu "${name}"...`);
 
         // 2. Chuyển hướng sang URL của mẫu mới với đầy đủ schema form và preview đồng nhất
         const currentUrl = new URL(window.location.href);

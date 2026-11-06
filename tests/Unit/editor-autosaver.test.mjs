@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 import { Autosaver } from '../../public/assets/client/js/editor/autosaver.js';
+import { TemplateSwitcher } from '../../public/assets/client/js/editor/template-switcher.js';
 
 let savedGlobals;
 let storage;
@@ -10,15 +11,20 @@ beforeEach(() => {
         window: globalThis.window,
         document: globalThis.document,
         localStorage: globalThis.localStorage,
+        sessionStorage: globalThis.sessionStorage,
         fetch: globalThis.fetch,
     };
     storage = new Map();
-    globalThis.window = { addEventListener() {} };
-    globalThis.document = { querySelector: () => null };
+    globalThis.window = { addEventListener() {}, location: { href: 'https://example.test/tao-thiep' } };
+    globalThis.document = { querySelector: () => null, querySelectorAll: () => [] };
     globalThis.localStorage = {
         setItem: (key, value) => storage.set(key, value),
         getItem: (key) => storage.get(key) ?? null,
         removeItem: (key) => storage.delete(key),
+    };
+    globalThis.sessionStorage = {
+        setItem: (key, value) => storage.set(key, value),
+        getItem: (key) => storage.get(key) ?? null,
     };
 });
 
@@ -144,5 +150,60 @@ test('keeps changes and pauses when a successful response has no valid next revi
         assert.equal(JSON.parse(storage.get('mayhen_draft_42')).wedding.groom_name, 'Minh');
         await autosaver.syncToServer();
         assert.equal(requests, 1);
+    }
+});
+
+test('switching templates stops when the browser cannot store the transfer draft', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    const messages = [];
+    switcher.showToast = (message) => messages.push(message);
+    switcher.closeModal = () => assert.fail('the modal must remain open');
+    globalThis.sessionStorage.setItem = () => { throw new Error('Storage full'); };
+
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+
+    assert.equal(window.location.href, 'https://example.test/tao-thiep');
+    assert.match(messages[0], /Không thể lưu dữ liệu/);
+});
+
+test('switching templates stops for an unresolved conflict or a temporary image', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    const messages = [];
+    switcher.showToast = (message) => messages.push(message);
+    switcher.closeModal = () => assert.fail('the modal must remain open');
+    switcher.store.autosaver = { hasConflict: true };
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+    assert.match(messages[0], /xung đột/);
+
+    switcher.store.autosaver.hasConflict = false;
+    document.querySelectorAll = () => [{ getAttribute: () => 'wedding.cover_photo_url', value: 'blob:pending' }];
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+    assert.match(messages[1], /Ảnh đang được xử lý/);
+    assert.equal(storage.has('mayhen_transferred_draft'), false);
+});
+
+test('switching templates preserves uploaded local image paths', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.showToast = () => {};
+    switcher.closeModal = () => {};
+    document.querySelectorAll = () => [
+        { getAttribute: () => 'wedding.cover_photo_url', value: '/storage/photos/a.webp' },
+        { getAttribute: () => 'wedding.extra_data.gallery.0', value: '/uploads/b.webp' },
+    ];
+    const originalSetTimeout = globalThis.setTimeout;
+    let navigate;
+    globalThis.setTimeout = (callback) => { navigate = callback; };
+    try {
+        switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+        const draft = JSON.parse(storage.get('mayhen_transferred_draft'));
+        assert.equal(draft.wedding['wedding.cover_photo_url'], '/storage/photos/a.webp');
+        assert.equal(draft.wedding['wedding.extra_data.gallery.0'], '/uploads/b.webp');
+        navigate();
+        assert.equal(window.location.href, 'https://example.test/tao-thiep?template=new-template');
+    } finally {
+        globalThis.setTimeout = originalSetTimeout;
     }
 });
