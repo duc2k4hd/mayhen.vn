@@ -114,7 +114,25 @@ test('a personalized template renders the correct RSVP endpoint', function (stri
     $this->get(route('invitation.show', ['slug' => $invitation->slug, 'token' => $guest->guest_token]))
         ->assertOk()
         ->assertSee(route('rsvp.submit', ['slug' => $invitation->slug, 'token' => $guest->guest_token]));
-})->with(['ngay-tinh-yeu-dom-hoa', 'tron-kiep-nay-ben-nhau']);
+})->with(['ngay-tinh-yeu-dom-hoa', 'tron-kiep-nay-ben-nhau', 'giua-muon-ngan-vi-sao', 'hanh-phuc-mang-ten-chung-minh']);
+
+test('the template renders persisted wishes and states they are public', function (string $templateSlug) {
+    $invitation = makeRsvpTokenInvitation('rsvp-starry-wishes');
+    $invitation->template->update(['slug' => $templateSlug]);
+    $invitation->wedding->wishes()->create([
+        'name' => 'Khách kiểm thử',
+        'message' => 'Chúc hai bạn hạnh phúc',
+        'is_approved' => true,
+        'ip_address' => '192.0.2.15',
+    ]);
+
+    $this->get(route('invitation.show', $invitation->slug))
+        ->assertOk()
+        ->assertSee('Khách kiểm thử')
+        ->assertSee('Chúc hai bạn hạnh phúc')
+        ->assertSee('Lời chúc sẽ hiển thị công khai trên thiệp.')
+        ->assertDontSee('Chỉ cô dâu, chú rể');
+})->with(['giua-muon-ngan-vi-sao', 'hanh-phuc-mang-ten-chung-minh']);
 
 test('an RSVP stores the submitted adult and child counts', function () {
     $invitation = makeRsvpTokenInvitation('rsvp-counts');

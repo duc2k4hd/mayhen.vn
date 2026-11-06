@@ -143,7 +143,7 @@
 @endpush
 
 @section('content')
-<div class="mayhen_invitation_ladi_wraper mayhen_invitation_app {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}" data-is-embed="{{ $isEmbed ? 'true' : 'false' }}">
+<div class="mayhen_invitation_ladi_wraper mayhen_invitation_app {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}" data-is-embed="{{ $isEmbed ? 'true' : 'false' }}" data-rsvp-endpoint="{{ $rsvpSubmitUrl ?? '' }}">
 
     {{-- ==================== NÚT ĐĨA THAN NHẠC CỐ ĐỊNH GÓC TRÊN BÊN TRÁI ==================== --}}
     <div class="mayhen_invitation_music_dock" data-ignore-autoscroll="true">
@@ -705,41 +705,41 @@
                 </div>
 
                 <div class="mayhen_invitation_row_2col">
-                    <select name="party_side" class="mayhen_invitation_select">
-                        <option value="Tiệc Cưới Nhà Trai & Nhà Gái">Nơi tham dự: Cả hai bên</option>
-                        <option value="Tiệc Cưới Nhà Trai">Tiệc Cưới Nhà Trai</option>
-                        <option value="Tiệc Cưới Nhà Gái">Tiệc Cưới Nhà Gái</option>
+                    <select name="guest_count" class="mayhen_invitation_select" aria-label="Số người lớn">
+                        <option value="1">1 Người lớn</option>
+                        <option value="2">2 Người lớn</option>
+                        <option value="3">3 Người lớn</option>
+                        <option value="4">4 Người lớn</option>
+                        <option value="5">5 Người lớn</option>
                     </select>
-                    <select name="guest_count" class="mayhen_invitation_select">
-                        <option value="1 Người">Số lượng: 1 Người</option>
-                        <option value="2 Người">2 Người</option>
-                        <option value="3 Người">3 Người</option>
-                        <option value="Gia đình">Đi cùng Gia đình</option>
+                    <select name="children_count" class="mayhen_invitation_select" aria-label="Số trẻ em">
+                        <option value="0">0 Trẻ em</option>
+                        <option value="1">1 Trẻ em</option>
+                        <option value="2">2 Trẻ em</option>
+                        <option value="3">3 Trẻ em</option>
+                        <option value="4">4 Trẻ em</option>
+                        <option value="5">5 Trẻ em</option>
                     </select>
                 </div>
 
                 <div class="mayhen_invitation_field">
                     <textarea name="message" class="mayhen_invitation_textarea" placeholder="Gửi lời chúc tốt đẹp nhất tới cô dâu chú rể..."></textarea>
+                    <p>Lời chúc sẽ hiển thị công khai trên thiệp.</p>
                 </div>
 
                 <button type="submit" class="mayhen_invitation_submit_btn">Xác Nhận &amp; Gửi Lời Chúc</button>
+                <p class="mayhen_invitation_form_status" role="status" aria-live="polite"></p>
             </form>
         </div>
 
         <div class="mayhen_invitation_wishes_box mayhen_invitation_reveal">
             <div class="mayhen_invitation_wishes_list">
+                @foreach ($wishes ?? [] as $wish)
                 <div class="mayhen_invitation_wish_item">
-                    <p class="mayhen_invitation_wish_msg">“Chúc hai bạn trăm năm tình viên mãn, bạc đầu nghĩa phu thê, mãi mãi ngập tràn tiếng cười!”</p>
-                    <span class="mayhen_invitation_wish_author">— Hùng Nguyễn</span>
+                    <p class="mayhen_invitation_wish_msg">“{{ $wish->message }}”</p>
+                    <span class="mayhen_invitation_wish_author">— {{ $wish->name }}</span>
                 </div>
-                <div class="mayhen_invitation_wish_item">
-                    <p class="mayhen_invitation_wish_msg">“Thật ngưỡng mộ tình yêu đẹp của hai em. Chúc gia đình nhỏ luôn ấm áp, bình yên và hạnh phúc trọn vẹn!”</p>
-                    <span class="mayhen_invitation_wish_author">— Lê Quốc Huy</span>
-                </div>
-                <div class="mayhen_invitation_wish_item">
-                    <p class="mayhen_invitation_wish_msg">“Chúc cô dâu chú rể trăm năm hạnh phúc, luôn thấu hiểu và đồng hành cùng nhau trên mọi chặng đường!”</p>
-                    <span class="mayhen_invitation_wish_author">— Hạ Châm &amp; Gia đình</span>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>

@@ -149,7 +149,7 @@
         : 'Thiệp cưới: ' . $groomName . ' & ' . $brideName . ' | ' . config('app.name');
 
     $wishSubmitUrl = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', 'giua-muon-ngan-vi-sao') : route('invitation.wish.store', $invitation->slug ?? ''));
-    $rsvpSubmitUrl = $rsvpSubmitUrl ?? ($isPreview ? route('templates.preview.rsvp', 'giua-muon-ngan-vi-sao') : route('invitation.show', $invitation->slug ?? ''));
+    $rsvpSubmitUrl = $rsvpSubmitUrl ?? '';
 
     $cssVersion = file_exists(resource_path('views/client/invitations/giua-muon-ngan-vi-sao/styles.css'))
         ? filemtime(resource_path('views/client/invitations/giua-muon-ngan-vi-sao/styles.css'))
@@ -235,7 +235,10 @@
     </div>
 
     <!-- ===================== NỘI DUNG CHÍNH CỦA THIỆP ===================== -->
-    <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr">
+    <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr"
+         data-is-embed="{{ $isEmbed ? 'true' : 'false' }}"
+         data-rsvp-endpoint="{{ $rsvpSubmitUrl }}"
+         data-wish-endpoint="{{ $wishSubmitUrl }}">
 
         <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="hero,couple" data-section-name="hero">
@@ -1083,13 +1086,6 @@
                                 <input type="text" class="mayhen_invitation_wb_form_input mayhen_invitation_rsvp_name_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
-                                <label class="mayhen_invitation_wb_form_label">Bạn là khách của ai?</label>
-                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_guest_of" data-name="guestOf">
-                                    <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="bride">Cô Dâu</label>
-                                    <label class="mayhen_invitation_wb_opt_label" data-val="groom">Chú Rể</label>
-                                </div>
-                            </div>
-                            <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Xác nhận tham dự</label>
                                 <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_attendance" data-name="attendance">
                                     <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="yes">Sẽ tham dự</label>
@@ -1097,15 +1093,17 @@
                                 </div>
                             </div>
                             <div class="mayhen_invitation_wb_form_field mayhen_invitation_wb_guest_count_field mayhen_invitation_rsvp_count">
-                                <label class="mayhen_invitation_wb_form_label">Số lượng khách tham dự</label>
+                                <label class="mayhen_invitation_wb_form_label">Số người lớn tham dự</label>
                                 <div class="mayhen_invitation_wb_counter">
                                     <button type="button" class="mayhen_invitation_wb_counter_btn mayhen_invitation_wb_dec">−</button>
                                     <input type="text" class="mayhen_invitation_wb_counter_val" value="1" readonly>
                                     <button type="button" class="mayhen_invitation_wb_counter_btn mayhen_invitation_wb_inc">+</button>
                                 </div>
+                                <label class="mayhen_invitation_wb_form_label" for="mayhen_invitation_children_count">Số trẻ em tham dự</label>
+                                <input id="mayhen_invitation_children_count" type="number" name="children_count" class="mayhen_invitation_wb_form_input" value="0" min="0" max="10">
                             </div>
                             <button class="mayhen_invitation_wb_submit_btn mayhen_invitation_rsvp_submit_btn" type="button">Xác Nhận</button>
-                            <div class="mayhen_invitation_wb_feedback"></div>
+                            <div class="mayhen_invitation_wb_feedback" role="status" aria-live="polite"></div>
                         </div>
                     </div>
                 </div>
@@ -1143,20 +1141,16 @@
                                 <label class="mayhen_invitation_wb_form_label">Tên của bạn</label>
                                 <input type="text" class="mayhen_invitation_wb_form_input mayhen_invitation_wish_name_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
                             </div>
-                            <div class="mayhen_invitation_wb_form_field">
-                                <label class="mayhen_invitation_wb_form_label">Ai sẽ thấy lời nhắn này?</label>
-                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_wish_visibility" data-name="visibility">
-                                    <label class="mayhen_invitation_wb_opt_label mayhen_invitation_active" data-val="all">Tất cả mọi người</label>
-                                    <label class="mayhen_invitation_wb_opt_label" data-val="private">Chỉ cô dâu, chú rể</label>
-                                </div>
+                            <div class="mayhen_invitation_wb_form_field mayhen_invitation_wish_visibility">
+                                <p class="mayhen_invitation_wb_form_label">Lời chúc sẽ hiển thị công khai trên thiệp.</p>
                             </div>
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Lời nhắn của bạn</label>
-                                <textarea class="mayhen_invitation_wb_form_textarea mayhen_invitation_wish_textarea" name="message" maxlength="1500" placeholder="Viết lời chúc của bạn..."></textarea>
-                                <div class="mayhen_invitation_wb_char_count"><span class="mayhen_invitation_wb_char_num">0</span>/1500</div>
+                                <textarea class="mayhen_invitation_wb_form_textarea mayhen_invitation_wish_textarea" name="message" maxlength="1000" placeholder="Viết lời chúc của bạn..."></textarea>
+                                <div class="mayhen_invitation_wb_char_count"><span class="mayhen_invitation_wb_char_num">0</span>/1000</div>
                             </div>
                             <button class="mayhen_invitation_wb_submit_btn mayhen_invitation_wish_submit_btn" type="button">Gửi lời chúc</button>
-                            <div class="mayhen_invitation_wb_feedback"></div>
+                            <div class="mayhen_invitation_wb_feedback" role="status" aria-live="polite"></div>
                         </div>
                     </div>
                 </div>
@@ -1166,16 +1160,11 @@
                 <div class="mayhen_invitation_MessageBox mayhen_invitation_wish_list">
                     @if (isset($wishes) && $wishes->count() > 0)
                         @foreach ($wishes as $wish)
-                            <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item">
-                                <h2 class="mayhen_invitation_MessageBox_item_name">{{ $wish->guest_name }}</h2>
+                            <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item" data-wish-id="{{ $wish->id }}">
+                                <h2 class="mayhen_invitation_MessageBox_item_name">{{ $wish->name }}</h2>
                                 <p class="mayhen_invitation_MessageBox_item_message">{{ $wish->message }}</p>
                             </div>
                         @endforeach
-                    @else
-                        <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item">
-                            <h2 class="mayhen_invitation_MessageBox_item_name">Mây Hẹn</h2>
-                            <p class="mayhen_invitation_MessageBox_item_message">Chúc hai bạn trăm năm hạnh phúc, vẹn tròn yêu thương!</p>
-                        </div>
                     @endif
                 </div>
             </div>
@@ -1256,11 +1245,6 @@
 @endsection
 
 @push('scripts')
-    <script>
-        window.__MAYHEN_IS_EMBED = {{ $isEmbed ? 'true' : 'false' }};
-        window.__MAYHEN_WISH_SUBMIT_URL = "{{ $wishSubmitUrl }}";
-        window.__MAYHEN_RSVP_SUBMIT_URL = "{{ $rsvpSubmitUrl }}";
-    </script>
     <script src="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 @endpush
 

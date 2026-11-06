@@ -722,6 +722,8 @@
     'use strict';
 
     var P = 'mayhen_invitation_';
+    var invitationRoot = document.querySelector('.mayhen_invitation_ladi_wraper');
+    var isEmbed = invitationRoot && invitationRoot.dataset.isEmbed === 'true';
     var giam = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var cua = document.querySelector('.' + P + 'sr_cua');
@@ -1316,7 +1318,7 @@
             posBtns.style.display = 'none';
             btnRow.style.display = 'flex';
             thaSao();
-            hienPopup('Đã lưu chữ ký', 'Cảm ơn bạn đã để lại dấu ấn kỷ niệm cùng chúng mình!', 'Tuyệt vời ✦');
+            hienPopup('Xem thử chữ ký', 'Chữ ký chỉ hiển thị tạm trên thiết bị này và chưa được gửi tới cô dâu, chú rể.', 'Đã hiểu ✦');
         });
 
         function makeDraggable(el, container) {
@@ -1374,7 +1376,7 @@
             });
             incBtn.addEventListener('click', function () {
                 var v = parseInt(cntVal.value, 10) || 1;
-                cntVal.value = Math.min(20, v + 1);
+                cntVal.value = Math.min(10, v + 1);
             });
         }
 
@@ -1383,6 +1385,7 @@
             var rsvpBtn = rsvpForm.querySelector('.' + P + 'wb_submit_btn');
             var rsvpFb = rsvpForm.querySelector('.' + P + 'wb_feedback');
             rsvpBtn.addEventListener('click', function () {
+                if (rsvpBtn.disabled) return;
                 var nameInput = rsvpForm.querySelector('input[name="name"]');
                 var name = nameInput ? nameInput.value.trim() : '';
                 if (!name) {
@@ -1394,35 +1397,44 @@
                 }
                 if (rsvpFb) rsvpFb.textContent = '';
 
-                var optGuest = rsvpForm.querySelector('.' + P + 'wb_opt_group[data-name="guestOf"] .' + P + 'active');
-                var guestOf = optGuest ? optGuest.getAttribute('data-val') : 'bride';
                 var optAttend = rsvpForm.querySelector('.' + P + 'wb_opt_group[data-name="attendance"] .' + P + 'active');
                 var isAttending = optAttend ? (optAttend.getAttribute('data-val') === 'yes') : true;
                 var guestCountInput = rsvpForm.querySelector('.' + P + 'wb_counter_val');
                 var guestCount = guestCountInput ? (parseInt(guestCountInput.value, 10) || 1) : 1;
-
-                // Gửi AJAX lên hệ thống Mây Hẹn nếu có URL
-                if (window.__MAYHEN_RSVP_SUBMIT_URL) {
-                    var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                    fetch(window.__MAYHEN_RSVP_SUBMIT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            guest_name: name,
-                            guest_of: guestOf,
-                            is_attending: isAttending,
-                            guest_count: isAttending ? guestCount : 0
-                        })
-                    }).catch(function () {});
+                var childrenInput = rsvpForm.querySelector('input[name="children_count"]');
+                var childrenCount = childrenInput ? Number(childrenInput.value) : 0;
+                if (isAttending && (!childrenInput || childrenInput.value.trim() === '' || !Number.isInteger(childrenCount) || childrenCount < 0 || childrenCount > 10)) {
+                    if (rsvpFb) rsvpFb.textContent = 'Vui lòng nhập số trẻ em từ 0 đến 10.';
+                    return;
                 }
-
-                nameInput.value = '';
-                thaSao();
-                hienPopup('Đã nhận lời hẹn', 'Cảm ơn Quý khách đã xác nhận.<br>Hẹn gặp nhau dưới màn sao ngày vui!', 'Hẹn gặp bạn ✦');
+                var endpoint = invitationRoot ? invitationRoot.dataset.rsvpEndpoint : '';
+                if (!endpoint) {
+                    if (rsvpFb) rsvpFb.textContent = 'Chưa thể gửi xác nhận. Vui lòng thử lại sau.';
+                    return;
+                }
+                var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                rsvpBtn.disabled = true;
+                if (rsvpFb) rsvpFb.textContent = 'Đang gửi xác nhận...';
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        guest_name: name,
+                        attending_status: isAttending ? 'attending' : 'declined',
+                        adults_count: isAttending ? guestCount : 0,
+                        children_count: isAttending ? childrenCount : 0
+                    })
+                }).then(function (res) {
+                    return res.json().then(function (data) {
+                        if (!res.ok || data.success !== true) throw new Error(data.message || 'Không thể gửi xác nhận.');
+                        return data;
+                    });
+                }).then(function (data) {
+                    nameInput.value = '';
+                    if (rsvpFb) rsvpFb.textContent = data.message || 'Cảm ơn bạn đã gửi xác nhận.';
+                }).catch(function (error) {
+                    if (rsvpFb) rsvpFb.textContent = error.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.';
+                }).finally(function () { rsvpBtn.disabled = false; });
             });
         }
 
@@ -1439,6 +1451,7 @@
             var msgBtn = msgForm.querySelector('.' + P + 'wb_submit_btn');
             var msgFb = msgForm.querySelector('.' + P + 'wb_feedback');
             msgBtn.addEventListener('click', function () {
+                if (msgBtn.disabled) return;
                 var nameInput = msgForm.querySelector('input[name="name"]');
                 var name = nameInput ? nameInput.value.trim() : '';
                 var msg = ta ? ta.value.trim() : '';
@@ -1451,41 +1464,49 @@
                 }
                 if (msgFb) msgFb.textContent = '';
 
-                // Gửi AJAX Lời chúc lên hệ thống Mây Hẹn
-                if (window.__MAYHEN_WISH_SUBMIT_URL) {
-                    var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                    fetch(window.__MAYHEN_WISH_SUBMIT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            guest_name: name,
-                            message: msg
-                        })
-                    }).catch(function () {});
+                var endpoint = invitationRoot ? invitationRoot.dataset.wishEndpoint : '';
+                if (!endpoint) {
+                    if (msgFb) msgFb.textContent = 'Chưa thể gửi lời chúc. Vui lòng thử lại sau.';
+                    return;
                 }
-
-                if (msgBox) {
-                    var item = document.createElement('div');
-                    item.className = P + 'MessageBox_item ' + P + 'wb_msg_enter';
-                    var h2 = document.createElement('h2');
-                    h2.className = P + 'MessageBox_item_name';
-                    h2.textContent = name;
-                    var p = document.createElement('p');
-                    p.className = P + 'MessageBox_item_message';
-                    p.textContent = msg;
-                    item.appendChild(h2);
-                    item.appendChild(p);
-                    msgBox.insertBefore(item, msgBox.firstChild);
-                }
-                nameInput.value = '';
-                ta.value = '';
-                if (charNum) charNum.textContent = '0';
-                thaSao();
-                hienPopup('Lời chúc đã gửi', 'Như một vì sao băng, lời chúc của bạn<br>đã bay tới cô dâu, chú rể.', 'Cảm ơn bạn ✦');
+                var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                msgBtn.disabled = true;
+                if (msgFb) msgFb.textContent = 'Đang gửi lời chúc...';
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                    body: JSON.stringify({ name: name, message: msg })
+                }).then(function (res) {
+                    return res.json().then(function (data) {
+                        if (!res.ok || data.success !== true) throw new Error(data.message || 'Không thể gửi lời chúc.');
+                        return data;
+                    });
+                }).then(function (data) {
+                    if (msgBox && data.wish && data.wish.id != null) {
+                        var wishId = String(data.wish.id);
+                        var item = Array.from(msgBox.querySelectorAll('[data-wish-id]')).find(function (el) { return el.dataset.wishId === wishId; });
+                        if (!item) {
+                            item = document.createElement('div');
+                            item.className = P + 'MessageBox_item ' + P + 'wb_msg_enter ' + P + 'wish_item';
+                            item.dataset.wishId = wishId;
+                            var h2 = document.createElement('h2');
+                            h2.className = P + 'MessageBox_item_name';
+                            var p = document.createElement('p');
+                            p.className = P + 'MessageBox_item_message';
+                            item.appendChild(h2);
+                            item.appendChild(p);
+                            msgBox.insertBefore(item, msgBox.firstChild);
+                        }
+                        item.querySelector('h2').textContent = data.wish.name;
+                        item.querySelector('p').textContent = data.wish.message;
+                    }
+                    nameInput.value = '';
+                    ta.value = '';
+                    if (charNum) charNum.textContent = '0';
+                    if (msgFb) msgFb.textContent = data.message || 'Cảm ơn bạn đã gửi lời chúc.';
+                }).catch(function (error) {
+                    if (msgFb) msgFb.textContent = error.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.';
+                }).finally(function () { msgBtn.disabled = false; });
             });
         }
     }
@@ -1647,7 +1668,7 @@
             audio.pause();
             audio.src = newUrl;
             audio.load();
-            if (wasPlaying || window.__MAYHEN_IS_EMBED) {
+            if (wasPlaying || isEmbed) {
                 phatNhac();
             }
         }
@@ -1674,7 +1695,7 @@
 
     // Phòng vệ nhúng Studio Editor
     function kiemTraEmbed() {
-        if (window.__MAYHEN_IS_EMBED) {
+        if (isEmbed) {
             document.body.classList.remove(P + 'sr_khoa');
             document.documentElement.classList.add(P + 'embed_mode');
             document.body.classList.add(P + 'embed_mode');

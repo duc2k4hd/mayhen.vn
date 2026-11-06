@@ -322,7 +322,6 @@
         var drawing = false;
         var hasStrokes = false;
         var previewItem = null;
-        var STORAGE_KEY = "mayhen_invitation_signatures_hpmtcm_v1";
 
         function configureCtx() {
             ctx.strokeStyle = currentInk;
@@ -412,7 +411,6 @@
             function onEnd() {
                 if (isDragging) {
                     isDragging = false;
-                    persistSignatures();
                 }
             }
 
@@ -442,63 +440,6 @@
 
             makeDraggable(item);
             return item;
-        }
-
-        function persistSignatures() {
-            try {
-                var items = board.querySelectorAll(".mayhen_invitation_signature_item");
-                var bw = board.clientWidth || 320;
-                var bh = board.clientHeight || 180;
-                var saved = [];
-                items.forEach(function (el) {
-                    var img = el.querySelector("img");
-                    if (!img) return;
-                    saved.push({
-                        src: img.src,
-                        rx: parseFloat(el.style.left || "20") / bw,
-                        ry: parseFloat(el.style.top || "20") / bh
-                    });
-                });
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(saved.slice(-16)));
-            } catch (e) {}
-        }
-
-        function createSampleCalligraphy(text, color) {
-            var c = document.createElement("canvas");
-            c.width = 170;
-            c.height = 72;
-            var cctx = c.getContext("2d");
-            cctx.font = "italic 24px 'Dancing Script', cursive";
-            cctx.fillStyle = color;
-            cctx.fillText(text, 10, 42);
-            cctx.beginPath();
-            cctx.strokeStyle = color;
-            cctx.lineWidth = 1.3;
-            cctx.moveTo(12, 50);
-            cctx.quadraticCurveTo(75, 42, 142, 52);
-            cctx.stroke();
-            return c.toDataURL("image/png");
-        }
-
-        // Load existing or seed sample signatures
-        var hasLoaded = false;
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) {
-                var list = JSON.parse(raw);
-                if (Array.isArray(list) && list.length) {
-                    list.forEach(function (item) {
-                        placeSignatureOnBoard(item.src, item.rx, item.ry);
-                    });
-                    hasLoaded = true;
-                }
-            }
-        } catch (e) {}
-
-        if (!hasLoaded) {
-            placeSignatureOnBoard(createSampleCalligraphy("Minh Khang ♥", "#233628"), 0.07, 0.14);
-            placeSignatureOnBoard(createSampleCalligraphy("Thanh Thảo", "#967332"), 0.58, 0.16);
-            placeSignatureOnBoard(createSampleCalligraphy("Hoàng Bách", "#4f644b"), 0.14, 0.58);
         }
 
         var clearBtn = document.querySelector('[data-sig-action="clear"]');
@@ -546,11 +487,10 @@
                     var img = previewItem.querySelector("img");
                     if (img) img.src = url;
                 }
-                persistSignatures();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hasStrokes = false;
                 previewItem = null;
-                showMayhenToast("Đã lưu chữ ký của bạn vào Sổ Lưu Bút Mây Hẹn!");
+                showMayhenToast("Chữ ký chỉ hiển thị tạm trên thiết bị này, chưa được gửi tới cô dâu chú rể.");
             });
         }
     }
@@ -560,57 +500,59 @@
        ---------------------------------------------------------------------- */
     function initRsvpAndWishes() {
         var form = document.querySelector(".mayhen_invitation_form");
-        var wishesList = document.querySelector(".mayhen_invitation_wishes_list");
-        var WISH_KEY = "mayhen_invitation_wishes_hpmtcm_v1";
-
-        function prependWish(name, message) {
-            if (!wishesList) return;
-            var item = document.createElement("div");
-            item.className = "mayhen_invitation_wish_item";
-            var p = document.createElement("p");
-            p.className = "mayhen_invitation_wish_msg";
-            p.textContent = "“" + message + "”";
-            var author = document.createElement("span");
-            author.className = "mayhen_invitation_wish_author";
-            author.textContent = "— " + name;
-            item.appendChild(p);
-            item.appendChild(author);
-            wishesList.insertBefore(item, wishesList.firstChild);
-        }
-
-        try {
-            var stored = JSON.parse(localStorage.getItem(WISH_KEY) || "[]");
-            if (Array.isArray(stored)) {
-                stored.forEach(function (w) {
-                    if (w && w.name && w.message) prependWish(w.name, w.message);
-                });
-            }
-        } catch (e) {}
-
         if (!form) return;
+        var root = document.querySelector(".mayhen_invitation_ladi_wraper");
+        var status = form.querySelector(".mayhen_invitation_form_status");
+        var submitButton = form.querySelector('button[type="submit"]');
         form.addEventListener("submit", function (e) {
             e.preventDefault();
+            if (submitButton.disabled) return;
             var nameInput = form.querySelector('input[name="name"]');
             var msgInput = form.querySelector('textarea[name="message"]');
+            var attendance = form.querySelector('input[name="attending"]:checked');
+            var adultCount = form.querySelector('select[name="guest_count"]');
+            var childrenCount = form.querySelector('select[name="children_count"]');
             var name = nameInput ? nameInput.value.trim() : "";
             var msg = msgInput ? msgInput.value.trim() : "";
 
             if (!name) {
-                showMayhenToast("Vui lòng nhập Họ và Tên của bạn nhé!");
+                if (status) status.textContent = "Vui lòng nhập họ và tên của bạn.";
                 return;
             }
-
-            var finalMsg = msg || "Chúc hai bạn trăm năm hạnh phúc, trọn vẹn yêu thương!";
-            prependWish(name, finalMsg);
-
-            try {
-                var arr = JSON.parse(localStorage.getItem(WISH_KEY) || "[]");
-                arr.push({ name: name, message: finalMsg });
-                localStorage.setItem(WISH_KEY, JSON.stringify(arr.slice(-30)));
-            } catch (err) {}
-
-            form.reset();
-            showMayhenToast("Cảm ơn " + name + " đã xác nhận tham dự và gửi lời chúc phúc!");
+            var endpoint = root ? root.dataset.rsvpEndpoint : "";
+            if (!endpoint) {
+                if (status) status.textContent = "Chưa thể gửi xác nhận. Vui lòng thử lại sau.";
+                return;
+            }
+            var isAttending = attendance && attendance.value === "Có, tôi sẽ đến";
+            var csrf = document.querySelector('meta[name="csrf-token"]');
+            submitButton.disabled = true;
+            if (status) status.textContent = "Đang gửi xác nhận...";
+            fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": csrf ? csrf.content : ""
+                },
+                body: JSON.stringify({
+                    guest_name: name,
+                    attending_status: isAttending ? "attending" : "declined",
+                    adults_count: isAttending ? Number(adultCount.value) : 0,
+                    children_count: isAttending ? Number(childrenCount.value) : 0,
+                    wishes: msg
+                })
+            }).then(function (response) {
+                return response.json().then(function (data) {
+                    if (!response.ok || data.success !== true) throw new Error(data.message || "Không thể gửi xác nhận.");
+                    return data;
+                });
+            }).then(function (data) {
+                if (status) status.textContent = data.message || "Cảm ơn bạn đã gửi xác nhận.";
+                form.reset();
+            }).catch(function (error) {
+                if (status) status.textContent = error.message || "Không thể kết nối máy chủ. Vui lòng thử lại.";
+            }).finally(function () { submitButton.disabled = false; });
         });
     }
 
