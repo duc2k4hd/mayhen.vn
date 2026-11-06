@@ -126,6 +126,10 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 - Bổ sung đối chiếu hiện trạng vào `docs/MAY_HEN_MASTER_PRD_ADMIN_STUDIO_V3.md`, báo cáo bước đầu `docs/MAY_HEN_PROJECT_AUDIT.md` và roadmap `docs/MAY_HEN_IMPLEMENTATION_ROADMAP.md`.
 - Ưu tiên kiểm tra quyền quản lý khách, xác thực webhook, phạm vi RSVP và độ tin cậy autosave. Những nhận định này dựa trên đọc mã tĩnh, chưa phải kết luận kiểm toán bảo mật hoàn chỉnh hoặc kết quả test.
 - Đây là giai đoạn khảo sát một phần: chưa sửa mã ứng dụng, chưa chạy migration hay kiểm thử tích hợp; các task và trạng thái chi tiết nằm trong roadmap.
+- Đối chiếu tiếp luồng quản lý khách: view tạo link chứa guest token; action xóa nhận guest ID nên cần kiểm tra quyền theo wedding và trường hợp wedding có nhiều thiệp. Chưa xác minh độc lập hoặc chạy kiểm thử do môi trường cô lập theo security-audit chưa được thiết lập.
+- Đã bổ sung sơ đồ luồng Studio và xuất bản vào báo cáo: đổi mẫu hiện chuyển trang, thiệp tạo mới được đánh dấu xuất bản, autosave cập nhật dữ liệu `weddings`; PRD cần coi nháp/xuất bản riêng và chuyển mẫu không reload là mục tiêu cần kiểm thử, không phải hành vi đã nghiệm thu.
+- SEC-01: `GuestController` kiểm tra user sở hữu hoặc slug thiệp hợp lệ trong session trước khi xem, thêm, xóa khách theo wedding; trả 404 nếu không có quyền. Bổ sung `tests/Feature/GuestManagementAuthorizationTest.php` cho tài khoản, khách vãng lai và wedding có nhiều thiệp. Đã kiểm tra cú pháp PHP; chưa chạy feature test hoặc Pint, chưa xác nhận hoàn thành.
+- `.gitignore` vốn bỏ qua thư mục `tests/`; bổ sung ngoại lệ riêng cho feature test SEC-01 để file có thể được theo dõi, giữ nguyên trạng thái bỏ qua của các test khác.
 
 ---
 

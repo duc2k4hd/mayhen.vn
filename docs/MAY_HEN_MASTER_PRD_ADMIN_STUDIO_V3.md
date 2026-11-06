@@ -505,6 +505,8 @@ Lưu draft mỗi bước, tiến trình hoàn thành %, resume từ bước cu�
 
 Mobile Studio dùng panel dạng bước và preview riêng, không cố nhồi 3 cột. Trên desktop, panel có thể co giãn, vị trí preview không bị zoom sai.
 
+**Phân biệt thiết kế và hiện trạng:** Sơ đồ trên là các nhóm chức năng sản phẩm, không thay thế thứ tự 10 section canonical của schema hiện tại. Khi thiết kế panel thực tế, phải lập bảng ánh xạ từng nhóm tới section/field tương ứng và tuân thủ hợp đồng template; không ép đổi dữ liệu hoặc ID section chỉ theo nhãn trong sơ đồ. Mã hiện tại chuyển mẫu bằng reload sau khi lưu dữ liệu tạm và tạo thiệp mới với `is_published = true`; luồng nháp/xuất bản riêng, lịch sử phiên bản server và chuyển mẫu không reload là yêu cầu mục tiêu cần triển khai và kiểm thử, chưa phải chức năng đã nghiệm thu.
+
 ### 23.2. Tính năng bắt buộc
 
 - **Live sync:** sửa input tới đâu phản ánh mọi occurrence của field trên thiệp tới đó, kể cả hai vị trí tên hoặc ngày.

@@ -9,6 +9,7 @@ use App\Http\Requests\SubmitWishRequest;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
+use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
@@ -24,8 +25,10 @@ class GuestController extends Controller
      */
     public function index(int $invitationId): View
     {
-        $invitation = Invitation::with(['wedding.guests.response'])->findOrFail($invitationId);
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+        $wedding->load('guests.response');
         $guests = $wedding->guests;
 
         // Statistics
@@ -53,6 +56,7 @@ class GuestController extends Controller
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
 
         Guest::create([
             'wedding_id' => $wedding->id,
@@ -73,11 +77,25 @@ class GuestController extends Controller
      */
     public function destroy(int $guestId): RedirectResponse
     {
-        $guest = Guest::findOrFail($guestId);
-        $invitationId = $guest->wedding->invitations()->first()?->id ?? 1;
+        $guest = Guest::with('wedding')->findOrFail($guestId);
+        $this->authorizeGuestManagement($guest->wedding);
         $guest->delete();
 
         return back()->with('success', 'Đã xóa khách mời khỏi danh sách.');
+    }
+
+    private function authorizeGuestManagement(Wedding $wedding): void
+    {
+        if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
+            return;
+        }
+
+        $ownedSlugs = (array) request()->session()->get('owned_invitation_slugs', []);
+        if ($ownedSlugs !== [] && $wedding->invitations()->whereIn('slug', $ownedSlugs)->exists()) {
+            return;
+        }
+
+        abort(404);
     }
 
     /**

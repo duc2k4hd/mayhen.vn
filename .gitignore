@@ -31,6 +31,11 @@ Thumbs.db
 # /.agents/
 /.codex/
 /tests/
+!/tests/
+/tests/*
+!/tests/Feature/
+/tests/Feature/*
+!/tests/Feature/GuestManagementAuthorizationTest.php
 /storage/
 /node_modules/
 /Mẫu thiệp/
