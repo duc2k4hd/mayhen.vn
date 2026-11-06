@@ -174,12 +174,16 @@
                     @endforeach
                 </nav>
 
-                <form id="mayhen_editor_form" action="{{ route('invitation.store') }}" method="POST">
+                <form id="mayhen_editor_form" action="{{ route('invitation.store') }}" method="POST" data-revision-conflict="{{ $errors->has('revision_id') ? 'true' : 'false' }}">
                     @csrf
                     <input type="hidden" name="template_id" id="template_id" value="{{ $selectedTemplate->id }}">
                     @if (isset($editingInvitation) && $editingInvitation)
                         <input type="hidden" name="invitation_id" id="invitation_id" value="{{ $editingInvitation->id }}">
+                        <input type="hidden" name="revision_id" id="invitation_revision_id" value="{{ $editingInvitation->revision_id }}">
                     @endif
+                    @error('revision_id')
+                        <p class="mayhen_editor_revision_error" role="alert">{{ $message }}</p>
+                    @enderror
                     <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode($editingInvitation->custom_config ?? []) }}">
                     @php
                         $currentMusicUrl = old('wedding.music_url', $editingInvitation->wedding->music_url ?? ($selectedTemplate->default_config['music_url'] ?? ''));

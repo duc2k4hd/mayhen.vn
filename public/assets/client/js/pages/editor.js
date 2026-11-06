@@ -52,6 +52,13 @@ const initEditor = () => {
         wedding: initialWedding,
     });
 
+    const hasRevisionConflict = mainForm?.dataset.revisionConflict === 'true';
+    if (hasRevisionConflict) {
+        store.autosaver.hasConflict = true;
+        store.state.ui.isDirty = true;
+        store.setSaveStatus('conflict', { message: 'Thiệp đã thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.' });
+    }
+
     // Khởi tạo các phân hệ
     const templateSwitcher = new TemplateSwitcher(store, { previewIframe, mobileIframe });
     const dndManager = new SectionDnDManager(store, { previewIframe, mobileIframe });
@@ -184,7 +191,7 @@ const initEditor = () => {
     let draftWeddingData = null;
     try {
         const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
-        if (transferredDraftRaw) {
+        if (!hasRevisionConflict && transferredDraftRaw) {
             const parsed = JSON.parse(transferredDraftRaw);
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
@@ -193,7 +200,7 @@ const initEditor = () => {
         }
     } catch (e) {}
 
-    if (!draftWeddingData) {
+    if (!hasRevisionConflict && !draftWeddingData) {
         const localDraft = store.autosaver.getLocalDraft(invitationId, templateSlug);
         if (localDraft && localDraft.wedding) {
             // Chỉ nạp localDraft nếu đúng mẫu thiệp hiện tại hoặc đang chỉnh sửa thiệp đã lưu
@@ -1754,6 +1761,10 @@ const initEditor = () => {
             window.alert('Thiệp đang có xung đột phiên làm việc. Hãy giữ lại bản nháp và kiểm tra trước khi xuất bản.');
             return;
         }
+        if (store.autosaver.isSaving) {
+            window.alert('Thiệp đang được lưu. Vui lòng đợi lưu xong rồi thử lại.');
+            return;
+        }
         const submitBtns = $$('[data-mayhen-action="trigger-submit"]');
         submitBtns.forEach(btn => {
             btn.disabled = true;
@@ -1772,6 +1783,11 @@ const initEditor = () => {
             const templateInput = document.getElementById('template_id');
             if (templateInput && currentTemplateId) {
                 templateInput.value = currentTemplateId;
+            }
+
+            const revisionInput = document.getElementById('invitation_revision_id');
+            if (revisionInput) {
+                revisionInput.value = String(store.getState().revision_id);
             }
 
             mainForm.submit();

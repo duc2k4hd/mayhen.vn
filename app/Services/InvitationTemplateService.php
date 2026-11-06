@@ -9,6 +9,7 @@ use App\Models\Wedding;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class InvitationTemplateService
 {
@@ -933,14 +934,19 @@ class InvitationTemplateService
      * Lưu thông tin thiệp cưới an toàn trong Transaction.
      * Tách bạch dữ liệu chung vào bảng weddings và cấu hình riêng vào invitations.
      */
-    public function saveInvitation(User $user, int $templateId, array $data, ?int $invitationId = null): Invitation
+    public function saveInvitation(User $user, int $templateId, array $data, ?int $invitationId = null, ?int $expectedRevision = null): Invitation
     {
-        return DB::transaction(function () use ($user, $templateId, $data, $invitationId) {
+        return DB::transaction(function () use ($user, $templateId, $data, $invitationId, $expectedRevision) {
             $weddingData = $data['wedding'] ?? [];
             $extraData = $weddingData['extra_data'] ?? [];
 
             // Nếu người dùng đã có wedding trước đó thì cập nhật, nếu chưa thì tạo mới
-            $existingInvitation = $invitationId ? Invitation::find($invitationId) : null;
+            $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
+            if ($existingInvitation && $expectedRevision !== (int) $existingInvitation->revision_id) {
+                throw ValidationException::withMessages([
+                    'revision_id' => 'Thiệp đã được thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
+                ]);
+            }
             $wedding = $existingInvitation?->wedding;
 
             if (! $wedding) {
@@ -989,6 +995,7 @@ class InvitationTemplateService
                     'template_id' => $template->id,
                     'template_version' => $template->current_version ?? 'v1',
                     'custom_config' => array_merge($existingInvitation->custom_config ?? [], $customConfig),
+                    'revision_id' => (int) $existingInvitation->revision_id + 1,
                 ]);
 
                 return $existingInvitation;

@@ -186,7 +186,15 @@ class InvitationEditorController extends Controller
         // Validate cơ bản
         $request->validate([
             'template_id' => 'required|exists:invitation_templates,id',
+            'invitation_id' => 'nullable|integer|min:1',
+            'revision_id' => 'required_with:invitation_id|nullable|integer|min:0',
         ]);
+
+        $invitationId = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
+        if ($invitationId) {
+            $existing = Invitation::with('wedding')->findOrFail($invitationId);
+            abort_unless($existing->isOwner(), 404);
+        }
 
         // Tìm hoặc tạo guest user
         $user = auth()->user() ?? User::firstOrCreate(
@@ -197,14 +205,6 @@ class InvitationEditorController extends Controller
                 'role' => 'customer',
             ]
         );
-
-        $invitationId = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
-        if ($invitationId) {
-            $existing = Invitation::find($invitationId);
-            if (! $existing || ! $existing->isOwner()) {
-                $invitationId = null; // Bảo mật: nếu không phải chủ nhân thì không cho ghi đè
-            }
-        }
 
         // Tiếp nhận và chuẩn hóa custom_config (bố cục, bảng màu, tem sáp)
         $rawConfig = $request->input('invitation.custom_config', $request->input('custom_config', []));
@@ -220,7 +220,7 @@ class InvitationEditorController extends Controller
             'invitation' => [
                 'custom_config' => $customConfig,
             ],
-        ], $invitationId);
+        ], $invitationId, $invitationId ? (int) $request->input('revision_id') : null);
 
         // Lưu slug thiệp vào session để ghi nhận người tạo là chủ nhân thiệp
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);

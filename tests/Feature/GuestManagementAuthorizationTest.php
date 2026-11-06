@@ -132,3 +132,87 @@ test('autosave accepts the current revision and increments it', function () {
     expect($invitation->fresh()->draft_config)->toBe(['theme' => 'updated']);
     expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
 });
+
+test('saving an existing invitation rejects a missing or mismatched revision', function (?int $revision) {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'manual-revision-conflict');
+    $invitation->update(['revision_id' => 5]);
+    $payload = [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'wedding' => ['groom_name' => 'Tuấn'],
+    ];
+    if ($revision !== null) {
+        $payload['revision_id'] = $revision;
+    }
+
+    $this->actingAs($owner)->postJson(route('invitation.store'), $payload)
+        ->assertUnprocessable()->assertJsonValidationErrors('revision_id');
+    expect($invitation->fresh()->revision_id)->toBe(5);
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Minh');
+})->with([null, 4, 6]);
+
+test('saving an existing invitation advances its revision', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'manual-revision-current');
+    $invitation->update(['revision_id' => 5]);
+
+    $this->actingAs($owner)->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => 5,
+        'wedding' => ['groom_name' => 'Tuấn'],
+    ])->assertOk()->assertJson(['success' => true]);
+
+    expect($invitation->fresh()->revision_id)->toBe(6);
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
+});
+
+test('saving an invitation owned by someone else does not create another invitation', function () {
+    $invitation = makeGuestManagementInvitation(User::factory()->create(), 'manual-other-owner');
+
+    $this->actingAs(User::factory()->create())->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding' => ['groom_name' => 'Tuấn'],
+    ])->assertNotFound();
+
+    $this->assertDatabaseCount('invitations', 1);
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Minh');
+});
+
+test('an anonymous owner can save an invitation with the correct revision', function () {
+    $invitation = makeGuestManagementInvitation(User::factory()->create(), 'manual-session-owner');
+
+    $this->withSession(['owned_invitation_slugs' => [$invitation->slug]])
+        ->postJson(route('invitation.store'), [
+            'template_id' => $invitation->template_id,
+            'invitation_id' => $invitation->id,
+            'revision_id' => $invitation->fresh()->revision_id,
+            'wedding' => ['groom_name' => 'Tuấn'],
+        ])->assertOk()->assertJson(['success' => true]);
+
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
+});
+
+test('a manual save invalidates an older autosave revision', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'manual-invalidates-autosave');
+    $invitation->update(['revision_id' => 5]);
+    $this->actingAs($owner);
+
+    $this->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => 5,
+        'wedding' => ['groom_name' => 'Tuấn'],
+    ])->assertOk();
+    $this->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => 5,
+        'wedding_delta' => ['groom_name' => 'Minh'],
+    ])->assertStatus(409);
+
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
+});
