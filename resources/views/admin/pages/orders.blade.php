@@ -19,7 +19,6 @@
                     <th>Phương Thức</th>
                     <th>Trạng Thái</th>
                     <th>Thời Gian</th>
-                    <th>Thao Tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,22 +40,10 @@
                             @endif
                         </td>
                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                        <td>
-                            @if (!$order->isPaid())
-                                <form action="{{ route('admin.orders.mark_paid', $order->id) }}" method="POST" onsubmit="return confirm('Xác nhận kích hoạt đơn hàng này?');">
-                                    @csrf
-                                    <button type="submit" class="mayhen_admin_btn_sm" style="color: #0F5132; background-color: #D1E7DD; border-color: #BADBCC;">
-                                        Xác Nhận Đã Thu
-                                    </button>
-                                </form>
-                            @else
-                                <span style="font-size: 0.75rem; color: #6C757D;">Hoàn tất</span>
-                            @endif
-                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" style="text-align: center; color: #6C757D; padding: 24px;">
+                        <td colspan="7" style="text-align: center; color: #6C757D; padding: 24px;">
                             Chưa có đơn hàng nào trong hệ thống.
                         </td>
                     </tr>

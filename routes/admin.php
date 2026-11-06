@@ -35,7 +35,6 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
-        Route::post('/{id}/mark-paid', [AdminOrderController::class, 'markPaid'])->name('mark_paid');
     });
 });
 

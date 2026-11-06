@@ -84,6 +84,18 @@ test('a webhook is unavailable when its secret is not configured', function () {
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
 
+test('an admin cannot mark an order paid without payment verification', function () {
+    $invitation = makeCheckoutInvitation(User::factory()->create());
+    $order = makeCheckoutOrder();
+    $order->update(['invitation_id' => $invitation->id]);
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    $this->actingAs($admin)->post('/admin/orders/'.$order->id.'/mark-paid')->assertNotFound();
+
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
+    $this->assertDatabaseHas('invitations', ['id' => $invitation->id, 'is_published' => false]);
+});
+
 test('a webhook rejects missing invalid or expired HMAC credentials', function (string $variant) {
     $order = makeCheckoutOrder();
     config(['services.sepay.webhook_secret' => 'test-secret']);
