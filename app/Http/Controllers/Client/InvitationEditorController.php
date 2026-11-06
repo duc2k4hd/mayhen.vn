@@ -7,7 +7,6 @@ use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
-use App\Models\WeddingWish;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
@@ -246,7 +245,7 @@ class InvitationEditorController extends Controller
      */
     public function show(string $slug): View
     {
-        $invitation = Invitation::with(['wedding.wishes', 'template'])
+        $invitation = Invitation::with(['wedding', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -255,28 +254,26 @@ class InvitationEditorController extends Controller
         $wishSubmitUrl = route('invitation.wish.store', $slug);
         $rsvpRouteParameters = ['slug' => $slug];
         $query = request()->query();
+        $guest = null;
         if (array_key_exists('token', $query)) {
             $guestToken = $query['token'];
             if (! is_string($guestToken) || $guestToken === '' || strlen($guestToken) > 64) {
                 abort(404);
             }
 
+            abort_unless($wedding, 404);
+            $guest = $wedding->guests()->where('guest_token', $guestToken)->firstOrFail();
             $rsvpRouteParameters['token'] = $guestToken;
         }
         $rsvpSubmitUrl = route('rsvp.submit', $rsvpRouteParameters);
 
-        $clientIp = request()->ip();
         $currentRsvp = null;
         $myWish = null;
 
-        if ($wedding) {
+        if ($wedding && $guest) {
             $currentRsvp = GuestResponse::where('wedding_id', $wedding->id)
-                ->where('ip_address', $clientIp)
+                ->where('guest_id', $guest->id)
                 ->latest()
-                ->first();
-
-            $myWish = WeddingWish::where('wedding_id', $wedding->id)
-                ->where('ip_address', $clientIp)
                 ->first();
         }
 
@@ -292,7 +289,8 @@ class InvitationEditorController extends Controller
             $rsvpStats = [
                 'total' => $rsvpResponses->count(),
                 'attending' => $rsvpResponses->where('attending_status', 'attending')->count(),
-                'attending_guests' => (int) $rsvpResponses->where('attending_status', 'attending')->sum('adults_count'),
+                'attending_guests' => (int) ($rsvpResponses->where('attending_status', 'attending')->sum('adults_count')
+                    + $rsvpResponses->where('attending_status', 'attending')->sum('children_count')),
                 'declined' => $rsvpResponses->where('attending_status', 'declined')->count(),
             ];
         }

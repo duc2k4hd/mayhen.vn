@@ -16,6 +16,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class GuestController extends Controller
@@ -119,23 +120,60 @@ class GuestController extends Controller
         }
 
         $query = $request->query();
-        $guest = null;
+        $guestToken = null;
         if (array_key_exists('token', $query)) {
             $guestToken = $query['token'];
             if (! is_string($guestToken) || $guestToken === '' || strlen($guestToken) > 64) {
                 abort(404);
             }
-
-            $guest = $wedding->guests()->where('guest_token', $guestToken)->firstOrFail();
         }
         $ip = $request->ip();
 
-        // 1. Kiểm tra nếu IP này đã từng gửi xác nhận tham dự cho đám cưới này
-        $existingResponse = GuestResponse::where('wedding_id', $wedding->id)
-            ->where('ip_address', $ip)
-            ->first();
+        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request): bool {
+            $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
+            $guest = $guestToken === null
+                ? null
+                : $lockedWedding->guests()->where('guest_token', $guestToken)->firstOrFail();
 
-        if ($existingResponse) {
+            $existingResponse = GuestResponse::where('wedding_id', $lockedWedding->id);
+            if ($guest) {
+                $existingResponse->where('guest_id', $guest->id);
+            } else {
+                $existingResponse->whereNull('guest_id')->where('ip_address', $ip);
+            }
+
+            if ($existingResponse->exists()) {
+                return false;
+            }
+
+            GuestResponse::create([
+                'wedding_id' => $lockedWedding->id,
+                'guest_id' => $guest?->id,
+                'guest_name' => $request->validated('guest_name'),
+                'phone' => $request->validated('phone'),
+                'attending_status' => $request->validated('attending_status'),
+                'adults_count' => $request->validated('adults_count') ?? 1,
+                'children_count' => $request->validated('children_count') ?? 0,
+                'dietary_requirements' => $request->validated('dietary_requirements'),
+                'wishes' => $request->validated('wishes'),
+                'is_wishes_public' => true,
+                'ip_address' => $ip,
+            ]);
+
+            if (! empty($request->validated('wishes'))) {
+                WeddingWish::create([
+                    'wedding_id' => $lockedWedding->id,
+                    'ip_address' => $ip,
+                    'name' => $request->validated('guest_name'),
+                    'message' => $request->validated('wishes'),
+                    'is_approved' => true,
+                ]);
+            }
+
+            return true;
+        });
+
+        if (! $created) {
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -144,35 +182,6 @@ class GuestController extends Controller
             }
 
             return back()->with('rsvp_error', 'Bạn đã gửi xác nhận tham dự cho lễ cưới này rồi.');
-        }
-
-        $response = GuestResponse::create([
-            'wedding_id' => $wedding->id,
-            'guest_id' => $guest?->id,
-            'guest_name' => $request->validated('guest_name'),
-            'phone' => $request->validated('phone'),
-            'attending_status' => $request->validated('attending_status'),
-            'adults_count' => $request->validated('adults_count') ?? 1,
-            'children_count' => $request->validated('children_count') ?? 0,
-            'dietary_requirements' => $request->validated('dietary_requirements'),
-            'wishes' => $request->validated('wishes'),
-            'is_wishes_public' => true,
-            'ip_address' => $ip,
-        ]);
-
-        // Nếu RSVP có kèm lời chúc, tự động lưu hoặc cập nhật vào sổ lưu bút của IP này
-        if (! empty($request->validated('wishes'))) {
-            WeddingWish::updateOrCreate(
-                [
-                    'wedding_id' => $wedding->id,
-                    'ip_address' => $ip,
-                ],
-                [
-                    'name' => $request->validated('guest_name'),
-                    'message' => $request->validated('wishes'),
-                    'is_approved' => true,
-                ]
-            );
         }
 
         if ($request->wantsJson()) {
@@ -202,8 +211,8 @@ class GuestController extends Controller
     }
 
     /**
-     * Submit or edit a wish to the wedding guestbook.
-     * 1 IP chỉ được gửi 1 lời chúc, nếu gửi lại sẽ cập nhật lời chúc cũ.
+     * Submit a wish to the wedding guestbook.
+     * Lời chúc mới được lưu riêng, không dùng IP để xác định người gửi.
      */
     public function submitWish(SubmitWishRequest $request, string $slug): JsonResponse
     {
@@ -220,34 +229,18 @@ class GuestController extends Controller
 
         $ip = $request->ip();
 
-        $existingWish = WeddingWish::where('wedding_id', $wedding->id)
-            ->where('ip_address', $ip)
-            ->first();
-
-        $isUpdate = false;
-        if ($existingWish) {
-            $existingWish->update([
-                'name' => $request->validated('name'),
-                'message' => $request->validated('message'),
-            ]);
-            $wish = $existingWish;
-            $isUpdate = true;
-            $message = 'Đã cập nhật lời chúc của bạn thành công!';
-        } else {
-            $wish = WeddingWish::create([
-                'wedding_id' => $wedding->id,
-                'name' => $request->validated('name'),
-                'message' => $request->validated('message'),
-                'is_approved' => true,
-                'ip_address' => $ip,
-            ]);
-            $message = 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!';
-        }
+        $wish = WeddingWish::create([
+            'wedding_id' => $wedding->id,
+            'name' => $request->validated('name'),
+            'message' => $request->validated('message'),
+            'is_approved' => true,
+            'ip_address' => $ip,
+        ]);
 
         return response()->json([
             'success' => true,
-            'is_update' => $isUpdate,
-            'message' => $message,
+            'is_update' => false,
+            'message' => 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!',
             'wish' => [
                 'id' => $wish->id,
                 'name' => $wish->name,
@@ -256,7 +249,7 @@ class GuestController extends Controller
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ],
-        ], $isUpdate ? 200 : 201);
+        ], 201);
     }
 
     /**
@@ -331,7 +324,8 @@ class GuestController extends Controller
             'stats' => [
                 'total' => $responses->count(),
                 'attending' => $responses->where('attending_status', 'attending')->count(),
-                'attending_guests' => (int) $responses->where('attending_status', 'attending')->sum('adults_count'),
+                'attending_guests' => (int) ($responses->where('attending_status', 'attending')->sum('adults_count')
+                    + $responses->where('attending_status', 'attending')->sum('children_count')),
                 'declined' => $responses->where('attending_status', 'declined')->count(),
             ],
             'responses' => $responses,
