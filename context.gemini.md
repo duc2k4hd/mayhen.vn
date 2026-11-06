@@ -108,8 +108,8 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 
 ## 3. TECH STACK & MÔI TRƯỜNG DỰ ÁN
 
-- **Ngôn ngữ & Runtime**: PHP 8.5
-- **Framework**: Laravel 11.x
+- **Ngôn ngữ & Runtime**: PHP 8.5 (CLI hiện tại: 8.5.10)
+- **Framework**: Laravel 13.x (phiên bản hiện cài đặt: 13.35.0)
 - **Database**: SQLite (local) / MySQL (production)
 - **Frontend Architecture**:
   - Pure Blade Template (`resources/views/client/`)
