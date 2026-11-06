@@ -75,6 +75,7 @@ export class TemplateSwitcher {
 
         // 1. Thu thập toàn bộ dữ liệu người dùng đã nhập trên form hiện tại
         const draftData = {};
+        const formKeys = new Set();
         let hasPendingImages = false;
         const isUserImage = (value) => typeof value === 'string' && (
             value.startsWith('data:image') || value.startsWith('http://') || value.startsWith('https://') ||
@@ -84,6 +85,7 @@ export class TemplateSwitcher {
         inputs.forEach((inp) => {
             const key = inp.getAttribute('data-sync-key');
             if (key && inp.value !== undefined) {
+                formKeys.add(key);
                 const val = inp.value;
                 const isPhoto = key.includes('photo') || key.includes('cover') || key.includes('image') || key.includes('gallery') || key.includes('album');
                 // Nếu là trường ảnh, chỉ giữ lại nếu người dùng đã tự upload (data:image hoặc http), không mang asset mặc định của mẫu cũ sang mẫu mới
@@ -101,21 +103,31 @@ export class TemplateSwitcher {
 
         // Hợp nhất cả state hiện có trong store
         const weddingState = state.wedding || {};
-        Object.keys(weddingState).forEach((wKey) => {
-            const val = weddingState[wKey];
-            const isPhoto = wKey.includes('photo') || wKey.includes('cover') || wKey.includes('image') || wKey.includes('gallery') || wKey.includes('album');
-            if (val && typeof val === 'string' && !Object.hasOwn(draftData, `wedding.${wKey}`)) {
-                if (isPhoto) {
-                    if (val.startsWith('blob:')) {
-                        hasPendingImages = true;
-                    } else if (isUserImage(val)) {
-                        draftData[`wedding.${wKey}`] = val;
-                    }
-                } else {
-                    draftData[`wedding.${wKey}`] = val;
-                }
+        const collectStateValue = (value, path, nested = false) => {
+            if (path.split('.').some((part) => !/^[A-Za-z0-9_-]+$/.test(part)
+                || /^\d+$/.test(part) || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
+            if (Array.isArray(value)) return;
+            if (value && typeof value === 'object') {
+                Object.keys(value).forEach((part) => collectStateValue(value[part], `${path}.${part}`, true));
+                return;
             }
-        });
+            if (typeof value !== 'string' || (!nested && !value) || formKeys.has(path) || Object.hasOwn(draftData, path)) return;
+
+            const isPhoto = path.includes('photo') || path.includes('cover') || path.includes('image') || path.includes('gallery') || path.includes('album');
+            if (isPhoto) {
+                if (value.startsWith('blob:')) {
+                    hasPendingImages = true;
+                } else if (isUserImage(value)) {
+                    draftData[path] = value;
+                }
+            } else {
+                draftData[path] = value;
+            }
+        };
+        Object.keys(weddingState).filter((key) => !key.includes('.'))
+            .forEach((key) => collectStateValue(weddingState[key], `wedding.${key}`));
+        Object.keys(weddingState).filter((key) => key.includes('.'))
+            .forEach((key) => collectStateValue(weddingState[key], `wedding.${key}`));
 
         if (hasPendingImages) {
             this.showToast('Ảnh đang được xử lý. Vui lòng đợi ảnh hoàn tất trước khi đổi mẫu.');

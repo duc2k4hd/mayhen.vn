@@ -267,6 +267,51 @@ test('switching templates keeps cleared fields and their aliases empty', () => {
     }
 });
 
+test('switching templates carries nested fields and uploaded images absent from the form', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.store.state.wedding.extra_data = {
+        timeline: [{ time: '10:30', title: 'Lễ cưới' }, { time: '', title: 'Tiệc' }],
+        hero_photo_url: '/storage/photos/a.webp',
+        bride_photo_url: '/mau-thiep/old/assets/default.webp',
+        story_quote: '',
+        story: 'Dữ liệu trong store',
+    };
+    switcher.store.state.wedding['extra_data.story'] = 'Dữ liệu cũ';
+    document.querySelectorAll = () => [
+        { getAttribute: () => 'wedding.extra_data.story', value: 'Dữ liệu trên form' },
+    ];
+    switcher.showToast = () => {};
+    switcher.closeModal = () => {};
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = () => {};
+    try {
+        switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+        const draft = JSON.parse(storage.get('mayhen_transferred_draft'));
+        assert.equal(Object.hasOwn(draft.wedding, 'wedding.extra_data.timeline.0.time'), false);
+        assert.equal(draft.wedding['wedding.extra_data.story_quote'], '');
+        assert.equal(draft.wedding['wedding.extra_data.hero_photo_url'], '/storage/photos/a.webp');
+        assert.equal(Object.hasOwn(draft.wedding, 'wedding.extra_data.bride_photo_url'), false);
+        assert.equal(draft.wedding['wedding.extra_data.story'], 'Dữ liệu trên form');
+    } finally {
+        globalThis.setTimeout = originalSetTimeout;
+    }
+});
+
+test('switching templates waits for a nested image that is still being processed', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.store.state.wedding.extra_data = { hero_photo_url: 'blob:pending' };
+    const messages = [];
+    switcher.showToast = (message) => messages.push(message);
+    switcher.closeModal = () => assert.fail('the modal must remain open');
+
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+
+    assert.match(messages[0], /Ảnh đang được xử lý/);
+    assert.equal(storage.has('mayhen_transferred_draft'), false);
+});
+
 test('switching an existing invitation waits for its pending autosave', () => {
     const switcher = Object.create(TemplateSwitcher.prototype);
     switcher.store = makeStore();
