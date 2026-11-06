@@ -25,6 +25,7 @@ beforeEach(() => {
     globalThis.sessionStorage = {
         setItem: (key, value) => storage.set(key, value),
         getItem: (key) => storage.get(key) ?? null,
+        removeItem: (key) => storage.delete(key),
     };
 });
 
@@ -206,4 +207,79 @@ test('switching templates preserves uploaded local image paths', () => {
     } finally {
         globalThis.setTimeout = originalSetTimeout;
     }
+});
+
+test('a stale local draft pauses autosave and cannot be overwritten while protected', async () => {
+    const store = makeStore();
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 0, wedding: { groom_name: 'Bản cũ' } });
+    storage.set('mayhen_draft_42', raw);
+    let requests = 0;
+    globalThis.fetch = async () => { requests += 1; };
+    const autosaver = new Autosaver(store, { debounceMs: 60000 });
+
+    assert.equal(autosaver.protectStaleLocalDraft(1), true);
+    store.state.wedding.groom_name = 'Bản máy chủ';
+    autosaver.schedule();
+    await autosaver.syncToServer();
+
+    assert.equal(storage.get('mayhen_draft_42'), raw);
+    assert.equal(autosaver.hasConflict, true);
+    assert.equal(requests, 0);
+});
+
+test('a matching local draft remains eligible for normal recovery', () => {
+    const store = makeStore();
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, wedding: { groom_name: 'Bản nháp' } });
+    storage.set('mayhen_draft_42', raw);
+    const autosaver = new Autosaver(store);
+
+    assert.equal(autosaver.protectStaleLocalDraft(1), false);
+    assert.equal(autosaver.hasConflict, false);
+    assert.equal(autosaver.getLocalDraft(42).wedding.groom_name, 'Bản nháp');
+});
+
+test('drafts with malformed data or an unknown revision are protected', () => {
+    for (const raw of [
+        '{invalid json',
+        JSON.stringify({ invitation_id: 42, wedding: { groom_name: 'Bản cũ' } }),
+        JSON.stringify({ invitation_id: 42, revision_id: 2 }),
+        JSON.stringify({ invitation_id: 99, revision_id: 1 }),
+    ]) {
+        storage.set('mayhen_draft_42', raw);
+        const autosaver = new Autosaver(makeStore());
+        assert.equal(autosaver.protectStaleLocalDraft(1), true);
+        assert.equal(autosaver.protectedLocalDraft.raw, raw);
+        assert.equal(storage.get('mayhen_draft_42'), raw);
+    }
+});
+
+test('continuing with server data first preserves the stale draft in a recovery copy', () => {
+    const store = makeStore();
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 0, wedding: { groom_name: 'Bản cũ' } });
+    storage.set('mayhen_draft_42', raw);
+    const autosaver = new Autosaver(store);
+    autosaver.protectStaleLocalDraft(1);
+
+    assert.equal(autosaver.archiveProtectedLocalDraft(), true);
+    assert.equal(storage.has('mayhen_draft_42'), false);
+    const backups = [...storage.entries()].filter(([key]) => key.startsWith('mayhen_draft_42_recovery_'));
+    assert.equal(backups.length, 1);
+    assert.equal(backups[0][1], raw);
+});
+
+test('a stale draft is retained if backup storage fails or another tab changes it', () => {
+    const store = makeStore();
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 0, wedding: { groom_name: 'Bản cũ' } });
+    storage.set('mayhen_draft_42', raw);
+    const autosaver = new Autosaver(store);
+    autosaver.protectStaleLocalDraft(1);
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = () => { throw new Error('Storage full'); };
+    assert.equal(autosaver.archiveProtectedLocalDraft(), false);
+    assert.equal(storage.get('mayhen_draft_42'), raw);
+
+    localStorage.setItem = originalSetItem;
+    storage.set('mayhen_draft_42', 'newer draft');
+    assert.equal(autosaver.archiveProtectedLocalDraft(), false);
+    assert.equal(storage.get('mayhen_draft_42'), 'newer draft');
 });

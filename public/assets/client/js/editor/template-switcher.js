@@ -159,6 +159,7 @@ export class TemplateSwitcher {
             if (sessionStorage.getItem('mayhen_transferred_draft') !== transferredDraft) {
                 throw new Error('Không thể đọc dữ liệu chuyển tiếp.');
             }
+            sessionStorage.removeItem('mayhen_skip_transferred_draft');
         } catch (error) {
             this.showToast('Không thể lưu dữ liệu để đổi mẫu. Vui lòng giữ trang hiện tại và thử lại.');
             return;

@@ -40,6 +40,46 @@ body.mayhen_editor_body_fullscreen {
     position: relative;
 }
 
+.mayhen_editor_recovery {
+    margin: 12px 0;
+    padding: 16px;
+    border: 1px solid #9b5c18;
+    border-radius: 12px;
+    background: #fff8eb;
+    color: #32220e;
+}
+
+.mayhen_editor_recovery[hidden] {
+    display: none;
+}
+
+.mayhen_editor_recovery h2 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+
+.mayhen_editor_recovery_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.mayhen_editor_recovery_button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #805019;
+    border-radius: 8px;
+    background: #fff;
+    color: #32220e;
+    cursor: pointer;
+}
+
+.mayhen_editor_recovery_button:focus-visible {
+    outline: 3px solid #805019;
+    outline-offset: 2px;
+}
+
 /* ==========================================================================
    0.1 CUSTOM SLIM ELEGANT SCROLLBAR (Quiet Luxury Scrollbar)
    ========================================================================== */

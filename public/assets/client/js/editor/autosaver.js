@@ -12,6 +12,7 @@ export class Autosaver {
         this.isSaving = false;
         this.changeVersion = 0;
         this.hasConflict = false;
+        this.protectedLocalDraft = null;
         this.endpoint = options.endpoint || '/api/editor/autosave';
 
         this.init();
@@ -41,6 +42,7 @@ export class Autosaver {
      * Lưu tức thì vào LocalStorage (chống mất điện / tắt tab đột ngột)
      */
     saveToLocalStorage(state) {
+        if (this.protectedLocalDraft) return;
         try {
             const key = this.getDraftKey(state);
             const payload = {
@@ -55,6 +57,57 @@ export class Autosaver {
             localStorage.setItem(key, JSON.stringify(payload));
         } catch (err) {
             console.warn('[Autosaver] LocalStorage save failed:', err);
+        }
+    }
+
+    protectStaleLocalDraft(serverRevision) {
+        const state = this.store.getState();
+        if (!state.invitation_id) return false;
+
+        try {
+            const key = this.getDraftKey(state);
+            const raw = localStorage.getItem(key);
+            if (raw === null) return false;
+
+            let draft;
+            try {
+                draft = JSON.parse(raw);
+            } catch (error) {
+                draft = null;
+            }
+
+            if (draft && String(draft.invitation_id) === String(state.invitation_id)
+                && Number.isSafeInteger(draft.revision_id) && draft.revision_id === serverRevision) {
+                return false;
+            }
+
+            this.protectedLocalDraft = { key, raw };
+            this.hasConflict = true;
+            return true;
+        } catch (error) {
+            console.warn('[Autosaver] LocalStorage read failed:', error);
+            return false;
+        }
+    }
+
+    archiveProtectedLocalDraft() {
+        const protectedDraft = this.protectedLocalDraft;
+        if (!protectedDraft) return false;
+
+        try {
+            if (localStorage.getItem(protectedDraft.key) !== protectedDraft.raw) return false;
+            const backupKey = `${protectedDraft.key}_recovery_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+            if (localStorage.getItem(backupKey) !== null) return false;
+            localStorage.setItem(backupKey, protectedDraft.raw);
+            if (localStorage.getItem(backupKey) !== protectedDraft.raw) return false;
+            if (localStorage.getItem(protectedDraft.key) !== protectedDraft.raw) return false;
+            localStorage.removeItem(protectedDraft.key);
+            if (localStorage.getItem(protectedDraft.key) !== null) return false;
+            this.protectedLocalDraft = null;
+            return true;
+        } catch (error) {
+            console.warn('[Autosaver] Local draft backup failed:', error);
+            return false;
         }
     }
 
