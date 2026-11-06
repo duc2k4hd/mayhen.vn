@@ -264,3 +264,48 @@ test('a failed wish save rolls back the RSVP', function () {
     $this->assertDatabaseCount('guest_responses', 0);
     $this->assertDatabaseCount('wedding_wishes', 0);
 });
+
+test('wishes stay within their own wedding when guests share a network', function () {
+    $first = makeRsvpTokenInvitation('wishes-first-wedding');
+    $second = makeRsvpTokenInvitation('wishes-second-wedding');
+
+    foreach ([[$first, 'Lời chúc cho đôi thứ nhất'], [$second, 'Lời chúc cho đôi thứ hai']] as [$invitation, $message]) {
+        $this->postJson(route('invitation.wish.store', $invitation->slug), [
+            'name' => 'Khách mời', 'message' => $message,
+        ])->assertCreated();
+    }
+
+    $this->getJson(route('invitation.wish.index', $first->slug))->assertOk()
+        ->assertJsonCount(1, 'wishes')
+        ->assertJsonPath('wishes.0.message', 'Lời chúc cho đôi thứ nhất');
+    $this->getJson(route('invitation.wish.index', $second->slug))->assertOk()
+        ->assertJsonCount(1, 'wishes')
+        ->assertJsonPath('wishes.0.message', 'Lời chúc cho đôi thứ hai');
+});
+
+test('guest submissions reject inappropriate text without persisting it', function (string $routeName, array $payload, string $field) {
+    $invitation = makeRsvpTokenInvitation('moderation-guest-submission');
+
+    $this->postJson(route($routeName, $invitation->slug), $payload)
+        ->assertUnprocessable()->assertJsonValidationErrors([$field]);
+
+    $this->assertDatabaseCount('wedding_wishes', 0);
+    $this->assertDatabaseCount('guest_responses', 0);
+})->with([
+    'wish message' => ['invitation.wish.store', ['name' => 'Khách mời', 'message' => 'Chúc hai bạn sớm ly dị'], 'message'],
+    'rsvp guest name' => ['rsvp.submit', ['guest_name' => 'thằng mặt lồn', 'attending_status' => 'attending'], 'guest_name'],
+    'rsvp wish' => ['rsvp.submit', ['guest_name' => 'Khách mời', 'attending_status' => 'attending', 'wishes' => 'Chúc hai bạn sớm ly dị'], 'wishes'],
+]);
+
+test('an owner cannot reply to a wish from another wedding', function () {
+    $first = makeRsvpTokenInvitation('reply-first-wedding');
+    $second = makeRsvpTokenInvitation('reply-second-wedding');
+    $wish = $second->wedding->wishes()->create(['name' => 'Khách mời', 'message' => 'Chúc mừng hạnh phúc']);
+
+    $this->actingAs($first->wedding->user)
+        ->postJson(route('invitation.wish.reply', ['slug' => $first->slug, 'wishId' => $wish->id]), [
+            'reply' => 'Cảm ơn bạn',
+        ])->assertNotFound();
+
+    expect($wish->fresh()->reply)->toBeNull();
+});
