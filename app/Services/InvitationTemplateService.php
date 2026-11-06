@@ -778,11 +778,23 @@ class InvitationTemplateService
 
                 // Cập nhật defaults cho các fields từ raw schema nếu trùng key
                 $rawFieldsByKey = [];
+                $hasGalleryType = false;
                 foreach ($rawSec['fields'] ?? [] as $rf) {
                     $k = $rf['key'] ?? $rf['name'] ?? null;
+                    if ($rf['type'] ?? '' === 'gallery' || $k === 'wedding.extra_data.gallery') {
+                        $hasGalleryType = true;
+                    }
                     if ($k && ! in_array($k, $legacyBankFields, true)) {
                         $rawFieldsByKey[$k] = $rf;
                     }
+                }
+
+                // Tương thích ngược: nếu raw schema dùng ending_title/ending_text thì map sang thank_you_title/thank_you_quote
+                if (isset($rawFieldsByKey['wedding.extra_data.ending_title']) && ! isset($rawFieldsByKey['wedding.extra_data.thank_you_title'])) {
+                    $rawFieldsByKey['wedding.extra_data.thank_you_title'] = $rawFieldsByKey['wedding.extra_data.ending_title'];
+                }
+                if (isset($rawFieldsByKey['wedding.extra_data.ending_text']) && ! isset($rawFieldsByKey['wedding.extra_data.thank_you_quote'])) {
+                    $rawFieldsByKey['wedding.extra_data.thank_you_quote'] = $rawFieldsByKey['wedding.extra_data.ending_text'];
                 }
 
                 $processedKeys = [];
@@ -799,9 +811,21 @@ class InvitationTemplateService
                 }
 
                 // Bảo tồn toàn bộ các fields riêng do mẫu thiệp định nghĩa mà canonical chưa có
+                // (Loại trừ các trường trùng lặp: gallery.* nếu đã có gallery, ending_title/ending_text nếu đã có thank_you_*)
                 foreach ($rawSec['fields'] ?? [] as $rf) {
                     $k = $rf['key'] ?? $rf['name'] ?? null;
-                    if ($k && ! in_array($k, $processedKeys, true) && ! in_array($k, $legacyBankFields, true)) {
+                    if (! $k || in_array($k, $legacyBankFields, true)) {
+                        continue;
+                    }
+                    // Bỏ qua các trường lẻ gallery.0 ... gallery.9 nếu đã dùng type gallery
+                    if ($sectionId === 'album' && preg_match('/gallery\.\d+$/', $k)) {
+                        continue;
+                    }
+                    // Bỏ qua ending_title / ending_text vì đã chuẩn hóa sang thank_you_*
+                    if ($sectionId === 'ending' && in_array($k, ['wedding.extra_data.ending_title', 'wedding.extra_data.ending_text', 'ending_title', 'ending_text'], true)) {
+                        continue;
+                    }
+                    if (! in_array($k, $processedKeys, true)) {
                         $mergedFields[] = $rf;
                         $processedKeys[] = $k;
                     }

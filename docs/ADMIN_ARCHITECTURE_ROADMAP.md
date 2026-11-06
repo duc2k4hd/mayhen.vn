@@ -357,3 +357,5 @@ mayhen.vn/
 
 *Tài liệu được thiết lập và phê chuẩn cho Dự án Mây Hẹn (mayhen.vn).*
 
+Dự án mây hẹn sẽ phân quyền như sau: "quản trị viên, nhân viên, quản lý, người dùng, cộng tác viên"
+Hiện tại đang làm trang /admin, các trang khác sau này sẽ làm sau, cứ làm /admin và user trước

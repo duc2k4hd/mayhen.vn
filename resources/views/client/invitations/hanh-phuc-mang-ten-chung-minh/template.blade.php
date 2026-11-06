@@ -110,8 +110,9 @@
     $rawGallery = $extraData['gallery'] ?? ($data['gallery'] ?? []);
     $gallery = [];
     for ($i = 0; $i < 10; $i++) {
-        $img = !empty($rawGallery[$i]) ? $rawGallery[$i] : ($data["gallery.{$i}"] ?? ($defaultGallery[$i] ?? 'gallery-1.webp'));
-        $gallery[] = $resolveAsset($img, $defaultGallery[$i] ?? 'gallery-1.webp');
+        $defaultImg = $defaultGallery[$i] ?? 'gallery-1.webp';
+        $userUpload = !empty($rawGallery[$i]) ? $rawGallery[$i] : ($data["gallery.{$i}"] ?? null);
+        $gallery[] = $resolveAsset($defaultImg, $userUpload);
     }
 
     // 10. Mừng Cưới & Ngân Hàng
@@ -124,8 +125,8 @@
     $brideAccountName = $data['bride_account_name'] ?? ($extraData['bride_account_name'] ?? ($data['bride_bank_holder'] ?? ($extraData['bride_bank_holder'] ?? 'NGUYEN HOAI THUONG')));
 
     // 11. Ending Lời Tri Ân Kết Thiệp
-    $endingTitle = $extraData['ending_title'] ?? ($data['ending_title'] ?? 'Thank You!');
-    $endingText = $extraData['ending_text'] ?? ($data['ending_text'] ?? 'Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.');
+    $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? ($data['thank_you_title'] ?? ($data['ending_title'] ?? 'Thank You!')));
+    $endingText = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? ($data['thank_you_quote'] ?? ($data['ending_text'] ?? 'Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.')));
 
     $guestName = request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
 
@@ -752,9 +753,9 @@
                  alt="{{ $coupleNames }}"
                  data-sync-target="footer_photo_url">
         </div>
-        <h2 class="mayhen_invitation_footer_thank" data-sync-target="ending_title">{{ $endingTitle }}</h2>
+        <h2 class="mayhen_invitation_footer_thank" data-sync-target="thank_you_title">{{ $endingTitle }}</h2>
         <p class="mayhen_invitation_footer_names"><span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span></p>
-        <p class="mayhen_invitation_footer_sub" data-sync-target="ending_text">
+        <p class="mayhen_invitation_footer_sub" data-sync-target="thank_you_quote">
             {{ $endingText }}
         </p>
     </footer>

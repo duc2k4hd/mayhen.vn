@@ -425,74 +425,23 @@
       "description": "Bộ sưu tập những khoảnh khắc đẹp nhất của cô dâu và chú rể",
       "fields": [
         {
-          "key": "wedding.extra_data.gallery.0",
-          "label": "Ảnh cưới 1",
-          "type": "image",
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
           "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-1.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.1",
-          "label": "Ảnh cưới 2",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-2.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.2",
-          "label": "Ảnh cưới 3",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-3.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.3",
-          "label": "Ảnh cưới 4",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-4.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.4",
-          "label": "Ảnh cưới 5",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-5.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.5",
-          "label": "Ảnh cưới 6",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-6.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.6",
-          "label": "Ảnh cưới 7",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-7.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.7",
-          "label": "Ảnh cưới 8",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-8.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.8",
-          "label": "Ảnh cưới 9",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-9.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery.9",
-          "label": "Ảnh cưới 10",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-10.webp"
+          "max_items": 10,
+          "default": [
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-1.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-2.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-3.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-4.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-5.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-6.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-7.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-8.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-9.webp",
+            "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/gallery-10.webp"
+          ]
         }
       ]
     },
@@ -581,29 +530,29 @@
       "description": "Sổ ký tên điện tử, xác nhận tham dự RSVP và lời tri ân cuối thiệp (Tuyệt đối không ảnh người)",
       "fields": [
         {
-          "key": "wedding.extra_data.footer_photo_url",
-          "label": "Ảnh tròn lời cảm ơn cuối thiệp",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/footer-couple.webp"
-        },
-        {
-          "key": "wedding.extra_data.ending_title",
-          "label": "Tiêu đề cảm ơn",
+          "key": "wedding.extra_data.thank_you_title",
+          "label": "Tiêu đề lời tri ân kết thiệp",
           "type": "text",
           "required": false,
-          "default": "Thank You!",
-          "placeholder": "Ví dụ: Thank You!",
+          "default": "Thank You",
+          "placeholder": "Ví dụ: Thank You",
           "max": 50
         },
         {
-          "key": "wedding.extra_data.ending_text",
-          "label": "Lời tri ân quan khách",
+          "key": "wedding.extra_data.thank_you_quote",
+          "label": "Thông điệp cảm ơn gửi quan khách",
           "type": "textarea",
           "required": false,
           "default": "Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.",
           "placeholder": "Nhập lời cảm ơn...",
           "max": 300
+        },
+        {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh tròn lời cảm ơn cuối thiệp (Không dùng ảnh cặp đôi)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/footer-couple.webp"
         }
       ]
     }
