@@ -328,6 +328,87 @@ test('a matching transfer draft is accepted for the correct invitation and targe
     assert.equal(autosaver.hasConflict, false);
 });
 
+test('transfer recovery saves a complete local snapshot before allowing autosave', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const store = makeStore();
+    const autosaver = new Autosaver(store, { debounceMs: 60000 });
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    autosaver.isRestoringTransfer = true;
+    store.state.wedding.groom_name = 'Bản đang khôi phục';
+    autosaver.schedule();
+    assert.equal(storage.has('mayhen_draft_42'), false);
+    assert.equal(autosaver.timer, null);
+
+    assert.equal(autosaver.finishTransferRecovery(), true);
+    assert.equal(JSON.parse(storage.get('mayhen_draft_42')).wedding.groom_name, 'Bản đang khôi phục');
+    assert.equal(storage.get('mayhen_transferred_draft'), raw);
+    assert.equal(storage.get('mayhen_skip_transferred_draft'), '1');
+    clearTimeout(autosaver.timer);
+});
+
+test('transfer recovery pauses and keeps the original if local storage fails', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    autosaver.isRestoringTransfer = true;
+    globalThis.localStorage.setItem = () => { throw new Error('Storage full'); };
+
+    assert.equal(autosaver.finishTransferRecovery(), false);
+    assert.equal(autosaver.hasConflict, true);
+    assert.equal(autosaver.timer, null);
+    assert.equal(autosaver.protectedTransferDraft.raw, raw);
+    assert.equal(storage.get('mayhen_transferred_draft'), raw);
+    assert.equal(storage.has('mayhen_skip_transferred_draft'), false);
+});
+
+test('transfer recovery refuses to overwrite or skip a changed transfer', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    autosaver.isRestoringTransfer = true;
+    storage.set('mayhen_transferred_draft', 'new transfer');
+
+    assert.equal(autosaver.finishTransferRecovery(), false);
+    assert.equal(storage.get('mayhen_transferred_draft'), 'new transfer');
+    assert.equal(storage.has('mayhen_skip_transferred_draft'), false);
+    assert.equal(autosaver.hasConflict, true);
+});
+
+test('transfer recovery pauses if the session cannot mark the draft as restored', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    autosaver.isRestoringTransfer = true;
+    globalThis.sessionStorage.setItem = () => { throw new Error('Session unavailable'); };
+
+    assert.equal(autosaver.finishTransferRecovery(), false);
+    assert.equal(autosaver.hasConflict, true);
+    assert.equal(storage.get('mayhen_transferred_draft'), raw);
+    assert.equal(storage.has('mayhen_skip_transferred_draft'), false);
+    assert.equal(autosaver.timer, null);
+});
+
+test('an interrupted transfer recovery stops autosave and keeps the original draft', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    autosaver.isRestoringTransfer = true;
+    autosaver.schedule();
+
+    autosaver.failTransferRecovery();
+    autosaver.schedule();
+    assert.equal(autosaver.hasConflict, true);
+    assert.equal(autosaver.timer, null);
+    assert.equal(autosaver.protectedTransferDraft.raw, raw);
+    assert.equal(storage.get('mayhen_transferred_draft'), raw);
+    assert.equal(storage.has('mayhen_draft_42'), false);
+});
+
 test('a new invitation can restore its matching transfer draft', () => {
     const store = makeStore();
     store.state.invitation_id = null;

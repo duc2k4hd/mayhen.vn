@@ -254,6 +254,7 @@ const initEditor = () => {
     // Kiểm tra và phục hồi bản nháp (Ưu tiên bản nháp vừa chuyển mẫu transferred_draft)
     let draftWeddingData = null;
     let draftCustomConfig = null;
+    let restoringTransfer = false;
     const restoredFieldKeys = new Set();
     try {
         const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
@@ -264,7 +265,8 @@ const initEditor = () => {
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
                 draftCustomConfig = parsed.custom_config;
-                sessionStorage.removeItem('mayhen_transferred_draft');
+                restoringTransfer = true;
+                store.autosaver.isRestoringTransfer = true;
             }
         }
     } catch (e) {}
@@ -282,6 +284,8 @@ const initEditor = () => {
         }
     }
 
+    let transferRecoveryFailed = false;
+    try {
     if (draftWeddingData) {
         if (draftCustomConfig && typeof draftCustomConfig === 'object' && !Array.isArray(draftCustomConfig)) {
             store.dispatch({ type: ActionTypes.UPDATE_CUSTOM_CONFIG, payload: draftCustomConfig });
@@ -348,6 +352,47 @@ const initEditor = () => {
                 type: ActionTypes.UPDATE_FIELD,
                 payload: { key: key.startsWith('wedding.') ? key : `wedding.${key}`, value: val }
             });
+        });
+    }
+    if (restoringTransfer && !store.autosaver.finishTransferRecovery()) transferRecoveryFailed = true;
+    } catch (error) {
+        if (!restoringTransfer) throw error;
+        store.autosaver.failTransferRecovery();
+        transferRecoveryFailed = true;
+        console.warn('[Editor] Transfer recovery failed:', error);
+    }
+
+    if (transferRecoveryFailed) {
+        store.state.ui.isDirty = true;
+        store.setSaveStatus('conflict', { message: 'Không thể lưu bản nháp đã khôi phục trên thiết bị.' });
+        if (savePill) savePill.setAttribute('data-status', 'conflict');
+        if (saveText) saveText.textContent = 'Không thể khôi phục bản nháp!';
+        if (mainForm) mainForm.inert = true;
+        const recovery = document.getElementById('mayhen_editor_recovery');
+        const description = document.getElementById('mayhen_editor_recovery_description');
+        const message = document.getElementById('mayhen_editor_recovery_message');
+        const download = document.getElementById('mayhen_editor_recovery_download');
+        const retry = document.getElementById('mayhen_editor_recovery_continue');
+        if (recovery) recovery.hidden = false;
+        if (description) description.textContent = 'Không thể lưu bản nháp đã khôi phục trên thiết bị. Hãy tải bản nháp đã đọc xuống khi trang còn mở trước khi thử lại.';
+        if (retry) {
+            retry.textContent = 'Thử lại';
+            retry.addEventListener('click', () => window.location.reload());
+        }
+        download?.addEventListener('click', () => {
+            try {
+                const url = URL.createObjectURL(new Blob([store.autosaver.validatedTransferDraft.raw], { type: 'application/json;charset=utf-8' }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mayhen-ban-nhap-${invitationId || 'moi'}.json`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                if (message) message.textContent = 'Đã yêu cầu tải bản nháp xuống thiết bị.';
+            } catch (error) {
+                if (message) message.textContent = 'Không thể tải bản nháp. Hãy giữ trang hiện tại và thử lại.';
+            }
         });
     }
 

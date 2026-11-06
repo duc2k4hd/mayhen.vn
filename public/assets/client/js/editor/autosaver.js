@@ -15,6 +15,7 @@ export class Autosaver {
         this.protectedLocalDraft = null;
         this.protectedTransferDraft = null;
         this.validatedTransferDraft = null;
+        this.isRestoringTransfer = false;
         this.endpoint = options.endpoint || '/api/editor/autosave';
 
         this.init();
@@ -43,8 +44,8 @@ export class Autosaver {
     /**
      * Lưu tức thì vào LocalStorage (chống mất điện / tắt tab đột ngột)
      */
-    saveToLocalStorage(state) {
-        if (this.protectedLocalDraft || this.protectedTransferDraft) return;
+    saveToLocalStorage(state, verify = false) {
+        if (this.protectedLocalDraft || this.protectedTransferDraft) return false;
         try {
             const key = this.getDraftKey(state);
             const payload = {
@@ -56,10 +57,39 @@ export class Autosaver {
                 custom_config: state.custom_config,
                 updated_at: new Date().toISOString(),
             };
-            localStorage.setItem(key, JSON.stringify(payload));
+            const serialized = JSON.stringify(payload);
+            localStorage.setItem(key, serialized);
+            return !verify || localStorage.getItem(key) === serialized;
         } catch (err) {
             console.warn('[Autosaver] LocalStorage save failed:', err);
+            return false;
         }
+    }
+
+    finishTransferRecovery() {
+        const draft = this.validatedTransferDraft;
+        this.isRestoringTransfer = false;
+        try {
+            if (!draft || sessionStorage.getItem(draft.key) !== draft.raw
+                || !this.saveToLocalStorage(this.store.getState(), true)) throw new Error('Cannot preserve restored draft');
+            sessionStorage.setItem('mayhen_skip_transferred_draft', '1');
+            if (sessionStorage.getItem('mayhen_skip_transferred_draft') !== '1'
+                || sessionStorage.getItem(draft.key) !== draft.raw) throw new Error('Cannot preserve transfer draft');
+            this.schedule();
+            return true;
+        } catch (error) {
+            try { sessionStorage.removeItem('mayhen_skip_transferred_draft'); } catch (ignored) {}
+            this.hasConflict = true;
+            this.protectedTransferDraft = draft;
+            console.warn('[Autosaver] Transfer recovery failed:', error);
+            return false;
+        }
+    }
+
+    failTransferRecovery() {
+        this.isRestoringTransfer = false;
+        this.hasConflict = true;
+        this.protectedTransferDraft = this.validatedTransferDraft;
     }
 
     protectStaleLocalDraft(serverRevision) {
@@ -202,6 +232,8 @@ export class Autosaver {
     schedule() {
         const state = this.store.getState();
         this.changeVersion += 1;
+
+        if (this.isRestoringTransfer) return;
 
         // 1. Phản xạ lưu ngay vào LocalStorage
         this.saveToLocalStorage(state);
