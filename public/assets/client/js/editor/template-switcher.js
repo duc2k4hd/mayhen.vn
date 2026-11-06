@@ -68,6 +68,10 @@ export class TemplateSwitcher {
             this.showToast('Thiệp đang có xung đột. Hãy kiểm tra bản nháp trước khi đổi mẫu.');
             return;
         }
+        if (state.invitation_id && (this.store.autosaver?.isSaving || this.store.autosaver?.timer)) {
+            this.showToast('Thiệp đang được lưu. Vui lòng đợi lưu xong trước khi đổi mẫu.');
+            return;
+        }
 
         // 1. Thu thập toàn bộ dữ liệu người dùng đã nhập trên form hiện tại
         const draftData = {};
@@ -150,7 +154,20 @@ export class TemplateSwitcher {
 
         // Lưu vào sessionStorage để trang mẫu mới tự động khôi phục toàn vẹn dữ liệu
         try {
+            const existingDraft = sessionStorage.getItem('mayhen_transferred_draft');
+            if (existingDraft !== null) {
+                const backupKey = `mayhen_transferred_draft_recovery_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
+                if (sessionStorage.getItem(backupKey) !== null) throw new Error('Bản dự phòng đã tồn tại.');
+                sessionStorage.setItem(backupKey, existingDraft);
+                if (sessionStorage.getItem(backupKey) !== existingDraft
+                    || sessionStorage.getItem('mayhen_transferred_draft') !== existingDraft) {
+                    throw new Error('Không thể giữ bản nháp chuyển tiếp.');
+                }
+            }
             const transferredDraft = JSON.stringify({
+                invitation_id: state.invitation_id ?? null,
+                revision_id: state.revision_id,
+                destination_template_slug: slug,
                 wedding: draftData,
                 custom_config: state.custom_config || {},
                 timestamp: Date.now()

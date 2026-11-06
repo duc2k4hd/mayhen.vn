@@ -60,7 +60,10 @@ const initEditor = () => {
     }
 
     const hasProtectedLocalDraft = !hasRevisionConflict && store.autosaver.protectStaleLocalDraft(initialRevision);
-    if (hasProtectedLocalDraft) {
+    const hasProtectedTransferDraft = !hasRevisionConflict && !hasProtectedLocalDraft
+        && store.autosaver.protectStaleTransferDraft(initialRevision, templateSlug);
+    const hasProtectedDraft = hasProtectedLocalDraft || hasProtectedTransferDraft;
+    if (hasProtectedDraft) {
         store.state.ui.isDirty = true;
         store.setSaveStatus('conflict', { message: 'Bản nháp trên máy không khớp với thiệp hiện tại.' });
         if (savePill) savePill.setAttribute('data-status', 'conflict');
@@ -68,18 +71,23 @@ const initEditor = () => {
         if (mainForm) mainForm.inert = true;
 
         const recovery = document.getElementById('mayhen_editor_recovery');
+        const recoveryDescription = document.getElementById('mayhen_editor_recovery_description');
         const recoveryMessage = document.getElementById('mayhen_editor_recovery_message');
         const downloadButton = document.getElementById('mayhen_editor_recovery_download');
         const continueButton = document.getElementById('mayhen_editor_recovery_continue');
         if (recovery) recovery.hidden = false;
+        if (hasProtectedTransferDraft && recoveryDescription) {
+            recoveryDescription.textContent = 'Bản đang chuyển mẫu có thể chứa thay đổi chưa lưu. Hãy tải xuống nếu cần; khi tiếp tục, bản này chỉ được giữ trong tab hiện tại cho đến khi đóng tab.';
+        }
+        if (!invitationId && continueButton) continueButton.textContent = 'Bắt đầu lại';
         downloadButton?.addEventListener('click', () => {
             try {
-                const raw = store.autosaver.protectedLocalDraft?.raw;
+                const raw = store.autosaver.protectedLocalDraft?.raw ?? store.autosaver.protectedTransferDraft?.raw;
                 if (typeof raw !== 'string') throw new Error('Missing draft');
                 const url = URL.createObjectURL(new Blob([raw], { type: 'application/json;charset=utf-8' }));
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `mayhen-ban-nhap-${invitationId}.json`;
+                link.download = `mayhen-ban-nhap-${invitationId || 'moi'}.json`;
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
@@ -90,17 +98,22 @@ const initEditor = () => {
             }
         });
         continueButton?.addEventListener('click', () => {
-            try {
-                if (sessionStorage.getItem('mayhen_transferred_draft') !== null) {
-                    sessionStorage.setItem('mayhen_skip_transferred_draft', '1');
-                    if (sessionStorage.getItem('mayhen_skip_transferred_draft') !== '1') throw new Error('Cannot preserve transfer');
+            if (hasProtectedLocalDraft) {
+                try {
+                    if (sessionStorage.getItem('mayhen_transferred_draft') !== null) {
+                        sessionStorage.setItem('mayhen_skip_transferred_draft', '1');
+                        if (sessionStorage.getItem('mayhen_skip_transferred_draft') !== '1') throw new Error('Cannot preserve transfer');
+                    }
+                } catch (error) {
+                    if (recoveryMessage) recoveryMessage.textContent = 'Không thể kiểm tra bản nháp đang chuyển mẫu. Hãy tải bản nháp xuống và thử lại.';
+                    return;
                 }
-            } catch (error) {
-                if (recoveryMessage) recoveryMessage.textContent = 'Không thể kiểm tra bản nháp đang chuyển mẫu. Hãy tải bản nháp xuống và thử lại.';
-                return;
             }
-            if (!store.autosaver.archiveProtectedLocalDraft()) {
-                if (recoveryMessage) recoveryMessage.textContent = 'Không thể tạo bản dự phòng hoặc bản nháp đã thay đổi ở tab khác. Hãy tải xuống hoặc kiểm tra lại trước khi tiếp tục.';
+            const preserved = hasProtectedLocalDraft
+                ? store.autosaver.archiveProtectedLocalDraft()
+                : store.autosaver.suppressProtectedTransferDraft();
+            if (!preserved) {
+                if (recoveryMessage) recoveryMessage.textContent = 'Không thể giữ bản nháp hoặc bản nháp đã thay đổi. Hãy tải xuống hoặc kiểm tra lại trước khi tiếp tục.';
                 return;
             }
             store.state.ui.isDirty = false;
@@ -241,7 +254,8 @@ const initEditor = () => {
     try {
         const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
         const skipTransferredDraft = sessionStorage.getItem('mayhen_skip_transferred_draft') === '1';
-        if (!hasRevisionConflict && !hasProtectedLocalDraft && !skipTransferredDraft && transferredDraftRaw) {
+        if (!hasRevisionConflict && !hasProtectedDraft && !skipTransferredDraft && transferredDraftRaw
+            && transferredDraftRaw === store.autosaver.validatedTransferDraft?.raw) {
             const parsed = JSON.parse(transferredDraftRaw);
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
@@ -250,7 +264,7 @@ const initEditor = () => {
         }
     } catch (e) {}
 
-    if (!hasRevisionConflict && !hasProtectedLocalDraft && !draftWeddingData) {
+    if (!hasRevisionConflict && !hasProtectedDraft && !draftWeddingData) {
         const localDraft = store.autosaver.getLocalDraft(invitationId, templateSlug);
         if (localDraft && localDraft.wedding) {
             // Chỉ nạp localDraft nếu đúng mẫu thiệp hiện tại hoặc đang chỉnh sửa thiệp đã lưu

@@ -200,6 +200,9 @@ test('switching templates preserves uploaded local image paths', () => {
     try {
         switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
         const draft = JSON.parse(storage.get('mayhen_transferred_draft'));
+        assert.equal(draft.invitation_id, 42);
+        assert.equal(draft.revision_id, 1);
+        assert.equal(draft.destination_template_slug, 'new-template');
         assert.equal(draft.wedding['wedding.cover_photo_url'], '/storage/photos/a.webp');
         assert.equal(draft.wedding['wedding.extra_data.gallery.0'], '/uploads/b.webp');
         navigate();
@@ -207,6 +210,122 @@ test('switching templates preserves uploaded local image paths', () => {
     } finally {
         globalThis.setTimeout = originalSetTimeout;
     }
+});
+
+test('switching an existing invitation waits for its pending autosave', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.store.autosaver = { isSaving: true };
+    const messages = [];
+    switcher.showToast = (message) => messages.push(message);
+    switcher.closeModal = () => assert.fail('the modal must remain open');
+
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+    assert.match(messages[0], /đang được lưu/);
+    assert.equal(storage.has('mayhen_transferred_draft'), false);
+});
+
+test('switching templates backs up an existing transfer before replacing it', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.showToast = () => {};
+    switcher.closeModal = () => {};
+    const original = '{"wedding":{"groom_name":"Bản cũ"}}';
+    storage.set('mayhen_transferred_draft', original);
+    storage.set('mayhen_skip_transferred_draft', '1');
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = () => {};
+    try {
+        switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+        const backup = [...storage.entries()].find(([key]) => key.startsWith('mayhen_transferred_draft_recovery_'));
+        assert.equal(backup?.[1], original);
+        assert.equal(JSON.parse(storage.get('mayhen_transferred_draft')).destination_template_slug, 'new-template');
+        assert.equal(storage.has('mayhen_skip_transferred_draft'), false);
+    } finally {
+        globalThis.setTimeout = originalSetTimeout;
+    }
+});
+
+test('switching templates preserves the existing transfer when its backup fails', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    const messages = [];
+    switcher.showToast = (message) => messages.push(message);
+    switcher.closeModal = () => assert.fail('the modal must remain open');
+    const original = '{"wedding":{"groom_name":"Bản cũ"}}';
+    storage.set('mayhen_transferred_draft', original);
+    globalThis.sessionStorage.setItem = () => { throw new Error('Storage full'); };
+
+    switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+
+    assert.equal(storage.get('mayhen_transferred_draft'), original);
+    assert.match(messages[0], /Không thể lưu dữ liệu/);
+    assert.equal(window.location.href, 'https://example.test/tao-thiep');
+});
+
+test('a matching transfer draft is accepted for the correct invitation and target', () => {
+    const raw = JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: { groom_name: 'Minh' } });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+
+    assert.equal(autosaver.protectStaleTransferDraft(1, 'new-template'), false);
+    assert.equal(autosaver.validatedTransferDraft.raw, raw);
+    assert.equal(autosaver.hasConflict, false);
+});
+
+test('a new invitation can restore its matching transfer draft', () => {
+    const store = makeStore();
+    store.state.invitation_id = null;
+    store.state.revision_id = 0;
+    const raw = JSON.stringify({ invitation_id: null, revision_id: 0, destination_template_slug: 'new-template', wedding: {} });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(store);
+
+    assert.equal(autosaver.protectStaleTransferDraft(0, 'new-template'), false);
+    assert.equal(autosaver.validatedTransferDraft.raw, raw);
+});
+
+test('old or invalid transfer drafts are retained and stop autosave', async () => {
+    for (const raw of [
+        '{invalid json',
+        JSON.stringify({ wedding: { groom_name: 'Mẫu cũ' } }),
+        JSON.stringify({ invitation_id: 99, revision_id: 1, destination_template_slug: 'new-template', wedding: {} }),
+        JSON.stringify({ invitation_id: 42, revision_id: 0, destination_template_slug: 'new-template', wedding: {} }),
+        JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'other', wedding: {} }),
+        JSON.stringify({ invitation_id: 42, revision_id: 1, destination_template_slug: 'new-template', wedding: [] }),
+    ]) {
+        storage.set('mayhen_transferred_draft', raw);
+        const autosaver = new Autosaver(makeStore());
+        assert.equal(autosaver.protectStaleTransferDraft(1, 'new-template'), true);
+        autosaver.schedule();
+        await autosaver.syncToServer();
+        assert.equal(autosaver.hasConflict, true);
+        assert.equal(storage.get('mayhen_transferred_draft'), raw);
+        assert.equal(autosaver.protectedTransferDraft.raw, raw);
+    }
+});
+
+test('continuing with the server keeps the transfer in the current tab but skips restoring it', () => {
+    const raw = JSON.stringify({ wedding: { groom_name: 'Bản cũ' } });
+    storage.set('mayhen_transferred_draft', raw);
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+
+    assert.equal(autosaver.suppressProtectedTransferDraft(), true);
+    assert.equal(storage.get('mayhen_transferred_draft'), raw);
+    assert.equal(storage.get('mayhen_skip_transferred_draft'), '1');
+    assert.equal(new Autosaver(makeStore()).protectStaleTransferDraft(1, 'new-template'), false);
+});
+
+test('a changed transfer draft is not suppressed', () => {
+    storage.set('mayhen_transferred_draft', '{"wedding":{}}');
+    const autosaver = new Autosaver(makeStore());
+    autosaver.protectStaleTransferDraft(1, 'new-template');
+    storage.set('mayhen_transferred_draft', 'new draft');
+
+    assert.equal(autosaver.suppressProtectedTransferDraft(), false);
+    assert.equal(storage.get('mayhen_transferred_draft'), 'new draft');
+    assert.equal(storage.has('mayhen_skip_transferred_draft'), false);
 });
 
 test('a stale local draft pauses autosave and cannot be overwritten while protected', async () => {

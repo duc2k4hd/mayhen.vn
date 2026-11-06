@@ -176,7 +176,7 @@
 
                 <section class="mayhen_editor_recovery" id="mayhen_editor_recovery" aria-labelledby="mayhen_editor_recovery_title" hidden>
                     <h2 id="mayhen_editor_recovery_title">Có bản nháp chưa khớp với thiệp hiện tại</h2>
-                    <p>Bản trên máy có thể chứa thay đổi chưa lưu. Hãy tải bản nháp xuống nếu cần; khi tiếp tục, một bản dự phòng sẽ được giữ trong trình duyệt này.</p>
+                    <p id="mayhen_editor_recovery_description">Bản trên máy có thể chứa thay đổi chưa lưu. Hãy tải bản nháp xuống nếu cần; khi tiếp tục, một bản dự phòng sẽ được giữ trong trình duyệt này.</p>
                     <div class="mayhen_editor_recovery_actions">
                         <button type="button" class="mayhen_editor_recovery_button" id="mayhen_editor_recovery_download">Tải bản nháp xuống</button>
                         <button type="button" class="mayhen_editor_recovery_button" id="mayhen_editor_recovery_continue">Dùng bản trên máy chủ</button>

@@ -13,6 +13,8 @@ export class Autosaver {
         this.changeVersion = 0;
         this.hasConflict = false;
         this.protectedLocalDraft = null;
+        this.protectedTransferDraft = null;
+        this.validatedTransferDraft = null;
         this.endpoint = options.endpoint || '/api/editor/autosave';
 
         this.init();
@@ -42,7 +44,7 @@ export class Autosaver {
      * Lưu tức thì vào LocalStorage (chống mất điện / tắt tab đột ngột)
      */
     saveToLocalStorage(state) {
-        if (this.protectedLocalDraft) return;
+        if (this.protectedLocalDraft || this.protectedTransferDraft) return;
         try {
             const key = this.getDraftKey(state);
             const payload = {
@@ -107,6 +109,57 @@ export class Autosaver {
             return true;
         } catch (error) {
             console.warn('[Autosaver] Local draft backup failed:', error);
+            return false;
+        }
+    }
+
+    protectStaleTransferDraft(serverRevision, destinationSlug) {
+        try {
+            if (sessionStorage.getItem('mayhen_skip_transferred_draft') === '1') return false;
+            const key = 'mayhen_transferred_draft';
+            const raw = sessionStorage.getItem(key);
+            if (raw === null) return false;
+
+            let draft;
+            try {
+                draft = JSON.parse(raw);
+            } catch (error) {
+                draft = null;
+            }
+            const state = this.store.getState();
+            const hasInvitationId = draft && Object.prototype.hasOwnProperty.call(draft, 'invitation_id');
+            const sameInvitation = hasInvitationId && (draft.invitation_id === null && state.invitation_id === null
+                || draft.invitation_id !== null && state.invitation_id !== null
+                    && String(draft.invitation_id) === String(state.invitation_id));
+            if (sameInvitation && Number.isSafeInteger(draft.revision_id) && draft.revision_id === serverRevision
+                && draft.destination_template_slug === destinationSlug && draft.wedding && typeof draft.wedding === 'object'
+                && !Array.isArray(draft.wedding)) {
+                this.validatedTransferDraft = { key, raw };
+                return false;
+            }
+
+            this.protectedTransferDraft = { key, raw };
+            this.hasConflict = true;
+            return true;
+        } catch (error) {
+            console.warn('[Autosaver] SessionStorage read failed:', error);
+            return false;
+        }
+    }
+
+    suppressProtectedTransferDraft() {
+        const protectedDraft = this.protectedTransferDraft;
+        if (!protectedDraft) return false;
+
+        try {
+            if (sessionStorage.getItem(protectedDraft.key) !== protectedDraft.raw) return false;
+            sessionStorage.setItem('mayhen_skip_transferred_draft', '1');
+            if (sessionStorage.getItem('mayhen_skip_transferred_draft') !== '1') return false;
+            if (sessionStorage.getItem(protectedDraft.key) !== protectedDraft.raw) return false;
+            this.protectedTransferDraft = null;
+            return true;
+        } catch (error) {
+            console.warn('[Autosaver] Transfer draft protection failed:', error);
             return false;
         }
     }
