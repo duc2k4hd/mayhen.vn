@@ -41,6 +41,17 @@ class CheckoutController extends Controller
             abort_unless($invitation->isOwner(), 404);
         }
 
+        $bankCode = config('services.sepay.bank_code');
+        $bankName = config('services.sepay.bank_name');
+        $bankAccount = config('services.sepay.bank_account');
+        $bankAccountName = config('services.sepay.bank_account_name');
+        if (! is_string($bankCode) || ! preg_match('/\A[A-Za-z0-9]{1,20}\z/', $bankCode)
+            || ! is_string($bankAccount) || ! preg_match('/\A[A-Za-z0-9]{1,19}\z/', $bankAccount)
+            || ! is_string($bankName) || trim($bankName) === ''
+            || ! is_string($bankAccountName) || trim($bankAccountName) === '') {
+            return response()->json(['success' => false, 'message' => 'Chưa cấu hình tài khoản nhận thanh toán.'], 503);
+        }
+
         $user = auth()->user() ?? User::firstOrCreate(
             ['email' => $request->validated('customer_email')],
             [
@@ -51,7 +62,7 @@ class CheckoutController extends Controller
             ]
         );
 
-        $orderCode = 'MH'.strtoupper(Str::random(8));
+        $orderCode = 'MH'.strtoupper(Str::random(10));
 
         $order = Order::create([
             'order_code' => $orderCode,
@@ -64,10 +75,10 @@ class CheckoutController extends Controller
         ]);
 
         // VietQR payload
-        $vietQrUrl = 'https://img.vietqr.io/image/MB-0988888888-compact2.png?'.http_build_query([
+        $vietQrUrl = 'https://img.vietqr.io/image/'.rawurlencode($bankCode).'-'.rawurlencode($bankAccount).'-compact2.png?'.http_build_query([
             'amount' => $order->amount,
             'addInfo' => $order->order_code,
-            'accountName' => 'MAY HEN VN',
+            'accountName' => $bankAccountName,
         ]);
 
         return response()->json([
@@ -77,9 +88,9 @@ class CheckoutController extends Controller
             'formatted_amount' => number_format($order->amount, 0, ',', '.').'đ',
             'vietqr_url' => $vietQrUrl,
             'bank_info' => [
-                'bank_name' => 'Ngân hàng Quân Đội (MB Bank)',
-                'account_number' => '0988888888',
-                'account_name' => 'MAY HEN VN',
+                'bank_name' => $bankName,
+                'account_number' => $bankAccount,
+                'account_name' => $bankAccountName,
                 'content' => $order->order_code,
             ],
         ]);
@@ -104,13 +115,21 @@ class CheckoutController extends Controller
      */
     public function handleWebhook(Request $request): JsonResponse
     {
-        $secretToken = config('services.sepay.webhook_token');
-        if (! is_string($secretToken) || trim($secretToken) === '') {
+        $secret = config('services.sepay.webhook_secret');
+        if (! is_string($secret) || trim($secret) === '') {
             return response()->json(['error' => 'Webhook is not configured'], 503);
         }
 
-        $authHeader = $request->header('Authorization');
-        if (! is_string($authHeader) || ! hash_equals('Apikey '.$secretToken, $authHeader)) {
+        $timestamp = $request->header('X-SePay-Timestamp');
+        $signature = $request->header('X-SePay-Signature');
+        if (! is_string($timestamp) || ! preg_match('/\A[0-9]{1,12}\z/', $timestamp)
+            || abs(now()->timestamp - (int) $timestamp) > 300
+            || ! is_string($signature) || ! preg_match('/\Asha256=[a-f0-9]{64}\z/', $signature)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $expectedSignature = 'sha256='.hash_hmac('sha256', $timestamp.'.'.$request->getContent(), $secret);
+        if (! hash_equals($expectedSignature, $signature)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -120,6 +139,15 @@ class CheckoutController extends Controller
         }
         if ($transferType !== 'in') {
             return response()->json(['success' => false, 'message' => 'Invalid transfer type'], 422);
+        }
+
+        $bankAccount = config('services.sepay.bank_account');
+        if (! is_string($bankAccount) || $bankAccount === '') {
+            return response()->json(['error' => 'Payment account is not configured'], 503);
+        }
+        $receivedAccount = $request->input('accountNumber');
+        if (! is_string($receivedAccount) || $receivedAccount !== $bankAccount) {
+            return response()->json(['success' => false, 'message' => 'Invalid payment account'], 422);
         }
 
         $content = $request->input('content') ?? $request->input('description') ?? '';
@@ -133,13 +161,21 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid payment data'], 422);
         }
 
-        // Find matching pending order code in transaction description
-        preg_match('/MH[A-Z0-9]{8}/', strtoupper($content), $matches);
-        $orderCode = $matches[0] ?? null;
+        // Hỗ trợ mã mới 10 ký tự và đơn cũ 8 ký tự sau tiền tố MH.
+        $paymentCode = $request->input('code');
+        $orderCode = is_string($paymentCode) && preg_match('/\AMH(?:[A-Z0-9]{10}|[A-Z0-9]{8})\z/i', $paymentCode)
+            ? $paymentCode
+            : null;
+        if ($orderCode === null) {
+            preg_match('/(?<![A-Z0-9])MH(?:[A-Z0-9]{10}|[A-Z0-9]{8})(?![A-Z0-9])/i', $content, $matches);
+            $orderCode = $matches[0] ?? null;
+        }
 
         if (! $orderCode) {
             return response()->json(['success' => false, 'message' => 'No order code detected in description'], 200);
         }
+
+        $orderCode = strtoupper($orderCode);
 
         return DB::transaction(function () use ($orderCode, $amount): JsonResponse {
             $order = Order::where('order_code', $orderCode)->lockForUpdate()->first();

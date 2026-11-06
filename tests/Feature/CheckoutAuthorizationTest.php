@@ -8,6 +8,15 @@ use App\Models\User;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\Event;
 
+beforeEach(function () {
+    config([
+        'services.sepay.bank_code' => 'MB',
+        'services.sepay.bank_name' => 'MB Bank',
+        'services.sepay.bank_account' => '0012345678',
+        'services.sepay.bank_account_name' => 'TEST ACCOUNT',
+    ]);
+});
+
 function makeCheckoutOrder(): Order
 {
     $plan = Plan::create(['slug' => 'webhook-test', 'name' => 'Gói kiểm thử', 'price' => 100000]);
@@ -55,63 +64,206 @@ function checkoutInput(Plan $plan, ?Invitation $invitation = null): array
     ];
 }
 
+function sepayHeaders(array $payload, ?int $timestamp = null, string $secret = 'test-secret'): array
+{
+    $timestamp = (string) ($timestamp ?? now()->timestamp);
+    $body = json_encode($payload);
+
+    return [
+        'X-SePay-Timestamp' => $timestamp,
+        'X-SePay-Signature' => 'sha256='.hash_hmac('sha256', $timestamp.'.'.$body, $secret),
+    ];
+}
+
 test('a webhook is unavailable when its secret is not configured', function () {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => null]);
+    config(['services.sepay.webhook_secret' => null]);
 
     $this->postJson(route('webhook.payment'), ['content' => $order->order_code, 'transferAmount' => $order->amount])
         ->assertStatus(503);
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
 
-test('a webhook requires the exact configured SePay authorization header', function (?string $authorization) {
+test('a webhook rejects missing invalid or expired HMAC credentials', function (string $variant) {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
-    $headers = $authorization === null ? [] : ['Authorization' => $authorization];
-
-    $this->postJson(route('webhook.payment'), [
-        'content' => $order->order_code,
-        'transferAmount' => $order->amount,
-    ], $headers)->assertUnauthorized();
-    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
-})->with([
-    'missing header' => [null],
-    'wrong key' => ['Apikey wrong-secret'],
-    'substring only' => ['Apikey prefix-test-secret-suffix'],
-    'wrong scheme' => ['Bearer test-secret'],
-]);
-
-test('a correctly authenticated webhook can mark a matching order paid', function () {
-    $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
-
-    $this->postJson(route('webhook.payment'), [
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount,
         'transferType' => 'in',
-    ], ['Authorization' => 'Apikey test-secret'])->assertOk()->assertJson(['success' => true]);
+    ];
+    $headers = sepayHeaders($payload);
+    if ($variant === 'missing timestamp') {
+        unset($headers['X-SePay-Timestamp']);
+    } elseif ($variant === 'missing signature') {
+        unset($headers['X-SePay-Signature']);
+    } elseif ($variant === 'wrong secret') {
+        $headers = sepayHeaders($payload, secret: 'wrong-secret');
+    } elseif ($variant === 'expired') {
+        $headers = sepayHeaders($payload, now()->timestamp - 301);
+    } elseif ($variant === 'future timestamp') {
+        $headers = sepayHeaders($payload, now()->timestamp + 301);
+    } elseif ($variant === 'malformed signature') {
+        $headers['X-SePay-Signature'] = 'sha256=invalid';
+    } elseif ($variant === 'tampered body') {
+        $payload['transferAmount']++;
+    }
+
+    $this->postJson(route('webhook.payment'), $payload, $headers)->assertUnauthorized();
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
+})->with([
+    'missing timestamp',
+    'missing signature',
+    'wrong secret',
+    'expired',
+    'future timestamp',
+    'malformed signature',
+    'tampered body',
+]);
+
+test('a new order uses the configured ten-character payment suffix', function () {
+    $plan = Plan::create(['slug' => 'code-test', 'name' => 'Gói kiểm thử', 'price' => 100000]);
+
+    $response = $this->postJson(route('checkout.process'), checkoutInput($plan))->assertOk();
+
+    expect($response->json('order_code'))->toMatch('/\AMH[A-Z0-9]{10}\z/');
+    expect($response->json('bank_info.account_number'))->toBe('0012345678');
+    expect($response->json('vietqr_url'))->toContain('/MB-0012345678-compact2.png?');
+    $this->assertDatabaseHas('orders', ['order_code' => $response->json('order_code'), 'status' => 'pending']);
+});
+
+test('checkout does not create an order if the payment bank account is missing', function () {
+    $plan = Plan::create(['slug' => 'bank-missing', 'name' => 'Gói kiểm thử', 'price' => 100000]);
+    config(['services.sepay.bank_account' => null]);
+
+    $this->postJson(route('checkout.process'), checkoutInput($plan))->assertStatus(503);
+    $this->assertDatabaseCount('orders', 0);
+});
+
+test('the webhook recognizes new and legacy payment codes', function (string $code) {
+    $order = makeCheckoutOrder();
+    $order->update(['order_code' => $code]);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'content' => 'Thanh toan '.$code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))
+        ->assertOk()->assertJson(['success' => true]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'paid']);
+})->with(['MHTEST0001', 'MHTEST000001']);
+
+test('the webhook does not match a payment code inside a longer code', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'content' => $order->order_code.'XYZ',
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))
+        ->assertOk()->assertJson(['success' => false]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
+});
+
+test('the webhook accepts the payment code extracted by SePay', function () {
+    $order = makeCheckoutOrder();
+    $order->update(['order_code' => 'MHTEST000001']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'code' => $order->order_code,
+        'content' => 'Thong tin chuyen khoan',
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))
+        ->assertOk()->assertJson(['success' => true]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'paid']);
+});
+
+test('the legacy webhook route also requires a valid HMAC signature', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment.legacy'), $payload)->assertUnauthorized();
+    $this->postJson(route('webhook.payment.legacy'), $payload, sepayHeaders($payload))
+        ->assertOk()->assertJson(['success' => true]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'paid']);
+});
+
+test('a correctly authenticated webhook can mark a matching order paid', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+
+    $payload = [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertOk()->assertJson(['success' => true]);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'paid']);
+});
+
+test('a webhook cannot pay an order without the configured receiving account', function (mixed $account) {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => $account,
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(422);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
+})->with([null, '12345678', '0099999999', 12345678]);
+
+test('a webhook is unavailable when the receiving account is not configured', function () {
+    $order = makeCheckoutOrder();
+    config(['services.sepay.webhook_secret' => 'test-secret', 'services.sepay.bank_account' => null]);
+    $payload = [
+        'content' => $order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(503);
+    $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
 
 test('a repeated webhook does not extend the invitation again', function () {
     $invitation = makeCheckoutInvitation(User::factory()->create());
     $order = makeCheckoutOrder();
     $order->update(['invitation_id' => $invitation->id]);
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
     $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount,
         'transferType' => 'in',
+        'accountNumber' => '0012345678',
     ];
-    $headers = ['Authorization' => 'Apikey test-secret'];
-
-    $this->postJson(route('webhook.payment'), $payload, $headers)->assertOk()->assertJson(['success' => true]);
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertOk()->assertJson(['success' => true]);
     $expiry = $invitation->fresh()->expires_at->toIso8601String();
     $paidAt = $order->fresh()->paid_at->toIso8601String();
 
     $this->travel(2)->days();
-    $this->postJson(route('webhook.payment'), $payload, $headers)->assertOk()->assertJson(['success' => true]);
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertOk()->assertJson(['success' => true]);
 
     expect($invitation->fresh()->expires_at->toIso8601String())->toBe($expiry);
     expect($order->fresh()->paid_at->toIso8601String())->toBe($paidAt);
@@ -120,39 +272,45 @@ test('a repeated webhook does not extend the invitation again', function () {
 test('a webhook cannot mark a non-pending order paid', function (string $status) {
     $order = makeCheckoutOrder();
     $order->update(['status' => $status]);
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount,
         'transferType' => 'in',
-    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(409);
+        'accountNumber' => '0012345678',
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(409);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => $status, 'paid_at' => null]);
 })->with(['failed', 'refunded']);
 
 test('an insufficient transfer leaves the order pending', function () {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount - 1,
         'transferType' => 'in',
-    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(400);
+        'accountNumber' => '0012345678',
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(400);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
 });
 
 test('an overpayment leaves the order pending for reconciliation', function () {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount + 1,
         'transferType' => 'in',
-    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(400);
+        'accountNumber' => '0012345678',
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(400);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
 });
@@ -161,16 +319,18 @@ test('an invitation update failure rolls back the payment status', function () {
     $invitation = makeCheckoutInvitation(User::factory()->create());
     $order = makeCheckoutOrder();
     $order->update(['invitation_id' => $invitation->id]);
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
     $eventName = 'eloquent.updating: '.Invitation::class;
     Event::listen($eventName, fn () => throw new RuntimeException('Simulated invitation update failure'));
 
     try {
-        $this->postJson(route('webhook.payment'), [
+        $payload = [
             'content' => $order->order_code,
             'transferAmount' => $order->amount,
             'transferType' => 'in',
-        ], ['Authorization' => 'Apikey test-secret'])->assertInternalServerError();
+            'accountNumber' => '0012345678',
+        ];
+        $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertInternalServerError();
     } finally {
         Event::forget($eventName);
     }
@@ -181,38 +341,42 @@ test('an invitation update failure rolls back the payment status', function () {
 
 test('outgoing transfers do not mark an order paid', function () {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount,
         'transferType' => 'out',
-    ], ['Authorization' => 'Apikey test-secret'])->assertOk()->assertJson(['success' => true]);
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertOk()->assertJson(['success' => true]);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
 
 test('an authenticated webhook without a transfer type does not mark an order paid', function () {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $order->amount,
-    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(422);
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(422);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending']);
 });
 
 test('a webhook with invalid payment data does not mark an order paid', function (mixed $amount) {
     $order = makeCheckoutOrder();
-    config(['services.sepay.webhook_token' => 'test-secret']);
+    config(['services.sepay.webhook_secret' => 'test-secret']);
 
-    $this->postJson(route('webhook.payment'), [
+    $payload = [
         'content' => $order->order_code,
         'transferAmount' => $amount,
         'transferType' => 'in',
-    ], ['Authorization' => 'Apikey test-secret'])->assertStatus(422);
+        'accountNumber' => '0012345678',
+    ];
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))->assertStatus(422);
 
     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'pending', 'paid_at' => null]);
 })->with([

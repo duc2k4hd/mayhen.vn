@@ -21,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.auth' => AdminAuthenticate::class,
         ]);
+
+        $middleware->preventRequestForgery(except: [
+            'api/payments/sepay/webhook',
+            'api/webhook/payment',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

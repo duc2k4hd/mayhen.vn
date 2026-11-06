@@ -29,7 +29,11 @@ return [
     ],
 
     'sepay' => [
-        'webhook_token' => env('SEPAY_WEBHOOK_TOKEN'),
+        'webhook_secret' => env('SEPAY_WEBHOOK_SECRET'),
+        'bank_code' => env('SEPAY_BANK_CODE'),
+        'bank_name' => env('SEPAY_BANK_NAME'),
+        'bank_account' => env('SEPAY_BANK_ACCOUNT'),
+        'bank_account_name' => env('SEPAY_BANK_ACCOUNT_NAME'),
     ],
 
     'slack' => [
