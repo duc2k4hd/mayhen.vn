@@ -10,6 +10,8 @@ export class Autosaver {
         this.debounceMs = options.debounceMs || 1500;
         this.timer = null;
         this.isSaving = false;
+        this.changeVersion = 0;
+        this.hasConflict = false;
         this.endpoint = options.endpoint || '/api/editor/autosave';
 
         this.init();
@@ -93,9 +95,12 @@ export class Autosaver {
      */
     schedule() {
         const state = this.store.getState();
+        this.changeVersion += 1;
 
         // 1. Phản xạ lưu ngay vào LocalStorage
         this.saveToLocalStorage(state);
+
+        if (this.hasConflict) return;
 
         // 2. Cập nhật UI trạng thái
         this.store.setSaveStatus('pending');
@@ -105,6 +110,7 @@ export class Autosaver {
         }
 
         this.timer = setTimeout(() => {
+            this.timer = null;
             this.syncToServer();
         }, this.debounceMs);
     }
@@ -121,8 +127,14 @@ export class Autosaver {
             return;
         }
 
-        if (this.isSaving) return;
+        if (this.isSaving || this.hasConflict) return;
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
         this.isSaving = true;
+        const sentVersion = this.changeVersion;
+        let shouldFlush = false;
         this.store.setSaveStatus('saving');
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
@@ -148,6 +160,11 @@ export class Autosaver {
 
             if (response.status === 409) {
                 // Xung đột phiên bản (Được chỉnh sửa từ tab khác)
+                this.hasConflict = true;
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
                 this.store.setSaveStatus('conflict', {
                     current_revision: data.current_revision,
                     message: data.message || 'Phiên làm việc đã cũ do có chỉnh sửa từ một thiết bị hoặc tab khác.',
@@ -164,7 +181,17 @@ export class Autosaver {
                 this.store.updateRevision(data.new_revision_id);
             }
 
-            this.store.setSaveStatus('saved', { saved_at: data.saved_at });
+            this.saveToLocalStorage(this.store.getState());
+            shouldFlush = this.changeVersion !== sentVersion;
+            if (shouldFlush) {
+                if (this.timer) {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                }
+                this.store.setSaveStatus('pending');
+            } else {
+                this.store.setSaveStatus('saved', { saved_at: data.saved_at });
+            }
         } catch (error) {
             console.error('[Autosaver] Sync error:', error);
             // Vẫn giữ an toàn dữ liệu trên client
@@ -173,6 +200,9 @@ export class Autosaver {
             });
         } finally {
             this.isSaving = false;
+            if (shouldFlush) {
+                this.syncToServer();
+            }
         }
     }
 }

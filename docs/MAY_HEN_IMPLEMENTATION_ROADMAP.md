@@ -8,9 +8,9 @@ Ngày lập: 06/11/2026. Đây là roadmap ban đầu dựa trên kiểm toán t
 |---|---|---|---|---|
 | DISC-01 | P0 | Hoàn tất bản đồ các module, database, PRD và kiểm toán bảo mật độc lập; lập baseline test an toàn | Không | Đang thực hiện |
 | SEC-01 | P0 | Ràng buộc quyền xem/thêm/xóa khách với chủ wedding và session tạo thiệp | DISC-01; xác minh quyền hiện tại | Đã sửa mã, chờ chạy test và xác minh độc lập |
-| PAY-01 | P0 | Đóng xác thực webhook, kiểm tra quyền gắn đơn và giao dịch lặp | DISC-01; hợp đồng SePay, cấu hình test an toàn | Chưa bắt đầu |
+| PAY-01 | P0 | Đóng xác thực webhook, kiểm tra quyền gắn đơn và giao dịch lặp | DISC-01; hợp đồng SePay, cấu hình test an toàn | Đã sửa một phần, chờ test và đối soát |
 | RSVP-01 | P0 | Ràng buộc token với đúng wedding; kiểm thử quyền, response và IP dùng chung | SEC-01; quyết định tương thích RSVP | Đã sửa phạm vi token, chờ kiểm thử và tích hợp mẫu |
-| STU-01 | P0 | Bảo đảm autosave đồng bộ thay đổi mới, revision và trạng thái lưu đúng | DISC-01; test tái hiện có kiểm soát | Chưa bắt đầu |
+| STU-01 | P0 | Bảo đảm autosave đồng bộ thay đổi mới, revision và trạng thái lưu đúng | DISC-01; test tái hiện có kiểm soát | Đã sửa phần đồng bộ client, chờ chạy test và kiểm tra tích hợp |
 | PUB-01 | P0 | Chốt nháp/công khai, publish, expiry và an toàn dữ liệu khi đổi mẫu | STU-01; thiết kế dữ liệu | Chưa bắt đầu |
 | QA-01 | P0 | Đối chiếu test 6 section với contract 10 section và template thực | DISC-01 | Chưa bắt đầu |
 | OPS-01 | P0 | Kiểm tra backup/restore, secrets, log, monitoring và cấu hình phát hành | DISC-01 | Chưa bắt đầu |
@@ -46,6 +46,7 @@ Ngày lập: 06/11/2026. Đây là roadmap ban đầu dựa trên kiểm toán t
 - **Phạm vi dự kiến:** checkout controller, request, cấu hình provider và test; schema chỉ thay đổi khi chứng minh cần lưu transaction/event để chống lặp, kèm migration tương thích và phương án rollback.
 - **Quy tắc/nghiệm thu:** thiếu/sai secret bị từ chối; chỉ chấp nhận format xác thực đúng provider; đối chiếu đơn, số tiền, loại giao dịch và ID giao dịch; retries/concurrency không cấp quyền hai lần; đơn không được gắn thiệp người khác; lỗi không lộ secret. Test dùng dữ liệu giả, không gọi gateway thật.
 - **Đối chiếu bổ sung:** kiểm tra plan vẫn active khi tạo đơn; thống nhất cách tính hạn dùng giữa webhook và thao tác admin; chuyển thông tin nhận thanh toán sang cấu hình sau khi xác định hợp đồng vận hành, không làm thay đổi giao dịch lịch sử.
+- **Tiến độ:** cấu hình `SEPAY_WEBHOOK_TOKEN` qua `config/services.php`; yêu cầu header API Key theo tài liệu SePay, đóng webhook khi thiếu cấu hình, bỏ qua giao dịch tiền ra; kiểm tra plan active và quyền đối với thiệp khi tạo đơn. Đã thêm `tests/Feature/CheckoutAuthorizationTest.php`, chưa chạy feature test hoặc Pint. Chưa triển khai đối soát transaction ID, concurrency/idempotency an toàn, xác minh CSRF/gateway hay kiểm tra dịch vụ thật; không coi PAY-01 đã hoàn thành. Cần cấu hình API Key trong môi trường và SePay trước khi triển khai thay đổi.
 - **Rủi ro/rollback:** thay đổi xác thực có thể ngắt callback đang vận hành; triển khai sau khi kiểm tra cấu hình thật, có giám sát và phương án xử lý giao dịch chờ, không tùy tiện sửa các đơn lịch sử.
 
 ### RSVP-01 — Token và phạm vi phản hồi
@@ -62,6 +63,7 @@ Ngày lập: 06/11/2026. Đây là roadmap ban đầu dựa trên kiểm toán t
 - **Lý do:** khi có request đang chạy, `syncToServer()` hiện có thể thoát sớm; cần chứng minh hành vi với các thay đổi phát sinh trong lúc đợi.
 - **Phạm vi:** autosaver, store, service và test liên quan; không thay đổi giao thức lưu nếu chưa đối chiếu người dùng hiện tại.
 - **Nghiệm thu:** thao tác mới trong request được gửi sau khi request trước kết thúc; không hiển thị saved khi còn dữ liệu chưa đồng bộ; 409 giữ bản nháp; mất mạng và khôi phục không ghi đè dữ liệu mới. Kiểm thử cả SQLite và database production tương thích khi có môi trường phù hợp.
+- **Tiến độ:** `autosaver.js` theo dõi thay đổi phát sinh trong request, lưu tiếp với revision mới và chỉ báo saved khi không còn thay đổi; sau 409 giữ conflict và bản nháp tại trình duyệt. Đã thêm ba kiểm thử Node tại `tests/Unit/editor-autosaver.test.mjs` cho request chậm, conflict và lỗi server. Mới kiểm tra cú pháp; chưa chạy test hoặc kiểm tra browser/backend, chưa xác nhận task hoàn thành.
 - **Rollback:** hoàn nguyên mã autosave; không xóa local draft hoặc dữ liệu server.
 
 ### PUB-01 — Quy định nháp, công khai và hết hạn

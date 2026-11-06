@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
+use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
@@ -31,7 +32,13 @@ class CheckoutController extends Controller
      */
     public function process(CreateOrderRequest $request): JsonResponse
     {
-        $plan = Plan::findOrFail($request->validated('plan_id'));
+        $plan = Plan::where('is_active', true)->findOrFail($request->validated('plan_id'));
+
+        $invitationId = $request->validated('invitation_id');
+        if ($invitationId !== null) {
+            $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+            abort_unless($invitation->isOwner(), 404);
+        }
 
         $user = auth()->user() ?? User::firstOrCreate(
             ['email' => $request->validated('customer_email')],
@@ -49,7 +56,7 @@ class CheckoutController extends Controller
             'order_code' => $orderCode,
             'user_id' => $user->id,
             'plan_id' => $plan->id,
-            'invitation_id' => $request->validated('invitation_id'),
+            'invitation_id' => $invitationId,
             'amount' => $plan->price,
             'status' => 'pending',
             'payment_method' => $request->validated('payment_method'),
@@ -96,12 +103,22 @@ class CheckoutController extends Controller
      */
     public function handleWebhook(Request $request): JsonResponse
     {
-        // 1. Verify gateway authorization token if configured
-        $secretToken = config('services.sepay.webhook_token', 'mayhen_secret_webhook_token_2026');
-        $authHeader = $request->header('Authorization') ?? $request->header('X-API-KEY');
+        $secretToken = config('services.sepay.webhook_token');
+        if (! is_string($secretToken) || trim($secretToken) === '') {
+            return response()->json(['error' => 'Webhook is not configured'], 503);
+        }
 
-        if ($authHeader && ! str_contains($authHeader, $secretToken)) {
-            return response()->json(['error' => 'Unauthorized signature'], 401);
+        $authHeader = $request->header('Authorization');
+        if (! is_string($authHeader) || ! hash_equals('Apikey '.$secretToken, $authHeader)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $transferType = $request->input('transferType');
+        if ($transferType === 'out') {
+            return response()->json(['success' => true]);
+        }
+        if ($transferType !== 'in') {
+            return response()->json(['success' => false, 'message' => 'Invalid transfer type'], 422);
         }
 
         // 2. Extract content & amount
