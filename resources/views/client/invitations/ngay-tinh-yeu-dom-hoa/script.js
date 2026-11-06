@@ -347,15 +347,16 @@
     function initRsvpForm(rootEl) {
         var form = rootEl.querySelector(".mayhen_invitation_rsvp_form");
         var statusEl = rootEl.querySelector(".mayhen_invitation_rsvp_form .mayhen_invitation_status_msg");
-        var wishList = rootEl.querySelector(".mayhen_invitation_wishes_list");
         if (!form) return;
+        var isSubmitting = false;
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
+            if (isSubmitting) return;
             var name = (form.querySelector('input[name="name"]') || {}).value || "";
             var attendingEl = form.querySelector('input[name="is_attending"]:checked');
-            var partySide = (form.querySelector('select[name="party_side"]') || {}).value || "";
             var guestCount = (form.querySelector('select[name="guest_count"]') || {}).value || "";
+            var childrenCount = (form.querySelector('select[name="children_count"]') || {}).value || "0";
             var message = (form.querySelector('textarea[name="message"]') || {}).value || "";
 
             name = name.trim();
@@ -375,44 +376,29 @@
             }
 
             var payload = {
-                name: name,
-                is_attending: attendingEl.value,
-                party_side: partySide,
-                guest_count: guestCount,
-                message: message
+                guest_name: name,
+                attending_status: attendingEl.value === "Xin lỗi, tôi bận mất rồi" ? "declined" : "attending",
+                adults_count: attendingEl.value === "Xin lỗi, tôi bận mất rồi" ? 0 : Number(guestCount),
+                children_count: attendingEl.value === "Xin lỗi, tôi bận mất rồi" ? 0 : Number(childrenCount),
+                wishes: message
             };
 
             var endpoint = rootEl.getAttribute("data-rsvp-endpoint") || "";
             var csrfTokenEl = form.querySelector('input[name="_token"]');
             var csrfToken = csrfTokenEl ? csrfTokenEl.value : "";
 
-            // Append wish to local preview list safely using textContent (no innerHTML injection)
-            if (message && wishList) {
-                var item = document.createElement("div");
-                item.className = "mayhen_invitation_wish_item";
-                var msgDiv = document.createElement("div");
-                msgDiv.className = "mayhen_invitation_wish_message";
-                msgDiv.textContent = '"' + message + '"';
-                var nameDiv = document.createElement("div");
-                nameDiv.className = "mayhen_invitation_wish_name";
-                nameDiv.textContent = "— " + name;
-                item.appendChild(msgDiv);
-                item.appendChild(nameDiv);
-                wishList.insertBefore(item, wishList.firstChild);
-            }
-
             // Dispatch event for Mây Hẹn Studio / host app integration
             window.dispatchEvent(new CustomEvent("mayhen:rsvp:submit", { detail: payload }));
 
             if (!endpoint) {
                 if (statusEl) {
-                    statusEl.textContent = "Đã ghi nhận thông tin tại trình duyệt (Cần cấu hình data-rsvp-endpoint trên Mây Hẹn để lưu máy chủ).";
+                    statusEl.textContent = "Chưa thể gửi xác nhận. Vui lòng thử lại sau.";
                 }
-                form.reset();
                 return;
             }
 
             if (statusEl) statusEl.textContent = "Đang gửi xác nhận...";
+            isSubmitting = true;
             fetch(endpoint, {
                 method: "POST",
                 headers: {
@@ -423,15 +409,22 @@
                 body: JSON.stringify(payload)
             })
                 .then(function (res) {
-                    if (!res.ok) throw new Error("HTTP " + res.status);
-                    return res.json();
+                    return res.json().then(function (data) {
+                        if (!res.ok || data.success !== true) {
+                            throw new Error(data.message || "Không thể gửi xác nhận. Vui lòng thử lại.");
+                        }
+                        return data;
+                    });
                 })
-                .then(function () {
-                    if (statusEl) statusEl.textContent = "Cảm ơn " + name + " đã gửi xác nhận tham dự!";
+                .then(function (data) {
+                    if (statusEl) statusEl.textContent = data.message || "Cảm ơn bạn đã gửi xác nhận.";
                     form.reset();
                 })
-                .catch(function () {
-                    if (statusEl) statusEl.textContent = "Không thể kết nối máy chủ. Vui lòng thử lại sau.";
+                .catch(function (error) {
+                    if (statusEl) statusEl.textContent = error.message || "Không thể kết nối máy chủ. Vui lòng thử lại sau.";
+                })
+                .finally(function () {
+                    isSubmitting = false;
                 });
         });
     }

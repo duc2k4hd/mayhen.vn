@@ -459,7 +459,6 @@ function initForms(root) {
       e.preventDefault();
       const formData = new FormData(wishesForm);
       const guestName = String(formData.get('guest_name') || '').trim();
-      const guestRelation = String(formData.get('guest_relation') || 'Khách Mời').trim();
       const wishMessage = String(formData.get('wish_message') || '').trim();
 
       if (!guestName || !wishMessage) {
@@ -467,38 +466,13 @@ function initForms(root) {
         return;
       }
 
-      const payload = { guest_name: guestName, guest_relation: guestRelation, wish_message: wishMessage };
+      const payload = { name: guestName, message: wishMessage };
 
       // Dispatch event hook for Mây Hẹn Studio / Parent Host
       window.dispatchEvent(new CustomEvent('mayhen:wish-submit', { detail: payload }));
 
-      // Append safe DOM preview bubble using textContent (no innerHTML XSS)
-      if (wishesFeed) {
-        const bubble = document.createElement('article');
-        bubble.className = 'mayhen_invitation_wishes__bubble';
-
-        const head = document.createElement('header');
-        head.className = 'mayhen_invitation_wishes__bubble_head';
-        const strong = document.createElement('strong');
-        strong.textContent = guestName;
-        const badge = document.createElement('span');
-        badge.className = 'mayhen_invitation_wishes__badge';
-        badge.textContent = guestRelation;
-        head.appendChild(strong);
-        head.appendChild(badge);
-
-        const p = document.createElement('p');
-        p.className = 'mayhen_invitation_wishes__bubble_text';
-        p.textContent = wishMessage;
-
-        bubble.appendChild(head);
-        bubble.appendChild(p);
-        wishesFeed.prepend(bubble);
-      }
-
       if (!wishesEndpoint) {
-        wishesStatus.textContent = 'Đã hiển thị lời chúc trên phiên hiện tại (Chế độ xem trước — cần cấu hình API endpoint Mây Hẹn để lưu vĩnh viễn).';
-        wishesForm.reset();
+        wishesStatus.textContent = 'Chưa thể gửi lời chúc. Vui lòng thử lại sau.';
         return;
       }
 
@@ -513,8 +487,31 @@ function initForms(root) {
           },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        wishesStatus.textContent = 'Cảm ơn bạn đã gửi lời chúc tới Dâu Rể!';
+        const result = await res.json();
+        if (!res.ok || result.success !== true) {
+          wishesStatus.textContent = result.message || 'Không thể gửi lời chúc. Vui lòng thử lại.';
+          return;
+        }
+        if (wishesFeed && result.wish && result.wish.id != null) {
+          const wishId = String(result.wish.id);
+          let bubble = Array.from(wishesFeed.querySelectorAll('[data-wish-id]'))
+            .find((item) => item.dataset.wishId === wishId);
+          if (!bubble) {
+            bubble = document.createElement('article');
+            bubble.className = 'mayhen_invitation_wishes__bubble mayhen_invitation_wish_item';
+            bubble.dataset.wishId = wishId;
+            const head = document.createElement('header');
+            head.className = 'mayhen_invitation_wishes__bubble_head';
+            head.appendChild(document.createElement('strong'));
+            const text = document.createElement('p');
+            text.className = 'mayhen_invitation_wishes__bubble_text';
+            bubble.append(head, text);
+            wishesFeed.prepend(bubble);
+          }
+          bubble.querySelector('strong').textContent = result.wish.name;
+          bubble.querySelector('p').textContent = result.wish.message;
+        }
+        wishesStatus.textContent = result.message || 'Cảm ơn bạn đã gửi lời chúc.';
         wishesForm.reset();
       } catch (err) {
         wishesStatus.textContent = 'Không thể kết nối máy chủ lưu lời chúc. Vui lòng thử lại sau.';
@@ -525,15 +522,17 @@ function initForms(root) {
   // RSVP Form
   const rsvpForm = root.querySelector('[data-mayhen-rsvp-form]');
   const rsvpStatus = root.querySelector('[data-rsvp-status]');
+  let isRsvpSubmitting = false;
 
   if (rsvpForm && rsvpStatus) {
     rsvpForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (isRsvpSubmitting) return;
       const formData = new FormData(rsvpForm);
       const guestName = String(formData.get('guest_name') || '').trim();
       const attendanceStatus = String(formData.get('attendance_status') || 'attending');
-      const eventType = String(formData.get('event_type') || 'Lễ Vu Quy');
       const guestCount = String(formData.get('guest_count') || '1');
+      const childrenCount = String(formData.get('children_count') || '0');
       const message = String(formData.get('message') || '').trim();
 
       if (!guestName) {
@@ -543,20 +542,21 @@ function initForms(root) {
 
       const payload = {
         guest_name: guestName,
-        attendance_status: attendanceStatus,
-        event_type: eventType,
-        guest_count: parseInt(guestCount, 10) || 1,
-        message
+        attending_status: attendanceStatus,
+        adults_count: attendanceStatus === 'attending' ? Number(guestCount) : 0,
+        children_count: attendanceStatus === 'attending' ? Number(childrenCount) : 0,
+        wishes: message
       };
 
       window.dispatchEvent(new CustomEvent('mayhen:rsvp-submit', { detail: payload }));
 
       if (!rsvpEndpoint) {
-        rsvpStatus.textContent = 'Đã ghi nhận thông tin ở chế độ xem trước (Adapter required: cần kết nối API endpoint Mây Hẹn để lưu vào cơ sở dữ liệu).';
+        rsvpStatus.textContent = 'Chưa thể gửi xác nhận. Vui lòng thử lại sau.';
         return;
       }
 
       try {
+        isRsvpSubmitting = true;
         rsvpStatus.textContent = 'Đang gửi xác nhận tham dự...';
         const res = await fetch(rsvpEndpoint, {
           method: 'POST',
@@ -567,11 +567,17 @@ function initForms(root) {
           },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        rsvpStatus.textContent = 'Cảm ơn bạn đã phản hồi cho vợ chồng mình nhé. Chúc bạn và gia đình thật nhiều sức khỏe !!';
+        const result = await res.json();
+        if (!res.ok || result.success !== true) {
+          rsvpStatus.textContent = result.message || 'Không thể gửi xác nhận. Vui lòng thử lại.';
+          return;
+        }
+        rsvpStatus.textContent = result.message || 'Cảm ơn bạn đã gửi xác nhận.';
         rsvpForm.reset();
       } catch (err) {
         rsvpStatus.textContent = 'Lỗi kết nối khi gửi xác nhận tham dự. Vui lòng thử lại sau.';
+      } finally {
+        isRsvpSubmitting = false;
       }
     });
   }

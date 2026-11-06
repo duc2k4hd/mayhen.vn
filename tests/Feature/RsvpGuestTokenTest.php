@@ -105,3 +105,33 @@ test('a personalized invitation includes its token in the RSVP endpoint', functi
             'token' => $guest->guest_token,
         ]));
 });
+
+test('a personalized template renders the correct RSVP endpoint', function (string $templateSlug) {
+    $invitation = makeRsvpTokenInvitation('rsvp-template-link');
+    $invitation->template->update(['slug' => $templateSlug]);
+    $guest = Guest::create(['wedding_id' => $invitation->wedding_id, 'name' => 'Khách mời']);
+
+    $this->get(route('invitation.show', ['slug' => $invitation->slug, 'token' => $guest->guest_token]))
+        ->assertOk()
+        ->assertSee(route('rsvp.submit', ['slug' => $invitation->slug, 'token' => $guest->guest_token]));
+})->with(['ngay-tinh-yeu-dom-hoa', 'tron-kiep-nay-ben-nhau']);
+
+test('an RSVP stores the submitted adult and child counts', function () {
+    $invitation = makeRsvpTokenInvitation('rsvp-counts');
+    $guest = Guest::create(['wedding_id' => $invitation->wedding_id, 'name' => 'Khách mời']);
+
+    $this->postJson(route('rsvp.submit', ['slug' => $invitation->slug, 'token' => $guest->guest_token]), [
+        'guest_name' => 'Khách mời',
+        'attending_status' => 'attending',
+        'adults_count' => 2,
+        'children_count' => 1,
+        'wishes' => 'Chúc hai bạn hạnh phúc',
+    ])->assertOk()->assertJson(['success' => true]);
+
+    $this->assertDatabaseHas('guest_responses', [
+        'wedding_id' => $invitation->wedding_id,
+        'guest_id' => $guest->id,
+        'adults_count' => 2,
+        'children_count' => 1,
+    ]);
+});

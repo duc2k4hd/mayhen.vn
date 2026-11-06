@@ -196,9 +196,9 @@
     $footerPhotoUrl = $resolveAsset('assets/images/ceremony-aodai-02.webp', $extraData['footer_photo_url'] ?? null);
 
     $musicUrl       = $resolveAsset('assets/audio/wedding-melody.mp3', $extraData['background_music_url'] ?? null);
-    $rsvpEndpoint   = (isset($wedding) && $wedding) ? route('invitations.rsvp', $wedding->id) : '';
-    $wishEndpoint   = (isset($wedding) && $wedding) ? route('invitations.wishes', $wedding->id) : '';
-    $sigEndpoint    = (isset($wedding) && $wedding) ? route('invitations.signature', $wedding->id) : '';
+    $rsvpEndpoint   = $rsvpSubmitUrl ?? '';
+    $wishEndpoint   = $wishSubmitUrl ?? '';
+    $sigEndpoint    = '';
     $cssVersion     = '2.0.0';
     $jsVersion      = '2.0.0';
 @endphp
@@ -1086,21 +1086,24 @@
 
                     <div class="mayhen_invitation_rsvp__row">
                         <div class="mayhen_invitation_rsvp__field">
-                            <label for="mayhen_rsvp_event" class="mayhen_invitation_rsvp__label">Nơi tham dự</label>
-                            <select id="mayhen_rsvp_event" name="event_type" class="mayhen_invitation_rsvp__select">
-                                <option value="Lễ Vu Quy">Lễ Vu Quy</option>
-                                <option value="Lễ Thành Hôn">Lễ Thành Hôn</option>
-                            </select>
-                        </div>
-
-                        <div class="mayhen_invitation_rsvp__field">
-                            <label for="mayhen_rsvp_guests" class="mayhen_invitation_rsvp__label">SL tham dự</label>
+                            <label for="mayhen_rsvp_guests" class="mayhen_invitation_rsvp__label">Số người lớn</label>
                             <select id="mayhen_rsvp_guests" name="guest_count" class="mayhen_invitation_rsvp__select">
                                 <option value="1">1 Người</option>
                                 <option value="2">2 Người</option>
                                 <option value="3">3 Người</option>
                                 <option value="4">4 Người</option>
                                 <option value="5">5 Người</option>
+                            </select>
+                        </div>
+                        <div class="mayhen_invitation_rsvp__field">
+                            <label for="mayhen_rsvp_children" class="mayhen_invitation_rsvp__label">Số trẻ em</label>
+                            <select id="mayhen_rsvp_children" name="children_count" class="mayhen_invitation_rsvp__select">
+                                <option value="0">0 Trẻ em</option>
+                                <option value="1">1 Trẻ em</option>
+                                <option value="2">2 Trẻ em</option>
+                                <option value="3">3 Trẻ em</option>
+                                <option value="4">4 Trẻ em</option>
+                                <option value="5">5 Trẻ em</option>
                             </select>
                         </div>
                     </div>
@@ -1218,16 +1221,6 @@
                     </div>
 
                     <div class="mayhen_invitation_wishes__field">
-                        <label for="mayhen_wish_relation" class="mayhen_invitation_wishes__label">Khách Mời</label>
-                        <select id="mayhen_wish_relation" name="guest_relation" class="mayhen_invitation_wishes__select">
-                            <option value="Khách Mời">Khách Mời</option>
-                            <option value="Bạn cô Dâu">Bạn cô Dâu</option>
-                            <option value="Bạn chú Rể">Bạn chú Rể</option>
-                            <option value="Bạn Dâu Rể">Bạn Dâu Rể</option>
-                        </select>
-                    </div>
-
-                    <div class="mayhen_invitation_wishes__field">
                         <label for="mayhen_wish_preset" class="mayhen_invitation_wishes__label">Lời chúc gợi ý</label>
                         <select id="mayhen_wish_preset" class="mayhen_invitation_wishes__select" data-wish-preset-select>
                             <option value="">-- Chọn lời chúc gợi ý --</option>
@@ -1258,24 +1251,14 @@
                 </form>
 
                 <div class="mayhen_invitation_wishes__feed mayhen_invitation_wish_list" data-wishes-feed aria-label="Danh sách lời chúc">
-                    <article class="mayhen_invitation_wishes__bubble mayhen_invitation_wish_item">
+                    @foreach ($wishes ?? [] as $wish)
+                    <article class="mayhen_invitation_wishes__bubble mayhen_invitation_wish_item" data-wish-id="{{ $wish->id }}">
                         <header class="mayhen_invitation_wishes__bubble_head">
-                            <strong>Gia đình hai bên</strong>
-                            <span class="mayhen_invitation_wishes__badge">Bạn Dâu Rể</span>
+                            <strong>{{ $wish->name }}</strong>
                         </header>
-                        <p class="mayhen_invitation_wishes__bubble_text">
-                            Trăm năm tình viên mãn 💕, bạc đầu nghĩa phu thê! Chúc hai con hạnh phúc mãi mãi!
-                        </p>
+                        <p class="mayhen_invitation_wishes__bubble_text">{{ $wish->message }}</p>
                     </article>
-                    <article class="mayhen_invitation_wishes__bubble mayhen_invitation_wish_item">
-                        <header class="mayhen_invitation_wishes__bubble_head">
-                            <strong>Minh Thư &amp; Hoàng Nam</strong>
-                            <span class="mayhen_invitation_wishes__badge">Bạn cô Dâu</span>
-                        </header>
-                        <p class="mayhen_invitation_wishes__bubble_text">
-                            Chúc hai bạn mãi mãi hạnh phúc bên nhau ❤️💍 Sớm đón thiên thần nhỏ nhé!
-                        </p>
-                    </article>
+                    @endforeach
                 </div>
             </div>
         </section>

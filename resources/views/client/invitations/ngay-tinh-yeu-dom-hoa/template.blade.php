@@ -199,7 +199,7 @@
     // --- Khách mời & Endpoints ---
     $guestName    = $invitation->guest_name ?? 'Quý Khách';
     $musicUrl     = $wedding->music_url ?? ($extraData['music_url'] ?? '');
-    $rsvpEndpoint = $rsvpSubmitUrl ?? ($isPreview ? route('templates.preview.rsvp', $slug) : route('invitation.show', $invitation->slug ?? ''));
+    $rsvpEndpoint = $rsvpSubmitUrl ?? '';
     $wishEndpoint = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', $slug)  : route('invitation.wish.store', $invitation->slug ?? ''));
 
     // --- Meta ---
@@ -802,17 +802,6 @@
                    placeholder="Họ và Tên" aria-label="Họ và Tên"
                    value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
 
-            <div class="mayhen_invitation_form_radio_box mayhen_invitation_rsvp_guest_of" role="radiogroup" aria-label="Khách của ai">
-                <label class="mayhen_invitation_form_radio_label">
-                    <input type="radio" name="guest_of" value="Khách của Chú Rể" checked>
-                    <span>Khách của Chú Rể</span>
-                </label>
-                <label class="mayhen_invitation_form_radio_label">
-                    <input type="radio" name="guest_of" value="Khách của Cô Dâu">
-                    <span>Khách của Cô Dâu</span>
-                </label>
-            </div>
-
             <div class="mayhen_invitation_form_radio_box mayhen_invitation_rsvp_attendance" role="radiogroup" aria-label="Trạng thái tham dự">
                 <label class="mayhen_invitation_form_radio_label">
                     <input type="radio" name="is_attending" value="Có, tôi sẽ đến" required checked>
@@ -825,19 +814,21 @@
             </div>
 
             <div class="mayhen_invitation_form_row_2col">
-                <select name="party_side" class="mayhen_invitation_form_select" aria-label="Nơi tham dự">
-                    <option value="">Nơi tham dự</option>
-                    <option value="Tiệc Nhà Trai">Tiệc Nhà Trai</option>
-                    <option value="Tiệc Nhà Gái">Tiệc Nhà Gái</option>
-                    <option value="Cả hai tiệc">Cả hai tiệc</option>
-                </select>
-                <select name="guest_count" class="mayhen_invitation_form_select mayhen_invitation_rsvp_count" aria-label="Số lượng">
-                    <option value="">SL tham dự</option>
+                <select name="guest_count" class="mayhen_invitation_form_select mayhen_invitation_rsvp_count" aria-label="Số người lớn">
+                    <option value="">Số người lớn</option>
                     <option value="1">1 Người</option>
                     <option value="2">2 Người</option>
                     <option value="3">3 Người</option>
                     <option value="4">4 Người</option>
                     <option value="5">5 Người</option>
+                </select>
+                <select name="children_count" class="mayhen_invitation_form_select" aria-label="Số trẻ em">
+                    <option value="0">0 Trẻ em</option>
+                    <option value="1">1 Trẻ em</option>
+                    <option value="2">2 Trẻ em</option>
+                    <option value="3">3 Trẻ em</option>
+                    <option value="4">4 Trẻ em</option>
+                    <option value="5">5 Trẻ em</option>
                 </select>
             </div>
 
