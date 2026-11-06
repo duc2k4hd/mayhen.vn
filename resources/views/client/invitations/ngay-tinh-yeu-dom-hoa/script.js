@@ -646,52 +646,6 @@
         }
     }
 
-    /* ----------------------------------------------------------------------
-       8. STUDIO LIVE SYNC (ALL OCCURRENCES OF data-sync-target)
-       ---------------------------------------------------------------------- */
-    function initStudioSync(rootEl) {
-        window.addEventListener("message", function (event) {
-            var msg = event.data;
-            if (!msg || typeof msg !== "object") return;
-            var data = msg.data || msg.fields || msg;
-            if (!data || typeof data !== "object") return;
-
-            Object.keys(data).forEach(function (key) {
-                var val = data[key];
-                if (val === undefined || val === null) return;
-                rootEl.querySelectorAll('[data-sync-target="' + key + '"]').forEach(function (el) {
-                    if (el.tagName === "IMG" || el.tagName === "AUDIO") {
-                        el.src = String(val);
-                    } else if (el.tagName === "A") {
-                        el.href = String(val);
-                    } else {
-                        el.textContent = String(val);
-                    }
-                });
-            });
-
-            if (data.groom_name || data.bride_name) {
-                var gEl = rootEl.querySelector('[data-sync-target="groom_name"]');
-                var bEl = rootEl.querySelector('[data-sync-target="bride_name"]');
-                var g = data.groom_name || (gEl ? gEl.textContent : "");
-                var b = data.bride_name || (bEl ? bEl.textContent : "");
-                if (g && b && !data.couple_names) {
-                    rootEl.querySelectorAll('[data-sync-target="couple_names"]').forEach(function (el) {
-                        el.textContent = g + " - " + b;
-                    });
-                }
-            }
-
-            if (data.wedding_date_digits || (data.wedding_day && data.wedding_month && data.wedding_year)) {
-                var dateStr =
-                    data.wedding_date_digits ||
-                    pad2(data.wedding_day) + "." + pad2(data.wedding_month) + "." + data.wedding_year;
-                window.renderMayhenWeddingCalendar(dateStr);
-                window.updateMayhenCountdown(dateStr);
-            }
-        });
-    }
-
     function boot() {
         var rootEl = document.querySelector(".mayhen_invitation_root");
         if (!rootEl) return;
@@ -702,7 +656,6 @@
         initRsvpForm(rootEl);
         initSignatureCanvas(rootEl);
         initLightbox(rootEl);
-        initStudioSync(rootEl);
     }
 
     if (document.readyState === "loading") {

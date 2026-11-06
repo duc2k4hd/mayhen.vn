@@ -69,10 +69,10 @@
     $storyContent  = $extraData['story_content'] ?? 'Biết ơn vì đã tìm thấy nhau giữa thế giới bao la. Cùng nhau chúng ta đi qua những năm tháng tuổi trẻ, và hôm nay bước vào cánh cửa hôn nhân rạng rỡ và hạnh phúc trọn vẹn nhất.';
 
     // --- 5. SECTION 3: GIA ĐÌNH & ĐÔI UYÊN ƯƠNG ---
-    $groomFather        = $extraData['groom_father']         ?? 'Nguyễn Đắc Cường';
+    $groomFather        = $extraData['groom_father']         ?? ($wedding->groom_parents ?? 'Nguyễn Đắc Cường');
     $groomMother        = $extraData['groom_mother']         ?? 'Đặng Thị Hương';
     $groomParentsAddr   = $extraData['groom_parents_address'] ?? 'TDP Nhân Sơn, Yên Nghĩa, Hà Đông, Hà Nội';
-    $brideFather        = $extraData['bride_father']         ?? 'Nguyễn Đức Trí';
+    $brideFather        = $extraData['bride_father']         ?? ($wedding->bride_parents ?? 'Nguyễn Đức Trí');
     $brideMother        = $extraData['bride_mother']         ?? 'Bùi Thị Tầm';
     $brideParentsAddr   = $extraData['bride_parents_address'] ?? 'Tổ 5 Quang Lãm, Phú Lương, Hà Đông, Hà Nội';
     $groomBio           = $extraData['groom_bio'] ?? 'Biết ơn Em về tất cả. Nguyện bên Em qua muôn nẻo đường phía trước, mình đồng hành cùng nhau đến mãi mãi về sau.';
@@ -374,7 +374,7 @@
         <p class="mayhen_invitation_story_content mayhen_invitation_anim mayhen_invitation_anim--fadeInUp"
            data-sync-target="story_content">{{ $storyContent }}</p>
 
-        <div class="mayhen_invitation_monogram">✦ {{ mb_strtoupper(mb_substr($groomName, -mb_strpos(strrev($groomName), ' ') ?: mb_strlen($groomName), 1)) }} &amp; {{ mb_strtoupper(mb_substr($brideName, -mb_strpos(strrev($brideName), ' ') ?: mb_strlen($brideName), 1)) }} ✦</div>
+        <div class="mayhen_invitation_monogram">✦ <span data-monogram-role="groom">{{ mb_strtoupper(mb_substr($groomName, 0, 1)) }}</span> &amp; <span data-monogram-role="bride">{{ mb_strtoupper(mb_substr($brideName, 0, 1)) }}</span> ✦</div>
 
         {{-- Lễ Ăn Hỏi --}}
         <div class="mayhen_invitation_ritual_block mayhen_invitation_ceremony_bride_card mayhen_invitation_anim mayhen_invitation_anim--fadeInUp">
@@ -870,7 +870,7 @@
         <img class="mayhen_invitation_footer_ornament"
              src="{{ $resolveAsset('assets/images/ornament-footer-floral.webp') }}" alt="">
 
-        <h3 class="mayhen_invitation_footer_names mayhen_invitation_ending_couple_name">
+        <h3 class="mayhen_invitation_footer_names mayhen_invitation_ending_couple_name" data-sync-target="couple_names">
             <span data-sync-target="groom_name">{{ $groomName }}</span>
             &amp;
             <span data-sync-target="bride_name">{{ $brideName }}</span>
@@ -882,12 +882,11 @@
                      alt="{{ $groomName }} & {{ $brideName }}"
                      data-sync-target="footer_photo_url">
             </div>
-            <img class="mayhen_invitation_footer_thankyou_img"
-                 src="{{ $resolveAsset('assets/images/ornament-thankyou-text.webp') }}"
-                 alt="Thank You">
+            <div class="mayhen_invitation_footer_thankyou_badge">
+                <h4 class="mayhen_invitation_ending_title" data-sync-target="ending_title">{{ $endingTitle }}</h4>
+            </div>
         </div>
 
-        <span class="mayhen_invitation_ending_title" data-sync-target="ending_title" style="display:none;">{{ $endingTitle }}</span>
         <p class="mayhen_invitation_ending_text" data-sync-target="ending_text">{{ $endingText }}</p>
     </footer>
 

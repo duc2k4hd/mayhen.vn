@@ -1038,26 +1038,40 @@
 
             // QR is supplied by a locally stored wedding asset; never fetch it from a remote image service.
 
-            // Đồng bộ tên đôi uyên ương gộp (couple_names / opening_names)
+            // Đồng bộ tên đôi uyên ương gộp (couple_names / opening_names / ending_couple_name)
             if (cleanKey === 'groom_name' || cleanKey === 'bride_name') {
                 var g = window.__MAYHEN_LOCAL_STATE['groom_name'] || '';
                 var b = window.__MAYHEN_LOCAL_STATE['bride_name'] || '';
 
-                if (cleanKey === 'groom_name' && !g) g = val;
-                if (cleanKey === 'bride_name' && !b) b = val;
+                if (cleanKey === 'groom_name') g = val;
+                if (cleanKey === 'bride_name') b = val;
 
-                // Tự động tìm cả phần tử có class hoặc contract couple_names
-                document.querySelectorAll('[data-sync-target="couple_names"]').forEach(function(el) {
-                    if (el.querySelector('[data-sync-target="groom_name"]') || el.querySelector('[data-sync-target="bride_name"]')) {
-                        return; // Đã có các thẻ con quản lý riêng biệt
+                // Dự phòng lấy trực tiếp từ DOM nếu state chưa kịp cập nhật một trong hai tên
+                if (!g) {
+                    var domG = document.querySelector('[data-sync-target="groom_name"]');
+                    if (domG && domG.textContent) g = domG.textContent.trim();
+                }
+                if (!b) {
+                    var domB = document.querySelector('[data-sync-target="bride_name"]');
+                    if (domB && domB.textContent) b = domB.textContent.trim();
+                }
+
+                // Tự động tìm cả phần tử có class hoặc contract couple_names / ending_couple_name
+                document.querySelectorAll('[data-sync-target="couple_names"], .mayhen_invitation_ending_couple_name, .mayhen_invitation_footer_names').forEach(function(el) {
+                    var gEl = el.querySelector('[data-sync-target="groom_name"]');
+                    var bEl = el.querySelector('[data-sync-target="bride_name"]');
+                    if (gEl && bEl) {
+                        if (cleanKey === 'groom_name') gEl.textContent = val;
+                        if (cleanKey === 'bride_name') bEl.textContent = val;
+                    } else {
+                        var isUpper = el.getAttribute('data-sync-transform') === 'uppercase';
+                        var gTxt = isUpper ? (g || 'CHÚ RỂ').toUpperCase() : (g || 'Chú Rể');
+                        var bTxt = isUpper ? (b || 'CÔ DÂU').toUpperCase() : (b || 'Cô Dâu');
+                        el.innerHTML = '<span data-sync-target="groom_name">' + gTxt + '</span> <span class="mayhen_amp">&amp;</span> <span data-sync-target="bride_name">' + bTxt + '</span>';
                     }
-                    var isUpper = el.getAttribute('data-sync-transform') === 'uppercase';
-                    var gTxt = isUpper ? (g || 'CHÚ RỂ').toUpperCase() : (g || 'Chú Rể');
-                    var bTxt = isUpper ? (b || 'CÔ DÂU').toUpperCase() : (b || 'Cô Dâu');
-                    el.innerHTML = gTxt + ' <span class="mayhen_amp">&</span> ' + bTxt;
                 });
 
-                // Cập nhật Monogram
+                // Cập nhật Monogram chữ cái đầu tên cô dâu chú rể
                 if (cleanKey === 'groom_name') {
                     document.querySelectorAll('[data-monogram-role="groom"]').forEach(function(el) {
                         el.textContent = (val && val.trim().length > 0) ? val.trim().charAt(0).toUpperCase() : 'G';

@@ -3642,4 +3642,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+              132. **Đồng Bộ Tự Động Tên Đôi Uyên Ương Thank You (`ending_couple_name`) & Rà Soát Toàn Diện Dữ Liệu Khách Nhập**:
+                   - **Đồng bộ tự động 100% `mayhen_invitation_ending_couple_name` theo tên nhập ở Bước 1**:
+                     1. *Loại bỏ xung đột event listener*: Xóa bỏ hàm `initStudioSync` chạy ngầm trong `script.js` của mẫu `ngay-tinh-yeu-dom-hoa`. Hàm này trước đây can thiệp vào sự kiện `message` và tự ý gán `el.textContent = g + " - " + b` đè lên toàn bộ thẻ con, xóa mất các thẻ `<span data-sync-target="groom_name">` và `bride_name`.
+                     2. *Nâng cấp `editor-bridge.blade.php`*: Mở rộng bộ chọn tự động tìm và cập nhật cả `.mayhen_invitation_ending_couple_name`, `.mayhen_invitation_footer_names` và `[data-sync-target="couple_names"]`. Nếu thẻ con bị mất hoặc chưa có, bridge tự động khôi phục cấu trúc thẻ con `<span data-sync-target="groom_name">` & `<span data-sync-target="bride_name">` kèm logic fallback lấy trực tiếp từ DOM nếu một trong hai tên chưa có trong local state.
+                   - **Rà soát dữ liệu khách hàng nhập trên toàn bộ mẫu thiệp**:
+                     1. *Monogram hai chữ cái đầu*: Bổ sung `data-monogram-role="groom"` và `data-monogram-role="bride"` cho thẻ `.mayhen_invitation_monogram` để chữ cái đầu tên tự động nhảy tức thời khi người dùng gõ tên chú rể hoặc cô dâu.
+                     2. *Song thân hai họ*: Cho phép fallback lấy từ `$wedding->groom_parents` và `$wedding->bride_parents` khi tạo thiệp từ thông tin hồ sơ đã có của khách hàng.
+                     3. *Huy hiệu cảm ơn cuối thiệp (`ending_title`)*: Thay thế ảnh tĩnh bằng badge `.mayhen_invitation_footer_thankyou_badge` nền trắng, bo tròn oval 999px, viền đỏ son `#8e0101` kèm font chữ Playfair Display / MayhenScript nghiêng sang trọng, hiển thị đúng và đồng bộ tức thời tiêu đề tri ân do khách hàng nhập.
+                   - **Files tác động**:
+                     - `resources/views/client/invitations/partials/editor-bridge.blade.php`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/script.js`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/styles.css`
+                   - **Kiểm thử**: Pest 5/5 tests passed (51 assertions), Pint passed format.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

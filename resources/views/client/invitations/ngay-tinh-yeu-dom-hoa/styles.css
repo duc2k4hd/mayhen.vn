@@ -1733,6 +1733,32 @@
     pointer-events: none;
 }
 
+.mayhen_invitation_footer_thankyou_badge {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 1.5px solid var(--mayhen-invitation-ring-red);
+    border-radius: 999px;
+    padding: 6px 26px;
+    box-shadow: 0 4px 14px rgba(142, 1, 1, 0.12);
+    z-index: 2;
+    white-space: nowrap;
+    max-width: 90%;
+}
+
+.mayhen_invitation_footer_thankyou_badge .mayhen_invitation_ending_title {
+    font-family: var(--mayhen-invitation-script-font), 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--mayhen-invitation-ring-red);
+    margin: 0;
+    line-height: 1.15;
+    text-align: center;
+}
+
 /* ==========================================================================
    9. POPUPS & LIGHTBOX (#SECTION_POPUP: #CODAU, #CHURE, #ALBUM, #lightbox-screen)
    ========================================================================== */
