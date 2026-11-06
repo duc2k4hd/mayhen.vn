@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <ellipse cx="100" cy="120" rx="88" ry="108" stroke="#F5D38E" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.85"/>
+  <ellipse cx="100" cy="120" rx="80" ry="100" stroke="#F5D38E" stroke-width="1.5"/>
+  <g fill="#F5D38E">
+    <!-- Traditional Double Happiness 囍 geometric emblem -->
+    <text x="100" y="148" text-anchor="middle" font-size="96" font-weight="700" font-family="serif" fill="#F5D38E">囍</text>
+  </g>
+  <circle cx="100" cy="12" r="4" fill="#F5D38E"/>
+  <circle cx="100" cy="228" r="4" fill="#F5D38E"/>
+</svg>

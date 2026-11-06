@@ -3673,4 +3673,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+              134. **Tích Hợp & Chuẩn Hóa Mẫu Thiệp Cưới `tron-kiep-nay-ben-nhau` (Trọn Kiếp Này Bên Nhau) Đạt Chuẩn 10 Section Toàn Diện**:
+                   - **Định vị & Phong cách**: Mẫu thiệp phong cách Quiet Luxury Đỏ Son Hoàng Gia & Vàng Ánh Kim (`#C82333` & `#F5D38E`) trên nền kem ấm (`#FFFDF9`, `#EAE6DF`). Phù hợp cho đám cưới truyền thống sang trọng và hiện đại.
+                   - **Slug chính thức**: `tron-kiep-nay-ben-nhau`.
+                   - **Thư mục mẫu**: `resources/views/client/invitations/tron-kiep-nay-ben-nhau/`.
+                   - **Chuẩn hóa 8 nguyên tắc cốt lõi theo tiêu chuẩn Mây Hẹn**:
+                     1. *Đủ 10 Section Tiêu Chuẩn*:
+                        - **Section 1 (Hero)**: Cánh cửa mở Song Hỷ đỏ mở bung (tự động ẩn khi nhúng), ảnh bìa đôi uyên ương, tên cô dâu chú rể, loại lễ (`Lễ Vu Quy`), ngày dương/âm lịch, slogan mở màn.
+                        - **Section 2 (Story)**: Lời ngỏ tình yêu, subtitle "Trọn Kiếp Này Bên Nhau", trích dẫn lãng mạn, ảnh kỷ niệm khung vòm nghệ thuật, đoạn tâm sự và Monogram cặp đôi.
+                        - **Section 3 (Parents)**: Song thân hai họ Nhà Trai & Nhà Gái, địa chỉ tư gia, chân dung riêng và lời tự sự của Cô Dâu & Chú Rể.
+                        - **Section 4 (Countdown & Calendar)**: Tờ lịch tháng nghệ thuật và đồng hồ đếm ngược 4 trái tim thời gian thực (Ngày, Giờ, Phút, Giây).
+                        - **Section 5 (Events & Maps)**: Bộ 3 ảnh vòm nghệ thuật áo dài đỏ, thư mời quan khách, tiệc cưới Nhà Gái/Nhà Trai, bản đồ vị trí tổ chức vector an toàn kèm nút chỉ đường Google Maps.
+                        - **Section 6 (Timeline)**: Bổ sung mới Section Lịch trình tiệc cưới chuẩn 4 mốc thời gian kèm icon SVG và đường nối sang trọng.
+                        - **Section 7 (Dresscode)**: Bổ sung mới Section Quy định trang phục với các ô màu swatch tròn 3D có nhãn tiếng Việt ("Đỏ Son", "Vàng Champagne", "Trắng Tinh Khôi", "Đen Quý Phái") và lời dặn dò trang phục, tuyệt đối không in mã hex thô.
+                        - **Section 8 (Album)**: Bộ sưu tập 8 ảnh cưới chất lượng cao kèm nút xem thêm và modal lightbox phóng to toàn màn hình.
+                        - **Section 9 (Gift)**: Nắp mở hộp quà mừng cưới tương tác, thẻ VietQR Chú Rể & Cô Dâu kèm nút sao chép số tài khoản một chạm.
+                        - **Section 10 (Ending)**: Sổ ký tên điện tử Canvas (100% không ảnh người, nền canvas nghệ thuật), Xác nhận tham dự RSVP (100% không ảnh người), Sổ lưu bút chúc phúc và Chân trang cảm ơn với tên cặp đôi tự động đồng bộ Live Sync.
+                     2. *BEM Prefix Bất Biến*: Sử dụng hệ thống class `mayhen_invitation_*` toàn diện, tương thích 100% với Studio Tạo Thiệp và Admin.
+                     3. *Hợp Đồng Live Sync Tuyệt Đối*: Gắn đầy đủ `data-sync-target` cho tất cả các trường dữ liệu.
+                     4. *Phòng Vệ Nhúng Studio (`$isEmbed = true`)*: Cánh cửa mở đầu ẩn ngay lập tức (`display: none !important;`), không khóa cuộn body, hiển thị nội dung tức thì trong iframe.
+                     5. *100% Local Assets*: Toàn bộ ảnh WebP, font WOFF2 và icon SVG được phục vụ nội bộ qua route `/mau-thiep/tron-kiep-nay-ben-nhau/assets/...`.
+                     6. *Đăng Ký Database*: Cập nhật `InvitationTemplateSeeder` và nạp bản ghi mẫu vào cơ sở dữ liệu `invitation_templates`.
+                   - **Files tác động**:
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/schema.json` (tạo mới)
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/template.blade.php` (tạo mới)
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/styles.css` (tạo mới)
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/script.js` (tạo mới)
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/assets/` (ảnh, font, icon nội bộ)
+                     - `database/seeders/InvitationTemplateSeeder.php` (bổ sung bản ghi mẫu)
+                   - **Kiểm thử & Chất lượng**:
+                     - Toàn bộ Feature tests chạy pass 100% (9/9 tests, 82 assertions).
+                     - Schema không bị trùng lặp trường.
+                     - Laravel Pint pass format agent style.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

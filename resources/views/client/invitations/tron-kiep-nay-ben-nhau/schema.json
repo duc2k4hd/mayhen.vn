@@ -1,0 +1,592 @@
+{
+  "slug": "tron-kiep-nay-ben-nhau",
+  "version": "v1",
+  "name": "Trọn Kiếp Này Bên Nhau",
+  "tier": "free",
+  "complexity": "editorial",
+  "setup_time": "3 phút",
+  "supported_sections": [
+    "hero",
+    "story",
+    "parents",
+    "countdown_calendar",
+    "events",
+    "timeline",
+    "dresscode",
+    "album",
+    "gift",
+    "ending"
+  ],
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Trang Bìa Chính",
+      "short_title": "Trang Bìa",
+      "icon": "sparkles",
+      "description": "Tên cô dâu chú rể, loại lễ, slogan và ảnh đại diện bìa thiệp",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_type",
+          "label": "Loại hình lễ cưới",
+          "type": "text",
+          "required": false,
+          "default": "Lễ Vu Quy",
+          "placeholder": "Ví dụ: Lễ Vu Quy, Lễ Thành Hôn...",
+          "max": 50
+        },
+        {
+          "key": "wedding.groom_name",
+          "label": "Họ và tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Trần Quốc Hưng",
+          "placeholder": "Ví dụ: Quốc Hưng",
+          "max": 30
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Họ và tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Âu Mỹ Anh",
+          "placeholder": "Ví dụ: Mỹ Anh",
+          "max": 30
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-08-02",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch cử hành hôn lễ",
+          "type": "text",
+          "required": false,
+          "default": "(Tức ngày 20 tháng 06 năm Bính Ngọ)",
+          "placeholder": "Ví dụ: (Tức ngày 20 tháng 06 năm Bính Ngọ)",
+          "max": 100
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/hero-couple.webp"
+        },
+        {
+          "key": "wedding.extra_data.slogan",
+          "label": "Câu slogan mở màn",
+          "type": "text",
+          "required": false,
+          "default": "Hôn nhân là chuyện cả đời. Yêu người vừa ý, cưới người mình thương.",
+          "placeholder": "Ví dụ: Hôn nhân là chuyện cả đời...",
+          "max": 150
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Lời Ngỏ & Chuyện Tình Yêu",
+      "short_title": "Lời Ngỏ",
+      "icon": "heart",
+      "description": "Tiêu đề Lời ngỏ, câu chuyện kỷ niệm và ảnh nghệ thuật của cặp đôi",
+      "fields": [
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/countdown-veil.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_title",
+          "label": "Tiêu đề mục Lời ngỏ",
+          "type": "text",
+          "required": false,
+          "default": "Lời Ngỏ Tình Yêu",
+          "placeholder": "Ví dụ: Lời Ngỏ hoặc Chuyện Tình Yêu",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.story_subtitle",
+          "label": "Tiêu đề phụ câu chuyện",
+          "type": "text",
+          "required": false,
+          "default": "Trọn Kiếp Này Bên Nhau",
+          "placeholder": "Ví dụ: Trọn Kiếp Này Bên Nhau",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Lời ngỏ / Thông điệp tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Hôn nhân là chuyện cả đời, Yêu người vừa ý, cưới người mình thương",
+          "placeholder": "Chia sẻ ngắn gọn lời ngỏ gửi đến quan khách...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.story_content",
+          "label": "Đoạn tâm sự tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Cảm ơn bạn vì đã luôn dành sự yêu thương và quan tâm đến vợ chồng mình! Chúng mình biết rằng cuộc sống bận rộn, nào là công việc, trách nhiệm gia đình và những lo toan thường ngày. Vì thế, sự trân trọng dành cho bạn càng lớn hơn nữa. Thật lòng, ngày Hạnh Phúc của chúng mình sẽ trở nên trọn vẹn hơn nếu có sự hiện diện của bạn cùng người thương.",
+          "placeholder": "Kể ngắn gọn câu chuyện hoặc cảm xúc của hai bạn...",
+          "max": 600
+        }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Song Thân & Đôi Uyên Ương",
+      "short_title": "Gia Đình",
+      "icon": "users",
+      "description": "Họ tên cha mẹ hai bên gia đình, địa chỉ tư gia và chân dung cô dâu chú rể",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Họ tên Cha (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Trần Hùng Anh",
+          "placeholder": "Ví dụ: Trần Hùng Anh",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Họ tên Mẹ (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Võ Thị Thúy Vân",
+          "placeholder": "Ví dụ: Võ Thị Thúy Vân",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.groom_parents_address",
+          "label": "Địa chỉ tư gia Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Ấp Đông Giang, X. Đông Bình II, H. Thới Lai, TP. Cần Thơ",
+          "placeholder": "Ví dụ: Ấp Đông Giang, X. Đông Bình II, H. Thới Lai, TP. Cần Thơ",
+          "max": 150
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Âu Sới Tỷ",
+          "placeholder": "Ví dụ: Âu Sới Tỷ",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Họ tên Mẹ (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Nguyễn Thị Diệu Hiền",
+          "placeholder": "Ví dụ: Nguyễn Thị Diệu Hiền",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.bride_parents_address",
+          "label": "Địa chỉ tư gia Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "placeholder": "Ví dụ: Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "max": 150
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/groom-portrait.webp"
+        },
+        {
+          "key": "wedding.extra_data.groom_bio",
+          "label": "Lời tự sự của Chú rể",
+          "type": "textarea",
+          "required": false,
+          "default": "Một chàng trai điềm đạm, chân thành và luôn sống trọn vẹn vì tình yêu thương gia đình.",
+          "placeholder": "Nhập vài dòng giới thiệu bản thân...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/bride-portrait.webp"
+        },
+        {
+          "key": "wedding.extra_data.bride_bio",
+          "label": "Lời tự sự của Cô dâu",
+          "type": "textarea",
+          "required": false,
+          "default": "Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.",
+          "placeholder": "Nhập vài dòng giới thiệu bản thân...",
+          "max": 300
+        }
+      ]
+    },
+    {
+      "id": "countdown_calendar",
+      "title": "Đếm Ngược & Lịch Tháng",
+      "short_title": "Đếm Ngược",
+      "icon": "clock",
+      "description": "Đồng hồ đếm ngược thời gian thực và lịch tháng lưu ngày trọng đại",
+      "fields": [
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày đếm ngược đến hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-08-02",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.event_target_time",
+          "label": "Giờ mục tiêu đếm ngược",
+          "type": "time",
+          "required": false,
+          "default": "09:00",
+          "placeholder": "HH:MM"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Sự Kiện & Bản Đồ Chỉ Đường",
+      "short_title": "Sự Kiện",
+      "icon": "map-pin",
+      "description": "Thời gian, địa điểm Lễ Vu Quy, Lễ Thành Hôn và Tiệc Cưới",
+      "fields": [
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ đón khách / khai tiệc",
+          "type": "time",
+          "required": false,
+          "default": "09:00",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên địa điểm tổ chức tiệc cưới",
+          "type": "text",
+          "required": false,
+          "default": "Tư Gia Nhà Gái",
+          "placeholder": "Ví dụ: Tư Gia Nhà Gái",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.event_party_address",
+          "label": "Địa chỉ tổ chức chi tiết",
+          "type": "text",
+          "required": true,
+          "default": "Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "placeholder": "Ví dụ: Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ Lễ Vu Quy (Nhà Gái)",
+          "type": "time",
+          "required": false,
+          "default": "09:00",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_address",
+          "label": "Địa chỉ Lễ Vu Quy (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "placeholder": "Ví dụ: Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_time",
+          "label": "Giờ Lễ Thành Hôn (Nhà Trai)",
+          "type": "time",
+          "required": false,
+          "default": "11:00",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_address",
+          "label": "Địa chỉ Lễ Thành Hôn (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Ấp Đông Giang, X. Đông Bình II, H. Thới Lai, TP. Cần Thơ",
+          "placeholder": "Ví dụ: Ấp Đông Giang, X. Đông Bình II, H. Thới Lai, TP. Cần Thơ",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.event_party_map_link",
+          "label": "Đường dẫn Google Maps",
+          "type": "text",
+          "required": false,
+          "default": "https://www.google.com/maps/search/?api=1&query=%E1%BA%A4p+B%E1%BA%BFn+B%C3%A0o,+X%C3%A3+V%C4%A9nh+L%E1%BB%99c+A,+Huy%E1%BB%87n+H%E1%BB%93ng+D%C3%A2n,+T%E1%BB%89nh+B%E1%BA%A1c+Li%C3%AAu",
+          "placeholder": "Dán liên kết Google Maps...",
+          "max": 500
+        },
+        {
+          "key": "wedding.extra_data.ceremony_photo_1",
+          "label": "Ảnh Thư Mời 01 (Áo Dài Trái)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-01.webp"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_photo_2",
+          "label": "Ảnh Thư Mời 02 (Áo Dài Song Hỷ Giữa)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-02.webp"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_photo_3",
+          "label": "Ảnh Thư Mời 03 (Áo Dài Cận Cảnh Phải)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-03.webp"
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Tiệc Cưới",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian diễn ra hôn lễ và đón khách",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
+          "required": false,
+          "max_items": 6,
+          "default": [
+            { "time": "08:30", "title": "Đón khách & Trà thân mật" },
+            { "time": "09:00", "title": "Cử hành Lễ Vu Quy tại tư gia" },
+            { "time": "10:30", "title": "Khai tiệc mừng tân hôn" },
+            { "time": "12:00", "title": "Chụp ảnh kỷ niệm & Tiễn khách" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "time" },
+            { "key": "title", "label": "Nội dung", "type": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Quy Định Trang Phục",
+      "short_title": "Trang Phục",
+      "icon": "tag",
+      "description": "Gợi ý màu sắc trang phục để khách mời đồng điệu cùng không gian tiệc",
+      "fields": [
+        {
+          "key": "wedding.extra_data.dresscode_colors",
+          "label": "Bảng màu trang phục gợi ý (Mã HEX cách nhau bởi dấu phẩy)",
+          "type": "text",
+          "required": false,
+          "default": "#C82333,#F5D38E,#FFFFFF,#2B2B2B",
+          "placeholder": "Ví dụ: #C82333,#F5D38E,#FFFFFF,#2B2B2B",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.dresscode_note",
+          "label": "Ghi chú trang phục",
+          "type": "textarea",
+          "required": false,
+          "default": "Khuyến khích quý khách diện trang phục trang nhã mang tông màu đỏ son, vàng champagne hoặc trắng để những khung hình kỷ niệm thêm phần rạng rỡ.",
+          "placeholder": "Nhập lời dặn khách mời về trang phục...",
+          "max": 300
+        }
+      ]
+    },
+    {
+      "id": "album",
+      "title": "Album Hình Cưới",
+      "short_title": "Ảnh Cưới",
+      "icon": "image",
+      "description": "Bộ sưu tập 8 khoảnh khắc đẹp nhất của cô dâu và chú rể",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gallery_photo_1",
+          "label": "Ảnh cưới 1",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/hero-couple.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_2",
+          "label": "Ảnh cưới 2",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-01.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_3",
+          "label": "Ảnh cưới 3",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/countdown-veil.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_4",
+          "label": "Ảnh cưới 4",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-02.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_5",
+          "label": "Ảnh cưới 5",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-05.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_6",
+          "label": "Ảnh cưới 6",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-06.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_7",
+          "label": "Ảnh cưới 7",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-03.webp"
+        },
+        {
+          "key": "wedding.extra_data.gallery_photo_8",
+          "label": "Ảnh cưới 8",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/groom-portrait.webp"
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Hộp Mừng Cưới & Mã VietQR",
+      "short_title": "Mừng Cưới",
+      "icon": "gift",
+      "description": "Thông tin tài khoản ngân hàng và mã QR gửi mừng cưới",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Ngân hàng Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Vietcombank - CN Cần Thơ",
+          "placeholder": "Ví dụ: Vietcombank",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "1029384756",
+          "placeholder": "Nhập số tài khoản...",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Tên chủ tài khoản Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "TRAN QUOC HUNG",
+          "placeholder": "Ví dụ: TRAN QUOC HUNG",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.qr_groom_image",
+          "label": "Ảnh mã QR mừng cưới Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/qr-groom.webp"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Ngân hàng Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Techcombank - CN Bạc Liêu",
+          "placeholder": "Ví dụ: Techcombank",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "190345678901",
+          "placeholder": "Nhập số tài khoản...",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Tên chủ tài khoản Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "AU MY ANH",
+          "placeholder": "Ví dụ: AU MY ANH",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.qr_bride_image",
+          "label": "Ảnh mã QR mừng cưới Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/qr-bride.webp"
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "Tương Tác, RSVP & Lời Cảm Ơn",
+      "short_title": "Cảm Ơn",
+      "icon": "check-circle",
+      "description": "Sổ ký tên điện tử, xác nhận tham dự RSVP và lời tri ân cuối thiệp (Tuyệt đối không ảnh người)",
+      "fields": [
+        {
+          "key": "wedding.extra_data.thank_you_title",
+          "label": "Tiêu đề lời tri ân kết thiệp",
+          "type": "text",
+          "required": false,
+          "default": "Thank You",
+          "placeholder": "Ví dụ: Thank You",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.thank_you_quote",
+          "label": "Thông điệp cảm ơn gửi quan khách",
+          "type": "textarea",
+          "required": false,
+          "default": "Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!",
+          "placeholder": "Nhập lời cảm ơn...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh tròn kết thiệp (Không dùng ảnh cặp đôi)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-02.webp"
+        }
+      ]
+    }
+  ]
+}
+

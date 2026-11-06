@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 180" fill="none">
+  <rect x="10" y="12" width="120" height="156" rx="14" fill="#C82333" stroke="#F5D38E" stroke-width="2.5"/>
+  <path d="M12 24 L70 78 L128 24" stroke="#F5D38E" stroke-width="2" fill="#A71928"/>
+  <circle cx="70" cy="76" r="22" fill="#F5D38E"/>
+  <path d="M70 88s-12-7.2-12-15.5c0-4.8 3.6-8.2 7.8-8.2 2.5 0 4.2 1.6 4.2 1.6s1.7-1.6 4.2-1.6c4.2 0 7.8 3.4 7.8 8.2C82 80.8 70 88 70 88z" fill="#C82333"/>
+  <text x="70" y="138" text-anchor="middle" font-size="14" font-weight="700" fill="#F5D38E" font-family="sans-serif">MỪNG CƯỚI</text>
+</svg>
