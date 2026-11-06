@@ -37,7 +37,7 @@
 
     // --- 2. SECTION 1: HERO ---
     $ceremonyType = $extraData['ceremony_type'] ?? 'Lễ Thành Hôn';
-    $heroSlogan   = $extraData['hero_slogan'] ?? 'Kéo Xuống Để Xem Chi Tiết Thiệp Cưới';
+    $heroSlogan   = $extraData['slogan'] ?? ($extraData['hero_slogan'] ?? 'Hôn nhân không phải là nhìn nhau, mà là cùng nhau nhìn về một hướng.');
 
     // --- 3. NGÀY GIỜ CƯỚI ---
     $weddingDate       = isset($wedding->wedding_date)
@@ -117,15 +117,29 @@
     $dresscodeColors = $extraData['dresscode_colors'] ?? '#FCE39E,#FFFFFF,#1B2A4A,#0C0C0C';
     $dresscodeNote   = $extraData['dresscode_note']   ?? 'Khuyến khích trang phục thanh lịch mang tông màu ấm áp để những bức ảnh kỷ niệm thêm phần lung linh.';
     $dresscodeItems  = array_filter(array_map('trim', explode(',', $dresscodeColors)));
+    $dresscodeColorNames = [
+        '#fce39e' => 'Vàng Champagne',
+        '#ffffff' => 'Trắng Tinh Khôi',
+        '#1b2a4a' => 'Xanh Đêm Sâu',
+        '#0c0c0c' => 'Đen Huyền',
+        '#8e0101' => 'Đỏ Son',
+        '#a8b8a3' => 'Xanh Sage',
+        '#233628' => 'Xanh Rừng',
+        '#c5a059' => 'Vàng Cổ Điển',
+        '#f8f6f0' => 'Kem Ấm Áp',
+        '#1f1d1a' => 'Charcoal',
+        '#f2d6c9' => 'Hồng Pastel',
+        '#e8b4b8' => 'Hồng Đất',
+    ];
 
     // --- 9. ẢNH ---
     $heroPhotoUrl      = $resolveAsset('assets/images/hero-couple.webp',           $wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null));
-    $coupleBannerUrl   = $resolveAsset('assets/images/section2-couple-banner.webp', $extraData['couple_banner_url'] ?? null);
+    $saveDatePhotoUrl  = $resolveAsset('assets/images/section2-couple-banner.webp', $extraData['save_date_photo_url'] ?? ($extraData['couple_banner_url'] ?? null));
     $triptychLeftUrl   = $resolveAsset('assets/images/triptych-left.webp',          $extraData['triptych_left_url'] ?? null);
     $triptychCenterUrl = $resolveAsset('assets/images/triptych-center.webp',        $extraData['triptych_center_url'] ?? null);
     $triptychRightUrl  = $resolveAsset('assets/images/triptych-right.webp',         $extraData['triptych_right_url'] ?? null);
-    $groomPhotoUrl     = $resolveAsset('assets/images/groom-portrait.webp',         $wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null));
-    $bridePhotoUrl     = $resolveAsset('assets/images/bride-portrait.webp',         $wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null));
+    $groomPhotoUrl     = $resolveAsset('assets/images/groom-portrait.webp',         $extraData['groom_photo_url'] ?? ($wedding->groom_photo_url ?? null));
+    $bridePhotoUrl     = $resolveAsset('assets/images/bride-portrait.webp',         $extraData['bride_photo_url'] ?? ($wedding->bride_photo_url ?? null));
     $footerPhotoUrl    = $resolveAsset('assets/images/footer-couple-circle.webp',   $extraData['footer_photo_url'] ?? null);
 
     // Album 8 ảnh — key: gallery_photo_1 .. gallery_photo_8
@@ -281,9 +295,12 @@
             {{ $weddingLunarDate }}
         </p>
 
-        {{-- Slogan cuộn --}}
+        {{-- Slogan lãng mạn --}}
+        <p class="mayhen_invitation_ladi_paragraph_slogan" data-sync-target="slogan">{{ $heroSlogan }}</p>
+
+        {{-- Scroll cue (hardcode, không phải slogan) --}}
         <div class="mayhen_invitation_hero__scroll_cue" data-scroll-next="true">
-            <p class="mayhen_invitation_ladi_paragraph_slogan" data-sync-target="hero_slogan">{{ $heroSlogan }}</p>
+            <p class="mayhen_invitation_hero__scroll_text">Kéo Xuống Để Xem Chi Tiết<br>Thiệp Cưới</p>
             <img class="mayhen_invitation_hero__scroll_icon"
                  src="{{ $resolveAsset('assets/icons/chevron-down.svg') }}" alt="">
         </div>
@@ -341,12 +358,12 @@
         {{-- Tiêu đề phụ chuyện tình yêu --}}
         <h3 class="mayhen_invitation_story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
 
-        {{-- Ảnh banner kỷ niệm --}}
+        {{-- Ảnh kỷ niệm lời ngỏ --}}
         <div class="mayhen_invitation_story_img mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
              data-lightbox-item="true">
-            <img src="{{ $coupleBannerUrl }}"
+            <img src="{{ $saveDatePhotoUrl }}"
                  alt="{{ $groomName }} & {{ $brideName }}"
-                 data-sync-target="couple_banner_url">
+                 data-sync-target="save_date_photo_url">
         </div>
 
         {{-- Câu trích dẫn --}}
@@ -587,22 +604,38 @@
     {{-- ==================== SECTION 6: LỊCH TRÌNH HÔN LỄ (TIMELINE) ==================== --}}
     <section class="mayhen_invitation_section mayhen_invitation_timeline" data-mayhen-section="timeline">
 
-        <div class="mayhen_invitation_timeline_kicker">Timeline</div>
+        <div class="mayhen_invitation_timeline_kicker">Chương Trình Hôn Lễ</div>
         <h2 class="mayhen_invitation_timeline_title">Lịch Trình Buổi Tiệc</h2>
 
-        <div class="mayhen_invitation_timeline_list">
-            @foreach($timelineList as $index => $item)
-                <div class="mayhen_invitation_timeline_item">
-                    <div class="mayhen_invitation_timeline_time" data-sync-target="timeline.{{ $index }}.time">
-                        {{ $item['time'] ?? '' }}
+        <div class="mayhen_invitation_timeline_card">
+            <div class="mayhen_invitation_timeline_list">
+                @php
+                    $timelineIcons = [
+                        0 => '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>',
+                        1 => '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+                        2 => '<svg viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>',
+                        3 => '<svg viewBox="0 0 24 24"><path d="M21 6h-3.17L16 4H8L6.17 6H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-9 13a5 5 0 1 1 5-5 5 5 0 0 1-5 5z"/></svg>',
+                    ];
+                @endphp
+                @foreach($timelineList as $index => $item)
+                    <div class="mayhen_invitation_timeline_item">
+                        <div class="mayhen_invitation_timeline_time" data-sync-target="timeline.{{ $index }}.time">
+                            {{ $item['time'] ?? '' }}
+                        </div>
+                        <div class="mayhen_invitation_timeline_col">
+                            <div class="mayhen_invitation_timeline_dot" aria-hidden="true">
+                                {!! $timelineIcons[$index % 4] !!}
+                            </div>
+                            @if(!$loop->last)
+                                <div class="mayhen_invitation_timeline_line" aria-hidden="true"></div>
+                            @endif
+                        </div>
+                        <div class="mayhen_invitation_timeline_text" data-sync-target="timeline.{{ $index }}.title">
+                            {{ $item['title'] ?? '' }}
+                        </div>
                     </div>
-                    <div class="mayhen_invitation_timeline_dot" aria-hidden="true"></div>
-                    <div class="mayhen_invitation_timeline_line" aria-hidden="true"></div>
-                    <div class="mayhen_invitation_timeline_text" data-sync-target="timeline.{{ $index }}.title">
-                        {{ $item['title'] ?? '' }}
-                    </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -614,33 +647,46 @@
         <div class="mayhen_invitation_dresscode_kicker">Dresscode</div>
         <h2 class="mayhen_invitation_dresscode_title">Gợi Ý Trang Phục</h2>
 
-        <div class="mayhen_invitation_dresscode_icon" aria-hidden="true">
-            <img src="{{ $resolveAsset('assets/icons/ceremony-couple.svg') }}" alt="Trang phục">
-        </div>
+        <div class="mayhen_invitation_dresscode_card">
+            <div class="mayhen_invitation_dresscode_icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" stroke-width="1.8">
+                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+                </svg>
+            </div>
 
-        <div class="mayhen_invitation_dresscode_swatches">
-            @foreach($dresscodeItems as $hex)
-                <div class="mayhen_invitation_dresscode_item">
-                    <div class="mayhen_invitation_dresscode_circle" style="background-color: {{ $hex }};"></div>
-                    <span class="mayhen_invitation_dresscode_label">{{ $hex }}</span>
-                </div>
-            @endforeach
-        </div>
+            <div class="mayhen_invitation_dresscode_swatches">
+                @foreach($dresscodeItems as $hex)
+                    @php
+                        $cleanHex = trim($hex);
+                        $cName = $dresscodeColorNames[strtolower($cleanHex)] ?? ($dresscodeColorNames[$cleanHex] ?? 'Trang Nhã');
+                    @endphp
+                    <div class="mayhen_invitation_dresscode_item">
+                        <div class="mayhen_invitation_dresscode_circle"
+                             style="background-color: {{ $cleanHex }};"
+                             title="{{ $cName }}"></div>
+                        <span class="mayhen_invitation_dresscode_label">{{ $cName }}</span>
+                    </div>
+                @endforeach
+            </div>
 
-        <p class="mayhen_invitation_dresscode_note" data-sync-target="dresscode_note">{{ $dresscodeNote }}</p>
+            <p class="mayhen_invitation_dresscode_note" data-sync-target="dresscode_note">{{ $dresscodeNote }}</p>
+        </div>
     </section>
 
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
     {{-- ==================== SECTION 8: ALBUM HÌNH CƯỚI (8 PHOTOS) ==================== --}}
-    <section class="mayhen_invitation_section mayhen_invitation_gallery" data-mayhen-section="album,gallery">
+    <section class="mayhen_invitation_section mayhen_invitation_album_section mayhen_invitation_gallery" data-mayhen-section="album,gallery">
 
-        <div class="mayhen_invitation_gallery_kicker">Album</div>
-        <h2 class="mayhen_invitation_gallery_title">Khoảnh Khắc Hạnh Phúc</h2>
+        <div class="mayhen_invitation_album_header">
+            <h3 class="mayhen_invitation_album_title mayhen_invitation_gallery_title mayhen_invitation_anim mayhen_invitation_anim--fadeInDown">Album hình cưới</h3>
+            <img class="mayhen_invitation_album_ornament"
+                 src="{{ $resolveAsset('assets/images/ornament-divider-floral.webp') }}" alt="">
+        </div>
 
-        <div class="mayhen_invitation_gallery_wrap">
+        <div class="mayhen_invitation_album_grid mayhen_invitation_gallery_wrap">
             @for ($i = 1; $i <= 8; $i++)
-                <div class="mayhen_invitation_gallery_item mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
+                <div class="mayhen_invitation_album_item mayhen_invitation_gallery_item mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
                      data-lightbox-item="true" data-index="{{ $i }}">
                     <img src="{{ $galleryPhotos[$i] }}"
                          alt="Ảnh cưới {{ $i }}"
@@ -650,54 +696,62 @@
             @endfor
         </div>
 
-        <div class="mayhen_invitation_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
-            <div class="mayhen_invitation_modal_box">
-                <button type="button" class="mayhen_invitation_modal_close" aria-label="Đóng">✕</button>
-                <button type="button" class="mayhen_invitation_gallery_prev_btn mayhen_invitation_modal_nav mayhen_invitation_modal_nav--prev" aria-label="Ảnh trước">❮</button>
-                <img class="mayhen_invitation_modal_img" src="" alt="Ảnh phóng to">
-                <button type="button" class="mayhen_invitation_gallery_next_btn mayhen_invitation_modal_nav mayhen_invitation_modal_nav--next" aria-label="Ảnh tiếp">❯</button>
-            </div>
-        </div>
+        <button type="button" class="mayhen_invitation_album_more" data-open-album-popup="true">
+            <span class="mayhen_invitation_album_more__label">XEM THÊM</span>
+            <img class="mayhen_invitation_album_more__icon"
+                 src="{{ $resolveAsset('assets/icons/chevron-down.svg') }}" alt="">
+        </button>
     </section>
 
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
     {{-- ==================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR ==================== --}}
-    <section class="mayhen_invitation_section mayhen_invitation_gift" data-mayhen-section="gift">
+    <section class="mayhen_invitation_section mayhen_invitation_gift_section mayhen_invitation_gift" data-mayhen-section="gift">
 
-        <div class="mayhen_invitation_gift_kicker">Mừng Cưới</div>
-        <h2 class="mayhen_invitation_gift_title">Hộp Mừng Cưới</h2>
-        <p class="mayhen_invitation_gift_desc">
-            Thật vui vì được gặp và đón tiếp các bạn trong dịp đặc biệt như đám cưới của chúng tôi.
-        </p>
+        <div class="mayhen_invitation_gift_header">
+            <img class="mayhen_invitation_gift_icon"
+                 src="{{ $resolveAsset('assets/icons/gift-pouch.svg') }}" alt="Hộp Mừng Cưới">
+            <h3 class="mayhen_invitation_gift_title">Hộp Mừng Cưới</h3>
+            <p class="mayhen_invitation_gift_desc">
+                Thật vui vì được gặp và đón tiếp các bạn trong một dịp đặc biệt như đám cưới của chúng tôi.
+            </p>
+        </div>
 
         <div class="mayhen_invitation_gift_grid">
             {{-- QR Chú Rể --}}
-            <div class="mayhen_invitation_gift_card_groom mayhen_invitation_anim mayhen_invitation_anim--fadeInLeft">
-                <div class="mayhen_invitation_gift_role_groom">MỪNG CƯỚI ĐẾN<br>CHÚ RỂ</div>
-                <div class="mayhen_invitation_gift_qr_groom" data-lightbox-item="true">
+            <div class="mayhen_invitation_qr_card mayhen_invitation_gift_card_groom mayhen_invitation_anim mayhen_invitation_anim--fadeInLeft">
+                <h3 class="mayhen_invitation_qr_card__title mayhen_invitation_gift_role_groom">MỪNG CƯỚI ĐẾN<br>CHÚ RỂ</h3>
+                <div class="mayhen_invitation_qr_card__img_wrap mayhen_invitation_gift_qr_groom" data-lightbox-item="true">
                     <img src="{{ $qrGroomUrl }}" alt="QR Chú Rể" data-sync-target="qr_groom_image">
                 </div>
-                <p class="mayhen_invitation_gift_bank_info">
+                <p class="mayhen_invitation_qr_card__bank mayhen_invitation_gift_bank_info">
                     <span class="mayhen_invitation_gift_bank_name_groom" data-sync-target="groom_bank_name">{{ $groomBankName }}</span>:
                     <strong class="mayhen_invitation_gift_account_number_groom" data-sync-target="groom_bank_account">{{ $groomBankAccount }}</strong>
                 </p>
-                <p class="mayhen_invitation_gift_account_holder_groom" data-sync-target="groom_account_name">{{ $groomAccountName }}</p>
-                <button type="button" class="mayhen_invitation_copy_btn" data-copy="{{ $groomBankAccount }}">Sao chép STK</button>
+                <div style="font-size:11px; font-weight:700; color:var(--mayhen-invitation-text-charcoal); margin-top:2px;"
+                     class="mayhen_invitation_gift_account_holder_groom"
+                     data-sync-target="groom_account_name">{{ $groomAccountName }}</div>
+                <button type="button" class="mayhen_invitation_qr_card__btn mayhen_invitation_copy_btn" data-copy="{{ $groomBankAccount }}" style="border:none; cursor:pointer;">
+                    Sao chép STK
+                </button>
             </div>
 
             {{-- QR Cô Dâu --}}
-            <div class="mayhen_invitation_gift_card_bride mayhen_invitation_anim mayhen_invitation_anim--fadeInRight">
-                <div class="mayhen_invitation_gift_role_bride">MỪNG CƯỚI ĐẾN<br>CÔ DÂU</div>
-                <div class="mayhen_invitation_gift_qr_bride" data-lightbox-item="true">
+            <div class="mayhen_invitation_qr_card mayhen_invitation_gift_card_bride mayhen_invitation_anim mayhen_invitation_anim--fadeInRight">
+                <h3 class="mayhen_invitation_qr_card__title mayhen_invitation_gift_role_bride">MỪNG CƯỚI ĐẾN<br>CÔ DÂU</h3>
+                <div class="mayhen_invitation_qr_card__img_wrap mayhen_invitation_gift_qr_bride" data-lightbox-item="true">
                     <img src="{{ $qrBrideUrl }}" alt="QR Cô Dâu" data-sync-target="qr_bride_image">
                 </div>
-                <p class="mayhen_invitation_gift_bank_info">
+                <p class="mayhen_invitation_qr_card__bank mayhen_invitation_gift_bank_info">
                     <span class="mayhen_invitation_gift_bank_name_bride" data-sync-target="bride_bank_name">{{ $brideBankName }}</span>:
                     <strong class="mayhen_invitation_gift_account_number_bride" data-sync-target="bride_bank_account">{{ $brideBankAccount }}</strong>
                 </p>
-                <p class="mayhen_invitation_gift_account_holder_bride" data-sync-target="bride_account_name">{{ $brideAccountName }}</p>
-                <button type="button" class="mayhen_invitation_copy_btn" data-copy="{{ $brideBankAccount }}">Sao chép STK</button>
+                <div style="font-size:11px; font-weight:700; color:var(--mayhen-invitation-text-charcoal); margin-top:2px;"
+                     class="mayhen_invitation_gift_account_holder_bride"
+                     data-sync-target="bride_account_name">{{ $brideAccountName }}</div>
+                <button type="button" class="mayhen_invitation_qr_card__btn mayhen_invitation_copy_btn" data-copy="{{ $brideBankAccount }}" style="border:none; cursor:pointer;">
+                    Sao chép STK
+                </button>
             </div>
         </div>
     </section>
@@ -831,6 +885,16 @@
             <p class="mayhen_invitation_ending_text" data-sync-target="ending_text">{{ $endingText }}</p>
         </div>
     </section>
+
+    {{-- ==================== LIGHTBOX MODAL ==================== --}}
+    <div class="mayhen_invitation_modal_backdrop mayhen_invitation_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
+        <div class="mayhen_invitation_modal_box">
+            <button type="button" class="mayhen_invitation_modal_close" aria-label="Đóng">✕</button>
+            <button type="button" class="mayhen_invitation_modal_nav mayhen_invitation_modal_nav--prev" aria-label="Ảnh trước">❮</button>
+            <img class="mayhen_invitation_modal_img" src="" alt="Ảnh phóng to">
+            <button type="button" class="mayhen_invitation_modal_nav mayhen_invitation_modal_nav--next" aria-label="Ảnh tiếp">❯</button>
+        </div>
+    </div>
 
 </div>
 @endsection

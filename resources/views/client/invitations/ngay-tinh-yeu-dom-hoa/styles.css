@@ -1062,8 +1062,7 @@
     position: absolute;
     width: 30px;
     height: 32px;
-    top: 50%;
-    left: 50%;
+    top: 10%;
     transform: translate(-50%, -50%);
     z-index: -1;
     animation: mayhenPulse 1s infinite;
@@ -1902,4 +1901,230 @@
     .mayhen_invitation_anim {
         opacity: 1 !important;
     }
+}
+
+/* ==========================================================================
+   SECTION 6: LỊCH TRÌNH TIỆC CƯỚI (TIMELINE)
+   ========================================================================== */
+.mayhen_invitation_timeline {
+    width: 100%;
+    padding: 36px 20px;
+    text-align: center;
+}
+
+.mayhen_invitation_timeline_kicker {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-invitation-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_timeline_title {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mayhen-invitation-accent);
+    margin-bottom: 22px;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_invitation_timeline_card {
+    width: 100%;
+    background: #fffaf5;
+    border: 1px solid rgba(142, 1, 1, 0.22);
+    border-radius: 18px;
+    padding: 24px 16px;
+    box-shadow: 0 4px 18px rgba(142, 1, 1, 0.06);
+    position: relative;
+}
+
+.mayhen_invitation_timeline_list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+.mayhen_invitation_timeline_item {
+    display: grid;
+    grid-template-columns: 72px 42px 1fr;
+    align-items: center;
+    position: relative;
+    min-height: 64px;
+}
+
+.mayhen_invitation_timeline_time {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--mayhen-invitation-accent);
+    text-align: right;
+    padding-right: 8px;
+    letter-spacing: 0.04em;
+}
+
+.mayhen_invitation_timeline_col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+.mayhen_invitation_timeline_dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--mayhen-invitation-accent);
+    border: 1.5px solid #e2c08d;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(142, 1, 1, 0.28);
+}
+
+.mayhen_invitation_timeline_dot svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+}
+
+.mayhen_invitation_timeline_line {
+    position: absolute;
+    top: 50%;
+    bottom: -50%;
+    width: 2px;
+    background: linear-gradient(180deg, #e2c08d 0%, rgba(142, 1, 1, 0.3) 100%);
+    z-index: 1;
+}
+
+.mayhen_invitation_timeline_item:last-child .mayhen_invitation_timeline_line {
+    display: none;
+}
+
+.mayhen_invitation_timeline_text {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mayhen-invitation-text-dark);
+    padding-left: 8px;
+    text-align: left;
+}
+
+/* ==========================================================================
+   SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE)
+   ========================================================================== */
+.mayhen_invitation_dresscode {
+    width: 100%;
+    padding: 36px 20px;
+    text-align: center;
+}
+
+.mayhen_invitation_dresscode_kicker {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mayhen-invitation-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_dresscode_title {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mayhen-invitation-accent);
+    margin-bottom: 22px;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_invitation_dresscode_card {
+    width: 100%;
+    background: #fffaf5;
+    border: 1px solid rgba(142, 1, 1, 0.22);
+    border-radius: 18px;
+    padding: 24px 16px;
+    box-shadow: 0 4px 18px rgba(142, 1, 1, 0.06);
+    text-align: center;
+}
+
+.mayhen_invitation_dresscode_icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--mayhen-invitation-accent);
+    color: #e2c08d;
+    border: 1.5px solid #e2c08d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(142, 1, 1, 0.25);
+}
+
+.mayhen_invitation_dresscode_icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+}
+
+.mayhen_invitation_dresscode_swatches {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.mayhen_invitation_dresscode_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_invitation_dresscode_circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(142, 1, 1, 0.2);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.mayhen_invitation_dresscode_circle:hover {
+    transform: scale(1.12);
+    box-shadow: 0 6px 16px rgba(142, 1, 1, 0.35);
+}
+
+.mayhen_invitation_dresscode_label {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mayhen-invitation-text-dark);
+    letter-spacing: 0.02em;
+}
+
+.mayhen_invitation_dresscode_note {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 13px;
+    color: var(--mayhen-invitation-text-muted);
+    line-height: 1.6;
+    background: rgba(142, 1, 1, 0.04);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px dashed rgba(142, 1, 1, 0.35);
+    margin-top: 10px;
+    font-style: italic;
 }

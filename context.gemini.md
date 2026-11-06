@@ -3620,4 +3620,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+              131. **Chuẩn Hóa 10 Section Toàn Diện, Loại Bỏ Trùng Lặp Ảnh & Hoàn Thiện CSS Timeline/Dresscode Cho Mẫu `ngay-tinh-yeu-dom-hoa`**:
+                   - **Xóa bỏ triệt để trùng lặp ảnh ở Studio Tạo Thiệp**:
+                     1. *Bước 2 (Lời ngỏ)*: Bỏ hẳn field `wedding.extra_data.couple_banner_url`, đồng nhất sử dụng trường canonical duy nhất `wedding.extra_data.save_date_photo_url` ("Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)").
+                     2. *Bước 3 (Gia đình)*: Sửa key ảnh chân dung từ `wedding.groom_photo_url` / `wedding.bride_photo_url` thành `wedding.extra_data.groom_photo_url` và `wedding.extra_data.bride_photo_url` khớp 100% với Canonical `InvitationTemplateService`. Kết quả: Loại bỏ hoàn toàn 2 ô upload chân dung bị lặp lại ở cuối form.
+                     3. *Bước 1 (Trang bìa)*: Đồng bộ trường `slogan` canonical `wedding.extra_data.slogan`.
+                   - **Thiết kế lại hoàn chỉnh Section 6 (Lịch Trình Tiệc Cưới - Timeline)**:
+                     1. Cấu trúc HTML theo chuẩn Quiet Luxury: Khung thẻ `.mayhen_invitation_timeline_card` nền kem ivory viền đỏ son, các mốc thời gian căn phải trang trọng, cột mốc chứa chấm tròn viền vàng kim `#e2c08d` kèm SVG biểu tượng (Đón khách, Cử hành hôn lễ, Khai tiệc, Giao lưu), nối bằng đường line gradient vàng kim - đỏ son lung linh.
+                   - **Thiết kế lại hoàn chỉnh Section 7 (Gợi Ý Trang Phục - Dresscode)**:
+                     1. **Ẩn hoàn toàn chuỗi mã HEX thô thiển**: Ánh xạ mã màu sang tên màu tiếng Việt tinh tế (Vàng Champagne, Trắng Tinh Khôi, Xanh Đêm Sâu, Đen Huyền...).
+                     2. Thiết kế thẻ `.mayhen_invitation_dresscode_card` sang trọng, icon váy/áo lễ cưới hoàng gia, các ô swatch màu tròn 44px viền đôi trắng/vàng kim nổi 3D, hiệu ứng phóng to hover mượt mà và khung ghi chú trang phục viền nét đứt thanh lịch.
+                   - **Khôi phục 100% Giao diện Album & Hộp Mừng Cưới (Fix CSS Class Mapping & Lightbox Modal)**:
+                     1. *Album Hình Cưới*: Bổ sung đầy đủ hệ thống class gốc `.mayhen_invitation_album_section`, `.mayhen_invitation_album_header`, `.mayhen_invitation_album_title`, `.mayhen_invitation_album_ornament`, `.mayhen_invitation_album_grid` và `.mayhen_invitation_album_item`, khôi phục lưới 2 cột tỷ lệ chuẩn kèm hiệu ứng hover và nút xem thêm.
+                     2. *Hộp Mừng Cưới (VietQR)*: Khôi phục cấu trúc thẻ `.mayhen_invitation_gift_section`, `.mayhen_invitation_gift_grid`, `.mayhen_invitation_qr_card` với khung ảnh QR `.mayhen_invitation_qr_card__img_wrap` cố định kích thước 131x134px viền cong bo góc, ngăn ngừa mã QR bị phóng to tràn màn hình.
+                     3. *Sửa lỗi thanh đen `< >` che khuất giao diện*: Đưa khung Lightbox Modal xuống cuối trang và gắn đúng class `.mayhen_invitation_modal_backdrop` (có `display: none` mặc định), ngăn việc thanh điều khiển ảnh hiện đè lên giao diện.
+                   - **Kiểm thử**: Pest test 5/5 passed, render test đạt 127KB sạch sẽ không lỗi PHP, schema Studio chuẩn 10 bước không còn duplicate.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

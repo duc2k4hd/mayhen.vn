@@ -77,13 +77,13 @@
           "default": "/mau-thiep/ngay-tinh-yeu-dom-hoa/assets/images/hero-couple.webp"
         },
         {
-          "key": "wedding.extra_data.hero_slogan",
+          "key": "wedding.extra_data.slogan",
           "label": "Câu slogan mở màn",
           "type": "text",
           "required": false,
-          "default": "Kéo Xuống Để Xem Chi Tiết Thiệp Cưới",
-          "placeholder": "Ví dụ: Kéo Xuống Để Xem Chi Tiết Thiệp Cưới",
-          "max": 100
+          "default": "Hôn nhân không phải là nhìn nhau, mà là cùng nhau nhìn về một hướng.",
+          "placeholder": "Ví dụ: Giữa muôn ngàn vì sao, chúng ta đã tìm thấy nhau...",
+          "max": 150
         }
       ]
     },
@@ -131,8 +131,8 @@
           "max": 1000
         },
         {
-          "key": "wedding.extra_data.couple_banner_url",
-          "label": "Ảnh banner đôi uyên ương (Lời ngỏ)",
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)",
           "type": "image",
           "required": false,
           "default": "/mau-thiep/ngay-tinh-yeu-dom-hoa/assets/images/section2-couple-banner.webp"
@@ -148,7 +148,7 @@
       "fields": [
         {
           "key": "wedding.extra_data.groom_father",
-          "label": "Họ và tên Cha Chú Rể",
+          "label": "Họ tên Cha (Nhà Trai)",
           "type": "text",
           "required": false,
           "default": "Nguyễn Đắc Cường",
@@ -157,7 +157,7 @@
         },
         {
           "key": "wedding.extra_data.groom_mother",
-          "label": "Họ và tên Mẹ Chú Rể",
+          "label": "Họ tên Mẹ (Nhà Trai)",
           "type": "text",
           "required": false,
           "default": "Đặng Thị Hương",
@@ -175,7 +175,7 @@
         },
         {
           "key": "wedding.extra_data.bride_father",
-          "label": "Họ và tên Cha Cô Dâu",
+          "label": "Họ tên Cha (Nhà Gái)",
           "type": "text",
           "required": false,
           "default": "Nguyễn Đức Trí",
@@ -184,7 +184,7 @@
         },
         {
           "key": "wedding.extra_data.bride_mother",
-          "label": "Họ và tên Mẹ Cô Dâu",
+          "label": "Họ tên Mẹ (Nhà Gái)",
           "type": "text",
           "required": false,
           "default": "Bùi Thị Tầm",
@@ -201,8 +201,8 @@
           "max": 150
         },
         {
-          "key": "wedding.groom_photo_url",
-          "label": "Ảnh chân dung Chú rể",
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
           "type": "image",
           "required": false,
           "default": "/mau-thiep/ngay-tinh-yeu-dom-hoa/assets/images/groom-portrait.webp"
@@ -212,13 +212,13 @@
           "label": "Lời tự sự của Chú rể",
           "type": "textarea",
           "required": false,
-          "default": "Biết ơn Em về tất cả. Nguyện bên Em qua muôn nẻo đường phía trước, mình đồng hành cùng nhau đến mãi mãi về sau.",
+          "default": "Một chàng trai điềm đạm, chân thành và luôn sống trọn vẹn vì tình yêu thương gia đình.",
           "placeholder": "Nhập vài dòng giới thiệu bản thân...",
           "max": 300
         },
         {
-          "key": "wedding.bride_photo_url",
-          "label": "Ảnh chân dung Cô dâu",
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
           "type": "image",
           "required": false,
           "default": "/mau-thiep/ngay-tinh-yeu-dom-hoa/assets/images/bride-portrait.webp"
@@ -228,7 +228,7 @@
           "label": "Lời tự sự của Cô dâu",
           "type": "textarea",
           "required": false,
-          "default": "Hành trình trưởng thành của em thật đẹp khi có sự xuất hiện của Anh. Cùng nhau chúng ta khám phá thế giới kỳ diệu này anh nhé.",
+          "default": "Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.",
           "placeholder": "Nhập vài dòng giới thiệu bản thân...",
           "max": 300
         }
