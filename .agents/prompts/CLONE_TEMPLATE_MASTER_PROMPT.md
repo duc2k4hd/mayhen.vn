@@ -15,12 +15,12 @@ Bạn là **Senior Frontend Reverse-Engineering Engineer, Visual QA Engineer và
 | Thuộc tính | Giá trị |
 |---|---|
 | Nền tảng nhận mẫu | **Mây Hẹn — mayhen.vn** |
-| URL tham chiếu | `https://hwd.happyweddingday.vn/red-vip` |
-| Tên mẫu trên Mây Hẹn | **Hạnh Phúc Mang Tên Chúng Mình** |
-| Slug | `hanh-phuc-mang-ten-chung-minh` |
+| URL tham chiếu | `https://hwd.happyweddingday.vn/ever-vip` |
+| Tên mẫu trên Mây Hẹn | **Trọn Kiếp Này Bên Nhau** |
+| Slug | `tron-kiep-nay-ben-nhau` |
 | Bộ công nghệ | Laravel Blade, HTML5, CSS3, JavaScript ES Modules thuần |
-| Tệp ZIP đầu ra | **`Hạnh Phúc Mang Tên Chúng Mình.zip`** |
-| Thư mục gốc trong ZIP | `hanh-phuc-mang-ten-chung-minh/` |
+| Tệp ZIP đầu ra | **`Trọn Kiếp Này Bên Nhau.zip`** |
+| Thư mục gốc trong ZIP | `tron-kiep-nay-ben-nhau/` |
 
 ### MỆNH LỆNH TỐI CAO: SOURCE OF TRUTH = MẪU GỐC
 
@@ -376,8 +376,8 @@ Có thể thêm ảnh section/breakpoint. Nếu không chụp được ảnh ngu
 ## 10. CẤU TRÚC ZIP BẮT BUỘC
 
 ```text
-Hạnh Phúc Mang Tên Chúng Mình.zip
-└── hanh-phuc-mang-ten-chung-minh/
+Trọn Kiếp Này Bên Nhau.zip
+└── tron-kiep-nay-ben-nhau/
     ├── template.blade.php
     ├── styles.css
     ├── script.js
@@ -440,7 +440,7 @@ Không bỏ qua bước 8 để chuyển sang bước 10 chỉ vì giao diện �
 
 **Không chỉ in code vào chat.** Hãy trực tiếp tạo file trong môi trường có quyền ghi file và xuất:
 
-1. Link tải ZIP **`Hạnh Phúc Mang Tên Chúng Mình.zip`** chứa toàn bộ bộ mã nguồn, asset hợp lệ và tài liệu audit.
+1. Link tải ZIP **`Trọn Kiếp Này Bên Nhau.zip`** chứa toàn bộ bộ mã nguồn, asset hợp lệ và tài liệu audit.
 2. Bản preview/screenshot local tiêu biểu, nếu có thể thực thi browser.
 3. Tóm tắt: số section clone, số asset tải được/tổng số, số tài nguyên thiếu, tính năng đã chạy, tình trạng Studio integration và visual QA.
 4. Danh sách ngắn các điểm chưa giống/không hoàn thành, với lý do cụ thể và không che giấu hạn chế.
@@ -463,6 +463,6 @@ Không bỏ qua bước 8 để chuyển sang bước 10 chỉ vì giao diện �
 - [ ] RSVP và Signature có chức năng thực, không có ảnh cặp đôi trong hai phần đó.
 - [ ] Studio có thể thay ảnh cặp đôi, QR và nội dung khách hàng.
 - [ ] Đã so sánh screenshot nếu môi trường hỗ trợ, có báo cáo sai khác minh bạch.
-- [ ] Đã đóng và giải nén kiểm tra `Hạnh Phúc Mang Tên Chúng Mình.zip`.
+- [ ] Đã đóng và giải nén kiểm tra `Trọn Kiếp Này Bên Nhau.zip`.
 
 > **NHẮC LẠI CHO AI THỰC THI:** Người dùng **không cần một giao diện mới trông đẹp theo kiểu AI**. Người dùng cần **đúng thiết kế đã gửi từ A–Z**, chỉ thay phần cấu trúc mã nguồn để tương thích Mây Hẹn và bổ sung các chức năng bắt buộc theo phong cách gốc. **Không tự sáng tạo màu sắc, viền, font, shadow, animation, khung hoặc ảnh.**

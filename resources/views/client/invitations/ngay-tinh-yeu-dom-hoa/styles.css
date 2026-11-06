@@ -1,0 +1,1905 @@
+/* ==========================================================================
+   MÂY HẸN (MAYHEN.VN) — REFERENCE-LOCKED CLONE STYLESHEET (v2.0)
+   Source of Truth: https://hwd.happyweddingday.vn/red-vip
+   Template Name: Hạnh Phúc Mang Tên Chúng Mình (hanh-phuc-mang-ten-chung-minh)
+   Namespace: .mayhen_invitation_root / .mayhen_invitation_*
+   ========================================================================== */
+
+@font-face {
+    font-family: "MayhenScript";
+    src: url("assets/fonts/font-script.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenSerif";
+    src: url("assets/fonts/font-serif.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenSerif";
+    src: url("assets/fonts/font-serif-bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenDisplay";
+    src: url("assets/fonts/font-display.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenDisplay";
+    src: url("assets/fonts/font-display-bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenSans";
+    src: url("assets/fonts/font-sans.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenSans";
+    src: url("assets/fonts/font-sans-bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "MayhenCondensed";
+    src: url("assets/fonts/font-condensed.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    /* Exact measured color tokens from https://hwd.happyweddingday.vn/red-vip */
+    --mayhen-invitation-bg: #ffffff;
+    --mayhen-invitation-text: #000000;
+    --mayhen-invitation-text-dark: #181818;      /* rgb(24, 24, 24) */
+    --mayhen-invitation-text-charcoal: #252628;  /* rgb(37, 38, 40) */
+    --mayhen-invitation-text-muted: #444444;     /* rgb(68, 68, 68) */
+    --mayhen-invitation-accent: #8e0101;         /* rgb(142, 1, 1) - primary border, calendar header, RSVP button, ceremony date */
+    --mayhen-invitation-accent-bright: #b10000;  /* rgb(177, 0, 0) - map buttons, groom/bride portrait border */
+    --mayhen-invitation-accent-deep: #8d0808;    /* rgb(141, 8, 8) - countdown boxes, gift headings */
+    --mayhen-invitation-guest-red: #d11515;      /* rgb(209, 21, 21) - guest name highlight */
+    --mayhen-invitation-ring-red: #a80606;       /* rgb(168, 6, 6) - footer circle border */
+    --mayhen-invitation-door-wine: #801e2a;      /* #801E2A - floating music & scroll buttons */
+    --mayhen-invitation-gray-icon: #797171;      /* rgb(121, 113, 113) - gift pouch icon */
+    --mayhen-invitation-qr-btn-bg: #dedede;      /* rgb(222, 222, 222) - QR download button */
+    --mayhen-invitation-qr-border: #bfbfbf;      /* rgb(191, 191, 191) - QR frame border */
+
+    /* Self-hosted font stacks mapped to source font roles */
+    --mayhen-invitation-script-font: "MayhenScript", cursive, serif;
+    --mayhen-invitation-heading-font: "MayhenDisplay", Georgia, serif;
+    --mayhen-invitation-serif-font: "MayhenSerif", "Times New Roman", serif;
+    --mayhen-invitation-body-font: "MayhenSans", Arial, sans-serif;
+    --mayhen-invitation-condensed-font: "MayhenCondensed", Impact, sans-serif;
+}
+
+.mayhen_invitation_root,
+.mayhen_invitation_root *,
+.mayhen_invitation_root *::before,
+.mayhen_invitation_root *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mayhen_invitation_root {
+    width: 100%;
+    max-width: 420px;
+    margin-inline: auto;
+    position: relative;
+    background-color: var(--mayhen-invitation-bg);
+    color: var(--mayhen-invitation-text);
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    box-shadow: 0 0 28px rgba(0, 0, 0, 0.08);
+}
+
+/* Studio Embed Mode Protection ($isEmbed = true) */
+.mayhen_invitation_root--embed .mayhen_invitation_opening,
+.mayhen_invitation_root--embed .mayhen_invitation_open_text_wrap,
+.mayhen_invitation_root--embed .mayhen_invitation_music_hint {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ==========================================================================
+   0. CLOUD DOORS OPENING SCREEN & FLOATING CONTROLS (EXACT SOURCE CLONE)
+   ========================================================================== */
+.mayhen_invitation_opening {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.mayhen_invitation_cloud_door {
+    position: fixed;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    z-index: 9999;
+    background-image: url("assets/images/cloud-door-gate.webp");
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    transition: transform 4s ease-in-out;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.mayhen_invitation_cloud_door--left {
+    left: 0;
+    background-position: left center;
+}
+
+.mayhen_invitation_cloud_door--right {
+    right: 0;
+    background-position: right center;
+}
+
+.mayhen_invitation_root--opened .mayhen_invitation_cloud_door--left {
+    transform: translateX(-100%);
+    cursor: default;
+    pointer-events: none;
+}
+
+.mayhen_invitation_root--opened .mayhen_invitation_cloud_door--right {
+    transform: translateX(100%);
+    cursor: default;
+    pointer-events: none;
+}
+
+.mayhen_invitation_open_btn {
+    position: fixed;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: opacity 0.5s ease;
+}
+
+@media (min-width: 768px) {
+    .mayhen_invitation_open_btn {
+        top: 12%;
+    }
+}
+
+.mayhen_invitation_root--opened .mayhen_invitation_open_btn {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}
+
+.mayhen_invitation_open_btn__text {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+    letter-spacing: 2px;
+    font-family: var(--mayhen-invitation-script-font);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 192, 203, 0.6);
+    animation: mayhenPulseText 1.5s infinite;
+}
+
+/* Floating Music Button & Hint (#music-toggle, #music-hint) */
+.mayhen_invitation_music_hint {
+    position: fixed;
+    bottom: 78px;
+    left: 20px;
+    z-index: 10000;
+    background: var(--mayhen-invitation-door-wine);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: var(--mayhen-invitation-body-font);
+    animation: mayhenHintBounce 2s infinite;
+    box-shadow: 0 4px 14px rgba(128, 30, 42, 0.35), 0 0 18px rgba(128, 30, 42, 0.25);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.mayhen_invitation_music_hint::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 18px;
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: var(--mayhen-invitation-door-wine) transparent transparent transparent;
+}
+
+.mayhen_invitation_music_hint--hidden {
+    opacity: 0;
+    display: none;
+}
+
+.mayhen_invitation_music_toggle {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: var(--mayhen-invitation-door-wine);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(128, 30, 42, 0.35), 0 0 18px rgba(128, 30, 42, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.mayhen_invitation_music_toggle img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.mayhen_invitation_music_toggle--vibrating img {
+    animation: mayhenSpinIcon 4s linear infinite;
+}
+
+/* Floating Auto-Scroll Toggle (#scroll-toggle-btn) */
+.mayhen_invitation_scroll_toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
+    background: var(--mayhen-invitation-door-wine);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(128, 30, 42, 0.35), 0 0 18px rgba(128, 30, 42, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.mayhen_invitation_scroll_toggle--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mayhen_invitation_scroll_toggle img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.mayhen_invitation_scroll_toggle--scrolling img {
+    animation: mayhenSpinIcon 4s linear infinite;
+}
+
+/* Snowflakes Overlay (.snowflakes / .snowflake from source) */
+.mayhen_invitation_snowflakes {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+
+.mayhen_invitation_snowflake {
+    color: #ffffff;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #000000;
+    position: fixed;
+    top: -10%;
+    z-index: 9998;
+    user-select: none;
+    cursor: default;
+    animation-name: mayhenSnowflakesFall, mayhenSnowflakesShake;
+    animation-duration: 10s, 3s;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+}
+
+.mayhen_invitation_snowflake:nth-of-type(1) { left: 10%; font-size: 20px; animation-delay: 1s, 1s; }
+.mayhen_invitation_snowflake:nth-of-type(2) { left: 20%; animation-delay: 6s, 0.5s; }
+.mayhen_invitation_snowflake:nth-of-type(3) { left: 30%; font-size: 20px; animation-delay: 4s, 2s; }
+.mayhen_invitation_snowflake:nth-of-type(4) { left: 40%; animation-delay: 2s, 2s; }
+.mayhen_invitation_snowflake:nth-of-type(5) { left: 50%; font-size: 15px; animation-delay: 8s, 3s; }
+.mayhen_invitation_snowflake:nth-of-type(6) { left: 60%; font-size: 12px; animation-delay: 6s, 2s; }
+.mayhen_invitation_snowflake:nth-of-type(7) { left: 70%; font-size: 16px; animation-delay: 2.5s, 1s; }
+.mayhen_invitation_snowflake:nth-of-type(8) { left: 80%; font-size: 20px; animation-delay: 1s, 0s; }
+.mayhen_invitation_snowflake:nth-of-type(9) { left: 90%; font-size: 14px; animation-delay: 3s, 1.5s; }
+.mayhen_invitation_snowflake:nth-of-type(10) { left: 25%; font-size: 12px; animation-delay: 2s, 0s; }
+
+/* ==========================================================================
+   COMMON SECTION SHELL & PAPER BACKGROUND (#IMAGE7, #IMAGE111, etc.)
+   ========================================================================== */
+.mayhen_invitation_section {
+    position: relative;
+    width: 100%;
+    background-image: url("assets/images/bg-paper-texture.webp");
+    background-repeat: repeat-y;
+    background-size: 100% auto;
+    background-position: top center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Scroll Reveal Helper Classes Matching Source Keyframes */
+.mayhen_invitation_anim {
+    opacity: 0;
+}
+
+.mayhen_invitation_anim.mayhen_invitation_anim--active {
+    opacity: 1;
+    animation-fill-mode: both;
+}
+
+.mayhen_invitation_anim--fadeInDown.mayhen_invitation_anim--active {
+    animation: mayhenFadeInDown 2s ease both;
+}
+
+.mayhen_invitation_anim--bounceIn.mayhen_invitation_anim--active {
+    animation: mayhenBounceIn 2s ease both;
+}
+
+.mayhen_invitation_anim--fadeInUp.mayhen_invitation_anim--active {
+    animation: mayhenFadeInUp 1.4s ease both;
+}
+
+.mayhen_invitation_anim--fadeInLeft.mayhen_invitation_anim--active {
+    animation: mayhenFadeInLeft 1.6s ease both;
+}
+
+.mayhen_invitation_anim--fadeInRight.mayhen_invitation_anim--active {
+    animation: mayhenFadeInRight 1.6s ease both;
+}
+
+.mayhen_invitation_anim--bounceInLeft.mayhen_invitation_anim--active {
+    animation: mayhenBounceInLeft 2s ease both;
+}
+
+.mayhen_invitation_anim--bounceInRight.mayhen_invitation_anim--active {
+    animation: mayhenBounceInRight 2s ease both;
+}
+
+/* ==========================================================================
+   1. SECTION 1: HERO COVER (#SECTION1, height ~745.8px)
+   ========================================================================== */
+.mayhen_invitation_hero {
+    padding: 6px 10px 18px;
+}
+
+.mayhen_invitation_hero__subtitle {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-align: center;
+    width: 100%;
+}
+
+.mayhen_invitation_hero__couple {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: clamp(28px, 7.8vw, 33px);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-text);
+    text-align: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_hero__stage {
+    position: relative;
+    width: 100%;
+    max-width: 404px;
+    padding-top: 112px;
+    padding-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_invitation_hero__song_hy {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92px;
+    height: 92px;
+    z-index: 2;
+}
+
+.mayhen_invitation_hero__cloud_left,
+.mayhen_invitation_hero__cloud_right {
+    position: absolute;
+    top: 22px;
+    width: 96px;
+    height: 96px;
+    z-index: 2;
+}
+
+.mayhen_invitation_hero__cloud_left {
+    left: 16px;
+}
+
+.mayhen_invitation_hero__cloud_right {
+    right: 16px;
+}
+
+.mayhen_invitation_hero__photo_frame {
+    position: relative;
+    width: 75.2%;
+    max-width: 304.67px;
+    aspect-ratio: 304.67 / 457;
+    border: 8px solid var(--mayhen-invitation-accent);
+    overflow: hidden;
+    background: #f5f5f5;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.mayhen_invitation_hero__photo_frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_hero__bow_left,
+.mayhen_invitation_hero__bow_right {
+    position: absolute;
+    bottom: 2px;
+    width: 88.67px;
+    height: 88.67px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.mayhen_invitation_hero__bow_left {
+    left: 0;
+}
+
+.mayhen_invitation_hero__bow_right {
+    right: 0;
+}
+
+.mayhen_invitation_hero__scroll_cue {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    animation: mayhenBounce 3s infinite;
+}
+
+.mayhen_invitation_hero__scroll_text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text-charcoal);
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.mayhen_invitation_hero__scroll_icon {
+    width: 20.17px;
+    height: 33.2px;
+    margin-top: 2px;
+    animation: mayhenPulse 1s infinite;
+}
+
+/* ==========================================================================
+   2. SECTION 13: FAMILY & CEREMONY ANNOUNCEMENT (#SECTION13)
+   ========================================================================== */
+.mayhen_invitation_family_ceremony {
+    padding: 16px 18px 32px;
+}
+
+.mayhen_invitation_family_ceremony__crest_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.mayhen_invitation_family_ceremony__top_crest {
+    width: 109px;
+    height: 108px;
+    object-fit: contain;
+}
+
+.mayhen_invitation_family_ceremony__sub_crest {
+    width: 70px;
+    height: 70px;
+    margin-top: -18px;
+    object-fit: contain;
+}
+
+.mayhen_invitation_family_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 382.5px;
+    margin: 4px auto 20px;
+}
+
+.mayhen_invitation_family_col {
+    text-align: center;
+}
+
+.mayhen_invitation_family_col__title {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_family_col__parents {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_announce_heading {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_announce_couple {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_announce_couple__name {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: clamp(32px, 9.2vw, 40px);
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_announce_couple__amp {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_announce_photo {
+    width: 90.6%;
+    max-width: 348.17px;
+    aspect-ratio: 348.17 / 271;
+    border: 8px solid var(--mayhen-invitation-accent);
+    overflow: hidden;
+    margin: 0 auto 24px;
+    cursor: pointer;
+}
+
+.mayhen_invitation_announce_photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+}
+
+/* Ceremony Event Blocks (LỄ ĂN HỎI #GROUP179 & LỄ THÀNH HÔN #GROUP170) */
+.mayhen_invitation_ritual_block {
+    width: 100%;
+    max-width: 346.3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.mayhen_invitation_ritual_icon--rings {
+    width: 73px;
+    height: 73px;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_ritual_icon--couple {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_ritual_connector {
+    width: 16px;
+    height: 45px;
+    border-right: 3px solid var(--mayhen-invitation-accent);
+    border-bottom: 3px solid var(--mayhen-invitation-accent);
+    border-left: 3px solid var(--mayhen-invitation-accent);
+    margin: 8px auto 6px;
+}
+
+.mayhen_invitation_ritual_title {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_ritual_time {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-text-dark);
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_date_row {
+    display: grid;
+    grid-template-columns: 89px auto 89px;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 6px;
+}
+
+.mayhen_invitation_date_wing {
+    border-top: 1px solid var(--mayhen-invitation-accent);
+    border-right: 1px solid var(--mayhen-invitation-accent);
+    border-bottom: 1px solid var(--mayhen-invitation-accent);
+    padding: 6px 2px;
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-text-dark);
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_date_wing--black {
+    border-color: var(--mayhen-invitation-text);
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_date_daynum {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--mayhen-invitation-accent);
+    text-align: center;
+    min-width: 82px;
+}
+
+.mayhen_invitation_date_daynum--black {
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_ritual_lunar {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text-dark);
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_ritual_venue_box {
+    width: 100%;
+    min-height: 83px;
+    border: 3px solid var(--mayhen-invitation-accent);
+    border-radius: 6px;
+    background-color: transparent;
+    padding: 11px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mayhen_invitation_ritual_venue_label {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--mayhen-invitation-text-charcoal);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_ritual_venue_name {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--mayhen-invitation-accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   3. SECTION 4: PARTY INVITATION & MAPS (#SECTION4)
+   ========================================================================== */
+.mayhen_invitation_party_section {
+    padding: 21px 16px 32px;
+}
+
+.mayhen_invitation_party_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.mayhen_invitation_party_header__title {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--mayhen-invitation-text);
+    text-align: center;
+}
+
+.mayhen_invitation_party_header__swoosh {
+    width: 150px;
+    height: 10px;
+    margin-top: -2px;
+}
+
+.mayhen_invitation_triptych {
+    display: grid;
+    grid-template-columns: 1fr 1.12fr 1fr;
+    gap: 10px;
+    align-items: end;
+    width: 100%;
+    max-width: 358.3px;
+    margin: 0 auto 24px;
+}
+
+.mayhen_invitation_triptych__item {
+    width: 100%;
+    aspect-ratio: 110.83 / 154.97;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 15px 20px -12px #000000;
+    transition: transform 150ms linear;
+    cursor: pointer;
+}
+
+.mayhen_invitation_triptych__item--center {
+    aspect-ratio: 123.98 / 179.94;
+    transform: translateY(-18px);
+}
+
+.mayhen_invitation_triptych__item:hover {
+    transform: scale(1.02);
+}
+
+.mayhen_invitation_triptych__item--center:hover {
+    transform: translateY(-18px) scale(1.02);
+}
+
+.mayhen_invitation_triptych__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_guest_invite {
+    text-align: center;
+    width: 100%;
+    max-width: 384px;
+    margin-bottom: 18px;
+}
+
+.mayhen_invitation_guest_invite__label {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_guest_invite__name {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-guest-red);
+}
+
+.mayhen_invitation_guest_invite__desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_party_block {
+    width: 100%;
+    max-width: 333px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.mayhen_invitation_party_block__heading {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_party_block__time {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-text);
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_party_block__lunar {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_party_card {
+    width: 100%;
+    min-height: 220px;
+    border: 3px solid var(--mayhen-invitation-accent);
+    border-radius: 6px;
+    padding: 20px 12px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_invitation_party_card__label {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text-muted);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_party_card__venue {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-text);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 4px 0;
+}
+
+.mayhen_invitation_party_card__address {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--mayhen-invitation-text-muted);
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_map_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 38px;
+    background-color: var(--mayhen-invitation-accent-bright);
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 28px;
+    box-shadow: 0px 15px 20px -15px var(--mayhen-invitation-accent);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 150ms linear, background-color 150ms linear, color 150ms linear;
+}
+
+.mayhen_invitation_map_btn:hover {
+    transform: scale(1.02);
+    background-color: #ffffff;
+    color: var(--mayhen-invitation-accent);
+}
+
+.mayhen_invitation_party_divider {
+    width: 342.5px;
+    max-width: 92%;
+    height: 52px;
+    margin: 14px auto;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   4. SECTION 12: SAVE THE DATE CALENDAR, COUNTDOWN, RSVP & WISHES (#SECTION12)
+   ========================================================================== */
+.mayhen_invitation_calendar_rsvp {
+    padding: 20px 16px 28px;
+}
+
+.mayhen_invitation_std_title {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 30px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--mayhen-invitation-text);
+    letter-spacing: 2px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_calendar_wrap {
+    width: 100%;
+    max-width: 354.45px;
+    margin: 0 auto 22px;
+}
+
+.mayhen_invitation_calendar_month {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 25px;
+    line-height: 1.2;
+    color: var(--mayhen-invitation-text);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_calendar_weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+    height: 53px;
+    background-color: var(--mayhen-invitation-accent);
+    border: 3px solid var(--mayhen-invitation-accent);
+    border-radius: 3px 3px 0 0;
+    color: #ffffff;
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.mayhen_invitation_calendar_grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    min-height: 211px;
+    background-color: #ffffff;
+    border: 3px solid var(--mayhen-invitation-accent);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    padding: 10px 4px;
+    row-gap: 6px;
+    align-items: center;
+    justify-items: center;
+}
+
+.mayhen_invitation_calendar_cell {
+    width: 36px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 14px;
+    color: var(--mayhen-invitation-text);
+    z-index: 1;
+}
+
+.mayhen_invitation_calendar_cell--active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.mayhen_invitation_calendar_heart {
+    position: absolute;
+    width: 30px;
+    height: 32px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    animation: mayhenPulse 1s infinite;
+}
+
+/* Countdown Row with Left/Right Bow Ornaments (#GROUP160) */
+.mayhen_invitation_countdown_stage {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    padding-bottom: 42px;
+    margin: 0 auto 10px;
+}
+
+.mayhen_invitation_countdown_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 357px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_invitation_countdown_item {
+    height: 69.5px;
+    background-color: var(--mayhen-invitation-accent-deep);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+}
+
+.mayhen_invitation_countdown_num {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 33px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.mayhen_invitation_countdown_label {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.mayhen_invitation_countdown_bow {
+    position: absolute;
+    bottom: -8px;
+    width: 90px;
+    height: 97px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mayhen_invitation_countdown_bow--left {
+    left: -6px;
+}
+
+.mayhen_invitation_countdown_bow--right {
+    right: -6px;
+    transform: scaleX(-1);
+}
+
+/* RSVP Heading & Form (#GROUP164 & #FORM4) */
+.mayhen_invitation_rsvp_header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_rsvp_header__line {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 32px;
+    line-height: 1.3;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_rsvp_header__amp {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 37px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_rsvp_form {
+    width: 100%;
+    max-width: 358.12px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 14px;
+    color: var(--mayhen-invitation-text-muted);
+}
+
+.mayhen_invitation_form_control {
+    width: 100%;
+    height: 43.67px;
+    background-color: #ffffff;
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--mayhen-invitation-text-muted);
+}
+
+.mayhen_invitation_form_radio_box {
+    width: 100%;
+    min-height: 47px;
+    background-color: #ffffff;
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    gap: 14px;
+    align-items: center;
+}
+
+.mayhen_invitation_form_radio_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--mayhen-invitation-text-muted);
+}
+
+.mayhen_invitation_form_radio_label input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--mayhen-invitation-accent);
+}
+
+.mayhen_invitation_form_row_2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.mayhen_invitation_form_select {
+    width: 100%;
+    height: 38.21px;
+    background-color: #ffffff;
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    padding: 0 8px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--mayhen-invitation-text-muted);
+}
+
+.mayhen_invitation_form_textarea {
+    width: 100%;
+    height: 72.06px;
+    background-color: #ffffff;
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--mayhen-invitation-text-muted);
+    resize: none;
+}
+
+.mayhen_invitation_rsvp_submit {
+    width: 157.05px;
+    height: 43.67px;
+    margin: 4px auto 0;
+    background-color: var(--mayhen-invitation-accent);
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 20px;
+    box-shadow: 0px 15px 20px -15px var(--mayhen-invitation-accent);
+    color: #ffffff;
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 150ms linear, background-color 150ms linear, color 150ms linear;
+}
+
+.mayhen_invitation_rsvp_submit:hover {
+    transform: scale(1.03);
+    background-color: #fff3f3;
+    color: var(--mayhen-invitation-accent);
+}
+
+.mayhen_invitation_status_msg {
+    font-size: 13px;
+    text-align: center;
+    min-height: 18px;
+    color: var(--mayhen-invitation-accent);
+    font-weight: 700;
+}
+
+/* Standalone Wishes Feed (#HTML_CODE3 / #wish-standalone-container) */
+.mayhen_invitation_wishes_container {
+    width: 100%;
+    max-width: 360.41px;
+    height: 250px;
+    margin: 10px auto 22px;
+    overflow-y: auto;
+    position: relative;
+    border: 1px dashed #cccccc;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    font-family: var(--mayhen-invitation-serif-font);
+    padding: 20px;
+}
+
+.mayhen_invitation_wish_item {
+    margin-bottom: 26px;
+    text-align: center;
+}
+
+.mayhen_invitation_wish_message {
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 6px;
+    color: #333333;
+}
+
+.mayhen_invitation_wish_name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #555555;
+}
+
+/* ==========================================================================
+   MÂY HẸN MANDATORY FEATURE: SIGNATURE CANVAS (STYLES DERIVED FROM #FORM4)
+   Rule F1: Strictly ZERO couple/person photos in Signature/RSVP
+   ========================================================================== */
+.mayhen_invitation_signature_box {
+    width: 100%;
+    max-width: 358.12px;
+    margin: 6px auto 0;
+    background-color: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    padding: 14px 12px;
+    text-align: center;
+}
+
+.mayhen_invitation_signature_title {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 28px;
+    color: var(--mayhen-invitation-text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_signature_sub {
+    font-size: 13px;
+    color: var(--mayhen-invitation-text-muted);
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_signature_canvas_wrap {
+    width: 100%;
+    height: 160px;
+    background-color: #ffffff;
+    border: 1px dashed var(--mayhen-invitation-accent);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_signature_canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.mayhen_invitation_signature_controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_invitation_sig_btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 20px;
+    border: 1px solid var(--mayhen-invitation-accent);
+    background-color: #ffffff;
+    color: var(--mayhen-invitation-accent);
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mayhen_invitation_sig_btn--primary {
+    background-color: var(--mayhen-invitation-accent);
+    color: #ffffff;
+}
+
+.mayhen_invitation_signature_preview_list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.mayhen_invitation_signature_thumb {
+    width: 104px;
+    height: 54px;
+    border: 1px dashed #cccccc;
+    border-radius: 4px;
+    background: #ffffff;
+    padding: 3px;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   5. SECTION 9: GROOM & BRIDE PROFILES (#SECTION9, height ~647px)
+   ========================================================================== */
+.mayhen_invitation_couple_section {
+    padding: 14px 20px 28px;
+}
+
+.mayhen_invitation_couple_quote {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 26px;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-accent);
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.mayhen_invitation_profile_row {
+    display: grid;
+    grid-template-columns: 181.1px 1fr;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 24px;
+}
+
+.mayhen_invitation_profile_row--bride {
+    grid-template-columns: 1fr 181.1px;
+    margin-bottom: 0;
+}
+
+.mayhen_invitation_profile_photo {
+    width: 181.1px;
+    height: 236.65px;
+    border: 5px solid var(--mayhen-invitation-accent-bright);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.mayhen_invitation_profile_photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_profile_text {
+    text-align: center;
+    padding: 0 4px;
+}
+
+.mayhen_invitation_profile_role {
+    font-family: var(--mayhen-invitation-condensed-font);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-accent);
+}
+
+.mayhen_invitation_profile_name {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 36px;
+    line-height: 1.3;
+    color: var(--mayhen-invitation-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_profile_bio {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+}
+
+@media (max-width: 390px) {
+    .mayhen_invitation_profile_row,
+    .mayhen_invitation_profile_row--bride {
+        grid-template-columns: 1fr 1fr;
+    }
+    .mayhen_invitation_profile_photo {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 181.1 / 236.65;
+    }
+}
+
+/* ==========================================================================
+   6. SECTION 6: ALBUM HÌNH CƯỚI (#SECTION6, height ~1210.96px)
+   ========================================================================== */
+.mayhen_invitation_album_section {
+    padding: 16px 28px 24px;
+}
+
+.mayhen_invitation_album_header {
+    width: 100%;
+    max-width: 353px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.mayhen_invitation_album_title {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 25px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+    text-align: left;
+}
+
+.mayhen_invitation_album_ornament {
+    width: 135px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.mayhen_invitation_album_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 11px;
+    width: 100%;
+    max-width: 352.78px;
+}
+
+.mayhen_invitation_album_item {
+    width: 100%;
+    aspect-ratio: 170.83 / 256.24;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0px 15px 20px -15px #000000;
+    cursor: pointer;
+    transition: transform 150ms linear;
+}
+
+.mayhen_invitation_album_item:hover {
+    transform: scale(1.02);
+}
+
+.mayhen_invitation_album_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_album_more {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.mayhen_invitation_album_more__label {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text-charcoal);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_album_more__icon {
+    width: 20.17px;
+    height: 33.2px;
+    animation: mayhenFadeInDown 2s infinite;
+}
+
+/* ==========================================================================
+   7. SECTION 11: HỘP MỪNG CƯỚI QR (#SECTION11, height ~465px)
+   ========================================================================== */
+.mayhen_invitation_gift_section {
+    padding: 28px 24px 28px;
+    background-color: #ffffff;
+}
+
+.mayhen_invitation_gift_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 371px;
+    margin-bottom: 16px;
+}
+
+.mayhen_invitation_gift_icon {
+    width: 65px;
+    height: 65px;
+    animation: mayhenTada 1.5s infinite;
+}
+
+.mayhen_invitation_gift_title {
+    font-family: var(--mayhen-invitation-heading-font);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--mayhen-invitation-accent-deep);
+    text-decoration: underline;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_gift_desc {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text);
+}
+
+.mayhen_invitation_gift_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+    width: 100%;
+    max-width: 350.63px;
+}
+
+.mayhen_invitation_qr_card {
+    min-height: 222.77px;
+    background-color: #ffffff;
+    border: 1px dashed var(--mayhen-invitation-text-charcoal);
+    border-radius: 8px;
+    padding: 8px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    transition: background-color 150ms linear, transform 150ms linear;
+}
+
+.mayhen_invitation_qr_card:hover {
+    background-color: rgb(236, 226, 232);
+    transform: scale(1.02);
+}
+
+.mayhen_invitation_qr_card__title {
+    font-family: var(--mayhen-invitation-body-font);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--mayhen-invitation-accent-deep);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_qr_card__img_wrap {
+    width: 131.42px;
+    height: 134.21px;
+    border: 1px solid var(--mayhen-invitation-qr-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.mayhen_invitation_qr_card__img_wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_qr_card__bank {
+    font-size: 11px;
+    color: var(--mayhen-invitation-text-charcoal);
+    line-height: 1.3;
+}
+
+.mayhen_invitation_qr_card__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64.37px;
+    height: 19.54px;
+    padding: 0 10px;
+    background-color: var(--mayhen-invitation-qr-btn-bg);
+    border-radius: 35px;
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 11px;
+    color: var(--mayhen-invitation-text-charcoal);
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   8. SECTION 7: THANK YOU FOOTER (#SECTION7, height ~413.47px)
+   ========================================================================== */
+.mayhen_invitation_footer_section {
+    padding: 12px 20px 36px;
+    text-align: center;
+}
+
+.mayhen_invitation_footer_ornament {
+    width: 128.65px;
+    height: 69.62px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_footer_names {
+    font-family: var(--mayhen-invitation-script-font);
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--mayhen-invitation-text-charcoal);
+    margin-bottom: 14px;
+}
+
+.mayhen_invitation_footer_circle_stage {
+    position: relative;
+    width: 202.22px;
+    height: 268px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_invitation_footer_circle {
+    width: 202.22px;
+    height: 202.22px;
+    border: 2px solid var(--mayhen-invitation-ring-red);
+    border-radius: 200px;
+    overflow: hidden;
+    animation: mayhenPulse 3s infinite;
+    cursor: pointer;
+}
+
+.mayhen_invitation_footer_circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_footer_thankyou_img {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180.83px;
+    height: 97.65px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   9. POPUPS & LIGHTBOX (#SECTION_POPUP: #CODAU, #CHURE, #ALBUM, #lightbox-screen)
+   ========================================================================== */
+.mayhen_invitation_modal_backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.mayhen_invitation_modal_backdrop--active {
+    display: flex;
+}
+
+.mayhen_invitation_modal_box {
+    position: relative;
+    width: 100%;
+    max-width: 389px;
+    background: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+}
+
+.mayhen_invitation_modal_close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.mayhen_invitation_modal_img {
+    width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+    background: #111111;
+}
+
+.mayhen_invitation_modal_nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.mayhen_invitation_modal_nav--prev { left: 10px; }
+.mayhen_invitation_modal_nav--next { right: 10px; }
+
+/* ==========================================================================
+   10. KEYFRAMES (EXACT SOURCE ANIMATIONS + REDUCED MOTION SUPPORT)
+   ========================================================================== */
+@keyframes mayhenPulseText {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+@keyframes mayhenHintBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes mayhenSpinIcon {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mayhenSnowflakesFall {
+    0% { top: -10%; }
+    100% { top: 100%; }
+}
+
+@keyframes mayhenSnowflakesShake {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(80px); }
+}
+
+@keyframes mayhenFadeInDown {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mayhenFadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mayhenFadeInLeft {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mayhenFadeInRight {
+    0% { opacity: 0; transform: translateX(20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mayhenBounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes mayhenBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-16px); }
+    60% { transform: translateY(-8px); }
+}
+
+@keyframes mayhenPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes mayhenBounceInLeft {
+    0% { opacity: 0; transform: translateX(-120px); }
+    60% { opacity: 1; transform: translateX(15px); }
+    80% { transform: translateX(-6px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mayhenBounceInRight {
+    0% { opacity: 0; transform: translateX(120px); }
+    60% { opacity: 1; transform: translateX(-15px); }
+    80% { transform: translateX(6px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mayhenTada {
+    0%, 100% { transform: scale(1) rotate(0); }
+    10%, 20% { transform: scale(0.92) rotate(-3deg); }
+    30%, 50%, 70%, 90% { transform: scale(1.08) rotate(3deg); }
+    40%, 60%, 80% { transform: scale(1.08) rotate(-3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_invitation_root *,
+    .mayhen_invitation_root *::before,
+    .mayhen_invitation_root *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .mayhen_invitation_anim {
+        opacity: 1 !important;
+    }
+}

@@ -3595,4 +3595,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+              130. **Tích Hợp Mẫu Thiệp Cưới `ngay-tinh-yeu-dom-hoa` — Quiet Luxury Đỏ Son, Thư Pháp**:
+                   - **Nguồn gốc**: Clone và chuẩn hóa từ `D:\File\Templates Mây Hẹn\Ngày Tình Yêu Đơm Hoa\`, lấy cảm hứng từ `https://hwd.happyweddingday.vn/red-vip`.
+                   - **Phong cách**: Đỏ Son Truyền Thống, Thư Pháp, Song Hỷ, Quiet Luxury. Màu chủ đạo `#8e0101`.
+                   - **Slug chính thức**: `ngay-tinh-yeu-dom-hoa`.
+                   - **Thư mục template**: `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/`.
+                   - **Assets 100% local**: 27 ảnh `.webp`, 8 font `.woff2`, 8 icon `.svg` trong thư mục `assets/`.
+                   - **Đặc thù kỹ thuật khác biệt so với các mẫu còn lại**:
+                     1. **8 Section** (không đủ 10): Mẫu này không có Section Timeline và Dresscode riêng. Đây là đặc thù thiết kế hợp lệ — Dresscode tích hợp vào Section Story/Family, Timeline tích hợp vào Section Events.
+                     2. **Album 8 ảnh** (không phải 10): Key ánh xạ dùng `gallery_photo_1` đến `gallery_photo_8` (số nguyên, không phải `gallery.0`..`gallery.9`).
+                     3. **Lễ Ăn Hỏi riêng biệt**: Có thêm `engagement_date`, `engagement_time`, `engagement_location`, `engagement_address_map` cho Section Lễ Ăn Hỏi — khác với mẫu `giua-muon-ngan-vi-sao`.
+                     4. **Ảnh đặc thù**: `couple_banner_url` (ảnh banner ngang), `triptych_left/center/right_url` (bộ 3 ảnh nghệ thuật), `footer_photo_url` (ảnh tròn cuối thiệp).
+                     5. **Script.js đọc endpoint** từ `data-rsvp-endpoint` và `data-signature-endpoint` trên `.mayhen_invitation_root` — tuân thủ đúng chuẩn, không hardcode URL.
+                     6. **Animation**: `snowflakes-falling-red` — hoa tuyết đỏ rơi trên nền Đỏ Son.
+                   - **Cơ sở dữ liệu**: Insert bản ghi vào `invitation_templates` với `is_active=1`, `is_featured=1`, `category='luxury'`, `tier='free'`.
+                   - **Kiểm thử**: Render thành công 118KB, không lỗi PHP, 8 section BEM đầy đủ.
+                   - **Files thay đổi**:
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php` (tạo mới — `@extends`, `$wedding->...`, `$extraData[...]`, `$resolveAsset`, `data-sync-target`, `$isEmbed`)
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/styles.css` (copy từ nguồn — 1905 dòng)
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/script.js` (copy từ nguồn — sửa comment dòng 4 slug)
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/assets/` (27 webp, 8 woff2, 8 svg)
+                   - **Preview URL**: `/xem-thu/ngay-tinh-yeu-dom-hoa`
+                   - **Thumbnail**: `/mau-thiep/ngay-tinh-yeu-dom-hoa/assets/images/hero-couple.webp`
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
