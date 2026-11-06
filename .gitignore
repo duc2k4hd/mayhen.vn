@@ -40,6 +40,11 @@ Thumbs.db
 !/tests/Feature/CheckoutAuthorizationTest.php
 !/tests/Feature/GalleryRenderTest.php
 !/tests/Feature/BottomNavTest.php
+!/tests/Feature/CanonicalTemplateSectionsTest.php
+!/tests/Feature/NetMucTinhYeuTemplateTest.php
+!/tests/Feature/InvitationEditorDataSyncTest.php
+!/tests/Feature/HacBachTraoDuyen2ResponsiveTest.php
+!/tests/Feature/HacBachTraoDuyenTemplateTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
