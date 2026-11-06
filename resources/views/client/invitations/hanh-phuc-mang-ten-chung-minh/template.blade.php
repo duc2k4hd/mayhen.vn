@@ -9,8 +9,38 @@
 
     $data = $data ?? [];
     $extraData = $wedding->extra_data ?? [];
+    foreach ($extraData as $key => $value) {
+        if ($value === null && !in_array($key, ['gallery', 'timeline', 'dresscode_colors'], true) && !str_ends_with($key, '_url') && !str_ends_with($key, '_image')) {
+            $extraData[$key] = '';
+        }
+    }
 
     $resolveAsset = function (string $filename, ?string $customUrl = null) use ($slug, $assetBase) {
+        $customUrl = trim((string) $customUrl);
+        if (str_starts_with($customUrl, 'data:')) {
+            if (preg_match('#^data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$#D', $customUrl, $matches)) {
+                $decoded = base64_decode($matches[2], true);
+                $image = $decoded === false ? false : @getimagesizefromstring($decoded);
+                if ($image !== false && ($image['mime'] ?? '') === 'image/' . $matches[1]) {
+                    return $customUrl;
+                }
+            }
+            if (preg_match('#^data:image/svg\+xml;(base64|utf8),(.+)$#Ds', $customUrl, $matches)) {
+                $svg = $matches[1] === 'base64' ? base64_decode($matches[2], true) : rawurldecode($matches[2]);
+                $document = new \DOMDocument();
+                if (is_string($svg) && !str_contains(strtoupper($svg), '<!DOCTYPE') && @$document->loadXML($svg, LIBXML_NONET)) {
+                    $xpath = new \DOMXPath($document);
+                    $unsafe = $xpath->query('//*[not(local-name()="svg" or local-name()="g" or local-name()="rect" or local-name()="path" or local-name()="circle" or local-name()="text" or local-name()="tspan" or local-name()="defs" or local-name()="clipPath" or local-name()="polygon" or local-name()="polyline" or local-name()="line" or local-name()="ellipse")] | //@*[starts-with(translate(local-name(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "on") or local-name()="href" or local-name()="style"]');
+                    if ($document->documentElement?->localName === 'svg' && $unsafe->length === 0) {
+                        return $customUrl;
+                    }
+                }
+            }
+            $customUrl = '';
+        }
+        if (preg_match('#^[a-z][a-z0-9+.-]*:#i', $customUrl) && !preg_match('#^https?://#i', $customUrl)) {
+            $customUrl = '';
+        }
         if (!empty($customUrl)) {
             return $customUrl;
         }
@@ -43,6 +73,14 @@
     $weddingYear = $data['wedding_year'] ?? ($extraData['wedding_year'] ?? '2026');
     $weddingLunarDate = $data['wedding_lunar_date'] ?? ($extraData['wedding_lunar_date'] ?? '(Tức ngày 14 tháng 10 năm Bính Ngọ)');
     $calendarMonthYear = $data['calendar_month_year'] ?? ($extraData['calendar_month_year'] ?? "Tháng {$weddingMonth}/{$weddingYear}");
+    if (isset($wedding->wedding_date)) {
+        $weddingDate = \Carbon\Carbon::parse($wedding->wedding_date);
+        $weddingDateDigits = $weddingDate->format('d.m.Y');
+        $weddingDay = $weddingDate->format('d');
+        $weddingMonth = $weddingDate->format('m');
+        $weddingYear = $weddingDate->format('Y');
+        $calendarMonthYear = "Tháng {$weddingMonth}/{$weddingYear}";
+    }
 
     // 4. Lễ Ăn Hỏi & Lễ Thành Hôn
     $engagementTime = $data['engagement_time'] ?? ($extraData['engagement_time'] ?? '08:00');
@@ -164,6 +202,7 @@
             <button type="button" class="mayhen_invitation_open_btn" aria-label="Chạm để mở thiệp">
                 <span class="mayhen_invitation_wax_seal">
                     <img src="{{ $resolveAsset('wax-seal.svg') }}" alt="Tem sáp niêm phong Mây Hẹn">
+                    <span class="mayhen_invitation_wax_initials" data-mayhen-wax-monogram></span>
                 </span>
                 <span class="mayhen_invitation_open_hint">Chạm Để Mở Thiệp</span>
             </button>

@@ -79,42 +79,24 @@ class InvitationEditorController extends Controller
      */
     public function store(Request $request): JsonResponse|RedirectResponse
     {
+        $request->validate(array_merge(
+            ['wedding' => 'nullable|array'],
+            $this->weddingInputRules('wedding.'),
+            $this->weddingInputRules(''),
+        ));
         $templateId = (int) $request->input('template_id');
         $template = InvitationTemplate::findOrFail($templateId);
 
         // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
         $rawWedding = $request->input('wedding', []);
         if (empty($rawWedding) && $request->has('groom_name')) {
-            $rawWedding = [
-                'groom_name' => $request->input('groom_name'),
-                'bride_name' => $request->input('bride_name'),
-                'groom_parents' => $request->input('groom_parents'),
-                'bride_parents' => $request->input('bride_parents'),
-                'wedding_date' => $request->input('wedding_date'),
-                'venue_name' => $request->input('venue_name'),
-                'venue_address' => $request->input('venue_address'),
-                'story' => $request->input('story'),
-                'cover_photo_url' => $request->input('cover_photo_url'),
-                'music_url' => $request->input('music_url'),
-                'bank_name' => $request->input('bank_name'),
-                'bank_account_number' => $request->input('bank_account_number'),
-                'bank_account_name' => $request->input('bank_account_name'),
-                'extra_data' => $request->input('extra_data', []),
-            ];
+            $rawWedding = array_intersect_key($request->all(), array_flip([
+                'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
+                'wedding_date', 'venue_name', 'venue_address', 'story',
+                'cover_photo_url', 'music_url', 'bank_name',
+                'bank_account_number', 'bank_account_name', 'extra_data',
+            ]));
         }
-
-        // Khử toàn diện chuỗi URL tạm thời blob: tránh lưu vào database
-        $sanitizeBlobs = function (mixed $value) use (&$sanitizeBlobs): mixed {
-            if (is_array($value)) {
-                return array_map($sanitizeBlobs, $value);
-            }
-            if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
-                return null;
-            }
-
-            return $value;
-        };
-        $rawWedding = $sanitizeBlobs($rawWedding);
 
         $extraData = (array) ($rawWedding['extra_data'] ?? []);
 
@@ -388,12 +370,12 @@ class InvitationEditorController extends Controller
      */
     public function autosave(Request $request): JsonResponse
     {
-        $request->validate([
+        $request->validate(array_merge([
             'invitation_id' => 'required|integer|exists:invitations,id',
             'revision_id' => 'required|integer|min:0',
             'draft_config' => 'nullable|array',
             'wedding_delta' => 'nullable|array',
-        ]);
+        ], $this->weddingInputRules('wedding_delta.')));
 
         $invitation = Invitation::with('wedding')->findOrFail((int) $request->input('invitation_id'));
 
@@ -417,6 +399,47 @@ class InvitationEditorController extends Controller
         }
 
         return response()->json($result, 200);
+    }
+
+    /** @return array<string, string> */
+    private function weddingInputRules(string $prefix): array
+    {
+        $rules = [
+            'groom_name' => 'sometimes|required|string|max:255',
+            'bride_name' => 'sometimes|required|string|max:255',
+            'wedding_date' => 'sometimes|required|date_format:Y-m-d',
+            'groom_parents' => 'nullable|string|max:1000',
+            'bride_parents' => 'nullable|string|max:1000',
+            'venue_name' => 'nullable|string|max:255',
+            'venue_address' => 'nullable|string|max:3000',
+            'story' => 'nullable|string|max:10000',
+            'cover_photo_url' => 'nullable|string',
+            'music_url' => 'nullable|string|max:500',
+            'bank_name' => 'nullable|string|max:100',
+            'bank_account_number' => 'nullable|string|max:50',
+            'bank_account_name' => 'nullable|string|max:100',
+            'extra_data' => 'nullable|array',
+            'extra_data.gallery' => 'nullable|array|max:20',
+            'extra_data.gallery.*' => 'nullable|string',
+            'extra_data.timeline' => 'nullable|array|max:10',
+            'extra_data.timeline.*' => 'nullable|array',
+            'extra_data.timeline.*.title' => 'nullable|string|max:255',
+            'extra_data.timeline.*.time' => 'nullable|string|max:100',
+        ];
+        foreach ([
+            'groom_father', 'groom_mother', 'bride_father', 'bride_mother',
+            'event_party_address', 'party_venue', 'party_time', 'event_party_time',
+            'groom_bank_account', 'bride_bank_account',
+        ] as $field) {
+            $rules['extra_data.'.$field] = 'nullable|string';
+        }
+
+        $prefixed = [];
+        foreach ($rules as $field => $rule) {
+            $prefixed[$prefix.$field] = $rule;
+        }
+
+        return $prefixed;
     }
 
     /**

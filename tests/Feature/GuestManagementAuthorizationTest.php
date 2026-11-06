@@ -133,6 +133,80 @@ test('autosave accepts the current revision and increments it', function () {
     expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
 });
 
+test('autosave merges partial gallery and timeline edits without losing other entries', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'autosave-list-merge');
+    $invitation->wedding->update(['extra_data' => [
+        'gallery' => ['/storage/first.webp', '/storage/second.webp', '/storage/third.webp'],
+        'timeline' => [
+            ['time' => '08:00', 'title' => 'Đón khách'],
+            ['time' => '09:00', 'title' => 'Lễ cưới'],
+        ],
+        'other' => 'Giữ lại',
+    ]]);
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding_delta' => ['extra_data' => [
+            'gallery' => [1 => '/storage/new.webp'],
+            'timeline' => [1 => ['title' => 'Khai tiệc']],
+        ]],
+    ])->assertOk();
+
+    expect($invitation->wedding->fresh()->extra_data)->toBe([
+        'gallery' => ['/storage/first.webp', '/storage/new.webp', '/storage/third.webp'],
+        'timeline' => [
+            ['time' => '08:00', 'title' => 'Đón khách'],
+            ['time' => '09:00', 'title' => 'Khai tiệc'],
+        ],
+        'other' => 'Giữ lại',
+    ]);
+});
+
+test('autosave supports explicit clearing of a gallery entry and an entire timeline', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'autosave-list-clear');
+    $invitation->wedding->update(['extra_data' => [
+        'gallery' => ['/storage/first.webp', '/storage/second.webp'],
+        'timeline' => [['time' => '08:00', 'title' => 'Đón khách']],
+    ]]);
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding_delta' => ['extra_data' => ['gallery' => [1 => ''], 'timeline' => []]],
+    ])->assertOk();
+
+    expect($invitation->wedding->fresh()->extra_data)->toBe([
+        'gallery' => ['/storage/first.webp', null],
+        'timeline' => [],
+    ]);
+});
+
+test('autosave does not replace stored images with temporary blob urls', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'autosave-pending-image');
+    $invitation->wedding->update(['extra_data' => [
+        'gallery' => ['/storage/first.webp', '/storage/second.webp'],
+        'hero_photo_url' => '/storage/hero.webp',
+    ]]);
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding_delta' => ['extra_data' => [
+            'gallery' => [1 => 'blob:pending'],
+            'hero_photo_url' => 'blob:pending',
+        ]],
+    ])->assertOk();
+
+    expect($invitation->wedding->fresh()->extra_data)->toBe([
+        'gallery' => ['/storage/first.webp', '/storage/second.webp'],
+        'hero_photo_url' => '/storage/hero.webp',
+    ]);
+});
+
 test('saving an existing invitation rejects a missing or mismatched revision', function (?int $revision) {
     $owner = User::factory()->create();
     $invitation = makeGuestManagementInvitation($owner, 'manual-revision-conflict');
@@ -182,6 +256,81 @@ test('saving an invitation owned by someone else does not create another invitat
     expect($invitation->wedding->fresh()->groom_name)->toBe('Minh');
 });
 
+test('manual saves preserve omitted album and timeline entries and clear explicit values', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'manual-partial-lists');
+    $invitation->wedding->update([
+        'cover_photo_url' => '/storage/cover.webp',
+        'story' => 'Câu chuyện cũ',
+        'extra_data' => [
+            'gallery' => ['/storage/first.webp', '/storage/second.webp', '/storage/third.webp'],
+            'timeline' => [
+                ['time' => '08:00', 'title' => 'Đón khách'],
+                ['time' => '09:00', 'title' => 'Lễ cưới'],
+            ],
+            'other' => 'Giữ lại',
+        ],
+    ]);
+
+    $this->actingAs($owner)->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding' => [
+            'story' => null,
+            'cover_photo_url' => 'blob:pending',
+            'extra_data' => [
+                'gallery' => [1 => '/storage/new.webp', 2 => null],
+                'timeline' => [1 => ['title' => 'Khai tiệc']],
+            ],
+        ],
+    ])->assertOk();
+
+    $wedding = $invitation->wedding->fresh();
+    expect($wedding->story)->toBeNull()
+        ->and($wedding->cover_photo_url)->toBe('/storage/cover.webp')
+        ->and($wedding->extra_data)->toBe([
+            'gallery' => ['/storage/first.webp', '/storage/new.webp', null],
+            'timeline' => [
+                ['time' => '08:00', 'title' => 'Đón khách'],
+                ['time' => '09:00', 'title' => 'Khai tiệc'],
+            ],
+            'other' => 'Giữ lại',
+        ]);
+
+    $this->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding' => ['extra_data' => ['gallery' => [], 'timeline' => []]],
+    ])->assertOk();
+
+    expect($invitation->wedding->fresh()->extra_data)->toBe([
+        'gallery' => [], 'timeline' => [], 'other' => 'Giữ lại',
+    ]);
+});
+
+test('manual save publishes autosaved settings and discards the superseded config draft', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'manual-promotes-draft');
+    $invitation->update([
+        'custom_config' => ['palette' => 'cream', 'layout' => 'original'],
+        'draft_config' => ['palette' => 'rose', 'sections_hidden' => ['dresscode']],
+    ]);
+
+    $this->actingAs($owner)->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'wedding' => ['groom_name' => 'Tuấn'],
+        'invitation' => ['custom_config' => ['palette' => 'sage']],
+    ])->assertOk();
+
+    expect($invitation->fresh()->custom_config)->toBe([
+        'palette' => 'sage', 'layout' => 'original', 'sections_hidden' => ['dresscode'],
+    ])->and($invitation->fresh()->draft_config)->toBeNull();
+});
+
 test('an anonymous owner can save an invitation with the correct revision', function () {
     $invitation = makeGuestManagementInvitation(User::factory()->create(), 'manual-session-owner');
 
@@ -215,4 +364,107 @@ test('a manual save invalidates an older autosave revision', function () {
     ])->assertStatus(409);
 
     expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn');
+});
+
+test('shared wedding edits invalidate stale sibling invitation saves', function (string $saveMode) {
+    $owner = User::factory()->create();
+    $first = makeGuestManagementInvitation($owner, 'shared-revision-first');
+    $sibling = Invitation::create([
+        'wedding_id' => $first->wedding_id,
+        'template_id' => $first->template_id,
+        'slug' => 'shared-revision-sibling',
+    ]);
+    $staleRevision = $sibling->fresh()->revision_id;
+    $this->actingAs($owner);
+
+    $payload = [
+        'invitation_id' => $first->id,
+        'revision_id' => $first->fresh()->revision_id,
+    ];
+    if ($saveMode === 'manual') {
+        $payload['template_id'] = $first->template_id;
+        $payload['wedding'] = ['groom_name' => 'Tuấn'];
+        $routeName = 'invitation.store';
+    } else {
+        $payload['wedding_delta'] = ['groom_name' => 'Tuấn'];
+        $routeName = 'invitation.autosave';
+    }
+    $this->postJson(route($routeName), $payload)->assertOk();
+
+    expect($sibling->fresh()->revision_id)->toBe($staleRevision + 1);
+    $payload['invitation_id'] = $sibling->id;
+    $payload['revision_id'] = $staleRevision;
+    if ($saveMode === 'manual') {
+        $payload['wedding'] = ['groom_name' => 'Minh'];
+        $this->postJson(route($routeName), $payload)->assertUnprocessable()->assertJsonValidationErrors('revision_id');
+    } else {
+        $payload['wedding_delta'] = ['groom_name' => 'Minh'];
+        $this->postJson(route($routeName), $payload)->assertConflict();
+    }
+    expect($first->wedding->fresh()->groom_name)->toBe('Tuấn');
+})->with(['manual', 'autosave']);
+
+test('config-only autosaves keep sibling wedding revisions valid', function () {
+    $owner = User::factory()->create();
+    $first = makeGuestManagementInvitation($owner, 'config-only-first');
+    $sibling = Invitation::create([
+        'wedding_id' => $first->wedding_id,
+        'template_id' => $first->template_id,
+        'slug' => 'config-only-sibling',
+    ]);
+    $revision = $sibling->fresh()->revision_id;
+
+    $this->actingAs($owner)->postJson(route('invitation.autosave'), [
+        'invitation_id' => $first->id,
+        'revision_id' => $first->fresh()->revision_id,
+        'draft_config' => ['palette' => 'sage'],
+    ])->assertOk();
+
+    expect($sibling->fresh()->revision_id)->toBe($revision);
+});
+
+test('studio saves reject malformed wedding values without changing stored data', function (string $mode, array|string $wedding, string $field) {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'invalid-wedding-input');
+    $revision = $invitation->fresh()->revision_id;
+    $payload = ['invitation_id' => $invitation->id, 'revision_id' => $revision];
+    $prefix = $mode === 'manual' ? 'wedding' : 'wedding_delta';
+    $payload[$prefix] = $wedding;
+    if ($mode === 'manual') {
+        $payload['template_id'] = $invitation->template_id;
+    }
+
+    $this->actingAs($owner)->postJson(route($mode === 'manual' ? 'invitation.store' : 'invitation.autosave'), $payload)
+        ->assertUnprocessable()->assertJsonValidationErrors($prefix.($field === '' ? '' : '.'.$field));
+
+    expect($invitation->fresh()->revision_id)->toBe($revision)
+        ->and($invitation->wedding->fresh()->groom_name)->toBe('Minh')
+        ->and($invitation->wedding->fresh()->wedding_date->format('Y-m-d'))->toBe('2027-01-01');
+})->with(['manual', 'autosave'])->with([
+    'invalid shape' => ['invalid', ''],
+    'empty date' => [['wedding_date' => ''], 'wedding_date'],
+    'invalid date' => [['wedding_date' => '2027-02-31'], 'wedding_date'],
+    'null groom' => [['groom_name' => null], 'groom_name'],
+    'array bride' => [['bride_name' => ['invalid']], 'bride_name'],
+    'array cover' => [['cover_photo_url' => ['invalid']], 'cover_photo_url'],
+    'invalid gallery' => [['extra_data' => ['gallery' => 'invalid']], 'extra_data.gallery'],
+    'invalid parent' => [['extra_data' => ['groom_father' => ['invalid']]], 'extra_data.groom_father'],
+    'invalid timeline title' => [['extra_data' => ['timeline' => [['title' => ['invalid']]]]], 'extra_data.timeline.0.title'],
+    'invalid timeline time' => [['extra_data' => ['timeline' => [['time' => ['invalid']]]]], 'extra_data.timeline.0.time'],
+]);
+
+test('partial legacy manual saves preserve unsubmitted required wedding fields', function () {
+    $owner = User::factory()->create();
+    $invitation = makeGuestManagementInvitation($owner, 'legacy-partial-save');
+
+    $this->actingAs($owner)->postJson(route('invitation.store'), [
+        'template_id' => $invitation->template_id,
+        'invitation_id' => $invitation->id,
+        'revision_id' => $invitation->fresh()->revision_id,
+        'groom_name' => 'Tuấn',
+    ])->assertOk();
+
+    expect($invitation->wedding->fresh()->groom_name)->toBe('Tuấn')
+        ->and($invitation->wedding->fresh()->bride_name)->toBe('An')
+        ->and($invitation->wedding->fresh()->wedding_date->format('Y-m-d'))->toBe('2027-01-01');
 });

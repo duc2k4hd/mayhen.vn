@@ -1122,6 +1122,7 @@
     window.__mayhenSyncInput = handleSyncInput;
 
     window.addEventListener('message', function(event) {
+        if (event.origin !== window.location.origin || (event.source !== window.parent && event.source !== window)) return;
         if (!event.data || typeof event.data !== 'object') return;
         var data = event.data;
 
@@ -1130,68 +1131,6 @@
             handleSyncInput(data.key, data.value);
         }
 
-        // 2. Đồng bộ Bảng Màu (Theme Palette Live Switcher)
-        if (data.type === 'MAYHEN_CHANGE_THEME') {
-            var palette = data.palette;
-            if (palette) {
-                var styleEl = document.getElementById('mayhen_live_custom_style');
-                if (!styleEl) {
-                    styleEl = document.createElement('style');
-                    styleEl.id = 'mayhen_live_custom_style';
-                    document.head.appendChild(styleEl);
-                }
-
-                var css = ':root {' +
-                    (palette.bg ? '--paper: ' + palette.bg + ' !important; --paper-dim: ' + palette.bg + ' !important; --mayhen_bg_warm: ' + palette.bg + ' !important;' : '') +
-                    (palette.text ? '--ink: ' + palette.text + ' !important; --mayhen_ink: ' + palette.text + ' !important;' : '') +
-                    (palette.accent ? '--border: ' + palette.accent + ' !important; --mayhen_gold: ' + palette.accent + ' !important; --mayhen_gold_soft: ' + palette.accent + ' !important;' : '') +
-                    (palette.primary ? '--primary: ' + palette.primary + ' !important; --primary-dark: ' + palette.primary + ' !important;' : '') +
-                '}';
-                styleEl.textContent = css;
-            }
-        }
-
-        // 3. Đồng bộ Con Dấu Sáp Mở Thiệp
-        if (data.type === 'MAYHEN_UPDATE_WAX_SEAL') {
-            var waxColor = data.color || (data.wax_seal && data.wax_seal.color);
-            var waxMonogram = data.monogram || (data.wax_seal && data.wax_seal.monogram);
-
-            if (waxColor) {
-                document.querySelectorAll('.mayhen_invitation_wax_seal, [class*="wax_seal"]').forEach(function(el) {
-                    el.style.background = 'radial-gradient(circle at 35% 35%, ' + waxColor + ', ' + waxColor + 'cc 70%, #1c1917 100%)';
-                });
-            }
-
-            if (waxMonogram !== undefined) {
-                document.querySelectorAll('.mayhen_invitation_wax_initials, [class*="wax_initials"]').forEach(function(el) {
-                    el.textContent = waxMonogram;
-                });
-            }
-        }
-
-        // 4. Sắp xếp thứ tự Section & Ẩn/Hiện
-        if (data.type === 'MAYHEN_REORDER_SECTIONS') {
-            var order = data.order || [];
-            var hidden = data.sections_hidden || data.hidden || [];
-
-            var container = document.querySelector('[data-mayhen-section-container]') ||
-                            document.querySelector('.mayhen_invitation_ladi_wraper') ||
-                            document.getElementById('mayhen_invitation_main_content');
-
-            if (container && order.length > 0) {
-                order.forEach(function(secId) {
-                    var el = document.querySelector('[data-mayhen-section="' + secId + '"]');
-                    if (el && el.parentNode === container) {
-                        container.appendChild(el);
-                    }
-                });
-            }
-
-            document.querySelectorAll('[data-mayhen-section]').forEach(function(secEl) {
-                var secId = secEl.getAttribute('data-mayhen-section');
-                secEl.style.display = (hidden.indexOf(secId) !== -1) ? 'none' : '';
-            });
-        }
 
         // 5. Cuộn tới Section theo Tab Stepper đang chọn (10 Section Tiêu Chuẩn)
         if (data.type === 'MAYHEN_SCROLL_TO_SECTION') {

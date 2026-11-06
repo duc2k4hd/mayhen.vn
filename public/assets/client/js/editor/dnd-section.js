@@ -18,12 +18,17 @@ export class SectionDnDManager {
         this.dropIndicator = null;
         this.startY = 0;
         this.isDragging = false;
+        this.defaultSectionOrder = Array.from(this.listEl?.querySelectorAll('.mayhen_editor_section_card') || [])
+            .map((card) => card.getAttribute('data-section-id'));
 
         this.init();
     }
 
     init() {
         if (!this.listEl) return;
+
+        this.renderFromState();
+        this.store.subscribe(() => this.renderFromState());
 
         // Tạo sẵn thanh drop indicator
         this.dropIndicator = document.createElement('div');
@@ -38,6 +43,32 @@ export class SectionDnDManager {
 
         // Lắng nghe các nút hành động (Ẩn/Hiện, Mũi tên Lên/Xuống)
         this.listEl.addEventListener('click', (e) => this.handleClickAction(e));
+    }
+
+    renderFromState() {
+        if (!this.listEl || this.isDragging) return;
+        const config = this.store.getState().custom_config || {};
+        const hidden = new Set(Array.isArray(config.sections_hidden) ? config.sections_hidden : []);
+        const cards = Array.from(this.listEl.querySelectorAll('.mayhen_editor_section_card'));
+        cards.forEach((card) => {
+            card.classList.toggle('is-hidden', hidden.has(card.getAttribute('data-section-id')));
+        });
+        const order = Array.isArray(config.sections_order) && config.sections_order.length
+            ? config.sections_order : this.defaultSectionOrder;
+        const byId = new Map(cards.map((card) => [card.getAttribute('data-section-id'), card]));
+        const ordered = [];
+        order.forEach((id) => {
+            const card = byId.get(id);
+            if (card) {
+                ordered.push(card);
+                byId.delete(id);
+            }
+        });
+        ordered.push(...byId.values());
+        ordered.forEach((card, index) => {
+            const current = this.listEl.children[index];
+            if (current !== card) this.listEl.insertBefore(card, current || null);
+        });
     }
 
     handlePointerDown(e) {
@@ -189,10 +220,10 @@ export class SectionDnDManager {
         const msg = { type, ...payload };
         try {
             if (this.previewIframe && this.previewIframe.contentWindow) {
-                this.previewIframe.contentWindow.postMessage(msg, '*');
+                this.previewIframe.contentWindow.postMessage(msg, window.location.origin);
             }
             if (this.mobileIframe && this.mobileIframe.contentWindow) {
-                this.mobileIframe.contentWindow.postMessage(msg, '*');
+                this.mobileIframe.contentWindow.postMessage(msg, window.location.origin);
             }
         } catch (err) {
             // Cross-origin safety

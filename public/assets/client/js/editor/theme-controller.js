@@ -70,6 +70,9 @@ export class ThemeController {
     }
 
     init() {
+        this.renderFromState();
+        this.store.subscribe(() => this.renderFromState());
+
         // 1. Lắng nghe chọn bảng màu
         if (this.paletteGrid) {
             this.paletteGrid.addEventListener('click', (e) => {
@@ -102,6 +105,21 @@ export class ThemeController {
                 const monogram = e.target.value.toUpperCase().slice(0, 4);
                 this.setSealMonogram(monogram);
             });
+        }
+    }
+
+    renderFromState() {
+        const config = this.store.getState().custom_config || {};
+        const paletteId = config.theme?.palette_id;
+        this.paletteGrid?.querySelectorAll('.mayhen_editor_palette_card').forEach((card) => {
+            card.classList.toggle('active', Boolean(paletteId) && card.getAttribute('data-palette-id') === paletteId);
+        });
+        const seal = config.wax_seal || {};
+        this.sealSwatches?.querySelectorAll('.mayhen_editor_seal_btn').forEach((button) => {
+            button.classList.toggle('active', Boolean(seal.color) && button.getAttribute('data-seal-color') === seal.color);
+        });
+        if (this.sealInput && document.activeElement !== this.sealInput) {
+            this.sealInput.value = seal.monogram ?? '';
         }
     }
 
@@ -196,10 +214,10 @@ export class ThemeController {
         const msg = { type, ...payload };
         try {
             if (this.previewIframe?.contentWindow) {
-                this.previewIframe.contentWindow.postMessage(msg, '*');
+                this.previewIframe.contentWindow.postMessage(msg, window.location.origin);
             }
             if (this.mobileIframe?.contentWindow) {
-                this.mobileIframe.contentWindow.postMessage(msg, '*');
+                this.mobileIframe.contentWindow.postMessage(msg, window.location.origin);
             }
         } catch (err) {
             // Safety

@@ -9,6 +9,7 @@ import { ActionTypes } from '../editor/actions.js';
 import { TemplateSwitcher } from '../editor/template-switcher.js';
 import { SectionDnDManager } from '../editor/dnd-section.js';
 import { ThemeController } from '../editor/theme-controller.js';
+import { applyWeddingDraft, mirrorWeddingInput } from '../editor/draft-recovery.js';
 
 const initEditor = () => {
     const mainForm = $('#mayhen_editor_form');
@@ -255,7 +256,8 @@ const initEditor = () => {
     let draftWeddingData = null;
     let draftCustomConfig = null;
     let restoringTransfer = false;
-    const restoredFieldKeys = new Set();
+    let restoredFieldKeys = new Set();
+    let recoveryRaw = null;
     try {
         const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
         const skipTransferredDraft = sessionStorage.getItem('mayhen_skip_transferred_draft') === '1';
@@ -265,6 +267,7 @@ const initEditor = () => {
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
                 draftCustomConfig = parsed.custom_config;
+                recoveryRaw = transferredDraftRaw;
                 restoringTransfer = true;
                 store.autosaver.isRestoringTransfer = true;
             }
@@ -276,88 +279,37 @@ const initEditor = () => {
         if (localDraft && localDraft.wedding) {
             // Chỉ nạp localDraft nếu đúng mẫu thiệp hiện tại hoặc đang chỉnh sửa thiệp đã lưu
             const isSameTemplate = localDraft.template_slug === templateSlug;
-            const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
+            const hasData = Object.keys(EditorStore.flattenWeddingFields(localDraft.wedding)).length > 0;
             if (hasData && (isSameTemplate || invitationId)) {
                 draftWeddingData = localDraft.wedding;
                 draftCustomConfig = localDraft.custom_config;
+                recoveryRaw = JSON.stringify(localDraft);
+                store.autosaver.isRestoringTransfer = true;
             }
         }
     }
 
     let transferRecoveryFailed = false;
     try {
-    if (draftWeddingData) {
-        if (draftCustomConfig && typeof draftCustomConfig === 'object' && !Array.isArray(draftCustomConfig)) {
-            store.dispatch({ type: ActionTypes.UPDATE_CUSTOM_CONFIG, payload: draftCustomConfig });
-            if (customConfigInput) customConfigInput.value = JSON.stringify(store.getState().custom_config);
+        if (draftWeddingData) {
+            const restored = applyWeddingDraft(mainForm, draftWeddingData, store.getState().wedding);
+            restoredFieldKeys = restored.restoredKeys;
+            if (draftCustomConfig && typeof draftCustomConfig === 'object' && !Array.isArray(draftCustomConfig)) {
+                store.dispatch({ type: ActionTypes.UPDATE_CUSTOM_CONFIG, payload: draftCustomConfig });
+                if (customConfigInput) customConfigInput.value = JSON.stringify(store.getState().custom_config);
+            }
+            store.dispatch({ type: ActionTypes.UPDATE_WEDDING, payload: restored.wedding });
+            if (restoringTransfer) {
+                transferRecoveryFailed = !store.autosaver.finishTransferRecovery();
+            } else {
+                store.autosaver.isRestoringTransfer = false;
+                if (!store.autosaver.saveToLocalStorage(store.getState(), true)) throw new Error('Cannot preserve restored local draft');
+                store.autosaver.schedule();
+            }
         }
-        Object.keys(draftWeddingData).forEach(key => {
-            const val = draftWeddingData[key];
-            if (val === undefined || val === null) return;
-
-            // Xử lý nếu val là mảng (như mảng gallery ảnh cưới)
-            if (Array.isArray(val)) {
-                val.forEach((itemVal, itemIdx) => {
-                    if (typeof itemVal !== 'string') return;
-                    const isUserUpload = itemVal.startsWith('data:image') || itemVal.includes('/storage/') || itemVal.includes('/uploads/');
-                    if (!isUserUpload) return; // Giữ nguyên ảnh mẫu mặc định
-
-                    const itemKey = `${key}.${itemIdx}`;
-                    const inputEl = document.querySelector(`[data-sync-key="${itemKey}"]`) ||
-                                    document.querySelector(`[data-sync-key="wedding.${itemKey}"]`) ||
-                                    document.querySelector(`[data-sync-key="wedding.extra_data.${itemKey}"]`);
-                    if (inputEl) {
-                        inputEl.value = itemVal;
-                        if (inputEl.id) {
-                            const thumb = document.getElementById('preview_thumb_' + inputEl.id);
-                            if (thumb) thumb.src = itemVal;
-                        }
-                    }
-                });
-                return;
-            }
-
-            const inputEl = document.querySelector(`[data-sync-key="${key}"]`) ||
-                            document.querySelector(`[data-sync-key="wedding.${key}"]`) ||
-                            document.querySelector(`[data-sync-key="wedding.extra_data.${key}"]`);
-            if (inputEl) {
-                // Quản lý ảnh: Khi load tạo thiệp, hiển thị 100% ảnh của mẫu.
-                // CHỈ ghi đè khi khách hàng đã thực sự tự tải ảnh lên (data:image/... hoặc link upload cá nhân)
-                if (isImageKey(key) && typeof val === 'string') {
-                    const isUserUpload = val.startsWith('data:image') || val.includes('/storage/') || val.includes('/uploads/');
-                    if (!isUserUpload) {
-                        // Nếu là đường dẫn ảnh tĩnh mẫu thì bỏ qua, không ghi đè lên ảnh mặc định của template hiện tại
-                        return;
-                    }
-                }
-
-                inputEl.value = val;
-                restoredFieldKeys.add(inputEl.getAttribute('data-sync-key'));
-
-                // Đồng bộ thẻ xem trước ảnh bên trái (preview thumb)
-                if (inputEl.id) {
-                    const thumb = document.getElementById('preview_thumb_' + inputEl.id);
-                    if (thumb && val && !isBannedExternalUrl(val)) {
-                        if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('data:')) {
-                            thumb.src = val;
-                        } else if (templateSlug) {
-                            const cleanVal = val.replace(/^assets\//, '').replace(/^\/+/, '');
-                            thumb.src = `/mau-thiep/${templateSlug}/assets/${cleanVal}`;
-                        }
-                    }
-                }
-            }
-
-            store.dispatch({
-                type: ActionTypes.UPDATE_FIELD,
-                payload: { key: key.startsWith('wedding.') ? key : `wedding.${key}`, value: val }
-            });
-        });
-    }
-    if (restoringTransfer && !store.autosaver.finishTransferRecovery()) transferRecoveryFailed = true;
     } catch (error) {
-        if (!restoringTransfer) throw error;
         store.autosaver.failTransferRecovery();
+        if (!restoringTransfer) store.autosaver.protectedLocalDraft = { key: store.autosaver.getDraftKey(store.getState()), raw: recoveryRaw };
         transferRecoveryFailed = true;
         console.warn('[Editor] Transfer recovery failed:', error);
     }
@@ -381,7 +333,7 @@ const initEditor = () => {
         }
         download?.addEventListener('click', () => {
             try {
-                const url = URL.createObjectURL(new Blob([store.autosaver.validatedTransferDraft.raw], { type: 'application/json;charset=utf-8' }));
+                const url = URL.createObjectURL(new Blob([recoveryRaw], { type: 'application/json;charset=utf-8' }));
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = `mayhen-ban-nhap-${invitationId || 'moi'}.json`;
@@ -429,6 +381,9 @@ const initEditor = () => {
                 case 'offline':
                     saveText.textContent = 'Đang lưu ngoại tuyến';
                     break;
+                case 'storage_error':
+                    saveText.textContent = 'Chưa lưu được trên thiết bị';
+                    break;
                 default:
                     saveText.textContent = 'Đã sẵn sàng';
             }
@@ -450,16 +405,10 @@ const initEditor = () => {
 
         // Nếu là action Undo hoặc Redo, cập nhật ngược lại các input trên DOM
         if (action.type === ActionTypes.UNDO || action.type === ActionTypes.REDO) {
-            const wedding = state.wedding;
-            Object.keys(wedding).forEach(prop => {
-                const val = wedding[prop];
-                const inputEl = document.querySelector(`[data-sync-key="wedding.${prop}"]`);
-                if (inputEl && inputEl.value !== val) {
-                    inputEl.value = val !== undefined && val !== null ? val : '';
-                }
-            });
-            syncAllFieldsToIframe(previewIframe);
-            syncAllFieldsToIframe(mobileIframe);
+            const restored = applyWeddingDraft(mainForm, state.wedding, {}, document, { authoritative: true, templateSlug });
+            restoredFieldKeys = restored.restoredKeys;
+            syncAllFieldsToIframe(previewIframe, true);
+            syncAllFieldsToIframe(mobileIframe, true);
             updateDockNames();
         }
     });
@@ -783,6 +732,7 @@ const initEditor = () => {
             // TUYỆT ĐỐI KHÔNG can thiệp hoặc gán đè target.value trong sự kiện input
             // để bảo vệ trọn vẹn bộ gõ tiếng Việt (Unikey/EVKey/Windows IME) không bị nuốt chữ hay nhảy con trỏ.
             const val = target.value;
+            mirrorWeddingInput(mainForm, target);
 
             // Dispatch vào State Store
             store.dispatch({
@@ -911,7 +861,7 @@ const initEditor = () => {
     }
 
     // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form, bảng màu và thứ tự bố cục sang iframe
-    const syncAllFieldsToIframe = (iframeEl) => {
+    const syncAllFieldsToIframe = (iframeEl, authoritative = false) => {
         if (!iframeEl || !iframeEl.contentWindow) return;
         const inputs = $$('[data-sync-key]');
         inputs.forEach(inp => {
@@ -923,7 +873,7 @@ const initEditor = () => {
                 // Các ảnh tĩnh mẫu thì iframe đã tự render sẵn ảnh mẫu đặc trưng của chính nó, không gửi đè tránh vỡ ảnh
                 if (isImageKey(key) && typeof val === 'string') {
                     const isUserUpload = val.startsWith('data:image') || val.includes('/storage/') || val.includes('/uploads/');
-                    if (!isUserUpload) {
+                    if (!isUserUpload && !authoritative) {
                         return;
                     }
                 }
@@ -935,14 +885,14 @@ const initEditor = () => {
         const customConfig = state.custom_config || {};
 
         // Đồng bộ Bảng màu (Theme Palette)
-        if (customConfig.theme && customConfig.theme.palette_id) {
+        if ((customConfig.theme && customConfig.theme.palette_id) || authoritative) {
             dispatchToIframes(
                 null,
                 [],
                 {
                     type: 'MAYHEN_CHANGE_THEME',
-                    palette_id: customConfig.theme.palette_id,
-                    palette: customConfig.theme,
+                    palette_id: customConfig.theme?.palette_id || '',
+                    palette: customConfig.theme || {},
                 }
             );
         }
@@ -1035,24 +985,28 @@ const initEditor = () => {
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    let w = img.naturalWidth;
-                    let h = img.naturalHeight;
+                    try {
+                        let w = img.naturalWidth;
+                        let h = img.naturalHeight;
 
-                    // Giới hạn kích thước tối đa giữ nguyên tỷ lệ
-                    if (w > maxWidth || h > maxHeight) {
-                        const ratio = Math.min(maxWidth / w, maxHeight / h);
-                        w = Math.round(w * ratio);
-                        h = Math.round(h * ratio);
+                        // Giới hạn kích thước tối đa giữ nguyên tỷ lệ
+                        if (w > maxWidth || h > maxHeight) {
+                            const ratio = Math.min(maxWidth / w, maxHeight / h);
+                            w = Math.round(w * ratio);
+                            h = Math.round(h * ratio);
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve(dataUrl);
+                    } catch (error) {
+                        reject(error);
                     }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-
-                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                    resolve(dataUrl);
                 };
                 img.onerror = reject;
                 img.src = e.target.result;
@@ -1122,6 +1076,7 @@ const initEditor = () => {
     const openCropperModal = (imageSource, targetObj) => {
         const img = new Image();
         img.onload = () => {
+            if (!store.isCurrentMedia(targetObj.mediaKey, targetObj.mediaToken)) return;
             activeCropperTarget = {
                 ...targetObj,
                 img: img,
@@ -1145,6 +1100,10 @@ const initEditor = () => {
                 renderCropper();
             });
         };
+        img.onerror = () => {
+            store.finishMedia(targetObj.mediaKey, targetObj.mediaToken);
+            URL.revokeObjectURL(imageSource);
+        };
         img.src = imageSource;
     };
 
@@ -1161,6 +1120,10 @@ const initEditor = () => {
                 activeCropperTarget.status.textContent = 'Đã hủy chọn ảnh';
                 activeCropperTarget.status.style.color = 'var(--mayhen-color-text-muted)';
             }
+        }
+        if (activeCropperTarget) {
+            store.finishMedia(activeCropperTarget.mediaKey, activeCropperTarget.mediaToken);
+            URL.revokeObjectURL(activeCropperTarget.objectUrl);
         }
         activeCropperTarget = null;
     };
@@ -1260,49 +1223,57 @@ const initEditor = () => {
     if (cropperConfirmBtn) {
         on(cropperConfirmBtn, 'click', () => {
             if (!activeCropperTarget || !activeCropperTarget.img) return;
+            if (!store.isCurrentMedia(activeCropperTarget.mediaKey, activeCropperTarget.mediaToken)) return;
+            try {
 
-            const { cropBoxW } = getCropperDimensions();
+                const { cropBoxW } = getCropperDimensions();
 
-            // Xuất ra canvas chất lượng cao độ phân giải chuẩn 3/4: 900x1200
-            const outW = 900;
-            const outH = 1200;
-            const outCanvas = document.createElement('canvas');
-            outCanvas.width = outW;
-            outCanvas.height = outH;
-            const outCtx = outCanvas.getContext('2d');
+                // Xuất ra canvas chất lượng cao độ phân giải chuẩn 3/4: 900x1200
+                const outW = 900;
+                const outH = 1200;
+                const outCanvas = document.createElement('canvas');
+                outCanvas.width = outW;
+                outCanvas.height = outH;
+                const outCtx = outCanvas.getContext('2d');
 
-            const scaleFactor = outW / cropBoxW; // Phóng to theo tỷ lệ khung cắt thực tế
+                const scaleFactor = outW / cropBoxW; // Phóng to theo tỷ lệ khung cắt thực tế
 
-            outCtx.save();
-            outCtx.translate(outW / 2 + activeCropperTarget.offsetX * scaleFactor, outH / 2 + activeCropperTarget.offsetY * scaleFactor);
-            outCtx.rotate((activeCropperTarget.rotate * Math.PI) / 180);
-            outCtx.scale(activeCropperTarget.scale * scaleFactor, activeCropperTarget.scale * scaleFactor);
-            outCtx.drawImage(activeCropperTarget.img, -activeCropperTarget.img.naturalWidth / 2, -activeCropperTarget.img.naturalHeight / 2);
-            outCtx.restore();
+                outCtx.save();
+                outCtx.translate(outW / 2 + activeCropperTarget.offsetX * scaleFactor, outH / 2 + activeCropperTarget.offsetY * scaleFactor);
+                outCtx.rotate((activeCropperTarget.rotate * Math.PI) / 180);
+                outCtx.scale(activeCropperTarget.scale * scaleFactor, activeCropperTarget.scale * scaleFactor);
+                outCtx.drawImage(activeCropperTarget.img, -activeCropperTarget.img.naturalWidth / 2, -activeCropperTarget.img.naturalHeight / 2);
+                outCtx.restore();
 
-            // Lấy chuỗi data:image/jpeg trực tiếp, không lưu file vào server
-            const dataUrl = outCanvas.toDataURL('image/jpeg', 0.88);
-            const targetInput = activeCropperTarget.input;
-            const targetThumb = activeCropperTarget.thumb;
-            const statusEl = activeCropperTarget.status;
+                // Lấy chuỗi data:image/jpeg trực tiếp, không lưu file vào server
+                const dataUrl = outCanvas.toDataURL('image/jpeg', 0.88);
+                const targetInput = activeCropperTarget.input;
+                const targetThumb = activeCropperTarget.thumb;
+                const statusEl = activeCropperTarget.status;
 
-            if (targetThumb) targetThumb.src = dataUrl;
-            if (targetInput) {
-                targetInput.value = dataUrl;
-                const syncKey = targetInput.getAttribute('data-sync-key');
-                if (syncKey) {
-                    sendSyncMessage(syncKey, dataUrl);
-                    sendScrollToTarget(syncKey, 'uploaded');
+                if (targetThumb) targetThumb.src = dataUrl;
+                if (targetInput) {
+                    targetInput.value = dataUrl;
+                    const syncKey = targetInput.getAttribute('data-sync-key');
+                    if (syncKey) {
+                        mirrorWeddingInput(mainForm, targetInput);
+                        store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: dataUrl } });
+                        sendSyncMessage(syncKey, dataUrl);
+                        sendScrollToTarget(syncKey, 'uploaded');
+                    }
                 }
-            }
 
-            if (statusEl) {
-                statusEl.textContent = '✓ Tải ảnh thành công';
-                statusEl.style.color = '#10B981';
-            }
+                if (statusEl) {
+                    statusEl.textContent = '✓ Tải ảnh thành công';
+                    statusEl.style.color = '#10B981';
+                }
 
-            activeCropperTarget.confirmed = true;
-            closeCropperModal();
+                activeCropperTarget.confirmed = true;
+                closeCropperModal();
+            } catch (error) {
+                console.error('Không thể cắt ảnh:', error);
+                closeCropperModal();
+            }
         });
     }
 
@@ -1318,6 +1289,13 @@ const initEditor = () => {
             const targetInput = document.getElementById(targetInputId);
             const targetThumb = document.getElementById(targetThumbId);
             const statusEl = document.getElementById('status_' + targetInputId);
+            const mediaKey = targetInputId;
+            const mediaToken = store.beginMedia(mediaKey);
+            const isCurrent = () => store.isCurrentMedia(mediaKey, mediaToken);
+            const finish = () => {
+                store.finishMedia(mediaKey, mediaToken);
+                URL.revokeObjectURL(objectUrl);
+            };
 
             // Tự động cuộn Iframe xem trước đến đúng vị trí ảnh ngay khi người dùng chọn file
             if (targetInput) {
@@ -1337,6 +1315,7 @@ const initEditor = () => {
             // Kiểm tra kích thước và tỷ lệ ảnh
             const tempImg = new Image();
             tempImg.onload = async () => {
+                if (!isCurrent()) { finish(); return; }
                 const ratio = tempImg.naturalWidth / tempImg.naturalHeight;
                 // Chuẩn 3/4 = 0.75. Ngưỡng dung sai cực nhỏ 0.02
                 const isExactThreeFour = Math.abs(ratio - 0.75) <= 0.02;
@@ -1354,17 +1333,21 @@ const initEditor = () => {
                         status: statusEl,
                         file: file,
                         uploader: uploader,
+                        mediaKey, mediaToken, objectUrl,
                     });
                 } else {
                     // Ảnh đã chuẩn 3/4 hoặc là ảnh gallery không bắt buộc -> Tự động nén sang data:image trực tiếp
                     try {
                         if (statusEl) statusEl.textContent = 'Đang tải ảnh...';
                         const dataUrl = await compressImageToDataUrl(file);
+                        if (!isCurrent()) return;
                         if (targetThumb) targetThumb.src = dataUrl;
                         if (targetInput) {
                             targetInput.value = dataUrl;
                             const syncKey = targetInput.getAttribute('data-sync-key');
                             if (syncKey) {
+                                mirrorWeddingInput(mainForm, targetInput);
+                                store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: dataUrl } });
                                 sendSyncMessage(syncKey, dataUrl);
                                 sendScrollToTarget(syncKey, 'uploaded');
                             }
@@ -1374,15 +1357,20 @@ const initEditor = () => {
                             statusEl.style.color = '#10B981';
                         }
                     } catch (err) {
+                        if (!isCurrent()) return;
                         console.error('Lỗi chuyển ảnh sang data:image:', err);
                         if (statusEl) {
                             statusEl.textContent = 'Không thể tải ảnh này';
                             statusEl.style.color = '#EF4444';
                         }
+                    } finally {
+                        finish();
                     }
                 }
             };
             tempImg.onerror = () => {
+                finish();
+                if (!isCurrent()) return;
                 if (statusEl) {
                     statusEl.textContent = 'Không thể đọc tệp ảnh';
                     statusEl.style.color = '#EF4444';
@@ -1700,44 +1688,62 @@ const initEditor = () => {
                 return;
             }
 
+            const mediaToken = store.beginMedia(targetInputId);
+            const isCurrent = () => store.isCurrentMedia(targetInputId, mediaToken);
+            const finish = () => store.finishMedia(targetInputId, mediaToken);
+            const fail = () => {
+                if (isCurrent() && statusEl) statusEl.textContent = 'Không thể đọc tệp ảnh QR';
+                finish();
+            };
             const reader = new FileReader();
+            reader.onerror = fail;
+            reader.onabort = fail;
             reader.onload = (e) => {
+                if (!isCurrent()) return;
                 const img = new Image();
+                img.onerror = fail;
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxDim = 800;
-                    let w = img.width;
-                    let h = img.height;
-                    if (w > maxDim || h > maxDim) {
-                        if (w > h) {
-                            h = Math.round((h * maxDim) / w);
-                            w = maxDim;
-                        } else {
-                            w = Math.round((w * maxDim) / h);
-                            h = maxDim;
+                    if (!isCurrent()) return;
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 800;
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) {
+                                h = Math.round((h * maxDim) / w);
+                                w = maxDim;
+                            } else {
+                                w = Math.round((w * maxDim) / h);
+                                h = maxDim;
+                            }
                         }
-                    }
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    const base64Data = canvas.toDataURL('image/png', 0.92);
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const base64Data = canvas.toDataURL('image/png', 0.92);
 
-                    if (targetThumb) targetThumb.src = base64Data;
-                    if (targetInput) {
-                        targetInput.value = base64Data;
-                        const syncKey = targetInput.getAttribute('data-sync-key');
-                        if (syncKey) {
-                            store.dispatch({
-                                type: ActionTypes.UPDATE_FIELD,
-                                payload: { key: syncKey, value: base64Data }
-                            });
-                            sendSyncMessage(syncKey, base64Data);
+                        if (targetThumb) targetThumb.src = base64Data;
+                        if (targetInput) {
+                            targetInput.value = base64Data;
+                            const syncKey = targetInput.getAttribute('data-sync-key');
+                            if (syncKey) {
+                                store.dispatch({
+                                    type: ActionTypes.UPDATE_FIELD,
+                                    payload: { key: syncKey, value: base64Data }
+                                });
+                                sendSyncMessage(syncKey, base64Data);
+                            }
                         }
-                    }
-                    if (statusEl) {
-                        statusEl.textContent = '✓ Đã tải ảnh QR từ thiết bị';
-                        statusEl.style.color = '#10B981';
+                        if (statusEl) {
+                            statusEl.textContent = '✓ Đã tải ảnh QR từ thiết bị';
+                            statusEl.style.color = '#10B981';
+                        }
+                    } catch (error) {
+                        fail();
+                    } finally {
+                        finish();
                     }
                 };
                 img.src = e.target.result;
@@ -1844,6 +1850,8 @@ const initEditor = () => {
                     }
                     if (musicInput) {
                         musicInput.value = audioUrl;
+                        mirrorWeddingInput(mainForm, musicInput);
+                        store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: 'wedding.music_url', value: audioUrl } });
                     }
                     sendSyncMessage('wedding.music_url', audioUrl);
                     sendSyncMessage('music_url', audioUrl);
@@ -1877,6 +1885,10 @@ const initEditor = () => {
     // 3.3 Submit Form: Toàn bộ ảnh đã được lưu trực tiếp dạng data:image, submit tức thì
     // ----------------------------------------------------
     const submitFormWithPendingUploads = async () => {
+        if (store.pendingMedia.size) {
+            window.alert('Ảnh đang được xử lý. Vui lòng đợi ảnh hoàn tất trước khi xuất bản.');
+            return;
+        }
         if (store.autosaver.hasConflict) {
             window.alert('Thiệp đang có xung đột phiên làm việc. Hãy giữ lại bản nháp và kiểm tra trước khi xuất bản.');
             return;
@@ -1910,6 +1922,10 @@ const initEditor = () => {
                 revisionInput.value = String(store.getState().revision_id);
             }
 
+            clearTimeout(store.autosaver.timer);
+            store.autosaver.timer = null;
+            store.autosaver.isNavigating = true;
+            store.autosaver.saveToLocalStorage(store.getState());
             mainForm.submit();
         }
     };

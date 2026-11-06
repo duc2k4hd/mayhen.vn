@@ -8,6 +8,11 @@
     $groomName = $wedding->groom_name ?? 'Minh Tuấn';
     $brideName = $wedding->bride_name ?? 'Thu Hà';
     $extraData = $wedding->extra_data ?? [];
+    foreach ($extraData as $key => $value) {
+        if ($value === null && !in_array($key, ['gallery', 'timeline', 'dresscode_colors'], true) && !str_ends_with($key, '_url') && !str_ends_with($key, '_image')) {
+            $extraData[$key] = '';
+        }
+    }
 
     $groomFather = $extraData['groom_father'] ?? ($wedding->groom_parents ?? 'Ông Nguyễn Văn Hùng');
     $groomMother = $extraData['groom_mother'] ?? 'Bà Lê Thị Thu';
@@ -51,6 +56,27 @@
     // 3. Hàm chuẩn hóa asset ảnh
     $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
         $val = trim((string) $path);
+        if (str_starts_with($val, 'data:')) {
+            if (preg_match('#^data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$#D', $val, $matches)) {
+                $decoded = base64_decode($matches[2], true);
+                $image = $decoded === false ? false : @getimagesizefromstring($decoded);
+                if ($image !== false && ($image['mime'] ?? '') === 'image/' . $matches[1]) {
+                    return $val;
+                }
+            }
+            if (preg_match('#^data:image/svg\+xml;(base64|utf8),(.+)$#Ds', $val, $matches)) {
+                $svg = $matches[1] === 'base64' ? base64_decode($matches[2], true) : rawurldecode($matches[2]);
+                $document = new \DOMDocument();
+                if (is_string($svg) && !str_contains(strtoupper($svg), '<!DOCTYPE') && @$document->loadXML($svg, LIBXML_NONET)) {
+                    $xpath = new \DOMXPath($document);
+                    $unsafe = $xpath->query('//*[not(local-name()="svg" or local-name()="g" or local-name()="rect" or local-name()="path" or local-name()="circle" or local-name()="text" or local-name()="tspan" or local-name()="defs" or local-name()="clipPath" or local-name()="polygon" or local-name()="polyline" or local-name()="line" or local-name()="ellipse")] | //@*[starts-with(translate(local-name(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "on") or local-name()="href" or local-name()="style"]');
+                    if ($document->documentElement?->localName === 'svg' && $unsafe->length === 0) {
+                        return $val;
+                    }
+                }
+            }
+            $val = '';
+        }
         if (str_starts_with($val, 'blob:')) {
             $val = '';
         }
@@ -326,7 +352,7 @@
                     {{ $storyContent }}
                 </p>
 
-                <div class="mayhen_invitation_monogram" aria-hidden="true">
+                <div class="mayhen_invitation_monogram" data-mayhen-wax-monogram aria-hidden="true">
                     <span>✦</span> {{ mb_substr($groomName, 0, 1) }} &amp; {{ mb_substr($brideName, 0, 1) }} <span>✦</span>
                 </div>
             </div>

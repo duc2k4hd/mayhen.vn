@@ -57,6 +57,10 @@ export class TemplateSwitcher {
      */
     switchTemplate({ id, slug, name, thumb, tier }) {
         const state = this.store.getState();
+        if (this.store.pendingMedia?.size) {
+            this.showToast('Ảnh đang được xử lý. Vui lòng đợi ảnh hoàn tất trước khi đổi mẫu.');
+            return;
+        }
 
         // Nếu trùng mẫu hiện tại thì chỉ đóng modal
         if (state.template_id === id) {
@@ -76,6 +80,7 @@ export class TemplateSwitcher {
         // 1. Thu thập toàn bộ dữ liệu người dùng đã nhập trên form hiện tại
         const draftData = {};
         const formKeys = new Set();
+        const schemaKeys = new Set();
         let hasPendingImages = false;
         const isUserImage = (value) => typeof value === 'string' && (
             value.startsWith('data:image') || value.startsWith('http://') || value.startsWith('https://') ||
@@ -86,6 +91,7 @@ export class TemplateSwitcher {
             const key = inp.getAttribute('data-sync-key');
             if (key && inp.value !== undefined) {
                 formKeys.add(key);
+                if (inp.getAttribute('data-mayhen-preserved-field') !== 'true') schemaKeys.add(key);
                 const val = inp.value;
                 const isPhoto = key.includes('photo') || key.includes('cover') || key.includes('image') || key.includes('gallery') || key.includes('album');
                 // Nếu là trường ảnh, chỉ giữ lại nếu người dùng đã tự upload (data:image hoặc http), không mang asset mặc định của mẫu cũ sang mẫu mới
@@ -105,8 +111,7 @@ export class TemplateSwitcher {
         const weddingState = state.wedding || {};
         const collectStateValue = (value, path, nested = false) => {
             if (path.split('.').some((part) => !/^[A-Za-z0-9_-]+$/.test(part)
-                || /^\d+$/.test(part) || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
-            if (Array.isArray(value)) return;
+                || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
             if (value && typeof value === 'object') {
                 Object.keys(value).forEach((part) => collectStateValue(value[part], `${path}.${part}`, true));
                 return;
@@ -144,16 +149,11 @@ export class TemplateSwitcher {
             'groom_account_name': 'groom_bank_holder',
             'bride_bank_holder': 'bride_account_name',
             'bride_account_name': 'bride_bank_holder',
-            'event_party_address': 'ceremony_address',
-            'ceremony_address': 'event_party_address',
             'party_address': 'event_party_address',
-            'groom_party_address': 'event_party_address',
-            'bride_party_address': 'event_party_address',
             'event_party_date': 'wedding_date',
             'wedding_date': 'event_party_date',
             'event_party_time': 'party_time',
-            'party_time': 'event_party_time',
-            'groom_party_time': 'event_party_time'
+            'party_time': 'event_party_time'
         };
 
         Object.keys(fieldAliases).forEach((fromKey) => {
@@ -161,7 +161,12 @@ export class TemplateSwitcher {
             const fromPath = [`wedding.extra_data.${fromKey}`, `wedding.${fromKey}`, fromKey]
                 .find((key) => Object.hasOwn(draftData, key));
             const toPaths = [`wedding.extra_data.${toKey}`, `wedding.${toKey}`, toKey];
-            if (fromPath && !toPaths.some((key) => Object.hasOwn(draftData, key))) {
+            const existingTarget = toPaths.find((key) => Object.hasOwn(draftData, key));
+            const preferSchemaValue = fromPath && schemaKeys.has(fromPath) && existingTarget && !schemaKeys.has(existingTarget)
+                && (/bank_|account_/.test(fromKey) || ['event_party_time', 'party_time'].includes(fromKey));
+            if (preferSchemaValue) {
+                draftData[existingTarget] = draftData[fromPath];
+            } else if (fromPath && !existingTarget) {
                 draftData[toPaths[0]] = draftData[fromPath];
             }
         });
@@ -198,6 +203,13 @@ export class TemplateSwitcher {
 
         this.closeModal();
         this.showToast(`Đang chuyển sang mẫu "${name}"...`);
+        if (this.store.autosaver) {
+            clearTimeout(this.store.autosaver.timer);
+            this.store.autosaver.timer = null;
+            this.store.autosaver.isNavigating = true;
+        }
+        const form = document.getElementById?.('mayhen_editor_form');
+        if (form) form.inert = true;
 
         // 2. Chuyển hướng sang URL của mẫu mới với đầy đủ schema form và preview đồng nhất
         const currentUrl = new URL(window.location.href);

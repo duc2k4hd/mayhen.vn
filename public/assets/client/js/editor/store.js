@@ -18,9 +18,43 @@ export class EditorStore {
         }
     }
 
+    static flattenWeddingFields(wedding) {
+        const fields = {};
+        const visit = (value, path) => {
+            if (path && path.split('.').some((part) => !/^[A-Za-z0-9_-]+$/.test(part)
+                || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
+            if (value && typeof value === 'object') {
+                const keys = Object.keys(value).sort((a, b) => Number(a.includes('.')) - Number(b.includes('.')));
+                keys.forEach((key) => visit(value[key], path ? `${path}.${key}` : key));
+            } else if (path && value !== undefined && !Object.hasOwn(fields, path)) {
+                fields[path] = value;
+            }
+        };
+        visit(wedding, '');
+        return fields;
+    }
+
+    static canonicalWeddingPath(key) {
+        const path = key.replace(/^wedding\./, '');
+        const rootFields = ['groom_name', 'bride_name', 'groom_parents', 'bride_parents', 'wedding_date',
+            'venue_name', 'venue_address', 'story', 'cover_photo_url', 'music_url', 'bank_name',
+            'bank_account_number', 'bank_account_name'];
+        return rootFields.includes(path) || path.startsWith('extra_data.') ? path : `extra_data.${path}`;
+    }
+
+    static normalizeWeddingFields(wedding) {
+        const normalized = {};
+        Object.entries(EditorStore.flattenWeddingFields(wedding)).forEach(([key, value]) => {
+            EditorStore.setByPath(normalized, EditorStore.canonicalWeddingPath(key), value);
+        });
+        return normalized;
+    }
+
     constructor(initialState = {}) {
         this.state = this.getInitialState(initialState);
         this.listeners = new Set();
+        this.pendingMedia = new Set();
+        this.mediaTokens = new Map();
         this.history = new HistoryManager();
         this.autosaver = new Autosaver(this);
     }
@@ -48,21 +82,18 @@ export class EditorStore {
                 bank_account_number: '',
                 bank_account_name: '',
                 extra_data: {},
-                ...(override.wedding || {}),
+                ...EditorStore.normalizeWeddingFields(override.wedding || {}),
             },
 
             custom_config: {
                 sections_order: [],
                 sections_hidden: [],
                 theme: {
-                    palette_id: 'quiet-luxury',
+                    palette_id: '',
                     font_heading: 'Playfair Display',
                     font_body: 'Inter',
                 },
-                wax_seal: {
-                    color: '#8A151B',
-                    monogram: 'MH',
-                },
+                wax_seal: {},
                 ...(override.custom_config || {}),
             },
 
@@ -81,6 +112,21 @@ export class EditorStore {
 
     getState() {
         return this.state;
+    }
+
+    beginMedia(key) {
+        const token = Symbol(key);
+        this.mediaTokens.set(key, token);
+        this.pendingMedia.add(key);
+        return token;
+    }
+
+    isCurrentMedia(key, token) {
+        return this.mediaTokens.get(key) === token;
+    }
+
+    finishMedia(key, token) {
+        if (this.isCurrentMedia(key, token)) this.pendingMedia.delete(key);
     }
 
     subscribe(listener) {
@@ -120,11 +166,13 @@ export class EditorStore {
      */
     static setByPath(obj, path, value) {
         const parts = path.split('.');
+        if (parts.some((part) => !/^[A-Za-z0-9_-]+$/.test(part)
+            || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
         let current = obj;
         for (let i = 0; i < parts.length - 1; i++) {
             const p = parts[i];
             if (!current[p] || typeof current[p] !== 'object') {
-                current[p] = {};
+                current[p] = /^\d+$/.test(parts[i + 1]) ? [] : {};
             }
             current = current[p];
         }
@@ -138,6 +186,14 @@ export class EditorStore {
         if (!action || !action.type) return;
 
         const { type, payload } = action;
+        if (type === ActionTypes.UPDATE_FIELD) {
+            const key = payload?.key;
+            if (!key || key.split('.').some((part) => !/^[A-Za-z0-9_-]+$/.test(part)
+                || ['__proto__', 'prototype', 'constructor'].includes(part))) return;
+            const path = key.includes('.') ? key : key in this.state.wedding ? `wedding.${key}` : key;
+            const current = path.split('.').reduce((value, part) => value?.[part], this.state);
+            if (current === payload.value) return;
+        }
 
         // Các action làm thay đổi dữ liệu cần lưu snapshot vào Undo History
         const dataMutatingActions = [

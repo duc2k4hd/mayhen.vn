@@ -16,16 +16,21 @@ export class Autosaver {
         this.protectedTransferDraft = null;
         this.validatedTransferDraft = null;
         this.isRestoringTransfer = false;
+        this.isNavigating = false;
+        this.localStorageOk = true;
         this.endpoint = options.endpoint || '/api/editor/autosave';
 
         this.init();
     }
 
     init() {
+        window.addEventListener('online', () => {
+            if (this.store.getState().ui.isDirty && !this.hasConflict && !this.isNavigating) this.schedule();
+        });
         // Cảnh báo khi người dùng tắt tab trong lúc đang có thay đổi chưa lưu lên server
         window.addEventListener('beforeunload', (e) => {
             const state = this.store.getState();
-            if (state.ui.isDirty) {
+            if ((state.ui.isDirty || this.store.pendingMedia?.size > 0) && !this.isNavigating) {
                 // Lưu ngay bản mới nhất vào LocalStorage trước khi tắt tab
                 this.saveToLocalStorage(state);
                 e.preventDefault();
@@ -233,10 +238,10 @@ export class Autosaver {
         const state = this.store.getState();
         this.changeVersion += 1;
 
-        if (this.isRestoringTransfer) return;
+        if (this.isRestoringTransfer || this.isNavigating) return;
 
         // 1. Phản xạ lưu ngay vào LocalStorage
-        this.saveToLocalStorage(state);
+        this.localStorageOk = this.saveToLocalStorage(state);
 
         if (this.hasConflict) return;
 
@@ -258,14 +263,14 @@ export class Autosaver {
      */
     async syncToServer() {
         const state = this.store.getState();
+        if (this.isSaving || this.hasConflict || this.isRestoringTransfer || this.isNavigating) return;
 
         // Nếu chưa có thiệp trong DB (đang tạo thiệp mới lần đầu), chỉ lưu LocalStorage
         if (!state.invitation_id) {
-            this.store.setSaveStatus('local_only');
+            this.store.setSaveStatus(this.localStorageOk ? 'local_only' : 'storage_error');
             return;
         }
 
-        if (this.isSaving || this.hasConflict) return;
         if (this.timer) {
             clearTimeout(this.timer);
             this.timer = null;
@@ -342,8 +347,9 @@ export class Autosaver {
         } catch (error) {
             console.error('[Autosaver] Sync error:', error);
             // Vẫn giữ an toàn dữ liệu trên client
-            this.store.setSaveStatus('offline', {
-                message: 'Không có kết nối mạng. Dữ liệu đang được lưu an toàn trên trình duyệt của bạn.',
+            this.store.setSaveStatus(this.localStorageOk ? 'offline' : 'storage_error', {
+                message: this.localStorageOk ? 'Chưa thể đồng bộ. Bản nháp đang được giữ trên trình duyệt.'
+                    : 'Không thể lưu bản nháp trên thiết bị. Hãy giữ trang hiện tại và thử xuất bản.',
             });
         } finally {
             this.isSaving = false;

@@ -194,7 +194,7 @@
                     @error('revision_id')
                         <p class="mayhen_editor_revision_error" role="alert">{{ $message }}</p>
                     @enderror
-                    <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode($editingInvitation->custom_config ?? []) }}">
+                    <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode(array_merge($editingInvitation->custom_config ?? [], $editingInvitation->draft_config ?? [])) }}">
                     @php
                         $currentMusicUrl = old('wedding.music_url', $editingInvitation->wedding->music_url ?? ($selectedTemplate->default_config['music_url'] ?? ''));
                         if (empty($currentMusicUrl)) {
@@ -238,14 +238,17 @@
 
                                         // Lấy giá trị khởi tạo: ưu tiên old input -> giá trị thiệp cũ đang sửa -> default trong schema
                                         $editingVal = null;
+                                        $hasEditingValue = false;
                                         if (isset($editingInvitation) && $editingInvitation->wedding) {
                                             $cleanKey = str_replace(['wedding.', 'invitation.'], '', $fieldKey);
                                             if (str_starts_with($cleanKey, 'extra_data.')) {
                                                 $extraSub = str_replace('extra_data.', '', $cleanKey);
-                                                $editingVal = $editingInvitation->wedding->extra_data[$extraSub] ?? null;
+                                                $editingExtra = $editingInvitation->wedding->extra_data ?? [];
+                                                $hasEditingValue = \Illuminate\Support\Arr::has($editingExtra, $extraSub);
+                                                $editingVal = \Illuminate\Support\Arr::get($editingExtra, $extraSub);
 
                                                 // Fallback tu chuoi cu neu chua co extra_data
-                                                if ($editingVal === null) {
+                                                if (!$hasEditingValue) {
                                                     $gParents = (string) ($editingInvitation->wedding->groom_parents ?? "");
                                                     $bParents = (string) ($editingInvitation->wedding->bride_parents ?? "");
                                                     if ($extraSub === "groom_father" && preg_match("/ÔNG:\s*([^&]+?)(?=\s*(&|BÀ:|$))/ui", $gParents, $m)) {
@@ -267,15 +270,20 @@
                                                     } elseif ($extraSub === "groom_party_address") {
                                                         $editingVal = $editingInvitation->wedding->extra_data['event_party_address'] ?? ($editingInvitation->wedding->venue_address ?? null);
                                                     }
+                                                    $hasEditingValue = $editingVal !== null;
                                                 }
                                             } else {
+                                                $hasEditingValue = array_key_exists($cleanKey, $editingInvitation->wedding->getAttributes());
                                                 $editingVal = $editingInvitation->wedding->{$cleanKey} ?? null;
                                             }
                                         }
 
-                                        $defaultVal = $editingVal !== null ? $editingVal : ($field['default'] ?? '');
+                                        $defaultVal = $hasEditingValue ? $editingVal : ($field['default'] ?? '');
                                         $val = old($oldKey, $defaultVal);
                                         $type = $field['type'] ?? 'text';
+                                        if ($type === 'date' && $val instanceof \DateTimeInterface) {
+                                            $val = $val->format('Y-m-d');
+                                        }
                                         $label = $field['label'] ?? $fieldKey;
                                         $isRequired = !empty($field['required']);
                                         $isFullWidth = in_array($type, ['repeater', 'gallery', 'textarea', 'color'])
@@ -310,7 +318,7 @@
                                                         <input type="time" 
                                                                name="{{ $inputName }}[{{ $rIdx }}][time]" 
                                                                class="mayhen_client_form_input mayhen_time_picker_input mayhen_picker_must_select" 
-                                                               value="{{ $rItem['time'] ?? '08:00' }}" 
+                                                               value="{{ is_array($rItem) && array_key_exists('time', $rItem) ? ($rItem['time'] ?? '') : '' }}"
                                                                onkeydown="if(event.key!=='Tab'&&event.key!=='Enter'&&event.key!=='Escape')return false;"
                                                                onpaste="return false;"
                                                                data-sync-key="{{ $fieldKey }}.{{ $rIdx }}.time">
@@ -346,7 +354,7 @@
                                                             : $selectedTemplate->thumbnail_url;
 
                                                         $rawItemVal = is_array($val) && isset($val[$gIdx]) && !empty($val[$gIdx]) ? $val[$gIdx] : null;
-                                                        $isUserUploaded = is_string($rawItemVal) && (str_starts_with($rawItemVal, 'data:') || preg_match('#^/?(storage|uploads)/#', $rawItemVal));
+                                                        $isUserUploaded = is_string($rawItemVal) && (str_starts_with($rawItemVal, 'data:image/') || preg_match('#^(?:https?://[^/]+)?/?(storage|uploads)/#', $rawItemVal));
 
                                                         if ($isUserUploaded) {
                                                             $gVal = $rawItemVal;
@@ -441,8 +449,8 @@
                                                 ? $editingInvitation->wedding->extra_data 
                                                 : [];
                                             $curBank = old('wedding.extra_data.' . $bankNameField, $curExtra[$bankNameField] ?? '');
-                                            $curAcc = old('wedding.extra_data.' . $bankAccField, $curExtra[$bankAccField] ?? ($curExtra[$isGroomQr ? 'groom_account_number' : 'bride_account_number'] ?? ''));
-                                            $curHolder = old('wedding.extra_data.' . $bankHolderField, $curExtra[$bankHolderField] ?? ($curExtra[$isGroomQr ? 'groom_account_name' : 'bride_account_name'] ?? ''));
+                                            $curAcc = old('wedding.extra_data.' . $bankAccField, array_key_exists($bankAccField, $curExtra) ? ($curExtra[$bankAccField] ?? '') : ($curExtra[$isGroomQr ? 'groom_account_number' : 'bride_account_number'] ?? ''));
+                                            $curHolder = old('wedding.extra_data.' . $bankHolderField, array_key_exists($bankHolderField, $curExtra) ? ($curExtra[$bankHolderField] ?? '') : ($curExtra[$isGroomQr ? 'groom_account_name' : 'bride_account_name'] ?? ''));
                                         @endphp
                                         <div class="{{ $groupClass }}">
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
@@ -546,7 +554,7 @@
                                                         ? "/mau-thiep/{$selectedTemplate->slug}/assets/{$cleanDefaultFieldImg}" 
                                                         : $selectedTemplate->thumbnail_url;
 
-                                                    $isUserUploaded = is_string($val) && (str_starts_with($val, 'data:') || preg_match('#^/?(storage|uploads)/#', $val));
+                                                    $isUserUploaded = is_string($val) && (str_starts_with($val, 'data:image/') || preg_match('#^(?:https?://[^/]+)?/?(storage|uploads)/#', $val));
                                                     if ($isUserUploaded) {
                                                         $imageVal = $val;
                                                         $imagePreviewSrc = $val;

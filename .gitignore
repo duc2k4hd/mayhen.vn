@@ -38,9 +38,11 @@ Thumbs.db
 !/tests/Feature/GuestManagementAuthorizationTest.php
 !/tests/Feature/RsvpGuestTokenTest.php
 !/tests/Feature/CheckoutAuthorizationTest.php
+!/tests/Feature/GalleryRenderTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
+!/tests/Unit/editor-browser.test.mjs
 /storage/
 /node_modules/
 /Mẫu thiệp/

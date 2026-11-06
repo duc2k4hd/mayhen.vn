@@ -47,6 +47,11 @@
 
     // --- Dữ liệu extra ---
     $extraData = $wedding->extra_data ?? [];
+    foreach ($extraData as $key => $value) {
+        if ($value === null && !in_array($key, ['gallery', 'timeline', 'dresscode_colors'], true) && !str_ends_with($key, '_url') && !str_ends_with($key, '_image')) {
+            $extraData[$key] = '';
+        }
+    }
 
     // --- 1. TÊN CÔ DÂU CHÚ RỂ ---
     $groomName   = $wedding->groom_name ?? ($extraData['groom_name'] ?? 'Đình Sang');
@@ -397,7 +402,7 @@
         <p class="mayhen_invitation_story_content mayhen_invitation_anim mayhen_invitation_anim--fadeInUp"
            data-sync-target="story_content">{{ $storyContent }}</p>
 
-        <div class="mayhen_invitation_monogram">✦ <span data-monogram-role="groom">{{ mb_strtoupper(mb_substr($groomName, 0, 1)) }}</span> &amp; <span data-monogram-role="bride">{{ mb_strtoupper(mb_substr($brideName, 0, 1)) }}</span> ✦</div>
+        <div class="mayhen_invitation_monogram" data-mayhen-wax-monogram>✦ <span data-monogram-role="groom">{{ mb_strtoupper(mb_substr($groomName, 0, 1)) }}</span> &amp; <span data-monogram-role="bride">{{ mb_strtoupper(mb_substr($brideName, 0, 1)) }}</span> ✦</div>
 
         {{-- Lễ Ăn Hỏi --}}
         <div class="mayhen_invitation_ritual_block mayhen_invitation_ceremony_bride_card mayhen_invitation_anim mayhen_invitation_anim--fadeInUp">

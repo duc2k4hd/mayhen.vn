@@ -937,17 +937,21 @@ class InvitationTemplateService
     public function saveInvitation(User $user, int $templateId, array $data, ?int $invitationId = null, ?int $expectedRevision = null): Invitation
     {
         return DB::transaction(function () use ($user, $templateId, $data, $invitationId, $expectedRevision) {
-            $weddingData = $data['wedding'] ?? [];
+            $weddingData = $this->sanitizePendingAssets($data['wedding'] ?? []);
             $extraData = $weddingData['extra_data'] ?? [];
 
             // Nếu người dùng đã có wedding trước đó thì cập nhật, nếu chưa thì tạo mới
+            $weddingId = $invitationId ? Invitation::whereKey($invitationId)->value('wedding_id') : null;
+            $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->firstOrFail() : null;
             $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
+            if ($existingInvitation && $existingInvitation->wedding_id !== $wedding?->id) {
+                throw ValidationException::withMessages(['revision_id' => 'Dữ liệu thiệp đã thay đổi. Vui lòng tải lại trước khi tiếp tục.']);
+            }
             if ($existingInvitation && $expectedRevision !== (int) $existingInvitation->revision_id) {
                 throw ValidationException::withMessages([
                     'revision_id' => 'Thiệp đã được thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
                 ]);
             }
-            $wedding = $existingInvitation?->wedding;
 
             if (! $wedding) {
                 $wedding = Wedding::create([
@@ -969,34 +973,30 @@ class InvitationTemplateService
                 ]);
             } else {
                 // Cập nhật wedding hiện có
-                $wedding->update([
-                    'groom_name' => $weddingData['groom_name'] ?? $wedding->groom_name,
-                    'bride_name' => $weddingData['bride_name'] ?? $wedding->bride_name,
-                    'groom_parents' => $weddingData['groom_parents'] ?? $wedding->groom_parents,
-                    'bride_parents' => $weddingData['bride_parents'] ?? $wedding->bride_parents,
-                    'wedding_date' => $weddingData['wedding_date'] ?? $wedding->wedding_date,
-                    'venue_name' => $weddingData['venue_name'] ?? $wedding->venue_name,
-                    'venue_address' => $weddingData['venue_address'] ?? $wedding->venue_address,
-                    'story' => $weddingData['story'] ?? $wedding->story,
-                    'cover_photo_url' => $weddingData['cover_photo_url'] ?? $wedding->cover_photo_url,
-                    'music_url' => $weddingData['music_url'] ?? $wedding->music_url,
-                    'bank_name' => $weddingData['bank_name'] ?? $wedding->bank_name,
-                    'bank_account_number' => $weddingData['bank_account_number'] ?? $wedding->bank_account_number,
-                    'bank_account_name' => $weddingData['bank_account_name'] ?? $wedding->bank_account_name,
-                    'extra_data' => array_merge($wedding->extra_data ?? [], $extraData),
-                ]);
+                $fieldsToUpdate = array_intersect_key($weddingData, array_flip([
+                    'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
+                    'wedding_date', 'venue_name', 'venue_address', 'story',
+                    'cover_photo_url', 'music_url', 'bank_name',
+                    'bank_account_number', 'bank_account_name',
+                ]));
+                $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $extraData);
+                $wedding->update($fieldsToUpdate);
             }
 
             $template = InvitationTemplate::findOrFail($templateId);
-            $customConfig = $data['invitation']['custom_config'] ?? [];
+            $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
 
             if ($existingInvitation) {
                 $existingInvitation->update([
                     'template_id' => $template->id,
                     'template_version' => $template->current_version ?? 'v1',
-                    'custom_config' => array_merge($existingInvitation->custom_config ?? [], $customConfig),
+                    'custom_config' => array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig),
+                    'draft_config' => null,
                     'revision_id' => (int) $existingInvitation->revision_id + 1,
                 ]);
+                if ($wedding->wasChanged()) {
+                    Invitation::where('wedding_id', $wedding->id)->whereKeyNot($existingInvitation->id)->increment('revision_id');
+                }
 
                 return $existingInvitation;
             }
@@ -1040,7 +1040,9 @@ class InvitationTemplateService
     public function saveDraftWithLock(Invitation $invitation, int $clientRevision, array $draftConfig, array $weddingDelta = []): array
     {
         return DB::transaction(function () use ($invitation, $clientRevision, $draftConfig, $weddingDelta) {
-            // Khóa dòng để đọc revision mới nhất chống race condition
+            $weddingId = Invitation::whereKey($invitation->id)->value('wedding_id');
+            $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->first() : null;
+            // Always lock the shared wedding before its invitations.
             $currentInvitation = Invitation::where('id', $invitation->id)->lockForUpdate()->first();
             if (! $currentInvitation) {
                 return [
@@ -1051,6 +1053,9 @@ class InvitationTemplateService
             }
 
             $currentRevision = (int) ($currentInvitation->revision_id ?? 0);
+            if ($currentInvitation->wedding_id !== $wedding?->id) {
+                return ['success' => false, 'conflict' => true, 'current_revision' => $currentRevision];
+            }
 
             // Kiểm tra xung đột phiên bản (Optimistic Concurrency Check)
             if ($clientRevision !== $currentRevision) {
@@ -1062,23 +1067,10 @@ class InvitationTemplateService
                 ];
             }
 
-            // Khử blob URLs trong dữ liệu nếu có
-            $sanitize = function (mixed $value) use (&$sanitize): mixed {
-                if (is_array($value)) {
-                    return array_map($sanitize, $value);
-                }
-                if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
-                    return null;
-                }
-
-                return $value;
-            };
-
-            $cleanDraft = $sanitize($draftConfig);
-            $cleanWeddingDelta = $sanitize($weddingDelta);
+            $cleanDraft = $this->sanitizePendingAssets($draftConfig);
+            $cleanWeddingDelta = $this->sanitizePendingAssets($weddingDelta);
 
             // Cập nhật wedding nếu có thay đổi delta
-            $wedding = $currentInvitation->wedding;
             if ($wedding && ! empty($cleanWeddingDelta)) {
                 $allowedFields = [
                     'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
@@ -1095,7 +1087,7 @@ class InvitationTemplateService
                 }
 
                 if (isset($cleanWeddingDelta['extra_data']) && is_array($cleanWeddingDelta['extra_data'])) {
-                    $fieldsToUpdate['extra_data'] = array_merge($wedding->extra_data ?? [], $cleanWeddingDelta['extra_data']);
+                    $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $cleanWeddingDelta['extra_data']);
                 }
 
                 if (! empty($fieldsToUpdate)) {
@@ -1111,6 +1103,9 @@ class InvitationTemplateService
                 'revision_id' => $newRevision,
                 'last_autosaved_at' => now(),
             ]);
+            if ($wedding?->wasChanged()) {
+                Invitation::where('wedding_id', $wedding->id)->whereKeyNot($currentInvitation->id)->increment('revision_id');
+            }
 
             return [
                 'success' => true,
@@ -1119,5 +1114,40 @@ class InvitationTemplateService
                 'saved_at' => now()->toIso8601String(),
             ];
         });
+    }
+
+    /** @param array<string|int, mixed> $values */
+    private function sanitizePendingAssets(array $values): array
+    {
+        $sanitized = [];
+        foreach ($values as $key => $value) {
+            if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
+                continue;
+            }
+            $cleanValue = is_array($value) ? $this->sanitizePendingAssets($value) : $value;
+            if (is_array($value) && $value !== [] && $cleanValue === []) {
+                continue;
+            }
+            $sanitized[$key] = $cleanValue;
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * @param  array<string, mixed>  $existing
+     * @param  array<string, mixed>  $changes
+     * @return array<string, mixed>
+     */
+    private function mergeWeddingExtraData(array $existing, array $changes): array
+    {
+        foreach (['gallery', 'timeline'] as $listKey) {
+            if (isset($changes[$listKey]) && is_array($changes[$listKey])
+                && $changes[$listKey] !== [] && is_array($existing[$listKey] ?? null)) {
+                $changes[$listKey] = array_replace_recursive($existing[$listKey], $changes[$listKey]);
+            }
+        }
+
+        return array_merge($existing, $changes);
     }
 }

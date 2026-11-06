@@ -49,7 +49,7 @@
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>
-<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" @yield('body_attributes')>
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" @yield('body_attributes')>
     {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}
     @yield('content')
 
@@ -71,5 +71,6 @@
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
     @stack('scripts')
+    <script type="module" src="{{ asset('assets/client/js/common/invitation-config.js') }}"></script>
 </body>
 </html>

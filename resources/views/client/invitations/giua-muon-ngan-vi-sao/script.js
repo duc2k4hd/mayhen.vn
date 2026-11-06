@@ -765,8 +765,10 @@
         var cv = document.querySelector('.' + P + 'sr_hat');
         if (!man || !cv || giam) return;
         var W = window.innerWidth, H = window.innerHeight, ctx;
+        if (W <= 0 || H <= 0 || !man.getClientRects().length) return;
         cv.width = W;
         cv.height = H;
+        if (!cv.width || !cv.height) return;
         try {
             ctx = cv.getContext('2d', { willReadFrequently: true });
         } catch (e) {
@@ -810,7 +812,14 @@
             ctx.fillText(chuoi, r.left + r.width / 2, r.top + r.height / 2);
         });
 
-        var d = ctx.getImageData(0, 0, W, H).data, hat = [], buoc = 3;
+        var d, hat = [], buoc = 3;
+        try {
+            d = ctx.getImageData(0, 0, W, H).data;
+        } catch (e) {
+            ctx.clearRect(0, 0, W, H);
+            cv.style.display = 'none';
+            return;
+        }
         for (var y = 0; y < H; y += buoc) {
             for (var x = 0; x < W; x += buoc) {
                 if (d[(y * W + x) * 4 + 3] > 120) {
@@ -829,6 +838,7 @@
             var step = Math.ceil(hat.length / 9000);
             hat = hat.filter(function (_, i) { return i % step === 0; });
         }
+        if (!hat.length) return;
         man.classList.add(P + 'tan');
         cv.style.display = 'block';
         var t0 = performance.now(), DAI = 1500;

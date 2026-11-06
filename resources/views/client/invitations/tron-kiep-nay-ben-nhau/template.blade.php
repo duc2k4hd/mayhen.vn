@@ -47,6 +47,11 @@
 
     // --- Dữ liệu extra ---
     $extraData = $wedding->extra_data ?? [];
+    foreach ($extraData as $key => $value) {
+        if ($value === null && !in_array($key, ['gallery', 'timeline', 'dresscode_colors'], true) && !str_ends_with($key, '_url') && !str_ends_with($key, '_image')) {
+            $extraData[$key] = '';
+        }
+    }
 
     // --- 1. TÊN CÔ DÂU CHÚ RỂ ---
     $groomName   = $wedding->groom_name ?? ($extraData['groom_name'] ?? 'Trần Quốc Hưng');
@@ -422,7 +427,7 @@
                     </p>
                 </div>
 
-                <div class="mayhen_invitation_monogram" aria-hidden="true">
+                <div class="mayhen_invitation_monogram" data-mayhen-wax-monogram aria-hidden="true">
                     ✦ <span data-sync-target="groom_name">{{ $groomName }}</span> &amp; <span data-sync-target="bride_name">{{ $brideName }}</span> ✦
                 </div>
             </div>
