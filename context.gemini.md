@@ -3728,6 +3728,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Schema kiểm tra trực tiếp: Mỗi mẫu chỉ có 1 field duy nhất "Album 10 Ảnh Cưới".
                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
 
+               136. **Khắc Phục Toàn Diện Lỗi Vỡ Ảnh (404) & Lỗi Trùng Lặp Ảnh Mặc Định Khi Tải Trang Tạo Thiệp (`/tao-thiep`)**:
+                    - **Bối cảnh & Nguyên nhân gốc rễ**:
+                      1. *Lỗi vỡ ảnh Album trên Live Preview Iframe*: Khi người dùng mở hoặc chuyển sang mẫu mới (`tron-kiep-nay-ben-nhau`), nếu `localStorage` hoặc session lưu bản nháp của mẫu trước đó (`ngay-tinh-yeu-dom-hoa`) chứa các tên file như `gallery-01.webp` (không có trong thư mục assets của `tron-kiep-nay-ben-nhau`), hàm `$resolveAsset` trước đó cố gắng nối path thành `/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-01.webp` dẫn đến lỗi 404, làm toàn bộ ảnh trong iframe bị vỡ.
+                      2. *Lỗi trùng cùng 1 ảnh thumbnail ở 10 ô tải ảnh bên form Studio*: Thuộc tính `onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'"` trong `editor.blade.php` đã cưỡng chế tất cả các ô tải ảnh chuyển về ảnh bìa `hero-couple.webp` khi có lỗi nạp ảnh, đồng thời logic phục hồi bản nháp trong `editor.js` đã ghi đè đường dẫn ảnh cũ của mẫu trước lên các ô nhập liệu của mẫu mới.
+                      3. *Lỗi lệch origin iframe*: Thẻ `iframe` trong `editor.blade.php` trước đó dùng `route('templates.preview')` sinh URL tuyệt đối (ví dụ `http://localhost:8000`), trong khi người dùng truy cập ở `http://127.0.0.1:8000`, gây rủi ro chặn tương tác DOM / CORS giữa trang cha và iframe con.
+                    - **Giải pháp xử lý toàn diện**:
+                      1. *Cơ chế Asset Fallback Defense tự bảo vệ chống 404*:
+                         - Trong `$resolveAsset` của `tron-kiep-nay-ben-nhau/template.blade.php` và `ngay-tinh-yeu-dom-hoa/template.blade.php`, bổ sung kiểm tra tồn tại tệp vật lý `file_exists($localFile)`.
+                         - Nếu file override từ bản nháp cũ không tồn tại trong thư mục của template hiện tại, hệ thống tự động fallback về đúng ảnh mẫu mặc định tương ứng của chính template đó (`$defaultPath`). Đảm bảo 100% không bao giờ sinh ra URL 404.
+                      2. *Hiển thị đúng 100% ảnh mẫu mặc định của template trong Studio Editor*:
+                         - Trong `editor.blade.php`, vòng lặp Album 10 ảnh (`$type === 'gallery'`) và trường ảnh đơn (`$type === 'image'`) phân giải chính xác `$defaultImgUrl` của từng ô từ `schema.json`.
+                         - Nếu người dùng chưa tự tải ảnh cá nhân lên (`data:image/...` hoặc URL upload), cả trường ẩn `$gVal` lẫn ảnh xem trước `preview_thumb` luôn hiển thị đúng ảnh mẫu mặc định của ô đó.
+                         - Sửa thuộc tính `onerror` của từng ô thành `onerror="this.src='{{ $defaultImgUrl }}'"` (fallback về chính ảnh của ô đó thay vì ép tất cả về cùng một ảnh `thumbnail_url`).
+                      3. *Bảo vệ bản nháp trong JavaScript (`editor.js`)*:
+                         - Khi phục hồi `draftWeddingData`, đối với các trường ảnh (ảnh bìa, ảnh chân dung, mảng gallery), CHỈ ghi đè khi dữ liệu là ảnh do người dùng tự tải lên (`data:image/...` hoặc link `/storage/`, `/uploads/`). Bỏ qua không ghi đè các đường dẫn ảnh tĩnh của mẫu khác.
+                         - Trong `syncAllFieldsToIframe`, chỉ gửi sang iframe những ảnh mà người dùng đã tự tải lên; không gửi đè ảnh tĩnh mẫu sang iframe vì iframe đã tự render hoàn chỉnh bộ ảnh mặc định đặc trưng từ server.
+                      4. *Chuẩn hóa Iframe sang đường dẫn tương đối*:
+                         - Chuyển `src` của cả desktop iframe và mobile preview iframe trong `editor.blade.php` thành `/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor` giúp cùng origin 100% trên cả `127.0.0.1` và `localhost`.
+                    - **Files tác động**:
+                      - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/template.blade.php`
+                      - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`
+                      - `resources/views/client/pages/editor.blade.php`
+                      - `public/assets/client/js/pages/editor.js`
+                      - `tests/Feature/GalleryRenderTest.php`
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 6/6 tests passed (73 assertions).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

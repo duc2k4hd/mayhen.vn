@@ -216,15 +216,18 @@
         bride_mother: "{{ addslashes($brideMother ?? '') }}"
     };
 
-    var assetBase = "{{ $assetBase ?? (isset($template) ? url('/mau-thiep/' . $template->slug . '/assets') : '') }}";
+    var assetBase = "{{ isset($template) ? ('/mau-thiep/' . $template->slug . '/assets') : '' }}";
     var resolveUrl = function(raw) {
         var s = (raw || '').toString().trim();
         if (!s) return '';
+        if (s.indexOf('localhost:8000/mau-thiep/') !== -1 || s.indexOf('127.0.0.1:8000/mau-thiep/') !== -1) {
+            s = s.replace(/^https?:\/\/[^\/]+/, '');
+        }
         if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('/') || s.startsWith('blob:') || s.startsWith('data:')) {
             return s;
         }
         var cleanPath = s.replace(/^assets\//, '').replace(/^\/+/, '');
-        return assetBase ? (assetBase.replace(/\/+$/, '') + '/' + cleanPath) : s;
+        return assetBase ? (assetBase.replace(/\/+$/, '') + '/' + cleanPath) : ('/mau-thiep/assets/' + cleanPath);
     };
 
     // Thuật toán chuyển đổi ngày Dương Lịch sang Âm Lịch Việt Nam chuẩn thiên văn (Hồ Ngọc Đức - GMT+7)

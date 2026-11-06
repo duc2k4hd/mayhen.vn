@@ -13,18 +13,36 @@
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Ngày Tình Yêu Đơm Hoa';
 
-    // --- Hàm resolve asset ---
+    // --- Hàm resolve asset an toàn tuyệt đối với fallback nội bộ (100% relative path chống CORS & 404) ---
     $resolveAsset = function (string $relativePath, ?string $overrideUrl = null) use ($slug): string {
+        $cleanRelative = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $relativePath), '/');
+        $cleanRelative = ltrim(preg_replace('#^assets/#', '', $cleanRelative), '/');
+        $fallbackUrl   = "/mau-thiep/{$slug}/assets/{$cleanRelative}";
+
         $override = trim((string) ($overrideUrl ?? ''));
         if (str_starts_with($override, 'blob:')) {
-            $override = '';
+            return $fallbackUrl;
         }
         if (!empty($override)) {
-            if (str_starts_with($override, 'http://') || str_starts_with($override, 'https://') || str_starts_with($override, '/')) {
+            if (str_starts_with($override, 'data:')) {
                 return $override;
             }
+            if (preg_match('#^/?(storage|uploads)/#', $override)) {
+                return '/' . ltrim($override, '/');
+            }
+            if (preg_match('#^https?://#', $override) && !str_contains($override, 'localhost') && !str_contains($override, '127.0.0.1')) {
+                return $override;
+            }
+            $cleanOverride = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $override), '/');
+            $cleanOverride = ltrim(preg_replace('#^assets/#', '', $cleanOverride), '/');
+            $localFile     = resource_path("views/client/invitations/{$slug}/assets/{$cleanOverride}");
+            if (file_exists($localFile)) {
+                return "/mau-thiep/{$slug}/assets/{$cleanOverride}";
+            }
+            // File override không tồn tại trong template này (ảnh từ template khác nạp nhầm) -> fallback về ảnh mặc định của template
+            return $fallbackUrl;
         }
-        return route('templates.asset', ['slug' => $slug, 'path' => ltrim($relativePath, '/')]);
+        return $fallbackUrl;
     };
 
     // --- Dữ liệu extra ---
@@ -155,11 +173,12 @@
         8 => 'assets/images/hero-couple.webp',
         9 => 'assets/images/section2-couple-banner.webp',
     ];
-    $rawGallery = $wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? []);
+    $rawGallery = (isset($wedding) && isset($wedding->extra_data['gallery'])) ? $wedding->extra_data['gallery'] : ($extraData['gallery'] ?? []);
     $galleryPhotos = [];
     for ($g = 0; $g < 10; $g++) {
-        $img = !empty($rawGallery[$g]) ? $rawGallery[$g] : ($extraData['gallery_photo_' . ($g + 1)] ?? ($defaultGalleryList[$g] ?? 'assets/images/gallery-01.webp'));
-        $galleryPhotos[$g] = $resolveAsset($defaultGalleryList[$g] ?? 'assets/images/gallery-01.webp', $img);
+        $defaultPath = $defaultGalleryList[$g] ?? 'assets/images/gallery-01.webp';
+        $img = !empty($rawGallery[$g]) ? $rawGallery[$g] : ($extraData['gallery_photo_' . ($g + 1)] ?? null);
+        $galleryPhotos[$g] = $resolveAsset($defaultPath, $img);
     }
 
     // --- 10. SECTION 9: MỪNG CƯỚI ---

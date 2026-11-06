@@ -210,13 +210,38 @@ const initEditor = () => {
             const val = draftWeddingData[key];
             if (val === undefined || val === null || val === '') return;
 
+            // Xử lý nếu val là mảng (như mảng gallery ảnh cưới)
+            if (Array.isArray(val)) {
+                val.forEach((itemVal, itemIdx) => {
+                    if (typeof itemVal !== 'string') return;
+                    const isUserUpload = itemVal.startsWith('data:image') || itemVal.includes('/storage/') || itemVal.includes('/uploads/');
+                    if (!isUserUpload) return; // Giữ nguyên ảnh mẫu mặc định
+
+                    const itemKey = `${key}.${itemIdx}`;
+                    const inputEl = document.querySelector(`[data-sync-key="${itemKey}"]`) ||
+                                    document.querySelector(`[data-sync-key="wedding.${itemKey}"]`) ||
+                                    document.querySelector(`[data-sync-key="wedding.extra_data.${itemKey}"]`);
+                    if (inputEl) {
+                        inputEl.value = itemVal;
+                        if (inputEl.id) {
+                            const thumb = document.getElementById('preview_thumb_' + inputEl.id);
+                            if (thumb) thumb.src = itemVal;
+                        }
+                    }
+                });
+                return;
+            }
+
             const inputEl = document.querySelector(`[data-sync-key="${key}"]`) ||
                             document.querySelector(`[data-sync-key="wedding.${key}"]`) ||
                             document.querySelector(`[data-sync-key="wedding.extra_data.${key}"]`);
             if (inputEl) {
-                // Nếu là trường ảnh, loại bỏ asset ảo hoặc link rác bên ngoài (motdoi, ladicdn...)
+                // Quản lý ảnh: Khi load tạo thiệp, hiển thị 100% ảnh của mẫu.
+                // CHỈ ghi đè khi khách hàng đã thực sự tự tải ảnh lên (data:image/... hoặc link upload cá nhân)
                 if (isImageKey(key) && typeof val === 'string') {
-                    if (isBannedExternalUrl(val) || (val.startsWith('assets/') && !val.startsWith('data:image'))) {
+                    const isUserUpload = val.startsWith('data:image') || val.includes('/storage/') || val.includes('/uploads/');
+                    if (!isUserUpload) {
+                        // Nếu là đường dẫn ảnh tĩnh mẫu thì bỏ qua, không ghi đè lên ảnh mặc định của template hiện tại
                         return;
                     }
                 }
@@ -230,7 +255,8 @@ const initEditor = () => {
                         if (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('data:')) {
                             thumb.src = val;
                         } else if (templateSlug) {
-                            thumb.src = `/mau-thiep/${templateSlug}/assets/${val}`;
+                            const cleanVal = val.replace(/^assets\//, '').replace(/^\/+/, '');
+                            thumb.src = `/mau-thiep/${templateSlug}/assets/${cleanVal}`;
                         }
                     }
                 }
@@ -766,6 +792,14 @@ const initEditor = () => {
             const val = inp.value;
             // Chỉ gửi các trường có dữ liệu thực sự để tránh ghi đè chuỗi rỗng làm mất text mặc định của mẫu thiệp
             if (key && val !== undefined && val !== null && String(val).trim() !== '') {
+                // Bảo vệ trường ảnh: CHỈ gửi sang iframe khi là ảnh do người dùng tải lên (data:image/... hoặc link upload cá nhân)
+                // Các ảnh tĩnh mẫu thì iframe đã tự render sẵn ảnh mẫu đặc trưng của chính nó, không gửi đè tránh vỡ ảnh
+                if (isImageKey(key) && typeof val === 'string') {
+                    const isUserUpload = val.startsWith('data:image') || val.includes('/storage/') || val.includes('/uploads/');
+                    if (!isUserUpload) {
+                        return;
+                    }
+                }
                 sendSyncMessage(key, val);
             }
         });

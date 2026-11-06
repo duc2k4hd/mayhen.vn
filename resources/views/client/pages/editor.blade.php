@@ -325,18 +325,23 @@
                                                 @for ($gIdx = 0; $gIdx < ($field['max_items'] ?? 10); $gIdx++)
                                                     @php
                                                         $defaultImg = $defaultGalleryList[$gIdx] ?? '';
-                                                        $gVal = is_array($val) && isset($val[$gIdx]) && !empty($val[$gIdx])
-                                                            ? $val[$gIdx]
-                                                            : $defaultImg;
-                                                        $gId = "gallery_photo_{$gIdx}";
-                                                        $galleryThumbSrc = $selectedTemplate->thumbnail_url;
-                                                        if (!empty($gVal) && is_string($gVal)) {
-                                                            if (str_starts_with($gVal, 'http') || str_starts_with($gVal, '/') || str_starts_with($gVal, 'data:')) {
-                                                                $galleryThumbSrc = $gVal;
-                                                            } else {
-                                                                $galleryThumbSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($gVal, '/'));
-                                                            }
+                                                        $cleanDefaultImg = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $defaultImg), '/');
+                                                        $cleanDefaultImg = ltrim(preg_replace('#^assets/#', '', $cleanDefaultImg), '/');
+                                                        $defaultImgUrl = !empty($cleanDefaultImg) 
+                                                            ? "/mau-thiep/{$selectedTemplate->slug}/assets/{$cleanDefaultImg}" 
+                                                            : $selectedTemplate->thumbnail_url;
+
+                                                        $rawItemVal = is_array($val) && isset($val[$gIdx]) && !empty($val[$gIdx]) ? $val[$gIdx] : null;
+                                                        $isUserUploaded = is_string($rawItemVal) && (str_starts_with($rawItemVal, 'data:') || preg_match('#^/?(storage|uploads)/#', $rawItemVal));
+
+                                                        if ($isUserUploaded) {
+                                                            $gVal = $rawItemVal;
+                                                            $galleryThumbSrc = $rawItemVal;
+                                                        } else {
+                                                            $gVal = $defaultImgUrl;
+                                                            $galleryThumbSrc = $defaultImgUrl;
                                                         }
+                                                        $gId = "gallery_photo_{$gIdx}";
                                                     @endphp
                                                     <div class="mayhen_editor_gallery_item_box">
                                                         <div class="mayhen_editor_image_field_row">
@@ -344,13 +349,14 @@
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
-                                                                 onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                                 onerror="this.src='{{ $defaultImgUrl }}'">
                                                             <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
                                                                 <input type="hidden" 
                                                                        id="{{ $gId }}"
                                                                        name="{{ $inputName }}[{{ $gIdx }}]" 
                                                                        value="{{ $gVal }}" 
-                                                                       data-sync-key="{{ $fieldKey }}.{{ $gIdx }}">
+                                                                       data-sync-key="{{ $fieldKey }}.{{ $gIdx }}"
+                                                                       data-default-src="{{ $defaultImgUrl }}">
                                                                 <div style="display: flex; align-items: center; gap: 8px;">
                                                                     <label for="upload_{{ $gId }}" class="mayhen_editor_upload_btn mayhen_editor_upload_btn_sm" title="Tải ảnh từ máy tính hoặc điện thoại">
                                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -519,26 +525,34 @@
                                             </label>
                                             <div class="mayhen_editor_image_field_row">
                                                 @php
-                                                    $imagePreviewSrc = $selectedTemplate->thumbnail_url;
-                                                    if (!empty($val) && is_string($val)) {
-                                                        if (str_starts_with($val, 'http') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) {
-                                                            $imagePreviewSrc = $val;
-                                                        } else {
-                                                            $imagePreviewSrc = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . ltrim($val, '/'));
-                                                        }
+                                                    $defaultFieldImg = $field['default'] ?? '';
+                                                    $cleanDefaultFieldImg = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $defaultFieldImg), '/');
+                                                    $cleanDefaultFieldImg = ltrim(preg_replace('#^assets/#', '', $cleanDefaultFieldImg), '/');
+                                                    $defaultFieldUrl = !empty($cleanDefaultFieldImg) 
+                                                        ? "/mau-thiep/{$selectedTemplate->slug}/assets/{$cleanDefaultFieldImg}" 
+                                                        : $selectedTemplate->thumbnail_url;
+
+                                                    $isUserUploaded = is_string($val) && (str_starts_with($val, 'data:') || preg_match('#^/?(storage|uploads)/#', $val));
+                                                    if ($isUserUploaded) {
+                                                        $imageVal = $val;
+                                                        $imagePreviewSrc = $val;
+                                                    } else {
+                                                        $imageVal = $defaultFieldUrl;
+                                                        $imagePreviewSrc = $defaultFieldUrl;
                                                     }
                                                 @endphp
                                                 <img src="{{ $imagePreviewSrc }}" 
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"
-                                                     onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                     onerror="this.src='{{ $defaultFieldUrl }}'">
                                                 <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
                                                     <input type="hidden" 
                                                            id="{{ $fieldId }}" 
                                                            name="{{ $inputName }}" 
                                                            data-sync-key="{{ $fieldKey }}" 
-                                                           value="{{ is_string($val) ? $val : '' }}">
+                                                           value="{{ $imageVal }}"
+                                                           data-default-src="{{ $defaultFieldUrl }}">
                                                     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                                                         <label for="upload_{{ $fieldId }}" class="mayhen_editor_upload_btn" title="Chọn ảnh từ máy tính hoặc điện thoại">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -881,7 +895,7 @@
                     <div class="mayhen_editor_phone_island"></div>
                     <iframe 
                         id="mayhen_editor_preview_iframe"
-                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
+                        src="/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
                         class="mayhen_editor_iframe_viewport"
                         title="Bản xem trước trực tiếp mẫu thiệp cưới {{ $selectedTemplate->name }}"
                         loading="eager"
@@ -909,7 +923,7 @@
                 <div class="mayhen_editor_modal_body" id="mayhen_mobile_modal_body" style="padding: 0; height: calc(100vh - 120px); overflow: hidden;">
                     <iframe 
                         id="mayhen_editor_mobile_preview_iframe"
-                        src="{{ route('templates.preview', $selectedTemplate->slug) }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
+                        src="/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
                         style="width: 100%; height: 100%; border: none; display: block;"
                         title="Bản xem trước di động"
                     ></iframe>
