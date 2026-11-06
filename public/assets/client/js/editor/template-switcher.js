@@ -104,7 +104,7 @@ export class TemplateSwitcher {
         Object.keys(weddingState).forEach((wKey) => {
             const val = weddingState[wKey];
             const isPhoto = wKey.includes('photo') || wKey.includes('cover') || wKey.includes('image') || wKey.includes('gallery') || wKey.includes('album');
-            if (val && typeof val === 'string' && !draftData[`wedding.${wKey}`]) {
+            if (val && typeof val === 'string' && !Object.hasOwn(draftData, `wedding.${wKey}`)) {
                 if (isPhoto) {
                     if (val.startsWith('blob:')) {
                         hasPendingImages = true;
@@ -146,9 +146,11 @@ export class TemplateSwitcher {
 
         Object.keys(fieldAliases).forEach((fromKey) => {
             const toKey = fieldAliases[fromKey];
-            const fromVal = draftData[`wedding.extra_data.${fromKey}`] || draftData[`wedding.${fromKey}`] || draftData[fromKey];
-            if (fromVal && !draftData[`wedding.extra_data.${toKey}`] && !draftData[`wedding.${toKey}`]) {
-                draftData[`wedding.extra_data.${toKey}`] = fromVal;
+            const fromPath = [`wedding.extra_data.${fromKey}`, `wedding.${fromKey}`, fromKey]
+                .find((key) => Object.hasOwn(draftData, key));
+            const toPaths = [`wedding.extra_data.${toKey}`, `wedding.${toKey}`, toKey];
+            if (fromPath && !toPaths.some((key) => Object.hasOwn(draftData, key))) {
+                draftData[toPaths[0]] = draftData[fromPath];
             }
         });
 

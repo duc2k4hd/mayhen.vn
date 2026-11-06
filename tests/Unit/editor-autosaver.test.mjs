@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 import { Autosaver } from '../../public/assets/client/js/editor/autosaver.js';
 import { TemplateSwitcher } from '../../public/assets/client/js/editor/template-switcher.js';
+import { EditorStore } from '../../public/assets/client/js/editor/store.js';
+import { ActionTypes } from '../../public/assets/client/js/editor/actions.js';
 
 let savedGlobals;
 let storage;
@@ -60,6 +62,33 @@ function makeStore() {
 function makeResponse(status, data) {
     return { status, ok: status >= 200 && status < 300, json: async () => data };
 }
+
+test('saved editor configuration is loaded without replacing it with defaults', () => {
+    const savedConfig = { theme: { palette_id: 'sage-botanic' }, sections_hidden: ['story'] };
+    const store = new EditorStore({ custom_config: EditorStore.parseCustomConfig(JSON.stringify(savedConfig)) });
+
+    assert.deepEqual(store.getState().custom_config.theme, savedConfig.theme);
+    assert.deepEqual(store.getState().custom_config.sections_hidden, ['story']);
+    assert.deepEqual(EditorStore.parseCustomConfig('[]'), {});
+    assert.deepEqual(EditorStore.parseCustomConfig('{invalid'), {});
+});
+
+test('autosave retains the saved configuration when a wedding field changes', async () => {
+    const savedConfig = { theme: { palette_id: 'sage-botanic' }, sections_hidden: ['story'] };
+    const store = new EditorStore({ invitation_id: 42, revision_id: 1, custom_config: EditorStore.parseCustomConfig(JSON.stringify(savedConfig)) });
+    store.autosaver.debounceMs = 60000;
+    let request;
+    globalThis.fetch = async (url, options) => {
+        request = JSON.parse(options.body);
+        return makeResponse(200, { success: true, new_revision_id: 2 });
+    };
+
+    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: 'wedding.groom_name', value: 'Minh' } });
+    await store.autosaver.syncToServer();
+
+    assert.deepEqual(request.draft_config.theme, savedConfig.theme);
+    assert.deepEqual(request.draft_config.sections_hidden, ['story']);
+});
 
 test('saves changes made during a pending request with the new revision', async () => {
     const store = makeStore();
@@ -207,6 +236,32 @@ test('switching templates preserves uploaded local image paths', () => {
         assert.equal(draft.wedding['wedding.extra_data.gallery.0'], '/uploads/b.webp');
         navigate();
         assert.equal(window.location.href, 'https://example.test/tao-thiep?template=new-template');
+    } finally {
+        globalThis.setTimeout = originalSetTimeout;
+    }
+});
+
+test('switching templates keeps cleared fields and their aliases empty', () => {
+    const switcher = Object.create(TemplateSwitcher.prototype);
+    switcher.store = makeStore();
+    switcher.store.state.wedding.groom_name = 'Tên cũ';
+    switcher.showToast = () => {};
+    switcher.closeModal = () => {};
+    document.querySelectorAll = () => [
+        { getAttribute: () => 'wedding.groom_name', value: '' },
+        { getAttribute: () => 'wedding.extra_data.groom_bank_account', value: '' },
+        { getAttribute: () => 'wedding.extra_data.groom_account_number', value: 'Giá trị cũ' },
+        { getAttribute: () => 'wedding.extra_data.bride_bank_account', value: '' },
+    ];
+    const originalSetTimeout = globalThis.setTimeout;
+    globalThis.setTimeout = () => {};
+    try {
+        switcher.switchTemplate({ id: 2, slug: 'new-template', name: 'Mẫu mới' });
+        const draft = JSON.parse(storage.get('mayhen_transferred_draft'));
+        assert.equal(draft.wedding['wedding.groom_name'], '');
+        assert.equal(draft.wedding['wedding.extra_data.groom_bank_account'], '');
+        assert.equal(draft.wedding['wedding.extra_data.groom_account_number'], 'Giá trị cũ');
+        assert.equal(draft.wedding['wedding.extra_data.bride_account_number'], '');
     } finally {
         globalThis.setTimeout = originalSetTimeout;
     }

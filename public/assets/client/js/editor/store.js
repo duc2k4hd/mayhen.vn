@@ -9,6 +9,15 @@ import { HistoryManager } from './history.js';
 import { Autosaver } from './autosaver.js';
 
 export class EditorStore {
+    static parseCustomConfig(value) {
+        try {
+            const config = typeof value === 'string' ? JSON.parse(value) : value;
+            return config && typeof config === 'object' && !Array.isArray(config) ? config : {};
+        } catch (error) {
+            return {};
+        }
+    }
+
     constructor(initialState = {}) {
         this.state = this.getInitialState(initialState);
         this.listeners = new Set();

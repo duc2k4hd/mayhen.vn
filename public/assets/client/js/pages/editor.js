@@ -32,6 +32,7 @@ const initEditor = () => {
     const templateId = window.__MAYHEN_TEMPLATE_ID || null;
     const templateSlug = window.__MAYHEN_TEMPLATE_SLUG || '';
     const initialRevision = window.__MAYHEN_REVISION_ID || 0;
+    const customConfigInput = document.getElementById('invitation_custom_config');
 
     // Đọc các giá trị input hiện có trong DOM để khởi tạo State
     const initialWedding = {};
@@ -50,6 +51,7 @@ const initEditor = () => {
         template_slug: templateSlug,
         revision_id: initialRevision,
         wedding: initialWedding,
+        custom_config: EditorStore.parseCustomConfig(customConfigInput?.value),
     });
 
     const hasRevisionConflict = mainForm?.dataset.revisionConflict === 'true';
@@ -251,6 +253,8 @@ const initEditor = () => {
 
     // Kiểm tra và phục hồi bản nháp (Ưu tiên bản nháp vừa chuyển mẫu transferred_draft)
     let draftWeddingData = null;
+    let draftCustomConfig = null;
+    const restoredFieldKeys = new Set();
     try {
         const transferredDraftRaw = sessionStorage.getItem('mayhen_transferred_draft');
         const skipTransferredDraft = sessionStorage.getItem('mayhen_skip_transferred_draft') === '1';
@@ -259,6 +263,7 @@ const initEditor = () => {
             const parsed = JSON.parse(transferredDraftRaw);
             if (parsed && parsed.wedding) {
                 draftWeddingData = parsed.wedding;
+                draftCustomConfig = parsed.custom_config;
                 sessionStorage.removeItem('mayhen_transferred_draft');
             }
         }
@@ -272,14 +277,19 @@ const initEditor = () => {
             const hasData = Object.values(localDraft.wedding).some(v => typeof v === 'string' && v.trim().length > 0);
             if (hasData && (isSameTemplate || invitationId)) {
                 draftWeddingData = localDraft.wedding;
+                draftCustomConfig = localDraft.custom_config;
             }
         }
     }
 
     if (draftWeddingData) {
+        if (draftCustomConfig && typeof draftCustomConfig === 'object' && !Array.isArray(draftCustomConfig)) {
+            store.dispatch({ type: ActionTypes.UPDATE_CUSTOM_CONFIG, payload: draftCustomConfig });
+            if (customConfigInput) customConfigInput.value = JSON.stringify(store.getState().custom_config);
+        }
         Object.keys(draftWeddingData).forEach(key => {
             const val = draftWeddingData[key];
-            if (val === undefined || val === null || val === '') return;
+            if (val === undefined || val === null) return;
 
             // Xử lý nếu val là mảng (như mảng gallery ảnh cưới)
             if (Array.isArray(val)) {
@@ -318,6 +328,7 @@ const initEditor = () => {
                 }
 
                 inputEl.value = val;
+                restoredFieldKeys.add(inputEl.getAttribute('data-sync-key'));
 
                 // Đồng bộ thẻ xem trước ảnh bên trái (preview thumb)
                 if (inputEl.id) {
@@ -861,8 +872,8 @@ const initEditor = () => {
         inputs.forEach(inp => {
             const key = inp.getAttribute('data-sync-key');
             const val = inp.value;
-            // Chỉ gửi các trường có dữ liệu thực sự để tránh ghi đè chuỗi rỗng làm mất text mặc định của mẫu thiệp
-            if (key && val !== undefined && val !== null && String(val).trim() !== '') {
+            // Giữ nội dung mẫu mặc định, trừ trường rỗng đã được khôi phục có chủ đích từ bản nháp.
+            if (key && val !== undefined && val !== null && (String(val).trim() !== '' || restoredFieldKeys.has(key))) {
                 // Bảo vệ trường ảnh: CHỈ gửi sang iframe khi là ảnh do người dùng tải lên (data:image/... hoặc link upload cá nhân)
                 // Các ảnh tĩnh mẫu thì iframe đã tự render sẵn ảnh mẫu đặc trưng của chính nó, không gửi đè tránh vỡ ảnh
                 if (isImageKey(key) && typeof val === 'string') {
