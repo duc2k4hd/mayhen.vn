@@ -3634,7 +3634,11 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      1. *Album Hình Cưới*: Bổ sung đầy đủ hệ thống class gốc `.mayhen_invitation_album_section`, `.mayhen_invitation_album_header`, `.mayhen_invitation_album_title`, `.mayhen_invitation_album_ornament`, `.mayhen_invitation_album_grid` và `.mayhen_invitation_album_item`, khôi phục lưới 2 cột tỷ lệ chuẩn kèm hiệu ứng hover và nút xem thêm.
                      2. *Hộp Mừng Cưới (VietQR)*: Khôi phục cấu trúc thẻ `.mayhen_invitation_gift_section`, `.mayhen_invitation_gift_grid`, `.mayhen_invitation_qr_card` với khung ảnh QR `.mayhen_invitation_qr_card__img_wrap` cố định kích thước 131x134px viền cong bo góc, ngăn ngừa mã QR bị phóng to tràn màn hình.
                      3. *Sửa lỗi thanh đen `< >` che khuất giao diện*: Đưa khung Lightbox Modal xuống cuối trang và gắn đúng class `.mayhen_invitation_modal_backdrop` (có `display: none` mặc định), ngăn việc thanh điều khiển ảnh hiện đè lên giao diện.
-                   - **Kiểm thử**: Pest test 5/5 passed, render test đạt 127KB sạch sẽ không lỗi PHP, schema Studio chuẩn 10 bước không còn duplicate.
+                   - **Khôi phục hoàn hảo Section Lời Cảm Ơn Kết Thiệp (Footer Thank You)**:
+                     1. Khôi phục cấu trúc thẻ `.mayhen_invitation_footer_section` độc lập sau Section RSVP & Lời chúc.
+                     2. Áp dụng container `.mayhen_invitation_footer_circle_stage`, định vị chuẩn xác vòng tròn chân dung `.mayhen_invitation_footer_circle` bo cong viền đỏ son và ảnh nghệ thuật chữ thư pháp `.mayhen_invitation_footer_thankyou_img` ôm trọn nửa dưới khung ảnh.
+                     3. Loại bỏ chữ Thank You text bị lặp đè lên ảnh nghệ thuật, hiển thị tên cặp đôi `.mayhen_invitation_footer_names` font chữ thư pháp cổ điển `MayhenScript` căn giữa trang trọng và lời tri ân `.mayhen_invitation_ending_text` thanh lịch.
+                   - **Kiểm thử**: Pest test 5/5 passed, render test đạt 129KB sạch sẽ không lỗi PHP, schema Studio chuẩn 10 bước không còn duplicate.
 
 ---
 

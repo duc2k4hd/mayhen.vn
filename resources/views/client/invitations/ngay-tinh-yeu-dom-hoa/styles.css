@@ -2128,3 +2128,14 @@
     margin-top: 10px;
     font-style: italic;
 }
+
+.mayhen_invitation_ending_text {
+    font-family: var(--mayhen-invitation-serif-font);
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--mayhen-invitation-text-muted);
+    font-style: italic;
+    max-width: 320px;
+    margin: 18px auto 0;
+    text-align: center;
+}

@@ -861,30 +861,35 @@
             <p class="mayhen_invitation_sig_status mayhen_invitation_status_msg" role="status" aria-live="polite"></p>
             <div class="mayhen_invitation_signature_preview_list" aria-label="Danh sách chữ ký đã lưu"></div>
         </div>
-
-        {{-- Lời cảm ơn kết thiệp --}}
-        <div class="mayhen_invitation_ending">
-            <img class="mayhen_invitation_footer_ornament"
-                 src="{{ $resolveAsset('assets/images/ornament-footer-floral.webp') }}" alt="">
-            <p class="mayhen_invitation_ending_couple_name">
-                <span data-sync-target="groom_name">{{ $groomName }}</span>
-                &amp;
-                <span data-sync-target="bride_name">{{ $brideName }}</span>
-            </p>
-            <div class="mayhen_invitation_ending_photo" data-lightbox-item="true">
-                <div class="mayhen_invitation_footer_circle">
-                    <img src="{{ $footerPhotoUrl }}"
-                         alt="{{ $groomName }} & {{ $brideName }}"
-                         data-sync-target="footer_photo_url">
-                </div>
-                <img class="mayhen_invitation_footer_thankyou_img"
-                     src="{{ $resolveAsset('assets/images/ornament-thankyou-text.webp') }}"
-                     alt="Thank You">
-            </div>
-            <h2 class="mayhen_invitation_ending_title" data-sync-target="ending_title">{{ $endingTitle }}</h2>
-            <p class="mayhen_invitation_ending_text" data-sync-target="ending_text">{{ $endingText }}</p>
-        </div>
     </section>
+
+    <div class="mayhen_invitation_divider" aria-hidden="true"></div>
+
+    {{-- ==================== FOOTER: LỜI CẢM ƠN KẾT THIỆP ==================== --}}
+    <footer class="mayhen_invitation_section mayhen_invitation_footer_section mayhen_invitation_ending" data-mayhen-section="ending">
+        <img class="mayhen_invitation_footer_ornament"
+             src="{{ $resolveAsset('assets/images/ornament-footer-floral.webp') }}" alt="">
+
+        <h3 class="mayhen_invitation_footer_names mayhen_invitation_ending_couple_name">
+            <span data-sync-target="groom_name">{{ $groomName }}</span>
+            &amp;
+            <span data-sync-target="bride_name">{{ $brideName }}</span>
+        </h3>
+
+        <div class="mayhen_invitation_footer_circle_stage">
+            <div class="mayhen_invitation_footer_circle mayhen_invitation_ending_photo" data-lightbox-item="true">
+                <img src="{{ $footerPhotoUrl }}"
+                     alt="{{ $groomName }} & {{ $brideName }}"
+                     data-sync-target="footer_photo_url">
+            </div>
+            <img class="mayhen_invitation_footer_thankyou_img"
+                 src="{{ $resolveAsset('assets/images/ornament-thankyou-text.webp') }}"
+                 alt="Thank You">
+        </div>
+
+        <span class="mayhen_invitation_ending_title" data-sync-target="ending_title" style="display:none;">{{ $endingTitle }}</span>
+        <p class="mayhen_invitation_ending_text" data-sync-target="ending_text">{{ $endingText }}</p>
+    </footer>
 
     {{-- ==================== LIGHTBOX MODAL ==================== --}}
     <div class="mayhen_invitation_modal_backdrop mayhen_invitation_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
