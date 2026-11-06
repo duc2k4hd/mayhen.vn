@@ -140,17 +140,25 @@
         '#0c0c0c' => 'Đen Tuyền',
     ];
 
-    // --- 9. SECTION 8: ALBUM 8-10 ẢNH ---
-    $galleryPhotos = [
-        1 => $resolveAsset('assets/images/hero-couple.webp', $extraData['gallery_photo_1'] ?? null),
-        2 => $resolveAsset('assets/images/ceremony-aodai-01.webp', $extraData['gallery_photo_2'] ?? null),
-        3 => $resolveAsset('assets/images/countdown-veil.webp', $extraData['gallery_photo_3'] ?? null),
-        4 => $resolveAsset('assets/images/ceremony-aodai-02.webp', $extraData['gallery_photo_4'] ?? null),
-        5 => $resolveAsset('assets/images/gallery-05.webp', $extraData['gallery_photo_5'] ?? null),
-        6 => $resolveAsset('assets/images/gallery-06.webp', $extraData['gallery_photo_6'] ?? null),
-        7 => $resolveAsset('assets/images/ceremony-aodai-03.webp', $extraData['gallery_photo_7'] ?? null),
-        8 => $resolveAsset('assets/images/groom-portrait.webp', $extraData['gallery_photo_8'] ?? null),
+    // --- 9. SECTION 8: ALBUM 10 ẢNH CƯỚI TIÊU CHUẨN ---
+    $defaultGalleryList = [
+        0 => 'assets/images/hero-couple.webp',
+        1 => 'assets/images/ceremony-aodai-01.webp',
+        2 => 'assets/images/countdown-veil.webp',
+        3 => 'assets/images/ceremony-aodai-02.webp',
+        4 => 'assets/images/gallery-05.webp',
+        5 => 'assets/images/gallery-06.webp',
+        6 => 'assets/images/ceremony-aodai-03.webp',
+        7 => 'assets/images/groom-portrait.webp',
+        8 => 'assets/images/bride-portrait.webp',
+        9 => 'assets/images/hero-couple.webp',
     ];
+    $rawGallery = $wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? []);
+    $galleryPhotos = [];
+    for ($g = 0; $g < 10; $g++) {
+        $img = !empty($rawGallery[$g]) ? $rawGallery[$g] : ($extraData['gallery_photo_' . ($g + 1)] ?? ($defaultGalleryList[$g] ?? 'assets/images/hero-couple.webp'));
+        $galleryPhotos[$g] = $resolveAsset($defaultGalleryList[$g] ?? 'assets/images/hero-couple.webp', $img);
+    }
 
     // --- 10. SECTION 9: HỘP MỪNG CƯỚI ---
     $groomBankName    = $extraData['groom_bank_name']    ?? 'Vietcombank - CN Cần Thơ';
@@ -798,61 +806,73 @@
             </div>
 
             <div class="mayhen_invitation_gallery__grid mayhen_invitation_gallery_wrap">
-                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--tall mayhen_invitation_gallery_item" data-index="1">
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--tall mayhen_invitation_gallery_item" data-index="0">
                     <img
-                        src="{{ $galleryPhotos[1] }}"
+                        src="{{ $galleryPhotos[0] }}"
                         alt="Album hình cưới 01"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_1"
-                        data-lightbox-src="{{ $galleryPhotos[1] }}"
+                        data-sync-target="gallery.0"
+                        data-lightbox-src="{{ $galleryPhotos[0] }}"
                         loading="lazy"
                         width="800"
                         height="1200"
                     >
                 </figure>
-                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery_item" data-index="2">
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery_item" data-index="1">
                     <img
-                        src="{{ $galleryPhotos[2] }}"
+                        src="{{ $galleryPhotos[1] }}"
                         alt="Album hình cưới 02"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_2"
-                        data-lightbox-src="{{ $galleryPhotos[2] }}"
+                        data-sync-target="gallery.1"
+                        data-lightbox-src="{{ $galleryPhotos[1] }}"
                         loading="lazy"
                         width="600"
                         height="900"
                     >
                 </figure>
-                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery_item" data-index="3">
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery_item" data-index="2">
                     <img
-                        src="{{ $galleryPhotos[3] }}"
+                        src="{{ $galleryPhotos[2] }}"
                         alt="Album hình cưới 03"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_3"
-                        data-lightbox-src="{{ $galleryPhotos[3] }}"
+                        data-sync-target="gallery.2"
+                        data-lightbox-src="{{ $galleryPhotos[2] }}"
                         loading="lazy"
                         width="800"
                         height="1066"
                     >
                     <figcaption class="mayhen_invitation_gallery__caption">JUST THE WAY YOU ARE</figcaption>
                 </figure>
-                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--tall mayhen_invitation_gallery_item" data-index="4">
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--tall mayhen_invitation_gallery_item" data-index="3">
                     <img
-                        src="{{ $galleryPhotos[4] }}"
+                        src="{{ $galleryPhotos[3] }}"
                         alt="Album hình cưới 04"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_4"
-                        data-lightbox-src="{{ $galleryPhotos[4] }}"
+                        data-sync-target="gallery.3"
+                        data-lightbox-src="{{ $galleryPhotos[3] }}"
                         loading="lazy"
                         width="600"
                         height="900"
                     >
                 </figure>
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="4">
+                    <img
+                        src="{{ $galleryPhotos[4] }}"
+                        alt="Album hình cưới 05"
+                        class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
+                        data-sync-target="gallery.4"
+                        data-lightbox-src="{{ $galleryPhotos[4] }}"
+                        loading="lazy"
+                        width="600"
+                        height="800"
+                    >
+                </figure>
                 <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="5">
                     <img
                         src="{{ $galleryPhotos[5] }}"
-                        alt="Album hình cưới 05"
+                        alt="Album hình cưới 06"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_5"
+                        data-sync-target="gallery.5"
                         data-lightbox-src="{{ $galleryPhotos[5] }}"
                         loading="lazy"
                         width="600"
@@ -862,34 +882,46 @@
                 <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="6">
                     <img
                         src="{{ $galleryPhotos[6] }}"
-                        alt="Album hình cưới 06"
-                        class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_6"
-                        data-lightbox-src="{{ $galleryPhotos[6] }}"
-                        loading="lazy"
-                        width="600"
-                        height="800"
-                    >
-                </figure>
-                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="7">
-                    <img
-                        src="{{ $galleryPhotos[7] }}"
                         alt="Album hình cưới 07"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_7"
-                        data-lightbox-src="{{ $galleryPhotos[7] }}"
+                        data-sync-target="gallery.6"
+                        data-lightbox-src="{{ $galleryPhotos[6] }}"
                         loading="lazy"
                         width="600"
                         height="900"
                     >
                 </figure>
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="7">
+                    <img
+                        src="{{ $galleryPhotos[7] }}"
+                        alt="Album hình cưới 08"
+                        class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
+                        data-sync-target="gallery.7"
+                        data-lightbox-src="{{ $galleryPhotos[7] }}"
+                        loading="lazy"
+                        width="600"
+                        height="800"
+                    >
+                </figure>
                 <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="8">
                     <img
                         src="{{ $galleryPhotos[8] }}"
-                        alt="Album hình cưới 08"
+                        alt="Album hình cưới 09"
                         class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
-                        data-sync-target="gallery_photo_8"
+                        data-sync-target="gallery.8"
                         data-lightbox-src="{{ $galleryPhotos[8] }}"
+                        loading="lazy"
+                        width="600"
+                        height="900"
+                    >
+                </figure>
+                <figure class="mayhen_invitation_gallery__item mayhen_invitation_gallery__item--extra mayhen_invitation_gallery_item" data-index="9">
+                    <img
+                        src="{{ $galleryPhotos[9] }}"
+                        alt="Album hình cưới 10"
+                        class="mayhen_invitation_gallery__img mayhen_invitation_gallery_img"
+                        data-sync-target="gallery.9"
+                        data-lightbox-src="{{ $galleryPhotos[9] }}"
                         loading="lazy"
                         width="600"
                         height="800"

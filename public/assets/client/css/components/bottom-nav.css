@@ -173,13 +173,6 @@
     }
 }
 
-/* ==========================================================================
-   4. BODY PADDING OFFSET ĐẢM BẢO KHÔNG BỊ CHE KHUẤT NỘI DUNG CHÂN TRANG
-   ========================================================================== */
-body {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-}
-
 @media (min-width: 860px) {
     /* Trên màn hình lớn, thanh dock bo tròn nổi tuyệt đẹp ở giữa đáy */
     .mayhen_client_bottom_nav_wrapper {

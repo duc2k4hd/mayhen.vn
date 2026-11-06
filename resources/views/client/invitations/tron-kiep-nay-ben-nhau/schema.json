@@ -413,66 +413,29 @@
     },
     {
       "id": "album",
-      "title": "Album Hình Cưới",
+      "title": "Khoảnh Khắc Hạnh Phúc (10 Ảnh Cưới)",
       "short_title": "Ảnh Cưới",
       "icon": "image",
-      "description": "Bộ sưu tập 8 khoảnh khắc đẹp nhất của cô dâu và chú rể",
+      "description": "Bộ sưu tập 10 ảnh cưới ngọt ngào và đáng nhớ",
       "fields": [
         {
-          "key": "wedding.extra_data.gallery_photo_1",
-          "label": "Ảnh cưới 1",
-          "type": "image",
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
           "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/hero-couple.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_2",
-          "label": "Ảnh cưới 2",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-01.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_3",
-          "label": "Ảnh cưới 3",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/countdown-veil.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_4",
-          "label": "Ảnh cưới 4",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-02.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_5",
-          "label": "Ảnh cưới 5",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-05.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_6",
-          "label": "Ảnh cưới 6",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-06.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_7",
-          "label": "Ảnh cưới 7",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-03.webp"
-        },
-        {
-          "key": "wedding.extra_data.gallery_photo_8",
-          "label": "Ảnh cưới 8",
-          "type": "image",
-          "required": false,
-          "default": "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/groom-portrait.webp"
+          "max_items": 10,
+          "default": [
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/hero-couple.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-01.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/countdown-veil.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-02.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-05.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/gallery-06.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/ceremony-aodai-03.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/groom-portrait.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/bride-portrait.webp",
+            "/mau-thiep/tron-kiep-nay-ben-nhau/assets/images/hero-couple.webp"
+          ]
         }
       ]
     },

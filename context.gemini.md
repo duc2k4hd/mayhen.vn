@@ -3706,6 +3706,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                      - Schema không bị trùng lặp trường.
                      - Laravel Pint pass format agent style.
 
+              135. **Chuẩn Hóa Album 10 Ảnh Cưới Tiêu Chuẩn & Triệt Tiêu Lỗi Trùng Lặp Trường / Lặp Ảnh Trong Studio Editor**:
+                   - **Bối cảnh & Nguyên nhân**:
+                     1. *Lỗi thừa trường Bước 8 (Ảnh Cưới)*: Trong `schema.json` của cả 2 mẫu `tron-kiep-nay-ben-nhau` và `ngay-tinh-yeu-dom-hoa`, phần `album` trước đó định nghĩa các trường riêng lẻ `gallery_photo_1` .. `gallery_photo_8`. Trong khi đó, `InvitationTemplateService::normalizeSchema()` luôn tự động nạp trường canonical chuẩn `wedding.extra_data.gallery` (`type: "gallery"`, 10 ô tải ảnh). Do đó, giao diện Studio hiển thị đồng thời cả khối "Album 10 Ảnh Cưới" LẪN 8 trường "Ảnh cưới 1..8" bên dưới.
+                     2. *Lỗi lặp cùng 1 ảnh thumbnail ở 10 ô preview*: Mảng `gallery` trong `schema.json` và `InvitationTemplateSeeder` thiếu tiền tố đường dẫn hợp lệ hoặc chưa định nghĩa đủ 10 ảnh khác nhau, khiến các ô tải ảnh bị fallback về cùng một ảnh đại diện `thumbnail_url`.
+                     3. *Lỗi trái tim phần đếm ngược bị lệch*: Trong `ngay-tinh-yeu-dom-hoa/styles.css`, class `.mayhen_invitation_calendar_heart` trước đó chỉ có `top: 10%; transform: translate(-50%, -50%)` thiếu `left: 50%` khiến trái tim bị lệch sang mép trái và bay khỏi số ngày cưới.
+                   - **Giải pháp xử lý toàn diện**:
+                     1. *Chuẩn hóa Schema Album*: Thay thế toàn bộ 8 trường đơn lẻ `gallery_photo_1`..`gallery_photo_8` bằng trường canonical duy nhất `wedding.extra_data.gallery` (`type: "gallery"`, `max_items: 10`, cung cấp sẵn mảng 10 đường dẫn ảnh WebP mặc định hoàn toàn khác biệt từ kho ảnh nội bộ) trong `schema.json` của cả 2 mẫu `tron-kiep-nay-ben-nhau` và `ngay-tinh-yeu-dom-hoa`.
+                     2. *Cập nhật Template Blade*: Đọc trực tiếp từ mảng `$wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? [])`, duyệt đủ 10 ảnh (index 0 đến 9), gắn đầy đủ `data-sync-target="gallery.{{ $i }}"` và `data-index="{{ $i }}"`.
+                     3. *Cập nhật Database Seeder*: Cung cấp mảng 10 ảnh đầy đủ đường dẫn `/mau-thiep/{slug}/assets/images/...` trong `default_config->gallery` cho cả 2 mẫu và chạy lại seeder thành công.
+                     4. *Căn giữa tuyệt đối trái tim Lịch Đếm Ngược*: Sửa `.mayhen_invitation_calendar_heart` thành `top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none;` và đặt số ngày cưới `.mayhen_invitation_calendar_cell--active span` ở `z-index: 2; color: #ffffff !important;` giúp trái tim ôm khít số ngày cưới nổi bật.
+                   - **Files tác động**:
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/schema.json`
+                     - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/template.blade.php`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/schema.json`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/styles.css`
+                     - `database/seeders/InvitationTemplateSeeder.php`
+                   - **Kiểm thử & Chất lượng**:
+                     - Pest: 5/5 tests passed (51 assertions).
+                     - Schema kiểm tra trực tiếp: Mỗi mẫu chỉ có 1 field duy nhất "Album 10 Ảnh Cưới".
+                     - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

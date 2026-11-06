@@ -142,20 +142,24 @@
     $bridePhotoUrl     = $resolveAsset('assets/images/bride-portrait.webp',         $extraData['bride_photo_url'] ?? ($wedding->bride_photo_url ?? null));
     $footerPhotoUrl    = $resolveAsset('assets/images/footer-couple-circle.webp',   $extraData['footer_photo_url'] ?? null);
 
-    // Album 8 ảnh — key: gallery_photo_1 .. gallery_photo_8
-    $defaultGallery = [
-        1 => 'assets/images/gallery-01.webp',
-        2 => 'assets/images/gallery-02.webp',
-        3 => 'assets/images/gallery-03.webp',
-        4 => 'assets/images/gallery-04.webp',
-        5 => 'assets/images/gallery-05.webp',
-        6 => 'assets/images/gallery-06.webp',
-        7 => 'assets/images/gallery-07.webp',
-        8 => 'assets/images/gallery-08.webp',
+    // Album 10 ảnh cưới tiêu chuẩn — mảng extra_data.gallery
+    $defaultGalleryList = [
+        0 => 'assets/images/gallery-01.webp',
+        1 => 'assets/images/gallery-02.webp',
+        2 => 'assets/images/gallery-03.webp',
+        3 => 'assets/images/gallery-04.webp',
+        4 => 'assets/images/gallery-05.webp',
+        5 => 'assets/images/gallery-06.webp',
+        6 => 'assets/images/gallery-07.webp',
+        7 => 'assets/images/gallery-08.webp',
+        8 => 'assets/images/hero-couple.webp',
+        9 => 'assets/images/section2-couple-banner.webp',
     ];
+    $rawGallery = $wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? []);
     $galleryPhotos = [];
-    for ($i = 1; $i <= 8; $i++) {
-        $galleryPhotos[$i] = $resolveAsset($defaultGallery[$i], $extraData["gallery_photo_{$i}"] ?? null);
+    for ($g = 0; $g < 10; $g++) {
+        $img = !empty($rawGallery[$g]) ? $rawGallery[$g] : ($extraData['gallery_photo_' . ($g + 1)] ?? ($defaultGalleryList[$g] ?? 'assets/images/gallery-01.webp'));
+        $galleryPhotos[$g] = $resolveAsset($defaultGalleryList[$g] ?? 'assets/images/gallery-01.webp', $img);
     }
 
     // --- 10. SECTION 9: MỪNG CƯỚI ---
@@ -675,7 +679,7 @@
 
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
-    {{-- ==================== SECTION 8: ALBUM HÌNH CƯỚI (8 PHOTOS) ==================== --}}
+    {{-- ==================== SECTION 8: ALBUM HÌNH CƯỚI (10 PHOTOS) ==================== --}}
     <section class="mayhen_invitation_section mayhen_invitation_album_section mayhen_invitation_gallery" data-mayhen-section="album,gallery">
 
         <div class="mayhen_invitation_album_header">
@@ -685,13 +689,15 @@
         </div>
 
         <div class="mayhen_invitation_album_grid mayhen_invitation_gallery_wrap">
-            @for ($i = 1; $i <= 8; $i++)
+            @for ($i = 0; $i < 10; $i++)
                 <div class="mayhen_invitation_album_item mayhen_invitation_gallery_item mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
                      data-lightbox-item="true" data-index="{{ $i }}">
                     <img src="{{ $galleryPhotos[$i] }}"
-                         alt="Ảnh cưới {{ $i }}"
+                         alt="Ảnh cưới {{ $i + 1 }}"
                          class="mayhen_invitation_gallery_img"
-                         data-sync-target="gallery_photo_{{ $i }}">
+                         data-sync-target="gallery.{{ $i }}"
+                         data-lightbox-src="{{ $galleryPhotos[$i] }}"
+                         loading="lazy">
                 </div>
             @endfor
         </div>

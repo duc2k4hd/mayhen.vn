@@ -1054,18 +1054,29 @@
 }
 
 .mayhen_invitation_calendar_cell--active {
-    color: #ffffff;
+    color: #ffffff !important;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_invitation_calendar_cell--active span {
+    position: relative;
+    z-index: 2;
+    color: #ffffff !important;
     font-weight: 700;
 }
 
 .mayhen_invitation_calendar_heart {
     position: absolute;
-    width: 30px;
+    width: 32px;
     height: 32px;
-    top: 10%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
-    z-index: -1;
-    animation: mayhenPulse 1s infinite;
+    z-index: 1;
+    pointer-events: none;
+    animation: mayhenPulse 1.4s ease-in-out infinite;
 }
 
 /* Countdown Row with Left/Right Bow Ornaments (#GROUP160) */
