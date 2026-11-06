@@ -7,6 +7,17 @@
 **Trạng thái tài liệu:** ĐẶC TẢ ĐỀ XUẤT để thiết kế và phát triển; **không phải tuyên bố các chức năng đã triển khai**.  
 **Đối tượng đọc:** Chủ sản phẩm, thiết kế UI/UX, backend, frontend, QA, DevOps và AI agent triển khai.
 
+### Đối chiếu với repository — 06/11/2026 (đang thực hiện)
+
+Phần này ghi nhận bằng chứng ban đầu, không thay thế kiểm toán đầy đủ hoặc xác nhận một tính năng đã sẵn sàng kinh doanh. Xem [kiểm toán bước đầu](MAY_HEN_PROJECT_AUDIT.md) và [roadmap triển khai](MAY_HEN_IMPLEMENTATION_ROADMAP.md) để biết phạm vi kiểm tra, công việc còn lại và tiêu chí nghiệm thu.
+
+- **Công nghệ thực tế:** `composer.json` yêu cầu PHP `^8.3`, Laravel `^13.17`; phiên bản được kiểm tra trong workspace là PHP CLI 8.5.10 và Laravel 13.35.0. Blade, CSS thuần và JavaScript thuần là quy ước sản phẩm; việc khai báo một dependency frontend không chứng minh nó đang được sử dụng.
+- **Mô hình đang có:** `users` → `weddings` → `invitations`; mẫu ở `invitation_templates`; khách và RSVP gắn với `weddings`. Các bảng workspace, membership, wedding event và template version ở mục 38 là phương án mục tiêu, chưa được xác nhận đã tồn tại. Không tạo migration hoặc đổi tên bảng chỉ để khớp sơ đồ đề xuất.
+- **Studio:** Schema được chuẩn hóa qua `InvitationTemplateService`; mười section canonical hiện tại là `hero`, `story`, `parents`, `countdown_calendar`, `events`, `timeline`, `dresscode`, `album`, `gift`, `ending`. Opening là phần bao ngoài theo skill mẫu thiệp. Có endpoint autosave và revision; bảo toàn dữ liệu khi đồng bộ, cô lập nháp và công khai vẫn cần kiểm thử trước khi coi là hoàn tất.
+- **Bảo vệ P0:** Cần xử lý và xác minh quyền quản lý khách, xác thực webhook thanh toán, quyền gắn đơn hàng với thiệp và phạm vi guest token trước khi coi các luồng này đủ an toàn để mở bán. Danh sách chi tiết và điều kiện xác minh nằm trong báo cáo kiểm toán.
+- **Thứ tự thực hiện:** Ưu tiên bảo vệ dữ liệu khách và giao dịch, sau đó ổn định Studio, xuất bản và RSVP. Không mặc định triển khai ngay đa tenant, role matrix, snapshot, hàng loạt bảng mới hoặc các tính năng P2; thiết kế chi tiết theo nhu cầu và tương thích dữ liệu hiện hữu.
+- **Thứ bậc áp dụng:** Yêu cầu người dùng và `AGENTS.md` hiện hành áp dụng cho công việc trong repository. Phụ lục clone ở cuối là tài liệu nguồn tham khảo, không tự kích hoạt yêu cầu clone một mẫu hay ghi đè các quy tắc hiện hành khi làm tác vụ khác.
+
 > **Mục tiêu của bản viết lại:** File gốc chỉ tập trung clone trung thực **một** mẫu thiệp `Hương Hoa Ngày Đính Ước` từ URL tham chiếu. Bản này mở rộng thành kiến trúc và danh mục chức năng cho toàn bộ nền tảng Mây Hẹn, đặc biệt giao diện **Super Admin** và **Admin của khách hàng**. Đồng thời giữ nguyên những điều khoản không thể thỏa hiệp của file gốc về clone, asset, Studio, RSVP, chữ ký, responsive, QA và quyền sử dụng nội dung. **Toàn văn prompt gốc được đính ở cuối tài liệu làm phụ lục tham chiếu.**
 
 ---

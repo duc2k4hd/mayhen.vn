@@ -121,6 +121,14 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 
 ---
 
+### Cập nhật kiểm toán dự án — 06/11/2026
+
+- Bổ sung đối chiếu hiện trạng vào `docs/MAY_HEN_MASTER_PRD_ADMIN_STUDIO_V3.md`, báo cáo bước đầu `docs/MAY_HEN_PROJECT_AUDIT.md` và roadmap `docs/MAY_HEN_IMPLEMENTATION_ROADMAP.md`.
+- Ưu tiên kiểm tra quyền quản lý khách, xác thực webhook, phạm vi RSVP và độ tin cậy autosave. Những nhận định này dựa trên đọc mã tĩnh, chưa phải kết luận kiểm toán bảo mật hoàn chỉnh hoặc kết quả test.
+- Đây là giai đoạn khảo sát một phần: chưa sửa mã ứng dụng, chưa chạy migration hay kiểm thử tích hợp; các task và trạng thái chi tiết nằm trong roadmap.
+
+---
+
 ## 4. QUY TẮC BẢO VỆ PHÂN TẦNG MẪU THIỆP & QUẢN LÝ TRẢI NGHIỆM KHÁCH HÀNG
 
 ### 1. Phân Tầng Gói Dịch Vụ (Tiering System)
