@@ -3659,4 +3659,18 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+              133. **Khắc Phục Triệt Để Trùng Lặp Trường Nhập Liệu Tại Bước 10 (Cảm Ơn) & Bước 4 (Đếm Ngược) Trong Studio Editor**:
+                   - **Nguyên nhân cốt lõi**: `InvitationTemplateService::normalizeSchema()` luôn tự động nạp các trường canonical chuẩn từ hệ thống trước (`thank_you_title`, `thank_you_quote` cho Bước 10; `event_target_time` cho Bước 4). Vì file `schema.json` của mẫu trước đó định nghĩa các key tùy biến khác tên (`ending_title`, `ending_text`, `countdown_time`), hàm `normalizeSchema()` coi đây là các trường bổ sung riêng nên đã nối thêm vào danh sách, dẫn tới việc trên giao diện form hiển thị lặp lại 2 lần "Tiêu đề lời tri ân kết thiệp" và 2 lần "Thông điệp cảm ơn gửi quan khách".
+                   - **Xử lý triệt để**:
+                     1. Cập nhật `schema.json` chuẩn hóa 100% key đồng nhất với canonical: chuyển `ending_title` -> `wedding.extra_data.thank_you_title`, `ending_text` -> `wedding.extra_data.thank_you_quote`, `countdown_time` -> `wedding.extra_data.event_target_time`.
+                     2. Cập nhật `template.blade.php` và `aliasesMap` trong `editor-bridge.blade.php` hỗ trợ cả 2 chuẩn key (hai chiều), đồng bộ tức thời khi người dùng nhập liệu ở form Studio.
+                     3. Kết quả: Bước 10 chỉ còn đúng 3 trường sạch sẽ (Tiêu đề, Thông điệp cảm ơn, Ảnh tròn); Bước 4 chỉ còn đúng 2 trường (Ngày cưới, Giờ đếm ngược).
+                   - **Files tác động**:
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/schema.json`
+                     - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`
+                     - `resources/views/client/invitations/partials/editor-bridge.blade.php`
+                   - **Kiểm thử**: Đã chạy script kiểm tra `normalizeSchema()` thực tế, Pest 5/5 tests passed (51 assertions).
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

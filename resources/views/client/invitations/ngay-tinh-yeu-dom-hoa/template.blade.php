@@ -51,7 +51,7 @@
     $weddingLunarDate  = $extraData['wedding_lunar_date'] ?? '(Tức ngày 14 tháng 10 năm Bính Ngọ)';
 
     // Giờ đếm ngược
-    $countdownTime = $extraData['countdown_time'] ?? '13:00';
+    $countdownTime = $extraData['event_target_time'] ?? ($extraData['countdown_time'] ?? '13:00');
     [$cdH, $cdM]   = explode(':', $countdownTime . ':00');
     $countdownIso  = sprintf(
         '%s-%s-%sT%s:%s:00+07:00',
@@ -170,8 +170,8 @@
     $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['qr_bride_image'] ?? null);
 
     // --- 11. SECTION 10: ENDING ---
-    $endingTitle = $extraData['ending_title'] ?? 'Thank You';
-    $endingText  = $extraData['ending_text']  ?? 'Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!';
+    $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? 'Thank You');
+    $endingText  = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? 'Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!');
 
     // --- Khách mời & Endpoints ---
     $guestName    = $invitation->guest_name ?? 'Quý Khách';
@@ -883,11 +883,11 @@
                      data-sync-target="footer_photo_url">
             </div>
             <div class="mayhen_invitation_footer_thankyou_badge">
-                <h4 class="mayhen_invitation_ending_title" data-sync-target="ending_title">{{ $endingTitle }}</h4>
+                <h4 class="mayhen_invitation_ending_title" data-sync-target="thank_you_title">{{ $endingTitle }}</h4>
             </div>
         </div>
 
-        <p class="mayhen_invitation_ending_text" data-sync-target="ending_text">{{ $endingText }}</p>
+        <p class="mayhen_invitation_ending_text" data-sync-target="thank_you_quote">{{ $endingText }}</p>
     </footer>
 
     {{-- ==================== LIGHTBOX MODAL ==================== --}}

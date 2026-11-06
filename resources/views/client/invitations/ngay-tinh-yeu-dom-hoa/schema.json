@@ -250,7 +250,7 @@
           "placeholder": "YYYY-MM-DD"
         },
         {
-          "key": "wedding.extra_data.countdown_time",
+          "key": "wedding.extra_data.event_target_time",
           "label": "Giờ mục tiêu đếm ngược",
           "type": "time",
           "required": false,
@@ -596,7 +596,7 @@
       "description": "Sổ ký tên điện tử, xác nhận tham dự RSVP và lời tri ân cuối thiệp (Tuyệt đối không ảnh người)",
       "fields": [
         {
-          "key": "wedding.extra_data.ending_title",
+          "key": "wedding.extra_data.thank_you_title",
           "label": "Tiêu đề lời tri ân kết thiệp",
           "type": "text",
           "required": false,
@@ -605,7 +605,7 @@
           "max": 50
         },
         {
-          "key": "wedding.extra_data.ending_text",
+          "key": "wedding.extra_data.thank_you_quote",
           "label": "Thông điệp cảm ơn gửi quan khách",
           "type": "textarea",
           "required": false,

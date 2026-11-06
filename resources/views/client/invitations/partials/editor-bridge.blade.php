@@ -792,7 +792,13 @@
                 'save_date_photo_url': ['cover_photo_url', 'hero_photo_url'],
                 'couple_quote': ['quote', 'story', 'love_quote'],
                 'quote': ['couple_quote'],
-                'story': ['couple_quote']
+                'story': ['couple_quote'],
+                'thank_you_title': ['ending_title'],
+                'ending_title': ['thank_you_title'],
+                'thank_you_quote': ['ending_text'],
+                'ending_text': ['thank_you_quote'],
+                'event_target_time': ['countdown_time'],
+                'countdown_time': ['event_target_time']
             };
 
             if (aliasesMap[cleanKey]) {
