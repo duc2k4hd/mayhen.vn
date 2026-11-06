@@ -118,8 +118,16 @@ class GuestController extends Controller
             return back()->with('rsvp_error', 'Bạn là chủ nhân của thiệp cưới này.');
         }
 
-        $guestToken = $request->query('token');
-        $guest = $guestToken ? Guest::where('guest_token', $guestToken)->first() : null;
+        $query = $request->query();
+        $guest = null;
+        if (array_key_exists('token', $query)) {
+            $guestToken = $query['token'];
+            if (! is_string($guestToken) || $guestToken === '' || strlen($guestToken) > 64) {
+                abort(404);
+            }
+
+            $guest = $wedding->guests()->where('guest_token', $guestToken)->firstOrFail();
+        }
         $ip = $request->ip();
 
         // 1. Kiểm tra nếu IP này đã từng gửi xác nhận tham dự cho đám cưới này

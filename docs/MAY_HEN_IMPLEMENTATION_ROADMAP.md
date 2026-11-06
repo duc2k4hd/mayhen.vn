@@ -9,7 +9,7 @@ Ngày lập: 06/11/2026. Đây là roadmap ban đầu dựa trên kiểm toán t
 | DISC-01 | P0 | Hoàn tất bản đồ các module, database, PRD và kiểm toán bảo mật độc lập; lập baseline test an toàn | Không | Đang thực hiện |
 | SEC-01 | P0 | Ràng buộc quyền xem/thêm/xóa khách với chủ wedding và session tạo thiệp | DISC-01; xác minh quyền hiện tại | Đã sửa mã, chờ chạy test và xác minh độc lập |
 | PAY-01 | P0 | Đóng xác thực webhook, kiểm tra quyền gắn đơn và giao dịch lặp | DISC-01; hợp đồng SePay, cấu hình test an toàn | Chưa bắt đầu |
-| RSVP-01 | P0 | Ràng buộc token với đúng wedding; kiểm thử quyền, response và IP dùng chung | SEC-01; quyết định tương thích RSVP | Chưa bắt đầu |
+| RSVP-01 | P0 | Ràng buộc token với đúng wedding; kiểm thử quyền, response và IP dùng chung | SEC-01; quyết định tương thích RSVP | Đã sửa phạm vi token, chờ kiểm thử và tích hợp mẫu |
 | STU-01 | P0 | Bảo đảm autosave đồng bộ thay đổi mới, revision và trạng thái lưu đúng | DISC-01; test tái hiện có kiểm soát | Chưa bắt đầu |
 | PUB-01 | P0 | Chốt nháp/công khai, publish, expiry và an toàn dữ liệu khi đổi mẫu | STU-01; thiết kế dữ liệu | Chưa bắt đầu |
 | QA-01 | P0 | Đối chiếu test 6 section với contract 10 section và template thực | DISC-01 | Chưa bắt đầu |
@@ -53,6 +53,8 @@ Ngày lập: 06/11/2026. Đây là roadmap ban đầu dựa trên kiểm toán t
 - **Lý do:** truy vấn token khách trong RSVP hiện không lọc theo wedding; quy tắc chặn bằng IP có thể ảnh hưởng khách cùng mạng.
 - **Phạm vi:** `GuestController`, request và feature tests; giữ nguyên hành vi cũ cho đến khi chính sách thay đổi phản hồi được thống nhất.
 - **Nghiệm thu:** token của wedding A không liên kết response của wedding B; token sai không gây lộ dữ liệu; khách hợp lệ và phản hồi không token tuân thủ chính sách; kiểm tra số người lớn/trẻ em và cạnh tranh gửi.
+- **Tiến độ:** endpoint RSVP tra token trong danh sách khách của chính wedding và từ chối token sai; trang thiệp truyền token trong URL RSVP. Đã bổ sung `tests/Feature/RsvpGuestTokenTest.php` nhưng chưa chạy test. Chưa thay đổi chính sách một IP một phản hồi; cần kiểm thử mạng dùng chung và gửi đồng thời.
+- **Tích hợp còn thiếu:** `tron-kiep-nay-ben-nhau/template.blade.php` dùng tên route `invitations.rsvp` chưa thấy trong routes hiện tại; JavaScript mẫu này và `ngay-tinh-yeu-dom-hoa` còn cần đối chiếu tên trường RSVP với `SubmitRsvpRequest`. Chưa kết luận RSVP cá nhân hóa hoạt động ở tất cả mẫu.
 - **Rollback:** hoàn nguyên code nếu phát sinh regression; đánh giá dữ liệu sai đã lưu riêng, không tự xóa hoặc sửa hàng loạt.
 
 ### STU-01 — Autosave không bỏ sót thay đổi

@@ -130,6 +130,7 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 - Đã bổ sung sơ đồ luồng Studio và xuất bản vào báo cáo: đổi mẫu hiện chuyển trang, thiệp tạo mới được đánh dấu xuất bản, autosave cập nhật dữ liệu `weddings`; PRD cần coi nháp/xuất bản riêng và chuyển mẫu không reload là mục tiêu cần kiểm thử, không phải hành vi đã nghiệm thu.
 - SEC-01: `GuestController` kiểm tra user sở hữu hoặc slug thiệp hợp lệ trong session trước khi xem, thêm, xóa khách theo wedding; trả 404 nếu không có quyền. Bổ sung `tests/Feature/GuestManagementAuthorizationTest.php` cho tài khoản, khách vãng lai và wedding có nhiều thiệp. Đã kiểm tra cú pháp PHP; chưa chạy feature test hoặc Pint, chưa xác nhận hoàn thành.
 - `.gitignore` vốn bỏ qua thư mục `tests/`; bổ sung ngoại lệ riêng cho feature test SEC-01 để file có thể được theo dõi, giữ nguyên trạng thái bỏ qua của các test khác.
+- RSVP-01: endpoint tra token trong danh sách khách thuộc đúng wedding, từ chối token sai; trang thiệp chuyển token sang URL RSVP, giữ luồng không token. Đã thêm `tests/Feature/RsvpGuestTokenTest.php` và ngoại lệ Git; đã kiểm tra cú pháp PHP, chưa chạy feature test hoặc Pint. Một số mẫu còn cần sửa route/payload RSVP và chính sách một IP một phản hồi chưa thay đổi.
 
 ---
 

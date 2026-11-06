@@ -253,7 +253,17 @@ class InvitationEditorController extends Controller
         $wedding = $invitation->wedding;
         $wishes = $wedding ? $wedding->wishes()->where('is_approved', true)->take(50)->get() : collect([]);
         $wishSubmitUrl = route('invitation.wish.store', $slug);
-        $rsvpSubmitUrl = route('rsvp.submit', $slug);
+        $rsvpRouteParameters = ['slug' => $slug];
+        $query = request()->query();
+        if (array_key_exists('token', $query)) {
+            $guestToken = $query['token'];
+            if (! is_string($guestToken) || $guestToken === '' || strlen($guestToken) > 64) {
+                abort(404);
+            }
+
+            $rsvpRouteParameters['token'] = $guestToken;
+        }
+        $rsvpSubmitUrl = route('rsvp.submit', $rsvpRouteParameters);
 
         $clientIp = request()->ip();
         $currentRsvp = null;

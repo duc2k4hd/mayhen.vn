@@ -36,6 +36,7 @@ Thumbs.db
 !/tests/Feature/
 /tests/Feature/*
 !/tests/Feature/GuestManagementAuthorizationTest.php
+!/tests/Feature/RsvpGuestTokenTest.php
 /storage/
 /node_modules/
 /Mẫu thiệp/
