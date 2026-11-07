@@ -255,6 +255,64 @@ class GuestController extends Controller
     }
 
     /**
+     * Trang in danh sách khách đón tiếp & điểm danh bàn tiệc (Reception Check-in Sheet).
+     */
+    public function print(Request $request, int $invitationId): View
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+
+        $filterStatus = $request->query('status', 'all');
+        $filterGroup = $request->query('group');
+
+        $query = $wedding->guests()->with('response')->orderBy('group_name')->orderBy('name');
+
+        if ($filterGroup) {
+            $query->where('group_name', $filterGroup);
+        }
+
+        if ($filterStatus === 'attending') {
+            $query->whereHas('response', function ($q) {
+                $q->where('attending_status', 'attending');
+            });
+        }
+
+        $guests = $query->get();
+
+        // Thống kê nhanh toàn diện
+        $allGuests = $wedding->guests()->with('response')->get();
+        $totalGuestsCount = $allGuests->count();
+        $totalExpectedAttendees = (int) $allGuests->sum('expected_attendees');
+        $attendingResponses = $wedding->guestResponses()->where('attending_status', 'attending')->get();
+        $attendingGuestsCount = $allGuests->filter(fn ($g) => $g->response && $g->response->attending_status === 'attending')->count();
+        $totalAdults = (int) $attendingResponses->sum('adults_count');
+        $totalChildren = (int) $attendingResponses->sum('children_count');
+        $totalVegetarian = (int) $attendingResponses->filter(fn ($r) => ! empty($r->dietary_requirements))->count();
+
+        $availableGroups = $wedding->guests()
+            ->select('group_name')
+            ->distinct()
+            ->whereNotNull('group_name')
+            ->pluck('group_name');
+
+        return view('client.pages.account.guests-print', [
+            'invitation' => $invitation,
+            'wedding' => $wedding,
+            'guests' => $guests,
+            'filterStatus' => $filterStatus,
+            'filterGroup' => $filterGroup,
+            'availableGroups' => $availableGroups,
+            'totalGuestsCount' => $totalGuestsCount,
+            'totalExpectedAttendees' => $totalExpectedAttendees,
+            'attendingGuestsCount' => $attendingGuestsCount,
+            'totalAdults' => $totalAdults,
+            'totalChildren' => $totalChildren,
+            'totalVegetarian' => $totalVegetarian,
+        ]);
+    }
+
+    /**
      * Cập nhật thông tin khách mời.
      */
     public function update(Request $request, int $guestId): JsonResponse|RedirectResponse

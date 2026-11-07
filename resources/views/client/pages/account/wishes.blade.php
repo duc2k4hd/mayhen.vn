@@ -73,6 +73,22 @@
             </div>
         </div>
         <div class="mayhen_account_header_actions">
+            <a href="{{ route('account.wishes.print', $invitation->id) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                <span>In Sổ Kỷ Yếu</span>
+            </a>
+            <a href="{{ route('account.wishes.export', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Xuất CSV (Excel)</span>
+            </a>
             <a href="{{ route('invitation.show', $invitation->slug) }}#loi-chuc" target="_blank" class="mayhen_account_btn mayhen_account_btn_gold">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>

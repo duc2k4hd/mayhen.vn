@@ -9,6 +9,8 @@ use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class WishManagementController extends Controller
 {
@@ -121,6 +123,80 @@ class WishManagementController extends Controller
         $wish->delete();
 
         return back()->with('success', 'Đã xóa lời chúc khỏi sổ lưu bút thành công.');
+    }
+
+    /**
+     * Xuất danh sách Sổ Lưu Bút ra file CSV UTF-8 BOM cho Excel.
+     */
+    public function exportCsv(int $invitationId): StreamedResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeInvitationOwner($wedding);
+
+        $wishes = $wedding->wishes()->latest()->get();
+        $filename = 'so-luu-but-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($wishes) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF"); // UTF-8 BOM
+
+            fputcsv($handle, [
+                'STT',
+                'Người Chúc Phúc',
+                'Nội Dung Lời Chúc',
+                'Lời Cảm Ơn Của Cặp Đôi',
+                'Trạng Thái Hiển Thị',
+                'Thời Gian Gửi',
+                'Thời Gian Cảm Ơn',
+            ]);
+
+            $index = 1;
+            foreach ($wishes as $w) {
+                fputcsv($handle, [
+                    $index++,
+                    $w->name,
+                    $w->message,
+                    $w->reply ?? '',
+                    $w->is_approved ? 'Hiển thị' : 'Tạm ẩn',
+                    $w->created_at ? $w->created_at->format('d/m/Y H:i') : '',
+                    $w->replied_at ? $w->replied_at->format('d/m/Y H:i') : '',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Trang In Kỷ Yếu Sổ Lưu Bút (Keepsake Guestbook Print View).
+     */
+    public function print(Request $request, int $invitationId): View
+    {
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeInvitationOwner($wedding);
+
+        $query = $wedding->wishes();
+
+        $statusFilter = $request->query('status', 'approved');
+        if ($statusFilter === 'approved') {
+            $query->where('is_approved', true);
+        }
+
+        $wishes = $query->oldest()->get();
+
+        return view('client.pages.account.wishes-print', [
+            'invitation' => $invitation,
+            'wedding' => $wedding,
+            'wishes' => $wishes,
+            'statusFilter' => $statusFilter,
+            'totalCount' => $wedding->wishes()->count(),
+            'approvedCount' => $wedding->wishes()->where('is_approved', true)->count(),
+        ]);
     }
 
     /**

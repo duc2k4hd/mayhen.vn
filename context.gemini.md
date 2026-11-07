@@ -4286,6 +4286,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Trong `resources/views/client/pages/account/gifts.blade.php`: Chuẩn hóa class modal sang `mayhen_account_modal*`.
                      - **Kiểm thử**: Toàn bộ feature tests `ClientGiftManagementTest` và `ClientInvitationSettingsTest` passed 100%.
 
+
+                158. **Xây Dựng Tính Năng Xuất & In Sổ Kỷ Yếu Lưu Bút (Keepsake Guestbook) & Bảng Điểm Danh Đón Tiếp Hôn Lễ (Reception Check-in Sheet)**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       1. Cặp đôi sau hôn lễ có nhu cầu xuất và in lưu giữ trọn vẹn những lời chúc phúc ấm áp từ gia đình, thầy cô, bạn bè thành một cuốn kỷ yếu đóng gáy hoặc kẹp album cưới.
+                       2. Trong ngày cưới trọng đại, ban tiếp tân của cô dâu chú rể tại sảnh cưới cần một bảng in danh sách khách mời (khổ giấy A4) rõ ràng, có phân nhóm họ hàng/bạn bè, số suất tiệc, yêu cầu ăn chay, ô tích bút mực điểm danh `[✓]` và dòng ghi chú số phong bì/quà mừng để đối soát tài chính sau tiệc.
+                     - **Các thành phần đã triển khai**:
+                       - **Xuất CSV Sổ Lưu Bút UTF-8 BOM (`account.wishes.export`)**:
+                         + Route `GET /tai-khoan/thiep/{id}/so-luu-but/xuat-csv`.
+                         + Xuất file CSV có BOM `\xEF\xBB\xBF` mở 100% tiếng Việt trên Excel gồm STT, Người chúc, Lời chúc, Lời cảm ơn, Trạng thái và thời gian.
+                       - **Trang In Kỷ Yếu Sổ Lưu Bút (`account.wishes.print`)**:
+                         + Route `GET /tai-khoan/thiep/{id}/so-luu-but/in`.
+                         + View `resources/views/client/pages/account/wishes-print.blade.php`: Phong cách Quiet Luxury, typography Cormorant Garamond, hoa văn viền kép, các thẻ lời chúc viền Antique Gold trang nhã, kèm lời tri ân và chữ ký xác nhận của Cô Dâu & Chú Rể.
+                         + Hỗ trợ bộ lọc khi in: Chỉ in lời chúc đã duyệt hoặc toàn bộ lời chúc. Tối ưu CSS `@media print` tự động ngắt trang thông minh (`page-break-inside: avoid`).
+                       - **Trang In Bảng Điểm Danh Đón Tiếp Quan Khách Bàn Tiệc (`guests.print`)**:
+                         + Route `GET /tai-khoan/thiep/{id}/khach-moi/in`.
+                         + View `resources/views/client/pages/account/guests-print.blade.php`: Header sảnh tiệc trang trọng, thanh thống kê 5 chỉ số (Tổng khách, Số khách RSVP tham dự, Người lớn, Trẻ em, Suất ăn chay), bảng danh sách có ô vuông điểm danh `[✓]` và dòng kẻ ghi chú tiền mừng cưới.
+                         + Bộ lọc linh hoạt: In toàn bộ khách hoặc chỉ khách đã xác nhận đi tiệc, lọc theo từng nhóm khách.
+                       - **Cập nhật giao diện quản lý**:
+                         + Thêm các nút thao tác tương ứng tại `resources/views/client/pages/account/wishes.blade.php` và `resources/views/client/pages/guests.blade.php`.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: Bổ sung 5 test cases mới, nâng tổng số lên **51/51 tests passed 100% (287 assertions)** trên toàn bộ các suite người dùng (`ClientWishManagementTest`, `ClientGuestManagementTest`, `ClientGiftManagementTest`, `ClientInvitationSettingsTest`, `ClientAccountTest`, `ClientPlanUpgradeFlowTest`, `ClientWeddingQrModalTest`).
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
