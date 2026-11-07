@@ -1,0 +1,436 @@
+/* ==========================================================================
+   CUỐN SÁCH KỶ YẾU LƯU BÚT (KEEPSAKE GUESTBOOK EDITORIAL PRINT)
+   MÂY HẸN (MAYHEN.VN) — QUIET LUXURY BOOK LAYOUT
+   Pure CSS — Namespace: mayhen_book_*
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Screen Base & Top Action Bar
+   -------------------------------------------------------------------------- */
+.mayhen_book_body {
+    margin: 0;
+    padding: 0;
+    background: #EFE8DD;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1F1D1A;
+    -webkit-font-smoothing: antialiased;
+}
+
+.mayhen_book_screen_bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #1F1D1A;
+    color: #FAF8F5;
+    padding: 12px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.screen_bar_container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.screen_bar_info {
+    font-size: 14px;
+}
+
+.screen_bar_actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn_print {
+    background: #C5A880;
+    color: #1F1D1A;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn_print:hover {
+    background: #D8BD98;
+}
+
+.btn_close {
+    color: #A0988E;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+.btn_close:hover {
+    color: #FAF8F5;
+}
+
+/* --------------------------------------------------------------------------
+   2. Keepsake Book Container & Pages
+   -------------------------------------------------------------------------- */
+.mayhen_book_container {
+    max-width: 794px; /* A4 width at 96 DPI: 210mm ~ 794px */
+    margin: 32px auto 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.mayhen_book_page {
+    width: 100%;
+    min-height: 1123px; /* A4 height at 96 DPI: 297mm ~ 1123px */
+    box-sizing: border-box;
+    background: #FFFFFF;
+    box-shadow: 0 12px 36px rgba(31, 29, 26, 0.12);
+    border-radius: 4px;
+    padding: 64px 56px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Page Header & Footer Marks */
+.page_header_mark {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid #EFE8DD;
+    padding-bottom: 12px;
+    margin-bottom: 32px;
+}
+
+.page_footer_mark {
+    text-align: center;
+    font-size: 11px;
+    color: #8C827A;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    border-top: 1px solid #EFE8DD;
+    padding-top: 16px;
+    margin-top: 32px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Page 1: Cover Page
+   -------------------------------------------------------------------------- */
+.mayhen_book_page--cover {
+    background: #FAF8F5;
+    padding: 48px;
+    justify-content: center;
+}
+
+.cover_border {
+    border: 2px solid #C5A880;
+    outline: 1px solid #E5DCCD;
+    outline-offset: 8px;
+    height: 100%;
+    min-height: 1000px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 40px;
+}
+
+.cover_emblem {
+    margin-bottom: 24px;
+}
+
+.cover_super_title {
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+.cover_couple {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 52px;
+    font-weight: 600;
+    color: #1F1D1A;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.cover_amp {
+    font-size: 32px;
+    color: #9C7A4A;
+    font-weight: 400;
+}
+
+.cover_divider {
+    margin: 32px 0;
+    position: relative;
+    width: 140px;
+    text-align: center;
+}
+
+.cover_divider::before,
+.cover_divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 50px;
+    height: 1px;
+    background: #C5A880;
+}
+
+.cover_divider::before { left: 0; }
+.cover_divider::after { right: 0; }
+
+.divider_ornament {
+    color: #9C7A4A;
+    font-size: 14px;
+}
+
+.cover_date {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 18px;
+    color: #6B635B;
+    margin: 0 0 48px;
+    letter-spacing: 1px;
+}
+
+.cover_footer {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: #8C827A;
+    text-transform: uppercase;
+    margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   4. Page 2: Preface / Thank-you Page
+   -------------------------------------------------------------------------- */
+.preface_body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.preface_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 24px;
+}
+
+.preface_letter {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 20px;
+    line-height: 1.85;
+    color: #4A453E;
+    font-style: italic;
+    margin-bottom: 40px;
+}
+
+.preface_signatures {
+    margin-top: 24px;
+}
+
+.sig_line {
+    width: 100px;
+    height: 1px;
+    background: #C5A880;
+    margin: 0 auto 16px;
+}
+
+.sig_couple {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #85182A;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Wishes Pages
+   -------------------------------------------------------------------------- */
+.wishes_body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 28px;
+}
+
+.book_wish_entry {
+    background: #FFFDF9;
+    border: 1px solid #EFE8DD;
+    border-radius: 12px;
+    padding: 24px 28px;
+    position: relative;
+}
+
+.book_wish_entry::before {
+    content: "“";
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 48px;
+    color: #EFE8DD;
+    line-height: 1;
+}
+
+.wish_entry_header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #EFE8DD;
+    padding-bottom: 8px;
+}
+
+.wish_author {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1F1D1A;
+}
+
+.wish_date {
+    font-size: 11px;
+    color: #8C827A;
+}
+
+.wish_quote {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 18px;
+    line-height: 1.65;
+    color: #4A453E;
+    margin: 0 0 12px;
+    font-style: italic;
+    padding-left: 12px;
+}
+
+.wish_reply_entry {
+    background: #FAF8F5;
+    border-left: 2px solid #C5A880;
+    padding: 8px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.reply_lead {
+    display: block;
+    font-weight: 600;
+    color: #9C7A4A;
+    margin-bottom: 2px;
+}
+
+.reply_text {
+    color: #6B635B;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Final Back Cover Page
+   -------------------------------------------------------------------------- */
+.mayhen_book_page--back_cover {
+    background: #FAF8F5;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.back_cover_inner {
+    max-width: 440px;
+}
+
+.back_ornament {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.back_couple {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 16px;
+}
+
+.back_quote {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 17px;
+    color: #7A726A;
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0 0 40px;
+}
+
+.back_brand {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: #9C7A4A;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   7. @media print Specifications (Chuyên Biệt Xuất PDF / In Ấn)
+   -------------------------------------------------------------------------- */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+
+    body.mayhen_book_body {
+        background: #FFFFFF !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .mayhen_book_screen_bar {
+        display: none !important;
+    }
+
+    .mayhen_book_container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+
+    .mayhen_book_page {
+        width: 100vw !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        padding: 48px 40px !important;
+        box-sizing: border-box !important;
+    }
+
+    .mayhen_book_page--cover {
+        padding: 32px !important;
+    }
+
+    .cover_border {
+        min-height: 90vh !important;
+    }
+}
+

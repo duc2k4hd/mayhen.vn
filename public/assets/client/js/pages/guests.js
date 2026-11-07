@@ -223,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameInput = document.getElementById('edit-guest-name');
         const salutationInput = document.getElementById('edit-guest-salutation');
         const groupInput = document.getElementById('edit-guest-group');
+        const tableInput = document.getElementById('edit-guest-table');
         const phoneInput = document.getElementById('edit-guest-phone');
         const attendeesInput = document.getElementById('edit-guest-attendees');
 
@@ -232,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const name = btn.getAttribute('data-guest-name') || '';
                 const salutation = btn.getAttribute('data-guest-salutation') || '';
                 const group = btn.getAttribute('data-guest-group') || '';
+                const table = btn.getAttribute('data-guest-table') || '';
                 const phone = btn.getAttribute('data-guest-phone') || '';
                 const attendees = btn.getAttribute('data-guest-attendees') || '1';
 
@@ -239,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (nameInput) nameInput.value = name;
                 if (salutationInput) salutationInput.value = salutation;
                 if (groupInput) groupInput.value = group;
+                if (tableInput) tableInput.value = table;
                 if (phoneInput) phoneInput.value = phone;
                 if (attendeesInput) attendeesInput.value = attendees;
 

@@ -4695,6 +4695,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                          - Toàn bộ test suite toàn hệ thống: **192/192 tests passed 100% (1,046 assertions)**.
                          - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                  176. **Triển Khai Két Lưu Trữ Kỷ Niệm Số (TASK-V2-03) và Cuốn Sách Kỷ Yếu Lưu Bút In Ấn (TASK-V2-04)**:
+                       - **Bối cảnh & Ý nghĩa nghiệp vụ**:
+                         - Sau khi đám cưới khép lại, phần lớn thiệp cưới online trên thị trường bị rơi vào quên lãng hoặc hết hạn lưu trữ khiến kỷ niệm biến mất.
+                         - Mây Hẹn nâng tầm trải nghiệm sau ngày cưới: Thiệp cưới tự động chuyển mình thành **"Bảo Tàng Kỷ Niệm Số" (Digital Memory Vault)** lưu giữ vĩnh cửu toàn bộ tình cảm, lời chúc và khoảnh khắc đẹp nhất.
+                         - Cung cấp cho cặp đôi khả năng xuất bản **"Cuốn Sách Kỷ Yếu Lưu Bút" (Editorial Keepsake Book)** dàn trang theo tiêu chuẩn sách nghệ thuật A4 để in ấn đóng thành sách lưu bút thực tế để trên bàn phòng khách.
+                       - **Các thành phần kỹ thuật đã triển khai**:
+                         1. *Trang Kỷ Niệm Ngày Cưới Công Khai (`/ky-niem/{slug}`)*:
+                            - Hiển thị tự động sau ngày cưới hoặc khi cặp đôi chủ động kích hoạt chế độ Kỷ Niệm.
+                            - Bức tường ảnh kỷ niệm và tên đôi uyên ương với font Cormorant Garamond sang trọng.
+                            - Bộ đếm ngày kỷ niệm hạnh phúc: *"Đã cùng nhau đi qua [X] ngày hạnh phúc trọn vẹn"*.
+                            - Bức Tâm Thư Tri Ân & Cảm Ơn chân thành từ cô dâu chú rể gửi tới toàn thể người thân, bạn bè.
+                            - Cuốn Sổ Lưu Bút Kỷ Niệm: Trưng bày toàn bộ lời chúc phúc đã được duyệt theo phong cách thiệp vintage lụa ngà, kèm câu cảm ơn từ cặp đôi.
+                            - Thống kê khoảnh khắc: Tổng số lời chúc, tổng số khách đã có mặt chúc phúc.
+                         2. *Cấu Hình Két Kỷ Niệm Dành Cho Cặp Đôi (`MemoryVaultController.php`)*:
+                            - Quản lý tại `/tai-khoan/thiep/{id}/ky-niem`: Bật/tắt chế độ Vault, tùy biến Tâm thư tri ân (`thank_you_letter`), chọn ảnh bìa kỷ niệm (`cover_image`).
+                            - Dữ liệu lưu trong trường `custom_config['memory_vault']` của `invitations`, bảo toàn 100% database schema.
+                            - Kiểm tra validation, sanitize thẻ HTML độc hại và kiểm tra profanity.
+                         3. *Cuốn Sách Kỷ Yếu Lưu Bút Chuẩn Sách Editorial (`/tai-khoan/thiep/{id}/sach-ky-yeu`)*:
+                            - Dàn trang chuẩn khổ sách A4 (210mm x 297mm):
+                              * Trang 1: Trang bìa sách cổ điển mạ vàng Antique Gold, tên cô dâu chú rể, hoa văn góc và ngày cưới thiêng liêng.
+                              * Trang 2: Lời mở đầu & Tâm thư tri ân từ đôi uyên ương kèm chữ ký.
+                              * Các trang tiếp theo: Chia nhỏ mỗi trang 3 lời chúc, dàn trang cân đối, trích dẫn hoa mỹ, ngày giờ và câu trả lời cảm ơn.
+                              * Trang kết: Trang bìa sau với châm ngôn tình yêu và biểu tượng Mây Hẹn.
+                            - Tối ưu in ấn & xuất PDF bằng CSS `@media print`: Tự động ẩn thanh công cụ web, căn chỉnh `break-after: page; page-break-after: always;` ngắt trang in chính xác 100%, bảo toàn màu sắc và lề in (`print-color-adjust: exact`).
+                         4. *Tích hợp Điều Hướng & Quản Lý*:
+                            - Thêm nút liên kết "Bảo Tàng Kỷ Niệm Số" và "Cuốn Sách Kỷ Yếu (PDF)" trên header Sổ Lưu Bút (`account/wishes.blade.php`).
+                            - Thanh Owner Ribbon trên đầu trang Kỷ Niệm cho phép chủ sở hữu nhảy nhanh vào Cài Đặt và In Sách.
+                       - **Kiểm thử & Đảm bảo chất lượng**:
+                         - Viết 6 Feature test cases trong `tests/Feature/DigitalMemoryVaultTest.php`: Kiểm tra khách truy cập sau ngày cưới; kiểm tra redirect về thiệp chính nếu chưa đến ngày cưới và chưa bật vault; kiểm tra chủ thiệp luôn xem trước được; kiểm tra cặp đôi cấu hình và lưu thư cảm ơn; lọc sạch HTML; chặn truy cập người lạ (404); kiểm tra trang in sách kỷ yếu; kiểm tra loại trừ lời chúc bị ẩn -> **6/6 tests passed**.
+                         - Toàn bộ test suite toàn hệ thống: **198/198 tests passed 100% (1,077 assertions)**.
+                         - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

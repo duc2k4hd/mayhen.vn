@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
+use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
@@ -114,7 +115,15 @@ Route::prefix('tai-khoan')->group(function () {
     // Bảng Điều Khiển Ngày Cưới Realtime (Live Command Center - TASK-V2-02)
     Route::get('/thiep/{id}/dieu-phoi', [LiveCoordinationController::class, 'index'])->name('coordination.index');
     Route::get('/api/thiep/{id}/dieu-phoi/stats', [LiveCoordinationController::class, 'liveStats'])->middleware('throttle:120,1')->name('coordination.stats');
+
+    // Két Lưu Trữ Kỷ Niệm Số & Sách Kỷ Yếu (Digital Memory Vault - TASK-V2-03 & TASK-V2-04)
+    Route::get('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'settings'])->name('memory.settings');
+    Route::post('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'updateSettings'])->middleware('throttle:30,1')->name('memory.updateSettings');
+    Route::get('/thiep/{id}/sach-ky-yeu', [MemoryVaultController::class, 'keepsakeBook'])->name('memory.keepsake_book');
 });
+
+// Trang Kỷ Niệm Ngày Cưới Công Khai (Digital Memory Vault Public)
+Route::get('/ky-niem/{slug}', [MemoryVaultController::class, 'show'])->name('memory.vault');
 
 // Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)
 Route::get('/diem-danh-tiec/{slug}', [CheckInController::class, 'showPortal'])->name('checkin.portal');
