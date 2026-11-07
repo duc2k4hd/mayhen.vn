@@ -3883,6 +3883,25 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 32/32 tests passed 100% (137 assertions) bao gồm cả 4 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               141. **Hoàn Thiện Giai Đoạn 5: Quản Lý Người Dùng & Phân Quyền Vai Trò (Users & Roles - RBAC)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Xây dựng phân hệ quản lý tài khoản người dùng và phân quyền vai trò (Role-Based Access Control) gồm: Quản trị viên (`admin`), Quản lý (`manager`), Nhân viên (`staff`), Cộng tác viên (`partner`), Người dùng / Khách hàng (`customer`).
+                      2. Tabs phân loại người dùng động với số lượng đếm tức thời; tìm kiếm nhanh theo tên, email, số điện thoại.
+                      3. Trang chi tiết người dùng chuyên sâu: Xem toàn bộ lễ cưới và thiệp cưới đã tạo, lịch sử đơn hàng đã thanh toán và tổng chi tiêu tích lũy.
+                      4. Chức năng quản trị an toàn: Đặt lại mật khẩu mới cho khách hàng; Phân quyền vai trò với cơ chế phòng thủ ngăn chặn Quản trị viên tự hạ quyền của chính mình.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Models/User.php`: Bổ sung các phương thức kiểm tra vai trò `isAdmin()` (hỗ trợ cả admin và manager), `isManager()`, `isStaff()`, `isPartner()`, `isCustomer()` và thuộc tính `role_label` tiếng Việt chuẩn xác.
+                      - `app/Http/Controllers/Admin/UserController.php`: Xử lý các action `index` (tính toán số lượng đếm theo từng vai trò, tìm kiếm đa trường, phân trang native fast), `show` (chi tiết tài khoản, thống kê chi tiêu, danh sách thiệp và đơn hàng), `changeRole` (phòng thủ không tự hạ quyền admin), `resetPassword` (xác thực mật khẩu tối thiểu 6 ký tự).
+                      - `routes/admin.php`: Bổ sung nhóm route `admin.users.*` gồm `index`, `show`, `change_role`, `reset_password`.
+                      - `resources/views/admin/layouts/master.blade.php`: Bổ sung mục menu "Người Dùng & Tài Khoản" vào Sidebar với SVG icon người dùng.
+                      - `public/assets/admin/css/pages/users.css`: Định dạng hệ thống tab lọc vai trò, avatar tròn chữ cái đầu, badge màu sắc theo cấp bậc vai trò, layout 2 cột chi tiết người dùng.
+                      - `resources/views/admin/pages/users/index.blade.php`: Giao diện danh sách tài khoản với các tab phân loại, ô tìm kiếm và bảng dữ liệu hiển thị số thiệp đã tạo, tổng tiền đã chi tiêu và nút hành động.
+                      - `resources/views/admin/pages/users/show.blade.php`: Giao diện chi tiết 2 cột: Cột trái bảng thiệp cưới và lịch sử đơn hàng; Cột phải thẻ hồ sơ cá nhân, form phân quyền vai trò (RBAC) và form đặt lại mật khẩu nhanh.
+                      - `tests/Feature/AdminUserTest.php`: Bộ kiểm thử tự động 7 test cases bao phủ 100% phân quyền truy cập, danh sách lọc vai trò, xem chi tiết tài khoản kèm thiệp và đơn hàng, đổi quyền hạn, phòng thủ chống tự hạ quyền và đặt lại mật khẩu.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 39/39 tests passed 100% (165 assertions) bao gồm cả 5 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

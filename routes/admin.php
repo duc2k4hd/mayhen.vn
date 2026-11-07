@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,5 +51,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->name('approve');
         Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
+    });
+
+    // Quản lý Người dùng & Phân quyền
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
+        Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->name('change_role');
+        Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset_password');
     });
 });

@@ -61,7 +61,17 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'manager'], true);
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'manager';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role === 'staff';
     }
 
     public function isPartner(): bool
@@ -71,6 +81,17 @@ class User extends Authenticatable
 
     public function isCustomer(): bool
     {
-        return $this->role === 'customer';
+        return in_array($this->role, ['customer', 'user', null], true);
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Quản Trị Viên',
+            'manager' => 'Quản Lý',
+            'staff' => 'Nhân Viên',
+            'partner' => 'Cộng Tác Viên',
+            default => 'Người Dùng',
+        };
     }
 }

@@ -1,0 +1,143 @@
+/**
+ * MAYHEN.VN — ADMIN USERS & ROLES STYLES
+ * Pure Vanilla CSS (Prefix: mayhen_admin_*)
+ */
+
+/* User Tabs Filter */
+.mayhen_admin_user_tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.mayhen_admin_user_tab_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mh-admin-muted);
+    background-color: var(--mh-admin-surface);
+    border: 1px solid var(--mh-admin-border);
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_user_tab_item:hover {
+    background-color: var(--mh-admin-bg);
+    color: var(--mh-admin-charcoal);
+    border-color: #D6CEBF;
+}
+
+.mayhen_admin_user_tab_item.active {
+    background-color: var(--mh-admin-charcoal);
+    color: #FFFFFF;
+    border-color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_user_tab_count {
+    font-size: 0.6875rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.2);
+    line-height: 1.2;
+}
+
+.mayhen_admin_user_tab_item:not(.active) .mayhen_admin_user_tab_count {
+    background-color: #EAE6DF;
+    color: #4A453E;
+}
+
+/* User Avatar Table */
+.mayhen_admin_user_avatar_cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_admin_avatar_sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1B1815 0%, #3D3730 100%);
+    color: var(--mh-admin-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 1px solid var(--mh-admin-gold);
+}
+
+/* Role Badges */
+.mayhen_admin_role_badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.mayhen_admin_role_admin {
+    background-color: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+}
+
+.mayhen_admin_role_manager {
+    background-color: #EDE9FE;
+    color: #5B21B6;
+    border: 1px solid #DDD6FE;
+}
+
+.mayhen_admin_role_staff {
+    background-color: #E0F2FE;
+    color: #0369A1;
+    border: 1px solid #BAE6FD;
+}
+
+.mayhen_admin_role_partner {
+    background-color: #CCFBF1;
+    color: #0F766E;
+    border: 1px solid #99F6E4;
+}
+
+.mayhen_admin_role_customer {
+    background-color: #F1F5F9;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+}
+
+/* User Detail 2-Columns Layout */
+.mayhen_admin_user_detail_grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+}
+
+.mayhen_admin_user_hero_avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1B1815 0%, #3D3730 100%);
+    color: var(--mh-admin-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    border: 2px solid var(--mh-admin-gold);
+}
+
+@media (max-width: 991px) {
+    .mayhen_admin_user_detail_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
