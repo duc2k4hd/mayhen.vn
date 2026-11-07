@@ -192,6 +192,9 @@
     {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode) --}}
     @include('client.components.senior-mode-widget')
 
+    {{-- Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Interactive Parking Concierge) --}}
+    @include('client.components.parking-concierge-modal')
+
     <!-- Scripts -->
     <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>
 </body>

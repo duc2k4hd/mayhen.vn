@@ -250,6 +250,13 @@ class AccountController extends Controller
             'persona_messages.groups.*.title' => ['nullable', 'string', 'max:190'],
             'persona_messages.groups.*.subtitle' => ['nullable', 'string', 'max:190'],
             'persona_messages.groups.*.content' => ['nullable', 'string', 'max:2000'],
+            'parking_guide' => ['nullable', 'array'],
+            'parking_guide.enabled' => ['nullable', 'boolean'],
+            'parking_guide.car_parking' => ['nullable', 'string', 'max:500'],
+            'parking_guide.motorbike_parking' => ['nullable', 'string', 'max:500'],
+            'parking_guide.fee_note' => ['nullable', 'string', 'max:500'],
+            'parking_guide.entrance_guide' => ['nullable', 'string', 'max:500'],
+            'parking_guide.map_tip' => ['nullable', 'string', 'max:500'],
         ], [
             'slug.required' => 'Vui lòng nhập đường dẫn thiệp cưới.',
             'slug.min' => 'Đường dẫn thiệp phải có ít nhất 3 ký tự.',
@@ -298,6 +305,17 @@ class AccountController extends Controller
         $config['persona_messages'] = [
             'enabled' => $request->boolean('persona_enabled'),
             'groups' => $cleanedPersonaGroups,
+        ];
+
+        // Xử lý và lưu cấu hình Hướng Dẫn Vị Trí & Bãi Đỗ Xe Thông Minh (TASK-VAL-05)
+        $rawParking = $request->input('parking_guide', []);
+        $config['parking_guide'] = [
+            'enabled' => $request->boolean('parking_guide.enabled'),
+            'car_parking' => isset($rawParking['car_parking']) ? strip_tags(trim((string) $rawParking['car_parking'])) : null,
+            'motorbike_parking' => isset($rawParking['motorbike_parking']) ? strip_tags(trim((string) $rawParking['motorbike_parking'])) : null,
+            'fee_note' => isset($rawParking['fee_note']) ? strip_tags(trim((string) $rawParking['fee_note'])) : null,
+            'entrance_guide' => isset($rawParking['entrance_guide']) ? strip_tags(trim((string) $rawParking['entrance_guide'])) : null,
+            'map_tip' => isset($rawParking['map_tip']) ? strip_tags(trim((string) $rawParking['map_tip'])) : null,
         ];
 
         $invitation->slug = Str::slug($validated['slug']);

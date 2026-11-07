@@ -26,6 +26,7 @@ class WeddingTimeCapsule extends Model
         'sender_email',
         'media_urls',
         'unlocked_at',
+        'notified_at',
     ];
 
     protected function casts(): array
@@ -34,6 +35,7 @@ class WeddingTimeCapsule extends Model
             'unlock_date' => 'date',
             'is_sealed' => 'boolean',
             'unlocked_at' => 'datetime',
+            'notified_at' => 'datetime',
             'media_urls' => 'array',
             'milestone_years' => 'integer',
         ];

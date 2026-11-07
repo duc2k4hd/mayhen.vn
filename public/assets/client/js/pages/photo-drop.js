@@ -3,6 +3,8 @@
  * ES Modules & Zero External Libraries
  */
 
+import { MayHenImageOptimizer } from '../common/image-optimizer.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const appEl = document.getElementById('mayhen_drop_app');
     if (!appEl) return;
@@ -143,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Xử lý gửi Form tải ảnh qua AJAX với XMLHttpRequest để hiển thị progress bar
      */
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         if (selectedFiles.length === 0) {
@@ -158,21 +160,36 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const formData = new FormData(form);
-        // Xóa trường photos rỗng từ file input và nạp các file thực tế từ selectedFiles
-        formData.delete('photos[]');
-        selectedFiles.forEach(file => {
-            formData.append('photos[]', file);
-        });
-
         // Bật trạng thái loading & progress
         submitBtn.disabled = true;
         const originalBtnText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '⏳ Đang tải ảnh lên...';
+        submitBtn.innerHTML = '⚡ Đang tối ưu ảnh...';
 
         progressWrap.style.display = 'block';
-        progressFill.style.width = '0%';
-        progressLabel.textContent = 'Đang tải ảnh lên... 0%';
+        progressFill.style.width = '10%';
+        progressLabel.textContent = 'Đang tối ưu dung lượng ảnh...';
+
+        let uploadableFiles = selectedFiles;
+        try {
+            if (MayHenImageOptimizer) {
+                uploadableFiles = await MayHenImageOptimizer.optimizeFiles(selectedFiles, (curr, total) => {
+                    progressLabel.textContent = `Đang tối ưu ảnh (${curr}/${total})...`;
+                });
+            }
+        } catch (optErr) {
+            uploadableFiles = selectedFiles;
+        }
+
+        const formData = new FormData(form);
+        // Xóa trường photos rỗng từ file input và nạp các file đã tối ưu
+        formData.delete('photos[]');
+        uploadableFiles.forEach(file => {
+            formData.append('photos[]', file);
+        });
+
+        submitBtn.innerHTML = '⏳ Đang tải ảnh lên...';
+        progressFill.style.width = '20%';
+        progressLabel.textContent = 'Đang tải ảnh lên... 20%';
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', uploadUrl, true);

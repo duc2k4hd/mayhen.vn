@@ -16,68 +16,74 @@
 
 ## 2. CÁC CỘT MỐC TRIỂN KHAI CHI TIẾT (ACTIONABLE ROADMAP)
 
-### CỘT MỐC 1: SỰ AN TÂM & CHU ĐÁO VỚI GIA ĐÌNH (WEDDING CONFIDENCE & FAMILY RESPECT)
+### CỘT MỐC 1: SỰ AN TÂM & CHU ĐÁO VỚI GIA ĐÌNH (WEDDING CONFIDENCE & FAMILY RESPECT) — [HOÀN TẤT 100%]
 
-#### `TASK-VAL-01`: Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode)
+#### `TASK-VAL-01`: Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Thêm nút chuyển đổi font chữ lớn và giao diện tương phản cao trên thiệp cưới di động.
 - **Phạm vi code**:
-  * CSS: Bổ sung lớp `.mayhen_accessibility_mode` trong `public/assets/client/css/pages/invitation.css`.
-  * JS: Thêm nút bấm icon [ Chữ Lớn / Dễ Đọc ] trong `public/assets/client/js/pages/invitation.js`.
-  * Hành vi: Phóng to font chữ 125%, tăng độ tương phản màu sắc, dừng hiệu ứng hoa rơi, hiển thị nút gọi điện thoại nhanh cho gia đình.
-- **Tiêu chí nghiệm thu**: Khách bấm nút thì chữ to rõ ngay tức thì, không bị nhảy layout, lưu trạng thái vào `sessionStorage`.
+  * View component: `resources/views/client/components/senior-mode-widget.blade.php`.
+  * Nhúng vào layout: `resources/views/client/layouts/invitation.blade.php` và `public-invitation.blade.php`.
+  * Hành vi: Nút nổi [ 👓 Chữ Lớn ], phóng to font chữ 118%, tăng tương phản đen tuyền, dãn dòng 1.75, dừng hiệu ứng hoa rơi, Quick Bar gọi trực tiếp cô dâu chú rể và chỉ đường Google Maps 1 chạm, lưu `sessionStorage`.
+- **Kiểm thử**: `tests/Feature/SeniorFriendlyGuestModeTest.php` (2/2 tests passed).
 
-#### `TASK-VAL-02`: Bác Sĩ Đồng Bộ Thông Tin Trọng Yếu (Wedding Consistency Guardian)
+#### `TASK-VAL-02`: Bác Sĩ Đồng Bộ Thông Tin Trọng Yếu (Wedding Consistency Guardian) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Tự động so sánh chéo ngày giờ, sảnh tiệc giữa thiệp cưới, Google Maps và bảng tiếp tân.
 - **Phạm vi code**:
-  * Mở rộng `app/Services/VisualDoctorService.php`.
-  * Kiểm tra tính nhất quán giữa: `wedding_date`, địa chỉ sảnh tiệc `party_venue`, tọa độ Google Maps và lịch .ics.
-  * Hiển thị cảnh báo trực quan trong Studio Editor nếu phát hiện thông tin mâu thuẫn.
-- **Tiêu chí nghiệm thu**: Phát hiện chính xác nếu giờ tiệc trong văn bản lệch với giờ tiệc trong cấu hình lịch; có nút click dẫn thẳng đến ô cần sửa.
+  * Service: `app/Services/WeddingConsistencyGuardianService.php`.
+  * Kiểm tra 6 chỉ số trọng yếu: Ngày cưới, Địa điểm sảnh tiệc, Tọa độ/Link Google Maps, Thông tin ngân hàng nhận mừng cưới, Thông tin phụ mẫu hai bên, Mã PIN tiếp tân an toàn.
+  * API: `GET /api/editor/consistency-check/{id}` phân quyền an toàn `auth` và `isOwner()`.
+- **Kiểm thử**: `tests/Feature/WeddingConsistencyGuardianTest.php` (3/3 tests passed).
 
-#### `TASK-VAL-03`: Bộ Dự Phòng Ngày Cưới 1 Chạm (Wedding Day Resilience Kit)
+#### `TASK-VAL-03`: Bộ Dự Phòng Ngày Cưới 1 Chạm (Wedding Day Resilience Kit) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Tạo trang tổng hợp in ấn chuẩn A4/A3 cho sảnh tiệc cưới (phòng trường hợp mất mạng Wi-Fi tại nhà hàng).
 - **Phạm vi code**:
-  * Route: `/tai-khoan/thiep/{id}/bo-du-phong-ngay-cuoi`.
+  * Route: `/tai-khoan/thiep/{id}/bo-du-phong-ngay-cuoi` (`account.invitations.resilience_kit`).
   * View: `resources/views/client/pages/account/resilience-kit.blade.php`.
-  * Chức năng: In danh sách khách mời có sẵn mã QR cá nhân hóa, In sơ đồ bàn tiệc kèm số ghế, In phiếu tiếp tân hướng dẫn cứu hộ.
-- **Tiêu chí nghiệm thu**: File in trình duyệt hiển thị sắc nét khổ A4/A3 chuẩn @media print, không bị vỡ trang.
+  * Chức năng: Sơ đồ sức chứa bàn tiệc, Danh sách khách mời có sẵn ô tích điểm danh tay bằng bút, Thông số cứu hộ khẩn cấp và mã PIN tiếp tân. Tối ưu `@media print` ngắt trang A4 chuẩn xác.
+  * Nút bấm: "Bộ Dự Phòng" trên `account/invitations.blade.php`.
+- **Kiểm thử**: `tests/Feature/WeddingResilienceKitTest.php` (3/3 passed) & `tests/Feature/AccountInvitationsNavigationTest.php` (3/3 passed).
 
 ---
 
-### CỘT MỐC 2: TỐI ƯU HÓA TRẢI NGHIỆM GIAO TIẾP & TỐC ĐỘ (SPEED & GUEST CONCIERGE)
+### CỘT MỐC 2: TỐI ƯU HÓA TRẢI NGHIỆM GIAO TIẾP & TỐC ĐỘ (SPEED & GUEST CONCIERGE) — [HOÀN TẤT 100%]
 
-#### `TASK-VAL-04`: Tự Động Nén Ảnh Thông Minh Phía Trình Duyệt (Client-side Image Optimizer)
+#### `TASK-VAL-04`: Tự Động Nén Ảnh Thông Minh Phía Trình Duyệt (Client-side Image Optimizer) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Tối ưu dung lượng ảnh tải lên (Photo Drop và Studio) từ 15MB xuống dưới 1MB trước khi gửi request.
 - **Phạm vi code**:
   * File JS: `public/assets/client/js/common/image-optimizer.js`.
-  * Sử dụng Native Canvas API của trình duyệt: Tự động resize ảnh vượt quá 2560px, chuyển đổi sang định dạng WebP chất lượng 85%.
-  * Giảm tải 90% băng thông server và giúp khách mời gửi ảnh trong tiệc cưới cực nhanh dù 4G chập chờn.
-- **Tiêu chí nghiệm thu**: Ảnh chụp iPhone 48MP được nén trong ~0.3 giây trên điện thoại, tải lên thành công 100%.
+  * Tích hợp: `public/assets/client/js/pages/photo-drop.js`.
+  * Sử dụng Native Canvas API của trình duyệt: Tự động resize ảnh vượt quá 2560px, chuyển đổi sang định dạng WebP/JPEG chất lượng 85%. Tiết kiệm 90% băng thông server và giúp khách mời gửi ảnh trong tiệc cưới cực nhanh dù 4G chập chờn.
 
-#### `TASK-VAL-05`: Hướng Dẫn Vị Trí & Bãi Đỗ Xe Thông Minh (Interactive Parking Concierge)
+#### `TASK-VAL-05`: Hướng Dẫn Vị Trí & Bãi Đỗ Xe Thông Minh (Interactive Parking Concierge) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Bổ sung mục hướng dẫn gửi xe và lối vào sảnh tiệc trong phần Sự kiện tiệc cưới.
 - **Phạm vi code**:
-  * Cấu hình trong `schema.json` và `custom_config.parking_guide`.
-  * Giao diện Section 6 (Events & Maps): Cho phép hiển thị ảnh chụp lối vào bãi đỗ xe ô tô/xe máy, lưu ý về chi phí gửi xe hoặc biển chỉ dẫn thang máy.
-- **Tiêu chí nghiệm thu**: Khách mời xem thiệp có thể mở tab "Bãi đỗ xe" để xem ảnh hướng dẫn chi tiết.
+  * Backend: `AccountController::updateSettings` lưu trữ cấu hình `custom_config.parking_guide` (vị trí đỗ ô tô, xe máy, vé xe/chi phí, lối thang máy lên sảnh, mẹo tìm đường).
+  * UI Cài đặt: Khối 7 trong `resources/views/client/pages/account/settings.blade.php`.
+  * UI Thiệp mời: Component `resources/views/client/components/parking-concierge-modal.blade.php` hiển thị nút bấm nổi trang trọng `[ 🚗 Bãi Đỗ Xe & Lối Vào ]` và modal chỉ dẫn tiện ích sang trọng Quiet Luxury. Tự động ẩn khi nhúng iframe Studio Editor.
+- **Kiểm thử**: `tests/Feature/ParkingConciergeTest.php` (3/3 tests passed).
 
 ---
 
-### CỘT MỐC 3: KỶ NIỆM BỀN VỮNG SAU NGÀY CƯỚI (POST-WEDDING KEEPSAKE)
+### CỘT MỐC 3: KỶ NIỆM BỀN VỮNG SAU NGÀY CƯỚI (POST-WEDDING KEEPSAKE) — [HOÀN TẤT 100%]
 
-#### `TASK-VAL-06`: Sách Kỷ Yếu Hôn Nhân PDF (Keepsake Wedding Book PDF)
+#### `TASK-VAL-06`: Sách Kỷ Yếu Hôn Nhân PDF (Keepsake Wedding Book PDF) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Cho phép cặp đôi tải về 1 cuốn sách kỷ yếu kỹ thuật số lưu giữ toàn bộ chữ ký, lời chúc và ảnh cưới.
 - **Phạm vi code**:
-  * Controller: `MemoryVaultController::downloadKeepsakeBook`.
-  * View: `resources/views/client/pages/account/keepsake-book.blade.php`.
-  * Bố cục: Khổ A4 ngang, bìa da mỹ thuật, trang câu chuyện tình yêu, các trang lời chúc kèm chữ ký viết tay của bạn bè.
-- **Tiêu chí nghiệm thu**: Xuất file hoặc in trình duyệt chuẩn xác 100% không lệch trang, lưu giữ trọn đời.
+  * Route: `GET /tai-khoan/thiep/{id}/sach-ky-yeu` (`memory.keepsake_book`).
+  * Controller: `MemoryVaultController::keepsakeBook`.
+  * View: `resources/views/client/pages/keepsake-book.blade.php`.
+  * CSS: `public/assets/client/css/pages/keepsake-book.css`.
+  * Bố cục: Khổ A4 ngang/dọc sang trọng, bìa da mỹ thuật, trang câu chuyện tình yêu, tâm thư tri ân, các trang lời chúc kèm chữ ký viết tay của bạn bè (chia 3 lời chúc/trang), ngắt trang in ấn `@media print` hoàn hảo.
+  * Phân quyền: Kiểm soát chủ sở hữu an toàn (IDOR defense trả 404).
+- **Kiểm thử**: `tests/Feature/KeepsakeWeddingBookTest.php` (3/3 tests passed).
 
-#### `TASK-VAL-07`: Mở Niêm Phong Hộp Thời Gian Tự Động (Anniversary Email Reminder)
+#### `TASK-VAL-07`: Mở Niêm Phong Hộp Thời Gian Tự Động (Anniversary Email Reminder) — [ĐÃ HOÀN THÀNH]
 - **Mục tiêu**: Gửi email thông báo nhắc nhở cặp đôi vào đúng ngày mở khóa tâm thư sau 1, 3 hoặc 5 năm.
 - **Phạm vi code**:
-  * Artisan Command: `php artisan mayhen:check-time-capsules`.
-  * Mail: `App\Mail\TimeCapsuleUnlockedNotification`.
-  * Quét các bản ghi `wedding_time_capsules` đến hạn mở khóa hôm nay và gửi email kèm đường link trang trọng mở niêm phong sáp.
-- **Tiêu chí nghiệm thu**: Đã viết test kiểm tra lệnh console gửi đúng email và đúng ngày hẹn mở.
+  * Migration: `2026_11_07_184503_add_notified_at_to_wedding_time_capsules_table.php` bổ sung cột `notified_at`.
+  * Model: Cập nhật `app/Models/WeddingTimeCapsule.php` `$fillable` và `$casts`.
+  * Mailable: `app/Mail/TimeCapsuleAnniversaryMail.php` và view `resources/views/emails/time-capsule-anniversary.blade.php` (thiết kế Quiet Luxury sang trọng, tem sáp kỷ niệm, nút mở tâm thư trực tiếp).
+  * Artisan Command: `app/Console/Commands/CheckTimeCapsuleAnniversaries.php` (`php artisan mayhen:check-time-capsules`).
+  * Scheduler: Đăng ký lịch chạy tự động hàng ngày trong `routes/console.php`.
+- **Kiểm thử**: `tests/Feature/TimeCapsuleAnniversaryNotificationTest.php` (1/1 test passed, 9 assertions).
 

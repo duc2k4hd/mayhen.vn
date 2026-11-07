@@ -282,6 +282,64 @@
             </div>
         </div>
 
+        <!-- Khối 7: Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Interactive Parking Concierge) -->
+        @php
+            $parkingConfig = $config['parking_guide'] ?? [];
+            $parkingEnabled = old('parking_guide.enabled', !empty($parkingConfig['enabled']));
+        @endphp
+        <div class="mayhen_account_section" style="margin-bottom: 28px;">
+            <div class="mayhen_account_section_header">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 class="mayhen_account_section_title" style="margin: 0;">7. Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Parking Concierge)</h3>
+                            <span style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Premium Care</span>
+                        </div>
+                        <p class="mayhen_account_section_desc" style="margin-top: 4px;">Giúp khách mời không bị bỡ ngỡ khi lái ô tô hoặc đi xe máy đến dự tiệc cưới; hướng dẫn chi tiết vị trí đỗ xe, chính sách vé và lối thang máy lên sảnh.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div>
+                    <strong style="font-size: 14px; color: #1F1D1A; display: block;">Kích hoạt Hướng Dẫn Bãi Đỗ Xe (Parking Concierge)</strong>
+                    <span style="font-size: 12px; color: #7A726A;">Khi bật, thiệp cưới sẽ hiển thị nút chỉ dẫn đỗ xe và lối vào trang trọng cho khách mời xem thiệp.</span>
+                </div>
+                <label style="position: relative; display: inline-flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" name="parking_guide[enabled]" value="1" {{ $parkingEnabled ? 'checked' : '' }} style="width: 20px; height: 20px; accent-color: #C5A880; cursor: pointer;">
+                </label>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                    <div>
+                        <label class="mayhen_account_form_label" for="setting-parking-car">🚗 Vị trí bãi đỗ xe ô tô</label>
+                        <input type="text" name="parking_guide[car_parking]" id="setting-parking-car" value="{{ old('parking_guide.car_parking', $parkingConfig['car_parking'] ?? '') }}" class="mayhen_account_form_input" placeholder="Ví dụ: Tầng hầm B2 tòa nhà, cổng vào số 2 đường Nguyễn Thị Minh Khai">
+                    </div>
+                    <div>
+                        <label class="mayhen_account_form_label" for="setting-parking-moto">🛵 Vị trí bãi đỗ xe máy</label>
+                        <input type="text" name="parking_guide[motorbike_parking]" id="setting-parking-moto" value="{{ old('parking_guide.motorbike_parking', $parkingConfig['motorbike_parking'] ?? '') }}" class="mayhen_account_form_input" placeholder="Ví dụ: Bãi xe máy ngoài trời phía sau hội trường tiệc">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                    <div>
+                        <label class="mayhen_account_form_label" for="setting-parking-fee">🎫 Vé gửi xe & Chi phí</label>
+                        <input type="text" name="parking_guide[fee_note]" id="setting-parking-fee" value="{{ old('parking_guide.fee_note', $parkingConfig['fee_note'] ?? '') }}" class="mayhen_account_form_input" placeholder="Ví dụ: Miễn phí vé gửi xe — Quý khách đóng dấu vé tại bàn đón tiếp của gia đình">
+                    </div>
+                    <div>
+                        <label class="mayhen_account_form_label" for="setting-parking-entrance">🚪 Lối thang máy / Vào sảnh tiệc</label>
+                        <input type="text" name="parking_guide[entrance_guide]" id="setting-parking-entrance" value="{{ old('parking_guide.entrance_guide', $parkingConfig['entrance_guide'] ?? '') }}" class="mayhen_account_form_input" placeholder="Ví dụ: Đi thang máy Trục A lên tầng 3, sảnh Grand Ballroom">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="mayhen_account_form_label" for="setting-parking-tip">💡 Mẹo tìm đường / Ghi chú quan trọng khác</label>
+                    <input type="text" name="parking_guide[map_tip]" id="setting-parking-tip" value="{{ old('parking_guide.map_tip', $parkingConfig['map_tip'] ?? '') }}" class="mayhen_account_form_input" placeholder="Ví dụ: Tuyến đường 1 chiều, quý khách nên đi từ hướng ngã tư Cách Mạng Tháng 8 rẽ vào">
+                </div>
+            </div>
+        </div>
+
         <!-- Nút Lưu Cài Đặt -->
         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 40px;">
             <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">

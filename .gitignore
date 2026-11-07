@@ -59,6 +59,9 @@ Thumbs.db
 !/tests/Feature/SeniorFriendlyGuestModeTest.php
 !/tests/Feature/WeddingConsistencyGuardianTest.php
 !/tests/Feature/WeddingResilienceKitTest.php
+!/tests/Feature/ParkingConciergeTest.php
+!/tests/Feature/KeepsakeWeddingBookTest.php
+!/tests/Feature/TimeCapsuleAnniversaryNotificationTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

@@ -62,6 +62,9 @@
     {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode - TASK-VAL-01) --}}
     @include('client.components.senior-mode-widget')
 
+    {{-- Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Interactive Parking Concierge - TASK-VAL-05) --}}
+    @include('client.components.parking-concierge-modal')
+
     {{-- Huy hiệu Co-branding của Studio Đối Tác (TASK-V3-01) --}}
     @if(isset($wedding) && $wedding && $wedding->partner && $wedding->partner->isActive())
         @php
