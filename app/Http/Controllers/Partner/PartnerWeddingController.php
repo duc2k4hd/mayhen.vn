@@ -11,6 +11,7 @@ use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PartnerWeddingController extends Controller
@@ -180,17 +181,23 @@ class PartnerWeddingController extends Controller
         ]);
 
         $code = strtoupper(trim($validated['handover_code']));
-        $wedding = Wedding::where('handover_code', $code)->first();
+        $claimed = false;
+        $wedding = null;
 
-        if (! $wedding) {
+        DB::transaction(function () use ($code, &$claimed, &$wedding) {
+            $wedding = Wedding::where('handover_code', $code)->lockForUpdate()->first();
+            if ($wedding) {
+                $wedding->update([
+                    'user_id' => auth()->id(),
+                    'handover_code' => null,
+                ]);
+                $claimed = true;
+            }
+        });
+
+        if (! $claimed || ! $wedding) {
             return back()->with('error', 'Mã bàn giao không chính xác hoặc đã được sử dụng. Vui lòng liên hệ Studio của bạn để kiểm tra.');
         }
-
-        // Bàn giao cho cặp đôi: gán user_id của tài khoản hiện tại, làm trống handover_code
-        $wedding->update([
-            'user_id' => auth()->id(),
-            'handover_code' => null,
-        ]);
 
         return redirect()->route('account.invitations')
             ->with('success', 'Chúc mừng! Bạn đã nhận thành công quyền quản trị thiệp cưới của '.$wedding->groom_name.' & '.$wedding->bride_name.' từ Studio đối tác!');

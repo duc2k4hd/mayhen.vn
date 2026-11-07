@@ -113,7 +113,7 @@ class PhotoDropController extends Controller
         $storageDir = "guest_photos/{$wedding->id}";
 
         foreach ($request->file('photos') as $file) {
-            $extension = strtolower($file->getClientOriginalExtension());
+            $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
             if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'], true)) {
                 $extension = 'jpg';
             }

@@ -4988,6 +4988,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                             - Laravel Pint: Đạt chuẩn 100% agent style.
                             - Cập nhật `docs/MAY_HEN_BUG_REGISTER.md`.
 
+                     187. **Hoàn Tất Toàn Diện Kiểm Toán Bảo Mật, Vi Mô UX, Giá Trị Khách Hàng & Lộ Trình Nâng Cấp (Final Deep Audit - Giai Đoạn 03 Đến 07)**:
+                          - **Bối cảnh & Tinh thần thực hiện**:
+                            - Tiếp tục triển khai toàn diện các giai đoạn tiếp theo của bản Master Prompt: Bảo mật đa ranh giới (Luật 91/2025/QH15), Kiểm toán vi mô UX & trạng thái lỗi, Nghiên cứu tâm lý chi trả của khách hàng, Đánh giá 60 tính năng Premium theo thang L0-L5 và thiết lập Báo cáo tổng kết lãnh đạo.
+                          - **Các kết quả kỹ thuật và an toàn nổi bật**:
+                            1. *Gia cố bảo mật chống tấn công tranh chấp (Race Condition Claim)*:
+                               - Trong `PartnerWeddingController::claim()`, bao bọc lệnh nhận bàn giao thiệp cưới trong `DB::transaction` kèm khóa bi quan `lockForUpdate()`, đảm bảo một mã bàn giao 6 ký tự chỉ có thể được nhận thành công duy nhất một lần bởi một tài khoản, triệt tiêu nguy cơ tranh chấp quyền sở hữu thiệp.
+                            2. *Chuẩn hóa kiểm tra MIME thật khi tải ảnh (File Upload Defense)*:
+                               - Trong `PhotoDropController::upload()`, thay thế phương thức đọc đuôi client bằng `$file->guessExtension()`, chỉ chấp nhận danh sách trắng đuôi mở rộng an toàn và lưu trữ file dưới dạng UUID v4 ngẫu nhiên.
+                            3. *Phòng vệ chống rò rỉ dữ liệu cá nhân & IDOR*:
+                               - `GuestController` chủ động trả về `404 Not Found` (thay vì 403) khi tài khoản khác cố tình sửa/xóa/xem khách mời không thuộc quyền sở hữu, ngăn chặn kẻ xấu dò quét ID khách mời hoặc thiệp cưới.
+                               - `TimeCapsuleController::showPublic` chủ động đặt `content = null` tại tầng backend PHP khi tâm thư chưa tới ngày mở khóa hoặc chưa xác thực quyền sở hữu, không bao giờ gửi nội dung bí mật xuống client.
+                            4. *Bộ hồ sơ tài liệu kiểm toán chuyên sâu 5 sao*:
+                               - `docs/MAY_HEN_SECURITY_DEEP_DIVE_AND_PRIVACY_AUDIT.md`: Ma trận Route × Role × Action, chuẩn bảo mật thanh toán VietQR SePay, tuân thủ Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15.
+                               - `docs/MAY_HEN_MICRO_UX_AND_ERROR_STATE_AUDIT.md`: Đánh giá 5 trạng thái màn hình (Empty, Loading, Error, Conflict 409, Offline), Mobile-First Touch Targets (44px), Safe Area Insets.
+                               - `docs/MAY_HEN_PREMIUM_VALUE_PROPOSITION_AUDIT.md`: 7 câu hỏi sống còn của khách trả phí, bản đồ 9 nhóm Persona, hóa giải 8 nỗi sợ tâm lý ngày cưới lớn nhất.
+                               - `docs/MAY_HEN_60_PREMIUM_FEATURE_DEEP_EVALUATION.md`: Đánh giá 16 tính năng VNext và 60 ý tưởng danh mục theo thang đo trưởng thành L0 - L5.
+                               - `docs/MAY_HEN_PREMIUM_UPGRADE_ROADMAP.md`: Lộ trình nâng cấp giá trị cao cấp tập trung vào Sự an tâm ngày cưới (Wedding Confidence), Trải nghiệm gia đình và Sách kỷ yếu PDF lưu niệm.
+                               - `docs/MAY_HEN_FINAL_EXECUTIVE_SUMMARY.md`: Báo cáo tổng kết lãnh đạo toàn diện.
+                          - **Kiểm thử & Đảm bảo chất lượng**:
+                            - Viết Feature test suite trong `tests/Feature/SecurityDeepDiveMatrixTest.php` gồm 4 kịch bản kiểm thử bảo mật chuyên sâu -> **4/4 tests passed**.
+                            - Toàn bộ test suite toàn hệ thống: **285/285 tests passed 100% (1,422 assertions)**.
+                            - Laravel Pint: Đạt chuẩn 100% agent style.
+                            - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
