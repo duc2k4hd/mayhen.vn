@@ -353,17 +353,17 @@
     </div>
 
     <!-- Modal Chỉnh Sửa Khoản Mừng Cưới -->
-    <div id="mayhen-edit-gift-modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title">
-        <div class="mayhen_account_modal_backdrop" onclick="closeEditGiftModal()"></div>
-        <div class="mayhen_account_modal_dialog">
-            <div class="mayhen_account_modal_header">
-                <h3 id="mayhen-edit-gift-title" class="mayhen_account_modal_title">Chỉnh Sửa Khoản Mừng Cưới</h3>
-                <button type="button" class="mayhen_account_modal_close" onclick="closeEditGiftModal()">&times;</button>
+    <div id="mayhen-edit-gift-modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+        <div class="mayhen_account_modal_backdrop" onclick="closeEditGiftModal()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(31, 29, 26, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"></div>
+        <div class="mayhen_account_modal_dialog" style="position: relative; background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(31, 29, 26, 0.2); z-index: 10000;">
+            <div class="mayhen_account_modal_header" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #F0EBE3;">
+                <h3 id="mayhen-edit-gift-title" class="mayhen_account_modal_title" style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #1F1D1A; margin: 0;">Chỉnh Sửa Khoản Mừng Cưới</h3>
+                <button type="button" class="mayhen_account_modal_close" onclick="closeEditGiftModal()" aria-label="Đóng" style="background: none; border: none; font-size: 26px; line-height: 1; color: #8C827A; cursor: pointer; padding: 4px; transition: color 0.2s;">&times;</button>
             </div>
             <form id="mayhen-edit-gift-form" method="POST" action="">
                 @csrf
                 @method('PUT')
-                <div class="mayhen_account_modal_body">
+                <div class="mayhen_account_modal_body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
                     <div>
                         <label class="mayhen_account_form_label">Tên người mừng cưới *</label>
                         <input type="text" name="sender_name" id="modal-sender-name" required class="mayhen_account_form_input">
@@ -401,7 +401,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="mayhen_account_modal_footer">
+                <div class="mayhen_account_modal_footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #F0EBE3; background: #FAF8F5; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
                     <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeEditGiftModal()">Hủy</button>
                     <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Lưu Thay Đổi</button>
                 </div>
@@ -441,6 +441,7 @@
                 if (ackCheckbox) ackCheckbox.checked = ack;
 
                 if (editModal) {
+                    editModal.style.display = 'flex';
                     editModal.classList.add('is-open');
                     document.body.style.overflow = 'hidden';
                 }
@@ -451,6 +452,7 @@
     function closeEditGiftModal() {
         const modal = document.getElementById('mayhen-edit-gift-modal');
         if (modal) {
+            modal.style.display = 'none';
             modal.classList.remove('is-open');
             document.body.style.overflow = '';
         }

@@ -31,11 +31,10 @@ class GuestController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
 
-        // Danh sách nhóm độc nhất để hiển thị dropdown bộ lọc
-        $availableGroups = $wedding->guests()
-            ->select('group_name')
-            ->distinct()
+        // Danh sách nhóm độc nhất để hiển thị dropdown bộ lọc (dùng Model trực tiếp để tránh xung đột ORDER BY)
+        $availableGroups = Guest::where('wedding_id', $wedding->id)
             ->whereNotNull('group_name')
+            ->distinct()
             ->pluck('group_name');
 
         // Thống kê tổng quan (toàn bộ đám cưới)
@@ -290,10 +289,9 @@ class GuestController extends Controller
         $totalChildren = (int) $attendingResponses->sum('children_count');
         $totalVegetarian = (int) $attendingResponses->filter(fn ($r) => ! empty($r->dietary_requirements))->count();
 
-        $availableGroups = $wedding->guests()
-            ->select('group_name')
-            ->distinct()
+        $availableGroups = Guest::where('wedding_id', $wedding->id)
             ->whereNotNull('group_name')
+            ->distinct()
             ->pluck('group_name');
 
         return view('client.pages.account.guests-print', [

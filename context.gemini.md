@@ -4427,6 +4427,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **308/308 tests passed 100% (1,650 assertions)** trên toàn hệ thống trong ~9.8s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                165. **Khắc Phục Lỗi Truy Vấn SQL MySQL 3065 & Phòng Vệ Hiển Thị Modal Sổ Mừng Cưới (Fix CSS/Modal Cache)**:
+                     - **Bối cảnh & Vấn đề xử lý**:
+                       - **Lỗi SQL MySQL 3065**: Khi truy cập `/tai-khoan/thiep/1/so-mung-cuoi`, hệ thống bị văng lỗi `General error: 3065 Expression #1 of ORDER BY clause is not in SELECT list, references column 'mayhen.wedding_gifts.created_at' which is not in SELECT list; this is incompatible with DISTINCT` do quan hệ `gifts()` trên `Wedding.php` có default scope `latest()` (`ORDER BY created_at DESC`).
+                       - **Hiện tượng "Mất CSS" (Modal hiển thị dưới chân trang)**: Form modal "Chỉnh Sửa Khoản Mừng Cưới" hiển thị lộ liễu dưới chân trang thay vì popup ẩn. Nguyên nhân là do trình duyệt của người dùng cache file `account.css` cũ từ trước khi class `.mayhen_account_modal` được bổ sung, và thẻ modal trong Blade thiếu inline style phòng vệ khi nạp CSS bị trễ/lỗi.
+                     - **Các thành phần đã triển khai**:
+                       - **Khắc phục lỗi SQL 3065 triệt để**:
+                         + `app/Http/Controllers/Client/GiftManagementController.php`: Chuyển truy vấn danh sách nhóm mừng cưới độc nhất sang dùng trực tiếp `WeddingGift::where('wedding_id', $wedding->id)->whereNotNull('sender_group')->distinct()->pluck('sender_group')` loại bỏ hoàn toàn `ORDER BY` thừa.
+                         + `app/Http/Controllers/Client/GuestController.php`: Đồng bộ chuyển truy vấn `$availableGroups` ở trang Quản lý khách mời và trang In ấn khách sang dùng trực tiếp `Guest::where('wedding_id', $wedding->id)->whereNotNull('group_name')->distinct()->pluck('group_name')` chống lỗi SQL 3065 trên MySQL STRICT / ONLY_FULL_GROUP_BY.
+                       - **Phòng vệ hiển thị Modal Sổ Mừng Cưới & Cache-Busting CSS**:
+                         + `resources/views/client/pages/account/gifts.blade.php`: Gắn inline style phòng vệ `display: none; position: fixed; inset: 0; z-index: 9999;` lên modal `#mayhen-edit-gift-modal`, backdrop và dialog. Khi chưa bấm "Sửa", modal **tuyệt đối không bao giờ bị render thô ra ngoài trang**. Đồng thời cập nhật JS quản lý `style.display = 'flex'` khi mở và `'none'` khi đóng.
+                         + `resources/views/client/pages/account/layout.blade.php`: Bổ sung cơ chế Cache-Busting tự động theo thời gian sửa file `?v={{ filemtime(...) }}` cho thẻ link `assets/client/css/pages/account.css` để trình duyệt lập tức tải file CSS mới nhất mỗi khi mã nguồn cập nhật.
+                     - **Kiểm thử & Chất lượng**:
+                       - Toàn bộ **308/308 tests passed 100% (1,650 assertions)** trên toàn hệ thống trong ~18.2s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

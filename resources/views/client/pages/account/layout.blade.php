@@ -3,7 +3,7 @@
 @section('page_title', ($pageTitle ?? 'Tài Khoản') . ' | ' . config('app.name'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}?v={{ file_exists(public_path('assets/client/css/pages/account.css')) ? filemtime(public_path('assets/client/css/pages/account.css')) : '1.0' }}">
 @endpush
 
 @section('content')
