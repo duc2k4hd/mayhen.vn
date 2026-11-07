@@ -239,6 +239,19 @@ class InvitationEditorController extends Controller
             ]);
         }
 
+        $isOwner = $invitation->isOwner();
+
+        // Kiểm tra mật mã bảo vệ riêng tư nếu có
+        if (! empty($config['password']) && ! $isOwner) {
+            $isUnlocked = session("unlocked_invitation_{$invitation->id}") === true;
+            if (! $isUnlocked) {
+                return view('client.pages.invitation-password', [
+                    'invitation' => $invitation,
+                    'wedding' => $invitation->wedding,
+                ]);
+            }
+        }
+
         $wedding = $invitation->wedding;
         $wishes = $wedding ? $wedding->wishes()->where('is_approved', true)->take(50)->get() : collect([]);
         $wishSubmitUrl = route('invitation.wish.store', $slug);
@@ -487,5 +500,32 @@ class InvitationEditorController extends Controller
         }
 
         return $clean;
+    }
+
+    /**
+     * Mở khóa thiệp cưới được bảo vệ bằng mật mã.
+     */
+    public function unlockPassword(Request $request, string $slug): RedirectResponse
+    {
+        $invitation = Invitation::where('slug', $slug)->firstOrFail();
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode($invitation->custom_config, true) ?? []);
+
+        $expectedPassword = $config['password'] ?? null;
+
+        $request->validate([
+            'password' => ['required', 'string'],
+        ], [
+            'password.required' => 'Vui lòng nhập mật mã bảo mật.',
+        ]);
+
+        if ($expectedPassword && trim((string) $request->input('password')) === trim((string) $expectedPassword)) {
+            session()->put("unlocked_invitation_{$invitation->id}", true);
+
+            return redirect()->route('invitation.show', $slug);
+        }
+
+        return back()->with('password_error', 'Mật mã mở thiệp không chính xác, vui lòng thử lại.');
     }
 }

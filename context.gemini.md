@@ -4182,4 +4182,40 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+                154. **Xây Dựng Toàn Diện Module Cài Đặt Chi Tiết & Tùy Biến Thiệp Cưới (Wedding Invitation Settings Hub), Bảo Mật Mật Mã Riêng Tư & Nhân Bản Thiệp**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Cung cấp cho cặp đôi trang quản trị chuyên sâu cấu hình từng thiệp cưới (`/tai-khoan/thiep/{id}/cai-dat` - `account.invitations.settings`).
+                       2. **Tùy Biến Đường Dẫn Thiệp Độc Quyền (Custom Slug)**:
+                          - Cặp đôi chủ động đổi slug mang dấu ấn riêng (ví dụ `dat-ngoc-2026`).
+                          - Kiểm tra nghiêm ngặt định dạng regex `^[a-z0-9\-]+$` và tính duy nhất trên toàn hệ thống (`unique:invitations,slug`).
+                       3. **Bảo Mật Thiệp Bằng Mật Mã Riêng Tư (Password Protected Invitation)**:
+                          - Hỗ trợ các đám cưới yêu cầu sự kín đáo, chỉ những quan khách có mã PIN (mật mã 4-6 số) mới mở được thiệp.
+                          - View `resources/views/client/pages/invitation-password.blade.php`: Giao diện nhập mã phong cách Quiet Luxury với biểu tượng ổ khóa vàng, tên cô dâu chú rể và form mở khóa an toàn.
+                          - Route `POST /thiep/{slug}/mo-khoa` (`invitation.unlock`): Xác thực mã PIN, lưu cờ mở khóa an toàn trong session `unlocked_invitation_{id}`. Chủ sở hữu thiệp truy cập trực tiếp không bị chặn bởi mật mã.
+                       4. **Kiểm Soát Tương Tác Quan Khách & Hạn Chót RSVP**:
+                          - Tùy chọn Bật/Tắt nhận lời chúc Sổ Lưu Bút (`allow_wishes`).
+                          - Tùy chọn Bật/Tắt nhận phản hồi RSVP (`allow_rsvp`).
+                          - Thiết lập hạn chót phản hồi bàn tiệc (`rsvp_deadline`).
+                       5. **Âm Nhạc Nền Thiệp Cưới & Tự Động Phát**:
+                          - Tích hợp nạp toàn bộ danh mục bài hát đám cưới từ `WeddingMusicService` vào dropdown chọn bài hát thông minh.
+                          - Hỗ trợ nhập URL MP3 tùy chỉnh và bật/tắt tự động phát nhạc khi mở phong bì (`music_autoplay`).
+                       6. **Tùy Biến Chia Sẻ Mạng Xã Hội (Social & SEO Meta)**:
+                          - Tiêu đề (`og_title`) và Lời tựa mô tả (`og_description`) khi chia sẻ link thiệp qua Zalo, Facebook, iMessage.
+                       7. **Thao Tác Nâng Cao (Nhân Bản & Xóa Thiệp)**:
+                          - Nhân bản thiệp cưới (`account.invitations.duplicate`): Tự động tạo bản sao lưu mẫu thiệp với slug mới dạng `{slug}-sao-chep-{hash}` ở trạng thái bản nháp, giữ nguyên 100% nội dung và ảnh cưới đã thiết lập.
+                          - Xóa vĩnh viễn thiệp cưới (`account.invitations.destroy`): Kiểm tra quyền sở hữu chặt chẽ, xóa an toàn kèm hộp thoại xác nhận.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Client/AccountController.php`: Bổ sung 4 actions `settings`, `updateSettings`, `duplicate`, `destroy` cùng cơ chế phân quyền `authorizeInvitationOwner`.
+                       - `app/Http/Controllers/Client/InvitationEditorController.php`: Bổ sung kiểm tra mật khẩu trong `show` và action `unlockPassword`.
+                       - `routes/web.php`: Bổ sung các routes `account.invitations.settings`, `account.invitations.settings.update`, `account.invitations.duplicate`, `account.invitations.destroy`, và `invitation.unlock`.
+                       - `resources/views/client/pages/account/settings.blade.php`: Giao diện Quiet Luxury 5 khối cài đặt khoa học và khu vực thao tác nâng cao.
+                       - `resources/views/client/pages/invitation-password.blade.php`: Giao diện nhập mật mã bảo vệ thiệp cưới.
+                       - `resources/views/client/pages/account/invitations.blade.php` & `dashboard.blade.php`: Bổ sung nút "Cài Đặt Thiệp" điều hướng trực tiếp.
+                       - `tests/Feature/ClientInvitationSettingsTest.php`: Bộ 7 test cases bao phủ 100% các kịch bản xem cài đặt, cập nhật slug, validate format, bảo mật mật mã mở thiệp, nhân bản thiệp và xóa thiệp.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 41/41 tests passed 100% (224 assertions) trên toàn bộ suite người dùng (`ClientAccountTest`, `ClientGuestManagementTest`, `ClientWishManagementTest`, `ClientPlanUpgradeFlowTest`, `PublicInvitationPersonalizationTest`, `ClientWeddingQrModalTest`, `ClientInvitationSettingsTest`).
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

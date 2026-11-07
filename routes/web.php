@@ -41,6 +41,7 @@ Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uplo
 Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->middleware('throttle:editor_actions')->name('invitation.autosave');
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
+Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');
 Route::get('/thiep/{slug}/rsvp/responses', [GuestController::class, 'getRsvpResponses'])->name('invitation.rsvp.responses');
 Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
@@ -70,6 +71,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
     Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');
     Route::post('/doi-mat-khau', [AccountController::class, 'updatePassword'])->name('password.update');
+
+    // Cài Đặt Chi Tiết & Nhân Bản Thiệp Cưới
+    Route::get('/thiep/{id}/cai-dat', [AccountController::class, 'settings'])->name('invitations.settings');
+    Route::post('/thiep/{id}/cai-dat', [AccountController::class, 'updateSettings'])->name('invitations.settings.update');
+    Route::post('/thiep/{id}/nhan-ban', [AccountController::class, 'duplicate'])->name('invitations.duplicate');
+    Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
 
     // Sổ Lưu Bút & Lời Chúc Cặp Đôi
     Route::get('/thiep/{id}/so-luu-but', [WishManagementController::class, 'index'])->name('wishes.index');

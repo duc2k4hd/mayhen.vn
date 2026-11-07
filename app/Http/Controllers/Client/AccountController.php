@@ -7,11 +7,13 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class AccountController extends Controller
@@ -174,5 +176,153 @@ class AccountController extends Controller
         ]);
 
         return back()->with('success', 'Đổi mật khẩu tài khoản thành công!');
+    }
+
+    /**
+     * Hiển thị trang cấu hình chi tiết thiệp cưới.
+     */
+    public function settings(Request $request, int $invitationId, WeddingMusicService $musicService): View
+    {
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $wedding = $invitation->wedding;
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode($invitation->custom_config, true) ?? []);
+
+        $musics = $musicService->getCatalog();
+
+        return view('client.pages.account.settings', [
+            'invitation' => $invitation,
+            'wedding' => $wedding,
+            'config' => $config,
+            'musics' => $musics,
+        ]);
+    }
+
+    /**
+     * Cập nhật các thiết lập của thiệp cưới.
+     */
+    public function updateSettings(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $validated = $request->validate([
+            'slug' => [
+                'required',
+                'string',
+                'min:3',
+                'max:80',
+                'regex:/^[a-z0-9\-]+$/',
+                Rule::unique('invitations', 'slug')->ignore($invitation->id),
+            ],
+            'title' => ['nullable', 'string', 'max:190'],
+            'is_published' => ['nullable', 'boolean'],
+            'password' => ['nullable', 'string', 'max:20'],
+            'allow_wishes' => ['nullable', 'boolean'],
+            'allow_rsvp' => ['nullable', 'boolean'],
+            'rsvp_deadline' => ['nullable', 'date'],
+            'music_url' => ['nullable', 'string', 'max:500'],
+            'music_autoplay' => ['nullable', 'boolean'],
+            'og_title' => ['nullable', 'string', 'max:190'],
+            'og_description' => ['nullable', 'string', 'max:300'],
+        ], [
+            'slug.required' => 'Vui lòng nhập đường dẫn thiệp cưới.',
+            'slug.min' => 'Đường dẫn thiệp phải có ít nhất 3 ký tự.',
+            'slug.max' => 'Đường dẫn thiệp không được vượt quá 80 ký tự.',
+            'slug.regex' => 'Đường dẫn chỉ được chứa chữ cái thường (a-z), chữ số (0-9) và dấu gạch nối (-).',
+            'slug.unique' => 'Đường dẫn thiệp này đã được cặp đôi khác sử dụng, vui lòng chọn đường dẫn khác.',
+        ]);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode($invitation->custom_config, true) ?? []);
+
+        // Cập nhật các trường cấu hình
+        $config['password'] = $request->filled('password') ? trim((string) $request->input('password')) : null;
+        $config['allow_wishes'] = $request->boolean('allow_wishes', true);
+        $config['allow_rsvp'] = $request->boolean('allow_rsvp', true);
+        $config['rsvp_deadline'] = $request->input('rsvp_deadline') ?: null;
+        $config['music_url'] = $request->input('music_url') ?: null;
+        $config['music_autoplay'] = $request->boolean('music_autoplay', true);
+        $config['og_title'] = $request->input('og_title') ?: null;
+        $config['og_description'] = $request->input('og_description') ?: null;
+
+        $invitation->slug = Str::slug($validated['slug']);
+        $invitation->title = $validated['title'] ?? ($invitation->title ?: 'Thiệp Cưới Chính Thức');
+        $invitation->custom_config = $config;
+
+        // Nếu thiệp không bị khóa bởi Admin, cho phép cập nhật trạng thái xuất bản
+        if (empty($config['is_locked'])) {
+            $isPublished = $request->boolean('is_published');
+            $invitation->is_published = $isPublished;
+            if ($isPublished && ! $invitation->published_at) {
+                $invitation->published_at = now();
+            }
+        }
+
+        $invitation->save();
+
+        return redirect()->route('account.invitations.settings', $invitation->id)
+            ->with('success', 'Đã lưu cài đặt thiệp cưới thành công!');
+    }
+
+    /**
+     * Nhân bản thiệp cưới để tạo phiên bản sao lưu hoặc thiệp riêng cho nhà trai/gái.
+     */
+    public function duplicate(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $newSlug = Str::limit($invitation->slug, 60, '').'-sao-chep-'.Str::lower(Str::random(5));
+
+        $newInvitation = $invitation->replicate([
+            'slug',
+            'is_published',
+            'published_at',
+        ]);
+
+        $newInvitation->slug = $newSlug;
+        $newInvitation->title = ($invitation->title ?? 'Thiệp Cưới').' (Bản Sao)';
+        $newInvitation->is_published = false;
+        $newInvitation->published_at = null;
+        $newInvitation->save();
+
+        return redirect()->route('account.invitations')
+            ->with('success', "Đã nhân bản thiệp cưới thành công! Bản sao mới có đường dẫn: {$newSlug}");
+    }
+
+    /**
+     * Xóa thiệp cưới.
+     */
+    public function destroy(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $invitation->delete();
+
+        return redirect()->route('account.invitations')
+            ->with('success', 'Đã xóa thiệp cưới thành công khỏi tài khoản.');
+    }
+
+    /**
+     * Kiểm tra quyền sở hữu thiệp cưới của người dùng hiện tại.
+     */
+    private function authorizeInvitationOwner(Invitation $invitation): void
+    {
+        $wedding = $invitation->wedding;
+        if (! $wedding) {
+            abort(404);
+        }
+
+        if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
+            return;
+        }
+
+        abort(404);
     }
 }
