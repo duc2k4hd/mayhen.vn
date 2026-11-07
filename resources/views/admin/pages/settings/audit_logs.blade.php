@@ -120,11 +120,11 @@
                                 @php
                                     $act = $log['action'] ?? '';
                                     $badgeClass = 'mayhen_admin_badge_muted';
-                                    if (str_contains($act, 'approve') || str_contains($act, 'extend')) {
+                                    if (str_contains($act, 'approve') || str_contains($act, 'extend') || str_contains($act, 'unlock')) {
                                         $badgeClass = 'mayhen_admin_badge_success';
-                                    } elseif (str_contains($act, 'cancel') || str_contains($act, 'reset')) {
+                                    } elseif (str_contains($act, 'cancel') || str_contains($act, 'reset') || str_contains($act, 'lock') || str_contains($act, 'delete')) {
                                         $badgeClass = 'mayhen_admin_badge_danger';
-                                    } elseif (str_contains($act, 'update') || str_contains($act, 'role')) {
+                                    } elseif (str_contains($act, 'update') || str_contains($act, 'role') || str_contains($act, 'toggle') || str_contains($act, 'scan') || str_contains($act, 'migrate')) {
                                         $badgeClass = 'mayhen_admin_badge_warning';
                                     }
                                 @endphp

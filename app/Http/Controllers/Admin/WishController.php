@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\WeddingWish;
+use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -103,6 +104,14 @@ class WishController extends Controller
 
         $wish->update(['is_approved' => $newStatus]);
 
+        AuditLogger::log(
+            'toggle_wish_approval',
+            'WeddingWish',
+            $wish->id,
+            ($newStatus ? 'Duyệt hiển thị' : 'Tạm ẩn')." lời chúc của '{$wish->sender_name}' trên thiệp cưới #{$wish->wedding_id}",
+            ['is_approved' => $newStatus, 'wedding_id' => $wish->wedding_id]
+        );
+
         $msg = $newStatus
             ? "Đã duyệt hiển thị lời chúc của \"{$wish->sender_name}\"."
             : "Đã tạm ẩn lời chúc của \"{$wish->sender_name}\" khỏi thiệp cưới.";
@@ -117,7 +126,16 @@ class WishController extends Controller
     {
         $wish = WeddingWish::findOrFail($id);
         $sender = $wish->sender_name;
+        $weddingId = $wish->wedding_id;
         $wish->delete();
+
+        AuditLogger::log(
+            'delete_wish',
+            'WeddingWish',
+            $id,
+            "Xóa vĩnh viễn lời chúc từ '{$sender}' trên thiệp cưới #{$weddingId}",
+            ['wedding_id' => $weddingId, 'sender_name' => $sender]
+        );
 
         return back()->with('success', "Đã xóa vĩnh viễn lời chúc từ \"{$sender}\".");
     }

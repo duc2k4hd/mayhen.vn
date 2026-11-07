@@ -4532,6 +4532,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                         - Toàn bộ test suite đạt **178/178 tests passed (979 assertions)**.
                         - Pint: Đạt chuẩn 100%.
 
+                 170. **Hoàn Thiện Toàn Diện Hệ Thống Ghi Nhận & Truy Vết Nhật Ký Quản Trị (Admin System Audit Trail)**:
+                      - **Bối cảnh & Yêu cầu theo Roadmap (Giai đoạn 7)**:
+                        - Tuân thủ *Nguyên tắc 4: An toàn & Audit Trail*: Mọi thao tác quản trị nhạy cảm (duyệt/hủy đơn, khóa/mở khóa thiệp, duyệt/xóa lời chúc, can thiệp kho mẫu thiệp, đổi phân quyền) bắt buộc phải có log chi tiết: Ai làm, Lúc nào, Đối tượng nào, IP nào, và Chi tiết cụ thể.
+                        - Hoàn thiện bộ danh mục hành động `availableActions` và xuất báo cáo CSV chuẩn hóa UTF-8 BOM để quản trị viên đối soát dễ dàng trên Microsoft Excel.
+                      - **Các thành phần đã triển khai**:
+                        - **Bổ sung Audit Logging Cho Toàn Bộ Hành Động Quản Trị Mẫu Thiệp (`TemplateController.php`)**:
+                          + `update`: Ghi log `update_template` khi chỉnh sửa metadata, danh mục, tier, trạng thái active/featured của mẫu thiệp.
+                          + `toggleActive`: Ghi log `toggle_template_active` khi kích hoạt hoặc tạm ẩn mẫu thiệp.
+                          + `toggleFeatured`: Ghi log `toggle_template_featured` khi ghim hoặc bỏ ghim mẫu thiệp nổi bật.
+                          + `scanDiscovery`: Ghi log `scan_templates` ghi nhận số lượng mẫu thiệp mới được đồng bộ từ kho mã nguồn.
+                        - **Bổ sung Audit Logging Cho Quản Trị Lời Chúc (`WishController.php`)**:
+                          + `toggleApproval`: Ghi log `toggle_wish_approval` khi quản trị viên duyệt hiển thị hoặc tạm ẩn lời chúc của khách mời.
+                          + `destroy`: Ghi log `delete_wish` khi xóa vĩnh viễn lời chúc phản cảm, spam hoặc độc hại.
+                        - **Đồng Bộ & Chuẩn Hóa Danh Mục Hành Động (`SettingController.php`)**:
+                          + Cập nhật đầy đủ 17 loại hành động quản trị hệ thống vào `$availableActions` trong cả 2 method xem nhật ký (`auditLogs`) và xuất báo cáo (`exportAuditLogs`): `approve_order`, `cancel_order`, `lock_invitation`, `unlock_invitation`, `toggle_publish`, `extend_invitation`, `migrate_template`, `change_user_role`, `reset_user_password`, `scan_templates`, `update_template`, `toggle_template_active`, `toggle_template_featured`, `toggle_wish_approval`, `delete_wish`, `update_plan`, `update_banking`.
+                        - **Tối Ưu Giao Diện Nhật Ký Quản Trị (`audit_logs.blade.php`)**:
+                          + Tối ưu phân loại màu sắc badge hành động (`badgeClass`): Màu xanh an toàn cho duyệt đơn/mở khóa/gia hạn, màu đỏ cảnh báo cho khóa thiệp/hủy đơn/xóa lời chúc/đổi mật khẩu, màu vàng cho cập nhật cấu hình/phân quyền/quét mẫu/chuyển đổi trạng thái.
+                      - **Kiểm thử & Chất lượng**:
+                        - Viết Feature test `tests/Feature/AdminAuditLogActionsTest.php` kiểm tra đầy đủ 5 trường hợp: Render dropdown 17 hành động, lọc theo hành động, xuất CSV UTF-8 BOM, ghi log khi thao tác mẫu thiệp, ghi log khi thao tác kiểm duyệt lời chúc.
+                        - Toàn bộ test suite đạt **181/181 tests passed (990 assertions)**.
+                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+                        - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

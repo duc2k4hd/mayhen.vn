@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -160,6 +161,14 @@ class TemplateController extends Controller
 
         InvitationTemplate::clearTemplateCaches($template);
 
+        AuditLogger::log(
+            'update_template',
+            'InvitationTemplate',
+            $template->id,
+            "Cập nhật cấu hình mẫu thiệp '{$template->name}' (Tier: {$validated['tier']})",
+            ['tier' => $validated['tier'], 'is_active' => $template->is_active, 'is_featured' => $template->is_featured]
+        );
+
         return redirect()->route('admin.templates.index')->with('success', "Đã cập nhật thông tin mẫu thiệp \"{$template->name}\" thành công.");
     }
 
@@ -172,6 +181,14 @@ class TemplateController extends Controller
         $template->update(['is_active' => ! $template->is_active]);
 
         InvitationTemplate::clearTemplateCaches($template);
+
+        AuditLogger::log(
+            'toggle_template_active',
+            'InvitationTemplate',
+            $template->id,
+            ($template->is_active ? 'Kích hoạt hiển thị' : 'Tạm ẩn')." mẫu thiệp '{$template->name}'",
+            ['is_active' => $template->is_active]
+        );
 
         $msg = $template->is_active ? 'Đã kích hoạt hiển thị mẫu thiệp.' : 'Đã tạm ẩn mẫu thiệp khỏi hệ thống.';
 
@@ -195,6 +212,14 @@ class TemplateController extends Controller
         $template->update(['is_featured' => ! $template->is_featured]);
 
         InvitationTemplate::clearTemplateCaches($template);
+
+        AuditLogger::log(
+            'toggle_template_featured',
+            'InvitationTemplate',
+            $template->id,
+            ($template->is_featured ? 'Ghim nổi bật' : 'Bỏ ghim nổi bật')." mẫu thiệp '{$template->name}'",
+            ['is_featured' => $template->is_featured]
+        );
 
         $msg = $template->is_featured ? 'Đã ghim mẫu thiệp nổi bật.' : 'Đã bỏ ghim nổi bật của mẫu thiệp.';
 
@@ -273,6 +298,14 @@ class TemplateController extends Controller
         }
 
         InvitationTemplate::clearTemplateCaches();
+
+        AuditLogger::log(
+            'scan_templates',
+            'InvitationTemplate',
+            null,
+            "Quét và đồng bộ {$syncedCount} mẫu thiệp cưới từ kho mã nguồn",
+            ['synced_count' => $syncedCount]
+        );
 
         return redirect()->route('admin.templates.index')->with('success', "Đã quét và đồng bộ thành công {$syncedCount} mẫu thiệp cưới từ kho mã nguồn.");
     }
