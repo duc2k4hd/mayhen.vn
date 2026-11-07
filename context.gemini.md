@@ -4928,6 +4928,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Toàn bộ test suite toàn hệ thống: **273/273 tests passed 100% (1,366 assertions)**.
                                - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                     184. **Nâng Cấp Trung Tâm Điều Hành Cưới Trên Trang Tổng Quan (Wedding Mission Control Dashboard)**:
+                          - **Bối cảnh & Giá trị trải nghiệm**:
+                            - Trang tổng quan tài khoản `/tai-khoan` (`dashboard.blade.php`) đóng vai trò là cửa ngõ đầu tiên khi các cặp đôi đăng nhập hệ thống Mây Hẹn.
+                            - Cần nâng cấp trang Dashboard thành Trung Tâm Điều Hành Cưới toàn diện, giúp cặp đôi nắm bắt toàn bộ tiến trình từ chuẩn bị thiệp đến ngày hôn lễ và lưu giữ kỷ niệm sau đám cưới.
+                          - **Các thành phần kỹ thuật cốt lõi**:
+                            1. *Tái cấu trúc lưới phím tắt nhanh 6 thẻ (`mayhen_account_quick_actions`)*:
+                               - Thẻ 1: *Khách Mời & RSVP* (trỏ tới `guests.index`).
+                               - Thẻ 2: *Nâng Cấp Gói Cước* (trỏ tới `pricing`).
+                               - Thẻ 3: *Đơn Hàng Đã Mua* (trỏ tới `account.orders`).
+                               - Thẻ 4: *Sơ Đồ Xếp Bàn Tiệc & In Tiếp Tân* (trỏ tới `seating.index`).
+                               - Thẻ 5: *Màn Chiếu LED & Điều Phối Sự Kiện* (trỏ tới `live_wall.settings`).
+                               - Thẻ 6: *Két Kỷ Niệm & Hộp Thời Gian* (trỏ tới `memory.settings`).
+                               - Bố cục lưới 2 hàng x 3 cột trang nhã trên Desktop, tự động chuyển về 1 cột mượt mà trên Mobile theo chuẩn Mobile-First.
+                            2. *Tối ưu hóa thẻ thiệp cưới cá nhân (`invitations.blade.php`)*:
+                               - Tách riêng cụm 2 nút hành động chính (Primary Bar): Nút "Vào Studio" (60% width) và "Xem Thiệp" (40% width).
+                               - Lưới 10 công cụ hỗ trợ chia 2 cột cân xứng (5 hàng x 2 cột), loại bỏ tình trạng danh sách nút bị dàn trải không có điểm nhấn.
+                          - **Kiểm thử & Đảm bảo chất lượng**:
+                            - Viết Feature test suite trong `tests/Feature/AccountDashboardTest.php`: Kiểm tra chặn khách chưa đăng nhập; kiểm tra giao diện rỗng khi chưa có thiệp cưới; kiểm tra render KPI đếm ngược ngày cưới và đầy đủ 6 quick action cards trỏ chính xác vào thiệp cưới đang hoạt động -> **3/3 tests passed**.
+                            - Toàn bộ test suite toàn hệ thống: **276/276 tests passed 100% (1,382 assertions)**.
+                            - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

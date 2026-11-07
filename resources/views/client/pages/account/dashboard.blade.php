@@ -332,6 +332,82 @@
                 </svg>
             </span>
         </a>
+
+        <!-- Thẻ 4: Sơ Đồ Xếp Bàn Tiệc & In Tiếp Tân (TASK-V3-02) -->
+        <a href="{{ $activeInvitation ? route('seating.index', $activeInvitation->id) : route('account.invitations') }}" class="mayhen_account_quick_card">
+            <div>
+                <div class="mayhen_account_quick_header">
+                    <div class="mayhen_account_quick_icon_wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <line x1="12" y1="2" x2="12" y2="6"></line>
+                            <line x1="12" y1="18" x2="12" y2="22"></line>
+                            <line x1="2" y1="12" x2="6" y2="12"></line>
+                            <line x1="18" y1="12" x2="22" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3 class="mayhen_account_quick_title">Sơ Đồ Xếp Bàn Tiệc</h3>
+                </div>
+                <p class="mayhen_account_quick_desc" style="margin-top: 12px;">
+                    Sắp xếp khách vào từng bàn tiệc trực quan, tính toán tải bàn và in sơ đồ đón khách chuẩn A4 cho sảnh tiệc.
+                </p>
+            </div>
+            <span class="mayhen_account_quick_link_text">
+                Vào xếp bàn tiệc cưới
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </span>
+        </a>
+
+        <!-- Thẻ 5: Màn Chiếu LED & Điều Phối Sự Kiện (TASK-V2-02 & TASK-V3-04) -->
+        <a href="{{ $activeInvitation ? route('live_wall.settings', $activeInvitation->id) : route('account.invitations') }}" class="mayhen_account_quick_card">
+            <div>
+                <div class="mayhen_account_quick_header">
+                    <div class="mayhen_account_quick_icon_wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h3 class="mayhen_account_quick_title">Màn Chiếu & Điều Phối</h3>
+                </div>
+                <p class="mayhen_account_quick_desc" style="margin-top: 12px;">
+                    Bức tường trình chiếu ảnh cưới & lời chúc 60fps trên màn hình LED sân khấu và điều phối đón khách thời gian thực.
+                </p>
+            </div>
+            <span class="mayhen_account_quick_link_text">
+                Thiết lập màn chiếu LED
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </span>
+        </a>
+
+        <!-- Thẻ 6: Két Kỷ Niệm & Hộp Thời Gian (TASK-V2-03 & TASK-V3-05) -->
+        <a href="{{ $activeInvitation ? route('memory.settings', $activeInvitation->id) : route('account.invitations') }}" class="mayhen_account_quick_card">
+            <div>
+                <div class="mayhen_account_quick_header">
+                    <div class="mayhen_account_quick_icon_wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mayhen_account_quick_title">Két Kỷ Niệm & Hộp Thư</h3>
+                </div>
+                <p class="mayhen_account_quick_desc" style="margin-top: 12px;">
+                    Lưu giữ trọn đời lời chúc phúc, bộ sưu tập ảnh khách chụp, xuất sách kỷ yếu in ấn và tâm thư niêm phong sáp.
+                </p>
+            </div>
+            <span class="mayhen_account_quick_link_text">
+                Mở két kỷ niệm số
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </span>
+        </a>
     </div>
 
     <!-- Recent Wishes from Guests -->

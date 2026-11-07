@@ -52,6 +52,7 @@ Thumbs.db
 !/tests/Feature/LiveWeddingWallTest.php
 !/tests/Feature/WeddingTimeCapsuleTest.php
 !/tests/Feature/AccountInvitationsNavigationTest.php
+!/tests/Feature/AccountDashboardTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
