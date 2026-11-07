@@ -81,4 +81,111 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 4. Modal Chỉnh Sửa Thông Tin Khách Mời
+    const editModal = document.getElementById('mayhen-edit-guest-modal');
+    if (editModal) {
+        const editForm = document.getElementById('mayhen-edit-guest-form');
+        const nameInput = document.getElementById('edit-guest-name');
+        const salutationInput = document.getElementById('edit-guest-salutation');
+        const groupInput = document.getElementById('edit-guest-group');
+        const phoneInput = document.getElementById('edit-guest-phone');
+        const attendeesInput = document.getElementById('edit-guest-attendees');
+
+        document.querySelectorAll('.mayhen_guest_open_edit_btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const updateUrl = btn.getAttribute('data-update-url');
+                const name = btn.getAttribute('data-guest-name') || '';
+                const salutation = btn.getAttribute('data-guest-salutation') || '';
+                const group = btn.getAttribute('data-guest-group') || '';
+                const phone = btn.getAttribute('data-guest-phone') || '';
+                const attendees = btn.getAttribute('data-guest-attendees') || '1';
+
+                if (editForm) editForm.action = updateUrl;
+                if (nameInput) nameInput.value = name;
+                if (salutationInput) salutationInput.value = salutation;
+                if (groupInput) groupInput.value = group;
+                if (phoneInput) phoneInput.value = phone;
+                if (attendeesInput) attendeesInput.value = attendees;
+
+                openModal(editModal);
+            });
+        });
+
+        setupModalDismiss(editModal);
+    }
+
+    // 5. Modal Cập Nhật Trạng Thái RSVP Thủ Công Hộ Khách
+    const rsvpModal = document.getElementById('mayhen-rsvp-guest-modal');
+    if (rsvpModal) {
+        const rsvpForm = document.getElementById('mayhen-rsvp-guest-form');
+        const subtitleEl = document.getElementById('mayhen-rsvp-guest-subtitle');
+        const statusSelect = document.getElementById('rsvp-status-select');
+        const adultsInput = document.getElementById('rsvp-adults-count');
+        const childrenInput = document.getElementById('rsvp-children-count');
+        const dietaryInput = document.getElementById('rsvp-dietary');
+        const notesInput = document.getElementById('rsvp-notes');
+        const headcountBox = document.getElementById('rsvp-headcount-fields');
+
+        document.querySelectorAll('.mayhen_guest_open_rsvp_btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rsvpUrl = btn.getAttribute('data-rsvp-url');
+                const name = btn.getAttribute('data-guest-name') || '';
+                const status = btn.getAttribute('data-rsvp-status') || 'pending';
+                const adults = btn.getAttribute('data-rsvp-adults') || '1';
+                const children = btn.getAttribute('data-rsvp-children') || '0';
+                const dietary = btn.getAttribute('data-rsvp-dietary') || '';
+                const notes = btn.getAttribute('data-rsvp-notes') || '';
+
+                if (rsvpForm) rsvpForm.action = rsvpUrl;
+                if (subtitleEl) subtitleEl.textContent = `Khách mời: ${name}`;
+                if (statusSelect) statusSelect.value = status;
+                if (adultsInput) adultsInput.value = adults;
+                if (childrenInput) childrenInput.value = children;
+                if (dietaryInput) dietaryInput.value = dietary;
+                if (notesInput) notesInput.value = notes;
+
+                toggleHeadcountDisplay(status);
+                openModal(rsvpModal);
+            });
+        });
+
+        if (statusSelect) {
+            statusSelect.addEventListener('change', () => {
+                toggleHeadcountDisplay(statusSelect.value);
+            });
+        }
+
+        function toggleHeadcountDisplay(status) {
+            if (headcountBox) {
+                headcountBox.style.display = status === 'attending' ? 'grid' : 'none';
+            }
+        }
+
+        setupModalDismiss(rsvpModal);
+    }
+
+    function openModal(modalEl) {
+        modalEl.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalEl) {
+        modalEl.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    function setupModalDismiss(modalEl) {
+        const backdrop = modalEl.querySelector('.mayhen_guest_modal_backdrop');
+        const closeBtns = modalEl.querySelectorAll('.mayhen_guest_modal_close, .mayhen_guest_modal_cancel');
+
+        if (backdrop) backdrop.addEventListener('click', () => closeModal(modalEl));
+        closeBtns.forEach(b => b.addEventListener('click', () => closeModal(modalEl)));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalEl.classList.contains('is-open')) {
+                closeModal(modalEl);
+            }
+        });
+    }
 });

@@ -540,6 +540,141 @@
     background: #FFEBEE;
 }
 
+.mayhen_guest_icon_btn {
+    background: transparent;
+    border: none;
+    color: #7A726A;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_guest_icon_btn:hover {
+    color: #1F1D1A;
+    background: #EFE8DD;
+}
+
+.mayhen_guest_icon_btn_rsvp:hover {
+    color: #2E7D32;
+    background: #E8F5E9;
+}
+
+/* Modals */
+.mayhen_guest_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+}
+
+.mayhen_guest_modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.mayhen_guest_modal_backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(31, 29, 26, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.mayhen_guest_modal_dialog {
+    position: relative;
+    z-index: 2;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 48px rgba(31, 29, 26, 0.2);
+    overflow: hidden;
+    animation: mayhenGuestSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhenGuestSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mayhen_guest_modal_header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #F0EBE3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAF8F5;
+}
+
+.mayhen_guest_modal_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_guest_modal_close {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #5A534B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_guest_modal_close:hover {
+    background: #1F1D1A;
+    color: #FFFFFF;
+    border-color: #1F1D1A;
+}
+
+.mayhen_guest_modal_body {
+    padding: 22px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mayhen_guest_modal_footer {
+    padding: 16px 24px;
+    background: #FAF8F5;
+    border-top: 1px solid #F0EBE3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+
 /* Responsive */
 @media (max-width: 992px) {
     .mayhen_guest_stats_grid {

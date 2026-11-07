@@ -896,3 +896,254 @@
     }
 }
 
+/* ==========================================================================
+   MAYHEN WEDDING QR CODE & PRINT CARD MODAL (QUIET LUXURY)
+   ========================================================================== */
+.mayhen_qr_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+}
+
+.mayhen_qr_modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.mayhen_qr_modal_backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(31, 29, 26, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.mayhen_qr_modal_dialog {
+    position: relative;
+    z-index: 2;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(31, 29, 26, 0.22);
+    overflow: hidden;
+    animation: mayhenQrSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhenQrSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mayhen_qr_modal_header {
+    padding: 22px 26px 16px;
+    border-bottom: 1px solid #F0EBE3;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    background: #FAF8F5;
+}
+
+.mayhen_qr_modal_subtitle {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #9C7A4A;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.mayhen_qr_modal_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mayhen_qr_modal_date {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 4px 0 0;
+}
+
+.mayhen_qr_modal_close {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #5A534B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mayhen_qr_modal_close:hover {
+    background: #1F1D1A;
+    border-color: #1F1D1A;
+    color: #FFFFFF;
+}
+
+.mayhen_qr_modal_body {
+    padding: 24px 26px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mayhen_qr_preview_box {
+    background: #FAF8F5;
+    border: 1px solid #EAE3D9;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_qr_canvas_wrapper {
+    background: #FFFFFF;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.06);
+    border: 1px solid #F0EBE3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mayhen-qr-preview-canvas {
+    display: block;
+    width: 200px;
+    height: 200px;
+    border-radius: 6px;
+}
+
+.mayhen_qr_hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #8C827A;
+}
+
+.mayhen_qr_link_section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_qr_link_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5A534B;
+}
+
+.mayhen_qr_link_field {
+    background: #FAF8F5;
+    border: 1px solid #E0D6C8;
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mayhen_qr_link_text {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #9C7A4A;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mayhen_qr_link_text:hover {
+    text-decoration: underline;
+}
+
+.mayhen_qr_tip_card {
+    background: #FFFDF9;
+    border: 1px dashed #E5DCCD;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: #6E665E;
+    line-height: 1.5;
+}
+
+.mayhen_qr_tip_icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.mayhen_qr_modal_footer {
+    padding: 16px 26px;
+    background: #FAF8F5;
+    border-top: 1px solid #F0EBE3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mayhen_qr_modal_footer .mayhen_account_btn {
+    flex: 1;
+    min-width: 180px;
+}
+
+@media (max-width: 540px) {
+    .mayhen_qr_modal_dialog {
+        border-radius: 16px;
+    }
+
+    .mayhen_qr_modal_header,
+    .mayhen_qr_modal_body,
+    .mayhen_qr_modal_footer {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .mayhen_qr_modal_footer {
+        flex-direction: column;
+    }
+
+    .mayhen_qr_modal_footer .mayhen_account_btn {
+        width: 100%;
+    }
+}
+
+

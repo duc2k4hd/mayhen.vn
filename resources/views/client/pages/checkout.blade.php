@@ -23,6 +23,14 @@
                         @csrf
                         <input type="hidden" name="plan_id" value="{{ $plan->id }}">
                         <input type="hidden" name="payment_method" value="vietqr">
+                        @if($invitation)
+                            <input type="hidden" name="invitation_id" value="{{ $invitation->id }}">
+                            <div class="mayhen_checkout_invitation_target" style="background: rgba(197, 168, 128, 0.12); border: 1px solid #C5A880; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+                                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #9C7A4A; font-weight: 600;">Áp Dụng Kích Hoạt Cho Thiệp Cưới:</div>
+                                <div style="font-size: 16px; font-weight: 600; color: #1F1D1A; margin-top: 4px;">{{ $invitation->wedding->groom_name ?? 'Chú Rể' }} &amp; {{ $invitation->wedding->bride_name ?? 'Cô Dâu' }}</div>
+                                <div style="font-size: 12px; color: #6B635B; margin-top: 2px;">Mẫu thiệp: {{ $invitation->template->name ?? $invitation->slug }}</div>
+                            </div>
+                        @endif
 
                         <div class="mayhen_client_form_group">
                             <label class="mayhen_client_form_label" for="customer_name">Họ và tên của bạn *</label>
@@ -66,11 +74,22 @@
                 <div id="checkout-success-banner" class="mayhen_checkout_success_banner">
                     <h2 style="font-family: var(--mayhen-font-serif); font-size: 1.5rem; margin-bottom: 0.5rem;">Thanh Toán Thành Công!</h2>
                     <p style="font-size: 0.9375rem; margin-bottom: 1.5rem;">
-                        Gói dịch vụ <strong>{{ $plan->name }}</strong> của bạn đã được kích hoạt thành công. Bạn có thể tiếp tục chỉnh sửa và xuất bản thiệp cưới.
+                        Gói dịch vụ <strong>{{ $plan->name }}</strong> của bạn đã được kích hoạt thành công. Thiệp cưới của bạn đã được cập nhật thời hạn lưu trữ mới.
                     </p>
-                    <a href="{{ route('invitation.create') }}" class="mayhen_client_button_base mayhen_client_button_primary">
-                        Đi Tới Trình Tạo Thiệp
-                    </a>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        @if($invitation)
+                            <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_client_button_base mayhen_client_button_primary">
+                                Tiếp Tục Chỉnh Sửa Trong Studio
+                            </a>
+                        @else
+                            <a href="{{ route('invitation.create') }}" class="mayhen_client_button_base mayhen_client_button_primary">
+                                Bắt Đầu Tạo Thiệp Mới
+                            </a>
+                        @endif
+                        <a href="{{ route('account.invitations') }}" class="mayhen_client_button_base mayhen_client_button_secondary">
+                            Về Danh Sách Thiệp Cưới
+                        </a>
+                    </div>
                 </div>
             </div>
 

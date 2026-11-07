@@ -188,6 +188,23 @@
                         <span>Quản Lý Khách Mời</span>
                     </a>
 
+                    <button type="button"
+                        class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_qr_trigger"
+                        data-invitation-url="{{ url('/thiep/' . $activeInvitation->slug) }}"
+                        data-couple-name="{{ $groomName }} & {{ $brideName }}"
+                        data-wedding-date="{{ $wedding && $wedding->wedding_date ? \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') : '' }}"
+                        data-template-name="{{ $templateName }}"
+                        data-invitation-slug="{{ $activeInvitation->slug }}"
+                        title="Tạo mã QR & thẻ in thiệp cưới">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <span>Mã QR & Thẻ In</span>
+                    </button>
+
                     @if(!$isLocked)
                         <form action="{{ route('account.invitations.toggle_publish', $activeInvitation->id) }}" method="POST" style="margin: 0;">
                             @csrf

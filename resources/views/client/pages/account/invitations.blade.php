@@ -122,6 +122,23 @@
                                 <span>Sổ Lưu Bút</span>
                             </a>
 
+                            <button type="button" 
+                                class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm mayhen_account_qr_trigger"
+                                data-invitation-url="{{ url('/thiep/' . $inv->slug) }}"
+                                data-couple-name="{{ $groomName }} & {{ $brideName }}"
+                                data-wedding-date="{{ $wedding && $wedding->wedding_date ? \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') : '' }}"
+                                data-template-name="{{ $templateName }}"
+                                data-invitation-slug="{{ $inv->slug }}"
+                                title="Tạo mã QR & thẻ in thiệp cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                                <span>Mã QR</span>
+                            </button>
+
                             <a href="{{ route('invitation.show', $inv->slug) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>

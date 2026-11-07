@@ -326,7 +326,41 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                                         </a>
                                     </div>
                                 </td>
-                                <td style="text-align: right;">
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <!-- Nút Sửa Khách Mời -->
+                                    <button type="button" class="mayhen_guest_icon_btn mayhen_guest_open_edit_btn"
+                                        title="Chỉnh sửa thông tin khách"
+                                        data-guest-id="{{ $g->id }}"
+                                        data-guest-name="{{ $g->name }}"
+                                        data-guest-salutation="{{ $g->salutation }}"
+                                        data-guest-group="{{ $g->group_name }}"
+                                        data-guest-phone="{{ $g->phone ?? '' }}"
+                                        data-guest-attendees="{{ $g->expected_attendees }}"
+                                        data-update-url="{{ route('guests.update', $g->id) }}">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M12 20h9"></path>
+                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Nút Cập Nhật RSVP Thủ Công -->
+                                    <button type="button" class="mayhen_guest_icon_btn mayhen_guest_icon_btn_rsvp mayhen_guest_open_rsvp_btn"
+                                        title="Xác nhận RSVP hộ khách"
+                                        data-guest-id="{{ $g->id }}"
+                                        data-guest-name="{{ $g->name }}"
+                                        data-rsvp-status="{{ $g->response ? $g->response->attending_status : 'pending' }}"
+                                        data-rsvp-adults="{{ $g->response ? $g->response->adults_count : $g->expected_attendees }}"
+                                        data-rsvp-children="{{ $g->response ? $g->response->children_count : 0 }}"
+                                        data-rsvp-dietary="{{ $g->response ? $g->response->dietary_requirements : '' }}"
+                                        data-rsvp-notes="{{ $g->response ? $g->response->wishes : '' }}"
+                                        data-rsvp-url="{{ route('guests.manual_rsvp', $g->id) }}">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Nút Xóa Khách Mời -->
                                     <form action="{{ route('guests.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khách mời này khỏi danh sách?');" style="margin: 0; display: inline-block;">
                                         @csrf
                                         @method('DELETE')
@@ -358,6 +392,104 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+    <!-- Modal Sửa Thông Tin Khách Mời -->
+    <div id="mayhen-edit-guest-modal" class="mayhen_guest_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-modal-title">
+        <div class="mayhen_guest_modal_backdrop"></div>
+        <div class="mayhen_guest_modal_dialog">
+            <div class="mayhen_guest_modal_header">
+                <h3 id="mayhen-edit-modal-title" class="mayhen_guest_modal_title">Chỉnh Sửa Khách Mời</h3>
+                <button type="button" class="mayhen_guest_modal_close" aria-label="Đóng">&times;</button>
+            </div>
+            <form id="mayhen-edit-guest-form" method="POST" action="">
+                @csrf
+                @method('PUT')
+                <div class="mayhen_guest_modal_body">
+                    <div>
+                        <label class="mayhen_guest_form_label">Họ và tên khách mời *</label>
+                        <input type="text" name="name" id="edit-guest-name" required class="mayhen_guest_form_input">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="mayhen_guest_form_label">Cách xưng hô</label>
+                            <input type="text" name="salutation" id="edit-guest-salutation" class="mayhen_guest_form_input" placeholder="Thân mời, Kính mời...">
+                        </div>
+                        <div>
+                            <label class="mayhen_guest_form_label">Nhóm khách mời</label>
+                            <input type="text" name="group_name" id="edit-guest-group" class="mayhen_guest_form_input" placeholder="Bạn Bè, Nhà Trai...">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="mayhen_guest_form_label">Số điện thoại</label>
+                            <input type="text" name="phone" id="edit-guest-phone" class="mayhen_guest_form_input" placeholder="09xxxxxxx">
+                        </div>
+                        <div>
+                            <label class="mayhen_guest_form_label">Số người dự kiến</label>
+                            <input type="number" name="expected_attendees" id="edit-guest-attendees" min="1" max="20" required class="mayhen_guest_form_input">
+                        </div>
+                    </div>
+                </div>
+                <div class="mayhen_guest_modal_footer">
+                    <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline mayhen_guest_modal_cancel">Hủy</button>
+                    <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Xác Nhận RSVP Thủ Công Hộ Khách -->
+    <div id="mayhen-rsvp-guest-modal" class="mayhen_guest_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-rsvp-modal-title">
+        <div class="mayhen_guest_modal_backdrop"></div>
+        <div class="mayhen_guest_modal_dialog">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <h3 id="mayhen-rsvp-modal-title" class="mayhen_guest_modal_title">Cập Nhật Trạng Thái RSVP</h3>
+                    <p id="mayhen-rsvp-guest-subtitle" style="font-size: 13px; color: #7A726A; margin: 2px 0 0 0;">Khách: Nguyễn Văn A</p>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" aria-label="Đóng">&times;</button>
+            </div>
+            <form id="mayhen-rsvp-guest-form" method="POST" action="">
+                @csrf
+                <div class="mayhen_guest_modal_body">
+                    <div>
+                        <label class="mayhen_guest_form_label">Trạng thái tham dự *</label>
+                        <select name="attending_status" id="rsvp-status-select" required class="mayhen_guest_form_select">
+                            <option value="attending">Sẽ tham gia tiệc cưới</option>
+                            <option value="declined">Không thể tham gia (Từ chối)</option>
+                            <option value="pending">Chưa xác nhận (Đặt lại)</option>
+                        </select>
+                    </div>
+
+                    <div id="rsvp-headcount-fields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="mayhen_guest_form_label">Số người lớn</label>
+                            <input type="number" name="adults_count" id="rsvp-adults-count" min="1" max="20" class="mayhen_guest_form_input" value="1">
+                        </div>
+                        <div>
+                            <label class="mayhen_guest_form_label">Số trẻ em đi kèm</label>
+                            <input type="number" name="children_count" id="rsvp-children-count" min="0" max="20" class="mayhen_guest_form_input" value="0">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mayhen_guest_form_label">Yêu cầu đặc biệt về ẩm thực (nếu có)</label>
+                        <input type="text" name="dietary_requirements" id="rsvp-dietary" class="mayhen_guest_form_input" placeholder="Ăn chay, dị ứng hải sản...">
+                    </div>
+
+                    <div>
+                        <label class="mayhen_guest_form_label">Ghi chú hoặc lời nhắn hộ khách</label>
+                        <textarea name="notes" id="rsvp-notes" rows="2" class="mayhen_guest_form_textarea" placeholder="Bác báo đi cùng con gái..."></textarea>
+                    </div>
+                </div>
+                <div class="mayhen_guest_modal_footer">
+                    <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline mayhen_guest_modal_cancel">Hủy</button>
+                    <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary">Cập Nhật Trạng Thái</button>
+                </div>
+            </form>
         </div>
     </div>
 @endsection

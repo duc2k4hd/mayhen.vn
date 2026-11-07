@@ -20,12 +20,24 @@ class CheckoutController extends Controller
     /**
      * Show checkout page for selected plan.
      */
-    public function show(string $planSlug): View
+    public function show(Request $request, string $planSlug): View
     {
         $plan = Plan::where('slug', $planSlug)->where('is_active', true)->firstOrFail();
 
+        $invitation = null;
+        $invParam = $request->query('invitation_id') ?: $request->query('invitation');
+        if ($invParam) {
+            $inv = Invitation::with(['wedding', 'template'])
+                ->where(is_numeric($invParam) ? 'id' : 'slug', $invParam)
+                ->first();
+            if ($inv && $inv->isOwner()) {
+                $invitation = $inv;
+            }
+        }
+
         return view('client.pages.checkout', [
             'plan' => $plan,
+            'invitation' => $invitation,
         ]);
     }
 

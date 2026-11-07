@@ -114,7 +114,24 @@
 @endpush
 
 @section('content')
+    @php
+        $invitationParam = request()->query('invitation_id') ?: request()->query('invitation');
+        $checkoutParams = fn ($slug) => $invitationParam ? ['planSlug' => $slug, 'invitation_id' => $invitationParam] : ['planSlug' => $slug];
+    @endphp
     <div class="mayhen_client_layout_container mayhen_pricing_wrapper">
+        @if($invitationParam)
+            <div style="background: rgba(197, 168, 128, 0.12); border: 1px solid #C5A880; border-radius: 14px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #9C7A4A; font-weight: 600;">Nâng Cấp Gói Thiệp Cưới</span>
+                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #1F1D1A; font-weight: 500;">
+                        Lựa chọn gói dịch vụ phù hợp để mở khóa thời hạn lưu trữ trọn vẹn, không giới hạn khách mời và nhạc nền độc quyền.
+                    </p>
+                </div>
+                <a href="{{ route('account.invitations') }}" style="font-size: 13px; color: #1F1D1A; text-decoration: none; font-weight: 600;">
+                    &larr; Về danh sách thiệp
+                </a>
+            </div>
+        @endif
         <!-- ==========================================
              1. HERO HEADER
              ========================================== -->
@@ -188,11 +205,11 @@
                                 {{ $plan->cta }}
                             </a>
                         @elseif ($plan->slug === 'pro')
-                            <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ route('checkout.show', $checkoutParams('pro')) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
                                 {{ $plan->cta }}
                             </a>
                         @else
-                            <a href="{{ route('checkout.show', $plan->slug) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ route('checkout.show', $checkoutParams($plan->slug)) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
                                 {{ $plan->cta }}
                             </a>
                         @endif

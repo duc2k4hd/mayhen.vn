@@ -131,5 +131,13 @@
     <!-- Account Tab Content Area -->
     @yield('account_content')
 </div>
+
+{{-- QR Code & Print Card Modal --}}
+@include('client.components.qr-modal')
 @endsection
+
+@push('scripts')
+    <script type="module" src="{{ asset('assets/client/js/pages/account-qr.js') }}"></script>
+@endpush
+
 

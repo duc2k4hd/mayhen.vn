@@ -4131,6 +4131,55 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: 88/88 tests passed 100% (434 assertions) trên toàn bộ 12 bộ test suite.
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                152. **Hoàn Thiện Luồng Nâng Cấp Gói Cước Thiệp Cưới (Plan Upgrade Flow) & Tự Động Kích Hoạt Qua Webhook SePay**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Cho phép cặp đôi nâng cấp gói cước cho một thiệp cưới cụ thể (`invitation_id` / `invitation` slug).
+                       2. Khi truy cập trang Bảng giá (`/bang-gia?invitation_id=...`), toàn bộ nút chọn gói đều duy trì tham số thiệp mục tiêu chuyển tiếp sang trang Thanh toán (`/thanh-toan/{planSlug}?invitation_id=...`).
+                       3. Trang Thanh Toán hiển thị trực quan thông tin thiệp cưới được áp dụng (tên cô dâu chú rể, mẫu thiệp, trạng thái) và gán `invitation_id` vào đơn hàng tạo mới (`orders.invitation_id`).
+                       4. Webhook SePay VietQR xác nhận giao dịch thành công: đơn hàng chuyển sang `paid`, đồng thời thiệp cưới được tự động bật xuất bản (`is_published = true`) và gia hạn thời gian lưu trữ theo số ngày của gói (`expires_at = now()->addDays($plan->duration_days)`).
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Client/CheckoutController.php`: Bổ sung nhận diện và truyền `$invitation` sang view checkout; trong transaction thanh toán thành công tự động kích hoạt và gia hạn thiệp.
+                       - `resources/views/client/pages/checkout.blade.php`: Hiển thị thẻ thông tin thiệp cưới mục tiêu nâng cấp và input ẩn `invitation_id`.
+                       - `resources/views/client/pages/pricing.blade.php`: Giữ nguyên tham số `invitation_id` trong liên kết chọn gói.
+                       - `tests/Feature/ClientPlanUpgradeFlowTest.php`: Bộ 4 test cases kiểm tra hiển thị mục tiêu thiệp trên checkout, duy trì tham số trên pricing, liên kết order với invitation, và webhook kích hoạt gia hạn thiệp.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 4/4 tests passed 100% (17 assertions).
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
+                153. **Triển Khai Bộ Công Cụ Mã QR Thiệp Cưới & Thẻ In Sang Trọng (Wedding QR Code & Quiet Luxury Print Card), Chỉnh Sửa & Xác Nhận RSVP Thủ Công Hộ Khách**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. **Mã QR Thiệp Cưới & Thẻ In Chuẩn In Ấn (Wedding QR Code & Print Card)**:
+                          - Cung cấp cho cặp đôi công cụ tạo và tải mã QR thiệp cưới trực tiếp với 100% Pure Vanilla JavaScript, zero thư viện ngoài, zero phụ thuộc server bên thứ ba.
+                          - Module `public/assets/client/js/common/qrcode.js`: Trình tạo ma trận QR Code chuẩn (ISO/IEC 18004) hỗ trợ đa mức sửa lỗi (L, M, Q, H).
+                          - Module `public/assets/client/js/pages/account-qr.js`: Vẽ thẻ thiệp in Quiet Luxury độ phân giải cao (1000 x 1400px, tỷ lệ 5:7) trên HTML5 Canvas với nền kem mỹ thuật `#FAF8F5`, khung viền kép hoàng gia Antique Gold `#C5A880`, họa tiết góc cổ điển, tên cặp đôi font Serif quý phái, ngày hôn lễ, mã QR độ tương phản cao và thương hiệu `mayhen.vn`.
+                          - Hỗ trợ tải thẻ in thiệp PNG HD (dành cho tiệm in thiệp giấy / in standee đón khách) và tải riêng mã QR vuông 600x600px.
+                          - Tích hợp nút kích hoạt trên từng thẻ thiệp tại `/tai-khoan/thiep` và trong Hero Card trên Dashboard `/tai-khoan`.
+                       2. **Chỉnh Sửa Thông Tin Khách Mời Tại Chỗ (Inline Edit Guest)**:
+                          - Route `PUT /tai-khoan/khach-moi/{id}` (`guests.update`): Cho phép cặp đôi chỉnh sửa tên khách, cách xưng hô, nhóm khách, số điện thoại và số người dự kiến mà không phải xóa đi tạo lại.
+                          - Modal chỉnh sửa `#mayhen-edit-guest-modal` giao diện Quiet Luxury, hỗ trợ đóng nhanh bằng phím ESC hoặc click backdrop.
+                       3. **Cập Nhật Trạng Thái RSVP Thủ Công Hộ Khách (Manual RSVP Confirmation)**:
+                          - Route `POST /tai-khoan/khach-moi/{id}/rsvp-thu-cong` (`guests.manual_rsvp`): Giải quyết bài toán thực tế khi người lớn tuổi hoặc họ hàng gọi điện/nhắn tin báo miệng tham dự.
+                          - Cho phép cặp đôi chủ động cập nhật trạng thái: *Sẽ tham gia* (ghi nhận số người lớn, số trẻ em, yêu cầu ăn uống đặc biệt), *Từ chối* (không tham gia), hoặc *Chưa xác nhận* (reset record).
+                          - Dữ liệu lập tức đồng bộ vào KPI thống kê bàn tiệc (`attendingCount`) của hôn lễ.
+                          - Bảo mật phân quyền: Ngăn chặn tuyệt đối người dùng khác can thiệp khách mời của nhau.
+                     - **Các thành phần đã triển khai**:
+                       - `public/assets/client/js/common/qrcode.js`: Thư viện tạo QR Code Pure Vanilla JS dạng Native ES Module.
+                       - `public/assets/client/js/pages/account-qr.js`: Controller vẽ và tải thẻ in thiệp cưới HD trên Canvas.
+                       - `resources/views/client/components/qr-modal.blade.php`: Component Modal hiển thị mã QR và thẻ in.
+                       - `public/assets/client/css/pages/account.css`: Bổ sung 250+ dòng CSS chuẩn Quiet Luxury cho QR Modal.
+                       - `resources/views/client/pages/account/layout.blade.php`, `invitations.blade.php`, `dashboard.blade.php`: Nhúng modal và các nút kích hoạt QR.
+                       - `app/Http/Controllers/Client/GuestController.php`: Bổ sung 2 actions `update` và `manualRsvp`.
+                       - `routes/web.php`: Bổ sung 2 routes `guests.update` và `guests.manual_rsvp`.
+                       - `resources/views/client/pages/guests.blade.php`: Thêm nút Sửa, nút RSVP vào bảng khách mời và 2 Modals tương ứng.
+                       - `public/assets/client/css/pages/guests.css`: Thêm các styles cho nút và modal sửa/RSVP.
+                       - `public/assets/client/js/pages/guests.js`: Xử lý mở/đóng modal và điền dữ liệu động.
+                       - `tests/Feature/ClientWeddingQrModalTest.php`: 3 test cases kiểm tra nút QR trên dashboard, danh sách thiệp, modal và các module JS.
+                       - `tests/Feature/ClientGuestManagementTest.php`: Mở rộng thêm 2 test cases kiểm tra update khách mời và cập nhật RSVP thủ công (10/10 tests pass).
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 34/34 tests passed 100% (177 assertions) trên toàn bộ suite người dùng (`ClientAccountTest`, `ClientGuestManagementTest`, `ClientWishManagementTest`, `ClientPlanUpgradeFlowTest`, `PublicInvitationPersonalizationTest`, `ClientWeddingQrModalTest`).
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

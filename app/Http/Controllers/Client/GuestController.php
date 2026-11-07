@@ -255,6 +255,96 @@ class GuestController extends Controller
     }
 
     /**
+     * Cập nhật thông tin khách mời.
+     */
+    public function update(Request $request, int $guestId): JsonResponse|RedirectResponse
+    {
+        $guest = Guest::with('wedding')->findOrFail($guestId);
+        $this->authorizeGuestManagement($guest->wedding);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:190'],
+            'salutation' => ['nullable', 'string', 'max:50'],
+            'group_name' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'expected_attendees' => ['required', 'integer', 'min:1', 'max:50'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên khách mời.',
+            'expected_attendees.required' => 'Vui lòng nhập số người tham dự dự kiến.',
+            'expected_attendees.min' => 'Số người tham dự tối thiểu là 1.',
+        ]);
+
+        $guest->update([
+            'name' => $validated['name'],
+            'salutation' => $validated['salutation'] ?? 'Thân mời',
+            'group_name' => $validated['group_name'] ?? 'Bạn Bè',
+            'phone' => $validated['phone'],
+            'expected_attendees' => (int) $validated['expected_attendees'],
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật thông tin khách mời thành công.',
+                'guest' => $guest,
+            ]);
+        }
+
+        return back()->with('success', 'Đã cập nhật thông tin khách mời thành công.');
+    }
+
+    /**
+     * Cặp đôi cập nhật trạng thái xác nhận tham dự (RSVP) thủ công hộ khách mời.
+     */
+    public function manualRsvp(Request $request, int $guestId): JsonResponse|RedirectResponse
+    {
+        $guest = Guest::with(['wedding', 'response'])->findOrFail($guestId);
+        $this->authorizeGuestManagement($guest->wedding);
+
+        $validated = $request->validate([
+            'attending_status' => ['required', 'in:attending,declined,pending'],
+            'adults_count' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'children_count' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'dietary_requirements' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $status = $validated['attending_status'];
+
+        if ($status === 'pending') {
+            if ($guest->response) {
+                $guest->response->delete();
+            }
+        } else {
+            $adults = $status === 'attending' ? (int) ($validated['adults_count'] ?? $guest->expected_attendees) : 0;
+            $children = $status === 'attending' ? (int) ($validated['children_count'] ?? 0) : 0;
+
+            GuestResponse::updateOrCreate(
+                ['guest_id' => $guest->id],
+                [
+                    'wedding_id' => $guest->wedding_id,
+                    'guest_name' => $guest->name,
+                    'attending_status' => $status,
+                    'adults_count' => $adults,
+                    'children_count' => $children,
+                    'dietary_requirements' => $validated['dietary_requirements'] ?? null,
+                    'wishes' => $validated['notes'] ?? null,
+                    'ip_address' => $request->ip(),
+                ]
+            );
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật trạng thái RSVP cho khách mời thành công.',
+            ]);
+        }
+
+        return back()->with('success', 'Đã cập nhật trạng thái RSVP cho khách mời thành công.');
+    }
+
+    /**
      * Delete guest.
      */
     public function destroy(int $guestId): RedirectResponse
