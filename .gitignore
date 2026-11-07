@@ -49,6 +49,7 @@ Thumbs.db
 !/tests/Feature/PartnerPortalTest.php
 !/tests/Feature/SeatingPlannerTest.php
 !/tests/Feature/CustomDomainTest.php
+!/tests/Feature/LiveWeddingWallTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

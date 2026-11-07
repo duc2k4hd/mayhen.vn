@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
+use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
@@ -151,15 +152,24 @@ Route::prefix('tai-khoan')->group(function () {
     Route::post('/api/thiep/{id}/so-do-ban-tiec/xep-khach', [SeatingPlannerController::class, 'assignGuest'])->middleware('throttle:60,1')->name('seating.assignGuest');
     Route::get('/thiep/{id}/so-do-ban-tiec/in', [SeatingPlannerController::class, 'printChart'])->name('seating.print');
 
+    // Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (Live Wedding Projection Wall - TASK-V3-04)
+    Route::get('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'settings'])->middleware('auth')->name('live_wall.settings');
+    Route::post('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'updateSettings'])->middleware(['auth', 'throttle:30,1'])->name('live_wall.settings.update');
+
     // Nhận Thiệp Cưới Từ Studio Bàn Giao
     Route::post('/nhan-thiep-doi-tac', [PartnerWeddingController::class, 'claim'])->middleware('throttle:15,1')->name('account.claim_partner_invitation');
 });
 
+// Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (Live Wedding Projection Wall Public)
+Route::get('/trinh-chieu/{slug?}', [LiveWallController::class, 'show'])->name('live_wall.show');
+Route::post('/trinh-chieu/{slug}/xac-thuc-pin', [LiveWallController::class, 'verifyPin'])->middleware('throttle:15,1')->name('live_wall.verify_pin');
+Route::get('/api/trinh-chieu/{slug}/feed', [LiveWallController::class, 'liveFeed'])->middleware('throttle:120,1')->name('live_wall.feed');
+
 // Trang Kỷ Niệm Ngày Cưới Công Khai (Digital Memory Vault Public)
-Route::get('/ky-niem/{slug}', [MemoryVaultController::class, 'show'])->name('memory.vault');
+Route::get('/ky-niem/{slug?}', [MemoryVaultController::class, 'show'])->name('memory.vault');
 
 // Live Guest Photo Drop (Khách quét mã QR tại bàn tiệc tải ảnh tự nhiên)
-Route::get('/photo-drop/{slug}', [PhotoDropController::class, 'show'])->name('photo_drop.show');
+Route::get('/photo-drop/{slug?}', [PhotoDropController::class, 'show'])->name('photo_drop.show');
 Route::post('/api/photo-drop/{slug}/upload', [PhotoDropController::class, 'upload'])->middleware('throttle:20,1')->name('photo_drop.upload');
 
 // Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\InvitationEditorController;
+use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PhotoDropController;
 use App\Models\WeddingDomain;
@@ -105,6 +106,11 @@ class DetectCustomDomain
         // '/diem-danh-tiec' -> Cổng tiếp tân quét mã
         if ($path === 'diem-danh-tiec') {
             return response(app(CheckInController::class)->showPortal($matchedDomain->invitation->slug));
+        }
+
+        // '/trinh-chieu' -> Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp
+        if ($path === 'trinh-chieu') {
+            return response(app(LiveWallController::class)->show($request, $matchedDomain->invitation->slug));
         }
 
         return $next($request);

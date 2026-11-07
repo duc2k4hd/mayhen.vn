@@ -4860,6 +4860,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                            - Toàn bộ test suite toàn hệ thống: **246/246 tests passed 100% (1,251 assertions)**.
                            - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                    181. **Triển Khai Hoàn Thiện Live Wedding Projection Wall — Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (TASK-V3-04)**:
+                         - **Bối cảnh & Giá trị trải nghiệm**:
+                           - Tại các trung tâm tiệc cưới và rạp hôn lễ cao cấp, màn hình LED sân khấu hoặc máy chiếu đóng vai trò tâm điểm kết nối cảm xúc của toàn bộ quan khách.
+                           - Thay vì chỉ phát clip/ảnh tĩnh đơn điệu, Mây Hẹn phát triển **Live Wedding Projection Wall**: Màn hình toàn cảnh Fullscreen 60fps, tự động đồng bộ thời gian thực luân chuyển bộ ảnh cưới của đôi uyên ương, ảnh khách chụp tự nhiên vừa được duyệt từ Photo Drop và dòng lời chúc mừng bay vào sống động.
+                         - **Các thành phần kỹ thuật cốt lõi**:
+                           1. *Bộ Điều Khiển Màn Chiếu (`LiveWallController.php`)*:
+                              - Màn chiếu công khai: `/trinh-chieu/{slug}` (hoặc trên custom domain `/trinh-chieu`).
+                              - API Realtime Live Feed: `/api/trinh-chieu/{slug}/feed` (polling mỗi 8.5 giây, trả về danh sách ảnh cưới, ảnh khách chụp đã duyệt, lời chúc mới nhất và thống kê sĩ số).
+                              - Cơ chế Khóa PIN bảo vệ (`wall_pin`): Nếu cặp đôi cài đặt mã PIN, người mở đường link màn chiếu phải nhập đúng mã để bắt đầu trình chiếu; chủ sở hữu đã đăng nhập tự động được bỏ qua PIN.
+                              - Cổng cấu hình cặp đôi: `/tai-khoan/thiep/{id}/man-hinh-chieu` tùy chỉnh Tông màu chủ đạo (Dark Velvet Espresso / Ivory Cream), Chế độ hiển thị (Kết hợp / Chỉ ảnh / Chỉ lời chúc), Tốc độ slideshow (4s/6s/8s/12s), bật/tắt mã QR tương tác và đặt mã PIN.
+                           2. *Giao Diện Trình Chiếu Quiet Luxury (`live-wall.blade.php` & `live-wall.css`)*:
+                              - Thiết kế tối ưu cho tỷ lệ 16:9 Full HD/2K/4K, phông chữ serif thanh lịch `Cormorant Garamond` & `Playfair Display`.
+                              - Header Ribbon: Tên đôi uyên ương mạ vàng, địa điểm sảnh tiệc và đồng hồ thời gian thực (Live Clock `HH:mm:ss`).
+                              - Bố cục 2 cột linh hoạt: Bên trái trình chiếu ảnh với hiệu ứng Ken Burns zoom-in chậm rãi và chuyển cảnh crossfade mượt mà; bên phải hiển thị dòng thiệp lời chúc mừng trượt vào từ dưới lên.
+                              - Mã QR tương tác góc màn hình: Cho phép khách ngồi tại bàn tiệc quét mã gửi ngay lời chúc hoặc ảnh để hiện lên màn chiếu LED.
+                              - Thanh điều khiển nổi thông minh (Floating Auto-hide Toolbar): Tự động ẩn hoàn toàn sau 3.5 giây không di chuột để màn chiếu sạch sẽ 100%; hỗ trợ nút Toàn Màn Hình (HTML5 Fullscreen API), chuyển đổi theme và đổi chế độ hiển thị 1-chạm.
+                           3. *Tích Hợp Tên Miền Riêng & Hệ Sinh Thái*:
+                              - `DetectCustomDomain.php` tự động phục vụ trực tiếp màn chiếu trên custom domain (`https://tuanlan.wedding/trinh-chieu`).
+                              - Tích hợp nút "Màn Chiếu" trên danh sách thiệp cưới (`account/invitations.blade.php`).
+                         - **Kiểm thử & Đảm bảo chất lượng**:
+                           - Viết 12 Feature test cases trong `tests/Feature/LiveWeddingWallTest.php`: Khách công khai truy cập màn chiếu; chủ sở hữu xem trang cài đặt; chặn người chưa đăng nhập; chặn người lạ truy cập cài đặt (404); chủ sở hữu cập nhật cấu hình; màn chiếu khóa PIN hiển thị form nhập PIN; khách nhập đúng PIN mở màn chiếu; khách nhập sai PIN báo lỗi; chủ sở hữu tự động bypass PIN; API live feed trả về ảnh và lời chúc đã duyệt; API live feed lọc bỏ ảnh và lời chúc chưa duyệt; và custom domain phục vụ màn chiếu trên đường dẫn `/trinh-chieu` -> **12/12 tests passed**.
+                           - Toàn bộ test suite toàn hệ thống: **258/258 tests passed 100% (1,299 assertions)**.
+                           - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
