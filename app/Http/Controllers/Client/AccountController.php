@@ -176,4 +176,3 @@ class AccountController extends Controller
         return back()->with('success', 'Đổi mật khẩu tài khoản thành công!');
     }
 }
-

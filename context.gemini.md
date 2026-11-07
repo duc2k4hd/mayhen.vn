@@ -4059,6 +4059,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: 71/71 tests passed 100% (350 assertions) trên toàn bộ 9 bộ test suite (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`, `AdminRbacTest`, `ClientAccountTest`).
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                149. **Nâng Cấp Toàn Diện Phân Hệ Quản Lý Khách Mời & Sổ Ký Tên RSVP (Guest & RSVP Hub): Nhập Nhanh Hàng Loạt, Xuất CSV UTF-8 BOM & Bộ Lọc Đa Chiều**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Đáp ứng toàn diện các tiêu chuẩn kỹ thuật trong kỹ năng `mayhen-guest-rsvp`: hỗ trợ lời mời cá nhân hóa, theo dõi người lớn/trẻ em, xuất/nhập danh sách khách an toàn, tạo thông điệp Zalo kèm link token riêng.
+                       2. Chức năng Xuất CSV Danh Sách Khách Mời (`guests.export`):
+                          - Xuất file `.csv` có mã hóa UTF-8 kèm ký tự BOM (`\xEF\xBB\xBF`) để Microsoft Excel trên Windows tự động nhận diện tiếng Việt có dấu 100% không bị vỡ font.
+                          - Bao gồm đầy đủ 12 trường dữ liệu chi tiết: STT, Tên khách mời, Cách xưng hô, Nhóm khách, Số điện thoại, Số người dự kiến, Trạng thái phản hồi RSVP, Số người lớn, Số trẻ em, Yêu cầu ăn uống đặc biệt, Lời chúc / Ghi chú và Đường link thiệp cá nhân hóa có token.
+                       3. Chức năng Nhập Nhanh Hàng Loạt (Batch Import - `guests.batch_store`):
+                          - Cho phép cặp đôi dán trực tiếp danh sách nhiều dòng từ file ghi chú/Excel vào ô Textarea.
+                          - Hỗ trợ định dạng linh hoạt phân cách bằng dấu gạch đứng (`|`), dấu chấm phẩy (`;`) hoặc dấu tab (`Tên | Xưng hô | Nhóm | Số người | SĐT`).
+                          - Tự động gán token ngẫu nhiên `Str::random(32)` và lưu an toàn trong Database Transaction.
+                       4. Bộ Lọc Đa Chiều & Tìm Kiếm Tức Thì:
+                          - Tìm kiếm theo họ tên hoặc số điện thoại (`q=...`).
+                          - Lọc theo nhóm khách động (`group=...`): Bạn Bè, Họ Nhà Trai, Họ Nhà Gái, Đồng Nghiệp...
+                          - Lọc theo trạng thái phản hồi (`status=...`): Đã xác nhận tham dự, Chưa gửi phản hồi, Từ chối/Bận.
+                          - Thống kê Tỷ lệ phản hồi trực quan (%) và thanh tiến độ gradient.
+                       5. Giao diện & Trải nghiệm Người dùng:
+                          - Đồng bộ Breadcrumbs với phân hệ tài khoản (`Trang chủ` / `Tài khoản` / `Thiệp cưới` / `Khách mời`).
+                          - Nút sao chép lời mời Zalo và sao chép link cá nhân hóa có phản hồi tức thì trực tiếp trên nút, loại bỏ hoàn toàn lệnh `alert()` gây gián đoạn trải nghiệm.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Client/GuestController.php`: Bổ sung `batchStore`, `exportCsv` (stream CSV UTF-8 BOM), nâng cấp `index` với bộ lọc đa chiều và tính toán thống kê phản hồi.
+                       - `routes/web.php`: Bổ sung routes `guests.batch_store` (`POST /tai-khoan/thiep/{id}/khach-moi/nhap-nhanh`) và `guests.export` (`GET /tai-khoan/thiep/{id}/khach-moi/xuat-csv`).
+                       - `resources/views/client/pages/guests.blade.php`: Tái cấu trúc toàn bộ giao diện: Breadcrumbs, Header hành động, 4 thẻ KPI, Thanh tỷ lệ phản hồi, Hộp thêm khách 2 tab (Đơn lẻ & Hàng loạt), Thanh toolbar tìm kiếm/lọc, Bảng danh sách và công cụ mời Zalo.
+                       - `public/assets/client/css/pages/guests.css`: Stylesheet Pure CSS 100% không framework, chuẩn Quiet Luxury, tiền tố `mayhen_guest_*`.
+                       - `public/assets/client/js/pages/guests.js`: Native JS module xử lý chuyển tab và sao chép thông điệp Zalo mượt mà.
+                       - `tests/Feature/ClientGuestManagementTest.php`: Bộ 8 test cases bao phủ 100% các kịch bản kiểm tra xem danh sách, lọc/tìm kiếm, thêm 1 khách, nhập hàng loạt, xuất CSV UTF-8 BOM, xóa khách và phòng vệ phân quyền sở hữu.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 79/79 tests passed 100% (390 assertions) trên toàn bộ 10 bộ test suite.
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

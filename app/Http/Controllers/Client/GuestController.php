@@ -18,35 +18,76 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GuestController extends Controller
 {
     /**
      * Display guest management and RSVP dashboard.
      */
-    public function index(int $invitationId): View
+    public function index(Request $request, int $invitationId): View
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
-        $wedding->load('guests.response');
-        $guests = $wedding->guests;
 
-        // Statistics
-        $totalInvited = $guests->sum('expected_attendees');
+        // Danh sách nhóm độc nhất để hiển thị dropdown bộ lọc
+        $availableGroups = $wedding->guests()
+            ->select('group_name')
+            ->distinct()
+            ->whereNotNull('group_name')
+            ->pluck('group_name');
+
+        // Thống kê tổng quan (toàn bộ đám cưới)
+        $allGuests = $wedding->guests()->with('response')->get();
+        $totalInvited = (int) $allGuests->sum('expected_attendees');
+        $totalGuestsCount = $allGuests->count();
         $totalResponses = $wedding->guestResponses()->count();
-        $attendingCount = $wedding->guestResponses()->where('attending_status', 'attending')->sum('adults_count')
-            + $wedding->guestResponses()->where('attending_status', 'attending')->sum('children_count');
-        $declinedCount = $wedding->guestResponses()->where('attending_status', 'declined')->count();
+        $attendingCount = (int) ($wedding->guestResponses()->where('attending_status', 'attending')->sum('adults_count')
+            + $wedding->guestResponses()->where('attending_status', 'attending')->sum('children_count'));
+        $declinedCount = (int) $wedding->guestResponses()->where('attending_status', 'declined')->count();
+        $responseRate = $totalGuestsCount > 0 ? (int) round(($totalResponses / $totalGuestsCount) * 100) : 0;
+
+        // Xử lý bộ lọc danh sách hiển thị
+        $guestsQuery = $wedding->guests()->with('response');
+
+        if ($search = trim((string) $request->query('q'))) {
+            $guestsQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($groupFilter = $request->query('group')) {
+            $guestsQuery->where('group_name', $groupFilter);
+        }
+
+        if ($statusFilter = $request->query('status')) {
+            if ($statusFilter === 'attending') {
+                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'attending'));
+            } elseif ($statusFilter === 'declined') {
+                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
+            } elseif ($statusFilter === 'pending') {
+                $guestsQuery->whereDoesntHave('response');
+            }
+        }
+
+        $guests = $guestsQuery->latest()->get();
 
         return view('client.pages.guests', [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'guests' => $guests,
             'totalInvited' => $totalInvited,
+            'totalGuestsCount' => $totalGuestsCount,
             'totalResponses' => $totalResponses,
             'attendingCount' => $attendingCount,
             'declinedCount' => $declinedCount,
+            'responseRate' => $responseRate,
+            'availableGroups' => $availableGroups,
+            'filterSearch' => $search,
+            'filterGroup' => $groupFilter,
+            'filterStatus' => $statusFilter,
         ]);
     }
 
@@ -71,6 +112,146 @@ class GuestController extends Controller
 
         return redirect()->route('guests.index', $invitationId)
             ->with('success', 'Đã thêm khách mời thành công!');
+    }
+
+    /**
+     * Nhập nhanh nhiều khách mời cùng lúc (Batch Import).
+     */
+    public function batchStore(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+
+        $request->validate([
+            'batch_input' => ['required', 'string', 'max:20000'],
+            'default_salutation' => ['nullable', 'string', 'max:50'],
+            'default_group' => ['nullable', 'string', 'max:50'],
+        ], [
+            'batch_input.required' => 'Vui lòng nhập danh sách khách mời.',
+        ]);
+
+        $defaultSalutation = $request->input('default_salutation') ?: 'Thân mời';
+        $defaultGroup = $request->input('default_group') ?: 'Bạn Bè';
+
+        $rawLines = preg_split("/\r\n|\n|\r/", (string) $request->input('batch_input'));
+        $createdCount = 0;
+
+        DB::transaction(function () use ($rawLines, $wedding, $defaultSalutation, $defaultGroup, &$createdCount) {
+            foreach ($rawLines as $line) {
+                $line = trim($line);
+                if ($line === '') {
+                    continue;
+                }
+
+                // Hỗ trợ phân cách bằng dấu gạch đứng (|), dấu chấm phẩy (;) hoặc dấu tab
+                $parts = preg_split('/[|;\t]/', $line);
+                $name = trim($parts[0] ?? '');
+                if ($name === '') {
+                    continue;
+                }
+
+                $salutation = isset($parts[1]) && trim($parts[1]) !== '' ? trim($parts[1]) : $defaultSalutation;
+                $group = isset($parts[2]) && trim($parts[2]) !== '' ? trim($parts[2]) : $defaultGroup;
+                $attendees = isset($parts[3]) && is_numeric(trim($parts[3])) ? max(1, (int) trim($parts[3])) : 2;
+                $phone = isset($parts[4]) && trim($parts[4]) !== '' ? trim($parts[4]) : null;
+
+                Guest::create([
+                    'wedding_id' => $wedding->id,
+                    'name' => Str::limit($name, 190, ''),
+                    'salutation' => Str::limit($salutation, 50, ''),
+                    'group_name' => Str::limit($group, 50, ''),
+                    'phone' => $phone ? Str::limit($phone, 20, '') : null,
+                    'expected_attendees' => $attendees,
+                    'guest_token' => Str::random(32),
+                ]);
+
+                $createdCount++;
+            }
+        });
+
+        if ($createdCount === 0) {
+            return back()->with('error', 'Không tìm thấy thông tin khách mời hợp lệ để thêm.');
+        }
+
+        return redirect()->route('guests.index', $invitationId)
+            ->with('success', "Đã thêm thành công {$createdCount} khách mời vào danh sách!");
+    }
+
+    /**
+     * Xuất danh sách khách mời dạng CSV UTF-8 BOM cho Excel.
+     */
+    public function exportCsv(int $invitationId): StreamedResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+
+        $guests = $wedding->guests()->with('response')->orderBy('group_name')->get();
+
+        $filename = 'danh-sach-khach-moi-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($guests, $invitation) {
+            $handle = fopen('php://output', 'w');
+            // Ghi UTF-8 BOM để Excel tiếng Việt không bị lỗi font
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Header CSV
+            fputcsv($handle, [
+                'STT',
+                'Tên Khách Mời',
+                'Cách Xưng Hô',
+                'Nhóm Khách',
+                'Số Điện Thoại',
+                'Số Người Dự Kiến',
+                'Trạng Thái RSVP',
+                'Người Lớn (RSVP)',
+                'Trẻ Em (RSVP)',
+                'Yêu Cầu Ăn Uống',
+                'Lời Chúc / Ghi Chú',
+                'Link Thiệp Cá Nhân Hóa',
+            ]);
+
+            $index = 1;
+            foreach ($guests as $g) {
+                $response = $g->response;
+                $rsvpStatus = 'Chưa phản hồi';
+                $adults = '';
+                $children = '';
+                $dietary = '';
+                $wishes = '';
+
+                if ($response) {
+                    $rsvpStatus = $response->attending_status === 'attending' ? 'Đã xác nhận tham dự' : 'Từ chối / Không tham gia';
+                    $adults = $response->adults_count;
+                    $children = $response->children_count;
+                    $dietary = $response->dietary_requirements ?? '';
+                    $wishes = $response->wishes ?? '';
+                }
+
+                $personalUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $g->guest_token]);
+
+                fputcsv($handle, [
+                    $index++,
+                    $g->name,
+                    $g->salutation,
+                    $g->group_name,
+                    $g->phone ?? '',
+                    $g->expected_attendees,
+                    $rsvpStatus,
+                    $adults,
+                    $children,
+                    $dietary,
+                    $wishes,
+                    $personalUrl,
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 
     /**

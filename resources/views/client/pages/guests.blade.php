@@ -1,95 +1,259 @@
 @extends('client.layouts.master')
 
-@section('title', 'Quản Lý Khách Mời & RSVP — Mây Hẹn')
-@section('meta_description', 'Quản lý danh sách khách mời, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
+@section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP | ' . config('app.name'))
+@section('meta_description', 'Quản lý danh sách khách mời, xuất file Excel CSV, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/guests.css') }}">
 @endpush
 
 @section('content')
-    <div class="mayhen_client_layout_container mayhen_guest_wrapper">
+    <div class="mayhen_guest_container">
+        <!-- Breadcrumbs -->
+        <div class="mayhen_guest_breadcrumbs">
+            <a href="{{ route('home') }}">Trang chủ</a>
+            <span class="mayhen_guest_breadcrumbs_sep">/</span>
+            <a href="{{ route('account.dashboard') }}">Tài khoản</a>
+            <span class="mayhen_guest_breadcrumbs_sep">/</span>
+            <a href="{{ route('account.invitations') }}">Thiệp cưới</a>
+            <span class="mayhen_guest_breadcrumbs_sep">/</span>
+            <span class="mayhen_guest_breadcrumbs_current">Khách Mời & RSVP</span>
+        </div>
+
+        <!-- Session Feedback Alerts -->
+        @if(session('success'))
+            <div class="mayhen_guest_alert mayhen_guest_alert_success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mayhen_guest_alert mayhen_guest_alert_danger">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
         <!-- Header -->
-        <div class="mayhen_guest_header">
+        <div class="mayhen_guest_header_card">
             <div>
-                <h1 class="mayhen_guest_title">Quản Lý Khách Mời & RSVP</h1>
-                <p style="color: var(--mayhen-color-text-muted); font-size: 0.9375rem; margin-bottom: 0;">
-                    Đám cưới: {{ $wedding->groom_name }} & {{ $wedding->bride_name }} &bull; {{ $wedding->wedding_date->format('d/m/Y') }}
+                <span class="mayhen_guest_sub_title">Sổ Theo Dõi Quan Khách</span>
+                <h1 class="mayhen_guest_title">Khách Mời & Phản Hồi RSVP</h1>
+                <p class="mayhen_guest_meta">
+                    Lễ thành hôn: <strong>{{ $wedding->groom_name }} & {{ $wedding->bride_name }}</strong> &bull;
+                    @if($wedding->wedding_date)
+                        Ngày cưới: <strong>{{ \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') }}</strong>
+                    @endif
                 </p>
             </div>
-            <div>
-                <a href="{{ route('invitation.show', $invitation->slug) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_sm" target="_blank">
-                    Xem Trang Thiệp Chính
+            <div class="mayhen_guest_header_actions">
+                <a href="{{ route('guests.export', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Xuất Danh Sách CSV (Excel)</span>
+                </a>
+                <a href="{{ route('invitation.show', $invitation->slug) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Xem Thiệp Chính</span>
+                </a>
+                <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    <span>Vào Studio</span>
                 </a>
             </div>
         </div>
 
-        <!-- 4 Stats Cards -->
+        <!-- 4 Stats Cards Grid -->
         <div class="mayhen_guest_stats_grid">
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_number">{{ $guests->count() }}</span>
-                <span class="mayhen_guest_stat_label">Tổng Lời Mời</span>
+                <span class="mayhen_guest_stat_label">Tổng Số Lời Mời</span>
+                <span class="mayhen_guest_stat_number">{{ number_format($totalGuestsCount) }}</span>
+                <span class="mayhen_guest_stat_desc">Số thiệp gửi cá nhân hóa</span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_number">{{ $totalInvited }}</span>
-                <span class="mayhen_guest_stat_label">Số Khách Dự Kiến</span>
+                <span class="mayhen_guest_stat_label">Khách Dự Kiến</span>
+                <span class="mayhen_guest_stat_number">{{ number_format($totalInvited) }}</span>
+                <span class="mayhen_guest_stat_desc">Ước tính người tham dự</span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_number" style="color: #2D5A27;">{{ $attendingCount }}</span>
                 <span class="mayhen_guest_stat_label">Xác Nhận Tham Dự</span>
+                <span class="mayhen_guest_stat_number" style="color: #2E7D32;">{{ number_format($attendingCount) }}</span>
+                <span class="mayhen_guest_stat_desc">Quan khách báo sẽ đến</span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_number" style="color: var(--mayhen-color-danger);">{{ $declinedCount }}</span>
                 <span class="mayhen_guest_stat_label">Từ Chối / Bận</span>
+                <span class="mayhen_guest_stat_number" style="color: #C62828;">{{ number_format($declinedCount) }}</span>
+                <span class="mayhen_guest_stat_desc">Không thể sắp xếp dự tiệc</span>
             </div>
         </div>
 
-        <!-- Add Guest Quick Form -->
+        <!-- Response Progress Bar -->
+        <div class="mayhen_guest_progress_card">
+            <div class="mayhen_guest_progress_header">
+                <span>Tỷ lệ phản hồi RSVP của quan khách:</span>
+                <strong>{{ $responseRate }}% ({{ $totalResponses }}/{{ $totalGuestsCount }} khách)</strong>
+            </div>
+            <div class="mayhen_guest_progress_track">
+                <div class="mayhen_guest_progress_fill" style="width: {{ $responseRate }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Add Guest Box (Tabs: Thêm Đơn Lẻ & Nhập Nhanh Hàng Loạt) -->
         <div class="mayhen_guest_add_card">
-            <h2 class="mayhen_guest_add_title">Thêm Khách Mời Mới</h2>
-            <form action="{{ route('guests.store', $invitation->id) }}" method="POST">
-                @csrf
-                <div class="mayhen_guest_form_row">
-                    <div class="mayhen_client_form_group" style="margin-bottom: 0;">
-                        <label class="mayhen_client_form_label">Tên khách mời *</label>
-                        <input type="text" name="name" class="mayhen_client_form_input" required placeholder="Ví dụ: Anh Hoàng & Bạn gái">
-                    </div>
+            <div class="mayhen_guest_tab_header">
+                <button type="button" class="mayhen_guest_add_tab_btn active" data-tab-target="single">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    <span>Thêm Từng Khách Mời</span>
+                </button>
+                <button type="button" class="mayhen_guest_add_tab_btn" data-tab-target="batch">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    <span>Nhập Nhanh Nhiều Khách (Hàng Loạt)</span>
+                </button>
+            </div>
 
-                    <div class="mayhen_client_form_group" style="margin-bottom: 0;">
-                        <label class="mayhen_client_form_label">Cách xưng hô</label>
-                        <select name="salutation" class="mayhen_client_form_select">
-                            <option value="Kính mời">Kính mời (Người lớn tuổi/Trang trọng)</option>
-                            <option value="Thân mời" selected>Thân mời (Bạn bè/Đồng nghiệp)</option>
-                            <option value="Thương mời">Thương mời (Người thân thiết)</option>
-                        </select>
-                    </div>
+            <!-- Single Add Form -->
+            <div class="mayhen_guest_tab_pane active" id="tab-single">
+                <form action="{{ route('guests.store', $invitation->id) }}" method="POST">
+                    @csrf
+                    <div class="mayhen_guest_form_grid">
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Tên khách mời *</label>
+                            <input type="text" name="name" class="mayhen_guest_form_input" required placeholder="Ví dụ: Anh Hoàng & Bạn gái">
+                        </div>
 
-                    <div class="mayhen_client_form_group" style="margin-bottom: 0;">
-                        <label class="mayhen_client_form_label">Nhóm khách</label>
-                        <input type="text" name="group_name" class="mayhen_client_form_input" value="Bạn Bè" placeholder="Bạn Đại học, Họ Hàng...">
-                    </div>
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Cách xưng hô</label>
+                            <select name="salutation" class="mayhen_guest_form_select">
+                                <option value="Kính mời">Kính mời (Người lớn tuổi / Trang trọng)</option>
+                                <option value="Thân mời" selected>Thân mời (Bạn bè / Đồng nghiệp)</option>
+                                <option value="Thương mời">Thương mời (Người thân thiết)</option>
+                            </select>
+                        </div>
 
-                    <div class="mayhen_client_form_group" style="margin-bottom: 0;">
-                        <label class="mayhen_client_form_label">Số người dự kiến</label>
-                        <input type="number" name="expected_attendees" class="mayhen_client_form_input" min="1" max="10" value="2">
-                    </div>
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Nhóm khách</label>
+                            <input type="text" name="group_name" class="mayhen_guest_form_input" value="Bạn Bè" placeholder="Họ Nhà Trai, Bạn Đại Học...">
+                        </div>
 
-                    <div>
-                        <button type="submit" class="mayhen_client_button_base mayhen_client_button_primary" style="height: 48px;">
-                            + Thêm Khách
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Số người dự kiến</label>
+                            <input type="number" name="expected_attendees" class="mayhen_guest_form_input" min="1" max="10" value="2">
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Số điện thoại (tùy chọn)</label>
+                            <input type="tel" name="phone" class="mayhen_guest_form_input" placeholder="0912345678">
+                        </div>
+
+                        <div style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary" style="height: 42px; width: 100%;">
+                                + Thêm Khách
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Batch Add Form -->
+            <div class="mayhen_guest_tab_pane" id="tab-batch" style="display: none;">
+                <form action="{{ route('guests.batch_store', $invitation->id) }}" method="POST">
+                    @csrf
+                    <p style="font-size: 13px; color: #7A726A; margin: 0 0 12px 0;">
+                        Dán danh sách khách mời vào khung dưới đây, mỗi dòng một khách. Định dạng hỗ trợ: <br>
+                        <code>Tên khách mời | Cách xưng hô | Nhóm | Số người | Số điện thoại</code>
+                    </p>
+                    <textarea name="batch_input" rows="6" class="mayhen_guest_form_textarea" required placeholder="Ví dụ:
+Anh Hoàng & Bạn gái | Thân mời | Bạn Đại học | 2 | 0912345678
+Gia đình Chú Bảy | Kính mời | Họ Nhà Trai | 4
+Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 12px; font-size: 13px;">
+                            <div>
+                                <label style="font-size: 12px; color: #6B635B;">Xưng hô mặc định:</label>
+                                <input type="text" name="default_salutation" value="Thân mời" class="mayhen_guest_form_input" style="height: 34px; padding: 4px 10px; font-size: 13px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: #6B635B;">Nhóm mặc định:</label>
+                                <input type="text" name="default_group" value="Bạn Bè" class="mayhen_guest_form_input" style="height: 34px; padding: 4px 10px; font-size: 13px;">
+                            </div>
+                        </div>
+                        <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary">
+                            + Nhập Hàng Loạt Vào Danh Sách
                         </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
-        <!-- Guests Table -->
-        <div class="mayhen_guest_table_card">
-            <div style="padding: 16px 20px; border-bottom: 1px solid var(--mayhen-color-border); display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="font-family: var(--mayhen-font-serif); font-size: 1.25rem; margin: 0;">Danh Sách Khách & Công Cụ Gửi Mời</h2>
-                <span style="font-size: 0.8125rem; color: var(--mayhen-color-text-muted);">{{ $guests->count() }} khách</span>
-            </div>
+        <!-- Filter & Search Toolbar -->
+        <div class="mayhen_guest_toolbar">
+            <form action="{{ route('guests.index', $invitation->id) }}" method="GET" class="mayhen_guest_filter_form">
+                <div class="mayhen_guest_search_box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="q" value="{{ $filterSearch }}" placeholder="Tìm kiếm theo tên hoặc SĐT..." class="mayhen_guest_search_input">
+                </div>
 
+                <select name="group" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả nhóm khách --</option>
+                    @foreach($availableGroups as $grp)
+                        <option value="{{ $grp }}" {{ $filterGroup === $grp ? 'selected' : '' }}>{{ $grp }}</option>
+                    @endforeach
+                </select>
+
+                <select name="status" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả trạng thái RSVP --</option>
+                    <option value="attending" {{ $filterStatus === 'attending' ? 'selected' : '' }}>Đã xác nhận tham dự</option>
+                    <option value="pending" {{ $filterStatus === 'pending' ? 'selected' : '' }}>Chưa gửi phản hồi</option>
+                    <option value="declined" {{ $filterStatus === 'declined' ? 'selected' : '' }}>Từ chối / Không tham gia</option>
+                </select>
+
+                @if($filterSearch || $filterGroup || $filterStatus)
+                    <a href="{{ route('guests.index', $invitation->id) }}" class="mayhen_guest_reset_link">
+                        Đặt lại
+                    </a>
+                @endif
+            </form>
+
+            <span style="font-size: 13px; color: #7A726A; white-space: nowrap;">
+                Hiển thị: <strong>{{ $guests->count() }}</strong> khách
+            </span>
+        </div>
+
+        <!-- Guests Table Card -->
+        <div class="mayhen_guest_table_card">
             <div style="overflow-x: auto;">
                 <table class="mayhen_guest_table">
                     <thead>
@@ -97,10 +261,10 @@
                             <th>Tên Khách Mời</th>
                             <th>Xưng Hô</th>
                             <th>Nhóm</th>
-                            <th>Dự Kiến</th>
+                            <th>Số Dự Kiến</th>
                             <th>Phản Hồi RSVP</th>
                             <th>Công Cụ Mời Zalo</th>
-                            <th>Thao Tác</th>
+                            <th style="text-align: right;">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,16 +273,30 @@
                                 $personalUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $g->guest_token]);
                             @endphp
                             <tr>
-                                <td><strong>{{ $g->name }}</strong></td>
+                                <td>
+                                    <div style="font-weight: 600; color: #1F1D1A;">{{ $g->name }}</div>
+                                    @if($g->phone)
+                                        <div style="font-size: 11px; color: #8C827A;">{{ $g->phone }}</div>
+                                    @endif
+                                </td>
                                 <td>{{ $g->salutation }}</td>
-                                <td><span style="background: var(--mayhen-color-bg-soft); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">{{ $g->group_name }}</span></td>
+                                <td>
+                                    <span class="mayhen_guest_group_badge">{{ $g->group_name }}</span>
+                                </td>
                                 <td>{{ $g->expected_attendees }} người</td>
                                 <td>
                                     @if ($g->response)
                                         @if ($g->response->attending_status === 'attending')
-                                            <span class="mayhen_guest_badge_attending">Đã xác nhận ({{ $g->response->adults_count + $g->response->children_count }} người)</span>
+                                            <span class="mayhen_guest_badge_attending">
+                                                Tham gia ({{ $g->response->adults_count + $g->response->children_count }} người)
+                                            </span>
+                                            @if($g->response->wishes)
+                                                <div style="font-size: 11px; color: #6B635B; margin-top: 4px; font-style: italic;">
+                                                    "{{ Str::limit($g->response->wishes, 35) }}"
+                                                </div>
+                                            @endif
                                         @else
-                                            <span style="color: var(--mayhen-color-danger); font-size: 0.75rem;">Không tham dự</span>
+                                            <span class="mayhen_guest_badge_declined">Không tham gia</span>
                                         @endif
                                     @else
                                         <span class="mayhen_guest_badge_pending">Chưa phản hồi</span>
@@ -126,34 +304,54 @@
                                 </td>
                                 <td>
                                     <div class="mayhen_guest_actions_cell">
-                                        <button type="button" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_sm"
+                                        <button type="button" class="mayhen_guest_action_btn mayhen_guest_action_zalo"
                                             data-mayhen-action="copy-zalo"
                                             data-guest-name="{{ $g->name }}"
                                             data-guest-salutation="{{ $g->salutation }}"
                                             data-guest-link="{{ $personalUrl }}"
                                             data-couple-names="{{ $wedding->groom_name }} & {{ $wedding->bride_name }}"
-                                            data-wedding-date="{{ $wedding->wedding_date->format('d.m.Y') }}">
-                                            Sao Chép Lời Mời Zalo
+                                            data-wedding-date="{{ $wedding->wedding_date ? \Carbon\Carbon::parse($wedding->wedding_date)->format('d.m.Y') : '' }}">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                            </svg>
+                                            Chép Mời Zalo
                                         </button>
-                                        <button type="button" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm"
+                                        <button type="button" class="mayhen_guest_action_btn mayhen_guest_action_link"
                                             data-mayhen-action="copy-link"
                                             data-guest-link="{{ $personalUrl }}">
                                             Copy Link
                                         </button>
+                                        <a href="{{ $personalUrl }}" target="_blank" class="mayhen_guest_action_btn" style="text-decoration: none;" title="Xem thiệp với vai trò khách này">
+                                            Mở
+                                        </a>
                                     </div>
                                 </td>
-                                <td>
-                                    <form action="{{ route('guests.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa khách mời này?');">
+                                <td style="text-align: right;">
+                                    <form action="{{ route('guests.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khách mời này khỏi danh sách?');" style="margin: 0; display: inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" style="color: var(--mayhen-color-danger); font-size: 0.8125rem;">Xóa</button>
+                                        <button type="submit" class="mayhen_guest_del_btn" title="Xóa khách mời">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align: center; padding: 3rem; color: var(--mayhen-color-text-muted);">
-                                    Chưa có khách mời nào trong danh sách. Hãy thêm khách mời đầu tiên ở khung trên!
+                                <td colspan="7" style="text-align: center; padding: 48px 20px; color: #8C827A;">
+                                    @if($filterSearch || $filterGroup || $filterStatus)
+                                        Không tìm thấy khách mời nào phù hợp với bộ lọc hiện tại.
+                                        <div style="margin-top: 10px;">
+                                            <a href="{{ route('guests.index', $invitation->id) }}" style="color: #9C7A4A; font-weight: 500;">
+                                                Xem toàn bộ danh sách &rarr;
+                                            </a>
+                                        </div>
+                                    @else
+                                        Chưa có khách mời nào trong danh sách. Hãy thêm khách mời đầu tiên ở khung trên!
+                                    @endif
                                 </td>
                             </tr>
                         @endforelse
