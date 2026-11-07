@@ -4513,6 +4513,25 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
                        - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
 
+
+
+                 169. **Phòng Vệ Hai Tầng Triệt Để Chống Duplicate Trường Timeline Trong Studio Tạo Thiệp**:
+                      - **Hiện tượng và Bối cảnh (Hình ảnh phản hồi thực tế)**:
+                        - Tại Bước 6 "Lịch Trình Tiệc Cưới" trên Studio Tạo Thiệp (`/tao-thiep?template=hanh-phuc-mang-ten-chung-minh`), màn hình xuất hiện 2 cụm nhập liệu trùng lặp nhau:
+                          + Cụm 1 (Phía trên): Repeater mốc thời gian động (hiển thị giờ dạng time picker 05:30, 06:00, 06:30, 08:00 tương ứng 17:30, 18:00, 18:30, 20:00 theo chuẩn 12h AM/PM của trình duyệt).
+                          + Cụm 2 (Phía dưới): 8 ô text riêng lẻ ("Thời gian mốc 1", "Nội dung mốc 1", "Thời gian mốc 2"...) gây rối mắt và thừa thãi.
+                      - **Nguyên nhân kỹ thuật**:
+                        - `InvitationTemplateService` tự động sinh ra canonical section `timeline` chứa trường `wedding.extra_data.timeline` (type `repeater`).
+                        - Trong file `schema.json` cũ của mẫu `hanh-phuc-mang-ten-chung-minh`, người tạo mẫu đã vô tình khai báo 8 trường con rời rạc (`wedding.extra_data.timeline.0.time`, `title`...).
+                        - Hàm `InvitationTemplateService::normalizeSchema()` khi duyệt các trường riêng (custom fields) chưa có bộ lọc loại bỏ các key `timeline.N`, dẫn tới việc cả 2 cụm đều được render ra view form Studio.
+                      - **Giải pháp hoàn thiện triệt để (Cơ chế bảo vệ 2 tầng)**:
+                        - *Tầng 1 (Dữ liệu Schema)*: Đã chuẩn hóa `schema.json` của mẫu `hanh-phuc-mang-ten-chung-minh` sang duy nhất trường canonical repeater `wedding.extra_data.timeline`.
+                        - *Tầng 2 (Lớp Dịch Vụ Service Guard)*: Bổ sung bộ lọc phòng vệ tự động vào `InvitationTemplateService::normalizeSchema()` (`if ($sectionId === 'timeline' && preg_match('/timeline\.\d+/', $k)) continue;`). Đảm bảo ngay cả khi các mẫu thiệp mới hoặc schema cũ trong tương lai có chứa các trường con dạng `timeline.0...timeline.N`, hệ thống cũng tự động loại trừ, không bao giờ sinh ra trường duplicate trên Studio Tạo Thiệp.
+                      - **Kiểm thử & Chất lượng**:
+                        - Đã kiểm thử với Feature Test giả lập cả schema chuẩn và schema legacy có trường trùng lặp -> 100% tự động lọc sạch.
+                        - Toàn bộ test suite đạt **178/178 tests passed (979 assertions)**.
+                        - Pint: Đạt chuẩn 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

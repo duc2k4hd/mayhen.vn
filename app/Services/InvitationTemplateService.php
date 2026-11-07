@@ -822,6 +822,10 @@ class InvitationTemplateService
                     if ($sectionId === 'album' && preg_match('/gallery\.\d+$/', $k)) {
                         continue;
                     }
+                    // Bỏ qua các trường lẻ timeline.0 ... timeline.N nếu đã dùng canonical repeater
+                    if ($sectionId === 'timeline' && preg_match('/timeline\.\d+/', $k)) {
+                        continue;
+                    }
                     // Bỏ qua ending_title / ending_text vì đã chuẩn hóa sang thank_you_*
                     if ($sectionId === 'ending' && in_array($k, ['wedding.extra_data.ending_title', 'wedding.extra_data.ending_text', 'ending_title', 'ending_text'], true)) {
                         continue;
