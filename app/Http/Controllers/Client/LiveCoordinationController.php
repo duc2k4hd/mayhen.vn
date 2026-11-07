@@ -57,7 +57,9 @@ class LiveCoordinationController extends Controller
         $guests = $wedding->guests()->with('response')->get();
 
         $totalInvitedGuests = $guests->count();
-        $totalExpectedAttendees = (int) $guests->sum('expected_attendees');
+        $totalExpectedAttendees = (int) $guests->sum(function (Guest $g) {
+            return $g->actualAttendeesCount();
+        });
 
         // RSVP metrics
         $rsvpAttending = $wedding->guestResponses()->where('attending_status', 'attending')->count();
@@ -67,7 +69,7 @@ class LiveCoordinationController extends Controller
         // Check-in metrics
         $checkedInGuests = $guests->whereNotNull('checked_in_at');
         $checkedInCount = (int) $checkedInGuests->sum(function (Guest $g) {
-            return $g->checked_in_attendees ?: $g->expected_attendees;
+            return $g->checked_in_attendees ?: $g->actualAttendeesCount();
         });
         $checkedInGuestsCount = $checkedInGuests->count();
 
@@ -83,9 +85,11 @@ class LiveCoordinationController extends Controller
 
         $tableWaves = [];
         foreach ($groupedByTable as $tableName => $tableGuests) {
-            $tableExpected = (int) $tableGuests->sum('expected_attendees');
+            $tableExpected = (int) $tableGuests->sum(function (Guest $g) {
+                return $g->actualAttendeesCount();
+            });
             $tableCheckedIn = (int) $tableGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
-                return $g->checked_in_attendees ?: $g->expected_attendees;
+                return $g->checked_in_attendees ?: $g->actualAttendeesCount();
             });
             $fillRate = $tableExpected > 0 ? (int) min(100, round(($tableCheckedIn / $tableExpected) * 100)) : 0;
 
@@ -100,7 +104,7 @@ class LiveCoordinationController extends Controller
                         'id' => $g->id,
                         'name' => $g->name,
                         'salutation' => $g->salutation,
-                        'expected' => $g->expected_attendees,
+                        'expected' => $g->actualAttendeesCount(),
                         'is_checked_in' => $g->checked_in_at !== null,
                         'checked_in_time' => $g->checked_in_at ? $g->checked_in_at->format('H:i') : null,
                     ];
@@ -132,7 +136,7 @@ class LiveCoordinationController extends Controller
                     'name' => $g->name,
                     'salutation' => $g->salutation,
                     'table_name' => $g->table_name ?: 'Chưa xếp bàn',
-                    'attendees' => $g->checked_in_attendees ?: $g->expected_attendees,
+                    'attendees' => $g->checked_in_attendees ?: $g->actualAttendeesCount(),
                     'time' => $g->checked_in_at ? $g->checked_in_at->format('H:i') : '',
                 ];
             })->values()->all();

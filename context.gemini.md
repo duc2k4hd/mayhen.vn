@@ -4962,6 +4962,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và giữ nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                     186. **Khởi Động Chương Trình Kiểm Toán Chất Lượng Cuối Cùng & Khắc Phục 3 Lỗi Logic Nghiệp Vụ Cốt Lõi (Final Deep Logic Audit - Giai Đoạn 01 & 02)**:
+                          - **Bối cảnh & Tinh thần chỉ đạo**:
+                            - Thực thi tài liệu chỉ đạo cao cấp `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                            - Không chạy theo số lượng tính năng cho đủ checklist; tập trung kiểm toán đến tận gốc logic nghiệp vụ, tính nhất quán dữ liệu xuyên suốt các module (cross-module invariants), bảo mật đa ranh giới và chiều sâu giá trị khách hàng trả phí.
+                          - **Các lỗi logic nghiệp vụ cốt lõi đã phát hiện và xử lý dứt điểm**:
+                            1. *Khắc phục BUG-AUDIT-01 (Lệch Sĩ Số Check-in Cổng Ngày Cưới)*:
+                               - Trong `app/Models/Guest.php`, bổ sung phương thức nghiệp vụ cốt lõi `actualAttendeesCount()`: ưu tiên lấy đúng sĩ số khách đã phản hồi RSVP (`adults_count + children_count` nếu `attending`, `0` nếu `declined`), trước khi fallback về `expected_attendees`.
+                               - Trong `CheckInController::processScan()`, tự động ghi nhận `$guest->actualAttendeesCount()` khi lễ tân quét mã QR tại sảnh tiệc mà không nhập ô đè số người. Các chỉ số thống kê `totalExpected` và `checkedInCount` trên toàn bộ dashboard tiếp tân được tính toán chuẩn xác.
+                            2. *Khắc phục BUG-AUDIT-02 (Seating Planner Bị Lệch Ghế Khi Khách Thay Đổi RSVP)*:
+                               - Trong `app/Models/WeddingTable.php`, sửa accessor `getAssignedAttendeesCountAttribute()` chuyển từ đếm `expected_attendees` sang đếm `$g->actualAttendeesCount()`.
+                               - Khi khách báo bận (`declined`), bàn tiệc tự động giải phóng ghế về 0; khi khách RSVP đi 3 người, bàn tiệc tự động chiếm 3 ghế và cảnh báo đỏ `isOverCapacity()` chính xác khi vượt quá sức chứa.
+                            3. *Khắc phục BUG-AUDIT-03 (Mâu Thuẫn Hai Nguồn Sự Thật `table_id` và `table_name`)*:
+                               - Trong `GuestController::store()`, `batchStore()` và `update()`: tự động tra cứu `WeddingTable` cùng tên thuộc `wedding_id` để đồng bộ trường `table_id`. Nếu khách bị xóa tên bàn, cả `table_id` và `table_name` đều chuyển về `null`.
+                               - Chấm dứt triệt để tình trạng khách có tên bàn trên trang Khách Mời nhưng lại bị liệt kê vào "Chưa xếp bàn" trong Seating Planner Studio.
+                            4. *Đồng bộ hóa các Controller liên quan*:
+                               - Cập nhật nhất quán trong `LiveCoordinationController.php` (sĩ số thời gian thực và làn sóng bàn tiệc), `MemoryVaultController.php` (thống kê khách tham dự sau cưới), `SeatingPlannerController.php` (eager load `guests.response` tối ưu hiệu năng không N+1 queries).
+                          - **Khởi tạo 3 tài liệu hồ sơ bàn giao chuyên sâu**:
+                            1. `docs/MAY_HEN_FINAL_AUDIT_BASELINE.md`: Bảng đối soát tuyên bố vs code thực tế, phân tích chi tiết 3 lỗi logic gốc đã sửa và baseline kiểm thử 281 tests.
+                            2. `docs/MAY_HEN_DOMAIN_INVARIANTS_AND_STATE_MACHINES.md`: Bản đồ máy trạng thái chính thức (Order, Invitation, Guest, Table, Time Capsule) và 50 Bất biến nghiệp vụ cốt lõi (Domain Invariants).
+                            3. `docs/MAY_HEN_CROSS_MODULE_E2E_MATRIX.md`: Ma trận 20 luồng nghiệp vụ liên hoàn xuyên suốt các phân hệ.
+                          - **Kiểm thử & Đảm bảo chất lượng**:
+                            - Viết Feature test suite trong `tests/Feature/CrossModuleLogicInvariantsTest.php` gồm 5 kịch bản kiểm tra bất biến logic liên module -> **5/5 tests passed**.
+                            - Toàn bộ test suite toàn hệ thống: **281/281 tests passed 100% (1,403 assertions)**.
+                            - Laravel Pint: Đạt chuẩn 100% agent style.
+                            - Cập nhật `docs/MAY_HEN_BUG_REGISTER.md`.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

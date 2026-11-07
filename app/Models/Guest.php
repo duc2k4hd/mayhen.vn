@@ -43,6 +43,28 @@ class Guest extends Model
         return $this->checked_in_at !== null;
     }
 
+    /**
+     * Sĩ số tham dự thực tế dựa trên xác nhận RSVP hoặc dự kiến ban đầu.
+     */
+    public function actualAttendeesCount(): int
+    {
+        $response = $this->response;
+
+        if ($response) {
+            if ($response->attending_status === 'attending') {
+                $total = (int) ($response->adults_count + $response->children_count);
+
+                return max(1, $total);
+            }
+
+            if ($response->attending_status === 'declined') {
+                return 0;
+            }
+        }
+
+        return max(1, (int) ($this->expected_attendees ?: 1));
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Guest $guest) {

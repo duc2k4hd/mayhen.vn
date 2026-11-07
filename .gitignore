@@ -53,6 +53,8 @@ Thumbs.db
 !/tests/Feature/WeddingTimeCapsuleTest.php
 !/tests/Feature/AccountInvitationsNavigationTest.php
 !/tests/Feature/AccountDashboardTest.php
+!/tests/Feature/CheckInTableCoordinationTest.php
+!/tests/Feature/CrossModuleLogicInvariantsTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

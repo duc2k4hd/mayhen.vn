@@ -63,7 +63,7 @@ class MemoryVaultController extends Controller
             ->whereNotNull('checked_in_at')
             ->get()
             ->sum(function (Guest $g) {
-                return $g->checked_in_attendees ?: $g->expected_attendees;
+                return $g->checked_in_attendees ?: $g->actualAttendeesCount();
             });
         if ($totalGuestsAttended === 0) {
             $totalGuestsAttended = (int) ($wedding->guestResponses()->where('attending_status', 'attending')->sum('adults_count')

@@ -46,7 +46,7 @@ class WeddingTable extends Model
     public function getAssignedAttendeesCountAttribute(): int
     {
         return (int) $this->guests->sum(function (Guest $g) {
-            return $g->expected_attendees ?: 1;
+            return $g->actualAttendeesCount();
         });
     }
 

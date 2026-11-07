@@ -24,10 +24,11 @@ class SeatingPlannerController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeOwner($wedding);
 
-        $tables = $wedding->tables()->with('guests')->get();
+        $tables = $wedding->tables()->with(['guests.response'])->get();
 
         // Khách mời chưa được xếp bàn
         $unassignedGuests = $wedding->guests()
+            ->with('response')
             ->whereNull('table_id')
             ->orderBy('name')
             ->get();
@@ -37,7 +38,7 @@ class SeatingPlannerController extends Controller
         $totalCapacity = (int) $tables->sum('capacity');
         $assignedSeats = (int) $tables->sum('assigned_attendees_count');
         $unassignedSeats = (int) $unassignedGuests->sum(function (Guest $g) {
-            return $g->expected_attendees ?: 1;
+            return $g->actualAttendeesCount();
         });
         $overCapacityCount = $tables->filter(fn (WeddingTable $t) => $t->isOverCapacity())->count();
 

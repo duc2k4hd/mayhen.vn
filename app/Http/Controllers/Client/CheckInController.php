@@ -30,10 +30,12 @@ class CheckInController extends Controller
         }
 
         // Thống kê nhanh đón tiếp
-        $allGuests = $wedding->guests()->get();
-        $totalExpected = (int) $allGuests->sum('expected_attendees');
+        $allGuests = $wedding->guests()->with('response')->get();
+        $totalExpected = (int) $allGuests->sum(function (Guest $g) {
+            return $g->actualAttendeesCount();
+        });
         $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
-            return $g->checked_in_attendees ?: $g->expected_attendees;
+            return $g->checked_in_attendees ?: $g->actualAttendeesCount();
         });
         $checkedInGuestsCount = $allGuests->whereNotNull('checked_in_at')->count();
         $totalGuestsCount = $allGuests->count();
@@ -152,7 +154,7 @@ class CheckInController extends Controller
         if (! $alreadyCheckedIn) {
             $attendeesCount = ! empty($validated['attendees'])
                 ? (int) $validated['attendees']
-                : ($guest->expected_attendees ?: 1);
+                : $guest->actualAttendeesCount();
 
             $guest->update([
                 'checked_in_at' => now(),
@@ -162,10 +164,12 @@ class CheckInController extends Controller
         }
 
         // Cập nhật lại thống kê
-        $allGuests = $wedding->guests()->get();
-        $totalExpected = (int) $allGuests->sum('expected_attendees');
+        $allGuests = $wedding->guests()->with('response')->get();
+        $totalExpected = (int) $allGuests->sum(function (Guest $g) {
+            return $g->actualAttendeesCount();
+        });
         $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
-            return $g->checked_in_attendees ?: $g->expected_attendees;
+            return $g->checked_in_attendees ?: $g->actualAttendeesCount();
         });
 
         return response()->json([
@@ -178,8 +182,8 @@ class CheckInController extends Controller
                 'salutation' => $guest->salutation ?: 'Thân mời',
                 'group_name' => $guest->group_name ?: 'Khách chung',
                 'table_name' => $guest->table_name ?: 'Chưa xếp bàn',
-                'expected_attendees' => $guest->expected_attendees,
-                'checked_in_attendees' => $guest->checked_in_attendees ?: $guest->expected_attendees,
+                'expected_attendees' => $guest->actualAttendeesCount(),
+                'checked_in_attendees' => $guest->checked_in_attendees ?: $guest->actualAttendeesCount(),
                 'checked_in_at' => $guest->checked_in_at ? $guest->checked_in_at->format('H:i d/m/Y') : null,
                 'dietary' => $guest->response?->dietary_requirements,
                 'wishes' => $guest->response?->wishes,

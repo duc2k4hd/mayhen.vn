@@ -119,12 +119,20 @@ class GuestController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
 
+        $tableName = $request->validated('table_name') ? trim((string) $request->validated('table_name')) : null;
+        $tableId = null;
+        if (! empty($tableName)) {
+            $matchedTable = $wedding->tables()->where('name', $tableName)->first();
+            $tableId = $matchedTable?->id;
+        }
+
         Guest::create([
             'wedding_id' => $wedding->id,
             'name' => $request->validated('name'),
             'salutation' => $request->validated('salutation') ?? 'Thân mời',
             'group_name' => $request->validated('group_name') ?? 'Bạn Bè',
-            'table_name' => $request->validated('table_name'),
+            'table_name' => $tableName,
+            'table_id' => $tableId,
             'phone' => $request->validated('phone'),
             'expected_attendees' => $request->validated('expected_attendees') ?? 1,
             'guest_token' => Str::random(32),
@@ -176,13 +184,20 @@ class GuestController extends Controller
                 $attendees = isset($parts[3]) && is_numeric(trim($parts[3])) ? max(1, (int) trim($parts[3])) : 2;
                 $phone = isset($parts[4]) && trim($parts[4]) !== '' ? trim($parts[4]) : null;
                 $table = isset($parts[5]) && trim($parts[5]) !== '' ? trim($parts[5]) : null;
+                $tableClean = $table ? Str::limit($table, 100, '') : null;
+                $tableId = null;
+                if (! empty($tableClean)) {
+                    $matchedTable = $wedding->tables()->where('name', $tableClean)->first();
+                    $tableId = $matchedTable?->id;
+                }
 
                 Guest::create([
                     'wedding_id' => $wedding->id,
                     'name' => Str::limit($name, 190, ''),
                     'salutation' => Str::limit($salutation, 50, ''),
                     'group_name' => Str::limit($group, 50, ''),
-                    'table_name' => $table ? Str::limit($table, 100, '') : null,
+                    'table_name' => $tableClean,
+                    'table_id' => $tableId,
                     'phone' => $phone ? Str::limit($phone, 20, '') : null,
                     'expected_attendees' => $attendees,
                     'guest_token' => Str::random(32),
@@ -362,11 +377,19 @@ class GuestController extends Controller
             'expected_attendees.min' => 'Số người tham dự tối thiểu là 1.',
         ]);
 
+        $tableName = ! empty($validated['table_name']) ? trim((string) $validated['table_name']) : null;
+        $tableId = null;
+        if (! empty($tableName)) {
+            $matchedTable = $guest->wedding->tables()->where('name', $tableName)->first();
+            $tableId = $matchedTable?->id;
+        }
+
         $guest->update([
             'name' => $validated['name'],
             'salutation' => $validated['salutation'] ?? 'Thân mời',
             'group_name' => $validated['group_name'] ?? 'Bạn Bè',
-            'table_name' => $validated['table_name'] ?? null,
+            'table_name' => $tableName,
+            'table_id' => $tableId,
             'phone' => $validated['phone'] ?? null,
             'expected_attendees' => (int) $validated['expected_attendees'],
         ]);
