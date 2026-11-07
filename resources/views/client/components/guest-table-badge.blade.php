@@ -1,4 +1,9 @@
-@if(isset($guest) && $guest && !($isEmbed ?? false))
+@php
+    $isEmbedMode = ($isEmbed ?? false) 
+        || request()->boolean('embed') 
+        || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+@endphp
+@if(isset($guest) && $guest && !$isEmbedMode)
 <div class="mayhen_guest_badge_widget" id="mayhen_guest_badge_widget">
     {{-- Floating Action Pill --}}
     <button type="button" class="mayhen_guest_badge_trigger" id="mayhen_btn_guest_pass" aria-label="Xem vị trí bàn tiệc và mã điểm danh">

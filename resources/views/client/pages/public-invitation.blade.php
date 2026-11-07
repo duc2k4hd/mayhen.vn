@@ -186,6 +186,12 @@
         </article>
     </div>
 
+    {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời --}}
+    @include('client.components.guest-table-badge')
+
+    {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode) --}}
+    @include('client.components.senior-mode-widget')
+
     <!-- Scripts -->
     <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>
 </body>

@@ -346,6 +346,37 @@ class AccountController extends Controller
     }
 
     /**
+     * Bộ Dự Phòng Ngày Cưới 1 Chạm (Wedding Day Resilience Kit - TASK-VAL-03).
+     */
+    public function resilienceKit(int $invitationId): View
+    {
+        $invitation = Invitation::with(['wedding.tables.guests.response', 'template'])->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+        $wedding = $invitation->wedding;
+
+        $guests = $wedding->guests()->with('response')->orderBy('table_name')->orderBy('name')->get();
+        $tables = $wedding->tables()->with(['guests.response'])->orderBy('name')->get();
+
+        $totalGuests = $guests->count();
+        $totalExpectedAttendees = (int) $guests->sum(fn (Guest $g) => $g->actualAttendeesCount());
+        $attendingGuests = $guests->filter(fn (Guest $g) => $g->response && $g->response->attending_status === 'attending')->count();
+
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        $checkinPin = $config['checkin_pin'] ?? '123456';
+
+        return view('client.pages.account.resilience-kit', [
+            'invitation' => $invitation,
+            'wedding' => $wedding,
+            'guests' => $guests,
+            'tables' => $tables,
+            'totalGuests' => $totalGuests,
+            'totalExpectedAttendees' => $totalExpectedAttendees,
+            'attendingGuests' => $attendingGuests,
+            'checkinPin' => $checkinPin,
+        ]);
+    }
+
+    /**
      * Xóa thiệp cưới.
      */
     public function destroy(Request $request, int $invitationId): RedirectResponse

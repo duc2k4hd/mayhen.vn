@@ -9,6 +9,7 @@ use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Services\AiStoryWriterService;
 use App\Services\InvitationTemplateService;
+use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -431,6 +432,22 @@ class InvitationEditorController extends Controller
         $data = $aiService->generate($groom, $bride, $keywords, $tone);
 
         return response()->json($data);
+    }
+
+    /**
+     * Bác Sĩ Đồng Bộ Thông Tin Trọng Yếu (Wedding Consistency Guardian - TASK-VAL-02).
+     */
+    public function consistencyCheck(int $invitationId, WeddingConsistencyGuardianService $guardian): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
+
+        $result = $guardian->inspect($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
     }
 
     /**

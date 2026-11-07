@@ -248,6 +248,15 @@
                                 </svg>
                                 <span>Cài Đặt</span>
                             </a>
+
+                            <a href="{{ route('account.invitations.resilience_kit', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ tài liệu in ấn dự phòng sự cố ngày cưới A4/A3">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                    <rect x="6" y="14" width="12" height="8"></rect>
+                                </svg>
+                                <span>Bộ Dự Phòng</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

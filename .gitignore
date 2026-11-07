@@ -56,6 +56,9 @@ Thumbs.db
 !/tests/Feature/CheckInTableCoordinationTest.php
 !/tests/Feature/CrossModuleLogicInvariantsTest.php
 !/tests/Feature/SecurityDeepDiveMatrixTest.php
+!/tests/Feature/SeniorFriendlyGuestModeTest.php
+!/tests/Feature/WeddingConsistencyGuardianTest.php
+!/tests/Feature/WeddingResilienceKitTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

@@ -59,6 +59,9 @@
     {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (Guest Table Finder & QR Pass) --}}
     @include('client.components.guest-table-badge')
 
+    {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode - TASK-VAL-01) --}}
+    @include('client.components.senior-mode-widget')
+
     {{-- Huy hiệu Co-branding của Studio Đối Tác (TASK-V3-01) --}}
     @if(isset($wedding) && $wedding && $wedding->partner && $wedding->partner->isActive())
         @php

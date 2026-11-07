@@ -104,6 +104,9 @@ class AccountInvitationsNavigationTest extends TestCase
 
         // 13. Xem Thiệp Trực Tuyến
         $response->assertSee(route('invitation.show', $this->invitation->slug));
+
+        // 14. Bộ Dự Phòng Sự Cố Ngày Cưới (TASK-VAL-03)
+        $response->assertSee(route('account.invitations.resilience_kit', $this->invitation->id));
     }
 
     public function test_locked_invitation_displays_locked_badge_and_disables_toggle(): void
