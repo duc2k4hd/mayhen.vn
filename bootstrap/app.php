@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminAuthenticate;
+use App\Http\Middleware\EnsureAdminOrManager;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin.auth' => AdminAuthenticate::class,
+            'admin.manager' => EnsureAdminOrManager::class,
             'admin.super' => EnsureSuperAdmin::class,
         ]);
 

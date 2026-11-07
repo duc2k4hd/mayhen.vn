@@ -201,7 +201,7 @@
                             </div>
                             <div class="mayhen_admin_user_meta">
                                 <span class="mayhen_admin_user_name">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</span>
-                                <span class="mayhen_admin_user_role">Quản trị viên</span>
+                                <span class="mayhen_admin_user_role">{{ Auth::user()->role_label ?? 'Quản Trị Viên' }}</span>
                             </div>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #8C847A;">
                                 <polyline points="6 9 12 15 18 9"></polyline>

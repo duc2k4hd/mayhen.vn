@@ -4386,6 +4386,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **302/302 tests passed 100% (1,608 assertions)** trên toàn hệ thống trong ~12.4s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                163. **Thiết Lập Middleware Phân Quyền Quản Lý `admin.manager` (EnsureAdminOrManager) & Bảo Vệ Toàn Diện 5 Vai Trò**:
+                     - **Bối cảnh & Vấn đề xử lý**:
+                       - Hiện thực hóa triệt để chỉ đạo: *"Dự án mây hẹn sẽ phân quyền như sau: quản trị viên, nhân viên, quản lý, người dùng, cộng tác viên. Hiện tại đang làm trang /admin, các trang khác sau này sẽ làm sau, cứ làm /admin và user trước"*.
+                       - Trước đó, các thao tác nhạy cảm như duyệt tiền đơn hàng thủ công (`orders.approve`), hủy đơn (`orders.cancel`), khóa thiệp vi phạm (`invitations.lock`), xóa vĩnh viễn lời chúc (`wishes.destroy`) chỉ kiểm tra middleware chung `admin.auth`, khiến tài khoản Nhân viên (`staff`) vốn chỉ làm nhiệm vụ CSKH cũng có thể bấm duyệt tiền hoặc xóa dữ liệu của khách.
+                     - **Các thành phần đã triển khai**:
+                       - **Tạo Middleware `EnsureAdminOrManager` (`app/Http/Middleware/EnsureAdminOrManager.php`)**:
+                         + Kiểm tra quyền người dùng hiện tại thông qua `$user->isAdmin()` (chỉ chấp nhận `role === 'admin'` hoặc `role === 'manager'`).
+                         + Nếu tài khoản là `staff` (nhân viên) thực hiện thao tác nhạy cảm: Trả về JSON 403 hoặc chuyển hướng quay lại kèm thông báo lỗi: *"Tài khoản của bạn có quyền Nhân viên, không được phép thực hiện thao tác nhạy cảm này."*
+                       - **Đăng Ký Alias Toàn Cục (`bootstrap/app.php`)**:
+                         + Gắn alias `'admin.manager' => EnsureAdminOrManager::class`.
+                       - **Bảo Vệ Định Tuyến (`routes/admin.php`)**:
+                         + Gắn middleware `admin.manager` cho các route nhạy cảm:
+                           * `orders.approve` & `orders.cancel`: Duyệt hoặc hủy đơn hàng thủ công.
+                           * `invitations.lock` & `invitations.unlock`: Khóa hoặc mở khóa thiệp cưới.
+                           * `templates.update`, `templates.toggle_active`, `templates.toggle_featured`: Can thiệp trạng thái kho mẫu thiệp.
+                           * `users.reset_password`: Đặt lại mật khẩu tài khoản người dùng.
+                           * `wishes.destroy`: Xóa vĩnh viễn lời chúc của khách mời.
+                       - **Hiển Thị Vai Trò Động Trên Master Layout (`resources/views/admin/layouts/master.blade.php`)**:
+                         + Cập nhật badge role trên Topbar tài khoản hiển thị chính xác theo `Auth::user()->role_label` (Quản Trị Viên, Quản Lý, Nhân Viên) thay vì hardcode.
+                     - **Kiểm thử & Chất lượng**:
+                       - Tạo file test mới `tests/Feature/AdminRbacRoleTest.php` với 4 test cases toàn diện kiểm chứng ranh giới phân quyền của cả 5 vai trò (Admin, Manager, Staff, Partner, Customer).
+                       - Toàn bộ **306/306 tests passed 100% (1,641 assertions)** trên toàn hệ thống trong ~9.4s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

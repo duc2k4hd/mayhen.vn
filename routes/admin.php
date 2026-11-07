@@ -38,8 +38,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/migrate-template', [AdminInvitationController::class, 'migrateTemplate'])->name('migrate_template');
         Route::get('/{id}/export-guests', [AdminInvitationController::class, 'exportGuests'])->name('export_guests');
         Route::get('/{id}/export-gifts', [AdminInvitationController::class, 'exportGifts'])->name('export_gifts');
-        Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->name('lock');
-        Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->name('unlock');
+        Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->middleware('admin.manager')->name('lock');
+        Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });
 
     // Quản lý Mẫu thiệp cưới (Templates Engine)
@@ -48,9 +48,9 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/export-csv', [AdminTemplateController::class, 'exportCsv'])->name('export');
         Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->middleware('admin.super')->name('scan_discovery');
         Route::get('/{id}/edit', [AdminTemplateController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminTemplateController::class, 'update'])->name('update');
-        Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->name('toggle_active');
-        Route::post('/{id}/toggle-featured', [AdminTemplateController::class, 'toggleFeatured'])->name('toggle_featured');
+        Route::put('/{id}', [AdminTemplateController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle_active');
+        Route::post('/{id}/toggle-featured', [AdminTemplateController::class, 'toggleFeatured'])->middleware('admin.manager')->name('toggle_featured');
     });
 
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
@@ -59,8 +59,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/export-csv', [AdminOrderController::class, 'exportCsv'])->name('export');
         Route::get('/webhooks/audit', [AdminOrderController::class, 'webhooks'])->name('webhooks');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
-        Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->name('approve');
-        Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
+        Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->middleware('admin.manager')->name('approve');
+        Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->middleware('admin.manager')->name('cancel');
     });
 
     // Quản lý Người dùng & Phân quyền
@@ -69,7 +69,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/export-csv', [AdminUserController::class, 'exportCsv'])->name('export');
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
-        Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset_password');
+        Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->middleware('admin.manager')->name('reset_password');
     });
 
     // Quản lý Lời chúc & Giám sát RSVP
@@ -79,7 +79,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/rsvps', [AdminWishController::class, 'rsvps'])->name('rsvps');
         Route::get('/rsvps/export-csv', [AdminWishController::class, 'exportRsvpsCsv'])->name('rsvps.export');
         Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
-        Route::delete('/{id}', [AdminWishController::class, 'destroy'])->name('destroy');
+        Route::delete('/{id}', [AdminWishController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
     // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ (Yêu cầu Quản trị viên cấp cao)
