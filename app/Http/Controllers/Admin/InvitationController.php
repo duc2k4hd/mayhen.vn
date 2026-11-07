@@ -50,11 +50,15 @@ class InvitationController extends Controller
 
         // 2. Status Filter
         if ($status === 'published') {
-            $query->where('is_published', true);
+            $query->where('is_published', true)->where(function ($q) {
+                $q->whereNull('custom_config->is_locked')->orWhere('custom_config->is_locked', false);
+            });
         } elseif ($status === 'draft') {
             $query->where('is_published', false);
         } elseif ($status === 'expired') {
             $query->whereNotNull('expires_at')->where('expires_at', '<', now());
+        } elseif ($status === 'locked') {
+            $query->where('custom_config->is_locked', true);
         }
 
         // 3. Template Filter

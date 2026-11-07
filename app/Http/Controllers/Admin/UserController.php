@@ -137,6 +137,12 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($id);
+
+        // Security Defense: Manager cannot reset password of Super Admin
+        if ($user->isSuperAdmin() && ! Auth::user()->isSuperAdmin()) {
+            return back()->with('error', 'Chỉ Quản trị viên cấp cao mới có thẩm quyền đặt lại mật khẩu cho tài khoản Quản trị viên.');
+        }
+
         $user->update([
             'password' => Hash::make($request->input('password')),
         ]);

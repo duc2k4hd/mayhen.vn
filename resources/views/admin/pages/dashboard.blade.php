@@ -8,6 +8,53 @@
 @endpush
 
 @section('content')
+    <!-- Operational Actionable Alerts Banner -->
+    @if (($pendingOrdersCount ?? 0) > 0 || ($pendingWishesCount ?? 0) > 0 || ($lockedInvitationsCount ?? 0) > 0)
+        <div class="mayhen_admin_card" style="background: #FFFDF9; border-left: 4px solid var(--mh-admin-gold); padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: #FAF3E0; color: #9C7A4A; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div>
+                    <strong style="font-size: 0.9375rem; color: var(--mh-admin-charcoal);">Cảnh Báo Vận Hành Cần Xử Lý</strong>
+                    <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); display: flex; gap: 16px; flex-wrap: wrap; margin-top: 2px;">
+                        @if (($pendingOrdersCount ?? 0) > 0)
+                            <span>&bull; <strong>{{ $pendingOrdersCount }}</strong> đơn hàng chờ thanh toán</span>
+                        @endif
+                        @if (($pendingWishesCount ?? 0) > 0)
+                            <span>&bull; <strong>{{ $pendingWishesCount }}</strong> lời chúc chờ duyệt / tạm ẩn</span>
+                        @endif
+                        @if (($lockedInvitationsCount ?? 0) > 0)
+                            <span>&bull; <strong>{{ $lockedInvitationsCount }}</strong> thiệp cưới đang bị khóa</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                @if (($pendingOrdersCount ?? 0) > 0)
+                    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                        Xem Đơn Chờ &rarr;
+                    </a>
+                @endif
+                @if (($pendingWishesCount ?? 0) > 0)
+                    <a href="{{ route('admin.wishes.index', ['status' => 'pending']) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                        Duyệt Lời Chúc &rarr;
+                    </a>
+                @endif
+                @if (($lockedInvitationsCount ?? 0) > 0)
+                    <a href="{{ route('admin.invitations.index', ['status' => 'locked']) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                        Xử Lý Thiệp Khóa &rarr;
+                    </a>
+                @endif
+            </div>
+        </div>
+    @endif
+
     <!-- 5 Key KPI Metrics -->
     <div class="mayhen_admin_grid_cards" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 24px;">
         <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">

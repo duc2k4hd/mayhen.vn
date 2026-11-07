@@ -30,6 +30,7 @@
             <option value="">-- Tất cả trạng thái --</option>
             <option value="published" {{ $currentStatus === 'published' ? 'selected' : '' }}>Đã xuất bản</option>
             <option value="draft" {{ $currentStatus === 'draft' ? 'selected' : '' }}>Bản nháp</option>
+            <option value="locked" {{ $currentStatus === 'locked' ? 'selected' : '' }}>Đang bị khóa</option>
             <option value="expired" {{ $currentStatus === 'expired' ? 'selected' : '' }}>Đã hết hạn</option>
         </select>
 
@@ -173,7 +174,12 @@
 
                             <!-- Status -->
                             <td>
-                                @if ($isExpired)
+                                @php
+                                    $isLocked = !empty($inv->custom_config['is_locked']);
+                                @endphp
+                                @if ($isLocked)
+                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger" title="Lý do khóa: {{ $inv->custom_config['lock_reason'] ?? 'Vi phạm quy định' }}">Đang Khóa</span>
+                                @elseif ($isExpired)
                                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Hết Hạn</span>
                                 @elseif ($inv->is_published)
                                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Xuất Bản</span>

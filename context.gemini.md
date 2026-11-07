@@ -4464,6 +4464,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **311/311 tests passed 100% (1,679 assertions)** trên toàn hệ thống trong ~11.8s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                167. **Nâng Cấp Bảo Vệ Phân Quyền Tài Khoản (Chống Leo Quyền RBAC), Bộ Lọc Thiệp Bị Khóa & Thanh Cảnh Báo Vận Hành Dashboard**:
+                     - **Bối cảnh & Vấn đề giải quyết**:
+                       1. *Lỗ hổng leo thang đặc quyền (Privilege Escalation Defense)*: Trước đó trong `UserController@resetPassword`, tài khoản có vai trò Quản lý (`manager`) có thể gửi request đặt lại mật khẩu cho tài khoản Quản trị viên cấp cao (`admin`). Đồng thời giao diện `users/show.blade.php` vẫn hiển thị form đổi role cho tài khoản không phải Super Admin.
+                       2. *Bộ lọc và Huy hiệu Thiệp Bị Khóa (`locked`)*: Khi Admin khóa một thiệp cưới vi phạm, bảng danh sách `invitations/index.blade.php` trước đây chỉ hiển thị badge "Đã Xuất Bản" hoặc "Bản Nháp" gây hiểu lầm, và dropdown lọc trạng thái thiếu tùy chọn lọc thiệp "Đang bị khóa". Bộ lọc "Đã xuất bản" trước đó cũng chưa loại trừ thiệp đang bị khóa.
+                       3. *Thanh Cảnh Báo Vận Hành Cần Xử Lý Ngay (Operational Actionable Alerts)*: Theo đúng định vị "Atelier Control Room", Dashboard Quản trị cần một thanh cảnh báo thông minh thông báo ngay khi có: Đơn hàng chờ thanh toán, Lời chúc chờ duyệt/tạm ẩn, hoặc Thiệp cưới đang bị khóa, kèm nút điều hướng 1-chạm để giải quyết ngay.
+                     - **Các thành phần đã triển khai**:
+                       - **Phòng vệ đặc quyền & Tinh giản giao diện phân quyền (`UserController` & `users/show.blade.php`)**:
+                         + `app/Http/Controllers/Admin/UserController.php`: Bổ sung kiểm tra an ninh trong `resetPassword`: Chỉ Quản trị viên cấp cao (`isSuperAdmin()`) mới có quyền đặt lại mật khẩu cho tài khoản Quản trị viên khác; chặn Manager can thiệp mật khẩu Admin.
+                         + `resources/views/admin/pages/users/show.blade.php`:
+                           * Thẻ "Phân Quyền Vai Trò (RBAC)": Chỉ hiển thị form chọn vai trò cho Quản trị viên cấp cao (`isSuperAdmin()`), các vai trò khác hiển thị khung thông tin vai trò hiện tại chỉ đọc kèm ghi chú rõ ràng.
+                           * Thẻ "Đặt Lại Mật Khẩu": Bảo vệ chặt chẽ theo vai trò; ẩn form và hiển thị cảnh báo nếu tài khoản mục tiêu là Super Admin mà người thao tác không phải Super Admin, hoặc nếu người thao tác là Nhân viên (`staff`).
+                       - **Hoàn thiện Bộ Lọc & Trạng Thái Thiệp Khóa (`InvitationController` & `invitations/index.blade.php`)**:
+                         + `app/Http/Controllers/Admin/InvitationController.php`: Bổ sung nhánh lọc `$status === 'locked'` truy vấn `custom_config->is_locked = true`, đồng thời cập nhật nhánh `$status === 'published'` tự động loại trừ các thiệp đang bị khóa.
+                         + `resources/views/admin/pages/invitations/index.blade.php`:
+                           * Bổ sung `<option value="locked">Đang bị khóa</option>` trên dropdown lọc trạng thái.
+                           * Cập nhật cột Trạng Thái trong bảng: Nếu thiệp có `$isLocked = true`, hiển thị badge đỏ sang trọng "Đang Khóa" kèm tooltip lý do khóa cụ thể.
+                       - **Thanh Cảnh Báo Vận Hành Nhanh Trên Dashboard (`DashboardController` & `dashboard.blade.php`)**:
+                         + `app/Http/Controllers/Admin/DashboardController.php`: Tính toán nhanh 3 chỉ số vận hành thời gian thực: `$pendingOrdersCount`, `$pendingWishesCount`, `$lockedInvitationsCount`.
+                         + `resources/views/admin/pages/dashboard.blade.php`: Thiết kế thanh thông báo cảnh báo Quiet Luxury viền vàng kim `#9C7A4A`, tự động hiển thị khi có việc cần xử lý và cung cấp các nút tắt trực tiếp: "Xem Đơn Chờ &rarr;", "Duyệt Lời Chúc &rarr;", "Xử Lý Thiệp Khóa &rarr;".
+                     - **Kiểm thử & Chất lượng**:
+                       - Viết file test Feature toàn diện `tests/Feature/AdminSecurityAndFiltersTest.php` với 5 test cases kiểm chứng: Lọc thiệp khóa, Chống leo quyền đặt lại mật khẩu của Super Admin, Quyền của Super Admin, Phân quyền UI hiển thị, Tính toán và render cảnh báo Dashboard.
+                       - Toàn bộ **181/181 tests passed 100% (989 assertions)** trên toàn hệ thống trong ~3.4s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+                       - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

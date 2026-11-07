@@ -9,6 +9,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\WeddingWish;
 use App\Services\AuditLogger;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -52,6 +53,11 @@ class DashboardController extends Controller
         $templates = InvitationTemplate::withCount('invitations')->orderByDesc('invitations_count')->take(5)->get();
         $recentAuditLogs = AuditLogger::getRecentLogs(5);
 
+        // Operational Actionable Alerts
+        $pendingOrdersCount = Order::where('status', 'pending')->count();
+        $pendingWishesCount = WeddingWish::where('is_approved', false)->count();
+        $lockedInvitationsCount = Invitation::where('custom_config->is_locked', true)->count();
+
         return view('admin.pages.dashboard', [
             'totalRevenue' => $totalRevenue,
             'paidOrdersCount' => $paidOrdersCount,
@@ -67,6 +73,9 @@ class DashboardController extends Controller
             'recentOrders' => $recentOrders,
             'templates' => $templates,
             'recentAuditLogs' => $recentAuditLogs,
+            'pendingOrdersCount' => $pendingOrdersCount,
+            'pendingWishesCount' => $pendingWishesCount,
+            'lockedInvitationsCount' => $lockedInvitationsCount,
         ]);
     }
 }

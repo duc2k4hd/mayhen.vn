@@ -221,38 +221,45 @@
                 </div>
 
                 <div class="mayhen_admin_card_body">
-                    <form action="{{ route('admin.users.change_role', $user->id) }}" method="POST">
-                        @csrf
-                        <div style="margin-bottom: 16px;">
-                            <label for="role" class="mayhen_admin_form_label">
-                                Chọn Vai Trò Hệ Thống:
-                            </label>
-                            <select id="role" name="role" class="mayhen_admin_form_select">
-                                <option value="customer" {{ $user->role === 'customer' || empty($user->role) ? 'selected' : '' }}>
-                                    Người Dùng / Khách Hàng (Customer)
-                                </option>
-                                <option value="partner" {{ $user->role === 'partner' ? 'selected' : '' }}>
-                                    Cộng Tác Viên / Studio (Partner)
-                                </option>
-                                <option value="staff" {{ $user->role === 'staff' ? 'selected' : '' }}>
-                                    Nhân Viên CSKH / Vận Hành (Staff)
-                                </option>
-                                <option value="manager" {{ $user->role === 'manager' ? 'selected' : '' }}>
-                                    Quản Lý Nghiệp Vụ (Manager)
-                                </option>
-                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>
-                                    Quản Trị Viên Cấp Cao (Admin)
-                                </option>
-                            </select>
-                            <div class="mayhen_admin_form_help">
-                                Cấp quyền quản trị viên sẽ cho phép tài khoản đăng nhập vào /admin.
+                    @if (Auth::user()?->isSuperAdmin())
+                        <form action="{{ route('admin.users.change_role', $user->id) }}" method="POST">
+                            @csrf
+                            <div style="margin-bottom: 16px;">
+                                <label for="role" class="mayhen_admin_form_label">
+                                    Chọn Vai Trò Hệ Thống:
+                                </label>
+                                <select id="role" name="role" class="mayhen_admin_form_select">
+                                    <option value="customer" {{ $user->role === 'customer' || empty($user->role) ? 'selected' : '' }}>
+                                        Người Dùng / Khách Hàng (Customer)
+                                    </option>
+                                    <option value="partner" {{ $user->role === 'partner' ? 'selected' : '' }}>
+                                        Cộng Tác Viên / Studio (Partner)
+                                    </option>
+                                    <option value="staff" {{ $user->role === 'staff' ? 'selected' : '' }}>
+                                        Nhân Viên CSKH / Vận Hành (Staff)
+                                    </option>
+                                    <option value="manager" {{ $user->role === 'manager' ? 'selected' : '' }}>
+                                        Quản Lý Nghiệp Vụ (Manager)
+                                    </option>
+                                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>
+                                        Quản Trị Viên Cấp Cao (Admin)
+                                    </option>
+                                </select>
+                                <div class="mayhen_admin_form_help">
+                                    Cấp quyền quản trị viên sẽ cho phép tài khoản đăng nhập vào /admin.
+                                </div>
                             </div>
-                        </div>
 
-                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn thay đổi vai trò phân quyền cho tài khoản này?');">
-                            Cập Nhật Quyền Hạn
-                        </button>
-                    </form>
+                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn thay đổi vai trò phân quyền cho tài khoản này?');">
+                                Cập Nhật Quyền Hạn
+                            </button>
+                        </form>
+                    @else
+                        <div style="padding: 12px; background: #FAF8F5; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle); color: var(--mh-admin-muted); font-size: 0.8125rem;">
+                            Vai trò hiện tại: <strong style="color: var(--mh-admin-charcoal);">{{ $user->role_label }}</strong>.<br>
+                            <span style="font-size: 0.75rem; color: #8C827A;">Chỉ Quản trị viên cấp cao mới có thẩm quyền điều chỉnh phân quyền vai trò tài khoản.</span>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -269,22 +276,32 @@
                 </div>
 
                 <div class="mayhen_admin_card_body">
-                    <form action="{{ route('admin.users.reset_password', $user->id) }}" method="POST">
-                        @csrf
-                        <div style="margin-bottom: 12px;">
-                            <label for="password" class="mayhen_admin_form_label">Mật khẩu mới (Tối thiểu 6 ký tự):</label>
-                            <input type="password" id="password" name="password" class="mayhen_admin_form_input" required minlength="6">
+                    @if (! Auth::user()?->isAdmin())
+                        <div style="padding: 12px; background: #FAF8F5; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle); color: var(--mh-admin-muted); font-size: 0.8125rem;">
+                            Tài khoản Nhân viên không được phép đặt lại mật khẩu của người dùng.
                         </div>
-
-                        <div style="margin-bottom: 16px;">
-                            <label for="password_confirmation" class="mayhen_admin_form_label">Xác nhận mật khẩu:</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" class="mayhen_admin_form_input" required minlength="6">
+                    @elseif ($user->isSuperAdmin() && ! Auth::user()?->isSuperAdmin())
+                        <div style="padding: 12px; background: #FAF8F5; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle); color: var(--mh-admin-muted); font-size: 0.8125rem;">
+                            Chỉ Quản trị viên cấp cao mới có quyền đặt lại mật khẩu cho tài khoản Quản trị viên.
                         </div>
+                    @else
+                        <form action="{{ route('admin.users.reset_password', $user->id) }}" method="POST">
+                            @csrf
+                            <div style="margin-bottom: 12px;">
+                                <label for="password" class="mayhen_admin_form_label">Mật khẩu mới (Tối thiểu 6 ký tự):</label>
+                                <input type="password" id="password" name="password" class="mayhen_admin_form_input" required minlength="6">
+                            </div>
 
-                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn đặt lại mật khẩu mới cho tài khoản này?');">
-                            Lưu Mật Khẩu Mới
-                        </button>
-                    </form>
+                            <div style="margin-bottom: 16px;">
+                                <label for="password_confirmation" class="mayhen_admin_form_label">Xác nhận mật khẩu:</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation" class="mayhen_admin_form_input" required minlength="6">
+                            </div>
+
+                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn đặt lại mật khẩu mới cho tài khoản này?');">
+                                Lưu Mật Khẩu Mới
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
