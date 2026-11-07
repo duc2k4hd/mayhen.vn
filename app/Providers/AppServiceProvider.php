@@ -46,5 +46,12 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(120)->by($key);
         });
+
+        // Rate limiter bảo vệ tải tệp ảnh lên hệ thống (Chống DoS lưu trữ)
+        RateLimiter::for('upload_actions', function (Request $request) {
+            $key = (string) ($request->user()?->id ?: $request->ip());
+
+            return Limit::perMinute(30)->by($key);
+        });
     }
 }

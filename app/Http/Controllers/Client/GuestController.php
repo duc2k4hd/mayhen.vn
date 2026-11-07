@@ -426,12 +426,29 @@ class GuestController extends Controller
         abort(404);
     }
 
+    private function ensureInvitationInteractable(Invitation $invitation): void
+    {
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode($invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới tạm thời bị khóa.');
+        }
+
+        if (! $invitation->is_published) {
+            abort(404, 'Thiệp cưới chưa được xuất bản.');
+        }
+
+        if ($invitation->expires_at && $invitation->expires_at->isPast()) {
+            abort(410, 'Thiệp cưới đã hết hạn lưu trữ.');
+        }
+    }
+
     /**
      * Submit RSVP from public invitation.
      */
     public function submitRsvp(SubmitRsvpRequest $request, string $slug): JsonResponse|RedirectResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $this->ensureInvitationInteractable($invitation);
         $wedding = $invitation->wedding;
 
         // 0. Chủ nhân thiệp không được phép gửi xác nhận tham dự cho chính mình
@@ -544,6 +561,7 @@ class GuestController extends Controller
     public function submitWish(SubmitWishRequest $request, string $slug): JsonResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $this->ensureInvitationInteractable($invitation);
         $wedding = $invitation->wedding;
 
         // Chủ nhân thiệp không gửi lời chúc cho chính mình mà chỉ trả lời lời chúc của khách
@@ -665,6 +683,7 @@ class GuestController extends Controller
     public function getWishes(string $slug): JsonResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $this->ensureInvitationInteractable($invitation);
         $wishes = $invitation->wedding->wishes()
             ->where('is_approved', true)
             ->take(50)

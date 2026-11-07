@@ -88,6 +88,14 @@ class AccountController extends Controller
             abort(403, 'Bạn không có quyền chỉnh sửa thiệp cưới này.');
         }
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode($invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return back()->with('error', 'Thiệp cưới của bạn hiện đang bị tạm khóa bởi Quản trị viên. Vui lòng liên hệ hỗ trợ để được mở khóa.');
+        }
+
         $newStatus = ! $invitation->is_published;
         $invitation->update([
             'is_published' => $newStatus,

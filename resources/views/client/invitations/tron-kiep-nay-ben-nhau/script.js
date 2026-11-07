@@ -768,6 +768,7 @@ function initStudioLiveSync() {
   });
 
   window.addEventListener('message', (evt) => {
+    if (evt.origin !== window.location.origin) return;
     const msg = evt.data;
     if (msg && typeof msg === 'object' && (msg.type === 'MAYHEN_STUDIO_SYNC' || msg.action === 'sync')) {
       handleSyncPayload(msg.payload || msg.data || msg);

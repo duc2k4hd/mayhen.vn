@@ -86,7 +86,7 @@ test('invitation created with an active template renders dynamic user data', fun
         'template_id' => $template->id,
         'slug' => 'quan-mai-wedding-2026',
         'view_count' => 0,
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // Truy cập xem thiệp của cặp đôi qua slug
@@ -140,7 +140,7 @@ test('each wedding has its own independent guestbook database with wish submissi
         'wedding_id' => $weddingA->id,
         'template_id' => $template->id,
         'slug' => 'duc-phuong-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // 2. Tạo đám cưới B (Minh & Lan)
@@ -154,7 +154,7 @@ test('each wedding has its own independent guestbook database with wish submissi
         'wedding_id' => $weddingB->id,
         'template_id' => $template->id,
         'slug' => 'minh-lan-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // 3. Khách mời gửi lời chúc vào đám cưới A
@@ -230,7 +230,7 @@ test('each wedding has independent rsvp responses for attending and declining', 
         'wedding_id' => $weddingA->id,
         'template_id' => $template->id,
         'slug' => 'nam-ha-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     $weddingB = Wedding::create([
@@ -243,7 +243,7 @@ test('each wedding has independent rsvp responses for attending and declining', 
         'wedding_id' => $weddingB->id,
         'template_id' => $template->id,
         'slug' => 'anh-giang-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // 2. Khách A xác nhận CÓ THAM DỰ vào đám cưới A
@@ -314,7 +314,7 @@ test('user cannot rsvp more than once from the same ip for the same wedding', fu
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => 'kien-linh-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     $clientIp = '192.168.1.100';
@@ -381,7 +381,7 @@ test('wishes from the same ip are stored as separate submissions', function () {
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => 'long-chi-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     $clientIp = '10.10.10.20';
@@ -578,7 +578,7 @@ it('blocks profanity, insults and wedding curses in guestbook wishes', function 
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => 'nam-thao-wedding',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // 1. Chửi bậy viết tắt / lóng MXH
@@ -636,7 +636,7 @@ it('blocks profanity and malicious text in rsvp submissions', function () {
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => 'rsvp-profanity-check',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     // 1. Tên khách mời chứa từ ngữ chửi bậy
@@ -682,7 +682,7 @@ it('blocks profanity in owner replies', function () {
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => 'reply-profanity-check',
-        'status' => 'published',
+        'is_published' => true,
     ]);
 
     $wish = WeddingWish::create([

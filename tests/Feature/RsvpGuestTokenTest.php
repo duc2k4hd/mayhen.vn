@@ -27,6 +27,7 @@ function makeRsvpTokenInvitation(string $slug): Invitation
         'wedding_id' => $wedding->id,
         'template_id' => $template->id,
         'slug' => $slug,
+        'is_published' => true,
     ]);
 }
 

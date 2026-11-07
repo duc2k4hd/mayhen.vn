@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GiftManagementController extends Controller
@@ -103,7 +104,10 @@ class GiftManagementController extends Controller
             'sender_group' => ['nullable', 'string', 'max:50'],
             'amount' => ['required', 'integer', 'min:0', 'max:1000000000'],
             'payment_method' => ['required', 'in:cash,bank_transfer,other'],
-            'guest_id' => ['nullable', 'exists:guests,id'],
+            'guest_id' => [
+                'nullable',
+                Rule::exists('guests', 'id')->where('wedding_id', $invitation->wedding_id),
+            ],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_acknowledged' => ['nullable', 'boolean'],
         ], [
@@ -143,7 +147,10 @@ class GiftManagementController extends Controller
             'sender_group' => ['nullable', 'string', 'max:50'],
             'amount' => ['required', 'integer', 'min:0', 'max:1000000000'],
             'payment_method' => ['required', 'in:cash,bank_transfer,other'],
-            'guest_id' => ['nullable', 'exists:guests,id'],
+            'guest_id' => [
+                'nullable',
+                Rule::exists('guests', 'id')->where('wedding_id', $invitation->wedding_id),
+            ],
             'notes' => ['nullable', 'string', 'max:500'],
             'is_acknowledged' => ['nullable', 'boolean'],
         ], [

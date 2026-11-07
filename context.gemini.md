@@ -4555,6 +4555,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                         - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
                         - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
 
+                 171. **Thực Hiện Toàn Diện Post-Launch Security & Quality Audit và Thiết Lập Lộ Trình Premium VNext**:
+                      - **Bối cảnh & Chỉ đạo chiến lược**:
+                        - Thực hiện toàn bộ chỉ thị theo `docs/MAY_HEN_POST_LAUNCH_SECURITY_QA_PREMIUM_MASTER_PROMPT.md` và đối soát với 4 tài liệu gốc (`MAY_HEN_MASTER_PRD_ADMIN_STUDIO_V3.md`, `MAY_HEN_IMPLEMENTATION_ROADMAP.md`, `MAY_HEN_PROJECT_AUDIT.md`, `ADMIN_ARCHITECTURE_ROADMAP.md`).
+                        - Đặt ưu tiên tối cao cho: Bảo vệ dữ liệu cá nhân, thông tin gia đình, danh sách khách mời, Sổ Mừng Cưới, bảo mật giao dịch webhook SePay, và rào chắn cô lập giữa bản nháp và thiệp công khai.
+                      - **Khắc phục triệt để 6 lỗ hổng bảo mật cốt lõi (P0/P1) bằng mã nguồn thực tế**:
+                        1. *SEC-PUB-01 (P0)*: Đóng rào chắn bảo vệ thiệp công khai (`InvitationEditorController::show` và `GuestController`): Thiệp bị Admin khóa (`is_locked`), chưa xuất bản (`! is_published`), hoặc đã hết hạn (`expires_at < now()`) bị chặn triệt để 100% khỏi mọi truy cập của người ngoài và các API tương tác (`submitRsvp`, `submitWish`, `getWishes`, `getRsvpResponses`). Thiết kế 2 view thông báo Quiet Luxury đồng bộ: `invitation-unpublished.blade.php` và `invitation-expired.blade.php`.
+                        2. *SEC-PAY-01 (P0)*: Bổ sung cột `provider_transaction_id` (string 64, unique index) vào bảng `orders` qua migration mới `2026_11_07_101426_add_provider_transaction_id_to_orders_table.php`. Webhook SePay kiểm tra chống replay attack và ngăn chặn 1 giao dịch ngân hàng bị dùng chung để kích hoạt nhiều đơn hàng.
+                        3. *SEC-IDOR-01 (P1)*: Khắc phục Tenant Leak trong `GiftManagementController::store` và `update`: Ràng buộc `Rule::exists('guests', 'id')->where('wedding_id', $invitation->wedding_id)`, ngăn chặn cặp đôi A gán khách mời của cặp đôi B vào sổ mừng cưới.
+                        4. *SEC-AUTH-02 (P1)*: Khắc phục lỗ hổng bypass khóa Admin trong `AccountController::togglePublish`: Kiểm tra cờ `is_locked` trước khi cho phép đảo trạng thái xuất bản.
+                        5. *SEC-UPL-01 (P1)*: Chuẩn hóa bảo mật tải tệp ảnh trong `InvitationEditorController::uploadAsset`: Dùng `guessExtension()` kết hợp whitelist nghiêm ngặt; bổ sung Rate Limiter `upload_actions` (30 ảnh/phút) bảo vệ chống DoS dung lượng.
+                        6. *SEC-DOM-01 (P2)*: Bổ sung kiểm tra `evt.origin !== window.location.origin` cho listener postMessage trong `tron-kiep-nay-ben-nhau/script.js`.
+                      - **Xây dựng 6 tài liệu chiến lược theo Master Prompt**:
+                        1. `docs/MAY_HEN_QA_SECURITY_BASELINE.md`: Nguồn sự thật hiện trạng, ma trận 123 routes, baseline môi trường và giới hạn SQLite in-memory.
+                        2. `docs/MAY_HEN_SECURITY_AUDIT_VNEXT.md`: Threat model, ma trận OWASP ASVS 4.0, chi tiết 6 lỗ hổng và giải pháp khắc phục.
+                        3. `docs/MAY_HEN_BUG_REGISTER.md`: Sổ theo dõi lỗi logic, dữ liệu và DOM đã xác minh.
+                        4. `docs/MAY_HEN_UI_UX_POLISH_AUDIT.md`: Báo cáo rà soát giao diện đa thiết bị, giữ nguyên 4 mẫu thiệp source-locked.
+                        5. `docs/MAY_HEN_PREMIUM_FEATURE_CATALOG.md`: Nghiên cứu đối thủ và lập danh mục **60 tính năng cao cấp** thuộc 6 nhóm chiến lược (A: Cảm xúc & Persona, B: Guest CRM & RSVP, C: Wedding Day Control Room, D: Lưu niệm số sau cưới, E: Studio V2, F: Dịch vụ thông minh & SaaS).
+                        6. `docs/MAY_HEN_PREMIUM_VNEXT_ROADMAP.md`: Lộ trình 3 kịch bản đầu tư (Lean Premium, Growth Premium, Signature Experience) kèm KPIs và phân rã vertical slice tasks.
+                      - **Kiểm thử & Đảm bảo chất lượng**:
+                        - Viết file test hồi quy toàn diện `tests/Feature/SecurityVNextRemediationTest.php` với 6 ca kiểm thử bao phủ toàn bộ các lỗ hổng vừa khắc phục -> **100% Passed**.
+                        - Toàn bộ test suite toàn dự án đạt **182/182 tests passed 100% (984 assertions)**.
+                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

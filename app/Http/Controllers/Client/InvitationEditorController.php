@@ -241,6 +241,20 @@ class InvitationEditorController extends Controller
 
         $isOwner = $invitation->isOwner();
 
+        // 1. Kiểm tra thời hạn lưu trữ của thiệp cưới
+        if ($invitation->expires_at && $invitation->expires_at->isPast() && ! $isOwner) {
+            return view('client.pages.invitation-expired', [
+                'invitation' => $invitation,
+            ]);
+        }
+
+        // 2. Kiểm tra trạng thái xuất bản công khai
+        if (! $invitation->is_published && ! $isOwner) {
+            return view('client.pages.invitation-unpublished', [
+                'invitation' => $invitation,
+            ]);
+        }
+
         // Kiểm tra mật mã bảo vệ riêng tư nếu có
         if (! empty($config['password']) && ! $isOwner) {
             $isUnlocked = session("unlocked_invitation_{$invitation->id}") === true;
@@ -345,8 +359,9 @@ class InvitationEditorController extends Controller
         ]);
 
         $file = $request->file('file');
-        $ext = strtolower($file->getClientOriginalExtension());
-        if (empty($ext) || $ext === 'bin') {
+        $allowedExtensions = ['jpeg', 'png', 'jpg', 'webp', 'gif', 'heic'];
+        $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+        if (! in_array($ext, $allowedExtensions, true)) {
             $ext = 'jpg';
         }
         $filename = Str::uuid()->toString().'.'.$ext;

@@ -191,14 +191,22 @@ class CheckoutController extends Controller
         }
 
         $orderCode = strtoupper($orderCode);
+        $providerTransId = $request->input('id') ? (string) $request->input('id') : ($request->input('referenceCode') ? (string) $request->input('referenceCode') : null);
 
-        return DB::transaction(function () use ($orderCode, $amount, $request, $content): JsonResponse {
+        return DB::transaction(function () use ($orderCode, $amount, $request, $content, $providerTransId): JsonResponse {
             $order = Order::where('order_code', $orderCode)->lockForUpdate()->first();
 
             if (! $order) {
                 $this->recordWebhookLog('warning', "Không tìm thấy đơn hàng #{$orderCode} trong cơ sở dữ liệu", $orderCode, $amount, $request->ip(), $content);
 
                 return response()->json(['success' => false, 'message' => 'Order not found'], 200);
+            }
+
+            // Chống tấn công replay attack hoặc 1 giao dịch ngân hàng dùng chung cho 2 đơn khác nhau
+            if ($providerTransId && Order::where('provider_transaction_id', $providerTransId)->where('id', '!=', $order->id)->exists()) {
+                $this->recordWebhookLog('error', "Mã giao dịch SePay #{$providerTransId} đã được sử dụng cho một đơn hàng khác", $orderCode, $amount, $request->ip(), $content);
+
+                return response()->json(['success' => false, 'message' => 'Transaction ID already used for another order'], 409);
             }
 
             if ($order->isPaid()) {
@@ -222,6 +230,7 @@ class CheckoutController extends Controller
             $order->update([
                 'status' => 'paid',
                 'paid_at' => now(),
+                'provider_transaction_id' => $providerTransId,
             ]);
 
             if ($order->invitation) {

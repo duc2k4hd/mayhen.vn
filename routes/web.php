@@ -38,7 +38,7 @@ Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])-
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
 Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->middleware('throttle:editor_actions')->name('invitation.store');
-Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->middleware('throttle:editor_actions')->name('invitation.uploadAsset');
+Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->middleware('throttle:upload_actions')->name('invitation.uploadAsset');
 Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->middleware('throttle:editor_actions')->name('invitation.autosave');
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
