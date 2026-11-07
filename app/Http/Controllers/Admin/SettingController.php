@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Services\AuditLogger;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SettingController extends Controller
 {
@@ -288,6 +290,69 @@ class SettingController extends Controller
             'currentSearch' => $search,
             'currentAction' => $action,
             'availableActions' => $availableActions,
+        ]);
+    }
+
+    /**
+     * Export administrative audit logs as UTF-8 BOM CSV.
+     */
+    public function exportAuditLogs(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $action = $request->input('action');
+
+        $logs = AuditLogger::getRecentLogs(2000, $action ?: null, $search ?: null);
+        $filename = 'nhat-ky-quan-tri-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        $availableActions = [
+            'approve_order' => 'Duyệt Đơn Hàng',
+            'cancel_order' => 'Hủy Đơn Hàng',
+            'toggle_publish' => 'Bật/Ẩn Thiệp',
+            'extend_invitation' => 'Gia Hạn Thiệp',
+            'migrate_template' => 'Đổi Mẫu Thiệp',
+            'change_user_role' => 'Phân Quyền User',
+            'reset_user_password' => 'Đặt Lại Mật Khẩu',
+            'update_plan' => 'Cập Nhật Gói Cước',
+            'update_banking' => 'Cập Nhật Ngân Hàng',
+        ];
+
+        return response()->streamDownload(function () use ($logs, $availableActions) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'STT',
+                'Thời Gian',
+                'Quản Trị Viên',
+                'Email',
+                'Hành Động',
+                'Đối Tượng Tác Động',
+                'Mã Đối Tượng',
+                'Nội Dung Chi Tiết',
+                'Địa Chỉ IP',
+            ]);
+
+            $index = 1;
+            foreach ($logs as $log) {
+                $actionLabel = $availableActions[$log['action'] ?? ''] ?? ($log['action'] ?? 'Thao tác');
+                $time = isset($log['timestamp']) ? Carbon::parse($log['timestamp'])->format('d/m/Y H:i:s') : 'N/A';
+
+                fputcsv($handle, [
+                    $index++,
+                    $time,
+                    $log['admin_name'] ?? 'System',
+                    $log['admin_email'] ?? 'N/A',
+                    $actionLabel,
+                    $log['target_type'] ?? 'Hệ thống',
+                    $log['target_id'] ?? '',
+                    $log['description'] ?? '',
+                    $log['ip'] ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 }

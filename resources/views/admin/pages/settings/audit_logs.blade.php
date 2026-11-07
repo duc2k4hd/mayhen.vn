@@ -62,9 +62,19 @@
 
     <!-- Audit Logs Table Card -->
     <div class="mayhen_admin_card">
-        <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div class="mayhen_admin_card_title">Danh Sách Nhật Ký Quản Trị</div>
-            <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Hiển thị {{ count($logs) }} sự kiện gần nhất</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Hiển thị {{ count($logs) }} sự kiện gần nhất</div>
+                <a href="{{ route('admin.settings.audit_logs.export', ['q' => $currentSearch, 'action' => $currentAction]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Xuất CSV (Excel)</span>
+                </a>
+            </div>
         </div>
 
         <div class="mayhen_admin_table_wrapper">

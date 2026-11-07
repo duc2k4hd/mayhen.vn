@@ -92,5 +92,6 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
         Route::get('/audit-logs', [AdminSettingController::class, 'auditLogs'])->name('audit_logs');
+        Route::get('/audit-logs/export-csv', [AdminSettingController::class, 'exportAuditLogs'])->name('audit_logs.export');
     });
 });

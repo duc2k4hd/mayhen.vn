@@ -4411,6 +4411,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **306/306 tests passed 100% (1,641 assertions)** trên toàn hệ thống trong ~9.4s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 sạch sẽ.
 
+
+                164. **Xây Dựng Tính Năng Xuất Nhật Ký Quản Trị Hệ Thống (Audit Logs CSV UTF-8 BOM) Cho Quản Trị Cấp Cao**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       - Nhằm phục vụ công tác thanh tra bảo mật, kiểm toán định kỳ và tuân thủ quy định bảo vệ dữ liệu, Quản trị viên cấp cao (`admin`) cần khả năng trích xuất toàn bộ dữ liệu lịch sử thao tác hệ thống (duyệt đơn, đổi vai trò, khóa thiệp, cập nhật ngân hàng, cấu hình bảng giá) ra file CSV chuẩn mực có hỗ trợ tiếng Việt trên Microsoft Excel.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Admin/SettingController.php`:
+                         + Bổ sung method `exportAuditLogs(Request $request): StreamedResponse`.
+                         + Kế thừa 100% bộ lọc tìm kiếm `q` và phân loại hành động `action`.
+                         + Xuất file CSV định dạng UTF-8 BOM `\xEF\xBB\xBF` gồm các trường: STT, Thời Gian, Quản Trị Viên, Email, Hành Động, Đối Tượng Tác Động, Mã Đối Tượng, Nội Dung Chi Tiết, Địa Chỉ IP.
+                       - `routes/admin.php`: Đăng ký route `GET /admin/settings/audit-logs/export-csv` (`admin.settings.audit_logs.export`) được bảo vệ bởi middleware `admin.super`.
+                       - `resources/views/admin/pages/settings/audit_logs.blade.php`: Gắn nút "Xuất CSV (Excel)" trên header bảng danh sách nhật ký quản trị.
+                     - **Kiểm thử & Chất lượng**:
+                       - Bổ sung 2 test cases mới vào `tests/Feature/AdminSettingTest.php`: `admin can export audit logs as utf-8 bom csv` và `customer or staff cannot export admin audit logs csv`.
+                       - Toàn bộ **308/308 tests passed 100% (1,650 assertions)** trên toàn hệ thống trong ~9.8s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
