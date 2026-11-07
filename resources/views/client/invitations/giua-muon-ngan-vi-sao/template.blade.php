@@ -51,7 +51,8 @@
     $ceremonyGroomAddress = $extraData['ceremony_groom_address'] ?? 'Tại tư gia nhà trai - Đống Đa, Hà Nội';
 
     // Khách mời
-    $guestName = $invitation->guest_name ?? 'Quý Khách';
+    $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
+    $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
 
     // 3. Hàm chuẩn hóa asset ảnh
     $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
@@ -576,7 +577,7 @@
                     <svg class="mayhen_invitation_chom mayhen_invitation_c2"><use href="#mayhen_invitation_sr_chom_sao"></use></svg>
                     <i class="mayhen_invitation_huy"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></i>
                 </span>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_trang_trong"><p class="mayhen_invitation_ladi_headline">Kính mời</p></div>
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_trang_trong"><p class="mayhen_invitation_ladi_headline">{{ $guestSalutation }}</p></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_class_tenKhachMoi mayhen_invitation_khach mayhen_invitation_guest_name mayhen_invitation_sr_ten"><h3 class="mayhen_invitation_ladi_headline">{{ $guestName }}</h3></div>
                 <div class="mayhen_invitation_ClientEditText mayhen_invitation_toi_du"><p class="mayhen_invitation_ladi_paragraph">tới dự bữa tiệc chung vui<br>cùng gia đình chúng tôi</p></div>
                 <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_moi mayhen_invitation_anh_moi mayhen_invitation_party_photo">
@@ -1189,6 +1190,16 @@
                             <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item" data-wish-id="{{ $wish->id }}">
                                 <h2 class="mayhen_invitation_MessageBox_item_name">{{ $wish->name }}</h2>
                                 <p class="mayhen_invitation_MessageBox_item_message">{{ $wish->message }}</p>
+                                @if (!empty($wish->reply))
+                                    <div class="mayhen_invitation_wish_reply" style="margin-top: 8px; padding: 8px 12px; background: rgba(197, 168, 128, 0.12); border-left: 2px solid #C5A880; border-radius: 4px; font-size: 0.85em; text-align: left;">
+                                        <div style="font-weight: 600; color: #C5A880; margin-bottom: 2px;">
+                                            Phản hồi từ Cô Dâu &amp; Chú Rể:
+                                        </div>
+                                        <div style="font-style: italic; opacity: 0.9;">
+                                            {{ $wish->reply }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     @endif

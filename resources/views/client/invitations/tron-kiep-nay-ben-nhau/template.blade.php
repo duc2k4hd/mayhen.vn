@@ -113,7 +113,8 @@
     $brideBio         = $extraData['bride_bio'] ?? 'Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.';
 
     // --- 6. SECTION 5: SỰ KIỆN & BẢN ĐỒ ---
-    $guestName         = $guestName ?? 'Quý Khách';
+    $guestName         = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
+    $guestSalutation   = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
     $partyTime         = $extraData['party_time']          ?? '09:00';
     $partyVenue        = $extraData['party_venue']         ?? 'TƯ GIA NHÀ GÁI';
     $eventPartyAddress = $extraData['event_party_address'] ?? 'Ấp Bến Bào, Xã Vĩnh Lộc A, Huyện Hồng Dân, Tỉnh Bạc Liêu';
@@ -1262,6 +1263,16 @@
                             <strong>{{ $wish->name }}</strong>
                         </header>
                         <p class="mayhen_invitation_wishes__bubble_text">{{ $wish->message }}</p>
+                        @if (!empty($wish->reply))
+                            <div class="mayhen_invitation_wish_reply" style="margin-top: 8px; padding: 8px 12px; background: rgba(197, 168, 128, 0.12); border-left: 2px solid #C5A880; border-radius: 4px; font-size: 0.85em; text-align: left;">
+                                <div style="font-weight: 600; color: #9C7A4A; margin-bottom: 2px;">
+                                    Phản hồi từ Cô Dâu &amp; Chú Rể:
+                                </div>
+                                <div style="font-style: italic; opacity: 0.9;">
+                                    {{ $wish->reply }}
+                                </div>
+                            </div>
+                        @endif
                     </article>
                     @endforeach
                 </div>

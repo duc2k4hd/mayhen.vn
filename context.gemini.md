@@ -4114,6 +4114,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: 85/85 tests passed 100% (423 assertions) trên toàn bộ 11 bộ test suite.
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                151. **Hoàn Thiện Cơ Chế Cá Nhân Hóa Khách Mời Qua Token & Đồng Bộ Hiển Thị Phản Hồi Cảm Ơn Trên Mẫu Thiệp Công Khai**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Khép kín vòng trải nghiệm cảm xúc hoàn hảo cho đám cưới: Khi khách mời nhận link cá nhân hóa (`/thiep/{slug}?token={guest_token}`), thiệp cưới tự động nhận diện danh tính quan khách và hiển thị lời chào trân trọng (`$guestSalutation` và `$guestName`).
+                       2. Form xác nhận tham dự (RSVP) tự động điền sẵn tên của khách mời, giúp khách không phải nhập lại họ tên, gia tăng tỷ lệ phản hồi dự tiệc.
+                       3. Hiển thị câu trả lời cảm ơn của Cô Dâu & Chú Rể (`$wish->reply`) trên Section Sổ Lưu Bút trong cả 4 mẫu thiệp chuẩn (`giua-muon-ngan-vi-sao`, `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`).
+                       4. Phòng vệ dữ liệu: Các lời chúc bị cặp đôi hoặc quản trị viên tạm ẩn (`is_approved = false`) tuyệt đối không bao giờ hiển thị trên thiệp công khai.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Client/InvitationEditorController.php`: Bổ sung truyền biến `'guest' => $guest` vào view thiệp cưới công khai.
+                       - `resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`: Tích hợp `$guestName`, `$guestSalutation` và khối hiển thị `$wish->reply`.
+                       - `resources/views/client/invitations/hanh-phuc-mang-ten-chung-minh/template.blade.php`: Tích hợp `$guestName`, `$guestSalutation` và khối hiển thị `$wish->reply`.
+                       - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`: Tích hợp `$guestName`, `$guestSalutation`, sửa fallback tên khách và khối hiển thị `$wish->reply`.
+                       - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/template.blade.php`: Tích hợp `$guestName`, `$guestSalutation` và khối hiển thị `$wish->reply`.
+                       - `tests/Feature/PublicInvitationPersonalizationTest.php`: Bộ 3 test cases kiểm tra hiển thị cá nhân hóa theo token, lời chào mặc định khi không có token, và hiển thị phản hồi lời chúc của cặp đôi.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 88/88 tests passed 100% (434 assertions) trên toàn bộ 12 bộ test suite.
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

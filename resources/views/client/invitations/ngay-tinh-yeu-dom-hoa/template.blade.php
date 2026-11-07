@@ -202,7 +202,8 @@
     $endingText  = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? 'Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!');
 
     // --- Khách mời & Endpoints ---
-    $guestName    = $invitation->guest_name ?? 'Quý Khách';
+    $guestName       = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
+    $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
     $musicUrl     = $wedding->music_url ?? ($extraData['music_url'] ?? '');
     $rsvpEndpoint = $rsvpSubmitUrl ?? '';
     $wishEndpoint = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', $slug)  : route('invitation.wish.store', $invitation->slug ?? ''));
@@ -851,7 +852,17 @@
                     @foreach($wishes as $wish)
                         <div class="mayhen_invitation_wish_item">
                             <div class="mayhen_invitation_wish_message">"{{ $wish->message }}"</div>
-                            <div class="mayhen_invitation_wish_name">— {{ $wish->guest_name }}</div>
+                            <div class="mayhen_invitation_wish_name">— {{ $wish->name ?? $wish->guest_name ?? 'Khách quý' }}</div>
+                            @if (!empty($wish->reply))
+                                <div class="mayhen_invitation_wish_reply" style="margin-top: 8px; padding: 8px 12px; background: rgba(197, 168, 128, 0.12); border-left: 2px solid #C5A880; border-radius: 4px; font-size: 0.85em; text-align: left;">
+                                    <div style="font-weight: 600; color: #9C7A4A; margin-bottom: 2px;">
+                                        Phản hồi từ Cô Dâu &amp; Chú Rể:
+                                    </div>
+                                    <div style="font-style: italic; opacity: 0.9;">
+                                        {{ $wish->reply }}
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 @else

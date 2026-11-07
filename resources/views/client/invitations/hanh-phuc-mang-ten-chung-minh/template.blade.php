@@ -166,7 +166,8 @@
     $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? ($data['thank_you_title'] ?? ($data['ending_title'] ?? 'Thank You!')));
     $endingText = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? ($data['thank_you_quote'] ?? ($data['ending_text'] ?? 'Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.')));
 
-    $guestName = request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
+    $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
+    $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
 
     $cssVersion = file_exists(resource_path('views/client/invitations/hanh-phuc-mang-ten-chung-minh/styles.css'))
         ? filemtime(resource_path('views/client/invitations/hanh-phuc-mang-ten-chung-minh/styles.css'))
@@ -777,6 +778,16 @@
                 <div class="mayhen_invitation_wish_item">
                     <p class="mayhen_invitation_wish_msg">“{{ $wish->message }}”</p>
                     <span class="mayhen_invitation_wish_author">— {{ $wish->name }}</span>
+                    @if (!empty($wish->reply))
+                        <div class="mayhen_invitation_wish_reply" style="margin-top: 8px; padding: 8px 12px; background: rgba(197, 168, 128, 0.12); border-left: 2px solid #C5A880; border-radius: 4px; font-size: 0.85em; text-align: left;">
+                            <div style="font-weight: 600; color: #9C7A4A; margin-bottom: 2px;">
+                                Phản hồi từ Cô Dâu &amp; Chú Rể:
+                            </div>
+                            <div style="font-style: italic; opacity: 0.9;">
+                                {{ $wish->reply }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 @endforeach
             </div>
