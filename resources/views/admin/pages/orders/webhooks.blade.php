@@ -3,6 +3,10 @@
 @section('title', 'Nhật Ký Webhook Thanh Toán — Mây Hẹn')
 @section('page_title', 'Nhật Ký Đối Soát Webhook Thanh Toán')
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.orders.index') }}">Đơn Hàng</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/orders.css') }}">
 @endpush

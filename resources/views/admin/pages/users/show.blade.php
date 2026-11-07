@@ -3,6 +3,10 @@
 @section('title', 'Tài Khoản: ' . $user->name . ' — Mây Hẹn')
 @section('page_title', 'Hồ Sơ & Phân Quyền: ' . $user->name)
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.users.index') }}">Người Dùng</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/users.css') }}">
 @endpush

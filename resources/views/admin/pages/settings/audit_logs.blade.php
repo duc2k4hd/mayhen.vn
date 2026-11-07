@@ -3,6 +3,10 @@
 @section('title', 'Nhật Ký Quản Trị Hệ Thống — Mây Hẹn')
 @section('page_title', 'Nhật Ký Quản Trị Hệ Thống (Audit Logs)')
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.dashboard') }}">Hệ Thống</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
 @endpush

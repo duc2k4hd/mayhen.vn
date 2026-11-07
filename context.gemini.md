@@ -4490,6 +4490,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
                        - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
 
+
+                168. **Hoàn Thiện Hệ Thống Breadcrumbs Đa Tầng & Dropdown Quản Trị Viên Chuyên Nghiệp (Giai Đoạn 1 PRD)**:
+                     - **Bối cảnh & Yêu cầu theo Roadmap**:
+                       - Trong `docs/ADMIN_ARCHITECTURE_ROADMAP.md` (Giai đoạn 1), hệ thống đặt ra 2 yêu cầu cốt lõi về trải nghiệm điều hướng:
+                         1. *Breadcrumbs tự động đa tầng*: Giúp Quản trị viên luôn biết mình đang ở đâu trong hệ thống (Ví dụ: `Admin > Thiệp Cưới > Chi tiết #102` thay vì chỉ có `Admin / Chi tiết`), bấm 1-chạm quay lại danh mục cha.
+                         2. *Menu Dropdown Quản Trị Viên Hoàn Chỉnh*: Thể hiện đầy đủ danh tính và vai trò, lối tắt nhanh đến "Hồ Sơ & Đổi Mật Khẩu" của chính mình (`/admin/users/{id}`), lối tắt đến "Nhật Ký Quản Trị (Audit)" cho Quản trị viên cấp cao, nút mở tab mới xem trang khách (`/`) và nút Đăng xuất có xác nhận an toàn.
+                     - **Các thành phần đã triển khai**:
+                       - **Nâng cấp Master Layout (`resources/views/admin/layouts/master.blade.php`)**:
+                         + Thêm khối `@hasSection('breadcrumb_parent')` trong thanh điều hướng Breadcrumb Topbar, render tự động `Admin / @yield('breadcrumb_parent') / @yield('page_title')`.
+                         + Tái cấu trúc Dropdown Quản trị viên: Hiển thị Header danh tính sang trọng gồm Tên, Email, Badge vai trò (`role_label`), Menu item dẫn về Hồ sơ cá nhân của chính tài khoản đăng nhập (`route('admin.users.show', Auth::id())`), liên kết Audit Logs dành riêng cho Super Admin, liên kết Xem trang khách và nút Đăng xuất an toàn kèm xác nhận popup.
+                       - **Tích hợp Breadcrumb Cha Cho Toàn Bộ Trang Con Của Admin**:
+                         + `invitations/show.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về `Thiệp Cưới`.
+                         + `templates/edit.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về `Kho Mẫu Thiệp`.
+                         + `orders/show.blade.php` & `orders/webhooks.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về `Đơn Hàng`.
+                         + `users/show.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về `Người Dùng`.
+                         + `wishes/rsvps.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về `Lời Chúc & RSVP`.
+                         + `settings/audit_logs.blade.php` & `settings/plans/edit.blade.php`: Gắn `@section('breadcrumb_parent')` liên kết về phân hệ tương ứng.
+                     - **Kiểm thử & Chất lượng**:
+                       - Viết Feature test `tests/Feature/AdminBreadcrumbsAndDropdownTest.php` kiểm chứng: Render Breadcrumb đa tầng chính xác, Dropdown chứa đầy đủ link hồ sơ của admin đăng nhập, kiểm tra ẩn/hiện link Audit Logs giữa Super Admin và Manager, xác nhận đăng xuất.
+                       - Toàn bộ **176/176 tests passed 100% (962 assertions)** trên toàn hệ thống trong ~6.9s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+                       - Dọn dẹp sạch sẽ file test tạm để giữ kho mã nguồn tinh gọn.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -3,6 +3,10 @@
 @section('title', 'Chỉnh Sửa Mẫu: ' . $template->name . ' — Mây Hẹn')
 @section('page_title', 'Chỉnh Sửa Mẫu & Soát Schema: ' . $template->name)
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.templates.index') }}">Kho Mẫu Thiệp</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/templates.css') }}">
 @endpush

@@ -3,6 +3,10 @@
 @section('title', 'Chi Tiết Đơn Hàng #' . $order->order_code . ' — Mây Hẹn')
 @section('page_title', 'Chi Tiết Đơn Hàng: #' . $order->order_code)
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.orders.index') }}">Đơn Hàng</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/orders.css') }}">
 @endpush

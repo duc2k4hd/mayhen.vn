@@ -3,6 +3,10 @@
 @section('title', 'Báo Cáo Phản Hồi RSVP Quan Khách — Mây Hẹn')
 @section('page_title', 'Báo Cáo & Quản Lý Phản Hồi RSVP')
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.wishes.index') }}">Lời Chúc & RSVP</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/wishes.css') }}">
 @endpush

@@ -185,6 +185,12 @@
                         <div class="mayhen_admin_breadcrumb_item">
                             <a href="{{ route('admin.dashboard') }}">Admin</a>
                         </div>
+                        @hasSection('breadcrumb_parent')
+                            <span class="mayhen_admin_breadcrumb_sep">/</span>
+                            <div class="mayhen_admin_breadcrumb_item">
+                                @yield('breadcrumb_parent')
+                            </div>
+                        @endif
                         <span class="mayhen_admin_breadcrumb_sep">/</span>
                         <div class="mayhen_admin_breadcrumb_item active">
                             <span>@yield('page_title', 'Bảng Điều Khiển')</span>
@@ -210,27 +216,53 @@
 
                         <!-- Dropdown Menu -->
                         <div class="mayhen_admin_user_dropdown" role="menu">
-                            <div style="padding: 8px 12px; font-size: 0.75rem; color: #7A756E; border-bottom: 1px solid #F0ECE4;">
-                                Đăng nhập với email:<br>
-                                <strong style="color: #1F1D1A;">{{ Auth::user()->email ?? 'admin@mayhen.vn' }}</strong>
+                            <div style="padding: 10px 14px; font-size: 0.75rem; color: #7A756E; border-bottom: 1px solid var(--mh-admin-border-subtle); background: #FAF8F5; border-radius: 8px 8px 0 0;">
+                                Đăng nhập với tư cách:<br>
+                                <strong style="color: var(--mh-admin-charcoal); font-size: 0.8125rem;">{{ Auth::user()->name ?? 'Quản Trị Viên' }}</strong>
+                                <div style="font-size: 0.71875rem; color: #8C827A; margin-top: 2px;">{{ Auth::user()->email ?? 'admin@mayhen.vn' }} &bull; <span style="font-weight: 600; color: var(--mh-admin-gold);">{{ Auth::user()->role_label ?? 'Quản Trị Viên' }}</span></div>
                             </div>
+
+                            @if (Auth::user())
+                                <a href="{{ route('admin.users.show', Auth::id()) }}" class="mayhen_admin_user_dropdown_item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <span>Hồ Sơ & Đổi Mật Khẩu</span>
+                                </a>
+                            @endif
+
+                            @if (Auth::user()?->isSuperAdmin())
+                                <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_user_dropdown_item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    </svg>
+                                    <span>Nhật Ký Quản Trị (Audit)</span>
+                                </a>
+                            @endif
+
                             <a href="{{ route('home') }}" class="mayhen_admin_user_dropdown_item" target="_blank" rel="noopener noreferrer">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
                                 </svg>
-                                <span>Trang chủ Mây Hẹn</span>
+                                <span>Xem Trang Khách &nearr;</span>
                             </a>
+
                             <div class="mayhen_admin_user_dropdown_divider"></div>
                             <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
                                 @csrf
-                                <button type="submit" class="mayhen_admin_user_dropdown_item danger" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất khỏi trang quản trị?');">
+                                <button type="submit" class="mayhen_admin_user_dropdown_item danger" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất khỏi không gian Quản trị?');">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>
                                         <line x1="21" y1="12" x2="9" y2="12"></line>
                                     </svg>
-                                    <span>Đăng Xuất</span>
+                                    <span>Đăng Xuất An Toàn</span>
                                 </button>
                             </form>
                         </div>

@@ -3,6 +3,10 @@
 @section('title', 'Chỉnh Sửa Gói Dịch Vụ — Mây Hẹn')
 @section('page_title', 'Chỉnh Sửa Gói: ' . $plan->name)
 
+@section('breadcrumb_parent')
+    <a href="{{ route('admin.settings.plans') }}">Bảng Giá & Gói Dịch Vụ</a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
 @endpush
