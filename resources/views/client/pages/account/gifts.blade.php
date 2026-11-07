@@ -345,17 +345,17 @@
     </div>
 
     <!-- Modal Chỉnh Sửa Khoản Mừng Cưới -->
-    <div id="mayhen-edit-gift-modal" class="mayhen_guest_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title">
-        <div class="mayhen_guest_modal_backdrop" onclick="closeEditGiftModal()"></div>
-        <div class="mayhen_guest_modal_dialog">
-            <div class="mayhen_guest_modal_header">
-                <h3 id="mayhen-edit-gift-title" class="mayhen_guest_modal_title">Chỉnh Sửa Khoản Mừng Cưới</h3>
-                <button type="button" class="mayhen_guest_modal_close" onclick="closeEditGiftModal()">&times;</button>
+    <div id="mayhen-edit-gift-modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title">
+        <div class="mayhen_account_modal_backdrop" onclick="closeEditGiftModal()"></div>
+        <div class="mayhen_account_modal_dialog">
+            <div class="mayhen_account_modal_header">
+                <h3 id="mayhen-edit-gift-title" class="mayhen_account_modal_title">Chỉnh Sửa Khoản Mừng Cưới</h3>
+                <button type="button" class="mayhen_account_modal_close" onclick="closeEditGiftModal()">&times;</button>
             </div>
             <form id="mayhen-edit-gift-form" method="POST" action="">
                 @csrf
                 @method('PUT')
-                <div class="mayhen_guest_modal_body">
+                <div class="mayhen_account_modal_body">
                     <div>
                         <label class="mayhen_account_form_label">Tên người mừng cưới *</label>
                         <input type="text" name="sender_name" id="modal-sender-name" required class="mayhen_account_form_input">
@@ -393,7 +393,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="mayhen_guest_modal_footer">
+                <div class="mayhen_account_modal_footer">
                     <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeEditGiftModal()">Hủy</button>
                     <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Lưu Thay Đổi</button>
                 </div>

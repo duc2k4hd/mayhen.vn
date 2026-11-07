@@ -445,6 +445,7 @@
     border-radius: 10px;
     font-size: 14px;
     font-weight: 500;
+    font-family: inherit;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -766,13 +767,17 @@
     margin-bottom: 18px;
 }
 
-.mayhen_account_label {
+.mayhen_account_label,
+.mayhen_account_form_label {
     font-size: 13px;
     font-weight: 500;
     color: #4A453E;
+    display: block;
+    margin-bottom: 6px;
 }
 
-.mayhen_account_input {
+.mayhen_account_input,
+.mayhen_account_form_input {
     width: 100%;
     padding: 10px 14px;
     border: 1px solid #D8CEBD;
@@ -780,11 +785,26 @@
     font-size: 14px;
     color: #1F1D1A;
     background: #FFFFFF;
+    font-family: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
+    line-height: 1.5;
 }
 
-.mayhen_account_input:focus {
+select.mayhen_account_input,
+select.mayhen_account_form_input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A726A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.mayhen_account_input:focus,
+.mayhen_account_form_input:focus {
     outline: none;
     border-color: #C5A880;
     box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.15);
@@ -1145,5 +1165,151 @@
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   ACCOUNT SECTIONS & DIALOG MODALS (QUIET LUXURY)
+   ========================================================================== */
+
+.mayhen_account_section {
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 20px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_account_section_header {
+    margin-bottom: 20px;
+}
+
+.mayhen_account_section_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 4px 0;
+}
+
+.mayhen_account_section_desc {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 0;
+}
+
+/* Modal Dialog */
+.mayhen_account_modal,
+.mayhen_guest_modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.mayhen_account_modal.is-open,
+.mayhen_guest_modal.is-open {
+    display: flex !important;
+}
+
+.mayhen_account_modal_backdrop,
+.mayhen_guest_modal_backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(31, 29, 26, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.mayhen_account_modal_dialog,
+.mayhen_guest_modal_dialog {
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(31, 29, 26, 0.2);
+    z-index: 1;
+    animation: mayhenAccountModalFadeIn 0.25s ease forwards;
+}
+
+@keyframes mayhenAccountModalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mayhen_account_modal_header,
+.mayhen_guest_modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #F0EBE3;
+}
+
+.mayhen_account_modal_title,
+.mayhen_guest_modal_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_account_modal_close,
+.mayhen_guest_modal_close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #8C827A;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+.mayhen_account_modal_close:hover,
+.mayhen_guest_modal_close:hover {
+    color: #1F1D1A;
+}
+
+.mayhen_account_modal_body,
+.mayhen_guest_modal_body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mayhen_account_modal_footer,
+.mayhen_guest_modal_footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #F0EBE3;
+    background: #FAF8F5;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
 
 

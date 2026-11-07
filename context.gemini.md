@@ -4271,6 +4271,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Chạy toàn bộ test suite của hệ thống: **284/284 tests passed 100% (1,493 assertions)** chạy mượt mà, không còn bất kỳ lỗi nào.
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (`tests/Pest.php` đã được format sạch đẹp).
 
+
+                157. **Bổ Sung CSS Form Controls & Chuẩn Hóa Hệ Thống Modal Cho Trang Sổ Mừng Cưới**:
+                     - **Bối cảnh & Vấn đề xử lý**:
+                       1. *Thiếu CSS Selector cho Form Inputs*: Trong `gifts.blade.php` và `settings.blade.php`, các thẻ input, select và label sử dụng các class `mayhen_account_form_input` và `mayhen_account_form_label`. Tuy nhiên trong `account.css` trước đó chỉ có selector đơn `mayhen_account_input` và `mayhen_account_label`, dẫn tới việc các trường nhập liệu và chọn hình thức thanh toán bị trả về giao diện thô mặc định của trình duyệt.
+                       2. *Modal Bị Lộ Thiên Dưới Đáy Trang*: Modal sửa khoản mừng cưới trước đó dùng nhầm class `mayhen_guest_modal` (vốn thuộc `guests.css`), trong khi trang Sổ mừng cưới thuộc layout Account (`account.css`), khiến modal không có `display: none !important;` và bị trôi tự do ra dưới chân bảng danh sách.
+                     - **Giải pháp triển khai**:
+                       - Trong `public/assets/client/css/pages/account.css`:
+                         + Đồng bộ các selector form: `.mayhen_account_form_input, .mayhen_account_input`, `.mayhen_account_form_label, .mayhen_account_label`.
+                         + Bổ sung custom appearance cho thẻ `select` với icon mũi tên SVG trang nhã, font-family kế thừa thay vì font mặc định hệ điều hành.
+                         + Thêm `font-family: inherit;` vào `.mayhen_account_btn`.
+                         + Thêm bộ style `.mayhen_account_section*` cho khung chứa form ghi nhận mừng cưới.
+                         + Bổ sung hệ thống modal hoàn chỉnh `.mayhen_account_modal` (backdrop blur, dialog bo góc 20px, animation fade in, header, close, footer) và alias tương thích ngược.
+                       - Trong `resources/views/client/pages/account/gifts.blade.php`: Chuẩn hóa class modal sang `mayhen_account_modal*`.
+                     - **Kiểm thử**: Toàn bộ feature tests `ClientGiftManagementTest` và `ClientInvitationSettingsTest` passed 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
