@@ -4443,6 +4443,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **308/308 tests passed 100% (1,650 assertions)** trên toàn hệ thống trong ~18.2s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                166. **Hoàn Thiện Bộ Đôi Xuất CSV Báo Cáo Phản Hồi RSVP & Lời Chúc (Chi Tiết Thiệp Cưới Admin)**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       - Trong trang Chi tiết & Giám sát thiệp cưới (`/admin/invitations/{id}`), trước đó Quản trị viên mới chỉ có nút xuất CSV cho Khách mời (`export_guests`) và Sổ mừng cưới (`export_gifts`).
+                       - Khi cặp đôi hoặc Admin cần trích xuất danh sách khách xác nhận tham dự (để lên số lượng mâm cỗ, ghi chú món ăn) hoặc danh sách lời chúc mừng của riêng thiệp này để lưu niệm, hệ thống chưa cung cấp chức năng xuất báo cáo độc lập.
+                       - Đồng thời, bảng RSVP trước đây gọi nhầm thuộc tính cũ (`attending` và `number_of_guests` thay vì `attending_status`, `adults_count`, `children_count`), và bảng lời chúc thiếu nút Xóa trực tiếp đối với lời chúc phản cảm.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Admin/InvitationController.php`:
+                         + Bổ sung method `exportRsvps(int $id): StreamedResponse`: Xuất danh sách phản hồi RSVP của thiệp cưới ra file CSV UTF-8 BOM `\xEF\xBB\xBF` (Tên quan khách, Trạng thái tham dự, Số người lớn, Trẻ em, Tổng người, Số điện thoại, Ghi chú ăn uống, Thời gian).
+                         + Bổ sung method `exportWishes(int $id): StreamedResponse`: Xuất danh sách lời chúc mừng của thiệp cưới ra CSV UTF-8 BOM (Người gửi, Nội dung lời chúc, Lời đáp của dâu rể, Thời gian gửi, Trạng thái duyệt).
+                       - `routes/admin.php`:
+                         + Đăng ký route `GET /admin/invitations/{id}/export-rsvps` (`admin.invitations.export_rsvps`).
+                         + Đăng ký route `GET /admin/invitations/{id}/export-wishes` (`admin.invitations.export_wishes`).
+                       - `resources/views/admin/pages/invitations/show.blade.php`:
+                         + Tab 2 (RSVP): Thêm toolbar tóm tắt số lượt tham dự/từ chối kèm nút "Xuất Phản Hồi RSVP (CSV)", chuẩn hóa hiển thị `attending_status` ('attending', 'declined', 'uncertain') và phân tách số người lớn/trẻ em.
+                         + Tab 3 (Wishes): Thêm toolbar kèm nút "Xuất Lời Chúc (CSV)", bổ sung cột Thao Tác có nút "Xóa" lời chúc vi phạm (gắn popup xác nhận, bảo vệ bởi middleware `admin.manager`).
+                     - **Kiểm thử & Chất lượng**:
+                       - Tạo mới file test `tests/Feature/AdminInvitationExportTest.php` với 3 test cases toàn diện kiểm thử xuất CSV UTF-8 BOM và chặn truy cập trái phép.
+                       - Toàn bộ **311/311 tests passed 100% (1,679 assertions)** trên toàn hệ thống trong ~11.8s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

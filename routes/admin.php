@@ -38,6 +38,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/migrate-template', [AdminInvitationController::class, 'migrateTemplate'])->name('migrate_template');
         Route::get('/{id}/export-guests', [AdminInvitationController::class, 'exportGuests'])->name('export_guests');
         Route::get('/{id}/export-gifts', [AdminInvitationController::class, 'exportGifts'])->name('export_gifts');
+        Route::get('/{id}/export-rsvps', [AdminInvitationController::class, 'exportRsvps'])->name('export_rsvps');
+        Route::get('/{id}/export-wishes', [AdminInvitationController::class, 'exportWishes'])->name('export_wishes');
         Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->middleware('admin.manager')->name('lock');
         Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });

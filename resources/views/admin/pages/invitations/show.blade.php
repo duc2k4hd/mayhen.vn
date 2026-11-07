@@ -315,13 +315,31 @@
 
                     <!-- Tab 2: RSVP Responses -->
                     <div id="tab-rsvp" class="mayhen_admin_tab_pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Tổng cộng <strong>{{ $wedding->guestResponses->count() }}</strong> phản hồi RSVP 
+                                &bull; Sẽ tham dự: <strong style="color: #1B5E20;">{{ $wedding->guestResponses->where('attending_status', 'attending')->count() }}</strong>
+                                &bull; Không tham dự: <strong style="color: #C62828;">{{ $wedding->guestResponses->where('attending_status', 'declined')->count() }}</strong>
+                            </div>
+                            @if ($wedding->guestResponses->count() > 0)
+                                <a href="{{ route('admin.invitations.export_rsvps', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <span>Xuất Phản Hồi RSVP (CSV)</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <div class="mayhen_admin_table_responsive">
                             <table class="mayhen_admin_table">
                                 <thead>
                                     <tr>
                                         <th>Tên Quan Khách</th>
                                         <th>Tham Dự</th>
-                                        <th>Số Người</th>
+                                        <th>Số Người Đi Cùng</th>
                                         <th>Số Điện Thoại</th>
                                         <th>Lời Nhắn / Chế Độ Ăn</th>
                                         <th>Thời Gian</th>
@@ -332,17 +350,22 @@
                                         <tr>
                                             <td><strong>{{ $resp->guest_name }}</strong></td>
                                             <td>
-                                                @if ($resp->attending === 'yes')
+                                                @if ($resp->attending_status === 'attending')
                                                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Có Tham Dự</span>
-                                                @elseif ($resp->attending === 'no')
+                                                @elseif ($resp->attending_status === 'declined')
                                                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Không Tham Dự</span>
                                                 @else
                                                     <span class="mayhen_admin_badge mayhen_admin_badge_warning">Chưa Chắc Chắn</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $resp->number_of_guests ?? 1 }} người</td>
+                                            <td>
+                                                <strong>{{ ($resp->adults_count ?? 1) + ($resp->children_count ?? 0) }}</strong> người
+                                                @if(($resp->children_count ?? 0) > 0)
+                                                    <span style="font-size: 0.6875rem; color: #7A756E;">({{ $resp->adults_count ?? 1 }} lớn, {{ $resp->children_count }} trẻ em)</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $resp->phone ?? '—' }}</td>
-                                            <td>{{ $resp->dietary_requirements ?? '—' }}</td>
+                                            <td style="max-width: 220px; font-size: 0.75rem;">{{ $resp->dietary_requirements ?? '—' }}</td>
                                             <td>{{ $resp->created_at ? $resp->created_at->format('d/m/Y H:i') : '—' }}</td>
                                         </tr>
                                     @empty
@@ -359,6 +382,22 @@
 
                     <!-- Tab 3: Wishes -->
                     <div id="tab-wishes" class="mayhen_admin_tab_pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Tổng cộng <strong>{{ $wedding->wishes->count() }}</strong> lời chúc phúc từ quan khách.
+                            </div>
+                            @if ($wedding->wishes->count() > 0)
+                                <a href="{{ route('admin.invitations.export_wishes', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <span>Xuất Lời Chúc (CSV)</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <div class="mayhen_admin_table_responsive">
                             <table class="mayhen_admin_table">
                                 <thead>
@@ -366,18 +405,37 @@
                                         <th>Người Chúc</th>
                                         <th>Nội Dung Lời Chúc</th>
                                         <th>Thời Gian</th>
+                                        <th style="text-align: right;">Thao Tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($wedding->wishes as $wish)
                                         <tr>
-                                            <td><strong>{{ $wish->sender_name }}</strong></td>
-                                            <td>{{ $wish->message }}</td>
+                                            <td><strong>{{ $wish->name ?? $wish->sender_name }}</strong></td>
+                                            <td style="max-width: 300px; font-size: 0.8125rem;">
+                                                {{ $wish->message }}
+                                                @if($wish->reply)
+                                                    <div style="margin-top: 4px; padding: 4px 8px; background: #FAF8F5; border-radius: 4px; font-size: 0.75rem; color: #9C7A4A;">
+                                                        <strong>Cặp đôi phản hồi:</strong> {{ $wish->reply }}
+                                                    </div>
+                                                @endif
+                                            </td>
                                             <td>{{ $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '—' }}</td>
+                                            <td style="text-align: right;">
+                                                @if(auth()->user()->isAdmin())
+                                                    <form action="{{ route('admin.wishes.destroy', $wish->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn lời chúc này khỏi thiệp cưới?');" style="display: inline-block; margin: 0;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_danger mayhen_admin_btn_sm" title="Xóa lời chúc">
+                                                            Xóa
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" style="text-align: center; color: #7A756E; padding: 24px;">
+                                            <td colspan="4" style="text-align: center; color: #7A756E; padding: 24px;">
                                                 Chưa có lời chúc nào được gửi cho thiệp cưới này.
                                             </td>
                                         </tr>

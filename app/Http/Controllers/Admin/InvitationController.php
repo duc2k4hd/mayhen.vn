@@ -280,6 +280,111 @@ class InvitationController extends Controller
     }
 
     /**
+     * Export RSVP responses list of an invitation as UTF-8 CSV with BOM for Excel.
+     */
+    public function exportRsvps(int $id): StreamedResponse
+    {
+        $invitation = Invitation::with(['wedding.guestResponses'])->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $responses = $wedding?->guestResponses ?? collect();
+
+        $filename = "danh-sach-rsvp-{$invitation->slug}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($responses) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, [
+                'STT',
+                'Tên Quan Khách',
+                'Xác Nhận Tham Dự',
+                'Người Lớn',
+                'Trẻ Em',
+                'Tổng Người',
+                'Số Điện Thoại',
+                'Yêu Cầu Ăn Uống / Lời Nhắn',
+                'Thời Gian Phản Hồi',
+            ]);
+
+            foreach ($responses as $idx => $resp) {
+                $statusLabel = match ($resp->attending_status) {
+                    'attending' => 'Có tham dự',
+                    'declined' => 'Không tham dự',
+                    'uncertain' => 'Chưa chắc chắn',
+                    default => $resp->attending_status ?? 'Chưa rõ',
+                };
+
+                $adults = (int) ($resp->adults_count ?? 1);
+                $children = (int) ($resp->children_count ?? 0);
+                $total = $adults + $children;
+
+                fputcsv($file, [
+                    $idx + 1,
+                    $resp->guest_name,
+                    $statusLabel,
+                    $adults,
+                    $children,
+                    $total,
+                    $resp->phone ?? '',
+                    $resp->dietary_requirements ?? '',
+                    $resp->created_at ? $resp->created_at->format('d/m/Y H:i') : '',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    /**
+     * Export wishes list of an invitation as UTF-8 CSV with BOM for Excel.
+     */
+    public function exportWishes(int $id): StreamedResponse
+    {
+        $invitation = Invitation::with(['wedding.wishes'])->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $wishes = $wedding?->wishes ?? collect();
+
+        $filename = "loi-chuc-mung-{$invitation->slug}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($wishes) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, [
+                'STT',
+                'Người Gửi Lời Chúc',
+                'Nội Dung Lời Chúc',
+                'Phản Hồi Của Cặp Đôi',
+                'Thời Gian Gửi',
+                'Trạng Thái Duyệt',
+            ]);
+
+            foreach ($wishes as $idx => $wish) {
+                fputcsv($file, [
+                    $idx + 1,
+                    $wish->name ?? $wish->sender_name ?? '',
+                    $wish->message ?? '',
+                    $wish->reply ?? '',
+                    $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '',
+                    $wish->is_approved ? 'Đã duyệt' : 'Chờ duyệt',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    /**
      * Lock an invitation due to spam, terms violation, or payment dispute.
      */
     public function lock(Request $request, int $id): RedirectResponse
