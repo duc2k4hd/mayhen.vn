@@ -61,4 +61,9 @@ class Wedding extends Model
     {
         return $this->hasMany(WeddingWish::class)->latest();
     }
+
+    public function gifts(): HasMany
+    {
+        return $this->hasMany(WeddingGift::class)->latest();
+    }
 }

@@ -6,11 +6,8 @@ use App\Models\User;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use Database\Seeders\InvitationTemplateSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-
-uses(RefreshDatabase::class);
 
 test('active template can be seeded, viewed, and previewed', function () {
     $this->seed(InvitationTemplateSeeder::class);

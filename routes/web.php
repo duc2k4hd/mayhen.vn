@@ -3,6 +3,7 @@
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
@@ -83,6 +84,14 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/so-luu-but/{wishId}/phan-hoi', [WishManagementController::class, 'reply'])->name('wishes.reply');
     Route::post('/thiep/{id}/so-luu-but/{wishId}/an-hien', [WishManagementController::class, 'toggleVisibility'])->name('wishes.toggle_visibility');
     Route::delete('/thiep/{id}/so-luu-but/{wishId}', [WishManagementController::class, 'destroy'])->name('wishes.destroy');
+
+    // Sổ Mừng Cưới & Quản Lý Tiền Mừng
+    Route::get('/thiep/{id}/so-mung-cuoi', [GiftManagementController::class, 'index'])->name('gifts.index');
+    Route::post('/thiep/{id}/so-mung-cuoi', [GiftManagementController::class, 'store'])->name('gifts.store');
+    Route::put('/thiep/{id}/so-mung-cuoi/{giftId}', [GiftManagementController::class, 'update'])->name('gifts.update');
+    Route::post('/thiep/{id}/so-mung-cuoi/{giftId}/cam-on', [GiftManagementController::class, 'toggleAcknowledge'])->name('gifts.toggle_ack');
+    Route::delete('/thiep/{id}/so-mung-cuoi/{giftId}', [GiftManagementController::class, 'destroy'])->name('gifts.destroy');
+    Route::get('/thiep/{id}/so-mung-cuoi/xuat-csv', [GiftManagementController::class, 'exportCsv'])->name('gifts.export');
 });
 
 // Guest Management & RSVP

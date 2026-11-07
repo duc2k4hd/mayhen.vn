@@ -4216,6 +4216,61 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: 41/41 tests passed 100% (224 assertions) trên toàn bộ suite người dùng (`ClientAccountTest`, `ClientGuestManagementTest`, `ClientWishManagementTest`, `ClientPlanUpgradeFlowTest`, `PublicInvitationPersonalizationTest`, `ClientWeddingQrModalTest`, `ClientInvitationSettingsTest`).
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                155. **Xây Dựng Phân Hệ Sổ Mừng Cưới & Quản Lý Tiền Mừng (Wedding Gift & Shugi-bukuro / Mừng Cưới Tracker)**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Cung cấp cho cặp đôi công cụ số hóa toàn diện sổ mừng cưới sau ngày hôn lễ (`/tai-khoan/thiep/{id}/so-mung-cuoi` - `account.gifts.index`).
+                       2. **Cơ sở dữ liệu an toàn (Additive Migration)**:
+                          - Bảng `wedding_gifts`: Quản lý người mừng, số tiền, hình thức mừng (`cash` = Tiền mặt / Phong bì, `bank_transfer` = Chuyển khoản VietQR, `other` = Quà tặng hiện vật), liên kết khách mời (`guest_id`), nhóm khách, lời chúc / ghi chú và trạng thái đã gửi lời cảm ơn (`is_acknowledged`).
+                          - Đánh index hiệu năng cao: `['wedding_id', 'created_at']`, `['wedding_id', 'payment_method']`, `['wedding_id', 'sender_group']`.
+                       3. **4 Thẻ KPI Tài Chính Hôn Lễ Thông Minh**:
+                          - Tổng số tiền mừng cưới thu được (`number_format` VNĐ).
+                          - Tổng số lượt mừng cưới đã ghi nhận.
+                          - Tiền mừng trung bình trên mỗi khách.
+                          - Cơ cấu chi tiết: Chuyển khoản VietQR vs Phong bì tiền mặt.
+                       4. **Ghi Nhận Mừng Cưới Một Chạm (Quick Add Card)**:
+                          - Phím tắt mệnh giá nhanh: 500.000đ, 1.000.000đ, 2.000.000đ, 5.000.000đ.
+                          - Datalist tự động gợi ý tên khách từ danh sách quan khách (`$guests`).
+                       5. **Bộ Lọc Đa Chiều & Tìm Kiếm Tức Thì**:
+                          - Tìm theo tên người mừng hoặc lời chúc (`q=...`).
+                          - Lọc theo hình thức thanh toán (`method=...`).
+                          - Lọc theo nhóm quan khách động (`group=...`).
+                          - Lọc theo trạng thái đã gửi lời cảm ơn (`ack=...`).
+                       6. **Xuất File Báo Cáo Sổ Mừng Cưới CSV UTF-8 BOM**:
+                          - Route `account.gifts.export`: Xuất file CSV có ký tự BOM (`\xEF\xBB\xBF`) mở trên Microsoft Excel tiếng Việt có dấu 100% không bị vỡ font.
+                          - Cột chi tiết: STT, Tên người mừng, Nhóm khách, Số tiền (VNĐ), Hình thức mừng, Lời chúc, Trạng thái cảm ơn, Thời gian ghi nhận.
+                       7. **Chỉnh Sửa & Chuyển Đổi Trạng Thái Cảm Ơn**:
+                          - Nút toggle một chạm chuyển đổi trạng thái "Đã cảm ơn" / "Chưa gửi" (`account.gifts.toggle_ack`).
+                          - Modal chỉnh sửa `#mayhen-edit-gift-modal` sửa nhanh thông tin hoặc xóa khoản mừng.
+                     - **Các thành phần đã triển khai**:
+                       - `database/migrations/2026_11_07_070534_create_wedding_gifts_table.php`: Migration tạo bảng `wedding_gifts`.
+                       - `app/Models/WeddingGift.php`: Model Eloquent quan hệ `wedding()` và `guest()`, accessor `payment_method_label`.
+                       - `app/Models/Wedding.php`: Bổ sung quan hệ `gifts()`.
+                       - `app/Http/Controllers/Client/GiftManagementController.php`: Controller chuyên trách xử lý `index`, `store`, `update`, `toggleAcknowledge`, `destroy`, `exportCsv`.
+                       - `routes/web.php`: Đăng ký 6 routes `account.gifts.*`.
+                       - `resources/views/client/pages/account/gifts.blade.php`: Giao diện Sổ mừng cưới Quiet Luxury, 4 thẻ KPI, bảng danh sách và modal sửa.
+                       - `resources/views/client/pages/account/invitations.blade.php` & `dashboard.blade.php`: Tích hợp nút điều hướng "Sổ Mừng Cưới".
+                       - `tests/Feature/ClientGiftManagementTest.php`: Bộ 8 test cases bao phủ 100% các kịch bản xem thống kê KPI, thêm mới, sửa, xóa, toggle cảm ơn, lọc tìm kiếm, xuất CSV UTF-8 BOM và phòng vệ phân quyền sở hữu.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 49/49 tests passed 100% (268 assertions) trên toàn bộ suite người dùng (`ClientAccountTest`, `ClientGuestManagementTest`, `ClientWishManagementTest`, `ClientPlanUpgradeFlowTest`, `PublicInvitationPersonalizationTest`, `ClientWeddingQrModalTest`, `ClientInvitationSettingsTest`, `ClientGiftManagementTest`).
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
+
+                156. **Khắc Phục Xung Đột Truy Vấn MySQL DISTINCT, Dọn Dẹp Route Imports & Thiết Lập Cấu Hình Pest Toàn Cục**:
+                     - **Bối cảnh & Vấn đề xử lý**:
+                       1. *Lỗi MySQL 3065 (Incompatible with DISTINCT)*:
+                          - Triệu chứng: Khi truy cập trang Sổ Mừng Cưới (`/tai-khoan/thiep/1/so-mung-cuoi`), MySQL chế độ `ONLY_FULL_GROUP_BY` quăng ngoại lệ `QueryException: SQLSTATE[HY000]: General error: 3065 Expression #1 of ORDER BY clause is not in SELECT list, references column 'mayhen.wedding_gifts.created_at' which is not in SELECT list; this is incompatible with DISTINCT`.
+                          - Nguyên nhân gốc: Do quan hệ `$wedding->gifts()` được định nghĩa có `->latest()` (`ORDER BY created_at DESC`). Khi controller gọi `$wedding->gifts()->select('sender_group')->distinct()->pluck('sender_group')`, Laravel tự động kế thừa mệnh đề ORDER BY từ relation, làm phát sinh xung đột với phép DISTINCT của MySQL.
+                          - Khắc phục triệt để: Trong `app/Http/Controllers/Client/GiftManagementController.php`, chuyển sang truy vấn trực tiếp từ model: `WeddingGift::where('wedding_id', $wedding->id)->whereNotNull('sender_group')->distinct()->pluck('sender_group')` nhằm loại bỏ hoàn toàn mệnh đề ORDER BY không hợp lệ.
+                       2. *Lỗi Trùng Lặp Import Controller trong Routes (`routes/web.php`)*:
+                          - Triệu chứng: `PHP Fatal error: Cannot use App\Http\Controllers\Client\GiftManagementController as GiftManagementController because the name is already in use in routes\web.php on line 8`.
+                          - Khắc phục: Xóa bỏ dòng `use` trùng lặp ở đầu file `routes/web.php`.
+                       3. *Chuẩn Hóa Cấu Hình Pest Toàn Cục (`tests/Pest.php`)*:
+                          - Tạo file `tests/Pest.php` với cấu hình chuẩn: `uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class)->in('Feature');`.
+                          - Dọn dẹp các khai báo `uses(TestCase::class, ...)` lặp lại cục bộ ở từng file test trong thư mục `tests/Feature/` nhằm tránh lỗi `Pest\Exceptions\TestCaseAlreadyInUse`.
+                     - **Kiểm thử & Chất lượng**:
+                       - Chạy toàn bộ test suite của hệ thống: **284/284 tests passed 100% (1,493 assertions)** chạy mượt mà, không còn bất kỳ lỗi nào.
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (`tests/Pest.php` đã được format sạch đẹp).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

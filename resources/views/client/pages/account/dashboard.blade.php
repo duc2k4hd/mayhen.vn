@@ -188,6 +188,14 @@
                         <span>Quản Lý Khách Mời</span>
                     </a>
 
+                    <a href="{{ route('account.gifts.index', $activeInvitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline" title="Quản lý tiền mừng cưới">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                        <span>Sổ Mừng Cưới</span>
+                    </a>
+
                     <button type="button"
                         class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_qr_trigger"
                         data-invitation-url="{{ url('/thiep/' . $activeInvitation->slug) }}"
