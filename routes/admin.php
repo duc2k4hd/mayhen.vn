@@ -45,6 +45,7 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Mẫu thiệp cưới (Templates Engine)
     Route::prefix('templates')->name('templates.')->group(function () {
         Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminTemplateController::class, 'exportCsv'])->name('export');
         Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->middleware('admin.super')->name('scan_discovery');
         Route::get('/{id}/edit', [AdminTemplateController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminTemplateController::class, 'update'])->name('update');

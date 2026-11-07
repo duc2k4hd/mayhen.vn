@@ -4366,6 +4366,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **298/298 tests passed 100% (1,584 assertions)** trên toàn hệ thống trong ~9.9s.
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                162. **Xây Dựng Tính Năng In Sổ Mừng Cưới A4 (Đối Soát Tài Chính Hôn Lễ) & Xuất Báo Cáo Kho Mẫu Thiệp CSV Cho Admin**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       1. *Phân hệ Cặp Đôi (Client)*: Sau hôn lễ, cô dâu chú rể và ban lễ tân gia đình cần một tài liệu in ấn trang trọng (khổ giấy A4) để đối soát chi tiết từng phong bì mừng cưới, sao kê chuyển khoản VietQR, tổng kết số tiền mừng cưới và ký tên xác nhận kỷ niệm. Cùng với In Bảng Tiếp Tân và In Kỷ Yếu Lời Chúc, tính năng này hoàn thiện trọn vẹn "Bộ Ba Tài Liệu In Khổ A4 Cưới Hỏi Quiet Luxury" của Mây Hẹn.
+                       2. *Phân hệ Quản Trị (Admin)*: Quản trị viên cần xuất toàn bộ thông tin kho mẫu thiệp (tên mẫu, slug, phong cách, phân hạng gói Free/Plus/Pro, số lượng thiệp đã tạo từ mẫu, trạng thái hoạt động/nổi bật) ra file CSV chuẩn UTF-8 BOM để báo cáo và quản lý kho giao diện.
+                     - **Các thành phần đã triển khai**:
+                       - **Trang In Sổ Mừng Cưới Khổ Giấy A4 (`account.gifts.print`)**:
+                         + `app/Http/Controllers/Client/GiftManagementController.php`: Bổ sung method `print(Request $request, int $invitationId)` lấy danh sách quà mừng có lọc theo hình thức thanh toán/nhóm khách, tính toán 4 chỉ số tài chính (Tổng tiền, Số khoản mừng, Tiền mặt, VietQR).
+                         + `routes/web.php`: Đăng ký route `GET /tai-khoan/thiep/{id}/so-mung-cuoi/in` (`account.gifts.print`).
+                         + `resources/views/client/pages/account/gifts-print.blade.php`: View in ấn Quiet Luxury khổ A4, typography Cormorant Garamond, hoa văn viền nhã nhặn, bảng thống kê 4 chỉ số, danh sách quà mừng chi tiết và khu vực ký tên xác nhận của Ban tiếp tân gia đình & Cô dâu Chú rể. Tối ưu CSS `@media print` ngắt trang tự động.
+                         + `resources/views/client/pages/account/gifts.blade.php`: Gắn nút "In Sổ Mừng Cưới (A4)" trên header.
+                       - **Xuất CSV Thống Kê Kho Mẫu Thiệp Cho Admin (`admin.templates.export`)**:
+                         + `app/Http/Controllers/Admin/TemplateController.php`: Bổ sung method `exportCsv(Request $request)` kế thừa bộ lọc tìm kiếm `q`, `category`, `status`.
+                         + `routes/admin.php`: Đăng ký route `GET /admin/templates/export-csv` (`admin.templates.export`).
+                         + `resources/views/admin/pages/templates/index.blade.php`: Gắn nút "Xuất CSV (Excel)" trên thanh công cụ quản lý mẫu.
+                     - **Kiểm thử & Chất lượng**:
+                       - Bổ sung 4 test cases mới vào `tests/Feature/ClientGiftManagementTest.php` và `tests/Feature/AdminTemplateTest.php`.
+                       - Toàn bộ **302/302 tests passed 100% (1,608 assertions)** trên toàn hệ thống trong ~12.4s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

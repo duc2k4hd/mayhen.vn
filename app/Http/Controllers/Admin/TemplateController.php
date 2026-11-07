@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TemplateController extends Controller
 {
@@ -274,5 +275,83 @@ class TemplateController extends Controller
         InvitationTemplate::clearTemplateCaches();
 
         return redirect()->route('admin.templates.index')->with('success', "Đã quét và đồng bộ thành công {$syncedCount} mẫu thiệp cưới từ kho mã nguồn.");
+    }
+
+    /**
+     * Export templates directory data as UTF-8 BOM CSV.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $category = $request->input('category');
+        $status = $request->input('status');
+
+        $query = InvitationTemplate::query()->withCount('invitations');
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        if (! empty($category)) {
+            $query->where('category', $category);
+        }
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        } elseif ($status === 'featured') {
+            $query->where('is_featured', true);
+        }
+
+        $templates = $query->latest('id')->get();
+        $filename = 'kho-mau-thiep-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($templates) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'STT',
+                'Mã Mẫu',
+                'Tên Mẫu Thiệp',
+                'Slug Kỹ Thuật',
+                'Phong Cách Thiết Kế',
+                'Phân Hạng Gói',
+                'Số Thiệp Đã Tạo',
+                'Ghim Nổi Bật',
+                'Trạng Thái Hoạt Động',
+                'Ngày Khởi Tạo',
+            ]);
+
+            $index = 1;
+            foreach ($templates as $tpl) {
+                $tierLabel = match ($tpl->tier) {
+                    'free' => 'Gói Miễn Phí',
+                    'pro' => 'Gói Pro VIP',
+                    default => 'Gói Hạnh Phúc (Plus)',
+                };
+
+                fputcsv($handle, [
+                    $index++,
+                    $tpl->id,
+                    $tpl->name,
+                    $tpl->slug,
+                    $tpl->category_label,
+                    $tierLabel,
+                    $tpl->invitations_count,
+                    $tpl->is_featured ? 'Có (Nổi bật)' : 'Không',
+                    $tpl->is_active ? 'Đang hoạt động' : 'Tạm ẩn',
+                    $tpl->created_at ? $tpl->created_at->format('d/m/Y H:i:s') : 'N/A',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

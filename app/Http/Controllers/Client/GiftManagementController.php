@@ -249,6 +249,68 @@ class GiftManagementController extends Controller
     }
 
     /**
+     * Hiển thị trang In Sổ Mừng Cưới Khổ A4 (Đối Soát Tài Chính Sau Hôn Lễ).
+     */
+    public function print(Request $request, int $invitationId): View
+    {
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $wedding = $invitation->wedding;
+
+        // Query danh sách quà mừng có lọc
+        $giftsQuery = $wedding->gifts()->with('guest');
+
+        if ($methodFilter = $request->query('method')) {
+            $giftsQuery->where('payment_method', $methodFilter);
+        }
+
+        if ($groupFilter = $request->query('group')) {
+            $giftsQuery->where('sender_group', $groupFilter);
+        }
+
+        if ($ackFilter = $request->query('ack')) {
+            if ($ackFilter === 'yes') {
+                $giftsQuery->where('is_acknowledged', true);
+            } elseif ($ackFilter === 'no') {
+                $giftsQuery->where('is_acknowledged', false);
+            }
+        }
+
+        $gifts = $giftsQuery->orderBy('sender_group')->latest('id')->get();
+
+        // Thống kê tài chính cho bản in
+        $totalAmount = (int) $gifts->sum('amount');
+        $totalGiftsCount = $gifts->count();
+        $cashAmount = (int) $gifts->where('payment_method', 'cash')->sum('amount');
+        $bankAmount = (int) $gifts->where('payment_method', 'bank_transfer')->sum('amount');
+        $otherAmount = (int) $gifts->where('payment_method', 'other')->sum('amount');
+        $acknowledgedCount = $gifts->where('is_acknowledged', true)->count();
+
+        // Danh sách nhóm có trong hôn lễ
+        $availableGroups = WeddingGift::where('wedding_id', $wedding->id)
+            ->whereNotNull('sender_group')
+            ->distinct()
+            ->pluck('sender_group');
+
+        return view('client.pages.account.gifts-print', [
+            'invitation' => $invitation,
+            'wedding' => $wedding,
+            'gifts' => $gifts,
+            'totalAmount' => $totalAmount,
+            'totalGiftsCount' => $totalGiftsCount,
+            'cashAmount' => $cashAmount,
+            'bankAmount' => $bankAmount,
+            'otherAmount' => $otherAmount,
+            'acknowledgedCount' => $acknowledgedCount,
+            'availableGroups' => $availableGroups,
+            'filterMethod' => $methodFilter,
+            'filterGroup' => $groupFilter,
+            'filterAck' => $ackFilter,
+        ]);
+    }
+
+    /**
      * Kiểm tra quyền sở hữu thiệp cưới của người dùng hiện tại.
      */
     private function authorizeInvitationOwner(Invitation $invitation): void
