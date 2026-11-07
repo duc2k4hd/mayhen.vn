@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
@@ -322,7 +323,51 @@ class InvitationEditorController extends Controller
         $isPersonaEnabled = ! empty($personaConfig['enabled']);
         $personaMessage = null;
 
-        if ($isPersonaEnabled && $guest && ! empty($guest->group_name)) {
+        // Chế Độ Tổng Duyệt Vai Trò Trước Khi Gửi Thiệp (Pre-Publish Rehearsal - TASK-VAL-08)
+        $isRehearsal = false;
+        $rehearsalGroup = null;
+        $availableGroups = ['Bạn Bè', 'Gia Đình & Họ Hàng', 'Đồng Nghiệp', 'Khách VIP'];
+
+        if ($wedding) {
+            $dbGroups = $wedding->guests()->whereNotNull('group_name')->where('group_name', '!=', '')->distinct()->pluck('group_name')->all();
+            $availableGroups = array_values(array_unique(array_filter(array_merge($availableGroups, $dbGroups))));
+        }
+
+        if ($isOwner && (request()->boolean('rehearsal') || request()->has('rehearsal_group'))) {
+            $isRehearsal = true;
+            $reqGroup = request()->query('rehearsal_group');
+            if (is_string($reqGroup) && in_array(trim($reqGroup), $availableGroups, true)) {
+                $rehearsalGroup = trim($reqGroup);
+            }
+
+            if ($rehearsalGroup) {
+                if ($isPersonaEnabled) {
+                    $groupMsg = $personaConfig['groups'][$rehearsalGroup] ?? null;
+                    if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
+                        $personaMessage = [
+                            'title' => $groupMsg['title'] ?? null,
+                            'subtitle' => $groupMsg['subtitle'] ?? null,
+                            'content' => $groupMsg['content'] ?? null,
+                            'group_name' => $rehearsalGroup,
+                        ];
+                    }
+                }
+
+                if (! $guest) {
+                    $dummyGuest = new Guest;
+                    $dummyGuest->id = 0;
+                    $dummyGuest->wedding_id = $wedding ? $wedding->id : 0;
+                    $dummyGuest->name = "Khách Quý ({$rehearsalGroup})";
+                    $dummyGuest->group_name = $rehearsalGroup;
+                    $dummyGuest->guest_token = 'rehearsal-demo-token';
+                    $dummyGuest->expected_attendees = 2;
+                    $dummyGuest->table_name = ($rehearsalGroup === 'Khách VIP') ? 'Bàn VIP 01' : 'Bàn 08';
+                    $guest = $dummyGuest;
+                }
+            }
+        }
+
+        if (! $isRehearsal && $isPersonaEnabled && $guest && ! empty($guest->group_name)) {
             $groupMsg = $personaConfig['groups'][$guest->group_name] ?? null;
             if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
                 $personaMessage = [
@@ -348,6 +393,9 @@ class InvitationEditorController extends Controller
             'rsvpStats' => $rsvpStats,
             'rsvpResponses' => $rsvpResponses,
             'personaMessage' => $personaMessage,
+            'isRehearsal' => $isRehearsal,
+            'rehearsalGroup' => $rehearsalGroup,
+            'availableGroups' => $availableGroups,
         ];
 
         if ($customView && view()->exists($customView)) {
@@ -443,6 +491,23 @@ class InvitationEditorController extends Controller
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
 
         $result = $guardian->inspect($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
+    }
+
+    /**
+     * API Phân Tích Khác Biệt & Báo Cáo Tác Động Khi Sửa Ngày Giờ Thiệp Đã Gửi (TASK-VAL-09).
+     */
+    public function publishImpact(Request $request, int $invitationId, WeddingConsistencyGuardianService $guardian): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền thực hiện thao tác này.');
+
+        $newData = $request->input('wedding', []);
+        $result = $guardian->evaluatePublishImpact($invitation->wedding, is_array($newData) ? $newData : []);
 
         return response()->json([
             'success' => true,

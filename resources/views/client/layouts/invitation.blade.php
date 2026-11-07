@@ -50,6 +50,9 @@
     @include('client.components.favicon')
 </head>
 <body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" @yield('body_attributes')>
+    {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
+    @include('client.components.rehearsal-bar')
+
     {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}
     @yield('content')
 

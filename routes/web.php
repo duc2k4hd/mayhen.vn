@@ -56,6 +56,7 @@ Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosav
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::post('/api/editor/ai-story', [InvitationEditorController::class, 'generateAiStory'])->middleware('throttle:editor_actions')->name('invitation.aiStory');
 Route::get('/api/editor/consistency-check/{id}', [InvitationEditorController::class, 'consistencyCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.consistency_check');
+Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');

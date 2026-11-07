@@ -5072,6 +5072,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                      190. **Triển Khai Cột Mốc 4: Chế Độ Tổng Duyệt Vai Trò Trước Khi Gửi Thiệp & Báo Cáo Tác Động Khi Sửa Ngày Giờ (Pre-Publish Rehearsal & Publish Impact Report)**:
+                           - **Bối cảnh & Giá trị trải nghiệm**:
+                             - Thực thi mục 09.1 trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`, tập trung hóa giải nỗi lo lớn nhất của các cặp đôi: "Không biết gửi cho Bạn Thân thì thiệp hiện ra sao, gửi cho Họ Hàng thì lời ngỏ có đúng vai vế không" và "Lỡ sửa giờ tiệc từ 17:30 sang 18:00 thì có bao nhiêu khách bị ảnh hưởng".
+                           - **Các tính năng cao cấp đã hoàn thành**:
+                             1. *TASK-VAL-08: Chế Độ Tổng Duyệt Vai Trò Trước Khi Gửi Thiệp (Pre-Publish Rehearsal & Persona Simulator)*:
+                                - Trong `InvitationEditorController@show`, bổ sung hỗ trợ tham số `rehearsal=1` và `rehearsal_group={tên_nhóm}` dành riêng cho chủ sở hữu thiệp (`$isOwner = true`).
+                                - Tự động trích xuất thông điệp Persona tương ứng và khởi tạo `$dummyGuest` đại diện có đầy đủ thẻ bàn tiệc VIP/thường, QR Check-in an toàn để cặp đôi trải nghiệm toàn diện thiệp cưới dưới góc nhìn của từng đối tượng khách mời.
+                                - Tạo Blade component `resources/views/client/components/rehearsal-bar.blade.php`: thanh điều khiển top bar cố định sang trọng, dropdown chuyển vai tức thì, huy hiệu trạng thái mô phỏng và nút thoát chế độ tổng duyệt. Tự động ẩn an toàn trong Studio iframe embed (`?embed=1`).
+                                - Nhúng vào layout chung `invitation.blade.php` và `public-invitation.blade.php`.
+                                - Thêm nút thao tác nhanh `[ 🎭 Tổng Duyệt Thiệp ]` trên giao diện Cài đặt thiệp cưới (`settings.blade.php`).
+                                - Khắc phục phòng thủ lỗi thiếu `guest_token` trong `guest-table-badge.blade.php`, đảm bảo không bao giờ throw Route Exception khi dữ liệu khách mẫu bị khuyết token.
+                             2. *TASK-VAL-09: So Sánh Khác Biệt & Báo Cáo Tác Động Khi Sửa Ngày Giờ Thiệp Đã Gửi (Publish Diff & Impact Report)*:
+                                - Trong `app/Services/WeddingConsistencyGuardianService.php`, xây dựng phương thức `evaluatePublishImpact(Wedding $wedding, array $newData)` tự động so sánh chéo 5 chỉ số trọng yếu: Ngày cưới (`wedding_date`), Giờ tiệc cưới (`party_time`), Tên sảnh tiệc (`venue_name`), Địa chỉ tổ chức (`venue_address`) và Tài khoản ngân hàng mừng cưới (`groom_bank_account` / `bride_bank_account`).
+                                - Tính toán số lượng khách mời bị ảnh hưởng (`impacted_guests_count`) và số khách đã RSVP (`impacted_rsvp_count`).
+                                - Phân cấp cảnh báo thông minh: `critical` (đổi ngày/sảnh tiệc - nguy cơ khách đi nhầm), `warning` (đổi giờ tiệc/tài khoản) và `none` (chỉ sửa nội dung thông thường).
+                                - Bổ sung route và API endpoint `POST /api/editor/publish-impact/{id}` (`invitation.publish_impact`) trong `InvitationEditorController.php`, kiểm soát quyền sở hữu chặt chẽ (`auth`, `isOwner()`).
+                           - **Kiểm thử & Đảm bảo chất lượng**:
+                             - Viết mới 2 Feature test suites:
+                               * `tests/Feature/PrePublishRehearsalTest.php` -> **4/4 tests passed**.
+                               * `tests/Feature/PublishImpactReportTest.php` -> **4/4 tests passed**.
+                             - Toàn bộ test suite toàn hệ thống: **308/308 tests passed 100% (1,521 assertions)**.
+                             - Laravel Pint: Đạt chuẩn 100% agent style.
+                             - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                             - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

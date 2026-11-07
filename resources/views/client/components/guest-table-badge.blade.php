@@ -41,9 +41,14 @@
                 @endif
             </div>
 
+            @php
+                $checkinUrl = !empty($guest->guest_token) 
+                    ? route('checkin.direct', ['token' => $guest->guest_token]) 
+                    : url('#');
+            @endphp
             <div class="pass_modal_qr_wrap">
                 <div class="pass_qr_code">
-                    {!! \App\Services\QrCodeService::svg(route('checkin.direct', ['token' => $guest->guest_token]), 180, '#1F1D1A', '#FAF8F5') !!}
+                    {!! \App\Services\QrCodeService::svg($checkinUrl, 180, '#1F1D1A', '#FAF8F5') !!}
                 </div>
                 <p class="pass_qr_text">
                     Xuất trình mã này tại bàn đón tiếp để nhận vị trí bàn tiệc nhanh nhất
@@ -51,7 +56,7 @@
             </div>
 
             <div class="pass_modal_footer">
-                <a href="{{ route('checkin.direct', ['token' => $guest->guest_token]) }}" target="_blank" class="pass_btn_link">
+                <a href="{{ $checkinUrl }}" {{ !empty($guest->guest_token) ? 'target="_blank"' : '' }} class="pass_btn_link">
                     Mở thẻ VIP đầy đủ →
                 </a>
             </div>

@@ -87,3 +87,24 @@
   * Scheduler: Đăng ký lịch chạy tự động hàng ngày trong `routes/console.php`.
 - **Kiểm thử**: `tests/Feature/TimeCapsuleAnniversaryNotificationTest.php` (1/1 test passed, 9 assertions).
 
+---
+
+### CỘT MỐC 4: AN TÂM XUẤT BẢN & PHÒNG VỆ SỰ CỐ DỮ LIỆU (PUBLISH PROTECTION & CONFIDENCE) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-08`: Chế Độ Tổng Duyệt Vai Trò Trước Khi Gửi Thiệp (Pre-Publish Rehearsal & Persona Simulator) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Cho phép cặp đôi mô phỏng góc nhìn thực tế của từng nhóm khách mời (Bạn Bè, Gia Đình, Đồng Nghiệp, Khách VIP) ngay trên thiệp mà không cần tạo khách giả hay gửi token thật.
+- **Phạm vi code**:
+  * Controller: `InvitationEditorController@show` hỗ trợ tham số `rehearsal=1` và `rehearsal_group={tên_nhóm}`, tự động render đúng thông điệp Persona và khởi tạo `$dummyGuest` mô phỏng thẻ bàn tiệc VIP/thông thường.
+  * View component: `resources/views/client/components/rehearsal-bar.blade.php` thanh top bar nổi sang trọng, dropdown chuyển vai tức thời, nút thoát chế độ tổng duyệt. Tự động ẩn an toàn trong Studio iframe embed.
+  * Nhúng vào layout: `resources/views/client/layouts/invitation.blade.php` và `public-invitation.blade.php`.
+  * Nút thao tác nhanh: Thêm nút `[ 🎭 Tổng Duyệt Thiệp ]` trên `account/settings.blade.php`.
+- **Kiểm thử**: `tests/Feature/PrePublishRehearsalTest.php` (4/4 tests passed).
+
+#### `TASK-VAL-09`: So Sánh Khác Biệt & Báo Cáo Tác Động Khi Sửa Ngày Giờ Thiệp Đã Gửi (Publish Diff & Impact Report) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Tự động phát hiện khi cặp đôi điều chỉnh thông tin trọng yếu của thiệp cưới đã phát hành (ngày cưới, giờ khai tiệc, sảnh tiệc, địa chỉ, số tài khoản ngân hàng), tính toán chính xác số lượng khách mời và số khách đã RSVP có thể bị ảnh hưởng.
+- **Phạm vi code**:
+  * Service: Mở rộng `WeddingConsistencyGuardianService::evaluatePublishImpact(Wedding $wedding, array $newData)`.
+  * Phân loại mức độ cảnh báo: `critical` (đổi ngày/sảnh tiệc - nguy cơ khách đi nhầm ngày/sảnh), `warning` (đổi giờ tiệc/tài khoản ngân hàng), `none` (chỉ sửa câu chuyện/ảnh thông thường).
+  * API endpoint: `POST /api/editor/publish-impact/{id}` (`invitation.publish_impact`) phân quyền an toàn `auth` và `isOwner()`.
+- **Kiểm thử**: `tests/Feature/PublishImpactReportTest.php` (4/4 tests passed).
+

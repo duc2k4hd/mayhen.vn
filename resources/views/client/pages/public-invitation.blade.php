@@ -29,6 +29,9 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
 </head>
 <body class="mayhen_invitation_wrapper">
+    {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
+    @include('client.components.rehearsal-bar')
+
     @if (isset($isOwner) && $isOwner && isset($invitation))
         {{-- Floating Top Bar dành riêng cho Chủ Nhân Thiệp --}}
         <header class="mayhen_invitation_demo_banner" style="background: rgba(28, 25, 23, 0.95); z-index: 9999;">
@@ -78,8 +81,13 @@
                 <h1 class="mayhen_invitation_names">
                     {{ $wedding->groom_name }} <span class="mayhen_invitation_names_amp">&</span> {{ $wedding->bride_name }}
                 </h1>
+                @if(!empty($personaMessage['title']))
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: #9C7A4A; margin-top: 8px; font-weight: 600;">
+                        {{ $personaMessage['title'] }}
+                    </h3>
+                @endif
                 @if(!empty($personaMessage['content']))
-                    <p style="font-size: 0.9375rem; color: #1F1D1A; font-style: italic; margin-top: 10px; line-height: 1.6;">
+                    <p style="font-size: 0.9375rem; color: #1F1D1A; font-style: italic; margin-top: 8px; line-height: 1.6;">
                         "{{ $personaMessage['content'] }}"
                     </p>
                 @else

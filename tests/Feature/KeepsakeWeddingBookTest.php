@@ -99,4 +99,3 @@ test('guest session with owned slug can view keepsake book', function () {
     $response->assertSee('Hải Đăng');
     $response->assertSee('Thảo My');
 });
-

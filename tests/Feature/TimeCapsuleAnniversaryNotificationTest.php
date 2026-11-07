@@ -116,4 +116,3 @@ test('command sends anniversary notification email for due time capsules', funct
 
     Mail::assertSent(TimeCapsuleAnniversaryMail::class, 1);
 });
-

@@ -140,4 +140,122 @@ class WeddingConsistencyGuardianService
             'checks_total' => $checksTotal,
         ];
     }
+
+    /**
+     * So Sánh Khác Biệt & Báo Cáo Tác Động Khi Sửa Ngày Giờ Thiệp Đã Gửi (Publish Diff & Impact Report - TASK-VAL-09).
+     *
+     * @param  array<string, mixed>  $newData
+     * @return array{
+     *     has_critical_changes: bool,
+     *     impacted_guests_count: int,
+     *     impacted_rsvp_count: int,
+     *     warning_level: string,
+     *     changes: array<int, array{field: string, label: string, old: ?string, new: ?string}>,
+     *     advice: string
+     * }
+     */
+    public function evaluatePublishImpact(Wedding $wedding, array $newData): array
+    {
+        $changes = [];
+        $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+        $newExtra = is_array($newData['extra_data'] ?? null) ? $newData['extra_data'] : [];
+
+        // 1. So sánh ngày cưới
+        $oldDate = $wedding->wedding_date ? $wedding->wedding_date->format('Y-m-d') : null;
+        $newDate = ! empty($newData['wedding_date']) ? substr((string) $newData['wedding_date'], 0, 10) : null;
+        if ($oldDate && $newDate && $oldDate !== $newDate) {
+            $changes[] = [
+                'field' => 'wedding_date',
+                'label' => 'Ngày tổ chức hôn lễ',
+                'old' => $oldDate,
+                'new' => $newDate,
+            ];
+        }
+
+        // 2. So sánh giờ tiệc cưới
+        $oldTime = trim((string) ($extra['party_time'] ?? ($extra['event_party_time'] ?? '')));
+        $newTime = trim((string) ($newExtra['party_time'] ?? ($newExtra['event_party_time'] ?? ($newData['party_time'] ?? ''))));
+        if ($oldTime !== '' && $newTime !== '' && $oldTime !== $newTime) {
+            $changes[] = [
+                'field' => 'party_time',
+                'label' => 'Giờ khai tiệc / Đón khách',
+                'old' => $oldTime,
+                'new' => $newTime,
+            ];
+        }
+
+        // 3. So sánh tên sảnh tiệc / địa điểm
+        $oldVenue = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? ''))));
+        $newVenue = trim((string) ($newData['venue_name'] ?? ($newExtra['party_venue'] ?? ($newExtra['event_party_venue'] ?? ''))));
+        if ($oldVenue !== '' && $newVenue !== '' && $oldVenue !== $newVenue) {
+            $changes[] = [
+                'field' => 'venue_name',
+                'label' => 'Trung tâm / Sảnh tiệc',
+                'old' => $oldVenue,
+                'new' => $newVenue,
+            ];
+        }
+
+        // 4. So sánh địa chỉ sảnh tiệc
+        $oldAddr = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
+        $newAddr = trim((string) ($newData['venue_address'] ?? ($newExtra['event_party_address'] ?? '')));
+        if ($oldAddr !== '' && $newAddr !== '' && $oldAddr !== $newAddr) {
+            $changes[] = [
+                'field' => 'venue_address',
+                'label' => 'Địa chỉ tổ chức tiệc cưới',
+                'old' => $oldAddr,
+                'new' => $newAddr,
+            ];
+        }
+
+        // 5. So sánh tài khoản ngân hàng mừng cưới
+        $oldGroomBank = trim((string) ($extra['groom_bank_account'] ?? ''));
+        $newGroomBank = trim((string) ($newExtra['groom_bank_account'] ?? ''));
+        if ($oldGroomBank !== '' && $newGroomBank !== '' && $oldGroomBank !== $newGroomBank) {
+            $changes[] = [
+                'field' => 'groom_bank_account',
+                'label' => 'Số tài khoản ngân hàng Nhà Trai',
+                'old' => $oldGroomBank,
+                'new' => $newGroomBank,
+            ];
+        }
+
+        $oldBrideBank = trim((string) ($extra['bride_bank_account'] ?? ''));
+        $newBrideBank = trim((string) ($newExtra['bride_bank_account'] ?? ''));
+        if ($oldBrideBank !== '' && $newBrideBank !== '' && $oldBrideBank !== $newBrideBank) {
+            $changes[] = [
+                'field' => 'bride_bank_account',
+                'label' => 'Số tài khoản ngân hàng Nhà Gái',
+                'old' => $oldBrideBank,
+                'new' => $newBrideBank,
+            ];
+        }
+
+        $hasCriticalChanges = count($changes) > 0;
+        $totalGuests = $wedding->guests()->count();
+        $attendingGuests = $wedding->guestResponses()->where('attending_status', 'attending')->count();
+
+        $warningLevel = 'none';
+        $advice = 'Không phát hiện thay đổi trọng yếu nào ảnh hưởng đến lịch trình của quan khách.';
+
+        if ($hasCriticalChanges) {
+            $hasDateOrVenueChange = collect($changes)->contains(fn ($c) => in_array($c['field'], ['wedding_date', 'venue_name', 'venue_address'], true));
+            if ($hasDateOrVenueChange) {
+                $warningLevel = 'critical';
+                $advice = "Cảnh báo cao độ: Bạn đang thay đổi ngày cưới hoặc địa điểm sảnh tiệc. Có {$totalGuests} khách mời trong danh sách (trong đó {$attendingGuests} khách đã xác nhận tham dự) có thể bị đi nhầm ngày hoặc nhầm địa điểm. Bạn nên gửi tin nhắn thông báo điều chỉnh ngay sau khi lưu.";
+            } else {
+                $warningLevel = 'warning';
+                $advice = "Lưu ý: Bạn đang điều chỉnh giờ tiệc hoặc số tài khoản mừng cưới. Có {$totalGuests} khách mời có thể bị ảnh hưởng bởi thay đổi này.";
+            }
+        }
+
+        return [
+            'has_critical_changes' => $hasCriticalChanges,
+            'impacted_guests_count' => $totalGuests,
+            'impacted_rsvp_count' => $attendingGuests,
+            'warning_level' => $warningLevel,
+            'changes' => $changes,
+            'advice' => $advice,
+        ];
+    }
 }

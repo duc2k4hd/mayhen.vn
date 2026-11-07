@@ -62,6 +62,8 @@ Thumbs.db
 !/tests/Feature/ParkingConciergeTest.php
 !/tests/Feature/KeepsakeWeddingBookTest.php
 !/tests/Feature/TimeCapsuleAnniversaryNotificationTest.php
+!/tests/Feature/PrePublishRehearsalTest.php
+!/tests/Feature/PublishImpactReportTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

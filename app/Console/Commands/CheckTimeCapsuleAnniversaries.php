@@ -71,4 +71,3 @@ class CheckTimeCapsuleAnniversaries extends Command
         return self::SUCCESS;
     }
 }
-
