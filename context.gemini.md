@@ -4650,7 +4650,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              * Đường dẫn Google Maps tìm đường 1-chạm.
                              * Lời ngỏ và câu chuyện tình yêu.
                              * Thông tin tài khoản ngân hàng mừng cưới VietQR.
-                           - Cung cấp nút *"Đi tới sửa →"* cho từng hạng mục chưa đạt, bấm vào tự động nhảy ngay tới Tab / Bước tương ứng trong Studio để người dùng sửa nhanh.
+                           - Cung cấp nút *"Đi tới sửa →"* cho từng hạng mục chưa đạt: Tự động phân giải vị trí bước động (`getStepInfoForInput`), kích hoạt `goToStep(targetStep, true)`, gửi lệnh kép `sendScrollToSection` và `sendScrollToTarget` sang Preview Iframe, đồng thời cuộn mượt và highlight ô input trên Drawer nhập liệu.
                       - **Kiểm thử & Đảm bảo chất lượng**:
                         - Feature test kiểm tra dịch vụ AI Story, kiểm tra endpoint API, validation tone, và xử lý sanitize XSS -> 100% Passed.
                         - Toàn bộ test suite toàn hệ thống: **182/182 tests passed 100% (984 assertions)**.

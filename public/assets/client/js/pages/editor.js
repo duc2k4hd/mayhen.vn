@@ -2294,120 +2294,169 @@ const initEditor = () => {
     const doctorModalBadge = $('#doctor-modal-badge');
     const doctorCheckList = $('#doctor-check-list');
 
+    function getStepInfoForInput(input) {
+        if (!input) return { step: 1, sectionId: null };
+        const panel = input.closest('[data-step-panel]');
+        if (panel) {
+            return {
+                step: parseInt(panel.getAttribute('data-step-panel'), 10) || 1,
+                sectionId: panel.getAttribute('data-section-id') || null
+            };
+        }
+        return { step: 1, sectionId: null };
+    }
+
     function runQualityDiagnosis() {
         const checks = [];
         let score = 100;
 
         // 1. Tên Cô dâu & Chú rể
-        const groomVal = ($('[data-sync-key="wedding.groom_name"]')?.value || '').trim();
-        const brideVal = ($('[data-sync-key="wedding.bride_name"]')?.value || '').trim();
+        const groomInp = $('[data-sync-key="wedding.groom_name"]') || $('input[name*="groom_name"]');
+        const brideInp = $('[data-sync-key="wedding.bride_name"]') || $('input[name*="bride_name"]');
+        const groomVal = (groomInp?.value || '').trim();
+        const brideVal = (brideInp?.value || '').trim();
+        const coupleInfo = getStepInfoForInput(groomInp);
         if (!groomVal || !brideVal || groomVal === 'Chú Rể' || brideVal === 'Cô Dâu') {
             score -= 20;
             checks.push({
                 passed: false,
-                step: 1,
+                step: coupleInfo.step,
+                sectionId: coupleInfo.sectionId || 'couple',
+                targetKey: 'groom_name',
                 title: 'Tên Cô Dâu & Chú Rể',
                 desc: 'Chưa điền tên cô dâu chú rể thật của hai bạn.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 1,
+                step: coupleInfo.step,
+                sectionId: coupleInfo.sectionId || 'couple',
+                targetKey: 'groom_name',
                 title: 'Tên Cô Dâu & Chú Rể',
                 desc: `Đã điền: ${groomVal} & ${brideVal}.`
             });
         }
 
         // 2. Ngày cử hành hôn lễ
-        const dateVal = ($('[data-sync-key="wedding.wedding_date"]')?.value || '').trim();
+        const dateInp = $('[data-sync-key="wedding.wedding_date"]') || $('input[name*="wedding_date"]');
+        const dateVal = (dateInp?.value || '').trim();
+        const dateInfo = getStepInfoForInput(dateInp);
         if (!dateVal) {
             score -= 15;
             checks.push({
                 passed: false,
-                step: 5,
+                step: dateInfo.step,
+                sectionId: dateInfo.sectionId || 'countdown_calendar',
+                targetKey: 'wedding_date',
                 title: 'Ngày Cử Hành Hôn Lễ',
                 desc: 'Chưa chọn ngày diễn ra đám cưới.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 5,
+                step: dateInfo.step,
+                sectionId: dateInfo.sectionId || 'countdown_calendar',
+                targetKey: 'wedding_date',
                 title: 'Ngày Cử Hành Hôn Lễ',
                 desc: `Ngày cưới: ${dateVal} (đã tự động tính âm lịch).`
             });
         }
 
         // 3. Địa chỉ tiệc cưới
-        const addressVal = ($('[data-sync-key*="address"]')?.value || '').trim();
+        const addressInp = $('[data-sync-key*="party_address"]') || $('[data-sync-key*="event_party_address"]') || $('[data-sync-key*="address"]');
+        const addressVal = (addressInp?.value || '').trim();
+        const addressInfo = getStepInfoForInput(addressInp);
         if (!addressVal) {
             score -= 15;
             checks.push({
                 passed: false,
-                step: 6,
+                step: addressInfo.step,
+                sectionId: addressInfo.sectionId || 'events',
+                targetKey: addressInp?.getAttribute('data-sync-key') || 'party_address',
                 title: 'Địa Chỉ Tổ Chức Tiệc',
                 desc: 'Chưa điền địa chỉ nơi tiếp đón quan khách.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 6,
+                step: addressInfo.step,
+                sectionId: addressInfo.sectionId || 'events',
+                targetKey: addressInp?.getAttribute('data-sync-key') || 'party_address',
                 title: 'Địa Chỉ Tổ Chức Tiệc',
                 desc: 'Đã có địa chỉ sảnh tiệc chi tiết.'
             });
         }
 
         // 4. Đường dẫn Google Maps
-        const mapVal = ($('[data-sync-key*="map"]')?.value || '').trim();
+        const mapInp = $('[data-sync-key*="party_map_url"]') || $('[data-sync-key*="map_url"]') || $('[data-sync-key*="map"]');
+        const mapVal = (mapInp?.value || '').trim();
+        const mapInfo = getStepInfoForInput(mapInp);
         if (!mapVal || mapVal === '#' || mapVal.startsWith('#map')) {
             score -= 10;
             checks.push({
                 passed: false,
-                step: 6,
+                step: mapInfo.step,
+                sectionId: mapInfo.sectionId || 'events',
+                targetKey: mapInp?.getAttribute('data-sync-key') || 'party_map_url',
                 title: 'Bản Đồ Chỉ Đường Google Maps',
                 desc: 'Chưa dán liên kết Google Maps để khách tìm đường 1-chạm.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 6,
+                step: mapInfo.step,
+                sectionId: mapInfo.sectionId || 'events',
+                targetKey: mapInp?.getAttribute('data-sync-key') || 'party_map_url',
                 title: 'Bản Đồ Chỉ Đường Google Maps',
                 desc: 'Đã tích hợp link bản đồ Google Maps.'
             });
         }
 
         // 5. Lời ngỏ & Câu chuyện tình yêu
-        const storyVal = ($('[data-sync-key*="story_content"]')?.value || '').trim();
+        const storyInp = $('[data-sync-key*="story_content"]') || $('textarea[name*="story_content"]');
+        const storyVal = (storyInp?.value || '').trim();
+        const storyInfo = getStepInfoForInput(storyInp);
         if (!storyVal) {
             score -= 10;
             checks.push({
                 passed: false,
-                step: 3,
+                step: storyInfo.step,
+                sectionId: storyInfo.sectionId || 'story',
+                targetKey: 'story_content',
                 title: 'Lời Ngỏ & Tình Yêu',
                 desc: 'Chưa viết lời ngỏ tâm sự gửi tới khách mời.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 3,
+                step: storyInfo.step,
+                sectionId: storyInfo.sectionId || 'story',
+                targetKey: 'story_content',
                 title: 'Lời Ngỏ & Tình Yêu',
                 desc: 'Đã có lời ngỏ tình cảm dành cho quan khách.'
             });
         }
 
         // 6. Tài khoản mừng cưới VietQR
-        const bankAccountVal = ($('[data-sync-key*="bank_account"]')?.value || '').trim();
-        if (!bankAccountVal) {
+        const bankInp = $('[data-sync-key*="groom_bank_account"]') || $('[data-sync-key*="bank_account"]');
+        const bankVal = (bankInp?.value || '').trim();
+        const bankInfo = getStepInfoForInput(bankInp);
+        if (!bankVal) {
             score -= 10;
             checks.push({
                 passed: false,
-                step: 10,
+                step: bankInfo.step,
+                sectionId: bankInfo.sectionId || 'gift',
+                targetKey: 'groom_bank_account',
                 title: 'Tài Khoản Mừng Cưới VietQR',
                 desc: 'Chưa điền số tài khoản ngân hàng để nhận mừng cưới online.'
             });
         } else {
             checks.push({
                 passed: true,
-                step: 10,
+                step: bankInfo.step,
+                sectionId: bankInfo.sectionId || 'gift',
+                targetKey: 'groom_bank_account',
                 title: 'Tài Khoản Mừng Cưới VietQR',
                 desc: 'Đã cấu hình tài khoản ngân hàng mừng cưới.'
             });
@@ -2476,7 +2525,11 @@ const initEditor = () => {
                         </div>
                     </div>
                     ${!item.passed ? `
-                        <button type="button" class="btn-jump-step" data-jump-step="${item.step}" style="background: #FAF8F5; border: 1px solid #C5A880; color: #9C7A4A; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+                        <button type="button" class="btn-jump-step" 
+                            data-jump-step="${item.step}" 
+                            data-jump-section="${item.sectionId || ''}" 
+                            data-jump-key="${item.targetKey || ''}" 
+                            style="background: #FAF8F5; border: 1px solid #C5A880; color: #9C7A4A; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
                             Đi tới sửa →
                         </button>
                     ` : ''}
@@ -2485,10 +2538,49 @@ const initEditor = () => {
                 const jumpBtn = el.querySelector('.btn-jump-step');
                 if (jumpBtn) {
                     on(jumpBtn, 'click', () => {
-                        const targetStep = parseInt(jumpBtn.getAttribute('data-jump-step'), 10);
+                        const targetStep = parseInt(jumpBtn.getAttribute('data-jump-step'), 10) || 1;
+                        const targetSectionId = jumpBtn.getAttribute('data-jump-section') || '';
+                        const targetKey = jumpBtn.getAttribute('data-jump-key') || '';
+
                         closeDoctorModal();
-                        const stepPill = $(`[data-step="${targetStep}"]`);
-                        if (stepPill) stepPill.click();
+
+                        // 1. Chuyển sang rail 'content' nếu đang ở tab khác
+                        const contentRailBtn = $('[data-rail-tab="content"]');
+                        if (contentRailBtn && !contentRailBtn.classList.contains('active')) {
+                            contentRailBtn.click();
+                        }
+
+                        // 2. Chuyển đúng bước trên Sidebar Stepper
+                        goToStep(targetStep, true);
+
+                        // 3. Cuộn Preview Iframe đến đúng Section và Target Element (cơ chế kép direct call + postMessage)
+                        setTimeout(() => {
+                            if (targetSectionId) {
+                                sendScrollToSection(targetSectionId, targetStep);
+                            }
+                            if (targetKey) {
+                                sendScrollToTarget(targetKey, 'focus');
+                            }
+                        }, 150);
+
+                        // 4. Focus và cuộn mượt tới ô nhập liệu trên form bên trái
+                        setTimeout(() => {
+                            let targetInput = null;
+                            if (targetKey) {
+                                targetInput = $(`[data-sync-key="${targetKey}"]`) || $(`[data-sync-key*="${targetKey}"]`) || $(`[name*="${targetKey}"]`);
+                            }
+                            if (targetInput) {
+                                targetInput.focus();
+                                targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                targetInput.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+                                targetInput.style.borderColor = '#C5A880';
+                                targetInput.style.boxShadow = '0 0 0 3px rgba(197, 168, 128, 0.45)';
+                                setTimeout(() => {
+                                    targetInput.style.borderColor = '';
+                                    targetInput.style.boxShadow = '';
+                                }, 2500);
+                            }
+                        }, 250);
                     });
                 }
 
