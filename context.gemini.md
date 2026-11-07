@@ -3981,6 +3981,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 57/57 tests passed 100% (266 assertions) trên toàn bộ 7 test suite Admin.
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               146. **Hoàn Thiện Cơ Chế Khóa / Mở Khóa Cưỡng Chế Thiệp Cưới (Administrative Lock & Unlock Enforcement) & Màn Hình Khóa Trang Nhã Cho Khách Mời**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Đáp ứng trọn vẹn yêu cầu mục 138 trong `ADMIN_ARCHITECTURE_ROADMAP.md`: Cung cấp cho Quản trị viên quyền năng khóa thiệp cưới cưỡng chế khi phát hiện tài khoản vi phạm (spam nội dung, hình ảnh phản cảm, tranh chấp thanh toán hoặc yêu cầu pháp lý).
+                      2. Lưu trữ an toàn trong trường JSON `custom_config` (`is_locked`, `lock_reason`, `locked_at`) mà hoàn toàn không cần can thiệp hay sửa đổi lược đồ cơ sở dữ liệu.
+                      3. Cơ chế phòng thủ hiển thị công khai: Khi thiệp cưới bị khóa, bất kỳ khách mời hoặc người dùng nào truy cập vào `/thiep/{slug}` sẽ được chuyển hướng hiển thị trang thông báo tạm dừng sang trọng, lịch thiệp (`invitation-locked.blade.php`) giải thích rõ lý do và hướng dẫn liên hệ hỗ trợ.
+                      4. Giao diện trang chi tiết thiệp cưới (`admin.invitations.show`): Hiển thị trạng thái khóa cảnh báo nền đỏ, lý do khóa và hai biểu mẫu riêng biệt: Khóa thiệp có ô nhập lý do; Mở khóa thiệp một chạm có hộp thoại xác nhận.
+                      5. Tự động truy vết mọi hành vi Khóa và Mở khóa thiệp cưới vào `AuditLogger` (`lock_invitation`, `unlock_invitation`).
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/InvitationController.php`: Bổ sung 2 action `lock` và `unlock`, cập nhật `custom_config` và ghi nhận `AuditLogger::log`.
+                      - `app/Http/Controllers/Client/InvitationEditorController.php`: Kiểm tra cờ `is_locked` trong `show($slug)` và hiển thị view thông báo tạm khóa.
+                      - `routes/admin.php`: Bổ sung 2 routes `admin.invitations.lock` và `admin.invitations.unlock`.
+                      - `resources/views/client/pages/invitation-locked.blade.php`: Giao diện thông báo tạm khóa thiệp cưới thuần CSS chuẩn Quiet Luxury (khóa tem sáp vàng kim, hộp lý do viền nét đứt, nút về trang chủ).
+                      - `resources/views/admin/pages/invitations/show.blade.php`: Bổ sung khối "Khóa / Mở Khóa Thiệp Cưới" trong vùng hành động điện thoại.
+                      - `tests/Feature/AdminInvitationTest.php`: Bổ sung test case toàn diện `admin can lock and unlock invitation, displaying locked view to visitors` kiểm tra cả luồng backend lẫn phản hồi giao diện của khách truy cập.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 58/58 tests passed 100% (274 assertions) trên toàn bộ 7 test suite Admin.
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

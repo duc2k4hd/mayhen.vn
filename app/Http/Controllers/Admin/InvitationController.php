@@ -236,4 +236,64 @@ class InvitationController extends Controller
 
         return response()->streamDownload($callback, $filename, $headers);
     }
+
+    /**
+     * Lock an invitation due to spam, terms violation, or payment dispute.
+     */
+    public function lock(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $invitation = Invitation::findOrFail($id);
+        $reason = trim((string) $request->input('reason', ''));
+        if ($reason === '') {
+            $reason = 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.';
+        }
+
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode($invitation->custom_config, true) ?? []);
+        $config['is_locked'] = true;
+        $config['lock_reason'] = $reason;
+        $config['locked_at'] = now()->toIso8601String();
+
+        $invitation->update([
+            'custom_config' => $config,
+        ]);
+
+        AuditLogger::log(
+            'lock_invitation',
+            'Invitation',
+            $invitation->id,
+            "Khóa thiệp cưới \"{$invitation->slug}\" với lý do: {$reason}",
+            ['slug' => $invitation->slug, 'reason' => $reason]
+        );
+
+        return back()->with('success', "Đã khóa thiệp cưới \"{$invitation->slug}\" thành công.");
+    }
+
+    /**
+     * Unlock an invitation.
+     */
+    public function unlock(int $id): RedirectResponse
+    {
+        $invitation = Invitation::findOrFail($id);
+
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode($invitation->custom_config, true) ?? []);
+        unset($config['is_locked'], $config['lock_reason'], $config['locked_at']);
+
+        $invitation->update([
+            'custom_config' => $config,
+        ]);
+
+        AuditLogger::log(
+            'unlock_invitation',
+            'Invitation',
+            $invitation->id,
+            "Mở khóa thiệp cưới \"{$invitation->slug}\"",
+            ['slug' => $invitation->slug]
+        );
+
+        return back()->with('success', "Đã mở khóa thiệp cưới \"{$invitation->slug}\" thành công.");
+    }
 }

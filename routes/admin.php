@@ -37,6 +37,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/extend', [AdminInvitationController::class, 'extend'])->name('extend');
         Route::post('/{id}/migrate-template', [AdminInvitationController::class, 'migrateTemplate'])->name('migrate_template');
         Route::get('/{id}/export-guests', [AdminInvitationController::class, 'exportGuests'])->name('export_guests');
+        Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->name('lock');
+        Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->name('unlock');
     });
 
     // Quản lý Mẫu thiệp cưới (Templates Engine)

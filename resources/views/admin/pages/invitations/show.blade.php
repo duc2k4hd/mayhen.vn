@@ -104,6 +104,45 @@
                         Mẫu hiện tại: <strong>{{ $template->name ?? '—' }}</strong>
                     </div>
                 </div>
+
+                @php
+                    $customCfg = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode($invitation->custom_config, true) ?? []);
+                    $isLocked = !empty($customCfg['is_locked']);
+                    $lockReason = $customCfg['lock_reason'] ?? '';
+                @endphp
+
+                <!-- Lock / Unlock Enforcement -->
+                <div class="mayhen_admin_card" style="margin-top: 8px; margin-bottom: 0; padding: 14px; {{ $isLocked ? 'background-color: #FFF5F5; border-color: #FFCDD2;' : '' }}">
+                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: {{ $isLocked ? '#C62828' : 'var(--mh-admin-muted)' }}; margin-bottom: 8px;">
+                        {{ $isLocked ? 'Thiệp Đang Bị Khóa' : 'Khóa Thiệp Cưỡng Chế' }}
+                    </div>
+
+                    @if ($isLocked)
+                        <div style="font-size: 0.8125rem; color: #C62828; margin-bottom: 10px; line-height: 1.4;">
+                            Lý do: <strong>{{ $lockReason }}</strong>
+                        </div>
+                        <form action="{{ route('admin.invitations.unlock', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn mở khóa thiệp cưới này không?');">
+                            @csrf
+                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" style="width: 100%;">
+                                Mở Khóa Thiệp
+                            </button>
+                        </form>
+                    @else
+                        <form action="{{ route('admin.invitations.lock', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn khóa thiệp cưới này không? Khách truy cập sẽ thấy thông báo tạm dừng.');">
+                            @csrf
+                            <input 
+                                type="text" 
+                                name="reason" 
+                                class="mayhen_admin_input" 
+                                placeholder="Lý do khóa (Spam, vi phạm, tranh chấp...)" 
+                                style="font-size: 0.75rem; padding: 6px 10px; margin-bottom: 8px; width: 100%;"
+                            >
+                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_sm" style="width: 100%; color: #C62828; background-color: #FFEBEE; border-color: #FFCDD2;">
+                                Khóa Thiệp Này
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
         </div>
 
