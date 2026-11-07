@@ -26,12 +26,12 @@
 
 | Mã lỗi | Mức độ | Lớp ảnh hưởng | Tên lỗ hổng & Hành vi | Tác động thực tế (Impact) | Trạng thái |
 |---|---|---|---|---|---|
-| **SEC-PUB-01** | **CRITICAL** | `Client\InvitationEditorController`, `Client\GuestController` | **Thiệp chưa xuất bản, hết hạn hoặc bị khóa vẫn mở công khai và nhận tương tác** | Người ngoài xem được bản nháp chưa công bố của cặp đôi; thiệp bị Admin khóa vẫn tiếp tục nhận RSVP và lời chúc. | CẦN SỬA NGAY |
-| **SEC-PAY-01** | **CRITICAL** | `Client\CheckoutController`, Migration `orders` | **Thiếu Provider Transaction ID & Unique Constraint trong đơn hàng** | Nguy cơ dùng 1 giao dịch ngân hàng để đối soát hoặc kích hoạt nhiều đơn; thiếu dấu vết giao dịch SePay. | CẦN SỬA NGAY |
-| **SEC-IDOR-01** | **HIGH** | `Client\GiftManagementController@store`, `@update` | **Lỗ hổng Tenant Leak: Gán `guest_id` thuộc đám cưới khác vào Sổ Mừng Cưới** | Cặp đôi A có thể liên kết và xem thông tin khách mời của cặp đôi B thông qua việc gửi `guest_id` tùy ý. | CẦN SỬA NGAY |
-| **SEC-AUTH-02** | **HIGH** | `Client\AccountController@togglePublish` | **Bỏ qua trạng thái Khóa của Admin khi Bật lại Xuất bản** | Cặp đôi có thiệp bị Admin khóa vi phạm vẫn có thể tự ý mở lại xuất bản thông qua endpoint `/xuat-ban`. | CẦN SỬA NGAY |
-| **SEC-UPL-01** | **HIGH** | `Client\InvitationEditorController@uploadAsset` | **Upload tin cậy Extension Client gửi lên (`getClientOriginalExtension`)** | Tiềm ẩn rủi ro lưu file với extension không mong muốn nếu header bị giả mạo; rate limit quá rộng (120 req/phút). | CẦN SỬA NGAY |
-| **SEC-DOM-01** | **MEDIUM** | `resources/views/.../tron-kiep-nay-ben-nhau/script.js` | **PostMessage listener không kiểm tra `event.origin`** | Bất kỳ trang web nào nhúng iframe đều có thể gửi message giả mạo để can thiệp DOM thiệp cưới. | CẦN SỬA NGAY |
+| **SEC-PUB-01** | **CRITICAL** | `Client\InvitationEditorController`, `Client\GuestController` | **Thiệp chưa xuất bản, hết hạn hoặc bị khóa vẫn mở công khai và nhận tương tác** | Người ngoài xem được bản nháp chưa công bố của cặp đôi; thiệp bị Admin khóa vẫn tiếp tục nhận RSVP và lời chúc. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-PAY-01** | **CRITICAL** | `Client\CheckoutController`, Migration `orders` | **Thiếu Provider Transaction ID & Unique Constraint trong đơn hàng** | Nguy cơ dùng 1 giao dịch ngân hàng để đối soát hoặc kích hoạt nhiều đơn; thiếu dấu vết giao dịch SePay. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-IDOR-01** | **HIGH** | `Client\GiftManagementController@store`, `@update` | **Lỗ hổng Tenant Leak: Gán `guest_id` thuộc đám cưới khác vào Sổ Mừng Cưới** | Cặp đôi A có thể liên kết và xem thông tin khách mời của cặp đôi B thông qua việc gửi `guest_id` tùy ý. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-AUTH-02** | **HIGH** | `Client\AccountController@togglePublish` | **Bỏ qua trạng thái Khóa của Admin khi Bật lại Xuất bản** | Cặp đôi có thiệp bị Admin khóa vi phạm vẫn có thể tự ý mở lại xuất bản thông qua endpoint `/xuat-ban`. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-UPL-01** | **HIGH** | `Client\InvitationEditorController@uploadAsset` | **Upload tin cậy Extension Client gửi lên (`getClientOriginalExtension`)** | Tiềm ẩn rủi ro lưu file với extension không mong muốn nếu header bị giả mạo; rate limit quá rộng (120 req/phút). | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-DOM-01** | **MEDIUM** | `resources/views/.../tron-kiep-nay-ben-nhau/script.js` | **PostMessage listener không kiểm tra `event.origin`** | Bất kỳ trang web nào nhúng iframe đều có thể gửi message giả mạo để can thiệp DOM thiệp cưới. | **ĐÃ XỬ LÝ (RESOLVED)** |
 
 ---
 
