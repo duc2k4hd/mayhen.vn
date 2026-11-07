@@ -45,11 +45,14 @@ class CheckInController extends Controller
             ->limit(10)
             ->get();
 
-        // Danh sách bàn tiệc để chọn nhanh
-        $tables = $wedding->guests()
+        // Danh sách bàn tiệc để chọn nhanh (kết hợp từ Seating Planner và Guest table_name)
+        $plannerTables = $wedding->tables()->pluck('name')->filter()->toArray();
+        $guestTables = $wedding->guests()
             ->whereNotNull('table_name')
             ->distinct()
-            ->pluck('table_name');
+            ->pluck('table_name')
+            ->toArray();
+        $tables = array_values(array_unique(array_merge($plannerTables, $guestTables)));
 
         return view('client.pages.checkin', [
             'invitation' => $invitation,

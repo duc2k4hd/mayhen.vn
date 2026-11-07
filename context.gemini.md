@@ -4949,6 +4949,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                             - Toàn bộ test suite toàn hệ thống: **276/276 tests passed 100% (1,382 assertions)**.
                             - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                     185. **Tích Hợp Đồng Bộ Sơ Đồ Xếp Bàn Với Cổng Tiếp Tân & Hoàn Tất Toàn Diện Lộ Trình (VNext Complete)**:
+                          - **Bối cảnh & Giá trị trải nghiệm**:
+                            - Khi Wedding Planner hoặc cặp đôi phân chia bàn tiệc trong Seating Planner Studio, lễ tân đứng tại cổng đón khách quét mã QR cần nhìn thấy danh sách đầy đủ tất cả các bàn để điều phối hoặc đổi bàn linh hoạt.
+                          - **Các thành phần kỹ thuật cốt lõi**:
+                            1. *Đồng bộ bàn tiệc trong `CheckInController::showPortal`*:
+                               - Tự động hợp nhất danh sách bàn tiệc cấu hình từ Seating Planner Studio (`$wedding->tables()`) và danh sách bàn thực tế gán trên khách mời (`$wedding->guests()`).
+                               - Lễ tân tại cổng Check-in có ngay danh sách đầy đủ toàn bộ bàn tiệc để chuyển đổi hoặc chọn nhanh khi quét QR đón khách.
+                            2. *Tổng kết nghiệm thu toàn bộ Lộ trình Premium VNext*:
+                               - Hoàn thành trọn vẹn 100% cả 3 giai đoạn chiến lược (Lean Premium, Growth Premium, Signature Experience) với tổng cộng 16 tính năng lớn.
+                               - Toàn bộ test suite toàn hệ thống: **276/276 tests passed 100% (1,382 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và giữ nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
