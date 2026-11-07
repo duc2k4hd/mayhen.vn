@@ -4915,6 +4915,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                             - Toàn bộ test suite toàn hệ thống: **270/270 tests passed 100% (1,345 assertions)**.
                             - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                     183. **Tối Ưu Hóa & Đồng Bộ Toàn Diện Bảng Điều Khiển Cặp Đôi (End-to-End Navigation Suite)**:
+                          - **Bối cảnh & Giá trị trải nghiệm**:
+                            - Sau khi hoàn tất trọn vẹn 16 tính năng lớn thuộc 3 giai đoạn của lộ trình Premium VNext, người dùng cần một bảng điều hành tập trung liền mạch để truy cập mọi tính năng từ danh sách thiệp cưới cá nhân (`/tai-khoan/thiep`).
+                          - **Các thành phần kỹ thuật cốt lõi**:
+                            1. *Đồng bộ thanh tác vụ trên thiệp cưới (`account/invitations.blade.php`)*:
+                               - Bổ sung nút "Điều Phối" (Live Command Center): Trỏ tới `route('coordination.index', $inv->id)` theo dõi sĩ số khách, sóng lấp đầy bàn và dòng check-in realtime.
+                               - Bổ sung nút "Két Kỷ Niệm" (Digital Memory Vault): Trỏ tới `route('memory.settings', $inv->id)` cấu hình bộ đếm kỷ niệm, tâm thư tri ân và xuất sách kỷ yếu PDF.
+                               - Đầy đủ 13 liên kết chức năng được sắp xếp mạch lạc: Studio, Khách Mời, Sổ Lưu Bút, Sổ Mừng Cưới, Ảnh Khách, Điều Phối, Két Kỷ Niệm, Xếp Bàn, Màn Chiếu, Hộp Thời Gian, Tên Miền, Cài Đặt, Xem Thiệp.
+                            2. *Kiểm thử & Đảm bảo chất lượng*:
+                               - Viết Feature test suite trong `tests/Feature/AccountInvitationsNavigationTest.php`: Kiểm tra chặn khách chưa đăng nhập; kiểm tra render đầy đủ 13 liên kết chức năng của thiệp cưới; kiểm tra hiển thị huy hiệu "Bị Khóa" và vô hiệu hóa nút xuất bản khi thiệp bị khóa bởi quản trị -> **3/3 tests passed**.
+                               - Toàn bộ test suite toàn hệ thống: **273/273 tests passed 100% (1,366 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

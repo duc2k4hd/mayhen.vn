@@ -114,4 +114,3 @@ class WeddingTimeCapsule extends Model
         };
     }
 }
-
