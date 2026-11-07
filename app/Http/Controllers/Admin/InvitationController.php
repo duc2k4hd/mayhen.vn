@@ -95,6 +95,9 @@ class InvitationController extends Controller
                 'wedding.wishes' => function ($q) {
                     $q->latest('id');
                 },
+                'wedding.gifts' => function ($q) {
+                    $q->latest('id');
+                },
                 'template',
                 'orders.plan',
             ])
@@ -229,6 +232,45 @@ class InvitationController extends Controller
                     $guest->group_name ?? 'Chung',
                     $guest->is_sent ? 'Đã gửi' : 'Chưa gửi',
                     $guest->is_opened ? 'Đã xem' : 'Chưa xem',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
+    }
+
+    /**
+     * Export wedding gifts list of an invitation as UTF-8 CSV with BOM for Excel.
+     */
+    public function exportGifts(int $id): StreamedResponse
+    {
+        $invitation = Invitation::with(['wedding.gifts'])->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $gifts = $wedding?->gifts ?? collect();
+
+        $filename = "so-mung-cuoi-{$invitation->slug}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($gifts) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, ['STT', 'Người Mừng Cưới', 'Nhóm Khách', 'Số Tiền (VNĐ)', 'Hình Thức Mừng', 'Lời Chúc / Ghi Chú', 'Đã Cảm Ơn', 'Thời Gian']);
+
+            foreach ($gifts as $idx => $gift) {
+                fputcsv($file, [
+                    $idx + 1,
+                    $gift->sender_name,
+                    $gift->sender_group ?? '',
+                    number_format($gift->amount, 0, ',', '.'),
+                    $gift->payment_method_label,
+                    $gift->notes ?? '',
+                    $gift->is_acknowledged ? 'Đã cảm ơn' : 'Chưa cảm ơn',
+                    $gift->created_at ? $gift->created_at->format('d/m/Y H:i') : '',
                 ]);
             }
             fclose($file);

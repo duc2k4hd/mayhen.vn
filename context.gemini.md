@@ -4309,6 +4309,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: Bổ sung 5 test cases mới, nâng tổng số lên **51/51 tests passed 100% (287 assertions)** trên toàn bộ các suite người dùng (`ClientWishManagementTest`, `ClientGuestManagementTest`, `ClientGiftManagementTest`, `ClientInvitationSettingsTest`, `ClientAccountTest`, `ClientPlanUpgradeFlowTest`, `ClientWeddingQrModalTest`).
                        - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+
+                159. **Tích Hợp Quản Lý Sổ Mừng Cưới & Xuất CSV Tiền Mừng Trong Phân Hệ Admin (`/admin/invitations/{id}`)**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       - Khi người dùng (cặp đôi) liên hệ đội ngũ Admin / Kỹ thuật để đối soát dữ liệu quà mừng, xuất file sao lưu hoặc kiểm tra thông tin chuyển khoản VietQR, quản trị viên cần xem được dữ liệu sổ mừng cưới trực tiếp trong chi tiết thiệp (`admin.invitations.show`).
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Admin/InvitationController.php`:
+                         + Bổ sung eager load quan hệ `'wedding.gifts' => fn ($q) => $q->latest('id')` trong method `show`.
+                         + Bổ sung method `exportGifts(int $id)`: Xuất danh sách tiền mừng cưới của thiệp dạng file CSV UTF-8 BOM (`\xEF\xBB\xBF`) mở chuẩn mực trên Microsoft Excel.
+                       - `routes/admin.php`: Đăng ký route `admin.invitations.export_gifts` (`GET /admin/invitations/{id}/export-gifts`).
+                       - `resources/views/admin/pages/invitations/show.blade.php`:
+                         + Bổ sung tab thứ 5 "Sổ Mừng Cưới" trên thanh điều hướng tab interaction.
+                         + Thiết kế tab pane `#tab-gifts`: Thanh thống kê tổng tiền mừng, số khoản mừng, phân tách VietQR vs Tiền mặt, nút "Xuất Sổ Mừng Cưới (CSV)" và bảng danh sách quà mừng chi tiết.
+                     - **Kiểm thử & Chất lượng**:
+                       - Thêm test case `admin can view wedding gifts tab and export gifts as csv` trong `tests/Feature/AdminInvitationTest.php`.
+                       - Toàn bộ **64/64 tests Admin** và **51/51 tests Client** (tổng cộng 115 tests, 605 assertions) đều passed 100%.
+                       - Laravel Pint: Đạt chuẩn PSR-12 sạch sẽ.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

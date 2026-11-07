@@ -241,6 +241,9 @@
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-wishes">
                             Lời Chúc ({{ $wedding->wishes->count() }})
                         </button>
+                        <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-gifts">
+                            Sổ Mừng Cưới ({{ $wedding->gifts->count() }})
+                        </button>
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-config">
                             Hồ Sơ Kỹ Thuật (Schema)
                         </button>
@@ -384,7 +387,76 @@
                         </div>
                     </div>
 
-                    <!-- Tab 4: Technical Schema Config -->
+                    <!-- Tab 4: Wedding Gifts Tracker -->
+                    <div id="tab-gifts" class="mayhen_admin_tab_pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Tổng tiền mừng ghi nhận: <strong>{{ number_format((int) $wedding->gifts->sum('amount'), 0, ',', '.') }} đ</strong> 
+                                ({{ $wedding->gifts->count() }} khoản mừng &bull; CK VietQR: {{ number_format((int) $wedding->gifts->where('payment_method', 'bank_transfer')->sum('amount'), 0, ',', '.') }} đ)
+                            </div>
+                            @if ($wedding->gifts->count() > 0)
+                                <a href="{{ route('admin.invitations.export_gifts', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <span>Xuất Sổ Mừng Cưới (CSV)</span>
+                                </a>
+                            @endif
+                        </div>
+
+                        <div class="mayhen_admin_table_responsive">
+                            <table class="mayhen_admin_table">
+                                <thead>
+                                    <tr>
+                                        <th>Người Mừng Cưới</th>
+                                        <th>Nhóm Khách</th>
+                                        <th>Số Tiền</th>
+                                        <th>Hình Thức</th>
+                                        <th>Lời Chúc / Ghi Chú</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Thời Gian</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($wedding->gifts as $gift)
+                                        <tr>
+                                            <td><strong>{{ $gift->sender_name }}</strong></td>
+                                            <td><span class="mayhen_admin_badge mayhen_admin_badge_muted">{{ $gift->sender_group ?? 'Chung' }}</span></td>
+                                            <td><strong style="color: #9C7A4A;">{{ number_format($gift->amount, 0, ',', '.') }} đ</strong></td>
+                                            <td>
+                                                @if ($gift->payment_method === 'bank_transfer')
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">VietQR</span>
+                                                @elseif ($gift->payment_method === 'cash')
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_primary">Tiền Mặt</span>
+                                                @else
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_muted">Quà Tặng</span>
+                                                @endif
+                                            </td>
+                                            <td style="max-width: 220px; font-size: 0.75rem; color: #5A534B; font-style: italic;">
+                                                {{ $gift->notes ? "\"{$gift->notes}\"" : '—' }}
+                                            </td>
+                                            <td>
+                                                <span class="mayhen_admin_badge {{ $gift->is_acknowledged ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_muted' }}">
+                                                    {{ $gift->is_acknowledged ? 'Đã cảm ơn' : 'Chưa' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $gift->created_at ? $gift->created_at->format('d/m/Y H:i') : '—' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" style="text-align: center; color: #7A756E; padding: 24px;">
+                                                Chưa có khoản mừng cưới nào được ghi nhận cho thiệp này.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Technical Schema Config -->
                     <div id="tab-config" class="mayhen_admin_tab_pane">
                         <div class="mayhen_admin_info_grid">
                             <div class="mayhen_admin_info_item">
