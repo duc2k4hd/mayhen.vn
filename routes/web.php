@@ -17,6 +17,7 @@ use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
+use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
 use App\Http\Controllers\Partner\PartnerDashboardController;
@@ -156,6 +157,12 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'settings'])->middleware('auth')->name('live_wall.settings');
     Route::post('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'updateSettings'])->middleware(['auth', 'throttle:30,1'])->name('live_wall.settings.update');
 
+    // Hộp Thời Gian Kỷ Niệm Tương Lai (Wedding Time Capsule - TASK-V3-05)
+    Route::get('/thiep/{id}/hop-thoi-gian', [TimeCapsuleController::class, 'index'])->middleware('auth')->name('account.time_capsule.index');
+    Route::post('/thiep/{id}/hop-thoi-gian', [TimeCapsuleController::class, 'store'])->middleware(['auth', 'throttle:30,1'])->name('account.time_capsule.store');
+    Route::post('/thiep/{id}/hop-thoi-gian/{capsuleId}/mo-khoa', [TimeCapsuleController::class, 'unseal'])->middleware('auth')->name('account.time_capsule.unseal');
+    Route::delete('/thiep/{id}/hop-thoi-gian/{capsuleId}', [TimeCapsuleController::class, 'destroy'])->middleware('auth')->name('account.time_capsule.destroy');
+
     // Nhận Thiệp Cưới Từ Studio Bàn Giao
     Route::post('/nhan-thiep-doi-tac', [PartnerWeddingController::class, 'claim'])->middleware('throttle:15,1')->name('account.claim_partner_invitation');
 });
@@ -171,6 +178,11 @@ Route::get('/ky-niem/{slug?}', [MemoryVaultController::class, 'show'])->name('me
 // Live Guest Photo Drop (Khách quét mã QR tại bàn tiệc tải ảnh tự nhiên)
 Route::get('/photo-drop/{slug?}', [PhotoDropController::class, 'show'])->name('photo_drop.show');
 Route::post('/api/photo-drop/{slug}/upload', [PhotoDropController::class, 'upload'])->middleware('throttle:20,1')->name('photo_drop.upload');
+
+// Hộp Thời Gian Kỷ Niệm Tương Lai Công Khai (Wedding Time Capsule Public - TASK-V3-05)
+Route::get('/hop-thoi-gian/{slug?}', [TimeCapsuleController::class, 'showPublic'])->name('time_capsule.public');
+Route::get('/thiep/{slug}/hop-thoi-gian', [TimeCapsuleController::class, 'showPublic'])->name('time_capsule.public_slug');
+Route::post('/thiep/{slug}/hop-thoi-gian', [TimeCapsuleController::class, 'storeGuest'])->middleware('throttle:20,1')->name('time_capsule.guest.store');
 
 // Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)
 Route::get('/diem-danh-tiec/{slug}', [CheckInController::class, 'showPortal'])->name('checkin.portal');

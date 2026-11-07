@@ -63,6 +63,11 @@ class Invitation extends Model
         return $this->hasOne(WeddingDomain::class);
     }
 
+    public function timeCapsules(): HasMany
+    {
+        return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
+    }
+
     /**
      * Check if the current visitor or authenticated user is the owner/creator of this invitation.
      */

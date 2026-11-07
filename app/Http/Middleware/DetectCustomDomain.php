@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PhotoDropController;
+use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Models\WeddingDomain;
 use Closure;
 use Illuminate\Http\Request;
@@ -111,6 +112,11 @@ class DetectCustomDomain
         // '/trinh-chieu' -> Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp
         if ($path === 'trinh-chieu') {
             return response(app(LiveWallController::class)->show($request, $matchedDomain->invitation->slug));
+        }
+
+        // '/hop-thoi-gian' -> Hộp Thời Gian Kỷ Niệm Tương Lai (Wedding Time Capsule)
+        if ($path === 'hop-thoi-gian') {
+            return response(app(TimeCapsuleController::class)->showPublic($request, $matchedDomain->invitation->slug));
         }
 
         return $next($request);

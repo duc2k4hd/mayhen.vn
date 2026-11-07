@@ -50,6 +50,7 @@ Thumbs.db
 !/tests/Feature/SeatingPlannerTest.php
 !/tests/Feature/CustomDomainTest.php
 !/tests/Feature/LiveWeddingWallTest.php
+!/tests/Feature/WeddingTimeCapsuleTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

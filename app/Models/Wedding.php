@@ -90,4 +90,9 @@ class Wedding extends Model
     {
         return $this->hasOne(WeddingDomain::class);
     }
+
+    public function timeCapsules(): HasMany
+    {
+        return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
+    }
 }

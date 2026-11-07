@@ -4884,6 +4884,37 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                            - Toàn bộ test suite toàn hệ thống: **258/258 tests passed 100% (1,299 assertions)**.
                            - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                     182. **Triển Khai Hoàn Thiện Wedding Time Capsule — Hộp Thời Gian Kỷ Niệm Tương Lai (TASK-V3-05)**:
+                          - **Bối cảnh & Giá trị trải nghiệm**:
+                            - Hôn lễ không chỉ là sự kiện trong 1 ngày, mà là khởi đầu cho hành trình trọn đời.
+                            - Mây Hẹn phát triển **Hộp Thời Gian Kỷ Niệm (Wedding Time Capsule)**: Cặp đôi và người thân, bạn bè có thể viết những bức tâm thư thiêng liêng gửi gắm cảm xúc lúc kết hôn và niêm phong bằng con dấu sáp (wax seal).
+                            - Những bức thư này được khóa bảo mật tuyệt đối trên hệ thống và chỉ được mở ra vào các dịp kỷ niệm tương lai: 1 năm (Đám cưới Giấy), 3 năm (Đám cưới Da), 5 năm (Đám cưới Gỗ) hoặc 10 năm (Đám cưới Thiếc).
+                          - **Các thành phần kỹ thuật cốt lõi**:
+                            1. *Cơ sở dữ liệu & Models*:
+                               - Migration `2026_11_07_171207_create_wedding_time_capsules_table.php`: Lưu trữ `wedding_id`, `invitation_id`, `sender_type` ('groom', 'bride', 'couple', 'guest'), `sender_name`, `recipient_name`, `milestone_years` (1, 3, 5, 10), `unlock_date`, `seal_color` ('ruby', 'gold', 'emerald', 'navy'), `title`, `content` (text), `is_sealed` (boolean default true), `unlocked_at` (timestamp). Index tối ưu trên `(wedding_id, unlock_date)` và `(invitation_id, is_sealed)`.
+                               - Model `WeddingTimeCapsule`: Các helper nghiệp vụ `canBeUnlocked()` (kiểm tra `now() >= unlock_date`), `daysRemaining()`, `isUnlocked()`, `milestoneLabel()`, và `sealColorHex()`.
+                               - Quan hệ `timeCapsules(): HasMany` trong cả `Wedding` và `Invitation`.
+                            2. *Bộ Điều Khiển & Bảo Mật Tâm Thư (`TimeCapsuleController.php`)*:
+                               - Không gian quản trị cặp đôi: `/tai-khoan/thiep/{id}/hop-thoi-gian`.
+                               - Hành động viết tâm thư: `POST /tai-khoan/thiep/{id}/hop-thoi-gian`.
+                               - Hành động bẻ niêm phong sáp: `POST /tai-khoan/thiep/{id}/hop-thoi-gian/{capsuleId}/mo-khoa` (chặn tuyệt đối nếu chưa đến ngày mở khóa).
+                               - Hành động xóa thư: `DELETE /tai-khoan/thiep/{id}/hop-thoi-gian/{capsuleId}`.
+                               - Trang công khai cho quan khách gửi tâm thư: `/hop-thoi-gian/{slug}` (hoặc trên custom domain `/hop-thoi-gian`).
+                               - Quan khách gửi thư niêm phong: `POST /thiep/{slug}/hop-thoi-gian` (throttle 20 req/phút).
+                               - **Nguyên tắc bảo mật nội dung**: Khi `now() < unlock_date`, trường `content` của bức thư TUYỆT ĐỐI KHÔNG được render ra HTML hoặc JSON để chống inspect mã nguồn đọc trước.
+                            3. *Thiết Kế Phong Bì & Con Dấu Sáp Quiet Luxury (`time-capsule.css`)*:
+                               - Toàn bộ class tuân thủ nghiêm ngặt tiền tố `mayhen_capsule_*`.
+                               - Bì thư mỹ thuật với nắp tam giác gấp (envelope flap), hoa văn chìm và hiệu ứng nổi 3D.
+                               - 4 sắc thái con dấu sáp hoàng gia: Đỏ Ruby (`#8B1E24`), Vàng Kim (`#B8860B`), Lục Bảo (`#1B4D3E`), Lam Ngọc (`#1B2E4B`) với chữ cái dập nổi Mây Hẹn và viền đổ bóng sáp chảy tự nhiên.
+                               - Đồng hồ đếm ngược số ngày còn lại đến thời khắc mở niêm phong.
+                            4. *Tích Hợp Tên Miền Riêng & Hệ Sinh Thái*:
+                               - Middleware `DetectCustomDomain.php` tự động phục vụ trực tiếp `/hop-thoi-gian` trên Vanity Subdomain và Custom Domain độc bản.
+                               - Thêm nút "Hộp Thời Gian" trên danh sách thiệp cưới (`account/invitations.blade.php`).
+                          - **Kiểm thử & Đảm bảo chất lượng**:
+                            - Viết 12 Feature test cases trong `tests/Feature/WeddingTimeCapsuleTest.php`: Chủ sở hữu truy cập không gian quản trị; chặn người dùng chưa đăng nhập; chặn người lạ truy cập (404); chủ sở hữu tạo tâm thư niêm phong sáp; validate bắt buộc các trường dữ liệu; chặn bẻ niêm phong khi chưa đến ngày; mở niêm phong thành công khi đã đến ngày; chủ sở hữu xóa thư; khách công khai truy cập và xem danh sách phong bì; nội dung bí mật được ẩn hoàn toàn trên HTML khi đang niêm phong; khách gửi thư niêm phong thành công; và custom domain phục vụ trực tiếp hộp thời gian trên đường dẫn `/hop-thoi-gian` -> **12/12 tests passed**.
+                            - Toàn bộ test suite toàn hệ thống: **270/270 tests passed 100% (1,345 assertions)**.
+                            - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
