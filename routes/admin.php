@@ -47,5 +47,8 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
+        Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->name('approve');
+        Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
     });
 });

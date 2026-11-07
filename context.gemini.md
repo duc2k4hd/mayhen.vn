@@ -3866,6 +3866,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 24/24 passed 100% (100 assertions) gồm cả `AdminAuthTest`, `AdminInvitationTest` và `AdminTemplateTest`.
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
 
+               140. **Hoàn Thiện Giai Đoạn 4: Quản Lý Đơn Hàng, Doanh Thu, Đối Soát Thanh Toán & Duyệt Kích Hoạt Thủ Công (Orders & Payments)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Xây dựng phân hệ quản trị đơn hàng và đối soát doanh thu toàn diện, đảm bảo dòng tiền kinh doanh minh bạch và xử lý ngay lập tức các trường hợp ngân hàng bảo trì làm chậm lệnh webhook.
+                      2. Bộ lọc đơn hàng chuyên sâu đa chiều: Tìm kiếm theo mã đơn (`MH...`), tên/email/SĐT khách hàng; lọc theo trạng thái (`paid`, `pending`, `cancelled`); lọc theo gói cước (`Plan`); lọc theo cổng thanh toán (`vietqr`, `sepay`, `bank_transfer`) và lọc theo mốc thời gian (Hôm nay, Tuần này, Tháng này).
+                      3. Cơ chế Duyệt Thanh Toán Thủ Công (Manual Approval): Bọc an toàn trong `DB::transaction()`, chuyển trạng thái đơn sang `paid`, ghi nhận `paid_at = now()` và tự động kích hoạt xuất bản thiệp cưới kèm gia hạn `expires_at` theo số ngày bản quyền của gói dịch vụ (`plan->duration_days`).
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/OrderController.php`: Nâng cấp các action `index` (tính toán 4 KPI doanh thu, đơn thành công, chờ thanh toán, đơn hủy; tìm kiếm & lọc đa tiêu chí), `show` (chi tiết giao dịch, thông tin khách hàng, quyền lợi gói cước và thiệp cưới liên kết), `approve` (duyệt thủ công kích hoạt bản quyền thiệp trong transaction), `cancel` (hủy đơn hàng an toàn).
+                      - `routes/admin.php`: Mở rộng đầy đủ các tuyến đường `admin.orders.show`, `admin.orders.approve`, `admin.orders.cancel`.
+                      - `public/assets/admin/css/pages/orders.css`: Định dạng 4 thẻ KPI doanh thu, badge phương thức thanh toán (`mayhen_admin_method_vietqr`, `sepay`), pill mã đơn hàng monospace kèm nút sao chép nhanh, layout 2 cột trang chi tiết đơn hàng với khối Hero Amount sang trọng màu charcoal & gold.
+                      - `resources/views/admin/pages/orders/index.blade.php`: Giao diện danh sách đơn hàng chuyên nghiệp với 4 thẻ KPI, thanh tìm kiếm lọc đa trường, bảng dữ liệu chi tiết kèm nút copy mã đơn và nút Duyệt nhanh cho đơn chờ chuyển khoản.
+                      - `resources/views/admin/pages/orders/show.blade.php`: Giao diện chi tiết chuyên sâu chia 2 cột: Cột trái khối Hero số tiền, chi tiết giao dịch và hồ sơ khách hàng; Cột phải quyền lợi gói dịch vụ, liên kết thiệp cưới được kích hoạt và hộp thao tác Duyệt thủ công / Hủy đơn có hộp thoại xác nhận.
+                      - `resources/views/admin/pages/orders.blade.php`: Kế thừa `@include('admin.pages.orders.index')` đảm bảo tương thích ngược 100%.
+                      - `tests/Feature/AdminOrderTest.php`: Bộ kiểm thử tự động 8 test cases bao phủ 100% phân quyền khách/admin, KPI, bộ lọc đa tiêu chí, xem chi tiết giao dịch, duyệt thanh toán thủ công kích hoạt thiệp cưới và hủy đơn hàng.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 32/32 tests passed 100% (137 assertions) bao gồm cả 4 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
