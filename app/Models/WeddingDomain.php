@@ -124,4 +124,3 @@ class WeddingDomain extends Model
         return null;
     }
 }
-

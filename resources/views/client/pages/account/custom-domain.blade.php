@@ -162,20 +162,24 @@
                     </svg>
                     <span>{{ $domain->subdomain ? 'Cập Nhật Tên Miền Phụ' : 'Kích Hoạt Tên Miền Phụ' }}</span>
                 </button>
+            </div>
+        </form>
 
-                @if($domain->subdomain)
+        @if($domain->subdomain)
+            <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+                <form action="{{ route('account.invitations.domain.destroy', $invitation->id) }}" method="POST" style="margin: 0;">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="type" value="subdomain">
                     <button type="submit" 
-                        formaction="{{ route('account.invitations.domain.destroy', $invitation->id) }}" 
-                        name="type" 
-                        value="subdomain"
                         class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm"
                         style="color: #9E2A2B; border-color: #F3D2D2;"
                         onclick="return confirm('Bạn có chắc chắn muốn gỡ bỏ tên miền phụ này?');">
                         Gỡ Bỏ Subdomain
                     </button>
-                @endif
+                </form>
             </div>
-        </form>
+        @endif
     </div>
 
     <!-- KHỐI 2: TÊN MIỀN RIÊNG ĐỘC BẢN (CUSTOM DOMAIN) -->
@@ -242,20 +246,24 @@
                     </svg>
                     <span>Lưu Tên Miền Riêng</span>
                 </button>
+            </div>
+        </form>
 
-                @if($domain->custom_domain)
+        @if($domain->custom_domain)
+            <div style="margin-top: -12px; margin-bottom: 20px; display: flex; justify-content: flex-end;">
+                <form action="{{ route('account.invitations.domain.destroy', $invitation->id) }}" method="POST" style="margin: 0;">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="type" value="custom_domain">
                     <button type="submit" 
-                        formaction="{{ route('account.invitations.domain.destroy', $invitation->id) }}" 
-                        name="type" 
-                        value="custom_domain"
                         class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm"
                         style="color: #9E2A2B; border-color: #F3D2D2;"
                         onclick="return confirm('Bạn có chắc chắn muốn gỡ bỏ tên miền riêng này?');">
                         Gỡ Bỏ Tên Miền Riêng
                     </button>
-                @endif
+                </form>
             </div>
-        </form>
+        @endif
 
         <!-- Hướng dẫn Cấu Hình DNS CNAME -->
         <div style="background: #FAF8F5; border: 1px dashed #D8CEBD; border-radius: 12px; padding: 20px;">

@@ -93,10 +93,10 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
 
     // Tên Miền Riêng & Vanity Subdomain (TASK-V3-03)
     Route::get('/thiep/{id}/ten-mien', [CustomDomainController::class, 'show'])->name('invitations.domain');
+    Route::match(['post', 'delete'], '/thiep/{id}/ten-mien', [CustomDomainController::class, 'storeOrUpdate'])->name('invitations.domain.destroy');
     Route::post('/thiep/{id}/ten-mien/subdomain', [CustomDomainController::class, 'updateSubdomain'])->middleware('throttle:20,1')->name('invitations.domain.subdomain');
     Route::post('/thiep/{id}/ten-mien/custom', [CustomDomainController::class, 'updateCustomDomain'])->middleware('throttle:20,1')->name('invitations.domain.custom');
     Route::post('/thiep/{id}/ten-mien/xac-minh-dns', [CustomDomainController::class, 'verifyDns'])->middleware('throttle:30,1')->name('invitations.domain.verify');
-    Route::delete('/thiep/{id}/ten-mien', [CustomDomainController::class, 'destroy'])->name('invitations.domain.destroy');
 
     // Sổ Lưu Bút & Lời Chúc Cặp Đôi
     Route::get('/thiep/{id}/so-luu-but', [WishManagementController::class, 'index'])->name('wishes.index');

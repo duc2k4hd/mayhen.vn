@@ -40,6 +40,26 @@ class CustomDomainController extends Controller
     }
 
     /**
+     * Tiếp nhận xử lý đa năng (Lưu / Xóa / Cập nhật) khi gửi POST/DELETE trực tiếp tới /thiep/{id}/ten-mien.
+     */
+    public function storeOrUpdate(Request $request, int $id, DomainDnsService $dnsService): RedirectResponse
+    {
+        if ($request->isMethod('delete') || strtoupper((string) $request->input('_method')) === 'DELETE' || $request->has('type')) {
+            return $this->destroy($request, $id);
+        }
+
+        if ($request->has('subdomain')) {
+            return $this->updateSubdomain($request, $id);
+        }
+
+        if ($request->has('custom_domain')) {
+            return $this->updateCustomDomain($request, $id);
+        }
+
+        return redirect()->route('account.invitations.domain', $id);
+    }
+
+    /**
      * Đăng ký hoặc cập nhật Vanity Subdomain (ví dụ: tuanlan.mayhen.vn).
      */
     public function updateSubdomain(Request $request, int $id): RedirectResponse

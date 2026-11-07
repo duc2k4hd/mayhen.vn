@@ -282,6 +282,26 @@ class CustomDomainTest extends TestCase
         $this->assertNull($domain->custom_domain);
     }
 
+    public function test_post_method_on_base_domain_route_is_supported_and_does_not_throw_405(): void
+    {
+        WeddingDomain::create([
+            'wedding_id' => $this->wedding->id,
+            'invitation_id' => $this->invitation->id,
+            'subdomain' => 'tuanlan',
+            'status' => 'active',
+        ]);
+
+        // Gửi POST trực tiếp tới /tai-khoan/thiep/{id}/ten-mien với type=subdomain
+        $response = $this->actingAs($this->user)
+            ->post(route('account.invitations.domain.destroy', $this->invitation->id), [
+                'type' => 'subdomain',
+            ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(route('account.invitations.domain', $this->invitation->id));
+        $this->assertNull($this->wedding->fresh()->domain->subdomain);
+    }
+
     public function test_detect_custom_domain_middleware_serves_invitation_on_subdomain(): void
     {
         WeddingDomain::create([
