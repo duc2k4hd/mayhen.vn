@@ -44,7 +44,7 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Mẫu thiệp cưới (Templates Engine)
     Route::prefix('templates')->name('templates.')->group(function () {
         Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
-        Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->name('scan_discovery');
+        Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->middleware('admin.super')->name('scan_discovery');
         Route::get('/{id}/edit', [AdminTemplateController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminTemplateController::class, 'update'])->name('update');
         Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->name('toggle_active');
@@ -64,7 +64,7 @@ Route::middleware('admin.auth')->group(function () {
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
-        Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->name('change_role');
+        Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset_password');
     });
 
@@ -76,8 +76,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->name('destroy');
     });
 
-    // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ
-    Route::prefix('settings')->name('settings.')->group(function () {
+    // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ (Yêu cầu Quản trị viên cấp cao)
+    Route::prefix('settings')->middleware('admin.super')->name('settings.')->group(function () {
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');
         Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');
         Route::put('/plans/{id}', [AdminSettingController::class, 'updatePlan'])->name('plans.update');

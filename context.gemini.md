@@ -3999,6 +3999,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 58/58 tests passed 100% (274 assertions) trên toàn bộ 7 test suite Admin.
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               147. **Hoàn Thiện Kiến Trúc Phân Quyền Vai Trò 5 Cấp Bậc (RBAC) & Middleware Bảo Vệ Quản Trị Viên Cấp Cao (EnsureSuperAdmin)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Thực hiện chuẩn xác chỉ dẫn cốt lõi của dự án: phân quyền 5 cấp bậc rõ ràng gồm "quản trị viên (`admin`), quản lý (`manager`), nhân viên (`staff`), cộng tác viên (`partner`), người dùng (`customer`)".
+                      2. Xác định ranh giới bảo mật nghiêm ngặt:
+                         - Nhân viên (`staff`): Được cấp quyền truy cập `/admin`, tham gia vận hành hỗ trợ khách hàng, xem danh sách thiệp cưới, duyệt sổ lưu bút và kiểm tra đơn hàng, nhưng bị phong tỏa hoàn toàn khỏi các khu vực cấu hình hệ thống bảng giá, ngân hàng và không thể thay đổi vai trò tài khoản.
+                         - Quản lý (`manager`): Vận hành giám sát toàn bộ thiệp, đơn hàng, người dùng, xem báo cáo nhưng không can thiệp cài đặt ngân hàng.
+                         - Quản trị viên (`admin`): Nắm giữ đặc quyền tối cao toàn hệ thống.
+                         - Cộng tác viên (`partner`) & Người dùng (`customer`): Bị chặn tuyệt đối khỏi phân hệ `/admin`.
+                      3. Tạo Middleware chuyên trách `App\Http\Middleware\EnsureSuperAdmin` (`admin.super`) bảo vệ các thao tác nhạy cảm: `admin.settings.*`, `admin.users.change_role`, `admin.templates.scan_discovery`.
+                      4. Tùy biến thanh điều hướng Sidebar (`master.blade.php`): Chỉ hiển thị mục Section 5 "Hệ Thống & Cài Đặt" đối với tài khoản `admin`.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Models/User.php`: Bổ sung `isSuperAdmin()` và `canAccessAdminPanel()`.
+                      - `app/Http/Middleware/AdminAuthenticate.php`: Kiểm tra quyền hạn `canAccessAdminPanel()` chặn ngay lập tức `customer` và `partner`.
+                      - `app/Http/Middleware/EnsureSuperAdmin.php`: Chặn và điều hướng an toàn các tài khoản không phải `admin` kèm thông báo lỗi.
+                      - `bootstrap/app.php`: Đăng ký alias middleware `admin.super`.
+                      - `routes/admin.php`: Áp dụng middleware `admin.super` lên các tuyến đường nhạy cảm.
+                      - `resources/views/admin/layouts/master.blade.php`: Ẩn Section 5 khỏi Sidebar nếu người dùng không phải Quản trị viên cấp cao.
+                      - `tests/Feature/AdminRbacTest.php`: Bộ 5 test cases bao phủ 100% các kịch bản phân quyền 5 vai trò.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 63/63 tests passed 100% (307 assertions) trên toàn bộ 8 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`, `AdminRbacTest`).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

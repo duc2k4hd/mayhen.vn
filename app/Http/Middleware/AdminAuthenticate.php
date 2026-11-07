@@ -25,7 +25,7 @@ class AdminAuthenticate
         }
 
         $user = Auth::user();
-        if (! $user || ! method_exists($user, 'isAdmin') || ! $user->isAdmin()) {
+        if (! $user || ! method_exists($user, 'canAccessAdminPanel') || ! $user->canAccessAdminPanel()) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Forbidden. Admin privileges required.'], 403);
             }

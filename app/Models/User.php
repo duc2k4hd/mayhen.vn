@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
     public function isAdmin(): bool
     {
         return in_array($this->role, ['admin', 'manager'], true);
@@ -82,6 +87,11 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return in_array($this->role, ['customer', 'user', null], true);
+    }
+
+    public function canAccessAdminPanel(): bool
+    {
+        return in_array($this->role, ['admin', 'manager', 'staff'], true);
     }
 
     public function getRoleLabelAttribute(): string

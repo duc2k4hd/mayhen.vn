@@ -106,50 +106,52 @@
                     <span>Quản Lý Người Dùng</span>
                 </a>
 
-                <!-- Section 5: Hệ Thống & Cài Đặt -->
-                <div class="mayhen_admin_menu_section">Hệ Thống & Cài Đặt</div>
-                <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.plans*') ? 'mayhen_admin_nav_link_active' : '' }}">
-                    <span class="mayhen_admin_nav_icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                        </svg>
-                    </span>
-                    <span>Gói Dịch Vụ & Bảng Giá</span>
-                </a>
+                <!-- Section 5: Hệ Thống & Cài Đặt (Chỉ Quản trị viên cấp cao) -->
+                @if (Auth::user()?->isSuperAdmin())
+                    <div class="mayhen_admin_menu_section">Hệ Thống & Cài Đặt</div>
+                    <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.plans*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                        </span>
+                        <span>Gói Dịch Vụ & Bảng Giá</span>
+                    </a>
 
-                <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.banking') ? 'mayhen_admin_nav_link_active' : '' }}">
-                    <span class="mayhen_admin_nav_icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                            <line x1="2" y1="10" x2="22" y2="10"></line>
-                        </svg>
-                    </span>
-                    <span>Ngân Hàng & VietQR</span>
-                </a>
+                    <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.banking') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                <line x1="2" y1="10" x2="22" y2="10"></line>
+                            </svg>
+                        </span>
+                        <span>Ngân Hàng & VietQR</span>
+                    </a>
 
-                <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.storage') ? 'mayhen_admin_nav_link_active' : '' }}">
-                    <span class="mayhen_admin_nav_icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                        </svg>
-                    </span>
-                    <span>Thanh Tra Bộ Nhớ Lưu Trữ</span>
-                </a>
+                    <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.storage') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                        </span>
+                        <span>Thanh Tra Bộ Nhớ Lưu Trữ</span>
+                    </a>
 
-                <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.audit_logs') ? 'mayhen_admin_nav_link_active' : '' }}">
-                    <span class="mayhen_admin_nav_icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                    </span>
-                    <span>Nhật Ký Quản Trị (Audit)</span>
-                </a>
+                    <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.audit_logs') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </span>
+                        <span>Nhật Ký Quản Trị (Audit)</span>
+                    </a>
+                @endif
             </nav>
 
             <!-- Sidebar Footer -->
