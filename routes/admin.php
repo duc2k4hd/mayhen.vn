@@ -4,8 +4,10 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\WishController as AdminWishController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,5 +61,24 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset_password');
+    });
+
+    // Quản lý Lời chúc & Giám sát RSVP
+    Route::prefix('wishes')->name('wishes.')->group(function () {
+        Route::get('/', [AdminWishController::class, 'index'])->name('index');
+        Route::get('/rsvps', [AdminWishController::class, 'rsvps'])->name('rsvps');
+        Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
+        Route::delete('/{id}', [AdminWishController::class, 'destroy'])->name('destroy');
+    });
+
+    // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');
+        Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');
+        Route::put('/plans/{id}', [AdminSettingController::class, 'updatePlan'])->name('plans.update');
+        Route::post('/plans/{id}/toggle-active', [AdminSettingController::class, 'togglePlanActive'])->name('plans.toggle_active');
+        Route::get('/banking', [AdminSettingController::class, 'banking'])->name('banking');
+        Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
+        Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
     });
 });

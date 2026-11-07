@@ -148,4 +148,3 @@ class InvitationController extends Controller
         return back()->with('success', "Đã gia hạn thời gian hiển thị thiệp cưới thêm {$days} ngày.");
     }
 }
-

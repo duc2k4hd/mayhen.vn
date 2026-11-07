@@ -126,4 +126,3 @@ class UserController extends Controller
         return back()->with('success', "Đã đặt lại mật khẩu mới cho người dùng \"{$user->name}\" thành công.");
     }
 }
-

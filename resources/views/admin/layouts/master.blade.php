@@ -71,6 +71,15 @@
                     <span>Kho Mẫu Thiệp</span>
                 </a>
 
+                <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.wishes.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </span>
+                    <span>Lời Chúc & RSVP</span>
+                </a>
+
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
                 <div class="mayhen_admin_menu_section">Kinh Doanh & Doanh Thu</div>
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.orders.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -95,6 +104,38 @@
                         </svg>
                     </span>
                     <span>Quản Lý Người Dùng</span>
+                </a>
+
+                <!-- Section 5: Hệ Thống & Cài Đặt -->
+                <div class="mayhen_admin_menu_section">Hệ Thống & Cài Đặt</div>
+                <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.plans*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                    </span>
+                    <span>Gói Dịch Vụ & Bảng Giá</span>
+                </a>
+
+                <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.banking') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                    </span>
+                    <span>Ngân Hàng & VietQR</span>
+                </a>
+
+                <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.storage') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </span>
+                    <span>Thanh Tra Bộ Nhớ Lưu Trữ</span>
                 </a>
             </nav>
 

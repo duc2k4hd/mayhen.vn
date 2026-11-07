@@ -350,8 +350,8 @@ mayhen.vn/
 | **05** | **Quản lý Mẫu thiệp: Bật/Tắt & Ghim** | AJAX toggle active/featured, xem schema.json, thống kê mẫu | ✅ ĐÃ XONG | **Ưu tiên 2** |
 | **06** | **Quản lý Đơn hàng: Duyệt thủ công** | Bảng đơn hàng, lọc theo ngày, nút duyệt nạp tiền SePay tay | ✅ ĐÃ XONG | **Ưu tiên 2** |
 | **07** | **Quản lý Khách hàng & Phân quyền** | Bảng user, lịch sử tạo thiệp, phân quyền Admin/Partner/Staff | ✅ ĐÃ XONG | **Ưu tiên 3** |
-| **08** | **Kiểm duyệt Lời chúc & RSVP** | Lọc từ ngữ xấu, ẩn/xóa lời chúc spam trên thiệp cưới | ⏳ BẮT ĐẦU NGAY | **ƯU TIÊN 3** |
-| **09** | **Cấu hình Bảng giá & Hệ thống** | Chỉnh giá gói dịch vụ, cấu hình VietQR Mây Hẹn, Audit log | ⏳ Hoàn thiện | Ưu tiên 4 |
+| **08** | **Kiểm duyệt Lời chúc & RSVP** | Lọc từ ngữ xấu, ẩn/xóa lời chúc spam trên thiệp cưới, báo cáo RSVP | ✅ ĐÃ XONG | **Ưu tiên 3** |
+| **09** | **Cấu hình Bảng giá & Hệ thống** | Chỉnh giá gói dịch vụ, cấu hình VietQR Mây Hẹn, Thanh tra bộ nhớ | ✅ ĐÃ XONG | **Ưu tiên 4** |
 
 ---
 

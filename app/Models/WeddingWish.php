@@ -32,4 +32,9 @@ class WeddingWish extends Model
     {
         return $this->belongsTo(Wedding::class);
     }
+
+    public function getSenderNameAttribute(): string
+    {
+        return $this->name ?? 'Quan Khách';
+    }
 }

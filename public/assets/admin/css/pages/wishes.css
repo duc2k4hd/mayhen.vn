@@ -1,0 +1,87 @@
+/**
+ * MAYHEN.VN — ADMIN WISHES & RSVP STYLES
+ * Pure Vanilla CSS (Prefix: mayhen_admin_*)
+ */
+
+/* Wish Message Bubble */
+.mayhen_admin_wish_bubble {
+    background-color: #FAF8F5;
+    border: 1px solid var(--mh-admin-border-subtle);
+    border-radius: var(--mh-admin-radius-sm);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    color: var(--mh-admin-charcoal);
+    line-height: 1.5;
+    position: relative;
+    max-width: 480px;
+}
+
+.mayhen_admin_wish_bubble.flagged {
+    background-color: #FFF5F5;
+    border-color: #FFCDD2;
+}
+
+.mayhen_admin_spam_flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: var(--mh-admin-danger-bg);
+    color: var(--mh-admin-danger-text);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.mayhen_admin_reply_box {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--mh-admin-border);
+    font-size: 0.8125rem;
+    color: var(--mh-admin-muted);
+}
+
+/* RSVP Status Badges */
+.mayhen_admin_rsvp_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.mayhen_admin_rsvp_yes {
+    background-color: var(--mh-admin-success-bg);
+    color: var(--mh-admin-success-text);
+}
+
+.mayhen_admin_rsvp_no {
+    background-color: var(--mh-admin-danger-bg);
+    color: var(--mh-admin-danger-text);
+}
+
+.mayhen_admin_rsvp_uncertain {
+    background-color: var(--mh-admin-warning-bg);
+    color: var(--mh-admin-warning-text);
+}
+
+/* Rate Cards */
+.mayhen_admin_rsvp_rate_bar {
+    width: 100%;
+    height: 8px;
+    background-color: #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.mayhen_admin_rsvp_rate_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+

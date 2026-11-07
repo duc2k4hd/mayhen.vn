@@ -3902,6 +3902,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 39/39 tests passed 100% (165 assertions) bao gồm cả 5 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               142. **Hoàn Thiện Giai Đoạn 6: Quản Lý Lời Chúc (Wishes), Kiểm Duyệt Sổ Lưu Bút & Báo Cáo RSVP Quan Khách**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Xây dựng phân hệ trung tâm kiểm duyệt lời chúc và sổ lưu bút trên toàn bộ hệ thống thiệp cưới của Mây Hẹn.
+                      2. Tự động rà soát và phát hiện từ khóa nhạy cảm / quảng cáo cá độ / link bẩn (`SPAM_KEYWORDS`) để gắn cờ đỏ cảnh báo (`is_flagged`) cho quản trị viên dễ dàng phát hiện.
+                      3. Thao tác kiểm duyệt nhanh: Bật/Tắt duyệt hiển thị lời chúc (`toggleApproval`), Xóa vĩnh viễn lời chúc phản cảm (`destroy`).
+                      4. Báo cáo phản hồi RSVP quan khách tập trung (`rsvps`): Thống kê tỷ lệ tham dự (% Có tham dự, % Không đến được, % Chưa chắc chắn), bảng dữ liệu chi tiết số lượng người lớn, trẻ em và chế độ ăn uống đặc biệt của quan khách.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/WishController.php`: Xử lý `index` (4 KPI lời chúc & RSVP, bộ lọc đa trường, gắn nhãn spam tự động), `toggleApproval` (duyệt/ẩn lời chúc), `destroy` (xóa vĩnh viễn), `rsvps` (thống kê và lọc trạng thái tham dự).
+                      - `routes/admin.php`: Bổ sung nhóm route `admin.wishes.*` (`index`, `rsvps`, `toggle_approval`, `destroy`).
+                      - `resources/views/admin/layouts/master.blade.php`: Bổ sung menu "Lời Chúc & RSVP" vào Sidebar.
+                      - `public/assets/admin/css/pages/wishes.css`: Phong cách Pure Vanilla CSS cho bong bóng tin nhắn lời chúc, cờ cảnh báo spam đỏ, badge trạng thái RSVP và tỷ lệ tham dự.
+                      - `resources/views/admin/pages/wishes/index.blade.php`: Giao diện danh sách lời chúc với 4 thẻ KPI, tabs chuyển đổi, bộ lọc và bảng dữ liệu kiểm duyệt.
+                      - `resources/views/admin/pages/wishes/rsvps.blade.php`: Giao diện báo cáo RSVP toàn hệ thống với tỷ lệ tham dự, số người đi kèm và ghi chú ăn uống.
+                      - `tests/Feature/AdminWishTest.php`: Bộ 7 test cases tự động kiểm tra chặt chẽ phân quyền, xem danh sách, lọc spam, bật/tắt duyệt, xóa lời chúc và báo cáo RSVP.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 46/46 passed 100% (203 assertions).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
+               143. **Hoàn Thiện Giai Đoạn 7: Cấu Hình Hệ Thống, Quản Lý Gói Dịch Vụ, Cài Đặt Ngân Hàng VietQR / SePay & Thanh Tra Dung Lượng Lưu Trữ (Storage Inspector)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Xây dựng phân hệ quản trị bảng giá và các gói dịch vụ (`plans`): Cho phép Admin trực tiếp điều chỉnh giá bán, thời hạn lưu trữ (ngày), số thiệp tối đa, danh sách quyền lợi tính năng và bật/tắt mở bán (hỗ trợ cả web form lẫn AJAX).
+                      2. Cấu hình ngân hàng thu tiền & VietQR NAPAS: Tích hợp hơn 50 ngân hàng Việt Nam từ `config/banks.php`, cấu hình số tài khoản, tên chủ tài khoản, mẫu hiển thị VietQR và SePay Webhook API Secret Key lưu trữ an toàn trong `storage/app/settings/banking.json` mà không làm thay đổi lược đồ database.
+                      3. Trình xem trước VietQR mô phỏng (Live QR Mockup): Hiển thị tức thời ảnh mã QR thanh toán động mô phỏng đúng số tiền và cú pháp giao dịch.
+                      4. Công cụ Thanh Tra Bộ Nhớ Lưu Trữ (Public Asset Storage Inspector): Đo lường tổng dung lượng bộ nhớ đã dùng (`storage/app/public/`), thanh tiến trình trực quan phân bổ theo thư mục (`weddings/`, `client/`, `admin/`), đếm số lượng tệp và liệt kê 20 tệp tải lên mới nhất.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/SettingController.php`: Xử lý `plans` (kèm đếm đơn hàng & tổng doanh thu từng gói), `editPlan`, `updatePlan`, `togglePlanActive` (hỗ trợ AJAX JSON), `banking`, `updateBanking` (lưu file json an toàn), `storageInspector` (quét storage disk).
+                      - `routes/admin.php`: Bổ sung nhóm route `admin.settings.*` (`plans`, `plans.edit`, `plans.update`, `plans.toggle_active`, `banking`, `banking.update`, `storage`).
+                      - `resources/views/admin/layouts/master.blade.php`: Thêm Section 5 "Hệ Thống & Cài Đặt" trong Sidebar gồm 3 liên kết menu tương ứng.
+                      - `public/assets/admin/css/pages/settings.css`: CSS thuần cho lưới gói dịch vụ, checkboxes tính năng, layout 2 cột ngân hàng & xem trước VietQR, thanh tiến trình màu sắc phân bổ lưu trữ.
+                      - `resources/views/admin/pages/settings/plans/index.blade.php`: Giao diện danh sách gói dịch vụ, hiển thị giá tiền, doanh thu và nút bật/tắt nhanh.
+                      - `resources/views/admin/pages/settings/plans/edit.blade.php`: Giao diện biên tập thông tin gói dịch vụ và danh sách checkboxes tính năng.
+                      - `resources/views/admin/pages/settings/banking.blade.php`: Giao diện cài đặt tài khoản ngân hàng thụ hưởng, token webhook và xem trước mã VietQR.
+                      - `resources/views/admin/pages/settings/storage.blade.php`: Giao diện thanh tra bộ nhớ lưu trữ trực quan và danh sách 20 tệp gần nhất.
+                      - `tests/Feature/AdminSettingTest.php`: Bộ kiểm thử 7 test cases bao phủ toàn diện xác thực quyền hạn, danh sách gói dịch vụ, cập nhật thông tin gói, AJAX toggle mở bán, lưu cài đặt ngân hàng và kiểm tra dung lượng lưu trữ.
+                      - `docs/ADMIN_ARCHITECTURE_ROADMAP.md`: Đã cập nhật 100% trạng thái hoàn tất các giai đoạn trong bảng checklist.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 53/53 tests passed 100% (250 assertions) cho toàn bộ phân hệ Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

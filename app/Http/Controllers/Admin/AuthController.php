@@ -123,4 +123,3 @@ class AuthController extends Controller
         return redirect()->route('admin.login')->with('success', 'Bạn đã đăng xuất thành công khỏi không gian quản trị.');
     }
 }
-

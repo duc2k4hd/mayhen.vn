@@ -1,0 +1,194 @@
+/**
+ * MAYHEN.VN — ADMIN SETTINGS & STORAGE STYLES
+ * Pure Vanilla CSS (Prefix: mayhen_admin_*)
+ */
+
+/* Plans Grid */
+.mayhen_admin_plans_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.mayhen_admin_plan_card {
+    background-color: var(--mh-admin-bg-surface);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: var(--mh-admin-shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_admin_plan_card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mh-admin-shadow-md);
+}
+
+.mayhen_admin_plan_card.featured {
+    border-color: var(--mh-admin-gold);
+    background: linear-gradient(180deg, #FFFDF8 0%, #FFFFFF 100%);
+}
+
+.mayhen_admin_plan_badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background-color: var(--mh-admin-gold);
+    color: #FFFFFF;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.mayhen_admin_plan_price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--mh-admin-charcoal);
+    margin: 12px 0 6px 0;
+}
+
+.mayhen_admin_plan_features {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_admin_plan_feature_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84375rem;
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_plan_feature_item svg {
+    color: #10B981;
+    flex-shrink: 0;
+}
+
+/* Feature Checkboxes Grid in Edit Page */
+.mayhen_admin_features_checkbox_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    background-color: #FAF8F5;
+    padding: 16px;
+    border-radius: var(--mh-admin-radius-sm);
+    border: 1px solid var(--mh-admin-border-subtle);
+}
+
+.mayhen_admin_feature_checkbox_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84375rem;
+    color: var(--mh-admin-charcoal);
+    cursor: pointer;
+}
+
+/* Banking Settings Layout */
+.mayhen_admin_banking_layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .mayhen_admin_banking_layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_admin_qr_preview_card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    padding: 24px;
+    text-align: center;
+    box-shadow: var(--mh-admin-shadow-sm);
+}
+
+.mayhen_admin_qr_image_box {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 16px auto;
+    background-color: #FAF8F5;
+    border: 1px solid var(--mh-admin-border-subtle);
+    border-radius: var(--mh-admin-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.mayhen_admin_qr_image_box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Storage Inspector Visuals */
+.mayhen_admin_storage_bar {
+    width: 100%;
+    height: 14px;
+    background-color: #E2E8F0;
+    border-radius: 999px;
+    display: flex;
+    overflow: hidden;
+    margin: 16px 0;
+}
+
+.mayhen_admin_storage_segment {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.mayhen_admin_storage_segment.weddings {
+    background-color: #C5A880; /* Gold */
+}
+
+.mayhen_admin_storage_segment.client {
+    background-color: #3B82F6; /* Blue */
+}
+
+.mayhen_admin_storage_segment.admin {
+    background-color: #8B5CF6; /* Purple */
+}
+
+.mayhen_admin_storage_segment.other {
+    background-color: #94A3B8; /* Slate */
+}
+
+.mayhen_admin_storage_legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 0.8125rem;
+}
+
+.mayhen_admin_storage_legend_item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_admin_storage_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
