@@ -1,0 +1,237 @@
+/**
+ * MAYHEN.VN — ADMIN TEMPLATES ENGINE STYLES
+ * Pure Vanilla CSS (Prefix: mayhen_admin_*)
+ */
+
+/* Templates KPI Grid */
+.mayhen_admin_template_kpi_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.mayhen_admin_template_kpi_card {
+    background-color: var(--mh-admin-surface);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--mh-admin-shadow-sm);
+}
+
+.mayhen_admin_template_kpi_icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--mh-admin-radius-sm);
+    background-color: var(--mh-admin-bg);
+    border: 1px solid var(--mh-admin-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mh-admin-gold);
+    flex-shrink: 0;
+}
+
+.mayhen_admin_template_kpi_val {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--mh-admin-charcoal);
+    line-height: 1.2;
+}
+
+.mayhen_admin_template_kpi_lbl {
+    font-size: 0.75rem;
+    color: var(--mh-admin-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Template Item Thumbnail */
+.mayhen_admin_tpl_thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--mh-admin-radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--mh-admin-border);
+    background-color: #EDE8DE;
+}
+
+/* Tier Badges */
+.mayhen_admin_tier_badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mayhen_admin_tier_free {
+    background-color: #E2E8F0;
+    color: #475569;
+}
+
+.mayhen_admin_tier_plus {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.mayhen_admin_tier_pro {
+    background-color: #EDE9FE;
+    color: #5B21B6;
+}
+
+/* Edit Template & Schema Inspector Grid */
+.mayhen_admin_tpl_edit_layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 28px;
+    align-items: start;
+}
+
+/* Form Styles */
+.mayhen_admin_form_group {
+    margin-bottom: 20px;
+}
+
+.mayhen_admin_form_label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mh-admin-charcoal);
+    margin-bottom: 6px;
+}
+
+.mayhen_admin_form_label .required {
+    color: var(--mh-admin-danger-text);
+}
+
+.mayhen_admin_form_input,
+.mayhen_admin_form_select,
+.mayhen_admin_form_textarea {
+    width: 100%;
+    padding: 9px 14px;
+    background-color: var(--mh-admin-bg);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-sm);
+    font-size: 0.875rem;
+    color: var(--mh-admin-charcoal);
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_form_input:focus,
+.mayhen_admin_form_select:focus,
+.mayhen_admin_form_textarea:focus {
+    border-color: var(--mh-admin-gold);
+    box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.2);
+    background-color: #FFFFFF;
+}
+
+.mayhen_admin_form_textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.mayhen_admin_form_help {
+    font-size: 0.75rem;
+    color: var(--mh-admin-muted);
+    margin-top: 4px;
+}
+
+.mayhen_admin_checkbox_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--mh-admin-charcoal);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Schema Validator Card */
+.mayhen_admin_schema_card {
+    background-color: var(--mh-admin-surface);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    box-shadow: var(--mh-admin-shadow-sm);
+    position: sticky;
+    top: calc(var(--mh-admin-topbar-height) + 20px);
+}
+
+.mayhen_admin_schema_status_banner {
+    padding: 16px 20px;
+    border-radius: var(--mh-admin-radius-md) var(--mh-admin-radius-md) 0 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_admin_schema_status_banner.valid {
+    background-color: var(--mh-admin-success-bg);
+    color: var(--mh-admin-success-text);
+    border-bottom: 1px solid #C8E6C9;
+}
+
+.mayhen_admin_schema_status_banner.invalid {
+    background-color: var(--mh-admin-warning-bg);
+    color: var(--mh-admin-warning-text);
+    border-bottom: 1px solid #FFE082;
+}
+
+.mayhen_admin_section_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.mayhen_admin_section_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: var(--mh-admin-radius-sm);
+    background-color: var(--mh-admin-bg);
+    border: 1px solid var(--mh-admin-border-subtle);
+    font-size: 0.8125rem;
+}
+
+.mayhen_admin_section_item.passed {
+    border-left: 3px solid #2E7D32;
+}
+
+.mayhen_admin_section_item.missing {
+    border-left: 3px solid #C62828;
+    background-color: #FFF5F5;
+}
+
+.mayhen_admin_section_title {
+    font-weight: 600;
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_section_badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+@media (max-width: 1080px) {
+    .mayhen_admin_tpl_edit_layout {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_admin_schema_card {
+        position: static;
+    }
+}
+

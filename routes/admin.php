@@ -34,9 +34,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/extend', [AdminInvitationController::class, 'extend'])->name('extend');
     });
 
-    // Quản lý Mẫu thiệp cưới
+    // Quản lý Mẫu thiệp cưới (Templates Engine)
     Route::prefix('templates')->name('templates.')->group(function () {
         Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
+        Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->name('scan_discovery');
+        Route::get('/{id}/edit', [AdminTemplateController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminTemplateController::class, 'update'])->name('update');
         Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->name('toggle_active');
         Route::post('/{id}/toggle-featured', [AdminTemplateController::class, 'toggleFeatured'])->name('toggle_featured');
     });

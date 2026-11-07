@@ -3849,6 +3849,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 17/17 tests passed 100% (60 assertions).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
 
+               139. **Hoàn Thiện Giai Đoạn 3: Quản Lý Mẫu Thiệp Cưới (Templates Engine), Trình Soát Tính Toàn Vẹn Schema & Tự Động Quét Mẫu (Discovery Engine)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Xây dựng phân hệ quản trị mẫu thiệp cưới toàn diện, cho phép Admin chủ động phân loại phong cách, xếp hạng gói (`free`, `plus`, `pro`), ghim nổi bật và ẩn/hiện mẫu tức thời mà không cần can thiệp code.
+                      2. Tích hợp Trình Soát Tính Toàn Vẹn Schema (Schema Validator Inspector): Tự động quét và đối chiếu `schema.json` của từng mẫu với 10 Section tiêu chuẩn của Mây Hẹn (`hero`, `story`, `parents`, `countdown_calendar`, `events`, `timeline`, `dresscode`, `album`, `gift`, `ending`), báo lỗi đỏ hoặc badge xanh đạt chuẩn kèm kiểm tra trường Album 10 ảnh.
+                      3. Tự Động Quét & Đồng Bộ Mẫu (Template Discovery Engine): Nút một chạm tự động rà soát toàn bộ thư mục `resources/views/client/invitations/`, đọc `schema.json` và đồng bộ tức thời vào cơ sở dữ liệu `invitation_templates`.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/TemplateController.php`: Nâng cấp toàn diện các action `index` (KPI metrics, tìm kiếm, lọc phong cách & trạng thái), `edit` (tích hợp Schema Inspector phân tích 10 canonical sections), `update` (cập nhật metadata, tier, mô tả phong cách), `toggleActive` & `toggleFeatured` (hỗ trợ cả submit thường lẫn AJAX JSON), `scanDiscovery` (quét thư mục vật lý và đồng bộ DB).
+                      - `routes/admin.php`: Bổ sung các route `admin.templates.scan_discovery`, `admin.templates.edit`, `admin.templates.update`.
+                      - `public/assets/admin/css/pages/templates.css`: Phong cách cho 4 thẻ KPI mẫu thiệp, bảng dữ liệu, badge hạng gói (`mayhen_admin_tier_*`), form biên tập và thẻ Schema Inspector kèm checklist trực quan 10 Section.
+                      - `resources/views/admin/pages/templates/index.blade.php`: Giao diện danh sách mẫu thiệp với 4 KPI tổng quan, bộ lọc đa tiêu chí, nút Quét & Đồng Bộ mẫu, bảng dữ liệu thumbnail và toggle trạng thái nhanh.
+                      - `resources/views/admin/pages/templates/edit.blade.php`: Giao diện chuyên sâu 2 cột: Cột trái form biên tập tên, mô tả, danh mục, tier, thumbnail; Cột phải Schema Inspector đối chiếu 10/10 Section chuẩn mực và kiểm tra trường Album 10 ảnh.
+                      - `resources/views/admin/pages/templates.blade.php`: Kế thừa an toàn qua `@include('admin.pages.templates.index')` đảm bảo tương thích ngược 100%.
+                      - `tests/Feature/AdminTemplateTest.php`: Bộ kiểm thử 7 test cases bao phủ toàn diện xác thực, tìm kiếm, toggle AJAX active/featured, xem Schema Inspector, cập nhật tier và quét tự động `scanDiscovery`.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 24/24 passed 100% (100 assertions) gồm cả `AdminAuthTest`, `AdminInvitationTest` và `AdminTemplateTest`.
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
