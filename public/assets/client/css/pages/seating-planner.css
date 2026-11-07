@@ -1,0 +1,623 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Seating Planner Studio Styling
+ * Quiet Luxury, Floor Plan & Seating Chart Studio
+ * Mandatory Prefix: mayhen_seat_*
+ */
+
+/* ==========================================================================
+   1. MAIN CONTAINER & WORKSPACE (.mayhen_seat_*)
+   ========================================================================== */
+
+.mayhen_seat_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    padding: 1.5rem 1.25rem 4rem;
+}
+
+.mayhen_seat_container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Breadcrumbs */
+.mayhen_seat_breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #8C8479;
+    margin-bottom: 1.25rem;
+}
+
+.mayhen_seat_breadcrumbs a {
+    color: #6E685F;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.mayhen_seat_breadcrumbs a:hover {
+    color: #1F1D1A;
+}
+
+/* Alerts */
+.mayhen_seat_alert {
+    padding: 0.85rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.mayhen_seat_alert--success {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border: 1px solid #C8E6C9;
+}
+
+.mayhen_seat_alert--error {
+    background: #FFEBEE;
+    color: #B71C1C;
+    border: 1px solid #FFCDD2;
+}
+
+/* Header */
+.mayhen_seat_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+}
+
+.seat_badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.seat_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.35rem;
+}
+
+.seat_subtitle {
+    font-size: 0.9rem;
+    color: #6E685F;
+    margin: 0;
+}
+
+.seat_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.mayhen_seat_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: none;
+    box-sizing: border-box;
+}
+
+.mayhen_seat_btn--primary {
+    background: linear-gradient(135deg, #2E2A25 0%, #1A1815 100%);
+    color: #FAF6EF;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.15);
+}
+
+.mayhen_seat_btn--gold {
+    background: linear-gradient(135deg, #C5A880 0%, #A68A56 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(166, 138, 86, 0.25);
+}
+
+.mayhen_seat_btn--gold:hover {
+    background: linear-gradient(135deg, #B59870 0%, #967A46 100%);
+    transform: translateY(-1px);
+}
+
+.mayhen_seat_btn--outline {
+    background: #FFFFFF;
+    color: #38332D;
+    border: 1px solid #DCD5CB;
+}
+
+.mayhen_seat_btn--outline:hover {
+    background: #F3EFEA;
+    border-color: #C5A880;
+}
+
+.mayhen_seat_btn--sm {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+
+/* ==========================================================================
+   2. STAT METRIC CARDS (.mayhen_seat_stats_*)
+   ========================================================================== */
+
+.mayhen_seat_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+@media (max-width: 960px) {
+    .mayhen_seat_stats_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_seat_stats_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_seat_stat_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 12px;
+    padding: 1.15rem 1.25rem;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.03);
+}
+
+.stat_label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8C8479;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+
+.stat_value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+}
+
+.stat_hint {
+    font-size: 0.78rem;
+    color: #8C8479;
+}
+
+
+/* ==========================================================================
+   3. STUDIO TWO-COLUMN WORKSPACE (.mayhen_seat_workspace)
+   ========================================================================== */
+
+.mayhen_seat_workspace {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 1024px) {
+    .mayhen_seat_workspace {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Floor Plan Interactive Canvas Area */
+.mayhen_seat_floorplan_wrap {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(31, 29, 26, 0.04);
+}
+
+.floorplan_toolbar {
+    background: #FAF8F5;
+    border-bottom: 1px solid #EBE5DC;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.view_mode_toggle {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.mode_btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #DCD5CB;
+    background: #FFFFFF;
+    color: #6E685F;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mode_btn.is-active {
+    background: #2E2A25;
+    color: #FAF6EF;
+    border-color: #2E2A25;
+}
+
+/* Canvas Stage (Sân Khấu) */
+.floorplan_stage_bar {
+    background: linear-gradient(180deg, #EBE5DC 0%, #FAF8F5 100%);
+    border-bottom: 1px dashed #C5A880;
+    padding: 0.85rem;
+    text-align: center;
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #8C6D3F;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+/* The Draggable Canvas Surface */
+.floorplan_canvas {
+    min-height: 580px;
+    position: relative;
+    background-color: #FAF8F5;
+    background-image: 
+        radial-gradient(#E8E1D5 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    padding: 1.5rem;
+    overflow: auto;
+}
+
+/* Table Item on Canvas */
+.seat_table_item {
+    position: absolute;
+    width: 170px;
+    min-height: 155px;
+    background: #FFFFFF;
+    border: 2px solid #DCD5CB;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(31, 29, 26, 0.06);
+    padding: 0.85rem 0.75rem;
+    box-sizing: border-box;
+    cursor: move;
+    user-select: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.seat_table_item:hover {
+    border-color: #C5A880;
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.12);
+}
+
+.seat_table_item.is-dragover {
+    border-color: #A68A56 !important;
+    background: #FFFDF9 !important;
+    transform: scale(1.03);
+}
+
+/* Round Table Shape Modifier */
+.seat_table_item--round {
+    border-radius: 50%;
+    width: 165px;
+    height: 165px;
+    text-align: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+/* Overcapacity Warning */
+.seat_table_item.is-overcapacity {
+    border-color: #D32F2F !important;
+    background: #FFF8F8 !important;
+}
+
+.table_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table_name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.table_capacity_pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #FAF8F5;
+    border: 1px solid #EBE5DC;
+    color: #6E685F;
+}
+
+.table_capacity_pill.is-full {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border-color: #C8E6C9;
+}
+
+.table_capacity_pill.is-overflow {
+    background: #FFEBEE;
+    color: #C62828;
+    border-color: #FFCDD2;
+}
+
+.table_assigned_list {
+    margin: 0.35rem 0;
+    max-height: 55px;
+    overflow-y: auto;
+    font-size: 0.72rem;
+    color: #6E685F;
+    line-height: 1.35;
+    text-align: left;
+}
+
+.table_guest_chip {
+    display: inline-block;
+    background: #F3EFEA;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin: 0.1rem 0.1rem 0.1rem 0;
+    white-space: nowrap;
+}
+
+.table_foot_actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed #EBE5DC;
+    padding-top: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.table_action_link {
+    font-size: 0.72rem;
+    color: #8C6D3F;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.table_action_link:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   4. UNASSIGNED GUESTS DRAWER (.mayhen_seat_drawer)
+   ========================================================================== */
+
+.mayhen_seat_drawer {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 6px 20px rgba(31, 29, 26, 0.04);
+}
+
+.drawer_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid #F0ECE6;
+    padding-bottom: 0.75rem;
+}
+
+.drawer_title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.drawer_count_badge {
+    background: #FAF8F5;
+    border: 1px solid #EBE5DC;
+    color: #8C6D3F;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+}
+
+.drawer_search {
+    margin-bottom: 0.85rem;
+}
+
+.drawer_search_input {
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid #DCD5CB;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    box-sizing: border-box;
+}
+
+.drawer_guests_list {
+    max-height: 520px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-right: 0.25rem;
+}
+
+/* Guest Draggable Card */
+.guest_drag_card {
+    background: #FAF8F5;
+    border: 1px solid #EBE5DC;
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.guest_drag_card:hover {
+    background: #FFFFFF;
+    border-color: #C5A880;
+    box-shadow: 0 4px 10px rgba(31, 29, 26, 0.06);
+}
+
+.guest_drag_card:active {
+    cursor: grabbing;
+    opacity: 0.6;
+}
+
+.guest_info_left strong {
+    display: block;
+    font-size: 0.86rem;
+    color: #1F1D1A;
+}
+
+.guest_info_left span {
+    font-size: 0.72rem;
+    color: #8C8479;
+}
+
+.guest_attendees_badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #544E47;
+    background: #EBE5DC;
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================================
+   5. MODAL DIALOGS (.mayhen_seat_modal)
+   ========================================================================== */
+
+.mayhen_seat_modal_overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 29, 26, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+}
+
+.mayhen_seat_modal_box {
+    background: #FFFFFF;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    padding: 1.75rem;
+    box-shadow: 0 16px 40px rgba(31, 29, 26, 0.2);
+    box-sizing: border-box;
+}
+
+.modal_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #F0ECE6;
+    padding-bottom: 0.75rem;
+}
+
+.modal_title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.modal_close_btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #8C8479;
+    cursor: pointer;
+}
+
+
+/* ==========================================================================
+   6. PRINT STYLES FOR FLOOR PLAN & SEATING LIST
+   ========================================================================== */
+
+@media print {
+    body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+    }
+
+    .mayhen_seat_breadcrumbs,
+    .seat_header_actions,
+    .mayhen_seat_drawer,
+    .floorplan_toolbar,
+    header, footer, nav,
+    .table_foot_actions,
+    .table_action_link {
+        display: none !important;
+    }
+
+    .mayhen_seat_wrap {
+        padding: 0 !important;
+    }
+
+    .mayhen_seat_workspace {
+        grid-template-columns: 1fr !important;
+    }
+
+    .print_seating_page {
+        page-break-after: always;
+        break-after: page;
+        padding: 1.5cm;
+    }
+
+    .print_seating_grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+

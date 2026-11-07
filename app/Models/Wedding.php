@@ -79,4 +79,9 @@ class Wedding extends Model
     {
         return $this->belongsTo(Partner::class);
     }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(WeddingTable::class)->orderBy('display_order')->orderBy('id');
+    }
 }

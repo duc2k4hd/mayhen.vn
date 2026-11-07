@@ -37,4 +37,3 @@ class EnsureUserIsPartner
         return $next($request);
     }
 }
-

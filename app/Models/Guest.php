@@ -18,6 +18,7 @@ class Guest extends Model
         'salutation',
         'group_name',
         'table_name',
+        'table_id',
         'guest_token',
         'phone',
         'expected_attendees',
@@ -54,6 +55,11 @@ class Guest extends Model
     public function wedding(): BelongsTo
     {
         return $this->belongsTo(Wedding::class);
+    }
+
+    public function table(): BelongsTo
+    {
+        return $this->belongsTo(WeddingTable::class, 'table_id');
     }
 
     public function response(): HasOne

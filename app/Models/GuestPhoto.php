@@ -49,4 +49,3 @@ class GuestPhoto extends Model
         return $query->where('is_approved', false);
     }
 }
-

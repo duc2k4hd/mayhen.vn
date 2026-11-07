@@ -164,6 +164,14 @@
                                 <span>Ảnh Khách</span>
                             </a>
 
+                            <a href="{{ route('seating.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Sơ đồ xếp bàn tiệc cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                </svg>
+                                <span>Xếp Bàn</span>
+                            </a>
+
                             <button type="button" 
                                 class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm mayhen_account_qr_trigger"
                                 data-invitation-url="{{ url('/thiep/' . $inv->slug) }}"

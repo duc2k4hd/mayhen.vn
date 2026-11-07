@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
+use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\WishManagementController;
@@ -132,6 +133,15 @@ Route::prefix('tai-khoan')->group(function () {
     Route::post('/thiep/{id}/album-khach/{photoId}/duyet', [PhotoDropController::class, 'toggleApproval'])->name('photo_drop.toggleApproval');
     Route::delete('/thiep/{id}/album-khach/{photoId}', [PhotoDropController::class, 'destroy'])->name('photo_drop.destroy');
     Route::get('/thiep/{id}/album-khach/tai-zip', [PhotoDropController::class, 'downloadZip'])->name('photo_drop.downloadZip');
+
+    // Sơ Đồ Xếp Bàn Tiệc Trực Quan (Seating Planner Studio - TASK-V3-02)
+    Route::get('/thiep/{id}/so-do-ban-tiec', [SeatingPlannerController::class, 'index'])->name('seating.index');
+    Route::post('/thiep/{id}/so-do-ban-tiec/ban', [SeatingPlannerController::class, 'storeTable'])->middleware('throttle:30,1')->name('seating.storeTable');
+    Route::put('/thiep/{id}/so-do-ban-tiec/ban/{tableId}', [SeatingPlannerController::class, 'updateTable'])->middleware('throttle:30,1')->name('seating.updateTable');
+    Route::delete('/thiep/{id}/so-do-ban-tiec/ban/{tableId}', [SeatingPlannerController::class, 'deleteTable'])->name('seating.deleteTable');
+    Route::post('/api/thiep/{id}/so-do-ban-tiec/vi-tri', [SeatingPlannerController::class, 'updatePositions'])->middleware('throttle:60,1')->name('seating.updatePositions');
+    Route::post('/api/thiep/{id}/so-do-ban-tiec/xep-khach', [SeatingPlannerController::class, 'assignGuest'])->middleware('throttle:60,1')->name('seating.assignGuest');
+    Route::get('/thiep/{id}/so-do-ban-tiec/in', [SeatingPlannerController::class, 'printChart'])->name('seating.print');
 
     // Nhận Thiệp Cưới Từ Studio Bàn Giao
     Route::post('/nhan-thiep-doi-tac', [PartnerWeddingController::class, 'claim'])->middleware('throttle:15,1')->name('account.claim_partner_invitation');

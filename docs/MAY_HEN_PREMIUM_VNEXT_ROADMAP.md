@@ -71,7 +71,7 @@ flowchart TD
 | Task ID | Tính năng cốt lõi | Phạm vi mã nguồn | Bàn giao & Tiêu chí nghiệm thu | Độ ưu tiên |
 |---|---|---|---|---|
 | **TASK-V3-01** | **Studio & Agency B2B Portal** | `Partner*` Controllers, Models, Views, Migrations | Cổng B2B quản trị tập trung danh sách thiệp cưới của khách hàng cho Studio/Planner. Sinh mã bàn giao (Handover Code 6 ký tự) để cặp đôi claim thiệp về tài khoản cá nhân; hệ thống hoa hồng chiết khấu tự động (20-30%); Co-branding thương hiệu Studio độc quyền ở chân thiệp cưới; và middleware bảo vệ phân quyền. Đã bao phủ 11 test cases. | **P1 (ĐÃ HOÀN TẤT)** |
-| **TASK-V3-02** | **Sơ Đồ Xếp Bàn Tiệc Trực Quan (Seating Planner Studio)** | Canvas Drag & Drop, Models | Kéo thả khách mời vào các bàn tiệc 10 người, xuất sơ đồ đón khách thông minh. | **P2** |
+| **TASK-V3-02** | **Sơ Đồ Xếp Bàn Tiệc Trực Quan (Seating Planner Studio)** | `SeatingPlannerController`, `WeddingTable`, Canvas JS/CSS | Studio trực quan hóa sơ đồ sảnh tiệc, canvas kéo thả bàn tiệc và khách mời; tự động tính toán sức chứa ghế ngồi vs thực tế; cảnh báo bàn quá tải; hỗ trợ bàn tròn, bàn dài, bàn VIP; xuất sơ đồ sảnh cưới & danh sách đón khách chuẩn A4/A3 cho nhà hàng/lễ tân; và liên kết chặt chẽ với cổng Check-in. Đã bao phủ 10 test cases. | **P2 (ĐÃ HOÀN TẤT)** |
 | **TASK-V3-03** | **Tên Miền Riêng Cho Đám Cưới (Custom Domain)** | DNS Routing, Cloudflare API | Hỗ trợ cấu hình tên miền riêng dạng `tuanlan.wedding` hoặc `tuanlan.mayhen.vn`. | **P2** |
 
 ---

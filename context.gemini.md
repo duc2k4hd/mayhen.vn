@@ -4790,6 +4790,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                           - Toàn bộ test suite toàn hệ thống: **219/219 tests passed 100% (1,155 assertions)**.
                           - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                   179. **Triển Khai Hoàn Thiện Seating Planner Studio — Sơ Đồ Xếp Bàn Tiệc Trực Quan (TASK-V3-02)**:
+                        - **Bối cảnh & Giá trị trải nghiệm**:
+                          - Việc xếp chỗ ngồi trong ngày cưới (Seating Chart) luôn là một trong những khâu căng thẳng và tốn nhiều thời gian nhất của cô dâu chú rể: Xếp ai ngồi cùng bàn với ai, tránh ghép người bất hòa, đảm bảo bàn VIP cho phụ mẫu và gia đình gần sân khấu.
+                          - Phần lớn các website thiệp cưới tại Việt Nam chỉ dừng lại ở form RSVP danh sách phẳng mà không có công cụ trực quan hóa sơ đồ sảnh tiệc.
+                          - Mây Hẹn phát triển **Seating Planner Studio**: Không gian tương tác cho phép kéo thả bàn tiệc, kéo thả khách mời vào bàn, theo dõi sức chứa ghế ngồi, cảnh báo quá tải và xuất bản sơ đồ in ấn A4/A3 cho nhà hàng/lễ tân.
+                        - **Các thành phần kỹ thuật cốt lõi**:
+                          1. *Cơ sở dữ liệu & Models*:
+                             - Bảng `wedding_tables`: Lưu trữ `wedding_id`, `name`, `shape` (round, long, square), `capacity` (số ghế), `pos_x`, `pos_y` (tọa độ canvas), `zone` (khu vực), `notes`, `display_order`.
+                             - Bổ sung `table_id` (foreign key nullable trỏ `wedding_tables.id`, nullOnDelete) vào bảng `guests`.
+                             - Model `WeddingTable`: Các helper `assigned_attendees_count`, `isFull()`, `isOverCapacity()`, `remaining_seats`, `shape_label`.
+                             - Model `Guest`: Bổ sung `table()` BelongsTo `WeddingTable`. Model `Wedding`: Quan hệ `tables()` HasMany.
+                          2. *Giao diện Studio Hai Cột Tương Tác (`SeatingPlannerController.php`)*:
+                             - Đường dẫn: `/tai-khoan/thiep/{id}/so-do-ban-tiec`.
+                             - *Cột Trái (Floor Plan Canvas)*:
+                               * Thanh Sân Khấu Trung Tâm (Stage & Backdrop) làm mốc định hướng sảnh tiệc.
+                               * Canvas tương tác lưới chấm nhẹ, các bàn tiệc đặt theo tọa độ `(pos_x, pos_y)`, hỗ trợ kéo thả vị trí và tự động lưu tọa độ bằng API `updatePositions` (debounce 600ms).
+                               * Bàn tròn sang trọng bo tròn 50%, hiển thị tên bàn, số ghế hiện tại / tổng số (`5/10`), danh sách chip khách trong bàn, badge cảnh báo viền đỏ nếu vượt quá số ghế.
+                               * Hỗ trợ bấm 1-chạm vào tên khách trong bàn để gỡ khách về danh sách chưa xếp bàn.
+                             - *Cột Phải (Unassigned Guests Drawer)*:
+                               * Ngăn kéo hiển thị toàn bộ khách mời chưa được xếp bàn.
+                               * Tìm kiếm nhanh (Live Search) theo tên khách hoặc nhóm khách.
+                               * Thẻ khách mời hỗ trợ HTML5 Drag & Drop: Kéo thả trực tiếp thẻ khách vào bất kỳ bàn tiệc nào trên canvas để gán chỗ tức thì.
+                          3. *Bản In Sơ Đồ Sảnh Tiệc & Danh Sách Đón Khách Chuẩn A4/A3 (`/tai-khoan/thiep/{id}/so-do-ban-tiec/in`)*:
+                             - Dàn trang tối ưu CSS `@media print` phân chia trang in rõ ràng (`break-inside: avoid; page-break-inside: avoid;`).
+                             - Bố cục danh sách từng bàn tiệc, danh sách họ tên khách kèm số lượng người đi cùng, sẵn sàng in đóng thành bảng điều phối đặt tại cửa sảnh tiệc cho lễ tân hoặc gửi cho trung tâm tiệc cưới.
+                          4. *Tích Hợp Sâu Vào Hệ Thống*:
+                             - Tự động đồng bộ `table_name` giữa Seating Planner và cổng tiếp tân điểm danh `CheckInController` (quét QR hiện đúng tên bàn tiệc).
+                             - Bổ sung nút liên kết "Sơ Đồ Bàn Tiệc" trên trang Quản lý Khách Mời (`guests.blade.php`) và danh sách thiệp cưới (`account/invitations.blade.php`).
+                        - **Kiểm thử & Đảm bảo chất lượng**:
+                          - Viết 10 Feature test cases trong `tests/Feature/SeatingPlannerTest.php`: Kiểm tra chủ sở hữu truy cập studio; chặn người lạ truy cập (404); đối tác studio sở hữu đám cưới truy cập được; tạo bàn tiệc mới; cập nhật bàn và đồng bộ tên bàn cho khách; xóa bàn tiệc tự động unbind khách; gán khách vào bàn; gỡ khách khỏi bàn; cập nhật tọa độ canvas qua API; và xem bản in sơ đồ A4/A3 -> **10/10 tests passed**.
+                          - Toàn bộ test suite toàn hệ thống: **229/229 tests passed 100% (1,197 assertions)**.
+                          - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
