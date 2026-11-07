@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
+use App\Http\Controllers\Client\WishManagementController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +70,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
     Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');
     Route::post('/doi-mat-khau', [AccountController::class, 'updatePassword'])->name('password.update');
+
+    // Sổ Lưu Bút & Lời Chúc Cặp Đôi
+    Route::get('/thiep/{id}/so-luu-but', [WishManagementController::class, 'index'])->name('wishes.index');
+    Route::post('/thiep/{id}/so-luu-but/{wishId}/phan-hoi', [WishManagementController::class, 'reply'])->name('wishes.reply');
+    Route::post('/thiep/{id}/so-luu-but/{wishId}/an-hien', [WishManagementController::class, 'toggleVisibility'])->name('wishes.toggle_visibility');
+    Route::delete('/thiep/{id}/so-luu-but/{wishId}', [WishManagementController::class, 'destroy'])->name('wishes.destroy');
 });
 
 // Guest Management & RSVP

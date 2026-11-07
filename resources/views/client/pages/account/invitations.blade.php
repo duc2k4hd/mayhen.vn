@@ -115,6 +115,13 @@
                                 <span>Khách Mời</span>
                             </a>
 
+                            <a href="{{ route('account.wishes.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                                <span>Sổ Lưu Bút</span>
+                            </a>
+
                             <a href="{{ route('invitation.show', $inv->slug) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -122,17 +129,19 @@
                                 </svg>
                                 <span>Xem Thiệp</span>
                             </a>
+                        </div>
 
+                        <div style="margin-top: 8px;">
                             @if(!$isLocked)
                                 <form action="{{ route('account.invitations.toggle_publish', $inv->id) }}" method="POST" style="margin: 0;">
                                     @csrf
                                     <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="width: 100%;">
-                                        {{ $inv->is_published ? 'Tạm Ẩn' : 'Xuất Bản' }}
+                                        {{ $inv->is_published ? 'Tạm Dừng Xuất Bản' : 'Xuất Bản Trực Tuyến' }}
                                     </button>
                                 </form>
                             @else
-                                <button type="button" disabled class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="opacity: 0.6; cursor: not-allowed;">
-                                    Bị Khóa
+                                <button type="button" disabled class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="width: 100%; opacity: 0.6; cursor: not-allowed;">
+                                    Tạm Khóa Bởi Quản Trị
                                 </button>
                             @endif
                         </div>

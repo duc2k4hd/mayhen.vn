@@ -1,0 +1,277 @@
+@extends('client.layouts.master')
+
+@section('page_title', 'Sổ Lưu Bút & Lời Chúc Mừng Cặp Đôi | ' . config('app.name'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}">
+@endpush
+
+@section('content')
+<div class="mayhen_account_container">
+    <!-- Breadcrumbs -->
+    <div class="mayhen_account_breadcrumbs">
+        <a href="{{ route('home') }}">Trang chủ</a>
+        <span class="mayhen_account_breadcrumbs_sep">/</span>
+        <a href="{{ route('account.dashboard') }}">Tài khoản</a>
+        <span class="mayhen_account_breadcrumbs_sep">/</span>
+        <a href="{{ route('account.invitations') }}">Thiệp cưới</a>
+        <span class="mayhen_account_breadcrumbs_sep">/</span>
+        <span class="mayhen_account_breadcrumbs_current">Sổ Lưu Bút & Lời Chúc</span>
+    </div>
+
+    <!-- Session Feedback Alerts -->
+    @if(session('success'))
+        <div class="mayhen_account_alert mayhen_account_alert_success">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mayhen_account_alert mayhen_account_alert_danger">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="mayhen_account_alert mayhen_account_alert_danger">
+            <div>
+                <strong>Có lỗi xảy ra:</strong>
+                <ul style="margin: 6px 0 0 18px; padding: 0;">
+                    @foreach($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    <!-- Header Card -->
+    <div class="mayhen_account_header_card">
+        <div>
+            <span class="mayhen_account_greeting">Sổ Lưu Bút Kỷ Niệm</span>
+            <h1 class="mayhen_account_username">
+                Lời Chúc Mừng: {{ $wedding->groom_name }} & {{ $wedding->bride_name }}
+            </h1>
+            <div class="mayhen_account_meta_info">
+                <span>Thiệp cưới: <strong>{{ $invitation->title ?? $invitation->slug }}</strong></span>
+                @if($wedding->wedding_date)
+                    <span>&bull; Ngày cưới: {{ \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') }}</span>
+                @endif
+            </div>
+        </div>
+        <div class="mayhen_account_header_actions">
+            <a href="{{ route('invitation.show', $invitation->slug) }}#loi-chuc" target="_blank" class="mayhen_account_btn mayhen_account_btn_gold">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Xem Trên Thiệp Cưới</span>
+            </a>
+            <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">
+                <span>Về Danh Sách Thiệp</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Stats Cards Grid -->
+    <div class="mayhen_account_kpi_grid" style="margin-bottom: 24px;">
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Tổng Lời Chúc Phúc</span>
+                <svg class="mayhen_account_kpi_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </div>
+            <div class="mayhen_account_kpi_val">{{ number_format($totalWishes) }}</div>
+            <div class="mayhen_account_kpi_desc">Lời chúc từ gia đình & bạn bè</div>
+        </div>
+
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Đã Gửi Lời Cảm Ơn</span>
+                <svg class="mayhen_account_kpi_icon" style="color: #2E7D32;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div class="mayhen_account_kpi_val" style="color: #2E7D32;">{{ number_format($repliedCount) }}</div>
+            <div class="mayhen_account_kpi_desc">Cặp đôi đã phản hồi lại</div>
+        </div>
+
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Chờ Phản Hồi</span>
+                <svg class="mayhen_account_kpi_icon" style="color: #F57F17;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <div class="mayhen_account_kpi_val" style="color: #F57F17;">{{ number_format($pendingReplyCount) }}</div>
+            <div class="mayhen_account_kpi_desc">Khách mời đang mong lời cảm ơn</div>
+        </div>
+
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Tạm Ẩn Khỏi Thiệp</span>
+                <svg class="mayhen_account_kpi_icon" style="color: #8C827A;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+            </div>
+            <div class="mayhen_account_kpi_val">{{ number_format($hiddenCount) }}</div>
+            <div class="mayhen_account_kpi_desc">Lời chúc không hiển thị công khai</div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+        <form action="{{ route('account.wishes.index', $invitation->id) }}" method="GET" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-grow: 1;">
+            <div style="position: relative; display: flex; align-items: center; min-width: 240px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; left: 12px; color: #8C827A;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" name="q" value="{{ $filterSearch }}" placeholder="Tìm theo tên hoặc lời nhắn..." class="mayhen_account_input" style="height: 38px; padding-left: 36px;">
+            </div>
+
+            <select name="status" class="mayhen_account_input" style="height: 38px; width: auto;" onchange="this.form.submit()">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="pending" {{ $filterStatus === 'pending' ? 'selected' : '' }}>Chờ phản hồi cảm ơn</option>
+                <option value="replied" {{ $filterStatus === 'replied' ? 'selected' : '' }}>Đã gửi lời cảm ơn</option>
+                <option value="hidden" {{ $filterStatus === 'hidden' ? 'selected' : '' }}>Tạm ẩn khỏi thiệp</option>
+            </select>
+
+            @if($filterSearch || $filterStatus)
+                <a href="{{ route('account.wishes.index', $invitation->id) }}" style="font-size: 13px; color: #C62828; text-decoration: none; padding: 6px 10px;">
+                    Đặt lại
+                </a>
+            @endif
+        </form>
+
+        <span style="font-size: 13px; color: #7A726A; white-space: nowrap;">
+            Hiển thị: <strong>{{ $wishes->total() }}</strong> lời chúc
+        </span>
+    </div>
+
+    <!-- Wishes Postcard Grid -->
+    @if($wishes->isNotEmpty())
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 32px;">
+            @foreach($wishes as $wish)
+                <div class="mayhen_account_form_card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 16px;">
+                    <div>
+                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="font-size: 16px; font-weight: 600; color: #1F1D1A; margin: 0;">
+                                    {{ $wish->name }}
+                                </h3>
+                                <span style="font-size: 12px; color: #8C827A;">
+                                    {{ $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '' }}
+                                </span>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                @if(!$wish->is_approved)
+                                    <span class="mayhen_account_status_badge locked" style="font-size: 11px;">Tạm Ẩn</span>
+                                @elseif($wish->reply)
+                                    <span class="mayhen_account_status_badge published" style="font-size: 11px;">Đã Cảm Ơn</span>
+                                @else
+                                    <span class="mayhen_account_status_badge draft" style="font-size: 11px;">Chờ Cảm Ơn</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Nội dung lời chúc -->
+                        <div style="background: #FAF8F5; border-left: 3px solid #C5A880; border-radius: 4px 8px 8px 4px; padding: 12px 14px; font-size: 14px; color: #2C2824; font-style: italic; line-height: 1.5; margin-bottom: 16px;">
+                            "{{ $wish->message }}"
+                        </div>
+
+                        <!-- Câu trả lời của cô dâu chú rể (nếu có) -->
+                        @if($wish->reply)
+                            <div style="background: #EEF8F1; border: 1px solid #C4E7D0; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                    <span style="font-size: 12px; font-weight: 600; color: #1B5E32;">Phản hồi từ Cô Dâu & Chú Rể:</span>
+                                    <span style="font-size: 11px; color: #2E7D32;">
+                                        {{ $wish->replied_at ? $wish->replied_at->format('d/m/Y H:i') : '' }}
+                                    </span>
+                                </div>
+                                <p style="font-size: 13px; color: #1F1D1A; margin: 0; line-height: 1.4;">
+                                    {{ $wish->reply }}
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Form gửi phản hồi & Nút thao tác -->
+                    <div style="border-top: 1px solid #F0EBE3; padding-top: 14px;">
+                        <form action="{{ route('account.wishes.reply', [$invitation->id, $wish->id]) }}" method="POST" style="margin-bottom: 12px;">
+                            @csrf
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" name="reply" class="mayhen_account_input" style="height: 38px; font-size: 13px;" placeholder="{{ $wish->reply ? 'Cập nhật lời cảm ơn...' : 'Nhập lời cảm ơn gửi tới khách...' }}" value="{{ old('reply', $wish->reply) }}" required>
+                                <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="white-space: nowrap;">
+                                    {{ $wish->reply ? 'Cập Nhật' : 'Gửi Cảm Ơn' }}
+                                </button>
+                            </div>
+                        </form>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <form action="{{ route('account.wishes.toggle_visibility', [$invitation->id, $wish->id]) }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" style="background: none; border: none; font-size: 12px; color: #6B635B; cursor: pointer; text-decoration: underline;">
+                                    {{ $wish->is_approved ? 'Tạm ẩn khỏi thiệp cưới' : 'Cho phép hiển thị lại' }}
+                                </button>
+                            </form>
+
+                            <form action="{{ route('account.wishes.destroy', [$invitation->id, $wish->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lời chúc này?');" style="margin: 0;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="background: none; border: none; font-size: 12px; color: #C62828; cursor: pointer;">
+                                    Xóa vĩnh viễn
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        @if($wishes->hasPages())
+            <div style="margin-top: 24px;">
+                {{ $wishes->links() }}
+            </div>
+        @endif
+    @else
+        <div class="mayhen_account_section mayhen_account_empty_state">
+            <svg class="mayhen_account_empty_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <h2 class="mayhen_account_empty_title">Chưa Có Lời Chúc Nào</h2>
+            <p class="mayhen_account_empty_desc">
+                @if($filterSearch || $filterStatus)
+                    Không tìm thấy lời chúc nào khớp với bộ lọc tìm kiếm hiện tại.
+                @else
+                    Khách mời chưa gửi lời chúc mừng trên thiệp cưới này. Hãy gửi link thiệp mời cho bạn bè và người thân để nhận những thông điệp chúc phúc ấm áp!
+                @endif
+            </p>
+            @if($filterSearch || $filterStatus)
+                <a href="{{ route('account.wishes.index', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline" style="margin-top: 8px;">
+                    Xem Toàn Bộ Lời Chúc
+                </a>
+            @endif
+        </div>
+    @endif
+</div>
+@endsection
+

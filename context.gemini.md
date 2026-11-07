@@ -4088,6 +4088,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Pest Feature tests: 79/79 tests passed 100% (390 assertions) trên toàn bộ 10 bộ test suite.
                        - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                150. **Xây Dựng Hoàn Chỉnh Phân Hệ Quản Lý Sổ Lưu Bút & Trả Lời Lời Chúc (Client Wishes & Guestbook Hub)**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Cung cấp cho cặp đôi giao diện chuyên biệt quản lý toàn bộ những lời chúc phúc từ bạn bè và người thân (`/tai-khoan/thiep/{id}/so-luu-but`).
+                       2. Tính năng Trả Lời Lời Chúc (Reply to Wish - `account.wishes.reply`):
+                          - Cho phép cô dâu & chú rể gửi thông điệp cảm ơn tới từng quan khách.
+                          - Kiểm tra bộ lọc từ ngữ văn minh (`NoProfanity`), lưu lại thời gian phản hồi (`replied_at`) và hiển thị lời cảm ơn trang nhã ngay trên thiệp cưới công khai.
+                       3. Tính năng Ẩn / Hiện Lời Chúc (`account.wishes.toggle_visibility`):
+                          - Cặp đôi chủ động ẩn các lời chúc bị nhầm lẫn hoặc không phù hợp khỏi thiệp cưới công khai mà không làm mất dữ liệu.
+                       4. Tính năng Xóa Lời Chúc (`account.wishes.destroy`):
+                          - Cho phép xóa vĩnh viễn lời chúc khỏi sổ lưu bút kèm hộp thoại xác nhận.
+                       5. Bộ Lọc & Tìm Kiếm Lời Chúc:
+                          - Tìm kiếm theo tên người chúc hoặc nội dung lời nhắn (`q=...`).
+                          - Lọc theo trạng thái: *Chờ gửi lời cảm ơn* (`pending`), *Đã cảm ơn* (`replied`), *Tạm ẩn* (`hidden`).
+                          - 4 thẻ KPI tóm tắt: Tổng lời chúc, Đã gửi lời cảm ơn, Chờ phản hồi, Tạm ẩn khỏi thiệp.
+                       6. Liên kết đồng bộ toàn hệ thống:
+                          - Nút "Quản Lý Sổ Lưu Bút" trực tiếp từ trang Dashboard và từ thẻ thiệp cưới trong trang danh sách thiệp.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Client/WishManagementController.php`: Controller chuyên trách xử lý các tác vụ `index`, `reply`, `toggleVisibility`, `destroy` với cơ chế kiểm tra quyền sở hữu thiệp cưới nghiêm ngặt.
+                       - `routes/web.php`: Bổ sung 4 routes trong nhóm `account.`: `account.wishes.index`, `account.wishes.reply`, `account.wishes.toggle_visibility`, `account.wishes.destroy`.
+                       - `resources/views/client/pages/account/wishes.blade.php`: Giao diện bưu thiếp Quiet Luxury hiển thị lời chúc, khung phản hồi của cô dâu chú rể, bộ lọc và phân trang 12 lời chúc/trang.
+                       - `resources/views/client/pages/account/dashboard.blade.php` & `invitations.blade.php`: Tích hợp các nút điều hướng dẫn trực tiếp sang Sổ Lưu Bút của từng thiệp.
+                       - `tests/Feature/ClientWishManagementTest.php`: Bộ 6 test cases bao phủ 100% các kịch bản xem danh sách, lọc tìm kiếm, gửi lời cảm ơn, ẩn/hiện, xóa lời chúc và phòng vệ phân quyền sở hữu.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 85/85 tests passed 100% (423 assertions) trên toàn bộ 11 bộ test suite.
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

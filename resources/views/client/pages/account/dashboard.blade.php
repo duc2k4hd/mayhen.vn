@@ -306,9 +306,14 @@
         <div class="mayhen_account_section_header">
             <h2 class="mayhen_account_section_title">Lời Chúc Phúc Mới Nhất Từ Quan Khách</h2>
             @if($activeInvitation)
-                <a href="{{ route('invitation.show', $activeInvitation->slug) }}#loi-chuc" target="_blank" style="font-size: 13px; color: #9C7A4A; text-decoration: none; font-weight: 500;">
-                    Xem trên thiệp &rarr;
-                </a>
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <a href="{{ route('account.wishes.index', $activeInvitation->id) }}" style="font-size: 13px; color: #1F1D1A; text-decoration: none; font-weight: 600;">
+                        Quản Lý Sổ Lưu Bút ({{ $totalWishes }}) &rarr;
+                    </a>
+                    <a href="{{ route('invitation.show', $activeInvitation->slug) }}#loi-chuc" target="_blank" style="font-size: 13px; color: #9C7A4A; text-decoration: none; font-weight: 500;">
+                        Xem trên thiệp &rarr;
+                    </a>
+                </div>
             @endif
         </div>
 
