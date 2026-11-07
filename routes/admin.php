@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,14 @@ Route::middleware('admin.auth')->group(function () {
     // Bảng điều khiển KPI & Hoạt động
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+    // Quản lý Thiệp cưới Khách hàng (Invitations & Weddings)
+    Route::prefix('invitations')->name('invitations.')->group(function () {
+        Route::get('/', [AdminInvitationController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminInvitationController::class, 'show'])->name('show');
+        Route::post('/{id}/toggle-publish', [AdminInvitationController::class, 'togglePublish'])->name('toggle_publish');
+        Route::post('/{id}/extend', [AdminInvitationController::class, 'extend'])->name('extend');
+    });
+
     // Quản lý Mẫu thiệp cưới
     Route::prefix('templates')->name('templates.')->group(function () {
         Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
@@ -37,4 +46,3 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
     });
 });
-

@@ -1,0 +1,712 @@
+/**
+ * MAYHEN.VN — ADMIN PANEL MASTER LAYOUT STYLES
+ * Pure Vanilla CSS (Zero Frameworks, Zero Third-party Kits)
+ * Mandatory Prefix: mayhen_admin_*
+ * Aesthetic: Quiet Luxury Atelier Control Room
+ */
+
+:root {
+    --mh-admin-bg: #F8F6F2;
+    --mh-admin-surface: #FFFFFF;
+    --mh-admin-sidebar-bg: #1B1815;
+    --mh-admin-sidebar-text: #BDB7AF;
+    --mh-admin-sidebar-active-bg: rgba(197, 168, 128, 0.14);
+    --mh-admin-sidebar-active-text: #EFE8DD;
+    --mh-admin-gold: #C5A880;
+    --mh-admin-gold-hover: #B5956A;
+    --mh-admin-charcoal: #1F1D1A;
+    --mh-admin-muted: #7A756E;
+    --mh-admin-border: #E8E2D8;
+    --mh-admin-border-subtle: #F0ECE4;
+    --mh-admin-success-bg: #E8F5E9;
+    --mh-admin-success-text: #1B5E20;
+    --mh-admin-warning-bg: #FFF8E1;
+    --mh-admin-warning-text: #B78103;
+    --mh-admin-danger-bg: #FFEBEE;
+    --mh-admin-danger-text: #C62828;
+    --mh-admin-info-bg: #E3F2FD;
+    --mh-admin-info-text: #1565C0;
+    --mh-admin-sidebar-width: 260px;
+    --mh-admin-topbar-height: 64px;
+    --mh-admin-radius-sm: 6px;
+    --mh-admin-radius-md: 10px;
+    --mh-admin-radius-lg: 16px;
+    --mh-admin-shadow-sm: 0 1px 3px rgba(31, 29, 26, 0.05);
+    --mh-admin-shadow-md: 0 4px 14px rgba(31, 29, 26, 0.08);
+}
+
+/* Master Layout Structure */
+.mayhen_admin_layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--mh-admin-bg);
+    color: var(--mh-admin-charcoal);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Sidebar Navigation */
+.mayhen_admin_sidebar {
+    width: var(--mh-admin-sidebar-width);
+    background-color: var(--mh-admin-sidebar-bg);
+    color: var(--mh-admin-sidebar-text);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mayhen_admin_sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+.mayhen_admin_sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Sidebar Brand Header */
+.mayhen_admin_sidebar_brand {
+    height: var(--mh-admin-topbar-height);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
+.mayhen_admin_sidebar_logo_mark {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mh-admin-radius-sm);
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.mayhen_admin_sidebar_brand_text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mayhen_admin_sidebar_brand_title {
+    color: #FFFFFF;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+}
+
+.mayhen_admin_sidebar_brand_sub {
+    color: var(--mh-admin-gold);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* Sidebar Navigation Menu */
+.mayhen_admin_nav_menu {
+    padding: 16px 12px 32px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.mayhen_admin_menu_section {
+    padding: 16px 10px 6px 10px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #71695F;
+    user-select: none;
+}
+
+.mayhen_admin_nav_link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: var(--mh-admin-radius-sm);
+    color: var(--mh-admin-sidebar-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    position: relative;
+}
+
+.mayhen_admin_nav_link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+}
+
+.mayhen_admin_nav_link.mayhen_admin_nav_link_active {
+    background-color: var(--mh-admin-sidebar-active-bg);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.mayhen_admin_nav_link.mayhen_admin_nav_link_active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background-color: var(--mh-admin-gold);
+    border-radius: 0 4px 4px 0;
+}
+
+.mayhen_admin_nav_icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #8C847A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+}
+
+.mayhen_admin_nav_link:hover .mayhen_admin_nav_icon,
+.mayhen_admin_nav_link.mayhen_admin_nav_link_active .mayhen_admin_nav_icon {
+    color: var(--mh-admin-gold);
+}
+
+.mayhen_admin_nav_badge {
+    margin-left: auto;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    line-height: 1.2;
+}
+
+.mayhen_admin_nav_badge_gold {
+    background-color: rgba(197, 168, 128, 0.2);
+    color: var(--mh-admin-gold);
+}
+
+/* Sidebar Footer Actions */
+.mayhen_admin_sidebar_footer {
+    padding: 14px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.mayhen_admin_btn_view_site {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: var(--mh-admin-radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--mh-admin-sidebar-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_btn_view_site:hover {
+    background: rgba(197, 168, 128, 0.15);
+    color: #FFFFFF;
+    border-color: var(--mh-admin-gold);
+}
+
+/* Main Workspace Area */
+.mayhen_admin_main {
+    flex: 1;
+    margin-left: var(--mh-admin-sidebar-width);
+    min-width: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Topbar Header */
+.mayhen_admin_topbar {
+    height: var(--mh-admin-topbar-height);
+    background-color: var(--mh-admin-surface);
+    border-bottom: 1px solid var(--mh-admin-border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    box-shadow: var(--mh-admin-shadow-sm);
+}
+
+.mayhen_admin_topbar_left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mayhen_admin_sidebar_toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mh-admin-radius-sm);
+    border: 1px solid var(--mh-admin-border);
+    background-color: var(--mh-admin-bg);
+    color: var(--mh-admin-charcoal);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_sidebar_toggle:hover {
+    background-color: #EDE8DE;
+    color: var(--mh-admin-gold-hover);
+}
+
+.mayhen_admin_breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    color: var(--mh-admin-muted);
+}
+
+.mayhen_admin_breadcrumb_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_admin_breadcrumb_item a {
+    color: var(--mh-admin-muted);
+    transition: color 0.15s ease;
+}
+
+.mayhen_admin_breadcrumb_item a:hover {
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_breadcrumb_item.active {
+    color: var(--mh-admin-charcoal);
+    font-weight: 600;
+}
+
+.mayhen_admin_breadcrumb_sep {
+    color: #C0BAB0;
+    font-size: 0.75rem;
+}
+
+/* Topbar Right Actions */
+.mayhen_admin_topbar_right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* User Profile Pill & Dropdown */
+.mayhen_admin_user_dropdown_wrap {
+    position: relative;
+}
+
+.mayhen_admin_user_pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px 4px 4px;
+    background-color: var(--mh-admin-bg);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_user_pill:hover {
+    border-color: #D6CEBF;
+    background-color: #EFE9DE;
+}
+
+.mayhen_admin_user_avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1B1815 0%, #3D3730 100%);
+    color: var(--mh-admin-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    border: 1px solid var(--mh-admin-gold);
+}
+
+.mayhen_admin_user_meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.mayhen_admin_user_name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mh-admin-charcoal);
+    line-height: 1.2;
+}
+
+.mayhen_admin_user_role {
+    font-size: 0.6875rem;
+    color: var(--mh-admin-muted);
+    line-height: 1.2;
+}
+
+.mayhen_admin_user_dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background-color: var(--mh-admin-surface);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    box-shadow: var(--mh-admin-shadow-md);
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    z-index: 1050;
+    animation: mayhenDropdownFade 0.15s ease;
+}
+
+.mayhen_admin_user_dropdown.show {
+    display: flex;
+}
+
+@keyframes mayhenDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mayhen_admin_user_dropdown_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 0.8125rem;
+    color: var(--mh-admin-charcoal);
+    border-radius: var(--mh-admin-radius-sm);
+    transition: background 0.15s ease;
+    text-decoration: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+}
+
+.mayhen_admin_user_dropdown_item:hover {
+    background-color: var(--mh-admin-bg);
+    color: var(--mh-admin-gold-hover);
+}
+
+.mayhen_admin_user_dropdown_divider {
+    height: 1px;
+    background-color: var(--mh-admin-border-subtle);
+    margin: 4px 0;
+}
+
+.mayhen_admin_user_dropdown_item.danger {
+    color: var(--mh-admin-danger-text);
+}
+.mayhen_admin_user_dropdown_item.danger:hover {
+    background-color: var(--mh-admin-danger-bg);
+}
+
+/* Main Content Body */
+.mayhen_admin_content {
+    padding: 28px;
+    max-width: 1400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Page Header Title */
+.mayhen_admin_page_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.mayhen_admin_page_title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--mh-admin-charcoal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_admin_page_subtitle {
+    font-size: 0.8125rem;
+    color: var(--mh-admin-muted);
+    margin-top: 4px;
+}
+
+/* Cards & Surfaces */
+.mayhen_admin_card {
+    background-color: var(--mh-admin-surface);
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    box-shadow: var(--mh-admin-shadow-sm);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.mayhen_admin_card_header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--mh-admin-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.mayhen_admin_card_title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--mh-admin-charcoal);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_admin_card_body {
+    padding: 20px;
+}
+
+/* Tables */
+.mayhen_admin_table_responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.mayhen_admin_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.mayhen_admin_table th {
+    background-color: #FAF8F5;
+    color: var(--mh-admin-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--mh-admin-border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.mayhen_admin_table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--mh-admin-border-subtle);
+    color: var(--mh-admin-charcoal);
+    vertical-align: middle;
+}
+
+.mayhen_admin_table tr:last-child td {
+    border-bottom: none;
+}
+
+.mayhen_admin_table tr:hover td {
+    background-color: #FAF8F5;
+}
+
+/* Badges */
+.mayhen_admin_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.mayhen_admin_badge_success {
+    background-color: var(--mh-admin-success-bg);
+    color: var(--mh-admin-success-text);
+}
+
+.mayhen_admin_badge_warning {
+    background-color: var(--mh-admin-warning-bg);
+    color: var(--mh-admin-warning-text);
+}
+
+.mayhen_admin_badge_danger {
+    background-color: var(--mh-admin-danger-bg);
+    color: var(--mh-admin-danger-text);
+}
+
+.mayhen_admin_badge_info {
+    background-color: var(--mh-admin-info-bg);
+    color: var(--mh-admin-info-text);
+}
+
+.mayhen_admin_badge_muted {
+    background-color: #ECEAE4;
+    color: #6C665D;
+}
+
+/* Buttons */
+.mayhen_admin_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--mh-admin-radius-sm);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.mayhen_admin_btn_primary {
+    background-color: var(--mh-admin-gold);
+    color: #FFFFFF;
+}
+.mayhen_admin_btn_primary:hover {
+    background-color: var(--mh-admin-gold-hover);
+}
+
+.mayhen_admin_btn_outline {
+    background-color: var(--mh-admin-surface);
+    border-color: var(--mh-admin-border);
+    color: var(--mh-admin-charcoal);
+}
+.mayhen_admin_btn_outline:hover {
+    background-color: var(--mh-admin-bg);
+    border-color: #D5CEBF;
+}
+
+.mayhen_admin_btn_sm {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+.mayhen_admin_btn_danger {
+    background-color: var(--mh-admin-danger-bg);
+    border-color: #FFCDD2;
+    color: var(--mh-admin-danger-text);
+}
+.mayhen_admin_btn_danger:hover {
+    background-color: #FFCDD2;
+}
+
+/* Toast Alerts */
+.mayhen_admin_alert {
+    padding: 12px 18px;
+    border-radius: var(--mh-admin-radius-sm);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.mayhen_admin_alert_success {
+    background-color: var(--mh-admin-success-bg);
+    color: var(--mh-admin-success-text);
+    border: 1px solid #C8E6C9;
+}
+
+.mayhen_admin_alert_danger {
+    background-color: var(--mh-admin-danger-bg);
+    color: var(--mh-admin-danger-text);
+    border: 1px solid #FFCDD2;
+}
+
+/* Mobile Overlay Drawer */
+.mayhen_admin_backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 950;
+    backdrop-filter: blur(2px);
+}
+
+/* Collapsed Sidebar on Desktop */
+@media (min-width: 992px) {
+    .mayhen_admin_layout.sidebar-collapsed .mayhen_admin_sidebar {
+        transform: translateX(calc(-1 * var(--mh-admin-sidebar-width)));
+    }
+    .mayhen_admin_layout.sidebar-collapsed .mayhen_admin_main {
+        margin-left: 0;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .mayhen_admin_sidebar {
+        transform: translateX(-100%);
+    }
+    .mayhen_admin_main {
+        margin-left: 0;
+    }
+    .mayhen_admin_layout.sidebar-mobile-open .mayhen_admin_sidebar {
+        transform: translateX(0);
+    }
+    .mayhen_admin_layout.sidebar-mobile-open .mayhen_admin_backdrop {
+        display: block;
+    }
+    .mayhen_admin_content {
+        padding: 20px 16px;
+    }
+    .mayhen_admin_topbar {
+        padding: 0 16px;
+    }
+    .mayhen_admin_breadcrumbs {
+        display: none;
+    }
+}
+

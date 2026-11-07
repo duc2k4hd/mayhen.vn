@@ -344,10 +344,10 @@ mayhen.vn/
 | Thứ tự | Module / Tính năng | Mô tả tóm tắt | Trạng thái | Mức ưu tiên |
 | :---: | :--- | :--- | :---: | :---: |
 | **01** | **Xác thực Admin & Điều hướng** | Login thiệp cưới, Session Auth, Rate Limit, Redirect thông minh | ✅ ĐÃ XONG | Cốt lõi |
-| **02** | **Master Layout & Dashboard KPI** | Master Blade, 5 thẻ KPI vận hành, Topbar tên admin & logout | ✅ ĐÃ XONG | Cốt lõi |
-| **03** | **Quản lý Thiệp cưới: Danh sách** | Bộ lọc trạng thái, tìm kiếm cô dâu chú rể, phân trang mượt | ⏳ BẮT ĐẦU NGAY | **ƯU TIÊN 1** |
-| **04** | **Quản lý Thiệp cưới: Chi tiết & Khóa** | Phone mockup live preview, xem RSVP/khách, khóa/mở thiệp | ⏳ BẮT ĐẦU NGAY | **ƯU TIÊN 1** |
-| **05** | **Quản lý Mẫu thiệp: Bật/Tắt & Ghim** | AJAX toggle active/featured, xem schema.json, thống kê mẫu | ⏳ Tiếp theo | Ưu tiên 2 |
+| **02** | **Master Layout & Dashboard KPI** | Master Blade, 5 thẻ KPI vận hành, Topbar tên admin & logout, Drawer | ✅ ĐÃ XONG | Cốt lõi |
+| **03** | **Quản lý Thiệp cưới: Danh sách** | Bộ lọc trạng thái, tìm kiếm cô dâu chú rể, phân trang mượt, copy link | ✅ ĐÃ XONG | **Ưu tiên 1** |
+| **04** | **Quản lý Thiệp cưới: Chi tiết & Khóa** | Phone mockup live preview, xem RSVP/khách, gia hạn, bật/tắt xuất bản | ✅ ĐÃ XONG | **Ưu tiên 1** |
+| **05** | **Quản lý Mẫu thiệp: Bật/Tắt & Ghim** | AJAX toggle active/featured, xem schema.json, thống kê mẫu | ⏳ BẮT ĐẦU NGAY | **ƯU TIÊN 2** |
 | **06** | **Quản lý Đơn hàng: Duyệt thủ công** | Bảng đơn hàng, lọc theo ngày, nút duyệt nạp tiền SePay tay | ⏳ Tiếp theo | Ưu tiên 2 |
 | **07** | **Quản lý Khách hàng & Phân quyền** | Bảng user, lịch sử tạo thiệp, phân quyền Admin/Partner | ⏳ Kế tiếp | Ưu tiên 3 |
 | **08** | **Kiểm duyệt Lời chúc & RSVP** | Lọc từ ngữ xấu, ẩn/xóa lời chúc spam trên thiệp cưới | ⏳ Kế tiếp | Ưu tiên 3 |

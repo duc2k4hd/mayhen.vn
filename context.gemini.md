@@ -3828,6 +3828,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 16/16 passed 100% (110 assertions).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
 
+               138. **Nâng Cấp Toàn Diện Admin Master Layout Quiet Luxury & Triển Khai Giai Đoạn 2: Quản Lý Thiệp Cưới Khách Hàng (Invitations & Weddings)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Học hỏi và bóc tách cấu trúc phân khu, sidebar menu sections, topbar actions và responsive drawer từ dự án `nobifashion.vn`.
+                      2. Tuyệt đối không dùng Bootstrap hay CDN của dự án mẫu; chuẩn hóa 100% sang Pure Vanilla CSS và Native ES Modules với tiền tố BEM `mayhen_admin_*`.
+                      3. Thiết kế thẩm mỹ Quiet Luxury Atelier Control Room: Tông màu Ivory / Warm Beige (`#F8F6F2`, `#FAF8F5`), viền ngà (`#E8E2D8`), Charcoal (`#1F1D1A`) và điểm nhấn Antique Gold hoàng gia (`#C5A880`).
+                      4. Triển khai Giai Đoạn 2 (Ưu tiên số 1 trong `ADMIN_ARCHITECTURE_ROADMAP.md`): Phân hệ quản lý toàn bộ thiệp cưới do khách hàng tạo trên nền tảng.
+                    - **Các thành phần đã triển khai**:
+                      - `public/assets/admin/css/common/layout.css`: Khung sườn Master Layout hoàn chỉnh: Sidebar cố định chia các Section (Tổng quan, Vận hành thiệp cưới, Kinh doanh & Doanh thu), Brand Logo Mark M lồng hoạ tiết sang trọng, Topbar cố định kèm breadcrumbs động, Pill avatar tài khoản quản trị kèm dropdown menu, hệ thống thẻ card, bảng responsive, nút bấm và badge trạng thái chuẩn BEM.
+                      - `public/assets/admin/js/common/admin-core.js`: Native Vanilla JavaScript quản lý đóng/mở sidebar (lưu trạng thái thu gọn vào `localStorage`), mở drawer trên mobile kèm backdrop, dropdown menu tài khoản và helper sao chép liên kết một chạm có thông báo toast mượt mà.
+                      - `resources/views/admin/layouts/master.blade.php`: Tái cấu trúc chuẩn hoá toàn bộ layout, tích hợp SVG icons nội bộ tinh xảo, loại bỏ hoàn toàn sự phụ thuộc vào FontAwesome hay icon CDN ngoài.
+                      - `app/Http/Controllers/Admin/InvitationController.php`: Xử lý truy vấn native fast tối ưu (Eager loading `wedding.user`, `template`, `wedding.guests`, `wedding.wishes`), tìm kiếm tức thời theo tên cô dâu/chú rể, slug, SĐT, email; lọc theo trạng thái (Xuất bản/Bản nháp/Hết hạn) và mẫu thiệp; xử lý bật/tắt xuất bản và gia hạn thiệp cưới.
+                      - `routes/admin.php`: Bổ sung nhóm route `admin.invitations.*` (`index`, `show`, `toggle_publish`, `extend`).
+                      - `public/assets/admin/css/pages/invitations.css`: Phong cách cho bộ lọc tìm kiếm, bảng danh sách thiệp cưới và khung mô phỏng điện thoại Live Phone Mockup tỉ lệ iPhone 15 Pro với Dynamic Island và iframe nhúng mượt mà.
+                      - `resources/views/admin/pages/invitations/index.blade.php`: Giao diện danh sách thiệp cưới với thumbnail mẫu, cặp đôi, chủ sở hữu, nút copy link công khai, badge số khách/lời chúc và nút thao tác nhanh.
+                      - `resources/views/admin/pages/invitations/show.blade.php`: Giao diện chi tiết chuyên sâu chia 2 cột: Cột trái Phone Mockup dính (sticky) xem trực tiếp thiệp cưới của khách kèm form gia hạn và ẩn/hiện thiệp; Cột phải thẻ thông tin ngày cưới, gia đình, địa chỉ tiệc cưới và hệ thống tab xem danh sách khách mời, phản hồi RSVP, sổ lưu bút lời chúc và hồ sơ kỹ thuật schema.
+                      - `resources/views/admin/pages/dashboard.blade.php`, `templates.blade.php`, `orders.blade.php`: Đồng bộ hóa giao diện thẻ card, icon SVG và badge trạng thái theo layout mới.
+                      - `tests/Feature/AdminInvitationTest.php`: Bộ 7 test cases tự động kiểm tra chặt chẽ phân quyền khách/admin, tìm kiếm lọc, xem chi tiết Phone mockup, bật/tắt xuất bản và gia hạn thiệp cưới.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 17/17 tests passed 100% (60 assertions).
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
