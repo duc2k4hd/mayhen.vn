@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\GuestController;
@@ -58,6 +59,17 @@ Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->mi
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
 Route::post('/api/payments/sepay/webhook', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
 Route::post('/api/webhook/payment', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment.legacy');
+
+// User Account Portal (Cặp đôi / Khách hàng)
+Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('dashboard');
+    Route::get('/thiep', [AccountController::class, 'invitations'])->name('invitations');
+    Route::post('/thiep/{id}/xuat-ban', [AccountController::class, 'togglePublish'])->name('invitations.toggle_publish');
+    Route::get('/don-hang', [AccountController::class, 'orders'])->name('orders');
+    Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
+    Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/doi-mat-khau', [AccountController::class, 'updatePassword'])->name('password.update');
+});
 
 // Guest Management & RSVP
 Route::prefix('tai-khoan')->group(function () {

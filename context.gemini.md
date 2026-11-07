@@ -4021,6 +4021,44 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 63/63 tests passed 100% (307 assertions) trên toàn bộ 8 bộ test suite Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`, `AdminRbacTest`).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+                148. **Xây Dựng Hoàn Chỉnh Phân Hệ Quản Lý Tài Khoản Người Dùng & Cặp Đôi (User Account Portal - `/tai-khoan`)**:
+                     - **Bối cảnh & Yêu cầu lộ trình**:
+                       1. Triển khai phân hệ người dùng theo đúng chỉ dẫn chiến lược: *"Hiện tại đang làm trang /admin, các trang khác sau này sẽ làm sau, cứ làm /admin và user trước"*.
+                       2. Cung cấp cho các cặp đôi cô dâu chú rể một không gian Bảng điều khiển riêng biệt (`/tai-khoan`) mang đậm tinh thần Quiet Luxury, tối giản, sang trọng và chuẩn Responsive Mobile-first.
+                       3. Trang Tổng Quan (`/tai-khoan`):
+                          - 4 thẻ KPI cá nhân: Thiệp cưới đã tạo, Khách mời trong danh sách, Khách xác nhận tham gia (RSVP), Lời chúc phúc nhận được.
+                          - Thẻ Thiệp Cưới Nổi Bật (Hero Wedding Card): Ảnh bìa, tên cô dâu chú rể, tên mẫu thiệp, ngày cưới, đếm ngược ngày hôn lễ, trạng thái xuất bản (Đang xuất bản / Bản nháp / Bị khóa), hộp liên kết chia sẻ kèm nút chép link một chạm, hàng nút hành động (Vào Studio chỉnh sửa `?edit={slug}`, Xem thiệp trực tiếp, Quản lý khách mời, Bật/tắt xuất bản).
+                          - 3 Khối lối tắt vận hành nhanh (Khách mời & RSVP, Nâng cấp gói thiệp, Đơn hàng đã mua).
+                          - Danh sách 5 lời chúc phúc mới nhất từ quan khách.
+                       4. Trang Thiệp Cưới Của Tôi (`/tai-khoan/thiep`):
+                          - Lưới thẻ thiệp cưới (Grid card) hiển thị tất cả các thiệp của user kèm thông tin ngày cưới, số lượng khách mời, trạng thái và các nút thao tác nhanh.
+                          - Phân trang nhẹ nhàng, nút tạo thêm mẫu mới.
+                       5. Thao tác Bật/Tắt Xuất Bản Thiệp (`POST /tai-khoan/thiep/{id}/xuat-ban`):
+                          - Xác thực quyền sở hữu nghiêm ngặt (`$wedding->user_id === auth()->id()`), chặn tuyệt đối người dùng khác can thiệp.
+                       6. Trang Đơn Hàng & Gói Cước (`/tai-khoan/don-hang`):
+                          - Bảng lịch sử các đơn hàng mua gói thiệp cưới (Mã đơn `MH...`, gói cước, số tiền, ngày tạo, trạng thái thanh toán, nút tiếp tục thanh toán nếu đơn chờ duyệt).
+                       7. Trang Hồ Sơ & Bảo Mật (`/tai-khoan/ho-so`):
+                          - Biểu mẫu cập nhật họ tên, email, số điện thoại (`POST /tai-khoan/ho-so`).
+                          - Biểu mẫu đổi mật khẩu an toàn có kiểm tra mật khẩu hiện tại (`POST /tai-khoan/doi-mat-khau`).
+                       8. Tích hợp Header & Mobile Drawer Navigation:
+                          - Cập nhật menu thả xuống của tài khoản trên Header với 4 liên kết trực tiếp (Bảng Điều Khiển, Thiệp Cưới Của Tôi, Đơn Hàng & Gói Cước, Hồ Sơ & Mật Khẩu).
+                          - Bổ sung nút truy cập nhanh "Bảng Điều Khiển Cặp Đôi" trong Mobile Drawer.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Models/User.php`: Bổ sung quan hệ Eloquent `invitations()` thông qua `hasManyThrough(Invitation::class, Wedding::class)`.
+                       - `app/Http/Controllers/Client/AccountController.php`: Controller chuyên trách xử lý toàn bộ logic phân hệ tài khoản (`index`, `invitations`, `togglePublish`, `orders`, `profile`, `updateProfile`, `updatePassword`).
+                       - `routes/web.php`: Nhóm các route `/tai-khoan` bảo vệ bởi middleware `auth`.
+                       - `public/assets/client/css/pages/account.css`: Stylesheet Pure CSS 100% không framework, chuẩn Quiet Luxury, tiền tố `mayhen_account_*`.
+                       - `resources/views/client/pages/account/layout.blade.php`: Khung sườn layout dùng chung cho tài khoản.
+                       - `resources/views/client/pages/account/dashboard.blade.php`: Bảng điều khiển tổng quan cặp đôi.
+                       - `resources/views/client/pages/account/invitations.blade.php`: Quản lý danh sách thiệp cưới.
+                       - `resources/views/client/pages/account/orders.blade.php`: Lịch sử đơn hàng và gói cước.
+                       - `resources/views/client/pages/account/profile.blade.php`: Hồ sơ cá nhân và đổi mật khẩu.
+                       - `resources/views/client/components/header.blade.php`: Cập nhật dropdown menu và mobile drawer.
+                       - `tests/Feature/ClientAccountTest.php`: Bộ 8 test cases bao phủ 100% các kịch bản kiểm tra bảo mật, phân quyền sở hữu, thống kê KPI, bật/tắt xuất bản, cập nhật hồ sơ và đổi mật khẩu.
+                     - **Kiểm thử & Chất lượng**:
+                       - Pest Feature tests: 71/71 tests passed 100% (350 assertions) trên toàn bộ 9 bộ test suite (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`, `AdminRbacTest`, `ClientAccountTest`).
+                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

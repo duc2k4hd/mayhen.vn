@@ -58,6 +58,37 @@
                                 <span>Trang Quản Trị</span>
                             </a>
                         @endif
+                        <a href="{{ route('account.dashboard') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                                <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                                <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                                <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Bảng Điều Khiển</span>
+                        </a>
+                        <a href="{{ route('account.invitations') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 3.5h11c.55 0 1 .45 1 1v8c0 .55-.45 1-1 1h-11c-.55 0-1-.45-1-1v-8c0-.55.45-1 1-1z" stroke="currentColor" stroke-width="1.3"/>
+                                <path d="M14.5 4.5l-6.5 4.5-6.5-4.5" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Thiệp Cưới Của Tôi</span>
+                        </a>
+                        <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                                <path d="M2 6.5h12" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Đơn Hàng & Gói Cước</span>
+                        </a>
+                        <a href="{{ route('account.profile') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.5 13.5v-1a2.5 2.5 0 0 0-2.5-2.5h-6A2.5 2.5 0 0 0 2.5 12.5v1" stroke="currentColor" stroke-width="1.3"/>
+                                <circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Hồ Sơ & Mật Khẩu</span>
+                        </a>
+                        <div class="mayhen_client_header_user_divider"></div>
                         <a href="{{ route('invitation.create') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -120,6 +151,10 @@
         </a>
 
         @auth
+            <a href="{{ route('account.dashboard') }}" class="mayhen_client_header_drawer_link" style="background: rgba(197, 168, 128, 0.12); font-weight: 600; color: #1F1D1A;">
+                <span>Bảng Điều Khiển Cặp Đôi</span>
+                <span style="font-size: 0.875rem; color: #9C7A4A;">&rarr;</span>
+            </a>
             <div class="mayhen_client_header_drawer_user_card">
                 <div class="mayhen_client_header_drawer_user_info">
                     <span class="mayhen_client_header_user_avatar">{{ $headerUserInitial }}</span>
