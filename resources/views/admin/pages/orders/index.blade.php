@@ -64,6 +64,23 @@
         </div>
     </div>
 
+    <!-- Navigation Tabs: Orders vs Webhooks -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--mh-admin-border); padding-bottom: 8px;">
+        <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_btn" style="background-color: var(--mh-admin-charcoal); color: #FFF; border-color: var(--mh-admin-charcoal);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <span>Đơn Hàng & Doanh Thu</span>
+        </a>
+        <a href="{{ route('admin.orders.webhooks') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>Nhật Ký Webhook Thanh Toán</span>
+        </a>
+    </div>
+
     <!-- Filter Bar -->
     <form action="{{ route('admin.orders.index') }}" method="GET" class="mayhen_admin_filter_bar">
         <!-- Search query -->

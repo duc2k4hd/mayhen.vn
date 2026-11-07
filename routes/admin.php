@@ -35,6 +35,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}', [AdminInvitationController::class, 'show'])->name('show');
         Route::post('/{id}/toggle-publish', [AdminInvitationController::class, 'togglePublish'])->name('toggle_publish');
         Route::post('/{id}/extend', [AdminInvitationController::class, 'extend'])->name('extend');
+        Route::post('/{id}/migrate-template', [AdminInvitationController::class, 'migrateTemplate'])->name('migrate_template');
+        Route::get('/{id}/export-guests', [AdminInvitationController::class, 'exportGuests'])->name('export_guests');
     });
 
     // Quản lý Mẫu thiệp cưới (Templates Engine)
@@ -50,6 +52,7 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/webhooks/audit', [AdminOrderController::class, 'webhooks'])->name('webhooks');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->name('approve');
         Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
@@ -80,5 +83,6 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/banking', [AdminSettingController::class, 'banking'])->name('banking');
         Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
+        Route::get('/audit-logs', [AdminSettingController::class, 'auditLogs'])->name('audit_logs');
     });
 });

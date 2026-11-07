@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -172,27 +173,37 @@ class CheckoutController extends Controller
         }
 
         if (! $orderCode) {
+            $this->recordWebhookLog('warning', 'Không tìm thấy mã đơn hàng trong nội dung chuyển khoản', null, $amount, $request->ip(), $content);
+
             return response()->json(['success' => false, 'message' => 'No order code detected in description'], 200);
         }
 
         $orderCode = strtoupper($orderCode);
 
-        return DB::transaction(function () use ($orderCode, $amount): JsonResponse {
+        return DB::transaction(function () use ($orderCode, $amount, $request, $content): JsonResponse {
             $order = Order::where('order_code', $orderCode)->lockForUpdate()->first();
 
             if (! $order) {
+                $this->recordWebhookLog('warning', "Không tìm thấy đơn hàng #{$orderCode} trong cơ sở dữ liệu", $orderCode, $amount, $request->ip(), $content);
+
                 return response()->json(['success' => false, 'message' => 'Order not found'], 200);
             }
 
             if ($order->isPaid()) {
+                $this->recordWebhookLog('info', "Đơn hàng #{$orderCode} đã được thanh toán trước đó (idempotent)", $orderCode, $amount, $request->ip(), $content);
+
                 return response()->json(['success' => true, 'message' => 'Order already processed (idempotent)'], 200);
             }
 
             if ($order->status !== 'pending') {
+                $this->recordWebhookLog('error', "Đơn hàng #{$orderCode} không ở trạng thái chờ thanh toán", $orderCode, $amount, $request->ip(), $content);
+
                 return response()->json(['success' => false, 'message' => 'Order cannot be paid in its current status'], 409);
             }
 
             if ($amount !== $order->amount) {
+                $this->recordWebhookLog('error', "Số tiền chuyển khoản ({$amount}đ) không khớp giá trị đơn ({$order->amount}đ)", $orderCode, $amount, $request->ip(), $content);
+
                 return response()->json(['success' => false, 'message' => 'Payment amount mismatch'], 400);
             }
 
@@ -209,7 +220,38 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            $this->recordWebhookLog('success', "Xác nhận thanh toán và kích hoạt gói cho đơn #{$orderCode} thành công", $orderCode, $amount, $request->ip(), $content);
+
             return response()->json(['success' => true, 'message' => 'Payment confirmed and plan activated'], 200);
         });
+    }
+
+    /**
+     * Record a payment webhook audit log entry to storage/logs/payment_webhooks.jsonl.
+     */
+    protected function recordWebhookLog(string $status, string $message, ?string $orderCode = null, ?int $amount = null, ?string $ip = null, ?string $content = null): void
+    {
+        try {
+            $logPath = storage_path('logs/payment_webhooks.jsonl');
+            $dir = dirname($logPath);
+            if (! File::exists($dir)) {
+                File::makeDirectory($dir, 0755, true);
+            }
+
+            $entry = json_encode([
+                'timestamp' => now()->toIso8601String(),
+                'ip' => $ip ?? request()->ip(),
+                'status' => $status,
+                'message' => $message,
+                'order_code' => $orderCode,
+                'amount' => $amount,
+                'content' => $content ?? '',
+                'gateway' => 'SePay',
+            ], JSON_UNESCAPED_UNICODE);
+
+            File::append($logPath, $entry."\n");
+        } catch (\Throwable) {
+            // Keep webhook idempotent and robust
+        }
     }
 }

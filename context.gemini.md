@@ -3941,6 +3941,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 53/53 tests passed 100% (250 assertions) cho toàn bộ phân hệ Admin (`AdminAuthTest`, `AdminInvitationTest`, `AdminTemplateTest`, `AdminOrderTest`, `AdminUserTest`, `AdminWishTest`, `AdminSettingTest`).
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               144. **Nâng Cấp Chuyên Sâu Vận Hành Admin: Xuất Khách Mời CSV (Excel UTF-8 BOM), Chuyển Đổi Mẫu Thiệp (Migrate Template), Nhật Ký Webhook Thanh Toán & Hệ Thống Truy Vết Hành Động Quản Trị (Audit Logs)**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Hỗ trợ Quản trị viên xuất danh sách khách mời của bất kỳ thiệp cưới nào dưới dạng tệp CSV chuẩn UTF-8 kèm ký tự BOM (`\xEF\xBB\xBF`) để Microsoft Excel trên Windows/Mac hiển thị tiếng Việt hoàn hảo, giúp khách hàng thuận tiện in ấn thiệp giấy truyền thống.
+                      2. Tính năng Chuyển đổi mẫu thiệp (`migrateTemplate`): Cho phép chuyển đổi linh hoạt một thiệp cưới sang mẫu thiết kế khác mà không làm mất thông tin sự kiện hay album ảnh khi khách hàng yêu cầu đổi giao diện.
+                      3. Nhật ký Webhook Thanh toán (`admin.orders.webhooks`): Tự động ghi nhận mọi sự kiện webhook SePay gọi về kèm thời gian, địa chỉ IP, mã đơn, số tiền và trạng thái (Thành công, Cảnh báo, Đã xử lý), hiển thị giao diện đối soát trực quan 100 sự kiện gần nhất.
+                      4. Dịch vụ Hệ thống Truy vết Hành động Quản trị (`App\Services\AuditLogger`): Ghi nhận toàn bộ thao tác nhạy cảm (duyệt/hủy đơn hàng, gia hạn thiệp, xuất bản/ẩn thiệp, đổi mẫu, phân quyền vai trò tài khoản, đặt lại mật khẩu, cập nhật giá cước và tài khoản ngân hàng) lưu trữ dạng `JSONL` an toàn không làm ảnh hưởng đến hiệu năng truy vấn database.
+                      5. Giao diện xem Nhật Ký Quản Trị (`admin.settings.audit_logs`) với bộ lọc loại hành động và ô tìm kiếm nhanh.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Services/AuditLogger.php`: Lớp dịch vụ tập trung ghi log và đọc danh sách lịch sử truy vết quản trị.
+                      - `app/Http/Controllers/Admin/InvitationController.php`: Bổ sung `exportGuests` (stream CSV UTF-8) và `migrateTemplate` (chuyển đổi mẫu thiệp), tích hợp gọi `AuditLogger::log`.
+                      - `app/Http/Controllers/Client/CheckoutController.php`: Bổ sung `recordWebhookLog` tự động ghi vết mỗi request Webhook nhận được.
+                      - `app/Http/Controllers/Admin/OrderController.php`: Bổ sung action `webhooks` hiển thị lịch sử webhook, tích hợp gọi `AuditLogger::log` khi duyệt/hủy đơn.
+                      - `app/Http/Controllers/Admin/UserController.php`: Tích hợp gọi `AuditLogger::log` khi đổi vai trò và đặt lại mật khẩu.
+                      - `app/Http/Controllers/Admin/SettingController.php`: Bổ sung action `auditLogs` lọc và tìm kiếm lịch sử hành động quản trị, tích hợp gọi `AuditLogger::log` khi đổi bảng giá và tài khoản ngân hàng.
+                      - `routes/admin.php`: Bổ sung các routes `admin.invitations.migrate_template`, `admin.invitations.export_guests`, `admin.orders.webhooks`, `admin.settings.audit_logs`.
+                      - `resources/views/admin/pages/invitations/show.blade.php`: Nâng cấp giao diện với nút "Xuất Danh Sách Khách (CSV)" và hộp thao tác "Chuyển Đổi Mẫu Thiệp".
+                      - `resources/views/admin/pages/orders/index.blade.php`: Thêm tabs điều hướng sang Nhật Ký Webhook.
+                      - `resources/views/admin/pages/orders/webhooks.blade.php`: Giao diện bảng đối soát 100 sự kiện Webhook gần nhất.
+                      - `resources/views/admin/pages/settings/audit_logs.blade.php`: Giao diện bảng Nhật Ký Quản Trị kèm bộ lọc hành động.
+                      - `resources/views/admin/layouts/master.blade.php`: Bổ sung mục menu "Nhật Ký Quản Trị (Audit)" vào Sidebar.
+                      - `tests/Feature/AdminInvitationTest.php`, `AdminOrderTest.php`, `AdminSettingTest.php`: Bổ sung 4 test cases kiểm tra xuất CSV, chuyển mẫu thiệp, xem nhật ký webhook và xem nhật ký audit log.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 57/57 tests passed 100% (266 assertions) trên toàn bộ 7 test suite Admin.
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

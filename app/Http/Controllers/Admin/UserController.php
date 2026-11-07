@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -106,6 +107,14 @@ class UserController extends Controller
 
         $user->update(['role' => $newRole]);
 
+        AuditLogger::log(
+            'change_user_role',
+            'User',
+            $user->id,
+            "Đổi vai trò tài khoản {$user->email} ({$user->name}) thành \"{$user->role_label}\"",
+            ['user_id' => $user->id, 'new_role' => $newRole]
+        );
+
         return back()->with('success', "Đã cập nhật vai trò tài khoản {$user->name} thành \"{$user->role_label}\" thành công.");
     }
 
@@ -122,6 +131,14 @@ class UserController extends Controller
         $user->update([
             'password' => Hash::make($request->input('password')),
         ]);
+
+        AuditLogger::log(
+            'reset_user_password',
+            'User',
+            $user->id,
+            "Đặt lại mật khẩu cho tài khoản {$user->email} ({$user->name})",
+            ['user_id' => $user->id]
+        );
 
         return back()->with('success', "Đã đặt lại mật khẩu mới cho người dùng \"{$user->name}\" thành công.");
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
+use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -91,6 +92,14 @@ class SettingController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
+        AuditLogger::log(
+            'update_plan',
+            'Plan',
+            $plan->id,
+            "Cập nhật thông tin gói cước \"{$plan->name}\" (Giá: ".number_format($plan->price, 0, ',', '.').'đ)',
+            ['plan_id' => $plan->id, 'price' => $plan->price, 'duration_days' => $plan->duration_days]
+        );
+
         return redirect()->route('admin.settings.plans')
             ->with('success', "Đã cập nhật thông tin gói dịch vụ \"{$plan->name}\" thành công.");
     }
@@ -154,6 +163,14 @@ class SettingController extends Controller
         File::put(
             $this->bankingConfigPath,
             json_encode($validated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+        );
+
+        AuditLogger::log(
+            'update_banking',
+            'Banking',
+            'gateway',
+            "Cập nhật tài khoản thụ hưởng VietQR: {$validated['bank_name']} - {$validated['bank_account']} ({$validated['bank_account_name']})",
+            ['bank_code' => $validated['bank_code'], 'bank_account' => $validated['bank_account']]
         );
 
         return back()->with('success', 'Đã lưu cấu hình tài khoản ngân hàng & VietQR thành công.');
@@ -243,5 +260,34 @@ class SettingController extends Controller
             'qr_template' => 'compact',
         ];
     }
-}
 
+    /**
+     * Display centralized administrative audit logs.
+     */
+    public function auditLogs(Request $request): View
+    {
+        $search = trim((string) $request->input('q', ''));
+        $action = $request->input('action');
+
+        $logs = AuditLogger::getRecentLogs(100, $action ?: null, $search ?: null);
+
+        $availableActions = [
+            'approve_order' => 'Duyệt Đơn Hàng',
+            'cancel_order' => 'Hủy Đơn Hàng',
+            'toggle_publish' => 'Bật/Ẩn Thiệp',
+            'extend_invitation' => 'Gia Hạn Thiệp',
+            'migrate_template' => 'Đổi Mẫu Thiệp',
+            'change_user_role' => 'Phân Quyền User',
+            'reset_user_password' => 'Đặt Lại Mật Khẩu',
+            'update_plan' => 'Cập Nhật Gói Cước',
+            'update_banking' => 'Cập Nhật Ngân Hàng',
+        ];
+
+        return view('admin.pages.settings.audit_logs', [
+            'logs' => $logs,
+            'currentSearch' => $search,
+            'currentAction' => $action,
+            'availableActions' => $availableActions,
+        ]);
+    }
+}

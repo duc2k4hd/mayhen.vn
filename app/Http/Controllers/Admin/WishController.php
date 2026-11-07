@@ -165,4 +165,3 @@ class WishController extends Controller
         ]);
     }
 }
-

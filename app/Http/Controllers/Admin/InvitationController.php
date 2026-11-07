@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Services\AuditLogger;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvitationController extends Controller
 {
@@ -98,10 +100,16 @@ class InvitationController extends Controller
             ])
             ->findOrFail($id);
 
+        $allTemplates = InvitationTemplate::query()
+            ->select('id', 'name', 'slug')
+            ->orderBy('name')
+            ->get();
+
         return view('admin.pages.invitations.show', [
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
             'template' => $invitation->template,
+            'allTemplates' => $allTemplates,
         ]);
     }
 
@@ -119,6 +127,14 @@ class InvitationController extends Controller
         }
 
         $invitation->update($updateData);
+
+        AuditLogger::log(
+            'toggle_publish',
+            'Invitation',
+            $invitation->id,
+            "Đã chuyển trạng thái thiệp \"{$invitation->slug}\" sang ".($newStatus ? 'Xuất bản' : 'Bản nháp'),
+            ['slug' => $invitation->slug, 'is_published' => $newStatus]
+        );
 
         $msg = $newStatus ? 'Đã kích hoạt xuất bản thiệp cưới thành công.' : 'Đã chuyển thiệp cưới về trạng thái bản nháp riêng tư.';
 
@@ -145,6 +161,79 @@ class InvitationController extends Controller
             'expires_at' => $baseDate->copy()->addDays($days),
         ]);
 
+        AuditLogger::log(
+            'extend_invitation',
+            'Invitation',
+            $invitation->id,
+            "Gia hạn hiển thị thiệp \"{$invitation->slug}\" thêm {$days} ngày",
+            ['slug' => $invitation->slug, 'days' => $days]
+        );
+
         return back()->with('success', "Đã gia hạn thời gian hiển thị thiệp cưới thêm {$days} ngày.");
+    }
+
+    /**
+     * Migrate the invitation to another template.
+     */
+    public function migrateTemplate(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'template_id' => 'required|integer|exists:invitation_templates,id',
+        ]);
+
+        $invitation = Invitation::findOrFail($id);
+        $targetTemplate = InvitationTemplate::findOrFail((int) $request->input('template_id'));
+
+        $invitation->update([
+            'template_id' => $targetTemplate->id,
+        ]);
+
+        AuditLogger::log(
+            'migrate_template',
+            'Invitation',
+            $invitation->id,
+            "Chuyển đổi mẫu thiệp \"{$invitation->slug}\" sang mẫu \"{$targetTemplate->name}\"",
+            ['slug' => $invitation->slug, 'template_id' => $targetTemplate->id, 'template_name' => $targetTemplate->name]
+        );
+
+        return back()->with('success', "Đã chuyển đổi mẫu thiệp sang \"{$targetTemplate->name}\" thành công.");
+    }
+
+    /**
+     * Export guests list of an invitation as UTF-8 CSV with BOM for Excel.
+     */
+    public function exportGuests(int $id): StreamedResponse
+    {
+        $invitation = Invitation::with(['wedding.guests'])->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $guests = $wedding?->guests ?? collect();
+
+        $filename = "danh-sach-khach-moi-{$invitation->slug}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($guests) {
+            $file = fopen('php://output', 'w');
+            // Write UTF-8 BOM so Excel opens Vietnamese characters cleanly
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, ['STT', 'Họ Và Tên', 'Số Điện Thoại', 'Nhóm Khách', 'Trạng Thái Gửi', 'Đã Xem Thiệp']);
+
+            foreach ($guests as $idx => $guest) {
+                fputcsv($file, [
+                    $idx + 1,
+                    $guest->name,
+                    $guest->phone ?? '',
+                    $guest->group_name ?? 'Chung',
+                    $guest->is_sent ? 'Đã gửi' : 'Chưa gửi',
+                    $guest->is_opened ? 'Đã xem' : 'Chưa xem',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
     }
 }

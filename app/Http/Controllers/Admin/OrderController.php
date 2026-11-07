@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Plan;
+use App\Services\AuditLogger;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class OrderController extends Controller
 {
@@ -140,6 +142,14 @@ class OrderController extends Controller
             }
         });
 
+        AuditLogger::log(
+            'approve_order',
+            'Order',
+            $order->id,
+            "Duyệt thủ công đơn hàng #{$order->order_code} số tiền ".number_format($order->amount, 0, ',', '.').'đ',
+            ['order_code' => $order->order_code, 'amount' => $order->amount]
+        );
+
         return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} và kích hoạt bản quyền thiệp cưới thành công.");
     }
 
@@ -156,6 +166,41 @@ class OrderController extends Controller
 
         $order->update(['status' => 'cancelled']);
 
+        AuditLogger::log(
+            'cancel_order',
+            'Order',
+            $order->id,
+            "Hủy đơn hàng #{$order->order_code}",
+            ['order_code' => $order->order_code]
+        );
+
         return back()->with('success', "Đã hủy đơn hàng #{$order->order_code}.");
+    }
+
+    /**
+     * Display payment gateway webhook audit logs.
+     */
+    public function webhooks(): View
+    {
+        $logPath = storage_path('logs/payment_webhooks.jsonl');
+        $logs = [];
+
+        if (File::exists($logPath)) {
+            $lines = file($logPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            if (is_array($lines)) {
+                $lines = array_reverse($lines);
+                $lines = array_slice($lines, 0, 100);
+                foreach ($lines as $line) {
+                    $decoded = json_decode($line, true);
+                    if (is_array($decoded)) {
+                        $logs[] = $decoded;
+                    }
+                }
+            }
+        }
+
+        return view('admin.pages.orders.webhooks', [
+            'logs' => $logs,
+        ]);
     }
 }

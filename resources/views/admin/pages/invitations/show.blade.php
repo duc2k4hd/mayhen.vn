@@ -81,6 +81,29 @@
                         Hạn hiện tại: <strong>{{ $invitation->expires_at ? $invitation->expires_at->format('d/m/Y H:i') : 'Vĩnh viễn / Chưa đặt' }}</strong>
                     </div>
                 </div>
+
+                <!-- Migrate Template -->
+                <div class="mayhen_admin_card" style="margin-top: 8px; margin-bottom: 0; padding: 14px;">
+                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 8px;">
+                        Chuyển Đổi Mẫu Thiệp
+                    </div>
+                    <form action="{{ route('admin.invitations.migrate_template', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn chuyển đổi thiệp này sang mẫu mới không?');">
+                        @csrf
+                        <select name="template_id" class="mayhen_admin_select" style="width: 100%; margin-bottom: 8px;">
+                            @foreach ($allTemplates as $tpl)
+                                <option value="{{ $tpl->id }}" {{ $invitation->template_id === $tpl->id ? 'selected' : '' }}>
+                                    {{ $tpl->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" style="width: 100%;">
+                            Chuyển Mẫu
+                        </button>
+                    </form>
+                    <div style="font-size: 0.6875rem; color: #7A756E; margin-top: 6px;">
+                        Mẫu hiện tại: <strong>{{ $template->name ?? '—' }}</strong>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -188,6 +211,22 @@
                 <div class="mayhen_admin_card_body">
                     <!-- Tab 1: Guests List -->
                     <div id="tab-guests" class="mayhen_admin_tab_pane active">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Tổng cộng <strong>{{ $wedding->guests->count() }}</strong> khách mời đã lưu.
+                            </div>
+                            @if ($wedding->guests->count() > 0)
+                                <a href="{{ route('admin.invitations.export_guests', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <span>Xuất Danh Sách Khách (CSV)</span>
+                                </a>
+                            @endif
+                        </div>
+
                         <div class="mayhen_admin_table_responsive">
                             <table class="mayhen_admin_table">
                                 <thead>
