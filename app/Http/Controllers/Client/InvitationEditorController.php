@@ -315,24 +315,24 @@ class InvitationEditorController extends Controller
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
 
-        if ($customView && view()->exists($customView)) {
-            return view($customView, [
-                'invitation' => $invitation,
-                'wedding' => $wedding,
-                'template' => $template,
-                'guest' => $guest,
-                'wishes' => $wishes,
-                'wishSubmitUrl' => $wishSubmitUrl,
-                'rsvpSubmitUrl' => $rsvpSubmitUrl,
-                'currentRsvp' => $currentRsvp,
-                'myWish' => $myWish,
-                'isOwner' => $isOwner,
-                'rsvpStats' => $rsvpStats,
-                'rsvpResponses' => $rsvpResponses,
-            ]);
+        // Trích xuất thông điệp cá nhân hóa (Invitation Persona) nếu có
+        $personaConfig = $config['persona_messages'] ?? [];
+        $isPersonaEnabled = ! empty($personaConfig['enabled']);
+        $personaMessage = null;
+
+        if ($isPersonaEnabled && $guest && ! empty($guest->group_name)) {
+            $groupMsg = $personaConfig['groups'][$guest->group_name] ?? null;
+            if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
+                $personaMessage = [
+                    'title' => $groupMsg['title'] ?? null,
+                    'subtitle' => $groupMsg['subtitle'] ?? null,
+                    'content' => $groupMsg['content'] ?? null,
+                    'group_name' => $guest->group_name,
+                ];
+            }
         }
 
-        return view('client.pages.public-invitation', [
+        $viewData = [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'template' => $template,
@@ -345,7 +345,14 @@ class InvitationEditorController extends Controller
             'isOwner' => $isOwner,
             'rsvpStats' => $rsvpStats,
             'rsvpResponses' => $rsvpResponses,
-        ]);
+            'personaMessage' => $personaMessage,
+        ];
+
+        if ($customView && view()->exists($customView)) {
+            return view($customView, $viewData);
+        }
+
+        return view('client.pages.public-invitation', $viewData);
     }
 
     /**

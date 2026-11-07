@@ -26,37 +26,171 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Sao chép lời mời Zalo kèm link cá nhân hóa
+    // 2. Thẻ Mời Zalo & Messenger Khắc Tên (TASK-V1-05: Social Share Card Modal)
+    const shareModal = document.getElementById('mayhen-share-zalo-modal');
+    const shareCardName = document.getElementById('share-card-guest-name');
+    const shareCardCouple = document.getElementById('share-card-couple');
+    const shareCardGroup = document.getElementById('share-card-group');
+    const shareCardDate = document.getElementById('share-card-date');
+    const shareMessageText = document.getElementById('share-message-text');
+    const shareCopyToast = document.getElementById('share-copy-toast');
+    const shareStyleBtns = document.querySelectorAll('.mayhen_guest_share_style_btn');
+    const shareCopyMsgBtn = document.getElementById('share-copy-message-btn');
+    const shareCopyLinkOnlyBtn = document.getElementById('share-copy-link-only-btn');
+    const shareOpenZaloBtn = document.getElementById('share-open-zalo-btn');
+
+    let currentShareData = {
+        guestName: '',
+        salutation: 'Kính mời',
+        groupName: '',
+        guestLink: '',
+        coupleNames: '',
+        weddingDate: '',
+        currentStyle: 'formal'
+    };
+
+    function generateShareMessage(style, data) {
+        const { guestName, salutation, coupleNames, weddingDate, guestLink } = data;
+        const dateStr = weddingDate ? ` vào ngày ${weddingDate}` : '';
+
+        if (style === 'intimate') {
+            return `Thân gửi ${guestName} ơi!\n\nNgày vui của ${coupleNames} sắp đến rồi${dateStr}. Tụi mình gửi tấm thiệp cưới này cùng tất cả sự trân quý, rất mong bạn sẽ bớt chút thời gian tới chung vui và quẩy hết mình cùng tụi mình nhé!\n\nXem thiệp và xác nhận tham dự tại đây nha:\n${guestLink}\n\nHẹn gặp bạn ngày vui nha!`;
+        } else if (style === 'warm') {
+            return `Mến gửi ${salutation} ${guestName},\n\n${coupleNames} trân trọng gửi thiệp mời tham dự tiệc cưới của chúng mình${dateStr}. Thật hạnh phúc nếu được đón tiếp bạn cùng người thương trong ngày trọng đại này.\n\nKính mời bạn xem thông tin chi tiết và gửi lời chúc phúc tại:\n${guestLink}\n\nTrân trọng & Cảm ơn bạn rất nhiều!`;
+        }
+
+        // Mặc định: Trang trọng & Kính cẩn (formal)
+        return `Kính gửi ${salutation} ${guestName},\n\nGia đình chúng tôi xin trân trọng kính mời quý khách tới tham dự lễ thành hôn của ${coupleNames}${dateStr}.\n\nKính mời xem chi tiết thiệp cưới và xác nhận tham dự tại:\n${guestLink}\n\nSự hiện diện của quý khách là niềm vinh hạnh lớn nhất của gia đình chúng tôi!`;
+    }
+
+    function openShareModal(btn) {
+        if (!shareModal) return;
+
+        currentShareData.guestName = btn.getAttribute('data-guest-name') || 'Quý Khách';
+        currentShareData.salutation = btn.getAttribute('data-guest-salutation') || 'Kính mời';
+        currentShareData.groupName = btn.getAttribute('data-guest-group') || 'Chung';
+        currentShareData.guestLink = btn.getAttribute('data-guest-link') || window.location.href;
+        currentShareData.coupleNames = btn.getAttribute('data-couple-names') || 'Cô Dâu & Chú Rể';
+        currentShareData.weddingDate = btn.getAttribute('data-wedding-date') || '';
+
+        // Tự động suy luận phong cách phù hợp theo nhóm khách
+        const grpLower = currentShareData.groupName.toLowerCase();
+        if (grpLower.includes('bạn') || grpLower.includes('thân')) {
+            currentShareData.currentStyle = 'intimate';
+        } else if (grpLower.includes('gia đình') || grpLower.includes('họ hàng') || grpLower.includes('vip') || grpLower.includes('người lớn')) {
+            currentShareData.currentStyle = 'formal';
+        } else {
+            currentShareData.currentStyle = 'warm';
+        }
+
+        // Cập nhật thẻ xem trước bưu thiếp mini
+        if (shareCardName) shareCardName.innerText = `${currentShareData.salutation} ${currentShareData.guestName}`;
+        if (shareCardCouple && currentShareData.coupleNames) shareCardCouple.innerText = currentShareData.coupleNames;
+        if (shareCardGroup) shareCardGroup.innerText = `Nhóm: ${currentShareData.groupName}`;
+        if (shareCardDate && currentShareData.weddingDate) shareCardDate.innerText = currentShareData.weddingDate;
+
+        // Cập nhật trạng thái active của nút chọn phong cách
+        shareStyleBtns.forEach(b => {
+            const isMatch = b.getAttribute('data-style') === currentShareData.currentStyle;
+            b.classList.toggle('is-active', isMatch);
+            b.style.borderColor = isMatch ? '#C5A880' : '#E5DCCD';
+            b.style.background = isMatch ? '#FAF8F5' : '#FFFFFF';
+            b.style.fontWeight = isMatch ? '600' : 'normal';
+        });
+
+        // Tạo nội dung tin nhắn và đưa vào textarea
+        if (shareMessageText) {
+            shareMessageText.value = generateShareMessage(currentShareData.currentStyle, currentShareData);
+        }
+
+        if (shareCopyToast) shareCopyToast.style.display = 'none';
+
+        shareModal.classList.add('is-open');
+        shareModal.setAttribute('aria-hidden', 'false');
+    }
+
+    // Gán sự kiện mở modal cho các nút Chép Mời Zalo
     const copyZaloBtns = document.querySelectorAll('[data-mayhen-action="copy-zalo"]');
     copyZaloBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const guestName = btn.getAttribute('data-guest-name') || '';
-            const salutation = btn.getAttribute('data-guest-salutation') || 'Kính mời';
-            const guestLink = btn.getAttribute('data-guest-link') || '';
-            const coupleNames = btn.getAttribute('data-couple-names') || 'Cô Dâu & Chú Rể';
-            const weddingDate = btn.getAttribute('data-wedding-date') || '';
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openShareModal(btn);
+        });
+    });
 
-            const dateStr = weddingDate ? ` vào ngày ${weddingDate}` : '';
-            const message = `${salutation} ${guestName},\n\nTrân trọng kính mời quý khách tới tham dự lễ thành hôn của ${coupleNames}${dateStr}.\n\nXem chi tiết thiệp cưới và gửi lời chúc phúc tại:\n${guestLink}\n\nRất hân hạnh được đón tiếp!`;
+    // Chuyển đổi phong cách lời mời trong modal
+    shareStyleBtns.forEach(b => {
+        b.addEventListener('click', () => {
+            const style = b.getAttribute('data-style');
+            currentShareData.currentStyle = style;
 
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(message).then(() => {
-                    const originalHtml = btn.innerHTML;
-                    btn.innerText = 'Đã chép lời mời!';
-                    btn.style.backgroundColor = '#1F1D1A';
-                    btn.style.color = '#FAF8F5';
-                    btn.style.borderColor = '#1F1D1A';
+            shareStyleBtns.forEach(btn => {
+                const isMatch = btn === b;
+                btn.classList.toggle('is-active', isMatch);
+                btn.style.borderColor = isMatch ? '#C5A880' : '#E5DCCD';
+                btn.style.background = isMatch ? '#FAF8F5' : '#FFFFFF';
+                btn.style.fontWeight = isMatch ? '600' : 'normal';
+            });
 
-                    setTimeout(() => {
-                        btn.innerHTML = originalHtml;
-                        btn.style.backgroundColor = '';
-                        btn.style.color = '';
-                        btn.style.borderColor = '';
-                    }, 2000);
-                });
+            if (shareMessageText) {
+                shareMessageText.value = generateShareMessage(style, currentShareData);
             }
         });
     });
+
+    function showToast(msg) {
+        if (!shareCopyToast) return;
+        shareCopyToast.innerText = msg;
+        shareCopyToast.style.display = 'inline';
+        setTimeout(() => {
+            shareCopyToast.style.display = 'none';
+        }, 3000);
+    }
+
+    // Sao chép toàn bộ lời mời kèm link
+    if (shareCopyMsgBtn) {
+        shareCopyMsgBtn.addEventListener('click', () => {
+            const text = shareMessageText ? shareMessageText.value : '';
+            if (navigator.clipboard && text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('✓ Đã sao chép lời mời vào bộ nhớ tạm!');
+                });
+            }
+        });
+    }
+
+    // Sao chép riêng đường link thiệp
+    if (shareCopyLinkOnlyBtn) {
+        shareCopyLinkOnlyBtn.addEventListener('click', () => {
+            const link = currentShareData.guestLink;
+            if (navigator.clipboard && link) {
+                navigator.clipboard.writeText(link).then(() => {
+                    showToast('✓ Đã sao chép đường link!');
+                });
+            }
+        });
+    }
+
+    // Mở Zalo: tự động sao chép trước khi mở app / web Zalo
+    if (shareOpenZaloBtn) {
+        shareOpenZaloBtn.addEventListener('click', () => {
+            const text = shareMessageText ? shareMessageText.value : '';
+            if (navigator.clipboard && text) {
+                navigator.clipboard.writeText(text);
+            }
+        });
+    }
+
+    // Đóng share modal
+    if (shareModal) {
+        const closeBtns = shareModal.querySelectorAll('.mayhen_guest_modal_close, .mayhen_guest_modal_cancel, .mayhen_guest_modal_backdrop');
+        closeBtns.forEach(cb => {
+            cb.addEventListener('click', () => {
+                shareModal.classList.remove('is-open');
+                shareModal.setAttribute('aria-hidden', 'true');
+            });
+        });
+    }
 
     // 3. Sao chép trực tiếp đường link thiệp của khách (không dùng alert)
     const copyLinkBtns = document.querySelectorAll('[data-mayhen-action="copy-link"]');

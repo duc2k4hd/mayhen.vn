@@ -106,6 +106,12 @@
     $coupleQuote = $extraData['couple_quote'] ?? 'Giữa muôn ngàn vì sao sáng trên bầu trời, em là ngôi sao duy nhất chiếu rọi trái tim anh.';
     $storyContent = $extraData['story_content'] ?? 'Vũ trụ bao la với hàng triệu vì tinh tú, nhưng định mệnh đã dẫn lối để hai tâm hồn đồng điệu tìm thấy nhau. Cảm ơn vì đã cùng nhau đi qua những năm tháng thanh xuân, và hôm nay, chúng ta cùng viết tiếp chương mới rạng rỡ nhất.';
 
+    if (! empty($personaMessage)) {
+        $storyTitle = $personaMessage['title'] ?? $storyTitle;
+        $storySubtitle = $personaMessage['subtitle'] ?? $storySubtitle;
+        $storyContent = $personaMessage['content'] ?? $storyContent;
+    }
+
     // 3.1 Quy định trang phục (Dresscode)
     $rawDresscodeColors = $extraData['dresscode_colors'] ?? '#FCE39E,#FFFFFF,#1B2A4A,#0D1322';
     $dresscodeColors = is_array($rawDresscodeColors) ? $rawDresscodeColors : array_map('trim', explode(',', $rawDresscodeColors));

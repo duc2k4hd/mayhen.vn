@@ -45,9 +45,9 @@ flowchart TD
 |---|---|---|---|---|
 | **TASK-V1-01** | **Bảo vệ Trạng Thái Thiệp (Draft / Expired / Locked)** | `InvitationEditorController`, `GuestController`, Views | 100% chặn truy cập công khai và các API tương tác khi thiệp bị khóa hoặc chưa xuất bản. Đã có 6 test cases bao phủ. | **P0 (ĐÃ HOÀN TẤT)** |
 | **TASK-V1-02** | **Xác thực Webhook & Deduplication Transaction ID** | `CheckoutController`, Migration `orders` | Lưu `provider_transaction_id` unique, chống replay attack và trùng lặp giao dịch. Đã có test case bao phủ. | **P0 (ĐÃ HOÀN TẤT)** |
-| **TASK-V1-03** | **Cá Nhân Hóa Lời Chào Theo Nhóm (Invitation Persona)** | Studio Editor, `template.blade.php`, `GuestController` | Cho phép soạn lời ngỏ riêng cho [Bạn Bè / Gia Đình / Đồng Nghiệp]. Khách mở link nhận đúng thông điệp theo nhóm. | **P1 (Ưu tiên số 1)** |
+| **TASK-V1-03** | **Cá Nhân Hóa Lời Chào Theo Nhóm (Invitation Persona)** | Cài đặt thiệp, `InvitationEditorController`, 4 Mẫu Thiệp Blade | Cặp đôi tùy biến lời ngỏ riêng theo nhóm khách [Bạn Bè, Gia Đình, Đồng Nghiệp, Khách VIP]. Khách mở link nhận đúng thông điệp theo nhóm. DOM client cách ly an toàn, chống leak phân loại khách. 7/7 test cases bao phủ. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V1-04** | **Trợ Lý Viết Lời Ngỏ Tình Yêu Bằng AI (AI Story Writer)** | Studio V2, Service AI, Controller | Cặp đôi nhập từ khóa kỷ niệm, AI sinh ra 3 phương án lời ngỏ Quiet Luxury để chọn lựa. | **P1 (Ưu tiên số 2)** |
-| **TASK-V1-05** | **Thẻ Chia Sẻ Zalo / Messenger Tự Động Khắc Tên** | Modal chia sẻ, Blade templates | Tự động sinh đoạn tin nhắn mời cưới trang trọng và lịch thiệp có khắc tên riêng khách mời. | **P1 (Ưu tiên số 3)** |
+| **TASK-V1-05** | **Thẻ Chia Sẻ Zalo / Messenger Tự Động Khắc Tên** | Modal chia sẻ `guests.blade.php`, `guests.js` | Modal bưu thiếp mini khắc tên khách mời, 3 phong cách lời mời (Trang trọng, Thân mật, Lịch thiệp), tự động gợi ý theo nhóm, sao chép 1-chạm và mở Zalo. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V1-06** | **Trợ Lý Khám Bệnh Thiệp Cưới (Visual Quality Doctor)** | Studio Editor JS, Canvas | Cảnh báo trước khi xuất bản nếu ảnh quá mờ, thiếu địa chỉ Google Maps hoặc chưa điền giờ đón khách. | **P2** |
 
 ---

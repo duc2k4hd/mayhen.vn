@@ -4578,6 +4578,58 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                         - Toàn bộ test suite toàn dự án đạt **182/182 tests passed 100% (984 assertions)**.
                         - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
 
+                 172. **Hoàn Thiện Tính Năng Cá Nhân Hóa Lời Chào & Thông Điệp Theo Nhóm Khách (TASK-V1-03: Invitation Persona)**:
+                      - **Bối cảnh & Giá trị nghiệp vụ**:
+                        - Giải quyết bài toán then chốt trong văn hóa cưới hỏi Việt Nam: Cùng một đám cưới nhưng lời ngỏ gửi cho [Bạn Bè] cần trẻ trung, thân mật, hóm hỉnh; trong khi gửi cho [Gia Đình & Họ Hàng] hoặc [Khách VIP] cần kính cẩn, trang trọng, tri ân.
+                        - Giúp khách mời cảm thấy được tôn trọng tối đa khi mở tấm thiệp mang đúng thông điệp dành riêng cho mối quan hệ của họ.
+                      - **Các thành phần kỹ thuật đã triển khai**:
+                        1. *Giao diện Cấu hình Cài đặt Thiệp (`settings.blade.php`)*:
+                           - Bổ sung Khối 6: *"6. Cá Nhân Hóa Lời Chào Theo Nhóm Khách (Invitation Persona)"* gắn badge Quiet Luxury `Premium VNext`.
+                           - Checkbox bật/tắt tính năng toàn cục (`persona_enabled`).
+                           - Tự động nạp danh sách các nhóm khách hiện có của đám cưới kết hợp nhóm gợi ý mặc định (`['Bạn Bè', 'Gia Đình & Họ Hàng', 'Đồng Nghiệp', 'Khách VIP', 'Bà Con Lối Xóm']`).
+                           - Cho phép nhập độc lập Tiêu đề (`title`), Câu trích dẫn (`subtitle`), và Lời ngỏ thân gửi (`content`) cho từng nhóm khách.
+                        2. *Xử lý Backend & Bảo mật dữ liệu (`AccountController.php`)*:
+                           - Validation nghiêm ngặt độ dài (`max:190` cho tiêu đề, `max:2000` cho nội dung).
+                           - Lọc sạch mã độc XSS bằng `strip_tags()` trước khi lưu vào `custom_config['persona_messages']`.
+                           - Phân quyền nghiêm ngặt: Chỉ chủ sở hữu thiệp cưới mới được phép cập nhật.
+                        3. *Tích hợp Hiển thị Thiệp Công Khai (`InvitationEditorController.php`)*:
+                           - Khi khách mời mở thiệp bằng link định danh có `token`, controller tra cứu nhóm khách (`$guest->group_name`).
+                           - Nếu tính năng Persona bật và nhóm đó có thông điệp riêng, trích xuất duy nhất thông điệp đó và truyền biến `$personaMessage` vào view thiệp.
+                        4. *Đồng bộ trên 4 Mẫu Thiệp Độc Quyền & View Mặc định*:
+                           - Cập nhật cả 4 mẫu thiệp (`giua-muon-ngan-vi-sao`, `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`) và `public-invitation.blade.php`.
+                           - Giữ nguyên 100% layout, BEM classes, animation và typography source-locked của từng mẫu thiệp.
+                        5. *Bảo vệ Riêng Tư Tuyệt Đối (DOM Security & Privacy Guard)*:
+                           - Client của khách chỉ nhận duy nhất nội dung dành riêng cho nhóm của mình.
+                           - Tuyệt đối không nhúng JSON chứa các nhóm khác vào DOM hay script, loại bỏ hoàn toàn nguy cơ rò rỉ phân loại khách mời hay lộ thông điệp riêng tư.
+                      - **Kiểm thử & Đảm bảo chất lượng**:
+                        - Viết 7 test cases bao phủ toàn diện: Bạn bè nhận đúng lời chào bạn bè; Gia đình nhận đúng lời chào gia đình; Không token/link chung nhận lời ngỏ mặc định; Tắt Persona hiển thị lời ngỏ mặc định; Lọc sạch script XSS; Chặn truy cập trái phép của người dùng khác; Khẳng định không rò rỉ thông điệp nhóm khác trong DOM HTML -> **7/7 tests passed**.
+                        - Toàn bộ test suite hệ thống: **182/182 tests passed 100% (984 assertions)**.
+                        - Laravel Pint: Đạt chuẩn 100%.
+
+                 173. **Triển Khai Thẻ Mời Zalo & Messenger Khắc Tên Tự Động (TASK-V1-05: Social Share Card Modal)**:
+                      - **Bối cảnh & Ý nghĩa nghiệp vụ**:
+                        - Khắc phục tình trạng gửi link thiệp hàng loạt dạng spam khiến khách mời bỏ lỡ hoặc ngần ngại mở xem.
+                        - Cung cấp cho cặp đôi công cụ chia sẻ 1-chạm có khắc tên riêng và xưng hô tôn kính (`Trân trọng kính mời: [Xưng hô] [Tên khách]`) cùng 3 phong cách văn phong tùy chọn: Trang trọng, Thân mật, Lịch thiệp.
+                      - **Các thành phần kỹ thuật đã triển khai**:
+                        1. *Thẻ Xem Trước Bưu Thiếp Mini (Mini Postcard Preview)*:
+                           - Giao diện Quiet Luxury thanh lịch với viền vàng ánh kim nhạt, font Cormorant Garamond, hiển thị tên khách mời, xưng hô, nhóm khách, tên cô dâu chú rể và ngày tổ chức hôn lễ.
+                        2. *Bộ Chọn 3 Phong Cách Văn Phong Tự Động Theo Nhóm*:
+                           - *Trang trọng & Kính cẩn*: Tự động kích hoạt khi nhóm khách là Gia đình, Họ hàng, Khách VIP hoặc Người lớn tuổi.
+                           - *Thân mật & Hóm hỉnh*: Tự động kích hoạt cho nhóm Bạn bè, Anh chị em thân thiết.
+                           - *Lịch thiệp & Ấm áp*: Dành cho Đồng nghiệp, Đối tác, Khách chung.
+                        3. *Tương Tác Nhanh 1-Chạm*:
+                           - Ô textarea cho phép cặp đôi tự do biên tập, thêm bớt câu chữ trước khi gửi.
+                           - Nút `📋 Sao Chép Lời Mời`: Copy toàn bộ văn bản và link thiệp riêng biệt vào clipboard kèm toast thông báo thành công.
+                           - Nút `Copy Link`: Sao chép riêng đường link có mã định danh `token`.
+                           - Nút `Mở Zalo`: Tự động nạp vào clipboard và mở `https://zalo.me/` để dán ngay vào cuộc trò chuyện.
+                        4. *Kiến Trúc Frontend Pure JavaScript*:
+                           - Hoàn toàn viết bằng Vanilla JavaScript ES Modules trong `guests.js`, không sử dụng thêm thư viện ngoài.
+                           - Hỗ trợ đóng mở modal bằng phím `Escape`, nút Đóng, nút Hủy, hoặc bấm ra vùng mờ (backdrop).
+                      - **Kiểm thử & Đảm bảo chất lượng**:
+                        - Viết Feature test kiểm tra việc render modal, các data attribute cá nhân hóa (`data-guest-group`, `data-couple-names`, `data-wedding-date`) và bộ nút tương tác -> Passed 100%.
+                        - Toàn bộ test suite hệ thống duy trì **182/182 tests passed 100% (984 assertions)**.
+                        - Laravel Pint: Đạt chuẩn 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

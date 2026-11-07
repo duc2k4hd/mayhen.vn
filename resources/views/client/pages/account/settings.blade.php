@@ -202,6 +202,78 @@
             </div>
         </div>
 
+        <!-- Khối 6: Cá Nhân Hóa Lời Chào Theo Nhóm Khách (Invitation Persona) -->
+        @php
+            $personaConfig = $config['persona_messages'] ?? [];
+            $personaEnabled = old('persona_enabled', !empty($personaConfig['enabled']));
+            $savedPersonaGroups = old('persona_messages.groups', $personaConfig['groups'] ?? []);
+        @endphp
+        <div class="mayhen_account_section" style="margin-bottom: 28px;">
+            <div class="mayhen_account_section_header">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 class="mayhen_account_section_title" style="margin: 0;">6. Cá Nhân Hóa Lời Chào Theo Nhóm Khách (Invitation Persona)</h3>
+                            <span style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Premium VNext</span>
+                        </div>
+                        <p class="mayhen_account_section_desc" style="margin-top: 4px;">Tự động hiển thị Lời ngỏ và Câu trích dẫn khác nhau phù hợp với từng đối tượng: Bạn Bè, Gia Đình, Đồng Nghiệp hay Khách VIP khi họ mở link thiệp riêng.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div>
+                    <strong style="font-size: 14px; color: #1F1D1A; display: block;">Kích hoạt tính năng Cá Nhân Hóa Lời Chào (Persona)</strong>
+                    <span style="font-size: 12px; color: #7A726A;">Khi bật, khách mời có mã định danh (token) sẽ thấy đúng thông điệp của nhóm mình. Khách xem link chung vẫn nhận lời ngỏ mặc định của thiệp.</span>
+                </div>
+                <label style="position: relative; display: inline-flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" name="persona_enabled" id="persona-toggle" value="1" {{ $personaEnabled ? 'checked' : '' }} style="width: 20px; height: 20px; accent-color: #C5A880; cursor: pointer;">
+                </label>
+            </div>
+
+            <div id="persona-groups-container" style="display: flex; flex-direction: column; gap: 16px;">
+                @foreach($availableGroups as $gIdx => $gName)
+                    @php
+                        $gData = $savedPersonaGroups[$gName] ?? [];
+                        $gTitle = $gData['title'] ?? '';
+                        $gSubtitle = $gData['subtitle'] ?? '';
+                        $gContent = $gData['content'] ?? '';
+                        $hasCustomContent = !empty($gTitle) || !empty($gSubtitle) || !empty($gContent);
+                    @endphp
+                    <div class="mayhen_account_persona_card" style="border: 1px solid #EAE3D9; border-radius: 12px; background: #FFFFFF; overflow: hidden; transition: border-color 0.2s ease;">
+                        <div style="padding: 14px 18px; background: #FCFAF7; border-bottom: 1px solid #EAE3D9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: #EFE8DD; color: #6B5E4B; font-size: 12px; font-weight: 600;">{{ $gIdx + 1 }}</span>
+                                <strong style="font-size: 14px; color: #1F1D1A;">Nhóm: {{ $gName }}</strong>
+                                @if($hasCustomContent)
+                                    <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500;">Đã thiết lập</span>
+                                @else
+                                    <span style="background: #F5F5F5; color: #757575; font-size: 11px; padding: 2px 8px; border-radius: 10px;">Dùng lời ngỏ chung</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div style="padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+                                <div>
+                                    <label class="mayhen_account_form_label" style="font-size: 12px;">Tiêu đề lời ngỏ cho nhóm {{ $gName }}</label>
+                                    <input type="text" name="persona_messages[groups][{{ $gName }}][title]" value="{{ $gTitle }}" class="mayhen_account_form_input" style="font-size: 13px;" placeholder="Ví dụ: Gửi Những Người Bạn Tuyệt Vời">
+                                </div>
+                                <div>
+                                    <label class="mayhen_account_form_label" style="font-size: 12px;">Câu đề tựa / Trích dẫn phụ</label>
+                                    <input type="text" name="persona_messages[groups][{{ $gName }}][subtitle]" value="{{ $gSubtitle }}" class="mayhen_account_form_input" style="font-size: 13px;" placeholder="Ví dụ: Tuổi Trẻ & Kỷ Niệm Cùng Nhau">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="mayhen_account_form_label" style="font-size: 12px;">Nội dung lời ngỏ thân gửi nhóm {{ $gName }} (Để trống nếu dùng mặc định)</label>
+                                <textarea name="persona_messages[groups][{{ $gName }}][content]" rows="3" class="mayhen_account_form_input" style="height: auto; padding: 10px 14px; font-size: 13px; line-height: 1.5;" placeholder="Nhập tâm sự, lời nhắn gửi riêng dành cho khách thuộc nhóm {{ $gName }}...">{{ $gContent }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <!-- Nút Lưu Cài Đặt -->
         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 40px;">
             <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">

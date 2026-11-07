@@ -78,9 +78,15 @@
                 <h1 class="mayhen_invitation_names">
                     {{ $wedding->groom_name }} <span class="mayhen_invitation_names_amp">&</span> {{ $wedding->bride_name }}
                 </h1>
-                <p style="font-size: 0.875rem; color: var(--mayhen-color-text-muted); font-style: italic;">
-                    "{{ $wedding->story ?? 'Tình yêu là hành trình cùng nhau chia sẻ những điều tuyệt vời nhất.' }}"
-                </p>
+                @if(!empty($personaMessage['content']))
+                    <p style="font-size: 0.9375rem; color: #1F1D1A; font-style: italic; margin-top: 10px; line-height: 1.6;">
+                        "{{ $personaMessage['content'] }}"
+                    </p>
+                @else
+                    <p style="font-size: 0.875rem; color: var(--mayhen-color-text-muted); font-style: italic;">
+                        "{{ $wedding->story ?? 'Tình yêu là hành trình cùng nhau chia sẻ những điều tuyệt vời nhất.' }}"
+                    </p>
+                @endif
             </div>
 
             <!-- Couple Photo -->

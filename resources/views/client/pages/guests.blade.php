@@ -316,6 +316,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                                             data-mayhen-action="copy-zalo"
                                             data-guest-name="{{ $g->name }}"
                                             data-guest-salutation="{{ $g->salutation }}"
+                                            data-guest-group="{{ $g->group_name }}"
                                             data-guest-link="{{ $personalUrl }}"
                                             data-couple-names="{{ $wedding->groom_name }} & {{ $wedding->bride_name }}"
                                             data-wedding-date="{{ $wedding->wedding_date ? \Carbon\Carbon::parse($wedding->wedding_date)->format('d.m.Y') : '' }}">
@@ -498,6 +499,80 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                     <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary">Cập Nhật Trạng Thái</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Thẻ Mời Zalo & Messenger Khắc Tên (TASK-V1-05: Social Share Card) -->
+    <div id="mayhen-share-zalo-modal" class="mayhen_guest_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-share-modal-title">
+        <div class="mayhen_guest_modal_backdrop"></div>
+        <div class="mayhen_guest_modal_dialog" style="max-width: 560px;">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <h3 id="mayhen-share-modal-title" class="mayhen_guest_modal_title">Thẻ Mời Zalo & Messenger Khắc Tên</h3>
+                    <p style="font-size: 13px; color: #7A726A; margin: 2px 0 0 0;">Lời mời cá nhân hóa gửi riêng cho từng vị khách quý</p>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="mayhen_guest_modal_body">
+                <!-- Thẻ xem trước bưu thiếp mini (Mini Invitation Card Preview) -->
+                <div class="mayhen_guest_share_card_preview" style="background: linear-gradient(145deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 12px; padding: 18px 20px; box-shadow: inset 0 0 0 1px rgba(197, 168, 128, 0.25);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #D8CEBD; padding-bottom: 8px;">
+                        <span style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #9C7A4A; font-weight: 600;">MÂY HẸN • SAVE OUR DATE</span>
+                        <span id="share-card-group" class="mayhen_guest_group_badge" style="background: #EFE8DD; color: #6B5E4B; font-size: 11px;">Nhóm: Bạn Bè</span>
+                    </div>
+                    <div style="text-align: center; margin: 10px 0;">
+                        <div style="font-size: 13px; color: #7A726A; font-style: italic;">Trân trọng kính mời</div>
+                        <h4 id="share-card-guest-name" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 700; color: #1F1D1A; margin: 4px 0 4px 0;">Nguyễn Văn A</h4>
+                        <div style="font-size: 13px; color: #9C7A4A; font-weight: 500;">Tới dự lễ thành hôn của</div>
+                        <div id="share-card-couple" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 19px; color: #1F1D1A; font-weight: 600; margin-top: 2px;">{{ $wedding->groom_name }} & {{ $wedding->bride_name }}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: #5A534B; border-top: 1px dashed #D8CEBD; padding-top: 8px; margin-top: 10px; flex-wrap: wrap;">
+                        <span>📅 <strong id="share-card-date">{{ $wedding->wedding_date ? \Carbon\Carbon::parse($wedding->wedding_date)->format('d.m.Y') : 'Ngày trọng đại' }}</strong></span>
+                        @if($wedding->venue_name)
+                            <span>📍 <strong>{{ $wedding->venue_name }}</strong></span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Bộ chọn 3 phong cách lời nhắn -->
+                <div>
+                    <label class="mayhen_guest_form_label" style="margin-bottom: 6px;">Chọn phong cách lời mời:</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                        <button type="button" class="mayhen_guest_share_style_btn is-active" data-style="formal" style="padding: 8px 6px; border-radius: 8px; border: 1px solid #C5A880; background: #FAF8F5; font-size: 12px; font-weight: 600; color: #1F1D1A; cursor: pointer; text-align: center;">
+                            🌟 Trang Trọng
+                        </button>
+                        <button type="button" class="mayhen_guest_share_style_btn" data-style="intimate" style="padding: 8px 6px; border-radius: 8px; border: 1px solid #E5DCCD; background: #FFF; font-size: 12px; color: #5A534B; cursor: pointer; text-align: center;">
+                            💖 Thân Mật
+                        </button>
+                        <button type="button" class="mayhen_guest_share_style_btn" data-style="warm" style="padding: 8px 6px; border-radius: 8px; border: 1px solid #E5DCCD; background: #FFF; font-size: 12px; color: #5A534B; cursor: pointer; text-align: center;">
+                            🕊️ Lịch Thiệp
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ô xem và sửa tin nhắn -->
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <label class="mayhen_guest_form_label" style="margin: 0;">Nội dung tin nhắn sẽ gửi:</label>
+                        <span id="share-copy-toast" style="font-size: 12px; color: #2E7D32; font-weight: 500; display: none;">✓ Đã sao chép vào bộ nhớ tạm!</span>
+                    </div>
+                    <textarea id="share-message-text" rows="5" class="mayhen_guest_form_textarea" style="font-size: 13px; line-height: 1.5; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+            </div>
+            <div class="mayhen_guest_modal_footer" style="flex-wrap: wrap; justify-content: space-between; gap: 10px;">
+                <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline mayhen_guest_modal_cancel">Đóng</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" id="share-copy-link-only-btn" class="mayhen_guest_btn mayhen_guest_btn_outline" style="font-size: 13px;">
+                        Copy Link
+                    </button>
+                    <button type="button" id="share-copy-message-btn" class="mayhen_guest_btn mayhen_guest_btn_primary" style="font-size: 13px;">
+                        📋 Sao Chép Lời Mời
+                    </button>
+                    <a id="share-open-zalo-btn" href="https://zalo.me/" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn" style="background: #0068FF; color: #FFF; border: none; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                        Mở Zalo
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

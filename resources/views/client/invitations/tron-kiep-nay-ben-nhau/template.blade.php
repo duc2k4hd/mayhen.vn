@@ -99,6 +99,12 @@
     $storyContent     = $extraData['story_content']  ?? 'Cảm ơn bạn vì đã luôn dành sự yêu thương và quan tâm đến vợ chồng mình! Chúng mình biết rằng cuộc sống bận rộn, nào là công việc, trách nhiệm gia đình và những lo toan thường ngày. Vì thế, sự trân trọng dành cho bạn càng lớn hơn nữa. Thật lòng, ngày Hạnh Phúc của chúng mình sẽ trở nên trọn vẹn hơn nếu có sự hiện diện của bạn cùng người thương.';
     $saveDatePhotoUrl = $resolveAsset('assets/images/countdown-veil.webp', $extraData['save_date_photo_url'] ?? null);
 
+    if (! empty($personaMessage)) {
+        $storyTitle = $personaMessage['title'] ?? $storyTitle;
+        $storySubtitle = $personaMessage['subtitle'] ?? $storySubtitle;
+        $storyContent = $personaMessage['content'] ?? $storyContent;
+    }
+
     // --- 5. SECTION 3: GIA ĐÌNH & ĐÔI UYÊN ƯƠNG ---
     $groomFather      = $extraData['groom_father']          ?? ($wedding->groom_parents ?? 'Trần Hùng Anh');
     $groomMother      = $extraData['groom_mother']          ?? 'Võ Thị Thúy Vân';

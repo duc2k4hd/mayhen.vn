@@ -91,6 +91,12 @@
     $coupleQuote   = $extraData['couple_quote']  ?? '"Hôn nhân là chuyện cả đời, Yêu người vừa ý, cưới người mình thương"';
     $storyContent  = $extraData['story_content'] ?? 'Biết ơn vì đã tìm thấy nhau giữa thế giới bao la. Cùng nhau chúng ta đi qua những năm tháng tuổi trẻ, và hôm nay bước vào cánh cửa hôn nhân rạng rỡ và hạnh phúc trọn vẹn nhất.';
 
+    if (! empty($personaMessage)) {
+        $storyTitle = $personaMessage['title'] ?? $storyTitle;
+        $storySubtitle = $personaMessage['subtitle'] ?? $storySubtitle;
+        $storyContent = $personaMessage['content'] ?? $storyContent;
+    }
+
     // --- 5. SECTION 3: GIA ĐÌNH & ĐÔI UYÊN ƯƠNG ---
     $groomFather        = $extraData['groom_father']         ?? ($wedding->groom_parents ?? 'Nguyễn Đắc Cường');
     $groomMother        = $extraData['groom_mother']         ?? 'Đặng Thị Hương';

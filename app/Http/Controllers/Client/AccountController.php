@@ -201,11 +201,19 @@ class AccountController extends Controller
 
         $musics = $musicService->getCatalog();
 
+        // Lấy danh sách các nhóm khách mời hiện có của đám cưới này kết hợp nhóm gợi ý chuẩn
+        $defaultGroups = ['Bạn Bè', 'Gia Đình & Họ Hàng', 'Đồng Nghiệp', 'Khách VIP', 'Bà Con Lối Xóm'];
+        $existingGroups = $wedding
+            ? $wedding->guests()->whereNotNull('group_name')->where('group_name', '!=', '')->distinct()->pluck('group_name')->all()
+            : [];
+        $availableGroups = array_values(array_unique(array_filter(array_merge($defaultGroups, $existingGroups))));
+
         return view('client.pages.account.settings', [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'config' => $config,
             'musics' => $musics,
+            'availableGroups' => $availableGroups,
         ]);
     }
 
@@ -236,6 +244,12 @@ class AccountController extends Controller
             'music_autoplay' => ['nullable', 'boolean'],
             'og_title' => ['nullable', 'string', 'max:190'],
             'og_description' => ['nullable', 'string', 'max:300'],
+            'persona_enabled' => ['nullable', 'boolean'],
+            'persona_messages' => ['nullable', 'array'],
+            'persona_messages.groups' => ['nullable', 'array'],
+            'persona_messages.groups.*.title' => ['nullable', 'string', 'max:190'],
+            'persona_messages.groups.*.subtitle' => ['nullable', 'string', 'max:190'],
+            'persona_messages.groups.*.content' => ['nullable', 'string', 'max:2000'],
         ], [
             'slug.required' => 'Vui lòng nhập đường dẫn thiệp cưới.',
             'slug.min' => 'Đường dẫn thiệp phải có ít nhất 3 ký tự.',
@@ -257,6 +271,34 @@ class AccountController extends Controller
         $config['music_autoplay'] = $request->boolean('music_autoplay', true);
         $config['og_title'] = $request->input('og_title') ?: null;
         $config['og_description'] = $request->input('og_description') ?: null;
+
+        // Xử lý và làm sạch cấu hình Cá nhân hóa Lời ngỏ theo Nhóm Khách (Invitation Persona)
+        $rawPersonaGroups = $request->input('persona_messages.groups', []);
+        $cleanedPersonaGroups = [];
+        if (is_array($rawPersonaGroups)) {
+            foreach ($rawPersonaGroups as $gName => $gData) {
+                if (! is_string($gName) || trim($gName) === '' || ! is_array($gData)) {
+                    continue;
+                }
+                $cleanGroupName = strip_tags(trim($gName));
+                $title = isset($gData['title']) ? strip_tags(trim((string) $gData['title'])) : null;
+                $subtitle = isset($gData['subtitle']) ? strip_tags(trim((string) $gData['subtitle'])) : null;
+                $content = isset($gData['content']) ? strip_tags(trim((string) $gData['content'])) : null;
+
+                if (! empty($title) || ! empty($subtitle) || ! empty($content)) {
+                    $cleanedPersonaGroups[$cleanGroupName] = [
+                        'title' => $title ?: null,
+                        'subtitle' => $subtitle ?: null,
+                        'content' => $content ?: null,
+                    ];
+                }
+            }
+        }
+
+        $config['persona_messages'] = [
+            'enabled' => $request->boolean('persona_enabled'),
+            'groups' => $cleanedPersonaGroups,
+        ];
 
         $invitation->slug = Str::slug($validated['slug']);
         $invitation->title = $validated['title'] ?? ($invitation->title ?: 'Thiệp Cưới Chính Thức');

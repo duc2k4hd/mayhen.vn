@@ -110,6 +110,12 @@
     $storySubtitle = $data['story_subtitle'] ?? ($extraData['story_subtitle'] ?? 'Hạnh Phúc Mang Tên Chúng Mình');
     $storyContent = $data['story_content'] ?? ($extraData['story_content'] ?? 'Biết ơn vì đã tìm thấy nhau giữa thế giới bao la. Cùng nhau chúng ta đi qua những năm tháng tuổi trẻ, và hôm nay bước vào cánh cửa hôn nhân rạng rỡ và hạnh phúc trọn vẹn nhất.');
 
+    if (! empty($personaMessage)) {
+        $storyTitle = $personaMessage['title'] ?? $storyTitle;
+        $storySubtitle = $personaMessage['subtitle'] ?? $storySubtitle;
+        $storyContent = $personaMessage['content'] ?? $storyContent;
+    }
+
     $groomBio = $data['groom_bio'] ?? ($extraData['groom_bio'] ?? 'Biết ơn Em về tất cả. Nguyện bên Em qua muôn nẻo đường phía trước, mình đồng hành cùng nhau đến mãi mãi về sau.');
     $brideBio = $data['bride_bio'] ?? ($extraData['bride_bio'] ?? 'Hành trình trưởng thành của em thật đẹp khi có sự xuất hiện của Anh. Cùng nhau chúng ta khám phá thế giới kỳ diệu này anh nhé.');
 
