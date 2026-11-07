@@ -15,12 +15,20 @@
             <span class="mayhen_admin_user_tab_count">{{ $totalCount }}</span>
         </a>
         <a href="{{ route('admin.users.index', ['role' => 'customer']) }}" class="mayhen_admin_user_tab_item {{ $currentRole === 'customer' ? 'active' : '' }}">
-            <span>Khách Hàng (Người Dùng)</span>
+            <span>Người Dùng</span>
             <span class="mayhen_admin_user_tab_count">{{ $customerCount }}</span>
         </a>
         <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" class="mayhen_admin_user_tab_item {{ $currentRole === 'admin' ? 'active' : '' }}">
-            <span>Ban Quản Trị (Admin/Staff)</span>
+            <span>Quản Trị Viên</span>
             <span class="mayhen_admin_user_tab_count">{{ $adminCount }}</span>
+        </a>
+        <a href="{{ route('admin.users.index', ['role' => 'manager']) }}" class="mayhen_admin_user_tab_item {{ $currentRole === 'manager' ? 'active' : '' }}">
+            <span>Quản Lý</span>
+            <span class="mayhen_admin_user_tab_count">{{ $managerCount }}</span>
+        </a>
+        <a href="{{ route('admin.users.index', ['role' => 'staff']) }}" class="mayhen_admin_user_tab_item {{ $currentRole === 'staff' ? 'active' : '' }}">
+            <span>Nhân Viên</span>
+            <span class="mayhen_admin_user_tab_count">{{ $staffCount }}</span>
         </a>
         <a href="{{ route('admin.users.index', ['role' => 'partner']) }}" class="mayhen_admin_user_tab_item {{ $currentRole === 'partner' ? 'active' : '' }}">
             <span>Cộng Tác Viên (Studio)</span>
@@ -61,7 +69,7 @@
 
     <!-- Users Table Card -->
     <div class="mayhen_admin_card">
-        <div class="mayhen_admin_card_header">
+        <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div class="mayhen_admin_card_title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -70,6 +78,17 @@
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
                 <span>Danh Sách Tài Khoản ({{ $users->total() }} người dùng)</span>
+            </div>
+
+            <div>
+                <a href="{{ route('admin.users.export', ['q' => $currentSearch, 'role' => $currentRole]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Xuất CSV (Excel)</span>
+                </a>
             </div>
         </div>
 

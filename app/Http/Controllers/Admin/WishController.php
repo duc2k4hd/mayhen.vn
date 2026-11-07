@@ -9,6 +9,7 @@ use App\Models\WeddingWish;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class WishController extends Controller
 {
@@ -162,6 +163,165 @@ class WishController extends Controller
             'attendingCount' => $attendingCount,
             'declinedCount' => $declinedCount,
             'uncertainCount' => $uncertainCount,
+        ]);
+    }
+
+    /**
+     * Export wedding wishes as UTF-8 BOM CSV.
+     */
+    public function exportWishesCsv(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $status = $request->input('status');
+        $weddingId = $request->input('wedding_id');
+
+        $query = WeddingWish::query()->with([
+            'wedding:id,user_id,groom_name,bride_name',
+        ]);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('message', 'like', "%{$search}%")
+                    ->orWhereHas('wedding', function ($wq) use ($search) {
+                        $wq->where('groom_name', 'like', "%{$search}%")
+                            ->orWhere('bride_name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($status === 'approved') {
+            $query->where('is_approved', true);
+        } elseif ($status === 'pending') {
+            $query->where('is_approved', false);
+        } elseif ($status === 'flagged') {
+            $query->where(function ($q) {
+                foreach (self::SPAM_KEYWORDS as $kw) {
+                    $q->orWhere('message', 'like', "%{$kw}%");
+                }
+            });
+        }
+
+        if (! empty($weddingId)) {
+            $query->where('wedding_id', (int) $weddingId);
+        }
+
+        $wishes = $query->latest('id')->get();
+        $filename = 'danh-sach-loi-chuc-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($wishes) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'STT',
+                'Mã Lời Chúc',
+                'Người Gửi',
+                'Mối Quan Hệ',
+                'Nội Dung Lời Chúc',
+                'Lời Cảm Ơn Của Cặp Đôi',
+                'Cặp Đôi Hôn Lễ',
+                'Trạng Thái Kiểm Duyệt',
+                'Thời Gian Gửi',
+            ]);
+
+            $index = 1;
+            foreach ($wishes as $wish) {
+                $couple = $wish->wedding ? ($wish->wedding->groom_name.' & '.$wish->wedding->bride_name) : 'N/A';
+                $statusLabel = $wish->is_approved ? 'Đã duyệt hiển thị' : 'Chờ duyệt / Tạm ẩn';
+
+                fputcsv($handle, [
+                    $index++,
+                    $wish->id,
+                    $wish->sender_name,
+                    $wish->relationship ?? 'Khách mời',
+                    $wish->message,
+                    $wish->couple_reply ?? '',
+                    $couple,
+                    $statusLabel,
+                    $wish->created_at ? $wish->created_at->format('d/m/Y H:i:s') : 'N/A',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * Export centralized RSVPs as UTF-8 BOM CSV.
+     */
+    public function exportRsvpsCsv(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $status = $request->input('status');
+
+        $query = GuestResponse::query()->with([
+            'wedding:id,user_id,groom_name,bride_name',
+        ]);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('guest_name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('wishes', 'like', "%{$search}%");
+            });
+        }
+
+        if (! empty($status)) {
+            $query->where('attending_status', $status);
+        }
+
+        $rsvps = $query->latest('id')->get();
+        $filename = 'bao-cao-rsvp-quan-khach-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($rsvps) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'STT',
+                'Mã RSVP',
+                'Tên Khách Mời',
+                'Số Điện Thoại',
+                'Cặp Đôi Hôn Lễ',
+                'Phản Hồi Tham Dự',
+                'Số Người Lớn',
+                'Số Trẻ Em',
+                'Ăn Chay / Yêu Cầu Riêng',
+                'Lời Nhắn Gửi Cặp Đôi',
+                'Thời Gian Phản Hồi',
+            ]);
+
+            $index = 1;
+            foreach ($rsvps as $rsvp) {
+                $couple = $rsvp->wedding ? ($rsvp->wedding->groom_name.' & '.$rsvp->wedding->bride_name) : 'N/A';
+                $statusLabel = match ($rsvp->attending_status) {
+                    'attending' => 'Sẽ tham dự',
+                    'declined' => 'Không thể đến',
+                    'uncertain' => 'Chưa chắc chắn',
+                    default => $rsvp->attending_status,
+                };
+
+                fputcsv($handle, [
+                    $index++,
+                    $rsvp->id,
+                    $rsvp->guest_name,
+                    $rsvp->phone ?? 'Chưa cập nhật',
+                    $couple,
+                    $statusLabel,
+                    $rsvp->adults_count ?? 1,
+                    $rsvp->children_count ?? 0,
+                    $rsvp->dietary_requirements ?? 'Không có',
+                    $rsvp->wishes ?? '',
+                    $rsvp->created_at ? $rsvp->created_at->format('d/m/Y H:i:s') : 'N/A',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 }

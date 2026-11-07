@@ -4326,6 +4326,46 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                        - Toàn bộ **64/64 tests Admin** và **51/51 tests Client** (tổng cộng 115 tests, 605 assertions) đều passed 100%.
                        - Laravel Pint: Đạt chuẩn PSR-12 sạch sẽ.
 
+
+                160. **Xây Dựng Tính Năng Xuất Báo Cáo Doanh Thu & Đơn Hàng CSV UTF-8 BOM Trong Phân Hệ Admin (`admin.orders.export`)**:
+                     - **Bối cảnh & Yêu cầu thực tế**:
+                       - Nhằm phục vụ công tác đối soát doanh thu, kiểm toán tài chính và hỗ trợ khách hàng, quản trị viên cần xuất toàn bộ đơn hàng (hoặc tập đơn hàng đang được lọc theo ngày, tháng, trạng thái đã thanh toán/chờ chuyển khoản) ra file CSV chuẩn mực.
+                     - **Các thành phần đã triển khai**:
+                       - `app/Http/Controllers/Admin/OrderController.php`:
+                         + Bổ sung method `exportCsv(Request $request): StreamedResponse`.
+                         + Kế thừa 100% các bộ lọc tìm kiếm (`q`, `status`, `plan_id`, `payment_method`, `date_range`) từ query string.
+                         + Xuất file CSV có BOM UTF-8 `\xEF\xBB\xBF` mở 100% tiếng Việt trên Excel gồm STT, Mã đơn, Khách hàng, Email, SĐT, Gói dịch vụ, Số tiền (VNĐ), Cổng thanh toán, Mã thiệp liên kết, Cặp đôi hôn lễ, Trạng thái, Thời gian tạo, Thời gian thanh toán.
+                       - `routes/admin.php`: Đăng ký route `admin.orders.export` (`GET /admin/orders/export-csv`).
+                       - `resources/views/admin/pages/orders/index.blade.php`: Gắn nút "Xuất Báo Cáo Doanh Thu (CSV)" đồng bộ tham số query string hiện tại trên thẻ header của bảng đơn hàng.
+                     - **Kiểm thử & Chất lượng**:
+                       - Thêm 2 test cases mới vào `tests/Feature/AdminOrderTest.php`: `admin can export orders as utf-8 bom csv file with filters` và `customer cannot export admin orders csv`.
+                       - Toàn bộ **66/66 tests Admin** và **51/51 tests Client** (tổng cộng 117 tests, 616 assertions) đều passed 100%.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 sạch sẽ.
+
+
+                161. **Hoàn Thiện 5 Phân Quyền Vai Trò Người Dùng & Bộ Ba Xuất Dữ Liệu CSV Cho Quản Lý Tài Khoản, Lời Chúc & RSVP**:
+                     - **Bối cảnh & Định hướng nghiệp vụ**:
+                       - Bám sát yêu cầu chỉ đạo: *"Dự án mây hẹn sẽ phân quyền như sau: quản trị viên, nhân viên, quản lý, người dùng, cộng tác viên. Hiện tại đang làm trang /admin, các trang khác sau này sẽ làm sau, cứ làm /admin và user trước"*.
+                       - Tách bạch rõ ràng 5 vai trò trên giao diện quản lý người dùng: Người dùng (`customer`), Quản trị viên (`admin`), Quản lý (`manager`), Nhân viên (`staff`), Cộng tác viên (`partner`).
+                       - Cung cấp tính năng xuất CSV chuẩn UTF-8 BOM cho 3 phân mục quan trọng: Danh sách người dùng, Danh sách lời chúc cưới và Báo cáo phản hồi RSVP của khách mời hôn lễ.
+                     - **Các thành phần đã triển khai**:
+                       - **Tách bạch 5 vai trò & Xuất CSV Người Dùng (`admin.users.export`)**:
+                         + `app/Http/Controllers/Admin/UserController.php`: Bổ sung đếm và lọc riêng biệt cho cả 5 vai trò (`customerCount`, `adminCount`, `managerCount`, `staffCount`, `partnerCount`). Bổ sung `exportCsv(Request $request)` xuất danh sách người dùng, email, SĐT, vai trò, số thiệp, tổng chi tiêu ra CSV UTF-8 BOM `\xEF\xBB\xBF`.
+                         + `routes/admin.php`: Đăng ký route `GET /admin/users/export-csv` (`admin.users.export`).
+                         + `resources/views/admin/pages/users/index.blade.php`: Cập nhật tab bar 6 trạng thái (Tất cả, Người dùng, Quản trị viên, Quản lý, Nhân viên, Cộng tác viên) và bổ sung nút "Xuất CSV (Excel)".
+                       - **Xuất CSV Lời Chúc Mừng & Kiểm Duyệt Sổ Lưu Bút (`admin.wishes.export`)**:
+                         + `app/Http/Controllers/Admin/WishController.php`: Bổ sung `exportWishesCsv(Request $request)` kế thừa lọc tìm kiếm, trạng thái duyệt (`approved`, `pending`, `flagged`) và thiệp cưới cụ thể.
+                         + `routes/admin.php`: Đăng ký `GET /admin/wishes/export-csv` (`admin.wishes.export`).
+                         + `resources/views/admin/pages/wishes/index.blade.php`: Gắn nút "Xuất CSV (Excel)" trên header bảng lời chúc.
+                       - **Xuất CSV Báo Cáo Phản Hồi RSVP Toàn Nền Tảng (`admin.wishes.rsvps.export`)**:
+                         + `app/Http/Controllers/Admin/WishController.php`: Bổ sung `exportRsvpsCsv(Request $request)` kế thừa bộ lọc tìm kiếm và trạng thái tham dự (`attending`, `declined`, `uncertain`).
+                         + `routes/admin.php`: Đăng ký `GET /admin/wishes/rsvps/export-csv` (`admin.wishes.rsvps.export`).
+                         + `resources/views/admin/pages/wishes/rsvps.blade.php`: Gắn nút "Xuất CSV (Excel)" trên header bảng báo cáo RSVP.
+                     - **Kiểm thử & Chất lượng**:
+                       - Viết thêm 6 test cases mới trong `tests/Feature/AdminUserTest.php` và `tests/Feature/AdminWishTest.php`.
+                       - Toàn bộ **298/298 tests passed 100% (1,584 assertions)** trên toàn hệ thống trong ~9.9s.
+                       - Laravel Pint: Đạt chuẩn 100% PSR-12 / Pint agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

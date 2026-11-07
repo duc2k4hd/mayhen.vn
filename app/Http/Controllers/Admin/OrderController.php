@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
 {
@@ -93,6 +94,119 @@ class OrderController extends Controller
             'pendingCount' => $pendingCount,
             'cancelledCount' => $cancelledCount,
         ]);
+    }
+
+    /**
+     * Export orders list as UTF-8 CSV with BOM for Excel.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $status = $request->input('status');
+        $planId = $request->input('plan_id');
+        $paymentMethod = $request->input('payment_method');
+        $dateRange = $request->input('date_range');
+
+        $query = Order::query()->with([
+            'user:id,name,email,phone',
+            'plan:id,slug,name,price,duration_days',
+            'invitation:id,slug,wedding_id,is_published,expires_at',
+            'invitation.wedding:id,groom_name,bride_name',
+        ]);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if (! empty($status)) {
+            $query->where('status', $status);
+        }
+
+        if (! empty($planId)) {
+            $query->where('plan_id', (int) $planId);
+        }
+
+        if (! empty($paymentMethod)) {
+            $query->where('payment_method', $paymentMethod);
+        }
+
+        if ($dateRange === 'today') {
+            $query->whereDate('created_at', Carbon::today());
+        } elseif ($dateRange === 'this_week') {
+            $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($dateRange === 'this_month') {
+            $query->whereMonth('created_at', Carbon::now()->month)
+                ->whereYear('created_at', Carbon::now()->year);
+        }
+
+        $orders = $query->latest('id')->get();
+        $filename = 'bao-cao-don-hang-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($orders) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+            fputcsv($file, [
+                'STT',
+                'Mã Đơn Hàng',
+                'Khách Hàng',
+                'Email',
+                'Số Điện Thoại',
+                'Gói Dịch Vụ',
+                'Số Tiền (VNĐ)',
+                'Cổng Thanh Toán',
+                'Mã Thiệp Liên Kết',
+                'Cặp Đôi Hôn Lễ',
+                'Trạng Thái',
+                'Thời Gian Tạo',
+                'Thời Gian Thanh Toán',
+            ]);
+
+            foreach ($orders as $idx => $order) {
+                $statusLabel = match ($order->status) {
+                    'paid' => 'Đã thanh toán',
+                    'pending' => 'Chờ thanh toán',
+                    'cancelled' => 'Đã hủy',
+                    'failed' => 'Thất bại',
+                    default => $order->status,
+                };
+
+                $couple = ($order->invitation && $order->invitation->wedding)
+                    ? "{$order->invitation->wedding->groom_name} & {$order->invitation->wedding->bride_name}"
+                    : '';
+
+                fputcsv($file, [
+                    $idx + 1,
+                    $order->order_code,
+                    $order->user?->name ?? '—',
+                    $order->user?->email ?? '',
+                    $order->user?->phone ?? '',
+                    $order->plan?->name ?? 'Gói tùy chỉnh',
+                    number_format($order->amount, 0, ',', '.'),
+                    strtoupper($order->payment_method ?? 'VIETQR'),
+                    $order->invitation?->slug ?? '',
+                    $couple,
+                    $statusLabel,
+                    $order->created_at ? $order->created_at->format('d/m/Y H:i:s') : '',
+                    $order->paid_at ? $order->paid_at->format('d/m/Y H:i:s') : '',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
     }
 
     /**

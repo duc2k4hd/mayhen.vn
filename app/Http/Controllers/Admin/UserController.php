@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserController extends Controller
 {
@@ -42,7 +43,11 @@ class UserController extends Controller
                 $q->whereIn('role', ['customer', 'user'])->orWhereNull('role');
             });
         } elseif ($role === 'admin') {
-            $query->whereIn('role', ['admin', 'manager', 'staff']);
+            $query->where('role', 'admin');
+        } elseif ($role === 'manager') {
+            $query->where('role', 'manager');
+        } elseif ($role === 'staff') {
+            $query->where('role', 'staff');
         } elseif ($role === 'partner') {
             $query->where('role', 'partner');
         } elseif (! empty($role) && $role !== 'all') {
@@ -56,7 +61,9 @@ class UserController extends Controller
         $customerCount = User::where(function ($q) {
             $q->whereIn('role', ['customer', 'user'])->orWhereNull('role');
         })->count();
-        $adminCount = User::whereIn('role', ['admin', 'manager', 'staff'])->count();
+        $adminCount = User::where('role', 'admin')->count();
+        $managerCount = User::where('role', 'manager')->count();
+        $staffCount = User::where('role', 'staff')->count();
         $partnerCount = User::where('role', 'partner')->count();
 
         return view('admin.pages.users.index', [
@@ -66,6 +73,8 @@ class UserController extends Controller
             'totalCount' => $totalCount,
             'customerCount' => $customerCount,
             'adminCount' => $adminCount,
+            'managerCount' => $managerCount,
+            'staffCount' => $staffCount,
             'partnerCount' => $partnerCount,
         ]);
     }
@@ -141,5 +150,86 @@ class UserController extends Controller
         );
 
         return back()->with('success', "Đã đặt lại mật khẩu mới cho người dùng \"{$user->name}\" thành công.");
+    }
+
+    /**
+     * Export users list as UTF-8 BOM CSV.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        $search = trim((string) $request->input('q', ''));
+        $role = $request->input('role');
+
+        $query = User::query()
+            ->withCount('weddings')
+            ->with(['orders' => function ($q) {
+                $q->where('status', 'paid');
+            }]);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($role === 'customer') {
+            $query->where(function ($q) {
+                $q->whereIn('role', ['customer', 'user'])->orWhereNull('role');
+            });
+        } elseif ($role === 'admin') {
+            $query->where('role', 'admin');
+        } elseif ($role === 'manager') {
+            $query->where('role', 'manager');
+        } elseif ($role === 'staff') {
+            $query->where('role', 'staff');
+        } elseif ($role === 'partner') {
+            $query->where('role', 'partner');
+        } elseif (! empty($role) && $role !== 'all') {
+            $query->where('role', $role);
+        }
+
+        $users = $query->latest('id')->get();
+
+        $filename = 'danh-sach-nguoi-dung-mayhen-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($users) {
+            $handle = fopen('php://output', 'w');
+            // Write UTF-8 BOM for Excel compatibility
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'STT',
+                'Mã ID',
+                'Họ và Tên',
+                'Email',
+                'Số Điện Thoại',
+                'Vai Trò (Phân Quyền)',
+                'Số Thiệp Cưới Đã Tạo',
+                'Tổng Tiền Đã Thanh Toán (VNĐ)',
+                'Ngày Tham Gia',
+            ]);
+
+            $index = 1;
+            foreach ($users as $user) {
+                $totalSpent = $user->orders->sum('amount');
+                fputcsv($handle, [
+                    $index++,
+                    $user->id,
+                    $user->name,
+                    $user->email,
+                    $user->phone ?? 'Chưa cập nhật',
+                    $user->role_label,
+                    $user->weddings_count,
+                    $totalSpent,
+                    $user->created_at ? $user->created_at->format('d/m/Y H:i:s') : 'N/A',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

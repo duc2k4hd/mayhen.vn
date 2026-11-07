@@ -55,6 +55,7 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminOrderController::class, 'exportCsv'])->name('export');
         Route::get('/webhooks/audit', [AdminOrderController::class, 'webhooks'])->name('webhooks');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->name('approve');
@@ -64,6 +65,7 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Người dùng & Phân quyền
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminUserController::class, 'exportCsv'])->name('export');
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset_password');
@@ -72,7 +74,9 @@ Route::middleware('admin.auth')->group(function () {
     // Quản lý Lời chúc & Giám sát RSVP
     Route::prefix('wishes')->name('wishes.')->group(function () {
         Route::get('/', [AdminWishController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminWishController::class, 'exportWishesCsv'])->name('export');
         Route::get('/rsvps', [AdminWishController::class, 'rsvps'])->name('rsvps');
+        Route::get('/rsvps/export-csv', [AdminWishController::class, 'exportRsvpsCsv'])->name('rsvps.export');
         Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->name('destroy');
     });

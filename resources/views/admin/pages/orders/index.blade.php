@@ -145,7 +145,7 @@
 
     <!-- Orders Table Card -->
     <div class="mayhen_admin_card">
-        <div class="mayhen_admin_card_header">
+        <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div class="mayhen_admin_card_title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
                     <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -153,6 +153,15 @@
                 </svg>
                 <span>Danh Sách Đơn Hàng ({{ $orders->total() }} đơn)</span>
             </div>
+
+            <a href="{{ route('admin.orders.export', request()->query()) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Xuất Báo Cáo Doanh Thu (CSV)</span>
+            </a>
         </div>
 
         <div class="mayhen_admin_table_responsive">
