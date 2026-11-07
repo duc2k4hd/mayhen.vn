@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
@@ -89,6 +90,13 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/cai-dat', [AccountController::class, 'updateSettings'])->name('invitations.settings.update');
     Route::post('/thiep/{id}/nhan-ban', [AccountController::class, 'duplicate'])->name('invitations.duplicate');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
+
+    // Tên Miền Riêng & Vanity Subdomain (TASK-V3-03)
+    Route::get('/thiep/{id}/ten-mien', [CustomDomainController::class, 'show'])->name('invitations.domain');
+    Route::post('/thiep/{id}/ten-mien/subdomain', [CustomDomainController::class, 'updateSubdomain'])->middleware('throttle:20,1')->name('invitations.domain.subdomain');
+    Route::post('/thiep/{id}/ten-mien/custom', [CustomDomainController::class, 'updateCustomDomain'])->middleware('throttle:20,1')->name('invitations.domain.custom');
+    Route::post('/thiep/{id}/ten-mien/xac-minh-dns', [CustomDomainController::class, 'verifyDns'])->middleware('throttle:30,1')->name('invitations.domain.verify');
+    Route::delete('/thiep/{id}/ten-mien', [CustomDomainController::class, 'destroy'])->name('invitations.domain.destroy');
 
     // Sổ Lưu Bút & Lời Chúc Cặp Đôi
     Route::get('/thiep/{id}/so-luu-but', [WishManagementController::class, 'index'])->name('wishes.index');

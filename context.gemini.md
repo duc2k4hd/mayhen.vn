@@ -4823,6 +4823,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                           - Toàn bộ test suite toàn hệ thống: **229/229 tests passed 100% (1,197 assertions)**.
                           - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                    180. **Triển Khai Hoàn Thiện Tên Miền Riêng Cho Đám Cưới & Vanity Subdomain (TASK-V3-03)**:
+                         - **Bối cảnh & Giá trị trải nghiệm**:
+                           - Nhằm mang lại trải nghiệm Quiet Luxury độc bản và sang trọng bậc nhất cho ngày trọng đại, Mây Hẹn cung cấp tính năng Tên Miền Riêng (Custom Domain) và Tên Miền Phụ Miễn Phí (Vanity Subdomain).
+                           - Cặp đôi có thể sở hữu đường link ngắn gọn tức thì dạng `tuanlan.mayhen.vn` hoặc gắn tên miền độc quyền đã mua như `tuanlan.wedding` hay `damcuoituanlan.vn`. Toàn bộ hệ sinh thái thiệp cưới (Thiệp chính, Két Kỷ Niệm, Photo Drop, Cổng Quét Check-in) đều chạy trực tiếp trên tên miền của cặp đôi mà không bị đổi URL.
+                         - **Các thành phần kỹ thuật cốt lõi**:
+                           1. *Cơ sở dữ liệu & Models*:
+                              - Bảng `wedding_domains`: Lưu trữ `wedding_id`, `invitation_id`, `subdomain` (độ dài 63 unique chuẩn RFC), `custom_domain` (độ dài 191 unique chuẩn utf8mb4), `cname_target` (mặc định `cname.mayhen.vn`), `status` ('pending', 'active', 'failed'), `ssl_status`, `dns_verified_at`, `dns_records` (json).
+                              - Model `WeddingDomain`: Các helper `isActive()`, `isPending()`, `isFailed()`, `subdomainUrl()`, `customDomainUrl()`, `activeUrl()`, và hằng số `BLACKLISTED_SUBDOMAINS` bảo lưu các subdomain hệ thống (`admin`, `api`, `app`, `cdn`, `cname`, `mail`, `partner`, `www`...).
+                              - Quan hệ `domain(): HasOne` trong cả `Wedding` và `Invitation`.
+                           2. *Bộ Định Tuyến Middleware Tên Miền Thông Minh (`DetectCustomDomain.php`)*:
+                              - Đăng ký tự động vào pipeline `web` middleware trong `bootstrap/app.php`.
+                              - Kiểm tra host: Tự động bỏ qua các host chính của hệ thống (`mayhen.vn`, `www.mayhen.vn`, `localhost`, `127.0.0.1`).
+                              - Nhận diện Subdomain: Tách tiền tố subdomain, kiểm tra blacklist, tra cứu `WeddingDomain` active.
+                              - Nhận diện Custom Domain: Tra cứu trực tiếp theo tên miền riêng đang hoạt động.
+                              - Phục vụ Native Multi-Page không đổi URL trình duyệt:
+                                * Đường dẫn gốc `/` -> Phục vụ view thiệp cưới công khai (`InvitationEditorController::show`).
+                                * Đường dẫn `/ky-niem` -> Phục vụ Két Kỷ Niệm Số (`MemoryVaultController::show`).
+                                * Đường dẫn `/photo-drop` -> Phục vụ Thu Thập Ảnh Khách Chụp (`PhotoDropController::show`).
+                                * Đường dẫn `/diem-danh-tiec` -> Phục vụ Cổng Tiếp Tân Quét QR (`CheckInController::showPortal`).
+                              - Trang phòng vệ `domain-pending.blade.php`: Trả về giao diện Quiet Luxury 404 trang trọng khi tên miền ngoài trỏ về nhưng chưa liên kết hoặc đang chờ kích hoạt.
+                           3. *Dịch Vụ Xác Minh DNS Tự Động (`DomainDnsService.php`)*:
+                              - Chuẩn hóa định dạng hostname, truy vấn bản ghi DNS CNAME và ALIAS thực tế trên máy chủ, so khớp target `cname.mayhen.vn`.
+                              - Hỗ trợ môi trường test an toàn và mô phỏng phản hồi DNS không phụ thuộc mạng ngoài.
+                           4. *Không Gian Quản Trị Tên Miền Cặp Đôi (`CustomDomainController.php`)*:
+                              - Đường dẫn: `/tai-khoan/thiep/{id}/ten-mien`.
+                              - Giao diện 3 khối chức năng: Banner xem trước URL ưu tiên và nút chép link 1-chạm; Khối cấu hình Vanity Subdomain kích hoạt tức thì; và Khối cấu hình Custom Domain với bảng hướng dẫn CNAME chuẩn hóa và nút "Kiểm Tra Kết Nối DNS & Kích Hoạt".
+                              - Hỗ trợ gỡ bỏ riêng biệt subdomain hoặc custom domain 1-chạm.
+                              - Bảo vệ IDOR tuyệt đối qua `authorizeOwner(Wedding $wedding)`.
+                           5. *Tích Hợp Sâu Vào Hệ Thống*:
+                              - Thêm nút "Tên Miền" trên danh sách thiệp cưới (`account/invitations.blade.php`).
+                              - Thêm gợi ý nâng cấp tên miền ngay dưới trường Slug trên trang Cài Đặt Thiệp (`account/settings.blade.php`).
+                         - **Kiểm thử & Đảm bảo chất lượng**:
+                           - Viết 16 Feature test cases trong `tests/Feature/CustomDomainTest.php`: Kiểm tra chủ sở hữu truy cập; chặn người chưa đăng nhập; chặn người lạ xem tên miền người khác (404); đối tác studio quản lý đám cưới truy cập được; đăng ký & cập nhật subdomain; chặn subdomain thuộc blacklist; chặn trùng lặp subdomain; kiểm tra định dạng regex subdomain; đăng ký custom domain trạng thái pending; chặn custom domain là domain hệ thống; xác minh DNS CNAME thành công chuyển active; xác minh DNS thất bại chuyển failed; gỡ bỏ subdomain/custom domain; middleware phục vụ thiệp trên subdomain; middleware phục vụ thiệp trên custom domain; và custom domain lạ hiển thị trang pending -> **16/16 tests passed**.
+                           - Toàn bộ test suite toàn hệ thống: **245/245 tests passed 100% (1,247 assertions)**.
+                           - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

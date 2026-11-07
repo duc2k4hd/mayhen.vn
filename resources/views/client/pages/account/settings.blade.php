@@ -78,6 +78,14 @@
                     <span style="font-size: 12px; color: #7A726A; display: block; margin-top: 4px;">
                         Chỉ dùng chữ cái thường không dấu (a-z), chữ số (0-9) và dấu gạch nối (-). Ví dụ: <code>thanh-dat-bich-ngoc</code>
                     </span>
+                    <div style="margin-top: 8px; font-size: 12px; background: #FAF6F0; border: 1px dashed #E5DCCD; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span style="color: #6E665E;">
+                            ✨ Muốn có đường dẫn ngắn gọn như <code>tuanlan.mayhen.vn</code> hoặc tên miền riêng <code>tuanlan.wedding</code>?
+                        </span>
+                        <a href="{{ route('account.invitations.domain', $invitation->id) }}" style="color: #9C7A4A; font-weight: 600; text-decoration: none; white-space: nowrap;">
+                            Cấu hình Tên Miền &rarr;
+                        </a>
+                    </div>
                 </div>
 
                 <div>

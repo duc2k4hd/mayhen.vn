@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Wedding extends Model
 {
@@ -83,5 +84,10 @@ class Wedding extends Model
     public function tables(): HasMany
     {
         return $this->hasMany(WeddingTable::class)->orderBy('display_order')->orderBy('id');
+    }
+
+    public function domain(): HasOne
+    {
+        return $this->hasOne(WeddingDomain::class);
     }
 }
