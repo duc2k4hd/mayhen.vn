@@ -4657,6 +4657,44 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                         - Hoàn thành trọn vẹn 100% các nhiệm vụ của **Giai Đoạn 1: LEAN PREMIUM** trong lộ trình VNext.
                         - Laravel Pint: Đạt chuẩn 100%.
 
+                  175. **Triển Khai Mã QR Điểm Danh & Tra Cứu Bàn Tiệc (TASK-V2-01) và Bảng Điều Khiển Ngày Cưới Realtime (TASK-V2-02)**:
+                       - **Bối cảnh & Ý nghĩa nghiệp vụ**:
+                         - Giải quyết triệt để vấn đề hỗn loạn, nhầm lẫn bàn tiệc và ùn tắc tại sảnh tiệc trong ngày cưới:
+                           1. Khách mời không biết mình ngồi bàn nào, phải hỏi quanh hoặc tìm kiếm vất vả giữa hàng chục bàn tiệc.
+                           2. Ban lễ tân tiếp đón bằng danh sách giấy truyền thống lúng túng, chậm chạp, không nắm được sĩ số thời gian thực.
+                           3. Cô dâu chú rể và hai bên gia đình trong phòng thay đồ / sân khấu hoàn toàn mù mờ không biết khách đã đến được bao nhiêu phần trăm để quyết định giờ làm lễ chính thức.
+                       - **Các thành phần kỹ thuật đã triển khai**:
+                         1. *Cơ Sở Dữ Liệu & Phân Loại Bàn Tiệc (`guests` table)*:
+                            - Migration bổ sung 4 trường dữ liệu cốt lõi:
+                              * `table_name`: string(100), indexed (Tên bàn tiệc, ví dụ: "Bàn 08 - Bạn Đại Học", "Bàn VIP 01 - Họ Nhà Gái").
+                              * `checked_in_at`: timestamp, indexed (Thời điểm quét mã QR điểm danh).
+                              * `checked_in_attendees`: unsignedInteger (Số lượng khách thực tế có mặt lúc check-in).
+                              * `check_in_note`: string(255) (Ghi chú giờ chót từ ban tiếp tân).
+                            - Cập nhật Form Request, Controller `GuestController`, Form thêm đơn lẻ, Form nhập nhanh hàng loạt và tính năng xuất CSV có đầy đủ thông tin Bàn tiệc và Trạng thái check-in.
+                         2. *Bộ Sinh Mã QR Vector Thuần PHP (`QrCodeService.php`)*:
+                            - Tự chứa 100% (Zero Dependencies), tuân thủ ISO/IEC 18004 sinh mã SVG vector siêu nét, nhẹ vài KB.
+                            - Không cần bất kỳ thư viện hay CDN bên ngoài nào, tương thích mọi camera smartphone (iPhone, Android, Zalo, Google Lens).
+                         3. *Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (`Guest Table Finder & VIP Pass`)*:
+                            - Component nổi toàn cục `@include('client.components.guest-table-badge')` trong layout thiệp cưới (`invitation.blade.php`), tự động kích hoạt khi khách mở link cá nhân hóa có token.
+                            - Floating pill sang trọng: `"⚜️ Bàn Tiệc: [Tên Bàn]"` mở Bottom Sheet / Modal VIP hiển thị tên khách mời, xưng hô tôn kính, số bàn tiệc to rõ và mã QR check-in 1-chạm.
+                            - Trang Thẻ VIP độc lập `/diem-danh/{guest_token}` hỗ trợ lưu ảnh / in thẻ.
+                         4. *Cổng Tiếp Tân Điểm Danh Ngày Cưới (`CheckInController.php`)*:
+                            - Đường dẫn `/diem-danh-tiec/{slug}` bảo vệ bằng mã PIN tiếp tân 6 số (sinh tự động hoặc tùy chỉnh), giúp bạn bè trực bàn đón tiếp mở ngay trên điện thoại mà không cần đăng nhập tài khoản của cô dâu chú rể.
+                            - Camera Live Scanner qua native Web APIs (`getUserMedia` & `BarcodeDetector`), hỗ trợ đổi camera trước/sau, kèm khung ngắm ánh kim hoàng gia.
+                            - Hiệu ứng âm thanh chuông đôi Quiet Luxury ("Ding!") tổng hợp tức thì bằng Native `AudioContext` (không dùng file âm thanh ngoài).
+                            - Popup đón khách nổi bật với tên bàn tiệc to rõ để lễ tân đọc hoặc chỉ dẫn khách, kèm tính năng đổi nhanh bàn tiệc tại chỗ nếu cần xếp lại.
+                            - Tìm kiếm nhanh (Fast Live Search debounce 250ms) theo tên, SĐT, nhóm hoặc bàn tiệc, hỗ trợ nút "Điểm danh" và "Hủy điểm danh" 1-chạm.
+                         5. *Bảng Điều Khiển Ngày Cưới Realtime (`LiveCoordinationController.php` & `live-coordination.js/css`)*:
+                            - Đường dẫn `/tai-khoan/thiep/{id}/dieu-phoi` dành riêng cho cặp đôi:
+                              * 4 Thẻ Sĩ Số Lớn: Tổng khách mời dự kiến, Đã phản hồi RSVP, Đã có mặt tại sảnh (% lấp đầy tiệc), và Số khách chưa tới đang trên đường đến.
+                              * Sóng Lấp Đầy Bàn Tiệc (Table Seating Wave): Gom nhóm theo từng bàn tiệc, hiển thị tiến độ ghế vào bàn / tổng số ghế dự kiến, progress bar đổi màu khi đủ bàn, kèm badge từng khách mời (xanh lá khi đã vào bàn, xám khi chưa tới).
+                              * Dòng Sự Kiện Đón Khách Trực Tiếp (Live Arrival Feed): Cập nhật timeline từng lượt khách vừa quét mã.
+                            - Cơ chế Polling AJAX tự động mỗi 8 giây không cần reload trang, tự động tạm dừng khi chuyển tab để tiết kiệm pin và băng thông.
+                       - **Kiểm thử & Đảm bảo chất lượng**:
+                         - Viết 10 Feature test cases trong `tests/Feature/CheckInTableCoordinationTest.php`: Kiểm tra thêm/sửa khách kèm bàn tiệc; nhập nhanh batch kèm bàn tiệc; rào chắn mã PIN tiếp tân; chủ sở hữu vào thẳng không cần PIN; chặn truy cập người lạ (404); quét mã QR điểm danh & chống quét trùng (already_checked_in); tìm nhanh, đổi bàn, hủy điểm danh; api stats realtime; mở thẻ VIP cá nhân; và xuất CSV danh sách khách -> **10/10 tests passed**.
+                         - Toàn bộ test suite toàn hệ thống: **192/192 tests passed 100% (1,046 assertions)**.
+                         - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

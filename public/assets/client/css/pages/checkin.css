@@ -1,0 +1,964 @@
+/* ==========================================================================
+   CỔNG TIẾP TÂN ĐIỂM DANH & QUÉT MÃ QR (CHECK-IN & TABLE FINDER)
+   MÂY HẸN (MAYHEN.VN) — QUIET LUXURY EDITORIAL STYLE
+   Pure CSS — Namespace: mayhen_checkin_* / mayhen_guest_pass_*
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. PIN Keypad & Access Screen
+   -------------------------------------------------------------------------- */
+.mayhen_checkin_pin_wrapper {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background: #FAF8F5;
+}
+
+.mayhen_checkin_pin_card {
+    width: 100%;
+    max-width: 440px;
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(31, 29, 26, 0.06);
+}
+
+.mayhen_checkin_pin_emblem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #FAF7F0;
+    color: #9C7A4A;
+    border: 1px solid #EFE8DD;
+    margin-bottom: 20px;
+}
+
+.mayhen_checkin_badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.mayhen_checkin_pin_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 10px;
+    line-height: 1.2;
+}
+
+.mayhen_checkin_pin_subtitle {
+    font-size: 14px;
+    color: #6B635B;
+    line-height: 1.5;
+    margin: 0 0 24px;
+}
+
+.mayhen_checkin_pin_input_wrap {
+    margin-bottom: 18px;
+}
+
+.mayhen_checkin_pin_input {
+    width: 100%;
+    height: 56px;
+    font-size: 26px;
+    letter-spacing: 8px;
+    text-align: center;
+    border: 2px solid #E5DCCD;
+    border-radius: 14px;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_checkin_pin_input:focus {
+    border-color: #9C7A4A;
+    box-shadow: 0 0 0 4px rgba(156, 122, 74, 0.12);
+}
+
+.mayhen_checkin_pin_footer {
+    margin-top: 24px;
+    font-size: 12px;
+    color: #8C827A;
+}
+
+.mayhen_checkin_pin_link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #9C7A4A;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mayhen_checkin_pin_link:hover {
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   2. Main Receptionist Portal App
+   -------------------------------------------------------------------------- */
+.mayhen_checkin_app {
+    min-height: 90vh;
+    background: #FAF8F5;
+    padding: 32px 16px 64px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1F1D1A;
+}
+
+.mayhen_checkin_container {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* Header */
+.mayhen_checkin_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkin_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FAF0E6;
+    color: #85182A;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid #EAD8C7;
+    margin-bottom: 6px;
+}
+
+.mayhen_checkin_live_dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #85182A;
+    display: inline-block;
+    animation: livePulse 1.6s infinite ease-in-out;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.4); }
+}
+
+.mayhen_checkin_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mayhen_checkin_subtitle {
+    font-size: 14px;
+    color: #7A726A;
+    margin: 4px 0 0;
+}
+
+.mayhen_checkin_header_actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Headcount Counter Grid */
+.mayhen_checkin_counter_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.mayhen_checkin_counter_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_checkin_counter_card--gold {
+    background: linear-gradient(145deg, #FFFDF9 0%, #F9F5EC 100%);
+    border-color: #D8CEBD;
+}
+
+.mayhen_checkin_counter_label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.mayhen_checkin_counter_value {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1;
+}
+
+.mayhen_checkin_counter_total {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #8C827A;
+}
+
+.mayhen_checkin_counter_hint {
+    display: block;
+    font-size: 12px;
+    color: #8C827A;
+    margin-top: 6px;
+}
+
+.mayhen_checkin_progress_bar {
+    width: 100%;
+    height: 6px;
+    background: #EFE8DD;
+    border-radius: 999px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.mayhen_checkin_progress_fill {
+    height: 100%;
+    background: #9C7A4A;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+/* Tabs */
+.mayhen_checkin_tabs {
+    display: flex;
+    background: #EFE8DD;
+    padding: 4px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    gap: 4px;
+}
+
+.mayhen_checkin_tab {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: #6B635B;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_checkin_tab.is-active {
+    background: #FFFFFF;
+    color: #1F1D1A;
+    box-shadow: 0 2px 8px rgba(31, 29, 26, 0.08);
+}
+
+.mayhen_checkin_panel {
+    display: none;
+}
+
+.mayhen_checkin_panel.is-active {
+    display: block;
+}
+
+/* Scanner Box */
+.mayhen_checkin_scanner_box {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.04);
+    text-align: center;
+}
+
+.mayhen_checkin_video_wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 4/3;
+    margin: 0 auto 20px;
+    background: #1F1D1A;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.mayhen_checkin_video_wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_checkin_scanner_overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.mayhen_checkin_scanner_reticle {
+    position: relative;
+    width: 220px;
+    height: 220px;
+}
+
+.reticle_corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border: 3px solid #C5A880;
+}
+
+.reticle_tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+.reticle_tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 8px; }
+.reticle_bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 8px; }
+.reticle_br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 8px; }
+
+.reticle_laser {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #CFA860, transparent);
+    box-shadow: 0 0 8px #CFA860;
+    animation: scannerScan 2s infinite ease-in-out;
+}
+
+@keyframes scannerScan {
+    0%, 100% { top: 8px; }
+    50% { top: 210px; }
+}
+
+.reticle_hint {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #FAF8F5;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 14px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+}
+
+.mayhen_checkin_scanner_controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkin_manual_input_wrap {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed #E5DCCD;
+}
+
+.mayhen_checkin_form_inline {
+    display: flex;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Search Box */
+.mayhen_checkin_search_box {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.04);
+}
+
+.mayhen_checkin_search_input_wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FAF8F5;
+    border: 1px solid #E5DCCD;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    color: #8C827A;
+}
+
+.mayhen_checkin_search_input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #1F1D1A;
+    outline: none;
+}
+
+.mayhen_checkin_search_results {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.mayhen_checkin_search_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+    border-radius: 14px;
+    gap: 12px;
+}
+
+.mayhen_checkin_search_item:hover {
+    background: #FFFDF9;
+    border-color: #D8CEBD;
+}
+
+.search_item_name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #1F1D1A;
+}
+
+.search_item_meta {
+    font-size: 12px;
+    color: #7A726A;
+    margin-top: 2px;
+}
+
+.search_item_meta strong {
+    color: #9C7A4A;
+}
+
+.mayhen_checkin_empty_state {
+    padding: 40px 16px;
+    text-align: center;
+    color: #8C827A;
+    font-size: 14px;
+}
+
+/* Recent Check-in Feed */
+.mayhen_checkin_recent_section {
+    margin-top: 32px;
+}
+
+.mayhen_checkin_section_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 14px;
+}
+
+.mayhen_checkin_recent_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mayhen_checkin_recent_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(31, 29, 26, 0.02);
+}
+
+.mayhen_checkin_recent_name {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1F1D1A;
+}
+
+.mayhen_checkin_recent_meta {
+    display: block;
+    font-size: 12px;
+    color: #7A726A;
+    margin-top: 2px;
+}
+
+.mayhen_checkin_recent_meta strong {
+    color: #85182A;
+}
+
+.mayhen_checkin_recent_action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_checkin_recent_time {
+    font-size: 12px;
+    color: #8C827A;
+}
+
+.mayhen_checkin_btn_undo {
+    border: none;
+    background: transparent;
+    color: #C62828;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.mayhen_checkin_btn_undo:hover {
+    background: #FFEBEE;
+}
+
+.mayhen_checkin_empty_recent {
+    padding: 24px;
+    background: #FFFFFF;
+    border: 1px dashed #D8CEBD;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: #8C827A;
+}
+
+/* --------------------------------------------------------------------------
+   3. Check-in Modal (Popup To Lễ Tân)
+   -------------------------------------------------------------------------- */
+.mayhen_checkin_modal_backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(18, 16, 14, 0.75);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.mayhen_checkin_modal_card {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background: #FAF8F5;
+    border: 1px solid #D8CEBD;
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    animation: mayhenCheckinPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhenCheckinPop {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.mayhen_checkin_modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.mayhen_checkin_modal_tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #E8F5E9;
+    color: #2E7D32;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.mayhen_checkin_modal_close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #EFE8DD;
+    color: #4A453E;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.mayhen_checkin_modal_salutation {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: center;
+}
+
+.mayhen_checkin_modal_name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1F1D1A;
+    text-align: center;
+    margin: 4px 0 6px;
+    line-height: 1.2;
+}
+
+.mayhen_checkin_modal_group {
+    text-align: center;
+    font-size: 13px;
+    color: #7A726A;
+    margin-bottom: 20px;
+}
+
+/* Big Table Badge */
+.mayhen_checkin_table_badge {
+    background: #FFFDF9;
+    border: 2px solid #C5A880;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 18px rgba(197, 168, 128, 0.15);
+}
+
+.table_badge_label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #8C827A;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.table_badge_val {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #85182A;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: 1px;
+}
+
+.table_badge_edit_link {
+    margin-top: 8px;
+}
+
+.btn_link_text {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #9C7A4A;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.mayhen_checkin_quick_table_box {
+    margin-bottom: 18px;
+}
+
+.quick_table_input_row {
+    display: flex;
+    gap: 8px;
+}
+
+.mayhen_checkin_modal_details {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.detail_label {
+    color: #7A726A;
+}
+
+.detail_val {
+    color: #1F1D1A;
+    font-weight: 600;
+}
+
+.mayhen_checkin_warning_box {
+    background: #FFF3E0;
+    border: 1px solid #FFE0B2;
+    color: #E65100;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   4. Buttons & Form Controls
+   -------------------------------------------------------------------------- */
+.mayhen_checkin_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+}
+
+.mayhen_checkin_btn--primary {
+    background: #1F1D1A;
+    color: #FAF8F5;
+}
+
+.mayhen_checkin_btn--primary:hover {
+    background: #3A3530;
+}
+
+.mayhen_checkin_btn--secondary {
+    background: #EFE8DD;
+    color: #1F1D1A;
+}
+
+.mayhen_checkin_btn--secondary:hover {
+    background: #E5DCCD;
+}
+
+.mayhen_checkin_btn--outline {
+    background: transparent;
+    border: 1px solid #D8CEBD;
+    color: #4A453E;
+}
+
+.mayhen_checkin_btn--outline:hover {
+    background: #EFE8DD;
+}
+
+.mayhen_checkin_btn--text {
+    background: transparent;
+    color: #7A726A;
+    padding: 8px 12px;
+}
+
+.mayhen_checkin_btn--text:hover {
+    color: #1F1D1A;
+}
+
+.mayhen_checkin_btn--full {
+    width: 100%;
+    height: 48px;
+}
+
+.mayhen_checkin_input {
+    width: 100%;
+    height: 44px;
+    padding: 8px 14px;
+    border: 1px solid #D8CEBD;
+    border-radius: 10px;
+    background: #FFFFFF;
+    color: #1F1D1A;
+    font-size: 14px;
+    outline: none;
+}
+
+.mayhen_checkin_input:focus {
+    border-color: #9C7A4A;
+}
+
+/* --------------------------------------------------------------------------
+   5. Public Guest Pass Standalone Card
+   -------------------------------------------------------------------------- */
+.mayhen_guest_pass_wrapper {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    background: #FAF8F5;
+}
+
+.mayhen_guest_pass_card {
+    width: 100%;
+    max-width: 440px;
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 24px;
+    padding: 40px 28px;
+    text-align: center;
+    box-shadow: 0 20px 48px rgba(31, 29, 26, 0.08);
+}
+
+.mayhen_guest_pass_emblem {
+    color: #C5A880;
+    margin-bottom: 14px;
+}
+
+.mayhen_guest_pass_badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #9C7A4A;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.mayhen_guest_pass_couple {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mayhen_guest_pass_date {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 6px 0 20px;
+}
+
+.mayhen_guest_pass_divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #E5DCCD, transparent);
+    margin: 20px 0;
+}
+
+.mayhen_guest_pass_salutation {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: #8C827A;
+    text-transform: uppercase;
+}
+
+.mayhen_guest_pass_name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 4px 0 6px;
+}
+
+.mayhen_guest_pass_group {
+    font-size: 13px;
+    color: #7A726A;
+    margin-bottom: 20px;
+}
+
+.mayhen_guest_pass_table_box {
+    background: #FFFDF9;
+    border: 2px solid #C5A880;
+    border-radius: 16px;
+    padding: 18px 14px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(197, 168, 128, 0.12);
+}
+
+.table_box_label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: #8C827A;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.table_box_number {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: #85182A;
+    letter-spacing: 1px;
+}
+
+.table_box_pending {
+    font-size: 13px;
+    color: #7A726A;
+    font-style: italic;
+    padding: 6px 0;
+}
+
+.mayhen_guest_pass_qr_box {
+    margin-bottom: 24px;
+}
+
+.mayhen_guest_pass_qr_code {
+    display: inline-block;
+    padding: 10px;
+    background: #FAF8F5;
+    border-radius: 16px;
+    border: 1px solid #EFE8DD;
+}
+
+.mayhen_guest_pass_qr_hint {
+    font-size: 12px;
+    color: #6B635B;
+    margin-top: 10px;
+    line-height: 1.4;
+    padding: 0 10px;
+}
+
+.mayhen_guest_pass_status {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.mayhen_guest_pass_status--checked {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.mayhen_guest_pass_actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 640px) {
+    .mayhen_checkin_counter_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_checkin_title {
+        font-size: 26px;
+    }
+}
+

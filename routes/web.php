@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
+use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
@@ -108,7 +110,22 @@ Route::prefix('tai-khoan')->group(function () {
     Route::put('/khach-moi/{id}', [GuestController::class, 'update'])->middleware('throttle:60,1')->name('guests.update');
     Route::post('/khach-moi/{id}/rsvp-thu-cong', [GuestController::class, 'manualRsvp'])->middleware('throttle:60,1')->name('guests.manual_rsvp');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
+
+    // Bảng Điều Khiển Ngày Cưới Realtime (Live Command Center - TASK-V2-02)
+    Route::get('/thiep/{id}/dieu-phoi', [LiveCoordinationController::class, 'index'])->name('coordination.index');
+    Route::get('/api/thiep/{id}/dieu-phoi/stats', [LiveCoordinationController::class, 'liveStats'])->middleware('throttle:120,1')->name('coordination.stats');
 });
+
+// Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)
+Route::get('/diem-danh-tiec/{slug}', [CheckInController::class, 'showPortal'])->name('checkin.portal');
+Route::post('/diem-danh-tiec/{slug}/xac-thuc-pin', [CheckInController::class, 'verifyPin'])->middleware('throttle:15,1')->name('checkin.verifyPin');
+Route::post('/api/diem-danh-tiec/{slug}/quet', [CheckInController::class, 'processScan'])->middleware('throttle:120,1')->name('checkin.scan');
+Route::get('/api/diem-danh-tiec/{slug}/tim-nhanh', [CheckInController::class, 'quickSearch'])->middleware('throttle:60,1')->name('checkin.quickSearch');
+Route::post('/api/diem-danh-tiec/{slug}/huy/{guestId}', [CheckInController::class, 'undo'])->middleware('throttle:60,1')->name('checkin.undo');
+Route::post('/api/diem-danh-tiec/{slug}/ban-tiec/{guestId}', [CheckInController::class, 'updateTable'])->middleware('throttle:60,1')->name('checkin.updateTable');
+
+// Thẻ VIP & Tra Cứu Bàn Tiệc Khi Quét QR Cá Nhân
+Route::get('/diem-danh/{token}', [CheckInController::class, 'directScan'])->name('checkin.direct');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

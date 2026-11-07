@@ -56,6 +56,9 @@
     {{-- Modals / Lightbox / Popups nếu có --}}
     @yield('modals')
 
+    {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (Guest Table Finder & QR Pass) --}}
+    @include('client.components.guest-table-badge')
+
     {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập ngoài trình duyệt) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
         @include('client.components.bottom-nav')

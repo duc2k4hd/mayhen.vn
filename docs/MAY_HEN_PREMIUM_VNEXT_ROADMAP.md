@@ -57,8 +57,8 @@ flowchart TD
 
 | Task ID | Tính năng cốt lõi | Phạm vi mã nguồn | Bàn giao & Tiêu chí nghiệm thu | Độ ưu tiên |
 |---|---|---|---|---|
-| **TASK-V2-01** | **Mã QR Điểm Danh & Check-in Bàn Tiệc (QR Check-in)** | `CheckInController`, Camera API, Views | Lễ tân quét mã QR trên thiệp khách trong 1 giây để điểm danh và báo số bàn tiệc. | **P1** |
-| **TASK-V2-02** | **Bảng Điều Khiển Ngày Cưới (Live Command Center)** | `WeddingLiveController`, Dashboard | Thống kê thời gian thực: số khách đã tới, số bàn đã đầy, khách cần hỗ trợ đặc biệt. | **P1** |
+| **TASK-V2-01** | **Mã QR Điểm Danh & Check-in Bàn Tiệc (QR Check-in & Table Finder)** | `CheckInController`, `QrCodeService`, Views, JS | Lễ tân quét mã QR trên thiệp khách trong 1 giây để điểm danh và báo số bàn tiệc. Khách xem vị trí bàn và mã check-in qua VIP Pass widget trên thiệp. Đã bao phủ 10 test cases. | **P1 (ĐÃ HOÀN TẤT)** |
+| **TASK-V2-02** | **Bảng Điều Khiển Ngày Cưới Realtime (Live Command Center)** | `LiveCoordinationController`, `live-coordination.js/css` | Thống kê sĩ số realtime (Tổng khách, RSVP, Đã tới, Chưa tới), Sóng lấp đầy bàn tiệc (Table Seating Wave) và dòng sự kiện đón khách trực tiếp qua AJAX Polling mỗi 8 giây. Đã kiểm thử 100%. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V2-03** | **Két Lưu Trữ Kỷ Niệm Số (Digital Memory Vault)** | Account Controller, Public Page | Thiệp cưới sau hôn lễ tự động chuyển thành trang kỷ niệm lưu trữ lời chúc, chữ ký và album ảnh trọn đời. | **P1** |
 | **TASK-V2-04** | **Xuất Cuốn Sách Kỷ Yếu Lưu Bút PDF In Ấn** | Export Service, Headless PDF | Xuất toàn bộ lời chúc và nét chữ ký tay thành file PDF dàn trang tuyệt đẹp để in kỷ niệm. | **P2** |
 | **TASK-V2-05** | **Live Guest Photo Drop (QR Thu Thập Ảnh)** | Upload Service, S3/R2 Storage | Khách tại tiệc quét mã QR để tải ảnh chụp tự nhiên lên album chung của cặp đôi. | **P2** |

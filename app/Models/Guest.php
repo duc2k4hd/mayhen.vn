@@ -17,9 +17,13 @@ class Guest extends Model
         'name',
         'salutation',
         'group_name',
+        'table_name',
         'guest_token',
         'phone',
         'expected_attendees',
+        'checked_in_at',
+        'checked_in_attendees',
+        'check_in_note',
         'is_sent',
     ];
 
@@ -27,8 +31,15 @@ class Guest extends Model
     {
         return [
             'expected_attendees' => 'integer',
+            'checked_in_attendees' => 'integer',
+            'checked_in_at' => 'datetime',
             'is_sent' => 'boolean',
         ];
+    }
+
+    public function isCheckedIn(): bool
+    {
+        return $this->checked_in_at !== null;
     }
 
     protected static function booted(): void

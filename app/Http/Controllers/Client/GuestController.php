@@ -31,11 +31,16 @@ class GuestController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
 
-        // Danh sách nhóm độc nhất để hiển thị dropdown bộ lọc (dùng Model trực tiếp để tránh xung đột ORDER BY)
+        // Danh sách nhóm và bàn tiệc độc nhất để hiển thị dropdown bộ lọc
         $availableGroups = Guest::where('wedding_id', $wedding->id)
             ->whereNotNull('group_name')
             ->distinct()
             ->pluck('group_name');
+
+        $availableTables = Guest::where('wedding_id', $wedding->id)
+            ->whereNotNull('table_name')
+            ->distinct()
+            ->pluck('table_name');
 
         // Thống kê tổng quan (toàn bộ đám cưới)
         $allGuests = $wedding->guests()->with('response')->get();
@@ -46,6 +51,9 @@ class GuestController extends Controller
             + $wedding->guestResponses()->where('attending_status', 'attending')->sum('children_count'));
         $declinedCount = (int) $wedding->guestResponses()->where('attending_status', 'declined')->count();
         $responseRate = $totalGuestsCount > 0 ? (int) round(($totalResponses / $totalGuestsCount) * 100) : 0;
+        $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
+            return $g->checked_in_attendees ?: $g->expected_attendees;
+        });
 
         // Xử lý bộ lọc danh sách hiển thị
         $guestsQuery = $wedding->guests()->with('response');
@@ -53,12 +61,17 @@ class GuestController extends Controller
         if ($search = trim((string) $request->query('q'))) {
             $guestsQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('table_name', 'like', "%{$search}%");
             });
         }
 
         if ($groupFilter = $request->query('group')) {
             $guestsQuery->where('group_name', $groupFilter);
+        }
+
+        if ($tableFilter = $request->query('table')) {
+            $guestsQuery->where('table_name', $tableFilter);
         }
 
         if ($statusFilter = $request->query('status')) {
@@ -68,6 +81,10 @@ class GuestController extends Controller
                 $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
             } elseif ($statusFilter === 'pending') {
                 $guestsQuery->whereDoesntHave('response');
+            } elseif ($statusFilter === 'checked_in') {
+                $guestsQuery->whereNotNull('checked_in_at');
+            } elseif ($statusFilter === 'not_checked_in') {
+                $guestsQuery->whereNull('checked_in_at');
             }
         }
 
@@ -83,9 +100,12 @@ class GuestController extends Controller
             'attendingCount' => $attendingCount,
             'declinedCount' => $declinedCount,
             'responseRate' => $responseRate,
+            'checkedInCount' => $checkedInCount,
             'availableGroups' => $availableGroups,
+            'availableTables' => $availableTables,
             'filterSearch' => $search,
             'filterGroup' => $groupFilter,
+            'filterTable' => $tableFilter,
             'filterStatus' => $statusFilter,
         ]);
     }
@@ -104,6 +124,7 @@ class GuestController extends Controller
             'name' => $request->validated('name'),
             'salutation' => $request->validated('salutation') ?? 'Thân mời',
             'group_name' => $request->validated('group_name') ?? 'Bạn Bè',
+            'table_name' => $request->validated('table_name'),
             'phone' => $request->validated('phone'),
             'expected_attendees' => $request->validated('expected_attendees') ?? 1,
             'guest_token' => Str::random(32),
@@ -154,12 +175,14 @@ class GuestController extends Controller
                 $group = isset($parts[2]) && trim($parts[2]) !== '' ? trim($parts[2]) : $defaultGroup;
                 $attendees = isset($parts[3]) && is_numeric(trim($parts[3])) ? max(1, (int) trim($parts[3])) : 2;
                 $phone = isset($parts[4]) && trim($parts[4]) !== '' ? trim($parts[4]) : null;
+                $table = isset($parts[5]) && trim($parts[5]) !== '' ? trim($parts[5]) : null;
 
                 Guest::create([
                     'wedding_id' => $wedding->id,
                     'name' => Str::limit($name, 190, ''),
                     'salutation' => Str::limit($salutation, 50, ''),
                     'group_name' => Str::limit($group, 50, ''),
+                    'table_name' => $table ? Str::limit($table, 100, '') : null,
                     'phone' => $phone ? Str::limit($phone, 20, '') : null,
                     'expected_attendees' => $attendees,
                     'guest_token' => Str::random(32),
@@ -201,11 +224,14 @@ class GuestController extends Controller
                 'Tên Khách Mời',
                 'Cách Xưng Hô',
                 'Nhóm Khách',
+                'Bàn Tiệc',
                 'Số Điện Thoại',
                 'Số Người Dự Kiến',
                 'Trạng Thái RSVP',
                 'Người Lớn (RSVP)',
                 'Trẻ Em (RSVP)',
+                'Điểm Danh Ngày Cưới',
+                'Thời Điểm Điểm Danh',
                 'Yêu Cầu Ăn Uống',
                 'Lời Chúc / Ghi Chú',
                 'Link Thiệp Cá Nhân Hóa',
@@ -228,6 +254,8 @@ class GuestController extends Controller
                     $wishes = $response->wishes ?? '';
                 }
 
+                $checkInStatus = $g->checked_in_at ? 'Đã có mặt' : 'Chưa điểm danh';
+                $checkInTime = $g->checked_in_at ? $g->checked_in_at->format('H:i d/m/Y') : '';
                 $personalUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $g->guest_token]);
 
                 fputcsv($handle, [
@@ -235,11 +263,14 @@ class GuestController extends Controller
                     $g->name,
                     $g->salutation,
                     $g->group_name,
+                    $g->table_name ?? 'Chưa xếp bàn',
                     $g->phone ?? '',
                     $g->expected_attendees,
                     $rsvpStatus,
                     $adults,
                     $children,
+                    $checkInStatus,
+                    $checkInTime,
                     $dietary,
                     $wishes,
                     $personalUrl,
@@ -322,6 +353,7 @@ class GuestController extends Controller
             'name' => ['required', 'string', 'max:190'],
             'salutation' => ['nullable', 'string', 'max:50'],
             'group_name' => ['nullable', 'string', 'max:50'],
+            'table_name' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:20'],
             'expected_attendees' => ['required', 'integer', 'min:1', 'max:50'],
         ], [
@@ -334,7 +366,8 @@ class GuestController extends Controller
             'name' => $validated['name'],
             'salutation' => $validated['salutation'] ?? 'Thân mời',
             'group_name' => $validated['group_name'] ?? 'Bạn Bè',
-            'phone' => $validated['phone'],
+            'table_name' => $validated['table_name'] ?? null,
+            'phone' => $validated['phone'] ?? null,
             'expected_attendees' => (int) $validated['expected_attendees'],
         ]);
 

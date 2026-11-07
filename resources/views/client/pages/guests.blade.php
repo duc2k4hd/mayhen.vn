@@ -55,13 +55,30 @@
                 </p>
             </div>
             <div class="mayhen_guest_header_actions">
-                <a href="{{ route('guests.print', $invitation->id) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_gold">
+                <a href="{{ route('coordination.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Điều Phối Ngày Cưới Realtime</span>
+                </a>
+                <a href="{{ route('checkin.portal', $invitation->slug) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Cổng Quét QR Tiếp Tân</span>
+                </a>
+                <a href="{{ route('guests.print', $invitation->id) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <polyline points="6 9 6 2 18 2 18 9"></polyline>
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                         <rect x="6" y="14" width="12" height="8"></rect>
                     </svg>
-                    <span>In Bảng Điểm Danh (A4)</span>
+                    <span>In Danh Sách (A4)</span>
                 </a>
                 <a href="{{ route('guests.export', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -69,21 +86,14 @@
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    <span>Xuất Danh Sách CSV (Excel)</span>
+                    <span>Xuất CSV (Excel)</span>
                 </a>
                 <a href="{{ route('invitation.show', $invitation->slug) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" target="_blank">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg>
-                    <span>Xem Thiệp Chính</span>
-                </a>
-                <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                    </svg>
-                    <span>Vào Studio</span>
+                    <span>Xem Thiệp</span>
                 </a>
             </div>
         </div>
@@ -173,6 +183,11 @@
                         </div>
 
                         <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Bàn tiệc (tùy chọn)</label>
+                            <input type="text" name="table_name" class="mayhen_guest_form_input" placeholder="Bàn 01, VIP 02...">
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
                             <label class="mayhen_guest_form_label">Số người dự kiến</label>
                             <input type="number" name="expected_attendees" class="mayhen_guest_form_input" min="1" max="10" value="2">
                         </div>
@@ -197,12 +212,12 @@
                     @csrf
                     <p style="font-size: 13px; color: #7A726A; margin: 0 0 12px 0;">
                         Dán danh sách khách mời vào khung dưới đây, mỗi dòng một khách. Định dạng hỗ trợ: <br>
-                        <code>Tên khách mời | Cách xưng hô | Nhóm | Số người | Số điện thoại</code>
+                        <code>Tên khách mời | Cách xưng hô | Nhóm | Số người | Số điện thoại | Bàn tiệc</code>
                     </p>
                     <textarea name="batch_input" rows="6" class="mayhen_guest_form_textarea" required placeholder="Ví dụ:
-Anh Hoàng & Bạn gái | Thân mời | Bạn Đại học | 2 | 0912345678
-Gia đình Chú Bảy | Kính mời | Họ Nhà Trai | 4
-Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
+Anh Hoàng & Bạn gái | Thân mời | Bạn Đại học | 2 | 0912345678 | Bàn 08
+Gia đình Chú Bảy | Kính mời | Họ Nhà Trai | 4 | | Bàn VIP 01
+Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"></textarea>
 
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 12px; flex-wrap: wrap;">
                         <div style="display: flex; gap: 12px; font-size: 13px;">
@@ -231,7 +246,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" name="q" value="{{ $filterSearch }}" placeholder="Tìm kiếm theo tên hoặc SĐT..." class="mayhen_guest_search_input">
+                    <input type="text" name="q" value="{{ $filterSearch }}" placeholder="Tìm kiếm theo tên, SĐT hoặc bàn..." class="mayhen_guest_search_input">
                 </div>
 
                 <select name="group" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
@@ -241,14 +256,23 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                     @endforeach
                 </select>
 
+                <select name="table" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả bàn tiệc --</option>
+                    @foreach($availableTables as $tbl)
+                        <option value="{{ $tbl }}" {{ ($filterTable ?? '') === $tbl ? 'selected' : '' }}>{{ $tbl }}</option>
+                    @endforeach
+                </select>
+
                 <select name="status" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
-                    <option value="">-- Tất cả trạng thái RSVP --</option>
+                    <option value="">-- Trạng thái RSVP & Điểm danh --</option>
                     <option value="attending" {{ $filterStatus === 'attending' ? 'selected' : '' }}>Đã xác nhận tham dự</option>
                     <option value="pending" {{ $filterStatus === 'pending' ? 'selected' : '' }}>Chưa gửi phản hồi</option>
                     <option value="declined" {{ $filterStatus === 'declined' ? 'selected' : '' }}>Từ chối / Không tham gia</option>
+                    <option value="checked_in" {{ $filterStatus === 'checked_in' ? 'selected' : '' }}>✓ Đã điểm danh tại sảnh</option>
+                    <option value="not_checked_in" {{ $filterStatus === 'not_checked_in' ? 'selected' : '' }}>○ Chưa điểm danh</option>
                 </select>
 
-                @if($filterSearch || $filterGroup || $filterStatus)
+                @if($filterSearch || $filterGroup || ($filterTable ?? '') || $filterStatus)
                     <a href="{{ route('guests.index', $invitation->id) }}" class="mayhen_guest_reset_link">
                         Đặt lại
                     </a>
@@ -269,8 +293,10 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                             <th>Tên Khách Mời</th>
                             <th>Xưng Hô</th>
                             <th>Nhóm</th>
+                            <th>Bàn Tiệc</th>
                             <th>Số Dự Kiến</th>
                             <th>Phản Hồi RSVP</th>
+                            <th>Điểm Danh</th>
                             <th>Công Cụ Mời Zalo</th>
                             <th style="text-align: right;">Thao Tác</th>
                         </tr>
@@ -291,6 +317,15 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                                 <td>
                                     <span class="mayhen_guest_group_badge">{{ $g->group_name }}</span>
                                 </td>
+                                <td>
+                                    @if($g->table_name)
+                                        <span style="font-weight: 600; color: #9C7A4A; background: #FAF5EE; padding: 2px 8px; border-radius: 4px; font-size: 12px; border: 1px solid #EADBCE;">
+                                            {{ $g->table_name }}
+                                        </span>
+                                    @else
+                                        <span style="color: #A0988E; font-size: 12px;">Chưa xếp</span>
+                                    @endif
+                                </td>
                                 <td>{{ $g->expected_attendees }} người</td>
                                 <td>
                                     @if ($g->response)
@@ -308,6 +343,15 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                                         @endif
                                     @else
                                         <span class="mayhen_guest_badge_pending">Chưa phản hồi</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($g->checked_in_at)
+                                        <span style="display:inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 99px; background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 600;">
+                                            ✓ Đã tới ({{ $g->checked_in_at->format('H:i') }})
+                                        </span>
+                                    @else
+                                        <span style="color: #A0988E; font-size: 11px;">○ Chưa tới</span>
                                     @endif
                                 </td>
                                 <td>
@@ -343,6 +387,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                                         data-guest-name="{{ $g->name }}"
                                         data-guest-salutation="{{ $g->salutation }}"
                                         data-guest-group="{{ $g->group_name }}"
+                                        data-guest-table="{{ $g->table_name ?? '' }}"
                                         data-guest-phone="{{ $g->phone ?? '' }}"
                                         data-guest-attendees="{{ $g->expected_attendees }}"
                                         data-update-url="{{ route('guests.update', $g->id) }}">
@@ -384,7 +429,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align: center; padding: 48px 20px; color: #8C827A;">
+                                <td colspan="9" style="text-align: center; padding: 48px 20px; color: #8C827A;">
                                     @if($filterSearch || $filterGroup || $filterStatus)
                                         Không tìm thấy khách mời nào phù hợp với bộ lọc hiện tại.
                                         <div style="margin-top: 10px;">
@@ -440,6 +485,11 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1"></textarea>
                             <label class="mayhen_guest_form_label">Số người dự kiến</label>
                             <input type="number" name="expected_attendees" id="edit-guest-attendees" min="1" max="20" required class="mayhen_guest_form_input">
                         </div>
+                    </div>
+
+                    <div style="margin-top: 12px;">
+                        <label class="mayhen_guest_form_label">Vị trí bàn tiệc</label>
+                        <input type="text" name="table_name" id="edit-guest-table" class="mayhen_guest_form_input" placeholder="Bàn 01, Bàn VIP 02, Bàn Bạn Cấp 3...">
                     </div>
                 </div>
                 <div class="mayhen_guest_modal_footer">

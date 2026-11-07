@@ -1,0 +1,478 @@
+/* ==========================================================================
+   BẢNG ĐIỀU KHIỂN NGÀY CƯỚI REALTIME (LIVE COMMAND CENTER)
+   MÂY HẸN (MAYHEN.VN) — QUIET LUXURY EDITORIAL STYLE
+   Pure CSS — Namespace: mayhen_live_*
+   ========================================================================== */
+
+.mayhen_live_app {
+    min-height: 90vh;
+    background: #FAF8F5;
+    padding: 32px 20px 64px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1F1D1A;
+}
+
+.mayhen_live_container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   1. Header
+   -------------------------------------------------------------------------- */
+.mayhen_live_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 20px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_live_brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mayhen_live_pulse {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #85182A;
+    box-shadow: 0 0 0 4px rgba(133, 24, 42, 0.2);
+    animation: livePulseGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes livePulseGlow {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.2); }
+    50% { box-shadow: 0 0 0 8px rgba(133, 24, 42, 0.05); }
+}
+
+.mayhen_live_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mayhen_live_subtitle {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 4px 0 0;
+}
+
+.mayhen_live_top_actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mayhen_live_pin_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFDF9;
+    border: 1px solid #D8CEBD;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.pin_label {
+    color: #7A726A;
+    font-size: 12px;
+}
+
+.pin_value {
+    font-family: monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: #9C7A4A;
+}
+
+/* --------------------------------------------------------------------------
+   2. Metric Cards Grid
+   -------------------------------------------------------------------------- */
+.mayhen_live_metrics_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.mayhen_live_metric_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_live_metric_card--highlight {
+    background: linear-gradient(145deg, #FFFDF9 0%, #FAF5EC 100%);
+    border-color: #D8CEBD;
+}
+
+.metric_label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: #8C827A;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.metric_value {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1;
+}
+
+.metric_value_row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.metric_rate_badge {
+    background: #85182A;
+    color: #FAF8F5;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.metric_hint {
+    display: block;
+    font-size: 12px;
+    color: #8C827A;
+    margin-top: 8px;
+}
+
+.metric_progress_track {
+    width: 100%;
+    height: 6px;
+    background: #EFE8DD;
+    border-radius: 999px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.metric_progress_fill {
+    height: 100%;
+    background: #85182A;
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+
+/* --------------------------------------------------------------------------
+   3. Main 2-Column Split Layout
+   -------------------------------------------------------------------------- */
+.mayhen_live_layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.mayhen_live_section_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.mayhen_live_sec_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    color: #1F1D1A;
+}
+
+.mayhen_live_sec_desc {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 2px 0 0;
+}
+
+.mayhen_live_table_count {
+    background: #EFE8DD;
+    color: #4A453E;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* Table Cards Grid */
+.mayhen_live_tables_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.mayhen_live_table_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.02);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.mayhen_live_table_card:hover {
+    transform: translateY(-2px);
+    border-color: #D8CEBD;
+}
+
+.mayhen_live_table_card.is-unassigned {
+    background: #FAF8F5;
+    border-style: dashed;
+}
+
+.table_card_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.table_card_name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.table_unassigned_badge {
+    display: inline-block;
+    font-size: 10px;
+    color: #C62828;
+    background: #FFEBEE;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+
+.table_card_headcount {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.table_current_count {
+    font-size: 16px;
+    color: #85182A;
+    font-weight: 700;
+}
+
+.table_total_count {
+    color: #8C827A;
+    font-weight: 400;
+}
+
+.table_progress_track {
+    width: 100%;
+    height: 5px;
+    background: #EFE8DD;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.table_progress_fill {
+    height: 100%;
+    background: #9C7A4A;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.table_progress_fill.is-full {
+    background: #2E7D32;
+}
+
+.table_card_guests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.table_guest_pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+
+.table_guest_pill.is-present {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border-color: #C8E6C9;
+    font-weight: 600;
+}
+
+.table_guest_pill.is-absent {
+    background: #FAF8F5;
+    color: #8C827A;
+    border-color: #EFE8DD;
+}
+
+.mayhen_live_empty_tables {
+    grid-column: 1 / -1;
+    padding: 40px 20px;
+    background: #FFFFFF;
+    border: 1px dashed #D8CEBD;
+    border-radius: 16px;
+    text-align: center;
+    color: #8C827A;
+    font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Live Activity Feed (Column Right)
+   -------------------------------------------------------------------------- */
+.mayhen_live_feed_box {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+.mayhen_live_feed_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_live_feed_item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+    border-radius: 12px;
+    font-size: 13px;
+    animation: feedSlideIn 0.3s ease-out;
+}
+
+@keyframes feedSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.feed_item_time {
+    font-family: monospace;
+    font-size: 12px;
+    color: #9C7A4A;
+    font-weight: 600;
+    padding-top: 1px;
+}
+
+.feed_item_guest strong {
+    color: #1F1D1A;
+}
+
+.feed_item_attendees {
+    font-size: 11px;
+    color: #7A726A;
+}
+
+.feed_item_table {
+    font-size: 12px;
+    color: #7A726A;
+    margin-top: 3px;
+}
+
+.feed_item_table strong {
+    color: #85182A;
+}
+
+.mayhen_live_feed_empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: #8C827A;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   5. Buttons
+   -------------------------------------------------------------------------- */
+.mayhen_live_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.mayhen_live_btn--primary {
+    background: #1F1D1A;
+    color: #FAF8F5;
+}
+
+.mayhen_live_btn--primary:hover {
+    background: #3A3530;
+}
+
+.mayhen_live_btn--outline {
+    background: transparent;
+    border: 1px solid #D8CEBD;
+    color: #4A453E;
+}
+
+.mayhen_live_btn--outline:hover {
+    background: #EFE8DD;
+}
+
+/* --------------------------------------------------------------------------
+   6. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .mayhen_live_metrics_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .mayhen_live_layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .mayhen_live_metrics_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_live_tables_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_live_header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
