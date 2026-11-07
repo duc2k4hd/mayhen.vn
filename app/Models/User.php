@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -65,6 +66,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function partner(): HasOne
+    {
+        return $this->hasOne(Partner::class);
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->role === 'admin';
@@ -87,7 +93,7 @@ class User extends Authenticatable
 
     public function isPartner(): bool
     {
-        return $this->role === 'partner';
+        return $this->role === 'partner' || ($this->relationLoaded('partner') ? (bool) $this->partner : $this->partner()->exists());
     }
 
     public function isCustomer(): bool

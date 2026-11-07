@@ -25,6 +25,32 @@
         </a>
     </div>
 
+    {{-- Hộp Nhập Mã Bàn Giao Từ Studio --}}
+    <div style="background: #FAF8F5; border: 1px dashed #C5A880; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div>
+            <strong style="display: block; font-size: 14px; color: #1F1D1A; margin-bottom: 2px;">
+                🔑 Bạn có mã nhận thiệp cưới từ Studio / Wedding Planner?
+            </strong>
+            <span style="font-size: 12px; color: #7A726A;">
+                Nhập mã bàn giao 6 ký tự do Studio cung cấp để nhận quyền quản lý thiệp cưới của hai bạn.
+            </span>
+        </div>
+        <form action="{{ route('account.claim_partner_invitation') }}" method="POST" style="display: flex; gap: 8px; margin: 0;">
+            @csrf
+            <input 
+                type="text" 
+                name="handover_code" 
+                maxlength="6" 
+                placeholder="Ví dụ: AB88CD" 
+                required 
+                style="padding: 6px 12px; border: 1px solid #DCD5CB; border-radius: 6px; font-family: monospace; font-weight: 700; text-transform: uppercase; width: 130px; font-size: 13px;"
+            >
+            <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm">
+                Nhận Thiệp
+            </button>
+        </form>
+    </div>
+
     @if($invitations->isNotEmpty())
         <div class="mayhen_account_invitations_grid">
             @foreach($invitations as $inv)
@@ -128,6 +154,14 @@
                                     <line x1="2" y1="10" x2="22" y2="10"></line>
                                 </svg>
                                 <span>Sổ Mừng Cưới</span>
+                            </a>
+
+                            <a href="{{ route('photo_drop.manage', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý ảnh do khách mời chụp tại bàn tiệc">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                                <span>Ảnh Khách</span>
                             </a>
 
                             <button type="button" 

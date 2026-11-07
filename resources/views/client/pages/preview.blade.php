@@ -182,8 +182,23 @@
 
             <!-- Thank you note -->
             <footer style="text-align: center; padding: 24px; color: var(--mayhen-color-text-muted); font-size: 0.8125rem;">
-                Trân trọng cảm ơn sự yêu thương của mọi người! &bull; Minh Quân & Ái Như
+                Trân trọng cảm ơn sự yêu thương của mọi người! &bull; {{ $wedding->groom_name ?? 'Minh Quân' }} & {{ $wedding->bride_name ?? 'Ái Như' }}
             </footer>
+
+            @if(isset($wedding) && $wedding && $wedding->partner && $wedding->partner->isActive())
+                @php
+                    $pConfig = is_array($wedding->partner->custom_config) && isset($wedding->partner->custom_config['branding'])
+                        ? $wedding->partner->custom_config['branding']
+                        : [];
+                    $showBadge = $pConfig['show_badge'] ?? true;
+                    $footerText = $pConfig['footer_text'] ?? ('Đồng hành cùng ' . $wedding->partner->business_name);
+                @endphp
+                @if($showBadge)
+                    <div style="text-align: center; padding: 12px 24px 28px; font-size: 0.8rem; color: #8C8479; letter-spacing: 0.05em; text-transform: uppercase;">
+                        <span>{{ $footerText }}</span>
+                    </div>
+                @endif
+            @endif
         </article>
     </div>
 

@@ -27,6 +27,9 @@ class Wedding extends Model
         'bank_account_number',
         'bank_account_name',
         'extra_data',
+        'partner_id',
+        'handover_code',
+        'client_notes',
     ];
 
     protected function casts(): array
@@ -65,5 +68,15 @@ class Wedding extends Model
     public function gifts(): HasMany
     {
         return $this->hasMany(WeddingGift::class)->latest();
+    }
+
+    public function guestPhotos(): HasMany
+    {
+        return $this->hasMany(GuestPhoto::class)->latest();
+    }
+
+    public function partner(): BelongsTo
+    {
+        return $this->belongsTo(Partner::class);
     }
 }

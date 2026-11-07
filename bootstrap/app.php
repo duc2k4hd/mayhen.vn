@@ -3,6 +3,7 @@
 use App\Http\Middleware\AdminAuthenticate;
 use App\Http\Middleware\EnsureAdminOrManager;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\EnsureUserIsPartner;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.auth' => AdminAuthenticate::class,
             'admin.manager' => EnsureAdminOrManager::class,
             'admin.super' => EnsureSuperAdmin::class,
+            'partner' => EnsureUserIsPartner::class,
         ]);
 
         $middleware->preventRequestForgery(except: [

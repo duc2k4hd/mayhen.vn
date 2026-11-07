@@ -4727,6 +4727,69 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                          - Toàn bộ test suite toàn hệ thống: **198/198 tests passed 100% (1,077 assertions)**.
                          - Laravel Pint: Đạt chuẩn 100% agent style.
 
+                   177. **Triển Khai Hoàn Thiện Live Guest Photo Drop — Hộp Nhận Ảnh Khách Mời Tại Bàn Tiệc (TASK-V2-05)**:
+                        - **Bối cảnh & Giá trị trải nghiệm**:
+                          - Trong ngày cưới, các nhiếp ảnh gia chính thường chỉ chụp các góc nghi thức sân khấu, trong khi những khoảnh khắc tự nhiên, vui nhộn và chân thật nhất lại nằm trong điện thoại của hàng trăm khách mời ngồi tại bàn tiệc.
+                          - Cặp đôi thường mất rất nhiều công sức sau đám cưới nhắn tin từng người xin ảnh, hoặc ảnh bị nén giảm chất lượng qua mạng xã hội.
+                          - Tính năng **Live Guest Photo Drop** biến mỗi bàn tiệc thành một trạm gửi ảnh trực tiếp: Khách quét mã QR đặt tại bàn tiệc, chọn ảnh gốc và gửi ngay vào album kỷ niệm chung chỉ trong vài giây.
+                        - **Các thành phần kỹ thuật cốt lõi**:
+                          1. *Cơ sở dữ liệu & Model (`GuestPhoto.php` & Migration `guest_photos`)*:
+                             - Bảng `guest_photos` lưu trữ: `wedding_id`, `guest_id` (nếu khách truy cập qua token cá nhân), `uploader_name`, `photo_url`, `file_size`, `caption`, `is_approved`, `ip_address`.
+                             - Model `GuestPhoto` có scope `approved()` và `pending()`, quan hệ `wedding()` và `guest()`.
+                             - Model `Wedding` bổ sung quan hệ `guestPhotos(): HasMany`.
+                          2. *Giao diện Tải Ảnh Di Động Dành Cho Quan Khách (`/photo-drop/{slug}`)*:
+                             - Dropzone tải ảnh tương tác, hỗ trợ kéo thả và file picker, tự động nhận diện tên khách nếu truy cập bằng token.
+                             - Hỗ trợ xem trước (Thumbnail Previews Grid) trước khi gửi, cho phép bấm xóa từng ảnh đã chọn nếu chọn nhầm.
+                             - Xử lý tải ảnh qua AJAX Native ES Modules với `XMLHttpRequest` để hiển thị chính xác tiến độ upload theo phần trăm (0% -> 100%).
+                             - Dòng khoảnh khắc cộng đồng (Community Stream Grid): Hiển thị ngay lập tức các bức ảnh vừa gửi kèm tên người chụp và lời nhắn.
+                          3. *Bảo Mật Tải File & Chống Tấn Công Tải Lên*:
+                             - Validate chặt chẽ: Chỉ chấp nhận mime type `jpeg, jpg, png, webp, heic, heif`.
+                             - Giới hạn dung lượng tối đa 12MB / ảnh, tối đa 10 ảnh / lần tải lên.
+                             - Sinh tên tệp ngẫu nhiên bằng `Str::uuid() . '.' . $extension` lưu trong `guest_photos/{wedding_id}/`, triệt tiêu hoàn toàn nguy cơ path traversal và ghi đè file.
+                             - Bộ lọc từ ngữ khiếm nhã `NoProfanity` và sanitize `strip_tags` cho tên người gửi và caption.
+                          4. *Không Gian Quản Lý Album Của Cặp Đôi (`/tai-khoan/thiep/{id}/album-khach`)*:
+                             - Thống kê 4 chỉ số: Tổng số ảnh đã nhận, Ảnh đã hiển thị công khai, Ảnh chờ kiểm duyệt, và Tổng dung lượng lưu trữ (MB).
+                             - Banner Mã QR Đặt Bàn Tiệc tích hợp chế độ In Standee chuẩn A4/A5 bằng CSS `@media print` (tự động ẩn các thành phần thừa, chỉ in mã QR độ phân giải cao và tên cặp đôi).
+                             - Bộ lọc trạng thái: Tất cả, Đã duyệt, Chờ duyệt.
+                             - Tính năng Duyệt / Ẩn ảnh 1-chạm (`toggleApproval`) và Xóa ảnh vĩnh viễn kèm xóa file vật lý trên đĩa (`destroy`).
+                             - Tính năng Đóng Gói Toàn Bộ Ảnh Thành File ZIP (`downloadZip`): Sử dụng extension native `ZipArchive` của PHP, gom toàn bộ ảnh gốc, đặt tên file rõ nghĩa theo tên khách mời và tự động xóa file tạm sau khi tải về máy tính.
+                          5. *Tích Hợp Sâu Vào Hệ Sinh Thái*:
+                             - Tự động hiển thị các ảnh khách mời đã duyệt trong Bảo Tàng Kỷ Niệm Số (`/ky-niem/{slug}`).
+                             - Bổ sung nút "Ảnh Khách" trên danh sách thiệp cưới (`account/invitations.blade.php`) và thanh Owner Ribbon của Két Kỷ Niệm.
+                        - **Kiểm thử & Đảm bảo chất lượng**:
+                          - Viết 10 Feature test cases trong `tests/Feature/LiveGuestPhotoDropTest.php`: Kiểm tra khách truy cập trang photo drop; khách upload ảnh hợp lệ; chặn file thực thi .php/.exe; chặn upload quá 10 ảnh; chặn khi cặp đôi đóng chức năng; chủ sở hữu quản lý album; chặn người lạ truy cập (404); bật/tắt duyệt ảnh; xóa ảnh và file vật lý; và đóng gói file ZIP -> **10/10 tests passed**.
+                          - Toàn bộ test suite toàn hệ thống: **208/208 tests passed 100% (1,113 assertions)**.
+                          - Laravel Pint: Đạt chuẩn 100% agent style.
+
+                   178. **Triển Khai Hoàn Thiện Studio & Agency B2B Portal — Cổng Đối Tác Studio & Wedding Planner (TASK-V3-01)**:
+                        - **Bối cảnh & Tầm nhìn chiến lược**:
+                          - Mở rộng Mây Hẹn từ nền tảng B2C (phục vụ từng cặp đôi riêng lẻ) sang hệ sinh thái B2B đối tác: Hợp tác trực tiếp cùng các Studio chụp ảnh cưới, Wedding Planner, chuyên viên makeup và khách sạn/trung tâm tiệc cưới.
+                          - Các Studio có nhu cầu tạo thiệp cưới cho hàng chục đến hàng trăm cặp đôi khách hàng, muốn gắn thương hiệu độc quyền (Co-Branding), quản lý tập trung và nhận chiết khấu hoa hồng tự động (20% - 30%).
+                        - **Các thành phần kỹ thuật cốt lõi**:
+                          1. *Cơ sở dữ liệu & Models*:
+                             - Bảng `partners`: Lưu thông tin Studio/Agency (`user_id`, `business_name`, `slug` độ dài 191 unique chuẩn utf8mb4, `partner_code` unique `MH-PARTNER-*`, `phone`, `email`, `address`, `logo_url`, `website`, `tier`, `commission_rate`, `wallet_balance`, `status`, `custom_config`).
+                             - Bổ sung `partner_id`, `handover_code`, `client_notes` vào bảng `weddings`.
+                             - Bảng `partner_commissions`: Ghi nhận lịch sử chiết khấu, hoa hồng, thưởng và quyết toán số dư.
+                             - Models `Partner`, `PartnerCommission`, cập nhật quan hệ trong `Wedding` và `User`.
+                          2. *Phân Quyền & Middleware (`EnsureUserIsPartner.php`)*:
+                             - Bảo vệ toàn bộ không gian `/doi-tac/*` qua middleware alias `'partner'`.
+                             - Kiểm tra đăng nhập, yêu cầu người dùng chưa là đối tác hoàn tất đăng ký trước, chặn đối tác bị tạm khóa (403), cho phép Admin hệ thống truy cập hỗ trợ.
+                          3. *Cổng Quản Trị Đối Tác (`/doi-tac`)*:
+                             - *Đăng Ký Đối Tác (`/doi-tac/dang-ky`)*: Tiếp nhận thông tin Studio, tự động kích hoạt tài khoản đối tác, sinh mã đối tác độc nhất và gán role `partner`.
+                             - *Bảng Điều Khiển Trung Tâm (`/doi-tac/tong-quan`)*: 4 metric cards theo dõi sĩ số khách hàng, thiệp đang phát hành, lượt khách RSVP và số dư hoa hồng; kèm banner sao chép mã giới thiệu 1-chạm.
+                             - *Danh Sách Thiệp Khách Hàng (`/doi-tac/danh-sach-thiep`)*: Tìm kiếm theo tên cặp đôi, sảnh tiệc hoặc ghi chú nội bộ; lọc trạng thái; nút nhảy nhanh vào Studio tạo thiệp.
+                             - *Khởi Tạo Thiệp Mới Cho Khách (`/doi-tac/tao-thiep`)*: Chọn mẫu thiết kế trực quan, nhập tên đôi uyên ương, ngày cưới và ghi chú hợp đồng của Studio.
+                             - *Bàn Giao Thiệp Cưới 1-Chạm (`/doi-tac/thiep/{id}/ban-giao`)*: Sinh mã bàn giao 6 ký tự (`handover_code`) to rõ, cung cấp mẫu tin nhắn Zalo/Messenger soạn sẵn để gửi khách, cho phép đổi mã mới nếu cần.
+                             - *Cặp Đôi Nhận Quyền Quản Trị Thiệp (`/tai-khoan/nhan-thiep-doi-tac`)*: Cặp đôi nhập mã 6 ký tự trên dashboard cá nhân, quyền sở hữu `user_id` chuyển sang cặp đôi, xóa mã bàn giao để chống claim lại, trong khi `partner_id` vẫn giữ nguyên vẹn để bảo toàn hoa hồng cho Studio.
+                             - *Bảng Hoa Hồng Doanh Thu (`/doi-tac/hoa-hong`)*: Lịch sử đối soát chiết khấu theo từng đám cưới và đơn hàng.
+                             - *Hồ Sơ Thương Hiệu & Co-Branding (`/doi-tac/ho-so`)*: Tải logo Studio, tùy biến dòng chữ bảo chứng chân thiệp cưới (`footer_text`), bật/tắt huy hiệu Studio trên thiệp của khách hàng.
+                          4. *Chữ Ký Bảo Chứng Quiet Luxury Trên Thiệp Cưới*:
+                             - Tự động hiển thị huy hiệu co-branding trang trọng ở cuối thiệp cưới (`Đồng hành cùng [Tên Studio]`) kèm logo Studio đối tác, tôn vinh thương hiệu đôi bên.
+                        - **Kiểm thử & Đảm bảo chất lượng**:
+                          - Viết 11 Feature test cases trong `tests/Feature/PartnerPortalTest.php`: Kiểm tra truy cập trang đăng ký; đăng ký đối tác thành công; truy cập dashboard B2B; chặn người chưa là partner; chặn partner bị khóa; tạo đám cưới cho khách; xem & đổi mã bàn giao; cặp đôi claim thiệp thành công; cập nhật hồ sơ & logo studio; xem lịch sử hoa hồng; và hiển thị co-branding trên thiệp cưới -> **11/11 tests passed**.
+                          - Toàn bộ test suite toàn hệ thống: **219/219 tests passed 100% (1,155 assertions)**.
+                          - Laravel Pint: Đạt chuẩn 100% agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -11,9 +11,15 @@ use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
+use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\WishManagementController;
+use App\Http\Controllers\Partner\PartnerCommissionController;
+use App\Http\Controllers\Partner\PartnerDashboardController;
+use App\Http\Controllers\Partner\PartnerProfileController;
+use App\Http\Controllers\Partner\PartnerRegistrationController;
+use App\Http\Controllers\Partner\PartnerWeddingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -120,10 +126,23 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'settings'])->name('memory.settings');
     Route::post('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'updateSettings'])->middleware('throttle:30,1')->name('memory.updateSettings');
     Route::get('/thiep/{id}/sach-ky-yeu', [MemoryVaultController::class, 'keepsakeBook'])->name('memory.keepsake_book');
+
+    // Quản Lý Album Ảnh Khách Chụp Ngày Cưới (Live Guest Photo Drop - TASK-V2-05)
+    Route::get('/thiep/{id}/album-khach', [PhotoDropController::class, 'manage'])->name('photo_drop.manage');
+    Route::post('/thiep/{id}/album-khach/{photoId}/duyet', [PhotoDropController::class, 'toggleApproval'])->name('photo_drop.toggleApproval');
+    Route::delete('/thiep/{id}/album-khach/{photoId}', [PhotoDropController::class, 'destroy'])->name('photo_drop.destroy');
+    Route::get('/thiep/{id}/album-khach/tai-zip', [PhotoDropController::class, 'downloadZip'])->name('photo_drop.downloadZip');
+
+    // Nhận Thiệp Cưới Từ Studio Bàn Giao
+    Route::post('/nhan-thiep-doi-tac', [PartnerWeddingController::class, 'claim'])->middleware('throttle:15,1')->name('account.claim_partner_invitation');
 });
 
 // Trang Kỷ Niệm Ngày Cưới Công Khai (Digital Memory Vault Public)
 Route::get('/ky-niem/{slug}', [MemoryVaultController::class, 'show'])->name('memory.vault');
+
+// Live Guest Photo Drop (Khách quét mã QR tại bàn tiệc tải ảnh tự nhiên)
+Route::get('/photo-drop/{slug}', [PhotoDropController::class, 'show'])->name('photo_drop.show');
+Route::post('/api/photo-drop/{slug}/upload', [PhotoDropController::class, 'upload'])->middleware('throttle:20,1')->name('photo_drop.upload');
 
 // Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)
 Route::get('/diem-danh-tiec/{slug}', [CheckInController::class, 'showPortal'])->name('checkin.portal');
@@ -145,6 +164,30 @@ Route::get('/lien-he', [PageController::class, 'contact'])->name('contact');
 Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
+
+// Đăng Ký Đối Tác Studio & Wedding Planner (Public)
+Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');
+Route::post('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'store'])->middleware('throttle:10,1')->name('partner.register.store');
+
+// Cổng Quản Trị Đối Tác Studio B2B (Protected by partner middleware)
+Route::prefix('doi-tac')->name('partner.')->middleware('partner')->group(function () {
+    Route::get('/', [PartnerDashboardController::class, 'index'])->name('index');
+    Route::get('/tong-quan', [PartnerDashboardController::class, 'index'])->name('dashboard');
+
+    // Quản lý danh sách thiệp cưới của khách hàng
+    Route::get('/danh-sach-thiep', [PartnerWeddingController::class, 'index'])->name('weddings.index');
+    Route::get('/tao-thiep', [PartnerWeddingController::class, 'create'])->name('weddings.create');
+    Route::post('/tao-thiep', [PartnerWeddingController::class, 'store'])->middleware('throttle:30,1')->name('weddings.store');
+    Route::get('/thiep/{id}/ban-giao', [PartnerWeddingController::class, 'handover'])->name('weddings.handover');
+    Route::post('/thiep/{id}/ban-giao/lam-moi', [PartnerWeddingController::class, 'regenerateHandoverCode'])->name('weddings.regenerate');
+
+    // Quản lý hoa hồng & chiết khấu B2B
+    Route::get('/hoa-hong', [PartnerCommissionController::class, 'index'])->name('commissions.index');
+
+    // Cài đặt hồ sơ Studio & Co-branding
+    Route::get('/ho-so', [PartnerProfileController::class, 'edit'])->name('profile');
+    Route::post('/ho-so', [PartnerProfileController::class, 'update'])->middleware('throttle:30,1')->name('profile.update');
+});
 
 // Admin Management Panel
 Route::prefix('admin')->name('admin.')->group(base_path('routes/admin.php'));

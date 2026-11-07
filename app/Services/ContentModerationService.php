@@ -10,7 +10,7 @@ class ContentModerationService
      */
     protected static array $badWords = [
         // 1. Tục tĩu, bộ phận sinh dục, hành vi tình dục
-        'buồi', 'buoi', 'bòi', 'cặc', 'cac', 'kặc', 'kac', 'dái', 'hòn dái', 'hon dai',
+        'buồi', 'buoi', 'cặc', 'cac', 'kặc', 'kac', 'dái', 'hòn dái', 'hon dai',
         'lồn', 'lon', 'lồz', 'loz', 'l0n', 'bướm', 'hột le', 'vú', 'bóp vú',
         'địt', 'dit', 'd1t', 'đ1t', 'đụ', 'đụ má', 'du ma', 'đụ mẹ', 'du me', 'đụ cụ', 'du cu',
         'chịch', 'chich', 'nện', 'xoạc', 'vét máng', 'vet mang', 'bú cu', 'bu cu', 'liếm lồn', 'liem lon',

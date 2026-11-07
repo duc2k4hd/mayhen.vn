@@ -17,6 +17,9 @@
                     <a href="{{ route('memory.settings', $invitation->id) }}" class="mayhen_vault_btn mayhen_vault_btn--sm">
                         ⚙️ Cài Đặt Két Kỷ Niệm
                     </a>
+                    <a href="{{ route('photo_drop.manage', $invitation->id) }}" class="mayhen_vault_btn mayhen_vault_btn--sm mayhen_vault_btn--outline">
+                        📷 Album Ảnh Khách ({{ $totalGuestPhotosCount }})
+                    </a>
                     <a href="{{ route('memory.keepsake_book', $invitation->id) }}" target="_blank" class="mayhen_vault_btn mayhen_vault_btn--sm mayhen_vault_btn--gold">
                         📖 In / Tải Sách Kỷ Yếu (PDF)
                     </a>
@@ -148,6 +151,47 @@
             @if($wishes->hasPages())
                 <div class="mayhen_vault_pagination">
                     {{ $wishes->links() }}
+                </div>
+            @endif
+        </section>
+
+        {{-- Guest Photos Memorial Section --}}
+        <section class="mayhen_vault_photos_section" style="margin-top: 3.5rem;">
+            <div class="mayhen_vault_sec_head">
+                <div>
+                    <span class="sec_badge">KHOẢNH KHẮC TỰ NHIÊN</span>
+                    <h2 class="sec_title">Ảnh Do Quan Khách Ghi Lại</h2>
+                </div>
+                <div class="sec_actions">
+                    <a href="{{ route('photo_drop.show', $invitation->slug) }}" class="mayhen_vault_btn mayhen_vault_btn--gold">
+                        ✨ Gửi Thêm Ảnh Kỷ Niệm
+                    </a>
+                </div>
+            </div>
+
+            @if($guestPhotos->isNotEmpty())
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                    @foreach($guestPhotos as $photo)
+                        <div style="background: #FFFFFF; border: 1px solid #EBE5DC; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(31, 29, 26, 0.04);">
+                            <div style="aspect-ratio: 1; overflow: hidden; background: #F0ECE6;">
+                                <img src="{{ $photo->photo_url }}" alt="Khoảnh khắc từ {{ $photo->uploader_name }}" style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy">
+                            </div>
+                            <div style="padding: 0.75rem 0.85rem;">
+                                <strong style="display: block; font-size: 0.85rem; color: #1F1D1A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ $photo->uploader_name }}
+                                </strong>
+                                @if($photo->caption)
+                                    <p style="font-size: 0.75rem; color: #6E685F; margin: 0.2rem 0 0; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        "{{ $photo->caption }}"
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="mayhen_vault_empty">
+                    Chưa có ảnh nào từ khách mời được chia sẻ. Bạn có thể <a href="{{ route('photo_drop.show', $invitation->slug) }}" style="color: #C5A880; font-weight: 600;">bấm vào đây</a> để tải lên bức ảnh đầu tiên!
                 </div>
             @endif
         </section>

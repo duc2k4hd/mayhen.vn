@@ -1,0 +1,995 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Live Guest Photo Drop & Album Styling
+ * Quiet Luxury, Editorial, Responsive Mobile-First
+ * Prefixes: mayhen_drop_* (Khách), mayhen_album_* (Cặp Đôi)
+ */
+
+/* ==========================================================================
+   1. GUEST PHOTO DROP INTERFACE (.mayhen_drop_*)
+   ========================================================================== */
+
+.mayhen_drop_wrapper {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #FAF8F5 0%, #F5F1EB 100%);
+    color: #1F1D1A;
+    padding: 2.5rem 1rem 4rem;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.mayhen_drop_container {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* Header */
+.mayhen_drop_header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.mayhen_drop_badge {
+    display: inline-block;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_drop_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    line-height: 1.25;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_drop_subtitle {
+    font-size: 0.95rem;
+    color: #6E685F;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 540px;
+}
+
+/* Closed State Card */
+.mayhen_drop_closed_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.04);
+    margin-bottom: 2.5rem;
+}
+
+.mayhen_drop_closed_card .closed_icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.mayhen_drop_closed_card .closed_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1F1D1A;
+}
+
+.mayhen_drop_closed_card .closed_desc {
+    font-size: 0.9rem;
+    color: #6E685F;
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+/* Upload Interactive Card */
+.mayhen_drop_upload_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 20px;
+    padding: 1.75rem;
+    box-shadow: 0 12px 36px rgba(31, 29, 26, 0.05);
+    margin-bottom: 2.5rem;
+    transition: border-color 0.2s ease;
+}
+
+/* Dropzone Area */
+.mayhen_dropzone {
+    position: relative;
+    border: 2px dashed #D6CBBE;
+    border-radius: 14px;
+    background: #FDFCFB;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.mayhen_dropzone:hover,
+.mayhen_dropzone.is-dragover {
+    border-color: #C5A880;
+    background: #FBF9F5;
+}
+
+.dropzone_input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.dropzone_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(197, 168, 128, 0.12);
+    margin-bottom: 0.85rem;
+    transition: transform 0.2s ease;
+}
+
+.mayhen_dropzone:hover .dropzone_icon {
+    transform: scale(1.06);
+}
+
+.dropzone_title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin-bottom: 0.35rem;
+}
+
+.dropzone_hint {
+    font-size: 0.82rem;
+    color: #8C8479;
+    margin: 0;
+}
+
+/* Previews Grid in Dropzone */
+.dropzone_previews {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+    position: relative;
+    z-index: 6;
+}
+
+.preview_item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #EBE5DC;
+    background: #F0ECE6;
+}
+
+.preview_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.preview_remove_btn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(31, 29, 26, 0.75);
+    color: #FFFFFF;
+    border: none;
+    font-size: 11px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.preview_remove_btn:hover {
+    background: #D32F2F;
+}
+
+/* Fields */
+.mayhen_drop_fields {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.form_field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.form_label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #38332D;
+    letter-spacing: 0.01em;
+}
+
+.form_input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #DCD5CB;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 0.92rem;
+    color: #1F1D1A;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.form_input:focus {
+    outline: none;
+    border-color: #C5A880;
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.2);
+}
+
+.form_input::placeholder {
+    color: #A39B8F;
+}
+
+/* Upload Progress Track */
+.mayhen_drop_progress {
+    margin-top: 1.35rem;
+}
+
+.progress_bar_wrap {
+    width: 100%;
+    height: 8px;
+    background: #EBE5DC;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress_bar_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C5A880 0%, #A68A56 100%);
+    border-radius: 999px;
+    transition: width 0.25s ease;
+}
+
+.progress_label {
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #8C6D3F;
+    margin-top: 0.45rem;
+}
+
+/* Submit Action Button */
+.mayhen_drop_action_wrap {
+    margin-top: 1.6rem;
+}
+
+.mayhen_drop_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.mayhen_drop_btn--primary {
+    background: linear-gradient(135deg, #2E2A25 0%, #1A1815 100%);
+    color: #FAF6EF;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.15);
+}
+
+.mayhen_drop_btn--primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #3D3832 0%, #25221F 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(31, 29, 26, 0.2);
+}
+
+.mayhen_drop_btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Community Stream Grid */
+.mayhen_drop_stream_section {
+    margin-top: 3rem;
+}
+
+.stream_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #EBE5DC;
+    padding-bottom: 0.75rem;
+}
+
+.stream_badge {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #8C6D3F;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+}
+
+.stream_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.stream_counter {
+    font-size: 0.85rem;
+    color: #6E685F;
+}
+
+.stream_counter strong {
+    color: #1F1D1A;
+}
+
+.mayhen_drop_stream_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+@media (max-width: 540px) {
+    .mayhen_drop_stream_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.stream_photo_card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #EBE5DC;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.05);
+}
+
+.stream_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.stream_photo_card:hover .stream_img {
+    transform: scale(1.05);
+}
+
+.stream_overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.5rem 0.65rem 0.5rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(31, 29, 26, 0.85) 100%);
+    color: #FFFFFF;
+}
+
+.stream_uploader {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stream_caption {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0.15rem 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer */
+.mayhen_drop_footer {
+    text-align: center;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #EBE5DC;
+}
+
+.mayhen_drop_back_link {
+    display: inline-block;
+    color: #8C6D3F;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    transition: color 0.15s ease;
+}
+
+.mayhen_drop_back_link:hover {
+    color: #5C4729;
+    text-decoration: underline;
+}
+
+.mayhen_drop_brand {
+    font-size: 0.75rem;
+    color: #A39B8F;
+    margin: 0;
+}
+
+
+/* ==========================================================================
+   2. OWNER ALBUM MANAGEMENT INTERFACE (.mayhen_album_*)
+   ========================================================================== */
+
+.mayhen_album_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    padding: 2rem 1.25rem 4rem;
+}
+
+.mayhen_album_container {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+/* Breadcrumbs */
+.mayhen_album_breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #8C8479;
+    margin-bottom: 1.25rem;
+}
+
+.mayhen_album_breadcrumbs a {
+    color: #6E685F;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.mayhen_album_breadcrumbs a:hover {
+    color: #1F1D1A;
+}
+
+/* Alerts */
+.mayhen_album_alert {
+    padding: 0.85rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.mayhen_album_alert--success {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border: 1px solid #C8E6C9;
+}
+
+.mayhen_album_alert--error {
+    background: #FFEBEE;
+    color: #B71C1C;
+    border: 1px solid #FFCDD2;
+}
+
+/* Header */
+.mayhen_album_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.album_badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.album_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.45rem;
+}
+
+.album_subtitle {
+    font-size: 0.92rem;
+    color: #6E685F;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.album_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.mayhen_album_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: none;
+}
+
+.mayhen_album_btn--gold {
+    background: linear-gradient(135deg, #C5A880 0%, #A68A56 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(166, 138, 86, 0.25);
+}
+
+.mayhen_album_btn--gold:hover {
+    background: linear-gradient(135deg, #B59870 0%, #967A46 100%);
+    transform: translateY(-1px);
+}
+
+.mayhen_album_btn--outline {
+    background: #FFFFFF;
+    color: #38332D;
+    border: 1px solid #DCD5CB;
+}
+
+.mayhen_album_btn--outline:hover {
+    background: #F3EFEA;
+    border-color: #C5A880;
+}
+
+.mayhen_album_btn--sm {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+/* QR Standee Banner */
+.mayhen_album_qr_banner {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 6px 20px rgba(31, 29, 26, 0.04);
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .mayhen_album_qr_banner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.25rem;
+    }
+}
+
+.qr_banner_code {
+    flex-shrink: 0;
+    padding: 0.75rem;
+    background: #FAF8F5;
+    border: 1px solid #EBE5DC;
+    border-radius: 12px;
+    display: inline-flex;
+}
+
+.qr_banner_code svg {
+    display: block;
+    width: 140px;
+    height: 140px;
+}
+
+.qr_banner_info {
+    flex-grow: 1;
+}
+
+.qr_banner_label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #8C6D3F;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+
+.qr_banner_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+}
+
+.qr_banner_desc {
+    font-size: 0.88rem;
+    color: #6E685F;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    max-width: 580px;
+}
+
+.qr_banner_links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.qr_link_url {
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: #544E47;
+    background: #F5F1EB;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #E3DDD4;
+    word-break: break-all;
+}
+
+/* 4 Stats Cards */
+.mayhen_album_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+    .mayhen_album_stats_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_album_stats_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_album_stat_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.03);
+}
+
+.stat_label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8C8479;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.stat_value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.stat_hint {
+    font-size: 0.78rem;
+    color: #A39B8F;
+}
+
+/* Toolbar Filters */
+.mayhen_album_toolbar {
+    margin-bottom: 1.5rem;
+}
+
+.toolbar_filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter_pill {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #6E685F;
+    background: #FFFFFF;
+    border: 1px solid #E3DDD4;
+    transition: all 0.15s ease;
+}
+
+.filter_pill:hover {
+    color: #1F1D1A;
+    border-color: #C5A880;
+}
+
+.filter_pill.is-active {
+    background: #2E2A25;
+    color: #FAF6EF;
+    border-color: #2E2A25;
+}
+
+/* Photos Grid */
+.mayhen_album_photos_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+    .mayhen_album_photos_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .mayhen_album_photos_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_album_photos_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_album_item {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_album_item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(31, 29, 26, 0.08);
+}
+
+.mayhen_album_item.is-pending {
+    opacity: 0.82;
+    border-style: dashed;
+    border-color: #E6A23C;
+}
+
+.album_item_thumb {
+    position: relative;
+    aspect-ratio: 1;
+    background: #F0ECE6;
+    overflow: hidden;
+}
+
+.album_item_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.thumb_pending_badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #E65100;
+    color: #FFFFFF;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.album_item_meta {
+    padding: 0.85rem 0.95rem 0.5rem;
+    flex-grow: 1;
+}
+
+.item_uploader {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item_caption {
+    font-size: 0.8rem;
+    color: #6E685F;
+    font-style: italic;
+    margin: 0.25rem 0 0.35rem;
+    line-height: 1.4;
+}
+
+.item_time {
+    display: block;
+    font-size: 0.72rem;
+    color: #A39B8F;
+}
+
+.album_item_actions {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #F0ECE6;
+    padding: 0.4rem 0.5rem;
+    background: #FAF8F5;
+    gap: 0.25rem;
+}
+
+.btn_item_action {
+    flex: 1;
+    padding: 0.45rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn_hide {
+    background: transparent;
+    color: #E65100;
+}
+
+.btn_hide:hover {
+    background: #FFF3E0;
+}
+
+.btn_approve {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.btn_approve:hover {
+    background: #C8E6C9;
+}
+
+.btn_view {
+    background: transparent;
+    color: #1F1D1A;
+}
+
+.btn_view:hover {
+    background: #EBE5DC;
+}
+
+.btn_delete {
+    background: transparent;
+    color: #C62828;
+}
+
+.btn_delete:hover {
+    background: #FFEBEE;
+}
+
+/* Empty State */
+.mayhen_album_empty {
+    grid-column: 1 / -1;
+    background: #FFFFFF;
+    border: 1px dashed #D6CBBE;
+    border-radius: 16px;
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+}
+
+.mayhen_album_empty .empty_icon {
+    font-size: 3rem;
+    margin-bottom: 0.85rem;
+}
+
+.mayhen_album_empty .empty_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.45rem;
+}
+
+.mayhen_album_empty .empty_desc {
+    font-size: 0.9rem;
+    color: #6E685F;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Pagination */
+.mayhen_album_pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Print Styles For Standee */
+@media print {
+    body {
+        background: #FFFFFF !important;
+    }
+    .mayhen_album_breadcrumbs,
+    .album_header_actions,
+    .mayhen_album_stats_grid,
+    .mayhen_album_toolbar,
+    .mayhen_album_photos_grid,
+    .mayhen_album_pagination,
+    header, footer, nav {
+        display: none !important;
+    }
+    .mayhen_album_wrap {
+        padding: 0 !important;
+    }
+    .mayhen_album_qr_banner {
+        border: 2px solid #C5A880 !important;
+        box-shadow: none !important;
+        padding: 2.5rem !important;
+        margin: 2rem auto !important;
+        max-width: 600px !important;
+    }
+    .qr_banner_code svg {
+        width: 220px !important;
+        height: 220px !important;
+    }
+}
+

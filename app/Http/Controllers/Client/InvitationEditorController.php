@@ -228,7 +228,7 @@ class InvitationEditorController extends Controller
      */
     public function show(string $slug): View
     {
-        $invitation = Invitation::with(['wedding', 'template'])
+        $invitation = Invitation::with(['wedding.partner', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
 

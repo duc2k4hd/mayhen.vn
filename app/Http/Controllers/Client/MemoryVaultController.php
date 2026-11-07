@@ -77,6 +77,14 @@ class MemoryVaultController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // Ảnh kỷ niệm do khách mời chụp đã duyệt
+        $guestPhotos = $wedding->guestPhotos()
+            ->approved()
+            ->latest()
+            ->limit(12)
+            ->get();
+        $totalGuestPhotosCount = $wedding->guestPhotos()->approved()->count();
+
         // Thư cảm ơn tri ân
         $thankYouLetter = ! empty($vaultConfig['thank_you_letter'])
             ? $vaultConfig['thank_you_letter']
@@ -90,6 +98,8 @@ class MemoryVaultController extends Controller
             'invitation' => $invitation,
             'wedding' => $wedding,
             'wishes' => $wishes,
+            'guestPhotos' => $guestPhotos,
+            'totalGuestPhotosCount' => $totalGuestPhotosCount,
             'totalWishesCount' => $totalWishesCount,
             'totalGuestsAttended' => $totalGuestsAttended,
             'anniversaryDays' => $anniversaryDays,

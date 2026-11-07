@@ -61,7 +61,7 @@ flowchart TD
 | **TASK-V2-02** | **Bảng Điều Khiển Ngày Cưới Realtime (Live Command Center)** | `LiveCoordinationController`, `live-coordination.js/css` | Thống kê sĩ số realtime (Tổng khách, RSVP, Đã tới, Chưa tới), Sóng lấp đầy bàn tiệc (Table Seating Wave) và dòng sự kiện đón khách trực tiếp qua AJAX Polling mỗi 8 giây. Đã kiểm thử 100%. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V2-03** | **Két Lưu Trữ Kỷ Niệm Số (Digital Memory Vault)** | `MemoryVaultController`, Public Page, Settings | Thiệp cưới sau hôn lễ tự động chuyển thành bảo tàng kỷ niệm lưu giữ trọn đời: Bộ đếm ngày kỷ niệm, Tâm thư tri ân từ đôi uyên ương, Sổ lưu bút và thống kê hạnh phúc. Đã bao phủ 6 test cases. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V2-04** | **Xuất Cuốn Sách Kỷ Yếu Lưu Bút PDF In Ấn (Keepsake Book)** | `MemoryVaultController`, `keepsake-book.blade.php/css` | Dàn trang sách Editorial chuẩn A4 (Bìa mạ vàng, Trang mở đầu tri ân, các trang lời chúc kèm hoa văn, Trang bìa sau). Tối ưu in ấn & xuất PDF bằng `@media print` phân trang hoàn hảo. | **P2 (ĐÃ HOÀN TẤT)** |
-| **TASK-V2-05** | **Live Guest Photo Drop (QR Thu Thập Ảnh)** | Upload Service, S3/R2 Storage | Khách tại tiệc quét mã QR để tải ảnh chụp tự nhiên lên album chung của cặp đôi. | **P2** |
+| **TASK-V2-05** | **Live Guest Photo Drop (QR Thu Thập Ảnh)** | `PhotoDropController`, `guest_photos` table, Views, JS/CSS | Khách tại tiệc quét mã QR đặt tại bàn tiệc để tải ảnh chụp tự nhiên (hỗ trợ JPG/PNG/WebP/HEIC tối đa 12MB, thanh tiến độ %). Cặp đôi quản lý album, duyệt/ẩn ảnh, in thẻ QR standee đặt bàn và tải file ZIP toàn bộ ảnh gốc. Tích hợp trực tiếp vào Két Kỷ Niệm Số. Đã bao phủ 10 test cases. | **P2 (ĐÃ HOÀN TẤT)** |
 
 ---
 
@@ -70,7 +70,7 @@ flowchart TD
 
 | Task ID | Tính năng cốt lõi | Phạm vi mã nguồn | Bàn giao & Tiêu chí nghiệm thu | Độ ưu tiên |
 |---|---|---|---|---|
-| **TASK-V3-01** | **Studio & Agency B2B Portal** | Multi-workspace, Role Agency | Các Studio áo cưới và Planner quản lý tập trung hàng chục đám cưới của khách hàng. | **P1** |
+| **TASK-V3-01** | **Studio & Agency B2B Portal** | `Partner*` Controllers, Models, Views, Migrations | Cổng B2B quản trị tập trung danh sách thiệp cưới của khách hàng cho Studio/Planner. Sinh mã bàn giao (Handover Code 6 ký tự) để cặp đôi claim thiệp về tài khoản cá nhân; hệ thống hoa hồng chiết khấu tự động (20-30%); Co-branding thương hiệu Studio độc quyền ở chân thiệp cưới; và middleware bảo vệ phân quyền. Đã bao phủ 11 test cases. | **P1 (ĐÃ HOÀN TẤT)** |
 | **TASK-V3-02** | **Sơ Đồ Xếp Bàn Tiệc Trực Quan (Seating Planner Studio)** | Canvas Drag & Drop, Models | Kéo thả khách mời vào các bàn tiệc 10 người, xuất sơ đồ đón khách thông minh. | **P2** |
 | **TASK-V3-03** | **Tên Miền Riêng Cho Đám Cưới (Custom Domain)** | DNS Routing, Cloudflare API | Hỗ trợ cấu hình tên miền riêng dạng `tuanlan.wedding` hoặc `tuanlan.mayhen.vn`. | **P2** |
 

@@ -1,0 +1,722 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Partner & Studio B2B Portal Styling
+ * Quiet Luxury, Editorial, Responsive Mobile-First
+ * Mandatory Prefix: mayhen_partner_*
+ */
+
+/* ==========================================================================
+   1. BASE LAYOUT & NAVIGATION (.mayhen_partner_*)
+   ========================================================================== */
+
+.mayhen_partner_body {
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Partner Top Navigation Bar */
+.mayhen_partner_navbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid #EBE5DC;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_partner_nav_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_partner_brand_wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+}
+
+.mayhen_partner_logo_img {
+    height: 32px;
+    width: auto;
+}
+
+.mayhen_partner_brand_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_partner_portal_pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_partner_nav_links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 820px) {
+    .mayhen_partner_nav_links {
+        display: none;
+    }
+}
+
+.mayhen_partner_nav_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #6E685F;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.mayhen_partner_nav_item:hover {
+    color: #1F1D1A;
+    background: #F3EFEA;
+}
+
+.mayhen_partner_nav_item.is-active {
+    color: #1F1D1A;
+    background: #EBE5DC;
+}
+
+.mayhen_partner_nav_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.mayhen_partner_user_dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1F1D1A;
+}
+
+/* Mobile Nav Bar */
+.mayhen_partner_mobile_subnav {
+    display: none;
+    background: #FFFFFF;
+    border-bottom: 1px solid #EBE5DC;
+    padding: 0.5rem 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.5rem;
+}
+
+@media (max-width: 820px) {
+    .mayhen_partner_mobile_subnav {
+        display: flex;
+    }
+}
+
+/* Main Content Wrapper */
+.mayhen_partner_main {
+    flex-grow: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+    box-sizing: border-box;
+}
+
+/* Breadcrumbs */
+.mayhen_partner_breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #8C8479;
+    margin-bottom: 1.25rem;
+}
+
+.mayhen_partner_breadcrumbs a {
+    color: #6E685F;
+    text-decoration: none;
+}
+
+.mayhen_partner_breadcrumbs a:hover {
+    color: #1F1D1A;
+}
+
+/* Alerts */
+.mayhen_partner_alert {
+    padding: 0.85rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.mayhen_partner_alert--success {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border: 1px solid #C8E6C9;
+}
+
+.mayhen_partner_alert--error {
+    background: #FFEBEE;
+    color: #B71C1C;
+    border: 1px solid #FFCDD2;
+}
+
+.mayhen_partner_alert--info {
+    background: #E3F2FD;
+    color: #0D47A1;
+    border: 1px solid #BBDEFB;
+}
+
+/* Buttons */
+.mayhen_partner_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: none;
+    box-sizing: border-box;
+}
+
+.mayhen_partner_btn--primary {
+    background: linear-gradient(135deg, #2E2A25 0%, #1A1815 100%);
+    color: #FAF6EF;
+    box-shadow: 0 4px 14px rgba(31, 29, 26, 0.15);
+}
+
+.mayhen_partner_btn--primary:hover {
+    background: linear-gradient(135deg, #3D3832 0%, #25221F 100%);
+    transform: translateY(-1px);
+}
+
+.mayhen_partner_btn--gold {
+    background: linear-gradient(135deg, #C5A880 0%, #A68A56 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(166, 138, 86, 0.25);
+}
+
+.mayhen_partner_btn--gold:hover {
+    background: linear-gradient(135deg, #B59870 0%, #967A46 100%);
+    transform: translateY(-1px);
+}
+
+.mayhen_partner_btn--outline {
+    background: #FFFFFF;
+    color: #38332D;
+    border: 1px solid #DCD5CB;
+}
+
+.mayhen_partner_btn--outline:hover {
+    background: #F3EFEA;
+    border-color: #C5A880;
+}
+
+.mayhen_partner_btn--sm {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+}
+
+
+/* ==========================================================================
+   2. DASHBOARD & STATS (.mayhen_partner_stat_*)
+   ========================================================================== */
+
+.mayhen_partner_dash_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.dash_head_info .studio_badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.dash_head_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.4rem;
+}
+
+.dash_head_desc {
+    font-size: 0.92rem;
+    color: #6E685F;
+    margin: 0;
+}
+
+.dash_head_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* 4 Metric Cards */
+.mayhen_partner_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 960px) {
+    .mayhen_partner_stats_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .mayhen_partner_stats_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_partner_stat_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 14px;
+    padding: 1.35rem;
+    box-shadow: 0 4px 14px rgba(31, 29, 26, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat_card_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.stat_card_label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8C8479;
+    text-transform: uppercase;
+}
+
+.stat_card_icon {
+    font-size: 1.25rem;
+    opacity: 0.8;
+}
+
+.stat_card_value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1.2;
+    margin-bottom: 0.35rem;
+}
+
+.stat_card_hint {
+    font-size: 0.8rem;
+    color: #8C8479;
+}
+
+/* Partner Referral & Code Banner */
+.mayhen_partner_code_banner {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+    flex-wrap: wrap;
+}
+
+.banner_code_info h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+    color: #1F1D1A;
+}
+
+.banner_code_info p {
+    font-size: 0.88rem;
+    color: #6E685F;
+    margin: 0;
+}
+
+.banner_code_box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.code_pill {
+    font-family: monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    background: #FAF8F5;
+    color: #8C6D3F;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    border: 1px dashed #C5A880;
+    letter-spacing: 0.08em;
+}
+
+
+/* ==========================================================================
+   3. WEDDINGS TABLE & CARDS (.mayhen_partner_table_*)
+   ========================================================================== */
+
+.mayhen_partner_section {
+    margin-bottom: 3rem;
+}
+
+.mayhen_partner_sec_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.sec_head_title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_partner_table_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_partner_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.mayhen_partner_table th {
+    background: #FAF8F5;
+    padding: 0.9rem 1.15rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8C8479;
+    text-transform: uppercase;
+    border-bottom: 1px solid #EBE5DC;
+}
+
+.mayhen_partner_table td {
+    padding: 1.1rem 1.15rem;
+    border-bottom: 1px solid #F0ECE6;
+    color: #38332D;
+    vertical-align: middle;
+}
+
+.mayhen_partner_table tr:last-child td {
+    border-bottom: none;
+}
+
+.mayhen_partner_table tr:hover td {
+    background: #FDFCFB;
+}
+
+/* Badges */
+.badge_status {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge_published {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.badge_draft {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+/* Actions in Table */
+.table_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Empty State */
+.mayhen_partner_empty {
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+}
+
+.empty_icon {
+    font-size: 2.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.empty_title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.35rem;
+}
+
+.empty_desc {
+    font-size: 0.88rem;
+    color: #6E685F;
+    margin: 0 auto 1.25rem;
+    max-width: 420px;
+}
+
+
+/* ==========================================================================
+   4. FORMS & INPUTS (.mayhen_partner_form_*)
+   ========================================================================== */
+
+.mayhen_partner_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 6px 20px rgba(31, 29, 26, 0.03);
+}
+
+.form_group {
+    margin-bottom: 1.35rem;
+}
+
+.form_label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #38332D;
+    margin-bottom: 0.45rem;
+}
+
+.form_input,
+.form_textarea,
+.form_select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #DCD5CB;
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 0.92rem;
+    color: #1F1D1A;
+    box-sizing: border-box;
+    transition: all 0.18s ease;
+}
+
+.form_input:focus,
+.form_textarea:focus,
+.form_select:focus {
+    outline: none;
+    border-color: #C5A880;
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.2);
+}
+
+.form_textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.form_hint {
+    display: block;
+    font-size: 0.78rem;
+    color: #8C8479;
+    margin-top: 0.35rem;
+}
+
+/* Template Select Cards Grid */
+.templates_select_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.template_radio_card {
+    position: relative;
+    border: 2px solid #EBE5DC;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #FAF8F5;
+    transition: all 0.2s ease;
+}
+
+.template_radio_card:hover {
+    border-color: #C5A880;
+}
+
+.template_radio_card.is-selected {
+    border-color: #A68A56;
+    box-shadow: 0 0 0 2px #A68A56;
+}
+
+.template_radio_input {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+}
+
+.template_card_thumb {
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background: #EBE5DC;
+}
+
+.template_card_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.template_card_info {
+    padding: 0.65rem 0.75rem;
+    background: #FFFFFF;
+}
+
+.template_card_title {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1F1D1A;
+}
+
+
+/* ==========================================================================
+   5. HANDOVER CODE CARD (.mayhen_partner_handover_*)
+   ========================================================================== */
+
+.handover_container {
+    max-width: 620px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.handover_card {
+    background: #FFFFFF;
+    border: 1px solid #EBE5DC;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(31, 29, 26, 0.05);
+}
+
+.handover_icon {
+    font-size: 3rem;
+    margin-bottom: 0.85rem;
+}
+
+.handover_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 1.85rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+}
+
+.handover_desc {
+    font-size: 0.92rem;
+    color: #6E685F;
+    line-height: 1.6;
+    margin: 0 auto 1.75rem;
+    max-width: 480px;
+}
+
+.handover_code_wrap {
+    background: #FAF8F5;
+    border: 2px dashed #C5A880;
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.handover_big_code {
+    font-family: monospace;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #8C6D3F;
+    letter-spacing: 0.25em;
+    padding-left: 0.25em;
+}
+
+.handover_steps {
+    text-align: left;
+    background: #FAF8F5;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.88rem;
+    color: #544E47;
+    line-height: 1.6;
+}
+
+.handover_steps ol {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.handover_steps li {
+    margin-bottom: 0.35rem;
+}
+

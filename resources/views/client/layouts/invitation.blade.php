@@ -59,6 +59,25 @@
     {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (Guest Table Finder & QR Pass) --}}
     @include('client.components.guest-table-badge')
 
+    {{-- Huy hiệu Co-branding của Studio Đối Tác (TASK-V3-01) --}}
+    @if(isset($wedding) && $wedding && $wedding->partner && $wedding->partner->isActive())
+        @php
+            $pConfig = is_array($wedding->partner->custom_config) && isset($wedding->partner->custom_config['branding'])
+                ? $wedding->partner->custom_config['branding']
+                : [];
+            $showBadge = $pConfig['show_badge'] ?? true;
+            $footerText = $pConfig['footer_text'] ?? ('Đồng hành cùng ' . $wedding->partner->business_name);
+        @endphp
+        @if($showBadge && !($isEmbed ?? false))
+            <div class="mayhen_invitation_partner_badge" style="text-align: center; padding: 1.5rem 1rem 3rem; font-size: 0.78rem; letter-spacing: 0.08em; color: rgba(31, 29, 26, 0.5); text-transform: uppercase;">
+                @if($wedding->partner->logo_url)
+                    <img src="{{ $wedding->partner->logo_url }}" alt="{{ $wedding->partner->business_name }}" style="max-height: 24px; width: auto; opacity: 0.6; display: block; margin: 0 auto 0.4rem;" loading="lazy">
+                @endif
+                <span>{{ $footerText }}</span>
+            </div>
+        @endif
+    @endif
+
     {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập ngoài trình duyệt) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
         @include('client.components.bottom-nav')
