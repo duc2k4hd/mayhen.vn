@@ -126,40 +126,73 @@
             </h3>
 
             <div class="mayhen_admin_quick_actions">
-                <form action="{{ route('admin.templates.scan_discovery') }}" method="POST" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="mayhen_admin_quick_btn" style="width: 100%; border: 1px solid var(--mh-admin-border); cursor: pointer;">
+                @if (Auth::user() && Auth::user()->isSuperAdmin())
+                    <form action="{{ route('admin.templates.scan_discovery') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="mayhen_admin_quick_btn" style="width: 100%; border: 1px solid var(--mh-admin-border); cursor: pointer;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            <span>Quét Mẫu Mới</span>
+                        </button>
+                    </form>
+
+                    <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_quick_btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
-                        <span>Quét Mẫu Mới</span>
-                    </button>
-                </form>
+                        <span>Duyệt Lời Chúc</span>
+                    </a>
 
-                <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_quick_btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span>Duyệt Lời Chúc</span>
-                </a>
+                    <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                        <span>Cài Đặt VietQR</span>
+                    </a>
 
-                <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_quick_btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                        <line x1="2" y1="10" x2="22" y2="10"></line>
-                    </svg>
-                    <span>Cài Đặt VietQR</span>
-                </a>
+                    <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                        <span>Bộ Nhớ Lưu Trữ</span>
+                    </a>
+                @else
+                    <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <span>Quản Lý Thiệp</span>
+                    </a>
 
-                <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_quick_btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                    </svg>
-                    <span>Bộ Nhớ Lưu Trữ</span>
-                </a>
+                    <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span>Kiểm Tra Đơn</span>
+                    </a>
+
+                    <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Duyệt Lời Chúc</span>
+                    </a>
+
+                    <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_quick_btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path>
+                        </svg>
+                        <span>Kho Mẫu Thiệp</span>
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -266,7 +299,9 @@
     <div class="mayhen_admin_card" style="margin-top: 24px;">
         <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="mayhen_admin_card_title" style="margin: 0;">Hoạt Động Quản Trị Gần Đây (Audit Trail)</div>
-            <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem tất cả nhật ký &rarr;</a>
+            @if (Auth::user() && Auth::user()->isSuperAdmin())
+                <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem tất cả nhật ký &rarr;</a>
+            @endif
         </div>
 
         <div style="padding: 8px 24px;">
