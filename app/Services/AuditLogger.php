@@ -100,4 +100,3 @@ class AuditLogger
         return $logs;
     }
 }
-

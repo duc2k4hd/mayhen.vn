@@ -9,133 +9,288 @@
 
 @section('content')
     <!-- 5 Key KPI Metrics -->
-    <div class="mayhen_admin_stats_grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-        <div class="mayhen_admin_stat_card">
-            <div class="mayhen_admin_stat_num" style="color: #1B5E20;">{{ number_format($totalRevenue, 0, ',', '.') }}đ</div>
-            <div class="mayhen_admin_stat_label">Doanh Thu Đã Thu</div>
-        </div>
-
-        <div class="mayhen_admin_stat_card">
-            <div class="mayhen_admin_stat_num">{{ $paidOrdersCount }}</div>
-            <div class="mayhen_admin_stat_label">Đơn Hàng Thành Công</div>
-        </div>
-
-        <div class="mayhen_admin_stat_card">
-            <div class="mayhen_admin_stat_num">{{ $publishedInvitations }} / {{ $totalInvitations }}</div>
-            <div class="mayhen_admin_stat_label">Thiệp Xuất Bản / Tổng Thiệp</div>
-        </div>
-
-        <div class="mayhen_admin_stat_card">
-            <div class="mayhen_admin_stat_num">{{ $totalGuests }}</div>
-            <div class="mayhen_admin_stat_label">Khách Mời & RSVP</div>
-        </div>
-
-        <div class="mayhen_admin_stat_card">
-            <div class="mayhen_admin_stat_num">{{ $totalUsers }}</div>
-            <div class="mayhen_admin_stat_label">Tổng Người Dùng</div>
-        </div>
-    </div>
-
-    <!-- Templates Popularity Grid -->
-    <div class="mayhen_admin_card">
-        <div class="mayhen_admin_card_header">
-            <div class="mayhen_admin_card_title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path>
-                </svg>
-                <span>Hiệu Suất Mẫu Thiệp Cưới</span>
-            </div>
-            <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Quản lý kho mẫu &rarr;</a>
-        </div>
-
-        <div class="mayhen_admin_table_responsive">
-            <table class="mayhen_admin_table">
-                <thead>
-                    <tr>
-                        <th>Ảnh</th>
-                        <th>Tên Mẫu</th>
-                        <th>Phong Cách</th>
-                        <th>Số Thiệp Đã Tạo</th>
-                        <th>Trạng Thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($templates as $tpl)
-                        <tr>
-                            <td>
-                                <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--mh-admin-border);">
-                            </td>
-                            <td><strong>{{ $tpl->name }}</strong></td>
-                            <td>{{ $tpl->category_label }}</td>
-                            <td><strong>{{ $tpl->invitations_count }}</strong> thiệp</td>
-                            <td>
-                                @if ($tpl->is_active)
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">Đang Hoạt Động</span>
-                                @else
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_warning">Tạm Ẩn</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Recent Orders -->
-    <div class="mayhen_admin_card">
-        <div class="mayhen_admin_card_header">
-            <div class="mayhen_admin_card_title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
+    <div class="mayhen_admin_grid_cards" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 24px;">
+        <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+            <div class="mayhen_admin_kpi_icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background-color: #E8F5E9; color: #1B5E20; border: 1px solid #C8E6C9;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="1" x2="12" y2="23"></line>
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
-                <span>Đơn Hàng Gần Đây</span>
             </div>
-            <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem tất cả &rarr;</a>
+            <div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: #1B5E20;">{{ number_format($totalRevenue, 0, ',', '.') }}đ</div>
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Doanh Thu Đã Thu</div>
+            </div>
         </div>
 
-        <div class="mayhen_admin_table_responsive">
-            <table class="mayhen_admin_table">
-                <thead>
-                    <tr>
-                        <th>Mã Đơn</th>
-                        <th>Khách Hàng</th>
-                        <th>Gói Dịch Vụ</th>
-                        <th>Số Tiền</th>
-                        <th>Thời Gian</th>
-                        <th>Trạng Thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($recentOrders as $order)
+        <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+            <div class="mayhen_admin_kpi_icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background-color: #FBF7EE; color: var(--mh-admin-gold); border: 1px solid #EFE4CA;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--mh-admin-charcoal);">{{ $paidOrdersCount }}</div>
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Đơn Hàng Thành Công</div>
+            </div>
+        </div>
+
+        <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+            <div class="mayhen_admin_kpi_icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background-color: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </div>
+            <div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--mh-admin-charcoal);">{{ $publishedInvitations }} <span style="font-size: 0.875rem; font-weight: 500; color: var(--mh-admin-muted);">/ {{ $totalInvitations }}</span></div>
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Thiệp Xuất Bản / Tổng Thiệp</div>
+            </div>
+        </div>
+
+        <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+            <div class="mayhen_admin_kpi_icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background-color: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--mh-admin-charcoal);">{{ number_format($totalGuests) }}</div>
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Khách Mời & RSVP</div>
+            </div>
+        </div>
+
+        <div class="mayhen_admin_card" style="display: flex; align-items: center; gap: 16px; padding: 20px;">
+            <div class="mayhen_admin_kpi_icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background-color: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--mh-admin-charcoal);">{{ number_format($totalUsers) }}</div>
+                <div style="font-size: 0.8125rem; color: var(--mh-admin-muted);">Tổng Người Dùng</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-Column Split: Revenue Chart & Quick Actions -->
+    <div class="mayhen_admin_dashboard_split">
+        <!-- Left: Revenue Trend Chart -->
+        <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
+                        Xu Hướng Doanh Thu 7 Ngày Gần Nhất
+                    </h3>
+                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                        Thống kê số tiền thanh toán thực nhận theo từng ngày
+                    </div>
+                </div>
+                <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                    Chi tiết &rarr;
+                </a>
+            </div>
+
+            <!-- Native Flexbox Chart -->
+            <div class="mayhen_admin_revenue_chart">
+                @foreach ($revenueLast7Days as $idx => $dayData)
+                    @php
+                        $pct = $maxDailyRevenue > 0 ? round(($dayData['amount'] / $maxDailyRevenue) * 100) : 0;
+                        $isToday = $idx === count($revenueLast7Days) - 1;
+                    @endphp
+                    <div class="mayhen_admin_chart_col">
+                        <div class="mayhen_admin_chart_tooltip">
+                            {{ $dayData['day'] }}: {{ number_format($dayData['amount'], 0, ',', '.') }}đ
+                        </div>
+                        <div class="mayhen_admin_chart_bar {{ $isToday ? 'today' : '' }}" style="height: {{ max($pct, 6) }}%;"></div>
+                        <div class="mayhen_admin_chart_label">{{ $dayData['day_name'] }}</div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--mh-admin-muted); padding-top: 4px;">
+                <div>Cột xanh: Hôm nay</div>
+                <div>Cột vàng: Các ngày trước</div>
+            </div>
+        </div>
+
+        <!-- Right: Quick Actions -->
+        <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 0;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0 0 16px 0;">
+                Lối Tắt Vận Hành Nhanh
+            </h3>
+
+            <div class="mayhen_admin_quick_actions">
+                <form action="{{ route('admin.templates.scan_discovery') }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_quick_btn" style="width: 100%; border: 1px solid var(--mh-admin-border); cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        <span>Quét Mẫu Mới</span>
+                    </button>
+                </form>
+
+                <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_quick_btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>Duyệt Lời Chúc</span>
+                </a>
+
+                <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_quick_btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>Cài Đặt VietQR</span>
+                </a>
+
+                <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_quick_btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
+                    <span>Bộ Nhớ Lưu Trữ</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-Column Split: Recent Orders & Top Templates -->
+    <div class="mayhen_admin_dashboard_split" style="margin-top: 24px;">
+        <!-- Left: Recent Orders -->
+        <div class="mayhen_admin_card" style="margin-bottom: 0;">
+            <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="mayhen_admin_card_title" style="margin: 0;">Đơn Hàng Gần Đây</div>
+                <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem tất cả &rarr;</a>
+            </div>
+
+            <div class="mayhen_admin_table_wrapper">
+                <table class="mayhen_admin_table">
+                    <thead>
                         <tr>
-                            <td><code>{{ $order->order_code }}</code></td>
-                            <td>
-                                <strong>{{ $order->user->name }}</strong><br>
-                                <span style="font-size: 0.75rem; color: #7A756E;">{{ $order->user->email }}</span>
-                            </td>
-                            <td>{{ $order->plan->name }}</td>
-                            <td><strong style="color: #1B5E20;">{{ number_format($order->amount, 0, ',', '.') }}đ</strong></td>
-                            <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                            <td>
-                                @if ($order->isPaid())
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
-                                @else
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_warning">Chờ Thanh Toán</span>
-                                @endif
-                            </td>
+                            <th>Mã Đơn</th>
+                            <th>Khách Hàng</th>
+                            <th>Số Tiền</th>
+                            <th style="text-align: center;">Trạng Thái</th>
                         </tr>
-                    @empty
+                    </thead>
+                    <tbody>
+                        @forelse ($recentOrders as $order)
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" style="font-family: monospace; font-weight: 600; color: var(--mh-admin-gold); text-decoration: none;">
+                                        {{ $order->order_code }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; font-size: 0.84375rem;">{{ $order->user->name }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">{{ $order->plan->name }}</div>
+                                </td>
+                                <td style="font-weight: 700; color: #1B5E20;">
+                                    {{ number_format($order->amount, 0, ',', '.') }}đ
+                                </td>
+                                <td style="text-align: center;">
+                                    @if ($order->isPaid())
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thu</span>
+                                    @else
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_warning">Chờ CK</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--mh-admin-muted); padding: 24px;">
+                                    Chưa có đơn hàng nào phát sinh.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right: Top Templates -->
+        <div class="mayhen_admin_card" style="margin-bottom: 0;">
+            <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="mayhen_admin_card_title" style="margin: 0;">Mẫu Thiệp Được Yêu Thích</div>
+                <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Kho mẫu &rarr;</a>
+            </div>
+
+            <div class="mayhen_admin_table_wrapper">
+                <table class="mayhen_admin_table">
+                    <thead>
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #7A756E; padding: 24px;">
-                                Chưa có đơn hàng nào phát sinh.
-                            </td>
+                            <th>Mẫu Thiệp</th>
+                            <th style="text-align: right;">Số Thiệp Tạo</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse ($templates as $tpl)
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--mh-admin-border);" onerror="this.src='{{ asset('assets/client/images/template-placeholder.webp') }}';">
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 0.84375rem;">{{ $tpl->name }}</div>
+                                            <div style="font-size: 0.6875rem; color: var(--mh-admin-muted);">{{ $tpl->category_label }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: right; font-weight: 700; color: var(--mh-admin-charcoal);">
+                                    {{ $tpl->invitations_count }} thiệp
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" style="text-align: center; color: var(--mh-admin-muted); padding: 24px;">
+                                    Chưa có dữ liệu mẫu thiệp.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Audit Logs Snapshot -->
+    <div class="mayhen_admin_card" style="margin-top: 24px;">
+        <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="mayhen_admin_card_title" style="margin: 0;">Hoạt Động Quản Trị Gần Đây (Audit Trail)</div>
+            <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem tất cả nhật ký &rarr;</a>
+        </div>
+
+        <div style="padding: 8px 24px;">
+            @forelse ($recentAuditLogs as $log)
+                <div class="mayhen_admin_audit_item">
+                    <div class="mayhen_admin_audit_icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.84375rem; color: var(--mh-admin-charcoal);">
+                            <strong>{{ $log['admin_name'] ?? 'System' }}</strong>: {{ $log['description'] ?? '—' }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                            {{ isset($log['timestamp']) ? \Carbon\Carbon::parse($log['timestamp'])->diffForHumans() : 'Vừa xong' }} &bull; IP: {{ $log['ip'] ?? '127.0.0.1' }}
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div style="text-align: center; color: var(--mh-admin-muted); padding: 20px;">
+                    Chưa có hoạt động quản trị nào gần đây.
+                </div>
+            @endforelse
         </div>
     </div>
 @endsection

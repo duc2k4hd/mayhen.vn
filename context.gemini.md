@@ -3966,6 +3966,21 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                       - Pest Feature tests: 57/57 tests passed 100% (266 assertions) trên toàn bộ 7 test suite Admin.
                       - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
 
+               145. **Nâng Cấp Toàn Diện Admin Dashboard (Atelier Control Center): Biểu Đồ Doanh Thu 7 Ngày Native CSS, Khối Lối Tắt Vận Hành Nhanh & Snapshot Nhật Ký Quản Trị**:
+                    - **Bối cảnh & Yêu cầu lộ trình**:
+                      1. Nâng cấp trang chủ Bảng điều khiển quản trị `/admin/dashboard` thành trung tâm chỉ huy vận hành toàn diện với bố cục 2 cột (split 2:1) Quiet Luxury cân đối.
+                      2. Biểu đồ xu hướng doanh thu 7 ngày gần nhất (7-Day Revenue Trend): Triển khai bằng Pure CSS Flexbox (hoàn toàn không dùng thư viện ngoài JS như Chart.js / ApexCharts), tự động tính toán tỷ lệ chiều cao tương ứng với doanh thu thực tế, có tooltips hover chi tiết hiển thị số tiền VND và phân biệt cột ngày hôm nay màu xanh ngọc lục bảo.
+                      3. Khối lối tắt vận hành nhanh (Quick Actions): 4 nút bấm điều hướng tức thời: Quét thư mục mẫu mới, Kiểm duyệt lời chúc quan khách, Cài đặt ngân hàng VietQR NAPAS, Thanh tra bộ nhớ lưu trữ.
+                      4. Lưới đôi giám sát hoạt động: Bảng 5 đơn hàng mới nhất kèm link chi tiết & trạng thái thanh toán; Bảng xếp hạng các mẫu thiệp cưới được tạo nhiều nhất.
+                      5. Snapshot Hoạt động Quản trị gần đây (Recent Audit Trail): Trích xuất 5 thao tác quản trị mới nhất từ `AuditLogger` hiển thị ngay tại trang chủ Dashboard.
+                    - **Các thành phần đã triển khai**:
+                      - `app/Http/Controllers/Admin/DashboardController.php`: Bổ sung tính toán doanh thu 7 ngày qua (`revenueLast7Days`), giá trị lớn nhất (`maxDailyRevenue`), thống kê quan khách RSVP, 5 đơn hàng mới nhất và nạp 5 dòng audit log gần nhất.
+                      - `public/assets/admin/css/pages/dashboard.css`: Tái cấu trúc toàn bộ stylesheet cho Dashboard: Grid split 2:1, Biểu đồ cột Flexbox `.mayhen_admin_revenue_chart`, Tooltips nổi, Lưới nút tắt `.mayhen_admin_quick_btn`, và Thẻ hoạt động quản trị `.mayhen_admin_audit_item`.
+                      - `resources/views/admin/pages/dashboard.blade.php`: Tái cấu trúc toàn bộ giao diện Blade: 5 thẻ KPI vận hành, Biểu đồ doanh thu 7 ngày, Lối tắt vận hành, Bảng đơn hàng & mẫu thiệp, và Snapshot nhật ký truy vết.
+                    - **Kiểm thử & Chất lượng**:
+                      - Pest Feature tests: 57/57 tests passed 100% (266 assertions) trên toàn bộ 7 test suite Admin.
+                      - Laravel Pint: Đã chạy định dạng chuẩn PSR-12 / Pint agent style (pass sạch sẽ).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
