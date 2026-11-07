@@ -2130,6 +2130,392 @@ const initEditor = () => {
         }
     }, true);
 
+    // ----------------------------------------------------
+    // AI STORY WRITER (TASK-V1-04)
+    // ----------------------------------------------------
+    const btnOpenAiStory = $('#btn-open-ai-story');
+    const aiStoryModal = $('#mayhen_ai_story_modal');
+    const aiStoryCloseBtn = $('#mayhen_ai_story_close_btn');
+    const aiGroomInp = $('#ai-story-groom');
+    const aiBrideInp = $('#ai-story-bride');
+    const aiKeywordsInp = $('#ai-story-keywords');
+    const aiToneBtns = $$('.mayhen_ai_tone_btn');
+    const btnGenAiStory = $('#btn-generate-ai-story');
+    const aiStoryResults = $('#ai-story-results');
+
+    let selectedTone = 'romantic';
+
+    if (btnOpenAiStory && aiStoryModal) {
+        on(btnOpenAiStory, 'click', () => {
+            const groomInp = $('[data-sync-key="wedding.groom_name"]') || $('input[name="wedding[groom_name]"]');
+            const brideInp = $('[data-sync-key="wedding.bride_name"]') || $('input[name="wedding[bride_name]"]');
+            if (aiGroomInp && groomInp && groomInp.value) aiGroomInp.value = groomInp.value;
+            if (aiBrideInp && brideInp && brideInp.value) aiBrideInp.value = brideInp.value;
+
+            aiStoryModal.classList.add('mayhen_editor_modal_open');
+        });
+
+        const closeAiModal = () => {
+            aiStoryModal.classList.remove('mayhen_editor_modal_open');
+        };
+
+        if (aiStoryCloseBtn) on(aiStoryCloseBtn, 'click', closeAiModal);
+        on(aiStoryModal, 'click', (e) => {
+            if (e.target === aiStoryModal) closeAiModal();
+        });
+
+        aiToneBtns.forEach(btn => {
+            on(btn, 'click', () => {
+                selectedTone = btn.getAttribute('data-tone') || 'romantic';
+                aiToneBtns.forEach(b => {
+                    const active = b === btn;
+                    b.classList.toggle('is-active', active);
+                    b.style.borderColor = active ? '#C5A880' : '#E5DCCD';
+                    b.style.background = active ? '#FAF8F5' : '#FFF';
+                    b.style.fontWeight = active ? '600' : 'normal';
+                });
+            });
+        });
+
+        if (btnGenAiStory) {
+            on(btnGenAiStory, 'click', async () => {
+                const groom = aiGroomInp?.value || 'Chú Rể';
+                const bride = aiBrideInp?.value || 'Cô Dâu';
+                const keywords = aiKeywordsInp?.value || '';
+                const originalBtnHtml = btnGenAiStory.innerHTML;
+
+                btnGenAiStory.disabled = true;
+                btnGenAiStory.innerHTML = '<span>⏳ Đang dệt nên câu chuyện...</span>';
+                if (aiStoryResults) {
+                    aiStoryResults.innerHTML = '<div style="text-align: center; padding: 24px; color: #7A726A; font-style: italic;">Đang phân tích kỷ niệm và tạo 3 phương án Quiet Luxury...</div>';
+                }
+
+                try {
+                    const aiUrl = window.__MAYHEN_AI_STORY_URL || '/api/editor/ai-story';
+                    const res = await fetch(aiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            groom_name: groom,
+                            bride_name: bride,
+                            keywords: keywords,
+                            tone: selectedTone
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (data && data.options && aiStoryResults) {
+                        aiStoryResults.innerHTML = '';
+                        data.options.forEach((opt) => {
+                            const card = document.createElement('div');
+                            card.style.border = '1px solid #EAE3D9';
+                            card.style.borderRadius = '12px';
+                            card.style.padding = '16px';
+                            card.style.background = '#FCFAF7';
+                            card.style.display = 'flex';
+                            card.style.flexDirection = 'column';
+                            card.style.gap = '8px';
+
+                            card.innerHTML = `
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${opt.style_name}</span>
+                                        <strong style="font-size: 14px; color: #1F1D1A;">${opt.title}</strong>
+                                    </div>
+                                    <button type="button" class="btn-apply-story mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 12px; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                                        Áp Dụng Vào Thiệp
+                                    </button>
+                                </div>
+                                <div style="font-size: 13px; color: #9C7A4A; font-style: italic; font-weight: 500;">"${opt.subtitle}"</div>
+                                <p style="font-size: 13px; color: #4A443E; line-height: 1.5; margin: 0;">${opt.content}</p>
+                            `;
+
+                            const applyBtn = card.querySelector('.btn-apply-story');
+                            if (applyBtn) {
+                                on(applyBtn, 'click', () => {
+                                    const titleInp = $('[data-sync-key*="story_title"]') || $('input[name*="story_title"]');
+                                    const subInp = $('[data-sync-key*="story_subtitle"]') || $('input[name*="story_subtitle"]');
+                                    const contentInp = $('[data-sync-key*="story_content"]') || $('textarea[name*="story_content"]');
+
+                                    if (titleInp) {
+                                        titleInp.value = opt.title;
+                                        titleInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                        titleInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+                                    if (subInp) {
+                                        subInp.value = opt.subtitle;
+                                        subInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                        subInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+                                    if (contentInp) {
+                                        contentInp.value = opt.content;
+                                        contentInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                        contentInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+
+                                    applyBtn.innerText = '✓ Đã Áp Dụng!';
+                                    applyBtn.style.background = '#2E7D32';
+
+                                    setTimeout(() => {
+                                        closeAiModal();
+                                    }, 800);
+                                });
+                            }
+
+                            aiStoryResults.appendChild(card);
+                        });
+                    }
+                } catch (err) {
+                    if (aiStoryResults) {
+                        aiStoryResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi tạo gợi ý. Vui lòng thử lại.</div>';
+                    }
+                } finally {
+                    btnGenAiStory.disabled = false;
+                    btnGenAiStory.innerHTML = originalBtnHtml;
+                }
+            });
+        }
+    }
+
+    // ----------------------------------------------------
+    // VISUAL QUALITY DOCTOR (TASK-V1-06)
+    // ----------------------------------------------------
+    const btnQualityDoctor = $('#mayhen_btn_quality_doctor');
+    const doctorScoreLabel = $('#mayhen_doctor_score_label');
+    const qualityDoctorModal = $('#mayhen_quality_doctor_modal');
+    const doctorCloseBtn = $('#mayhen_doctor_close_btn');
+    const doctorCloseBottomBtn = $('#doctor-close-bottom-btn');
+    const doctorModalScore = $('#doctor-modal-score');
+    const doctorModalSummary = $('#doctor-modal-summary');
+    const doctorModalBadge = $('#doctor-modal-badge');
+    const doctorCheckList = $('#doctor-check-list');
+
+    function runQualityDiagnosis() {
+        const checks = [];
+        let score = 100;
+
+        // 1. Tên Cô dâu & Chú rể
+        const groomVal = ($('[data-sync-key="wedding.groom_name"]')?.value || '').trim();
+        const brideVal = ($('[data-sync-key="wedding.bride_name"]')?.value || '').trim();
+        if (!groomVal || !brideVal || groomVal === 'Chú Rể' || brideVal === 'Cô Dâu') {
+            score -= 20;
+            checks.push({
+                passed: false,
+                step: 1,
+                title: 'Tên Cô Dâu & Chú Rể',
+                desc: 'Chưa điền tên cô dâu chú rể thật của hai bạn.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 1,
+                title: 'Tên Cô Dâu & Chú Rể',
+                desc: `Đã điền: ${groomVal} & ${brideVal}.`
+            });
+        }
+
+        // 2. Ngày cử hành hôn lễ
+        const dateVal = ($('[data-sync-key="wedding.wedding_date"]')?.value || '').trim();
+        if (!dateVal) {
+            score -= 15;
+            checks.push({
+                passed: false,
+                step: 5,
+                title: 'Ngày Cử Hành Hôn Lễ',
+                desc: 'Chưa chọn ngày diễn ra đám cưới.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 5,
+                title: 'Ngày Cử Hành Hôn Lễ',
+                desc: `Ngày cưới: ${dateVal} (đã tự động tính âm lịch).`
+            });
+        }
+
+        // 3. Địa chỉ tiệc cưới
+        const addressVal = ($('[data-sync-key*="address"]')?.value || '').trim();
+        if (!addressVal) {
+            score -= 15;
+            checks.push({
+                passed: false,
+                step: 6,
+                title: 'Địa Chỉ Tổ Chức Tiệc',
+                desc: 'Chưa điền địa chỉ nơi tiếp đón quan khách.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 6,
+                title: 'Địa Chỉ Tổ Chức Tiệc',
+                desc: 'Đã có địa chỉ sảnh tiệc chi tiết.'
+            });
+        }
+
+        // 4. Đường dẫn Google Maps
+        const mapVal = ($('[data-sync-key*="map"]')?.value || '').trim();
+        if (!mapVal || mapVal === '#' || mapVal.startsWith('#map')) {
+            score -= 10;
+            checks.push({
+                passed: false,
+                step: 6,
+                title: 'Bản Đồ Chỉ Đường Google Maps',
+                desc: 'Chưa dán liên kết Google Maps để khách tìm đường 1-chạm.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 6,
+                title: 'Bản Đồ Chỉ Đường Google Maps',
+                desc: 'Đã tích hợp link bản đồ Google Maps.'
+            });
+        }
+
+        // 5. Lời ngỏ & Câu chuyện tình yêu
+        const storyVal = ($('[data-sync-key*="story_content"]')?.value || '').trim();
+        if (!storyVal) {
+            score -= 10;
+            checks.push({
+                passed: false,
+                step: 3,
+                title: 'Lời Ngỏ & Tình Yêu',
+                desc: 'Chưa viết lời ngỏ tâm sự gửi tới khách mời.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 3,
+                title: 'Lời Ngỏ & Tình Yêu',
+                desc: 'Đã có lời ngỏ tình cảm dành cho quan khách.'
+            });
+        }
+
+        // 6. Tài khoản mừng cưới VietQR
+        const bankAccountVal = ($('[data-sync-key*="bank_account"]')?.value || '').trim();
+        if (!bankAccountVal) {
+            score -= 10;
+            checks.push({
+                passed: false,
+                step: 10,
+                title: 'Tài Khoản Mừng Cưới VietQR',
+                desc: 'Chưa điền số tài khoản ngân hàng để nhận mừng cưới online.'
+            });
+        } else {
+            checks.push({
+                passed: true,
+                step: 10,
+                title: 'Tài Khoản Mừng Cưới VietQR',
+                desc: 'Đã cấu hình tài khoản ngân hàng mừng cưới.'
+            });
+        }
+
+        score = Math.max(score, 0);
+
+        // Cập nhật nhãn điểm trên topbar
+        if (doctorScoreLabel) {
+            doctorScoreLabel.innerText = `${score}đ`;
+            if (score >= 90) {
+                doctorScoreLabel.style.color = '#2E7D32';
+            } else if (score >= 70) {
+                doctorScoreLabel.style.color = '#F57C00';
+            } else {
+                doctorScoreLabel.style.color = '#C62828';
+            }
+        }
+
+        return { score, checks };
+    }
+
+    function renderQualityDoctorModal() {
+        const { score, checks } = runQualityDiagnosis();
+
+        if (doctorModalScore) doctorModalScore.innerText = score;
+
+        if (doctorModalBadge && doctorModalSummary) {
+            if (score >= 90) {
+                doctorModalBadge.innerText = '✓ Sẵn sàng xuất bản';
+                doctorModalBadge.style.background = '#E8F5E9';
+                doctorModalBadge.style.color = '#2E7D32';
+                doctorModalSummary.innerText = 'Thiệp cưới của hai bạn đã rất hoàn thiện và trang trọng!';
+            } else if (score >= 70) {
+                doctorModalBadge.innerText = '⚠️ Nên hoàn thiện thêm';
+                doctorModalBadge.style.background = '#FFF3E0';
+                doctorModalBadge.style.color = '#E65100';
+                doctorModalSummary.innerText = 'Thiệp khá tốt, nhưng nên hoàn thiện các mục màu vàng để chu đáo hơn.';
+            } else {
+                doctorModalBadge.innerText = '❌ Cần điền thêm thông tin';
+                doctorModalBadge.style.background = '#FFEBEE';
+                doctorModalBadge.style.color = '#C62828';
+                doctorModalSummary.innerText = 'Thiệp còn thiếu các thông tin cơ bản trước khi có thể xuất bản.';
+            }
+        }
+
+        if (doctorCheckList) {
+            doctorCheckList.innerHTML = '';
+            checks.forEach(item => {
+                const el = document.createElement('div');
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.justifyContent = 'space-between';
+                el.style.padding = '12px 14px';
+                el.style.borderRadius = '10px';
+                el.style.background = item.passed ? '#FAFAFA' : '#FFF9F4';
+                el.style.border = item.passed ? '1px solid #EFEFEF' : '1px solid #FFE0B2';
+                el.style.gap = '10px';
+
+                el.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                        <span style="font-size: 16px; line-height: 1.2;">${item.passed ? '✅' : '⚠️'}</span>
+                        <div>
+                            <strong style="font-size: 13px; color: #1F1D1A; display: block;">${item.title}</strong>
+                            <span style="font-size: 12px; color: ${item.passed ? '#686058' : '#C62828'};">${item.desc}</span>
+                        </div>
+                    </div>
+                    ${!item.passed ? `
+                        <button type="button" class="btn-jump-step" data-jump-step="${item.step}" style="background: #FAF8F5; border: 1px solid #C5A880; color: #9C7A4A; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+                            Đi tới sửa →
+                        </button>
+                    ` : ''}
+                `;
+
+                const jumpBtn = el.querySelector('.btn-jump-step');
+                if (jumpBtn) {
+                    on(jumpBtn, 'click', () => {
+                        const targetStep = parseInt(jumpBtn.getAttribute('data-jump-step'), 10);
+                        closeDoctorModal();
+                        const stepPill = $(`[data-step="${targetStep}"]`);
+                        if (stepPill) stepPill.click();
+                    });
+                }
+
+                doctorCheckList.appendChild(el);
+            });
+        }
+    }
+
+    const closeDoctorModal = () => {
+        if (qualityDoctorModal) qualityDoctorModal.classList.remove('mayhen_editor_modal_open');
+    };
+
+    if (btnQualityDoctor && qualityDoctorModal) {
+        on(btnQualityDoctor, 'click', () => {
+            renderQualityDoctorModal();
+            qualityDoctorModal.classList.add('mayhen_editor_modal_open');
+        });
+
+        if (doctorCloseBtn) on(doctorCloseBtn, 'click', closeDoctorModal);
+        if (doctorCloseBottomBtn) on(doctorCloseBottomBtn, 'click', closeDoctorModal);
+        on(qualityDoctorModal, 'click', (e) => {
+            if (e.target === qualityDoctorModal) closeDoctorModal();
+        });
+
+        setTimeout(runQualityDiagnosis, 300);
+    }
+
     // Đồng bộ ngay lập tức toàn bộ dữ liệu form sang iframes
     setTimeout(() => {
         syncAllFieldsToIframe(previewIframe);

@@ -4630,6 +4630,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                         - Toàn bộ test suite hệ thống duy trì **182/182 tests passed 100% (984 assertions)**.
                         - Laravel Pint: Đạt chuẩn 100%.
 
+                 174. **Triển Khai Trợ Lý Viết Lời Ngỏ AI (TASK-V1-04) và Bác Sĩ Khám Bệnh Thiệp Cưới (TASK-V1-06)**:
+                      - **Bối cảnh & Giá trị nghiệp vụ**:
+                        - Giải quyết 2 rào cản lớn nhất của các cặp đôi trong quá trình làm thiệp:
+                          1. *"Bí từ"* không biết viết lời ngỏ tình yêu và câu chuyện gặp gỡ thế nào cho hay, sâu sắc, không sáo rỗng.
+                          2. *"Lo lắng sai sót"* không biết thiệp đã đủ thông tin chưa, có bị mờ ảnh, thiếu bản đồ hay quên số tài khoản ngân hàng mừng cưới không.
+                      - **Các thành phần kỹ thuật đã triển khai**:
+                        1. *Trợ Lý Viết Lời Ngỏ Tình Yêu AI (`AiStoryWriterService` & `InvitationEditorController`)*:
+                           - Xây dựng dịch vụ `AiStoryWriterService` phân tích tên cặp đôi, kỷ niệm đáng nhớ (như "Đà Lạt", "yêu xa 3 năm", "quán cafe") và tông giọng mong muốn.
+                           - Tự động sinh 3 phương án Quiet Luxury hoàn chỉnh (*Lãng Mạn Sâu Lắng*, *Tối Giản Thanh Lịch*, *Trẻ Trung Hóm Hỉnh*) gồm Tiêu đề (`story_title`), Đề tựa (`story_subtitle`), và Đoạn văn lời ngỏ (`story_content`).
+                           - API endpoint `POST /api/editor/ai-story` bảo vệ bằng middleware `throttle:editor_actions`, kiểm tra validation và lọc sạch thẻ HTML độc hại.
+                           - Nút *"Áp Dụng Vào Thiệp"* 1-chạm: Tự động điền dữ liệu vào form và kích hoạt handshake `editor-bridge.blade.php` Live Sync ngay lập tức sang chiếc thiệp điện thoại bên phải.
+                        2. *Bác Sĩ Khám Bệnh Thiệp Cưới (Visual Quality Doctor)*:
+                           - Tích hợp nút huy hiệu bác sĩ trên thanh công cụ Studio Topbar (`#mayhen_btn_quality_doctor`), tự động tính điểm sức khỏe thiệp theo thời gian thực (thang 100đ).
+                           - Chẩn đoán 6 hạng mục sống còn của một tấm thiệp cưới:
+                             * Tên cô dâu chú rể thật (không dùng tên mặc định).
+                             * Ngày cử hành hôn lễ chính thức.
+                             * Địa chỉ chi tiết sảnh tiệc / tư gia.
+                             * Đường dẫn Google Maps tìm đường 1-chạm.
+                             * Lời ngỏ và câu chuyện tình yêu.
+                             * Thông tin tài khoản ngân hàng mừng cưới VietQR.
+                           - Cung cấp nút *"Đi tới sửa →"* cho từng hạng mục chưa đạt, bấm vào tự động nhảy ngay tới Tab / Bước tương ứng trong Studio để người dùng sửa nhanh.
+                      - **Kiểm thử & Đảm bảo chất lượng**:
+                        - Feature test kiểm tra dịch vụ AI Story, kiểm tra endpoint API, validation tone, và xử lý sanitize XSS -> 100% Passed.
+                        - Toàn bộ test suite toàn hệ thống: **182/182 tests passed 100% (984 assertions)**.
+                        - Hoàn thành trọn vẹn 100% các nhiệm vụ của **Giai Đoạn 1: LEAN PREMIUM** trong lộ trình VNext.
+                        - Laravel Pint: Đạt chuẩn 100%.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

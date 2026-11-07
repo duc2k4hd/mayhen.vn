@@ -310,6 +310,23 @@ body.mayhen_editor_body_fullscreen {
     flex-shrink: 0;
 }
 
+.mayhen_editor_doctor_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #FAF8F5;
+    border: 1px solid #E5DCCD;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_editor_doctor_btn:hover {
+    background: #FAF3E8;
+    border-color: #C5A880;
+}
+
 /* Undo / Redo Buttons */
 .mayhen_editor_history_group {
     display: flex;
@@ -1457,6 +1474,8 @@ body.mayhen_editor_body_fullscreen {
 
 .mayhen_editor_template_modal,
 .mayhen_music_picker_modal,
+.mayhen_editor_ai_story_modal,
+.mayhen_editor_quality_doctor_modal,
 .mayhen_editor_modal_preview {
     position: fixed;
     top: 0;
@@ -1483,7 +1502,9 @@ body.mayhen_editor_body_fullscreen {
 }
 
 .mayhen_editor_template_modal_box,
-.mayhen_music_picker_box {
+.mayhen_music_picker_box,
+.mayhen_editor_ai_story_box,
+.mayhen_editor_quality_doctor_box {
     background: #ffffff;
     border-radius: 18px;
     width: 100%;

@@ -104,6 +104,12 @@
                     </button>
                 </div>
 
+                <!-- Visual Quality Doctor (TASK-V1-06) -->
+                <button type="button" class="mayhen_editor_doctor_btn" id="mayhen_btn_quality_doctor" title="Bác Sĩ Thiệp Cưới: Đánh giá chất lượng và độ hoàn thiện">
+                    <span style="font-size: 15px;">🩺</span>
+                    <span style="font-size: 11px; font-weight: 700; color: #1F1D1A;" id="mayhen_doctor_score_label">100đ</span>
+                </button>
+
                 <!-- Submit / Publish Button -->
                 <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit">
                     <span>Xuất Bản Thiệp</span>
@@ -213,6 +219,24 @@
                                     <p class="mayhen_editor_step_subtext">{{ $section['description'] }}</p>
                                 @endif
                             </div>
+
+                            @if ($section['id'] === 'story')
+                                <div class="mayhen_editor_ai_story_banner" style="margin-bottom: 20px; background: linear-gradient(135deg, #FFFDF9 0%, #FBF6EE 100%); border: 1px solid #EADECA; border-radius: 12px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(197, 168, 128, 0.1); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 16px; flex-shrink: 0;">
+                                            ✨
+                                        </div>
+                                        <div>
+                                            <strong style="font-size: 13px; color: #1F1D1A; display: block;">Trợ Lý Viết Lời Ngỏ Tình Yêu (AI Story Writer)</strong>
+                                            <span style="font-size: 12px; color: #7A726A;">Nhập kỷ niệm, AI gợi ý 3 phương án lời ngỏ Quiet Luxury chạm tới trái tim.</span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="mayhen_client_button_base mayhen_client_button_sm" id="btn-open-ai-story" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; border: none; font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+                                        <span>Gợi Ý Bằng AI</span>
+                                    </button>
+                                </div>
+                            @endif
 
                             <div class="mayhen_editor_fields_container mayhen_editor_fields_grid">
                                 @php
@@ -1071,7 +1095,105 @@
         </div>
         <audio id="mayhen_music_preview_audio" preload="none"></audio>
 
+        <!-- 9. Modal Trợ Lý Viết Lời Ngỏ Tình Yêu (TASK-V1-04: AI Story Writer) -->
+        <div class="mayhen_editor_ai_story_modal" id="mayhen_ai_story_modal" role="dialog" aria-modal="true" aria-label="Trợ lý viết lời ngỏ AI">
+            <div class="mayhen_editor_ai_story_box" style="background: #ffffff; border-radius: 18px; width: 100%; max-width: 640px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="mayhen_cropper_header">
+                    <div class="mayhen_cropper_header_title">
+                        <span style="font-size: 18px;">✨</span>
+                        <span>Trợ Lý Viết Lời Ngỏ Tình Yêu (AI Romance Writer)</span>
+                    </div>
+                    <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_ai_story_close_btn" aria-label="Đóng cửa sổ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+                    <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px; font-size: 13px; color: #5A534B;">
+                        💡 <strong>Cách hoạt động:</strong> Điền vài kỷ niệm của hai bạn, AI sẽ tự động dệt nên 3 câu chuyện Quiet Luxury với phong cách khác nhau để bạn chọn lựa và áp dụng ngay vào thiệp.
+                    </div>
 
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="mayhen_client_form_label" style="font-size: 12px;">Tên Chú Rể</label>
+                            <input type="text" id="ai-story-groom" class="mayhen_client_form_input" style="font-size: 13px;" value="{{ old('wedding.groom_name', $editingInvitation->wedding->groom_name ?? '') }}" placeholder="Chú rể...">
+                        </div>
+                        <div>
+                            <label class="mayhen_client_form_label" style="font-size: 12px;">Tên Cô Dâu</label>
+                            <input type="text" id="ai-story-bride" class="mayhen_client_form_input" style="font-size: 13px;" value="{{ old('wedding.bride_name', $editingInvitation->wedding->bride_name ?? '') }}" placeholder="Cô dâu...">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mayhen_client_form_label" style="font-size: 12px;">Kỷ niệm đáng nhớ / Từ khóa (cách nhau bằng dấu phẩy)</label>
+                        <input type="text" id="ai-story-keywords" class="mayhen_client_form_input" style="font-size: 13px;" placeholder="Ví dụ: Gặp ở Đà Lạt, yêu xa 3 năm, quán cafe quen, cùng thích đi phượt...">
+                    </div>
+
+                    <div>
+                        <label class="mayhen_client_form_label" style="font-size: 12px;">Chọn phong cách mong muốn:</label>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <button type="button" class="mayhen_ai_tone_btn is-active" data-tone="romantic" style="padding: 8px; border-radius: 8px; border: 1px solid #C5A880; background: #FAF8F5; font-size: 12px; font-weight: 600; color: #1F1D1A; cursor: pointer; text-align: center;">
+                                🌟 Lãng Mạn Sâu Lắng
+                            </button>
+                            <button type="button" class="mayhen_ai_tone_btn" data-tone="minimal" style="padding: 8px; border-radius: 8px; border: 1px solid #E5DCCD; background: #FFF; font-size: 12px; color: #5A534B; cursor: pointer; text-align: center;">
+                                🕊️ Tối Giản Thanh Lịch
+                            </button>
+                            <button type="button" class="mayhen_ai_tone_btn" data-tone="cheerful" style="padding: 8px; border-radius: 8px; border: 1px solid #E5DCCD; background: #FFF; font-size: 12px; color: #5A534B; cursor: pointer; text-align: center;">
+                                💖 Trẻ Trung Hóm Hỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-generate-ai-story" class="mayhen_client_button_base" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; border: none; font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>✨ Tạo Lời Ngỏ Tình Yêu</span>
+                    </button>
+
+                    <!-- Kết quả gợi ý -->
+                    <div id="ai-story-results" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Modal Bác Sĩ Khám Bệnh Thiệp Cưới (TASK-V1-06: Visual Quality Doctor) -->
+        <div class="mayhen_editor_quality_doctor_modal" id="mayhen_quality_doctor_modal" role="dialog" aria-modal="true" aria-label="Bác sĩ kiểm tra chất lượng thiệp">
+            <div class="mayhen_editor_quality_doctor_box" style="background: #ffffff; border-radius: 18px; width: 100%; max-width: 620px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="mayhen_cropper_header">
+                    <div class="mayhen_cropper_header_title">
+                        <span style="font-size: 18px;">🩺</span>
+                        <span>Trợ Lý Khám Bệnh Thiệp Cưới (Visual Quality Doctor)</span>
+                    </div>
+                    <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_doctor_close_btn" aria-label="Đóng cửa sổ">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Health Score Header -->
+                    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <span style="font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #9C7A4A; font-weight: 600; display: block; margin-bottom: 2px;">Điểm Chất Lượng Thiệp</span>
+                            <div style="display: flex; align-items: baseline; gap: 6px;">
+                                <span id="doctor-modal-score" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 34px; font-weight: 700; color: #1F1D1A;">100</span>
+                                <span style="font-size: 14px; color: #7A726A;">/ 100 điểm</span>
+                            </div>
+                            <p id="doctor-modal-summary" style="font-size: 13px; color: #5A534B; margin: 4px 0 0 0;">Thiệp cưới của hai bạn đã rất hoàn thiện!</p>
+                        </div>
+                        <div id="doctor-modal-badge" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #E8F5E9; color: #2E7D32;">
+                            ✓ Sẵn sàng xuất bản
+                        </div>
+                    </div>
+
+                    <!-- Danh sách các mục chẩn đoán -->
+                    <div>
+                        <h4 style="font-size: 14px; font-weight: 600; color: #1F1D1A; margin: 0 0 10px 0;">Kết quả đối soát chi tiết:</h4>
+                        <div id="doctor-check-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                    </div>
+                </div>
+                <div class="mayhen_editor_drawer_footer" style="padding: 14px 20px; justify-content: flex-end; background: #FAF8F5; border-top: 1px solid #EAE3D9;">
+                    <button type="button" class="mayhen_client_button_base mayhen_client_button_sm" id="doctor-close-bottom-btn" style="background: #1F1D1A; color: #FFF; padding: 8px 18px; border-radius: 8px; border: none; font-size: 13px; cursor: pointer;">
+                        Đã Hiểu & Quay Lại Sửa
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <!-- Mobile Floating Action Bar (Nổi khi xem trước trên mobile) -->
         <div class="mayhen_editor_mobile_floating_bar" role="toolbar" aria-label="Thao tác nhanh trên điện thoại">
@@ -1100,6 +1222,7 @@
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
         window.__MAYHEN_UPLOAD_URL = "{{ route('invitation.uploadAsset') }}";
         window.__MAYHEN_AUTOSAVE_URL = "{{ route('invitation.autosave') }}";
+        window.__MAYHEN_AI_STORY_URL = "{{ route('invitation.aiStory') }}";
     </script>
     <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}?v={{ file_exists(public_path('assets/client/js/pages/editor.js')) ? filemtime(public_path('assets/client/js/pages/editor.js')) : time() }}"></script>
 @endpush
