@@ -12,6 +12,7 @@ use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
 use App\Services\PersonalThankYouService;
@@ -142,8 +143,19 @@ class GuestController extends Controller
             'guest_token' => Str::random(32),
         ]);
 
-        return redirect()->route('guests.index', $invitationId)
+        $redirect = redirect()->route('guests.index', $invitationId)
             ->with('success', 'Đã thêm khách mời thành công!');
+
+        // Cảnh báo quá tải bàn tiệc nếu việc thêm khách vượt quá sức chứa của bàn (Flow 09)
+        if ($tableId) {
+            $table = $wedding->tables()->find($tableId);
+            if ($table && $table->isOverCapacity()) {
+                $over = $table->assigned_attendees_count - $table->capacity;
+                $redirect->with('warning', "Lưu ý: Bàn \"{$table->name}\" đang bị quá tải ghế sau khi thêm khách ({$table->assigned_attendees_count}/{$table->capacity} người, thừa {$over} chỗ). Vui lòng điều chỉnh lại sơ đồ bàn tiệc.");
+            }
+        }
+
+        return $redirect;
     }
 
     /**
@@ -168,8 +180,9 @@ class GuestController extends Controller
 
         $rawLines = preg_split("/\r\n|\n|\r/", (string) $request->input('batch_input'));
         $createdCount = 0;
+        $skippedCount = 0;
 
-        DB::transaction(function () use ($rawLines, $wedding, $defaultSalutation, $defaultGroup, &$createdCount) {
+        DB::transaction(function () use ($rawLines, $wedding, $defaultSalutation, $defaultGroup, &$createdCount, &$skippedCount) {
             foreach ($rawLines as $line) {
                 $line = trim($line);
                 if ($line === '') {
@@ -180,6 +193,13 @@ class GuestController extends Controller
                 $parts = preg_split('/[|;\t]/', $line);
                 $name = trim($parts[0] ?? '');
                 if ($name === '') {
+                    continue;
+                }
+
+                // Lọc bỏ các dòng chứa từ ngữ thô tục / cấm kỵ (Content Moderation)
+                if (ContentModerationService::containsProfanity($name)) {
+                    $skippedCount++;
+
                     continue;
                 }
 
@@ -212,11 +232,20 @@ class GuestController extends Controller
         });
 
         if ($createdCount === 0) {
-            return back()->with('error', 'Không tìm thấy thông tin khách mời hợp lệ để thêm.');
+            return back()->with('error', 'Không tìm thấy thông tin khách mời hợp lệ để thêm.'.($skippedCount > 0 ? " (Đã lọc bỏ {$skippedCount} dòng chứa ngôn từ không phù hợp)." : ''));
         }
 
-        return redirect()->route('guests.index', $invitationId)
-            ->with('success', "Đã thêm thành công {$createdCount} khách mời vào danh sách!");
+        $redirect = redirect()->route('guests.index', $invitationId)
+            ->with('success', "Đã thêm thành công {$createdCount} khách mời vào danh sách!".($skippedCount > 0 ? " (Đã lọc bỏ {$skippedCount} dòng chứa từ ngữ không phù hợp)." : ''));
+
+        // Cảnh báo nếu danh sách thêm vào làm bàn tiệc nào bị quá tải sức chứa
+        $overloadedTables = $wedding->tables()->get()->filter->isOverCapacity();
+        if ($overloadedTables->isNotEmpty()) {
+            $tableDetails = $overloadedTables->map(fn ($t) => "Bàn \"{$t->name}\" ({$t->assigned_attendees_count}/{$t->capacity} người)")->implode(', ');
+            $redirect->with('warning', "Lưu ý: Có bàn tiệc đang bị quá tải ghế sau khi thêm khách ({$tableDetails}). Vui lòng điều chỉnh lại sơ đồ bàn tiệc.");
+        }
+
+        return $redirect;
     }
 
     /**

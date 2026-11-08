@@ -283,3 +283,62 @@ it('warns couple when updating guest count or rsvp overloads assigned table capa
     $rsvpRes->assertJsonPath('is_table_overloaded', true);
     expect($rsvpRes->json('warning'))->toContain('quá tải ghế sau khi cập nhật RSVP');
 });
+
+it('warns couple when adding a single guest that exceeds table capacity', function () {
+    $table = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn Bạn Thân',
+        'shape' => 'round',
+        'capacity' => 4,
+    ]);
+
+    $this->actingAs($this->user);
+
+    $response = $this->post(route('guests.store', $this->invitation->id), [
+        'name' => 'Gia Đình Anh Tuấn',
+        'salutation' => 'Anh',
+        'group_name' => 'Bạn Bè',
+        'expected_attendees' => 5, // Vượt quá 4 ghế của bàn
+        'table_name' => 'Bàn Bạn Thân',
+    ]);
+
+    $response->assertRedirect(route('guests.index', $this->invitation->id));
+    $response->assertSessionHas('success');
+    $response->assertSessionHas('warning');
+    expect(session('warning'))->toContain('Bàn Bạn Thân')
+        ->toContain('quá tải ghế');
+});
+
+it('warns overload and filters profanity during batch guest import', function () {
+    $table = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn Doanh Nhân',
+        'shape' => 'round',
+        'capacity' => 4,
+    ]);
+
+    $this->actingAs($this->user);
+
+    $batchInput = "Nguyễn Văn A | Anh | Bạn Bè | 3 | 0911222333 | Bàn Doanh Nhân\n"
+        ."Trần Thị B | Chị | Bạn Bè | 3 | 0944555666 | Bàn Doanh Nhân\n"
+        .'Thằng đụ má | Bạn | Bạn Bè | 2 | | Bàn Doanh Nhân';
+
+    $response = $this->post(route('guests.batch_store', $this->invitation->id), [
+        'batch_input' => $batchInput,
+        'default_salutation' => 'Thân mời',
+        'default_group' => 'Bạn Bè',
+    ]);
+
+    $response->assertRedirect(route('guests.index', $this->invitation->id));
+    $response->assertSessionHas('success');
+    $response->assertSessionHas('warning');
+
+    // Dòng chứa profanity bị lọc bỏ (chỉ tạo 2 khách)
+    expect($this->wedding->guests()->count())->toBe(2);
+    expect($this->wedding->guests()->pluck('name')->all())->toContain('Nguyễn Văn A', 'Trần Thị B');
+    expect($this->wedding->guests()->where('name', 'like', '%đụ má%')->exists())->toBeFalse();
+
+    // Cảnh báo quá tải được phát hiện
+    expect(session('warning'))->toContain('Bàn Doanh Nhân')
+        ->toContain('quá tải ghế');
+});

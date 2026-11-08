@@ -5820,6 +5820,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        220. **Kiểm Soát Nhập Liệu Khách Mời & Cảnh Báo Quá Tải Bàn Tiệc (Guest Store & Batch Import Capacity Guard — Master Audit 06 & 09.3)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Mục 06 (Guest CRM: import/lọc/trùng/suất) và Mục 09.3 (Guest Journey Concierge & Seating Impact Simulator) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Bỏ lọt từ ngữ cấm trong Batch Import)**: Khi người dùng hoặc quản trị viên dán nhanh danh sách khách mời trong `GuestController::batchStore`, hệ thống chỉ tách chuỗi thô rồi insert trực tiếp vào database mà không hề kiểm tra qua bộ lọc ngôn từ `ContentModerationService`. Nếu danh sách có chứa từ ngữ thô tục, phá hoại hoặc chửi bậy, toàn bộ từ ngữ này sẽ lọt thẳng vào hệ thống thiệp cưới.
+                               - **Lỗi 2 (Thêm khách lẻ hoặc dán danh sách hàng loạt làm quá tải bàn tiệc mà không phát cảnh báo)**:
+                                 * Trong `GuestController::store`: Khi thêm một khách mới có số suất đi kèm lớn hơn sức chứa còn lại của bàn (`expected_attendees > capacity`), hệ thống chỉ báo thành công, không phát bất kỳ cảnh báo nào.
+                                 * Trong `GuestController::batchStore`: Khi dán 50-100 khách và gán vào các bàn tiệc, nhiều bàn bị quá tải ghế nghiêm trọng nhưng hệ thống chỉ hiển thị `"Đã thêm thành công X khách"`, khiến cặp đôi không hề hay biết sơ đồ bàn tiệc của mình đang bị loạn chỗ.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Lọc Sạch Ngôn Từ Thô Tục Khi Batch Import (`GuestController::batchStore`)**:
+                                 * Tích hợp `ContentModerationService::containsProfanity($name)` trong vòng lặp phân tích từng dòng khách mời.
+                                 * Tự động bỏ qua các dòng vi phạm (`$skippedCount++`) và ghi chú rõ ràng trong thông báo: `"(Đã lọc bỏ X dòng chứa ngôn từ không phù hợp)"`.
+                               - **Cảnh Báo Quá Tải Chỗ Ngồi Toàn Diện (`GuestController::store` & `batchStore`)**:
+                                 * `store`: Ngay sau khi lưu khách, kiểm tra trạng thái của bàn tiệc (`$table->isOverCapacity()`). Nếu quá tải, phát sinh cảnh báo chi tiết qua session flash `warning`: `"Lưu ý: Bàn \"[Tên bàn]\" đang bị quá tải ghế sau khi thêm khách ([Sĩ số]/[Sức chứa] người, thừa [X] chỗ). Vui lòng điều chỉnh lại sơ đồ bàn tiệc."`
+                                 * `batchStore`: Quét toàn bộ bàn tiệc của đám cưới sau khi import danh sách (`$wedding->tables()->get()->filter->isOverCapacity()`). Nếu có bất kỳ bàn nào vượt sức chứa, tổng hợp danh sách các bàn bị quá tải và cảnh báo trực quan cho người dùng.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/SeatingCapacityGuardianTest.php` thêm 2 ca kiểm thử chuyên sâu -> **8/8 tests passed (64 assertions)**:
+                                 * `it_warns_couple_when_adding_a_single_guest_that_exceeds_table_capacity`
+                                 * `it_warns_overload_and_filters_profanity_during_batch_guest_import`
+                               - Toàn bộ test suite toàn hệ thống: **457/457 tests passed 100% (2,327 assertions)** trong ~8.7 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
