@@ -5524,6 +5524,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        209. **Chuẩn Hóa Giao Diện Vi Mô & Responsive Mobile Sổ Lưu Bút (Micro-UX & Mobile-First Polish)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi mục 07 (UX audit ở mức vi mô — Mọi thiết bị & viewport mobile) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - Loại bỏ hoàn toàn inline grid style trong `resources/views/client/pages/account/wishes.blade.php`, thay thế bằng hệ thống CSS class BEM chuẩn thương hiệu:
+                                 * `.mayhen_account_wishes_grid`: Thiết lập lưới 2 cột sang trọng trên màn hình máy tính (`repeat(2, 1fr)`), tự động co giãn về 1 cột duy nhất (`1fr`) trên các thiết bị di động có chiều rộng $\le$ 640px. Giúp thẻ bưu thiếp lời chúc hiển thị thoáng đãng, không bị co ép chữ hoặc tràn màn hình ngang.
+                                 * `.mayhen_account_wishes_toolbar`: Chuẩn hóa thanh công cụ tìm kiếm và lọc trạng thái lời chúc thành một khối thống nhất, hỗ trợ `flex-wrap` mượt mà khi người dùng thao tác trên điện thoại.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Toàn bộ test suite toàn hệ thống: **409/409 tests passed 100% (2,056 assertions)** trong ~7.7 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

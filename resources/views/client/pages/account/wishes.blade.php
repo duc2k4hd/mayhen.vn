@@ -165,7 +165,7 @@
     </div>
 
     <!-- Filter & Search Toolbar -->
-    <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+    <div class="mayhen_account_wishes_toolbar">
         <form action="{{ route('account.wishes.index', $invitation->id) }}" method="GET" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-grow: 1;">
             <div style="position: relative; display: flex; align-items: center; min-width: 240px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position: absolute; left: 12px; color: #8C827A;">
@@ -206,7 +206,7 @@
 
     <!-- Wishes Postcard Grid -->
     @if($wishes->isNotEmpty())
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 32px;">
+        <div class="mayhen_account_wishes_grid">
             @foreach($wishes as $wish)
                 <div class="mayhen_account_form_card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 16px;">
                     <div>

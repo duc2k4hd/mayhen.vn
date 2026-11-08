@@ -619,6 +619,27 @@
     font-style: italic;
 }
 
+/* Wishes Postcard Grid & Toolbar */
+.mayhen_account_wishes_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.mayhen_account_wishes_toolbar {
+    background: #FAF8F5;
+    border: 1px solid #EAE3D9;
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
 /* Grid Invitations List */
 .mayhen_account_invitations_grid {
     display: grid;
@@ -898,6 +919,10 @@ select.mayhen_account_form_input {
     }
 
     .mayhen_account_invitations_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_account_wishes_grid {
         grid-template-columns: 1fr;
     }
 
