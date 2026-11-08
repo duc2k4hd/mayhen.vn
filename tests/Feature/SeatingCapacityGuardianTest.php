@@ -233,3 +233,53 @@ it('returns json seating health check through api endpoint with ownership author
     $forbidden = $this->getJson(route('seating.health_check', $this->invitation->id));
     $forbidden->assertNotFound();
 });
+
+it('warns couple when updating guest count or rsvp overloads assigned table capacity', function () {
+    $this->actingAs($this->user);
+
+    $table = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn VIP Gia Đình',
+        'shape' => 'round',
+        'capacity' => 4,
+    ]);
+
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'table_id' => $table->id,
+        'table_name' => $table->name,
+        'name' => 'Bác Hai',
+        'expected_attendees' => 2,
+    ]);
+
+    // 1. Cặp đôi sửa số người lên 6 (vượt sức chứa 4 ghế của bàn)
+    $response = $this->put(route('guests.update', $guest->id), [
+        'name' => 'Bác Hai (và các cháu)',
+        'expected_attendees' => 6,
+    ]);
+
+    $response->assertSessionHas('warning');
+    expect(session('warning'))->toContain('Bàn VIP Gia Đình')
+        ->toContain('quá tải');
+
+    // 2. Thử gọi qua JSON API
+    $jsonRes = $this->putJson(route('guests.update', $guest->id), [
+        'name' => 'Bác Hai (và các cháu)',
+        'expected_attendees' => 6,
+    ]);
+
+    $jsonRes->assertOk();
+    $jsonRes->assertJsonPath('is_table_overloaded', true);
+    expect($jsonRes->json('warning'))->toContain('Bàn VIP Gia Đình');
+
+    // 3. Cập nhật qua manual RSVP (thêm 5 người lớn)
+    $rsvpRes = $this->postJson(route('guests.manual_rsvp', $guest->id), [
+        'attending_status' => 'attending',
+        'adults_count' => 5,
+        'children_count' => 1,
+    ]);
+
+    $rsvpRes->assertOk();
+    $rsvpRes->assertJsonPath('is_table_overloaded', true);
+    expect($rsvpRes->json('warning'))->toContain('quá tải ghế sau khi cập nhật RSVP');
+});

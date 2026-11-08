@@ -437,32 +437,56 @@ class GuestController extends Controller
             'expected_attendees.min' => 'Số người tham dự tối thiểu là 1.',
         ]);
 
-        $tableName = ! empty($validated['table_name']) ? trim((string) $validated['table_name']) : null;
-        $tableId = null;
-        if (! empty($tableName)) {
-            $matchedTable = $guest->wedding->tables()->where('name', $tableName)->first();
-            $tableId = $matchedTable?->id;
+        $tableId = $guest->table_id;
+        $tableName = $guest->table_name;
+        if (array_key_exists('table_name', $validated)) {
+            $rawTable = trim((string) $validated['table_name']);
+            if ($rawTable === '') {
+                $tableName = null;
+                $tableId = null;
+            } else {
+                $tableName = $rawTable;
+                $matchedTable = $guest->wedding->tables()->where('name', $rawTable)->first();
+                $tableId = $matchedTable?->id;
+            }
         }
 
         $guest->update([
             'name' => $validated['name'],
-            'salutation' => $validated['salutation'] ?? 'Thân mời',
-            'group_name' => $validated['group_name'] ?? 'Bạn Bè',
+            'salutation' => $validated['salutation'] ?? $guest->salutation,
+            'group_name' => $validated['group_name'] ?? $guest->group_name,
             'table_name' => $tableName,
             'table_id' => $tableId,
-            'phone' => $validated['phone'] ?? null,
+            'phone' => array_key_exists('phone', $validated) ? ($validated['phone'] ?? null) : $guest->phone,
             'expected_attendees' => (int) $validated['expected_attendees'],
         ]);
+
+        // Cảnh báo quá tải bàn tiệc nếu việc thay đổi số người làm vượt sức chứa của bàn (Flow 09)
+        $tableOverloadedWarning = null;
+        if ($guest->table_id) {
+            $table = $guest->wedding->tables()->find($guest->table_id);
+            if ($table && $table->isOverCapacity()) {
+                $over = $table->assigned_attendees_count - $table->capacity;
+                $tableOverloadedWarning = "Lưu ý: Bàn \"{$table->name}\" đang bị quá tải ghế ({$table->assigned_attendees_count}/{$table->capacity} người, thừa {$over} chỗ). Vui lòng điều chỉnh lại sơ đồ bàn tiệc.";
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Đã cập nhật thông tin khách mời thành công.',
+                'warning' => $tableOverloadedWarning,
+                'is_table_overloaded' => ! empty($tableOverloadedWarning),
                 'guest' => $guest,
             ]);
         }
 
-        return back()->with('success', 'Đã cập nhật thông tin khách mời thành công.');
+        $redirect = back()->with('success', 'Đã cập nhật thông tin khách mời thành công.');
+        if ($tableOverloadedWarning) {
+            $redirect->with('warning', $tableOverloadedWarning);
+        }
+
+        return $redirect;
     }
 
     /**
@@ -506,14 +530,31 @@ class GuestController extends Controller
             );
         }
 
+        // Cảnh báo quá tải bàn tiệc nếu việc thay đổi trạng thái RSVP làm vượt sức chứa của bàn (Flow 09)
+        $tableOverloadedWarning = null;
+        if ($guest->table_id) {
+            $table = $guest->wedding->tables()->find($guest->table_id);
+            if ($table && $table->isOverCapacity()) {
+                $over = $table->assigned_attendees_count - $table->capacity;
+                $tableOverloadedWarning = "Lưu ý: Bàn \"{$table->name}\" đang bị quá tải ghế sau khi cập nhật RSVP ({$table->assigned_attendees_count}/{$table->capacity} người, thừa {$over} chỗ). Vui lòng điều chỉnh lại sơ đồ bàn tiệc.";
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Đã cập nhật trạng thái RSVP cho khách mời thành công.',
+                'warning' => $tableOverloadedWarning,
+                'is_table_overloaded' => ! empty($tableOverloadedWarning),
             ]);
         }
 
-        return back()->with('success', 'Đã cập nhật trạng thái RSVP cho khách mời thành công.');
+        $redirect = back()->with('success', 'Đã cập nhật trạng thái RSVP cho khách mời thành công.');
+        if ($tableOverloadedWarning) {
+            $redirect->with('warning', $tableOverloadedWarning);
+        }
+
+        return $redirect;
     }
 
     /**

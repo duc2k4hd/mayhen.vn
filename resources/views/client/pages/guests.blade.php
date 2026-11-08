@@ -42,6 +42,17 @@
             </div>
         @endif
 
+        @if(session('warning'))
+            <div class="mayhen_guest_alert mayhen_guest_alert_warning" style="background: #FFF8E1; border: 1px solid #FFE082; color: #8D6E63; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F57F17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span style="font-size: 13.5px; font-weight: 500;">{{ session('warning') }}</span>
+            </div>
+        @endif
+
         <!-- Header -->
         <div class="mayhen_guest_header_card">
             <div>

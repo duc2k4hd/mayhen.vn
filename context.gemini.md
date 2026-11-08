@@ -5594,6 +5594,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        213. **Bảo Tồn Bàn Tiệc Khi Sửa Khách & Cảnh Báo Quá Tải Bàn Tiệc Tức Thì (Preserve Table Assignment & Overcapacity Alert — Flow 09)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Kiểm toán thực chiến Flow 09 (Xếp bàn rồi thay RSVP / thay đổi số người đi cùng) và Business Invariant 10:
+                               - **Bug phát hiện 1**: Trong `GuestController::update`, khi người dùng submit cập nhật tên, xưng hô hoặc số người mà không gửi trường `table_name` trong form (hoặc gọi API update), logic cũ tự động gán `$tableName = null` và `$tableId = null`, làm khách bị xóa mất bàn tiệc âm thầm (silent unassignment) mà người dùng không hề hay biết.
+                               - **Bug phát hiện 2**: Khi cặp đôi sửa số người đi cùng của khách (`update`) hoặc cập nhật trạng thái RSVP thủ công (`manualRsvp`) làm tăng sĩ số khách ở bàn vượt quá sức chứa (`assigned_attendees_count > capacity`), hệ thống chỉ báo thành công mà không phát bất kỳ cảnh báo nào, dẫn đến nguy cơ loạn bàn tiệc trong ngày cưới thực tế.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Bảo tồn gán bàn tiệc (`GuestController::update`)**: Chỉ thay đổi `table_name` / `table_id` khi request có chứa trường `table_name`. Nếu trường này bị bỏ qua trong payload, hệ thống bảo tồn nguyên vẹn bàn tiệc hiện hành của khách.
+                               - **Cảnh báo quá tải tức thì (`GuestController::update` & `manualRsvp`)**:
+                                 * Ngay sau khi lưu khách hoặc RSVP, kiểm tra trạng thái sức chứa của bàn (`$table->isOverCapacity()`).
+                                 * Nếu bàn bị quá tải (thừa chỗ), lập tức phát sinh cảnh báo chi tiết: `"Lưu ý: Bàn \"[Tên bàn]\" đang bị quá tải ghế ([Số khách]/[Sức chứa] người, thừa [X] chỗ). Vui lòng điều chỉnh lại sơ đồ bàn tiệc."`
+                                 * Trả về cảnh báo qua session flash `warning` và thuộc tính JSON (`'warning'`, `'is_table_overloaded' => true`).
+                               - **Nâng cấp giao diện (`guests.blade.php`)**: Bổ sung khối Alert cảnh báo Quiet Luxury màu hổ phách ấm áp (`mayhen_guest_alert_warning`) để người dùng nhìn thấy cảnh báo ngay lập tức trên màn hình danh sách khách mời.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng test suite `tests/Feature/SeatingCapacityGuardianTest.php` với ca kiểm thử `it('warns couple when updating guest count or rsvp overloads assigned table capacity')` -> **6/6 tests passed (48 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **418/418 tests passed 100% (2,113 assertions)** trong ~8.2 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
