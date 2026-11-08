@@ -1,0 +1,277 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Privacy & Consent Center Styling
+ * Quiet Luxury, Data Protection & Compliance
+ * Mandatory Prefix: mayhen_privacy_*
+ */
+
+.mayhen_privacy_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    padding: 2rem 1.25rem 4rem;
+}
+
+.mayhen_privacy_container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.mayhen_privacy_breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #8C8479;
+    margin-bottom: 1.25rem;
+}
+
+.mayhen_privacy_breadcrumbs a {
+    color: #6E685F;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.mayhen_privacy_breadcrumbs a:hover {
+    color: #1F1D1A;
+}
+
+.mayhen_privacy_header {
+    margin-bottom: 2rem;
+}
+
+.privacy_badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.privacy_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.4rem;
+}
+
+.privacy_subtitle {
+    font-size: 0.92rem;
+    color: #6E685F;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Privacy Score Banner */
+.mayhen_privacy_score_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.04);
+}
+
+.score_card_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.score_badge_group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score_pill {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 1.35rem;
+}
+
+.score_pill--excellent {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.score_pill--good {
+    background: #FFF8E1;
+    color: #F57F17;
+    border: 1px solid #FFE082;
+}
+
+.score_pill--warning {
+    background: #FFEBEE;
+    color: #C62828;
+    border: 1px solid #FFCDD2;
+}
+
+.score_stats_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.score_stat_box {
+    background: #FAF8F5;
+    border: 1px solid #EFEAE3;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+}
+
+.score_stat_label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #8C8479;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.score_stat_num {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1F1D1A;
+}
+
+/* Settings Form Card */
+.mayhen_privacy_form_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.04);
+}
+
+.form_card_title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.privacy_setting_item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid #F7F4F0;
+}
+
+.privacy_setting_item:last-child {
+    border-bottom: none;
+}
+
+.setting_item_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.setting_item_title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.setting_item_desc {
+    font-size: 0.82rem;
+    color: #6E685F;
+    margin: 0.25rem 0 0;
+    line-height: 1.45;
+}
+
+.privacy_radio_group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.privacy_radio_label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #332F2A;
+    cursor: pointer;
+}
+
+/* Compliance Checklist */
+.mayhen_privacy_checks_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.04);
+}
+
+.compliance_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.compliance_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.compliance_item--pass {
+    background: #F1F8E9;
+    border: 1px solid #DCEDC8;
+    color: #33691E;
+}
+
+.compliance_item--warn {
+    background: #FFFDE7;
+    border: 1px solid #FFF9C4;
+    color: #F57F17;
+}
+
+.privacy_save_btn {
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #FFFFFF;
+    border: none;
+    padding: 0.75rem 1.75rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.3);
+    transition: opacity 0.2s ease;
+}
+
+.privacy_save_btn:hover {
+    opacity: 0.92;
+}
+

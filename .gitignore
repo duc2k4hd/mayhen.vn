@@ -75,6 +75,10 @@ Thumbs.db
 !/tests/Feature/PortableWeddingArchiveTest.php
 !/tests/Feature/TwoFamilyApprovalTest.php
 !/tests/Feature/ReceptionDryRunSimulatorTest.php
+!/tests/Feature/ReceptionExceptionDeskTest.php
+!/tests/Feature/SeatingCapacityGuardianTest.php
+!/tests/Feature/StaffShiftHandoverTest.php
+!/tests/Feature/WeddingPrivacyConsentTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

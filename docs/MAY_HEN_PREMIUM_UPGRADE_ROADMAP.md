@@ -257,6 +257,58 @@
   * Giao diện: Banner tím Quiet Luxury nổi bật trên `resources/views/client/pages/checkin.blade.php` kèm 5 thẻ quét nhanh 1 chạm và `public/assets/client/js/pages/checkin.js`.
 - **Kiểm thử**: `tests/Feature/ReceptionDryRunSimulatorTest.php` (5/5 tests passed, 26 assertions).
 
+---
+
+### CỘT MỐC 10: XỬ LÝ NGOẠI LỆ NGÀY CƯỚI & SỨC CHỨA BÀN TIỆC (RSVP EXCEPTION DESK & SEATING CAPACITY DEFENSE) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-21`: Bàn Xử Lý Ngoại Lệ Khách Mời Ngày Cưới (RSVP Exception Desk) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Thực tế ngày cưới luôn có khách đi kèm phát sinh không báo trước (Walk-in), khách mang thêm người thân vượt suất dự kiến, hoặc khách từng báo bận (declined) nhưng vào phút chót thu xếp đến dự. Bàn lễ tân cần một công cụ xử lý 1 chạm ngay tại sảnh đón tiếp để tạo khách phát sinh, điều chỉnh sĩ số và gán bàn tiệc tức thời mà không làm gián đoạn luồng quét QR thông thường.
+- **Phạm vi code**:
+  * Controller: `CheckInController::walkInGuest`, `adjustAttendees`, `convertDeclined`.
+  * Routes:
+    - `POST /api/diem-danh-tiec/{slug}/ngoai-le/khach-phat-sinh` (`checkin.exception.walk_in`).
+    - `POST /api/diem-danh-tiec/{slug}/ngoai-le/dieu-chinh-suat/{guestId}` (`checkin.exception.adjust_attendees`).
+    - `POST /api/diem-danh-tiec/{slug}/ngoai-le/chuyen-tham-du/{guestId}` (`checkin.exception.convert_declined`).
+  * Giao diện: Nút bấm `[ ⚡ Bàn Xử Lý Ngoại Lệ ]` màu vàng kim và Modal `#modal_exception_desk` trên `resources/views/client/pages/checkin.blade.php`.
+  * Client JS: Logic nạp form AJAX và phản hồi tức thời trong `public/assets/client/js/pages/checkin.js`.
+  * Hỗ trợ Dry Run: Hoạt động trơn tru trong cả chế độ thật và chế độ Diễn Tập (không ghi DB).
+- **Kiểm thử**: `tests/Feature/ReceptionExceptionDeskTest.php` (4/4 tests passed, 22 assertions).
+
+#### `TASK-VAL-22`: Bác Sĩ Bàn Tiệc & Dự Báo Sức Chứa Sảnh Cưới (Seating Capacity Guardian & Overfill Defense) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Ngăn ngừa thảm họa ngày cưới: Bàn tiệc bị nhồi nhét quá tải (10 ghế nhưng gán 13 người làm khách chen chúc ngột ngạt), bàn tiệc bị quá thưa (bàn 10 người nhưng chỉ có 2 khách làm lãng phí mâm cỗ), hoặc ghép nhầm thế hệ (người lớn tuổi / các bác họ hàng ngồi chung bàn với bạn bè trẻ gây ồn ào lệch nhịp). Tự động tính toán số bàn chính thức và số bàn dự phòng (buffer 10%) khuyên đặt nhà hàng.
+- **Phạm vi code**:
+  * Service: `app/Services/SeatingCapacityGuardianService.php` chấm điểm sức khỏe bàn tiệc (Health Score 0-100%), phát hiện overfilled, underfilled, mixed generations, tính tỷ lệ lấp đầy sảnh tiệc.
+  * Controller: Cập nhật `SeatingPlannerController::index` và bổ sung API `SeatingPlannerController::healthCheck`.
+  * Routes: `GET /api/thiep/{id}/so-do-ban-tiec/suc-khoe` (`seating.health_check`).
+  * Giao diện: Thẻ chẩn đoán `mayhen_seat_guardian_card` trên `resources/views/client/pages/account/seating-planner.blade.php` hiển thị điểm số, dự báo số bàn chính thức + bàn dự phòng, danh sách vấn đề cần lưu ý và badge cảnh báo trên từng bàn tiệc trong canvas.
+  * CSS: Bổ sung nhóm class `.mayhen_seat_guardian_*` vào `public/assets/client/css/pages/seating-planner.css`.
+- **Kiểm thử**: `tests/Feature/SeatingCapacityGuardianTest.php` (5/5 tests passed, 39 assertions).
+
+---
+
+### CỘT MỐC 11: BÀN GIAO CA LỄ TÂN & MINH BẠCH QUYỀN RIÊNG TƯ (STAFF SHIFT HANDOVER & PRIVACY CONSENT) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-23`: Bàn Giao Ca Trực & Phân Quyền Nhân Sự Đón Tiếp (Staff Shift Handover & Reception PIN Tokens) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Lễ tân ngày cưới thường chia ca hoặc chia cổng (Ca 1: Nhà Trai / Ca 2: Nhà Gái & Bạn Bè). Cặp đôi có thể cấp mã PIN riêng cho từng ca/nhân sự mà không cần chia sẻ mã PIN tổng. Khi hết ca, lễ tân bấm "Bàn Giao Ca Trực" để hệ thống tự động xuất biên bản bàn giao sĩ số: số khách đã đón trong ca, số người thực tế vào bàn, số khách phát sinh và số khách chưa đến, đồng thời lưu lịch sử bàn giao ca trực có ghi nhận tên nhân sự.
+- **Phạm vi code**:
+  * Service: `app/Services/StaffShiftHandoverService.php` (quản lý ca trực, xác thực mã PIN ca, tổng hợp snapshot số liệu ca, ghi nhận biên bản bàn giao).
+  * Controller: Mở rộng `CheckInController::verifyPin`, `showPortal`, `processScan` (tự động gắn tiền tố tên nhân sự trực ca vào ghi chú điểm danh), và bổ sung `getShifts`, `saveShift`, `deleteShift`, `getHandoverSummary`, `submitShiftHandover`.
+  * Routes:
+    - Quản lý ca của cặp đôi: `GET /api/thiep/{id}/ca-truc-le-tan`, `POST /api/thiep/{id}/ca-truc-le-tan`, `DELETE /api/thiep/{id}/ca-truc-le-tan/{shiftId}`.
+    - Bàn giao ca của lễ tân: `GET /api/diem-danh-tiec/{slug}/bien-ban-ban-giao`, `POST /api/diem-danh-tiec/{slug}/ban-giao-ca`.
+  * Giao diện: Badge ca trực, nút `[ 📋 Bàn Giao Ca Trực ]` và Modal Drawer `#modal_shift_handover` trên `resources/views/client/pages/checkin.blade.php` cùng logic JavaScript trong `public/assets/client/js/pages/checkin.js`.
+- **Kiểm thử**: `tests/Feature/StaffShiftHandoverTest.php` (4/4 tests passed, 23 assertions).
+
+#### `TASK-VAL-24`: Trung Tâm Minh Bạch Quyền Riêng Tư & Kiểm Soát Dữ Liệu Khách Mời (Privacy & Consent Center - Nghị định 13/2023/NĐ-CP & Luật 91/2025/QH15) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giúp cô dâu chú rể và khách mời hoàn toàn an tâm về dữ liệu cá nhân. Cặp đôi có quyền kiểm soát: che 4 số cuối tài khoản ngân hàng mừng cưới đối với khách vãng lai (chỉ hiển thị đủ cho khách có thiệp định danh cá nhân), kiểm duyệt ảnh khách tải lên trước khi chiếu, đặt thời hạn tự động tiêu hủy số điện thoại sau cưới (30 ngày / 90 ngày) tuân thủ "Quyền được lãng quên", và cam kết 100% không thu thập vị trí GPS ngầm của khách.
+- **Phạm vi code**:
+  * Service: `app/Services/WeddingPrivacyConsentService.php` (lưu trữ cấu hình bảo mật, lọc che dữ liệu nhạy cảm `filterSensitiveWeddingData`, lập báo cáo kiểm toán tuân thủ `generatePrivacyAuditReport`).
+  * Controller: `PrivacyConsentController::show`, `update`, `auditReport`.
+  * Routes: `GET /thiep/{id}/trung-tam-quyen-rieng-tu` (`privacy.show`), `POST /thiep/{id}/trung-tam-quyen-rieng-tu` (`privacy.update`), `GET /api/thiep/{id}/quyen-rieng-tu/kiem-toan` (`privacy.audit`).
+  * Giao diện: Trang `resources/views/client/pages/account/privacy-consent.blade.php` phong cách Quiet Luxury Editorial kèm điểm số tuân thủ bảo vệ dữ liệu (Privacy Score 0-100%), bảng checklist 5 tiêu chí và CSS `public/assets/client/css/pages/privacy-consent.css`.
+  * Tích hợp Settings: Nút `[ 🛡️ Quyền Riêng Tư ]` trên `resources/views/client/pages/account/settings.blade.php`.
+- **Kiểm thử**: `tests/Feature/WeddingPrivacyConsentTest.php` (4/4 tests passed, 30 assertions).
+
 
 
 

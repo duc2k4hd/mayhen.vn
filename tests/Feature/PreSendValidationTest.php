@@ -134,4 +134,3 @@ test('unauthorized user cannot access pre-send validation desk', function () {
 
     $response->assertNotFound();
 });
-

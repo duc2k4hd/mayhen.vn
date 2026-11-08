@@ -89,4 +89,3 @@ class FamilyApprovalController extends Controller
         abort(404);
     }
 }
-

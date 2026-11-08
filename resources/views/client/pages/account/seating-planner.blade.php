@@ -87,6 +87,84 @@
             </div>
         </div>
 
+        {{-- TASK-VAL-22: Bác Sĩ Cảnh Báo Quá Tải & Dự Báo Đặt Bàn Tiệc (Seating Capacity Guardian) --}}
+        @if(isset($seatingHealth))
+            <div class="mayhen_seat_guardian_card">
+                <div class="guardian_card_head">
+                    <div class="guardian_title_wrap">
+                        <span class="guardian_shield_icon">🛡️</span>
+                        <div>
+                            <h2 class="guardian_title">Bác Sĩ Bàn Tiệc & Dự Báo Sức Chứa (Seating Capacity Guardian)</h2>
+                            <p class="guardian_subtitle">Tự động phát hiện bàn quá tải, bàn quá thưa, xung đột thế hệ và tính toán số bàn tiệc đặt nhà hàng</p>
+                        </div>
+                    </div>
+                    <div class="guardian_score_group">
+                        <span class="guardian_score_badge guardian_score_badge--{{ $seatingHealth['status'] }}">
+                            <span class="guardian_score_num">{{ $seatingHealth['health_score'] }}</span>
+                            <span class="guardian_score_max">/100 Điểm</span>
+                        </span>
+                        <strong style="font-size: 0.88rem; color: #1F1D1A;">{{ $seatingHealth['status_label'] }}</strong>
+                    </div>
+                </div>
+
+                <div class="guardian_grid_summary">
+                    <div class="guardian_metric_col">
+                        <span class="guardian_metric_label">DỰ BÁO BÀN CHÍNH THỨC</span>
+                        <div class="guardian_metric_val">{{ $seatingHealth['metrics']['recommended_official_tables'] }} Bàn</div>
+                        <span class="guardian_metric_note">Tính chuẩn 10 khách/bàn cho toàn bộ khách tham dự</span>
+                    </div>
+
+                    <div class="guardian_metric_col">
+                        <span class="guardian_metric_label">BÀN DỰ PHÒNG AN TOÀN (10%)</span>
+                        <div class="guardian_metric_val" style="color: #7E57C2;">+{{ $seatingHealth['metrics']['recommended_buffer_tables'] }} Bàn</div>
+                        <span class="guardian_metric_note">Dự phòng khách phát sinh và khách đổi bàn phút chót</span>
+                    </div>
+
+                    <div class="guardian_metric_col">
+                        <span class="guardian_metric_label">TỶ LỆ LẤP ĐẦY SẢNH TIỆC</span>
+                        <div class="guardian_metric_val" style="color: {{ $seatingHealth['metrics']['overall_occupancy_percent'] > 100 ? '#C62828' : '#2E7D32' }};">
+                            {{ $seatingHealth['metrics']['overall_occupancy_percent'] }}%
+                        </div>
+                        <span class="guardian_metric_note">{{ $seatingHealth['metrics']['total_assigned'] }}/{{ $seatingHealth['metrics']['total_capacity'] }} ghế đã có chủ</span>
+                    </div>
+
+                    <div class="guardian_metric_col">
+                        <span class="guardian_metric_label">TRẠNG THÁI PHÂN BỔ</span>
+                        <div class="guardian_metric_val" style="font-size: 0.95rem;">
+                            @if($seatingHealth['metrics']['overfilled_tables_count'] > 0)
+                                <span style="color: #C62828;">⚠️ {{ $seatingHealth['metrics']['overfilled_tables_count'] }} bàn quá tải</span>
+                            @else
+                                <span style="color: #2E7D32;">✓ 0 bàn quá tải</span>
+                            @endif
+                            @if($seatingHealth['metrics']['underfilled_tables_count'] > 0)
+                                &bull; <span style="color: #F57F17;">{{ $seatingHealth['metrics']['underfilled_tables_count'] }} bàn thưa</span>
+                            @endif
+                        </div>
+                        <span class="guardian_metric_note">Khách chưa xếp bàn: {{ $seatingHealth['metrics']['total_unassigned'] }} người</span>
+                    </div>
+                </div>
+
+                @if(!empty($seatingHealth['issues']))
+                    <div class="guardian_issues_box">
+                        <div class="guardian_issues_title">Cảnh Báo Cần Lưu Ý Từ Chuyên Gia Bàn Tiệc ({{ count($seatingHealth['issues']) }} vấn đề):</div>
+                        <ul class="guardian_issue_list">
+                            @foreach($seatingHealth['issues'] as $issue)
+                                <li class="guardian_issue_item guardian_issue_item--{{ $issue['severity'] }}">
+                                    <span>
+                                        @if($issue['severity'] === 'critical') 🚨 @elseif($issue['severity'] === 'warning') ⚠️ @else 💡 @endif
+                                    </span>
+                                    <div>
+                                        <strong>{{ $issue['message'] }}</strong>
+                                        <span class="guardian_issue_suggest">Gợi ý: {{ $issue['suggestion'] }}</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         {{-- Main Two-Column Interactive Workspace --}}
         <div class="mayhen_seat_workspace">
             {{-- Left Area: Canvas Sơ Đồ Sảnh Tiệc --}}
@@ -129,6 +207,16 @@
                                     {{ $assignedCount }}/{{ $table->capacity }}
                                 </span>
                             </div>
+
+                            @if($isOver)
+                                <div style="margin-bottom: 0.35rem;">
+                                    <span class="table_warning_badge table_warning_badge--overfill">⚠️ Quá tải +{{ $assignedCount - $table->capacity }} người</span>
+                                </div>
+                            @elseif($assignedCount > 0 && $assignedCount < ($table->capacity * 0.5))
+                                <div style="margin-bottom: 0.35rem;">
+                                    <span class="table_warning_badge table_warning_badge--underfill">📉 Quá thưa ({{ $assignedCount }}/{{ $table->capacity }})</span>
+                                </div>
+                            @endif
 
                             {{-- Chips Khách Trong Bàn --}}
                             <div class="table_assigned_list">

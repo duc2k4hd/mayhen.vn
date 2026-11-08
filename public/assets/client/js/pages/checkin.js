@@ -514,5 +514,197 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 8. Bàn Xử Lý Ngoại Lệ Đón Khách (RSVP Exception Desk - TASK-VAL-21)
+    const btnOpenException = document.getElementById('btn_open_exception_modal');
+    const modalException = document.getElementById('modal_exception_desk');
+    const btnCloseException = document.getElementById('btn_close_exception_modal');
+    const formWalkin = document.getElementById('form_walkin_guest');
+    const walkinMsgBox = document.getElementById('walkin_msg_box');
+    const walkinUrl = appEl.getAttribute('data-walkin-url');
+
+    if (btnOpenException && modalException) {
+        btnOpenException.addEventListener('click', () => {
+            modalException.style.display = 'flex';
+        });
+
+        if (btnCloseException) {
+            btnCloseException.addEventListener('click', () => {
+                modalException.style.display = 'none';
+            });
+        }
+
+        modalException.addEventListener('click', (e) => {
+            if (e.target === modalException) {
+                modalException.style.display = 'none';
+            }
+        });
+
+        if (formWalkin && walkinUrl) {
+            formWalkin.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('btn_submit_walkin');
+                if (submitBtn) submitBtn.disabled = true;
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const payload = {
+                    name: document.getElementById('walkin_name')?.value,
+                    salutation: document.getElementById('walkin_salutation')?.value,
+                    attendees: document.getElementById('walkin_attendees')?.value,
+                    table_name: document.getElementById('walkin_table')?.value,
+                    group_name: document.getElementById('walkin_group')?.value,
+                    note: document.getElementById('walkin_note')?.value,
+                };
+
+                try {
+                    const res = await fetch(walkinUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken || '',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const json = await res.json();
+                    if (!json.success) throw new Error(json.message || 'Lỗi xử lý khách phát sinh.');
+
+                    if (walkinMsgBox) {
+                        walkinMsgBox.style.display = 'block';
+                        walkinMsgBox.style.background = '#E8F5E9';
+                        walkinMsgBox.style.color = '#2E7D32';
+                        walkinMsgBox.innerText = json.message || 'Đón tiếp thành công!';
+                    }
+
+                    setTimeout(() => {
+                        modalException.style.display = 'none';
+                        formWalkin.reset();
+                        if (walkinMsgBox) walkinMsgBox.style.display = 'none';
+                        window.location.reload();
+                    }, 1200);
+                } catch (err) {
+                    if (walkinMsgBox) {
+                        walkinMsgBox.style.display = 'block';
+                        walkinMsgBox.style.background = '#FFEBEE';
+                        walkinMsgBox.style.color = '#C62828';
+                        walkinMsgBox.innerText = err.message || 'Đã có lỗi xảy ra.';
+                    }
+                } finally {
+                    if (submitBtn) submitBtn.disabled = false;
+                }
+            });
+        }
+    }
+
+    /* --------------------------------------------------------------------------
+       9. TASK-VAL-23: Bàn Giao Ca Trực Lễ Tân (Staff Shift Handover)
+       -------------------------------------------------------------------------- */
+    const btnOpenHandover = document.getElementById('btn_open_handover_modal');
+    const modalHandover = document.getElementById('modal_shift_handover');
+    const btnCloseHandover = document.getElementById('btn_close_handover_modal');
+    const formHandover = document.getElementById('form_submit_handover');
+    const hoMsgBox = document.getElementById('ho_msg_box');
+    const handoverSummaryUrl = appEl.getAttribute('data-handover-summary-url');
+    const handoverSubmitUrl = appEl.getAttribute('data-handover-submit-url');
+
+    if (btnOpenHandover && modalHandover) {
+        btnOpenHandover.addEventListener('click', async () => {
+            modalHandover.style.display = 'flex';
+            const loadingEl = document.getElementById('handover_summary_loading');
+            const contentEl = document.getElementById('handover_summary_content');
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+
+            if (handoverSummaryUrl) {
+                try {
+                    const res = await fetch(handoverSummaryUrl, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const d = await res.json();
+                    if (d.success && d.summary) {
+                        const sum = d.summary.summary;
+                        const shift = d.summary.shift;
+                        document.getElementById('ho_stat_checked_in').innerText = sum.total_checked_in || 0;
+                        document.getElementById('ho_stat_attendees').innerText = sum.total_attendees || 0;
+                        document.getElementById('ho_stat_walkin').innerText = sum.walk_in_count || 0;
+                        document.getElementById('ho_stat_uncheckin').innerText = sum.remaining_uncheckin_guests || 0;
+                        document.getElementById('ho_from_staff').value = shift.staff_name ? `${shift.name} - ${shift.staff_name}` : 'Lễ Tân Hiện Tại';
+
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        if (contentEl) contentEl.style.display = 'block';
+                    }
+                } catch (e) {
+                    if (loadingEl) loadingEl.innerText = 'Lỗi tải tóm tắt ca trực. Vui lòng thử lại.';
+                }
+            }
+        });
+
+        if (btnCloseHandover) {
+            btnCloseHandover.addEventListener('click', () => {
+                modalHandover.style.display = 'none';
+            });
+        }
+
+        modalHandover.addEventListener('click', (e) => {
+            if (e.target === modalHandover) {
+                modalHandover.style.display = 'none';
+            }
+        });
+
+        if (formHandover && handoverSubmitUrl) {
+            formHandover.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('btn_submit_handover');
+                if (submitBtn) submitBtn.disabled = true;
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const payload = {
+                    handed_to_staff: document.getElementById('ho_to_staff')?.value,
+                    notes: document.getElementById('ho_notes')?.value,
+                };
+
+                try {
+                    const res = await fetch(handoverSubmitUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken || '',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const json = await res.json();
+                    if (!json.success) throw new Error(json.message || 'Lỗi lưu biên bản bàn giao ca.');
+
+                    if (hoMsgBox) {
+                        hoMsgBox.style.display = 'block';
+                        hoMsgBox.style.background = '#E8F5E9';
+                        hoMsgBox.style.color = '#2E7D32';
+                        hoMsgBox.innerText = json.message || 'Đã bàn giao ca thành công!';
+                    }
+
+                    setTimeout(() => {
+                        modalHandover.style.display = 'none';
+                        formHandover.reset();
+                        if (hoMsgBox) hoMsgBox.style.display = 'none';
+                        window.location.reload();
+                    }, 1200);
+                } catch (err) {
+                    if (hoMsgBox) {
+                        hoMsgBox.style.display = 'block';
+                        hoMsgBox.style.background = '#FFEBEE';
+                        hoMsgBox.style.color = '#C62828';
+                        hoMsgBox.innerText = err.message || 'Đã có lỗi xảy ra.';
+                    }
+                } finally {
+                    if (submitBtn) submitBtn.disabled = false;
+                }
+            });
+        }
+    }
 });
 

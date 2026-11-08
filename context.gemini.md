@@ -5275,6 +5275,55 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                               - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        197. **Hoàn Tất Cột Mốc 10: Xử Lý Ngoại Lệ Ngày Cưới & Sức Chứa Bàn Tiệc (RSVP Exception Desk & Seating Capacity Guardian)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi trọn vẹn `TASK-VAL-21` và `TASK-VAL-22` theo mục 09.3 (Guest Journey Concierge) và 09.4 (Wedding Day Reliability) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Xử lý triệt để 2 vấn đề lớn nhất tại sảnh tiệc: Sự bối rối khi khách phát sinh ngoài danh sách (Walk-in), khách mang thêm người thân vượt suất hoặc khách từng từ chối nay đến dự; và nguy cơ bàn tiệc bị xếp quá tải (>10 khách/bàn gây ngột ngạt), xếp quá thưa (<5 khách/bàn gây lãng phí suất tiệc) hoặc ghép nhầm thế hệ người lớn tuổi và bạn bè trẻ.
+                             - **Các tính năng cao cấp đã hoàn thành**:
+                               1. *TASK-VAL-21: Bàn Xử Lý Ngoại Lệ Khách Mời Ngày Cưới (RSVP Exception Desk)*:
+                                  - Controller: `CheckInController::walkInGuest`, `adjustAttendees`, `convertDeclined`.
+                                  - Routes:
+                                    * `POST /api/diem-danh-tiec/{slug}/ngoai-le/khach-phat-sinh` (`checkin.exception.walk_in`).
+                                    * `POST /api/diem-danh-tiec/{slug}/ngoai-le/dieu-chinh-suat/{guestId}` (`checkin.exception.adjust_attendees`).
+                                    * `POST /api/diem-danh-tiec/{slug}/ngoai-le/chuyen-tham-du/{guestId}` (`checkin.exception.convert_declined`).
+                                  - Giao diện: Nút bấm `[ ⚡ Bàn Xử Lý Ngoại Lệ ]` và modal `#modal_exception_desk` trên `resources/views/client/pages/checkin.blade.php`.
+                                  - Tích hợp 2 chế độ: Hoạt động đồng bộ cả trong chế độ thật (ghi DB) và chế độ Diễn Tập (Dry Run cách ly trong session).
+                               2. *TASK-VAL-22: Bác Sĩ Bàn Tiệc & Dự Báo Sức Chứa Sảnh Cưới (Seating Capacity Guardian & Table Overfill Defense)*:
+                                  - Service: `app/Services/SeatingCapacityGuardianService.php` chấm điểm sức khỏe bàn tiệc (0-100%), phát hiện bàn overfilled, underfilled, xung đột thế hệ, tính toán số bàn chính thức + bàn dự phòng (buffer 10%) khuyên đặt nhà hàng.
+                                  - Controller & Route: `SeatingPlannerController::index` và `GET /api/thiep/{id}/so-do-ban-tiec/suc-khoe` (`seating.health_check`).
+                                  - Giao diện: Thẻ chẩn đoán `mayhen_seat_guardian_card` trên `resources/views/client/pages/account/seating-planner.blade.php` hiển thị điểm số, dự báo số bàn chính thức + bàn dự phòng, danh sách vấn đề cần lưu ý và badge cảnh báo trên từng bàn tiệc trong canvas.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới 2 Feature test suites:
+                                 * `tests/Feature/ReceptionExceptionDeskTest.php` -> **4/4 tests passed (22 assertions)**.
+                                 * `tests/Feature/SeatingCapacityGuardianTest.php` -> **5/5 tests passed (39 assertions)**.
+
+                        198. **Hoàn Tất Cột Mốc 11: Bàn Giao Ca Lễ Tân & Minh Bạch Quyền Riêng Tư (Staff Shift Handover & Privacy Consent)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi trọn vẹn `TASK-VAL-23` và `TASK-VAL-24` theo mục 09.4 (Wedding Day Reliability) và 09.6 (Niềm tin, dịch vụ và chi trả) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Tôn trọng chuẩn mực bảo vệ dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP & Luật 91/2025/QH15, bảo vệ số tài khoản ngân hàng và thông tin liên hệ của khách mời; đồng thời giúp việc bàn giao ca trực giữa các nhóm bạn bè/anh em đón tiếp diễn ra trơn tru với biên bản bàn giao sĩ số chuẩn xác.
+                             - **Các tính năng cao cấp đã hoàn thành**:
+                               1. *TASK-VAL-23: Bàn Giao Ca Trực & Phân Quyền Nhân Sự Đón Tiếp (Staff Shift Handover & Reception PIN Tokens)*:
+                                  - Service: `app/Services/StaffShiftHandoverService.php` (quản lý ca trực, xác thực mã PIN ca, tổng hợp snapshot số liệu ca, ghi nhận biên bản bàn giao).
+                                  - Controller: Mở rộng `CheckInController::verifyPin`, `showPortal`, `processScan` (tự động gắn tiền tố tên nhân sự trực ca vào ghi chú điểm danh), và bổ sung `getShifts`, `saveShift`, `deleteShift`, `getHandoverSummary`, `submitShiftHandover`.
+                                  - Routes:
+                                    * Quản lý ca của cặp đôi: `GET /api/thiep/{id}/ca-truc-le-tan`, `POST /api/thiep/{id}/ca-truc-le-tan`, `DELETE /api/thiep/{id}/ca-truc-le-tan/{shiftId}`.
+                                    * Bàn giao ca của lễ tân: `GET /api/diem-danh-tiec/{slug}/bien-ban-ban-giao`, `POST /api/diem-danh-tiec/{slug}/ban-giao-ca`.
+                                  - Giao diện: Badge ca trực, nút `[ 📋 Bàn Giao Ca Trực ]` và Modal Drawer `#modal_shift_handover` trên `resources/views/client/pages/checkin.blade.php` cùng logic JavaScript trong `public/assets/client/js/pages/checkin.js`.
+                               2. *TASK-VAL-24: Trung Tâm Minh Bạch Quyền Riêng Tư & Kiểm Soát Dữ Liệu Khách Mời (Privacy & Consent Center - Nghị định 13/2023/NĐ-CP & Luật 91/2025/QH15)*:
+                                  - Service: `app/Services/WeddingPrivacyConsentService.php` (lưu trữ cấu hình bảo mật, lọc che dữ liệu nhạy cảm `filterSensitiveWeddingData`, lập báo cáo kiểm toán tuân thủ `generatePrivacyAuditReport`).
+                                  - Controller: `PrivacyConsentController::show`, `update`, `auditReport`.
+                                  - Routes: `GET /thiep/{id}/trung-tam-quyen-rieng-tu` (`privacy.show`), `POST /thiep/{id}/trung-tam-quyen-rieng-tu` (`privacy.update`), `GET /api/thiep/{id}/quyen-rieng-tu/kiem-toan` (`privacy.audit`).
+                                  - Giao diện: Trang `resources/views/client/pages/account/privacy-consent.blade.php` phong cách Quiet Luxury Editorial kèm điểm số tuân thủ bảo vệ dữ liệu (Privacy Score 0-100%), bảng checklist 5 tiêu chí và CSS `public/assets/client/css/pages/privacy-consent.css`.
+                                  - Tích hợp Settings: Nút `[ 🛡️ Quyền Riêng Tư ]` trên `resources/views/client/pages/account/settings.blade.php`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới 2 Feature test suites:
+                                 * `tests/Feature/StaffShiftHandoverTest.php` -> **4/4 tests passed (23 assertions)**.
+                                 * `tests/Feature/WeddingPrivacyConsentTest.php` -> **4/4 tests passed (30 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **372/372 tests passed 100% (1,880 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

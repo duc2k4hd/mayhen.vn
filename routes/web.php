@@ -15,6 +15,7 @@ use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
+use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
@@ -165,6 +166,12 @@ Route::prefix('tai-khoan')->group(function () {
     Route::post('/api/thiep/{id}/so-do-ban-tiec/vi-tri', [SeatingPlannerController::class, 'updatePositions'])->middleware('throttle:60,1')->name('seating.updatePositions');
     Route::post('/api/thiep/{id}/so-do-ban-tiec/xep-khach', [SeatingPlannerController::class, 'assignGuest'])->middleware('throttle:60,1')->name('seating.assignGuest');
     Route::get('/thiep/{id}/so-do-ban-tiec/in', [SeatingPlannerController::class, 'printChart'])->name('seating.print');
+    Route::get('/api/thiep/{id}/so-do-ban-tiec/suc-khoe', [SeatingPlannerController::class, 'healthCheck'])->middleware('throttle:30,1')->name('seating.health_check');
+
+    // Quản Lý Ca Trực Lễ Tân & Bàn Giao (Staff Shift Handover - TASK-VAL-23)
+    Route::get('/api/thiep/{id}/ca-truc-le-tan', [CheckInController::class, 'getShifts'])->middleware('throttle:60,1')->name('checkin.shifts.index');
+    Route::post('/api/thiep/{id}/ca-truc-le-tan', [CheckInController::class, 'saveShift'])->middleware('throttle:30,1')->name('checkin.shifts.store');
+    Route::delete('/api/thiep/{id}/ca-truc-le-tan/{shiftId}', [CheckInController::class, 'deleteShift'])->name('checkin.shifts.delete');
 
     // Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (Live Wedding Projection Wall - TASK-V3-04)
     Route::get('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'settings'])->middleware('auth')->name('live_wall.settings');
@@ -178,6 +185,11 @@ Route::prefix('tai-khoan')->group(function () {
 
     // Nhận Thiệp Cưới Từ Studio Bàn Giao
     Route::post('/nhan-thiep-doi-tac', [PartnerWeddingController::class, 'claim'])->middleware('throttle:15,1')->name('account.claim_partner_invitation');
+
+    // Trung Tâm Minh Bạch Quyền Riêng Tư & Bảo Mật Dữ Liệu (Privacy & Consent Center - TASK-VAL-24)
+    Route::get('/thiep/{id}/trung-tam-quyen-rieng-tu', [PrivacyConsentController::class, 'show'])->name('privacy.show');
+    Route::post('/thiep/{id}/trung-tam-quyen-rieng-tu', [PrivacyConsentController::class, 'update'])->middleware('throttle:30,1')->name('privacy.update');
+    Route::get('/api/thiep/{id}/quyen-rieng-tu/kiem-toan', [PrivacyConsentController::class, 'auditReport'])->middleware('throttle:60,1')->name('privacy.audit');
 });
 
 // Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (Live Wedding Projection Wall Public)
@@ -207,6 +219,15 @@ Route::post('/api/diem-danh-tiec/{slug}/ban-tiec/{guestId}', [CheckInController:
 Route::post('/diem-danh-tiec/{slug}/dien-tap/bat', [CheckInController::class, 'enableDryRun'])->name('checkin.dry_run.enable');
 Route::post('/diem-danh-tiec/{slug}/dien-tap/tat', [CheckInController::class, 'disableDryRun'])->name('checkin.dry_run.disable');
 Route::post('/diem-danh-tiec/{slug}/dien-tap/lam-moi', [CheckInController::class, 'resetDryRun'])->name('checkin.dry_run.reset');
+
+// Bàn Xử Lý Ngoại Lệ Ngày Cưới (RSVP Exception Desk - TASK-VAL-21)
+Route::post('/api/diem-danh-tiec/{slug}/ngoai-le/khach-phat-sinh', [CheckInController::class, 'walkInGuest'])->middleware('throttle:60,1')->name('checkin.exception.walk_in');
+Route::post('/api/diem-danh-tiec/{slug}/ngoai-le/dieu-chinh-suat/{guestId}', [CheckInController::class, 'adjustAttendees'])->middleware('throttle:60,1')->name('checkin.exception.adjust_attendees');
+Route::post('/api/diem-danh-tiec/{slug}/ngoai-le/chuyen-tham-du/{guestId}', [CheckInController::class, 'convertDeclined'])->middleware('throttle:60,1')->name('checkin.exception.convert_declined');
+
+// Bàn Giao Ca Trực Lễ Tân (Staff Shift Handover - TASK-VAL-23)
+Route::get('/api/diem-danh-tiec/{slug}/bien-ban-ban-giao', [CheckInController::class, 'getHandoverSummary'])->middleware('throttle:60,1')->name('checkin.shift.summary');
+Route::post('/api/diem-danh-tiec/{slug}/ban-giao-ca', [CheckInController::class, 'submitShiftHandover'])->middleware('throttle:30,1')->name('checkin.shift.handover');
 
 // Thẻ VIP & Tra Cứu Bàn Tiệc Khi Quét QR Cá Nhân
 Route::get('/diem-danh/{token}', [CheckInController::class, 'directScan'])->name('checkin.direct');

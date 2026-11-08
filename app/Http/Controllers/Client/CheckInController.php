@@ -8,6 +8,7 @@ use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Services\ReceptionDryRunService;
+use App\Services\StaffShiftHandoverService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -39,6 +40,8 @@ class CheckInController extends Controller
             $isDryRun = true;
         }
 
+        $currentShift = $request->session()->get("reception_shift_{$invitation->id}");
+
         if ($isDryRun) {
             $dryRunService = app(ReceptionDryRunService::class);
             $dryRunState = $dryRunService->getDryRunState($invitation);
@@ -54,6 +57,7 @@ class CheckInController extends Controller
                 'tables' => $dryRunState['tables'],
                 'isDryRun' => true,
                 'dryRunGuests' => $dryRunState['guests'],
+                'currentShift' => $currentShift,
             ]);
         }
 
@@ -95,6 +99,7 @@ class CheckInController extends Controller
             'tables' => $tables,
             'isDryRun' => false,
             'dryRunGuests' => [],
+            'currentShift' => $currentShift,
         ]);
     }
 
@@ -115,10 +120,21 @@ class CheckInController extends Controller
         $correctPin = $this->getReceptionistPin($invitation);
 
         if ($inputPin !== $correctPin) {
+            // Kiểm tra mã PIN ca trực tiếp tân (TASK-VAL-23)
+            $shift = app(StaffShiftHandoverService::class)->authenticateShiftPin($invitation, $inputPin);
+            if ($shift) {
+                $request->session()->put("receptionist_verified_{$invitation->id}", true);
+                $request->session()->put("reception_shift_{$invitation->id}", $shift);
+
+                return redirect()->route('checkin.portal', $slug)
+                    ->with('success', 'Đã đăng nhập ca trực: '.$shift['name'].' ('.$shift['staff_name'].')');
+            }
+
             return back()->with('error', 'Mã PIN tiếp tân không chính xác. Vui lòng hỏi cô dâu chú rể.');
         }
 
         $request->session()->put("receptionist_verified_{$invitation->id}", true);
+        $request->session()->forget("reception_shift_{$invitation->id}");
 
         return redirect()->route('checkin.portal', $slug)
             ->with('success', 'Đã mở khóa Cổng Tiếp Tân Điểm Danh thành công!');
@@ -192,10 +208,17 @@ class CheckInController extends Controller
                 ? (int) $validated['attendees']
                 : $guest->actualAttendeesCount();
 
+            $currentShift = $request->session()->get("reception_shift_{$invitation->id}");
+            $staffPrefix = $currentShift ? "[{$currentShift['staff_name']}] " : '';
+            $checkInNote = $validated['note'] ?? $guest->check_in_note;
+            if ($staffPrefix !== '' && (! $checkInNote || ! str_contains((string) $checkInNote, $staffPrefix))) {
+                $checkInNote = $staffPrefix.($checkInNote ?: 'Điểm danh đón tiếp');
+            }
+
             $guest->update([
                 'checked_in_at' => now(),
                 'checked_in_attendees' => $attendeesCount,
-                'check_in_note' => $validated['note'] ?? $guest->check_in_note,
+                'check_in_note' => $checkInNote,
             ]);
         }
 
@@ -342,6 +365,209 @@ class CheckInController extends Controller
             'success' => true,
             'message' => "Đã cập nhật bàn tiệc: {$guest->table_name}",
             'table_name' => $guest->table_name,
+        ]);
+    }
+
+    /**
+     * Bàn Xử Lý Ngoại Lệ: Thêm khách phát sinh (Walk-in) tại cửa tiệc (TASK-VAL-21).
+     */
+    public function walkInGuest(Request $request, string $slug): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'salutation' => ['nullable', 'string', 'max:50'],
+            'group_name' => ['nullable', 'string', 'max:100'],
+            'table_name' => ['nullable', 'string', 'max:100'],
+            'attendees' => ['required', 'integer', 'min:1', 'max:20'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên khách phát sinh.',
+            'attendees.required' => 'Vui lòng chọn số lượng khách đi cùng.',
+        ]);
+
+        if ($request->session()->get('is_dry_run_'.$invitation->id, false)) {
+            $dryRunGuest = [
+                'id' => rand(9100, 9999),
+                'name' => trim($validated['name']),
+                'salutation' => trim($validated['salutation'] ?? 'Bạn'),
+                'group_name' => trim($validated['group_name'] ?? 'Khách phát sinh'),
+                'table_name' => trim($validated['table_name'] ?? 'Chưa xếp bàn'),
+                'expected_attendees' => (int) $validated['attendees'],
+                'checked_in_attendees' => (int) $validated['attendees'],
+                'checked_in_at' => now()->format('H:i'),
+                'check_in_note' => trim('[Khách phát sinh] '.($validated['note'] ?? '')),
+                'guest_token' => 'dryrun_walkin_'.Str::random(8),
+                'dietary' => null,
+                'wishes' => null,
+            ];
+            $state = app(ReceptionDryRunService::class)->getDryRunState($invitation);
+            $state['guests'][] = $dryRunGuest;
+            $state['stats']['total_guests']++;
+            $state['stats']['total_expected'] += (int) $validated['attendees'];
+            $state['stats']['checked_in_guests']++;
+            $state['stats']['checked_in_count'] += (int) $validated['attendees'];
+            session()->put('reception_dry_run_'.$invitation->id, $state);
+
+            return response()->json([
+                'success' => true,
+                'is_dry_run' => true,
+                'message' => '[Diễn Tập] Đã thêm và đón khách phát sinh vào bàn thành công!',
+                'guest' => $dryRunGuest,
+            ], 201);
+        }
+
+        $attendees = (int) $validated['attendees'];
+        $guest = Guest::create([
+            'wedding_id' => $wedding->id,
+            'name' => trim($validated['name']),
+            'salutation' => trim($validated['salutation'] ?? 'Bạn'),
+            'group_name' => trim($validated['group_name'] ?? 'Khách phát sinh'),
+            'table_name' => ! empty($validated['table_name']) ? trim($validated['table_name']) : null,
+            'expected_attendees' => $attendees,
+            'is_sent' => true,
+            'guest_token' => Str::random(32),
+            'checked_in_at' => now(),
+            'checked_in_attendees' => $attendees,
+            'check_in_note' => trim('[Khách phát sinh] '.($validated['note'] ?? '')),
+        ]);
+
+        GuestResponse::create([
+            'wedding_id' => $wedding->id,
+            'guest_id' => $guest->id,
+            'guest_name' => $guest->name,
+            'attending_status' => 'attending',
+            'adults_count' => $attendees,
+            'children_count' => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã đón tiếp khách phát sinh {$guest->name} vào bàn thành công!",
+            'guest' => [
+                'id' => $guest->id,
+                'name' => $guest->name,
+                'salutation' => $guest->salutation,
+                'group_name' => $guest->group_name,
+                'table_name' => $guest->table_name ?: 'Chưa xếp bàn',
+                'expected_attendees' => $guest->actualAttendeesCount(),
+                'checked_in_attendees' => $guest->checked_in_attendees,
+                'checked_in_at' => $guest->checked_in_at->format('H:i d/m/Y'),
+            ],
+        ], 201);
+    }
+
+    /**
+     * Bàn Xử Lý Ngoại Lệ: Điều chỉnh sĩ số thực tế khách đi kèm (+1/+2) (TASK-VAL-21).
+     */
+    public function adjustAttendees(Request $request, string $slug, int $guestId): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'attendees' => ['required', 'integer', 'min:1', 'max:50'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $attendees = (int) $validated['attendees'];
+
+        if ($request->session()->get('is_dry_run_'.$invitation->id, false)) {
+            $state = app(ReceptionDryRunService::class)->getDryRunState($invitation);
+            foreach ($state['guests'] as $k => $g) {
+                if ($g['id'] === $guestId) {
+                    $oldAttendees = $g['checked_in_attendees'] ?? $g['expected_attendees'];
+                    $diff = $attendees - $oldAttendees;
+                    $state['guests'][$k]['checked_in_attendees'] = $attendees;
+                    $state['guests'][$k]['checked_in_at'] = $g['checked_in_at'] ?: now()->format('H:i');
+                    $state['stats']['checked_in_count'] += $diff;
+                    session()->put('reception_dry_run_'.$invitation->id, $state);
+
+                    return response()->json([
+                        'success' => true,
+                        'is_dry_run' => true,
+                        'message' => "[Diễn Tập] Đã điều chỉnh sĩ số khách thành {$attendees} suất.",
+                        'checked_in_attendees' => $attendees,
+                    ]);
+                }
+            }
+        }
+
+        $guest = $wedding->guests()->findOrFail($guestId);
+        $oldCheckInAttendees = $guest->checked_in_attendees ?: $guest->actualAttendeesCount();
+        $note = ! empty($validated['note']) ? trim($validated['note']) : "Điều chỉnh sĩ số từ {$oldCheckInAttendees} lên {$attendees} suất";
+
+        $guest->update([
+            'checked_in_at' => $guest->checked_in_at ?: now(),
+            'checked_in_attendees' => $attendees,
+            'check_in_note' => trim(($guest->check_in_note ? $guest->check_in_note.' | ' : '').$note),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã điều chỉnh sĩ số khách {$guest->name} thành {$attendees} suất.",
+            'checked_in_attendees' => $guest->checked_in_attendees,
+            'checked_in_at' => $guest->checked_in_at->format('H:i d/m/Y'),
+        ]);
+    }
+
+    /**
+     * Bàn Xử Lý Ngoại Lệ: Chuyển khách báo bận (declined) sang tham dự (TASK-VAL-21).
+     */
+    public function convertDeclined(Request $request, string $slug, int $guestId): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'table_name' => ['nullable', 'string', 'max:100'],
+            'attendees' => ['nullable', 'integer', 'min:1', 'max:20'],
+        ]);
+
+        $guest = $wedding->guests()->with('response')->findOrFail($guestId);
+        $attendees = ! empty($validated['attendees']) ? (int) $validated['attendees'] : $guest->actualAttendeesCount();
+
+        $updateData = [
+            'checked_in_at' => now(),
+            'checked_in_attendees' => $attendees,
+            'check_in_note' => trim(($guest->check_in_note ? $guest->check_in_note.' | ' : '').'[Khách đổi ý sang tham dự]'),
+        ];
+        if (! empty($validated['table_name'])) {
+            $updateData['table_name'] = trim($validated['table_name']);
+        }
+        $guest->update($updateData);
+
+        if ($guest->response) {
+            $guest->response->update([
+                'attending_status' => 'attending',
+                'adults_count' => $attendees,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã chuyển trạng thái đón tiếp cho khách {$guest->name} thành công!",
+            'guest' => [
+                'id' => $guest->id,
+                'name' => $guest->name,
+                'table_name' => $guest->table_name ?: 'Chưa xếp bàn',
+                'checked_in_attendees' => $guest->checked_in_attendees,
+                'checked_in_at' => $guest->checked_in_at->format('H:i d/m/Y'),
+            ],
         ]);
     }
 
@@ -556,5 +782,160 @@ class CheckInController extends Controller
         }
 
         return str_pad((string) ($invitation->id * 7919 % 1000000), 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Xác thực quyền chủ sở hữu thiệp cưới của cặp đôi (IDOR Defense).
+     */
+    private function authorizeOwner(Invitation $invitation): void
+    {
+        $wedding = $invitation->wedding;
+        if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
+            return;
+        }
+
+        if (auth()->check() && auth()->user()->partner && (int) $wedding->partner_id === (int) auth()->user()->partner->id) {
+            return;
+        }
+
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return;
+        }
+
+        $ownedSlugs = (array) request()->session()->get('owned_invitation_slugs', []);
+        if (in_array($invitation->slug, $ownedSlugs, true)) {
+            return;
+        }
+
+        abort(404);
+    }
+
+    /**
+     * API Lấy biên bản tóm tắt ca trực hiện tại để bàn giao (TASK-VAL-23).
+     */
+    public function getHandoverSummary(Request $request, string $slug, StaffShiftHandoverService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Phiên làm việc tiếp tân đã hết hạn.',
+            ], 403);
+        }
+
+        $currentShift = $request->session()->get("reception_shift_{$invitation->id}");
+        $shiftId = $request->input('shift_id') ?: ($currentShift['id'] ?? 'current_shift');
+
+        $summary = $service->generateHandoverSummary($invitation, $shiftId);
+
+        return response()->json([
+            'success' => true,
+            'summary' => $summary,
+            'data' => $summary,
+        ]);
+    }
+
+    /**
+     * API Lưu biên bản bàn giao ca trực (TASK-VAL-23).
+     */
+    public function submitShiftHandover(Request $request, string $slug, StaffShiftHandoverService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Phiên làm việc tiếp tân đã hết hạn.',
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'handed_to_staff' => ['required', 'string', 'max:100'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'shift_id' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $currentShift = $request->session()->get("reception_shift_{$invitation->id}");
+        $shiftId = $validated['shift_id'] ?? ($currentShift['id'] ?? 'shift_default');
+
+        $summaryData = $service->generateHandoverSummary($invitation, $shiftId)['summary'] ?? [];
+
+        $record = $service->recordHandover($invitation, $shiftId, [
+            'handed_to_staff' => $validated['handed_to_staff'],
+            'notes' => $validated['notes'] ?? '',
+            'summary' => $summaryData,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã lưu biên bản bàn giao ca trực thành công!',
+            'handover' => $record,
+            'data' => $record,
+        ]);
+    }
+
+    /**
+     * API Cặp đôi xem danh sách ca trực lễ tân (TASK-VAL-23).
+     */
+    public function getShifts(int $invitationId, StaffShiftHandoverService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeOwner($invitation);
+
+        $shifts = $service->getShifts($invitation);
+
+        return response()->json([
+            'success' => true,
+            'shifts' => $shifts,
+            'data' => $shifts,
+        ]);
+    }
+
+    /**
+     * API Cặp đôi tạo hoặc sửa ca trực lễ tân (TASK-VAL-23).
+     */
+    public function saveShift(Request $request, int $invitationId, StaffShiftHandoverService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeOwner($invitation);
+
+        $validated = $request->validate([
+            'id' => ['nullable', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:100'],
+            'staff_name' => ['required', 'string', 'max:100'],
+            'staff_phone' => ['nullable', 'string', 'max:20'],
+            'pin' => ['required', 'string', 'min:4', 'max:8'],
+            'start_time' => ['nullable', 'string', 'max:10'],
+            'end_time' => ['nullable', 'string', 'max:10'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $savedShift = $service->saveShift($invitation, $validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã lưu thông tin ca trực lễ tân thành công!',
+            'shift' => $savedShift,
+            'data' => $savedShift,
+        ]);
+    }
+
+    /**
+     * API Cặp đôi xóa ca trực lễ tân (TASK-VAL-23).
+     */
+    public function deleteShift(int $invitationId, string $shiftId, StaffShiftHandoverService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeOwner($invitation);
+
+        $deleted = $service->deleteShift($invitation, $shiftId);
+
+        return response()->json([
+            'success' => $deleted,
+            'message' => $deleted ? 'Đã xóa ca trực lễ tân.' : 'Không tìm thấy ca trực cần xóa.',
+        ]);
     }
 }

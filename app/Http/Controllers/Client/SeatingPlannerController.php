@@ -8,6 +8,7 @@ use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingTable;
 use App\Rules\NoProfanity;
+use App\Services\SeatingCapacityGuardianService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,7 @@ class SeatingPlannerController extends Controller
     /**
      * Màn hình Studio Xếp Bàn Tiệc Trực Quan (Seating Planner Studio).
      */
-    public function index(Request $request, int $invitationId): View
+    public function index(Request $request, int $invitationId, SeatingCapacityGuardianService $guardianService): View
     {
         $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
         $wedding = $invitation->wedding;
@@ -45,6 +46,9 @@ class SeatingPlannerController extends Controller
         // Gom danh sách nhóm khu vực (zones)
         $zones = $tables->pluck('zone')->filter()->unique()->values()->all();
 
+        // Phân tích sức khỏe bàn tiệc & dự báo quá tải (TASK-VAL-22)
+        $seatingHealth = $guardianService->analyzeSeatingHealth($wedding, $invitation);
+
         return view('client.pages.account.seating-planner', [
             'invitation' => $invitation,
             'wedding' => $wedding,
@@ -56,6 +60,25 @@ class SeatingPlannerController extends Controller
             'unassignedSeats' => $unassignedSeats,
             'overCapacityCount' => $overCapacityCount,
             'zones' => $zones,
+            'seatingHealth' => $seatingHealth,
+        ]);
+    }
+
+    /**
+     * API Phân Tích Sức Khỏe Phân Bàn & Cảnh Báo Quá Tải (TASK-VAL-22).
+     */
+    public function healthCheck(int $invitationId, SeatingCapacityGuardianService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeOwner($wedding);
+
+        $health = $service->analyzeSeatingHealth($wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'health' => $health,
+            'data' => $health,
         ]);
     }
 

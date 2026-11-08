@@ -24,6 +24,10 @@
             </p>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ route('privacy.show', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý hiển thị số tài khoản ngân hàng, bảo mật số điện thoại và tuân thủ Nghị định 13">
+                <span aria-hidden="true">🛡️</span>
+                <span>Quyền Riêng Tư</span>
+            </a>
             <a href="{{ route('invitation.show', ['slug' => $invitation->slug, 'rehearsal' => 1]) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_sm" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; border: none;" title="Chế độ tổng duyệt thử nghiệm các vai trò khách mời trước khi gửi thiệp">
                 <span aria-hidden="true">🎭</span>
                 <span>Tổng Duyệt Thiệp</span>
