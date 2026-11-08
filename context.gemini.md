@@ -5928,6 +5928,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                * Feature Test: `tests/Feature/CuratedInvitationFlowTest.php` với 9 ca kiểm thử toàn diện đáp ứng trọn vẹn 12 yêu cầu kỹ thuật -> **9/9 tests passed (64 assertions)**.
                                * Tương thích ngược: Cập nhật `tests/Feature/CanonicalTemplateSectionsTest.php` phân định rõ ràng giữa hệ thống 4 mẫu 10 section và mẫu 7 section tự phối -> **2/2 tests passed (28 assertions)**.
                                * Toàn bộ test suite toàn hệ thống: **471/471 tests passed 100% (2,430 assertions)**.
+                               * Tinh chỉnh & Sửa lỗi theo ảnh chụp thực tế:
+                                 - **Khắc phục lỗi mất CSS (Asset Route Fix)**: Sửa đường dẫn nạp `styles.css` và `script.js` từ `{{ $assetBase }}/../styles.css` thành `route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'styles.css'])` để server trả về đầy đủ định dạng text/css và text/javascript, loại bỏ triệt để lỗi 404 làm thiệp bị font trắng trơn.
+                                 - **Cách ly giao diện Studio độc lập (Zero Chrome Layout)**: Tách `preview.blade.php` hoàn toàn khỏi `client.layouts.master`, loại bỏ triệt để header tiếp thị và footer chân trang website gây mất thẩm mỹ; chuyển sang giao diện Studio toàn màn hình 100vh chuyên nghiệp, hiện đại.
+                                 - **Hoàn thiện trải nghiệm Live Crafting chân thật**: Tích hợp luồng cuộn mượt tự động (`initLiveCraftingScroll`) trong `script.js` đồng bộ với thời gian dựng từng mục (`0.2s` -> `4.9s`), bổ sung hiệu ứng vệt sáng kim loại vàng nghệ thuật (`mayhenCraftPencilScan`), và handshake 2 chiều postMessage cập nhật thanh trạng thái dựng trực tiếp trên Topbar.
                                * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --format agent`).
                                * Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 

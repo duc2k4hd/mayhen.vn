@@ -120,8 +120,14 @@
 
 @section('title', $pageTitle)
 
+@push('fonts')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+@endpush
+
 @push('styles')
-    <link rel="stylesheet" href="{{ $assetBase }}/../styles.css?v={{ time() }}">
+    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'styles.css']) }}?v={{ time() }}">
 @endpush
 
 @section('content')
@@ -218,5 +224,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ $assetBase }}/../script.js?v={{ time() }}"></script>
+    <script src="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'script.js']) }}?v={{ time() }}"></script>
 @endpush

@@ -13,9 +13,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const iframe = document.getElementById('curatedPreviewIframe');
     const phoneWrapper = document.getElementById('phoneWrapper');
-    const craftingBanner = document.getElementById('craftingBanner');
+    const craftingPill = document.getElementById('craftingStatusPill');
+    const craftingText = document.getElementById('craftingStatusText');
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    // Bản đồ tên tiếng Việt của 7 Section
+    const sectionTitles = {
+        hero: 'Trang Bìa Chính',
+        story: 'Lời Ngỏ & Chuyện Tình',
+        parents: 'Song Thân Phụ Mẫu',
+        countdown: 'Thời Khắc Đếm Ngược',
+        events: 'Sảnh Tiệc & Sự Kiện',
+        timeline: 'Lịch Trình Hôn Lễ',
+        dresscode: 'Quy Chuẩn Trang Phục',
+    };
 
     // Bản đồ tên biến thể cho từng section
     const variantNames = {
@@ -56,32 +68,71 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
-    // Helper: Hiển thị Crafting Banner tạm thời
-    function triggerCraftingAnimation() {
-        if (!craftingBanner) return;
-        craftingBanner.classList.add('is-active');
-        setTimeout(() => {
-            craftingBanner.classList.remove('is-active');
-        }, 5000);
+    // Helper: Bật trạng thái Live Crafting
+    function startCraftingMode() {
+        if (craftingPill && craftingText) {
+            craftingPill.classList.add('is-active');
+            craftingText.textContent = 'Đang bắt đầu dựng thiệp...';
+        }
+    }
+
+    function endCraftingMode() {
+        if (craftingPill && craftingText) {
+            craftingText.textContent = '✦ Hoàn thành bản thiệp độc bản!';
+            setTimeout(() => {
+                craftingPill.classList.remove('is-active');
+                document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
+            }, 3500);
+        }
     }
 
     // Kích hoạt ngay lúc vào trang nếu có query param crafting=1
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('crafting') === '1') {
-        triggerCraftingAnimation();
+        startCraftingMode();
     }
+
+    // Lắng nghe postMessage trực tiếp từ iframe khi mỗi section được dựng
+    window.addEventListener('message', (e) => {
+        if (!e.data || typeof e.data !== 'object') return;
+
+        if (e.data.type === 'MAYHEN_CRAFTING_STEP') {
+            if (craftingPill && craftingText) {
+                craftingPill.classList.add('is-active');
+                const title = sectionTitles[e.data.section] || e.data.section;
+                craftingText.textContent = `✦ Đang phác thảo: Mục ${e.data.step}/${e.data.total} (${title})...`;
+            }
+
+            // Highlight nhẹ thẻ section ở sidebar tương ứng
+            document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
+            const activeCard = document.querySelector(`.section_ctrl_card[data-section="${e.data.section}"]`);
+            if (activeCard) {
+                activeCard.style.borderColor = 'var(--curated-gold)';
+            }
+        }
+
+        if (e.data.type === 'MAYHEN_CRAFTING_COMPLETE') {
+            endCraftingMode();
+        }
+
+        if (e.data.type === 'MAYHEN_CURATED_SWITCH_SECTION') {
+            const sec = e.data.section;
+            const nextBtn = document.querySelector(`.btn_variant_nav.btn_next[data-section="${sec}"]`);
+            if (nextBtn) nextBtn.click();
+        }
+    });
 
     // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting)
     const btnReplay = document.getElementById('btnReplayCrafting');
     if (btnReplay && iframe) {
         btnReplay.addEventListener('click', () => {
-            triggerCraftingAnimation();
+            startCraftingMode();
             const baseUrl = iframe.src.split('?')[0];
             iframe.src = `${baseUrl}?crafting=1&replay=${Date.now()}`;
         });
     }
 
-    // 2. Nút Phối lại toàn bộ bố cục (Remix All) — BẢO TOÀN MÀU SẮC
+    // 2. Nút Phối lại toàn bộ bố cục (Remix All) — BẢO TOÀN MÀU SẮC BẤT BIẾN
     const btnRemix = document.getElementById('btnRemixAll');
     if (btnRemix && iframe) {
         btnRemix.addEventListener('click', async () => {
@@ -111,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng
-                    triggerCraftingAnimation();
+                    // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng thiệp
+                    startCraftingMode();
                     const baseUrl = iframe.src.split('?')[0];
                     iframe.src = `${baseUrl}?crafting=1&t=${Date.now()}`;
                 } else {
@@ -158,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         labelEl.textContent = variantNames[section][newVariant];
                     }
 
-                    // Tải lại iframe
+                    // Tải lại iframe ở đúng vị trí (không chạy full crafting dài)
                     if (iframe) {
                         const baseUrl = iframe.src.split('?')[0];
                         iframe.src = `${baseUrl}?crafting=0&t=${Date.now()}`;
@@ -229,4 +280,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

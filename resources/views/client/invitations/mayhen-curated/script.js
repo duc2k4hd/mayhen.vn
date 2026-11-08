@@ -10,7 +10,57 @@
         initMusicPlayer();
         initCountdown();
         initVariantSwitchers();
+        initLiveCraftingScroll();
     });
+
+    /**
+     * Tự động cuộn mượt theo tiến trình dựng thiệp trực tiếp (Live Crafting)
+     */
+    function initLiveCraftingScroll() {
+        const root = document.getElementById('mayhenCuratedRoot');
+        if (!root || !root.classList.contains('is-crafting-live')) return;
+
+        const sections = [
+            'hero',
+            'story',
+            'parents',
+            'countdown',
+            'events',
+            'timeline',
+            'dresscode'
+        ];
+
+        // Timing tương ứng với delay của từng section:
+        // hero: 200ms, story: 900ms, parents: 1700ms, countdown: 2500ms, events: 3300ms, timeline: 4100ms, dresscode: 4900ms
+        const timings = [200, 900, 1700, 2500, 3300, 4100, 4900];
+
+        timings.forEach(function (time, index) {
+            setTimeout(function () {
+                const secEl = document.querySelector('[data-curated-section="' + sections[index] + '"]');
+                if (secEl) {
+                    secEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'MAYHEN_CRAFTING_STEP',
+                            step: index + 1,
+                            total: 7,
+                            section: sections[index],
+                        }, '*');
+                    }
+                }
+            }, time);
+        });
+
+        // Khi hoàn thành (5.8s), lướt êm dịu trở lại đầu thiệp
+        setTimeout(function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'MAYHEN_CRAFTING_COMPLETE'
+                }, '*');
+            }
+        }, 5800);
+    }
 
     /**
      * Mở phong bì thiệp cưới

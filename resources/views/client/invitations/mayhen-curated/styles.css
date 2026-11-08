@@ -1364,28 +1364,74 @@
    ========================================================================== */
 .is-crafting-live .mayhen_curated_craft_node {
     opacity: 0;
-    transform: translateY(20px);
-    animation: mayhenCraftSectionReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: translateY(24px);
+    animation: mayhenCraftSectionReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.is-crafting-live .mayhen_curated_craft_node::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, transparent, var(--mh-accent), #FFFFFF, var(--mh-accent), transparent);
+    box-shadow: 0 0 16px var(--mh-accent), 0 0 24px var(--mh-accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 50;
+    animation: mayhenCraftPencilScan 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .is-crafting-live [data-curated-section="hero"] { animation-delay: 0.2s; }
-.is-crafting-live [data-curated-section="story"] { animation-delay: 0.8s; }
-.is-crafting-live [data-curated-section="parents"] { animation-delay: 1.4s; }
-.is-crafting-live [data-curated-section="countdown"] { animation-delay: 2.0s; }
-.is-crafting-live [data-curated-section="events"] { animation-delay: 2.6s; }
-.is-crafting-live [data-curated-section="timeline"] { animation-delay: 3.2s; }
-.is-crafting-live [data-curated-section="dresscode"] { animation-delay: 3.8s; }
+.is-crafting-live [data-curated-section="hero"]::after { animation-delay: 0.2s; }
+
+.is-crafting-live [data-curated-section="story"] { animation-delay: 0.9s; }
+.is-crafting-live [data-curated-section="story"]::after { animation-delay: 0.9s; }
+
+.is-crafting-live [data-curated-section="parents"] { animation-delay: 1.7s; }
+.is-crafting-live [data-curated-section="parents"]::after { animation-delay: 1.7s; }
+
+.is-crafting-live [data-curated-section="countdown"] { animation-delay: 2.5s; }
+.is-crafting-live [data-curated-section="countdown"]::after { animation-delay: 2.5s; }
+
+.is-crafting-live [data-curated-section="events"] { animation-delay: 3.3s; }
+.is-crafting-live [data-curated-section="events"]::after { animation-delay: 3.3s; }
+
+.is-crafting-live [data-curated-section="timeline"] { animation-delay: 4.1s; }
+.is-crafting-live [data-curated-section="timeline"]::after { animation-delay: 4.1s; }
+
+.is-crafting-live [data-curated-section="dresscode"] { animation-delay: 4.9s; }
+.is-crafting-live [data-curated-section="dresscode"]::after { animation-delay: 4.9s; }
 
 @keyframes mayhenCraftSectionReveal {
     0% {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(28px);
         clip-path: inset(0 100% 0 0);
     }
     100% {
         opacity: 1;
         transform: translateY(0);
         clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes mayhenCraftPencilScan {
+    0% {
+        left: 0%;
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    85% {
+        opacity: 1;
+    }
+    100% {
+        left: 100%;
+        opacity: 0;
     }
 }
 
