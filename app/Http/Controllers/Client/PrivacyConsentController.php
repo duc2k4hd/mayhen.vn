@@ -99,4 +99,3 @@ class PrivacyConsentController extends Controller
         abort(404);
     }
 }
-

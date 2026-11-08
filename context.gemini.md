@@ -5324,6 +5324,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        199. **Hoàn Tất Cột Mốc 12: Đánh Giá Nhu Cầu & Chăm Sóc Sau Thanh Toán (Plan Fit Advisor & Post-Payment First Success)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi trọn vẹn `TASK-VAL-25` và `TASK-VAL-26` theo mục 09.6 (Niềm tin, dịch vụ và chi trả) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Giải quyết triệt để sự lúng túng của cặp đôi khi chọn gói dịch vụ (không biết gói nào vừa vặn với đám cưới của mình) và sự hoang mang sau khi quét mã QR chuyển khoản VietQR/SePay (tiền trừ rồi làm gì tiếp theo? nếu webhook ngân hàng trễ thì thế nào?).
+                             - **Các tính năng cao cấp đã hoàn thành**:
+                               1. *TASK-VAL-25: Cố Vấn Khảo Sát & Đề Xuất Gói Phù Hợp (Plan Fit Advisor)*:
+                                  - Service: `app/Services/PlanFitAdvisorService.php` chấm điểm độ phù hợp (Fit Score 0-100%), đối chiếu 4 nhu cầu cốt lõi (quy mô khách mời, số lượng tiệc/sự kiện, nhu cầu vận hành sảnh tiệc, thời gian lưu giữ kỷ niệm), giải thích lý do khuyên dùng và tính toán số tiền tiết kiệm so với in thiệp giấy truyền thống (tiết kiệm đến 88% chi phí).
+                                  - Controller & Routes: `PlanAdvisorController::index` (`GET /tu-van-goi-cuoi`) và `analyze` (`POST /api/tu-van-goi-cuoi/phan-tich`).
+                                  - Giao diện: Trang `resources/views/client/pages/plan-advisor.blade.php` phong cách Quiet Luxury Editorial, bảng khảo sát tương tác AJAX tức thời và CSS `public/assets/client/css/pages/plan-advisor.css`.
+                                  - Tích hợp: Banner CTA khảo sát nhanh 30 giây trên `resources/views/client/pages/pricing.blade.php`.
+                               2. *TASK-VAL-26: Trải Nghiệm Khởi Đầu Thành Công Sau Thanh Toán (After-Payment First Success & Onboarding Portal)*:
+                                  - Service: `app/Services/PostPaymentOnboardingService.php` xây dựng lộ trình Onboarding 3 bước khởi đầu hoàn hảo (xem & gửi link thiệp chính thức, mở khóa sơ đồ bàn tiệc/check-in ngày cưới, cấu hình bảo vệ số tài khoản ngân hàng).
+                                  - Controller: Mở rộng `CheckoutController::firstSuccess` (`GET /thanh-toan/thanh-cong/{orderCode}`).
+                                  - Route: `checkout.first_success`.
+                                  - Giao diện: Trang `resources/views/client/pages/checkout-first-success.blade.php` hỗ trợ 2 trạng thái `paid` và `pending` (tự động polling API ngân hàng mỗi 3 giây) cùng CSS `public/assets/client/css/pages/checkout-first-success.css`.
+                                  - Client JS: Cập nhật `public/assets/client/js/pages/checkout.js` tự động chuyển hướng người dùng sang First Success Portal sau khi thanh toán thành công.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới 2 Feature test suites:
+                                 * `tests/Feature/PlanFitAdvisorTest.php` -> **4/4 tests passed (14 assertions)**.
+                                 * `tests/Feature/PostPaymentFirstSuccessTest.php` -> **4/4 tests passed (13 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **380/380 tests passed 100% (1,907 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

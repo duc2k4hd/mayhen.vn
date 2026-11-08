@@ -8,6 +8,7 @@ use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\PostPaymentOnboardingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -274,5 +275,22 @@ class CheckoutController extends Controller
         } catch (\Throwable) {
             // Keep webhook idempotent and robust
         }
+    }
+
+    /**
+     * Màn hình Onboarding Khởi Đầu Thành Công Sau Thanh Toán (TASK-VAL-26).
+     */
+    public function firstSuccess(string $orderCode, PostPaymentOnboardingService $service): View
+    {
+        $order = Order::with(['plan', 'invitation.wedding'])
+            ->where('order_code', strtoupper($orderCode))
+            ->firstOrFail();
+
+        $guide = $service->getOnboardingGuide($order);
+
+        return view('client.pages.checkout-first-success', [
+            'order' => $order,
+            'guide' => $guide,
+        ]);
     }
 }

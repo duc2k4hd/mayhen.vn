@@ -130,4 +130,3 @@ it('returns json privacy audit report through api endpoint with idor defense', f
     $forbidden = $this->getJson(route('privacy.audit', $this->invitation->id));
     $forbidden->assertNotFound();
 });
-

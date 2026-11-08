@@ -15,6 +15,7 @@ use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
+use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
@@ -79,6 +80,7 @@ Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('thrott
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::get('/thanh-toan/thanh-cong/{orderCode}', [CheckoutController::class, 'firstSuccess'])->name('checkout.first_success');
 Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:20,1')->name('checkout.process');
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
 Route::post('/api/payments/sepay/webhook', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
@@ -241,6 +243,8 @@ Route::post('/gia-dinh-duyet/{token}/quyet-dinh', [FamilyApprovalController::cla
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');
 Route::get('/bang-gia', [PageController::class, 'pricing'])->name('pricing');
+Route::get('/tu-van-goi-cuoi', [PlanAdvisorController::class, 'index'])->name('pricing.advisor');
+Route::post('/api/tu-van-goi-cuoi/phan-tich', [PlanAdvisorController::class, 'analyze'])->middleware('throttle:30,1')->name('pricing.advisor.analyze');
 Route::get('/huong-dan', [PageController::class, 'howItWorks'])->name('how-it-works');
 Route::get('/ve-may-hen', [PageController::class, 'about'])->name('about');
 Route::get('/lien-he', [PageController::class, 'contact'])->name('contact');

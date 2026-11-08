@@ -1,0 +1,235 @@
+/**
+ * Mây Hẹn (mayhen.vn) — After-Payment First Success Portal Styling
+ * Quiet Luxury, Onboarding & Activation Confirmation
+ * Mandatory Prefix: mayhen_success_*
+ */
+
+.mayhen_success_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    padding: 3rem 1.25rem 5rem;
+}
+
+.mayhen_success_container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+/* Hero Badge & Status Card */
+.mayhen_success_hero {
+    text-align: center;
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 30px rgba(31, 29, 26, 0.05);
+}
+
+.success_icon_ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #E8F5E9;
+    color: #2E7D32;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    border: 2px solid #C8E6C9;
+}
+
+.success_icon_ring--pending {
+    background: #FFF8E1;
+    color: #F57F17;
+    border-color: #FFE082;
+}
+
+.success_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+}
+
+.success_subtitle {
+    font-size: 0.95rem;
+    color: #6E685F;
+    margin: 0 auto 1.5rem;
+    max-width: 580px;
+    line-height: 1.5;
+}
+
+.success_order_meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: #FAF8F5;
+    border: 1px solid #EFEAE3;
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: #4A453E;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* 3-Step Onboarding Checklist */
+.mayhen_success_onboarding_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(31, 29, 26, 0.04);
+}
+
+.onboarding_head {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.onboarding_title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 0.25rem;
+}
+
+.onboarding_desc {
+    font-size: 0.82rem;
+    color: #8C8479;
+    margin: 0;
+}
+
+.onboarding_steps_list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.onboarding_step_item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.15rem 1.25rem;
+    background: #FAF8F5;
+    border: 1px solid #EFEAE3;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 640px) {
+    .onboarding_step_item {
+        grid-template-columns: 40px 1fr;
+    }
+    .onboarding_step_action {
+        grid-column: 1 / -1;
+        margin-top: 0.5rem;
+    }
+}
+
+.step_num_circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(197, 168, 128, 0.2);
+    color: #8C6D3F;
+    font-weight: 800;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step_content_title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.step_badge {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #E8F5E9;
+    color: #2E7D32;
+    font-weight: 700;
+}
+
+.step_content_desc {
+    font-size: 0.82rem;
+    color: #6E685F;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.step_action_btn {
+    display: inline-block;
+    padding: 0.6rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    background: #FFFFFF;
+    color: #8C6D3F;
+    border: 1px solid #C5A880;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.step_action_btn:hover {
+    background: #8C6D3F;
+    color: #FFFFFF;
+}
+
+/* Bottom CTA & Support Box */
+.mayhen_success_support_box {
+    background: #FFFDF9;
+    border: 1px dashed #E5DCCD;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.support_box_title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 0.2rem;
+}
+
+.support_box_desc {
+    font-size: 0.78rem;
+    color: #7A726A;
+    margin: 0;
+}
+
+.support_box_links {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.support_link {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #9C7A4A;
+    text-decoration: none;
+}
+

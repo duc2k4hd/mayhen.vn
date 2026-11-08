@@ -225,4 +225,3 @@ class StaffShiftHandoverService
         return $handoverRecord;
     }
 }
-

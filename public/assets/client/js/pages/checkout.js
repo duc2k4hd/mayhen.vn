@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 clearInterval(pollingTimer);
                                 qrSection.style.display = 'none';
                                 successBanner.style.display = 'block';
+
+                                setTimeout(() => {
+                                    window.location.href = `/thanh-toan/thanh-cong/${data.order_code}`;
+                                }, 1500);
                             }
                         } catch (err) {
                             console.error('Polling status error', err);

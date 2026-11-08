@@ -163,4 +163,3 @@ it('protects exception desk endpoints from unauthorized access', function () {
         'attendees' => 1,
     ])->assertForbidden();
 });
-

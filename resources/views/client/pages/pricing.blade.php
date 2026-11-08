@@ -166,6 +166,17 @@
                     <span>Nhận mừng cưới 0% phí trung gian</span>
                 </div>
             </div>
+
+            {{-- TASK-VAL-25: Plan Fit Advisor Banner --}}
+            <div style="margin-top: 1.5rem; background: #FFFFFF; border: 1px dashed #C5A880; border-radius: 12px; padding: 12px 20px; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(197, 168, 128, 0.15);">
+                <span style="font-size: 1.25rem;">✨</span>
+                <span style="font-size: 0.9rem; color: #1F1D1A;">
+                    Chưa biết chọn gói nào phù hợp với quy mô hôn lễ?
+                </span>
+                <a href="{{ route('pricing.advisor') }}" style="color: #9C7A4A; font-weight: 700; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                    Làm khảo sát 30 giây để nhận tư vấn &rarr;
+                </a>
+            </div>
         </header>
 
         <!-- ==========================================

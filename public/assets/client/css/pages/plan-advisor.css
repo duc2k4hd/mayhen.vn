@@ -1,0 +1,276 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Plan Fit Advisor Styling
+ * Quiet Luxury, Interactive Questionnaire & Plan Recommendation
+ * Mandatory Prefix: mayhen_advisor_*
+ */
+
+.mayhen_advisor_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    padding: 2.5rem 1.25rem 5rem;
+}
+
+.mayhen_advisor_container {
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.mayhen_advisor_header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+}
+
+.advisor_badge {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.65rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.advisor_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.35rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+    line-height: 1.25;
+}
+
+.advisor_subtitle {
+    font-size: 0.95rem;
+    color: #6E685F;
+    margin: 0;
+    line-height: 1.55;
+}
+
+/* Two-Column Grid: Form Left, Recommendation Right */
+.mayhen_advisor_grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .mayhen_advisor_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Left Card: Questionnaire */
+.advisor_quiz_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 20px rgba(31, 29, 26, 0.04);
+}
+
+.quiz_group {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.quiz_group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.quiz_label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin-bottom: 0.35rem;
+}
+
+.quiz_hint {
+    font-size: 0.8rem;
+    color: #8C8479;
+    margin-bottom: 0.85rem;
+    display: block;
+}
+
+.advisor_options_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.65rem;
+}
+
+.advisor_opt_btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.75rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid #EAE5DE;
+    background: #FAF8F5;
+    color: #332F2A;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.advisor_opt_btn:hover {
+    border-color: #C5A880;
+    background: #FFFDF9;
+}
+
+.advisor_opt_btn.is-active {
+    border-color: #9C7A4A;
+    background: #FFFBF5;
+    box-shadow: 0 0 0 2px rgba(156, 122, 74, 0.2);
+}
+
+.advisor_opt_title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin-bottom: 0.2rem;
+}
+
+.advisor_opt_desc {
+    font-size: 0.72rem;
+    color: #7A726A;
+    line-height: 1.35;
+}
+
+/* Right Card: Recommendation Box */
+.advisor_result_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 30px rgba(31, 29, 26, 0.06);
+    position: sticky;
+    top: 2rem;
+}
+
+.result_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.result_fit_badge {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: #E8F5E9;
+    color: #2E7D32;
+    font-size: 0.78rem;
+    font-weight: 800;
+    border: 1px solid #C8E6C9;
+}
+
+.result_plan_name {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 0.35rem;
+}
+
+.result_plan_price {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #9C7A4A;
+    margin-bottom: 1rem;
+}
+
+.result_plan_duration {
+    font-size: 0.8rem;
+    color: #8C8479;
+    font-weight: normal;
+}
+
+.result_reasons_title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #8C8479;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.result_reasons_list {
+    list-style: none;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.result_reason_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #332F2A;
+    line-height: 1.45;
+}
+
+/* Savings Box */
+.advisor_savings_box {
+    background: #F1F8E9;
+    border: 1px solid #DCEDC8;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.savings_box_label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #33691E;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.savings_box_value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1B5E20;
+    margin: 0.2rem 0;
+}
+
+.savings_box_note {
+    font-size: 0.72rem;
+    color: #558B2F;
+}
+
+.advisor_checkout_btn {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.3);
+    transition: opacity 0.2s ease;
+}
+
+.advisor_checkout_btn:hover {
+    opacity: 0.92;
+}
+

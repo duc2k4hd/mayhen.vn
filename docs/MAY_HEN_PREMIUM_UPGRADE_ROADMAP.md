@@ -309,6 +309,31 @@
   * Tích hợp Settings: Nút `[ 🛡️ Quyền Riêng Tư ]` trên `resources/views/client/pages/account/settings.blade.php`.
 - **Kiểm thử**: `tests/Feature/WeddingPrivacyConsentTest.php` (4/4 tests passed, 30 assertions).
 
+---
+
+### CỘT MỐC 12: ĐÁNH GIÁ NHU CẦU & CHĂM SÓC SAU THANH TOÁN (PLAN FIT ADVISOR & POST-PAYMENT FIRST SUCCESS) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-25`: Cố Vấn Khảo Sát & Đề Xuất Gói Phù Hợp (Plan Fit Advisor) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Người dùng khi chuẩn bị cưới thường lúng túng không biết gói nào phù hợp với quy mô hôn lễ của mình. Cung cấp bộ 4 câu hỏi khảo sát tương tác nhanh (quy mô khách mời, số lượng sự kiện, nhu cầu vận hành sảnh tiệc, thời gian lưu giữ kỷ niệm), tự động phân tích và đưa ra gói dịch vụ tối ưu, giải thích rõ ràng lý do khuyên dùng và tính toán số tiền tiết kiệm so với in thiệp giấy truyền thống (tiết kiệm đến 88% chi phí).
+- **Phạm vi code**:
+  * Service: `app/Services/PlanFitAdvisorService.php` (tính toán điểm phù hợp Fit Score, phân tích lý do khuyên dùng và ước tính chi phí so sánh với thiệp giấy).
+  * Controller: `PlanAdvisorController::index` và `analyze`.
+  * Routes: `GET /tu-van-goi-cuoi` (`pricing.advisor`), `POST /api/tu-van-goi-cuoi/phan-tich` (`pricing.advisor.analyze`).
+  * Giao diện: Trang `resources/views/client/pages/plan-advisor.blade.php` phong cách Quiet Luxury Editorial, bảng khảo sát tương tác AJAX và CSS `public/assets/client/css/pages/plan-advisor.css`.
+  * Tích hợp: Banner CTA gợi ý khảo sát nhanh trên `resources/views/client/pages/pricing.blade.php`.
+- **Kiểm thử**: `tests/Feature/PlanFitAdvisorTest.php` (4/4 tests passed, 14 assertions).
+
+#### `TASK-VAL-26`: Trải Nghiệm Khởi Đầu Thành Công Sau Thanh Toán (After-Payment First Success & Onboarding Portal) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Sau khi chuyển khoản quét mã VietQR, người dùng cần một cổng xác nhận chu đáo và hướng dẫn 3 bước khởi đầu hoàn hảo (First Success Onboarding). Nếu giao dịch ngân hàng đang xử lý (pending), trang tự động kiểm tra trạng thái mỗi 3 giây và chuyển sang kích hoạt thành công tức thời mà không làm mất phiên làm việc.
+- **Phạm vi code**:
+  * Service: `app/Services/PostPaymentOnboardingService.php` (tạo lộ trình Onboarding 3 bước cá nhân hóa theo gói dịch vụ và thiệp liên kết).
+  * Controller: Mở rộng `CheckoutController::firstSuccess` (`GET /thanh-toan/thanh-cong/{orderCode}`).
+  * Route: `checkout.first_success`.
+  * Giao diện: Trang `resources/views/client/pages/checkout-first-success.blade.php`, hỗ trợ 2 trạng thái `paid` và `pending` kèm auto polling và CSS `public/assets/client/css/pages/checkout-first-success.css`.
+  * Client JS: Cập nhật `public/assets/client/js/pages/checkout.js` tự động chuyển hướng sang First Success Portal sau khi thanh toán thành công.
+- **Kiểm thử**: `tests/Feature/PostPaymentFirstSuccessTest.php` (4/4 tests passed, 13 assertions).
+
+
 
 
 

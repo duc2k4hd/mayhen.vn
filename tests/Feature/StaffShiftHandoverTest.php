@@ -224,4 +224,3 @@ it('generates accurate shift handover summary and records handover log', functio
     expect($savedShift['handovers'])->toHaveCount(1)
         ->and($savedShift['handovers'][0]['handed_to_staff'])->toBe('Đỗ Minh Khang');
 });
-
