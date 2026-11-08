@@ -5665,6 +5665,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        216. **Nâng Cấp Cơ Chế Hoàn Tiền (Refund) & Bảo Toàn Thời Hạn Khi Gia Hạn Sớm (Order Refund & Renewal Expiry Guardian — Flow 12 & Flow 13)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Flow 12 (Checkout & Gói bản quyền) và Flow 13 (Hủy / Hoàn tiền / Hết hạn lưu trữ) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Mất ngày cũ khi khách chủ động gia hạn sớm)**: Trong `CheckoutController::handleWebhook` và `Admin/OrderController::approve`, khi kích hoạt gói bản quyền, hệ thống luôn gán cứng `'expires_at' => now()->addDays(...)`. Nếu cặp đôi đang còn 40 ngày hiệu lực mà mua thêm gói gia hạn 90 ngày, toàn bộ 40 ngày đã trả tiền trước đó bị xóa sổ và ghi đè âm thầm.
+                               - **Lỗi 2 (Thiếu quy trình hoàn tiền chuẩn mực)**: Hệ thống thiếu route và phương thức xử lý hoàn tiền (`refund`) cho đơn hàng. Khi cần hoàn tiền cho khách, admin không có công cụ thao tác hợp lệ; không có cơ chế thu hồi thời hạn trực tuyến an toàn mà vẫn bảo toàn 100% dữ liệu kỷ niệm, khách mời và lời chúc của khách hàng.
+                               - **Lỗi 3 (Lệch trạng thái giữa Admin và Khách hàng)**: Trạng thái `refunded` chưa có badge hiển thị trên giao diện quản lý đơn hàng của cặp đôi (`account/orders.blade.php`), làm thiếu minh bạch tài chính.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Bảo toàn thời hạn gia hạn sớm (`CheckoutController` & `Admin/OrderController`)**:
+                                 * Kiểm tra `$currentExpiresAt = $order->invitation->expires_at`.
+                                 * Nếu thiệp còn hạn trong tương lai (`$currentExpiresAt->isFuture()`), thời hạn mới được cộng dồn tiếp nối từ mốc tương lai đó (`$baseDate->copy()->addDays($durationDays)`).
+                                 * Nếu thiệp đã hết hạn hoặc chưa có hạn, cộng dồn từ `now()`.
+                               - **Xây dựng quy trình Hoàn tiền (Refund) an toàn (FLOW-13)**:
+                                 * Thêm route `POST /admin/orders/{id}/refund` có middleware bảo vệ `admin.manager`.
+                                 * Phương thức `Admin/OrderController::refund`: Kiểm tra `$order->isPaid()`, cập nhật trạng thái đơn thành `refunded` trong DB Transaction.
+                                 * Thu hồi thời hạn lưu trữ trực tuyến bằng cách cập nhật `$order->invitation->expires_at = now()`. Thiệp chuyển sang trạng thái hết hạn (`invitation-expired`) khi người ngoài truy cập, nhưng bảo toàn vẹn toàn 100% thiệp, khách mời, lời chúc và album ảnh cho cặp đôi.
+                                 * Ghi nhật ký kiểm toán hành chính `AuditLogger::log('refund_order', ...)` lưu lại lý do hoàn tiền.
+                               - **Đồng bộ hóa giao diện Client & Admin**:
+                                 * `resources/views/client/pages/account/orders.blade.php`: Thêm badge "Đã Hoàn Tiền" (màu vàng hổ phách) và "Đã Hủy".
+                                 * `resources/views/admin/pages/orders/show.blade.php`: Bổ sung nút bấm "↺ Hoàn Tiền Đơn Hàng (Refund)" kèm xác nhận cảnh báo an toàn.
+                                 * `resources/views/admin/pages/orders/index.blade.php`: Thêm bộ lọc trạng thái `refunded` và badge hiển thị trực quan trong bảng.
+                                 * `Admin/OrderController::exportCsv`: Cập nhật xuất nhãn "Đã hoàn tiền" cho các đơn hàng được refund.
+                                 * `app/Models/Order.php`: Bổ sung các helper methods `isRefunded(): bool`, `isCancelled(): bool`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Tạo mới Feature test suite `tests/Feature/AdminOrderRefundAndRenewalTest.php` với 6 ca kiểm thử toàn diện:
+                                 * `test_admin_can_refund_paid_order_and_expire_invitation_without_data_loss`: Kiểm thử hoàn tiền đơn đã thanh toán, chuyển hạn thiệp về now() và bảo toàn 100% dữ liệu cưới.
+                                 * `test_cannot_refund_pending_or_cancelled_order`: Kiểm thử từ chối hoàn tiền cho đơn chưa thanh toán.
+                                 * `test_non_admin_cannot_refund_order`: Kiểm thử phân quyền chặt chẽ (chặn khách hàng thường).
+                                 * `test_approving_order_for_active_invitation_extends_future_expiry_date`: Kiểm thử gia hạn cộng dồn đúng 30 ngày cũ + 90 ngày mới = 120 ngày.
+                                 * `test_approving_order_for_expired_invitation_extends_from_now`: Kiểm thử thiệp hết hạn gia hạn từ now().
+                                 * `test_admin_orders_index_filters_and_displays_refunded_status`: Kiểm thử bộ lọc và chi tiết đơn hàng đã hoàn tiền.
+                               - Test suite `AdminOrderRefundAndRenewalTest`: **6/6 tests passed (28 assertions)**.
+                               - Cập nhật whitelist `.gitignore` bổ sung `!/tests/Feature/AdminOrderRefundAndRenewalTest.php`.
+                               - Toàn bộ test suite toàn hệ thống: **433/433 tests passed 100% (2,198 assertions)** trong ~8.4 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

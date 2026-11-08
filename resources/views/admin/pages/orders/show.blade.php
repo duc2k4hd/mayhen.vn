@@ -269,6 +269,18 @@
                         <div style="padding: 12px; background-color: var(--mh-admin-success-bg); color: var(--mh-admin-success-text); border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
                             Đơn hàng đã được thanh toán và kích hoạt thành công.
                         </div>
+
+                        <form action="{{ route('admin.orders.refund', $order->id) }}" method="POST" style="margin-top: 8px;">
+                            @csrf
+                            <input type="hidden" name="reason" value="Hoàn tiền theo yêu cầu khách hàng">
+                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%; color: var(--mh-admin-danger); border-color: var(--mh-admin-danger);" onclick="return confirm('Bạn có chắc chắn muốn hoàn tiền đơn hàng #{{ $order->order_code }}? Thiệp cưới sẽ được chuyển về trạng thái hết hạn lưu trữ trực tuyến, dữ liệu kỷ niệm của khách vẫn được bảo tồn.');">
+                                ↺ Hoàn Tiền Đơn Hàng (Refund)
+                            </button>
+                        </form>
+                    @elseif ($order->status === 'refunded')
+                        <div style="padding: 12px; background-color: #FEF3C7; color: #92400E; border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
+                            Đơn hàng này đã được hoàn tiền (Refunded).
+                        </div>
                     @else
                         <div style="padding: 12px; background-color: var(--mh-admin-danger-bg); color: var(--mh-admin-danger-text); border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
                             Đơn hàng đã ở trạng thái hủy.

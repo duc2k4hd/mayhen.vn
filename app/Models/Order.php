@@ -59,4 +59,14 @@ class Order extends Model
     {
         return $this->status === 'paid';
     }
+
+    public function isRefunded(): bool
+    {
+        return $this->status === 'refunded';
+    }
+
+    public function isCancelled(): bool
+    {
+        return in_array($this->status, ['cancelled', 'failed'], true);
+    }
 }

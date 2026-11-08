@@ -82,6 +82,16 @@
                                         <span class="mayhen_account_status_dot"></span>
                                         Chờ Thanh Toán
                                     </span>
+                                @elseif($status === 'refunded')
+                                    <span class="mayhen_account_status_badge" style="background: #FEF3C7; color: #92400E;">
+                                        <span class="mayhen_account_status_dot" style="background: #D97706;"></span>
+                                        Đã Hoàn Tiền
+                                    </span>
+                                @elseif($status === 'cancelled')
+                                    <span class="mayhen_account_status_badge locked" style="background: #F3F4F6; color: #4B5563;">
+                                        <span class="mayhen_account_status_dot" style="background: #9CA3AF;"></span>
+                                        Đã Hủy
+                                    </span>
                                 @else
                                     <span class="mayhen_account_status_badge locked">
                                         <span class="mayhen_account_status_dot"></span>

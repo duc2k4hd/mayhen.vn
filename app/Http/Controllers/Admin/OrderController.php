@@ -79,6 +79,7 @@ class OrderController extends Controller
         $paidCount = Order::where('status', 'paid')->count();
         $pendingCount = Order::where('status', 'pending')->count();
         $cancelledCount = Order::whereIn('status', ['cancelled', 'failed'])->count();
+        $refundedCount = Order::where('status', 'refunded')->count();
 
         $plans = Plan::select('id', 'name')->get();
 
@@ -94,6 +95,7 @@ class OrderController extends Controller
             'paidCount' => $paidCount,
             'pendingCount' => $pendingCount,
             'cancelledCount' => $cancelledCount,
+            'refundedCount' => $refundedCount,
         ]);
     }
 
@@ -178,6 +180,7 @@ class OrderController extends Controller
                 $statusLabel = match ($order->status) {
                     'paid' => 'Đã thanh toán',
                     'pending' => 'Chờ thanh toán',
+                    'refunded' => 'Đã hoàn tiền',
                     'cancelled' => 'Đã hủy',
                     'failed' => 'Thất bại',
                     default => $order->status,
@@ -248,11 +251,14 @@ class OrderController extends Controller
             ]);
 
             if ($order->invitation) {
-                $duration = $order->plan ? $order->plan->duration_days : 365;
+                $duration = $order->plan ? (int) $order->plan->duration_days : 365;
+                $currentExpiresAt = $order->invitation->expires_at;
+                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
+
                 $order->invitation->update([
                     'is_published' => true,
                     'published_at' => $order->invitation->published_at ?? now(),
-                    'expires_at' => now()->addDays($duration),
+                    'expires_at' => $baseDate->copy()->addDays($duration),
                 ]);
             }
         });
@@ -266,6 +272,44 @@ class OrderController extends Controller
         );
 
         return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} và kích hoạt bản quyền thiệp cưới thành công.");
+    }
+
+    /**
+     * Hoàn tiền cho đơn hàng và thu hồi thời hạn lưu trữ trực tuyến (FLOW-13).
+     * Dữ liệu thiệp cưới, khách mời và kỷ niệm vẫn được bảo toàn nguyên vẹn.
+     */
+    public function refund(Request $request, int $id): RedirectResponse
+    {
+        $order = Order::with(['plan', 'invitation'])->findOrFail($id);
+
+        if (! $order->isPaid()) {
+            return back()->with('error', 'Chỉ có thể hoàn tiền cho đơn hàng đã thanh toán thành công.');
+        }
+
+        $reason = trim((string) $request->input('reason', 'Hoàn tiền theo yêu cầu khách hàng hoặc chính sách bảo hành'));
+
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'status' => 'refunded',
+            ]);
+
+            // Thu hồi thời hạn lưu trữ trực tuyến, thiệp chuyển sang trạng thái hết hạn nhưng dữ liệu không bị xóa
+            if ($order->invitation) {
+                $order->invitation->update([
+                    'expires_at' => now(),
+                ]);
+            }
+        });
+
+        AuditLogger::log(
+            'refund_order',
+            'Order',
+            $order->id,
+            "Hoàn tiền đơn hàng #{$order->order_code} số tiền ".number_format($order->amount, 0, ',', '.')."đ. Lý do: {$reason}",
+            ['order_code' => $order->order_code, 'amount' => $order->amount, 'reason' => $reason]
+        );
+
+        return back()->with('success', "Đã hoàn tiền đơn hàng #{$order->order_code} và cập nhật trạng thái lưu trữ thành công.");
     }
 
     /**

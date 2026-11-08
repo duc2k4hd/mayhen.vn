@@ -103,6 +103,7 @@
             <option value="">-- Tất cả trạng thái --</option>
             <option value="paid" {{ $currentStatus === 'paid' ? 'selected' : '' }}>Đã thanh toán (Paid)</option>
             <option value="pending" {{ $currentStatus === 'pending' ? 'selected' : '' }}>Chờ thanh toán (Pending)</option>
+            <option value="refunded" {{ $currentStatus === 'refunded' ? 'selected' : '' }}>Đã hoàn tiền (Refunded)</option>
             <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>Đã hủy (Cancelled)</option>
         </select>
 
@@ -254,6 +255,8 @@
                             <td>
                                 @if ($order->isPaid())
                                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
+                                @elseif ($order->status === 'refunded')
+                                    <span class="mayhen_admin_badge mayhen_admin_badge_muted" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">Đã Hoàn Tiền</span>
                                 @elseif ($order->status === 'cancelled')
                                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Đã Hủy</span>
                                 @else

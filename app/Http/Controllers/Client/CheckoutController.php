@@ -223,7 +223,8 @@ class CheckoutController extends Controller
             }
 
             if ($amount !== $order->amount) {
-                $this->recordWebhookLog('error', "Số tiền chuyển khoản ({$amount}đ) không khớp giá trị đơn ({$order->amount}đ)", $orderCode, $amount, $request->ip(), $content);
+                $diffText = $amount < $order->amount ? 'thiếu' : 'thừa';
+                $this->recordWebhookLog('error', "Số tiền chuyển khoản {$diffText} ({$amount}đ) không khớp giá trị đơn ({$order->amount}đ)", $orderCode, $amount, $request->ip(), $content);
 
                 return response()->json(['success' => false, 'message' => 'Payment amount mismatch'], 400);
             }
@@ -235,10 +236,14 @@ class CheckoutController extends Controller
             ]);
 
             if ($order->invitation) {
+                $durationDays = $order->plan ? (int) $order->plan->duration_days : 365;
+                $currentExpiresAt = $order->invitation->expires_at;
+                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
+
                 $order->invitation->update([
                     'is_published' => true,
-                    'published_at' => now(),
-                    'expires_at' => now()->addDays($order->plan->duration_days),
+                    'published_at' => $order->invitation->published_at ?? now(),
+                    'expires_at' => $baseDate->copy()->addDays($durationDays),
                 ]);
             }
 
