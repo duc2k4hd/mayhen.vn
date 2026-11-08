@@ -256,27 +256,28 @@
                     <div style="border-top: 1px solid #F0EBE3; padding-top: 14px;">
                         <form action="{{ route('account.wishes.reply', [$invitation->id, $wish->id]) }}" method="POST" style="margin-bottom: 12px;">
                             @csrf
+                            <input type="hidden" name="reply_wish_id" value="{{ $wish->id }}">
                             <div style="display: flex; gap: 8px;">
-                                <input type="text" name="reply" class="mayhen_account_input" style="height: 38px; font-size: 13px;" placeholder="{{ $wish->reply ? 'Cập nhật lời cảm ơn...' : 'Nhập lời cảm ơn gửi tới khách...' }}" value="{{ old('reply', $wish->reply) }}" required>
+                                <input type="text" name="reply" class="mayhen_account_input" style="height: 38px; font-size: 13px;" placeholder="{{ $wish->reply ? 'Cập nhật lời cảm ơn...' : 'Nhập lời cảm ơn gửi tới khách...' }}" value="{{ (old('reply_wish_id') == $wish->id) ? old('reply') : $wish->reply }}" required>
                                 <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="white-space: nowrap;">
                                     {{ $wish->reply ? 'Cập Nhật' : 'Gửi Cảm Ơn' }}
                                 </button>
                             </div>
                         </form>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
                             <form action="{{ route('account.wishes.toggle_visibility', [$invitation->id, $wish->id]) }}" method="POST" style="margin: 0;">
                                 @csrf
-                                <button type="submit" style="background: none; border: none; font-size: 12px; color: #6B635B; cursor: pointer; text-decoration: underline;">
-                                    {{ $wish->is_approved ? 'Tạm ẩn khỏi thiệp cưới' : 'Cho phép hiển thị lại' }}
+                                <button type="submit" style="background: none; border: 1px solid #EAE3D9; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #5A534B; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                                    {{ $wish->is_approved ? '👁️ Tạm ẩn' : '✓ Hiển thị' }}
                                 </button>
                             </form>
 
                             <form action="{{ route('account.wishes.destroy', [$invitation->id, $wish->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lời chúc này?');" style="margin: 0;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" style="background: none; border: none; font-size: 12px; color: #C62828; cursor: pointer;">
-                                    Xóa vĩnh viễn
+                                <button type="submit" style="background: none; border: 1px solid #FFCDD2; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #C62828; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                                    🗑️ Xóa
                                 </button>
                             </form>
                         </div>

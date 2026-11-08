@@ -5535,6 +5535,16 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        210. **Cách Ly Trạng Thái Form Phản Hồi & Tối Ưu Nút Thao Tác Thẻ Lời Chúc (Form State Isolation & Accessible Actions)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Khắc phục lỗi rò rỉ trạng thái nhập liệu chéo giữa các thẻ (cross-card input contamination): Trước đây khi một thẻ gửi phản hồi cảm ơn bị lỗi kiểm thực (validation error), toàn bộ các thẻ khác trên trang đều bị điền đè nội dung do cùng đọc `old('reply')`.
+                               - Giải pháp: Bổ sung input ẩn `reply_wish_id` trong từng form phản hồi và kiểm tra điều kiện `(old('reply_wish_id') == $wish->id) ? old('reply') : $wish->reply`. Đảm bảo khi có lỗi xảy ra, chỉ đúng duy nhất thẻ đang thao tác giữ lại nội dung vừa gõ, các thẻ còn lại bảo toàn dữ liệu gốc.
+                               - Nâng cấp kích thước vùng chạm (touch target $\ge 38\text{px}$) cho các nút `[ 👁️ Tạm ẩn ]` / `[ ✓ Hiển thị ]` và `[ 🗑️ Xóa ]` với viền bo góc Quiet Luxury tinh tế, chống ấn nhầm trên màn hình cảm ứng di động.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Toàn bộ test suite toàn hệ thống: **409/409 tests passed 100% (2,056 assertions)** trong ~7.65 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

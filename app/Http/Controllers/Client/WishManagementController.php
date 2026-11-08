@@ -75,6 +75,7 @@ class WishManagementController extends Controller
 
         $request->validate([
             'reply' => ['required', 'string', 'max:1000', new NoProfanity],
+            'reply_wish_id' => ['nullable', 'integer'],
         ], [
             'reply.required' => 'Vui lòng nhập nội dung phản hồi cảm ơn khách mời.',
             'reply.max' => 'Nội dung phản hồi không được vượt quá 1000 ký tự.',
