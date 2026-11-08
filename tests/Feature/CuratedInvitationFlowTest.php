@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Wedding;
 use App\Services\CuratedInvitationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class CuratedInvitationFlowTest extends TestCase
@@ -498,5 +500,55 @@ class CuratedInvitationFlowTest extends TestCase
         ]));
         $response2->assertStatus(200);
         $response2->assertDontSee('?crafting=1');
+    }
+
+    /**
+     * 11. AI Content Engine: Gọi provider khi có API key và fallback biên tập Mây Hẹn khi không có key hoặc lỗi (Mục 8).
+     */
+    public function test_ai_content_engine_uses_provider_when_configured_and_falls_back_gracefully(): void
+    {
+        // Kịch bản A: Khi có API Key và AI phản hồi thành công
+        Config::set('services.curated_ai.api_key', 'test-openai-key-secret');
+
+        $sequence = Http::fakeSequence()
+            ->push([
+                'choices' => [
+                    [
+                        'message' => [
+                            'content' => json_encode([
+                                'couple_quote' => 'Tình yêu là khi hai ánh mắt giao nhau và cùng nhìn về một hướng.',
+                                'story_title' => 'Khúc Ca Duyên Nợ',
+                                'story_subtitle' => 'Từng Nhịp Bước Bình Yên',
+                                'story_content' => 'Từ những ngày đầu gặp gỡ đến khoảnh khắc hẹn ước trăm năm, tình yêu của chúng mình luôn được nuôi dưỡng bằng sự bao dung và chân thành.',
+                                'dresscode_note' => 'Tone màu pastel trang nhã.',
+                            ]),
+                        ],
+                    ],
+                ],
+            ], 200)
+            ->push(['error' => 'Internal Server Error'], 500);
+
+        Http::fake([
+            'api.openai.com/*' => $sequence,
+        ]);
+
+        $aiResult = $this->curatedService->generateCuratedContent([
+            'groom_name' => 'Hoàng Nam',
+            'bride_name' => 'Thùy Dung',
+        ], 'romantic');
+
+        $this->assertEquals('ai_generated', $aiResult['content_source']);
+        $this->assertEquals('Khúc Ca Duyên Nợ', $aiResult['story_title']);
+        $this->assertStringContainsString('Tình yêu là khi', $aiResult['couple_quote']);
+
+        // Kịch bản B: Khi AI gặp lỗi 500 hoặc timeout, hệ thống tự động fallback biên tập an toàn không làm hỏng trải nghiệm
+        $fallbackResult = $this->curatedService->generateCuratedContent([
+            'groom_name' => 'Hoàng Nam',
+            'bride_name' => 'Thùy Dung',
+        ], 'romantic');
+
+        $this->assertEquals('editorial_fallback', $fallbackResult['content_source']);
+        $this->assertNotEmpty($fallbackResult['couple_quote']);
+        $this->assertNotEmpty($fallbackResult['story_content']);
     }
 }

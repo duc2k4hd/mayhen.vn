@@ -43,4 +43,10 @@ return [
         ],
     ],
 
+    'curated_ai' => [
+        'api_key' => env('CURATED_AI_KEY', env('GEMINI_API_KEY', env('OPENAI_API_KEY'))),
+        'provider' => env('CURATED_AI_PROVIDER', 'gemini'),
+        'timeout' => 5,
+    ],
+
 ];

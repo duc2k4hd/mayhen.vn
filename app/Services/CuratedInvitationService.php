@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class CuratedInvitationService
@@ -502,10 +504,8 @@ class CuratedInvitationService
     }
 
     /**
-     * AI sinh nội dung cảm xúc phù hợp với phong cách (Mục 7).
-     * AI chỉ viết lời ngỏ, câu trích dẫn, tiêu đề cảm xúc.
-     * Dung lượng copy chuẩn: Story content ~45-65 từ, Quote ~12-25 từ.
-     * Tuyệt đối không được bịa thông tin cá nhân, sự kiện hay ngày cưới.
+     * AI biên soạn lời ngỏ và trích dẫn cảm xúc theo đúng ngân sách từ ngữ (Section 7.3, 8).
+     * Bổ sung cơ chế gọi AI thật khi có API Key, và fallback biên tập Mây Hẹn an toàn.
      *
      * @param  array<string, mixed>  $weddingData
      * @return array{
@@ -531,8 +531,103 @@ class CuratedInvitationService
         $groom = htmlspecialchars(strip_tags($groom), ENT_QUOTES, 'UTF-8');
         $bride = htmlspecialchars(strip_tags($bride), ENT_QUOTES, 'UTF-8');
 
+        // Thử gọi AI provider nếu được cấu hình khóa API
+        $apiKey = config('services.curated_ai.api_key');
+        if (! empty($apiKey)) {
+            $aiResult = $this->callAiProvider($groom, $bride, $style, $apiKey);
+            if ($aiResult !== null) {
+                return $aiResult;
+            }
+        }
+
+        // Fallback nội dung biên tập Mây Hẹn chuẩn Quiet Luxury
+        return $this->getEditorialFallbackContent($groom, $bride, $style);
+    }
+
+    /**
+     * Gọi API sinh nội dung từ nhà cung cấp AI với JSON Schema chặt chẽ.
+     *
+     * @return array{
+     *     couple_quote: string,
+     *     story_title: string,
+     *     story_subtitle: string,
+     *     story_content: string,
+     *     dresscode_note: string,
+     *     ceremony_type: string,
+     *     content_source: string
+     * }|null
+     */
+    protected function callAiProvider(string $groom, string $bride, string $style, string $apiKey): ?array
+    {
+        try {
+            $prompt = "Bạn là biên tập viên thiệp cưới cao cấp của Mây Hẹn (mayhen.vn), mang phong cách Quiet Luxury, tinh tế, trang nhã.\n"
+                ."Hãy viết lời ngỏ thiệp cưới cho chú rể {$groom} và cô dâu {$bride} theo phong cách '{$style}'.\n"
+                ."Ngân sách từ ngữ bắt buộc:\n"
+                ."- couple_quote: 12-25 từ (câu trích dẫn tình yêu sâu sắc).\n"
+                ."- story_title: 3-7 từ (tiêu đề lời ngỏ trang trọng).\n"
+                ."- story_subtitle: 5-12 từ (phụ đề hoặc lời dẫn ngắn).\n"
+                ."- story_content: 45-65 từ (đoạn văn lời ngỏ tình cảm, chân thành, tuyệt đối không bịa đặt ngày tháng hoặc sự kiện chưa được cung cấp).\n"
+                ."- dresscode_note: 10-20 từ (gợi ý trang phục thanh lịch).\n"
+                .'Trả về định dạng JSON thuần túy có các khóa: couple_quote, story_title, story_subtitle, story_content, dresscode_note.';
+
+            $response = Http::timeout(config('services.curated_ai.timeout', 5))
+                ->withHeaders([
+                    'Authorization' => 'Bearer '.$apiKey,
+                    'Content-Type' => 'application/json',
+                ])
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Bạn là chuyên gia biên tập thiệp cưới Quiet Luxury. Chỉ trả về JSON hợp lệ.'],
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'response_format' => ['type' => 'json_object'],
+                    'max_tokens' => 350,
+                    'temperature' => 0.7,
+                ]);
+
+            if ($response->successful()) {
+                $raw = $response->json();
+                $contentJson = $raw['choices'][0]['message']['content'] ?? null;
+                if ($contentJson) {
+                    $parsed = json_decode($contentJson, true);
+                    if (is_array($parsed) && ! empty($parsed['story_content']) && ! empty($parsed['couple_quote'])) {
+                        return [
+                            'content_source' => 'ai_generated',
+                            'ceremony_type' => 'Lễ Thành Hôn',
+                            'couple_quote' => trim((string) $parsed['couple_quote']),
+                            'story_title' => trim((string) ($parsed['story_title'] ?? 'Chuyện Tình Chúng Mình')),
+                            'story_subtitle' => trim((string) ($parsed['story_subtitle'] ?? 'Hành Trình Gặp Gỡ & Kết Duyên')),
+                            'story_content' => trim((string) $parsed['story_content']),
+                            'dresscode_note' => trim((string) ($parsed['dresscode_note'] ?? 'Trang phục trang nhã, lịch sự.')),
+                        ];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::info('Curated AI provider call skipped or failed, using editorial fallback: '.$e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Nội dung lời ngỏ dự phòng chuẩn mực do đội ngũ biên tập Mây Hẹn soạn thảo.
+     *
+     * @return array{
+     *     couple_quote: string,
+     *     story_title: string,
+     *     story_subtitle: string,
+     *     story_content: string,
+     *     dresscode_note: string,
+     *     ceremony_type: string,
+     *     content_source: string
+     * }
+     */
+    protected function getEditorialFallbackContent(string $groom, string $bride, string $style): array
+    {
         $base = [
-            'content_source' => 'ai_generated',
+            'content_source' => 'editorial_fallback',
             'ceremony_type' => 'Lễ Thành Hôn',
         ];
 
@@ -555,7 +650,7 @@ class CuratedInvitationService
                 'couple_quote' => 'Trăm năm kết tóc se duyên — Nghĩa tình vẹn tròn, sắt son một lòng.',
                 'story_title' => 'Chuyện Trăm Năm',
                 'story_subtitle' => 'Nên Duyên Vợ Chồng — Vẹn Tròn Hiếu Nghĩa',
-                'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ân sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
+                'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ấn sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
                 'dresscode_note' => 'Trang phục lịch sự, trang nhã để buổi lễ thêm phần long trọng và ấm cúng.',
             ]),
             default => array_merge($base, [ // 'romantic'

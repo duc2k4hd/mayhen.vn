@@ -370,6 +370,85 @@ html, body.mayhen_curated_preview_body {
     border-bottom: 1px solid var(--curated-border-dark);
 }
 
+.sidebar_header_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.sidebar_close_btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--curated-text-muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.sidebar_close_btn:hover {
+    color: var(--curated-text-white);
+}
+
+.btn_toggle_drawer {
+    display: none;
+}
+
+.mayhen_curated_sidebar_backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 998;
+}
+
+@media (max-width: 900px) {
+    .btn_toggle_drawer {
+        display: inline-flex !important;
+    }
+
+    .mayhen_curated_variants_sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100% !important;
+        max-height: 80vh;
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--curated-border-gold);
+        border-right: none;
+        z-index: 999;
+        transform: translateY(105%);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+        padding: 20px 16px;
+    }
+
+    .mayhen_curated_variants_sidebar.is-drawer-open {
+        transform: translateY(0) !important;
+    }
+
+    .sidebar_close_btn {
+        display: block !important;
+    }
+
+    .mayhen_curated_sidebar_backdrop.is-open {
+        display: block !important;
+    }
+
+    .mayhen_curated_topbar {
+        padding: 0 12px;
+    }
+
+    .mayhen_curated_info_pill {
+        display: none !important;
+    }
+}
+
 .sidebar_kicker {
     font-size: 10px;
     font-weight: 700;

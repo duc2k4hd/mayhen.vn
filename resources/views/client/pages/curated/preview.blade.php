@@ -74,6 +74,12 @@
         </div>
 
         <div class="mayhen_curated_topbar_right">
+            {{-- NÚT MỞ BẢNG BỐ CỤC CHO MOBILE (DRAWER TOGGLE) --}}
+            <button type="button" class="mayhen_curated_btn_action btn_toggle_drawer" id="btnToggleSidebarDrawer" title="Mở bảng tùy biến bố cục 7 section">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                <span>Bố Cục 📐</span>
+            </button>
+
             {{-- NÚT XEM LẠI QUÁ TRÌNH DỰNG THIỆP (REPLAY) --}}
             <button type="button" class="mayhen_curated_btn_action" id="btnReplayCrafting" title="Xem lại quá trình dựng thiệp trực tiếp">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
@@ -105,7 +111,10 @@
         {{-- BẢNG ĐIỀU KHIỂN BIẾN THỂ 7 SECTION (SIDEBAR CONTROLLER) --}}
         <aside class="mayhen_curated_variants_sidebar" id="variantsSidebar">
             <div class="sidebar_header">
-                <span class="sidebar_kicker">7 SECTION TIÊU CHUẨN</span>
+                <div class="sidebar_header_top">
+                    <span class="sidebar_kicker">7 SECTION TIÊU CHUẨN</span>
+                    <button type="button" class="sidebar_close_btn" id="btnCloseSidebarDrawer" aria-label="Đóng bảng tùy biến">&times;</button>
+                </div>
                 <h2 class="sidebar_title">Đổi Bố Cục Từng Mục</h2>
                 <p class="sidebar_desc">Tùy biến riêng lẻ 3 biến thể mỹ thuật của từng section</p>
             </div>
@@ -165,6 +174,9 @@
                 </div>
             </div>
         </aside>
+
+        {{-- LỚP NỀN MỜ CHO MOBILE DRAWER --}}
+        <div class="mayhen_curated_sidebar_backdrop" id="sidebarBackdrop"></div>
 
         {{-- KHU VỰC SÂN KHẤU PREVIEW (PREVIEW STAGE) --}}
         <section class="mayhen_curated_stage_area">

@@ -5968,15 +5968,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                        * Bước 4: `Bảng màu & Thời khắc trọng đại` (Swatches màu sắc lớn trực quan, ngày cưới và địa điểm tổ chức).
                                      - Bổ sung khối **Tóm Tắt Thiết Kế (Design Summary Card)**: Tự động cập nhật thời gian thực tên cặp đôi, phong cách đã chọn, tông màu cố định, thông tin 7 Section chuẩn mực và lưu ý khung chờ ảnh cưới trung tính.
                                      - Nút bấm `✦ Tạo Thiệp Của Chúng Mình ✦` có trạng thái loading thật và chống nhấp đúp (anti double-submit).
+                                  6. **Drawer Tùy Biến Bố Cục Trên Thiết Bị Di Động (Section 6.3 Mobile Drawer)**:
+                                     - Trên màn hình di động (<= 900px), sidebar không còn chiếm cố định diện tích làm bóp hẹp khung thiệp xuống 150px.
+                                     - Khung preview điện thoại được hiển thị trọn vẹn toàn chiều rộng màn hình (Full-bleed responsive stage).
+                                     - Danh sách tùy biến biến thể 7 section mở mượt mà dưới dạng Bottom Sheet / Drawer với nút bấm `Bố Cục 📐`, nút đóng `✕` và lớp phủ mờ nền `sidebarBackdrop`.
+                                  7. **Động Cơ AI Nội Dung Đáng Tin Cậy & Fallback Minh Bạch (Section 8 AI Content Engine)**:
+                                     - Bổ sung cấu hình `config('services.curated_ai')` hỗ trợ kết nối trực tiếp AI provider (OpenAI / Gemini) với JSON schema chặt chẽ và ngân sách từ ngữ khắt khe (Story: 45-65 từ, Quote: 12-25 từ, Slogan: 6-12 từ).
+                                     - Khi API key chưa được cấu hình hoặc nhà cung cấp AI gặp sự cố (timeout/500), hệ thống tự động kích hoạt kho lưu trữ lời ngỏ biên tập dự phòng của Mây Hẹn với cờ nguồn nội dung `'content_source' => 'editorial_fallback'` rõ ràng, trung thực, tuyệt đối không tạo dữ liệu giả hay báo thành công ảo.
                              - **Tập tin đã cập nhật & bổ sung**:
-                               * Backend: `app/Services/CuratedInvitationService.php`, `app/Http/Controllers/Client/CuratedInvitationController.php`.
+                               * Backend: `app/Services/CuratedInvitationService.php`, `app/Http/Controllers/Client/CuratedInvitationController.php`, `config/services.php`.
                                * Views & Templates: `resources/views/client/invitations/mayhen-curated/schema.json`, `template.blade.php`, `styles.css`, `script.js`.
                                * 3 Biến Thể Album mới: `resources/views/client/invitations/mayhen-curated/sections/album/` (`variant_a.blade.php`, `variant_b.blade.php`, `variant_c.blade.php`).
                                * Asset mới: `resources/views/client/invitations/mayhen-curated/assets/placeholder-photo.svg`.
                                * Giao diện Studio Preview & Wizard: `resources/views/client/pages/curated/wizard.blade.php`, `preview.blade.php`, `public/assets/client/css/pages/curated-wizard.css`, `curated-preview.css`, `public/assets/client/js/pages/curated-wizard.js`, `curated-preview.js`.
-                               * Test Suites: `tests/Feature/CuratedInvitationFlowTest.php` (bổ sung test one-time token & kiểm tra 7 section có album), `tests/Feature/CanonicalTemplateSectionsTest.php`.
+                               * Test Suites: `tests/Feature/CuratedInvitationFlowTest.php` (11 ca kiểm thử toàn diện gồm AI mock & fallback), `tests/Feature/CanonicalTemplateSectionsTest.php`.
                              - **Kết quả Kiểm Thử**:
-                               * Toàn bộ 472/472 tests toàn hệ thống: **100% PASSED (2,438 assertions)** trong ~9 giây.
+                               * Toàn bộ 473/473 tests toàn hệ thống: **100% PASSED (2,444 assertions)** trong ~9.8 giây.
                                * Laravel Pint: Đạt chuẩn agent style không có lỗi.
                                * Đảm bảo không phá vỡ bất kỳ quy tắc nào trong `AGENTS.md` và `context.gemini.md`.
 

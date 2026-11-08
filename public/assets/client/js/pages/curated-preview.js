@@ -302,4 +302,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // 6. Mobile Drawer Toggle cho Bảng Tùy Biến Bố Cục
+    const btnToggleDrawer = document.getElementById('btnToggleSidebarDrawer');
+    const btnCloseDrawer = document.getElementById('btnCloseSidebarDrawer');
+    const sidebar = document.getElementById('variantsSidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    function openDrawer() {
+        if (sidebar) sidebar.classList.add('is-drawer-open');
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('is-open');
+    }
+
+    function closeDrawer() {
+        if (sidebar) sidebar.classList.remove('is-drawer-open');
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('is-open');
+    }
+
+    if (btnToggleDrawer) btnToggleDrawer.addEventListener('click', openDrawer);
+    if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeDrawer);
+    if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeDrawer);
 });
