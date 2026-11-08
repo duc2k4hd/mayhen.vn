@@ -5097,6 +5097,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                      191. **Triển Khai Bàn Soát Lỗi Trước Khi Gửi Thiệp & Trợ Lý Xưng Hô Lễ Nghi (Pre-Send Validation Desk & Family Etiquette Assistant)**:
+                           - **Bối cảnh & Giá trị trải nghiệm**:
+                             - Thực thi các mục 09.2 (Gia đình & văn hóa Việt) và 09.3 (Guest Journey Concierge) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                             - Hóa giải nỗi sợ lớn nhất khi gửi thiệp cưới: "Sợ gửi nhầm người, sợ thiếu danh xưng gây mất lòng phụ huynh họ hàng hai bên, sợ khách chưa có nhóm bị sót lời ngỏ Persona, hoặc thiệp chưa xuất bản đã vội gửi link".
+                           - **Các tính năng cao cấp đã hoàn thành**:
+                             1. *TASK-VAL-10: Bàn Soát Lỗi Trước Khi Gửi Thiệp & Trợ Lý Xưng Hô (Pre-Send Validation Desk)*:
+                                - Khởi tạo Service `app/Services/PreSendValidationService.php`:
+                                  * Tính toán điểm số sẵn sàng gửi thiệp (`readiness_score` từ 0 - 100%).
+                                  * Rà soát tự động 5 nhóm rủi ro: Thiệp chưa bật xuất bản (`unpublished`), Khách thiếu danh xưng tôn kính (`missing_salutation`), Khách chưa được phân nhóm (`missing_group`), Khách có nguy cơ trùng tên/số điện thoại (`duplicate_candidates`), Khách có số suất mời <= 0 (`invalid_attendees`).
+                                  * Tích hợp Trợ Lý Xưng Hô Lễ Nghi (`Family Etiquette Assistant`): Cung cấp ma trận danh xưng gợi ý chuẩn mực văn hóa cưới hỏi Việt Nam theo từng nhóm khách (Nhóm Họ Hàng -> Bác / Cô / Chú / Dì; Nhóm Bạn Bè -> Bạn / Cậu; Nhóm Đồng Nghiệp -> Anh / Chị).
+                                - Bổ sung API endpoint `GET /tai-khoan/thiep/{id}/khach-moi/kiem-tra-truoc-gui` (`guests.pre_send_validation`) trong `GuestController.php` kiểm soát phân quyền chặt chẽ (`auth`, `authorizeGuestManagement`).
+                                - Giao diện Quản lý khách mời (`resources/views/client/pages/guests.blade.php`): Thêm nút bấm nổi bật `[ 🛡️ Soát Lỗi Trước Khi Gửi ]` và Modal Drawer sang trọng hiển thị vòng tròn điểm số, thống kê khách đạt chuẩn vs khách cần xem lại, danh sách lỗi trực quan và bảng gợi ý xưng hô tương tác.
+                                - JavaScript `public/assets/client/js/pages/guests.js`: Xử lý fetch API, render dynamic status badges và hỗ trợ đóng mở mượt mà chuẩn Pure Vanilla JS.
+                           - **Kiểm thử & Đảm bảo chất lượng**:
+                             - Viết mới Feature test suite trong `tests/Feature/PreSendValidationTest.php` gồm 3 kịch bản kiểm thử: Phân tích các rủi ro, Cảnh báo thiệp chưa xuất bản, và Bảo vệ IDOR cho người lạ -> **3/3 tests passed**.
+                             - Toàn bộ test suite toàn hệ thống: **311/311 tests passed 100% (1,538 assertions)**.
+                             - Laravel Pint: Đạt chuẩn 100% agent style.
+                             - Cập nhật `.gitignore` đưa test suite mới vào kiểm soát mã nguồn.
+                             - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -107,4 +107,3 @@ test('rehearsal control bar is safely hidden inside studio embed iframe', functi
     $response->assertOk();
     $response->assertDontSee('mayhen_rehearsal_topbar');
 });
-

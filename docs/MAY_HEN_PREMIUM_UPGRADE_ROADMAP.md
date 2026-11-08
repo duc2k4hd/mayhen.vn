@@ -108,3 +108,12 @@
   * API endpoint: `POST /api/editor/publish-impact/{id}` (`invitation.publish_impact`) phân quyền an toàn `auth` và `isOwner()`.
 - **Kiểm thử**: `tests/Feature/PublishImpactReportTest.php` (4/4 tests passed).
 
+#### `TASK-VAL-10`: Bàn Soát Lỗi Trước Khi Gửi Thiệp & Trợ Lý Xưng Hô (Pre-Send Validation Desk & Family Etiquette Assistant) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Rà soát toàn diện danh sách khách mời trước khi gửi thiệp đồng loạt, cảnh báo khách thiếu danh xưng lễ nghi, khách chưa có nhóm, khách trùng tên/số điện thoại và gợi ý danh xưng chuẩn mực văn hóa cưới hỏi Việt Nam.
+- **Phạm vi code**:
+  * Service: `app/Services/PreSendValidationService.php` tính toán điểm số sẵn sàng (`readiness_score`), phân loại 5 nhóm rủi ro (chưa xuất bản, thiếu danh xưng, thiếu nhóm, trùng lặp, số suất <= 0) và cung cấp bảng gợi ý xưng hô tương ứng từng nhóm khách.
+  * Backend API: `GET /tai-khoan/thiep/{id}/khach-moi/kiem-tra-truoc-gui` (`guests.pre_send_validation`) trong `GuestController.php`.
+  * Giao diện Quản lý khách: Nút bấm `[ 🛡️ Soát Lỗi Trước Khi Gửi ]` và Modal Drawer sang trọng trên `resources/views/client/pages/guests.blade.php`.
+  * Client JS: `public/assets/client/js/pages/guests.js` gọi API, hiển thị badge phân cấp mức độ và bảng xưng hô tương tác.
+- **Kiểm thử**: `tests/Feature/PreSendValidationTest.php` (3/3 tests passed).
+

@@ -55,6 +55,12 @@
                 </p>
             </div>
             <div class="mayhen_guest_header_actions">
+                <button type="button" id="btn-open-presend-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Soát Lỗi Trước Khi Gửi</span>
+                </button>
                 <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -629,6 +635,76 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                         Mở Zalo
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bàn Soát Lỗi Trước Khi Gửi & Trợ Lý Xưng Hô (TASK-VAL-10) -->
+    <div class="mayhen_guest_modal" id="mayhen_modal_presend_validation" style="display: none;" role="dialog" aria-modal="true">
+        <div class="mayhen_guest_modal_backdrop" id="presend-modal-backdrop"></div>
+        <div class="mayhen_guest_modal_dialog" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">PRE-SEND VALIDATION DESK</span>
+                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Bàn Soát Lỗi Trước Khi Gửi Thiệp</h3>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" id="presend-modal-close" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
+                <div id="presend-loading" style="text-align: center; padding: 40px 20px; color: #7A726A;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                    <span>Đang rà soát toàn bộ danh sách khách mời và các chỉ số an tâm...</span>
+                </div>
+
+                <div id="presend-content" style="display: none; flex-direction: column; gap: 20px;">
+                    <!-- Thẻ Điểm Số Sẵn Sàng (Readiness Score Card) -->
+                    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFE6 100%); border: 1px solid #E5DCCD; border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                        <div>
+                            <span style="font-size: 12px; color: #7A726A; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Chỉ số sẵn sàng gửi thiệp</span>
+                            <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+                                <span id="presend-score-val" style="font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 700; color: #1F1D1A; line-height: 1;">100%</span>
+                                <span id="presend-score-badge" style="font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: #E8F5E9; color: #2E7D32;">Tuyệt vời</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; font-size: 13px;">
+                            <div>
+                                <span style="color: #7A726A; display: block;">Khách đạt chuẩn:</span>
+                                <strong id="presend-ready-count" style="color: #2E7D32; font-size: 16px;">0</strong>
+                            </div>
+                            <div style="border-left: 1px solid #D8CEBD; padding-left: 16px;">
+                                <span style="color: #7A726A; display: block;">Cần xem lại:</span>
+                                <strong id="presend-flagged-count" style="color: #C62828; font-size: 16px;">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách các vấn đề phát hiện -->
+                    <div>
+                        <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0 0 10px 0;">Danh Sách Điểm Cần Hoàn Thiện:</h4>
+                        <div id="presend-issues-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Dynamic items inserted via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Trợ Lý Xưng Hô Lễ Nghi (Family Etiquette Assistant) -->
+                    <div style="background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 12px; padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 16px;">📜</span>
+                            <h4 style="font-size: 13.5px; font-weight: 700; color: #1F1D1A; margin: 0;">Trợ Lý Xưng Hô Lễ Nghi (Family Etiquette Assistant)</h4>
+                        </div>
+                        <p style="font-size: 12.5px; color: #6E665E; margin: 0 0 12px 0; line-height: 1.5;">
+                            Gợi ý danh xưng chuẩn mực văn hóa Việt tương ứng với từng nhóm khách để thiệp mời trang trọng và lễ phép nhất:
+                        </p>
+                        <div id="presend-etiquette-table" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; font-size: 12.5px;">
+                            <!-- Dynamic suggestions -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
+                <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="presend-btn-done">
+                    Đã Hiểu & Quay Lại Danh Sách
+                </button>
             </div>
         </div>
     </div>

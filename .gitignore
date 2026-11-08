@@ -64,6 +64,7 @@ Thumbs.db
 !/tests/Feature/TimeCapsuleAnniversaryNotificationTest.php
 !/tests/Feature/PrePublishRehearsalTest.php
 !/tests/Feature/PublishImpactReportTest.php
+!/tests/Feature/PreSendValidationTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

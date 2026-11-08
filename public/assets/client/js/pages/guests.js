@@ -302,6 +302,122 @@ document.addEventListener('DOMContentLoaded', () => {
         setupModalDismiss(rsvpModal);
     }
 
+    // 6. Bàn Soát Lỗi Trước Khi Gửi & Trợ Lý Xưng Hô (Pre-Send Validation Desk - TASK-VAL-10)
+    const presendBtn = document.getElementById('btn-open-presend-modal');
+    const presendModal = document.getElementById('mayhen_modal_presend_validation');
+    if (presendBtn && presendModal) {
+        const loadingEl = document.getElementById('presend-loading');
+        const contentEl = document.getElementById('presend-content');
+        const scoreValEl = document.getElementById('presend-score-val');
+        const scoreBadgeEl = document.getElementById('presend-score-badge');
+        const readyCountEl = document.getElementById('presend-ready-count');
+        const flaggedCountEl = document.getElementById('presend-flagged-count');
+        const issuesListEl = document.getElementById('presend-issues-list');
+        const etiquetteTableEl = document.getElementById('presend-etiquette-table');
+        const doneBtn = document.getElementById('presend-btn-done');
+
+        presendBtn.addEventListener('click', async () => {
+            openModal(presendModal);
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+
+            try {
+                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/kiem-tra-truoc-gui';
+                const res = await fetch(endpoint, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const json = await res.json();
+                if (!json.success || !json.data) throw new Error('Không thể tải dữ liệu kiểm tra.');
+
+                const data = json.data;
+
+                // Render điểm số và thống kê
+                if (scoreValEl) scoreValEl.textContent = `${data.readiness_score}%`;
+                if (scoreBadgeEl) {
+                    if (data.readiness_score >= 90) {
+                        scoreBadgeEl.textContent = 'Hoàn hảo để gửi';
+                        scoreBadgeEl.style.background = '#E8F5E9';
+                        scoreBadgeEl.style.color = '#2E7D32';
+                    } else if (data.readiness_score >= 70) {
+                        scoreBadgeEl.textContent = 'Khá tốt';
+                        scoreBadgeEl.style.background = '#FFF8E1';
+                        scoreBadgeEl.style.color = '#F57F17';
+                    } else {
+                        scoreBadgeEl.textContent = 'Cần lưu ý';
+                        scoreBadgeEl.style.background = '#FFEBEE';
+                        scoreBadgeEl.style.color = '#C62828';
+                    }
+                }
+                if (readyCountEl) readyCountEl.textContent = data.ready_guests_count;
+                if (flaggedCountEl) flaggedCountEl.textContent = data.flagged_guests_count;
+
+                // Render danh sách lỗi
+                if (issuesListEl) {
+                    issuesListEl.innerHTML = '';
+                    const issueKeys = Object.keys(data.issues || {});
+                    if (issueKeys.length === 0) {
+                        issuesListEl.innerHTML = `
+                            <div style="background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 10px; padding: 14px; color: #2E7D32; font-size: 13px;">
+                                ✨ <strong>Tuyệt vời!</strong> Danh sách khách mời của bạn hoàn toàn chuẩn xác, đầy đủ danh xưng lễ nghi và sẵn sàng gửi thiệp ngay lúc này.
+                            </div>
+                        `;
+                    } else {
+                        issueKeys.forEach(key => {
+                            const iss = data.issues[key];
+                            const bg = iss.severity === 'critical' ? '#FFEBEE' : (iss.severity === 'warning' ? '#FFF8E1' : '#F5F5F5');
+                            const border = iss.severity === 'critical' ? '#FFCDD2' : (iss.severity === 'warning' ? '#FFE082' : '#E0E0E0');
+                            const color = iss.severity === 'critical' ? '#C62828' : (iss.severity === 'warning' ? '#E65100' : '#424242');
+
+                            let guestListHtml = '';
+                            if (iss.guests && iss.guests.length > 0) {
+                                const previewGuests = iss.guests.slice(0, 3).map(g => `<code>${g.name}</code>`).join(', ');
+                                const moreCount = iss.guests.length - 3;
+                                guestListHtml = `<div style="margin-top: 6px; font-size: 12px; color: #555;">Khách liên quan: ${previewGuests} ${moreCount > 0 ? `và ${moreCount} khách khác...` : ''}</div>`;
+                            }
+
+                            const item = document.createElement('div');
+                            item.style.cssText = `background: ${bg}; border: 1px solid ${border}; border-radius: 10px; padding: 12px 14px;`;
+                            item.innerHTML = `
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <strong style="color: ${color}; font-size: 13px;">${iss.title}</strong>
+                                    <span style="font-size: 12px; font-weight: 700; color: ${color};">${iss.count} trường hợp</span>
+                                </div>
+                                <p style="font-size: 12.5px; color: #4A453E; margin: 4px 0 0 0; line-height: 1.45;">${iss.description}</p>
+                                ${guestListHtml}
+                            `;
+                            issuesListEl.appendChild(item);
+                        });
+                    }
+                }
+
+                // Render gợi ý danh xưng (Family Etiquette Assistant)
+                if (etiquetteTableEl && data.etiquette_suggestions) {
+                    etiquetteTableEl.innerHTML = '';
+                    Object.entries(data.etiquette_suggestions).forEach(([grp, sugg]) => {
+                        const cell = document.createElement('div');
+                        cell.style.cssText = 'background: #FAF8F5; border: 1px solid #EFE8DD; border-radius: 8px; padding: 8px 12px;';
+                        cell.innerHTML = `
+                            <strong style="color: #1F1D1A; display: block; font-size: 12px;">Nhóm: ${grp}</strong>
+                            <span style="color: #9C7A4A; font-weight: 500;">Gợi ý: ${sugg}</span>
+                        `;
+                        etiquetteTableEl.appendChild(cell);
+                    });
+                }
+
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (contentEl) contentEl.style.display = 'flex';
+            } catch (err) {
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+            }
+        });
+
+        if (doneBtn) doneBtn.addEventListener('click', () => closeModal(presendModal));
+        setupModalDismiss(presendModal);
+    }
+
     function openModal(modalEl) {
         modalEl.classList.add('is-open');
         document.body.style.overflow = 'hidden';

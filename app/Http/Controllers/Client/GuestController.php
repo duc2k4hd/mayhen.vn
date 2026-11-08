@@ -12,6 +12,7 @@ use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\PreSendValidationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -454,6 +455,22 @@ class GuestController extends Controller
         }
 
         return back()->with('success', 'Đã cập nhật trạng thái RSVP cho khách mời thành công.');
+    }
+
+    /**
+     * Bàn Soát Lỗi Trước Khi Gửi Thiệp & Trợ Lý Xưng Hô (Pre-Send Validation Desk - TASK-VAL-10).
+     */
+    public function preSendValidation(int $invitationId, PreSendValidationService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeGuestManagement($invitation->wedding);
+
+        $result = $service->validate($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
     }
 
     /**

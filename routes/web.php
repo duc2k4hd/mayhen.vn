@@ -128,6 +128,7 @@ Route::prefix('tai-khoan')->group(function () {
     Route::post('/thiep/{id}/khach-moi/nhap-nhanh', [GuestController::class, 'batchStore'])->middleware('throttle:30,1')->name('guests.batch_store');
     Route::get('/thiep/{id}/khach-moi/xuat-csv', [GuestController::class, 'exportCsv'])->name('guests.export');
     Route::get('/thiep/{id}/khach-moi/in', [GuestController::class, 'print'])->name('guests.print');
+    Route::get('/thiep/{id}/khach-moi/kiem-tra-truoc-gui', [GuestController::class, 'preSendValidation'])->middleware('throttle:30,1')->name('guests.pre_send_validation');
     Route::put('/khach-moi/{id}', [GuestController::class, 'update'])->middleware('throttle:60,1')->name('guests.update');
     Route::post('/khach-moi/{id}/rsvp-thu-cong', [GuestController::class, 'manualRsvp'])->middleware('throttle:60,1')->name('guests.manual_rsvp');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
