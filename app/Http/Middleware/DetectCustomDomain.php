@@ -96,17 +96,17 @@ class DetectCustomDomain
 
         // '/ky-niem' -> Két lưu trữ kỷ niệm số
         if ($path === 'ky-niem') {
-            return response(app(MemoryVaultController::class)->show($matchedDomain->invitation->slug));
+            return response(app(MemoryVaultController::class)->show($request, $matchedDomain->invitation->slug));
         }
 
         // '/photo-drop' -> Thu thập ảnh khách chụp
         if ($path === 'photo-drop') {
-            return response(app(PhotoDropController::class)->show($matchedDomain->invitation->slug));
+            return response(app(PhotoDropController::class)->show($request, $matchedDomain->invitation->slug));
         }
 
         // '/diem-danh-tiec' -> Cổng tiếp tân quét mã
         if ($path === 'diem-danh-tiec') {
-            return response(app(CheckInController::class)->showPortal($matchedDomain->invitation->slug));
+            return response(app(CheckInController::class)->showPortal($request, $matchedDomain->invitation->slug));
         }
 
         // '/trinh-chieu' -> Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp

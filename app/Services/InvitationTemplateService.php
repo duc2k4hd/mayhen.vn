@@ -948,6 +948,18 @@ class InvitationTemplateService
             $weddingId = $invitationId ? Invitation::whereKey($invitationId)->value('wedding_id') : null;
             $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->firstOrFail() : null;
             $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
+            $existingConfig = [];
+            if ($existingInvitation) {
+                $existingConfig = is_array($existingInvitation->custom_config)
+                    ? $existingInvitation->custom_config
+                    : (json_decode((string) $existingInvitation->custom_config, true) ?? []);
+
+                if (! empty($existingConfig['is_locked'])) {
+                    throw ValidationException::withMessages([
+                        'is_locked' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.',
+                    ]);
+                }
+            }
             if ($existingInvitation && $existingInvitation->wedding_id !== $wedding?->id) {
                 throw ValidationException::withMessages(['revision_id' => 'Dữ liệu thiệp đã thay đổi. Vui lòng tải lại trước khi tiếp tục.']);
             }
@@ -1018,6 +1030,11 @@ class InvitationTemplateService
 
             if ($existingInvitation) {
                 $mergedConfig = array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig);
+                if (! empty($existingConfig['is_locked'])) {
+                    $mergedConfig['is_locked'] = true;
+                    $mergedConfig['lock_reason'] = $existingConfig['lock_reason'] ?? null;
+                    $mergedConfig['locked_at'] = $existingConfig['locked_at'] ?? null;
+                }
                 if ($previousSnapshot) {
                     $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
                 }
@@ -1084,6 +1101,19 @@ class InvitationTemplateService
                     'success' => false,
                     'conflict' => true,
                     'message' => 'Không tìm thấy thiệp cưới tương ứng.',
+                ];
+            }
+
+            $currentConfig = is_array($currentInvitation->custom_config)
+                ? $currentInvitation->custom_config
+                : (json_decode((string) $currentInvitation->custom_config, true) ?? []);
+
+            if (! empty($currentConfig['is_locked'])) {
+                return [
+                    'success' => false,
+                    'conflict' => true,
+                    'locked' => true,
+                    'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể tự động lưu nháp.',
                 ];
             }
 

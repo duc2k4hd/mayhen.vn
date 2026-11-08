@@ -32,13 +32,13 @@ class TimeCapsuleController extends Controller
         $sealedCount = $capsules->where('is_sealed', true)->count();
         $unlockedCount = $capsules->where('is_sealed', false)->count();
 
-        // Gợi ý ngày mở khóa theo ngày cưới
+        // Gợi ý ngày mở khóa theo ngày cưới (bảo vệ trường hợp năm nhuận 29/02)
         $weddingDate = $wedding->wedding_date ? Carbon::parse($wedding->wedding_date) : Carbon::today();
         $suggestedDates = [
-            1 => $weddingDate->copy()->addYear()->format('Y-m-d'),
-            3 => $weddingDate->copy()->addYears(3)->format('Y-m-d'),
-            5 => $weddingDate->copy()->addYears(5)->format('Y-m-d'),
-            10 => $weddingDate->copy()->addYears(10)->format('Y-m-d'),
+            1 => $weddingDate->copy()->addYearsNoOverflow(1)->format('Y-m-d'),
+            3 => $weddingDate->copy()->addYearsNoOverflow(3)->format('Y-m-d'),
+            5 => $weddingDate->copy()->addYearsNoOverflow(5)->format('Y-m-d'),
+            10 => $weddingDate->copy()->addYearsNoOverflow(10)->format('Y-m-d'),
         ];
 
         return view('client.pages.account.time-capsule', [
@@ -155,6 +155,17 @@ class TimeCapsuleController extends Controller
         $wedding = $invitation->wedding;
         abort_unless($wedding, 404);
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $isOwner = $invitation->isOwner();
 
         // Lấy danh sách phong bì (nếu chưa unlock thì ẩn content trên server để bảo mật)
@@ -181,9 +192,9 @@ class TimeCapsuleController extends Controller
 
         $weddingDate = $wedding->wedding_date ? Carbon::parse($wedding->wedding_date) : Carbon::today();
         $suggestedDates = [
-            1 => $weddingDate->copy()->addYear()->format('Y-m-d'),
-            3 => $weddingDate->copy()->addYears(3)->format('Y-m-d'),
-            5 => $weddingDate->copy()->addYears(5)->format('Y-m-d'),
+            1 => $weddingDate->copy()->addYearsNoOverflow(1)->format('Y-m-d'),
+            3 => $weddingDate->copy()->addYearsNoOverflow(3)->format('Y-m-d'),
+            5 => $weddingDate->copy()->addYearsNoOverflow(5)->format('Y-m-d'),
         ];
 
         return view('client.pages.time-capsule-public', [
@@ -204,6 +215,14 @@ class TimeCapsuleController extends Controller
         $wedding = $invitation->wedding;
         abort_unless($wedding, 404);
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới tạm thời bị khóa.');
+        }
+
         $request->validate([
             'sender_name' => 'required|string|max:100',
             'recipient_name' => 'required|string|max:100',
@@ -216,7 +235,7 @@ class TimeCapsuleController extends Controller
 
         $weddingDate = $wedding->wedding_date ? Carbon::parse($wedding->wedding_date) : Carbon::today();
         $milestone = (int) $request->input('milestone_years', 1);
-        $unlockDate = $weddingDate->copy()->addYears($milestone);
+        $unlockDate = $weddingDate->copy()->addYearsNoOverflow($milestone);
 
         WeddingTimeCapsule::create([
             'wedding_id' => $wedding->id,

@@ -61,6 +61,7 @@ class WeddingTimeCapsule extends Model
 
     /**
      * Kiểm tra đã tới hoặc qua ngày mở khóa để cho phép bẻ niêm phong sáp.
+     * Thống nhất múi giờ sự kiện theo giờ Việt Nam (Asia/Ho_Chi_Minh).
      */
     public function canBeUnlocked(): bool
     {
@@ -68,11 +69,14 @@ class WeddingTimeCapsule extends Model
             return false;
         }
 
-        return Carbon::now()->startOfDay()->gte($this->unlock_date->startOfDay());
+        $now = Carbon::now('Asia/Ho_Chi_Minh')->startOfDay();
+        $target = $this->unlock_date->copy()->timezone('Asia/Ho_Chi_Minh')->startOfDay();
+
+        return $now->gte($target);
     }
 
     /**
-     * Số ngày còn lại đến ngày mở khóa.
+     * Số ngày còn lại đến ngày mở khóa (theo múi giờ Asia/Ho_Chi_Minh).
      */
     public function daysRemaining(): int
     {
@@ -80,8 +84,8 @@ class WeddingTimeCapsule extends Model
             return 0;
         }
 
-        $now = Carbon::now()->startOfDay();
-        $target = $this->unlock_date->startOfDay();
+        $now = Carbon::now('Asia/Ho_Chi_Minh')->startOfDay();
+        $target = $this->unlock_date->copy()->timezone('Asia/Ho_Chi_Minh')->startOfDay();
 
         return $now->gte($target) ? 0 : (int) $now->diffInDays($target);
     }

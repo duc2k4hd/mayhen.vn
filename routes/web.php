@@ -219,7 +219,7 @@ Route::get('/thiep/{slug}/hop-thoi-gian', [TimeCapsuleController::class, 'showPu
 Route::post('/thiep/{slug}/hop-thoi-gian', [TimeCapsuleController::class, 'storeGuest'])->middleware('throttle:20,1')->name('time_capsule.guest.store');
 
 // Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới (QR Check-in & Table Finder - TASK-V2-01)
-Route::get('/diem-danh-tiec/{slug}', [CheckInController::class, 'showPortal'])->name('checkin.portal');
+Route::get('/diem-danh-tiec/{slug?}', [CheckInController::class, 'showPortal'])->name('checkin.portal');
 Route::post('/diem-danh-tiec/{slug}/xac-thuc-pin', [CheckInController::class, 'verifyPin'])->middleware('throttle:15,1')->name('checkin.verifyPin');
 Route::post('/api/diem-danh-tiec/{slug}/quet', [CheckInController::class, 'processScan'])->middleware('throttle:120,1')->name('checkin.scan');
 Route::get('/api/diem-danh-tiec/{slug}/tim-nhanh', [CheckInController::class, 'quickSearch'])->middleware('throttle:60,1')->name('checkin.quickSearch');

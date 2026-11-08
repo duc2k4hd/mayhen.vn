@@ -808,6 +808,7 @@ class GuestController extends Controller
     public function replyWish(Request $request, string $slug, int $wishId): JsonResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $this->ensureInvitationInteractable($invitation);
 
         if (! $invitation->isOwner()) {
             return response()->json([

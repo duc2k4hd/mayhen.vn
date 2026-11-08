@@ -344,4 +344,73 @@ class CustomDomainTest extends TestCase
         $response->assertStatus(404);
         $response->assertSee('Tên Miền Đang Chờ Kích Hoạt');
     }
+
+    public function test_custom_domain_serves_memory_vault_photo_drop_and_checkin_without_type_error(): void
+    {
+        WeddingDomain::create([
+            'wedding_id' => $this->wedding->id,
+            'invitation_id' => $this->invitation->id,
+            'custom_domain' => 'damcuoituanlan.wedding',
+            'status' => 'active',
+        ]);
+
+        // 1. /ky-niem
+        $resMemory = $this->get('http://damcuoituanlan.wedding/ky-niem');
+        $resMemory->assertOk();
+
+        // 2. /photo-drop
+        $resPhotoDrop = $this->get('http://damcuoituanlan.wedding/photo-drop');
+        $resPhotoDrop->assertOk();
+
+        // 3. /diem-danh-tiec (hiển thị trang nhập PIN tiếp tân)
+        $resCheckin = $this->get('http://damcuoituanlan.wedding/diem-danh-tiec');
+        $resCheckin->assertOk();
+
+        // 4. /hop-thoi-gian
+        $resCapsule = $this->get('http://damcuoituanlan.wedding/hop-thoi-gian');
+        $resCapsule->assertOk();
+    }
+
+    public function test_custom_domain_serves_locked_view_when_invitation_is_locked(): void
+    {
+        $this->invitation->update([
+            'custom_config' => [
+                'is_locked' => true,
+                'lock_reason' => 'Thiệp đang tạm khóa đối soát vi phạm.',
+            ],
+        ]);
+
+        WeddingDomain::create([
+            'wedding_id' => $this->wedding->id,
+            'invitation_id' => $this->invitation->id,
+            'custom_domain' => 'damcuoituanlan.wedding',
+            'status' => 'active',
+        ]);
+
+        // 1. Trang chủ thiệp trên tên miền riêng
+        $resHome = $this->get('http://damcuoituanlan.wedding/');
+        $resHome->assertOk()
+            ->assertViewIs('client.pages.invitation-locked')
+            ->assertSee('Thiệp đang tạm khóa đối soát vi phạm.');
+
+        // 2. Két kỷ niệm trên tên miền riêng
+        $resVault = $this->get('http://damcuoituanlan.wedding/ky-niem');
+        $resVault->assertOk()
+            ->assertViewIs('client.pages.invitation-locked');
+
+        // 3. Photo drop trên tên miền riêng
+        $resDrop = $this->get('http://damcuoituanlan.wedding/photo-drop');
+        $resDrop->assertOk()
+            ->assertViewIs('client.pages.invitation-locked');
+
+        // 4. Điểm danh trên tên miền riêng
+        $resCheckin = $this->get('http://damcuoituanlan.wedding/diem-danh-tiec');
+        $resCheckin->assertOk()
+            ->assertViewIs('client.pages.invitation-locked');
+
+        // 5. Hộp thời gian trên tên miền riêng
+        $resCapsule = $this->get('http://damcuoituanlan.wedding/hop-thoi-gian');
+        $resCapsule->assertOk()
+            ->assertViewIs('client.pages.invitation-locked');
+    }
 }

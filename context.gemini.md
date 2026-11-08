@@ -5629,6 +5629,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        215. **Bịt Kín Lỗ Hổng Bỏ Quên Khóa Thiệp & Chuẩn Hóa Múi Giờ, Năm Nhuận Hộp Thời Gian (Locked Invitation Guard & Time Capsule Leap Year — Flow 11, 16, 17)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Flow 11 (Thiệp public bị admin khóa / hết hạn), Flow 16 (Photo Drop, moderation & Memory Vault) và Flow 17 (Time Capsule timezone & leap year):
+                               - **Lỗ hổng 1 (Bypass khóa qua Studio & API tiếp tân)**: Khi admin khóa thiệp (`is_locked = true`), chủ thiệp vẫn có thể gọi route `invitation.store`, `invitation.autosave` và các API phân tích tác động để ghi đè cập nhật thiệp. Tương tự, ban tiếp tân vẫn có thể gọi `quickSearch`, `undo`, `updateTable`, `walkInGuest`, `adjustAttendees`, `convertDeclined` và các chế độ diễn tập.
+                               - **Lỗ hổng 2 (Lọt thông tin Hộp Thời Gian khi bị khóa)**: `TimeCapsuleController::showPublic` và `storeGuest` không kiểm tra cờ `is_locked`, cho phép mở trang và gửi thư vào thiệp đang bị khóa.
+                               - **Lỗ hổng 3 (Lỗi TypeError trên Custom Domain)**: Trong `DetectCustomDomain.php`, các lời gọi controller cho `/ky-niem`, `/photo-drop` và `/diem-danh-tiec` thiếu tham số `$request`, gây lỗi nghiêm trọng `TypeError: Argument #1 ($request) must be of type Request, string given`. Đồng thời route `/diem-danh-tiec/{slug}` bắt buộc slug khiến truy cập qua custom domain bị 404.
+                               - **Lỗ hổng 4 (Lệch múi giờ & Tràn ngày năm nhuận 29/02)**: `WeddingTimeCapsule::canBeUnlocked()` dùng `Carbon::now()` theo UTC làm lễ kỷ niệm mở muộn 7 tiếng so với giờ Việt Nam (`Asia/Ho_Chi_Minh`). Khi đám cưới tổ chức vào ngày nhuận 29/02, việc cộng năm thông thường làm tràn sang ngày 01/03 thay vì ở lại ngày cuối tháng Hai (28/02).
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Bảo vệ toàn diện trạng thái khóa thiệp**:
+                                 * `InvitationEditorController`: Chặn 403 ngay tại `store`, `autosave`, `publishImpact`, `readinessCheck`, `collisionCheck` nếu thiệp có `is_locked = true`.
+                                 * `InvitationTemplateService`: `saveInvitation` ném `ValidationException` khi sửa thiệp đã khóa; bảo tồn siêu dữ liệu `is_locked`, `lock_reason`, `locked_at` trong `$mergedConfig`. `saveDraftWithLock` trả về `['conflict' => true, 'locked' => true]`.
+                                 * `GuestController::replyWish`: Bổ sung `$this->ensureInvitationInteractable($invitation)`.
+                                 * `CheckInController`: Tích hợp kiểm tra `is_locked` vào `isAuthorizedReceptionist`, `quickSearch`, `undo`, `updateTable`, `walkInGuest`, `adjustAttendees`, `convertDeclined`, `enableDryRun`, `disableDryRun`, `resetDryRun`, `getHandoverSummary`, `submitShiftHandover`.
+                                 * `TimeCapsuleController`: `showPublic` hiển thị `client.pages.invitation-locked`, `storeGuest` chặn 403 khi thiệp bị khóa.
+                                 * `MemoryVaultController::updateSettings`: Chặn cập nhật khi thiệp đang bị khóa.
+                               - **Sửa lỗi ủy quyền & Route trên Custom Domain**:
+                                 * `DetectCustomDomain.php`: Sửa đúng chữ ký truyền `$request` cho `MemoryVaultController::show`, `PhotoDropController::show`, `CheckInController::showPortal`, `TimeCapsuleController::showPublic`, `LiveWallController::show`.
+                                 * `routes/web.php`: Đổi route `/diem-danh-tiec/{slug?}` với slug tùy chọn để hỗ trợ truy cập trực tiếp từ tên miền riêng.
+                                 * `CheckInController::showPortal`: Tự động nhận diện slug từ `custom_wedding_domain` nếu request không có slug trên URL.
+                               - **Chuẩn hóa Múi giờ Việt Nam & Năm nhuận cho Hộp Thời Gian**:
+                                 * `WeddingTimeCapsule`: Tính toán `canBeUnlocked()` và `daysRemaining()` thống nhất theo múi giờ `Asia/Ho_Chi_Minh`.
+                                 * `TimeCapsuleController`: Dùng `addYearsNoOverflow($milestone)` bảo vệ ngày mở thư cho các đám cưới tổ chức vào ngày nhuận 29/02.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng `tests/Feature/InvitationLockedConsistencyTest.php` thêm 5 ca kiểm thử chuyên sâu -> **10/10 tests passed (49 assertions)**:
+                                 * `test_locked_invitation_blocks_public_show_and_wishes_and_rsvp`
+                                 * `test_owner_cannot_bypass_lock_via_studio_publish_or_autosave`
+                                 * `test_locked_invitation_blocks_all_reception_actions`
+                                 * `test_locked_invitation_blocks_public_time_capsule_and_guest_submission`
+                                 * `test_time_capsule_timezone_and_leap_year_handling`
+                               - Mở rộng `tests/Feature/CustomDomainTest.php` thêm 2 ca kiểm thử -> **19/19 tests passed (69 assertions)**:
+                                 * `test_custom_domain_serves_memory_vault_photo_drop_and_checkin_without_type_error`
+                                 * `test_custom_domain_serves_locked_view_when_invitation_is_locked`
+                               - Toàn bộ test suite toàn hệ thống: **427/427 tests passed 100% (2,170 assertions)** trong ~8.2 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

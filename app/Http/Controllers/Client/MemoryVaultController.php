@@ -169,6 +169,10 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên.');
+        }
+
         $config['memory_vault'] = [
             'enabled' => $request->boolean('enabled'),
             'thank_you_letter' => $validated['thank_you_letter'] ? strip_tags(trim($validated['thank_you_letter'])) : null,

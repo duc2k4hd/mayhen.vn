@@ -21,8 +21,16 @@ class CheckInController extends Controller
     /**
      * Hiển thị Cổng Tiếp Tân Điểm Danh & Quét Mã QR Ngày Cưới.
      */
-    public function showPortal(Request $request, string $slug): View|RedirectResponse
+    public function showPortal(Request $request, ?string $slug = null): View|RedirectResponse
     {
+        if (! $slug) {
+            $customDomain = $request->attributes->get('custom_wedding_domain');
+            if ($customDomain && $customDomain->invitation) {
+                $slug = $customDomain->invitation->slug;
+            }
+        }
+        abort_unless($slug, 404, 'Không tìm thấy thông tin đám cưới.');
+
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
@@ -286,6 +294,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
@@ -335,6 +354,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
@@ -358,6 +388,17 @@ class CheckInController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
@@ -403,6 +444,17 @@ class CheckInController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
@@ -507,6 +559,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
@@ -565,6 +628,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
@@ -613,6 +687,15 @@ class CheckInController extends Controller
     public function enableDryRun(Request $request, string $slug): RedirectResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
         $request->session()->put('is_dry_run_'.$invitation->id, true);
 
         return redirect()->route('checkin.portal', ['slug' => $slug, 'dry_run' => 1])
@@ -625,6 +708,15 @@ class CheckInController extends Controller
     public function disableDryRun(Request $request, string $slug): RedirectResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
         $request->session()->forget('is_dry_run_'.$invitation->id);
         app(ReceptionDryRunService::class)->resetDryRun($invitation);
 
@@ -638,6 +730,15 @@ class CheckInController extends Controller
     public function resetDryRun(Request $request, string $slug): RedirectResponse
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
         app(ReceptionDryRunService::class)->resetDryRun($invitation);
 
         return redirect()->route('checkin.portal', ['slug' => $slug, 'dry_run' => 1])
@@ -799,6 +900,14 @@ class CheckInController extends Controller
      */
     private function isAuthorizedReceptionist(Request $request, Invitation $invitation, Wedding $wedding): bool
     {
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return false;
+        }
+
         // 1. Cặp đôi đã đăng nhập
         if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
             return true;
@@ -870,6 +979,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json([
                 'success' => false,
@@ -896,6 +1016,17 @@ class CheckInController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json([

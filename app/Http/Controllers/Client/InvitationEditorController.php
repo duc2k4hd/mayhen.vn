@@ -179,6 +179,20 @@ class InvitationEditorController extends Controller
         if ($invitationId) {
             $existing = Invitation::with('wedding')->findOrFail($invitationId);
             abort_unless($existing->isOwner(), 404);
+
+            $existingConfig = is_array($existing->custom_config)
+                ? $existing->custom_config
+                : (json_decode((string) $existing->custom_config, true) ?? []);
+
+            if (! empty($existingConfig['is_locked'])) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.',
+                    ], 403);
+                }
+                abort(403, 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.');
+            }
         }
 
         // Tìm hoặc tạo guest user
@@ -506,6 +520,14 @@ class InvitationEditorController extends Controller
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền thực hiện thao tác này.');
 
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         $newData = $request->input('wedding', []);
         $result = $guardian->evaluatePublishImpact($invitation->wedding, is_array($newData) ? $newData : []);
 
@@ -523,6 +545,14 @@ class InvitationEditorController extends Controller
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
 
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         $result = $guardian->calculateReadinessChecklist($invitation->wedding, $invitation);
 
         return response()->json([
@@ -538,6 +568,14 @@ class InvitationEditorController extends Controller
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
+
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         $result = $guardian->detectCeremonyCollisions($invitation->wedding, $invitation);
 
@@ -566,6 +604,16 @@ class InvitationEditorController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Bạn không có quyền chỉnh sửa thiệp cưới này.',
+            ], 403);
+        }
+
+        $invitationConfig = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($invitationConfig['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'conflict' => true,
+                'locked' => true,
+                'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể tự động lưu nháp.',
             ], 403);
         }
 
