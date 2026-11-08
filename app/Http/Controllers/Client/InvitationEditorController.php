@@ -516,6 +516,22 @@ class InvitationEditorController extends Controller
     }
 
     /**
+     * API Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Wedding Readiness Checklist - TASK-VAL-12).
+     */
+    public function readinessCheck(int $invitationId, WeddingConsistencyGuardianService $guardian): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
+
+        $result = $guardian->calculateReadinessChecklist($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
+    }
+
+    /**
      * API Autosave định kỳ từ Studio V2 kèm Optimistic Concurrency Control.
      */
     public function autosave(Request $request): JsonResponse

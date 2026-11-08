@@ -114,6 +114,33 @@
                             @endif
                         </div>
 
+                        {{-- Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (TASK-VAL-12) --}}
+                        @php
+                            $readiness = $readinessMap[$inv->id] ?? null;
+                        @endphp
+                        @if($readiness)
+                            <div class="mayhen_readiness_indicator">
+                                <div class="mayhen_readiness_header">
+                                    <span class="mayhen_readiness_title">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                        Sẵn sàng: <strong style="color: {{ $readiness['score'] >= 85 ? '#2E7D32' : ($readiness['score'] >= 50 ? '#C5A880' : '#C62828') }};">{{ $readiness['score'] }}%</strong>
+                                    </span>
+                                    <button 
+                                        type="button" 
+                                        class="mayhen_readiness_toggle_btn" 
+                                        data-invitation-id="{{ $inv->id }}"
+                                        data-couple-name="{{ $groomName }} & {{ $brideName }}"
+                                        data-readiness="{{ json_encode($readiness) }}"
+                                    >
+                                        Xem 7 bước ({{ $readiness['passed_count'] }}/{{ $readiness['total_count'] }})
+                                    </button>
+                                </div>
+                                <div class="mayhen_readiness_track">
+                                    <div class="mayhen_readiness_fill" style="background: {{ $readiness['score'] >= 85 ? '#2E7D32' : ($readiness['score'] >= 50 ? '#C5A880' : '#D9B4A7') }}; width: {{ $readiness['score'] }}%;"></div>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Link thiệp công khai -->
                         <div style="background: #FAF8F5; border: 1px dashed #EAE3D9; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px;">
                             <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace; color: #9C7A4A;">

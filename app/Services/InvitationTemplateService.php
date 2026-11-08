@@ -957,6 +957,7 @@ class InvitationTemplateService
                 ]);
             }
 
+            $previousSnapshot = null;
             if (! $wedding) {
                 $wedding = Wedding::create([
                     'user_id' => $user->id,
@@ -976,6 +977,31 @@ class InvitationTemplateService
                     'extra_data' => $extraData,
                 ]);
             } else {
+                // Lưu bản snapshot của bản xuất bản trước khi ghi đè (Emergency Rollback Safeguard - TASK-VAL-11)
+                if ($existingInvitation) {
+                    $previousSnapshot = [
+                        'saved_at' => now()->toIso8601String(),
+                        'template_id' => $existingInvitation->template_id,
+                        'wedding' => [
+                            'groom_name' => $wedding->groom_name,
+                            'bride_name' => $wedding->bride_name,
+                            'groom_parents' => $wedding->groom_parents,
+                            'bride_parents' => $wedding->bride_parents,
+                            'wedding_date' => $wedding->wedding_date ? $wedding->wedding_date->format('Y-m-d') : null,
+                            'venue_name' => $wedding->venue_name,
+                            'venue_address' => $wedding->venue_address,
+                            'story' => $wedding->story,
+                            'cover_photo_url' => $wedding->cover_photo_url,
+                            'music_url' => $wedding->music_url,
+                            'bank_name' => $wedding->bank_name,
+                            'bank_account_number' => $wedding->bank_account_number,
+                            'bank_account_name' => $wedding->bank_account_name,
+                            'extra_data' => is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []),
+                        ],
+                        'custom_config' => is_array($existingInvitation->custom_config) ? $existingInvitation->custom_config : (json_decode((string) $existingInvitation->custom_config, true) ?? []),
+                    ];
+                }
+
                 // Cập nhật wedding hiện có
                 $fieldsToUpdate = array_intersect_key($weddingData, array_flip([
                     'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
@@ -991,10 +1017,15 @@ class InvitationTemplateService
             $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
 
             if ($existingInvitation) {
+                $mergedConfig = array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig);
+                if ($previousSnapshot) {
+                    $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
+                }
+
                 $existingInvitation->update([
                     'template_id' => $template->id,
                     'template_version' => $template->current_version ?? 'v1',
-                    'custom_config' => array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig),
+                    'custom_config' => $mergedConfig,
                     'draft_config' => null,
                     'revision_id' => (int) $existingInvitation->revision_id + 1,
                 ]);

@@ -386,6 +386,34 @@
             </form>
         </div>
 
+        @php
+            $hasRollbackSnapshot = !empty($config['_previous_published_snapshot']);
+            $snapshotTime = $hasRollbackSnapshot ? \Carbon\Carbon::parse($config['_previous_published_snapshot']['saved_at'])->format('H:i - d/m/Y') : null;
+        @endphp
+        @if($hasRollbackSnapshot)
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-top: 1px solid #F0E8D8; padding-top: 18px; margin-top: 18px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <strong style="font-size: 14px; color: #9C7A4A; display: block;">Khôi Phục Khẩn Cấp Bản Xuất Bản Trước (Emergency Rollback)</strong>
+                        <span style="background: #FFF8E1; color: #F57F17; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Cứu Nguy 1 Chạm</span>
+                    </div>
+                    <span style="font-size: 12px; color: #7A726A;">
+                        Khôi phục lại phiên bản an toàn đã lưu lúc <strong>{{ $snapshotTime }}</strong>. Sử dụng khi bạn lỡ tay cập nhật sai thông tin ngày giờ thiệp đã phát hành.
+                    </span>
+                </div>
+                <form action="{{ route('account.invitations.rollback', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục thiệp cưới về phiên bản trước (lúc {{ $snapshotTime }})?');" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                        <span>Khôi Phục Bản Trước</span>
+                    </button>
+                </form>
+            </div>
+        @endif
+
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-top: 1px solid #F0E8D8; padding-top: 18px; margin-top: 18px;">
             <div>
                 <strong style="font-size: 14px; color: #C62828; display: block;">Xóa Thiệp Cưới Khỏi Tài Khoản</strong>

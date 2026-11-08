@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -61,7 +62,7 @@ class AccountController extends Controller
     /**
      * Danh sách tất cả thiệp cưới của người dùng.
      */
-    public function invitations(Request $request): View
+    public function invitations(Request $request, WeddingConsistencyGuardianService $guardian): View
     {
         $user = $request->user();
         $weddingIds = $user->weddings()->pluck('id');
@@ -71,9 +72,17 @@ class AccountController extends Controller
             ->latest()
             ->paginate(9);
 
+        $readinessMap = [];
+        foreach ($invitations as $inv) {
+            if ($inv->wedding) {
+                $readinessMap[$inv->id] = $guardian->calculateReadinessChecklist($inv->wedding, $inv);
+            }
+        }
+
         return view('client.pages.account.invitations', [
             'user' => $user,
             'invitations' => $invitations,
+            'readinessMap' => $readinessMap,
         ]);
     }
 
@@ -361,6 +370,59 @@ class AccountController extends Controller
 
         return redirect()->route('account.invitations')
             ->with('success', "Đã nhân bản thiệp cưới thành công! Bản sao mới có đường dẫn: {$newSlug}");
+    }
+
+    /**
+     * Khôi phục khẩn cấp bản xuất bản an toàn trước đó (Emergency Rollback - TASK-VAL-11).
+     */
+    public function rollback(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $snapshot = $config['_previous_published_snapshot'] ?? null;
+        if (! $snapshot || ! is_array($snapshot) || empty($snapshot['wedding'])) {
+            return back()->with('error', 'Chưa có bản phát hành an toàn trước đó để khôi phục.');
+        }
+
+        DB::transaction(function () use ($invitation, $snapshot) {
+            $wedding = $invitation->wedding;
+            if ($wedding && ! empty($snapshot['wedding'])) {
+                $wData = $snapshot['wedding'];
+                $wedding->update([
+                    'groom_name' => $wData['groom_name'] ?? $wedding->groom_name,
+                    'bride_name' => $wData['bride_name'] ?? $wedding->bride_name,
+                    'groom_parents' => $wData['groom_parents'] ?? null,
+                    'bride_parents' => $wData['bride_parents'] ?? null,
+                    'wedding_date' => $wData['wedding_date'] ?? $wedding->wedding_date,
+                    'venue_name' => $wData['venue_name'] ?? $wedding->venue_name,
+                    'venue_address' => $wData['venue_address'] ?? $wedding->venue_address,
+                    'story' => $wData['story'] ?? null,
+                    'cover_photo_url' => $wData['cover_photo_url'] ?? null,
+                    'music_url' => $wData['music_url'] ?? null,
+                    'bank_name' => $wData['bank_name'] ?? null,
+                    'bank_account_number' => $wData['bank_account_number'] ?? null,
+                    'bank_account_name' => $wData['bank_account_name'] ?? null,
+                    'extra_data' => $wData['extra_data'] ?? [],
+                ]);
+            }
+
+            $restoredConfig = is_array($snapshot['custom_config']) ? $snapshot['custom_config'] : [];
+            unset($restoredConfig['_previous_published_snapshot']);
+            $restoredConfig['last_rollback_at'] = now()->toIso8601String();
+
+            $invitation->update([
+                'template_id' => $snapshot['template_id'] ?? $invitation->template_id,
+                'custom_config' => $restoredConfig,
+                'revision_id' => (int) $invitation->revision_id + 1,
+            ]);
+        });
+
+        return back()->with('success', 'Đã khôi phục thành công thiệp cưới về phiên bản an toàn trước đó!');
     }
 
     /**

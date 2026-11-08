@@ -258,4 +258,136 @@ class WeddingConsistencyGuardianService
             'advice' => $advice,
         ];
     }
+
+    /**
+     * Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Wedding Readiness Checklist - TASK-VAL-12).
+     * Đánh giá 7 tiêu chí sống còn trước ngày diễn ra hôn lễ.
+     *
+     * @return array{
+     *     score: int,
+     *     passed_count: int,
+     *     total_count: int,
+     *     status: string,
+     *     items: array<int, array{key: string, title: string, passed: bool, description: string, action_url: string, action_text: string}>
+     * }
+     */
+    public function calculateReadinessChecklist(Wedding $wedding, ?Invitation $invitation = null): array
+    {
+        $invitation = $invitation ?? $wedding->invitations()->first();
+        $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+        $config = $invitation ? (is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? [])) : [];
+
+        $items = [];
+
+        // 1. Xuất bản thiệp công khai
+        $isPublished = (bool) ($invitation ? $invitation->is_published : false);
+        $items[] = [
+            'key' => 'publish',
+            'title' => 'Xuất bản thiệp cưới công khai',
+            'passed' => $isPublished,
+            'description' => $isPublished
+                ? 'Thiệp đã được kích hoạt xuất bản và sẵn sàng gửi tới khách mời.'
+                : 'Thiệp đang ở trạng thái bản nháp, cần bật xuất bản để khách mở được liên kết.',
+            'action_url' => $invitation ? route('account.invitations.settings', $invitation->id) : '#',
+            'action_text' => 'Cài đặt xuất bản',
+        ];
+
+        // 2. Thời gian & Địa điểm sảnh tiệc
+        $hasDate = ! empty($wedding->wedding_date);
+        $venueName = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? ''))));
+        $venueAddress = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
+        $hasVenue = $venueName !== '' && $venueAddress !== '';
+        $partyTime = trim((string) ($extra['party_time'] ?? ($extra['event_party_time'] ?? '')));
+        $dateTimeVenuePassed = $hasDate && $hasVenue && $partyTime !== '';
+        $items[] = [
+            'key' => 'date_time_venue',
+            'title' => 'Thời gian & Địa điểm hôn lễ',
+            'passed' => $dateTimeVenuePassed,
+            'description' => $dateTimeVenuePassed
+                ? 'Đã cấu hình đầy đủ ngày cưới, giờ khai tiệc và địa chỉ trung tâm tiệc cưới.'
+                : 'Còn thiếu ngày cưới, giờ đón khách hoặc địa chỉ chi tiết sảnh tiệc.',
+            'action_url' => $invitation ? route('invitation.create', ['edit' => $invitation->slug]) : '#',
+            'action_text' => 'Chỉnh sửa Studio',
+        ];
+
+        // 3. Liên kết Google Maps
+        $mapUrl = trim((string) ($extra['event_party_map_url'] ?? ($extra['google_map_url'] ?? '')));
+        $hasValidMap = $mapUrl !== '' && (str_contains($mapUrl, 'google.com/maps') || str_contains($mapUrl, 'maps.app.goo.gl') || str_contains($mapUrl, 'goo.gl/maps'));
+        $items[] = [
+            'key' => 'maps_navigation',
+            'title' => 'Định vị Google Maps sảnh tiệc',
+            'passed' => $hasValidMap,
+            'description' => $hasValidMap
+                ? 'Đã gắn liên kết Google Maps chuẩn giúp khách mở ứng dụng chỉ đường 1 chạm.'
+                : 'Chưa có liên kết Google Maps chỉ đường tới sảnh tiệc cưới.',
+            'action_url' => $invitation ? route('invitation.create', ['edit' => $invitation->slug]) : '#',
+            'action_text' => 'Gắn link Maps',
+        ];
+
+        // 4. Hộp mừng cưới & VietQR
+        $hasBank = ! empty($extra['groom_bank_account']) || ! empty($extra['bride_bank_account']) || ! empty($wedding->bank_account_number);
+        $items[] = [
+            'key' => 'vietqr_banking',
+            'title' => 'Hộp mừng cưới & Mã VietQR',
+            'passed' => $hasBank,
+            'description' => $hasBank
+                ? 'Đã thiết lập tài khoản ngân hàng để tạo mã VietQR mừng cưới phương xa.'
+                : 'Chưa cấu hình số tài khoản mừng cưới cho Nhà Trai hoặc Nhà Gái.',
+            'action_url' => $invitation ? route('invitation.create', ['edit' => $invitation->slug]) : '#',
+            'action_text' => 'Thêm tài khoản',
+        ];
+
+        // 5. Danh sách khách mời
+        $guestCount = $wedding->guests()->count();
+        $hasGuests = $guestCount > 0;
+        $items[] = [
+            'key' => 'guest_roster',
+            'title' => 'Danh sách khách mời & RSVP',
+            'passed' => $hasGuests,
+            'description' => $hasGuests
+                ? "Đã khởi tạo danh sách gồm {$guestCount} khách mời sẵn sàng nhận thiệp cá nhân hóa."
+                : 'Chưa có khách mời nào trong danh sách. Hãy thêm khách hoặc nhập từ file Excel.',
+            'action_url' => $invitation ? route('guests.index', $invitation->id) : '#',
+            'action_text' => 'Quản lý khách',
+        ];
+
+        // 6. Sơ đồ xếp bàn tiệc
+        $hasSeating = $wedding->guests()->whereNotNull('table_name')->where('table_name', '!=', '')->exists();
+        $items[] = [
+            'key' => 'seating_planner',
+            'title' => 'Sơ đồ phân bổ bàn tiệc',
+            'passed' => $hasSeating,
+            'description' => $hasSeating
+                ? 'Đã phân bổ bàn tiệc cho khách mời, hỗ trợ tiếp tân đón khách chu đáo.'
+                : 'Chưa xếp bàn tiệc cho khách. Khách có thể bối rối khi tìm chỗ ngồi trong sảnh.',
+            'action_url' => $invitation ? route('seating.index', $invitation->id) : '#',
+            'action_text' => 'Xếp bàn tiệc',
+        ];
+
+        // 7. Bộ dự phòng sự cố & Mã PIN tiếp tân
+        $checkinPin = $config['checkin_pin'] ?? '123456';
+        $isPinSafe = $checkinPin !== '123456' && $checkinPin !== '000000';
+        $items[] = [
+            'key' => 'resilience_kit',
+            'title' => 'Phương án dự phòng & Mã PIN tiếp tân',
+            'passed' => $isPinSafe,
+            'description' => $isPinSafe
+                ? 'Mã PIN bảo vệ cổng tiếp tân an toàn và Bộ Dự Phòng Ngày Cưới đã sẵn sàng in ấn.'
+                : 'Mã PIN tiếp tân đang dùng mặc định ('.$checkinPin.'). Nên đổi mã PIN và in sẵn Bộ Dự Phòng.',
+            'action_url' => $invitation ? route('account.invitations.resilience_kit', $invitation->id) : '#',
+            'action_text' => 'Bộ dự phòng',
+        ];
+
+        $totalCount = count($items);
+        $passedCount = collect($items)->where('passed', true)->count();
+        $score = (int) round(($passedCount / $totalCount) * 100);
+
+        return [
+            'score' => $score,
+            'passed_count' => $passedCount,
+            'total_count' => $totalCount,
+            'status' => $score >= 85 ? 'ready' : ($score >= 50 ? 'needs_attention' : 'incomplete'),
+            'items' => $items,
+        ];
+    }
 }

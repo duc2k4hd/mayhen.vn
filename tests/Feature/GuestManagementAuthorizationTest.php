@@ -5,6 +5,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\Wedding;
+use Illuminate\Support\Arr;
 
 function makeGuestManagementInvitation(User $owner, string $slug): Invitation
 {
@@ -326,7 +327,9 @@ test('manual save publishes autosaved settings and discards the superseded confi
         'invitation' => ['custom_config' => ['palette' => 'sage']],
     ])->assertOk();
 
-    expect($invitation->fresh()->custom_config)->toBe([
+    $freshConfig = Arr::except($invitation->fresh()->custom_config, ['_previous_published_snapshot']);
+
+    expect($freshConfig)->toBe([
         'palette' => 'sage', 'layout' => 'original', 'sections_hidden' => ['dresscode'],
     ])->and($invitation->fresh()->draft_config)->toBeNull();
 });

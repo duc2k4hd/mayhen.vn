@@ -117,3 +117,23 @@
   * Client JS: `public/assets/client/js/pages/guests.js` gọi API, hiển thị badge phân cấp mức độ và bảng xưng hô tương tác.
 - **Kiểm thử**: `tests/Feature/PreSendValidationTest.php` (3/3 tests passed).
 
+#### `TASK-VAL-11`: Nút Khôi Phục Bản Xuất Bản Khẩn Cấp & Phòng Vệ Snapshot (Emergency Rollback Button & Snapshot Safeguard) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Cho phép cặp đôi khôi phục lại tức thì bản xuất bản gần nhất trước đó trong 1 thao tác an toàn khi vô tình lưu nhầm hoặc đổi nhầm thông tin thiệp cưới đã gửi cho khách, không làm mất bản nháp và không phụ thuộc vào admin can thiệp thủ công.
+- **Phạm vi code**:
+  * Backend Logic: `InvitationTemplateService.php` tự động chụp `_previous_published_snapshot` trước mỗi lần xuất bản đè lên thiệp.
+  * Rollback Handler: `AccountController::rollback` khôi phục an toàn thông tin đám cưới (`wedding`) và cấu hình giao diện (`custom_config`), tăng `revision_id` và gỡ bỏ snapshot lồng nhau.
+  * Route: `POST /thiep/{id}/khoi-phuc-khan-cap` (`account.invitations.rollback`) kèm phòng vệ CSRF và kiểm soát IDOR chặt chẽ (trả về 404 cho tài khoản khác).
+  * Giao diện: Khối khôi phục khẩn cấp trên `resources/views/client/pages/account/settings.blade.php` hiển thị thời điểm lưu bản trước và nút khôi phục 1 chạm có hộp thoại xác nhận.
+- **Kiểm thử**: `tests/Feature/EmergencyRollbackTest.php` (3/3 tests passed).
+
+#### `TASK-VAL-12`: Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Wedding Readiness Checklist) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Rà soát 7 tiêu chí sống còn trước ngày diễn ra hôn lễ (không chỉ kiểm tra mẫu thiệp đẹp, mà đánh giá tính toàn vẹn: xuất bản công khai, ngày giờ sảnh tiệc, liên kết Google Maps chỉ đường, VietQR mừng cưới, danh sách khách mời, sơ đồ xếp bàn tiệc, và bộ dự phòng sự cố A4 kèm mã PIN tiếp tân an toàn).
+- **Phạm vi code**:
+  * Service: Mở rộng `WeddingConsistencyGuardianService::calculateReadinessChecklist(Wedding $wedding, ?Invitation $invitation = null)` tính toán điểm số %, số bước đạt chuẩn và phân cấp trạng thái (`ready` >= 85%, `needs_attention` 50-84%, `incomplete` < 50%).
+  * Backend API: `GET /api/editor/readiness/{id}` (`invitation.readiness_check`) trong `InvitationEditorController.php`.
+  * Dashboard tích hợp: `AccountController::invitations` tính toán sẵn `readinessMap` cho danh sách thiệp của người dùng.
+  * Giao diện Client: Thanh tiến độ trực quan trên từng card thiệp cưới (`invitations.blade.php`) và Modal chi tiết 7 bước (`resources/views/client/components/readiness-modal.blade.php`).
+  * Pure Native JS: `public/assets/client/js/pages/account-readiness.js` mở modal, nạp data dynamic và điều hướng nhanh tới đúng màn hình cấu hình.
+  * CSS Token: Khối `mayhen_readiness_*` trong `public/assets/client/css/pages/account.css`.
+- **Kiểm thử**: `tests/Feature/WeddingReadinessChecklistTest.php` (5/5 tests passed, 24 assertions).
+

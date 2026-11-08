@@ -5117,6 +5117,40 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - Cập nhật `.gitignore` đưa test suite mới vào kiểm soát mã nguồn.
                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                      192. **Hoàn Tất Nút Khôi Phục Bản Xuất Bản Khẩn Cấp & Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Emergency Rollback & Wedding Readiness Checklist)**:
+                           - **Bối cảnh & Giá trị trải nghiệm**:
+                             - Thực thi trọn vẹn `TASK-VAL-11` và `TASK-VAL-12` trong mục 09.1 (Wedding Confidence & Publish Protection) của `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                             - Xóa bỏ hoàn toàn nỗi sợ hãi khi vô tình lưu sai thông tin thiệp đã gửi cho hàng trăm khách mời (cho phép khôi phục snapshot gần nhất trong 1 chạm) và cung cấp cho cô dâu chú rể bảng rà soát 7 hạng mục sống còn trước ngày diễn ra hôn lễ.
+                           - **Các tính năng cao cấp đã hoàn thành**:
+                             1. *TASK-VAL-11: Nút Khôi Phục Bản Xuất Bản Khẩn Cấp & Phòng Vệ Snapshot (Emergency Rollback Button)*:
+                                - Trong `InvitationTemplateService.php`, tự động sao lưu `_previous_published_snapshot` trước mỗi lần xuất bản hoặc cập nhật thiệp cưới.
+                                - Xử lý khôi phục an toàn trong `AccountController::rollback`: đưa dữ liệu ngày cưới, địa điểm, ngân hàng và custom config về trạng thái trước đó, tăng `revision_id` và loại bỏ snapshot lồng nhau.
+                                - Route `POST /thiep/{id}/khoi-phuc-khan-cap` (`account.invitations.rollback`) phòng vệ IDOR chặt chẽ (trả về 404 cho người lạ).
+                                - Giao diện Cài đặt thiệp cưới (`settings.blade.php`): Thêm Khối "Khôi Phục Bản Xuất Bản Trước" hiển thị mốc thời gian đã lưu và nút khôi phục khẩn cấp.
+                             2. *TASK-VAL-12: Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Wedding Readiness Checklist)*:
+                                - Trong `WeddingConsistencyGuardianService.php`, xây dựng phương thức `calculateReadinessChecklist(Wedding $wedding, ?Invitation $invitation = null)` đánh giá 7 tiêu chí trọng yếu:
+                                  1. Xuất bản thiệp cưới công khai (`publish`).
+                                  2. Thời gian & Địa điểm sảnh tiệc đầy đủ (`date_time_venue`).
+                                  3. Liên kết Google Maps chỉ đường hợp lệ (`maps_navigation`).
+                                  4. Hộp mừng cưới & Mã VietQR (`vietqr_banking`).
+                                  5. Danh sách khách mời & RSVP (`guest_roster`).
+                                  6. Sơ đồ phân bổ bàn tiệc (`seating_planner`).
+                                  7. Phương án dự phòng A4 & Mã PIN tiếp tân an toàn (`resilience_kit`).
+                                - Backend API: Thêm route `GET /api/editor/readiness/{id}` (`invitation.readiness_check`) trong `InvitationEditorController.php`.
+                                - Dashboard: `AccountController::invitations` tính sẵn `readinessMap` cho các thiệp cưới của người dùng.
+                                - Giao diện Client: Thanh tiến độ độ sẵn sàng trực quan trên từng card thiệp trong `resources/views/client/pages/account/invitations.blade.php`.
+                                - Modal tương tác: `resources/views/client/components/readiness-modal.blade.php` cùng Native JavaScript `public/assets/client/js/pages/account-readiness.js` hiển thị chi tiết 7 tiêu chí, điểm số %, màu sắc trực quan và nút điều hướng tức thì tới đúng màn hình thiết lập.
+                                - CSS Token: Khối `mayhen_readiness_*` trong `public/assets/client/css/pages/account.css`.
+                           - **Kiểm thử & Đảm bảo chất lượng**:
+                             - Viết mới 2 Feature test suites:
+                               * `tests/Feature/EmergencyRollbackTest.php` -> **3/3 tests passed (13 assertions)**.
+                               * `tests/Feature/WeddingReadinessChecklistTest.php` -> **5/5 tests passed (24 assertions)**.
+                             - Cập nhật assertion chống xung đột snapshot trong `tests/Feature/GuestManagementAuthorizationTest.php` -> **44/44 tests passed**.
+                             - Toàn bộ test suite toàn hệ thống: **319/319 tests passed 100% (1,575 assertions)**.
+                             - Laravel Pint: Đạt chuẩn 100% agent style.
+                             - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                             - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

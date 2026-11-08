@@ -134,10 +134,14 @@
 
 {{-- QR Code & Print Card Modal --}}
 @include('client.components.qr-modal')
+
+{{-- Wedding Readiness Checklist Modal (TASK-VAL-12) --}}
+@include('client.components.readiness-modal')
 @endsection
 
 @push('scripts')
     <script type="module" src="{{ asset('assets/client/js/pages/account-qr.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/pages/account-readiness.js') }}"></script>
 @endpush
 
 

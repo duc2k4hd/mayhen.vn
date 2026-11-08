@@ -1311,5 +1311,146 @@ select.mayhen_account_form_input {
     border-bottom-right-radius: 20px;
 }
 
+/* ==========================================================================
+   BẢNG ĐÁNH GIÁ ĐỘ SẴN SÀNG NGÀY CƯỚI (WEDDING READINESS CHECKLIST - TASK-VAL-12)
+   ========================================================================== */
+.mayhen_readiness_indicator {
+    margin: 10px 0;
+    padding: 8px 12px;
+    background: #FAF8F5;
+    border-radius: 8px;
+    border: 1px solid #EFE8DD;
+}
+
+.mayhen_readiness_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.mayhen_readiness_title {
+    font-weight: 600;
+    color: #4A453E;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mayhen_readiness_toggle_btn {
+    background: none;
+    border: none;
+    color: #9C7A4A;
+    cursor: pointer;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.mayhen_readiness_toggle_btn:hover {
+    color: #1F1D1A;
+}
+
+.mayhen_readiness_track {
+    background: #E5DCCD;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.mayhen_readiness_fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.mayhen_readiness_summary_box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+}
+
+.mayhen_readiness_circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.mayhen_readiness_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    border: 1px solid #F0EBE3;
+    transition: all 0.2s ease;
+}
+
+.mayhen_readiness_item:hover {
+    border-color: #D8CEBD;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.mayhen_readiness_item_icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.mayhen_readiness_item_icon.passed {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.mayhen_readiness_item_icon.pending {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.mayhen_readiness_item_body {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_readiness_item_title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 2px 0;
+}
+
+.mayhen_readiness_item_desc {
+    font-size: 12px;
+    color: #7A726A;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.mayhen_readiness_item_action {
+    flex-shrink: 0;
+    margin-left: 8px;
+    align-self: center;
+}
+
 
 
