@@ -94,3 +94,32 @@ test('owner can access wedding day resilience kit and view all printed manifests
     $response->assertSee('In Tài Liệu Dự Phòng (A4)');
     $response->assertSee('Trung Tâm Hội Nghị Asiana Plaza');
 });
+
+test('resilience kit renders emergency runbook and pii phone masking accurately', function () {
+    // Tạo khách có số điện thoại để kiểm tra masking
+    Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Trần Thị Thu Hà',
+        'salutation' => 'Chị',
+        'phone' => '0912345678',
+        'table_name' => 'Bàn 01 - VIP',
+        'table_id' => $this->table->id,
+        'expected_attendees' => 1,
+    ]);
+
+    $this->actingAs($this->user);
+    $response = $this->get(route('account.invitations.resilience_kit', $this->invitation->id));
+
+    $response->assertOk();
+    // Kiểm tra quy trình 4 bước sự cố mạng
+    $response->assertSee('Kế Hoạch Vận Hành Khi Sự Cố Mạng / Mất Điện Tại Tiệc Cưới');
+    $response->assertSee('Bước 1: Tiếp đón bằng bản in');
+    $response->assertSee('Bước 2: Phát 4G dự phòng');
+    $response->assertSee('Bước 3: Sử dụng Mã PIN Tiếp Tân');
+    $response->assertSee('Bước 4: Trợ giúp kỹ thuật');
+
+    // Kiểm tra có cả bản đầy đủ và bản mask 4 số giữa SĐT
+    $response->assertSee('0912345678');
+    $response->assertSee('091****678');
+    $response->assertSee('Ẩn 4 số giữa của SĐT');
+});

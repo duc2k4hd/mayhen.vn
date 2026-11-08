@@ -5842,6 +5842,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        221. **Khôi Phục Khẩn Cấp Hai Chiều & Bộ Dự Phòng Sự Cố Ngày Cưới (Emergency Rollback Swap & Resilience Kit PII Guard — Flow 20, Master Audit 09.1 & 09.4)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Flow 20 (Khôi phục & ngày cưới), Mục 09.1.4 (Emergency Rollback Button) và Mục 09.4.18 (Resilience Kit) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Rollback một chiều xóa vĩnh viễn snapshot — không thể Redo/Hoàn tác nếu bấm nhầm)**: Trong `AccountController::rollback`, khi cặp đôi bấm khôi phục phiên bản an toàn trước đó, phương thức thực hiện `unset($restoredConfig['_previous_published_snapshot'])`. Hậu quả: phiên bản vừa phát hành bị xóa sạch dấu vết. Nếu cặp đôi bấm nhầm nút hoặc nhận ra bản mới mới là bản chuẩn xác, họ hoàn toàn mất khả năng quay lại (Redo Swap), gây hoang mang tột độ trong giờ phút sát ngày cưới.
+                               - **Lỗi 2 (Thiếu Audit Trail cho thao tác khôi phục khẩn cấp)**: Hành động rollback làm thay đổi toàn bộ thông tin ngày giờ, sảnh tiệc và bố cục xuất bản nhưng không hề được ghi nhận vào `AuditLogger`, vi phạm tiêu chí "hành động an toàn có version/audit".
+                               - **Lỗi 3 (API rollback chỉ trả Redirect, không hỗ trợ JSON cho Studio)**: Khi Studio hoặc modal gọi fetch với `Accept: application/json`, controller chỉ trả Redirect HTML thay vì JsonResponse.
+                               - **Lỗi 4 (Nguy cơ lộ số điện thoại khách mời khi in tài liệu lễ tân)**: Trong `resilience-kit.blade.php`, bảng in A4 phục vụ bàn tiếp tân in toàn bộ số điện thoại thật của quan khách. Nếu bản in vô tình bị bỏ quên hoặc thất lạc tại sảnh tiệc, toàn bộ danh bạ khách mời sẽ bị lộ ra ngoài, vi phạm Nghị định 13/2023/NĐ-CP và Luật Bảo vệ Dữ liệu Cá nhân 91/2025/QH15.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Cơ Chế Khôi Phục Hai Chiều An Toàn (Rollback Swap & Redo Preservation — FLOW-20)**:
+                                 * Trước khi revert snapshot cũ, hệ thống tự động lưu bản hiện tại thành snapshot đối ứng (`$currentSnapshot` kèm cờ `'is_rollback_swap' => true`).
+                                 * Cặp đôi có thể thoải mái chuyển đổi (hoán đổi an toàn) giữa 2 bản phát hành mà không bao giờ bị mất dữ liệu vĩnh viễn.
+                                 * **Bảo toàn 100% bản nháp (`draft_config`)**: Tuyệt đối không xóa hay ghi đè lên `draft_config` cặp đôi đang soạn thảo dở trong Studio.
+                                 * Tích hợp `AuditLogger::log('emergency_rollback', 'invitation', ...)` ghi nhận chi tiết thời điểm, revision mới và wedding ID.
+                                 * Hỗ trợ kép cả RedirectResponse (giao diện web) và JsonResponse (nếu `$request->expectsJson()`).
+                               - **Bảo Vệ Dữ Liệu Khách Mời & Kế Hoạch Vận Hành Khẩn Cấp (Resilience Kit PII Guard & Emergency Runbook)**:
+                                 * Thêm khối **Kế Hoạch Khẩn Cấp 4 Bước Khi Sự Cố Mạng / Mất Điện Tại Tiệc Cưới**:
+                                   - Bước 1: Tiếp đón bằng bản in danh sách A4 (đối soát tên khách, nhóm và số bàn).
+                                   - Bước 2: Phát Wi-Fi 4G từ điện thoại di động cho máy tính bảng/điện thoại bàn lễ tân.
+                                   - Bước 3: Sử dụng Mã PIN Tiếp Tân để đăng nhập nhanh không cần tài khoản cặp đôi.
+                                   - Bước 4: Hotline kỹ thuật khẩn cấp Mây Hẹn hỗ trợ trực tiếp 24/7 trong ngày cưới.
+                                 * Tích hợp tính năng **Masking PII Số Điện Thoại Khi In**:
+                                   - Thêm checkbox toggle Vanilla JS: `"🔒 Bảo vệ quyền riêng tư: Ẩn 4 số giữa của SĐT khi in ấn & xuất bản (Mask PII)"`.
+                                   - Tự động mã hóa số điện thoại dạng `091****678` (hoặc `09***` với số ngắn), đảm bảo tuyệt đối không rò rỉ danh bạ nếu tờ in bị bỏ quên ở sảnh cưới.
+                               - **Cập nhật Sổ Đăng Ký Lỗi (`docs/MAY_HEN_BUG_REGISTER.md`)**:
+                                 * Ghi nhận đầy đủ từ BUG-AUDIT-06 đến BUG-AUDIT-10 (False Positive Moderation, Cap Score Defense, Photo Double-submit, Agency Handover Expiry/Replay Guard, Rollback Swap & Resilience PII Guard).
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/EmergencyRollbackTest.php` thêm 3 ca kiểm thử chuyên sâu -> **6/6 tests passed (24 assertions)**:
+                                 * `test_rollback_khẩn_cấp_không_xóa_bản_nháp_draft_config_đang_chỉnh_sửa_của_cặp_đôi`
+                                 * `test_rollback_swap_cho_phép_hoàn_tác_quay_lại_phiên_bản_sau_nếu_bấm_nhầm`
+                                 * `test_gọi_api_rollback_với_json_trả_về_json_thành_công_kèm_revision_mới`
+                               - Mở rộng Feature test suite `tests/Feature/WeddingResilienceKitTest.php` thêm 1 ca kiểm thử chuyên sâu -> **4/4 tests passed (21 assertions)**:
+                                 * `it_renders_emergency_runbook_and_pii_phone_masking_accurately`
+                               - Toàn bộ test suite toàn hệ thống: **461/461 tests passed 100% (2,347 assertions)** trong ~8.9 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -130,3 +130,118 @@ test('stranger cannot rollback invitation of another user', function () {
 
     $response->assertNotFound();
 });
+
+test('emergency rollback preserves draft_config without erasing ongoing studio drafts', function () {
+    $templateService = app(InvitationTemplateService::class);
+
+    // 1. Cập nhật thiệp lần đầu để tạo snapshot
+    $templateService->saveInvitation(
+        $this->owner,
+        $this->template->id,
+        [
+            'wedding' => [
+                'groom_name' => 'Thế Anh',
+                'bride_name' => 'Mỹ Duyên',
+                'wedding_date' => '2026-12-25',
+                'venue_name' => 'Gem Center',
+            ],
+            'invitation' => [
+                'custom_config' => [
+                    'color_theme' => 'emerald',
+                ],
+            ],
+        ],
+        $this->invitation->id,
+        $this->invitation->revision_id
+    );
+
+    // 2. Cặp đôi đang mở Studio và có bản nháp chưa xuất bản
+    $this->invitation->update([
+        'draft_config' => [
+            'unsaved_notes' => 'Ghi chú nháp dở dang tại Studio',
+        ],
+    ]);
+
+    // 3. Thực hiện rollback
+    $response = $this->actingAs($this->owner)->post(route('account.invitations.rollback', $this->invitation->id));
+    $response->assertRedirect();
+
+    $this->invitation->refresh();
+
+    // Bản công khai đã về snapshot cũ (ruby), nhưng bản nháp draft_config vẫn được bảo toàn nguyên vẹn
+    expect($this->invitation->custom_config['color_theme'])->toBe('ruby');
+    expect($this->invitation->draft_config)->not->toBeNull();
+    expect($this->invitation->draft_config['unsaved_notes'])->toBe('Ghi chú nháp dở dang tại Studio');
+});
+
+test('emergency rollback supports redo swap allowing user to toggle between versions safely', function () {
+    $templateService = app(InvitationTemplateService::class);
+
+    // 1. Cập nhật thiệp để tạo snapshot V1
+    $templateService->saveInvitation(
+        $this->owner,
+        $this->template->id,
+        [
+            'wedding' => [
+                'groom_name' => 'Thế Anh',
+                'bride_name' => 'Mỹ Duyên',
+                'wedding_date' => '2026-12-25',
+                'venue_name' => 'Gem Center',
+            ],
+            'invitation' => [
+                'custom_config' => [
+                    'color_theme' => 'emerald',
+                ],
+            ],
+        ],
+        $this->invitation->id,
+        $this->invitation->revision_id
+    );
+
+    // 2. Rollback lần 1 -> Về bản V1 (White Palace / ruby)
+    $this->actingAs($this->owner)->post(route('account.invitations.rollback', $this->invitation->id));
+    $this->wedding->refresh();
+    $this->invitation->refresh();
+    expect($this->wedding->venue_name)->toBe('White Palace Phạm Văn Đồng');
+    expect($this->invitation->custom_config['color_theme'])->toBe('ruby');
+
+    // 3. Người dùng nhận ra bản V2 mới đúng, bấm Rollback lần 2 (Redo Swap) -> Quay lại Gem Center / emerald
+    $this->actingAs($this->owner)->post(route('account.invitations.rollback', $this->invitation->id));
+    $this->wedding->refresh();
+    $this->invitation->refresh();
+    expect($this->wedding->venue_name)->toBe('Gem Center');
+    expect($this->invitation->custom_config['color_theme'])->toBe('emerald');
+});
+
+test('emergency rollback api returns json response when requested with json header', function () {
+    $templateService = app(InvitationTemplateService::class);
+
+    $templateService->saveInvitation(
+        $this->owner,
+        $this->template->id,
+        [
+            'wedding' => [
+                'groom_name' => 'Thế Anh',
+                'bride_name' => 'Mỹ Duyên',
+                'wedding_date' => '2026-12-25',
+                'venue_name' => 'Gem Center',
+            ],
+            'invitation' => [
+                'custom_config' => [
+                    'color_theme' => 'emerald',
+                ],
+            ],
+        ],
+        $this->invitation->id,
+        $this->invitation->revision_id
+    );
+
+    $response = $this->actingAs($this->owner)->postJson(route('account.invitations.rollback', $this->invitation->id));
+
+    $response->assertOk();
+    $response->assertJson([
+        'success' => true,
+        'message' => 'Đã khôi phục thành công thiệp cưới về phiên bản an toàn trước đó!',
+    ]);
+    expect($response->json('revision_id'))->toBeGreaterThan(1);
+});

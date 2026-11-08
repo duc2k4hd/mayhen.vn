@@ -7,12 +7,14 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\AuditLogger;
 use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use App\Services\WeddingWeekReadinessService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -378,9 +380,9 @@ class AccountController extends Controller
     }
 
     /**
-     * Khôi phục khẩn cấp bản xuất bản an toàn trước đó (Emergency Rollback - TASK-VAL-11).
+     * Khôi phục khẩn cấp bản xuất bản an toàn trước đó (Emergency Rollback - TASK-VAL-11 / FLOW-20).
      */
-    public function rollback(Request $request, int $invitationId): RedirectResponse
+    public function rollback(Request $request, int $invitationId): RedirectResponse|JsonResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
@@ -391,12 +393,44 @@ class AccountController extends Controller
 
         $snapshot = $config['_previous_published_snapshot'] ?? null;
         if (! $snapshot || ! is_array($snapshot) || empty($snapshot['wedding'])) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Chưa có bản phát hành an toàn trước đó để khôi phục.',
+                ], 422);
+            }
+
             return back()->with('error', 'Chưa có bản phát hành an toàn trước đó để khôi phục.');
         }
 
-        DB::transaction(function () use ($invitation, $snapshot) {
+        DB::transaction(function () use ($invitation, $snapshot, $config) {
             $wedding = $invitation->wedding;
+            $currentSnapshot = null;
             if ($wedding && ! empty($snapshot['wedding'])) {
+                // Tạo snapshot đối ứng của bản hiện tại trước khi khôi phục (Rollback Swap / Redo Preservation)
+                $currentSnapshot = [
+                    'saved_at' => now()->toIso8601String(),
+                    'template_id' => $invitation->template_id,
+                    'wedding' => [
+                        'groom_name' => $wedding->groom_name,
+                        'bride_name' => $wedding->bride_name,
+                        'groom_parents' => $wedding->groom_parents,
+                        'bride_parents' => $wedding->bride_parents,
+                        'wedding_date' => $wedding->wedding_date ? $wedding->wedding_date->format('Y-m-d') : null,
+                        'venue_name' => $wedding->venue_name,
+                        'venue_address' => $wedding->venue_address,
+                        'story' => $wedding->story,
+                        'cover_photo_url' => $wedding->cover_photo_url,
+                        'music_url' => $wedding->music_url,
+                        'bank_name' => $wedding->bank_name,
+                        'bank_account_number' => $wedding->bank_account_number,
+                        'bank_account_name' => $wedding->bank_account_name,
+                        'extra_data' => is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []),
+                    ],
+                    'custom_config' => $config,
+                    'is_rollback_swap' => true,
+                ];
+
                 $wData = $snapshot['wedding'];
                 $wedding->update([
                     'groom_name' => $wData['groom_name'] ?? $wedding->groom_name,
@@ -417,7 +451,12 @@ class AccountController extends Controller
             }
 
             $restoredConfig = is_array($snapshot['custom_config']) ? $snapshot['custom_config'] : [];
-            unset($restoredConfig['_previous_published_snapshot']);
+            // Giữ lại bản hiện tại thành snapshot đối ứng để có thể hoàn tác đổi chiều (Rollback Swap)
+            if ($currentSnapshot) {
+                $restoredConfig['_previous_published_snapshot'] = $currentSnapshot;
+            } else {
+                unset($restoredConfig['_previous_published_snapshot']);
+            }
             $restoredConfig['last_rollback_at'] = now()->toIso8601String();
 
             $invitation->update([
@@ -425,7 +464,27 @@ class AccountController extends Controller
                 'custom_config' => $restoredConfig,
                 'revision_id' => (int) $invitation->revision_id + 1,
             ]);
+
+            AuditLogger::log(
+                'emergency_rollback',
+                'invitation',
+                $invitation->id,
+                'Khôi phục khẩn cấp bản xuất bản thiệp cưới về phiên bản trước (Emergency Rollback)',
+                [
+                    'wedding_id' => $wedding?->id,
+                    'restored_revision' => (int) $invitation->revision_id,
+                    'restored_at' => now()->toIso8601String(),
+                ]
+            );
         });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã khôi phục thành công thiệp cưới về phiên bản an toàn trước đó!',
+                'revision_id' => (int) $invitation->fresh()->revision_id,
+            ]);
+        }
 
         return back()->with('success', 'Đã khôi phục thành công thiệp cưới về phiên bản an toàn trước đó!');
     }

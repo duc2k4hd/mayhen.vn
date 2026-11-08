@@ -174,11 +174,81 @@
         page-break-inside: avoid;
     }
 }
+
+/* Masking PII cho Số điện thoại */
+.mayhen_phone_full { display: inline; }
+.mayhen_phone_masked { display: none; }
+.mayhen_mask_phone_active .mayhen_phone_full { display: none; }
+.mayhen_mask_phone_active .mayhen_phone_masked { display: inline; }
+
+.mayhen_resilience_actions_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    background: #FFFFFF;
+    border: 1px solid #EFE8DD;
+    border-radius: 8px;
+    padding: 12px 20px;
+}
+
+.mayhen_resilience_toggle_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4A453E;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mayhen_resilience_runbook {
+    background: #FFFDF9;
+    border: 1px solid #E5DCCD;
+    border-left: 4px solid #C5A880;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.mayhen_resilience_runbook_title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_resilience_runbook_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    font-size: 13px;
+    color: #4A453E;
+    line-height: 1.5;
+}
+
+.mayhen_resilience_runbook_step {
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.mayhen_resilience_runbook_step strong {
+    color: #9C7A4A;
+    display: block;
+    margin-bottom: 4px;
+}
 </style>
 @endpush
 
 @section('content')
-<div class="mayhen_resilience_container">
+<div class="mayhen_resilience_container mayhen_mask_phone_active" id="resilienceContainer">
     {{-- Header & Nút In --}}
     <div class="mayhen_resilience_header_card">
         <div>
@@ -190,6 +260,40 @@
         <button type="button" class="mayhen_resilience_print_btn" onclick="window.print()">
             🖨️ In Tài Liệu Dự Phòng (A4)
         </button>
+    </div>
+
+    {{-- Thanh Công Cụ & Tùy Chọn Bảo Mật PII --}}
+    <div class="mayhen_resilience_actions_bar">
+        <label class="mayhen_resilience_toggle_label">
+            <input type="checkbox" id="toggleMaskPhone" checked>
+            <span>🔒 Bảo vệ quyền riêng tư: <strong>Ẩn 4 số giữa của SĐT</strong> khi in ấn & xuất bản (Mask PII)</span>
+        </label>
+        <span style="font-size: 12px; color: #8C8275;">Định dạng chuẩn theo Nghị định 13/2023 & Luật 91/2025/QH15</span>
+    </div>
+
+    {{-- Kế Hoạch Ứng Phó Sự Cố Khẩn Cấp (Emergency Runbook) --}}
+    <div class="mayhen_resilience_runbook">
+        <div class="mayhen_resilience_runbook_title">
+            <span>🚨 Kế Hoạch Vận Hành Khi Sự Cố Mạng / Mất Điện Tại Tiệc Cưới</span>
+        </div>
+        <div class="mayhen_resilience_runbook_grid">
+            <div class="mayhen_resilience_runbook_step">
+                <strong>Bước 1: Tiếp đón bằng bản in</strong>
+                Sử dụng bản in A4 này để đối soát tên khách, nhóm và số bàn tiệc ngay tại bàn đón tiếp.
+            </div>
+            <div class="mayhen_resilience_runbook_step">
+                <strong>Bước 2: Phát 4G dự phòng</strong>
+                Bật điểm phát sóng Wi-Fi từ điện thoại 4G cho máy tính bảng/điện thoại của bàn lễ tân.
+            </div>
+            <div class="mayhen_resilience_runbook_step">
+                <strong>Bước 3: Sử dụng Mã PIN Tiếp Tân</strong>
+                Nhập mã PIN dự phòng <code>{{ $checkinPin }}</code> để đăng nhập nhanh không cần tài khoản chủ tiệc.
+            </div>
+            <div class="mayhen_resilience_runbook_step">
+                <strong>Bước 4: Trợ giúp kỹ thuật</strong>
+                Nếu cần can thiệp khẩn cấp, liên hệ đội ngũ kỹ thuật Mây Hẹn qua hotline hỗ trợ ngày cưới.
+            </div>
+        </div>
     </div>
 
     {{-- Lưới Thông Số Cứu Hộ Khẩn Cấp --}}
@@ -301,7 +405,27 @@
                                 <span style="color: #8C8275;">? Chưa trả lời</span>
                             @endif
                         </td>
-                        <td>{{ $g->phone ?: '—' }}</td>
+                        <td>
+                            @php
+                                $rawPhone = trim((string) $g->phone);
+                                $maskedPhone = '';
+                                if ($rawPhone !== '') {
+                                    $phoneDigits = preg_replace('/\D/', '', $rawPhone);
+                                    $len = strlen($phoneDigits);
+                                    if ($len >= 7) {
+                                        $maskedPhone = substr($phoneDigits, 0, 3) . '****' . substr($phoneDigits, -3);
+                                    } else {
+                                        $maskedPhone = substr($phoneDigits, 0, 2) . '***';
+                                    }
+                                }
+                            @endphp
+                            @if($rawPhone !== '')
+                                <span class="mayhen_phone_full">{{ $rawPhone }}</span>
+                                <span class="mayhen_phone_masked">{{ $maskedPhone }}</span>
+                            @else
+                                <span style="color: #8C8275;">—</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -312,5 +436,23 @@
         </table>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('toggleMaskPhone');
+    const container = document.getElementById('resilienceContainer');
+    if (toggle && container) {
+        toggle.addEventListener('change', function () {
+            if (this.checked) {
+                container.classList.add('mayhen_mask_phone_active');
+            } else {
+                container.classList.remove('mayhen_mask_phone_active');
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection
 
