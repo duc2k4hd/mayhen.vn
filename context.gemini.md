@@ -5960,15 +5960,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                     - Khắc phục lỗi bố cục 2 cột trên điện thoại (<= 520px) khiến cột chữ bị ép cụt ngủn dưới ~150px: cưỡng chế chuyển sang 1 cột cân đối trang nhã, ảnh hiển thị nổi bật với khoảng đệm mềm mại.
                                     - Tinh chỉnh nội dung AI sinh: Lời ngỏ cô đọng ~45-60 từ, trích dẫn sâu lắng ~15-20 từ; loại bỏ văn phong sáo rỗng hay tự bịa sự kiện/ngày tháng chưa được cung cấp.
                                     - Gắn cờ nguồn nội dung `'content_source' => 'ai_generated'` minh bạch.
+                                  5. **Tái cấu trúc giao diện Wizard Khởi Tạo (P1-C Wizard Redesign)**:
+                                     - Bố cục 4 bước rành mạch theo đúng chuẩn Quiet Luxury Atelier:
+                                       * Bước 1: `Hai bạn là ai?` (Nhập Chú rể & Cô dâu rõ ràng, trường bắt buộc).
+                                       * Bước 2: `Hai bên gia đình` (Song thân phụ mẫu hai bên, ghi chú minh bạch có thể bổ sung sau trong Studio).
+                                       * Bước 3: `Phong cách thẩm mỹ` (4 thẻ phong cách chuẩn mực: Lãng Mạn, Tối Giản, Tạp Chí, Truyền Thống với badge và mô tả định hình nghệ thuật).
+                                       * Bước 4: `Bảng màu & Thời khắc trọng đại` (Swatches màu sắc lớn trực quan, ngày cưới và địa điểm tổ chức).
+                                     - Bổ sung khối **Tóm Tắt Thiết Kế (Design Summary Card)**: Tự động cập nhật thời gian thực tên cặp đôi, phong cách đã chọn, tông màu cố định, thông tin 7 Section chuẩn mực và lưu ý khung chờ ảnh cưới trung tính.
+                                     - Nút bấm `✦ Tạo Thiệp Của Chúng Mình ✦` có trạng thái loading thật và chống nhấp đúp (anti double-submit).
                              - **Tập tin đã cập nhật & bổ sung**:
                                * Backend: `app/Services/CuratedInvitationService.php`, `app/Http/Controllers/Client/CuratedInvitationController.php`.
                                * Views & Templates: `resources/views/client/invitations/mayhen-curated/schema.json`, `template.blade.php`, `styles.css`, `script.js`.
                                * 3 Biến Thể Album mới: `resources/views/client/invitations/mayhen-curated/sections/album/` (`variant_a.blade.php`, `variant_b.blade.php`, `variant_c.blade.php`).
                                * Asset mới: `resources/views/client/invitations/mayhen-curated/assets/placeholder-photo.svg`.
-                               * Giao diện Studio Preview: `resources/views/client/pages/curated/preview.blade.php`, `public/assets/client/css/pages/curated-preview.css`, `public/assets/client/js/pages/curated-preview.js`.
+                               * Giao diện Studio Preview & Wizard: `resources/views/client/pages/curated/wizard.blade.php`, `preview.blade.php`, `public/assets/client/css/pages/curated-wizard.css`, `curated-preview.css`, `public/assets/client/js/pages/curated-wizard.js`, `curated-preview.js`.
                                * Test Suites: `tests/Feature/CuratedInvitationFlowTest.php` (bổ sung test one-time token & kiểm tra 7 section có album), `tests/Feature/CanonicalTemplateSectionsTest.php`.
                              - **Kết quả Kiểm Thử**:
-                               * Toàn bộ 472/472 tests toàn hệ thống: **100% PASSED (2,436 assertions)** trong ~15 giây.
+                               * Toàn bộ 472/472 tests toàn hệ thống: **100% PASSED (2,438 assertions)** trong ~9 giây.
                                * Laravel Pint: Đạt chuẩn agent style không có lỗi.
                                * Đảm bảo không phá vỡ bất kỳ quy tắc nào trong `AGENTS.md` và `context.gemini.md`.
 

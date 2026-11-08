@@ -63,6 +63,10 @@ class CuratedInvitationFlowTest extends TestCase
         foreach (array_keys($palettes) as $paletteKey) {
             $response->assertSee('value="'.$paletteKey.'"', false);
         }
+
+        // Kiểm tra khối tóm tắt và nút khởi tạo
+        $response->assertSee('Tóm Tắt Bản Thiết Kế Dành Riêng Cho Hai Bạn');
+        $response->assertSee('Tạo Thiệp Của Chúng Mình');
     }
 
     /**
