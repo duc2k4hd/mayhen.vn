@@ -5612,6 +5612,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        214. **Đồng Bộ Hóa Toàn Vẹn `table_id` Khi Tiếp Tân Đổi Bàn & Đón Khách Phát Sinh (Check-In Table ID Sync — Flow 10)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Kiểm toán thực chiến Flow 10 (Check-in thực tế: Lễ tân quét QR, chuyển bàn giữa lúc quét, đón khách vãng lai walk-in):
+                               - **Lỗ hổng không nhất quán giữa Check-in và Seating Planner**: Trong `CheckInController::updateTable` và `walkInGuest`, khi tiếp tân chuyển bàn cho khách hoặc tạo khách phát sinh có điền tên bàn, hệ thống chỉ lưu chuỗi text `table_name` mà hoàn toàn bỏ qua việc truy vấn và liên kết `table_id` tương ứng với bảng `wedding_tables`.
+                               - **Hệ lụy nghiêm trọng**: Trên sơ đồ Seating Planner và Command Center, khách đổi bàn vẫn bị neo ở bàn cũ (hoặc không vào bàn nào); số ghế `assigned_attendees_count` ở bàn mới không được cộng dồn, số ghế ở bàn cũ không được giảm trừ; bàn mới có nguy cơ quá tải nhưng hệ thống không phát hiện được.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Đồng bộ khi đổi bàn (`CheckInController::updateTable`)**: Tự động tra cứu `WeddingTable::where('name', $newTableName)->first()`, cập nhật song song cả `table_name` và `table_id` của khách, trả về `table_id` trong phản hồi JSON.
+                               - **Đồng bộ khi thêm khách phát sinh (`CheckInController::walkInGuest`)**: Tự động map `table_id` nếu tên bàn nhập vào trùng khớp với một bàn tiệc đã có trong đám cưới, giúp sĩ số thực tế của bàn tiệc được cập nhật đồng nhất ngay tức thì trên mọi màn hình điều phối.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/CheckInTableCoordinationTest.php` với 2 ca kiểm thử chuyên sâu:
+                                 * `test('tiếp tân đổi bàn cho khách đồng bộ cả table_name và table_id với wedding_tables')`: Xác nhận sĩ số bàn cũ giảm về 0 và bàn mới tăng lên 2 ngay khi tiếp tân bấm đổi bàn.
+                                 * `test('tiếp tân thêm khách phát sinh walk-in tự động map table_id và cập nhật sĩ số bàn tiệc')`: Xác nhận khách phát sinh được tự động gắn đúng `table_id` và sĩ số bàn tiệc phản ánh đúng số người.
+                               - Test suite `CheckInTableCoordinationTest`: **12/12 tests passed (77 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **420/420 tests passed 100% (2,128 assertions)** trong ~7.9 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

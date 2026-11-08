@@ -379,14 +379,20 @@ class CheckInController extends Controller
         }
 
         $guest = $wedding->guests()->findOrFail($guestId);
+        $newTableName = trim($validated['table_name']);
+        $matchedTable = $wedding->tables()->where('name', $newTableName)->first();
+        $tableId = $matchedTable?->id;
+
         $guest->update([
-            'table_name' => trim($validated['table_name']),
+            'table_name' => $newTableName,
+            'table_id' => $tableId,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => "Đã cập nhật bàn tiệc: {$guest->table_name}",
             'table_name' => $guest->table_name,
+            'table_id' => $tableId,
         ]);
     }
 
@@ -446,12 +452,20 @@ class CheckInController extends Controller
         }
 
         $attendees = (int) $validated['attendees'];
+        $tableName = ! empty($validated['table_name']) ? trim($validated['table_name']) : null;
+        $tableId = null;
+        if ($tableName !== null) {
+            $matchedTable = $wedding->tables()->where('name', $tableName)->first();
+            $tableId = $matchedTable?->id;
+        }
+
         $guest = Guest::create([
             'wedding_id' => $wedding->id,
             'name' => trim($validated['name']),
             'salutation' => trim($validated['salutation'] ?? 'Bạn'),
             'group_name' => trim($validated['group_name'] ?? 'Khách phát sinh'),
-            'table_name' => ! empty($validated['table_name']) ? trim($validated['table_name']) : null,
+            'table_name' => $tableName,
+            'table_id' => $tableId,
             'expected_attendees' => $attendees,
             'is_sent' => true,
             'guest_token' => Str::random(32),

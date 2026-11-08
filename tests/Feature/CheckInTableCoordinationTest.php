@@ -5,6 +5,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\Wedding;
+use App\Models\WeddingTable;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -312,4 +313,83 @@ test('xuất csv danh sách khách mời có đầy đủ cột bàn tiệc và 
     expect($csvContent)->toContain('Điểm Danh Ngày Cưới');
     expect($csvContent)->toContain('Bàn 12 - Nghệ Thuật');
     expect($csvContent)->toContain('Đã có mặt');
+});
+
+test('tiếp tân đổi bàn cho khách đồng bộ cả table_name và table_id với wedding_tables', function () {
+    $table1 = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn VIP 01',
+        'shape' => 'round',
+        'capacity' => 10,
+    ]);
+
+    $table2 = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn VIP 02',
+        'shape' => 'round',
+        'capacity' => 10,
+    ]);
+
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bác Trần Văn An',
+        'table_id' => $table1->id,
+        'table_name' => $table1->name,
+        'expected_attendees' => 2,
+    ]);
+
+    expect($table1->assigned_attendees_count)->toBe(2);
+    expect($table2->assigned_attendees_count)->toBe(0);
+
+    session(["receptionist_verified_{$this->invitation->id}" => true]);
+
+    // Tiếp tân đổi bàn từ Bàn VIP 01 sang Bàn VIP 02
+    $response = $this->postJson(url("api/diem-danh-tiec/{$this->invitation->slug}/ban-tiec/{$guest->id}"), [
+        'table_name' => 'Bàn VIP 02',
+    ]);
+
+    $response->assertOk();
+    $response->assertJson([
+        'success' => true,
+        'table_name' => 'Bàn VIP 02',
+        'table_id' => $table2->id,
+    ]);
+
+    $freshGuest = $guest->fresh();
+    expect($freshGuest->table_name)->toBe('Bàn VIP 02')
+        ->and($freshGuest->table_id)->toBe($table2->id);
+
+    // Bàn 1 giảm về 0, Bàn 2 tăng lên 2
+    expect($table1->fresh()->assigned_attendees_count)->toBe(0)
+        ->and($table2->fresh()->assigned_attendees_count)->toBe(2);
+});
+
+test('tiếp tân thêm khách phát sinh walk-in tự động map table_id và cập nhật sĩ số bàn tiệc', function () {
+    $table = WeddingTable::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bàn Dự Phòng 01',
+        'shape' => 'round',
+        'capacity' => 10,
+    ]);
+
+    session(["receptionist_verified_{$this->invitation->id}" => true]);
+
+    $response = $this->postJson(route('checkin.exception.walk_in', $this->invitation->slug), [
+        'name' => 'Anh Hải & Chị Mai (Khách phát sinh)',
+        'attendees' => 3,
+        'table_name' => 'Bàn Dự Phòng 01',
+        'note' => 'Bạn thân gia đình đến thêm',
+    ]);
+
+    $response->assertStatus(201);
+    $response->assertJson(['success' => true]);
+
+    $guest = Guest::where('name', 'Anh Hải & Chị Mai (Khách phát sinh)')->first();
+    expect($guest)->not->toBeNull();
+    expect($guest->table_id)->toBe($table->id);
+    expect($guest->table_name)->toBe('Bàn Dự Phòng 01');
+    expect($guest->checked_in_attendees)->toBe(3);
+
+    // Sĩ số bàn dự phòng tự động cập nhật lên 3
+    expect($table->fresh()->assigned_attendees_count)->toBe(3);
 });
