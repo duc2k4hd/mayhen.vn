@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -229,14 +230,14 @@ class InvitationController extends Controller
             fputcsv($file, ['STT', 'Họ Và Tên', 'Số Điện Thoại', 'Nhóm Khách', 'Trạng Thái Gửi', 'Đã Xem Thiệp']);
 
             foreach ($guests as $idx => $guest) {
-                fputcsv($file, [
+                fputcsv($file, CsvSanitizerService::row([
                     $idx + 1,
                     $guest->name,
                     $guest->phone ?? '',
                     $guest->group_name ?? 'Chung',
                     $guest->is_sent ? 'Đã gửi' : 'Chưa gửi',
                     $guest->is_opened ? 'Đã xem' : 'Chưa xem',
-                ]);
+                ]));
             }
             fclose($file);
         };
@@ -266,7 +267,7 @@ class InvitationController extends Controller
             fputcsv($file, ['STT', 'Người Mừng Cưới', 'Nhóm Khách', 'Số Tiền (VNĐ)', 'Hình Thức Mừng', 'Lời Chúc / Ghi Chú', 'Đã Cảm Ơn', 'Thời Gian']);
 
             foreach ($gifts as $idx => $gift) {
-                fputcsv($file, [
+                fputcsv($file, CsvSanitizerService::row([
                     $idx + 1,
                     $gift->sender_name,
                     $gift->sender_group ?? '',
@@ -275,7 +276,7 @@ class InvitationController extends Controller
                     $gift->notes ?? '',
                     $gift->is_acknowledged ? 'Đã cảm ơn' : 'Chưa cảm ơn',
                     $gift->created_at ? $gift->created_at->format('d/m/Y H:i') : '',
-                ]);
+                ]));
             }
             fclose($file);
         };
@@ -326,7 +327,7 @@ class InvitationController extends Controller
                 $children = (int) ($resp->children_count ?? 0);
                 $total = $adults + $children;
 
-                fputcsv($file, [
+                fputcsv($file, CsvSanitizerService::row([
                     $idx + 1,
                     $resp->guest_name,
                     $statusLabel,
@@ -336,7 +337,7 @@ class InvitationController extends Controller
                     $resp->phone ?? '',
                     $resp->dietary_requirements ?? '',
                     $resp->created_at ? $resp->created_at->format('d/m/Y H:i') : '',
-                ]);
+                ]));
             }
             fclose($file);
         };
@@ -373,14 +374,14 @@ class InvitationController extends Controller
             ]);
 
             foreach ($wishes as $idx => $wish) {
-                fputcsv($file, [
+                fputcsv($file, CsvSanitizerService::row([
                     $idx + 1,
                     $wish->name ?? $wish->sender_name ?? '',
                     $wish->message ?? '',
                     $wish->reply ?? '',
                     $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '',
                     $wish->is_approved ? 'Đã duyệt' : 'Chờ duyệt',
-                ]);
+                ]));
             }
             fclose($file);
         };

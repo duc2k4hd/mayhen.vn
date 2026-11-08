@@ -5461,6 +5461,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        205. **Phòng Vệ Toàn Diện Lỗ Hổng CSV Formula Injection (CWE-1236 Defense Across All Export Portals)**:
+                             - **Bối cảnh & Giá trị an toàn**:
+                               - Kiểm toán thực thi chuyên sâu mục 05 (Kiểm toán bảo mật theo tất cả ranh giới tin cậy — XSS/CSV formula injection) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Nguy cơ tiềm ẩn: Khi khách mời nhập tên, lời chúc, yêu cầu ăn uống hoặc ghi chú mừng cưới bắt đầu bằng các ký tự công thức (`=`, `+`, `-`, `@`, `\t`, `\r`), nếu người dùng hoặc quản trị viên xuất file CSV và mở bằng Microsoft Excel / Google Sheets, phần mềm bảng tính có thể hiểu lầm là macro/công thức và tự động thực thi mã lệnh nguy hiểm (CWE-1236).
+                             - **Giải pháp kỹ thuật**:
+                               - Xây dựng Service chuyên trách `app/Services/CsvSanitizerService.php`:
+                                 * Phương thức `sanitize(mixed $value)`: Tự động kiểm tra và thêm tiền tố nháy đơn `'` cho bất kỳ chuỗi nào bắt đầu bằng ký tự nguy hiểm (`=`, `+`, `-`, `@`, `\t`, `\r`), bảo vệ 100% người dùng khỏi việc thực thi công thức ngoài ý muốn. Các giá trị số, boolean, null và văn bản thuần được bảo toàn nguyên vẹn.
+                                 * Phương thức `row(array $row)`: Vệ sinh an toàn đồng bộ toàn bộ mảng hàng trước khi gọi `fputcsv()`.
+                               - Áp dụng triệt để cho toàn bộ các điểm xuất tệp CSV trong hệ thống:
+                                 1. Client Sổ Lưu Bút: `WishManagementController::exportCsv`.
+                                 2. Client Khách Mời: `GuestController::exportCsv`.
+                                 3. Client Sổ Mừng Cưới: `GiftManagementController::exportCsv`.
+                                 4. Admin Sổ Lưu Bút & RSVP: `Admin\WishController::exportCsv` & `exportRsvpsCsv`.
+                                 5. Admin Thiệp Cưới: `Admin\InvitationController::exportGuests`, `exportGifts`, `exportRsvps`, `exportWishes`.
+                                 6. Admin Đơn Hàng: `Admin\OrderController::exportCsv`.
+                                 7. Admin Mẫu Thiệp: `Admin\TemplateController::exportCsv`.
+                                 8. Admin Người Dùng: `Admin\UserController::exportCsv`.
+                                 9. Admin Nhật Ký Hệ Thống: `Admin\SettingController::exportCsv`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới Feature test suite:
+                                 * `tests/Feature/CsvFormulaInjectionDefenseTest.php` -> **4/4 tests passed (21 assertions)** bao phủ service sanitize, xuất Sổ lưu bút, xuất Khách mời và xuất Sổ mừng cưới.
+                               - Toàn bộ test suite toàn hệ thống: **407/407 tests passed 100% (2,044 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa `CsvFormulaInjectionDefenseTest.php` vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

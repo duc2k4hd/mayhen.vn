@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -368,7 +369,7 @@ class TemplateController extends Controller
                     default => 'Gói Hạnh Phúc (Plus)',
                 };
 
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $tpl->id,
                     $tpl->name,
@@ -379,7 +380,7 @@ class TemplateController extends Controller
                     $tpl->is_featured ? 'Có (Nổi bật)' : 'Không',
                     $tpl->is_active ? 'Đang hoạt động' : 'Tạm ẩn',
                     $tpl->created_at ? $tpl->created_at->format('d/m/Y H:i:s') : 'N/A',
-                ]);
+                ]));
             }
 
             fclose($handle);

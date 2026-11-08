@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -186,7 +187,7 @@ class OrderController extends Controller
                     ? "{$order->invitation->wedding->groom_name} & {$order->invitation->wedding->bride_name}"
                     : '';
 
-                fputcsv($file, [
+                fputcsv($file, CsvSanitizerService::row([
                     $idx + 1,
                     $order->order_code,
                     $order->user?->name ?? '—',
@@ -200,7 +201,7 @@ class OrderController extends Controller
                     $statusLabel,
                     $order->created_at ? $order->created_at->format('d/m/Y H:i:s') : '',
                     $order->paid_at ? $order->paid_at->format('d/m/Y H:i:s') : '',
-                ]);
+                ]));
             }
 
             fclose($file);

@@ -86,6 +86,7 @@ Thumbs.db
 !/tests/Feature/PricingPageTest.php
 !/tests/Feature/GuestRelationsAndBatchModerationTest.php
 !/tests/Feature/InvitationLockedConsistencyTest.php
+!/tests/Feature/CsvFormulaInjectionDefenseTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

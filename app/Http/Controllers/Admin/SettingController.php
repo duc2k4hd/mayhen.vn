@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -353,7 +354,7 @@ class SettingController extends Controller
                 $actionLabel = $availableActions[$log['action'] ?? ''] ?? ($log['action'] ?? 'Thao tác');
                 $time = isset($log['timestamp']) ? Carbon::parse($log['timestamp'])->format('d/m/Y H:i:s') : 'N/A';
 
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $time,
                     $log['admin_name'] ?? 'System',
@@ -363,7 +364,7 @@ class SettingController extends Controller
                     $log['target_id'] ?? '',
                     $log['description'] ?? '',
                     $log['ip'] ?? '',
-                ]);
+                ]));
             }
 
             fclose($handle);

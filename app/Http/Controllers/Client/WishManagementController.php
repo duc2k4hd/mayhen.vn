@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\CsvSanitizerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -167,7 +168,7 @@ class WishManagementController extends Controller
 
             $index = 1;
             foreach ($wishes as $w) {
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $w->name,
                     $w->message,
@@ -175,7 +176,7 @@ class WishManagementController extends Controller
                     $w->is_approved ? 'Hiển thị' : 'Tạm ẩn',
                     $w->created_at ? $w->created_at->format('d/m/Y H:i') : '',
                     $w->replied_at ? $w->replied_at->format('d/m/Y H:i') : '',
-                ]);
+                ]));
             }
 
             fclose($handle);

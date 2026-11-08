@@ -12,6 +12,7 @@ use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
@@ -276,7 +277,7 @@ class GuestController extends Controller
                 $checkInTime = $g->checked_in_at ? $g->checked_in_at->format('H:i d/m/Y') : '';
                 $personalUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $g->guest_token]);
 
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $g->name,
                     $g->salutation,
@@ -292,7 +293,7 @@ class GuestController extends Controller
                     $dietary,
                     $wishes,
                     $personalUrl,
-                ]);
+                ]));
             }
 
             fclose($handle);

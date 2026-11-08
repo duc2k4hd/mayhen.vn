@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\WeddingGift;
+use App\Services\CsvSanitizerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -236,7 +237,7 @@ class GiftManagementController extends Controller
 
             $index = 1;
             foreach ($gifts as $g) {
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $g->sender_name,
                     $g->sender_group ?? '',
@@ -245,7 +246,7 @@ class GiftManagementController extends Controller
                     $g->notes ?? '',
                     $g->is_acknowledged ? 'Đã cảm ơn' : 'Chưa cảm ơn',
                     $g->created_at ? $g->created_at->format('d/m/Y H:i') : '',
-                ]);
+                ]));
             }
 
             fclose($handle);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -220,7 +221,7 @@ class UserController extends Controller
             $index = 1;
             foreach ($users as $user) {
                 $totalSpent = $user->orders->sum('amount');
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $user->id,
                     $user->name,
@@ -230,7 +231,7 @@ class UserController extends Controller
                     $user->weddings_count,
                     $totalSpent,
                     $user->created_at ? $user->created_at->format('d/m/Y H:i:s') : 'N/A',
-                ]);
+                ]));
             }
 
             fclose($handle);

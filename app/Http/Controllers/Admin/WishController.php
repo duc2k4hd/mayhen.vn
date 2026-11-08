@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\WeddingWish;
 use App\Services\AuditLogger;
+use App\Services\CsvSanitizerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -248,7 +249,7 @@ class WishController extends Controller
                 $couple = $wish->wedding ? ($wish->wedding->groom_name.' & '.$wish->wedding->bride_name) : 'N/A';
                 $statusLabel = $wish->is_approved ? 'Đã duyệt hiển thị' : 'Chờ duyệt / Tạm ẩn';
 
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $wish->id,
                     $wish->sender_name,
@@ -258,7 +259,7 @@ class WishController extends Controller
                     $couple,
                     $statusLabel,
                     $wish->created_at ? $wish->created_at->format('d/m/Y H:i:s') : 'N/A',
-                ]);
+                ]));
             }
 
             fclose($handle);
@@ -322,7 +323,7 @@ class WishController extends Controller
                     default => $rsvp->attending_status,
                 };
 
-                fputcsv($handle, [
+                fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $rsvp->id,
                     $rsvp->guest_name,
@@ -334,7 +335,7 @@ class WishController extends Controller
                     $rsvp->dietary_requirements ?? 'Không có',
                     $rsvp->wishes ?? '',
                     $rsvp->created_at ? $rsvp->created_at->format('d/m/Y H:i:s') : 'N/A',
-                ]);
+                ]));
             }
 
             fclose($handle);
