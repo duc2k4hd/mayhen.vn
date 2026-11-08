@@ -49,13 +49,21 @@
         </div>
 
         {{-- Khung Bản Đồ --}}
-        <div class="mayhen_invitation_map_box">
-            <iframe src="{{ $partyMapLink }}" class="mayhen_invitation_map_iframe" loading="lazy" allowfullscreen title="Bản đồ chỉ đường"></iframe>
-            <div class="mayhen_invitation_map_footer_bar">
-                <span class="mayhen_invitation_map_address_text" data-sync-target="event_party_address">📍 {{ $partyAddress }}</span>
-                <a href="https://maps.google.com/?q={{ urlencode($partyVenue . ' ' . $partyAddress) }}" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_map_open_link">Mở Google Maps ↗</a>
+        @if($hasVenueInfo && !empty($partyMapLink))
+            <div class="mayhen_invitation_map_box">
+                <iframe src="{{ $partyMapLink }}" class="mayhen_invitation_map_iframe" loading="lazy" allowfullscreen title="Bản đồ chỉ đường"></iframe>
+                <div class="mayhen_invitation_map_footer_bar">
+                    <span class="mayhen_invitation_map_address_text" data-sync-target="event_party_address">📍 {{ $partyAddress }}</span>
+                    <a href="https://maps.google.com/?q={{ urlencode($partyVenue . ' ' . $partyAddress) }}" target="_blank" rel="noopener noreferrer" class="mayhen_invitation_map_open_link">Mở Google Maps ↗</a>
+                </div>
             </div>
-        </div>
+        @else
+            <div class="mayhen_invitation_map_placeholder">
+                <div class="mayhen_invitation_map_ph_icon">📍</div>
+                <p class="mayhen_invitation_map_ph_title">Chưa có định vị bản đồ sảnh tiệc</p>
+                <span class="mayhen_invitation_map_ph_hint">Bổ sung địa chỉ sảnh tiệc trong Studio để hiển thị bản đồ dẫn đường tương tác</span>
+            </div>
+        @endif
     </div>
 </section>
 

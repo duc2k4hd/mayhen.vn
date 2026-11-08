@@ -11,27 +11,33 @@
         <h2 class="mayhen_invitation_countdown_title">Từng Nhịp Đập Tiến Gần</h2>
         <p class="mayhen_invitation_countdown_desc">Chỉ còn ít ngày nữa để cùng nhau viết nên khoảnh khắc đẹp nhất cuộc đời</p>
         
-        <div class="mayhen_invitation_countdown mayhen_invitation_countdown--pill" data-countdown="{{ $weddingDate->toIso8601String() }}">
-            <div class="mayhen_invitation_cd_pill_box">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
-                <span class="mayhen_invitation_cd_lbl">DAYS</span>
+        @if($hasCustomWeddingDate && $weddingDate)
+            <div class="mayhen_invitation_countdown mayhen_invitation_countdown--pill" data-countdown="{{ $weddingDate->toIso8601String() }}">
+                <div class="mayhen_invitation_cd_pill_box">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
+                    <span class="mayhen_invitation_cd_lbl">DAYS</span>
+                </div>
+                <span class="mayhen_invitation_cd_sep">:</span>
+                <div class="mayhen_invitation_cd_pill_box">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_hour">00</span>
+                    <span class="mayhen_invitation_cd_lbl">HOURS</span>
+                </div>
+                <span class="mayhen_invitation_cd_sep">:</span>
+                <div class="mayhen_invitation_cd_pill_box">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_min">00</span>
+                    <span class="mayhen_invitation_cd_lbl">MINS</span>
+                </div>
+                <span class="mayhen_invitation_cd_sep">:</span>
+                <div class="mayhen_invitation_cd_pill_box">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_sec">00</span>
+                    <span class="mayhen_invitation_cd_lbl">SECS</span>
+                </div>
             </div>
-            <span class="mayhen_invitation_cd_sep">:</span>
-            <div class="mayhen_invitation_cd_pill_box">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_hour">00</span>
-                <span class="mayhen_invitation_cd_lbl">HOURS</span>
+        @else
+            <div class="mayhen_invitation_countdown_pending">
+                <span>✦ Bổ sung ngày cưới để xem đếm ngược ✦</span>
             </div>
-            <span class="mayhen_invitation_cd_sep">:</span>
-            <div class="mayhen_invitation_cd_pill_box">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_min">00</span>
-                <span class="mayhen_invitation_cd_lbl">MINS</span>
-            </div>
-            <span class="mayhen_invitation_cd_sep">:</span>
-            <div class="mayhen_invitation_cd_pill_box">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_sec">00</span>
-                <span class="mayhen_invitation_cd_lbl">SECS</span>
-            </div>
-        </div>
+        @endif
 
         <div class="mayhen_invitation_minimal_date_banner">
             <span class="mayhen_invitation_date_highlight">{{ $weddingDateDigits }}</span>

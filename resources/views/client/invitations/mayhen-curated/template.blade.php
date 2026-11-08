@@ -22,23 +22,35 @@
     $brideParentsAddress = $extraData['bride_parents_address'] ?? 'Tư gia Nhà Gái - Ba Đình, Hà Nội';
     $brideBio = $extraData['bride_bio'] ?? 'Một người con gái dịu dàng, tinh tế, luôn mang đến nụ cười ấm áp và bến đỗ bình yên.';
 
-    // 2. Ngày giờ và sự kiện cưới
-    $weddingDate = isset($wedding->wedding_date)
-        ? \Carbon\Carbon::parse($wedding->wedding_date)
-        : \Carbon\Carbon::create(2026, 12, 20, 18, 0, 0);
+    // 2. Ngày giờ và sự kiện cưới (Timezone Việt Nam: Asia/Ho_Chi_Minh)
+    $hasCustomWeddingDate = array_key_exists('has_custom_wedding_date', $extraData)
+        ? (bool) $extraData['has_custom_wedding_date']
+        : ! empty($wedding->wedding_date);
 
-    $weddingDateDigits = $weddingDate->format('d . m . Y');
-    $weddingDay = $weddingDate->format('d');
-    $weddingMonth = $weddingDate->format('m');
-    $weddingYear = $weddingDate->format('Y');
-    $weddingDayOfWeek = $weddingDate->locale('vi')->isoFormat('dddd');
+    $weddingDate = $hasCustomWeddingDate && ! empty($wedding->wedding_date)
+        ? \Carbon\Carbon::parse($wedding->wedding_date)->setTimezone('Asia/Ho_Chi_Minh')
+        : null;
+
+    $displayDate = $weddingDate ?? \Carbon\Carbon::create(2026, 12, 20, 18, 0, 0, 'Asia/Ho_Chi_Minh');
+
+    $weddingDateDigits = $displayDate->format('d . m . Y');
+    $weddingDay = $displayDate->format('d');
+    $weddingMonth = $displayDate->format('m');
+    $weddingYear = $displayDate->format('Y');
+    $weddingDayOfWeek = $displayDate->locale('vi')->isoFormat('dddd');
     $weddingLunar = $extraData['wedding_lunar_date'] ?? 'Nhằm ngày 12 tháng 11 năm Bính Ngọ';
 
     // Tiệc cưới chính
     $partyTime = $extraData['party_time'] ?? '18:00';
-    $partyVenue = $wedding->venue_name ?? ($extraData['party_venue'] ?? 'Trung tâm Tiệc cưới Ngân Hà');
-    $partyAddress = $wedding->venue_address ?? ($extraData['event_party_address'] ?? ($extraData['party_address'] ?? 'Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội'));
-    $partyMapLink = 'https://maps.google.com/maps?q=' . urlencode($partyVenue . ', ' . $partyAddress) . '&t=&z=16&ie=UTF8&iwloc=&output=embed';
+    $rawVenue = $wedding->venue_name ?? ($extraData['party_venue'] ?? null);
+    $rawAddress = $wedding->venue_address ?? ($extraData['event_party_address'] ?? ($extraData['party_address'] ?? null));
+    $hasVenueInfo = array_key_exists('has_venue_info', $extraData)
+        ? (bool) $extraData['has_venue_info']
+        : (! empty($rawVenue) || ! empty($rawAddress));
+
+    $partyVenue = $rawVenue ?: 'Trung tâm Tiệc cưới';
+    $partyAddress = $rawAddress ?: 'Chưa cập nhật địa chỉ';
+    $partyMapLink = $hasVenueInfo ? ('https://maps.google.com/maps?q=' . urlencode($partyVenue . ', ' . $partyAddress) . '&t=&z=16&ie=UTF8&iwloc=&output=embed') : null;
 
     // Lễ Gia Tiên
     $ceremonyTime = $extraData['ceremony_time'] ?? '08:00';

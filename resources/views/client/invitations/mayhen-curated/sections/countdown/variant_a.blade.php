@@ -25,24 +25,30 @@
         </div>
 
         {{-- Đồng Hồ 4 Số --}}
-        <div class="mayhen_invitation_countdown" data-countdown="{{ $weddingDate->toIso8601String() }}">
-            <div class="mayhen_invitation_cd_item">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
-                <span class="mayhen_invitation_cd_lbl">Ngày</span>
+        @if($hasCustomWeddingDate && $weddingDate)
+            <div class="mayhen_invitation_countdown" data-countdown="{{ $weddingDate->toIso8601String() }}">
+                <div class="mayhen_invitation_cd_item">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
+                    <span class="mayhen_invitation_cd_lbl">Ngày</span>
+                </div>
+                <div class="mayhen_invitation_cd_item">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_hour">00</span>
+                    <span class="mayhen_invitation_cd_lbl">Giờ</span>
+                </div>
+                <div class="mayhen_invitation_cd_item">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_min">00</span>
+                    <span class="mayhen_invitation_cd_lbl">Phút</span>
+                </div>
+                <div class="mayhen_invitation_cd_item">
+                    <span class="mayhen_invitation_cd_val mayhen_invitation_cd_sec">00</span>
+                    <span class="mayhen_invitation_cd_lbl">Giây</span>
+                </div>
             </div>
-            <div class="mayhen_invitation_cd_item">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_hour">00</span>
-                <span class="mayhen_invitation_cd_lbl">Giờ</span>
+        @else
+            <div class="mayhen_invitation_countdown_pending">
+                <span>✦ Bổ sung ngày cưới để xem đếm ngược ✦</span>
             </div>
-            <div class="mayhen_invitation_cd_item">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_min">00</span>
-                <span class="mayhen_invitation_cd_lbl">Phút</span>
-            </div>
-            <div class="mayhen_invitation_cd_item">
-                <span class="mayhen_invitation_cd_val mayhen_invitation_cd_sec">00</span>
-                <span class="mayhen_invitation_cd_lbl">Giây</span>
-            </div>
-        </div>
+        @endif
     </div>
 </section>
 

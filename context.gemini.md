@@ -5989,4 +5989,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+                        225. **Hoàn Thiện Cơ Chế Phòng Vệ Dữ Liệu Rỗng (UI-09) — Countdown & Bản Đồ Sảnh Tiệc Thông Minh Cho Curated Invitation**:
+                             - **Bối cảnh & Yêu cầu Master Prompt V2 (Mục UI-09 & Section 5)**:
+                               * Khi người dùng khởi tạo nhanh từ Wizard chỉ với họ tên cặp đôi mà chưa nhập ngày cưới hoặc địa điểm tổ chức, hệ thống tuyệt đối không tự bịa ra ngày giả hay gán bản đồ sai địa chỉ khiến khách hàng bối rối.
+                             - **Giải pháp triển khai thực tế**:
+                               1. **Countdown & Lịch Tháng (Section 4)**:
+                                  - Kiểm tra cờ `has_custom_wedding_date` trong `extra_data` và `wedding_date`.
+                                  - Khi có ngày cưới hợp lệ: Render trọn vẹn bộ đếm giờ thời gian thực 4 số (Ngày, Giờ, Phút, Giây) với `data-countdown="{{ $weddingDate->toIso8601String() }}"` chuẩn timezone Việt Nam (`Asia/Ho_Chi_Minh`).
+                                  - Khi chưa nhập ngày cưới: Ẩn đồng hồ đếm ngược đến ngày giả, thay thế bằng huy hiệu nhẹ nhàng chuẩn Quiet Luxury: `<div class="mayhen_invitation_countdown_pending"><span>✦ Bổ sung ngày cưới để xem đếm ngược ✦</span></div>`.
+                                  - Cập nhật đồng bộ trên cả 3 biến thể: `variant_a` (Tờ Lịch Cổ Điển), `variant_b` (Hộp Số Tối Giản), `variant_c` (Vòng Tròn Thời Gian).
+                               2. **Events & Maps (Section 5)**:
+                                  - Kiểm tra cờ `has_venue_info` từ `venue_name` hoặc `venue_address`.
+                                  - Khi đã có sảnh tiệc/địa chỉ: Render iframe bản đồ Google Maps và nút CTA mở Google Maps chỉ đường tương tác.
+                                  - Khi chưa nhập địa chỉ: Không hiển thị bản đồ chỉ sai địa điểm; hiển thị khung mỹ thuật trang nhã `<div class="mayhen_invitation_map_placeholder">` với icon ghim vị trí, thông báo *"Chưa có định vị bản đồ sảnh tiệc"* và lời gợi ý *"Bổ sung địa chỉ sảnh tiệc trong Studio để hiển thị bản đồ dẫn đường tương tác"*.
+                                  - Cập nhật đồng bộ trên cả 3 biến thể: `variant_a` (Boarding Pass), `variant_b` (Wax Seal), `variant_c` (Dual Split).
+                               3. **Phòng vệ Styling CSS Thuần**:
+                                  - Bổ sung style cho `.mayhen_invitation_countdown_pending` và `.mayhen_invitation_map_placeholder` sử dụng CSS variables chuẩn (`var(--mh-primary)`, `var(--mh-accent)`, `var(--mh-border)`, `var(--mh-surface)`), viền nét đứt tinh tế, tương thích 100% trên cả Desktop và Mobile.
+                             - **Tập tin đã cập nhật**:
+                               * Backend: `app/Http/Controllers/Client/CuratedInvitationController.php`, `resources/views/client/invitations/mayhen-curated/template.blade.php`.
+                               * Views: `resources/views/client/invitations/mayhen-curated/sections/countdown/` (`variant_a.blade.php`, `variant_b.blade.php`, `variant_c.blade.php`).
+                               * Views: `resources/views/client/invitations/mayhen-curated/sections/events/` (`variant_a.blade.php`, `variant_b.blade.php`, `variant_c.blade.php`).
+                               * Styles: `resources/views/client/invitations/mayhen-curated/styles.css`.
+                               * Tests: `tests/Feature/CuratedInvitationFlowTest.php` (bổ sung test #12 kiểm thử tự động toàn diện cả 2 kịch bản có/chưa có ngày cưới và địa điểm).
+                             - **Kết quả Kiểm Thử**:
+                               * Toàn bộ 474/474 tests toàn hệ thống: **100% PASSED (2,456 assertions)** trong 9.4 giây.
+                               * Laravel Pint: Đạt chuẩn agent style không có lỗi (`vendor/bin/pint --format agent`).
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

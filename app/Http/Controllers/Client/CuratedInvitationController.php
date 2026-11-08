@@ -78,9 +78,15 @@ class CuratedInvitationController extends Controller
         // 3. Chuẩn bị dữ liệu Wedding
         $groomName = trim((string) $request->input('groom_name'));
         $brideName = trim((string) $request->input('bride_name'));
-        $weddingDate = $request->input('wedding_date') ?: now()->addMonths(2)->format('Y-m-d');
-        $venueName = $request->input('venue_name') ?: 'Trung Tâm Tiệc Cưới';
-        $venueAddress = $request->input('venue_address') ?: 'TP. Hồ Chí Minh';
+        $rawWeddingDate = $request->input('wedding_date');
+        $hasCustomWeddingDate = ! empty($rawWeddingDate);
+        $weddingDate = $hasCustomWeddingDate ? $rawWeddingDate : now()->addMonths(2)->format('Y-m-d');
+
+        $rawVenueName = $request->input('venue_name');
+        $rawVenueAddress = $request->input('venue_address');
+        $hasVenueInfo = ! empty($rawVenueName) || ! empty($rawVenueAddress);
+        $venueName = $rawVenueName ? trim((string) $rawVenueName) : null;
+        $venueAddress = $rawVenueAddress ? trim((string) $rawVenueAddress) : null;
 
         $extraData = [
             'groom_father' => $request->input('groom_father', 'Ông Nguyễn Văn Hùng'),
@@ -98,6 +104,8 @@ class CuratedInvitationController extends Controller
             'party_time' => '18:00',
             'party_venue' => $venueName,
             'event_party_address' => $venueAddress,
+            'has_custom_wedding_date' => $hasCustomWeddingDate,
+            'has_venue_info' => $hasVenueInfo,
             'ceremony_time' => '08:00',
             'ceremony_groom_time' => '10:00',
             'wedding_lunar_date' => 'Nhằm ngày lành tháng tốt năm Bính Ngọ',

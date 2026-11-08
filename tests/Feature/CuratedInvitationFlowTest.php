@@ -551,4 +551,52 @@ class CuratedInvitationFlowTest extends TestCase
         $this->assertNotEmpty($fallbackResult['couple_quote']);
         $this->assertNotEmpty($fallbackResult['story_content']);
     }
+
+    /**
+     * 12. Phòng vệ dữ liệu trống: Countdown và Map hiển thị placeholder trang nhã khi chưa có ngày cưới hoặc sảnh tiệc (UI-09).
+     */
+    public function test_countdown_and_events_render_graceful_placeholders_when_date_or_venue_omitted(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        // Kịch bản A: Chỉ nhập tên, chưa có ngày cưới và địa điểm
+        $responseA = $this->actingAs($user)->post(route('curated.generate'), [
+            'groom_name' => 'Văn Hậu',
+            'bride_name' => 'Hải My',
+            'style' => 'editorial',
+            'palette' => 'sage-green',
+        ]);
+
+        $responseA->assertSessionHasNoErrors();
+        $responseA->assertRedirect();
+        $invitationA = Invitation::latest('id')->first();
+
+        $renderA = $this->get(route('invitation.show', ['slug' => $invitationA->slug]));
+        $renderA->assertStatus(200);
+        $renderA->assertSee('✦ Bổ sung ngày cưới để xem đếm ngược ✦');
+        $renderA->assertSee('Chưa có định vị bản đồ sảnh tiệc');
+        $renderA->assertDontSee('data-countdown=', false);
+
+        // Kịch bản B: Đã cung cấp đầy đủ ngày cưới và địa điểm sảnh tiệc
+        $responseB = $this->actingAs($user)->post(route('curated.generate'), [
+            'groom_name' => 'Văn Hậu',
+            'bride_name' => 'Hải My',
+            'style' => 'editorial',
+            'palette' => 'sage-green',
+            'wedding_date' => '2026-12-25',
+            'venue_name' => 'Khách Sạn Lotte Hà Nội',
+            'venue_address' => '54 Liễu Giai, Ba Đình, Hà Nội',
+        ]);
+
+        $responseB->assertSessionHasNoErrors();
+        $responseB->assertRedirect();
+        $invitationB = Invitation::latest('id')->first();
+
+        $renderB = $this->get(route('invitation.show', ['slug' => $invitationB->slug]));
+        $renderB->assertStatus(200);
+        $renderB->assertSee('data-countdown="2026-12-25', false);
+        $renderB->assertSee('Khách Sạn Lotte Hà Nội');
+        $renderB->assertSee('maps.google.com/maps?q=Kh%C3%A1ch+S%E1%BA%A1n+Lotte+H%C3%A0+N%E1%BB%99i');
+    }
 }
