@@ -164,4 +164,31 @@ class GuestRelationsAndBatchModerationTest extends TestCase
         $response->assertForbidden();
         $this->assertEquals(1, $this->wedding->wishes()->where('is_approved', false)->count());
     }
+
+    public function test_owner_can_view_wishes_print_page_and_other_user_is_forbidden(): void
+    {
+        WeddingWish::create([
+            'wedding_id' => $this->wedding->id,
+            'name' => 'Bác Năm',
+            'message' => 'Chúc hai cháu đầu bạc răng long!',
+            'is_approved' => true,
+        ]);
+
+        // 1. Chủ sở hữu truy cập trang in sổ lưu bút
+        $response = $this->actingAs($this->user)
+            ->get(route('account.wishes.print', $this->invitation->id));
+
+        $response->assertOk()
+            ->assertViewIs('client.pages.account.wishes-print')
+            ->assertSee('Sổ Lưu Bút Kỷ Niệm')
+            ->assertSee('Bác Năm')
+            ->assertSee('Chúc hai cháu đầu bạc răng long!');
+
+        // 2. Người dùng khác cố tình truy cập -> Bị chặn 403
+        $otherUser = User::factory()->create();
+        $otherResponse = $this->actingAs($otherUser)
+            ->get(route('account.wishes.print', $this->invitation->id));
+
+        $otherResponse->assertForbidden();
+    }
 }

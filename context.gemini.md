@@ -5501,6 +5501,18 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Toàn bộ 10 hồ sơ quản trị chất lượng đạt trạng thái **READY FOR COMMERCIAL PRODUCTION**.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        207. **Tích Hợp & Kiểm Thử Trang In Kỷ Yếu Sổ Lưu Bút Khổ A4 (Keepsake Guestbook Print & Security Access)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Hoàn thiện trải nghiệm người dùng trong quản lý Sổ lưu bút (`resources/views/client/pages/account/wishes.blade.php`): Bổ sung nút liên kết trực tiếp `[ 🖨️ In Sổ Lưu Bút ]` trỏ tới `route('account.wishes.print', $invitation->id)` trên thanh điều hướng tiêu đề trang.
+                               - Trang in kỷ yếu `wishes-print.blade.php` được thiết kế theo phong cách Quiet Luxury Editorial sang trọng, tích hợp quy chuẩn in ấn `@media print`, dàn trang khổ sách A4 và thanh công cụ Sticky Topbar với các tùy chọn in trực tiếp và tải về.
+                               - Rào chắn bảo mật quyền sở hữu: Chỉ cặp đôi sở hữu thiệp mới có quyền truy cập trang in; người dùng khác cố tình truy cập sẽ bị từ chối 403 Forbidden.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/GuestRelationsAndBatchModerationTest.php` với ca kiểm thử `test_owner_can_view_wishes_print_page_and_other_user_is_forbidden()`.
+                               - Test suite `GuestRelationsAndBatchModerationTest`: **6/6 tests passed (19 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **408/408 tests passed 100% (2,050 assertions)** trong ~7.7 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

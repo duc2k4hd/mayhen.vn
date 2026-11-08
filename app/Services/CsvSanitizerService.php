@@ -40,4 +40,3 @@ class CsvSanitizerService
         return array_map([self::class, 'sanitize'], $row);
     }
 }
-
