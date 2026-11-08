@@ -205,3 +205,120 @@ test('guest store and batch store sync table_id', function () {
     expect($guestF)->not->toBeNull();
     expect($guestF->table_id)->toBe($this->table->id);
 });
+
+test('flow 07: rsvp multi-transition lifecycle synchronizes table seats and checkin headcount without breaking guest token', function () {
+    // 1. Khách mời được khởi tạo với 3 suất ban đầu và gán vào Bàn VIP 01 (sức chứa 10)
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Nguyễn Anh Tuấn',
+        'expected_attendees' => 3,
+        'table_id' => $this->table->id,
+        'table_name' => $this->table->name,
+    ]);
+
+    $originalToken = $guest->guest_token;
+    expect($originalToken)->not->toBeEmpty();
+    expect($this->table->fresh()->assigned_attendees_count)->toBe(3);
+    expect($this->table->fresh()->remaining_seats)->toBe(7);
+
+    // 2. Khách phản hồi RSVP: Có tham dự 3 người (2 người lớn, 1 trẻ em)
+    $response = GuestResponse::create([
+        'wedding_id' => $this->wedding->id,
+        'guest_id' => $guest->id,
+        'guest_name' => $guest->name,
+        'attending_status' => 'attending',
+        'adults_count' => 2,
+        'children_count' => 1,
+    ]);
+
+    expect($this->table->fresh()->assigned_attendees_count)->toBe(3);
+    expect($this->table->fresh()->remaining_seats)->toBe(7);
+    expect($guest->fresh()->guest_token)->toBe($originalToken);
+
+    // 3. Khách đổi ý báo bận: Không tham dự (declined)
+    $response->update([
+        'attending_status' => 'declined',
+        'adults_count' => 0,
+        'children_count' => 0,
+    ]);
+
+    // Bàn tiệc lập tức giải phóng ghế về 0, toàn bộ 10 ghế trống trở lại
+    expect($this->table->fresh()->assigned_attendees_count)->toBe(0);
+    expect($this->table->fresh()->remaining_seats)->toBe(10);
+    expect($guest->fresh()->guest_token)->toBe($originalToken); // Token không bị xóa
+
+    // 4. Khách sắp xếp được thời gian và xác nhận lại: Có tham dự 2 người lớn
+    $response->update([
+        'attending_status' => 'attending',
+        'adults_count' => 2,
+        'children_count' => 0,
+    ]);
+
+    // Bàn tiệc tự động chiếm đúng 2 ghế, còn 8 ghế trống
+    expect($this->table->fresh()->assigned_attendees_count)->toBe(2);
+    expect($this->table->fresh()->remaining_seats)->toBe(8);
+    expect($guest->fresh()->actualAttendeesCount())->toBe(2);
+    expect($guest->fresh()->guest_token)->toBe($originalToken);
+
+    // 5. Đến ngày cưới, lễ tân quét QR token của khách: Check-in tự động nhận diện đúng 2 suất
+    $this->actingAs($this->user);
+    $scanResponse = $this->postJson(route('checkin.scan', $this->invitation->slug), [
+        'token' => $originalToken,
+    ]);
+
+    $scanResponse->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('already_checked_in', false)
+        ->assertJsonPath('guest.checked_in_attendees', 2);
+
+    $freshGuest = $guest->fresh();
+    expect($freshGuest->checked_in_at)->not->toBeNull();
+    expect($freshGuest->checked_in_attendees)->toBe(2);
+    expect($freshGuest->guest_token)->toBe($originalToken);
+});
+
+test('flow 10: repeated checkin scan is idempotent and partial attendee checkin records exact count', function () {
+    // Khách mời được mời 3 suất
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Hoàng Minh Châu',
+        'expected_attendees' => 3,
+        'table_id' => $this->table->id,
+        'table_name' => $this->table->name,
+    ]);
+
+    $this->actingAs($this->user);
+
+    // 1. Check-in một phần: Khách đi 2 trong tổng số 3 suất
+    $firstScan = $this->postJson(route('checkin.scan', $this->invitation->slug), [
+        'token' => $guest->guest_token,
+        'attendees' => 2,
+        'note' => 'Đi 2 người, 1 người bận',
+    ]);
+
+    $firstScan->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('already_checked_in', false)
+        ->assertJsonPath('guest.checked_in_attendees', 2);
+
+    $guest->refresh();
+    $firstCheckedInAt = $guest->checked_in_at;
+    expect($firstCheckedInAt)->not->toBeNull();
+    expect($guest->checked_in_attendees)->toBe(2);
+
+    // 2. Quét lại lần 2 (lễ tân khác hoặc quét nhầm): Không được tăng số lượng, không đổi mốc thời gian
+    $secondScan = $this->postJson(route('checkin.scan', $this->invitation->slug), [
+        'token' => $guest->guest_token,
+        'attendees' => 5, // Cố tình truyền số khác
+    ]);
+
+    $secondScan->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('already_checked_in', true)
+        ->assertJsonPath('previous_time', $firstCheckedInAt->format('H:i'));
+
+    $guest->refresh();
+    // Vẫn giữ nguyên 2 suất và thời gian check-in đầu tiên, không bị ghi đè
+    expect($guest->checked_in_attendees)->toBe(2);
+    expect($guest->checked_in_at->timestamp)->toBe($firstCheckedInAt->timestamp);
+});

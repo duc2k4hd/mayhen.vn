@@ -656,6 +656,13 @@ class CheckInController extends Controller
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
         $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         // 1. Lời nhắn riêng cho nhóm khách (Persona message)
         $personaMessage = ! empty($guest->group_name) && ! empty($config['persona_messages'][$guest->group_name])
             ? $config['persona_messages'][$guest->group_name]
@@ -688,8 +695,17 @@ class CheckInController extends Controller
      */
     public function downloadIcs(Request $request, string $guestToken): Response
     {
-        $guest = Guest::with(['wedding'])->where('guest_token', $guestToken)->firstOrFail();
+        $guest = Guest::with(['wedding.invitations'])->where('guest_token', $guestToken)->firstOrFail();
         $wedding = $guest->wedding;
+
+        $invitation = $wedding->invitations()->first();
+        if ($invitation) {
+            $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+            if (! empty($config['is_locked'])) {
+                abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+            }
+        }
+
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
 
         $dateStr = $wedding->wedding_date ? $wedding->wedding_date->format('Ymd') : date('Ymd');

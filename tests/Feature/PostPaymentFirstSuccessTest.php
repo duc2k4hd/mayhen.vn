@@ -108,4 +108,3 @@ it('returns 404 for non-existent order code', function () {
 
     $response->assertNotFound();
 });
-

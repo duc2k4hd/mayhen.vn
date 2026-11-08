@@ -51,4 +51,3 @@ class PlanAdvisorController extends Controller
         ]);
     }
 }
-

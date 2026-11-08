@@ -46,4 +46,3 @@ it('returns 404 for unsupported preview features', function () {
 
     $response->assertNotFound();
 });
-

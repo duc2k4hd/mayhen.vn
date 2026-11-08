@@ -53,4 +53,3 @@ class PricingPageTest extends TestCase
             ->assertSee('FAQPage');
     }
 }
-

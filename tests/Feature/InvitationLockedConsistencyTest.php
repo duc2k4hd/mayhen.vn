@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
@@ -128,5 +129,26 @@ class InvitationLockedConsistencyTest extends TestCase
                 'success' => false,
                 'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
             ]);
+    }
+
+    public function test_locked_invitation_blocks_guest_concierge_page_and_ics_download(): void
+    {
+        $guest = Guest::create([
+            'wedding_id' => $this->wedding->id,
+            'name' => 'Nguyễn Văn Nam',
+            'expected_attendees' => 2,
+        ]);
+
+        // 1. Màn hình Sổ tay khách mời Concierge
+        $response = $this->get(route('guest.concierge', ['guestToken' => $guest->guest_token]));
+
+        $response->assertOk()
+            ->assertViewIs('client.pages.invitation-locked')
+            ->assertSee('Thiệp cưới tạm thời bị khóa do có báo cáo vi phạm nội dung.');
+
+        // 2. Tải file lịch ICS
+        $icsResponse = $this->get(route('guest.concierge.ics', ['guestToken' => $guest->guest_token]));
+
+        $icsResponse->assertStatus(403);
     }
 }

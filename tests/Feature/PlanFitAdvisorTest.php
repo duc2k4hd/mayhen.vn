@@ -87,4 +87,3 @@ it('returns interactive analysis via api endpoint with validation', function () 
 
     $invalid->assertUnprocessable();
 });
-

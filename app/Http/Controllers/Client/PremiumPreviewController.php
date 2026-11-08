@@ -29,4 +29,3 @@ class PremiumPreviewController extends Controller
         ]);
     }
 }
-

@@ -5437,12 +5437,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                   - Controller: `PhotoDropController::show` trả về view `invitation-locked`; API `upload` từ chối nhận ảnh và trả về JSON 403 `Thiệp cưới đang tạm thời bị khóa`.
                                4. *Cổng Điểm Danh Tiếp Tân (Check-in Concierge)*:
                                   - Controller: `CheckInController::showPortal` trả về view `invitation-locked`; API `processScan` từ chối điểm danh và trả về JSON 403.
+                               5. *Sổ Tay Khách Mời Cá Nhân Hóa (Guest Concierge)*:
+                                  - Controller: `CheckInController::guestConcierge` trả về view `invitation-locked`; `downloadIcs` từ chối tải file lịch và trả về HTTP 403.
                              - **Kiểm thử & Đảm bảo chất lượng**:
                                - Viết mới Feature test suite:
-                                 * `tests/Feature/InvitationLockedConsistencyTest.php` -> **4/4 tests passed (18 assertions)** bao phủ toàn bộ 4 cổng phụ và API tương ứng.
-                               - Toàn bộ test suite toàn hệ thống: **400/400 tests passed 100% (1,987 assertions)**.
+                                 * `tests/Feature/InvitationLockedConsistencyTest.php` -> **5/5 tests passed (22 assertions)** bao phủ toàn bộ 5 cổng phụ và API tương ứng.
+                               - Toàn bộ test suite toàn hệ thống: **401/401 tests passed 100% (1,991 assertions)**.
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Cập nhật `.gitignore` đưa `InvitationLockedConsistencyTest.php` vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
+                        204. **Kiểm Thử Bất Biến Nghiệp Vụ Liên Module & Chu Kỳ Đa Trạng Thái RSVP / Check-in (Cross-Module Invariants & FLOW-07 / FLOW-10)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Kiểm toán thực thi chuyên sâu mục 02.2 (Business Invariants #09, #10, #11) và mục 03 (`FLOW-07` & `FLOW-10`) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                                 * `FLOW-07`: Chu kỳ vòng đời đa trạng thái của khách RSVP: Được mời 3 suất -> Phản hồi Tham dự 3 người -> Đổi ý Báo bận 0 người -> Sắp xếp lại đổi thành Tham dự 2 người. Đảm bảo toàn bộ ranh giới: Bàn tiệc tự động co giãn ghế chính xác (giải phóng 10 ghế khi bận, chiếm đúng 2 ghế khi tham dự lại), sĩ số check-in tự động nhận diện 2 người, và `guest_token` của khách không bao giờ bị xóa hay vô hiệu hóa trái phép.
+                                 * `FLOW-10 & Invariant #11`: Idempotency khi quét mã QR tiếp tân tại sảnh tiệc: Khi khách quét mã check-in một phần (ví dụ đi 2 trong 3 người), hệ thống ghi nhận chính xác 2 người; Khi tiếp tân khác hoặc vô tình quét lại lần 2, hệ thống trả về `already_checked_in = true` và `previous_time`, tuyệt đối KHÔNG tự động cộng dồn nhân đôi sĩ số hay làm sai lệch thời gian check-in ban đầu.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/CrossModuleLogicInvariantsTest.php` thêm 2 kịch bản tích hợp đa module:
+                                 * `flow 07: rsvp multi-transition lifecycle synchronizes table seats and checkin headcount without breaking guest token`.
+                                 * `flow 10: repeated checkin scan is idempotent and partial attendee checkin records exact count`.
+                               - Test suite `CrossModuleLogicInvariantsTest`: **7/7 tests passed (53 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **403/403 tests passed 100% (2,023 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
 ---
