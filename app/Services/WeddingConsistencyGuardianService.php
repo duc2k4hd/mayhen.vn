@@ -183,11 +183,36 @@ class WeddingConsistencyGuardianService
             $checksPassed++;
         }
 
+        // 7. Kiểm tra ảnh bìa chính (Visual Quality & First Impression)
+        $hasCover = ! empty($wedding->cover_photo_url)
+            || ! empty($extra['hero_photo_url'])
+            || ! empty($invitation?->template?->thumbnail_url);
+
+        if (! $hasCover) {
+            $issues[] = [
+                'severity' => 'warning',
+                'field' => 'cover_photo_url',
+                'field_target' => 'input_cover_photo_url',
+                'message' => 'Chưa có ảnh bìa đại diện cho đôi uyên ương.',
+                'suggestion' => 'Tải lên bức ảnh đẹp nhất của hai bạn làm ảnh bìa để tạo ấn tượng đầu tiên ngọt ngào cho thiệp cưới.',
+            ];
+        }
+
         $score = (int) round(($checksPassed / $checksTotal) * 100);
+
+        // FLOW-15 Guardian: Không bao giờ cho điểm xuất sắc (>= 80%) khi còn lỗi Critical (như thiếu ngày cưới hoặc thiếu địa điểm)
+        $hasCriticalIssues = collect($issues)->contains('severity', 'critical');
+        if ($hasCriticalIssues && $score > 65) {
+            $score = 65;
+        }
+
+        $status = $score >= 80 && ! $hasCriticalIssues
+            ? 'excellent'
+            : ($score >= 50 ? 'needs_attention' : 'critical');
 
         return [
             'score' => $score,
-            'status' => $score >= 80 ? 'excellent' : ($score >= 50 ? 'needs_attention' : 'critical'),
+            'status' => $status,
             'issues' => $issues,
             'checks_passed' => $checksPassed,
             'checks_total' => $checksTotal,

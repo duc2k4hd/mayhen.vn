@@ -5756,6 +5756,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        218. **Bác Sĩ Kiểm Soát Chất Lượng & Đồng Bộ Kiểm Duyệt Ảnh Khách (Visual Quality Doctor & Photo Moderation Sync — Flow 15 & Flow 16)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Flow 15 (Visual Quality Doctor) và Flow 16 (Ảnh khách + kiểm duyệt + trình chiếu + lưu niệm) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Cho điểm "Xuất sắc" 83% dù thiếu hoàn toàn ngày cưới hoặc sảnh tiệc)**: Trong `WeddingConsistencyGuardianService::inspect`, điểm số được tính thuần túy theo công thức tỷ lệ `(checksPassed / checksTotal) * 100`. Khi một thiệp cưới thiếu hoàn toàn ngày cưới (`wedding_date = null`) hoặc thiếu toàn bộ thông tin địa điểm (`venue_name = null` và `venue_address = null`), hệ thống vẫn chấm 83 điểm và xếp hạng `'excellent'`. Điều này tạo cảm giác giả "thiệp đã hoàn hảo", khiến cặp đôi chủ quan gửi thiệp thiếu ngày giờ/địa điểm cho khách mời.
+                               - **Lỗi 2 (Nguy cơ nhân bản file rác khi khách bấm gửi ảnh liên tiếp)**: Trong `PhotoDropController::upload`, nếu quan khách tại bàn tiệc bấm nút gửi 2 lần liên tiếp do mạng chậm (double-click submit), hệ thống sẽ lưu trùng lặp 2 file vật lý và tạo 2 bản ghi `GuestPhoto` giống hệt nhau, gây lãng phí dung lượng storage và làm album bị trùng ảnh.
+                               - **Lỗi 3 (Thiếu kiểm tra ảnh bìa & liên kết điều hướng field_target)**: `WeddingConsistencyGuardianService` chưa kiểm tra sự hiện diện của ảnh bìa đại diện (`cover_photo_url` / `hero_photo_url`), chưa gắn đủ `field_target` nhất quán để Studio tự động cuộn đến đúng ô nhập liệu khi người dùng bấm vào từng lỗi.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Thiết lập Cơ chế Bảo vệ Điểm Số (Cap Score Defense — FLOW-15)**:
+                                 * Trong `WeddingConsistencyGuardianService::inspect`, kiểm tra sự tồn tại của bất kỳ lỗi Trọng Yếu (`severity: 'critical'`, ví dụ: thiếu ngày cưới, thiếu địa điểm sảnh tiệc, hạn chót RSVP sau ngày cưới).
+                                 * Khi phát hiện có lỗi `critical`, điểm số bị giới hạn trần tối đa **65%** (`$score = min($score, 65)`), tuyệt đối không bao giờ cho điểm vượt mức hoặc xếp hạng `'excellent'`.
+                                 * Trạng thái bắt buộc chuyển thành `'needs_attention'` (hoặc `'critical'` nếu điểm dưới 50%), yêu cầu người dùng bổ sung thông tin sống còn trước khi gửi thiệp.
+                                 * Bổ sung kiểm tra Ảnh bìa đại diện (`cover_photo_url`), gắn đầy đủ `field_target` (`input_wedding_date`, `input_venue_name`, `input_rsvp_deadline`, `input_cover_photo_url`, `input_event_party_map_url`, `input_groom_bank_account`).
+                                 * Đảm bảo tính phi cản trở (non-blocking advice): Các khuyến nghị chất lượng (thiếu link Maps, thiếu số tài khoản mừng cưới) không bao giờ chặn quyền lưu nháp hay xuất bản thiệp của cặp đôi.
+                               - **Chống Nhân Bản File Trùng Lặp & Đồng Bộ Đa Tầng Kiểm Duyệt Ảnh (FLOW-16)**:
+                                 * `PhotoDropController::upload`: Tích hợp bộ lọc chống double-submit trong phạm vi 5 phút (`created_at >= now()->subMinutes(5)`). Nếu phát hiện cùng `uploader_name`, cùng `ip_address` và cùng `file_size`, hệ thống tái sử dụng bản ghi đã có (`is_duplicate => true`), không sinh thêm file vật lý và không nhân bản bản ghi rác.
+                                 * Xác nhận đồng bộ chặt chẽ 100% giữa các phân hệ:
+                                   - Ảnh chưa duyệt (`is_approved = false`): Bị ẩn tuyệt đối khỏi Photo Drop công khai, Live Wall feed và Digital Memory Vault.
+                                   - Khi chủ thiệp duyệt (`toggleApproval`): Ảnh ngay lập tức xuất hiện đồng thời trên Photo Drop, Live Wall realtime feed và Memory Vault.
+                                   - Khi chủ thiệp ẩn hoặc xóa (`destroy`): Ảnh bị gỡ tức thì khỏi mọi màn hình hiển thị công khai và xóa sạch file vật lý trong storage disk.
+                                   - Đóng gói ZIP (`downloadZip`): Đóng gói toàn bộ ảnh gốc có trong album của đám cưới thành file nén ZIP an toàn và dọn dẹp file tạm tức thì (`deleteFileAfterSend(true)`).
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Tạo mới Feature test suite `tests/Feature/VisualQualityDoctorFlowTest.php` với 5 ca kiểm thử chuyên sâu -> **5/5 tests passed (25 assertions)**:
+                                 * `test_bác_sĩ_phát_hiện_thiệp_thiếu_ngày_cưới_không_bao_giờ_cho_điểm_vượt_quá_65_phần_trăm`
+                                 * `test_bác_sĩ_phát_hiện_thiệp_thiếu_cả_tên_sảnh_tiệc_và_địa_chỉ_không_bao_giờ_cho_điểm_vượt_quá_65_phần_trăm`
+                                 * `test_bác_sĩ_phát_hiện_hạn_chót_rsvp_sau_ngày_cưới_là_lỗi_nghiêm_trọng`
+                                 * `test_thiệp_cưới_hoàn_thiện_đầy_đủ_mọi_tiêu_chí_đạt_100_điểm_xuất_sắc`
+                                 * `test_các_cảnh_báo_chất_lượng_không_chặn_việc_lưu_nháp_hay_xuất_bản_thiệp_cưới`
+                               - Mở rộng Feature test suite `tests/Feature/LiveGuestPhotoDropTest.php` thêm 2 ca kiểm thử chuyên sâu -> **12/12 tests passed (46 assertions)**:
+                                 * `test_hệ_thống_phát_hiện_và_không_nhân_bản_ảnh_trùng_lặp_khi_người_dùng_gửi_hai_lần_liên_tiếp`
+                                 * `test_ảnh_chưa_duyệt_bị_chặn_khỏi_live_wall_feed_và_xuất_hiện_ngay_sau_khi_được_chủ_thiệp_phê_duyệt`
+                               - Cập nhật whitelist `.gitignore`: Thêm `!/tests/Feature/VisualQualityDoctorFlowTest.php`.
+                               - Toàn bộ test suite toàn hệ thống: **452/452 tests passed 100% (2,301 assertions)** trong ~8.8 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

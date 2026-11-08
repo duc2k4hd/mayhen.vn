@@ -127,6 +127,26 @@ class PhotoDropController extends Controller
         $storageDir = "guest_photos/{$wedding->id}";
 
         foreach ($request->file('photos') as $file) {
+            $fileSize = $file->getSize();
+
+            // Chống nhân bản ảnh trùng lặp khi người dùng gửi 2 lần liên tiếp (Double-submit defense)
+            $recentDuplicate = $wedding->guestPhotos()
+                ->where('uploader_name', $uploaderName)
+                ->where('file_size', $fileSize)
+                ->where('created_at', '>=', now()->subMinutes(5))
+                ->first();
+
+            if ($recentDuplicate) {
+                $uploadedRecords[] = [
+                    'id' => $recentDuplicate->id,
+                    'url' => $recentDuplicate->photo_url,
+                    'uploader' => $recentDuplicate->uploader_name,
+                    'is_duplicate' => true,
+                ];
+
+                continue;
+            }
+
             $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
             if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'], true)) {
                 $extension = 'jpg';
@@ -140,7 +160,7 @@ class PhotoDropController extends Controller
                 'guest_id' => $guest?->id,
                 'uploader_name' => $uploaderName,
                 'photo_url' => Storage::disk('public')->url($path),
-                'file_size' => $file->getSize(),
+                'file_size' => $fileSize,
                 'caption' => $caption,
                 'is_approved' => $autoApprove,
                 'ip_address' => $request->ip(),

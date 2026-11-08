@@ -248,3 +248,70 @@ test('cặp đôi có thể tải xuống file ZIP đóng gói toàn bộ ảnh 
     $response->assertStatus(200);
     $response->assertHeader('content-type', 'application/zip');
 });
+
+test('hệ thống phát hiện và không nhân bản ảnh trùng lặp khi người dùng gửi hai lần liên tiếp', function () {
+    $file = UploadedFile::fake()->image('duplicate_test.jpg', 600, 600);
+
+    // Lần gửi 1
+    $response1 = $this->postJson(route('photo_drop.upload', $this->invitation->slug), [
+        'uploader_name' => 'Anh Họ Chú Rể',
+        'caption' => 'Chúc mừng hạnh phúc hai em!',
+        'photos' => [$file],
+    ]);
+    $response1->assertStatus(200);
+    $this->assertDatabaseCount('guest_photos', 1);
+
+    // Lần gửi 2 cùng file, cùng uploader trong vòng 5 phút (giả lập double click submit)
+    $response2 = $this->postJson(route('photo_drop.upload', $this->invitation->slug), [
+        'uploader_name' => 'Anh Họ Chú Rể',
+        'caption' => 'Chúc mừng hạnh phúc hai em!',
+        'photos' => [$file],
+    ]);
+    $response2->assertStatus(200);
+
+    // Vẫn chỉ có đúng 1 bản ghi duy nhất, không bị nhân bản file rác
+    $this->assertDatabaseCount('guest_photos', 1);
+    expect($response2->json()['photos'][0]['is_duplicate'])->toBeTrue();
+});
+
+test('ảnh chưa duyệt bị chặn khỏi live wall feed và xuất hiện ngay sau khi được chủ thiệp phê duyệt', function () {
+    $file = UploadedFile::fake()->image('moderation_flow.jpg', 500, 500);
+    $path = $file->storeAs("guest_photos/{$this->wedding->id}", 'moderation_flow.jpg', 'public');
+
+    // 1. Tạo ảnh ở trạng thái chưa duyệt (pending)
+    $photo = GuestPhoto::create([
+        'wedding_id' => $this->wedding->id,
+        'uploader_name' => 'Khách Bàn 5',
+        'photo_url' => Storage::disk('public')->url($path),
+        'file_size' => $file->getSize(),
+        'is_approved' => false,
+    ]);
+
+    // Live Wall feed không hiển thị ảnh pending
+    $feedBefore = $this->getJson(route('live_wall.feed', $this->invitation->slug));
+    $feedBefore->assertStatus(200);
+    $feedUrlsBefore = collect($feedBefore->json()['photos'])->pluck('url')->all();
+    expect($feedUrlsBefore)->not->toContain($photo->photo_url);
+
+    // 2. Chủ thiệp duyệt ảnh
+    $this->actingAs($this->user)->post(route('photo_drop.toggleApproval', [
+        'id' => $this->invitation->id,
+        'photoId' => $photo->id,
+    ]));
+
+    // Live Wall feed lập tức cập nhật ảnh vừa duyệt
+    $feedAfter = $this->getJson(route('live_wall.feed', $this->invitation->slug));
+    $feedAfter->assertStatus(200);
+    $feedUrlsAfter = collect($feedAfter->json()['photos'])->pluck('url')->all();
+    expect($feedUrlsAfter)->toContain($photo->photo_url);
+
+    // 3. Chủ thiệp xóa ảnh -> biến mất ngay khỏi feed
+    $this->actingAs($this->user)->delete(route('photo_drop.destroy', [
+        'id' => $this->invitation->id,
+        'photoId' => $photo->id,
+    ]));
+
+    $feedFinal = $this->getJson(route('live_wall.feed', $this->invitation->slug));
+    $feedUrlsFinal = collect($feedFinal->json()['photos'])->pluck('url')->all();
+    expect($feedUrlsFinal)->not->toContain($photo->photo_url);
+});
