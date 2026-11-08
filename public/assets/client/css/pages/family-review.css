@@ -1,0 +1,297 @@
+/* ==========================================================================
+   FAMILY REVIEW & BLESSING APPROVAL (TASK-VAL-19)
+   Style: Quiet Luxury, Editorial, Senior-Friendly, High Contrast
+   Class prefix: mayhen_family_*
+   ========================================================================== */
+
+:root {
+    --mayhen_family_bg: #FAF8F5;
+    --mayhen_family_card_bg: #FFFFFF;
+    --mayhen_family_border: #E5DCCD;
+    --mayhen_family_border_gold: #C5A880;
+    --mayhen_family_text: #1F1D1A;
+    --mayhen_family_muted: #6B6258;
+    --mayhen_family_gold: #9C7A4A;
+    --mayhen_family_gold_light: #F7F3ED;
+    --mayhen_family_green: #2E7D32;
+    --mayhen_family_green_bg: #E8F5E9;
+    --mayhen_family_amber: #E65100;
+    --mayhen_family_amber_bg: #FFF3E0;
+}
+
+.mayhen_family_wrapper {
+    background-color: var(--mayhen_family_bg);
+    min-height: 100vh;
+    padding: 32px 16px 60px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--mayhen_family_text);
+    line-height: 1.6;
+}
+
+.mayhen_family_container {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* Header & Seal */
+.mayhen_family_header {
+    text-align: center;
+    background: var(--mayhen_family_card_bg);
+    border: 1px solid var(--mayhen_family_border);
+    border-radius: 18px;
+    padding: 36px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.mayhen_family_seal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    background: var(--mayhen_family_gold_light);
+    border: 1px solid var(--mayhen_family_border_gold);
+    border-radius: 50%;
+    margin-bottom: 14px;
+    font-size: 22px;
+    color: var(--mayhen_family_gold);
+}
+
+.mayhen_family_pretitle {
+    display: block;
+    font-size: 11.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--mayhen_family_gold);
+    margin-bottom: 8px;
+}
+
+.mayhen_family_title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--mayhen_family_text);
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+}
+
+.mayhen_family_side_badge {
+    display: inline-block;
+    background: #FAF5EE;
+    border: 1px dashed var(--mayhen_family_border_gold);
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--mayhen_family_gold);
+}
+
+/* Current Status Banner */
+.mayhen_family_status_banner {
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 14px;
+}
+
+.mayhen_family_status_banner.is-approved {
+    background: var(--mayhen_family_green_bg);
+    border: 1px solid #A5D6A7;
+    color: #1B5E20;
+}
+
+.mayhen_family_status_banner.is-feedback {
+    background: var(--mayhen_family_amber_bg);
+    border: 1px solid #FFCC80;
+    color: #BF360C;
+}
+
+.mayhen_family_status_banner.is-pending {
+    background: #FFFDE7;
+    border: 1px solid #FFF59D;
+    color: #F57F17;
+}
+
+/* Review Sections Grid */
+.mayhen_family_section_card {
+    background: var(--mayhen_family_card_bg);
+    border: 1px solid var(--mayhen_family_border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.mayhen_family_section_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--mayhen_family_border);
+    padding-bottom: 12px;
+}
+
+.mayhen_family_section_num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mayhen_family_gold_light);
+    color: var(--mayhen_family_gold);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.mayhen_family_section_title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mayhen_family_text);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mayhen_family_info_row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #EAE3D9;
+    font-size: 15px;
+}
+
+.mayhen_family_info_row:last-child {
+    border-bottom: none;
+}
+
+.mayhen_family_info_label {
+    font-weight: 600;
+    color: var(--mayhen_family_muted);
+}
+
+.mayhen_family_info_value {
+    color: var(--mayhen_family_text);
+    font-weight: 500;
+}
+
+.mayhen_family_highlight {
+    font-weight: 700;
+    color: var(--mayhen_family_gold);
+}
+
+/* Action Box */
+.mayhen_family_action_box {
+    background: var(--mayhen_family_card_bg);
+    border: 2px solid var(--mayhen_family_border_gold);
+    border-radius: 18px;
+    padding: 30px 24px;
+    margin-top: 28px;
+    text-align: center;
+    box-shadow: 0 6px 24px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_family_action_title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 22px;
+    color: var(--mayhen_family_text);
+    margin: 0 0 8px 0;
+}
+
+.mayhen_family_action_desc {
+    font-size: 14px;
+    color: var(--mayhen_family_muted);
+    margin-bottom: 24px;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mayhen_family_btn_group {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.mayhen_family_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.mayhen_family_btn_approve {
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.35);
+}
+
+.mayhen_family_btn_approve:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(156, 122, 74, 0.45);
+}
+
+.mayhen_family_btn_feedback {
+    background: #FFFFFF;
+    color: #4A453E;
+    border: 1px solid #C5A880;
+}
+
+.mayhen_family_btn_feedback:hover {
+    background: #FAF8F5;
+}
+
+/* Form inputs for note */
+.mayhen_family_note_panel {
+    display: none;
+    margin-top: 20px;
+    text-align: left;
+    background: #FAF8F5;
+    border: 1px solid var(--mayhen_family_border);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.mayhen_family_textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--mayhen_family_border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 90px;
+    margin: 8px 0 12px 0;
+}
+
+.mayhen_family_textarea:focus {
+    outline: none;
+    border-color: var(--mayhen_family_border_gold);
+}
+
+@media (max-width: 600px) {
+    .mayhen_family_info_row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    .mayhen_family_btn {
+        width: 100%;
+    }
+}
+

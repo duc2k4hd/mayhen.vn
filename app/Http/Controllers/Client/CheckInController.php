@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\Wedding;
+use App\Services\ReceptionDryRunService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -29,6 +30,30 @@ class CheckInController extends Controller
             return view('client.pages.checkin-pin', [
                 'invitation' => $invitation,
                 'wedding' => $wedding,
+            ]);
+        }
+
+        $isDryRun = $request->boolean('dry_run') || (bool) $request->session()->get('is_dry_run_'.$invitation->id, false);
+        if ($request->boolean('dry_run')) {
+            $request->session()->put('is_dry_run_'.$invitation->id, true);
+            $isDryRun = true;
+        }
+
+        if ($isDryRun) {
+            $dryRunService = app(ReceptionDryRunService::class);
+            $dryRunState = $dryRunService->getDryRunState($invitation);
+
+            return view('client.pages.checkin', [
+                'invitation' => $invitation,
+                'wedding' => $wedding,
+                'totalExpected' => $dryRunState['stats']['total_expected'],
+                'checkedInCount' => $dryRunState['stats']['checked_in_count'],
+                'checkedInGuestsCount' => $dryRunState['stats']['checked_in_guests'],
+                'totalGuestsCount' => $dryRunState['stats']['total_guests'],
+                'recentCheckIns' => collect($dryRunState['guests'])->whereNotNull('checked_in_at')->values(),
+                'tables' => $dryRunState['tables'],
+                'isDryRun' => true,
+                'dryRunGuests' => $dryRunState['guests'],
             ]);
         }
 
@@ -68,6 +93,8 @@ class CheckInController extends Controller
             'totalGuestsCount' => $totalGuestsCount,
             'recentCheckIns' => $recentCheckIns,
             'tables' => $tables,
+            'isDryRun' => false,
+            'dryRunGuests' => [],
         ]);
     }
 
@@ -118,6 +145,12 @@ class CheckInController extends Controller
             'attendees' => ['nullable', 'integer', 'min:1', 'max:50'],
             'note' => ['nullable', 'string', 'max:255'],
         ]);
+
+        if ($request->session()->get('is_dry_run_'.$invitation->id, false)) {
+            $dryRunResult = app(ReceptionDryRunService::class)->processScan($invitation, $validated);
+
+            return response()->json($dryRunResult, $dryRunResult['success'] ? 200 : 404);
+        }
 
         $query = $wedding->guests()->with('response');
 
@@ -213,6 +246,13 @@ class CheckInController extends Controller
         }
 
         $keyword = trim((string) $request->query('q', ''));
+
+        if ($request->session()->get('is_dry_run_'.$invitation->id, false)) {
+            $dryRunGuests = app(ReceptionDryRunService::class)->quickSearch($invitation, $keyword);
+
+            return response()->json(['guests' => $dryRunGuests, 'is_dry_run' => true]);
+        }
+
         if (mb_strlen($keyword) < 1) {
             return response()->json(['guests' => []]);
         }
@@ -282,6 +322,17 @@ class CheckInController extends Controller
             'table_name' => ['required', 'string', 'max:100'],
         ]);
 
+        if ($request->session()->get('is_dry_run_'.$invitation->id, false)) {
+            app(ReceptionDryRunService::class)->updateTable($invitation, $guestId, $validated['table_name']);
+
+            return response()->json([
+                'success' => true,
+                'is_dry_run' => true,
+                'message' => "[Diễn Tập] Đã cập nhật bàn tiệc: {$validated['table_name']}",
+                'table_name' => trim($validated['table_name']),
+            ]);
+        }
+
         $guest = $wedding->guests()->findOrFail($guestId);
         $guest->update([
             'table_name' => trim($validated['table_name']),
@@ -292,6 +343,43 @@ class CheckInController extends Controller
             'message' => "Đã cập nhật bàn tiệc: {$guest->table_name}",
             'table_name' => $guest->table_name,
         ]);
+    }
+
+    /**
+     * Bật chế độ diễn tập đón tiếp (TASK-VAL-20).
+     */
+    public function enableDryRun(Request $request, string $slug): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $request->session()->put('is_dry_run_'.$invitation->id, true);
+
+        return redirect()->route('checkin.portal', ['slug' => $slug, 'dry_run' => 1])
+            ->with('success', 'Đã chuyển sang Chế Độ Diễn Tập Lễ Tân. Dữ liệu thử nghiệm hoàn toàn cách ly.');
+    }
+
+    /**
+     * Tắt chế độ diễn tập đón tiếp.
+     */
+    public function disableDryRun(Request $request, string $slug): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $request->session()->forget('is_dry_run_'.$invitation->id);
+        app(ReceptionDryRunService::class)->resetDryRun($invitation);
+
+        return redirect()->route('checkin.portal', ['slug' => $slug])
+            ->with('success', 'Đã quay trở lại Cổng Tiếp Tân Đón Tiếp Thực Tế.');
+    }
+
+    /**
+     * Làm mới dữ liệu diễn tập đón tiếp.
+     */
+    public function resetDryRun(Request $request, string $slug): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        app(ReceptionDryRunService::class)->resetDryRun($invitation);
+
+        return redirect()->route('checkin.portal', ['slug' => $slug, 'dry_run' => 1])
+            ->with('success', 'Đã làm mới toàn bộ 5 kịch bản khách mẫu diễn tập.');
     }
 
     /**

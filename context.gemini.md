@@ -5245,6 +5245,36 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                               - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                       196. **Hoàn Tất Cột Mốc 8 & 9: Chế Độ Phê Duyệt Thông Tin Cưới Hỏi Hai Nhà (Two-Family Approval) & Diễn Tập Lễ Tân Đón Tiếp (Reception Dry Run Simulator)**:
+                            - **Bối cảnh & Giá trị trải nghiệm**:
+                              - Thực thi trọn vẹn `TASK-VAL-19` và `TASK-VAL-20` theo mục 09.2 (Gia đình & văn hóa Việt) và 09.4 (Wedding Day Reliability) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                              - Giải quyết triệt để 2 nỗi sợ hãi lớn nhất trong ngày trọng đại: Nỗi sợ bị bố mẹ hai bên trách mắng vì ghi sai tên đệm phụ mẫu, sai thứ bậc hoặc sai giờ hoàng đạo làm lễ gia tiên rước dâu; và nỗi sợ ban lễ tân (bạn thân, anh em họ nhận việc sát giờ) lúng túng khi quét QR dẫn đến ùn tắc cổng đón tiếp vào giờ cao điểm.
+                            - **Các tính năng cao cấp đã hoàn thành**:
+                              1. *TASK-VAL-19: Chế Độ Phê Duyệt Thông Tin Cưới Hỏi Hai Nhà (Two-Family Review & Blessing Approval)*:
+                                 - Service: `app/Services/TwoFamilyApprovalService.php` tự động tạo token và liên kết rà soát riêng biệt cho Nhà Trai (`groom_family`) và Nhà Gái (`bride_family`).
+                                 - Giao diện phụ mẫu: `resources/views/client/pages/family-review.blade.php` phong cách Quiet Luxury Editorial, font chữ to, độ tương phản cao, dễ đọc cho người lớn tuổi. Rà soát 4 khối thông tin sống còn: Phụ mẫu & Uyên ương, Giờ làm lễ gia tiên hai nhà, Sảnh tiệc đón tiếp, và nút mở xem toàn bộ thiệp điện tử.
+                                 - Thao tác 1 chạm: Phụ mẫu có thể bấm `[ ⚜️ Bố Mẹ Đồng Ý & Chúc Phúc ]` kèm lời dặn dò, hoặc `[ ✏️ Có Chi Tiết Cần Sửa Lại ]` để gửi góp ý cho hai con.
+                                 - Route & Controller: `GET /gia-dinh-duyet/{token}` (`family_approval.review`), `POST /gia-dinh-duyet/{token}/quyet-dinh` (`family_approval.submit`) trong `FamilyApprovalController.php`.
+                                 - Tích hợp Dashboard: Khối 8 trên `resources/views/client/pages/account/settings.blade.php` hiển thị trực quan trạng thái duyệt của từng bên gia đình kèm link sao chép nhanh.
+                              2. *TASK-VAL-20: Mô Phỏng Check-in & Kiểm Thử Tổng Diễn Tập Đón Tiếp (Wedding Day Dry Run & Reception Simulator)*:
+                                 - Service: `app/Services/ReceptionDryRunService.php` khởi tạo phiên diễn tập cách ly hoàn toàn trong Session với 5 kịch bản khách mẫu kinh điển:
+                                   * `Bác Trần Văn Tuấn`: Khách VIP có bàn định danh.
+                                   * `Gia đình anh Lê Hoàng Nam`: Khách đi kèm người thân (Headcount 4 suất).
+                                   * `Bạn Nguyễn Thu Hà`: Khách chưa xếp bàn / có ghi chú ăn chay.
+                                   * `Chị Phạm Mai Hương`: Mô phỏng khách quét trùng lần 2 để kiểm tra cảnh báo.
+                                   * `Anh Đỗ Minh Khang`: Khách mời tiêu chuẩn.
+                                 - Phòng vệ cách ly dữ liệu tuyệt đối (Zero Database Pollution): Mọi thao tác quét mã, tìm kiếm nhanh và xếp bàn trong diễn tập chỉ tương tác với Session, tuyệt đối **KHÔNG ghi vào bảng `guests` hay `check_ins` trong database**.
+                                 - Controller & Routes: Mở rộng `CheckInController::showPortal`, `processScan`, `quickSearch`, `updateTable` và bổ sung `enableDryRun`, `disableDryRun`, `resetDryRun`.
+                                 - Giao diện: Banner tím Quiet Luxury nổi bật trên `resources/views/client/pages/checkin.blade.php` kèm 5 thẻ quét nhanh 1 chạm để lễ tân thử nghiệm camera và máy quét QR tức thời.
+                            - **Kiểm thử & Đảm bảo chất lượng**:
+                              - Viết mới 2 Feature test suites:
+                                * `tests/Feature/TwoFamilyApprovalTest.php` -> **5/5 tests passed (27 assertions)**.
+                                * `tests/Feature/ReceptionDryRunSimulatorTest.php` -> **5/5 tests passed (26 assertions)**.
+                              - Toàn bộ test suite toàn hệ thống: **355/355 tests passed 100% (1,766 assertions)**.
+                              - Laravel Pint: Đạt chuẩn 100% agent style.
+                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

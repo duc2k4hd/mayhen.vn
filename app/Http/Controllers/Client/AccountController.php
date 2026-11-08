@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
@@ -210,6 +211,7 @@ class AccountController extends Controller
             : (json_decode($invitation->custom_config, true) ?? []);
 
         $musics = $musicService->getCatalog();
+        $familyApprovals = app(TwoFamilyApprovalService::class)->getOrCreateApprovalTokens($invitation);
 
         // Lấy danh sách các nhóm khách mời hiện có của đám cưới này kết hợp nhóm gợi ý chuẩn
         $defaultGroups = ['Bạn Bè', 'Gia Đình & Họ Hàng', 'Đồng Nghiệp', 'Khách VIP', 'Bà Con Lối Xóm'];
@@ -224,6 +226,7 @@ class AccountController extends Controller
             'config' => $config,
             'musics' => $musics,
             'availableGroups' => $availableGroups,
+            'familyApprovals' => $familyApprovals,
         ]);
     }
 

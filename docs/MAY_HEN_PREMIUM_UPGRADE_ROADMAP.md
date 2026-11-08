@@ -227,5 +227,36 @@
   * Giao diện: Nút bấm `[ 📦 Gói Ngoại Tuyến ]` trên `resources/views/client/pages/account/invitations.blade.php` và `resources/views/client/pages/memory-vault.blade.php`.
 - **Kiểm thử**: `tests/Feature/PortableWeddingArchiveTest.php` (3/3 tests passed, 28 assertions).
 
+---
+
+### CỘT MỐC 8: HÒA HỢP GIA ĐÌNH & DUYỆT THIỆP HAI NHÀ (FAMILY HARMONY & TWO-FAMILY APPROVAL) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-19`: Chế Độ Phê Duyệt Thông Tin Cưới Hỏi Hai Nhà (Two-Family Review & Blessing Approval) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giải quyết bài toán văn hóa cưới hỏi Việt Nam: Đám cưới là chuyện của hai họ. Rất nhiều cặp đôi tự ý làm thiệp rồi bị bố mẹ hai bên trách mắng vì sai sót tên đệm phụ mẫu, thiếu chức danh hoặc ghi nhầm giờ hoàng đạo làm lễ gia tiên nhập trạch/đón dâu. Cung cấp liên kết rà soát riêng biệt cho Bố Mẹ Nhà Trai và Bố Mẹ Nhà Gái (không cần tài khoản, font chữ to, tương phản cao, dễ đọc cho người lớn tuổi).
+- **Phạm vi code**:
+  * Service: `app/Services/TwoFamilyApprovalService.php`.
+  * Controller: `FamilyApprovalController::review` (`GET /gia-dinh-duyet/{token}`), `submitDecision` (`POST /gia-dinh-duyet/{token}/quyet-dinh`), và `status` (`GET /api/editor/family-approval/{id}`).
+  * View: `resources/views/client/pages/family-review.blade.php` phong cách Quiet Luxury Editorial sang trọng, 4 phần kiểm tra cốt lõi: Phụ mẫu & Uyên ương, Giờ làm lễ hai nhà, Sảnh tiệc chiêu đãi, và nút mở xem toàn bộ thiệp.
+  * Hộp thao tác: Phụ mẫu có thể bấm `[ ⚜️ Bố Mẹ Đồng Ý & Chúc Phúc ]` kèm lời dặn dò, hoặc `[ ✏️ Có Chi Tiết Cần Sửa Lại ]` để gửi góp ý cho hai con.
+  * Tích hợp Dashboard: Khối 8 trong `resources/views/client/pages/account/settings.blade.php` hiển thị trạng thái và link sao chép cho hai bên gia đình.
+- **Kiểm thử**: `tests/Feature/TwoFamilyApprovalTest.php` (5/5 tests passed, 27 assertions).
+
+---
+
+### CỘT MỐC 9: TỔNG DIỄN TẬP ĐÓN TIẾP & MÔ PHỎNG SỰ KIỆN (WEDDING DAY DRY RUN & RECEPTION SIMULATOR) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-20`: Mô Phỏng Check-in & Kiểm Thử Tổng Diễn Tập Đón Tiếp (Wedding Day Dry Run & Reception Simulator) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giải tỏa nỗi lo âu lớn nhất của ban lễ tân tiệc cưới (bạn thân, anh chị em họ nhận việc sát giờ): Không biết máy quét hoạt động thế nào, khách đi kèm 3 người thì thao tác ra sao, khách chưa xếp bàn thì tìm bàn ở đâu. Nếu thử bằng khách thật thì làm hỏng số liệu check-in thật; nếu không thử thì lúng túng gây ùn tắc cổng đón tiếp vào giờ cao điểm.
+- **Phòng vệ cách ly dữ liệu tuyệt đối (Zero Database Pollution)**:
+  * Nạp 5 kịch bản khách mẫu mô phỏng kinh điển trong ngày cưới (`Bác Trần Văn Tuấn` - VIP có bàn, `Gia đình anh Lê Hoàng Nam` - headcount 4 suất, `Bạn Nguyễn Thu Hà` - chưa xếp bàn / ăn chay, `Chị Phạm Mai Hương` - mô phỏng quét trùng lần 2, `Anh Đỗ Minh Khang` - khách tiêu chuẩn).
+  * Mọi thao tác quét mã, tìm kiếm nhanh và xếp bàn trong chế độ diễn tập chỉ lưu trong Session tạm thời, tuyệt đối **KHÔNG ghi vào bảng `guests` hay `check_ins` trong database**.
+- **Phạm vi code**:
+  * Service: `app/Services/ReceptionDryRunService.php`.
+  * Controller: Mở rộng `CheckInController::showPortal`, `processScan`, `quickSearch`, `updateTable`, bổ sung `enableDryRun`, `disableDryRun`, `resetDryRun`.
+  * Routes: `POST /diem-danh-tiec/{slug}/dien-tap/bat`, `/tat`, `/lam-moi`.
+  * Giao diện: Banner tím Quiet Luxury nổi bật trên `resources/views/client/pages/checkin.blade.php` kèm 5 thẻ quét nhanh 1 chạm và `public/assets/client/js/pages/checkin.js`.
+- **Kiểm thử**: `tests/Feature/ReceptionDryRunSimulatorTest.php` (5/5 tests passed, 26 assertions).
+
+
 
 

@@ -344,6 +344,77 @@
             </div>
         </div>
 
+        <!-- Khối 8: Duyệt Thiệp Gia Đình Hai Nhà (Two-Family Review & Blessing Approval - TASK-VAL-19) -->
+        <div class="mayhen_account_section" style="margin-bottom: 28px;">
+            <div class="mayhen_account_section_header">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h3 class="mayhen_account_section_title" style="margin: 0;">8. Phê Duyệt Thông Tin Cưới Hỏi Hai Nhà (Two-Family Approval)</h3>
+                        <span style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Family Harmony</span>
+                    </div>
+                    <p class="mayhen_account_section_desc" style="margin-top: 4px;">Gửi liên kết rà soát riêng biệt cho Bố Mẹ Nhà Trai và Bố Mẹ Nhà Gái kiểm tra tên tuổi, danh xưng, giờ lành làm lễ gia tiên và sảnh tiệc trước khi phát hành thiệp cưới chính thức.</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                {{-- Nhà Trai --}}
+                @php
+                    $gf = $familyApprovals['groom_family'] ?? [];
+                    $gfStatus = $gf['status'] ?? 'pending';
+                @endphp
+                <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 14px; padding: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <strong style="font-size: 15px; color: #1F1D1A;">🤵 Nhà Trai (Bố Mẹ Chú Rể)</strong>
+                        @if($gfStatus === 'approved')
+                            <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Đã Duyệt &amp; Chúc Phúc</span>
+                        @elseif($gfStatus === 'feedback')
+                            <span style="background: #FFF3E0; color: #E65100; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Có Góp Ý Cần Sửa</span>
+                        @else
+                            <span style="background: #FFFDE7; color: #F57F17; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Chờ Bố Mẹ Duyệt</span>
+                        @endif
+                    </div>
+                    @if(!empty($gf['feedback']))
+                        <div style="background: #FFF8E1; border: 1px dashed #FFE082; padding: 8px 12px; border-radius: 8px; font-size: 12.5px; color: #BF360C; margin-bottom: 12px;">
+                            <strong>Góp ý từ Bố Mẹ:</strong> "{{ $gf['feedback'] }}"
+                        </div>
+                    @endif
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" readonly value="{{ $gf['review_url'] ?? '' }}" class="mayhen_account_form_input" style="font-size: 11.5px; font-family: monospace; color: #7A726A; background: #FFF; padding: 8px 10px;">
+                        <button type="button" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" onclick="navigator.clipboard.writeText('{{ $gf['review_url'] ?? '' }}'); this.innerText='Đã chép!'; setTimeout(() => this.innerText='Chép', 2000);">Chép</button>
+                        <a href="{{ $gf['review_url'] ?? '#' }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_sm mayhen_account_btn_gold">Mở</a>
+                    </div>
+                </div>
+
+                {{-- Nhà Gái --}}
+                @php
+                    $bf = $familyApprovals['bride_family'] ?? [];
+                    $bfStatus = $bf['status'] ?? 'pending';
+                @endphp
+                <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 14px; padding: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <strong style="font-size: 15px; color: #1F1D1A;">👰 Nhà Gái (Bố Mẹ Cô Dâu)</strong>
+                        @if($bfStatus === 'approved')
+                            <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Đã Duyệt &amp; Chúc Phúc</span>
+                        @elseif($bfStatus === 'feedback')
+                            <span style="background: #FFF3E0; color: #E65100; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Có Góp Ý Cần Sửa</span>
+                        @else
+                            <span style="background: #FFFDE7; color: #F57F17; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">Chờ Bố Mẹ Duyệt</span>
+                        @endif
+                    </div>
+                    @if(!empty($bf['feedback']))
+                        <div style="background: #FFF8E1; border: 1px dashed #FFE082; padding: 8px 12px; border-radius: 8px; font-size: 12.5px; color: #BF360C; margin-bottom: 12px;">
+                            <strong>Góp ý từ Bố Mẹ:</strong> "{{ $bf['feedback'] }}"
+                        </div>
+                    @endif
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" readonly value="{{ $bf['review_url'] ?? '' }}" class="mayhen_account_form_input" style="font-size: 11.5px; font-family: monospace; color: #7A726A; background: #FFF; padding: 8px 10px;">
+                        <button type="button" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" onclick="navigator.clipboard.writeText('{{ $bf['review_url'] ?? '' }}'); this.innerText='Đã chép!'; setTimeout(() => this.innerText='Chép', 2000);">Chép</button>
+                        <a href="{{ $bf['review_url'] ?? '#' }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_sm mayhen_account_btn_gold">Mở</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Nút Lưu Cài Đặt -->
         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 40px;">
             <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">

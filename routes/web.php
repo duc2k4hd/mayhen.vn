@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\CustomDomainController;
+use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
@@ -59,6 +60,7 @@ Route::get('/api/editor/consistency-check/{id}', [InvitationEditorController::cl
 Route::get('/api/editor/collision-check/{id}', [InvitationEditorController::class, 'collisionCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.collision_check');
 Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 'readinessCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.readiness_check');
 Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
+Route::get('/api/editor/family-approval/{id}', [FamilyApprovalController::class, 'status'])->middleware(['auth', 'throttle:30,1'])->name('family_approval.status');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');
@@ -202,11 +204,18 @@ Route::post('/api/diem-danh-tiec/{slug}/quet', [CheckInController::class, 'proce
 Route::get('/api/diem-danh-tiec/{slug}/tim-nhanh', [CheckInController::class, 'quickSearch'])->middleware('throttle:60,1')->name('checkin.quickSearch');
 Route::post('/api/diem-danh-tiec/{slug}/huy/{guestId}', [CheckInController::class, 'undo'])->middleware('throttle:60,1')->name('checkin.undo');
 Route::post('/api/diem-danh-tiec/{slug}/ban-tiec/{guestId}', [CheckInController::class, 'updateTable'])->middleware('throttle:60,1')->name('checkin.updateTable');
+Route::post('/diem-danh-tiec/{slug}/dien-tap/bat', [CheckInController::class, 'enableDryRun'])->name('checkin.dry_run.enable');
+Route::post('/diem-danh-tiec/{slug}/dien-tap/tat', [CheckInController::class, 'disableDryRun'])->name('checkin.dry_run.disable');
+Route::post('/diem-danh-tiec/{slug}/dien-tap/lam-moi', [CheckInController::class, 'resetDryRun'])->name('checkin.dry_run.reset');
 
 // Thẻ VIP & Tra Cứu Bàn Tiệc Khi Quét QR Cá Nhân
 Route::get('/diem-danh/{token}', [CheckInController::class, 'directScan'])->name('checkin.direct');
 Route::get('/khach-moi/{guestToken}', [CheckInController::class, 'guestConcierge'])->name('guest.concierge');
 Route::get('/khach-moi/{guestToken}/lich-ics', [CheckInController::class, 'downloadIcs'])->name('guest.concierge.ics');
+
+// Rà Soát Lễ Nghi & Duyệt Thiệp Gia Đình Hai Nhà (Two-Family Review - TASK-VAL-19)
+Route::get('/gia-dinh-duyet/{token}', [FamilyApprovalController::class, 'review'])->name('family_approval.review');
+Route::post('/gia-dinh-duyet/{token}/quyet-dinh', [FamilyApprovalController::class, 'submitDecision'])->middleware('throttle:20,1')->name('family_approval.submit');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

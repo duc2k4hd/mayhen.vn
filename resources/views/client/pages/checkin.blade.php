@@ -31,6 +31,76 @@
             </div>
         </header>
 
+        {{-- Banner Chế Độ Diễn Tập Lễ Tân (TASK-VAL-20) --}}
+        @if(!empty($isDryRun))
+            <div style="background: #F3E5F5; border: 2px dashed #AB47BC; border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 26px;">🧪</span>
+                    <div>
+                        <strong style="font-size: 15px; color: #6A1B9A; display: block;">CHẾ ĐỘ TỔNG DIỄN TẬP LỄ TÂN (DRY RUN SIMULATOR)</strong>
+                        <span style="font-size: 12.5px; color: #4A148C;">Dữ liệu thử nghiệm hoàn toàn cách ly trong phiên làm việc. Mọi lượt quét QR thử nghiệm sẽ KHÔNG làm thay đổi số liệu đón tiếp thật.</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <form action="{{ route('checkin.dry_run.reset', $invitation->slug) }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="mayhen_checkin_btn" style="background: #FFFFFF; color: #6A1B9A; border: 1px solid #AB47BC; padding: 6px 14px; font-size: 12px; border-radius: 20px;">
+                            🔄 Làm Mới Thử Nghiệm
+                        </button>
+                    </form>
+                    <form action="{{ route('checkin.dry_run.disable', $invitation->slug) }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="mayhen_checkin_btn" style="background: #6A1B9A; color: #FFFFFF; border: none; padding: 6px 14px; font-size: 12px; border-radius: 20px; font-weight: 700;">
+                            ✕ Thoát Diễn Tập
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {{-- 5 Kịch Bản Thử Nghiệm Nhanh 1 Chạm Cho Lễ Tân --}}
+            <div style="background: #FFFFFF; border: 1px solid #E5DCCD; border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <strong style="font-size: 13.5px; color: #1F1D1A; text-transform: uppercase; letter-spacing: 0.5px;">🎯 5 Kịch Bản Thử Nghiệm Nhanh (Bấm để quét thử lập tức):</strong>
+                    <span style="font-size: 11px; color: #7A726A;">Kiểm tra camera &amp; máy quét QR</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                    @foreach($dryRunGuests ?? [] as $dg)
+                        <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <strong style="font-size: 13px; color: #1F1D1A;">{{ $dg['name'] }}</strong>
+                                    @if(!empty($dg['checked_in_at']))
+                                        <span style="background: #FFF3E0; color: #E65100; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">Đã Đón</span>
+                                    @else
+                                        <span style="background: #E8F5E9; color: #2E7D32; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">Chưa Đón</span>
+                                    @endif
+                                </div>
+                                <div style="font-size: 11px; color: #7A726A;">
+                                    {{ $dg['table_name'] ?: '⚠️ Chưa xếp bàn' }} • {{ $dg['expected_attendees'] }} suất
+                                    @if(!empty($dg['dietary']))
+                                        <span style="color: #E65100; display: block;">🥗 {{ $dg['dietary'] }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <button type="button" class="btn-dry-run-scan" data-token="{{ $dg['guest_token'] }}" style="margin-top: 8px; width: 100%; background: #C5A880; color: #fff; border: none; border-radius: 6px; padding: 5px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                                📷 Quét Thử Mã Này
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            {{-- Nút Kích Hoạt Chế Độ Diễn Tập Cho Lễ Tân --}}
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
+                <form action="{{ route('checkin.dry_run.enable', $invitation->slug) }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="mayhen_checkin_btn" style="background: #FAF8F5; border: 1px dashed #AB47BC; color: #6A1B9A; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px;">
+                        🧪 Bật Chế Độ Diễn Tập Lễ Tân (Dry Run)
+                    </button>
+                </form>
+            </div>
+        @endif
+
         {{-- Live Headcount Counter Cards --}}
         <div class="mayhen_checkin_counter_grid">
             <div class="mayhen_checkin_counter_card mayhen_checkin_counter_card--gold">
@@ -125,18 +195,27 @@
             <h2 class="mayhen_checkin_section_title">Khách Mới Điểm Danh Gần Đây</h2>
             <div class="mayhen_checkin_recent_list" id="recent_checkin_list">
                 @forelse($recentCheckIns as $item)
-                    <div class="mayhen_checkin_recent_item" id="recent_guest_{{ $item->id }}">
+                    @php
+                        $itemId = data_get($item, 'id');
+                        $itemName = data_get($item, 'name');
+                        $itemSalutation = data_get($item, 'salutation');
+                        $itemTable = data_get($item, 'table_name');
+                        $itemAttendees = data_get($item, 'checked_in_attendees') ?: data_get($item, 'expected_attendees');
+                        $checkInRaw = data_get($item, 'checked_in_at');
+                        $itemTime = is_string($checkInRaw) ? $checkInRaw : ($checkInRaw instanceof \Carbon\Carbon ? $checkInRaw->format('H:i') : '');
+                    @endphp
+                    <div class="mayhen_checkin_recent_item" id="recent_guest_{{ $itemId }}">
                         <div class="mayhen_checkin_recent_main">
                             <span class="mayhen_checkin_recent_name">
-                                {{ $item->salutation ? $item->salutation . ' ' : '' }}{{ $item->name }}
+                                {{ $itemSalutation ? $itemSalutation . ' ' : '' }}{{ $itemName }}
                             </span>
                             <span class="mayhen_checkin_recent_meta">
-                                Bàn: <strong>{{ $item->table_name ?: 'Chưa xếp' }}</strong> • {{ $item->checked_in_attendees ?: $item->expected_attendees }} người
+                                Bàn: <strong>{{ $itemTable ?: 'Chưa xếp' }}</strong> • {{ $itemAttendees }} người
                             </span>
                         </div>
                         <div class="mayhen_checkin_recent_action">
-                            <span class="mayhen_checkin_recent_time">{{ $item->checked_in_at ? $item->checked_in_at->format('H:i') : '' }}</span>
-                            <button type="button" class="mayhen_checkin_btn_undo" data-guest-id="{{ $item->id }}" title="Hủy điểm danh nếu nhầm">
+                            <span class="mayhen_checkin_recent_time">{{ $itemTime }}</span>
+                            <button type="button" class="mayhen_checkin_btn_undo" data-guest-id="{{ $itemId }}" title="Hủy điểm danh nếu nhầm">
                                 Hủy ✕
                             </button>
                         </div>

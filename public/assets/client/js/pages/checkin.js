@@ -504,5 +504,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 7. Hỗ trợ nút quét nhanh trong Chế Độ Diễn Tập Lễ Tân (TASK-VAL-20)
+    document.querySelectorAll('.btn-dry-run-scan').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const token = btn.getAttribute('data-token');
+            if (token) {
+                handleScannedToken(token);
+            }
+        });
+    });
 });
 

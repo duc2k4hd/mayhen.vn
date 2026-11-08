@@ -73,6 +73,8 @@ Thumbs.db
 !/tests/Feature/GentleReminderPlannerTest.php
 !/tests/Feature/PersonalThankYouBuilderTest.php
 !/tests/Feature/PortableWeddingArchiveTest.php
+!/tests/Feature/TwoFamilyApprovalTest.php
+!/tests/Feature/ReceptionDryRunSimulatorTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
