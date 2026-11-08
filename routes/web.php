@@ -274,6 +274,7 @@ Route::prefix('doi-tac')->name('partner.')->middleware('partner')->group(functio
     Route::post('/tao-thiep', [PartnerWeddingController::class, 'store'])->middleware('throttle:30,1')->name('weddings.store');
     Route::get('/thiep/{id}/ban-giao', [PartnerWeddingController::class, 'handover'])->name('weddings.handover');
     Route::post('/thiep/{id}/ban-giao/lam-moi', [PartnerWeddingController::class, 'regenerateHandoverCode'])->name('weddings.regenerate');
+    Route::post('/thiep/{id}/ban-giao/thu-hoi', [PartnerWeddingController::class, 'revokeHandoverCode'])->name('weddings.revoke');
 
     // Quản lý hoa hồng & chiết khấu B2B
     Route::get('/hoa-hong', [PartnerCommissionController::class, 'index'])->name('commissions.index');

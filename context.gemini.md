@@ -5701,6 +5701,61 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        217. **Chuẩn Hóa AI Story Writer & Cơ Chế Bàn Giao Thiệp Cưới Agency (AI Story Writer & Agency Handover Guardian — Flow 14 & Flow 18)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Flow 14 (AI Story Writer) và Flow 18 (Agency claim & Handover) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Lỗ hổng False Positive nghiêm trọng trong Content Moderation)**: Phát hiện bộ lọc `ContentModerationService` tự động chuyển các từ tục tĩu có dấu sang ASCII rồi đem so khớp đơn âm tiết trên chuỗi ASCII đã chuẩn hóa. Hậu quả là hàng loạt từ ngữ thiệp cưới vô hại và quen thuộc bị coi là vi phạm và chặn oan 100%:
+                                 * "đại diện hai họ", "đại gia đình", "đại học" (bị từ `dái` -> `dai`).
+                                 * "vũ trụ bao la", "khiêu vũ", "vụ việc" (bị từ `vú` -> `vu`).
+                                 * "buổi tiệc cưới", "buổi sáng" (bị từ `buồi` -> `buoi`).
+                                 * "chúng mình đi du lịch", "lãng du" (bị từ `đụ` -> `du` và `đĩ` -> `di`).
+                                 * "nên duyên vợ chồng", "thắp nến" (bị từ `nện` -> `nen`).
+                               - **Lỗi 2 (AI Story Writer thiếu NoProfanity, HTML escape và trường chuyện gặp nhau)**: `InvitationEditorController::generateAiStory` thiếu rule `NoProfanity` cho `groom_name`, `bride_name`, `keywords`; thiếu tham số `how_we_met`; kết quả sinh ra chưa được escape HTML triệt để.
+                               - **Lỗi 3 (Mã bàn giao Agency không thời hạn & thiếu tính năng thu hồi)**: Trong `PartnerWeddingController`, mã bàn giao thiệp cưới `handover_code` không có thời gian khởi tạo và hạn sử dụng (vô thời hạn); thiếu route/tính năng cho phép Studio thu hồi (revoke) mã khi cần hủy; khi khách claim thành công không đồng bộ danh sách slug vào session `owned_invitation_slugs`, khiến khách chưa thể tương tác ngay lập tức trong Studio.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Khắc phục triệt để False Positive trong `ContentModerationService`**:
+                                 * Thêm danh sách `$asciiAmbiguousWords = ['buoi', 'dai', 'vu', 'du', 'nen', 'lon', 'buom', 'pho', 'di']`.
+                                 * Các từ đơn này chỉ được đối soát bắt lỗi khi có dấu chính xác 100% trong văn bản gốc (`$rawLower`), tuyệt đối không so khớp đơn âm tiết trên bản ASCII đã chuẩn hóa (`$normalizedAscii`).
+                                 * Bảo toàn khả năng chặn đứng 100% các từ tục tĩu thật ("đụ má", "đám ma", "thằng chó", "con đĩ", "bú cu", "hòn dái", "bóp vú" v.v.) trong khi cho phép hoàn toàn các từ văn minh ngày cưới như "đại diện hai họ", "buổi tiệc", "vũ trụ", "đi du lịch", "nên duyên".
+                               - **Nâng cấp toàn diện Trợ lý AI Lời Ngỏ (`AiStoryWriterService` & `InvitationEditorController`) (FLOW-14)**:
+                                 * Thêm `new NoProfanity` vào validation cho `groom_name`, `bride_name`, `keywords`, `how_we_met`.
+                                 * Làm sạch và HTML-escape toàn diện qua `htmlspecialchars(strip_tags(trim(...)), ENT_QUOTES, 'UTF-8')` chống XSS/HTML injection.
+                                 * Tích hợp mẩu chuyện gặp gỡ `how_we_met` uyển chuyển vào 3 phong cách Quiet Luxury (`romantic`, `minimal`, `cheerful`).
+                                 * API hoạt động cô lập (idempotent), không bao giờ tự ý ghi đè vào bản nháp database khi người dùng chưa chọn áp dụng.
+                               - **Nâng cấp Quy trình Bàn giao Thiệp Cưới Agency (FLOW-18)**:
+                                 * `app/Models/Wedding.php`: Bổ sung các helper methods:
+                                   - `generateHandoverCode(int $daysValid = 30): string`: Sinh mã 6 ký tự, ghi nhận `handover_generated_at` và `handover_expires_at` (30 ngày).
+                                   - `isHandoverCodeExpired(): bool`: Kiểm tra hạn dùng của mã bàn giao.
+                                   - `getHandoverExpiresAt(): ?Carbon`: Lấy thời điểm hết hạn.
+                                   - `revokeHandoverCode(): void`: Thu hồi mã và ghi `handover_revoked_at`.
+                                 * `PartnerWeddingController`:
+                                   - `store`: Gọi `$wedding->generateHandoverCode(30)`.
+                                   - `handover`: Hiển thị thời hạn hiệu lực của mã, cảnh báo khi mã hết hạn, và hiển thị trạng thái đã bàn giao thành công.
+                                   - `regenerateHandoverCode`: Sinh mã mới, gia hạn 30 ngày, ghi `AuditLogger::log('regenerate_wedding_handover_code', ...)`.
+                                   - Thêm phương thức `revokeHandoverCode`: Thu hồi mã, vô hiệu hóa việc claim, ghi `AuditLogger::log('revoke_wedding_handover_code', ...)`.
+                                   - Thêm route `POST /doi-tac/thiep/{id}/ban-giao/thu-hoi` (`partner.weddings.revoke`) trong `routes/web.php`.
+                                   - `claim`: Thực hiện trong `DB::transaction` với `lockForUpdate()`, chặn mã hết hạn (`expired`), chống Replay Attack (xóa mã sau lần nhận đầu tiên), ghi lịch sử bàn giao `handover_history`, đồng bộ `owned_invitation_slugs` vào session của cặp đôi và ghi `AuditLogger::log('claim_wedding_handover', ...)`.
+                                 * Nâng cấp giao diện `resources/views/partner/weddings/handover.blade.php`: Hiển thị ngày hết hạn của mã, thông báo mã hết hạn, trạng thái đã bàn giao và nút "Thu Hồi Mã".
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Tạo mới Feature test suite `tests/Feature/AiStoryWriterFlowTest.php` với 5 ca kiểm thử chuyên sâu -> **5/5 tests passed (22 assertions)**:
+                                 * `test_khách_hàng_có_thể_tạo_3_gợi_ý_lời_ngỏ_Quiet_Luxury_với_phong_cách_mặc_định_lãng_mạn`
+                                 * `test_khách_hàng_chọn_tông_tối_giản_hoặc_hóm_hỉnh_đưa_phong_cách_tương_ứng_lên_đầu`
+                                 * `test_chặn_từ_ngữ_thô_tục_hoặc_phản_cảm_ở_các_trường_đầu_vào`
+                                 * `test_ngăn_chặn_triệt_để_xss_và_html_injection_trong_nội_dung_sinh_ra`
+                                 * `test_api_sinh_lời_ngỏ_không_ghi_đè_tự_động_vào_bản_ghi_thiệp_cưới`
+                               - Tạo mới Feature test suite `tests/Feature/AgencyHandoverClaimFlowTest.php` với 7 ca kiểm thử chuyên sâu -> **7/7 tests passed (46 assertions)**:
+                                 * `test_studio_khởi_tạo_thiệp_cưới_tự_động_sinh_mã_bàn_giao_6_ký_tự_và_hạn_sử_dụng_30_ngày`
+                                 * `test_cặp_đôi_claim_thành_công_chuyển_giao_quyền_sở_hữu_xóa_mã_bàn_giao_và_đồng_bộ_session`
+                                 * `test_chặn_replay_attack_khi_mã_bàn_giao_đã_được_sử_dụng_một_lần`
+                                 * `test_chặn_mã_bàn_giao_đã_hết_hạn_hiệu_lực_quá_30_ngày`
+                                 * `test_studio_có_thể_đổi_mã_bàn_giao_mới_và_gia_hạn_thêm_30_ngày`
+                                 * `test_studio_có_thể_thu_hồi_mã_bàn_giao_để_ngăn_chặn_claim`
+                                 * `test_màn_hình_handover_hiển_thị_trạng_thái_đã_bàn_giao_khi_khách_đã_nhận_thiệp`
+                               - Cập nhật whitelist `.gitignore`: Thêm `!/tests/Feature/AiStoryWriterFlowTest.php` và `!/tests/Feature/AgencyHandoverClaimFlowTest.php`.
+                               - Toàn bộ test suite toàn hệ thống: **445/445 tests passed 100% (2,266 assertions)** trong ~8.5 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

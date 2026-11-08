@@ -57,6 +57,24 @@ class ContentModerationService
     ];
 
     /**
+     * Danh sách các từ đơn dễ gây hiểu nhầm (False Positives) khi so khớp không dấu (ASCII).
+     * Các từ này chỉ được kiểm tra nghiêm ngặt khi có dấu chính xác trong văn bản gốc.
+     * Ví dụ:
+     * - 'buoi' (buổi sáng, buổi tiệc, quả bưởi) vs 'buồi'
+     * - 'dai' (đại gia đình, đại học, dài lâu) vs 'dái'
+     * - 'vu' (vũ trụ, vũ hội, vụ việc) vs 'vú'
+     * - 'du' (du lịch, lãng du, dù sao) vs 'đụ'
+     * - 'nen' (nên duyên, thắp nến, nền tảng) vs 'nện'
+     * - 'lon' (lon nước, lớn lên) vs 'lồn'
+     * - 'buom' (bươm bướm) vs 'bướm'
+     * - 'pho' (phố phường, bát phở) vs 'phò'
+     * - 'di' (đi lại, đi chơi, cô dì, diệu kỳ) vs 'đĩ'
+     */
+    protected static array $asciiAmbiguousWords = [
+        'buoi', 'dai', 'vu', 'du', 'nen', 'lon', 'buom', 'pho', 'di',
+    ];
+
+    /**
      * Kiểm tra xem chuỗi có chứa từ ngữ vi phạm không.
      */
     public static function containsProfanity(?string $text): bool
@@ -73,8 +91,14 @@ class ContentModerationService
             $badWordLower = mb_strtolower($badWord, 'UTF-8');
             $badWordAscii = self::normalizeToAscii($badWordLower);
 
+            // Kiểm tra nguyên bản có dấu (Chính xác 100%)
             if (self::containsWordBoundary($rawLower, $badWordLower)) {
                 return true;
+            }
+
+            // Bỏ qua so khớp ASCII đơn nếu từ đó thuộc nhóm đa nghĩa dễ hiểu nhầm trong tiếng Việt
+            if (in_array($badWordAscii, self::$asciiAmbiguousWords, true)) {
+                continue;
             }
 
             if (self::containsWordBoundary($normalizedAscii, $badWordAscii)) {
@@ -167,8 +191,15 @@ class ContentModerationService
         $badWordLower = mb_strtolower($badWord, 'UTF-8');
         $badWordAscii = self::normalizeToAscii($badWordLower);
 
-        return self::containsWordBoundary($rawLower, $badWordLower)
-            || self::containsWordBoundary($normalizedAscii, $badWordAscii);
+        if (self::containsWordBoundary($rawLower, $badWordLower)) {
+            return true;
+        }
+
+        if (in_array($badWordAscii, self::$asciiAmbiguousWords, true)) {
+            return false;
+        }
+
+        return self::containsWordBoundary($normalizedAscii, $badWordAscii);
     }
 
     /**

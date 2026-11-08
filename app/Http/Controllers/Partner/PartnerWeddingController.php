@@ -8,6 +8,7 @@ use App\Models\InvitationTemplate;
 use App\Models\Partner;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
+use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -88,26 +89,23 @@ class PartnerWeddingController extends Controller
             'wedding_date.required' => 'Vui lòng chọn ngày tổ chức hôn lễ.',
         ]);
 
-        $handoverCode = strtoupper(Str::random(6));
-
         // Khởi tạo đám cưới gắn với partner_id
         $wedding = Wedding::create([
             'user_id' => auth()->id(),
             'partner_id' => $partner->id,
-            'handover_code' => $handoverCode,
             'groom_name' => strip_tags(trim($validated['groom_name'])),
             'bride_name' => strip_tags(trim($validated['bride_name'])),
             'wedding_date' => $validated['wedding_date'],
             'venue_name' => ! empty($validated['venue_name']) ? strip_tags(trim($validated['venue_name'])) : null,
             'venue_address' => ! empty($validated['venue_address']) ? strip_tags(trim($validated['venue_address'])) : null,
             'client_notes' => ! empty($validated['client_notes']) ? strip_tags(trim($validated['client_notes'])) : null,
+            'extra_data' => [
+                'story_quote' => 'Hai trái tim cùng chung một nhịp đập, cùng nhau viết nên câu chuyện hạnh phúc dài lâu.',
+            ],
         ]);
 
-        // Tạo lời chào mẫu
-        $wedding->extra_data = [
-            'story_quote' => 'Hai trái tim cùng chung một nhịp đập, cùng nhau viết nên câu chuyện hạnh phúc dài lâu.',
-        ];
-        $wedding->save();
+        // Sinh mã bàn giao an toàn có thời hạn 30 ngày
+        $wedding->generateHandoverCode(30);
 
         // Tạo bản ghi thiệp cưới
         $baseSlug = Str::slug($wedding->groom_name.'-'.$wedding->bride_name);
@@ -134,36 +132,69 @@ class PartnerWeddingController extends Controller
     }
 
     /**
-     * Màn hình tạo mã bàn giao thiệp cưới cho cô dâu chú rể.
+     * Màn hình tạo và quản lý mã bàn giao thiệp cưới cho cô dâu chú rể.
      */
     public function handover(int $weddingId): View
     {
         $partner = $this->resolvePartner();
         $wedding = $partner->weddings()->with(['invitations.template'])->findOrFail($weddingId);
 
-        if (! $wedding->handover_code) {
-            $wedding->update(['handover_code' => strtoupper(Str::random(6))]);
+        // Nếu chưa có mã và chưa từng được bàn giao, sinh mã mới
+        $isAlreadyClaimed = ! empty($wedding->extra_data['handover_claimed_at']) || ($wedding->user_id !== auth()->id() && $wedding->user_id !== null);
+        if (! $wedding->handover_code && ! $isAlreadyClaimed) {
+            $wedding->generateHandoverCode(30);
         }
 
         return view('partner.weddings.handover', [
             'partner' => $partner,
             'wedding' => $wedding,
             'invitation' => $wedding->invitations->first(),
+            'isExpired' => $wedding->isHandoverCodeExpired(),
+            'expiresAt' => $wedding->getHandoverExpiresAt(),
+            'isAlreadyClaimed' => $isAlreadyClaimed,
         ]);
     }
 
     /**
-     * Đổi mã bàn giao mới (nếu mã cũ bị lộ).
+     * Đổi mã bàn giao mới (nếu mã cũ bị lộ hoặc hết hạn).
      */
     public function regenerateHandoverCode(int $weddingId): RedirectResponse
     {
         $partner = $this->resolvePartner();
         $wedding = $partner->weddings()->findOrFail($weddingId);
 
-        $newCode = strtoupper(Str::random(6));
-        $wedding->update(['handover_code' => $newCode]);
+        $newCode = $wedding->generateHandoverCode(30);
 
-        return back()->with('success', 'Đã tạo mã bàn giao mới thành công: '.$newCode);
+        AuditLogger::log(
+            action: 'regenerate_wedding_handover_code',
+            targetType: 'Wedding',
+            targetId: $wedding->id,
+            description: "Đối tác #{$partner->id} ({$partner->business_name}) đã cấp lại mã bàn giao mới cho đám cưới #{$wedding->id}",
+            details: ['new_code' => $newCode, 'expires_at' => $wedding->getHandoverExpiresAt()?->toIso8601String()]
+        );
+
+        return back()->with('success', 'Đã tạo mã bàn giao mới thành công: '.$newCode.' (Hiệu lực trong 30 ngày)');
+    }
+
+    /**
+     * Thu hồi mã bàn giao thiệp cưới (Revoke code).
+     */
+    public function revokeHandoverCode(int $weddingId): RedirectResponse
+    {
+        $partner = $this->resolvePartner();
+        $wedding = $partner->weddings()->findOrFail($weddingId);
+
+        $wedding->revokeHandoverCode();
+
+        AuditLogger::log(
+            action: 'revoke_wedding_handover_code',
+            targetType: 'Wedding',
+            targetId: $wedding->id,
+            description: "Đối tác #{$partner->id} ({$partner->business_name}) đã thu hồi mã bàn giao của đám cưới #{$wedding->id}",
+            details: ['partner_id' => $partner->id]
+        );
+
+        return back()->with('success', 'Đã thu hồi mã bàn giao thành công. Mã cũ đã bị vô hiệu hóa hoàn toàn.');
     }
 
     /**
@@ -181,26 +212,85 @@ class PartnerWeddingController extends Controller
         ]);
 
         $code = strtoupper(trim($validated['handover_code']));
-        $claimed = false;
         $wedding = null;
+        $status = 'invalid'; // 'invalid', 'expired', 'already_owner', 'success'
+        $claimedWedding = null;
 
-        DB::transaction(function () use ($code, &$claimed, &$wedding) {
+        DB::transaction(function () use ($code, &$status, &$claimedWedding) {
             $wedding = Wedding::where('handover_code', $code)->lockForUpdate()->first();
-            if ($wedding) {
-                $wedding->update([
-                    'user_id' => auth()->id(),
-                    'handover_code' => null,
-                ]);
-                $claimed = true;
+
+            if (! $wedding) {
+                $status = 'invalid';
+
+                return;
             }
+
+            if ($wedding->isHandoverCodeExpired()) {
+                $status = 'expired';
+
+                return;
+            }
+
+            if ($wedding->user_id === auth()->id()) {
+                $status = 'already_owner';
+                $claimedWedding = $wedding;
+
+                return;
+            }
+
+            $previousUserId = $wedding->user_id;
+            $extra = $wedding->extra_data ?? [];
+            $history = $extra['handover_history'] ?? [];
+            $now = now()->toIso8601String();
+
+            $history[] = [
+                'handed_from_user_id' => $previousUserId,
+                'claimed_by_user_id' => auth()->id(),
+                'claimed_at' => $now,
+                'ip' => request()->ip(),
+            ];
+
+            $extra['handover_history'] = $history;
+            $extra['handover_claimed_at'] = $now;
+
+            $wedding->update([
+                'user_id' => auth()->id(),
+                'handover_code' => null,
+                'extra_data' => $extra,
+            ]);
+
+            $status = 'success';
+            $claimedWedding = $wedding;
         });
 
-        if (! $claimed || ! $wedding) {
+        if ($status === 'expired') {
+            return back()->with('error', 'Mã bàn giao này đã hết hạn hiệu lực (quá thời hạn 30 ngày). Vui lòng liên hệ Studio đối tác để được cấp mã mới.');
+        }
+
+        if ($status === 'already_owner' && $claimedWedding) {
+            return redirect()->route('account.invitations')
+                ->with('info', 'Bạn đã là người quản trị thiệp cưới của '.$claimedWedding->groom_name.' & '.$claimedWedding->bride_name.'.');
+        }
+
+        if ($status !== 'success' || ! $claimedWedding) {
             return back()->with('error', 'Mã bàn giao không chính xác hoặc đã được sử dụng. Vui lòng liên hệ Studio của bạn để kiểm tra.');
         }
 
+        // Đồng bộ quyền sở hữu thiệp vào session để truy cập Studio tức thì
+        $claimedSlugs = $claimedWedding->invitations()->pluck('slug')->toArray();
+        $ownedSlugs = session()->get('owned_invitation_slugs', []);
+        session()->put('owned_invitation_slugs', array_values(array_unique(array_merge($ownedSlugs, $claimedSlugs))));
+
+        AuditLogger::log(
+            action: 'claim_wedding_handover',
+            targetType: 'Wedding',
+            targetId: $claimedWedding->id,
+            description: 'Cặp đôi #'.auth()->id().' ('.auth()->user()->name.") đã nhận bàn giao đám cưới #{$claimedWedding->id} ({$claimedWedding->groom_name} & {$claimedWedding->bride_name}) từ Studio đối tác",
+            details: ['partner_id' => $claimedWedding->partner_id, 'claimed_slugs' => $claimedSlugs]
+        );
+
         return redirect()->route('account.invitations')
-            ->with('success', 'Chúc mừng! Bạn đã nhận thành công quyền quản trị thiệp cưới của '.$wedding->groom_name.' & '.$wedding->bride_name.' từ Studio đối tác!');
+            ->with('success', 'Chúc mừng! Bạn đã nhận thành công quyền quản trị thiệp cưới của '.$claimedWedding->groom_name.' & '.$claimedWedding->bride_name.' từ Studio đối tác!');
     }
 
     private function resolvePartner(): Partner

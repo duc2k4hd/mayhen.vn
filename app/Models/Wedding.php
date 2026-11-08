@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class Wedding extends Model
 {
@@ -94,5 +96,67 @@ class Wedding extends Model
     public function timeCapsules(): HasMany
     {
         return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
+    }
+
+    /**
+     * Sinh mã bàn giao mới có thời hạn hiệu lực (mặc định 30 ngày) cho Studio/Agency.
+     */
+    public function generateHandoverCode(int $daysValid = 30): string
+    {
+        $code = strtoupper(Str::random(6));
+        $extra = $this->extra_data ?? [];
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+
+        $extra['handover_generated_at'] = $now->toIso8601String();
+        $extra['handover_expires_at'] = $now->copy()->addDays($daysValid)->toIso8601String();
+        unset($extra['handover_revoked_at']);
+
+        $this->update([
+            'handover_code' => $code,
+            'extra_data' => $extra,
+        ]);
+
+        return $code;
+    }
+
+    /**
+     * Kiểm tra mã bàn giao đã hết hạn hiệu lực hay chưa.
+     */
+    public function isHandoverCodeExpired(): bool
+    {
+        if (! $this->handover_code) {
+            return false;
+        }
+
+        $expiresAt = $this->extra_data['handover_expires_at'] ?? null;
+        if (! $expiresAt) {
+            return false;
+        }
+
+        return Carbon::parse($expiresAt)->isPast();
+    }
+
+    /**
+     * Lấy mốc thời gian hết hạn của mã bàn giao (nếu có).
+     */
+    public function getHandoverExpiresAt(): ?Carbon
+    {
+        $expiresAt = $this->extra_data['handover_expires_at'] ?? null;
+
+        return $expiresAt ? Carbon::parse($expiresAt) : null;
+    }
+
+    /**
+     * Thu hồi mã bàn giao, ngăn chặn việc claim ngoài ý muốn.
+     */
+    public function revokeHandoverCode(): void
+    {
+        $extra = $this->extra_data ?? [];
+        $extra['handover_revoked_at'] = Carbon::now('Asia/Ho_Chi_Minh')->toIso8601String();
+
+        $this->update([
+            'handover_code' => null,
+            'extra_data' => $extra,
+        ]);
     }
 }

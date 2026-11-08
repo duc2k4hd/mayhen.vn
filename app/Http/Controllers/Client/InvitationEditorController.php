@@ -8,6 +8,7 @@ use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
+use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingConsistencyGuardianService;
@@ -475,23 +476,25 @@ class InvitationEditorController extends Controller
     }
 
     /**
-     * Gợi ý Lời ngỏ và Câu chuyện tình yêu bằng Trợ lý AI (TASK-V1-04).
+     * Gợi ý Lời ngỏ và Câu chuyện tình yêu bằng Trợ lý AI (TASK-V1-04 & FLOW-14).
      */
     public function generateAiStory(Request $request, AiStoryWriterService $aiService): JsonResponse
     {
         $validated = $request->validate([
-            'groom_name' => 'nullable|string|max:50',
-            'bride_name' => 'nullable|string|max:50',
-            'keywords' => 'nullable|string|max:200',
-            'tone' => 'nullable|string|in:romantic,minimal,cheerful',
+            'groom_name' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'bride_name' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'keywords' => ['nullable', 'string', 'max:200', new NoProfanity],
+            'how_we_met' => ['nullable', 'string', 'max:200', new NoProfanity],
+            'tone' => ['nullable', 'string', 'in:romantic,minimal,cheerful'],
         ]);
 
         $groom = $validated['groom_name'] ?? 'Chú Rể';
         $bride = $validated['bride_name'] ?? 'Cô Dâu';
         $keywords = $validated['keywords'] ?? null;
         $tone = $validated['tone'] ?? 'romantic';
+        $howWeMet = $validated['how_we_met'] ?? null;
 
-        $data = $aiService->generate($groom, $bride, $keywords, $tone);
+        $data = $aiService->generate($groom, $bride, $keywords, $tone, $howWeMet);
 
         return response()->json($data);
     }
