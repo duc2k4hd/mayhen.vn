@@ -5545,6 +5545,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        211. **Nâng Cấp Bộ Lọc Xuất CSV & Bản In A4 Cho Quản Lý Khách Mời & Sổ Mừng Cưới (Filtered Export & Print Integration)**:
+                             - **Bối cảnh & Động lực**:
+                               - Thực thi mục 06 (Kiểm toán chất lượng chức năng đã đánh dấu DONE) và mục 09 (Thiết kế các nâng cấp đáng tiền) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Trước đây, phương thức `exportCsv` trong `GuestController` và `GiftManagementController` luôn xuất toàn bộ danh sách dữ liệu, bỏ qua mọi tham số tìm kiếm hoặc lọc phân nhóm/trạng thái mà người dùng đang thao tác. Tương tự, trang in `print` cũng thiếu hỗ trợ lọc theo từ khóa hoặc bàn tiệc.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Quản lý Khách mời (`GuestController`)**:
+                                 * Nâng cấp `exportCsv(Request $request, int $invitationId)` nhận đầy đủ bộ lọc: từ khóa tìm kiếm (`q`), nhóm khách (`group`), bàn tiệc (`table`), trạng thái RSVP và điểm danh (`status`: `attending`, `declined`, `pending`, `checked_in`, `not_checked_in`).
+                                 * Mở rộng `print(Request $request, int $invitationId)` hỗ trợ lọc theo `q`, `table`, và đầy đủ các trạng thái `status`.
+                                 * Cập nhật `resources/views/client/pages/guests.blade.php`: Hai nút `[ In Danh Sách (A4) ]` và `[ Xuất CSV (Excel) ]` tự động bảo toàn query parameters hiện hành thông qua `array_filter(...)`.
+                                 * Bổ sung hiển thị dòng phân loại bộ lọc rõ ràng trong header bản in `guests-print.blade.php`.
+                               - **Sổ Mừng Cưới (`GiftManagementController`)**:
+                                 * Nâng cấp `exportCsv(Request $request, int $invitationId)` hỗ trợ lọc theo từ khóa (`q`), hình thức (`method`: `cash`, `bank_transfer`, `other`), nhóm khách (`group`), trạng thái cảm ơn (`ack`: `yes`, `no`).
+                                 * Mở rộng `print(Request $request, int $invitationId)` nhận tham số tìm kiếm `q`.
+                                 * Cập nhật `resources/views/client/pages/account/gifts.blade.php`: Hai nút `[ In Sổ Mừng Cưới (A4) ]` và `[ Xuất File CSV (Excel) ]` tự động truyền theo toàn bộ bộ lọc hiện hành.
+                                 * Cập nhật `gifts-print.blade.php` hiển thị thông tin phân loại bộ lọc chi tiết cho đối soát tài chính sau tiệc.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Tạo mới Feature test suite `tests/Feature/GuestAndGiftExportPrintFilterTest.php` với 6 ca kiểm thử toàn diện:
+                                 * `test_guests_export_csv_respects_group_and_status_filters`: Kiểm thử xuất CSV khách mời theo nhóm, trạng thái, và từ khóa tìm kiếm.
+                                 * `test_guests_print_page_respects_filters`: Kiểm thử trang in danh sách đón tiếp hiển thị chính xác theo bàn tiệc được lọc.
+                                 * `test_other_user_cannot_export_or_print_guests`: Kiểm thử bảo mật quyền sở hữu (404 Not Found chống lộ ID).
+                                 * `test_gifts_export_csv_respects_method_and_acknowledgement_filters`: Kiểm thử xuất CSV mừng cưới theo hình thức và trạng thái cảm ơn.
+                                 * `test_gifts_print_page_respects_filters`: Kiểm thử trang in sổ mừng cưới theo từ khóa tìm kiếm.
+                                 * `test_other_user_cannot_export_or_print_gifts`: Kiểm thử bảo mật quyền sở hữu sổ mừng cưới (404 Not Found).
+                               - Test suite `GuestAndGiftExportPrintFilterTest`: **6/6 tests passed (36 assertions)**.
+                               - Cập nhật whitelist `.gitignore` bổ sung `!/tests/Feature/GuestAndGiftExportPrintFilterTest.php`.
+                               - Toàn bộ test suite toàn hệ thống: **415/415 tests passed 100% (2,092 assertions)** trong ~7.7 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

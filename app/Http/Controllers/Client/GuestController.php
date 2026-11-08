@@ -220,15 +220,47 @@ class GuestController extends Controller
     }
 
     /**
-     * Xuất danh sách khách mời dạng CSV UTF-8 BOM cho Excel.
+     * Xuất danh sách khách mời dạng CSV UTF-8 BOM cho Excel (Hỗ trợ lọc theo tìm kiếm, nhóm, bàn, trạng thái).
      */
-    public function exportCsv(int $invitationId): StreamedResponse
+    public function exportCsv(Request $request, int $invitationId): StreamedResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
 
-        $guests = $wedding->guests()->with('response')->orderBy('group_name')->get();
+        $guestsQuery = $wedding->guests()->with('response');
+
+        if ($search = trim((string) $request->query('q'))) {
+            $guestsQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('table_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($groupFilter = $request->query('group')) {
+            $guestsQuery->where('group_name', $groupFilter);
+        }
+
+        if ($tableFilter = $request->query('table')) {
+            $guestsQuery->where('table_name', $tableFilter);
+        }
+
+        if ($statusFilter = $request->query('status')) {
+            if ($statusFilter === 'attending') {
+                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'attending'));
+            } elseif ($statusFilter === 'declined') {
+                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
+            } elseif ($statusFilter === 'pending') {
+                $guestsQuery->whereDoesntHave('response');
+            } elseif ($statusFilter === 'checked_in') {
+                $guestsQuery->whereNotNull('checked_in_at');
+            } elseif ($statusFilter === 'not_checked_in') {
+                $guestsQuery->whereNull('checked_in_at');
+            }
+        }
+
+        $guests = $guestsQuery->orderBy('group_name')->orderBy('name')->get();
 
         $filename = 'danh-sach-khach-moi-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
 
@@ -304,7 +336,7 @@ class GuestController extends Controller
     }
 
     /**
-     * Trang in danh sách khách đón tiếp & điểm danh bàn tiệc (Reception Check-in Sheet).
+     * Trang in danh sách khách đón tiếp & điểm danh bàn tiệc (Reception Check-in Sheet - Khổ A4).
      */
     public function print(Request $request, int $invitationId): View
     {
@@ -314,20 +346,42 @@ class GuestController extends Controller
 
         $filterStatus = $request->query('status', 'all');
         $filterGroup = $request->query('group');
+        $filterTable = $request->query('table');
+        $search = trim((string) $request->query('q'));
 
-        $query = $wedding->guests()->with('response')->orderBy('group_name')->orderBy('name');
+        $query = $wedding->guests()->with('response');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('table_name', 'like', "%{$search}%");
+            });
+        }
 
         if ($filterGroup) {
             $query->where('group_name', $filterGroup);
         }
 
-        if ($filterStatus === 'attending') {
-            $query->whereHas('response', function ($q) {
-                $q->where('attending_status', 'attending');
-            });
+        if ($filterTable) {
+            $query->where('table_name', $filterTable);
         }
 
-        $guests = $query->get();
+        if ($filterStatus && $filterStatus !== 'all') {
+            if ($filterStatus === 'attending') {
+                $query->whereHas('response', fn ($q) => $q->where('attending_status', 'attending'));
+            } elseif ($filterStatus === 'declined') {
+                $query->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
+            } elseif ($filterStatus === 'pending') {
+                $query->whereDoesntHave('response');
+            } elseif ($filterStatus === 'checked_in') {
+                $query->whereNotNull('checked_in_at');
+            } elseif ($filterStatus === 'not_checked_in') {
+                $query->whereNull('checked_in_at');
+            }
+        }
+
+        $guests = $query->orderBy('group_name')->orderBy('name')->get();
 
         // Thống kê nhanh toàn diện
         $allGuests = $wedding->guests()->with('response')->get();
@@ -350,6 +404,8 @@ class GuestController extends Controller
             'guests' => $guests,
             'filterStatus' => $filterStatus,
             'filterGroup' => $filterGroup,
+            'filterTable' => $filterTable,
+            'filterSearch' => $search,
             'availableGroups' => $availableGroups,
             'totalGuestsCount' => $totalGuestsCount,
             'totalExpectedAttendees' => $totalExpectedAttendees,

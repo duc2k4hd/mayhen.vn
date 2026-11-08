@@ -403,6 +403,13 @@
                 @if(!empty($wedding->extra_data['event_party_address']))
                     <div>Sảnh tiệc: <strong>{{ $wedding->extra_data['event_party_address'] }}</strong></div>
                 @endif
+                @if($filterGroup || !empty($filterTable) || !empty($filterSearch) || ($filterStatus && $filterStatus !== 'all'))
+                    <div>Phân loại: 
+                        @if($filterGroup) <strong>Nhóm: {{ $filterGroup }}</strong> @endif
+                        @if(!empty($filterTable)) <strong>&bull; Bàn: {{ $filterTable }}</strong> @endif
+                        @if(!empty($filterSearch)) <strong>&bull; Tìm: "{{ $filterSearch }}"</strong> @endif
+                    </div>
+                @endif
                 <div>Ngày in: {{ now()->format('d/m/Y H:i') }}</div>
             </div>
         </header>

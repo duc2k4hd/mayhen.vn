@@ -207,15 +207,40 @@ class GiftManagementController extends Controller
     }
 
     /**
-     * Xuất Sổ Mừng Cưới ra file CSV UTF-8 BOM cho Microsoft Excel.
+     * Xuất Sổ Mừng Cưới ra file CSV UTF-8 BOM cho Microsoft Excel (Hỗ trợ lọc theo tìm kiếm, hình thức, nhóm, cảm ơn).
      */
-    public function exportCsv(int $invitationId): StreamedResponse
+    public function exportCsv(Request $request, int $invitationId): StreamedResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
 
         $wedding = $invitation->wedding;
-        $gifts = $wedding->gifts()->with('guest')->orderBy('sender_group')->get();
+        $giftsQuery = $wedding->gifts()->with('guest');
+
+        if ($search = trim((string) $request->query('q'))) {
+            $giftsQuery->where(function ($q) use ($search) {
+                $q->where('sender_name', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%");
+            });
+        }
+
+        if ($methodFilter = $request->query('method')) {
+            $giftsQuery->where('payment_method', $methodFilter);
+        }
+
+        if ($groupFilter = $request->query('group')) {
+            $giftsQuery->where('sender_group', $groupFilter);
+        }
+
+        if ($ackFilter = $request->query('ack')) {
+            if ($ackFilter === 'yes') {
+                $giftsQuery->where('is_acknowledged', true);
+            } elseif ($ackFilter === 'no') {
+                $giftsQuery->where('is_acknowledged', false);
+            }
+        }
+
+        $gifts = $giftsQuery->orderBy('sender_group')->latest('id')->get();
 
         $filename = 'so-mung-cuoi-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
 
@@ -265,9 +290,17 @@ class GiftManagementController extends Controller
         $this->authorizeInvitationOwner($invitation);
 
         $wedding = $invitation->wedding;
+        $search = trim((string) $request->query('q'));
 
         // Query danh sách quà mừng có lọc
         $giftsQuery = $wedding->gifts()->with('guest');
+
+        if ($search) {
+            $giftsQuery->where(function ($q) use ($search) {
+                $q->where('sender_name', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%");
+            });
+        }
 
         if ($methodFilter = $request->query('method')) {
             $giftsQuery->where('payment_method', $methodFilter);
@@ -312,6 +345,7 @@ class GiftManagementController extends Controller
             'otherAmount' => $otherAmount,
             'acknowledgedCount' => $acknowledgedCount,
             'availableGroups' => $availableGroups,
+            'filterSearch' => $search,
             'filterMethod' => $methodFilter,
             'filterGroup' => $groupFilter,
             'filterAck' => $ackFilter,

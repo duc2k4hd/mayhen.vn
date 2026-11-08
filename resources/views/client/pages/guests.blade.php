@@ -98,7 +98,7 @@
                     </svg>
                     <span>Cổng Quét QR Tiếp Tân</span>
                 </a>
-                <a href="{{ route('guests.print', $invitation->id) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                <a href="{{ route('guests.print', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <polyline points="6 9 6 2 18 2 18 9"></polyline>
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -106,7 +106,7 @@
                     </svg>
                     <span>In Danh Sách (A4)</span>
                 </a>
-                <a href="{{ route('guests.export', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                <a href="{{ route('guests.export', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>

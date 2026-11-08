@@ -332,6 +332,14 @@
                     <span>&bull;</span>
                     <span><strong>Sảnh tiệc:</strong> {{ $wedding->extra_data['event_party_address'] }}</span>
                 @endif
+                @if(!empty($filterGroup) || !empty($filterMethod) || !empty($filterAck) || !empty($filterSearch))
+                    <span>&bull;</span>
+                    <span><strong>Phân loại:</strong> 
+                        @if(!empty($filterGroup)) Nhóm: {{ $filterGroup }} @endif
+                        @if(!empty($filterMethod)) Hình thức: {{ $filterMethod === 'cash' ? 'Tiền mặt' : ($filterMethod === 'bank_transfer' ? 'Chuyển khoản' : 'Khác') }} @endif
+                        @if(!empty($filterSearch)) Từ khóa: "{{ $filterSearch }}" @endif
+                    </span>
+                @endif
                 <span>&bull;</span>
                 <span><strong>Ngày in tài liệu:</strong> {{ now()->format('d/m/Y H:i') }}</span>
             </div>
