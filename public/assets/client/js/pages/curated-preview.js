@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         countdown: 'Thời Khắc Đếm Ngược',
         events: 'Sảnh Tiệc & Sự Kiện',
         timeline: 'Lịch Trình Hôn Lễ',
-        dresscode: 'Quy Chuẩn Trang Phục',
+        album: 'Khoảnh Khắc Hạnh Phúc (Album 10 Ảnh)',
     };
 
     // Bản đồ tên biến thể cho từng section
@@ -61,34 +61,51 @@ document.addEventListener('DOMContentLoaded', () => {
             variant_b: 'Thẻ Mốc So Le',
             variant_c: 'Tối Giản Tinh Tế',
         },
-        dresscode: {
-            variant_a: 'Vòng Tròn Sắc Màu',
-            variant_b: 'Bảng Mẫu Vải',
-            variant_c: 'Ký Họa Thời Trang',
+        album: {
+            variant_a: 'Lưới Tạp Chí (Editorial Grid)',
+            variant_b: 'Thước Phim Điện Ảnh (Filmstrip)',
+            variant_c: 'Photobook Mỹ Thuật (Fine-Art Collage)',
         },
     };
+
+    const btnSkip = document.getElementById('btnSkipCrafting');
+    if (btnSkip && iframe) {
+        btnSkip.addEventListener('click', () => {
+            try {
+                iframe.contentWindow?.postMessage({ type: 'MAYHEN_CRAFTING_SKIP' }, '*');
+            } catch (err) {}
+            endCraftingMode();
+        });
+    }
 
     // Helper: Bật trạng thái Live Crafting
     function startCraftingMode() {
         if (craftingPill && craftingText) {
             craftingPill.classList.add('is-active');
-            craftingText.textContent = 'Đang bắt đầu dựng thiệp...';
+            craftingText.textContent = 'Đang trình bày thiệp...';
+            if (btnSkip) btnSkip.style.display = 'inline-block';
         }
     }
 
     function endCraftingMode() {
         if (craftingPill && craftingText) {
-            craftingText.textContent = '✦ Hoàn thành bản thiệp độc bản!';
+            craftingText.textContent = '✦ Thiệp của bạn đã sẵn sàng!';
+            if (btnSkip) btnSkip.style.display = 'none';
             setTimeout(() => {
                 craftingPill.classList.remove('is-active');
                 document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
-            }, 3500);
+            }, 3000);
         }
+        // Gỡ token/query khỏi URL để F5 hoặc back/forward không replay
+        try {
+            history.replaceState({}, '', window.location.pathname);
+        } catch (e) {}
     }
 
-    // Kích hoạt ngay lúc vào trang nếu có query param crafting=1
+    // Kích hoạt ngay lúc vào trang nếu có query param crafting=1 hoặc pt
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('crafting') === '1') {
+    const hasCraftingParam = urlParams.get('crafting') === '1' || urlParams.has('pt') || (iframe && iframe.src.indexOf('crafting=1') !== -1);
+    if (hasCraftingParam) {
         startCraftingMode();
     }
 
@@ -122,11 +139,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting)
+    // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting) — 100% Client-Side, không tốn tài nguyên server
     const btnReplay = document.getElementById('btnReplayCrafting');
     if (btnReplay && iframe) {
         btnReplay.addEventListener('click', () => {
             startCraftingMode();
+            try {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'MAYHEN_REPLAY_CRAFTING' }, '*');
+                    return;
+                }
+            } catch (e) {}
             const baseUrl = iframe.src.split('?')[0];
             iframe.src = `${baseUrl}?crafting=1&replay=${Date.now()}`;
         });

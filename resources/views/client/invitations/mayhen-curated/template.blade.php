@@ -78,6 +78,17 @@
     $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), 'bride-portrait.webp');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'story-couple.webp');
 
+    // Chuẩn bị danh sách 10 slot ảnh cho Section Album kỷ niệm
+    $gallery = [];
+    $rawGallery = $extraData['gallery'] ?? [];
+    if (! is_array($rawGallery)) {
+        $rawGallery = [];
+    }
+    for ($i = 0; $i < 10; $i++) {
+        $photoPath = $rawGallery[$i] ?? ($rawGallery[(string) $i] ?? null);
+        $gallery[$i] = $resolveAsset($photoPath, 'placeholder-photo.svg');
+    }
+
     // 4. Lời ngỏ & Chuyện tình yêu
     $storyTitle = $extraData['story_title'] ?? 'Câu Chuyện Tình Yêu';
     $storySubtitle = $extraData['story_subtitle'] ?? 'Hành Trình Gặp Gỡ & Kết Duyên';
@@ -106,7 +117,7 @@
     $countdownVariant = $curatedLayout['sections']['countdown'] ?? 'variant_a';
     $eventsVariant = $curatedLayout['sections']['events'] ?? 'variant_a';
     $timelineVariant = $curatedLayout['sections']['timeline'] ?? 'variant_a';
-    $dresscodeVariant = $curatedLayout['sections']['dresscode'] ?? 'variant_a';
+    $albumVariant = $curatedLayout['sections']['album'] ?? ($curatedLayout['sections']['dresscode'] ?? 'variant_a');
 
     $showVariantControls = request()->boolean('curated_controls') || request()->routeIs('curated.preview');
     $isCraftingMode = request()->boolean('crafting');
@@ -211,8 +222,8 @@
             <span>✦</span>
         </div>
 
-        {{-- SECTION 7: Quy định trang phục (Dresscode) --}}
-        @include("client.invitations.mayhen-curated.sections.dresscode.{$dresscodeVariant}")
+        {{-- SECTION 7: Khoảnh khắc hạnh phúc (Album 10 Ảnh - Section 8 trong Skill) --}}
+        @include("client.invitations.mayhen-curated.sections.album.{$albumVariant}")
 
         {{-- Kết thiệp nhẹ nhàng --}}
         <footer class="mayhen_curated_footer">

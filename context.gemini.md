@@ -5937,4 +5937,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+                        224. **Nâng Cấp Toàn Diện Curated Invitation V2 — Progressive Fine-Grained Crafting, One-Time First Presentation, Chuẩn Hóa Section 7 (Album 10 Ảnh) & Tinh Chỉnh Editorial UX (Master Prompt V2)**:
+                             - **Bối cảnh & Tầm nhìn cốt lõi**:
+                               - Khắc phục triệt để các hạn chế phát hiện từ thực tế kiểm duyệt và tư liệu video/hình ảnh:
+                                 1. **Hiệu ứng Dựng thiệp mượt mà từng dòng/từng hàng (Progressive Crafting ~18-20s)**: Thay thế cơ chế cuộn lướt vội vã 4.9s cũ bằng trình diễn chi tiết mịn màng theo trật tự thị giác từ trên xuống dưới, từng hàng/dòng chữ xuất hiện tinh tế; đặc biệt khi kết thúc thì **dừng êm ái tại chỗ, tuyệt đối KHÔNG tự giật đột ngột trở về đầu trang**.
+                                 2. **Chỉ trình diễn một lần ở lượt tạo mới thực sự (One-Time First Presentation)**:
+                                    - Áp dụng token xác thực một lần duy nhất (`presentation_token` + `first_presented_at` trong `custom_config`).
+                                    - Khi tạo mới thành công, URL chuyển hướng mang token `?pt={token}`. Ngay khi nạp xong, server tiêu thụ token và `history.replaceState` gỡ sạch query khỏi URL.
+                                    - Bất kỳ thao tác F5, Reload, mở lại link, Back/Forward hoặc quay lại từ Studio: hiển thị 100% thiệp thành phẩm ngay lập tức, không lặp lại animation, không auto-scroll gây phiền toái.
+                                    - Nút `Xem lại dựng thiệp ↺` hoạt động 100% client-side (qua postMessage), không gọi backend AI và không ghi dữ liệu DB.
+                                    - Bổ sung nút `Bỏ qua ›` (Skip) trực tiếp trên Topbar để khách hàng có thể xem ngay thành phẩm bất kỳ lúc nào.
+                                 3. **Chuẩn hóa Hợp đồng Section 7 là Album 10 Ảnh (Section 8 trong SKILL)**:
+                                    - Khắc phục lỗi hiển thị Dresscode thay vì Album 10 ảnh.
+                                    - Section 7 chính thức là `album` ("Khoảnh Khắc Hạnh Phúc"), gồm đúng 10 slot ảnh chuẩn `data-sync-target="gallery.0"` đến `data-sync-target="gallery.9"`.
+                                    - Thiết kế 3 biến thể art-directed độc lập:
+                                      * `variant_a`: **Lưới Tạp Chí (Editorial Grid)** — 1 ảnh tiêu điểm lớn tỷ lệ 16:10 + lưới 9 ảnh phụ 3x3 có số thứ tự `#01..#10`.
+                                      * `variant_b`: **Thước Phim Điện Ảnh (Filmstrip Storyboard)** — Dải film 35mm cuộn ngang với lỗ kéo film (perforations), mã cuộn phim và frame số.
+                                      * `variant_c`: **Photobook Mỹ Thuật (Fine-Art Collage)** — Lưới ghép ảnh so le 2 cột nhịp nhàng với viền ảnh mỹ thuật.
+                                    - Sử dụng placeholder trung tính nội bộ (`placeholder-photo.svg`) với họa tiết máy ảnh giấy nghệ thuật, tuyệt đối không dùng ảnh stock cặp đôi xa lạ.
+                                    - Tương thích ngược: Tự động map dữ liệu `dresscode` cũ sang `album` an toàn, không gây mất dữ liệu hay lỗi giao diện.
+                                 4. **Khắc phục bố cục Love Story & Giới hạn từ ngữ (Content Budget)**:
+                                    - Khắc phục lỗi bố cục 2 cột trên điện thoại (<= 520px) khiến cột chữ bị ép cụt ngủn dưới ~150px: cưỡng chế chuyển sang 1 cột cân đối trang nhã, ảnh hiển thị nổi bật với khoảng đệm mềm mại.
+                                    - Tinh chỉnh nội dung AI sinh: Lời ngỏ cô đọng ~45-60 từ, trích dẫn sâu lắng ~15-20 từ; loại bỏ văn phong sáo rỗng hay tự bịa sự kiện/ngày tháng chưa được cung cấp.
+                                    - Gắn cờ nguồn nội dung `'content_source' => 'ai_generated'` minh bạch.
+                             - **Tập tin đã cập nhật & bổ sung**:
+                               * Backend: `app/Services/CuratedInvitationService.php`, `app/Http/Controllers/Client/CuratedInvitationController.php`.
+                               * Views & Templates: `resources/views/client/invitations/mayhen-curated/schema.json`, `template.blade.php`, `styles.css`, `script.js`.
+                               * 3 Biến Thể Album mới: `resources/views/client/invitations/mayhen-curated/sections/album/` (`variant_a.blade.php`, `variant_b.blade.php`, `variant_c.blade.php`).
+                               * Asset mới: `resources/views/client/invitations/mayhen-curated/assets/placeholder-photo.svg`.
+                               * Giao diện Studio Preview: `resources/views/client/pages/curated/preview.blade.php`, `public/assets/client/css/pages/curated-preview.css`, `public/assets/client/js/pages/curated-preview.js`.
+                               * Test Suites: `tests/Feature/CuratedInvitationFlowTest.php` (bổ sung test one-time token & kiểm tra 7 section có album), `tests/Feature/CanonicalTemplateSectionsTest.php`.
+                             - **Kết quả Kiểm Thử**:
+                               * Toàn bộ 472/472 tests toàn hệ thống: **100% PASSED (2,436 assertions)** trong ~15 giây.
+                               * Laravel Pint: Đạt chuẩn agent style không có lỗi.
+                               * Đảm bảo không phá vỡ bất kỳ quy tắc nào trong `AGENTS.md` và `context.gemini.md`.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

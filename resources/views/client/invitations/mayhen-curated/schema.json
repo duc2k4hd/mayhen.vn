@@ -10,7 +10,7 @@
     "countdown",
     "events",
     "timeline",
-    "dresscode"
+    "album"
   ],
   "default_palette": "ruby",
   "palettes": ["ruby", "dusty-rose", "sage-green", "royal-navy", "warm-amber"],
@@ -68,11 +68,19 @@
       ]
     },
     {
-      "id": "dresscode",
-      "title": "Gợi Ý Trang Phục",
+      "id": "album",
+      "title": "Khoảnh Khắc Hạnh Phúc (Album 10 Ảnh)",
       "fields": [
-        { "key": "wedding.extra_data.dresscode_note", "label": "Lời Dặn Trang Phục", "type": "textarea" },
-        { "key": "wedding.extra_data.dresscode_colors", "label": "Mã Màu Khuyến Nghị", "type": "text" }
+        { "key": "wedding.extra_data.gallery.0", "label": "Ảnh 01 (Tiêu điểm)", "type": "image" },
+        { "key": "wedding.extra_data.gallery.1", "label": "Ảnh 02", "type": "image" },
+        { "key": "wedding.extra_data.gallery.2", "label": "Ảnh 03", "type": "image" },
+        { "key": "wedding.extra_data.gallery.3", "label": "Ảnh 04", "type": "image" },
+        { "key": "wedding.extra_data.gallery.4", "label": "Ảnh 05", "type": "image" },
+        { "key": "wedding.extra_data.gallery.5", "label": "Ảnh 06", "type": "image" },
+        { "key": "wedding.extra_data.gallery.6", "label": "Ảnh 07", "type": "image" },
+        { "key": "wedding.extra_data.gallery.7", "label": "Ảnh 08", "type": "image" },
+        { "key": "wedding.extra_data.gallery.8", "label": "Ảnh 09", "type": "image" },
+        { "key": "wedding.extra_data.gallery.9", "label": "Ảnh 10", "type": "image" }
       ]
     }
   ]

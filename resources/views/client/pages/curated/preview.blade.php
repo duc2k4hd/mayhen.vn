@@ -65,10 +65,11 @@
                 </button>
             </div>
 
-            {{-- LIVE CRAFTING PROGRESS PILL --}}
+            {{-- LIVE CRAFTING PROGRESS PILL & SKIP --}}
             <div class="mayhen_curated_crafting_pill" id="craftingStatusPill">
                 <span class="crafting_spinner"></span>
-                <span class="crafting_status_text" id="craftingStatusText">Đang dựng thiệp trực tiếp...</span>
+                <span class="crafting_status_text" id="craftingStatusText">Đang trình bày thiệp...</span>
+                <button type="button" class="crafting_btn_skip" id="btnSkipCrafting" title="Bỏ qua và xem ngay thiệp thành phẩm">Bỏ qua ›</button>
             </div>
         </div>
 
@@ -118,7 +119,7 @@
                         'countdown' => 'variant_a',
                         'events' => 'variant_a',
                         'timeline' => 'variant_a',
-                        'dresscode' => 'variant_a',
+                        'album' => 'variant_a',
                     ];
                 @endphp
 
@@ -179,7 +180,7 @@
                     {{-- MÀN HÌNH CHÍNH (IFRAME) --}}
                     <div class="phone_screen">
                         <iframe 
-                            src="{{ route('invitation.show', ['slug' => $invitation->slug]) }}?crafting=1" 
+                            src="{{ route('invitation.show', ['slug' => $invitation->slug]) }}{{ (!empty($shouldAnimate)) ? '?crafting=1' : '' }}" 
                             id="curatedPreviewIframe" 
                             class="curated_preview_iframe"
                             title="Thiệp Cưới Tự Phối {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}"

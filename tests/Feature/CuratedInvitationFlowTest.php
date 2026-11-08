@@ -115,7 +115,9 @@ class CuratedInvitationFlowTest extends TestCase
         })->first();
 
         $this->assertNotNull($invitation);
-        $response->assertRedirect(route('curated.preview', ['slug' => $invitation->slug, 'crafting' => 1]));
+        $token = $invitation->custom_config['presentation_token'] ?? null;
+        $this->assertNotEmpty($token);
+        $response->assertRedirect(route('curated.preview', ['slug' => $invitation->slug, 'pt' => $token]));
 
         // Kiểm tra cấu hình bền vững
         $config = $invitation->custom_config;
@@ -134,13 +136,12 @@ class CuratedInvitationFlowTest extends TestCase
         $this->assertArrayHasKey('countdown', $sections);
         $this->assertArrayHasKey('events', $sections);
         $this->assertArrayHasKey('timeline', $sections);
-        $this->assertArrayHasKey('dresscode', $sections);
+        $this->assertArrayHasKey('album', $sections);
 
         // Nội dung AI sinh có trích dẫn và lời ngỏ
         $wedding = $invitation->wedding;
         $this->assertNotEmpty($wedding->extra_data['couple_quote']);
         $this->assertNotEmpty($wedding->extra_data['story_title']);
-        $this->assertNotEmpty($wedding->extra_data['dresscode_note']);
     }
 
     /**
@@ -187,7 +188,7 @@ class CuratedInvitationFlowTest extends TestCase
     }
 
     /**
-     * 5. Thiệp cưới tự phối render đúng 7 section, không render album 10 ảnh hay gift mừng cưới (Mục 5, 6).
+     * 5. Thiệp cưới tự phối render đúng 7 section tiêu chuẩn (bao gồm Album 10 ảnh, không render gift hay rsvp).
      */
     public function test_curated_invitation_renders_exactly_7_sections(): void
     {
@@ -229,19 +230,19 @@ class CuratedInvitationFlowTest extends TestCase
         // Phải có class chủ đề của bảng màu
         $response->assertSee('mayhen_curated_theme--royal-navy');
 
-        // Phải có đầy đủ 7 section tiêu chuẩn
+        // Phải có đầy đủ 7 section tiêu chuẩn (bao gồm section 8 trong SKILL là Album 10 ảnh)
         $response->assertSee('data-curated-section="hero"', false);
         $response->assertSee('data-curated-section="story"', false);
         $response->assertSee('data-curated-section="parents"', false);
         $response->assertSee('data-curated-section="countdown"', false);
         $response->assertSee('data-curated-section="events"', false);
         $response->assertSee('data-curated-section="timeline"', false);
-        $response->assertSee('data-curated-section="dresscode"', false);
+        $response->assertSee('data-curated-section="album"', false);
 
-        // KHÔNG được có album 10 ảnh hay gift QR
-        $response->assertDontSee('mayhen_invitation_album_grid');
+        // KHÔNG được có dresscode, gift QR, rsvp hay wishes
+        $response->assertDontSee('data-curated-section="dresscode"');
         $response->assertDontSee('data-mayhen-section="gift"');
-        $response->assertDontSee('data-mayhen-section="album"');
+        $response->assertDontSee('data-mayhen-section="rsvp"');
     }
 
     /**
@@ -313,7 +314,7 @@ class CuratedInvitationFlowTest extends TestCase
                 'countdown' => 'variant_a',
                 'events' => 'variant_a',
                 'timeline' => 'variant_a',
-                'dresscode' => 'variant_a',
+                'album' => 'variant_a',
             ],
         ];
 
@@ -377,7 +378,7 @@ class CuratedInvitationFlowTest extends TestCase
                 'countdown' => 'variant_c',
                 'events' => 'variant_b',
                 'timeline' => 'variant_a',
-                'dresscode' => 'variant_c',
+                'album' => 'variant_c',
             ],
         ];
 
@@ -441,5 +442,57 @@ class CuratedInvitationFlowTest extends TestCase
             'direction' => 'next',
         ]);
         $response2->assertStatus(404);
+    }
+
+    /**
+     * 10. Cơ chế One-Time Presentation Token: Chỉ phát hoạt cảnh dựng thiệp lần đầu, reload F5 hiện ngay thành phẩm.
+     */
+    public function test_one_time_presentation_token_only_animates_on_first_visit(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Thế Vinh',
+            'bride_name' => 'Lan Chi',
+            'wedding_date' => '2026-11-20',
+        ]);
+
+        $token = 'test-presentation-token-12345';
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'the-vinh-va-lan-chi-token',
+            'title' => 'Thiệp Cưới Thế Vinh & Lan Chi',
+            'custom_config' => [
+                'curated_layout' => $this->curatedService->assembleCuratedLayout('romantic', 'ruby'),
+                'is_curated' => true,
+                'presentation_token' => $token,
+                'first_presented_at' => null,
+            ],
+            'is_published' => true,
+        ]);
+
+        // Lần đầu mở với token hợp lệ: iframe có query crafting=1
+        $response1 = $this->actingAs($user)->get(route('curated.preview', [
+            'slug' => $invitation->slug,
+            'pt' => $token,
+        ]));
+        $response1->assertStatus(200);
+        $response1->assertSee('?crafting=1');
+
+        $invitation->refresh();
+        $this->assertNotNull($invitation->custom_config['first_presented_at']);
+        $this->assertNull($invitation->custom_config['presentation_token']);
+
+        // Lần thứ hai mở lại (Reload F5 / mở lại link cũ còn param pt): KHÔNG CÒN crafting=1
+        $response2 = $this->actingAs($user)->get(route('curated.preview', [
+            'slug' => $invitation->slug,
+            'pt' => $token,
+        ]));
+        $response2->assertStatus(200);
+        $response2->assertDontSee('?crafting=1');
     }
 }

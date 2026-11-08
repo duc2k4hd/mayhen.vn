@@ -125,7 +125,9 @@ class CuratedInvitationController extends Controller
             );
         }
 
-        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette) {
+        $presentationToken = Str::random(32);
+
+        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette, $presentationToken) {
             $wedding = Wedding::create([
                 'user_id' => $user->id,
                 'groom_name' => $groomName,
@@ -150,6 +152,8 @@ class CuratedInvitationController extends Controller
                     'curated_layout' => $curatedLayout, // Lưu bền vững layout ngẫu nhiên (Mục 10)
                     'color_theme' => $palette,          // Lưu bền vững bảng màu (Mục 3)
                     'is_curated' => true,
+                    'presentation_token' => $presentationToken,
+                    'first_presented_at' => null,
                 ],
                 'is_published' => true,
                 'published_at' => now(),
@@ -177,7 +181,7 @@ class CuratedInvitationController extends Controller
             ]
         );
 
-        $previewUrl = route('curated.preview', ['slug' => $invitation->slug, 'crafting' => 1]);
+        $previewUrl = route('curated.preview', ['slug' => $invitation->slug, 'pt' => $presentationToken]);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -204,7 +208,29 @@ class CuratedInvitationController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        // One-time presentation check: chỉ phát animation lần đầu tiên thực sự khi có token hợp lệ
+        $requestToken = (string) $request->query('pt', '');
+        $storedToken = (string) ($config['presentation_token'] ?? '');
+        $firstPresentedAt = $config['first_presented_at'] ?? null;
+
+        $shouldAnimate = false;
+        if (! empty($requestToken) && ! empty($storedToken) && hash_equals($storedToken, $requestToken) && empty($firstPresentedAt)) {
+            $shouldAnimate = true;
+            // Tiêu thụ token một lần duy nhất để reload/back/forward hoặc copy link không bị replay
+            $config['first_presented_at'] = now()->toIso8601String();
+            $config['presentation_token'] = null;
+            $invitation->custom_config = $config;
+            $invitation->saveQuietly();
+        }
+
         $curatedLayout = $config['curated_layout'] ?? [];
+
+        // Tương thích ngược: map dresscode cũ sang album
+        if (isset($curatedLayout['sections']['dresscode']) && ! isset($curatedLayout['sections']['album'])) {
+            $curatedLayout['sections']['album'] = $curatedLayout['sections']['dresscode'];
+            unset($curatedLayout['sections']['dresscode']);
+        }
+
         $style = $curatedLayout['style'] ?? 'romantic';
         $palette = $curatedLayout['palette'] ?? ($config['color_theme'] ?? 'ruby');
 
@@ -222,6 +248,7 @@ class CuratedInvitationController extends Controller
             'styles' => $styles,
             'palettes' => $palettes,
             'sectionDefinitions' => $sectionDefinitions,
+            'shouldAnimate' => $shouldAnimate,
         ]);
     }
 

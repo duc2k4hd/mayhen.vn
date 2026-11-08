@@ -1337,6 +1337,253 @@
     font-weight: 700;
 }
 
+/* ==========================================================================
+   8. SECTION 7: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 ẢNH - 3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_gallery {
+    padding: 30px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_gallery_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+}
+
+.mayhen_invitation_gallery_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    color: var(--mh-primary);
+    margin: 0 0 10px 0;
+    font-weight: 600;
+}
+
+.mayhen_invitation_gallery_desc {
+    font-size: 13px;
+    color: var(--mh-text-muted);
+    margin: 0 0 20px 0;
+    font-style: italic;
+}
+
+.mayhen_invitation_gallery_crest_line {
+    color: var(--mh-accent);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.mayhen_invitation_gallery_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.mayhen_invitation_gallery_footer_note {
+    font-size: 12.5px;
+    color: var(--mh-text-muted);
+    font-style: italic;
+    margin-top: 20px;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Album Variant A: Editorial Grid (1 Tiêu điểm lớn + 9 ảnh phụ) */
+.mayhen_invitation_gallery_editorial_wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gallery_item--feature {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    box-shadow: 0 6px 18px var(--mh-shadow);
+}
+
+.gallery_item--feature .gallery_item_inner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+}
+
+.gallery_badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(31, 29, 26, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #FAF7F2;
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mayhen_invitation_gallery_grid_9 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.gallery_item--sub {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    position: relative;
+}
+
+.gallery_item--sub .gallery_item_inner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.gallery_index_pill {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(31, 29, 26, 0.65);
+    color: #FFFFFF;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Album Variant B: Filmstrip Storyboard */
+.mayhen_invitation_filmstrip_container {
+    background: #181512;
+    border-radius: 12px;
+    padding: 12px 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(197, 168, 128, 0.25);
+    overflow: hidden;
+}
+
+.mayhen_invitation_filmstrip_perforations {
+    display: flex;
+    justify-content: space-around;
+    padding: 4px 8px;
+}
+
+.mayhen_invitation_filmstrip_perforations span {
+    width: 14px;
+    height: 8px;
+    background: #2A2520;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.mayhen_invitation_filmstrip_track {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 10px 14px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mh-accent) transparent;
+}
+
+.film_frame {
+    flex: 0 0 170px;
+    scroll-snap-align: center;
+    background: #24201C;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.film_meta_top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+    font-family: monospace;
+}
+
+.film_photo_wrap {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000000;
+}
+
+.mayhen_invitation_filmstrip_indicator {
+    font-size: 11px;
+    color: var(--mh-accent);
+    letter-spacing: 1px;
+    margin-top: 14px;
+}
+
+/* Album Variant C: Masonry Fine-Art Collage */
+.mayhen_invitation_gallery_collage_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.collage_col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.collage_card {
+    background: #FFFFFF;
+    border: 1px solid var(--mh-border);
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 4px 14px var(--mh-shadow);
+}
+
+.collage_card--standard .collage_card_inner {
+    aspect-ratio: 1;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.collage_card--tall .collage_card_inner {
+    aspect-ratio: 3 / 4;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.collage_caption {
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    color: var(--mh-text-muted);
+    text-align: right;
+    margin-top: 4px;
+    font-family: monospace;
+}
+
+.mayhen_invitation_gallery_footer_sign {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    color: var(--mh-primary);
+    margin-top: 20px;
+    font-style: italic;
+}
+
 /* Footer kết thiệp */
 .mayhen_curated_footer {
     text-align: center;
@@ -1359,79 +1606,55 @@
 }
 
 /* ==========================================================================
-   10. HIỆU ỨNG DỰNG THIỆP TRỰC TIẾP (LIVE CRAFTING PREVIEW ANIMATION — MỤC 8)
-   Dựng từ trên xuống dưới, chi tiết xuất hiện từ trái sang phải như nghệ nhân vẽ
+   10. HIỆU ỨNG DỰNG THIỆP TỪNG HÀNG/TỪNG DÒNG (PROGRESSIVE CRAFTING)
+   Trình bày trang nhã, không nhảy section đột ngột, tốc độ chuẩn mực ~18-22s
    ========================================================================== */
 .is-crafting-live .mayhen_curated_craft_node {
-    opacity: 0;
-    transform: translateY(24px);
-    animation: mayhenCraftSectionReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0.12;
+    filter: blur(2px);
+    transform: translateY(12px);
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 0.5s ease;
     position: relative;
-    overflow: hidden;
 }
 
-.is-crafting-live .mayhen_curated_craft_node::after {
+.is-crafting-live .mayhen_curated_craft_node.is-crafting-revealed {
+    opacity: 1 !important;
+    filter: blur(0) !important;
+    transform: translateY(0) !important;
+}
+
+.is-crafting-live .mayhen_curated_craft_node.is-crafting-active-scan::after {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 3px;
     background: linear-gradient(180deg, transparent, var(--mh-accent), #FFFFFF, var(--mh-accent), transparent);
-    box-shadow: 0 0 16px var(--mh-accent), 0 0 24px var(--mh-accent);
-    opacity: 0;
+    box-shadow: 0 0 14px var(--mh-accent);
+    left: 0;
+    animation: mayhenFineScan 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     pointer-events: none;
-    z-index: 50;
-    animation: mayhenCraftPencilScan 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    z-index: 30;
 }
 
-.is-crafting-live [data-curated-section="hero"] { animation-delay: 0.2s; }
-.is-crafting-live [data-curated-section="hero"]::after { animation-delay: 0.2s; }
-
-.is-crafting-live [data-curated-section="story"] { animation-delay: 0.9s; }
-.is-crafting-live [data-curated-section="story"]::after { animation-delay: 0.9s; }
-
-.is-crafting-live [data-curated-section="parents"] { animation-delay: 1.7s; }
-.is-crafting-live [data-curated-section="parents"]::after { animation-delay: 1.7s; }
-
-.is-crafting-live [data-curated-section="countdown"] { animation-delay: 2.5s; }
-.is-crafting-live [data-curated-section="countdown"]::after { animation-delay: 2.5s; }
-
-.is-crafting-live [data-curated-section="events"] { animation-delay: 3.3s; }
-.is-crafting-live [data-curated-section="events"]::after { animation-delay: 3.3s; }
-
-.is-crafting-live [data-curated-section="timeline"] { animation-delay: 4.1s; }
-.is-crafting-live [data-curated-section="timeline"]::after { animation-delay: 4.1s; }
-
-.is-crafting-live [data-curated-section="dresscode"] { animation-delay: 4.9s; }
-.is-crafting-live [data-curated-section="dresscode"]::after { animation-delay: 4.9s; }
-
-@keyframes mayhenCraftSectionReveal {
-    0% {
-        opacity: 0;
-        transform: translateY(28px);
-        clip-path: inset(0 100% 0 0);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-        clip-path: inset(0 0 0 0);
-    }
+@keyframes mayhenFineScan {
+    0% { left: 0%; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
 }
 
-@keyframes mayhenCraftPencilScan {
-    0% {
-        left: 0%;
-        opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+    .is-crafting-live .mayhen_curated_craft_node {
+        opacity: 1 !important;
+        filter: none !important;
+        transform: none !important;
+        transition: none !important;
     }
-    15% {
-        opacity: 1;
-    }
-    85% {
-        opacity: 1;
-    }
-    100% {
-        left: 100%;
-        opacity: 0;
+    .is-crafting-live .mayhen_curated_craft_node::after {
+        display: none !important;
     }
 }
 
@@ -1465,6 +1688,21 @@
     .mayhen_invitation_stub_barcode, .mayhen_invitation_stub_couple {
         writing-mode: horizontal-tb;
         margin: 0;
+    }
+
+    /* Khắc phục lỗi Love Story bị bóp hẹp 2 cột trên màn hình điện thoại */
+    .mayhen_invitation_story--magazine .mayhen_invitation_story_split_grid {
+        grid-template-columns: 1fr !important;
+        text-align: center;
+        gap: 16px;
+    }
+    .mayhen_invitation_story--magazine .mayhen_invitation_story_polaroid {
+        max-width: 260px;
+        margin: 0 auto;
+    }
+    .mayhen_invitation_story_content {
+        max-width: 100%;
+        padding: 0 10px;
     }
 }
 

@@ -31,7 +31,7 @@ test('all active templates use the ten canonical sections in order', function ()
 test('curated templates use exactly the seven curated sections', function () {
     $this->seed(InvitationTemplateSeeder::class);
     $service = app(InvitationTemplateService::class);
-    $curatedAllowed = ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'dresscode'];
+    $curatedAllowed = ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'album'];
     $curatedTemplates = InvitationTemplate::where('is_active', true)
         ->where('category', 'curated')
         ->pluck('slug');

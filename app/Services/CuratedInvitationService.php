@@ -27,7 +27,7 @@ class CuratedInvitationService
                 'countdown' => 'variant_a',
                 'events' => 'variant_b',
                 'timeline' => 'variant_a',
-                'dresscode' => 'variant_a',
+                'album' => 'variant_a',
             ],
         ],
         'minimal' => [
@@ -44,7 +44,7 @@ class CuratedInvitationService
                 'countdown' => 'variant_b',
                 'events' => 'variant_a',
                 'timeline' => 'variant_b',
-                'dresscode' => 'variant_b',
+                'album' => 'variant_b',
             ],
         ],
         'editorial' => [
@@ -61,7 +61,7 @@ class CuratedInvitationService
                 'countdown' => 'variant_c',
                 'events' => 'variant_c',
                 'timeline' => 'variant_a',
-                'dresscode' => 'variant_c',
+                'album' => 'variant_a',
             ],
         ],
         'traditional' => [
@@ -78,7 +78,7 @@ class CuratedInvitationService
                 'countdown' => 'variant_a',
                 'events' => 'variant_b',
                 'timeline' => 'variant_c',
-                'dresscode' => 'variant_a',
+                'album' => 'variant_c',
             ],
         ],
     ];
@@ -326,29 +326,29 @@ class CuratedInvitationService
                 ],
             ],
         ],
-        'dresscode' => [
-            'key' => 'dresscode',
+        'album' => [
+            'key' => 'album',
             'skill_section_index' => 8,
-            'title' => 'Quy Định Trang Phục (Dresscode)',
-            'description' => 'Gợi ý bảng màu trang phục dự tiệc và lời nhắn gửi tinh tế đến quan khách',
+            'title' => 'Khoảnh Khắc Hạnh Phúc (Album 10 Ảnh)',
+            'description' => 'Bộ sưu tập 10 khung hình kỷ niệm tình yêu được dàn trang nghệ thuật chuẩn mực',
             'variants' => [
                 'variant_a' => [
                     'id' => 'variant_a',
-                    'name' => 'Vòng Tròn Sắc Màu (Palette Circles)',
-                    'description' => 'Các vòng tròn mẫu màu kèm nhãn tên thanh lịch, lời dặn trang phục mềm mại.',
-                    'preview_thumbnail' => 'dresscode-circles.svg',
+                    'name' => 'Lưới Tạp Chí (Editorial Grid)',
+                    'description' => '1 ảnh tiêu điểm lớn dạng feature kết hợp lưới 9 ảnh phụ hài hòa, thanh lịch.',
+                    'preview_thumbnail' => 'album-editorial.svg',
                 ],
                 'variant_b' => [
                     'id' => 'variant_b',
-                    'name' => 'Mẫu Vải Nghệ Thuật (Fabric Swatches)',
-                    'description' => 'Khối mẫu màu phong cách bảng vải thời trang, gợi ý tone trang phục hòa hợp tiệc cưới.',
-                    'preview_thumbnail' => 'dresscode-swatches.svg',
+                    'name' => 'Thước Phim Điện Ảnh (Filmstrip)',
+                    'description' => 'Dải film âm bản 35mm cổ điển, cuộn ngang xem trọn vẹn 10 khoảnh khắc.',
+                    'preview_thumbnail' => 'album-filmstrip.svg',
                 ],
                 'variant_c' => [
                     'id' => 'variant_c',
-                    'name' => 'Ký Họa Thời Trang (Vogue Palette)',
-                    'description' => 'Phối hợp icon trang phục sketch tối giản và dải màu gợi ý Quiet Luxury.',
-                    'preview_thumbnail' => 'dresscode-vogue.svg',
+                    'name' => 'Photobook Mỹ Thuật (Fine-Art Collage)',
+                    'description' => 'Ghép ảnh nghệ thuật so le 2 cột nhịp nhàng, tôn vinh cảm xúc tình yêu.',
+                    'preview_thumbnail' => 'album-collage.svg',
                 ],
             ],
         ],
@@ -468,6 +468,15 @@ class CuratedInvitationService
      */
     public function switchSectionVariant(array $currentLayout, string $sectionKey, string $direction = 'next'): array
     {
+        // Tương thích ngược: map dresscode cũ sang album
+        if ($sectionKey === 'dresscode') {
+            $sectionKey = 'album';
+        }
+        if (isset($currentLayout['sections']['dresscode']) && ! isset($currentLayout['sections']['album'])) {
+            $currentLayout['sections']['album'] = $currentLayout['sections']['dresscode'];
+            unset($currentLayout['sections']['dresscode']);
+        }
+
         if (! isset(self::SECTIONS[$sectionKey])) {
             throw new InvalidArgumentException("Mục thiệp [{$sectionKey}] không tồn tại trong khung 7 section.");
         }
@@ -495,6 +504,7 @@ class CuratedInvitationService
     /**
      * AI sinh nội dung cảm xúc phù hợp với phong cách (Mục 7).
      * AI chỉ viết lời ngỏ, câu trích dẫn, tiêu đề cảm xúc.
+     * Dung lượng copy chuẩn: Story content ~45-65 từ, Quote ~12-25 từ.
      * Tuyệt đối không được bịa thông tin cá nhân, sự kiện hay ngày cưới.
      *
      * @param  array<string, mixed>  $weddingData
@@ -504,7 +514,8 @@ class CuratedInvitationService
      *     story_subtitle: string,
      *     story_content: string,
      *     dresscode_note: string,
-     *     ceremony_type: string
+     *     ceremony_type: string,
+     *     content_source: string
      * }
      */
     public function generateCuratedContent(array $weddingData, string $style): array
@@ -520,39 +531,40 @@ class CuratedInvitationService
         $groom = htmlspecialchars(strip_tags($groom), ENT_QUOTES, 'UTF-8');
         $bride = htmlspecialchars(strip_tags($bride), ENT_QUOTES, 'UTF-8');
 
+        $base = [
+            'content_source' => 'ai_generated',
+            'ceremony_type' => 'Lễ Thành Hôn',
+        ];
+
         return match ($style) {
-            'minimal' => [
-                'couple_quote' => 'Hạnh phúc không phải là điều gì đó xa xôi, mà là mỗi ngày thức dậy biết có một người luôn ở bên sẻ chia.',
-                'story_title' => 'Lời Ngỏ Yêu Thương',
-                'story_subtitle' => 'Khoảnh Khắc Bình Yên Giữa Đời Thường',
-                'story_content' => "Không cần những lời hoa mỹ hay những lời hứa hẹn xa vời, tình yêu của {$groom} và {$bride} được dệt nên từ những thấu hiểu bình dị, những bữa cơm ấm áp và sự đồng hành trọn vẹn. Ngày hôm nay, trước sự chứng kiến của những người thân quý nhất, chúng mình chính thức nắm tay nhau bước vào một chặng đường mới.",
-                'dresscode_note' => 'Trân trọng kính mời Quý khách diện trang phục trang nhã, ưu tiên tông màu be, trắng ngà hoặc xanh nhạt.',
-                'ceremony_type' => 'Lễ Thành Hôn',
-            ],
-            'editorial' => [
-                'couple_quote' => 'Tình yêu đẹp nhất là khi hai tâm hồn tự do tìm thấy nơi chốn bình yên sâu thẳm trong mắt nhau.',
+            'minimal' => array_merge($base, [
+                'couple_quote' => 'Hạnh phúc là mỗi ngày thức dậy, biết có một người luôn ở bên thấu hiểu và sẻ chia.',
+                'story_title' => 'Bình Yên Giản Dị',
+                'story_subtitle' => 'Hành Trình Cùng Nhau Trưởng Thành',
+                'story_content' => "Không cần hoa mỹ hay lời hẹn ước xa xôi, tình yêu của {$groom} và {$bride} lớn lên từ những sẻ chia bình dị. Hôm nay, trước sự chứng kiến của gia đình và bạn bè thân quý, chúng mình chính thức nắm tay nhau bước vào chặng đường hôn nhân hạnh phúc.",
+                'dresscode_note' => 'Trang phục trang nhã, ưu tiên tông màu be, trắng ngà hoặc xanh nhạt.',
+            ]),
+            'editorial' => array_merge($base, [
+                'couple_quote' => 'Tình yêu đẹp nhất là khi hai tâm hồn tự do tìm thấy chốn bình yên sâu thẳm trong nhau.',
                 'story_title' => 'Bản Tình Ca Riêng',
                 'story_subtitle' => 'Từng Trang Viết Cho Hạnh Phúc',
-                'story_content' => "Giữa thế giới tấp nập với bao điều vội vã, định mệnh đã dẫn lối để {$groom} và {$bride} nhận ra nhau. Chúng mình nhận ra rằng, điều tuyệt vời nhất của tuổi trẻ không phải là đi được bao xa, mà là tìm thấy một người để cùng nhau dừng chân và xây đắp một mái ấm vĩnh cửu. Sự hiện diện của bạn là mảnh ghép hoàn hảo nhất trong ngày trọng đại này.",
-                'dresscode_note' => 'Gợi ý trang phục: Tone màu ấm, sang trọng (Nâu đất, Vàng champagne, Đen thanh lịch).',
-                'ceremony_type' => 'Lễ Thành Hôn',
-            ],
-            'traditional' => [
-                'couple_quote' => 'Trăm năm kết tóc se duyên — Nghĩa tình vẹn tròn, một lòng son sắt.',
+                'story_content' => "Giữa thế giới tấp nập, định mệnh đã dẫn lối để {$groom} và {$bride} nhận ra nhau. Chúng mình tìm thấy ở nhau sự ấm áp và niềm tin son sắt. Sự hiện diện cùng lời chúc phúc của bạn là món quà trân quý nhất trong ngày trọng đại này.",
+                'dresscode_note' => 'Tone màu ấm, sang trọng (Nâu đất, Vàng champagne, Đen thanh lịch).',
+            ]),
+            'traditional' => array_merge($base, [
+                'couple_quote' => 'Trăm năm kết tóc se duyên — Nghĩa tình vẹn tròn, sắt son một lòng.',
                 'story_title' => 'Chuyện Trăm Năm',
                 'story_subtitle' => 'Nên Duyên Vợ Chồng — Vẹn Tròn Hiếu Nghĩa',
-                'story_content' => "Được sự tác thành và vun đắp của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đơm hoa kết trái. Trong niềm hân hoan của ngày vui trăm năm, gia đình chúng tôi xin gửi lời tri ân sâu sắc tới ông bà, cô bác, họ hàng nội ngoại và bạn bè thân hữu đã luôn yêu thương, đồng hành và chúc phúc.",
-                'dresscode_note' => 'Kính mời Quý khách diện trang phục lịch sự, trang nhã để buổi lễ thêm phần long trọng và ấm cúng.',
-                'ceremony_type' => 'Lễ Thành Hôn',
-            ],
-            default => [ // 'romantic'
-                'couple_quote' => 'Giữa muôn ngàn vì sao sáng trên bầu trời, em là ngôi sao duy nhất chiếu rọi và sưởi ấm trái tim anh.',
-                'story_title' => 'Câu Chuyện Tình Yêu',
+                'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ân sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
+                'dresscode_note' => 'Trang phục lịch sự, trang nhã để buổi lễ thêm phần long trọng và ấm cúng.',
+            ]),
+            default => array_merge($base, [ // 'romantic'
+                'couple_quote' => 'Giữa muôn ngàn tinh tú, em là ánh sáng ấm áp nhất soi rọi cuộc đời anh.',
+                'story_title' => 'Chuyện Tình Chúng Mình',
                 'story_subtitle' => 'Hành Trình Gặp Gỡ & Kết Duyên',
-                'story_content' => "Có những cuộc gặp gỡ như đã được định sẵn từ muôn kiếp trước. {$groom} và {$bride} đã cùng nhau đi qua những ngày mưa giông lẫn những chiều hoàng hôn rạng rỡ, để nhận ra rằng bàn tay này là dành để nắm chặt lấy nhau suốt cuộc đời. Chúng mình rất mong được chia sẻ niềm hạnh phúc thiêng liêng này cùng những người thân yêu nhất.",
-                'dresscode_note' => 'Trang phục khuyến nghị: Gam màu pastel, hồng tro, be hoặc trắng để hòa cùng không gian lãng mạn.',
-                'ceremony_type' => 'Lễ Thành Hôn',
-            ],
+                'story_content' => "Có những cuộc gặp gỡ như đã được định sẵn. Đi qua những năm tháng thanh xuân, {$groom} và {$bride} nhận ra bàn tay này là để nắm chặt suốt cuộc đời. Chúng mình rất mong được chia sẻ khoảnh khắc thiêng liêng này cùng những người thân yêu nhất.",
+                'dresscode_note' => 'Gam màu pastel, hồng tro, be hoặc trắng để hòa cùng không gian lãng mạn.',
+            ]),
         };
     }
 }
