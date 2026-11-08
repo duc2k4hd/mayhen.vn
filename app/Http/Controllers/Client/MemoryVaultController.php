@@ -32,6 +32,13 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $vaultConfig = $config['memory_vault'] ?? [];
         $isOwner = $invitation->isOwner();
 
@@ -126,6 +133,13 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $vaultConfig = $config['memory_vault'] ?? [];
 
         return view('client.pages.account.memory-vault-settings', [
@@ -180,6 +194,13 @@ class MemoryVaultController extends Controller
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
 
         $vaultConfig = $config['memory_vault'] ?? [];
 

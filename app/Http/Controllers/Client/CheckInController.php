@@ -26,6 +26,17 @@ class CheckInController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
 
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         // Kiểm tra quyền: Chủ tiệc hoặc Tiếp tân đã nhập đúng PIN
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return view('client.pages.checkin-pin', [
@@ -147,6 +158,17 @@ class CheckInController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
             return response()->json([

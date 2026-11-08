@@ -5424,6 +5424,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa `GuestRelationsAndBatchModerationTest.php` vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        203. **Đồng Bộ Phòng Vệ Trạng Thái Khóa Xuyên Suốt Mọi Phân Hệ (Locked State Consistency Across All Portals)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi triệt để Business Invariant #02 trong `docs/MAY_HEN_DOMAIN_INVARIANTS_AND_STATE_MACHINES.md` và mục 04.2 trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`: "Không ai đổi thiệp bị admin khóa thành public bằng cách gọi đường phụ hoặc thay trạng thái khác".
+                               - Phát hiện và bít kín lỗ hổng ranh giới: Khi thiệp cưới bị Admin khóa (`is_locked = true`), người dùng không thể xem thiệp chính thức (`/thiep/{slug}`), nhưng trước đây vẫn có thể truy cập lậu qua các cổng phụ (`/ky-niem/{slug}`, `/trinh-chieu/{slug}`, `/photo-drop/{slug}`, `/diem-danh-tiec/{slug}`).
+                             - **Các controller & phân hệ đã được chuẩn hóa đồng bộ**:
+                               1. *Bảo Tàng Kỷ Niệm (Memory Vault)*:
+                                  - Controller: `MemoryVaultController::show`, `settings`, `keepsakeBook` tự động kiểm tra `$config['is_locked']` và trả về view `client.pages.invitation-locked`.
+                               2. *Bức Tường Trình Chiếu Trực Tiếp (Live Wedding Wall)*:
+                                  - Controller: `LiveWallController::show` trả về view `invitation-locked`; API `liveFeed` từ chối trả dữ liệu và trả về JSON 403 `Thiệp cưới đang tạm thời bị khóa`.
+                               3. *Cổng Nhận Ảnh Khách Mời (Live Guest Photo Drop)*:
+                                  - Controller: `PhotoDropController::show` trả về view `invitation-locked`; API `upload` từ chối nhận ảnh và trả về JSON 403 `Thiệp cưới đang tạm thời bị khóa`.
+                               4. *Cổng Điểm Danh Tiếp Tân (Check-in Concierge)*:
+                                  - Controller: `CheckInController::showPortal` trả về view `invitation-locked`; API `processScan` từ chối điểm danh và trả về JSON 403.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới Feature test suite:
+                                 * `tests/Feature/InvitationLockedConsistencyTest.php` -> **4/4 tests passed (18 assertions)** bao phủ toàn bộ 4 cổng phụ và API tương ứng.
+                               - Toàn bộ test suite toàn hệ thống: **400/400 tests passed 100% (1,987 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa `InvitationLockedConsistencyTest.php` vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

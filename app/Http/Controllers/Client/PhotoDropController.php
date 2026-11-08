@@ -32,6 +32,13 @@ class PhotoDropController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $photoDropConfig = $config['photo_drop'] ?? [];
         $isClosed = isset($photoDropConfig['enabled']) && ! $photoDropConfig['enabled'];
 
@@ -70,6 +77,13 @@ class PhotoDropController extends Controller
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         $photoDropConfig = $config['photo_drop'] ?? [];
         if (isset($photoDropConfig['enabled']) && ! $photoDropConfig['enabled']) {

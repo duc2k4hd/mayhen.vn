@@ -36,6 +36,13 @@ class LiveWallController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $wallConfig = $config['projection_wall'] ?? [];
 
         // 1. Kiểm tra khóa bảo mật PIN nếu được thiết lập
@@ -96,6 +103,13 @@ class LiveWallController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            return view('client.pages.invitation-locked', [
+                'invitation' => $invitation,
+                'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ]);
+        }
+
         $wallConfig = $config['projection_wall'] ?? [];
         $expectedPin = (string) ($wallConfig['pin'] ?? '');
 
@@ -119,6 +133,17 @@ class LiveWallController extends Controller
         $invitation = Invitation::with(['wedding'])->where('slug', $slug)->firstOrFail();
         $wedding = $invitation->wedding;
         abort_unless($wedding, 404);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
 
         $photos = $this->collectProjectionPhotos($wedding);
 

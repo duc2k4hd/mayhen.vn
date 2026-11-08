@@ -85,6 +85,7 @@ Thumbs.db
 !/tests/Feature/WeddingWeekReadinessTest.php
 !/tests/Feature/PricingPageTest.php
 !/tests/Feature/GuestRelationsAndBatchModerationTest.php
+!/tests/Feature/InvitationLockedConsistencyTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
