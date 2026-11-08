@@ -4,7 +4,7 @@
 > **Dự án**: Nền tảng Thiệp Cưới Quiet Luxury Mây Hẹn (`mayhen.vn`)  
 > **Căn cứ chỉ thị**: Mục 13 — Quy chuẩn lộ trình sau kiểm toán tại [`docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`](file:///d:/Project/Laravel/mayhen.vn/docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md)  
 > **Kiến trúc phân tầng**: 5 Cổng Release Gate (GATE A &rarr; GATE B &rarr; GATE C &rarr; GATE D &rarr; GATE E)  
-> **Hiện trạng kiểm thử**: **387/387 Tests Passed 100% (1,936 assertions)** • Laravel Pint Agent Clean  
+> **Hiện trạng kiểm thử**: **407/407 Tests Passed 100% (2,044 assertions)** • Laravel Pint Agent Clean  
 > **Thời điểm ban hành**: Tháng 11/2026  
 
 ---
@@ -61,6 +61,20 @@
 - **Business invariant**: Khách vãng lai chỉ thấy 4 số cuối STK (`•••• •••• 4756`), chỉ khách có link thiệp cá nhân mới thấy STK đầy đủ; Cặp đôi có quyền đặt thời hạn tiêu hủy số điện thoại sau cưới (30/90 ngày).
 - **Scope & Affected modules**: `app/Services/WeddingPrivacyConsentService.php`, `PrivacyConsentController.php`, view `privacy-consent.blade.php`.
 - **Status**: **DONE (Đã có test suite `WeddingPrivacyConsentTest.php` 4/4 passed)**.
+
+#### `TICKET-GATE-A4`: Phòng vệ toàn diện lỗ hổng CSV Formula Injection (CWE-1236 Defense)
+- **Problem statement**: Khi khách mời nhập tên, lời chúc phúc hoặc ghi chú mừng cưới bắt đầu bằng các ký tự công thức (`=`, `+`, `-`, `@`, `\t`, `\r`), nếu người dùng hoặc quản trị viên xuất file CSV để mở bằng Excel / Google Sheets, phần mềm bảng tính có thể tự động thực thi mã lệnh nguy hiểm.
+- **User impact**: Nguy cơ lộ thông tin máy trạm hoặc bị tấn công command injection khi mở tệp xuất khẩu.
+- **Business invariant**: Toàn bộ chuỗi bắt đầu bằng ký tự công thức phải được tiền tố dấu nháy đơn `'` để vô hiệu hóa mã lệnh thành văn bản thuần; các trường số và text an toàn được giữ nguyên vẹn.
+- **Scope & Affected modules**: `app/Services/CsvSanitizerService.php`, `WishManagementController.php`, `GuestController.php`, `GiftManagementController.php`, các Admin Export Controllers.
+- **Status**: **DONE (Đã có test suite `CsvFormulaInjectionDefenseTest.php` 4/4 passed)**.
+
+#### `TICKET-GATE-A5`: Đồng bộ phòng vệ trạng thái Khóa (`is_locked`) xuyên suốt mọi cổng phụ
+- **Problem statement**: Khi thiệp bị Quản trị viên khóa do vi phạm hoặc hết hạn, người dùng không thể truy cập thiệp chính nhưng vẫn có thể đi đường phụ vào Memory Vault, Live Wall, Photo Drop, Check-in Concierge, Guest Concierge và file lịch ICS.
+- **User impact**: Vi phạm Business Invariant #02 (không ai truy cập hoặc chuyển đổi thiệp bị khóa qua cổng phụ).
+- **Business invariant**: Khi `is_locked = true`, mọi cổng phụ (HTML view) đều trả về `client.pages.invitation-locked`, mọi API nhận dữ liệu trả về JSON 403, file lịch từ chối tải.
+- **Scope & Affected modules**: `MemoryVaultController.php`, `LiveWallController.php`, `PhotoDropController.php`, `CheckInController.php`.
+- **Status**: **DONE (Đã có test suite `InvitationLockedConsistencyTest.php` 5/5 passed)**.
 
 ---
 
@@ -201,9 +215,9 @@
 
 | Cổng Release | Số lượng Task | Đã hoàn thành | Đang thực thi | Trạng thái thẩm định |
 |---|---|---|---|---|
-| **GATE A (Trust & Integrity)** | 3 | 3 | 0 |  **PASS 100%** |
+| **GATE A (Trust & Integrity)** | 5 | 5 | 0 |  **PASS 100%** |
 | **GATE B (Correctness & UX)** | 2 | 2 | 0 |  **PASS 100%** |
 | **GATE C (Deepen Features)** | 3 | 3 | 0 |  **PASS 100%** |
 | **GATE D (High-Value Premium)** | 24 | 24 | 0 |  **PASS 100%** |
 | **GATE E (Scaling & Conversion)** | 2 | 2 | 0 |  **PASS 100%** |
-| **TỔNG HỢP** | **34** | **34** | **0** | **HOÀN TẤT TRỌN VẸN 100%** |
+| **TỔNG HỢP** | **36** | **36** | **0** | **HOÀN TẤT TRỌN VẸN 100%** |

@@ -32,6 +32,8 @@
 | **SEC-AUTH-02** | **HIGH** | `Client\AccountController@togglePublish` | **Bỏ qua trạng thái Khóa của Admin khi Bật lại Xuất bản** | Cặp đôi có thiệp bị Admin khóa vi phạm vẫn có thể tự ý mở lại xuất bản thông qua endpoint `/xuat-ban`. | **ĐÃ XỬ LÝ (RESOLVED)** |
 | **SEC-UPL-01** | **HIGH** | `Client\InvitationEditorController@uploadAsset` | **Upload tin cậy Extension Client gửi lên (`getClientOriginalExtension`)** | Tiềm ẩn rủi ro lưu file với extension không mong muốn nếu header bị giả mạo; rate limit quá rộng (120 req/phút). | **ĐÃ XỬ LÝ (RESOLVED)** |
 | **SEC-DOM-01** | **MEDIUM** | `resources/views/.../tron-kiep-nay-ben-nhau/script.js` | **PostMessage listener không kiểm tra `event.origin`** | Bất kỳ trang web nào nhúng iframe đều có thể gửi message giả mạo để can thiệp DOM thiệp cưới. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-LOK-02** | **HIGH** | `Client\MemoryVaultController`, `LiveWallController`, `PhotoDropController`, `CheckInController` | **Lỗ hổng cổng phụ: Truy cập thiệp bị khóa qua đường dẫn thứ cấp** | Thiệp bị Admin khóa nhưng người ngoài vẫn có thể xem ảnh, trình chiếu, tải ảnh, check-in và tải lịch ICS qua các cổng phụ. | **ĐÃ XỬ LÝ (RESOLVED)** |
+| **SEC-CSV-01** | **HIGH** | `Client\WishManagementController`, `GuestController`, `GiftManagementController`, các Admin Controllers | **Lỗ hổng CSV Formula Injection (CWE-1236)** | Kẻ xấu nhập ký tự công thức (`=`, `+`, `-`, `@`) vào tên/lời chúc để tấn công máy trạm người dùng khi mở tệp xuất CSV bằng Excel/Sheets. | **ĐÃ XỬ LÝ (RESOLVED)** |
 
 ---
 
@@ -71,4 +73,15 @@
 - **Điểm yếu**: `tron-kiep-nay-ben-nhau/script.js:770` lắng nghe postMessage không kiểm tra `evt.origin`.
 - **Khắc phục**:
   - Thêm `if (evt.origin !== window.location.origin) return;`.
+
+### 3.7. [SEC-LOK-02] Đồng Bộ Rào Chắn Trạng Thái Khóa Xuyên Suốt Mọi Cổng Phụ
+- **Điểm yếu**: `MemoryVaultController`, `LiveWallController`, `PhotoDropController`, `CheckInController` chỉ kiểm tra tồn tại của thiệp theo slug mà không kiểm tra cờ `custom_config['is_locked']`.
+- **Khắc phục**:
+  - Tự động kiểm tra cờ khóa, trả về view `client.pages.invitation-locked` cho toàn bộ các giao diện HTML và trả về JSON 403 cho các API tiếp nhận tải ảnh/quét check-in/feed trình chiếu.
+
+### 3.8. [SEC-CSV-01] Vệ Sinh An Toàn Tệp Xuất CSV Chống Formula Injection (CWE-1236)
+- **Điểm yếu**: Dữ liệu tên khách mời, lời chúc, yêu cầu ăn uống hoặc ghi chú tiền mừng được ghi trực tiếp vào `fputcsv()`, khiến Excel/Sheets tự động thực thi công thức nếu chuỗi bắt đầu bằng `=`, `+`, `-`, `@`.
+- **Khắc phục**:
+  - Xây dựng `CsvSanitizerService` tự động kiểm tra và thêm tiền tố nháy đơn `'` cho bất kỳ chuỗi công thức nguy hiểm nào, đồng thời giữ nguyên vẹn các trường số và chuỗi an toàn. Áp dụng cho 100% các hàm xuất CSV Client và Admin.
+
 

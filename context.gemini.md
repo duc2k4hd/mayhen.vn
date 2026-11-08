@@ -5487,6 +5487,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa `CsvFormulaInjectionDefenseTest.php` vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        206. **Hoàn Tất Đối Soát Đồng Bộ 10 Tài Liệu Quản Trị Cốt Lõi & Lộ Trình 5 Cổng (Master Prompt Handover Dossier Synchronization)**:
+                             - **Bối cảnh & Giá trị quản trị**:
+                               - Thực thi đầy đủ mục 13 (Lộ trình 5 Cổng Release Gate) và mục 16 (Hồ sơ bàn giao bắt buộc 10 tài liệu cốt lõi) theo chỉ thị tối cao tại `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Đồng bộ hóa toàn bộ các tài liệu đối soát với mã nguồn thật:
+                                 1. `docs/MAY_HEN_CROSS_MODULE_E2E_MATRIX.md`: Chuẩn hóa 20/20 luồng nghiệp vụ liên hoàn trỏ chính xác vào các Feature test suites thực tế đang vận hành trên kho mã nguồn.
+                                 2. `docs/MAY_HEN_FINAL_QUALITY_AND_VALUE_ROADMAP.md`: Cập nhật 36/36 tickets (100% PASS trên 5 Cổng GATE A -> GATE E), bổ sung `TICKET-GATE-A4` (Phòng vệ CSV Formula Injection) và `TICKET-GATE-A5` (Đồng bộ phòng vệ trạng thái Khóa).
+                                 3. `docs/MAY_HEN_BUG_REGISTER.md`: Ghi nhận hoàn thành khắc phục `BUG-AUDIT-04` (Lỗ hổng truy cập thiệp bị khóa qua cổng phụ) và `BUG-AUDIT-05` (Nguy cơ CSV Formula Injection CWE-1236).
+                                 4. `docs/MAY_HEN_SECURITY_AUDIT_VNEXT.md`: Cập nhật chi tiết 2 lỗ hổng bảo mật mới `SEC-LOK-02` và `SEC-CSV-01` cùng biện pháp khắc phục triệt để.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Toàn bộ test suite toàn hệ thống: **407/407 tests passed 100% (2,044 assertions)** trong ~7.6 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Toàn bộ 10 hồ sơ quản trị chất lượng đạt trạng thái **READY FOR COMMERCIAL PRODUCTION**.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
