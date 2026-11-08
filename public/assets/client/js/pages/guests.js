@@ -418,6 +418,269 @@ document.addEventListener('DOMContentLoaded', () => {
         setupModalDismiss(presendModal);
     }
 
+    // 7. Trợ Lý Lên Lịch Nhắc Nhở Tế Nhị (Gentle Reminder Planner - TASK-VAL-16)
+    const reminderBtn = document.getElementById('btn-open-reminder-modal');
+    const reminderModal = document.getElementById('mayhen_modal_reminder_planner');
+    if (reminderBtn && reminderModal) {
+        const loadingEl = document.getElementById('reminder-loading');
+        const contentEl = document.getElementById('reminder-content');
+        const unresponsiveCountEl = document.getElementById('reminder-unresponsive-count');
+        const unsentCountEl = document.getElementById('reminder-unsent-count');
+        const unseatedCountEl = document.getElementById('reminder-unseated-count');
+        const timingWindowsEl = document.getElementById('reminder-timing-windows');
+        const timingTipEl = document.getElementById('reminder-timing-tip');
+        const listContainerEl = document.getElementById('reminder-list-container');
+        const doneBtn = document.getElementById('reminder-btn-done');
+
+        reminderBtn.addEventListener('click', async () => {
+            openModal(reminderModal);
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+
+            try {
+                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/ke-hoach-nhac-nho';
+                const res = await fetch(endpoint, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const json = await res.json();
+                if (!json.success || !json.data) throw new Error('Không thể tải kế hoạch nhắc nhở.');
+
+                const data = json.data;
+
+                // 1. Thống kê số lượng
+                if (unresponsiveCountEl) unresponsiveCountEl.textContent = data.stats.unresponsive_count || 0;
+                if (unsentCountEl) unsentCountEl.textContent = data.stats.unsent_count || 0;
+                if (unseatedCountEl) unseatedCountEl.textContent = data.stats.attending_unseated_count || 0;
+
+                // 2. Khung giờ vàng
+                if (timingWindowsEl && data.recommended_time && data.recommended_time.time_windows) {
+                    timingWindowsEl.innerHTML = data.recommended_time.time_windows.map(tw => `<div>• ${tw}</div>`).join('');
+                }
+                if (timingTipEl && data.recommended_time && data.recommended_time.tip) {
+                    timingTipEl.textContent = `💡 Lưu ý: ${data.recommended_time.tip}`;
+                }
+
+                // 3. Render danh sách khách
+                if (listContainerEl) {
+                    listContainerEl.innerHTML = '';
+                    const reminders = data.reminders || [];
+
+                    if (reminders.length === 0) {
+                        listContainerEl.innerHTML = `
+                            <div style="text-align: center; padding: 24px; color: #2E7D32; background: #E8F5E9; border-radius: 8px;">
+                                <strong>🎉 Tuyệt vời!</strong> Tất cả khách mời đều đã được gửi thiệp, phản hồi đầy đủ và xếp bàn chu đáo.
+                            </div>
+                        `;
+                    } else {
+                        reminders.forEach(r => {
+                            const card = document.createElement('div');
+                            card.style.cssText = 'background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 10px; padding: 12px 16px;';
+
+                            let badgeHtml = '';
+                            if (r.status_type === 'unresponsive') {
+                                badgeHtml = '<span style="background: #FFF3E0; color: #E65100; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Chưa phản hồi RSVP</span>';
+                            } else if (r.status_type === 'unsent') {
+                                badgeHtml = '<span style="background: #E8F5E9; color: #2E7D32; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Chưa gửi thiệp</span>';
+                            } else {
+                                badgeHtml = '<span style="background: #F3E5F5; color: #6A1B9A; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Chưa xếp bàn</span>';
+                            }
+
+                            const zaloBtnHtml = r.zalo_link
+                                ? `<a href="${r.zalo_link}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
+                                : '';
+
+                            card.innerHTML = `
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div>
+                                        <strong style="font-size: 13.5px; color: #1F1D1A;">${r.salutation ? r.salutation + ' ' : ''}${r.guest_name}</strong>
+                                        <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${r.group_name})</span>
+                                    </div>
+                                    <div>${badgeHtml}</div>
+                                </div>
+                                <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #4A453E; line-height: 1.4; margin-bottom: 8px;">
+                                    ${r.suggested_message}
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                    <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-reminder-msg" data-msg="${encodeURIComponent(r.suggested_message)}" style="padding: 4px 10px; font-size: 11px;">
+                                        📋 Sao Chép Tin Nhắn
+                                    </button>
+                                    ${zaloBtnHtml}
+                                </div>
+                            `;
+
+                            listContainerEl.appendChild(card);
+                        });
+
+                        // Event sao chép tin nhắn
+                        listContainerEl.querySelectorAll('.btn-copy-reminder-msg').forEach(b => {
+                            b.addEventListener('click', () => {
+                                const msg = decodeURIComponent(b.getAttribute('data-msg'));
+                                navigator.clipboard.writeText(msg).then(() => {
+                                    const origText = b.innerText;
+                                    b.innerText = 'Đã chép!';
+                                    setTimeout(() => b.innerText = origText, 2000);
+                                });
+                            });
+                        });
+                    }
+                }
+
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (contentEl) contentEl.style.display = 'flex';
+            } catch (err) {
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+            }
+        });
+
+        if (doneBtn) doneBtn.addEventListener('click', () => closeModal(reminderModal));
+        setupModalDismiss(reminderModal);
+    }
+
+    // 8. Trợ Lý Soạn Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (Personal Thank-you Builder - TASK-VAL-17)
+    const thankyouBtn = document.getElementById('btn-open-thankyou-modal');
+    const thankyouModal = document.getElementById('mayhen_modal_thankyou_builder');
+    if (thankyouBtn && thankyouModal) {
+        const loadingEl = document.getElementById('thankyou-loading');
+        const contentEl = document.getElementById('thankyou-content');
+        const attendedCountEl = document.getElementById('thankyou-attended-count');
+        const giftOnlyCountEl = document.getElementById('thankyou-gift-only-count');
+        const generalCountEl = document.getElementById('thankyou-general-count');
+        const albumUrlEl = document.getElementById('thankyou-album-url');
+        const listContainerEl = document.getElementById('thankyou-list-container');
+        const doneBtn = document.getElementById('thankyou-btn-done');
+        const filterBtns = thankyouModal.querySelectorAll('[data-thankyou-filter]');
+
+        let allThankYouMessages = [];
+        let currentFilter = 'all';
+
+        const renderThankYouList = () => {
+            if (!listContainerEl) return;
+            listContainerEl.innerHTML = '';
+
+            const filtered = allThankYouMessages.filter(m => {
+                if (currentFilter === 'all') return true;
+                return m.category === currentFilter;
+            });
+
+            if (filtered.length === 0) {
+                listContainerEl.innerHTML = '<div style="text-align: center; padding: 24px; color: #7A726A; font-size: 13px;">Không có khách nào trong phân loại này.</div>';
+                return;
+            }
+
+            filtered.forEach(m => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 10px; padding: 12px 16px;';
+
+                let badgeColor = '#2E7D32';
+                let badgeBg = '#E8F5E9';
+                if (m.category === 'gift_only') {
+                    badgeColor = '#E65100';
+                    badgeBg = '#FFF3E0';
+                } else if (m.category === 'general') {
+                    badgeColor = '#6A1B9A';
+                    badgeBg = '#F3E5F5';
+                }
+
+                const badgeHtml = `<span style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${m.category_label}</span>`;
+
+                const zaloBtnHtml = m.zalo_link
+                    ? `<a href="${m.zalo_link}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
+                    : '';
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div>
+                            <strong style="font-size: 13.5px; color: #1F1D1A;">${m.salutation ? m.salutation + ' ' : ''}${m.guest_name}</strong>
+                            <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${m.group_name})</span>
+                        </div>
+                        <div>${badgeHtml}</div>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; color: #4A453E; line-height: 1.5; margin-bottom: 8px;">
+                        ${m.suggested_message}
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-thankyou-msg" data-msg="${encodeURIComponent(m.suggested_message)}" style="padding: 4px 10px; font-size: 11px;">
+                            📋 Sao Chép Lời Cảm Ơn
+                        </button>
+                        ${zaloBtnHtml}
+                    </div>
+                `;
+
+                listContainerEl.appendChild(card);
+            });
+
+            // Gán sự kiện copy
+            listContainerEl.querySelectorAll('.btn-copy-thankyou-msg').forEach(b => {
+                b.addEventListener('click', () => {
+                    const msg = decodeURIComponent(b.getAttribute('data-msg'));
+                    navigator.clipboard.writeText(msg).then(() => {
+                        const origText = b.innerText;
+                        b.innerText = 'Đã chép!';
+                        setTimeout(() => b.innerText = origText, 2000);
+                    });
+                });
+            });
+        };
+
+        // Gán sự kiện filter tab
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = '#fff';
+                    b.style.color = '#4A453E';
+                    b.style.borderColor = '#E5DCCD';
+                });
+                btn.classList.add('active');
+                btn.style.background = '#C5A880';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#C5A880';
+
+                currentFilter = btn.getAttribute('data-thankyou-filter');
+                renderThankYouList();
+            });
+        });
+
+        thankyouBtn.addEventListener('click', async () => {
+            openModal(thankyouModal);
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+
+            try {
+                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/loi-cam-on-sau-cuoi';
+                const res = await fetch(endpoint, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const json = await res.json();
+                if (!json.success || !json.data) throw new Error('Không thể tải dữ liệu lời cảm ơn.');
+
+                const data = json.data;
+                allThankYouMessages = data.messages || [];
+
+                if (attendedCountEl) attendedCountEl.innerText = data.stats.attended_count || 0;
+                if (giftOnlyCountEl) giftOnlyCountEl.innerText = data.stats.gift_only_count || 0;
+                if (generalCountEl) generalCountEl.innerText = data.stats.general_count || 0;
+                if (albumUrlEl) albumUrlEl.innerText = data.album_link || '';
+
+                renderThankYouList();
+
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (contentEl) contentEl.style.display = 'flex';
+            } catch (err) {
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+            }
+        });
+
+        if (doneBtn) doneBtn.addEventListener('click', () => closeModal(thankyouModal));
+        setupModalDismiss(thankyouModal);
+    }
+
     function openModal(modalEl) {
         modalEl.classList.add('is-open');
         document.body.style.overflow = 'hidden';

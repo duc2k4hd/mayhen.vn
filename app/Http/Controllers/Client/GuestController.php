@@ -12,6 +12,8 @@ use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\GentleReminderPlannerService;
+use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -466,6 +468,38 @@ class GuestController extends Controller
         $this->authorizeGuestManagement($invitation->wedding);
 
         $result = $service->validate($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
+    }
+
+    /**
+     * API Kế Hoạch Nhắc Nhở RSVP Tế Nhị Trước Ngày Cưới (TASK-VAL-16).
+     */
+    public function reminderPlanner(int $invitationId, GentleReminderPlannerService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeGuestManagement($invitation->wedding);
+
+        $result = $service->plan($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
+    }
+
+    /**
+     * API Trợ Lý Soạn Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (TASK-VAL-17).
+     */
+    public function thankYouBuilder(int $invitationId, PersonalThankYouService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeGuestManagement($invitation->wedding);
+
+        $result = $service->buildThankYouPlan($invitation->wedding, $invitation);
 
         return response()->json([
             'success' => true,

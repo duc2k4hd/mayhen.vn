@@ -61,6 +61,19 @@
                     </svg>
                     <span>Soát Lỗi Trước Khi Gửi</span>
                 </button>
+                <button type="button" id="btn-open-reminder-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Nhắc Nhở Tế Nhị</span>
+                </button>
+                <button type="button" id="btn-open-thankyou-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span>Lời Cảm Ơn Sau Cưới</span>
+                </button>
                 <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -704,6 +717,139 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
             <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
                 <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="presend-btn-done">
                     Đã Hiểu & Quay Lại Danh Sách
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Trợ Lý Nhắc Nhở RSVP Tế Nhị (TASK-VAL-16) --}}
+    <div class="mayhen_guest_modal" id="mayhen_modal_reminder_planner" style="display: none;" role="dialog" aria-modal="true">
+        <div class="mayhen_guest_modal_backdrop" id="reminder-modal-backdrop"></div>
+        <div class="mayhen_guest_modal_dialog" style="max-width: 720px; max-height: 90vh; overflow-y: auto;">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">GENTLE REMINDER PLANNER</span>
+                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Trợ Lý Lên Lịch Nhắc Nhở Tế Nhị</h3>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" id="reminder-modal-close" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
+                <div id="reminder-loading" style="text-align: center; padding: 40px 20px; color: #7A726A;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                    <span>Đang tổng hợp danh sách khách cần nhắc nhở và chuẩn bị tin nhắn tế nhị...</span>
+                </div>
+
+                <div id="reminder-content" style="display: none; flex-direction: column; gap: 18px;">
+                    {{-- Thẻ thống kê 3 nhóm khách --}}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                        <div style="background: #FFF8E1; border: 1px solid #FFE082; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #8D6E63; text-transform: uppercase; font-weight: 700; display: block;">Chưa phản hồi RSVP</span>
+                            <strong id="reminder-unresponsive-count" style="font-size: 20px; color: #F57F17;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách đã gửi thiệp</span>
+                        </div>
+                        <div style="background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #2E7D32; text-transform: uppercase; font-weight: 700; display: block;">Chưa gửi thiệp</span>
+                            <strong id="reminder-unsent-count" style="font-size: 20px; color: #2E7D32;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách trong danh bạ</span>
+                        </div>
+                        <div style="background: #F3E5F5; border: 1px solid #E1BEE7; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #6A1B9A; text-transform: uppercase; font-weight: 700; display: block;">Chưa xếp bàn tiệc</span>
+                            <strong id="reminder-unseated-count" style="font-size: 20px; color: #6A1B9A;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách đã xác nhận đến</span>
+                        </div>
+                    </div>
+
+                    {{-- Khung giờ vàng đề xuất --}}
+                    <div style="background: #FAF8F5; border: 1px dashed #C5A880; border-radius: 10px; padding: 12px 16px;">
+                        <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; color: #9C7A4A; margin-bottom: 4px;">
+                            <span>⏰</span> <span id="reminder-timing-label">Khung Giờ Vàng Gửi Tin Nhắn Tế Nhị</span>
+                        </div>
+                        <div id="reminder-timing-windows" style="font-size: 12px; color: #4A453E; line-height: 1.5;"></div>
+                        <div id="reminder-timing-tip" style="font-size: 11px; color: #7A726A; margin-top: 4px; font-style: italic;"></div>
+                    </div>
+
+                    {{-- Danh sách khách và lời nhắn --}}
+                    <div>
+                        <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0 0 10px 0;">Danh Sách & Tin Nhắn Gợi Ý Cá Nhân Hóa:</h4>
+                        <div id="reminder-list-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+                            {{-- Dynamic via JS --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
+                <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="reminder-btn-done">
+                    Đóng Cửa Sổ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (TASK-VAL-17) --}}
+    <div class="mayhen_guest_modal" id="mayhen_modal_thankyou_builder" style="display: none;" role="dialog" aria-modal="true">
+        <div class="mayhen_guest_modal_backdrop" id="thankyou-modal-backdrop"></div>
+        <div class="mayhen_guest_modal_dialog" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">PERSONAL THANK-YOU BUILDER</span>
+                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Trợ Lý Soạn Lời Cảm Ơn Sau Cưới</h3>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" id="thankyou-modal-close" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
+                <div id="thankyou-loading" style="text-align: center; padding: 40px 20px; color: #7A726A;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                    <span>Đang phân loại khách đã dự tiệc, khách gửi quà từ xa và soạn lời tri ân...</span>
+                </div>
+
+                <div id="thankyou-content" style="display: none; flex-direction: column; gap: 18px;">
+                    {{-- Thẻ thống kê 3 nhóm khách --}}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                        <div style="background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #2E7D32; text-transform: uppercase; font-weight: 700; display: block;">Đã Đến Chung Vui</span>
+                            <strong id="thankyou-attended-count" style="font-size: 20px; color: #2E7D32;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách đã check-in / xác nhận</span>
+                        </div>
+                        <div style="background: #FFF8E1; border: 1px solid #FFE082; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #8D6E63; text-transform: uppercase; font-weight: 700; display: block;">Gửi Quà / Lời Chúc Từ Xa</span>
+                            <strong id="thankyou-gift-only-count" style="font-size: 20px; color: #F57F17;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách không thể đến</span>
+                        </div>
+                        <div style="background: #F3E5F5; border: 1px solid #E1BEE7; border-radius: 10px; padding: 12px 14px;">
+                            <span style="font-size: 11px; color: #6A1B9A; text-transform: uppercase; font-weight: 700; display: block;">Khách Mời Chung</span>
+                            <strong id="thankyou-general-count" style="font-size: 20px; color: #6A1B9A;">0</strong>
+                            <span style="font-size: 11px; color: #7A726A; display: block;">khách trong danh sách</span>
+                        </div>
+                    </div>
+
+                    {{-- Thông tin đính kèm --}}
+                    <div style="background: #FAF8F5; border: 1px dashed #C5A880; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="font-size: 13px; color: #4A453E;">
+                            <strong style="color: #9C7A4A;">📷 Album Ảnh Kỷ Niệm Đính Kèm:</strong>
+                            <span id="thankyou-album-url" style="word-break: break-all; margin-left: 6px; font-size: 12px; color: #7A726A;"></span>
+                        </div>
+                        <span style="font-size: 11px; color: #7A726A; font-style: italic;">Tự động chèn link để khách xem lại ảnh tiệc</span>
+                    </div>
+
+                    {{-- Danh sách khách và lời cảm ơn --}}
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0;">Danh Sách Lời Cảm Ơn Đã Soạn Sẵn:</h4>
+                            <div style="display: flex; gap: 6px;" id="thankyou-filter-tabs">
+                                <button type="button" class="mayhen_guest_filter_pill active" data-thankyou-filter="all" style="padding: 4px 10px; font-size: 11px; border-radius: 20px; border: 1px solid #C5A880; background: #C5A880; color: #fff; cursor: pointer;">Tất Cả</button>
+                                <button type="button" class="mayhen_guest_filter_pill" data-thankyou-filter="attended" style="padding: 4px 10px; font-size: 11px; border-radius: 20px; border: 1px solid #E5DCCD; background: #fff; color: #4A453E; cursor: pointer;">Đã Đến</button>
+                                <button type="button" class="mayhen_guest_filter_pill" data-thankyou-filter="gift_only" style="padding: 4px 10px; font-size: 11px; border-radius: 20px; border: 1px solid #E5DCCD; background: #fff; color: #4A453E; cursor: pointer;">Gửi Quà</button>
+                            </div>
+                        </div>
+                        <div id="thankyou-list-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+                            {{-- Dynamic via JS --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
+                <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="thankyou-btn-done">
+                    Hoàn Tất & Đóng
                 </button>
             </div>
         </div>

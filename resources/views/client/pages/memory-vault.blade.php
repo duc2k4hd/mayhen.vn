@@ -23,6 +23,9 @@
                     <a href="{{ route('memory.keepsake_book', $invitation->id) }}" target="_blank" class="mayhen_vault_btn mayhen_vault_btn--sm mayhen_vault_btn--gold">
                         📖 In / Tải Sách Kỷ Yếu (PDF)
                     </a>
+                    <a href="{{ route('memory.offline_archive', $invitation->id) }}" class="mayhen_vault_btn mayhen_vault_btn--sm mayhen_vault_btn--gold">
+                        📦 Gói Lưu Trữ Kỷ Niệm (ZIP)
+                    </a>
                     <a href="{{ route('account.wishes.index', $invitation->id) }}" class="mayhen_vault_btn mayhen_vault_btn--sm mayhen_vault_btn--outline">
                         Sổ Lưu Bút
                     </a>

@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\VendorBriefService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
@@ -453,6 +454,25 @@ class AccountController extends Controller
             'totalExpectedAttendees' => $totalExpectedAttendees,
             'attendingGuests' => $attendingGuests,
             'checkinPin' => $checkinPin,
+        ]);
+    }
+
+    /**
+     * Bản Hướng Dẫn Tác Nghiệp Tối Giản Cho MC, Nhà Hàng & Photographer (TASK-VAL-15).
+     */
+    public function vendorBrief(Request $request, int $invitationId, VendorBriefService $briefService): View
+    {
+        $user = $request->user();
+        $invitation = Invitation::with(['wedding.guests', 'template'])->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $brief = $briefService->generate($invitation->wedding, $invitation);
+
+        return view('client.pages.account.vendor-brief', [
+            'user' => $user,
+            'invitation' => $invitation,
+            'wedding' => $invitation->wedding,
+            'brief' => $brief,
         ]);
     }
 

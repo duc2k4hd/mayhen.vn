@@ -5180,6 +5180,71 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                       194. **Hoàn Tất Cột Mốc 6: Bộ Tài Liệu Tác Nghiệp Đối Tác (Vendor Brief) & Trợ Lý Lên Lịch Nhắc Nhở Tế Nhị (Gentle Reminder Planner)**:
+                            - **Bối cảnh & Giá trị trải nghiệm**:
+                              - Thực thi trọn vẹn `TASK-VAL-15` và `TASK-VAL-16` theo mục 09.4 (Vận hành ngày cưới & phối hợp đối tác) và 09.2 (Văn hóa ứng xử cưới hỏi tế nhị) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                              - Giúp cô dâu chú rể giải phóng khỏi sự hỗn loạn trong ngày cưới khi phải bàn giao thông tin riêng lẻ cho MC tiệc cưới, Quản lý sảnh tiệc (Catering) và Nhiếp ảnh gia (Media/Photographer); đồng thời giải quyết triệt để nỗi ngại ngùng khi cần nhắc khách chốt RSVP hoặc nhắc lịch sát ngày cưới một cách tinh tế, chuẩn lễ nghi.
+                            - **Các tính năng cao cấp đã hoàn thành**:
+                              1. *TASK-VAL-15: Bộ Tài Liệu Tác Nghiệp Tối Giản Cho MC, Nhà Hàng & Nhiếp Ảnh Gia (Vendor Brief Export)*:
+                                 - Service: `app/Services/VendorBriefService.php` trích xuất và cô đọng dữ liệu chuyên biệt cho 3 đối tác tác nghiệp cốt lõi:
+                                   * `mc`: Tên uyên ương, tên trang trọng phụ mẫu hai bên, các mốc thời gian nghi lễ hôn lễ (đón khách, khai tiệc, rót rượu, cắt bánh, nâng ly chúc mừng).
+                                   * `venue`: Sĩ số khách chính thức theo RSVP, tổng số bàn tiệc đã xếp, danh sách khách có ghi chú ăn kiêng/chay/dị ứng, và ma trận phân bổ bàn tiệc.
+                                   * `photo`: Lịch trình hai nhà, danh sách các bàn tiệc VIP cần ưu tiên chụp phóng sự đầy đủ, và mã QR truy cập nhanh trang Photo Drop để khách/nhiếp ảnh gia tải ảnh tiệc cưới.
+                                 - Phòng vệ riêng tư & an toàn tài chính (Zero Financial & PII Leak): Tuyệt đối không hiển thị số điện thoại khách mời và không để lộ số tiền mừng cưới / số tài khoản nhận tiền trong tài liệu tác nghiệp này.
+                                 - Route & Controller: `GET /tai-khoan/thiep/{id}/vendor-brief` (`account.invitations.vendor_brief`) trong `AccountController.php` kèm kiểm soát IDOR an toàn (`isOwner()`, trả về 404 cho tài khoản khác).
+                                 - Giao diện: `resources/views/client/pages/account/vendor-brief.blade.php` phong cách Quiet Luxury Editorial, hỗ trợ chuyển đổi bộ lọc 4 chế độ (Tất cả / MC / Sảnh tiệc / Media) và ngắt trang in ấn khổ A4 hoàn hảo (`@media print`).
+                                 - Assets: `public/assets/client/css/pages/vendor-brief.css` và `public/assets/client/js/pages/vendor-brief.js`.
+                                 - Tích hợp: Thêm nút bấm `[ 📋 Tài Liệu Tác Nghiệp ]` trên `resources/views/client/pages/account/invitations.blade.php`.
+                              2. *TASK-VAL-16: Trợ Lý Lên Lịch Nhắc Nhở Tế Nhị & Phân Luồng RSVP (Gentle Reminder Planner)*:
+                                 - Service: `app/Services/GentleReminderPlannerService.php` phân tích danh sách khách thành 3 nhóm trạng thái thông minh:
+                                   * `pending`: Khách chưa phản hồi RSVP (cần nhắc xác nhận lịch tham dự).
+                                   * `attending`: Khách đã xác nhận tham dự (cần nhắc giờ & chia sẻ bãi đỗ xe/lối vào trước ngày cưới 2-3 ngày).
+                                   * `declined`: Khách đã báo không thể tham dự (lời tri ân và chia sẻ đường link xem kỷ niệm).
+                                 - Soạn sẵn 3 mẫu tin nhắn văn hóa tế nhị (Trang trọng / Thân mật / Nhắc sát ngày cưới 3 ngày) tự động điền danh xưng, tên khách và đường link trợ lý cá nhân hóa `/khach-moi/{guestToken}`.
+                                 - Controller: `GuestController::reminderPlanner` (`GET /thiep/{id}/khach-moi/ke-hoach-nhac-nho`).
+                                 - Giao diện & Modal: Bổ sung nút `[ 💌 Kế Hoạch Nhắc Lịch ]` và Modal Drawer sang trọng trên `resources/views/client/pages/guests.blade.php`.
+                                 - Client JS: `public/assets/client/js/pages/guests.js` nạp dữ liệu thống kê dynamic, cho phép chuyển đổi nhóm khách, chọn mẫu tin nhắn và nút Copy 1 chạm thông minh kèm thông báo toast.
+                            - **Kiểm thử & Đảm bảo chất lượng**:
+                              - Viết mới 2 Feature test suites:
+                                * `tests/Feature/VendorBriefExportTest.php` -> **4/4 tests passed (21 assertions)**.
+                                * `tests/Feature/GentleReminderPlannerTest.php` -> **4/4 tests passed (15 assertions)**.
+                              - Toàn bộ test suite toàn hệ thống: **338/338 tests passed 100% (1,650 assertions)**.
+                              - Laravel Pint: Đạt chuẩn 100% agent style.
+                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
+                       195. **Hoàn Tất Cột Mốc 7: Trợ Lý Soạn Lời Cảm Ơn Sau Cưới (Personal Thank-you Builder) & Gói Kỷ Niệm Ngoại Tuyến Độc Lập (Portable Wedding Archive)**:
+                            - **Bối cảnh & Giá trị trải nghiệm**:
+                              - Thực thi trọn vẹn `TASK-VAL-17` và `TASK-VAL-18` theo mục 09.3 (Keepsake & Post-Wedding Value) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                              - Xóa tan nỗi lo âu lớn nhất của cô dâu chú rể về việc bảo tồn kỷ niệm hôn nhân ("10-20 năm nữa website còn không? Kỷ niệm của tôi có bị mất không?") thông qua gói ZIP lưu trữ độc lập kèm chữ ký toàn vẹn SHA-256; đồng thời giúp cặp đôi sau ngày cưới kiệt sức vẫn có thể gửi lời cảm ơn tinh tế, lễ phép, cá nhân hóa đến từng người thân, bạn bè và khách gửi quà mừng từ xa.
+                            - **Các tính năng cao cấp đã hoàn thành**:
+                              1. *TASK-VAL-17: Trợ Lý Soạn Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (Personal Thank-you Builder)*:
+                                 - Service: `app/Services/PersonalThankYouService.php` tự động phân loại danh sách khách dựa trên dữ liệu thật thành 3 nhóm trọng tâm:
+                                   * `attended`: Khách đã đến chung vui (đã check-in đón tiếp hoặc xác nhận attending).
+                                   * `gift_only`: Khách không thể đến nhưng gửi quà/chúc mừng từ xa (declined RSVP).
+                                   * `general`: Khách mời chung.
+                                 - Phòng vệ văn hóa xưng hô Việt Nam: Tự động phát hiện và loại bỏ hiện tượng lặp danh xưng ("Bác Bác Trần Văn Phú" -> "Bác Trần Văn Phú"), đồng thời phân định văn phong tôn kính dành cho bậc tiền bối ("vợ chồng con... trân trọng gửi lời cảm ơn sâu sắc nhất... niềm vinh hạnh to lớn của gia đình hai bên") và văn phong ấm áp, vui tươi cho bạn bè ("quẩy hết mình... bữa tiệc trọn vẹn và tràn ngập tiếng cười").
+                                 - Route & Controller: `GET /thiep/{id}/khach-moi/loi-cam-on-sau-cuoi` (`guests.thankyou_builder`) trong `GuestController.php`.
+                                 - Giao diện & Modal: Bổ sung nút `[ 💐 Lời Cảm Ơn Sau Cưới ]` và Modal Drawer `#mayhen_modal_thankyou_builder` trên `resources/views/client/pages/guests.blade.php`.
+                                 - Client JS: `public/assets/client/js/pages/guests.js` nạp dữ liệu động, bộ lọc 3 tab (Tất cả / Đã đến / Gửi quà) và nút Copy 1 chạm thông minh kèm thông báo toast.
+                              2. *TASK-VAL-18: Gói Kỷ Niệm Ngoại Tuyến Độc Lập Kèm Bảng Kiểm Tra Toàn Vẹn Checksum Manifest (Portable Wedding Archive)*:
+                                 - Service: `app/Services/PortableWeddingArchiveService.php` đóng gói toàn bộ ký ức ngày cưới thành 1 tệp ZIP lưu trữ độc lập hoàn chỉnh:
+                                   * `index.html`: Trang web tĩnh tự chứa (Standalone Self-contained Offline HTML) phong cách Quiet Luxury, mở xem tức thì trên mọi máy tính, tablet, điện thoại mà không cần internet.
+                                   * `danh_sach_khach_moi_va_rsvp.csv`: Bảng tính Excel chuẩn UTF-8 with BOM lưu toàn bộ danh bạ khách, số suất đi kèm và dữ liệu điểm danh.
+                                   * `loi_chuc_va_chu_ky.json`: Dữ liệu nguyên gốc toàn bộ lời chúc phúc và hồi đáp từ cô dâu chú rể.
+                                   * `HUONG_DAN_LUU_TRU_KY_NIEM.txt`: Bức tâm thư trân quý gửi tặng cặp đôi, hướng dẫn bảo quản kỷ niệm trên ổ cứng và đám mây gia đình.
+                                   * `wedding_manifest.json`: Bảng kê khai chứng thực số (Digital Provenance Manifest) ghi nhận siêu dữ liệu và mã băm SHA-256 của từng tệp bên trong, bảo đảm tính toàn vẹn kỹ thuật số không thể giả mạo.
+                                 - Route & Controller: `GET /thiep/{id}/xuat-ky-niem-ngoai-tuyen` (`memory.offline_archive`) trong `MemoryVaultController.php` kèm rate limit `throttle:10,1` và IDOR defense (trả về 404 cho tài khoản khác).
+                                 - Giao diện: Nút bấm `[ 📦 Gói Ngoại Tuyến ]` trên `resources/views/client/pages/account/invitations.blade.php` và `resources/views/client/pages/memory-vault.blade.php`.
+                            - **Kiểm thử & Đảm bảo chất lượng**:
+                              - Viết mới 2 Feature test suites:
+                                * `tests/Feature/PersonalThankYouBuilderTest.php` -> **4/4 tests passed (35 assertions)**.
+                                * `tests/Feature/PortableWeddingArchiveTest.php` -> **3/3 tests passed (28 assertions)**.
+                              - Toàn bộ test suite toàn hệ thống: **345/345 tests passed 100% (1,713 assertions)**.
+                              - Laravel Pint: Đạt chuẩn 100% agent style.
+                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

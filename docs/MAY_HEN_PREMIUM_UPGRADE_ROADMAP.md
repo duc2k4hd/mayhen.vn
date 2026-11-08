@@ -159,3 +159,73 @@
   * API endpoint: `GET /api/editor/collision-check/{id}` (`invitation.collision_check`) trong `InvitationEditorController.php`.
 - **Kiểm thử**: `tests/Feature/DualCeremonyCollisionDetectorTest.php` (6/6 tests passed, 18 assertions).
 
+---
+
+### CỘT MỐC 6: VẬN HÀNH NGÀY CƯỚI & PHỐI HỢP ĐỐI TÁC (DAY-OF RELIABILITY & VENDOR COLLABORATION) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-15`: Bộ Tài Liệu Tác Nghiệp Tối Giản Cho MC, Nhà Hàng & Nhiếp Ảnh Gia (Vendor Brief Export) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Ngày cưới thực tế có rất nhiều bên đối tác tác nghiệp (MC đám cưới, Quản lý sảnh tiệc / Catering, Nhiếp ảnh gia / Phóng sự cưới). Cặp đôi thường phải in hoặc nhắn tin lộn xộn các thông tin riêng cho từng bên. Vendor Brief cung cấp trang tra cứu và in ấn chuẩn A4 tối giản, chia rõ 3 phần tác nghiệp:
+  1. *Dành cho MC / Hôn lễ*: Tên đầy đủ cô dâu, chú rể, tên phụ mẫu hai bên kèm danh xưng trang trọng, timeline từng mốc nghi lễ (đón khách, khai tiệc, rót rượu, cắt bánh, chúc mừng tại bàn).
+  2. *Dành cho Quản lý Sảnh Tiệc / Catering*: Sĩ số khách chính thức theo RSVP, số bàn tiệc đã xếp, danh sách khách có ghi chú ăn kiêng/chay/dị ứng, và sơ đồ phân bổ bàn tiệc.
+  3. *Dành cho Nhiếp ảnh gia / Media*: Lịch trình di chuyển hai nhà, danh sách các bàn tiệc VIP cần ưu tiên chụp ảnh đầy đủ, và mã QR quét nhanh truy cập trang Photo Drop của ngày cưới.
+- **Phòng vệ bảo mật & riêng tư (Zero Financial / PII Leak)**:
+  * Không hiển thị số điện thoại cá nhân của khách mời.
+  * Tuyệt đối không hiển thị số tiền mừng cưới hoặc số tài khoản ngân hàng riêng tư trong tài liệu bàn giao tác nghiệp này.
+  * Phân quyền bảo mật: Chỉ chủ sở hữu thiệp mới có quyền truy cập (`isOwner()`, trả về 404 cho tài khoản khác).
+- **Phạm vi code**:
+  * Service: `app/Services/VendorBriefService.php`.
+  * Controller: `AccountController::vendorBrief` (`GET /tai-khoan/thiep/{id}/vendor-brief`).
+  * Route: `account.invitations.vendor_brief`.
+  * View: `resources/views/client/pages/account/vendor-brief.blade.php`.
+  * CSS/JS: `public/assets/client/css/pages/vendor-brief.css` và `public/assets/client/js/pages/vendor-brief.js` (hỗ trợ chuyển đổi linh hoạt chế độ xem All / MC / Venue / Photo và tối ưu in ấn A4 chuẩn `@media print`).
+  * Giao diện: Nút bấm `[ 📋 Tài Liệu Tác Nghiệp ]` trên `resources/views/client/pages/account/invitations.blade.php`.
+- **Kiểm thử**: `tests/Feature/VendorBriefExportTest.php` (4/4 tests passed, 21 assertions).
+
+#### `TASK-VAL-16`: Trợ Lý Lên Lịch Nhắc Nhở Tế Nhị & Phân Luồng RSVP (Gentle Reminder Planner) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giải quyết bài toán ngại ngùng của cô dâu chú rể khi phải đi giục khách chốt tham dự hoặc nhắc lịch trước ngày cưới. Tránh việc nhắn tin thô thiển hoặc giục nhầm người đã xác nhận tham dự.
+- **Phạm vi code**:
+  * Service: `app/Services/GentleReminderPlannerService.php` tự động tính toán số ngày còn lại đến đám cưới (`days_until_wedding`), phân tích danh sách khách thành 3 nhóm trạng thái:
+    1. `pending`: Khách chưa phản hồi RSVP (cần nhắc xác nhận lịch tham dự).
+    2. `attending`: Khách đã xác nhận tham dự (cần nhắc giờ & chia sẻ bãi đỗ xe/lối vào trước ngày cưới 2-3 ngày).
+    3. `declined`: Khách đã báo không thể tham dự (lời tri ân và chia sẻ đường link xem kỷ niệm).
+  * Mẫu tin nhắn văn hóa tế nhị: Soạn sẵn 3 phong cách (Trang trọng / Thân mật / Nhắc sát ngày cưới 3 ngày) có sẵn placeholder danh xưng và tên khách, kèm link tra cứu trợ lý 1 trang `/khach-moi/{guestToken}`.
+  * Controller: `GuestController::reminderPlanner` (`GET /thiep/{id}/khach-moi/ke-hoach-nhac-nho`).
+  * Giao diện: Nút bấm `[ 💌 Kế Hoạch Nhắc Lịch ]` và Modal Drawer sang trọng trên `resources/views/client/pages/guests.blade.php`.
+  * Client JS: `public/assets/client/js/pages/guests.js` nạp dữ liệu thống kê dynamic, cho phép chuyển đổi nhóm khách, chọn mẫu tin nhắn và nút Copy 1 chạm thông minh kèm thông báo toast.
+- **Kiểm thử**: `tests/Feature/GentleReminderPlannerTest.php` (4/4 tests passed, 15 assertions).
+
+---
+
+### CỘT MỐC 7: KỶ NIỆM BỀN VỮNG & TRI ÂN SAU CƯỚI (POST-WEDDING VALUE & LIFELONG KEEPSAKE) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-17`: Trợ Lý Soạn Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (Personal Thank-you Builder) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Sau đám cưới, cô dâu chú rể kiệt sức nhưng bắt buộc phải gửi lời cảm ơn đến khách dự và bạn bè đã gửi quà mừng. Công cụ phân luồng tự động dựa trên dữ liệu thật (đã check-in dự tiệc / đã mừng cưới / không đến nhưng gửi quà) và tạo sẵn mẫu tin nhắn tri ân cảm xúc chân thành, kèm link xem lại album ảnh kỷ niệm của tiệc cưới.
+- **Phòng vệ tinh tế & xưng hô lễ nghi**:
+  * Tự động phát hiện và xử lý hiện tượng lặp danh xưng trong văn hóa xưng hô Việt Nam (ví dụ: Salutation "Bác" + Tên "Bác Trần Văn Phú" -> Tự động chuyển thành "Bác Trần Văn Phú" thay vì "Bác Bác Trần Văn Phú").
+  * Phân biệt rõ văn phong trang trọng, tôn kính dành cho bậc tiền bối / họ hàng VIP ("vợ chồng con... trân trọng gửi lời cảm ơn sâu sắc nhất... niềm vinh hạnh to lớn của gia đình hai bên") với văn phong vui tươi, nồng nhiệt dành cho bạn bè ("quẩy hết mình... bữa tiệc trọn vẹn và tràn ngập tiếng cười").
+  * Đính kèm đường dẫn album ảnh trực tiếp vào tin nhắn để người thân, bạn bè mở xem ngay.
+- **Phạm vi code**:
+  * Service: `app/Services/PersonalThankYouService.php`.
+  * Controller: `GuestController::thankYouBuilder` (`GET /thiep/{id}/khach-moi/loi-cam-on-sau-cuoi`).
+  * Route: `guests.thankyou_builder`.
+  * Giao diện: Nút bấm `[ 💐 Lời Cảm Ơn Sau Cưới ]` và Modal Drawer `#mayhen_modal_thankyou_builder` trên `resources/views/client/pages/guests.blade.php`.
+  * Client JS: `public/assets/client/js/pages/guests.js` nạp dữ liệu động, bộ lọc 3 tab (Tất cả / Đã đến / Gửi quà) và nút Copy 1 chạm thông minh.
+- **Kiểm thử**: `tests/Feature/PersonalThankYouBuilderTest.php` (4/4 tests passed, 35 assertions).
+
+#### `TASK-VAL-18`: Gói Kỷ Niệm Ngoại Tuyến Độc Lập (Portable Wedding Archive & Integrity Checksum) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giải tỏa nỗi lo âu lớn nhất của cặp đôi: *"Trang web 10-20 năm nữa có còn không? Nếu sau này máy chủ nâng cấp thì thiệp và kỷ niệm có mất không?"*. Cho phép xuất toàn bộ thiệp cưới, ảnh cưới, lời chúc và chữ ký thành 1 file ZIP lưu trữ độc lập kèm file chứng thực toàn vẹn manifest JSON / SHA256 checksum, mở chạy trực tiếp trên máy tính cá nhân không cần internet.
+- **Cấu trúc gói lưu trữ ZIP ngoại tuyến**:
+  1. `index.html`: Trang thiệp tĩnh ngoại tuyến tự chứa (Standalone Self-contained Offline HTML), mở bằng mọi trình duyệt không cần internet hay máy chủ.
+  2. `danh_sach_khach_moi_va_rsvp.csv`: Bảng tính Excel UTF-8 with BOM lưu danh bạ và kết quả điểm danh.
+  3. `loi_chuc_va_chu_ky.json`: Toàn bộ lời chúc phúc và hồi đáp nguyên bản.
+  4. `HUONG_DAN_LUU_TRU_KY_NIEM.txt`: Bức tâm thư trân quý gửi tặng cặp đôi và gia đình, hướng dẫn lưu trữ bền vững.
+  5. `wedding_manifest.json`: Bảng kê khai chứng thực số ghi nhận mã băm SHA-256 của từng tệp, bảo đảm tính toàn vẹn kỹ thuật số không thể giả mạo.
+- **Phạm vi code**:
+  * Service: `app/Services/PortableWeddingArchiveService.php`.
+  * Controller: `MemoryVaultController::offlineArchive` (`GET /thiep/{id}/xuat-ky-niem-ngoai-tuyen`).
+  * Route: `memory.offline_archive` kèm rate limit `throttle:10,1` và IDOR defense (trả về 404 cho tài khoản khác).
+  * Giao diện: Nút bấm `[ 📦 Gói Ngoại Tuyến ]` trên `resources/views/client/pages/account/invitations.blade.php` và `resources/views/client/pages/memory-vault.blade.php`.
+- **Kiểm thử**: `tests/Feature/PortableWeddingArchiveTest.php` (3/3 tests passed, 28 assertions).
+
+
+

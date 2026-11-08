@@ -98,6 +98,7 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
+    Route::get('/thiep/{id}/vendor-brief', [AccountController::class, 'vendorBrief'])->name('invitations.vendor_brief');
 
     // Tên Miền Riêng & Vanity Subdomain (TASK-V3-03)
     Route::get('/thiep/{id}/ten-mien', [CustomDomainController::class, 'show'])->name('invitations.domain');
@@ -132,6 +133,8 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/khach-moi/xuat-csv', [GuestController::class, 'exportCsv'])->name('guests.export');
     Route::get('/thiep/{id}/khach-moi/in', [GuestController::class, 'print'])->name('guests.print');
     Route::get('/thiep/{id}/khach-moi/kiem-tra-truoc-gui', [GuestController::class, 'preSendValidation'])->middleware('throttle:30,1')->name('guests.pre_send_validation');
+    Route::get('/thiep/{id}/khach-moi/ke-hoach-nhac-nho', [GuestController::class, 'reminderPlanner'])->middleware('throttle:30,1')->name('guests.reminder_planner');
+    Route::get('/thiep/{id}/khach-moi/loi-cam-on-sau-cuoi', [GuestController::class, 'thankYouBuilder'])->middleware('throttle:30,1')->name('guests.thankyou_builder');
     Route::put('/khach-moi/{id}', [GuestController::class, 'update'])->middleware('throttle:60,1')->name('guests.update');
     Route::post('/khach-moi/{id}/rsvp-thu-cong', [GuestController::class, 'manualRsvp'])->middleware('throttle:60,1')->name('guests.manual_rsvp');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
@@ -144,6 +147,7 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'settings'])->name('memory.settings');
     Route::post('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'updateSettings'])->middleware('throttle:30,1')->name('memory.updateSettings');
     Route::get('/thiep/{id}/sach-ky-yeu', [MemoryVaultController::class, 'keepsakeBook'])->name('memory.keepsake_book');
+    Route::get('/thiep/{id}/xuat-ky-niem-ngoai-tuyen', [MemoryVaultController::class, 'offlineArchive'])->middleware('throttle:10,1')->name('memory.offline_archive');
 
     // Quản Lý Album Ảnh Khách Chụp Ngày Cưới (Live Guest Photo Drop - TASK-V2-05)
     Route::get('/thiep/{id}/album-khach', [PhotoDropController::class, 'manage'])->name('photo_drop.manage');

@@ -7,10 +7,12 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
+use App\Services\PortableWeddingArchiveService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemoryVaultController extends Controller
 {
@@ -198,6 +200,22 @@ class MemoryVaultController extends Controller
             'thankYouLetter' => $thankYouLetter,
             'totalCount' => $wishes->count(),
         ]);
+    }
+
+    /**
+     * Xuất Gói Kỷ Niệm Ngoại Tuyến Độc Lập (TASK-VAL-18).
+     */
+    public function offlineArchive(Request $request, int $invitationId, PortableWeddingArchiveService $service): BinaryFileResponse
+    {
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeOwner($wedding);
+
+        $archive = $service->generateArchive($invitation);
+
+        return response()->download($archive['zip_path'], $archive['zip_filename'], [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
     }
 
     private function authorizeOwner(Wedding $wedding): void
