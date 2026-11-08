@@ -640,3 +640,123 @@
     flex-wrap: wrap;
     gap: 14px;
 }
+
+/* ==========================================================================
+   9. INTERACTIVE SANDBOX VALUE PREVIEW BOOSTER (TICKET-GATE-E1)
+   ========================================================================== */
+.mayhen_pricing_sandbox_section {
+    margin-top: var(--mayhen-space-2xl);
+    background: linear-gradient(135deg, #FFFDF9 0%, #FAF8F5 100%);
+    border: 1px solid #E5DCCD;
+    border-radius: 20px;
+    padding: 36px 28px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+}
+
+.mayhen_pricing_sandbox_header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 30px;
+}
+
+.mayhen_pricing_sandbox_kicker {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #9C7A4A;
+    background-color: #EFE8DD;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+}
+
+.mayhen_pricing_sandbox_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+    color: #1F1D1A;
+    margin: 0 0 8px;
+}
+
+.mayhen_pricing_sandbox_desc {
+    font-size: 0.9375rem;
+    color: #6B635B;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.mayhen_pricing_sandbox_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.mayhen_pricing_sandbox_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DCCD;
+    border-radius: 14px;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s ease;
+}
+
+.mayhen_pricing_sandbox_card:hover {
+    border-color: #C5A880;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_pricing_sandbox_icon {
+    font-size: 1.75rem;
+    margin-bottom: 12px;
+}
+
+.mayhen_pricing_sandbox_name {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 6px;
+}
+
+.mayhen_pricing_sandbox_card_text {
+    font-size: 0.85rem;
+    color: #7A726A;
+    line-height: 1.5;
+    margin: 0 0 16px;
+    flex-grow: 1;
+}
+
+.mayhen_pricing_sandbox_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #9C7A4A;
+    transition: color 0.2s ease;
+}
+
+.mayhen_pricing_sandbox_card:hover .mayhen_pricing_sandbox_btn {
+    color: #1F1D1A;
+}
+
+@media (max-width: 992px) {
+    .mayhen_pricing_sandbox_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .mayhen_pricing_sandbox_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_pricing_sandbox_section {
+        padding: 24px 16px;
+    }
+}

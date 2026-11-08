@@ -83,6 +83,7 @@ Thumbs.db
 !/tests/Feature/PostPaymentFirstSuccessTest.php
 !/tests/Feature/PremiumValuePreviewTest.php
 !/tests/Feature/WeddingWeekReadinessTest.php
+!/tests/Feature/PricingPageTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

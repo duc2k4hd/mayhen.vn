@@ -229,6 +229,73 @@
             @endforeach
         </div>
 
+        {{-- TASK-VAL-27 & TICKET-GATE-E1: Interactive Sandbox Value Preview Booster --}}
+        <section class="mayhen_pricing_sandbox_section" aria-labelledby="sandbox-preview-heading">
+            <div class="mayhen_pricing_sandbox_header">
+                <span class="mayhen_pricing_sandbox_kicker">Trải Nghiệm Thực Tế</span>
+                <h2 id="sandbox-preview-heading" class="mayhen_pricing_sandbox_title">
+                    Xem Thử Các Tính Năng Cao Cấp Trong Gói Pro
+                </h2>
+                <p class="mayhen_pricing_sandbox_desc">
+                    Mây Hẹn tin vào sự minh bạch tuyệt đối. Hãy trực tiếp trải nghiệm thử 4 tính năng vận hành sảnh tiệc trong môi trường mô phỏng (Sandbox) trước khi quyết định nâng cấp.
+                </p>
+            </div>
+
+            <div class="mayhen_pricing_sandbox_grid">
+                <a href="{{ route('premium.preview', 'seating') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">🍽️</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Sơ Đồ Bàn Tiệc</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Kéo thả phân bàn trực quan, tự động cân đối sức chứa, cảnh báo bàn quá tải và xuất bản in A4 cho nhà hàng.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+
+                <a href="{{ route('premium.preview', 'checkin') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">📱</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Cổng Check-in Tiếp Tân</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Quét mã QR tra cứu số bàn trong 1 giây, bàn giao ca trực có mã PIN bảo vệ và xử lý ngoại lệ khách phát sinh.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+
+                <a href="{{ route('premium.preview', 'live-wall') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">✨</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Màn Hình Chiếu Trực Tiếp</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Trình chiếu lời chúc và ảnh cưới lên màn LED sân khấu tiệc cưới theo thời gian thực với hiệu ứng lãng mạn.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+
+                <a href="{{ route('premium.preview', 'memory-vault') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">📸</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Két Kỷ Niệm & Photo Drop</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Khách quét mã tại bàn tải ảnh tự nhiên lên album chung, khóa tâm thư Hộp thời gian và tải Sách kỷ yếu PDF.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+            </div>
+        </section>
+
         <!-- ==========================================
              3. BOX SO SÁNH GIÁ THIỆP CƯỚI GIẤY VS THIỆP ONLINE
              ========================================== -->

@@ -9,17 +9,17 @@
 
 ## 1. TỔNG QUAN HIỆN TRẠNG KIỂM THỬ (TEST BASELINE)
 
-- **Tổng số bài kiểm tra**: **387 tests**
-- **Tổng số xác nhận (Assertions)**: **1,936 assertions**
+- **Tổng số bài kiểm tra**: **391 tests**
+- **Tổng số xác nhận (Assertions)**: **1,956 assertions**
 - **Tỷ lệ vượt qua**: **100% Passed (0 Failed, 0 Skipped)**
-- **Thời gian chạy**: ~7.39 giây
+- **Thời gian chạy**: ~7.60 giây
 - **Code Style (Laravel Pint)**: 100% Clean theo chuẩn Agent.
 
 ```bash
    PASS  Tests\Unit\...
    PASS  Tests\Feature\...
-  Tests:    387 passed (1936 assertions)
-  Duration: 7.39s
+  Tests:    391 passed (1956 assertions)
+  Duration: 7.60s
 ```
 
 ---

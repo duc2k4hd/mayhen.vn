@@ -5378,6 +5378,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        201. **Ban Hành Lộ Trình Chất Lượng 5 Cổng & Tích Hợp Sandbox Booster Bảng Giá (5-Gate Quality Roadmap & Pricing Sandbox Integration)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi chuẩn mực quản trị phát hành phần mềm thương mại theo mục 13 trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Xây dựng hệ thống 5 Cổng Release Gate (GATE A: Trust & Integrity &rarr; GATE B: Correctness & UX Polish &rarr; GATE C: Deepen Features &rarr; GATE D: High-Value Premium &rarr; GATE E: Scaling & Conversion) gồm 34 nhiệm vụ độc lập có ràng buộc logic rõ ràng.
+                               - Thúc đẩy tỷ lệ chuyển đổi (Conversion Rate) trên trang Bảng Giá (`pricing.blade.php`) bằng cách đưa khối Sandbox Preview tương tác 4 tính năng gói Pro (`seating`, `checkin`, `live-wall`, `memory-vault`) vào ngay dưới bảng giá để khách hàng chạm thử giá trị thật trước khi chi tiền.
+                             - **Các tính năng & tài liệu hoàn thành**:
+                               1. *Tài liệu Lộ Trình 5 Cổng Chuẩn Mực*:
+                                  - Soạn thảo và ban hành `docs/MAY_HEN_FINAL_QUALITY_AND_VALUE_ROADMAP.md` chi tiết 34 tasks (34/34 tasks đạt trạng thái PASS 100%).
+                               2. *Tích Hợp Sandbox Value Preview Booster Trên Trang Bảng Giá*:
+                                  - View: Cập nhật `resources/views/client/pages/pricing.blade.php` bổ sung section `#sandbox-preview-heading` với 4 thẻ tính năng trực quan.
+                                  - CSS: Cập nhật `public/assets/client/css/pages/pricing.css` với nhóm class `.mayhen_pricing_sandbox_*` chuẩn Quiet Luxury Editorial, responsive đa màn hình.
+                                  - Cập nhật số liệu đồng bộ trên `docs/MAY_HEN_FINAL_AUDIT_BASELINE.md`, `docs/MAY_HEN_FINAL_EXECUTIVE_SUMMARY.md` và `docs/MAY_HEN_RELEASE_READINESS_SCORECARD.md`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới Feature test suite:
+                                 * `tests/Feature/PricingPageTest.php` -> **4/4 tests passed (20 assertions)** kiểm tra render trang giá, banner advisor, 4 liên kết sandbox và SEO JSON-LD schema.
+                               - Toàn bộ test suite toàn hệ thống: **391/391 tests passed 100% (1,956 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa `PricingPageTest.php` vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
