@@ -96,6 +96,47 @@ class CsvFormulaInjectionDefenseTest extends TestCase
         expect($content)->toContain("'+cmd|\"\"/C calc\"\"!A0 Chúc hai bạn trăm năm hạnh phúc");
     }
 
+    public function test_wishes_export_csv_supports_filtering_by_status_and_search_query(): void
+    {
+        WeddingWish::create([
+            'wedding_id' => $this->wedding->id,
+            'name' => 'Anh Ba',
+            'message' => 'Hạnh Phúc trọn đời nhé!',
+            'is_approved' => true,
+        ]);
+
+        WeddingWish::create([
+            'wedding_id' => $this->wedding->id,
+            'name' => 'Chị Tư',
+            'message' => 'Lời chúc này đang tạm ẩn để kiểm duyệt',
+            'is_approved' => false,
+        ]);
+
+        $this->actingAs($this->user);
+
+        // 1. Xuất chỉ các lời chúc tạm ẩn
+        $hiddenResponse = $this->get(route('account.wishes.export', [
+            'id' => $this->invitation->id,
+            'status' => 'hidden',
+        ]));
+
+        $hiddenResponse->assertOk();
+        $hiddenContent = $hiddenResponse->streamedContent();
+        expect($hiddenContent)->toContain('Chị Tư');
+        expect($hiddenContent)->not->toContain('Anh Ba');
+
+        // 2. Xuất theo từ khóa tìm kiếm "Hạnh Phúc"
+        $searchResponse = $this->get(route('account.wishes.export', [
+            'id' => $this->invitation->id,
+            'q' => 'Hạnh Phúc',
+        ]));
+
+        $searchResponse->assertOk();
+        $searchContent = $searchResponse->streamedContent();
+        expect($searchContent)->toContain('Anh Ba');
+        expect($searchContent)->not->toContain('Chị Tư');
+    }
+
     public function test_guests_export_csv_neutralizes_csv_formula_injection(): void
     {
         Guest::create([

@@ -143,13 +143,33 @@ class WishManagementController extends Controller
     /**
      * Xuất danh sách Sổ Lưu Bút ra file CSV UTF-8 BOM cho Excel.
      */
-    public function exportCsv(int $invitationId): StreamedResponse
+    public function exportCsv(Request $request, int $invitationId): StreamedResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $wedding = $invitation->wedding;
         $this->authorizeInvitationOwner($wedding);
 
-        $wishes = $wedding->wishes()->latest()->get();
+        $query = $wedding->wishes();
+
+        if ($search = trim((string) $request->query('q'))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('message', 'like', "%{$search}%");
+            });
+        }
+
+        $filterStatus = $request->query('status');
+        if ($filterStatus === 'replied') {
+            $query->whereNotNull('reply');
+        } elseif ($filterStatus === 'pending') {
+            $query->whereNull('reply');
+        } elseif ($filterStatus === 'hidden') {
+            $query->where('is_approved', false);
+        } elseif ($filterStatus === 'approved') {
+            $query->where('is_approved', true);
+        }
+
+        $wishes = $query->latest()->get();
         $filename = 'so-luu-but-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
 
         return response()->streamDownload(function () use ($wishes) {

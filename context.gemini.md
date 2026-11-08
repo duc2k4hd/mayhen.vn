@@ -5513,6 +5513,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        208. **Mở Rộng Xuất CSV & In Ấn Theo Bộ Lọc Lời Chúc (Filtered Export & Search Integrity)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Nâng cấp phương thức `exportCsv(Request $request, int $invitationId)` trong `WishManagementController.php`: Cho phép người dùng xuất file CSV chính xác theo kết quả tìm kiếm (`q`) hoặc theo trạng thái (`status=pending`, `replied`, `hidden`, `approved`). Khi không có tham số lọc, hệ thống tiếp tục xuất toàn bộ danh sách như mặc định.
+                               - Đồng bộ liên kết `[ Xuất CSV ]` và `[ In Sổ Lưu Bút ]` trên giao diện `wishes.blade.php` tự động bảo toàn tham số lọc hiện hành (`request()->only(['q', 'status'])`), giúp cô dâu chú rể dễ dàng xuất riêng tệp danh sách lời chúc cần trả lời hoặc danh sách lời chúc đã duyệt.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/CsvFormulaInjectionDefenseTest.php` với ca kiểm thử `test_wishes_export_csv_supports_filtering_by_status_and_search_query()`.
+                               - Test suite `CsvFormulaInjectionDefenseTest`: **5/5 tests passed (27 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **409/409 tests passed 100% (2,056 assertions)** trong ~7.7 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

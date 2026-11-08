@@ -89,7 +89,7 @@
             <a href="{{ route('memory.settings', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline">
                 <span>⚙️ Cài Đặt Kỷ Niệm</span>
             </a>
-            <a href="{{ route('account.wishes.print', $invitation->id) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline">
+            <a href="{{ route('account.wishes.print', array_merge(['id' => $invitation->id], request()->only(['status']))) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -97,7 +97,7 @@
                 </svg>
                 <span>In Sổ Lưu Bút</span>
             </a>
-            <a href="{{ route('account.wishes.export', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline">
+            <a href="{{ route('account.wishes.export', array_merge(['id' => $invitation->id], request()->only(['q', 'status']))) }}" class="mayhen_account_btn mayhen_account_btn_outline">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
