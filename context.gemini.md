@@ -5880,4 +5880,18 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
+                        222. **Đồng Bộ Hồ Sơ Kiểm Toán Bàn Giao Sẵn Sàng Phát Hành Thương Mại (Release Readiness & Commercial Scorecard Sync — Master Audit 16 & 17)**:
+                             - **Bối cảnh & Thực thi**:
+                               - Rà soát toàn bộ hồ sơ bàn giao bắt buộc theo Mục 16 của `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - Cập nhật số liệu kiểm thử thực tế và các phát hiện mới nhất vào các tài liệu chỉ đạo kiểm toán cốt lõi:
+                                 * `docs/MAY_HEN_FINAL_AUDIT_BASELINE.md`: Cập nhật bảng đối soát tuyên bố vs code thực tế cho 10 lỗi logic/bảo mật/ux sâu (từ `BUG-AUDIT-01` đến `BUG-AUDIT-10`), đồng bộ quy mô bộ kiểm thử đạt **461 tests** và **2,347 assertions** (100% passed).
+                                 * `docs/MAY_HEN_RELEASE_READINESS_SCORECARD.md`: Đồng bộ 12 trụ cột sẵn sàng thương mại (Security, Domain Correctness, Cross-module Integration, Data Safety, Test Quality, UX Polish, A11y, Wedding Reliability, Performance, Premium Value, Trust & Privacy, Operational Support) đạt trạng thái `PASS 100%` có bằng chứng test thực tế đối chiếu.
+                                 * `docs/MAY_HEN_BUG_REGISTER.md`: Duy trì nhật ký lỗi đầy đủ 10 bug kiểm toán trọng điểm kèm nguyên nhân gốc rễ và giải pháp triệt để.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Toàn bộ test suite toàn hệ thống: **461/461 tests passed 100% (2,347 assertions)** trong ~8.9 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
+---
+
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

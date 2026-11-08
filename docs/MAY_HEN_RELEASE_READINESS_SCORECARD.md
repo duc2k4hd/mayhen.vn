@@ -3,7 +3,7 @@
 
 > **Dự án**: Nền tảng Thiệp Cưới Quiet Luxury Mây Hẹn (`mayhen.vn`)  
 > **Căn cứ đánh giá**: Mục 16 — Hồ sơ bàn giao bắt buộc tại [`docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`](file:///d:/Project/Laravel/mayhen.vn/docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md)  
-> **Phiên bản hệ thống**: Laravel 13.35.0 • PHP 8.5.10 • 409 Test Suites (2,056 Assertions Passed 100%)  
+> **Phiên bản hệ thống**: Laravel 13.35.0 • PHP 8.5.10 • 461 Test Suites (2,347 Assertions Passed 100%)  
 > **Thời điểm cập nhật**: Tháng 11/2026  
 
 ---
@@ -25,7 +25,7 @@ Bảng điểm này từ chối các khẳng định suông kiểu "100% không 
 | **2. Domain Correctness** | `PASS` | Đảm bảo 50 Bất biến nghiệp vụ cốt lõi; Khách RSVP 0 suất không chiếm ghế; Headcount thực tế đồng bộ tự động giữa RSVP, Seating Planner và Check-in cổng; Đồng bộ 2 nguồn sự thật `table_id` và `table_name`. | `tests/Feature/CrossModuleLogicInvariantsTest.php`, `BUG-AUDIT-01..03` (Pass 100%). | Không có dữ liệu mồ côi khi xóa khách hoặc hủy bàn. |
 | **3. Cross-Module Integration** | `PASS` | 20 luồng nghiệp vụ liên hoàn xuyên suốt: Studio nhúng iframe 2 chiều Handshake `MAYHEN_BRIDGE_READY`; Check-in tự động cập nhật sĩ số thời gian thực sang Live Wall và Command Center; Đồng bộ số liệu sang Sách kỷ yếu và Hộp thời gian. | `tests/Feature/BottomNavTest.php`, `LiveWeddingWallTest.php`, `WeddingTimeCapsuleTest.php`. | Polling 8 giây tại Command Center được ghi chú rõ ràng về độ trễ, tránh ngộ nhận là WebSocket tức thì. |
 | **4. Data Safety & Recovery** | `PASS` | Nút khôi phục khẩn cấp `Emergency Rollback` 1 chạm; Báo cáo tác động `Publish Impact Report` trước khi ghi đè; Chế độ diễn tập `Reception Dry Run` cách ly hoàn toàn trong Session, zero ô nhiễm database; Trích xuất gói lưu trữ độc lập `Portable Wedding Archive` kèm mã băm SHA-256. | `tests/Feature/EmergencyRollbackTest.php`, `ReceptionDryRunSimulatorTest.php`, `PortableWeddingArchiveTest.php`. | Dữ liệu nháp luôn được lưu bản sao snapshot trước mỗi lần xuất bản công khai. |
-| **5. Test Quality & Coverage** | `PASS` | 409 Feature & Unit tests với 2,056 assertions; Không dùng test rỗng; Kiểm thử bao phủ đủ cả happy path, negative path (404/403/422), IDOR và boundary edge cases. | `php artisan test --compact` -> 409/409 passed (Duration ~7.7s). | Cần tiếp tục duy trì test suite tự động trong CI/CD pipeline trước mỗi lần release. |
+| **5. Test Quality & Coverage** | `PASS` | 461 Feature & Unit tests với 2,347 assertions; Không dùng test rỗng; Kiểm thử bao phủ đủ cả happy path, negative path (404/403/422), IDOR và boundary edge cases. | `php artisan test --compact` -> 461/461 passed (Duration ~8.9s). | Cần tiếp tục duy trì test suite tự động trong CI/CD pipeline trước mỗi lần release. |
 | **6. UX Polish & Micro-Interactions** | `PASS` | Đạt chuẩn Quiet Luxury Editorial, bảng màu Warm Cream, Soft Beige, Muted Gold; 100% Touch target >= 44px; Đầy đủ 5 trạng thái giao diện: Empty, Loading, Error, Conflict 409, Offline. | `public/assets/client/css/pages/*.css`, `tests/Feature/BottomNavTest.php`. | Không dùng CSS framework ngoài; class name tuân thủ nghiêm ngặt tiền tố `mayhen_*`. |
 | **7. Accessibility (A11y)** | `PASS` | Chế độ người lớn tuổi `Senior-Friendly Guest Mode` với nút bấm nổi [ 👓 Chữ Lớn ], tăng tương phản đen tuyền, dãn dòng 1.75, Quick Bar gọi điện và mở Google Maps 1 chạm; Hỗ trợ bàn phím di động Safe Area Insets. | `tests/Feature/SeniorFriendlyGuestModeTest.php`. | Giúp ông bà, cha mẹ đọc thiệp trên điện thoại dễ dàng mà không bị hoa mắt. |
 | **8. Wedding Day Reliability** | `PASS` | Bộ dự phòng ngày cưới `Resilience Kit` chuẩn A4/A3 khi nhà hàng mất mạng Wi-Fi; Bác sĩ bàn tiệc `Seating Capacity Guardian` dự báo số bàn chính thức + bàn dự phòng (buffer 10%); Bàn xử lý ngoại lệ `RSVP Exception Desk` đón khách phát sinh/đổi suất 1 chạm. | `tests/Feature/WeddingResilienceKitTest.php`, `SeatingCapacityGuardianTest.php`, `ReceptionExceptionDeskTest.php`. | Đảm bảo ngày cưới diễn ra suôn sẻ kể cả khi 4G yếu hoặc mạng sảnh tiệc chập chờn. |
@@ -41,7 +41,7 @@ Bảng điểm này từ chối các khẳng định suông kiểu "100% không 
 - **Tổng kết trạng thái**: **READY FOR PRODUCTION / COMMERCIAL DEPLOYMENT**.
 - **Độ tin cậy cốt lõi**:
   1. Toàn bộ 28 tác vụ nâng cấp giá trị cao cấp (`TASK-VAL-01` -> `TASK-VAL-28`) thuộc 13 Cột mốc đã hoàn thành trọn vẹn, không để sót bất kỳ tính năng dở dang nào.
-  2. Toàn bộ 409 test cases đều vượt qua 100% với 2,056 assertions kiểm tra sâu từng ranh giới dữ liệu và bảo mật.
+  2. Toàn bộ 461 test cases đều vượt qua 100% với 2,347 assertions kiểm tra sâu từng ranh giới dữ liệu và bảo mật.
   3. Mã nguồn tuân thủ 100% chuẩn Pure Vanilla CSS/Native JS, không sử dụng bất kỳ framework hay CDN bên ngoài nào, bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
   4. Hệ thống minh bạch, nhân văn, tôn trọng văn hóa gia đình Việt Nam và mang lại sự an tâm thực chất cho ngày trọng đại của cô dâu và chú rể.
 

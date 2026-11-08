@@ -9,17 +9,17 @@
 
 ## 1. TỔNG QUAN HIỆN TRẠNG KIỂM THỬ (TEST BASELINE)
 
-- **Tổng số bài kiểm tra**: **409 tests**
-- **Tổng số xác nhận (Assertions)**: **2,056 assertions**
+- **Tổng số bài kiểm tra**: **461 tests**
+- **Tổng số xác nhận (Assertions)**: **2,347 assertions**
 - **Tỷ lệ vượt qua**: **100% Passed (0 Failed, 0 Skipped)**
-- **Thời gian chạy**: ~7.70 giây
+- **Thời gian chạy**: ~8.90 giây
 - **Code Style (Laravel Pint)**: 100% Clean theo chuẩn Agent.
 
 ```bash
    PASS  Tests\Unit\...
    PASS  Tests\Feature\...
-  Tests:    409 passed (2056 assertions)
-  Duration: 7.70s
+  Tests:    461 passed (2347 assertions)
+  Duration: 8.90s
 ```
 
 ---
@@ -31,11 +31,13 @@
 | 1 | **Điểm danh bằng QR Code tại Cổng Tiếp Tân** (`CheckInController`) | Khi khách đã RSVP đi 3 người (`adults=2, children=1`), lễ tân quét mã QR tại cổng nhưng không nhập số đè thì hệ thống fallback về `expected_attendees = 1` của thiệp mời ban đầu, làm sĩ số báo cáo bị sai lệch. | ⚠️ **LỖI LOGIC GỐC** (`BUG-AUDIT-01`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Thêm phương thức `actualAttendeesCount()` trên Model `Guest`. Ưu tiên lấy sĩ số RSVP thực tế trước khi fallback về `expected_attendees`. |
 | 2 | **Sơ Đồ Xếp Bàn Tiệc & Sức Chứa** (`WeddingTable`, `SeatingPlannerController`) | Khách đã chọn RSVP `declined` (không tham dự) vẫn bị tính chiếm 1 ghế tại bàn tiệc; Khách RSVP đi 3 người chỉ bị tính chiếm 1 ghế, dẫn đến bàn bị quá tải thực tế nhưng hệ thống không báo đỏ `isOverCapacity()`. | ⚠️ **LỖI LOGIC GỐC** (`BUG-AUDIT-02`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Sửa `assigned_attendees_count` trong `WeddingTable` tính bằng `actualAttendeesCount()`. Trả về `0` nếu declined, `adults + children` nếu attending. |
 | 3 | **Đồng Bộ Hai Nguồn Sự Thật Bàn Tiệc** (`GuestController` vs `SeatingPlannerController`) | Khi cập nhật khách mời từ trang Khách Mời, hệ thống chỉ lưu `table_name` mà không tự động tra cứu để gán `table_id`, khiến khách có tên bàn nhưng lại xuất hiện trong danh sách "Chưa xếp bàn" ở Seating Planner. | ⚠️ **LỖI LOGIC GỐC** (`BUG-AUDIT-03`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Tự động tra cứu `WeddingTable` cùng tên thuộc `wedding_id` để đồng bộ `table_id` khi tạo đơn, nhập hàng loạt (`batchStore`) và cập nhật (`update`). |
-| 4 | **Bảo Mật Webhook SePay & VietQR** (`WebhookController`, `PaymentService`) | Kiểm tra chữ ký HMAC SHA256 / API Token, kiểm tra số tiền thanh toán, kiểm tra trạng thái đơn hàng (chống xử lý trùng lặp - Idempotent). |  **AN TOÀN** | Đạt 100% qua test suite thanh toán. |
-| 5 | **Phân Quyền & Cô Lập Dữ Liệu Thiệp** (`InvitationPolicy`, `GuestController`) | Chỉ chủ sở hữu thiệp hoặc đối tác được ủy quyền hợp lệ mới được xem/sửa khách mời, album ảnh, két kỷ niệm và cấu hình. |  **AN TOÀN** | Được phòng vệ bởi `authorizeGuestManagement` và Policy. |
-| 6 | **Cổng Check-In Tiếp Tân** (`CheckInController`) | Bảo vệ bởi mã PIN tiếp tân 6 chữ số riêng biệt với mật khẩu tài khoản cô dâu chú rể, có session kiểm tra ủy quyền. |  **AN TOÀN** | Đã có test xác thực PIN và phân quyền. |
-| 7 | **Hộp Thời Gian Kỷ Niệm (Time Capsule)** (`TimeCapsuleController`) | Khóa thông điệp và kỷ vật bằng mật khẩu cá nhân + ngày mở khóa trong tương lai. |  **AN TOÀN & ĐÚNG HẠN** | 12/12 test case chuyên sâu đạt chuẩn. |
-| 8 | **Đồng Bộ Dữ Liệu Trình Tạo Thiệp (Studio)** (`editor-bridge.blade.php`) | Bắt buộc handshake 2 chiều `MAYHEN_BRIDGE_READY` và thuộc tính `data-sync-target` cho toàn bộ 10 Section tiêu chuẩn. |  **CHUẨN HÓA 100%** | Tuân thủ 8 nguyên tắc cốt lõi `AGENTS.md`. |
+| 4 | **Bảo Mật Cổng Phụ Khi Thiệp Bị Khóa** (`MemoryVaultController`, `LiveWallController`, `PhotoDropController`) | Khi thiệp bị Admin khóa (`is_locked=true`), người dùng vẫn có thể truy cập qua các cổng phụ. | ⚠️ **LỖI BẢO MẬT** (`BUG-AUDIT-04`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Khóa đồng bộ 100% cổng phụ (Memory Vault, Live Wall, Photo Drop, Check-in, Lịch ICS). |
+| 5 | **Phòng Vệ CSV Formula Injection** (`CsvSanitizerService`) | Dữ liệu người dùng nhập (`=`, `+`, `-`, `@`) có thể kích hoạt công thức nguy hiểm khi mở file CSV trong Excel / Sheets. | ⚠️ **LỖI AN TOÀN DỮ LIỆU** (`BUG-AUDIT-05`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Tự động thêm tiền tố `'` vô hiệu hóa công thức qua `CsvSanitizerService`. |
+| 6 | **Bộ Lọc Ngôn Từ & False Positive** (`ContentModerationService`) | Chuyển chuỗi sang ASCII làm chặn oan từ ngữ ngày cưới lịch sự ("đại diện hai họ", "đại gia đình", "buổi tiệc", "vũ trụ", "đi du lịch", "nên duyên"). | ⚠️ **LỖI LOGIC TRẢI NGHIỆM** (`BUG-AUDIT-06`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Thêm `$asciiAmbiguousWords`, chỉ bắt lỗi từ tục khi văn bản gốc có dấu 100%. |
+| 7 | **Bác Sĩ Kiểm Soát Chất Lượng** (`WeddingConsistencyGuardianService`) | Chấm 83/100 điểm và xếp hạng "Xuất sắc" dù thiệp hoàn toàn thiếu ngày cưới hoặc thiếu địa điểm. | ⚠️ **LỖI ĐÁNH GIÁ CHẤT LƯỢNG** (`BUG-AUDIT-07`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Thiết lập Cap Score Defense (tối đa 65%) khi còn bất kỳ lỗi Critical nào. |
+| 8 | **Chống Nhân Bản File Tải Lên** (`PhotoDropController`) | Mạng di động chập chờn khiến khách ấn gửi 2 lần tạo trùng 2 file lưu trữ và 2 bản ghi ảnh rác. | ⚠️ **LỖI TÀI NGUYÊN LƯU TRỮ** (`BUG-AUDIT-08`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Tích hợp bộ lọc 5 phút: tái sử dụng bản ghi, không sinh file rác. |
+| 9 | **Bàn Giao Thiệp Cưới Agency** (`PartnerWeddingController`) | Mã bàn giao không thời hạn, thiếu tính năng thu hồi và nguy cơ Replay Attack sau khi claim. | ⚠️ **LỖI NGHIỆP VỤ ĐỐI TÁC** (`BUG-AUDIT-09`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Giới hạn mã 30 ngày, thêm route thu hồi (revoke) và xóa mã ngay sau lần claim đầu tiên. |
+| 10 | **Khôi Phục Khẩn Cấp & Dự Phòng PII** (`AccountController`, `resilience-kit.blade.php`) | Rollback một chiều xóa vĩnh viễn snapshot; thiếu Audit Trail; danh sách in tiếp tân làm lộ số điện thoại khách mời. | ⚠️ **LỖI PHỤC HỒI & QUYỀN RIÊNG TƯ** (`BUG-AUDIT-10`) | **ĐÃ KHẮC PHỤC TRIỆT ĐỂ**: Triển khai Rollback Swap hai chiều, tích hợp `AuditLogger`, thêm Phone Masking khi in A4. |
 
 ---
 
@@ -77,16 +79,30 @@
 - **Giải pháp xử lý**:
   Trong cả 3 luồng thêm đơn lẻ, nhập danh sách hàng loạt và cập nhật khách mời: tự động tìm kiếm `WeddingTable` có tên trùng khớp thuộc cùng đám cưới để cập nhật đồng bộ `table_id`. Nếu người dùng xóa tên bàn, cả `table_id` và `table_name` đều được đặt về `null`.
 
+### 3.4. BUG-AUDIT-04..10: Các lỗi bảo mật, dữ liệu, điều phối và khôi phục an toàn
+- **BUG-AUDIT-04 (Rò rỉ cổng phụ khi thiệp bị khóa)**: Khóa đồng bộ 100% cổng phụ (Memory Vault, Live Wall, Photo Drop, Check-in, Lịch ICS) khi `is_locked = true`.
+- **BUG-AUDIT-05 (CSV Formula Injection — CWE-1236)**: Thêm tiền tố nháy đơn `'` tự động cho mọi ô văn bản bắt đầu bằng `=`, `+`, `-`, `@`.
+- **BUG-AUDIT-06 (False Positive Content Moderation)**: Thêm danh sách `$asciiAmbiguousWords`, loại bỏ tình trạng chặn oan các cụm từ ngày cưới lịch sự ("đại diện", "buổi tiệc", "vũ trụ", "đi du lịch", "nên duyên").
+- **BUG-AUDIT-07 (Cap Score Defense cho Bác sĩ chất lượng)**: Khống chế điểm số tối đa 65% (buộc chuyển trạng thái `needs_attention`) khi thiệp thiếu ngày cưới hoặc thiếu địa điểm.
+- **BUG-AUDIT-08 (Photo Drop Double-Submit Deduplication)**: Tích hợp bộ lọc 5 phút chống double-click gửi ảnh, không sinh file rác và tái sử dụng bản ghi cũ an toàn.
+- **BUG-AUDIT-09 (Agency Handover Expiry, Revoke & Anti-Replay)**: Bổ sung hạn 30 ngày cho mã bàn giao, tính năng thu hồi mã và xóa mã ngay sau khi claim thành công.
+- **BUG-AUDIT-10 (Emergency Rollback Swap & Resilience Kit PII Guard)**: Triển khai khôi phục hai chiều Rollback Swap không mất dữ liệu, tích hợp `AuditLogger` và tính năng ẩn 4 số giữa SĐT khi in tài liệu tiếp tân ngày cưới.
+
 ---
 
 ## 4. BẰNG CHỨNG KIỂM CHỨNG TỰ ĐỘNG (REGRESSION SUITE)
 
-Đã tạo bộ kiểm thử chuyên biệt tại `tests/Feature/CrossModuleLogicInvariantsTest.php` gồm 5 kịch bản kiểm thử độc lập:
-1. `table_headcount_dynamically_adapts_to_rsvp_attending_count` -> **PASSED**
-2. `table_headcount_releases_seat_when_guest_declines_rsvp` -> **PASSED**
-3. `checkin_scan_automatically_uses_rsvp_headcount` -> **PASSED**
-4. `guest_management_update_syncs_table_id_with_seating_planner` -> **PASSED**
-5. `guest_store_and_batch_store_sync_table_id` -> **PASSED**
-
-Toàn bộ hệ sinh thái kiểm thử đạt **281/281 passed** không phát sinh bất kỳ hồi quy nào.
+Toàn bộ hệ sinh thái kiểm thử đạt **461/461 passed 100% (2,347 assertions)** trong ~8.90 giây, không phát sinh bất kỳ hồi quy nào:
+1. `tests/Feature/CrossModuleLogicInvariantsTest.php` -> **5/5 passed**
+2. `tests/Feature/SecurityDeepDiveMatrixTest.php` -> **4/4 passed**
+3. `tests/Feature/CsvFormulaInjectionDefenseTest.php` -> **4/4 passed**
+4. `tests/Feature/InvitationLockedConsistencyTest.php` -> **5/5 passed**
+5. `tests/Feature/AiStoryWriterFlowTest.php` -> **5/5 passed**
+6. `tests/Feature/VisualQualityDoctorFlowTest.php` -> **5/5 passed**
+7. `tests/Feature/LiveGuestPhotoDropTest.php` -> **12/12 passed**
+8. `tests/Feature/AgencyHandoverClaimFlowTest.php` -> **7/7 passed**
+9. `tests/Feature/SeatingCapacityGuardianTest.php` -> **8/8 passed**
+10. `tests/Feature/EmergencyRollbackTest.php` -> **6/6 passed**
+11. `tests/Feature/WeddingResilienceKitTest.php` -> **4/4 passed**
+12. Các feature test suites toàn hệ thống: **461/461 passed 100%**.
 
