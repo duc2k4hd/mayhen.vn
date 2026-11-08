@@ -89,7 +89,7 @@
             <section class="mayhen_concierge_card mayhen_concierge_card--persona">
                 <div class="mayhen_concierge_persona_icon" aria-hidden="true">💌</div>
                 <h3 class="mayhen_concierge_persona_title">{{ $personaMessage['title'] ?? 'Lời Ngỏ Trân Quý' }}</h3>
-                <p class="mayhen_concierge_persona_body">{{ $personaMessage['message'] ?? '' }}</p>
+                <p class="mayhen_concierge_persona_body">{{ $personaMessage['content'] ?? ($personaMessage['message'] ?? '') }}</p>
             </section>
         @endif
 

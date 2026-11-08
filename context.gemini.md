@@ -5791,6 +5791,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        219. **Nâng Cấp Invitation Persona Cá Nhân Hóa & Chống Rò Rỉ Nội Dung (Invitation Persona & Zero Leakage — Master Audit 06.1)**:
+                             - **Bối cảnh & Phát hiện bất thường**:
+                               - Thực thi kiểm toán sâu Mục 06.1 (Invitation Persona, cá nhân hóa nhóm khách, văn phong trang trọng, fallback và bảo mật) theo `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`:
+                               - **Lỗi 1 (Thiếu cơ chế biến động Placeholder cá nhân hóa)**: Trong `InvitationEditorController::show`, lời ngỏ nhóm `personaMessage` chỉ render chuỗi văn bản tĩnh. Nếu cặp đôi muốn gọi đúng tên khách (*"Kính gửi Bác Nguyễn Văn A, Tuấn Kiệt & Mai Phương trân trọng kính mời Bác..."*), họ không có cách nào chèn biến động `{guest_name}`, `{salutation}`, `{couple_name}` một cách tự nhiên.
+                               - **Lỗi 2 (Không có fallback khi nhóm lạ hoặc chưa cấu hình)**: Khi khách thuộc một nhóm mới chưa kịp soạn lời ngỏ riêng, hoặc khách mở thiệp công khai, hệ thống trả về `personaMessage = null` thay vì có phương án fallback về lời ngỏ trang trọng mặc định (`default`), làm mất trải nghiệm ấm áp.
+                               - **Lỗi 3 (Lệch cấu trúc thuộc tính giữa các màn hình)**: View `guest-concierge.blade.php` sử dụng thuộc tính `$personaMessage['message']`, trong khi `InvitationEditorController` và `public-invitation.blade.php` lại cung cấp `$personaMessage['content']`, dẫn đến lời ngỏ không hiển thị trên trang Concierge cá nhân của khách mời.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Thay thế Placeholder Tự Động & Linh Hoạt (`InvitationEditorController::show`)**:
+                                 * Tự động nhận diện và thay thế:
+                                   - `{guest_name}`: Họ tên khách mời thực tế (`$guest->name`).
+                                   - `{salutation}`: Danh xưng tôn kính (`$guest->salutation`, mặc định 'Quý khách').
+                                   - `{couple_name}`: Tên đôi uyên ương (`[Groom] & [Bride]`).
+                                 * Áp dụng đồng bộ cho cả chế độ khách thật lẫn chế độ Tổng duyệt vai trò trước khi gửi (`Pre-Publish Rehearsal`).
+                               - **Bảo Vệ Riêng Tư Tuyệt Đối (Zero Group Leakage)**:
+                                 * Server chỉ tính toán và trả về duy nhất một lời ngỏ tương ứng với vai trò của khách mời hiện tại.
+                                 * Tuyệt đối không gửi toàn bộ danh sách lời ngỏ của các nhóm khác xuống client rồi ẩn bằng CSS, ngăn chặn triệt để nguy cơ khách soi mã nguồn (Inspect HTML) đọc trộm thông điệp nội bộ của Họ hàng hoặc Khách VIP.
+                               - **Cơ Chế Dự Phòng Thông Minh (Default Fallback Guardian)**:
+                                 * Nếu khách thuộc nhóm chưa cấu hình riêng hoặc không có nhóm, hệ thống tự động tìm và áp dụng cấu hình `'default'` (nếu có trong `personaConfig['groups']['default']`), bảo đảm thiệp luôn có lời ngỏ chỉn chu.
+                               - **Chuẩn Hóa Thuộc Tính Đa Màn Hình (`guest-concierge.blade.php`)**:
+                                 * Cung cấp song song cả hai key `'content'` và `'message'` trong payload `$personaMessage`, cập nhật template hiển thị `{{ $personaMessage['content'] ?? ($personaMessage['message'] ?? '') }}` giúp lời ngỏ hiển thị sắc nét trên mọi trang thiệp cưới và Concierge.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Mở rộng Feature test suite `tests/Feature/PrePublishRehearsalTest.php` thêm 3 ca kiểm thử chuyên sâu -> **7/7 tests passed (27 assertions)**:
+                                 * `test_persona_thay_thế_placeholder_động_guest_name_salutation_couple_name_chính_xác_khi_khách_mở_thiệp`
+                                 * `test_khách_không_có_nhóm_hoặc_nhóm_chưa_định_nghĩa_tự_động_fallback_về_thông_điệp_mặc_định`
+                                 * `test_server_không_rò_rỉ_nội_dung_của_các_nhóm_khác_xuống_client_zero_group_leakage`
+                               - Toàn bộ test suite toàn hệ thống: **455/455 tests passed 100% (2,311 assertions)** trong ~9.5 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

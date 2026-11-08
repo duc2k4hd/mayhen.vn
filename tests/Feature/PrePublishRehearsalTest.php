@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
@@ -106,4 +107,79 @@ test('rehearsal control bar is safely hidden inside studio embed iframe', functi
 
     $response->assertOk();
     $response->assertDontSee('mayhen_rehearsal_topbar');
+});
+
+test('persona thay thế placeholder động {guest_name}, {salutation}, {couple_name} chính xác khi khách mở thiệp', function () {
+    // Cập nhật cấu hình có placeholder
+    $config = $this->invitation->custom_config;
+    $config['persona_messages']['groups']['Họ Hàng'] = [
+        'title' => 'Kính Gửi {salutation} {guest_name}',
+        'content' => 'Gia đình chúng con và hai cháu {couple_name} kính mời {salutation} đến dự tiệc.',
+    ];
+    $this->invitation->update(['custom_config' => $config]);
+
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Nguyễn Văn Hùng',
+        'salutation' => 'Bác',
+        'group_name' => 'Họ Hàng',
+        'guest_token' => 'token-bac-hung-123',
+    ]);
+
+    $response = $this->get(route('invitation.show', [
+        'slug' => $this->invitation->slug,
+        'token' => $guest->guest_token,
+    ]));
+
+    $response->assertOk();
+    $response->assertSee('Kính Gửi Bác Nguyễn Văn Hùng');
+    $response->assertSee('Gia đình chúng con và hai cháu Quốc Bảo &amp; Minh Anh kính mời Bác đến dự tiệc.', false);
+});
+
+test('khách không có nhóm hoặc nhóm chưa định nghĩa tự động fallback về thông điệp mặc định', function () {
+    $config = $this->invitation->custom_config;
+    $config['persona_messages']['groups']['default'] = [
+        'title' => 'Lời Ngỏ Trân Quý Từ Hai Đứa',
+        'content' => 'Cảm ơn bạn đã luôn đồng hành cùng chúng mình trong suốt chặng đường qua.',
+    ];
+    $this->invitation->update(['custom_config' => $config]);
+
+    // Khách thuộc nhóm chưa được định nghĩa riêng
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Lê Thuỳ Trang',
+        'group_name' => 'Bạn Cũ Cấp 2',
+        'guest_token' => 'token-trang-456',
+    ]);
+
+    $response = $this->get(route('invitation.show', [
+        'slug' => $this->invitation->slug,
+        'token' => $guest->guest_token,
+    ]));
+
+    $response->assertOk();
+    $response->assertSee('Lời Ngỏ Trân Quý Từ Hai Đứa');
+    $response->assertSee('Cảm ơn bạn đã luôn đồng hành cùng chúng mình');
+});
+
+test('server không rò rỉ nội dung của các nhóm khác xuống client (zero group leakage)', function () {
+    $guestFriend = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Hoàng Dũng',
+        'group_name' => 'Bạn Bè',
+        'guest_token' => 'token-dung-friend',
+    ]);
+
+    $response = $this->get(route('invitation.show', [
+        'slug' => $this->invitation->slug,
+        'token' => $guestFriend->guest_token,
+    ]));
+
+    $response->assertOk();
+    // Thấy nội dung nhóm Bạn Bè
+    $response->assertSee('Gửi Những Người Bạn Cực Chất');
+
+    // Tuyệt đối không chứa bất kỳ từ ngữ nào của nhóm Khách VIP
+    $response->assertDontSee('Kính Gửi Quý Khách Danh Dự');
+    $response->assertDontSee('Sự hiện diện của Quý vị là niềm vinh dự to lớn cho gia đình chúng tôi');
 });

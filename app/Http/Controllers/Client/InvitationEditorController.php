@@ -356,40 +356,85 @@ class InvitationEditorController extends Controller
             }
 
             if ($rehearsalGroup) {
-                if ($isPersonaEnabled) {
-                    $groupMsg = $personaConfig['groups'][$rehearsalGroup] ?? null;
-                    if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
-                        $personaMessage = [
-                            'title' => $groupMsg['title'] ?? null,
-                            'subtitle' => $groupMsg['subtitle'] ?? null,
-                            'content' => $groupMsg['content'] ?? null,
-                            'group_name' => $rehearsalGroup,
-                        ];
-                    }
-                }
-
                 if (! $guest) {
                     $dummyGuest = new Guest;
                     $dummyGuest->id = 0;
                     $dummyGuest->wedding_id = $wedding ? $wedding->id : 0;
                     $dummyGuest->name = "Khách Quý ({$rehearsalGroup})";
+                    $dummyGuest->salutation = 'Quý khách';
                     $dummyGuest->group_name = $rehearsalGroup;
                     $dummyGuest->guest_token = 'rehearsal-demo-token';
                     $dummyGuest->expected_attendees = 2;
                     $dummyGuest->table_name = ($rehearsalGroup === 'Khách VIP') ? 'Bàn VIP 01' : 'Bàn 08';
                     $guest = $dummyGuest;
                 }
+
+                if ($isPersonaEnabled) {
+                    $groupMsg = $personaConfig['groups'][$rehearsalGroup] ?? ($personaConfig['groups']['default'] ?? null);
+                    if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
+                        $rawTitle = $groupMsg['title'] ?? null;
+                        $rawSubtitle = $groupMsg['subtitle'] ?? null;
+                        $rawContent = $groupMsg['content'] ?? ($groupMsg['message'] ?? null);
+
+                        $coupleName = ($wedding->groom_name ?? 'Chú Rể').' & '.($wedding->bride_name ?? 'Cô Dâu');
+                        $replacePlaceholders = function (?string $text) use ($guest, $coupleName) {
+                            if (empty($text)) {
+                                return null;
+                            }
+
+                            return str_replace(
+                                ['{guest_name}', '{salutation}', '{couple_name}'],
+                                [$guest->name ?? 'Quý khách', $guest->salutation ?? 'Quý khách', $coupleName],
+                                $text
+                            );
+                        };
+
+                        $formattedContent = $replacePlaceholders($rawContent);
+
+                        $personaMessage = [
+                            'title' => $replacePlaceholders($rawTitle),
+                            'subtitle' => $replacePlaceholders($rawSubtitle),
+                            'content' => $formattedContent,
+                            'message' => $formattedContent,
+                            'group_name' => $rehearsalGroup,
+                        ];
+                    }
+                }
             }
         }
 
-        if (! $isRehearsal && $isPersonaEnabled && $guest && ! empty($guest->group_name)) {
-            $groupMsg = $personaConfig['groups'][$guest->group_name] ?? null;
-            if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']))) {
+        if (! $isRehearsal && $isPersonaEnabled && $guest) {
+            $groupKey = ! empty($guest->group_name) ? trim($guest->group_name) : 'default';
+            $groupMsg = $personaConfig['groups'][$groupKey] ?? ($personaConfig['groups']['default'] ?? null);
+
+            if ($groupMsg && (! empty($groupMsg['content']) || ! empty($groupMsg['title']) || ! empty($groupMsg['subtitle']) || ! empty($groupMsg['message']))) {
+                $rawTitle = $groupMsg['title'] ?? null;
+                $rawSubtitle = $groupMsg['subtitle'] ?? null;
+                $rawContent = $groupMsg['content'] ?? ($groupMsg['message'] ?? null);
+
+                $salutation = ! empty($guest->salutation) ? trim($guest->salutation) : 'Quý khách';
+                $coupleName = ($wedding->groom_name ?? 'Chú Rể').' & '.($wedding->bride_name ?? 'Cô Dâu');
+
+                $replacePlaceholders = function (?string $text) use ($guest, $salutation, $coupleName) {
+                    if (empty($text)) {
+                        return null;
+                    }
+
+                    return str_replace(
+                        ['{guest_name}', '{salutation}', '{couple_name}'],
+                        [$guest->name, $salutation, $coupleName],
+                        $text
+                    );
+                };
+
+                $formattedContent = $replacePlaceholders($rawContent);
+
                 $personaMessage = [
-                    'title' => $groupMsg['title'] ?? null,
-                    'subtitle' => $groupMsg['subtitle'] ?? null,
-                    'content' => $groupMsg['content'] ?? null,
-                    'group_name' => $guest->group_name,
+                    'title' => $replacePlaceholders($rawTitle),
+                    'subtitle' => $replacePlaceholders($rawSubtitle),
+                    'content' => $formattedContent,
+                    'message' => $formattedContent,
+                    'group_name' => $guest->group_name ?: 'Khách Quý',
                 ];
             }
         }
