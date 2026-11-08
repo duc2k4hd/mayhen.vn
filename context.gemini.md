@@ -5151,6 +5151,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                              - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                      193. **Hoàn Tất Cột Mốc 5: Trang Trợ Lý Khách Mời VIP (Guest Concierge) & Bộ Phát Hiện Xung Đột Lịch Trình Lễ Cưới Hai Nhà (Dual-Ceremony Collision Detector)**:
+                           - **Bối cảnh & Giá trị trải nghiệm**:
+                             - Thực thi trọn vẹn `TASK-VAL-13` và `TASK-VAL-14` theo mục 09.2 (Gia đình & văn hóa Việt) và 09.3 (Guest Journey Concierge) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                             - Nâng tầm thiệp cưới online thành một **Trợ Lý Đón Tiếp VIP Đích Thực** cho từng khách mời vào ngày đi ăn cưới (không cần tài khoản, có đầy đủ bàn tiệc, QR điểm danh, chỉ dẫn bãi xe ô tô/xe máy, lưu lịch Calendar và VietQR mừng cưới) và hóa giải xung đột lịch trình cưới hỏi truyền thống Việt Nam (Vu Quy vs Thành Hôn vs Tiệc Cưới).
+                           - **Các tính năng cao cấp đã hoàn thành**:
+                             1. *TASK-VAL-13: Trang Trợ Lý Khách Mời VIP Cá Nhân Hóa (One-Page Guest Concierge)*:
+                                - Bổ sung routes `GET /khach-moi/{guestToken}` (`guest.concierge`) và `GET /khach-moi/{guestToken}/lich-ics` (`guest.concierge.ics`) trong `routes/web.php`.
+                                - Controller: `CheckInController::guestConcierge` chuẩn bị trọn gói dữ liệu khách: Lời ngỏ Persona, Thẻ bàn tiệc, QR điểm danh cá nhân, Lịch trình, Link Google Calendar, Bãi đỗ xe và VietQR mừng cưới.
+                                - Controller: `CheckInController::downloadIcs` xuất file `.ics` chuẩn vCalendar v2.0 để khách thêm vào Apple Calendar / Outlook 1 chạm.
+                                - Giao diện: `resources/views/client/pages/guest-concierge.blade.php` phong cách Quiet Luxury Editorial sang trọng, mobile-first.
+                                - Cập nhật `resources/views/client/components/guest-table-badge.blade.php` gắn nút dẫn thẳng khách sang trang Concierge từ thiệp mời.
+                                - CSS Token: Toàn bộ hệ thống class `mayhen_concierge_*` trong `public/assets/client/css/pages/checkin.css`.
+                             2. *TASK-VAL-14: Bộ Phát Hiện Xung Đột Lịch Trình Lễ Cưới & Tiệc Cưới Hai Nhà (Dual-Ceremony Collision Detector)*:
+                                - Trong `WeddingConsistencyGuardianService.php`, xây dựng phương thức `detectCeremonyCollisions(Wedding $wedding, ?Invitation $invitation = null)` phát hiện 4 nhóm xung đột sống còn:
+                                  1. Trùng giờ hoặc giãn cách quá gấp giữa Lễ Vu Quy (Nhà Gái) và Lễ Thành Hôn (Nhà Trai) (< 90 phút khiến đoàn rước dâu trễ giờ lành).
+                                  2. Lễ gia tiên diễn ra sau giờ tiệc cưới hoặc kết thúc quá sát giờ đón khách (< 60 phút).
+                                  3. Nghi vấn lệch chi nhánh giữa Tên sảnh tiệc và Link Google Maps (hỗ trợ các chuỗi tiệc cưới lớn: White Palace, The Adora, Asiana Plaza...).
+                                  4. Khách họ hàng có nguy cơ bị gán nhầm sự kiện/nhà bên kia.
+                                - API: `GET /api/editor/collision-check/{id}` (`invitation.collision_check`) trong `InvitationEditorController.php`.
+                           - **Kiểm thử & Đảm bảo chất lượng**:
+                             - Viết mới 2 Feature test suites:
+                               * `tests/Feature/OnePageGuestConciergeTest.php` -> **5/5 tests passed (21 assertions)**.
+                               * `tests/Feature/DualCeremonyCollisionDetectorTest.php` -> **6/6 tests passed (18 assertions)**.
+                             - Cập nhật test suite `tests/Feature/CheckInTableCoordinationTest.php` -> **10/10 tests passed (62 assertions)**.
+                             - Toàn bộ test suite toàn hệ thống: **330/330 tests passed 100% (1,614 assertions)**.
+                             - Laravel Pint: Đạt chuẩn 100% agent style.
+                             - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                             - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

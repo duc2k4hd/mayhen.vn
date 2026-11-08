@@ -67,6 +67,8 @@ Thumbs.db
 !/tests/Feature/PreSendValidationTest.php
 !/tests/Feature/EmergencyRollbackTest.php
 !/tests/Feature/WeddingReadinessChecklistTest.php
+!/tests/Feature/OnePageGuestConciergeTest.php
+!/tests/Feature/DualCeremonyCollisionDetectorTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

@@ -56,6 +56,7 @@ Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosav
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::post('/api/editor/ai-story', [InvitationEditorController::class, 'generateAiStory'])->middleware('throttle:editor_actions')->name('invitation.aiStory');
 Route::get('/api/editor/consistency-check/{id}', [InvitationEditorController::class, 'consistencyCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.consistency_check');
+Route::get('/api/editor/collision-check/{id}', [InvitationEditorController::class, 'collisionCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.collision_check');
 Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 'readinessCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.readiness_check');
 Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
@@ -200,6 +201,8 @@ Route::post('/api/diem-danh-tiec/{slug}/ban-tiec/{guestId}', [CheckInController:
 
 // Thẻ VIP & Tra Cứu Bàn Tiệc Khi Quét QR Cá Nhân
 Route::get('/diem-danh/{token}', [CheckInController::class, 'directScan'])->name('checkin.direct');
+Route::get('/khach-moi/{guestToken}', [CheckInController::class, 'guestConcierge'])->name('guest.concierge');
+Route::get('/khach-moi/{guestToken}/lich-ics', [CheckInController::class, 'downloadIcs'])->name('guest.concierge.ics');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

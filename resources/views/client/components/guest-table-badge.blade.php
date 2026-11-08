@@ -45,6 +45,9 @@
                 $checkinUrl = !empty($guest->guest_token) 
                     ? route('checkin.direct', ['token' => $guest->guest_token]) 
                     : url('#');
+                $conciergeUrl = !empty($guest->guest_token) 
+                    ? route('guest.concierge', ['guestToken' => $guest->guest_token]) 
+                    : url('#');
             @endphp
             <div class="pass_modal_qr_wrap">
                 <div class="pass_qr_code">
@@ -56,8 +59,8 @@
             </div>
 
             <div class="pass_modal_footer">
-                <a href="{{ $checkinUrl }}" {{ !empty($guest->guest_token) ? 'target="_blank"' : '' }} class="pass_btn_link">
-                    Mở thẻ VIP đầy đủ →
+                <a href="{{ $conciergeUrl }}" {{ !empty($guest->guest_token) ? 'target="_blank"' : '' }} class="pass_btn_link">
+                    Mở Trợ Lý Đón Tiếp VIP & Chỉ Dẫn Bãi Xe →
                 </a>
             </div>
         </div>

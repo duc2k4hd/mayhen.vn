@@ -390,4 +390,196 @@ class WeddingConsistencyGuardianService
             'items' => $items,
         ];
     }
+
+    /**
+     * Bộ Phát Hiện Xung Đột Lịch Trình Lễ Cưới & Tiệc Cưới Hai Nhà (Dual-Ceremony Collision Detector - TASK-VAL-14).
+     * Phát hiện:
+     * 1. Xung đột thời gian giữa Lễ Vu Quy (Nhà Gái) và Lễ Thành Hôn (Nhà Trai) quá sát nhau (< 90 phút).
+     * 2. Xung đột giữa Lễ Gia Tiên và Giờ Khai Tiệc Cưới (trùng giờ hoặc giãn cách < 60 phút).
+     * 3. Xung đột lệch chi nhánh giữa Tên sảnh tiệc và Đường dẫn Google Maps (đặc biệt các chuỗi White Palace, Adora, Asiana...).
+     * 4. Khách mời họ hàng bị gán nhầm sự kiện.
+     *
+     * @return array{
+     *     has_collisions: bool,
+     *     highest_severity: string,
+     *     collisions_count: int,
+     *     collisions: array<int, array{type: string, severity: string, title: string, message: string, suggestion: string}>
+     * }
+     */
+    public function detectCeremonyCollisions(Wedding $wedding, ?Invitation $invitation = null): array
+    {
+        $collisions = [];
+        $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+
+        // 1. Phân tích thời gian các sự kiện
+        $brideCeremonyTime = trim((string) ($extra['ceremony_time'] ?? ''));
+        $groomCeremonyTime = trim((string) ($extra['ceremony_groom_time'] ?? ''));
+        $partyTime = trim((string) ($extra['party_time'] ?? ($extra['event_party_time'] ?? '')));
+
+        $brideMinutes = $this->timeToMinutes($brideCeremonyTime);
+        $groomMinutes = $this->timeToMinutes($groomCeremonyTime);
+        $partyMinutes = $this->timeToMinutes($partyTime);
+
+        // A. Kiểm tra xung đột giữa Lễ Vu Quy và Lễ Thành Hôn
+        if ($brideMinutes !== null && $groomMinutes !== null) {
+            $diffMinutes = abs($groomMinutes - $brideMinutes);
+            if ($diffMinutes === 0) {
+                $collisions[] = [
+                    'type' => 'ceremony_overlap',
+                    'severity' => 'critical',
+                    'title' => 'Trùng giờ Lễ Vu Quy và Lễ Thành Hôn',
+                    'message' => "Lễ Vu Quy (Nhà Gái) và Lễ Thành Hôn (Nhà Trai) đều đang được đặt cùng một thời điểm ({$brideCeremonyTime}).",
+                    'suggestion' => 'Vui lòng sắp xếp giờ đón dâu và giờ làm lễ tại hai gia đình so le nhau để hai họ có thời gian di chuyển trang trọng.',
+                ];
+            } elseif ($diffMinutes < 90) {
+                $collisions[] = [
+                    'type' => 'ceremony_tight_schedule',
+                    'severity' => 'warning',
+                    'title' => 'Khoảng cách giữa hai lễ gia tiên quá gấp',
+                    'message' => "Lễ Vu Quy ({$brideCeremonyTime}) và Lễ Thành Hôn ({$groomCeremonyTime}) chỉ cách nhau {$diffMinutes} phút.",
+                    'suggestion' => 'Khuyên nên giãn cách tối thiểu 90 - 120 phút để dự phòng kẹt xe và đảm bảo đoàn rước dâu kịp giờ hoàng đạo.',
+                ];
+            }
+        }
+
+        // B. Kiểm tra xung đột giữa Lễ Gia Tiên và Giờ Khai Tiệc
+        $latestCeremonyMinutes = max(array_filter([$brideMinutes, $groomMinutes], fn ($m) => $m !== null) ?: [null]);
+        if ($latestCeremonyMinutes !== null && $partyMinutes !== null) {
+            if ($latestCeremonyMinutes > $partyMinutes) {
+                $collisions[] = [
+                    'type' => 'ceremony_after_party',
+                    'severity' => 'critical',
+                    'title' => 'Lễ gia tiên diễn ra sau giờ khai tiệc',
+                    'message' => 'Lễ gia tiên tại nhà đang được thiết lập sau giờ khai tiệc tại nhà hàng tiệc cưới.',
+                    'suggestion' => 'Vui lòng kiểm tra lại giờ làm lễ gia tiên (buổi sáng/trưa) và giờ đón khách tại trung tâm tiệc cưới (buổi chiều/tối).',
+                ];
+            } elseif ($partyMinutes - $latestCeremonyMinutes < 60) {
+                $gap = $partyMinutes - $latestCeremonyMinutes;
+                $collisions[] = [
+                    'type' => 'ceremony_to_party_rushed',
+                    'severity' => 'warning',
+                    'title' => 'Khoảng cách giữa lễ gia tiên và tiệc cưới quá ngắn',
+                    'message' => "Lễ gia tiên kết thúc quá sát giờ đón khách tại nhà hàng (chỉ cách {$gap} phút).",
+                    'suggestion' => 'Cô dâu chú rể cần tối thiểu 60 - 90 phút để di chuyển tới sảnh tiệc, dặm lại trang điểm và thay trang phục đón khách.',
+                ];
+            }
+        }
+
+        // C. Kiểm tra nghi vấn lệch chi nhánh giữa Tên sảnh tiệc và Link Google Maps
+        $venueName = mb_strtolower((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? ''))), 'UTF-8');
+        $mapUrl = mb_strtolower((string) ($extra['event_party_map_url'] ?? ($extra['google_map_url'] ?? '')), 'UTF-8');
+
+        if ($mapUrl !== '') {
+            $multiBranchVenues = [
+                'white palace' => [
+                    'hoàng văn thụ' => ['hoang-van-thu', 'hoang_van_thu', 'hvt', '194-hoang-van-thu'],
+                    'phạm văn đồng' => ['pham-van-dong', 'pham_van_dong', 'pvd', '108-pham-van-dong'],
+                ],
+                'adora' => [
+                    'center' => ['431-hoang-van-thu', 'adora-center'],
+                    'grand' => ['nguyen-kiem', 'adora-grand'],
+                    'dynasty' => ['le-dai-hanh', 'adora-dynasty'],
+                    'riverside' => ['ben-van-don', 'adora-riverside'],
+                    'premium' => ['nguyen-van-linh', 'adora-premium'],
+                ],
+                'asiana plaza' => [
+                    'bình thạnh' => ['phan-dang-luu', 'binh-thanh'],
+                    'tân phú' => ['vuon-lai', 'tan-phu'],
+                ],
+            ];
+
+            foreach ($multiBranchVenues as $brand => $branches) {
+                if (str_contains($venueName, $brand)) {
+                    foreach ($branches as $branchKey => $keywords) {
+                        if (str_contains($venueName, $branchKey)) {
+                            // Tên sảnh là chi nhánh A, kiểm tra xem mapUrl có dính keyword của chi nhánh B khác không
+                            foreach ($branches as $otherBranchKey => $otherKeywords) {
+                                if ($otherBranchKey !== $branchKey) {
+                                    foreach ($otherKeywords as $kw) {
+                                        if (str_contains($mapUrl, $kw)) {
+                                            $collisions[] = [
+                                                'type' => 'venue_map_branch_mismatch',
+                                                'severity' => 'critical',
+                                                'title' => 'Cảnh báo lệch chi nhánh Google Maps',
+                                                'message' => "Tên sảnh tiệc ghi chi nhánh '{$branchKey}' nhưng link Google Maps dường như đang dẫn tới chi nhánh '{$otherBranchKey}'.",
+                                                'suggestion' => 'Vui lòng mở liên kết Google Maps kiểm tra lại ngay để tránh khách mời đi nhầm địa điểm sảnh tiệc.',
+                                            ];
+                                            break 3;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // D. Kiểm tra khách họ hàng bị gán nhầm sự kiện
+        $mismatchedGuestsCount = 0;
+        $brideAddress = trim((string) ($extra['ceremony_address'] ?? ''));
+        $groomAddress = trim((string) ($extra['ceremony_groom_address'] ?? ''));
+        if ($brideAddress !== '' || $groomAddress !== '') {
+            $brideFamilyGuests = $wedding->guests()
+                ->where('group_name', 'like', '%Nhà Gái%')
+                ->where(function ($q) {
+                    $q->where('check_in_note', 'like', '%nhà trai%')
+                        ->orWhere('check_in_note', 'like', '%thành hôn%');
+                })
+                ->count();
+            if ($brideFamilyGuests > 0) {
+                $mismatchedGuestsCount += $brideFamilyGuests;
+            }
+        }
+
+        if ($mismatchedGuestsCount > 0) {
+            $collisions[] = [
+                'type' => 'guest_assignment_mismatch',
+                'severity' => 'warning',
+                'title' => 'Khách họ hàng có thể bị gán nhầm sự kiện',
+                'message' => "Phát hiện {$mismatchedGuestsCount} khách thuộc nhóm họ hàng có ghi chú tham dự sự kiện của nhà bên kia.",
+                'suggestion' => 'Rà soát lại danh sách khách mời để đảm bảo khách nhận đúng thiệp mời dự Lễ Vu Quy hoặc Lễ Thành Hôn.',
+            ];
+        }
+
+        $highestSeverity = 'none';
+        if (collect($collisions)->contains(fn ($c) => $c['severity'] === 'critical')) {
+            $highestSeverity = 'critical';
+        } elseif (collect($collisions)->contains(fn ($c) => $c['severity'] === 'warning')) {
+            $highestSeverity = 'warning';
+        } elseif (count($collisions) > 0) {
+            $highestSeverity = 'info';
+        }
+
+        return [
+            'has_collisions' => count($collisions) > 0,
+            'highest_severity' => $highestSeverity,
+            'collisions_count' => count($collisions),
+            'collisions' => $collisions,
+        ];
+    }
+
+    /**
+     * Chuyển đổi chuỗi giờ "HH:MM" thành số phút trong ngày.
+     */
+    private function timeToMinutes(?string $timeStr): ?int
+    {
+        if (! $timeStr || ! str_contains($timeStr, ':')) {
+            return null;
+        }
+
+        $parts = explode(':', trim($timeStr));
+        if (count($parts) < 2) {
+            return null;
+        }
+
+        $h = (int) $parts[0];
+        $m = (int) $parts[1];
+
+        if ($h < 0 || $h > 23 || $m < 0 || $m > 59) {
+            return null;
+        }
+
+        return $h * 60 + $m;
+    }
 }

@@ -532,6 +532,22 @@ class InvitationEditorController extends Controller
     }
 
     /**
+     * API Bộ Phát Hiện Xung Đột Lịch Trình Lễ Cưới & Tiệc Cưới Hai Nhà (TASK-VAL-14).
+     */
+    public function collisionCheck(int $invitationId, WeddingConsistencyGuardianService $guardian): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
+
+        $result = $guardian->detectCeremonyCollisions($invitation->wedding, $invitation);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
+    }
+
+    /**
      * API Autosave định kỳ từ Studio V2 kèm Optimistic Concurrency Control.
      */
     public function autosave(Request $request): JsonResponse

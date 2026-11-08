@@ -137,3 +137,25 @@
   * CSS Token: Khối `mayhen_readiness_*` trong `public/assets/client/css/pages/account.css`.
 - **Kiểm thử**: `tests/Feature/WeddingReadinessChecklistTest.php` (5/5 tests passed, 24 assertions).
 
+---
+
+### CỘT MỐC 5: TRỢ LÝ ĐÓN TIẾP VIP & HÒA HỢP GIA ĐÌNH HAI NHÀ (GUEST CONCIERGE & FAMILY COLLISION DEFENSE) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-13`: Trang Trợ Lý Khách Mời VIP Cá Nhân Hóa (One-Page Guest Concierge) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Thay vì chỉ gửi thiệp mời dạng lật trang thông thường, cung cấp một trang Concierge 1 trang cá nhân hóa độc quyền cho từng vị khách tại `/khach-moi/{guestToken}` (không cần tạo tài khoản). Tổng hợp đầy đủ mọi tiện ích sống còn vào ngày đi ăn cưới: Tên khách & số suất mời, Thẻ bàn tiệc điện tử nổi bật, Mã QR điểm danh nhanh tại cổng đón tiếp, Thông điệp Persona riêng biệt, Nút 1 chạm thêm vào Google Calendar / Apple Calendar (.ics), Định vị Google Maps & Bãi đỗ xe thông minh (ô tô, xe máy, thang máy), Form xác nhận tham dự nhanh (Fast RSVP) và Hộp mừng cưới VietQR cá nhân hóa.
+- **Phạm vi code**:
+  * Controller: Mở rộng `CheckInController::guestConcierge` và `CheckInController::downloadIcs` xuất file `.ics` chuẩn iCalendar v2.0.
+  * Routes: `GET /khach-moi/{guestToken}` (`guest.concierge`), `GET /khach-moi/{guestToken}/lich-ics` (`guest.concierge.ics`), đồng thời liên kết tương thích 100% với `checkin.direct`.
+  * View: `resources/views/client/pages/guest-concierge.blade.php` phong cách Quiet Luxury Editorial sang trọng.
+  * Liên kết ngược: Cập nhật component `guest-table-badge.blade.php` dẫn thẳng khách sang trang Concierge từ thiệp cưới.
+  * CSS: Toàn bộ hệ thống class `mayhen_concierge_*` trong `public/assets/client/css/pages/checkin.css`.
+- **Kiểm thử**: `tests/Feature/OnePageGuestConciergeTest.php` (5/5 tests passed, 21 assertions) & `CheckInTableCoordinationTest.php` (10/10 passed).
+
+#### `TASK-VAL-14`: Bộ Phát Hiện Xung Đột Lịch Trình Lễ Cưới & Tiệc Cưới Hai Nhà (Dual-Ceremony Collision Detector) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Giải quyết bài toán văn hóa cưới hỏi Việt Nam (Lễ Vu Quy Nhà Gái, Lễ Thành Hôn Nhà Trai, Tiệc Cưới Nhà Hàng). Tự động phát hiện các xung đột nguy hiểm: trùng giờ làm lễ hoặc cách nhau quá ngắn (< 90 phút khiến đoàn rước dâu trễ giờ lành); lễ gia tiên diễn ra sau giờ tiệc cưới; nghi vấn lệch chi nhánh giữa Tên sảnh tiệc và Link Google Maps (các chuỗi nhà hàng tiệc cưới lớn như White Palace, Adora, Asiana...); và khách họ hàng bị gán nhầm sự kiện.
+- **Phạm vi code**:
+  * Service: Thêm `detectCeremonyCollisions(Wedding $wedding, ?Invitation $invitation = null)` trong `WeddingConsistencyGuardianService.php`.
+  * Phân cấp mức độ xung đột: `critical` (trùng giờ làm lễ, lễ sau tiệc, link Google Maps trỏ sai chi nhánh), `warning` (giãn cách giờ quá gấp, họ hàng gán nhầm), `none` (lịch trình hoàn hảo).
+  * API endpoint: `GET /api/editor/collision-check/{id}` (`invitation.collision_check`) trong `InvitationEditorController.php`.
+- **Kiểm thử**: `tests/Feature/DualCeremonyCollisionDetectorTest.php` (6/6 tests passed, 18 assertions).
+

@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
+use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class CheckInController extends Controller
 {
@@ -292,22 +295,137 @@ class CheckInController extends Controller
     }
 
     /**
-     * Khách quét mã QR bằng camera thường của điện thoại: Mở trang xem bàn tiệc và thẻ VIP.
+     * Khách quét mã QR bằng camera thường của điện thoại: Mở trang Concierge đón tiếp VIP.
      */
     public function directScan(Request $request, string $guestToken): View|RedirectResponse
     {
-        $guest = Guest::with(['wedding.invitations'])->where('guest_token', $guestToken)->firstOrFail();
-        $invitation = $guest->wedding->invitations()->first();
+        return $this->guestConcierge($request, $guestToken);
+    }
+
+    /**
+     * Trang Hành Trình Khách Mời Cá Nhân Hóa (One-Page Guest Concierge - TASK-VAL-13).
+     * Trợ lý số 1 trang cho khách mời: Lời chào cá nhân, bàn tiệc, QR Check-in,
+     * thời gian, chỉ đường Google Maps, hướng dẫn bãi đỗ xe, lưu lịch Calendar và VietQR mừng cưới.
+     */
+    public function guestConcierge(Request $request, string $guestToken): View
+    {
+        $guest = Guest::with(['wedding.invitations.template'])->where('guest_token', $guestToken)->firstOrFail();
+        $wedding = $guest->wedding;
+        $invitation = $wedding->invitations()->first();
 
         if (! $invitation) {
             abort(404, 'Không tìm thấy thiệp cưới.');
         }
 
-        return view('client.pages.guest-pass', [
+        $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        // 1. Lời nhắn riêng cho nhóm khách (Persona message)
+        $personaMessage = ! empty($guest->group_name) && ! empty($config['persona_messages'][$guest->group_name])
+            ? $config['persona_messages'][$guest->group_name]
+            : null;
+
+        // 2. Hướng dẫn bãi đỗ xe & lối vào sảnh tiệc
+        $parkingGuide = is_array($config['parking_guide'] ?? null) ? $config['parking_guide'] : [];
+
+        // 3. Phản hồi xác nhận tham dự (RSVP) hiện tại
+        $existingResponse = GuestResponse::where('wedding_id', $wedding->id)->where('guest_id', $guest->id)->first();
+
+        // 4. Link Google Calendar 1 chạm
+        $googleCalendarUrl = $this->buildGoogleCalendarUrl($wedding, $extra, $guest);
+
+        return view('client.pages.guest-concierge', [
             'guest' => $guest,
-            'wedding' => $guest->wedding,
+            'wedding' => $wedding,
             'invitation' => $invitation,
+            'extra' => $extra,
+            'config' => $config,
+            'personaMessage' => $personaMessage,
+            'parkingGuide' => $parkingGuide,
+            'existingResponse' => $existingResponse,
+            'googleCalendarUrl' => $googleCalendarUrl,
         ]);
+    }
+
+    /**
+     * Tải file iCalendar (.ics) cho khách thêm vào Apple Calendar / Outlook 1 chạm.
+     */
+    public function downloadIcs(Request $request, string $guestToken): Response
+    {
+        $guest = Guest::with(['wedding'])->where('guest_token', $guestToken)->firstOrFail();
+        $wedding = $guest->wedding;
+        $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+
+        $dateStr = $wedding->wedding_date ? $wedding->wedding_date->format('Ymd') : date('Ymd');
+        $timeStr = trim((string) ($extra['party_time'] ?? ($extra['event_party_time'] ?? '18:00')));
+        $cleanTime = str_replace(':', '', substr($timeStr, 0, 5)).'00';
+        if (strlen($cleanTime) !== 6) {
+            $cleanTime = '180000';
+        }
+
+        $startUtc = $dateStr.'T'.$cleanTime;
+        $endHour = str_pad((int) substr($cleanTime, 0, 2) + 3, 2, '0', STR_PAD_LEFT);
+        $endUtc = $dateStr.'T'.$endHour.substr($cleanTime, 2);
+
+        $title = "Hôn Lễ: {$wedding->groom_name} & {$wedding->bride_name}";
+        $venue = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? 'Sảnh Tiệc Cưới'))));
+        $address = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
+        $location = $venue.($address !== '' ? ', '.$address : '');
+        $description = "Trân trọng kính mời {$guest->salutation} {$guest->name} tới chung vui cùng đôi uyên ương tại {$venue}.";
+
+        $icsContent = "BEGIN:VCALENDAR\r\n"
+            ."VERSION:2.0\r\n"
+            ."PRODID:-//May Hen//Wedding Concierge//VI\r\n"
+            ."CALSCALE:GREGORIAN\r\n"
+            ."METHOD:PUBLISH\r\n"
+            ."BEGIN:VEVENT\r\n"
+            .'UID:'.md5($guest->id.$wedding->id)."@mayhen.vn\r\n"
+            .'DTSTAMP:'.gmdate('Ymd\THis\Z')."\r\n"
+            .'DTSTART;TZID=Asia/Ho_Chi_Minh:'.$startUtc."\r\n"
+            .'DTEND;TZID=Asia/Ho_Chi_Minh:'.$endUtc."\r\n"
+            .'SUMMARY:'.$title."\r\n"
+            .'DESCRIPTION:'.$description."\r\n"
+            .'LOCATION:'.$location."\r\n"
+            ."STATUS:CONFIRMED\r\n"
+            ."END:VEVENT\r\n"
+            ."END:VCALENDAR\r\n";
+
+        $filename = 'thiep-cuoi-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'.ics';
+
+        return response($icsContent, 200, [
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /**
+     * Tạo đường dẫn thêm vào Google Calendar 1 chạm.
+     *
+     * @param  array<string, mixed>  $extra
+     */
+    private function buildGoogleCalendarUrl(Wedding $wedding, array $extra, Guest $guest): string
+    {
+        $title = "Hôn Lễ: {$wedding->groom_name} & {$wedding->bride_name}";
+        $venue = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? 'Sảnh Tiệc Cưới'))));
+        $address = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
+        $location = $venue.($address !== '' ? ', '.$address : '');
+        $details = "Trân trọng kính mời {$guest->salutation} {$guest->name} tới chung vui cùng đôi uyên ương {$wedding->groom_name} & {$wedding->bride_name} tại {$venue}.";
+
+        $dateStr = $wedding->wedding_date ? $wedding->wedding_date->format('Ymd') : date('Ymd');
+        $timeStr = trim((string) ($extra['party_time'] ?? ($extra['event_party_time'] ?? '18:00')));
+        $cleanTime = str_replace(':', '', substr($timeStr, 0, 5)).'00';
+        if (strlen($cleanTime) !== 6) {
+            $cleanTime = '180000';
+        }
+        $start = $dateStr.'T'.$cleanTime;
+        $endHour = str_pad((int) substr($cleanTime, 0, 2) + 3, 2, '0', STR_PAD_LEFT);
+        $end = $dateStr.'T'.$endHour.substr($cleanTime, 2);
+
+        return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+            .'&text='.urlencode($title)
+            .'&dates='.$start.'/'.$end
+            .'&details='.urlencode($details)
+            .'&location='.urlencode($location);
     }
 
     /**
