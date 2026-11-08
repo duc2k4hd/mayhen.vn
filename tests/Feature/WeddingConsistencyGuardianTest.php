@@ -93,3 +93,32 @@ test('api consistency check enforces ownership and returns json inspection', fun
     $successResponse->assertJsonPath('data.status', 'excellent');
     $successResponse->assertJsonPath('data.score', 100);
 });
+
+test('consistency guardian detects inverted rsvp deadline and bride bank account issues with direct field targets', function () {
+    $this->wedding->update([
+        'extra_data' => [
+            'event_party_map_url' => 'https://maps.app.goo.gl/sample123',
+            'groom_bank_account' => '0123456789',
+            'groom_bank_name' => 'Vietcombank',
+            'rsvp_deadline' => now()->addDays(40)->format('Y-m-d'), // Sau ngày cưới (+30 ngày)
+            'bride_bank_account' => '9876543210',
+            'bride_bank_name' => '', // Thiếu tên ngân hàng nhà gái
+        ],
+    ]);
+
+    $guardian = app(WeddingConsistencyGuardianService::class);
+    $result = $guardian->inspect($this->wedding, $this->invitation);
+
+    $fields = array_column($result['issues'], 'field');
+    expect($fields)->toContain('rsvp_deadline');
+    expect($fields)->toContain('bride_bank_name');
+
+    // Kiểm tra có field_target để Studio cuộn tới đúng trường nhập liệu
+    $rsvpIssue = collect($result['issues'])->firstWhere('field', 'rsvp_deadline');
+    expect($rsvpIssue['field_target'])->toBe('input_rsvp_deadline');
+    expect($rsvpIssue['severity'])->toBe('critical');
+
+    $brideBankIssue = collect($result['issues'])->firstWhere('field', 'bride_bank_name');
+    expect($brideBankIssue['field_target'])->toBe('input_bride_bank_name');
+    expect($brideBankIssue['severity'])->toBe('warning');
+});

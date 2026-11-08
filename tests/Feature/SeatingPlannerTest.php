@@ -286,3 +286,44 @@ test('cặp đôi có thể mở trang in sơ đồ sảnh tiệc chuẩn A4/A3'
     $response->assertSee('Bàn VIP Danh Dự');
     $response->assertSee('Bác Hai');
 });
+
+test('tạo bàn mới tự động liên kết các khách có sẵn table_name nhưng chưa có table_id', function () {
+    // 1. Giả lập khách được nhập từ Excel có sẵn tên bàn nhưng chưa có table_id
+    $guest = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bạn Long Lớp Trưởng',
+        'table_name' => 'Bàn Đồng Nghiệp Cũ',
+        'table_id' => null,
+        'expected_attendees' => 2,
+    ]);
+
+    expect($guest->table_id)->toBeNull();
+
+    // 2. Cặp đôi tạo bàn mới trùng tên qua Seating Planner
+    $response = $this->actingAs($this->user)->postJson(route('seating.storeTable', $this->invitation->id), [
+        'name' => 'Bàn Đồng Nghiệp Cũ',
+        'shape' => 'round',
+        'capacity' => 10,
+    ]);
+
+    $response->assertStatus(200);
+    $table = WeddingTable::where('name', 'Bàn Đồng Nghiệp Cũ')->first();
+    expect($table)->not->toBeNull();
+
+    // 3. Khách phải được tự động liên kết table_id ngay lập tức
+    $freshGuest = $guest->fresh();
+    expect($freshGuest->table_id)->toBe($table->id)
+        ->and($freshGuest->table_name)->toBe('Bàn Đồng Nghiệp Cũ');
+
+    // 4. Kiểm tra self-healing khi vào trang index: khách khác có table_name trùng cũng được map
+    $guest2 = Guest::create([
+        'wedding_id' => $this->wedding->id,
+        'name' => 'Bạn Hùng CNTT',
+        'table_name' => 'Bàn Đồng Nghiệp Cũ',
+        'table_id' => null,
+        'expected_attendees' => 1,
+    ]);
+
+    $this->actingAs($this->user)->get(route('seating.index', $this->invitation->id));
+    expect($guest2->fresh()->table_id)->toBe($table->id);
+});

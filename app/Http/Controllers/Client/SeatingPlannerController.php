@@ -25,6 +25,22 @@ class SeatingPlannerController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeOwner($wedding);
 
+        // Self-healing: Tự động đồng bộ table_id cho khách mời nếu table_name trùng khớp với bàn hiện có
+        $unmappedGuests = $wedding->guests()
+            ->whereNull('table_id')
+            ->whereNotNull('table_name')
+            ->where('table_name', '!=', '')
+            ->get();
+
+        if ($unmappedGuests->isNotEmpty()) {
+            $existingTables = $wedding->tables()->pluck('id', 'name');
+            foreach ($unmappedGuests as $g) {
+                if (isset($existingTables[$g->table_name])) {
+                    $g->update(['table_id' => $existingTables[$g->table_name]]);
+                }
+            }
+        }
+
         $tables = $wedding->tables()->with(['guests.response'])->get();
 
         // Khách mời chưa được xếp bàn
@@ -120,6 +136,12 @@ class SeatingPlannerController extends Controller
             'pos_y' => (int) $posY,
             'display_order' => $tablesCount + 1,
         ]);
+
+        // Tự động liên kết các khách mời đã có sẵn tên bàn này nhưng chưa được gán table_id
+        $wedding->guests()
+            ->whereNull('table_id')
+            ->where('table_name', $table->name)
+            ->update(['table_id' => $table->id]);
 
         if ($request->wantsJson()) {
             return response()->json([

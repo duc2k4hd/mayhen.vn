@@ -13,7 +13,7 @@ class WeddingConsistencyGuardianService
      * @return array{
      *     score: int,
      *     status: string,
-     *     issues: array<int, array{severity: string, field: string, message: string, suggestion: string}>,
+     *     issues: array<int, array{severity: string, field: string, field_target?: string, message: string, suggestion: string}>,
      *     checks_passed: int,
      *     checks_total: int
      * }
@@ -26,13 +26,30 @@ class WeddingConsistencyGuardianService
 
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
 
-        // 1. Kiểm tra ngày tổ chức hôn lễ
+        // 1. Kiểm tra ngày tổ chức hôn lễ và hạn chót RSVP
         if ($wedding->wedding_date) {
             $checksPassed++;
+
+            // Kiểm tra tính hợp lý của hạn chót RSVP so với ngày cưới
+            $rsvpDeadline = trim((string) ($extra['rsvp_deadline'] ?? ($extra['event_party_rsvp_deadline'] ?? '')));
+            if ($rsvpDeadline !== '') {
+                $weddingTimestamp = strtotime((string) $wedding->wedding_date);
+                $deadlineTimestamp = strtotime($rsvpDeadline);
+                if ($weddingTimestamp && $deadlineTimestamp && $deadlineTimestamp > $weddingTimestamp) {
+                    $issues[] = [
+                        'severity' => 'critical',
+                        'field' => 'rsvp_deadline',
+                        'field_target' => 'input_rsvp_deadline',
+                        'message' => 'Hạn chót phản hồi RSVP ('.$rsvpDeadline.') đang được đặt sau ngày tổ chức hôn lễ.',
+                        'suggestion' => 'Vui lòng chỉnh lại hạn chót RSVP trước ngày cưới tối thiểu 3 - 7 ngày để kịp chốt số lượng mâm cỗ.',
+                    ];
+                }
+            }
         } else {
             $issues[] = [
                 'severity' => 'critical',
                 'field' => 'wedding_date',
+                'field_target' => 'input_wedding_date',
                 'message' => 'Chưa cấu hình ngày tổ chức hôn lễ chính thức.',
                 'suggestion' => 'Vui lòng chọn ngày cưới để hệ thống kích hoạt đồng hồ đếm ngược và lịch hẹn.',
             ];
@@ -47,6 +64,7 @@ class WeddingConsistencyGuardianService
             $issues[] = [
                 'severity' => 'warning',
                 'field' => 'venue_address',
+                'field_target' => 'input_venue_address',
                 'message' => 'Thông tin sảnh tiệc chưa đầy đủ (đã có tên sảnh nhưng thiếu địa chỉ chi tiết hoặc ngược lại).',
                 'suggestion' => 'Vui lòng điền cả tên sảnh và số nhà, tên đường để khách mời dễ dàng tìm kiếm.',
             ];
@@ -54,6 +72,7 @@ class WeddingConsistencyGuardianService
             $issues[] = [
                 'severity' => 'critical',
                 'field' => 'venue_name',
+                'field_target' => 'input_venue_name',
                 'message' => 'Chưa có thông tin địa điểm và sảnh tổ chức tiệc cưới.',
                 'suggestion' => 'Khách mời sẽ không biết đến dự tiệc tại trung tâm tiệc cưới nào.',
             ];
@@ -68,6 +87,7 @@ class WeddingConsistencyGuardianService
                 $issues[] = [
                     'severity' => 'warning',
                     'field' => 'event_party_map_url',
+                    'field_target' => 'input_event_party_map_url',
                     'message' => 'Liên kết bản đồ không thuộc định dạng chuẩn của Google Maps.',
                     'suggestion' => 'Khuyên dùng liên kết chia sẻ từ ứng dụng Google Maps để khách mở app chỉ đường 1 chạm.',
                 ];
@@ -76,29 +96,60 @@ class WeddingConsistencyGuardianService
             $issues[] = [
                 'severity' => 'info',
                 'field' => 'event_party_map_url',
+                'field_target' => 'input_event_party_map_url',
                 'message' => 'Chưa gắn liên kết Google Maps chỉ đường.',
                 'suggestion' => 'Gắn link Google Maps giúp khách lớn tuổi và khách ở xa đi lại thuận tiện hơn.',
             ];
         }
 
-        // 4. Kiểm tra tài khoản ngân hàng mừng cưới
+        // 4. Kiểm tra tài khoản ngân hàng mừng cưới (Nhà Trai & Nhà Gái)
         $groomBankAcc = trim((string) ($extra['groom_bank_account'] ?? ''));
         $groomBankName = trim((string) ($extra['groom_bank_name'] ?? ''));
+        $brideBankAcc = trim((string) ($extra['bride_bank_account'] ?? ''));
+        $brideBankName = trim((string) ($extra['bride_bank_name'] ?? ''));
+
+        $bankIssuesCount = 0;
         if ($groomBankAcc !== '' && $groomBankName === '') {
+            $bankIssuesCount++;
             $issues[] = [
                 'severity' => 'warning',
                 'field' => 'groom_bank_name',
+                'field_target' => 'input_groom_bank_name',
                 'message' => 'Đã có số tài khoản Nhà Trai nhưng chưa chọn ngân hàng thụ hưởng.',
                 'suggestion' => 'Vui lòng chọn tên ngân hàng (ví dụ: Vietcombank, MB Bank) để mã VietQR tạo chính xác.',
             ];
         } elseif ($groomBankAcc !== '' && strlen($groomBankAcc) < 6) {
+            $bankIssuesCount++;
             $issues[] = [
                 'severity' => 'warning',
                 'field' => 'groom_bank_account',
+                'field_target' => 'input_groom_bank_account',
                 'message' => 'Số tài khoản Nhà Trai có độ dài bất thường (< 6 chữ số).',
                 'suggestion' => 'Vui lòng kiểm tra lại để tránh khách gửi mừng cưới nhầm số tài khoản.',
             ];
-        } else {
+        }
+
+        if ($brideBankAcc !== '' && $brideBankName === '') {
+            $bankIssuesCount++;
+            $issues[] = [
+                'severity' => 'warning',
+                'field' => 'bride_bank_name',
+                'field_target' => 'input_bride_bank_name',
+                'message' => 'Đã có số tài khoản Nhà Gái nhưng chưa chọn ngân hàng thụ hưởng.',
+                'suggestion' => 'Vui lòng chọn tên ngân hàng (ví dụ: Vietcombank, Techcombank) để mã VietQR Nhà Gái hiển thị chính xác.',
+            ];
+        } elseif ($brideBankAcc !== '' && strlen($brideBankAcc) < 6) {
+            $bankIssuesCount++;
+            $issues[] = [
+                'severity' => 'warning',
+                'field' => 'bride_bank_account',
+                'field_target' => 'input_bride_bank_account',
+                'message' => 'Số tài khoản Nhà Gái có độ dài bất thường (< 6 chữ số).',
+                'suggestion' => 'Vui lòng kiểm tra lại để tránh khách gửi mừng cưới nhầm số tài khoản.',
+            ];
+        }
+
+        if ($bankIssuesCount === 0) {
             $checksPassed++;
         }
 
@@ -111,6 +162,7 @@ class WeddingConsistencyGuardianService
             $issues[] = [
                 'severity' => 'info',
                 'field' => 'parents',
+                'field_target' => 'input_groom_parents',
                 'message' => 'Chưa điền đủ tên phụ mẫu hai bên gia đình Nhà Trai và Nhà Gái.',
                 'suggestion' => 'Điền đầy đủ tên phụ mẫu giúp thiệp cưới trang trọng và đúng lễ nghi truyền thống.',
             ];
@@ -123,6 +175,7 @@ class WeddingConsistencyGuardianService
             $issues[] = [
                 'severity' => 'info',
                 'field' => 'checkin_pin',
+                'field_target' => 'input_checkin_pin',
                 'message' => 'Mã PIN Cổng Tiếp Tân đang dùng mã mặc định dễ đoán ('.$checkinPin.').',
                 'suggestion' => 'Đổi mã PIN riêng biệt trước ngày cưới để bảo vệ danh sách bàn tiệc tốt hơn.',
             ];

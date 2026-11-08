@@ -5574,6 +5574,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        212. **Nâng Cấp Bác Sĩ Kiểm Tra Thiệp (Visual Doctor Anchors) & Tự Động Đồng Bộ Bàn Tiệc (Self-Healing Seating)**:
+                             - **Bối cảnh & Động lực**:
+                               - Thực thi mục 06.4 (Visual Quality Doctor) và Business Invariant 10 (Seating Consistency & Headcount Protection) trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - **Vấn đề 1**: `WeddingConsistencyGuardianService::inspect` trước đây thiếu trường mục tiêu `field_target` để Studio cuộn thẳng tới ô nhập liệu cần sửa; thiếu kiểm tra tài khoản ngân hàng Nhà Gái (`bride_bank_account` & `bride_bank_name`); thiếu kiểm tra xung đột logic nghịch đảo khi hạn chót RSVP (`rsvp_deadline`) bị đặt sau ngày cưới (`wedding_date`).
+                               - **Vấn đề 2**: Trong Seating Planner (`SeatingPlannerController`), khi người dùng nhập khách từ file Excel / Batch Import có sẵn tên bàn nhưng bàn chưa được tạo, `table_id` bị để trống. Sau khi người dùng tạo bàn trùng tên hoặc mở màn hình Seating Planner, khách vẫn bị xem là chưa có bàn (`whereNull('table_id')`), làm mất công kéo thả thủ công lại từ đầu.
+                             - **Giải pháp & Kỹ thuật triển khai**:
+                               - **Bác sĩ Kiểm tra Thiệp (`WeddingConsistencyGuardianService`)**:
+                                 * Bổ sung định danh `field_target` (`input_wedding_date`, `input_venue_name`, `input_event_party_map_url`, `input_groom_bank_name`, `input_bride_bank_name`, `input_rsvp_deadline`, `input_checkin_pin`) cho mọi cảnh báo.
+                                 * Phát hiện lỗi nghịch đảo logic: Cảnh báo `critical` khi `rsvp_deadline > wedding_date`.
+                                 * Mở rộng kiểm tra thông tin tài khoản Nhà Gái: Phát hiện tài khoản thiếu tên ngân hàng hoặc số tài khoản có độ dài bất thường (< 6 ký tự).
+                               - **Tự động Đồng bộ Bàn Tiệc (`SeatingPlannerController`)**:
+                                 * Khi tạo bàn mới (`storeTable`): Tự động quét và liên kết `table_id = $table->id` cho toàn bộ khách mời có `table_name == $table->name` nhưng chưa có `table_id`.
+                                 * Cơ chế tự chữa lành (Self-healing reconciliation) khi tải màn hình `index`: Tự động map `table_id` cho các khách mời có tên bàn khớp với các bàn tiệc hiện hữu trong đám cưới.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Cập nhật test suite `tests/Feature/WeddingConsistencyGuardianTest.php` với ca kiểm thử `test('consistency guardian detects inverted rsvp deadline and bride bank account issues with direct field targets')` -> **4/4 tests passed (19 assertions)**.
+                               - Cập nhật test suite `tests/Feature/SeatingPlannerTest.php` với ca kiểm thử `test('tạo bàn mới tự động liên kết các khách có sẵn table_name nhưng chưa có table_id')` -> **11/11 tests passed (48 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **417/417 tests passed 100% (2,104 assertions)** trong ~8.1 giây.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
