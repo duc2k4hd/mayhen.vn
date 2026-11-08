@@ -120,6 +120,7 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/so-luu-but/in', [WishManagementController::class, 'print'])->name('wishes.print');
     Route::post('/thiep/{id}/so-luu-but/{wishId}/phan-hoi', [WishManagementController::class, 'reply'])->name('wishes.reply');
     Route::post('/thiep/{id}/so-luu-but/{wishId}/an-hien', [WishManagementController::class, 'toggleVisibility'])->name('wishes.toggle_visibility');
+    Route::post('/thiep/{id}/so-luu-but/duyet-tat-ca', [WishManagementController::class, 'approveAll'])->name('wishes.approve_all');
     Route::delete('/thiep/{id}/so-luu-but/{wishId}', [WishManagementController::class, 'destroy'])->name('wishes.destroy');
 
     // Sổ Mừng Cưới & Quản Lý Tiền Mừng
@@ -159,6 +160,7 @@ Route::prefix('tai-khoan')->group(function () {
     // Quản Lý Album Ảnh Khách Chụp Ngày Cưới (Live Guest Photo Drop - TASK-V2-05)
     Route::get('/thiep/{id}/album-khach', [PhotoDropController::class, 'manage'])->name('photo_drop.manage');
     Route::post('/thiep/{id}/album-khach/{photoId}/duyet', [PhotoDropController::class, 'toggleApproval'])->name('photo_drop.toggleApproval');
+    Route::post('/thiep/{id}/album-khach/duyet-tat-ca', [PhotoDropController::class, 'approveAll'])->name('photo_drop.approveAll');
     Route::delete('/thiep/{id}/album-khach/{photoId}', [PhotoDropController::class, 'destroy'])->name('photo_drop.destroy');
     Route::get('/thiep/{id}/album-khach/tai-zip', [PhotoDropController::class, 'downloadZip'])->name('photo_drop.downloadZip');
 

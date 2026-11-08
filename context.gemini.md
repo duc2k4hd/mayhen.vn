@@ -5398,6 +5398,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa `PricingPageTest.php` vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        202. **Nâng Cấp Chiều Sâu Quan Hệ Khách Mời & Duyệt Hàng Loạt Album Ảnh, Lời Chúc (Guest Relations & Batch Moderation)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi chuẩn mực nâng cấp chuyên sâu tính năng cũ theo mục 10 trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Xóa bỏ nút thắt vận hành tiệc cưới khi có hàng trăm bức ảnh và lời chúc gửi về: thay vì phải bấm duyệt thủ công từng ảnh/lời chúc đơn lẻ, cặp đôi có thể duyệt toàn bộ ảnh và lời chúc đang chờ cùng 1 lúc chỉ với 1 chạm.
+                               - Kết nối hoàn chỉnh quan hệ dữ liệu giữa danh bạ khách mời (`Guest`) và sổ mừng cưới (`WeddingGift`) thông qua Eloquent Relationship `hasMany`.
+                             - **Các tính năng & cải tiến hoàn thành**:
+                               1. *Quan Hệ Eloquent `Guest->gifts`*:
+                                  - Model: Cập nhật `app/Models/Guest.php` bổ sung quan hệ `public function gifts(): HasMany` trỏ tới `WeddingGift::class`.
+                               2. *Duyệt Hàng Loạt Ảnh Khách Mời (Photo Drop Bulk Approve)*:
+                                  - Controller: Mở rộng `PhotoDropController::approveAll(int $invitationId)`.
+                                  - Route: `POST /thiep/{id}/album-khach/duyet-tat-ca` (`photo_drop.approveAll`).
+                                  - View: Cập nhật `resources/views/client/pages/account/guest-photos.blade.php` hiển thị nút `[ ✓ Duyệt Tất Cả Ảnh Đang Chờ ]` khi có ảnh pending.
+                                  - Bảo mật: Chặn IDOR an toàn (trả về 404 cho tài khoản khác).
+                               3. *Duyệt Hàng Loạt Lời Chúc Mừng (Wedding Wishes Bulk Approve)*:
+                                  - Controller: Mở rộng `WishManagementController::approveAll(int $invitationId)`.
+                                  - Route: `POST /thiep/{id}/so-luu-but/duyet-tat-ca` (`wishes.approve_all`).
+                                  - View: Cập nhật `resources/views/client/pages/account/wishes.blade.php` hiển thị nút `[ ✓ Hiển Thị Tất Cả (N) ]` khi có lời chúc đang tạm ẩn.
+                                  - Bảo mật: Chặn IDOR an toàn (trả về 403 cho tài khoản khác).
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới Feature test suite:
+                                 * `tests/Feature/GuestRelationsAndBatchModerationTest.php` -> **5/5 tests passed (13 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **396/396 tests passed 100% (1,969 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa `GuestRelationsAndBatchModerationTest.php` vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

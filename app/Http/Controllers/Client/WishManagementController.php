@@ -111,6 +111,20 @@ class WishManagementController extends Controller
     }
 
     /**
+     * Cho phép hiển thị toàn bộ lời chúc đang tạm ẩn cùng một lúc.
+     */
+    public function approveAll(int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeInvitationOwner($wedding);
+
+        $updatedCount = $wedding->wishes()->where('is_approved', false)->update(['is_approved' => true]);
+
+        return back()->with('success', "Đã cho phép hiển thị {$updatedCount} lời chúc mừng trên thiệp cưới thành công!");
+    }
+
+    /**
      * Xóa vĩnh viễn một lời chúc khỏi sổ lưu bút.
      */
     public function destroy(int $invitationId, int $wishId): RedirectResponse

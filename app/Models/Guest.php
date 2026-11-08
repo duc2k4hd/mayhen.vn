@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
@@ -87,5 +88,10 @@ class Guest extends Model
     public function response(): HasOne
     {
         return $this->hasOne(GuestResponse::class);
+    }
+
+    public function gifts(): HasMany
+    {
+        return $this->hasMany(WeddingGift::class);
     }
 }

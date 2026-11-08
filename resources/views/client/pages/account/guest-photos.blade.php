@@ -99,7 +99,7 @@
         </div>
 
         {{-- Filter & Actions Bar --}}
-        <div class="mayhen_album_toolbar">
+        <div class="mayhen_album_toolbar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
             <div class="toolbar_filters">
                 <a href="{{ route('photo_drop.manage', $invitation->id) }}" class="filter_pill {{ empty($filterStatus) ? 'is-active' : '' }}">
                     Tất cả ({{ $totalPhotos }})
@@ -111,6 +111,15 @@
                     Chờ duyệt ({{ $pendingCount }})
                 </a>
             </div>
+
+            @if($pendingCount > 0)
+                <form action="{{ route('photo_drop.approveAll', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn duyệt hiển thị toàn bộ {{ $pendingCount }} bức ảnh đang chờ?');">
+                    @csrf
+                    <button type="submit" class="mayhen_album_btn mayhen_album_btn--gold" style="padding: 6px 14px; font-size: 13px;">
+                        ✓ Duyệt Tất Cả Ảnh Đang Chờ ({{ $pendingCount }})
+                    </button>
+                </form>
+            @endif
         </div>
 
         {{-- Photos Grid Collection --}}

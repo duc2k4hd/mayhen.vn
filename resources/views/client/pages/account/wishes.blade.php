@@ -181,9 +181,19 @@
             @endif
         </form>
 
-        <span style="font-size: 13px; color: #7A726A; white-space: nowrap;">
-            Hiển thị: <strong>{{ $wishes->total() }}</strong> lời chúc
-        </span>
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            @if($hiddenCount > 0)
+                <form action="{{ route('account.wishes.approve_all', $invitation->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn cho phép hiển thị toàn bộ {{ $hiddenCount }} lời chúc đang tạm ẩn?');">
+                    @csrf
+                    <button type="submit" class="mayhen_account_btn mayhen_account_btn_sm" style="background: #2E7D32; color: #FFFFFF; border: none;">
+                        ✓ Hiển Thị Tất Cả ({{ $hiddenCount }})
+                    </button>
+                </form>
+            @endif
+            <span style="font-size: 13px; color: #7A726A; white-space: nowrap;">
+                Hiển thị: <strong>{{ $wishes->total() }}</strong> lời chúc
+            </span>
+        </div>
     </div>
 
     <!-- Wishes Postcard Grid -->

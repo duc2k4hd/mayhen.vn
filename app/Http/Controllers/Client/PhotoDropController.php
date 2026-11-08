@@ -215,6 +215,20 @@ class PhotoDropController extends Controller
     }
 
     /**
+     * Duyệt toàn bộ ảnh đang chờ kiểm duyệt cùng một lúc.
+     */
+    public function approveAll(int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeOwner($wedding);
+
+        $updatedCount = $wedding->guestPhotos()->pending()->update(['is_approved' => true]);
+
+        return back()->with('success', "Đã duyệt và cho phép hiển thị {$updatedCount} bức ảnh thành công!");
+    }
+
+    /**
      * Xóa vĩnh viễn ảnh khỏi hệ thống.
      */
     public function destroy(int $invitationId, int $photoId): RedirectResponse
