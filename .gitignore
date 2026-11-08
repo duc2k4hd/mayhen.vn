@@ -81,6 +81,8 @@ Thumbs.db
 !/tests/Feature/WeddingPrivacyConsentTest.php
 !/tests/Feature/PlanFitAdvisorTest.php
 !/tests/Feature/PostPaymentFirstSuccessTest.php
+!/tests/Feature/PremiumValuePreviewTest.php
+!/tests/Feature/WeddingWeekReadinessTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

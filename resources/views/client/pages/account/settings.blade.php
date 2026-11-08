@@ -24,6 +24,10 @@
             </p>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ route('invitations.wedding_week', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Rà soát 5 trụ cột sẵn sàng và cam kết hỗ trợ kỹ thuật tuần lễ cưới">
+                <span aria-hidden="true">⏱️</span>
+                <span>Tuần Lễ Cưới</span>
+            </a>
             <a href="{{ route('privacy.show', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý hiển thị số tài khoản ngân hàng, bảo mật số điện thoại và tuân thủ Nghị định 13">
                 <span aria-hidden="true">🛡️</span>
                 <span>Quyền Riêng Tư</span>

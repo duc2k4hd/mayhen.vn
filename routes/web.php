@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
+use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
@@ -47,6 +48,7 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 });
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
+Route::get('/xem-thu-tinh-nang/{feature}', [PremiumPreviewController::class, 'preview'])->name('premium.preview');
 Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
@@ -170,10 +172,13 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/so-do-ban-tiec/in', [SeatingPlannerController::class, 'printChart'])->name('seating.print');
     Route::get('/api/thiep/{id}/so-do-ban-tiec/suc-khoe', [SeatingPlannerController::class, 'healthCheck'])->middleware('throttle:30,1')->name('seating.health_check');
 
-    // Quản Lý Ca Trực Lễ Tân & Bàn Giao (Staff Shift Handover - TASK-VAL-23)
+    // Bàn Giao Ca Trực Lễ Tân (Staff Shift Handover - TASK-VAL-23)
     Route::get('/api/thiep/{id}/ca-truc-le-tan', [CheckInController::class, 'getShifts'])->middleware('throttle:60,1')->name('checkin.shifts.index');
     Route::post('/api/thiep/{id}/ca-truc-le-tan', [CheckInController::class, 'saveShift'])->middleware('throttle:30,1')->name('checkin.shifts.store');
     Route::delete('/api/thiep/{id}/ca-truc-le-tan/{shiftId}', [CheckInController::class, 'deleteShift'])->name('checkin.shifts.delete');
+
+    // Bảng Radar Sẵn Sàng Tuần Lễ Cưới & Cam Kết Hỗ Trợ Kỹ Thuật (TASK-VAL-28)
+    Route::get('/thiep/{id}/tuan-le-cuoi', [AccountController::class, 'weddingWeekReadiness'])->middleware('auth')->name('invitations.wedding_week');
 
     // Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (Live Wedding Projection Wall - TASK-V3-04)
     Route::get('/thiep/{id}/man-hinh-chieu', [LiveWallController::class, 'settings'])->middleware('auth')->name('live_wall.settings');

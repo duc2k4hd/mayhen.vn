@@ -1,0 +1,437 @@
+/**
+ * Wedding Week Support Readiness Radar
+ * Prefix: mayhen_week_readiness_*
+ * Style: Quiet Luxury Editorial, Warm Sand & Muted Gold
+ */
+
+.mayhen_week_readiness_page {
+    min-height: 100vh;
+    background-color: #FAF8F5;
+    color: #2C2824;
+    padding: 2.5rem 1rem 5rem;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.mayhen_week_readiness_container {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+/* Header & Breadcrumb */
+.mayhen_week_readiness_header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.mayhen_week_readiness_back_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #8C827A;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: color 0.2s ease;
+}
+
+.mayhen_week_readiness_back_link:hover {
+    color: #2C2824;
+}
+
+.mayhen_week_readiness_badge {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    background-color: #EFE8DD;
+    color: #9C7A4A;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    margin-bottom: 0.75rem;
+}
+
+.mayhen_week_readiness_badge--urgent {
+    background-color: #FDF2E9;
+    color: #B95000;
+    border: 1px solid #F5C6A5;
+}
+
+.mayhen_week_readiness_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+    line-height: 1.25;
+}
+
+.mayhen_week_readiness_subtitle {
+    font-size: 1rem;
+    color: #6B635B;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Countdown Banner */
+.mayhen_week_readiness_countdown_card {
+    background: linear-gradient(135deg, #FFFDF9 0%, #F5EFEB 100%);
+    border: 1px solid #E5DCCD;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.mayhen_week_readiness_countdown_info {
+    flex: 1;
+    min-width: 260px;
+}
+
+.mayhen_week_readiness_countdown_label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9C7A4A;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.mayhen_week_readiness_countdown_date {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.65rem;
+    color: #1F1D1A;
+    margin-bottom: 0.35rem;
+}
+
+.mayhen_week_readiness_countdown_desc {
+    font-size: 0.9rem;
+    color: #6B635B;
+    margin: 0;
+}
+
+.mayhen_week_readiness_countdown_clock {
+    text-align: center;
+    background: #FAF8F5;
+    border: 1px solid #D8CEBD;
+    padding: 1rem 1.75rem;
+    border-radius: 12px;
+}
+
+.mayhen_week_readiness_clock_number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #9C7A4A;
+    line-height: 1;
+}
+
+.mayhen_week_readiness_clock_unit {
+    font-size: 0.8rem;
+    color: #8C827A;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+/* Radar Score Overview */
+.mayhen_week_readiness_score_card {
+    background: #FFFDF9;
+    border: 1px solid #E5DCCD;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.mayhen_week_readiness_score_flex {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mayhen_week_readiness_score_meta {
+    flex: 1;
+    min-width: 250px;
+}
+
+.mayhen_week_readiness_score_headline {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.5rem;
+}
+
+.mayhen_week_readiness_score_status {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.mayhen_week_readiness_score_status--excellent {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.mayhen_week_readiness_score_status--good {
+    background-color: #FFF8E1;
+    color: #F57F17;
+}
+
+.mayhen_week_readiness_score_status--warning {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.mayhen_week_readiness_gauge_wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+}
+
+.mayhen_week_readiness_gauge_val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    line-height: 1;
+}
+
+.mayhen_week_readiness_gauge_total {
+    font-size: 1.25rem;
+    color: #8C827A;
+}
+
+.mayhen_week_readiness_progress_bar_bg {
+    width: 100%;
+    height: 10px;
+    background-color: #EFE8DD;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.mayhen_week_readiness_progress_bar_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C5A880 0%, #9C7A4A 100%);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+
+/* 5 Pillars List */
+.mayhen_week_readiness_section_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: #1F1D1A;
+    margin: 0 0 1.25rem;
+}
+
+.mayhen_week_readiness_pillars_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.mayhen_week_readiness_pillar_card {
+    background: #FFFDF9;
+    border: 1px solid #E5DCCD;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+
+.mayhen_week_readiness_pillar_card:hover {
+    border-color: #C5A880;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.mayhen_week_readiness_pillar_body {
+    flex: 1;
+    min-width: 260px;
+}
+
+.mayhen_week_readiness_pillar_header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+}
+
+.mayhen_week_readiness_pillar_icon {
+    font-size: 1.1rem;
+}
+
+.mayhen_week_readiness_pillar_name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_week_readiness_pillar_badge {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.mayhen_week_readiness_pillar_badge--ready {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.mayhen_week_readiness_pillar_badge--warning {
+    background-color: #FFF3E0;
+    color: #E65100;
+}
+
+.mayhen_week_readiness_pillar_desc {
+    font-size: 0.88rem;
+    color: #6B635B;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.mayhen_week_readiness_pillar_action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    background-color: #FAF8F5;
+    color: #2C2824;
+    border: 1px solid #D8CEBD;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.mayhen_week_readiness_pillar_action:hover {
+    background-color: #1F1D1A;
+    color: #FFFDF9;
+    border-color: #1F1D1A;
+}
+
+/* Emergency Support Card */
+.mayhen_week_readiness_emergency_card {
+    background: #2C2824;
+    color: #FFFDF9;
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    box-shadow: 0 8px 30px rgba(44, 40, 36, 0.15);
+}
+
+.mayhen_week_readiness_emergency_content {
+    flex: 1;
+    min-width: 260px;
+}
+
+.mayhen_week_readiness_emergency_badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    background: rgba(197, 168, 128, 0.2);
+    color: #C5A880;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.mayhen_week_readiness_emergency_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #FAF8F5;
+    margin: 0 0 0.5rem;
+}
+
+.mayhen_week_readiness_emergency_text {
+    font-size: 0.9rem;
+    color: #D8CEBD;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.mayhen_week_readiness_emergency_channels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.mayhen_week_readiness_support_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mayhen_week_readiness_support_btn--hotline {
+    background: #C5A880;
+    color: #1F1D1A;
+}
+
+.mayhen_week_readiness_support_btn--hotline:hover {
+    background: #D8CEBD;
+}
+
+.mayhen_week_readiness_support_btn--zalo {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FAF8F5;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mayhen_week_readiness_support_btn--zalo:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 640px) {
+    .mayhen_week_readiness_page {
+        padding: 1.5rem 0.75rem 3.5rem;
+    }
+    .mayhen_week_readiness_title {
+        font-size: 1.75rem;
+    }
+    .mayhen_week_readiness_countdown_card,
+    .mayhen_week_readiness_score_card,
+    .mayhen_week_readiness_emergency_card {
+        padding: 1.25rem;
+    }
+    .mayhen_week_readiness_pillar_card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .mayhen_week_readiness_pillar_action {
+        width: 100%;
+    }
+}
+

@@ -333,6 +333,30 @@
   * Client JS: Cập nhật `public/assets/client/js/pages/checkout.js` tự động chuyển hướng sang First Success Portal sau khi thanh toán thành công.
 - **Kiểm thử**: `tests/Feature/PostPaymentFirstSuccessTest.php` (4/4 tests passed, 13 assertions).
 
+---
+
+### CỘT MỐC 13: XEM TRƯỚC GIÁ TRỊ PRO & SẴN SÀNG TUẦN LỄ CƯỚI (PREMIUM PREVIEW & WEDDING WEEK READINESS) — [HOÀN TẤT 100%]
+
+#### `TASK-VAL-27`: Xem Trước Giá Trị Cao Cấp Trước Thanh Toán (Premium Value Preview Sandbox) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Người dùng chưa nâng cấp gói Pro/Vip có thể trực tiếp trải nghiệm thử giá trị thực tế của 4 tính năng cao cấp (`seating`, `checkin`, `live-wall`, `memory-vault`) bằng dữ liệu mô phỏng sinh động, trực quan mà không cần nạp thẻ trước. Tạo "Aha moment" thuyết phục khách hàng nâng cấp gói dịch vụ.
+- **Phạm vi code**:
+  * Service: `app/Services/PremiumValuePreviewService.php` (chuẩn bị dữ liệu mẫu sinh động, danh sách điểm sáng giá trị thực tế và nút CTA nâng cấp tương ứng).
+  * Controller: `PremiumPreviewController::preview`.
+  * Route: `GET /xem-thu-tinh-nang/{feature}` (`premium.preview`).
+  * Giao diện: Trang `resources/views/client/pages/premium-preview.blade.php` phong cách Quiet Luxury Editorial, thanh chuyển đổi tab 4 tính năng, sandbox mô phỏng sinh động và CSS `public/assets/client/css/pages/premium-preview.css`.
+  * Tích hợp: Nút `[ Xem Thử Giao Diện Thực Tế ]` trên từng thẻ tính năng tại `resources/views/client/pages/pricing.blade.php`.
+- **Kiểm thử**: `tests/Feature/PremiumValuePreviewTest.php` (3/3 tests passed, 14 assertions).
+
+#### `TASK-VAL-28`: Bảng Radar Sẵn Sàng Tuần Lễ Cưới & Cam Kết Hỗ Trợ Kỹ Thuật (Wedding Week Support Readiness Radar) — [ĐÃ HOÀN THÀNH]
+- **Mục tiêu**: Tuần lễ trước ngày cưới là thời điểm cô dâu chú rể căng thẳng nhất. Bảng Radar tự động đếm ngược số ngày tới hôn lễ, đánh giá 5 trụ cột sẵn sàng then chốt (Đường dẫn thiệp đã xuất bản, Danh sách khách & tỷ lệ phản hồi RSVP, Sơ đồ bàn tiệc & sức chứa sảnh, Cổng lễ tân & mã PIN điểm danh, Bộ công cụ dự phòng sự cố mất mạng Resilience Kit), đưa ra chỉ số sẵn sàng 0-100% kèm cam kết đồng hành kỹ thuật trực ban 15 phút.
+- **Phạm vi code**:
+  * Service: `app/Services/WeddingWeekReadinessService.php` (tính toán `days_until_wedding`, `is_wedding_week`, điểm sẵn sàng 0-100%, 5 trụ cột và kênh hotline khẩn cấp 15 phút).
+  * Controller: Mở rộng `AccountController::weddingWeekReadiness`.
+  * Route: `GET /tai-khoan/thiep/{id}/tuan-le-cuoi` (`invitations.wedding_week`).
+  * Giao diện: Trang `resources/views/client/pages/account/wedding-week-readiness.blade.php` phong cách Quiet Luxury, thẻ đếm ngược, thanh đo điểm số sẵn sàng, danh sách 5 trụ cột hành động 1 chạm và CSS `public/assets/client/css/pages/wedding-week-readiness.css`.
+  * Tích hợp: Nút `[ ⏱️ Tuần Lễ Cưới ]` trên `resources/views/client/pages/account/settings.blade.php`.
+- **Kiểm thử**: `tests/Feature/WeddingWeekReadinessTest.php` (4/4 tests passed, 15 assertions).
+
 
 
 

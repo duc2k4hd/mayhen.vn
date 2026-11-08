@@ -1,0 +1,205 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Premium Value Preview Sandbox Styling
+ * Quiet Luxury, Interactive Demo Sandbox & Entitlement Teaser
+ * Mandatory Prefix: mayhen_preview_sandbox_*
+ */
+
+.mayhen_preview_sandbox_wrap {
+    min-height: 100vh;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    padding: 1.5rem 1.25rem 5rem;
+}
+
+.mayhen_preview_sandbox_container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Floating Top Banner: Sandbox Notice */
+.sandbox_notice_banner {
+    background: linear-gradient(135deg, #FFF8E1 0%, #FFF3E0 100%);
+    border: 1px solid #FFE082;
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 14px rgba(245, 127, 23, 0.08);
+}
+
+.sandbox_notice_info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.sandbox_badge_icon {
+    font-size: 1.65rem;
+    line-height: 1;
+}
+
+.sandbox_notice_title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #BF360C;
+    margin: 0 0 0.2rem;
+}
+
+.sandbox_notice_desc {
+    font-size: 0.8rem;
+    color: #795548;
+    margin: 0;
+}
+
+.sandbox_upgrade_btn {
+    background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 0.55rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(156, 122, 74, 0.25);
+    white-space: nowrap;
+}
+
+/* Feature Header */
+.sandbox_feature_header {
+    margin-bottom: 2rem;
+}
+
+.sandbox_feature_badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.15);
+    color: #8C6D3F;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(197, 168, 128, 0.35);
+}
+
+.sandbox_feature_title {
+    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-size: 2.15rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 0.35rem;
+}
+
+.sandbox_feature_desc {
+    font-size: 0.92rem;
+    color: #6E685F;
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.5;
+}
+
+/* Feature Sandbox Interactive Box */
+.sandbox_demo_surface {
+    background: #FFFFFF;
+    border: 1px solid #EAE5DE;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 6px 25px rgba(31, 29, 26, 0.05);
+    margin-bottom: 2rem;
+}
+
+.sandbox_demo_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #F3EFEA;
+}
+
+.sandbox_demo_title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+/* Seating Tables Preview Grid */
+.sandbox_tables_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.sandbox_table_card {
+    background: #FAF8F5;
+    border: 1px solid #EFEAE3;
+    border-radius: 12px;
+    padding: 1rem;
+    position: relative;
+}
+
+.sandbox_table_card--overfilled {
+    border-color: #EF9A9A;
+    background: #FFEBEE;
+}
+
+.sandbox_table_card--underfilled {
+    border-color: #FFE082;
+    background: #FFFDE7;
+}
+
+.sandbox_table_name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.sandbox_table_badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+/* Bottom Plan CTA Box */
+.sandbox_plan_cta_card {
+    background: #FFFDF9;
+    border: 1px solid #EFE4CA;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.plan_cta_title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 0.35rem;
+}
+
+.plan_cta_desc {
+    font-size: 0.85rem;
+    color: #7A726A;
+    margin: 0;
+}
+
+.plan_cta_actions {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+

@@ -5349,6 +5349,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        200. **Hoàn Tất Cột Mốc 13 & Bảng Điểm Sẵn Sàng Phát Hành Thương Mại (Premium Value Preview & Wedding Week Readiness Scorecard)**:
+                             - **Bối cảnh & Giá trị trải nghiệm**:
+                               - Thực thi trọn vẹn `TASK-VAL-27` và `TASK-VAL-28` theo mục 09.6 (Niềm tin, dịch vụ và chi trả) và mục 16 trong `docs/MAY_HEN_FINAL_DEEP_LOGIC_AUDIT_AND_PREMIUM_VALUE_MASTER_PROMPT.md`.
+                               - Xóa bỏ rào cản tâm lý khi nâng cấp gói Pro/Vip (cho khách hàng trải nghiệm thử giá trị thực tế của các tính năng sảnh tiệc trong Sandbox trước khi trả tiền) và xua tan nỗi âu lo lớn nhất của cô dâu chú rể trong 7 ngày áp chót trước hôn lễ bằng Bảng kiểm tra Radar sẵn sàng 5 trụ cột kèm cam kết kỹ thuật hỗ trợ trực ban trong vòng 15 phút.
+                             - **Các tính năng cao cấp đã hoàn thành**:
+                               1. *TASK-VAL-27: Xem Trước Giá Trị Cao Cấp Trước Thanh Toán (Premium Value Preview Sandbox)*:
+                                  - Service: `app/Services/PremiumValuePreviewService.php` (chuẩn bị dữ liệu mẫu sinh động cho 4 tính năng: `seating`, `checkin`, `live-wall`, `memory-vault`).
+                                  - Controller: `PremiumPreviewController::preview`.
+                                  - Route: `GET /xem-thu-tinh-nang/{feature}` (`premium.preview`).
+                                  - Giao diện: Trang `resources/views/client/pages/premium-preview.blade.php` phong cách Quiet Luxury Editorial, sandbox mô phỏng sinh động và CSS `public/assets/client/css/pages/premium-preview.css`.
+                                  - Tích hợp: Nút `[ Xem Thử Giao Diện Thực Tế ]` trên từng thẻ tính năng tại `resources/views/client/pages/pricing.blade.php`.
+                               2. *TASK-VAL-28: Bảng Radar Sẵn Sàng Tuần Lễ Cưới & Cam Kết Hỗ Trợ Kỹ Thuật (Wedding Week Support Readiness Radar)*:
+                                  - Service: `app/Services/WeddingWeekReadinessService.php` (tính toán `days_until_wedding`, `is_wedding_week`, điểm sẵn sàng 0-100%, 5 trụ cột then chốt: Link xuất bản, Guest RSVP, Sức chứa bàn tiệc, Mã PIN tiếp tân, Bộ dự phòng Resilience Kit).
+                                  - Controller: `AccountController::weddingWeekReadiness`.
+                                  - Route: `GET /tai-khoan/thiep/{id}/tuan-le-cuoi` (`invitations.wedding_week`).
+                                  - Giao diện: Trang `resources/views/client/pages/account/wedding-week-readiness.blade.php` phong cách Quiet Luxury, đồng hồ đếm ngược, thanh đo điểm số sẵn sàng và CSS `public/assets/client/css/pages/wedding-week-readiness.css`.
+                                  - Tích hợp: Nút `[ ⏱️ Tuần Lễ Cưới ]` trên `resources/views/client/pages/account/settings.blade.php`.
+                               3. *Bảng Điểm Sẵn Sàng Thương Mại (Release Readiness Scorecard)*:
+                                  - Biên soạn tài liệu chuẩn mực `docs/MAY_HEN_RELEASE_READINESS_SCORECARD.md` đánh giá trung thực 12 trụ cột chất lượng dựa trên bằng chứng kiểm thử thực tế.
+                                  - Cập nhật tài liệu đối soát `docs/MAY_HEN_FINAL_AUDIT_BASELINE.md` và `docs/MAY_HEN_FINAL_EXECUTIVE_SUMMARY.md`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               - Viết mới 2 Feature test suites:
+                                 * `tests/Feature/PremiumValuePreviewTest.php` -> **3/3 tests passed (14 assertions)**.
+                                 * `tests/Feature/WeddingWeekReadinessTest.php` -> **4/4 tests passed (15 assertions)**.
+                               - Toàn bộ test suite toàn hệ thống: **387/387 tests passed 100% (1,936 assertions)**.
+                               - Laravel Pint: Đạt chuẩn 100% agent style.
+                               - Cập nhật `.gitignore` đưa các test suite mới vào kiểm soát mã nguồn.
+                               - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

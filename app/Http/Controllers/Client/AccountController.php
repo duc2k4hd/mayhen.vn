@@ -11,6 +11,7 @@ use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
+use App\Services\WeddingWeekReadinessService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -508,5 +509,24 @@ class AccountController extends Controller
         }
 
         abort(404);
+    }
+
+    /**
+     * Màn hình Bảng Radar Sẵn Sàng Tuần Lễ Cưới & Cam Kết Hỗ Trợ Kỹ Thuật (TASK-VAL-28).
+     */
+    public function weddingWeekReadiness(Request $request, int $invitationId, WeddingWeekReadinessService $readinessService): View
+    {
+        $user = $request->user();
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $radar = $readinessService->assessReadiness($invitation);
+
+        return view('client.pages.account.wedding-week-readiness', [
+            'user' => $user,
+            'invitation' => $invitation,
+            'wedding' => $invitation->wedding,
+            'radar' => $radar,
+        ]);
     }
 }
