@@ -1,0 +1,444 @@
+/**
+ * MAYHEN.VN — AI CURATED INVITATION WIZARD STYLES
+ * Prefix: mayhen_curated_
+ */
+
+:root {
+    --curated-cream: #FAF8F5;
+    --curated-ivory: #FFFDF9;
+    --curated-beige: #EFE8DD;
+    --curated-border: #E5DCCD;
+    --curated-charcoal: #2C2824;
+    --curated-muted: #7A746E;
+    --curated-gold: #C5A880;
+    --curated-gold-dark: #9C7A4A;
+    --curated-gold-light: #F4EDE2;
+    --curated-shadow: 0 10px 30px rgba(44, 40, 36, 0.05);
+    --curated-shadow-hover: 0 14px 40px rgba(44, 40, 36, 0.1);
+}
+
+.mayhen_curated_wizard_page {
+    background-color: var(--curated-cream);
+    min-height: 100vh;
+    padding: 40px 16px 80px 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--curated-charcoal);
+}
+
+.mayhen_curated_wizard_container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+/* Header */
+.mayhen_curated_wizard_header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.mayhen_curated_kicker {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--curated-gold-dark);
+    margin-bottom: 12px;
+    background: var(--curated-gold-light);
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(197, 168, 128, 0.3);
+}
+
+.mayhen_curated_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 36px;
+    line-height: 1.2;
+    font-weight: 600;
+    color: var(--curated-charcoal);
+    margin: 0 0 12px 0;
+}
+
+@media (min-width: 768px) {
+    .mayhen_curated_title {
+        font-size: 46px;
+    }
+}
+
+.mayhen_curated_subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--curated-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Error Alert */
+.mayhen_curated_alert_error {
+    background-color: #FDF2F2;
+    border: 1px solid #F8B4B4;
+    color: #9B1C1C;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.mayhen_curated_alert_error ul {
+    margin: 8px 0 0 18px;
+    padding: 0;
+}
+
+/* Step Card */
+.mayhen_curated_step_card {
+    background: var(--curated-ivory);
+    border: 1px solid var(--curated-border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--curated-shadow);
+    display: flex;
+    gap: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .mayhen_curated_step_card {
+        padding: 32px;
+        gap: 28px;
+    }
+}
+
+.mayhen_curated_step_card:hover {
+    box-shadow: var(--curated-shadow-hover);
+}
+
+.mayhen_curated_step_num {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    background: var(--curated-gold-light);
+    color: var(--curated-gold-dark);
+    border: 1px solid var(--curated-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.mayhen_curated_step_content {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_curated_step_heading {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--curated-charcoal);
+    margin: 0 0 6px 0;
+}
+
+.mayhen_curated_step_desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--curated-muted);
+    margin: 0 0 20px 0;
+}
+
+.mayhen_curated_subheading {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--curated-muted);
+    margin: 20px 0 12px 0;
+    padding-top: 16px;
+    border-top: 1px dashed var(--curated-border);
+}
+
+/* Grids & Inputs */
+.mayhen_curated_inputs_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 600px) {
+    .mayhen_curated_inputs_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mayhen_curated_inputs_grid_4 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .mayhen_curated_inputs_grid_4 {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mayhen_curated_inputs_grid_3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 640px) {
+    .mayhen_curated_inputs_grid_3 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.mayhen_curated_field {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_curated_field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--curated-charcoal);
+    margin-bottom: 6px;
+}
+
+.mayhen_curated_field label .req {
+    color: #C0392B;
+}
+
+.mayhen_curated_field input[type="text"],
+.mayhen_curated_field input[type="date"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid var(--curated-border);
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    font-size: 14px;
+    color: var(--curated-charcoal);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.mayhen_curated_field input:focus {
+    border-color: var(--curated-gold);
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.25);
+}
+
+/* STEP 2: STYLES GRID */
+.mayhen_curated_styles_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 600px) {
+    .mayhen_curated_styles_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mayhen_curated_style_label {
+    cursor: pointer;
+    display: block;
+}
+
+.mayhen_curated_style_label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mayhen_curated_style_box {
+    border: 1.5px solid var(--curated-border);
+    border-radius: 14px;
+    padding: 16px;
+    background: #FFFFFF;
+    transition: all 0.2s ease;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.mayhen_curated_style_badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--curated-cream);
+    color: var(--curated-muted);
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.mayhen_curated_style_name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--curated-charcoal);
+    margin: 0 0 2px 0;
+}
+
+.mayhen_curated_style_en {
+    display: block;
+    font-size: 11px;
+    color: var(--curated-gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.mayhen_curated_style_desc {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--curated-muted);
+    margin: 0;
+}
+
+.mayhen_curated_style_label input[type="radio"]:checked + .mayhen_curated_style_box {
+    border-color: var(--curated-gold);
+    background-color: var(--curated-gold-light);
+    box-shadow: 0 4px 16px rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_curated_style_label input[type="radio"]:checked + .mayhen_curated_style_box .mayhen_curated_style_badge {
+    background: var(--curated-gold);
+    color: #FFFFFF;
+}
+
+/* STEP 3: PALETTES GRID */
+.mayhen_curated_palettes_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 500px) {
+    .mayhen_curated_palettes_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 768px) {
+    .mayhen_curated_palettes_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.mayhen_curated_palette_label {
+    cursor: pointer;
+    display: block;
+}
+
+.mayhen_curated_palette_label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mayhen_curated_palette_box {
+    border: 1.5px solid var(--curated-border);
+    border-radius: 12px;
+    padding: 14px;
+    background: #FFFFFF;
+    transition: all 0.2s ease;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.mayhen_curated_palette_swatches {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.mayhen_curated_palette_swatches span {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_curated_palette_info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_curated_palette_name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--curated-charcoal);
+    margin-bottom: 2px;
+}
+
+.mayhen_curated_palette_tag {
+    font-size: 11px;
+    color: var(--curated-muted);
+}
+
+.mayhen_curated_palette_label input[type="radio"]:checked + .mayhen_curated_palette_box {
+    border-color: var(--curated-gold);
+    background-color: var(--curated-gold-light);
+    box-shadow: 0 4px 16px rgba(197, 168, 128, 0.25);
+}
+
+/* SUBMIT BAR */
+.mayhen_curated_submit_bar {
+    text-align: center;
+    margin-top: 36px;
+}
+
+.mayhen_curated_btn_generate {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2C2824 0%, #1F1D1A 100%);
+    color: #FFFFFF;
+    border: 1px solid var(--curated-gold);
+    border-radius: 999px;
+    padding: 18px 48px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(44, 40, 36, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    text-decoration: none;
+}
+
+.mayhen_curated_btn_generate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(44, 40, 36, 0.3);
+    background: linear-gradient(135deg, #1F1D1A 0%, #151311 100%);
+}
+
+.mayhen_curated_btn_generate:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.mayhen_curated_btn_generate .btn_text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--curated-gold);
+}
+
+.mayhen_curated_btn_generate .btn_sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+

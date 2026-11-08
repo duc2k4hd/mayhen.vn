@@ -1,0 +1,445 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Invitation;
+use App\Models\InvitationTemplate;
+use App\Models\User;
+use App\Models\Wedding;
+use App\Services\CuratedInvitationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class CuratedInvitationFlowTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected CuratedInvitationService $curatedService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->curatedService = app(CuratedInvitationService::class);
+
+        // Đảm bảo template mayhen-curated tồn tại
+        InvitationTemplate::firstOrCreate(
+            ['slug' => 'mayhen-curated'],
+            [
+                'name' => 'Mây Hẹn Curated (Thiết Kế Tự Phối)',
+                'thumbnail_url' => '/assets/client/images/templates/curated-thumb.webp',
+                'description' => 'Mẫu thiệp cưới cao cấp tự phối thông minh 7 section tiêu chuẩn.',
+                'sections' => ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'dresscode'],
+                'category' => 'curated',
+                'is_active' => true,
+                'default_config' => [
+                    'theme_color' => '#85182A',
+                    'font_family' => 'Cormorant Garamond',
+                    'tier' => 'pro',
+                    'sections_count' => 7,
+                ],
+            ]
+        );
+    }
+
+    /**
+     * 1. Màn hình Wizard hiển thị đầy đủ danh sách phong cách và bảng màu chuẩn.
+     */
+    public function test_curated_wizard_page_can_be_rendered(): void
+    {
+        $response = $this->get(route('curated.create'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn');
+        $response->assertSee('AI CURATED INVITATION');
+
+        // Kiểm tra các phong cách chuẩn
+        $styles = $this->curatedService->getStyles();
+        foreach (array_keys($styles) as $styleKey) {
+            $response->assertSee('value="'.$styleKey.'"', false);
+        }
+
+        // Kiểm tra các bảng màu chuẩn
+        $palettes = $this->curatedService->getPalettes();
+        foreach (array_keys($palettes) as $paletteKey) {
+            $response->assertSee('value="'.$paletteKey.'"', false);
+        }
+    }
+
+    /**
+     * 2. Chặn từ chối nếu người dùng chọn phong cách hoặc bảng màu ngoài danh mục chuẩn (Mục 2, 3).
+     */
+    public function test_cannot_generate_with_invalid_style_or_palette(): void
+    {
+        $response = $this->post(route('curated.generate'), [
+            'groom_name' => 'Minh Tuấn',
+            'bride_name' => 'Thu Hà',
+            'style' => 'cyberpunk_neon', // Không hợp lệ
+            'palette' => 'ruby',
+        ]);
+
+        $response->assertSessionHasErrors(['style']);
+
+        $response2 = $this->post(route('curated.generate'), [
+            'groom_name' => 'Minh Tuấn',
+            'bride_name' => 'Thu Hà',
+            'style' => 'romantic',
+            'palette' => 'electric_purple', // Không hợp lệ
+        ]);
+
+        $response2->assertSessionHasErrors(['palette']);
+    }
+
+    /**
+     * 3. Khởi tạo thiệp tự phối thành công, lưu layout ngẫu nhiên bền vững và nội dung AI (Mục 1, 4, 7, 10).
+     */
+    public function test_generate_curated_invitation_creates_valid_7_section_invitation(): void
+    {
+        $postData = [
+            'groom_name' => 'Quang Vinh',
+            'bride_name' => 'Mai Anh',
+            'groom_father' => 'Ông Nguyễn Quang Huy',
+            'groom_mother' => 'Bà Lê Thị Kim',
+            'bride_father' => 'Ông Trần Văn Nam',
+            'bride_mother' => 'Bà Hoàng Thị Cúc',
+            'style' => 'editorial',
+            'palette' => 'sage-green',
+            'wedding_date' => '2026-11-20',
+            'venue_name' => 'Capella Gallery Hall',
+            'venue_address' => 'Số 24 Đường 3/2, Quận 10, TP.HCM',
+        ];
+
+        $response = $this->post(route('curated.generate'), $postData);
+
+        $invitation = Invitation::whereHas('wedding', function ($query) {
+            $query->where('groom_name', 'Quang Vinh')->where('bride_name', 'Mai Anh');
+        })->first();
+
+        $this->assertNotNull($invitation);
+        $response->assertRedirect(route('curated.preview', ['slug' => $invitation->slug, 'crafting' => 1]));
+
+        // Kiểm tra cấu hình bền vững
+        $config = $invitation->custom_config;
+        $this->assertEquals('sage-green', $config['color_theme']);
+        $this->assertTrue($config['is_curated']);
+        $this->assertIsArray($config['curated_layout']);
+        $this->assertEquals('editorial', $config['curated_layout']['style']);
+        $this->assertEquals('sage-green', $config['curated_layout']['palette']);
+
+        // Phải có đủ 7 section
+        $sections = $config['curated_layout']['sections'];
+        $this->assertCount(7, $sections);
+        $this->assertArrayHasKey('hero', $sections);
+        $this->assertArrayHasKey('story', $sections);
+        $this->assertArrayHasKey('parents', $sections);
+        $this->assertArrayHasKey('countdown', $sections);
+        $this->assertArrayHasKey('events', $sections);
+        $this->assertArrayHasKey('timeline', $sections);
+        $this->assertArrayHasKey('dresscode', $sections);
+
+        // Nội dung AI sinh có trích dẫn và lời ngỏ
+        $wedding = $invitation->wedding;
+        $this->assertNotEmpty($wedding->extra_data['couple_quote']);
+        $this->assertNotEmpty($wedding->extra_data['story_title']);
+        $this->assertNotEmpty($wedding->extra_data['dresscode_note']);
+    }
+
+    /**
+     * 4. Màn hình Live Crafting Preview hiển thị chính xác với đầy đủ công cụ điều khiển (Mục 8, 9).
+     */
+    public function test_curated_preview_page_can_be_rendered_by_owner(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Đức Minh',
+            'bride_name' => 'Ngọc Linh',
+            'wedding_date' => '2026-12-15',
+            'venue_name' => 'GEM Center',
+            'venue_address' => 'Số 8 Nguyễn Bỉnh Khiêm, Quận 1',
+        ]);
+
+        $layout = $this->curatedService->assembleCuratedLayout('romantic', 'ruby');
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'duc-minh-va-ngoc-linh-test',
+            'title' => 'Thiệp Cưới Đức Minh & Ngọc Linh',
+            'custom_config' => [
+                'curated_layout' => $layout,
+                'color_theme' => 'ruby',
+                'is_curated' => true,
+            ],
+            'is_published' => true,
+            'revision_id' => 1,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('curated.preview', ['slug' => $invitation->slug]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Đức Minh &amp; Ngọc Linh', false);
+        $response->assertSee('Phối lại bố cục 🎲');
+        $response->assertSee('Xem lại dựng thiệp ↺');
+        $response->assertSee('Đổi Bố Cục Từng Mục');
+        $response->assertSee('Xuất bản thiệp 🚀');
+    }
+
+    /**
+     * 5. Thiệp cưới tự phối render đúng 7 section, không render album 10 ảnh hay gift mừng cưới (Mục 5, 6).
+     */
+    public function test_curated_invitation_renders_exactly_7_sections(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Tuấn Kiệt',
+            'bride_name' => 'Phương Thảo',
+            'wedding_date' => '2026-10-10',
+            'venue_name' => 'White Palace',
+            'venue_address' => 'Phạm Văn Đồng, Thủ Đức',
+            'extra_data' => [
+                'couple_quote' => 'Trăm năm một chữ tình.',
+                'dresscode_note' => 'Trang phục trang nhã.',
+            ],
+        ]);
+
+        $layout = $this->curatedService->assembleCuratedLayout('traditional', 'royal-navy');
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'tuan-kiet-va-phuong-thao-test',
+            'title' => 'Thiệp Cưới Tuấn Kiệt & Phương Thảo',
+            'custom_config' => [
+                'curated_layout' => $layout,
+                'color_theme' => 'royal-navy',
+                'is_curated' => true,
+            ],
+            'is_published' => true,
+        ]);
+
+        $response = $this->get(route('invitation.show', ['slug' => $invitation->slug]));
+
+        $response->assertStatus(200);
+
+        // Phải có class chủ đề của bảng màu
+        $response->assertSee('mayhen_curated_theme--royal-navy');
+
+        // Phải có đầy đủ 7 section tiêu chuẩn
+        $response->assertSee('data-curated-section="hero"', false);
+        $response->assertSee('data-curated-section="story"', false);
+        $response->assertSee('data-curated-section="parents"', false);
+        $response->assertSee('data-curated-section="countdown"', false);
+        $response->assertSee('data-curated-section="events"', false);
+        $response->assertSee('data-curated-section="timeline"', false);
+        $response->assertSee('data-curated-section="dresscode"', false);
+
+        // KHÔNG được có album 10 ảnh hay gift QR
+        $response->assertDontSee('mayhen_invitation_album_grid');
+        $response->assertDontSee('data-mayhen-section="gift"');
+        $response->assertDontSee('data-mayhen-section="album"');
+    }
+
+    /**
+     * 6. Phối lại toàn bộ bố cục (Remix All Layout) ngẫu nhiên mà TUYỆT ĐỐI GIỮ NGUYÊN BẢNG MÀU (Mục 3, 9).
+     */
+    public function test_remix_layout_preserves_chosen_palette(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Thành Đạt',
+            'bride_name' => 'Khánh Vy',
+            'wedding_date' => '2026-12-01',
+        ]);
+
+        $originalLayout = $this->curatedService->assembleCuratedLayout('minimal', 'warm-amber');
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'thanh-dat-va-khanh-vy-remix',
+            'title' => 'Thiệp Cưới Thành Đạt & Khánh Vy',
+            'custom_config' => [
+                'curated_layout' => $originalLayout,
+                'color_theme' => 'warm-amber',
+                'is_curated' => true,
+            ],
+            'revision_id' => 1,
+            'is_published' => true,
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('curated.remix', ['id' => $invitation->id]));
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $invitation->refresh();
+
+        // Palette bắt buộc phải là warm-amber (không được đổi!)
+        $this->assertEquals('warm-amber', $invitation->custom_config['curated_layout']['palette']);
+        $this->assertEquals('warm-amber', $invitation->custom_config['color_theme']);
+        $this->assertEquals(2, $invitation->revision_id);
+    }
+
+    /**
+     * 7. Đổi riêng lẻ biến thể của một section hoạt động tuần tự (Mục 9).
+     */
+    public function test_switch_single_section_variant_works(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Hải Đăng',
+            'bride_name' => 'Thanh Thảo',
+            'wedding_date' => '2026-12-01',
+        ]);
+
+        $layout = [
+            'style' => 'romantic',
+            'palette' => 'ruby',
+            'sections' => [
+                'hero' => 'variant_a',
+                'story' => 'variant_a',
+                'parents' => 'variant_a',
+                'countdown' => 'variant_a',
+                'events' => 'variant_a',
+                'timeline' => 'variant_a',
+                'dresscode' => 'variant_a',
+            ],
+        ];
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'hai-dang-va-thanh-thao-switch',
+            'title' => 'Thiệp Cưới Hải Đăng & Thanh Thảo',
+            'custom_config' => [
+                'curated_layout' => $layout,
+                'color_theme' => 'ruby',
+                'is_curated' => true,
+            ],
+            'revision_id' => 1,
+            'is_published' => true,
+        ]);
+
+        // Đổi hero sang kiểu kế tiếp (variant_b)
+        $response = $this->actingAs($user)->postJson(route('curated.switch_variant'), [
+            'invitation_id' => $invitation->id,
+            'section' => 'hero',
+            'direction' => 'next',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'layout' => [
+                'sections' => [
+                    'hero' => 'variant_b',
+                ],
+            ],
+        ]);
+
+        $invitation->refresh();
+        $this->assertEquals('variant_b', $invitation->custom_config['curated_layout']['sections']['hero']);
+    }
+
+    /**
+     * 8. Layout ngẫu nhiên được lưu bền vững vào database, reload không random lại (Mục 10).
+     */
+    public function test_curated_layout_persists_across_reloads(): void
+    {
+        $user = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $user->id,
+            'groom_name' => 'Bảo Long',
+            'bride_name' => 'Kim Oanh',
+            'wedding_date' => '2026-12-01',
+        ]);
+
+        $fixedLayout = [
+            'style' => 'editorial',
+            'palette' => 'dusty-rose',
+            'sections' => [
+                'hero' => 'variant_c',
+                'story' => 'variant_b',
+                'parents' => 'variant_a',
+                'countdown' => 'variant_c',
+                'events' => 'variant_b',
+                'timeline' => 'variant_a',
+                'dresscode' => 'variant_c',
+            ],
+        ];
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'bao-long-va-kim-oanh-persist',
+            'title' => 'Thiệp Cưới Bảo Long & Kim Oanh',
+            'custom_config' => [
+                'curated_layout' => $fixedLayout,
+                'color_theme' => 'dusty-rose',
+                'is_curated' => true,
+            ],
+            'is_published' => true,
+        ]);
+
+        // Truy cập nhiều lần
+        $this->get(route('invitation.show', ['slug' => $invitation->slug]));
+        $this->get(route('invitation.show', ['slug' => $invitation->slug]));
+
+        $invitation->refresh();
+        $this->assertEquals($fixedLayout, $invitation->custom_config['curated_layout']);
+    }
+
+    /**
+     * 9. Người dùng lạ không thể tự ý remix hoặc đổi biến thể thiệp của người khác (Bảo mật).
+     */
+    public function test_unauthorized_user_cannot_remix_or_switch_variant(): void
+    {
+        $owner = User::factory()->create();
+        $stranger = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+
+        $wedding = Wedding::create([
+            'user_id' => $owner->id,
+            'groom_name' => 'Chủ Nhân',
+            'bride_name' => 'Hợp Pháp',
+            'wedding_date' => '2026-12-01',
+        ]);
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'chu-nhan-va-hop-phap',
+            'title' => 'Thiệp Cưới',
+            'custom_config' => [
+                'curated_layout' => $this->curatedService->assembleCuratedLayout('romantic', 'ruby'),
+                'is_curated' => true,
+            ],
+            'is_published' => true,
+        ]);
+
+        // Người lạ thử remix -> 404 (do authorizeInvitationOwner abort)
+        $response = $this->actingAs($stranger)->postJson(route('curated.remix', ['id' => $invitation->id]));
+        $response->assertStatus(404);
+
+        // Khách vãng lai không có session -> 404
+        $response2 = $this->postJson(route('curated.switch_variant'), [
+            'invitation_id' => $invitation->id,
+            'section' => 'hero',
+            'direction' => 'next',
+        ]);
+        $response2->assertStatus(404);
+    }
+}

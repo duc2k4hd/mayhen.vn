@@ -41,6 +41,7 @@ class InvitationTemplateService
         'couple',
         'groom_family',
         'bride_family',
+        'countdown',
     ];
 
     /**
@@ -755,14 +756,23 @@ class InvitationTemplateService
             'bride_bank_holder',
         ];
 
+        $legacyKeyMap = [
+            'countdown' => 'countdown_calendar',
+            'couple' => 'hero',
+            'groom_family' => 'parents',
+            'bride_family' => 'parents',
+        ];
+
         // Dựng danh sách sections chuẩn theo đúng thứ tự logic (1 -> 6)
         $normalizedSections = [];
         foreach ($validSupported as $sectionId) {
-            if (! isset($canonical[$sectionId])) {
+            $canonicalKey = $legacyKeyMap[$sectionId] ?? $sectionId;
+            if (! isset($canonical[$canonicalKey])) {
                 continue;
             }
 
-            $secDef = $canonical[$sectionId];
+            $secDef = $canonical[$canonicalKey];
+            $secDef['id'] = $sectionId;
 
             // Nếu trong file JSON có cung cấp title/description/fields riêng, hợp nhất một cách an toàn
             $rawSec = $rawSectionsById[$sectionId] ?? null;

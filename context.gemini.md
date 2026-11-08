@@ -5892,6 +5892,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                - Laravel Pint: Đạt chuẩn 100% agent style.
                                - Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
 
+                        223. **Triển Khai Chức Năng Tạo Thiệp Tự Động Thông Minh — AI Curated 7-Section Invitation System (Mục 1-12 Master Prompt)**:
+                             - **Bối cảnh & Triết lý cốt lõi**:
+                               - Triển khai chức năng tạo thiệp tự động hoàn chỉnh vào dự án thực tế theo chỉ đạo: **"AI chỉ tạo nội dung — Mây Hẹn tự phối giao diện từ các component đã thiết kế và kiểm duyệt."**
+                               - Khách hàng có cảm giác thiệp được thiết kế riêng độc bản (Art-Directed), nhưng hệ thống kiểm soát 100% chất lượng thẩm mỹ, bảo mật và sự ổn định.
+                             - **12 Yêu Cầu Bắt Buộc Đã Hiện Thực Hóa 100%**:
+                               1. **Nhập liệu linh hoạt (Wizard 4 Bước)**: Người dùng nhập tên cô dâu, chú rể, song thân phụ mẫu 2 bên, ngày cưới và sảnh tiệc.
+                               2. **Thư viện Phong cách Định sẵn (Style Whitelist)**: 4 phong cách chuẩn mực (`romantic` - Lãng Mạn, `minimal` - Tối Giản Tinh Tế, `editorial` - Tạp Chí Điện Ảnh, `traditional` - Gia Phong Truyền Thống). Chặn 100% phong cách lạ hoặc tự do nhập (Rule in whitelist + 422 validation).
+                               3. **Bảo Toàn Bảng Màu Bất Biến (Color Palette Lock)**: 5 bảng màu Quiet Luxury (`ruby` - Đỏ Ruby & Gold, `dusty-rose` - Hồng Tro & Champagne, `sage-green` - Xanh Sage & Olive, `royal-navy` - Xanh Hoàng Gia & Ánh Bạc, `warm-amber` - Nâu Hổ Phách). Phối lại bố cục (Remix) hay viết lại nội dung tuyệt đối KHÔNG tự đổi màu của khách.
+                               4. **Tự Phối Component Đã Kiểm Duyệt (Zero AI HTML/CSS Generation)**: Giao diện phối ngẫu nhiên từ thư viện 21 component layout (7 section x 3 biến thể A, B, C) đã thiết kế và kiểm duyệt khắt khe. AI tuyệt đối không can thiệp viết code HTML, CSS hay JS.
+                               5. **Đúng 7 Section Tiêu Chuẩn**: Tương ứng với Section 1, 2, 3, 4, 5, 6 và 8 của SKILL.md (Hero Cover, Love Story & Quote, Family & Couple, Countdown & Calendar, Events & Maps, Timeline, Dresscode). Tuyệt đối không có Album 10 ảnh, Sổ mừng cưới hay Ký tên/RSVP ngoài luồng.
+                               6. **Loại Thiệp Riêng Biệt (`category: 'curated'`)**: Mẫu thiệp slug `mayhen-curated` hoạt động hoàn toàn độc lập, không ảnh hưởng đến hệ thống 4 mẫu thiệp 10 section hiện tại.
+                               7. **AI Chỉ Sáng Tác Lời Chúc & Trích Dẫn**: Sinh lời ngỏ (`story_content`), tiêu đề (`story_title`), câu trích dẫn (`couple_quote`) và lưu ý trang phục (`dresscode_note`) theo từng phong cách; tuyệt đối không bịa đặt ngày giờ, địa điểm hay tên người thân.
+                               8. **Trải Nghiệm Live Crafting Preview Độc Bản**: Dựng thiệp từ trên xuống dưới, chi tiết xuất hiện từ trái sang phải bằng hiệu ứng CSS keyframe animation (`mayhenCraftSectionReveal`) thật 100% trên giao diện, không dùng video giả.
+                               9. **Công Cụ Điều Khiển Toàn Diện**:
+                                  * `Phối lại toàn bộ bố cục 🎲` (`/api/curated/remix/{id}`): Phối lại ngẫu nhiên 7 component mà bảo toàn 100% bảng màu.
+                                  * `Đổi riêng từng Section ‹ ›` (`/api/curated/switch-variant`): Đổi biến thể Variant A <-> B <-> C cho từng section riêng rẽ.
+                                  * `Xem lại dựng thiệp ↺`: Tải lại iframe với animation dựng thiệp.
+                                  * `Chuyển thiết bị`: Giả lập Mobile (390px), Tablet (768px), Desktop (100%).
+                                  * `Chỉnh trong Studio ✏️`: Chuyển sang Live Studio Editor.
+                                  * `Xuất bản thiệp 🚀`: Mở modal chia sẻ đường dẫn trực tuyến.
+                               10. **Lưu Bền Vững Bố Cục (Persistence Contract)**: Cấu hình layout ngẫu nhiên sau khi chốt được lưu trực tiếp vào `custom_config['curated_layout']` trong database, reload trang không bị random lại.
+                               11. **Tích Hợp Chặt Chẽ**: Kết nối đầy đủ với layout `client.layouts.invitation`, `editor-bridge`, AuditLogger (`generate_curated_invitation`), phân quyền sở hữu `authorizeInvitationOwner`.
+                               12. **Mobile-First & Art-Directed**: Giao diện hiển thị sắc nét trên cả điện thoại, máy tính bảng và desktop; 100% Pure CSS/JS, tiền tố `mayhen_curated_*`, zero external frameworks/CDNs.
+                             - **Mã Nguồn Đã Triển Khai**:
+                               * Backend Service: `app/Services/CuratedInvitationService.php`.
+                               * Controller: `app/Http/Controllers/Client/CuratedInvitationController.php`.
+                               * Routes: 5 routes trong `routes/web.php` (`curated.create`, `curated.generate`, `curated.preview`, `curated.remix`, `curated.switch_variant`).
+                               * Views: `resources/views/client/pages/curated/wizard.blade.php`, `preview.blade.php`.
+                               * Template & 21 Biến Thể: `resources/views/client/invitations/mayhen-curated/` (`template.blade.php`, `styles.css`, `script.js`, `schema.json`, `sections/` gồm 7 thư mục x 3 variants A/B/C).
+                               * Assets: SVG nội bộ cục bộ (`wax-seal.svg`, `monogram-crest.svg`, `corner-ornament.svg`, `music-disc.svg`).
+                               * Frontend Styling & Scripts: `public/assets/client/css/pages/curated-wizard.css`, `curated-preview.css`, `public/assets/client/js/pages/curated-wizard.js`, `curated-preview.js`.
+                               * Seeder: Bổ sung template `mayhen-curated` trong `database/seeders/InvitationTemplateSeeder.php`.
+                             - **Kiểm thử & Đảm bảo chất lượng**:
+                               * Feature Test: `tests/Feature/CuratedInvitationFlowTest.php` với 9 ca kiểm thử toàn diện đáp ứng trọn vẹn 12 yêu cầu kỹ thuật -> **9/9 tests passed (64 assertions)**.
+                               * Tương thích ngược: Cập nhật `tests/Feature/CanonicalTemplateSectionsTest.php` phân định rõ ràng giữa hệ thống 4 mẫu 10 section và mẫu 7 section tự phối -> **2/2 tests passed (28 assertions)**.
+                               * Toàn bộ test suite toàn hệ thống: **471/471 tests passed 100% (2,430 assertions)**.
+                               * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --format agent`).
+                               * Đảm bảo 100% Pure CSS/JS, tiền tố `mayhen_*`, zero external frameworks/CDNs và bảo tồn nguyên vẹn 4 mẫu thiệp cưới cốt lõi.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

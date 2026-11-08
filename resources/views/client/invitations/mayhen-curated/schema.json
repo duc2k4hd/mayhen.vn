@@ -1,0 +1,79 @@
+{
+  "slug": "mayhen-curated",
+  "name": "Mây Hẹn Curated (Thiết Kế Tự Phối)",
+  "version": "v1",
+  "category": "curated",
+  "supported_sections": [
+    "hero",
+    "story",
+    "parents",
+    "countdown",
+    "events",
+    "timeline",
+    "dresscode"
+  ],
+  "default_palette": "ruby",
+  "palettes": ["ruby", "dusty-rose", "sage-green", "royal-navy", "warm-amber"],
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Trang Bìa Chính (Hero Cover)",
+      "fields": [
+        { "key": "wedding.groom_name", "label": "Tên Chú Rể", "type": "text", "required": true },
+        { "key": "wedding.bride_name", "label": "Tên Cô Dâu", "type": "text", "required": true },
+        { "key": "wedding.wedding_date", "label": "Ngày Cưới", "type": "date", "required": true },
+        { "key": "wedding.cover_photo_url", "label": "Ảnh Bìa Chính", "type": "image" }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Lời Ngỏ & Chuyện Tình Yêu",
+      "fields": [
+        { "key": "wedding.extra_data.couple_quote", "label": "Câu Trích Dẫn", "type": "textarea" },
+        { "key": "wedding.extra_data.story_title", "label": "Tiêu Đề Lời Ngỏ", "type": "text" },
+        { "key": "wedding.extra_data.story_content", "label": "Đoạn Văn Lời Ngỏ", "type": "textarea" }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Song Thân & Đôi Uyên Ương",
+      "fields": [
+        { "key": "wedding.extra_data.groom_father", "label": "Họ Tên Cha (Nhà Trai)", "type": "text" },
+        { "key": "wedding.extra_data.groom_mother", "label": "Họ Tên Mẹ (Nhà Trai)", "type": "text" },
+        { "key": "wedding.extra_data.bride_father", "label": "Họ Tên Cha (Nhà Gái)", "type": "text" },
+        { "key": "wedding.extra_data.bride_mother", "label": "Họ Tên Mẹ (Nhà Gái)", "type": "text" }
+      ]
+    },
+    {
+      "id": "countdown",
+      "title": "Đếm Ngược & Lịch Tháng",
+      "fields": [
+        { "key": "wedding.wedding_date", "label": "Ngày Cưới", "type": "date" }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Thông Tin Sự Kiện & Bản Đồ",
+      "fields": [
+        { "key": "wedding.venue_name", "label": "Tên Sảnh Tiệc", "type": "text" },
+        { "key": "wedding.venue_address", "label": "Địa Chỉ Sảnh Tiệc", "type": "textarea" },
+        { "key": "wedding.extra_data.party_time", "label": "Giờ Khai Tiệc", "type": "text" }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Hôn Lễ",
+      "fields": [
+        { "key": "wedding.extra_data.timeline", "label": "Các Mốc Thời Gian", "type": "array" }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Gợi Ý Trang Phục",
+      "fields": [
+        { "key": "wedding.extra_data.dresscode_note", "label": "Lời Dặn Trang Phục", "type": "textarea" },
+        { "key": "wedding.extra_data.dresscode_colors", "label": "Mã Màu Khuyến Nghị", "type": "text" }
+      ]
+    }
+  ]
+}

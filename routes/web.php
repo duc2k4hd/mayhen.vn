@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
@@ -52,6 +53,13 @@ Route::get('/xem-thu-tinh-nang/{feature}', [PremiumPreviewController::class, 'pr
 Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
+
+// AI Curated Invitation System (7-Section Auto Design)
+Route::get('/tao-thiep-tu-dong', [CuratedInvitationController::class, 'create'])->name('curated.create');
+Route::post('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'generate'])->middleware('throttle:editor_actions')->name('curated.generate');
+Route::get('/tao-thiep-tu-dong/xem-thu/{slug}', [CuratedInvitationController::class, 'preview'])->name('curated.preview');
+Route::post('/api/curated/remix/{id}', [CuratedInvitationController::class, 'remix'])->middleware('throttle:30,1')->name('curated.remix');
+Route::post('/api/curated/switch-variant', [CuratedInvitationController::class, 'switchVariant'])->middleware('throttle:30,1')->name('curated.switch_variant');
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <path d="M60 10 C35 10 15 30 15 55 C15 75 30 95 60 110 C90 95 105 75 105 55 C105 30 85 10 60 10 Z" stroke="#CFA860" stroke-width="2" fill="none"/>
+  <circle cx="60" cy="55" r="30" stroke="#CFA860" stroke-width="1" stroke-dasharray="4 2"/>
+  <path d="M60 25 L63 35 L73 35 L65 42 L68 52 L60 46 L52 52 L55 42 L47 35 L57 35 Z" fill="#CFA860"/>
+  <text x="60" y="68" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="22" font-style="italic" fill="#85182A" font-weight="bold">M &amp; H</text>
+</svg>

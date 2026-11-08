@@ -1,0 +1,317 @@
+<?php
+
+namespace App\Http\Controllers\Client;
+
+use App\Http\Controllers\Controller;
+use App\Models\Invitation;
+use App\Models\InvitationTemplate;
+use App\Models\User;
+use App\Models\Wedding;
+use App\Rules\NoProfanity;
+use App\Services\AuditLogger;
+use App\Services\CuratedInvitationService;
+use App\Services\InvitationTemplateService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+
+class CuratedInvitationController extends Controller
+{
+    public function __construct(
+        protected CuratedInvitationService $curatedService,
+        protected InvitationTemplateService $templateService
+    ) {}
+
+    /**
+     * Màn hình Wizard khởi tạo thiệp tự phối thông minh (Mục 1, 2, 3).
+     */
+    public function create(): View
+    {
+        $styles = $this->curatedService->getStyles();
+        $palettes = $this->curatedService->getPalettes();
+
+        return view('client.pages.curated.wizard', [
+            'styles' => $styles,
+            'palettes' => $palettes,
+        ]);
+    }
+
+    /**
+     * Khởi tạo thiệp tự phối: AI viết nội dung + Mây Hẹn tự phối layout từ components chuẩn (Mục 1, 4, 7, 10).
+     */
+    public function generate(Request $request): JsonResponse|RedirectResponse
+    {
+        $request->validate([
+            'groom_name' => ['required', 'string', 'max:50', new NoProfanity],
+            'bride_name' => ['required', 'string', 'max:50', new NoProfanity],
+            'groom_father' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'groom_mother' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'bride_father' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'bride_mother' => ['nullable', 'string', 'max:50', new NoProfanity],
+            'style' => ['required', 'string', Rule::in(array_keys($this->curatedService->getStyles()))],
+            'palette' => ['required', 'string', Rule::in(array_keys($this->curatedService->getPalettes()))],
+            'wedding_date' => ['nullable', 'date'],
+            'venue_name' => ['nullable', 'string', 'max:100', new NoProfanity],
+            'venue_address' => ['nullable', 'string', 'max:255', new NoProfanity],
+        ], [
+            'style.in' => 'Phong cách lựa chọn phải thuộc danh mục chuẩn của Mây Hẹn.',
+            'palette.in' => 'Bảng màu lựa chọn phải thuộc danh mục chuẩn của Mây Hẹn.',
+        ]);
+
+        $style = (string) $request->input('style');
+        $palette = (string) $request->input('palette');
+
+        // 1. AI sinh nội dung cảm xúc chọn lọc (Mục 7)
+        $aiContent = $this->curatedService->generateCuratedContent([
+            'groom_name' => $request->input('groom_name'),
+            'bride_name' => $request->input('bride_name'),
+        ], $style);
+
+        // 2. Mây Hẹn tự phối ngẫu nhiên layout từ các component 7 section đã kiểm duyệt (Mục 4, 5)
+        $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
+
+        // 3. Chuẩn bị dữ liệu Wedding
+        $groomName = trim((string) $request->input('groom_name'));
+        $brideName = trim((string) $request->input('bride_name'));
+        $weddingDate = $request->input('wedding_date') ?: now()->addMonths(2)->format('Y-m-d');
+        $venueName = $request->input('venue_name') ?: 'Trung Tâm Tiệc Cưới';
+        $venueAddress = $request->input('venue_address') ?: 'TP. Hồ Chí Minh';
+
+        $extraData = [
+            'groom_father' => $request->input('groom_father', 'Ông Nguyễn Văn Hùng'),
+            'groom_mother' => $request->input('groom_mother', 'Bà Lê Thị Thu'),
+            'groom_parents_address' => 'Tư gia Nhà Trai',
+            'bride_father' => $request->input('bride_father', 'Ông Trần Quốc Bảo'),
+            'bride_mother' => $request->input('bride_mother', 'Bà Phạm Thị Mai'),
+            'bride_parents_address' => 'Tư gia Nhà Gái',
+            'couple_quote' => $aiContent['couple_quote'],
+            'story_title' => $aiContent['story_title'],
+            'story_subtitle' => $aiContent['story_subtitle'],
+            'story_content' => $aiContent['story_content'],
+            'dresscode_note' => $aiContent['dresscode_note'],
+            'ceremony_type' => $aiContent['ceremony_type'],
+            'party_time' => '18:00',
+            'party_venue' => $venueName,
+            'event_party_address' => $venueAddress,
+            'ceremony_time' => '08:00',
+            'ceremony_groom_time' => '10:00',
+            'wedding_lunar_date' => 'Nhằm ngày lành tháng tốt năm Bính Ngọ',
+            'timeline' => [
+                ['time' => '17:30', 'title' => 'Đón tiếp quan khách'],
+                ['time' => '18:00', 'title' => 'Cử hành hôn lễ'],
+                ['time' => '18:30', 'title' => 'Khai tiệc mừng'],
+                ['time' => '20:00', 'title' => 'Chụp hình & Tiễn khách'],
+            ],
+        ];
+
+        // 4. Tìm template 'mayhen-curated'
+        $template = InvitationTemplate::where('slug', 'mayhen-curated')->firstOrFail();
+
+        // 5. Thực hiện tạo trong Transaction
+        $user = Auth::user();
+        if (! $user) {
+            $user = User::firstOrCreate(
+                ['email' => 'guest@mayhen.vn'],
+                [
+                    'name' => 'Khách Vãng Lai',
+                    'password' => bcrypt(Str::random(32)),
+                    'role' => 'couple',
+                ]
+            );
+        }
+
+        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette) {
+            $wedding = Wedding::create([
+                'user_id' => $user->id,
+                'groom_name' => $groomName,
+                'bride_name' => $brideName,
+                'wedding_date' => $weddingDate,
+                'venue_name' => $venueName,
+                'venue_address' => $venueAddress,
+                'cover_photo_url' => '/mau-thiep/mayhen-curated/assets/hero-couple.webp',
+                'extra_data' => $extraData,
+            ]);
+
+            $slug = Str::slug($groomName.'-va-'.$brideName.'-'.Str::lower(Str::random(6)));
+
+            return Invitation::create([
+                'wedding_id' => $wedding->id,
+                'template_id' => $template->id,
+                'slug' => $slug,
+                'title' => 'Thiệp Cưới '.$groomName.' & '.$brideName,
+                'version_type' => 'general',
+                'template_version' => 'v1',
+                'custom_config' => [
+                    'curated_layout' => $curatedLayout, // Lưu bền vững layout ngẫu nhiên (Mục 10)
+                    'color_theme' => $palette,          // Lưu bền vững bảng màu (Mục 3)
+                    'is_curated' => true,
+                ],
+                'is_published' => true,
+                'published_at' => now(),
+                'revision_id' => 1,
+            ]);
+        });
+
+        // Lưu slug vào session để nhận diện chủ nhân
+        $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
+        if (! in_array($invitation->slug, $ownedSlugs, true)) {
+            $ownedSlugs[] = $invitation->slug;
+            $request->session()->put('owned_invitation_slugs', $ownedSlugs);
+        }
+
+        AuditLogger::log(
+            'generate_curated_invitation',
+            'invitation',
+            $invitation->id,
+            "Tự động tạo thiệp cưới tự phối thông minh phong cách [{$style}], bảng màu [{$palette}]",
+            [
+                'slug' => $invitation->slug,
+                'style' => $style,
+                'palette' => $palette,
+                'sections_count' => 7,
+            ]
+        );
+
+        $previewUrl = route('curated.preview', ['slug' => $invitation->slug, 'crafting' => 1]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã tạo thiệp cưới tự phối thành công!',
+                'slug' => $invitation->slug,
+                'preview_url' => $previewUrl,
+                'layout' => $curatedLayout,
+            ]);
+        }
+
+        return redirect($previewUrl);
+    }
+
+    /**
+     * Màn hình Live Crafting Preview: Dựng thiệp từ trên xuống dưới, chi tiết từ trái sang phải (Mục 8, 9).
+     */
+    public function preview(Request $request, string $slug): View
+    {
+        $invitation = Invitation::with(['wedding', 'template'])->where('slug', $slug)->firstOrFail();
+        $this->authorizeInvitationOwner($invitation);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $curatedLayout = $config['curated_layout'] ?? [];
+        $style = $curatedLayout['style'] ?? 'romantic';
+        $palette = $curatedLayout['palette'] ?? ($config['color_theme'] ?? 'ruby');
+
+        $styles = $this->curatedService->getStyles();
+        $palettes = $this->curatedService->getPalettes();
+        $sectionDefinitions = $this->curatedService->getSectionDefinitions();
+
+        return view('client.pages.curated.preview', [
+            'invitation' => $invitation,
+            'wedding' => $invitation->wedding,
+            'template' => $invitation->template,
+            'curatedLayout' => $curatedLayout,
+            'currentStyle' => $style,
+            'currentPalette' => $palette,
+            'styles' => $styles,
+            'palettes' => $palettes,
+            'sectionDefinitions' => $sectionDefinitions,
+        ]);
+    }
+
+    /**
+     * Phối lại toàn bộ bố cục (Remix All) mà TUYỆT ĐỐI GIỮ NGUYÊN BẢNG MÀU (Mục 3, 9).
+     */
+    public function remix(Request $request, int $invitationId): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $curatedLayout = $config['curated_layout'] ?? [];
+        $style = $curatedLayout['style'] ?? 'romantic';
+        // Bắt buộc giữ nguyên màu sắc do người dùng chọn (Mục 3)
+        $palette = $curatedLayout['palette'] ?? ($config['color_theme'] ?? 'ruby');
+
+        // Phối lại ngẫu nhiên các section layout
+        $newLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
+
+        $config['curated_layout'] = $newLayout;
+        $invitation->update([
+            'custom_config' => $config,
+            'revision_id' => (int) $invitation->revision_id + 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã phối lại toàn bộ bố cục thành công!',
+            'layout' => $newLayout,
+            'revision_id' => $invitation->revision_id,
+        ]);
+    }
+
+    /**
+     * Đổi riêng biến thể của một section cụ thể (Mục 9).
+     */
+    public function switchVariant(Request $request): JsonResponse
+    {
+        $request->validate([
+            'invitation_id' => 'required|integer|exists:invitations,id',
+            'section' => 'required|string',
+            'direction' => 'nullable|string|in:next,prev',
+        ]);
+
+        $invitation = Invitation::with('wedding')->findOrFail((int) $request->input('invitation_id'));
+        $this->authorizeInvitationOwner($invitation);
+
+        $sectionKey = (string) $request->input('section');
+        $direction = (string) $request->input('direction', 'next');
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $curatedLayout = $config['curated_layout'] ?? [];
+
+        $newLayout = $this->curatedService->switchSectionVariant($curatedLayout, $sectionKey, $direction);
+
+        $config['curated_layout'] = $newLayout;
+        $invitation->update([
+            'custom_config' => $config,
+            'revision_id' => (int) $invitation->revision_id + 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Đã đổi biến thể mục [{$sectionKey}] thành công!",
+            'layout' => $newLayout,
+            'revision_id' => $invitation->revision_id,
+        ]);
+    }
+
+    /**
+     * Kiểm tra quyền sở hữu thiệp cưới.
+     */
+    protected function authorizeInvitationOwner(Invitation $invitation): void
+    {
+        if ($invitation->isOwner()) {
+            return;
+        }
+
+        $sessionSlugs = (array) request()->session()->get('owned_invitation_slugs', []);
+        if (in_array($invitation->slug, $sessionSlugs, true)) {
+            return;
+        }
+
+        abort(404);
+    }
+}

@@ -8,7 +8,9 @@ test('all active templates use the ten canonical sections in order', function ()
     $this->seed(InvitationTemplateSeeder::class);
     $service = app(InvitationTemplateService::class);
     $canonicalAllowed = InvitationTemplateService::CANONICAL_SECTION_ORDER;
-    $templates = InvitationTemplate::where('is_active', true)->pluck('slug');
+    $templates = InvitationTemplate::where('is_active', true)
+        ->where('category', '!=', 'curated')
+        ->pluck('slug');
     expect($templates)->not->toBeEmpty();
     expect($canonicalAllowed)->toHaveCount(10);
 
@@ -23,5 +25,28 @@ test('all active templates use the ten canonical sections in order', function ()
 
         expect($sectionIds)->toBe($canonicalAllowed)
             ->and($schema['supported_sections'])->toBe($canonicalAllowed);
+    }
+});
+
+test('curated templates use exactly the seven curated sections', function () {
+    $this->seed(InvitationTemplateSeeder::class);
+    $service = app(InvitationTemplateService::class);
+    $curatedAllowed = ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'dresscode'];
+    $curatedTemplates = InvitationTemplate::where('is_active', true)
+        ->where('category', 'curated')
+        ->pluck('slug');
+    expect($curatedTemplates)->not->toBeEmpty();
+
+    foreach ($curatedTemplates as $slug) {
+        $schema = $service->getSchema($slug);
+
+        expect($schema)->toBeArray()
+            ->and($schema)->toHaveKey('sections')
+            ->and($schema)->toHaveKey('supported_sections');
+
+        $sectionIds = array_column($schema['sections'], 'id');
+
+        expect($sectionIds)->toBe($curatedAllowed)
+            ->and($schema['supported_sections'])->toBe($curatedAllowed);
     }
 });

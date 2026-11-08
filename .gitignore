@@ -92,6 +92,7 @@ Thumbs.db
 !/tests/Feature/AiStoryWriterFlowTest.php
 !/tests/Feature/AgencyHandoverClaimFlowTest.php
 !/tests/Feature/VisualQualityDoctorFlowTest.php
+!/tests/Feature/CuratedInvitationFlowTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

@@ -1,0 +1,1424 @@
+/* ==========================================================================
+   MÂY HẸN (MAYHEN.VN) — CURATED INVITATION STYLESHEET (7 SECTIONS)
+   Thiết kế tự phối • 100% Pure CSS • Zero Framework • Responsive Mobile-First
+   ========================================================================== */
+
+/* 1. PALETTES TOKENS DEFINITION (MỤC 3) */
+.mayhen_curated_theme--ruby {
+    --mh-primary: #85182A;
+    --mh-primary-dark: #5E0E1C;
+    --mh-accent: #CFA860;
+    --mh-accent-light: #F4E8D1;
+    --mh-bg: #FAF7F2;
+    --mh-surface: #FFFFFF;
+    --mh-text: #1F1D1A;
+    --mh-text-muted: #6B6357;
+    --mh-border: #E5DCCD;
+    --mh-shadow: rgba(133, 24, 42, 0.08);
+}
+
+.mayhen_curated_theme--dusty-rose {
+    --mh-primary: #A26B6B;
+    --mh-primary-dark: #7D4E4E;
+    --mh-accent: #C5A880;
+    --mh-accent-light: #F7EFE6;
+    --mh-bg: #FFFDF9;
+    --mh-surface: #FFFFFF;
+    --mh-text: #2C2824;
+    --mh-text-muted: #7A7265;
+    --mh-border: #EFE8DD;
+    --mh-shadow: rgba(162, 107, 107, 0.08);
+}
+
+.mayhen_curated_theme--sage-green {
+    --mh-primary: #4A635D;
+    --mh-primary-dark: #2E423D;
+    --mh-accent: #9AA899;
+    --mh-accent-light: #EAEFEA;
+    --mh-bg: #FAF8F5;
+    --mh-surface: #FFFFFF;
+    --mh-text: #1F1D1A;
+    --mh-text-muted: #666157;
+    --mh-border: #E5DFD5;
+    --mh-shadow: rgba(74, 99, 93, 0.08);
+}
+
+.mayhen_curated_theme--royal-navy {
+    --mh-primary: #1B2A4A;
+    --mh-primary-dark: #0F1A30;
+    --mh-accent: #A0AEC0;
+    --mh-accent-light: #EDF2F7;
+    --mh-bg: #F8FAFC;
+    --mh-surface: #FFFFFF;
+    --mh-text: #0F172A;
+    --mh-text-muted: #64748B;
+    --mh-border: #E2E8F0;
+    --mh-shadow: rgba(27, 42, 74, 0.08);
+}
+
+.mayhen_curated_theme--warm-amber {
+    --mh-primary: #8C4724;
+    --mh-primary-dark: #5C2D15;
+    --mh-accent: #D4A373;
+    --mh-accent-light: #FAEDCD;
+    --mh-bg: #FFFBF5;
+    --mh-surface: #FFFFFF;
+    --mh-text: #2C221E;
+    --mh-text-muted: #7C6F66;
+    --mh-border: #EFE4DA;
+    --mh-shadow: rgba(140, 71, 36, 0.08);
+}
+
+/* 2. BASE WRAPPER & TYPOGRAPHY */
+.mayhen_invitation_ladi_wraper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--mh-bg);
+    color: var(--mh-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    margin: 0 auto;
+    position: relative;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.mayhen_curated_sections_flow {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 0 16px 80px 16px;
+    background-color: var(--mh-surface);
+    box-shadow: 0 10px 40px var(--mh-shadow);
+    position: relative;
+}
+
+/* Divider giữa các section */
+.mayhen_invitation_divider {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--mh-accent);
+    font-size: 14px;
+    letter-spacing: 6px;
+    opacity: 0.8;
+}
+
+/* Section Badge & Nút đổi biến thể */
+.mayhen_curated_section_badge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--mh-bg);
+    border: 1px dashed var(--mh-border);
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    color: var(--mh-text-muted);
+}
+
+.mayhen_curated_switch_btn {
+    background: var(--mh-primary);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.mayhen_curated_switch_btn:hover {
+    opacity: 0.85;
+}
+
+/* G.2 Nút Đĩa Than Phát Nhạc */
+.mayhen_invitation_music_dock {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.mayhen_invitation_music_btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--mh-surface);
+    border: 1.5px solid var(--mh-accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mayhen_invitation_disc_icon {
+    width: 28px;
+    height: 28px;
+    animation: mayhenDiscSpin 4s linear infinite;
+}
+
+.mayhen_invitation_music_dock.is-paused .mayhen_invitation_disc_icon {
+    animation-play-state: paused;
+}
+
+@keyframes mayhenDiscSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* G.4 Màn Mở Đầu (Opening Envelope Gate) */
+.mayhen_invitation_opening {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: var(--mh-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.mayhen_invitation_opening.is-opened {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.mayhen_invitation_envelope_wrapper {
+    max-width: 400px;
+    width: 100%;
+    background: var(--mh-surface);
+    border: 1px solid var(--mh-border);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_invitation_wax_seal_pulse {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 16px;
+    animation: mayhenSealPulse 2s ease-in-out infinite;
+}
+
+@keyframes mayhenSealPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+.mayhen_invitation_opening_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_opening_couple {
+    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--mh-primary);
+    margin: 0 0 8px 0;
+}
+
+.mayhen_invitation_opening_date {
+    font-size: 14px;
+    color: var(--mh-text-muted);
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+}
+
+.mayhen_invitation_open_btn {
+    background: var(--mh-primary);
+    color: #FAF7F2;
+    border: 1px solid var(--mh-accent);
+    padding: 12px 28px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.mayhen_invitation_open_btn:hover {
+    background: var(--mh-primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   3. SECTION 1: HERO COVER (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_hero {
+    padding: 40px 0 20px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_monogram_icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 12px auto;
+}
+
+.mayhen_invitation_ladi_headline_ceremony_type {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.mayhen_invitation_hero_names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.mayhen_invitation_ladi_headline_name_groom,
+.mayhen_invitation_ladi_headline_name_bride {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.mayhen_invitation_hero_amp {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-style: italic;
+    color: var(--mh-accent);
+}
+
+/* Hero Variant A: Cổng Vòm */
+.mayhen_invitation_hero--arch .mayhen_invitation_hero_arch_wrap {
+    width: 240px;
+    height: 330px;
+    margin: 0 auto 20px auto;
+    border: 2px solid var(--mh-accent);
+    border-radius: 120px 120px 8px 8px;
+    padding: 6px;
+    background: var(--mh-surface);
+}
+
+.mayhen_invitation_hero--arch .mayhen_invitation_hero_arch_frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 114px 114px 4px 4px;
+    overflow: hidden;
+}
+
+.mayhen_invitation_hero--arch .mayhen_invitation_hero_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_invitation_hero_date_pill {
+    display: inline-block;
+    padding: 8px 20px;
+    border-top: 1px solid var(--mh-border);
+    border-bottom: 1px solid var(--mh-border);
+}
+
+.mayhen_invitation_ladi_headline_wedding_day {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--mh-text);
+}
+
+.mayhen_invitation_ladi_paragraph_lunar_calendar {
+    font-size: 12px;
+    color: var(--mh-text-muted);
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* Hero Variant B: Tối Giản */
+.mayhen_invitation_hero--minimal .mayhen_invitation_hero_full_img_box {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.mayhen_invitation_hero--minimal .mayhen_invitation_hero_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_invitation_hero--minimal .mayhen_invitation_hero_gradient_overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+}
+
+.mayhen_invitation_hero--minimal .mayhen_invitation_hero_content_floating {
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+    background: var(--mh-surface);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--mh-border);
+}
+
+/* Hero Variant C: Tạp Chí */
+.mayhen_invitation_hero--editorial .mayhen_invitation_editorial_header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1.5px solid var(--mh-primary);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--mh-primary);
+}
+
+.mayhen_invitation_hero--editorial .mayhen_invitation_editorial_title_box h1 {
+    font-size: 38px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.mayhen_invitation_hero--editorial .mayhen_invitation_editorial_overlap_wrap {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin: 12px 0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mayhen_invitation_hero--editorial .mayhen_invitation_hero_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_invitation_hero--editorial .mayhen_invitation_editorial_amp_stamp {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+    background: var(--mh-primary);
+    color: #FAF7F2;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* ==========================================================================
+   4. SECTION 2: LOVE STORY & QUOTE (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_story {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_story_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.mayhen_invitation_ladi_headline_story {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 12px 0;
+}
+
+.mayhen_invitation_quote_text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--mh-primary);
+    margin: 16px 0;
+    padding: 0 20px;
+    line-height: 1.5;
+}
+
+.mayhen_invitation_story_subtitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mh-text);
+    margin-bottom: 8px;
+}
+
+.mayhen_invitation_story_content {
+    font-size: 13.5px;
+    color: var(--mh-text-muted);
+    line-height: 1.7;
+    margin: 0 auto;
+    max-width: 460px;
+}
+
+/* Story Variant A: Khung Vòm */
+.mayhen_invitation_story--arch .mayhen_invitation_story_arch_box {
+    width: 180px;
+    height: 230px;
+    margin: 16px auto;
+    border-radius: 90px 90px 8px 8px;
+    overflow: hidden;
+    border: 1.5px solid var(--mh-border);
+}
+
+.mayhen_invitation_story_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Story Variant B: Tự sự lá thư */
+.mayhen_invitation_story--intimate .mayhen_invitation_seal_icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 8px;
+}
+
+.mayhen_invitation_story--intimate .mayhen_invitation_story_letter_card {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    margin-top: 16px;
+    position: relative;
+}
+
+.mayhen_invitation_story_signature_sign {
+    margin-top: 16px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--mh-primary);
+}
+
+/* Story Variant C: Magazine Split */
+.mayhen_invitation_story--magazine .mayhen_invitation_story_split_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: center;
+    text-align: left;
+    margin-top: 16px;
+}
+
+.mayhen_invitation_story_polaroid {
+    background: #FFFFFF;
+    padding: 8px 8px 16px 8px;
+    border: 1px solid var(--mh-border);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border-radius: 4px;
+}
+
+.mayhen_invitation_story_polaroid img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.mayhen_invitation_story_polaroid_caption {
+    font-size: 11px;
+    font-style: italic;
+    text-align: center;
+    color: var(--mh-text-muted);
+    margin-top: 6px;
+}
+
+/* ==========================================================================
+   5. SECTION 3: FAMILY & COUPLE (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_parents {
+    padding: 24px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_family_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_family_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 8px 0;
+}
+
+.mayhen_invitation_family_notice {
+    font-size: 12.5px;
+    color: var(--mh-text-muted);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* Family Variant A: Đối xứng hai họ */
+.mayhen_invitation_family_grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.mayhen_invitation_family_card {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.mayhen_invitation_family_card h4 {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--mh-primary);
+    margin: 0 0 8px 0;
+}
+
+.mayhen_invitation_family_parents_names p {
+    margin: 4px 0;
+    font-size: 13px;
+}
+
+.mayhen_invitation_family_groom_address,
+.mayhen_invitation_family_bride_address {
+    font-size: 11.5px;
+    color: var(--mh-text-muted);
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.mayhen_invitation_crest_small {
+    width: 32px;
+    height: 32px;
+}
+
+/* Portraits Cặp Đôi */
+.mayhen_invitation_couple_portraits_wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.mayhen_invitation_couple_col {
+    background: var(--mh-bg);
+    border-radius: 10px;
+    padding: 16px 12px;
+    border: 1px solid var(--mh-border);
+    text-align: center;
+}
+
+.mayhen_invitation_groom_photo_box,
+.mayhen_invitation_bride_photo_box {
+    width: 90px;
+    height: 120px;
+    margin: 0 auto 10px auto;
+    border-radius: 45px 45px 6px 6px;
+    overflow: hidden;
+    border: 1.5px solid var(--mh-accent);
+}
+
+.mayhen_invitation_groom_photo,
+.mayhen_invitation_bride_photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_invitation_groom_role,
+.mayhen_invitation_bride_role {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mh-accent);
+    font-weight: 700;
+}
+
+.mayhen_invitation_groom_name,
+.mayhen_invitation_bride_name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    color: var(--mh-primary);
+    margin: 2px 0 6px 0;
+}
+
+.mayhen_invitation_groom_bio,
+.mayhen_invitation_bride_bio {
+    font-size: 11.5px;
+    color: var(--mh-text-muted);
+    line-height: 1.5;
+}
+
+/* Family Variant B: Parchment Cards */
+.mayhen_invitation_family_parchment_item {
+    background: var(--mh-bg);
+    border-left: 3px solid var(--mh-primary);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.mayhen_invitation_parchment_badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_parchment_names {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+
+/* Family Variant C: Gia phong chuẩn mực */
+.mayhen_invitation_formal_border_box {
+    border: 1px solid var(--mh-accent);
+    padding: 24px 16px;
+    position: relative;
+    border-radius: 8px;
+    background: var(--mh-bg);
+}
+
+.mayhen_invitation_corner_tl { position: absolute; top: 4px; left: 4px; width: 24px; }
+.mayhen_invitation_corner_tr { position: absolute; top: 4px; right: 4px; width: 24px; transform: scaleX(-1); }
+.mayhen_invitation_corner_bl { position: absolute; bottom: 4px; left: 4px; width: 24px; transform: scaleY(-1); }
+.mayhen_invitation_corner_br { position: absolute; bottom: 4px; right: 4px; width: 24px; transform: scale(-1); }
+
+.mayhen_invitation_formal_ancestor_wrap {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.mayhen_invitation_formal_divider_line {
+    width: 1px;
+    height: 80px;
+    background: var(--mh-border);
+}
+
+/* ==========================================================================
+   6. SECTION 4: COUNTDOWN & CALENDAR (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_countdown_calendar {
+    padding: 24px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_countdown_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_countdown_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 16px 0;
+}
+
+/* Calendar Variant A: Classic Tear-off */
+.mayhen_invitation_calendar_tear_box {
+    width: 170px;
+    margin: 0 auto 20px auto;
+    background: var(--mh-surface);
+    border: 1px solid var(--mh-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px var(--mh-shadow);
+}
+
+.mayhen_invitation_calendar_tear_header {
+    background: var(--mh-primary);
+    color: #FAF7F2;
+    padding: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.mayhen_invitation_calendar_day_name {
+    display: block;
+    font-size: 9px;
+    opacity: 0.8;
+}
+
+.mayhen_invitation_calendar_big_day {
+    font-size: 54px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    line-height: 1.1;
+    padding: 10px 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.mayhen_invitation_calendar_tear_footer {
+    border-top: 1px solid var(--mh-border);
+    padding: 6px;
+    font-size: 10.5px;
+    color: var(--mh-text-muted);
+}
+
+/* Đồng hồ countdown */
+.mayhen_invitation_countdown {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.mayhen_invitation_cd_item {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    min-width: 52px;
+}
+
+.mayhen_invitation_cd_val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    display: block;
+    line-height: 1;
+}
+
+.mayhen_invitation_cd_lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--mh-text-muted);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Countdown Variant B: Pill */
+.mayhen_invitation_countdown--pill {
+    align-items: center;
+}
+
+.mayhen_invitation_cd_pill_box {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-accent);
+    border-radius: 20px;
+    padding: 8px 14px;
+}
+
+.mayhen_invitation_cd_sep {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--mh-accent);
+}
+
+/* Countdown Variant C: Circular Ring */
+.mayhen_invitation_gold_ring {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2px solid var(--mh-accent);
+    margin: 0 auto 20px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--mh-bg);
+}
+
+.mayhen_invitation_ring_day {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    line-height: 1;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.mayhen_invitation_ring_sub, .mayhen_invitation_ring_my {
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    color: var(--mh-text-muted);
+}
+
+/* ==========================================================================
+   7. SECTION 5: EVENTS & MAPS (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_events {
+    padding: 24px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_events_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_events_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 16px 0;
+}
+
+/* Event Variant A: Ticket */
+.mayhen_invitation_ticket_card {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.mayhen_invitation_ticket_main {
+    flex: 1;
+    padding: 20px;
+}
+
+.mayhen_invitation_ticket_header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mh-accent);
+    border-bottom: 1px solid var(--mh-border);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_guest_badge {
+    font-size: 13px;
+    color: var(--mh-text-muted);
+    margin-bottom: 14px;
+}
+
+.mayhen_invitation_guest_badge strong {
+    color: var(--mh-primary);
+    font-size: 15px;
+}
+
+.mayhen_invitation_ticket_details_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.mayhen_invitation_ticket_detail .lbl {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--mh-text-muted);
+    display: block;
+}
+
+.mayhen_invitation_ticket_detail .val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mh-text);
+}
+
+.mayhen_invitation_ticket_stub {
+    width: 60px;
+    border-left: 1.5px dashed var(--mh-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--mh-surface);
+    position: relative;
+}
+
+.mayhen_invitation_stub_barcode {
+    writing-mode: vertical-rl;
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--mh-text-muted);
+    letter-spacing: 2px;
+}
+
+.mayhen_invitation_stub_couple {
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    color: var(--mh-primary);
+    margin-top: 10px;
+}
+
+/* Event Variant B: Wax Envelope */
+.mayhen_invitation_wax_envelope_card {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 12px;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+}
+
+.mayhen_invitation_wax_seal_big {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_guest_name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    color: var(--mh-primary);
+    margin: 4px 0 12px 0;
+}
+
+.mayhen_invitation_party_venue {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    margin: 8px 0 4px 0;
+}
+
+.mayhen_invitation_party_address {
+    font-size: 13px;
+    color: var(--mh-text-muted);
+    margin-bottom: 16px;
+}
+
+.mayhen_invitation_party_time_pill {
+    display: inline-flex;
+    gap: 16px;
+    background: var(--mh-surface);
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid var(--mh-accent);
+    font-size: 13px;
+}
+
+/* Event Variant C: Split Columns */
+.mayhen_invitation_events_split_cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.mayhen_invitation_event_card_half {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.mayhen_invitation_event_card_half--highlight {
+    border-color: var(--mh-accent);
+    box-shadow: 0 4px 12px var(--mh-shadow);
+}
+
+.mayhen_invitation_event_tag {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--mh-accent);
+    font-weight: 700;
+}
+
+.mayhen_invitation_event_card_half h3 {
+    font-size: 16px;
+    color: var(--mh-primary);
+    margin: 4px 0 10px 0;
+}
+
+/* Khung Bản Đồ dùng chung */
+.mayhen_invitation_map_box {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--mh-border);
+    background: var(--mh-surface);
+}
+
+.mayhen_invitation_map_iframe {
+    width: 100%;
+    height: 220px;
+    border: none;
+    display: block;
+}
+
+.mayhen_invitation_map_footer_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--mh-surface);
+    border-top: 1px solid var(--mh-border);
+    font-size: 12px;
+}
+
+.mayhen_invitation_map_address_text {
+    color: var(--mh-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65%;
+}
+
+.mayhen_invitation_map_open_link {
+    color: var(--mh-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   8. SECTION 6: WEDDING TIMELINE (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_timeline {
+    padding: 24px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_timeline_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_timeline_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 20px 0;
+}
+
+/* Timeline Variant A: Trục chỉ vàng */
+.mayhen_invitation_timeline_list {
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.mayhen_invitation_timeline_item {
+    display: grid;
+    grid-template-columns: 70px 30px 1fr;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.mayhen_invitation_timeline_time {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--mh-primary);
+    text-align: right;
+    padding-right: 8px;
+}
+
+.mayhen_invitation_timeline_axis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 100%;
+}
+
+.mayhen_invitation_timeline_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--mh-accent);
+    border: 2px solid var(--mh-surface);
+    box-shadow: 0 0 0 1px var(--mh-accent);
+    margin-top: 5px;
+}
+
+.mayhen_invitation_timeline_line {
+    width: 1.5px;
+    background: var(--mh-border);
+    flex: 1;
+    min-height: 24px;
+    margin-top: 4px;
+}
+
+.mayhen_invitation_timeline_text {
+    font-size: 13.5px;
+    color: var(--mh-text);
+    padding-left: 8px;
+    padding-top: 1px;
+}
+
+/* Timeline Variant B: Cards so le */
+.mayhen_invitation_timeline_alternating_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.mayhen_invitation_timeline_card_box {
+    background: var(--mh-bg);
+    border: 1px solid var(--mh-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+}
+
+.mayhen_invitation_card_badge_time {
+    background: var(--mh-primary);
+    color: #FAF7F2;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mayhen_invitation_card_text_content {
+    font-size: 13.5px;
+    color: var(--mh-text);
+    font-weight: 500;
+}
+
+/* Timeline Variant C: Steps */
+.mayhen_invitation_timeline_steps_wrap {
+    max-width: 380px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.mayhen_invitation_timeline_step_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--mh-border);
+    font-size: 13.5px;
+}
+
+.mayhen_invitation_step_num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 16px;
+    color: var(--mh-accent);
+    font-weight: 700;
+}
+
+.mayhen_invitation_step_time {
+    font-weight: 700;
+    color: var(--mh-primary);
+}
+
+/* ==========================================================================
+   9. SECTION 7: DRESSCODE (3 VARIANTS)
+   ========================================================================== */
+.mayhen_invitation_dresscode {
+    padding: 24px 0 10px 0;
+    text-align: center;
+}
+
+.mayhen_invitation_dresscode_kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--mh-accent);
+    margin-bottom: 6px;
+}
+
+.mayhen_invitation_dresscode_title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    color: var(--mh-primary);
+    margin: 0 0 16px 0;
+}
+
+/* Dresscode Variant A: Vòng tròn màu */
+.mayhen_invitation_dresscode_swatches {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.mayhen_invitation_dresscode_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_invitation_dresscode_circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--mh-surface);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.mayhen_invitation_dresscode_label {
+    font-size: 10.5px;
+    color: var(--mh-text-muted);
+}
+
+.mayhen_invitation_dresscode_note {
+    font-size: 12.5px;
+    color: var(--mh-text-muted);
+    font-style: italic;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Dresscode Variant B: Swatches Fabric */
+.mayhen_invitation_fabric_swatches_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 360px;
+    margin: 0 auto 16px auto;
+}
+
+.mayhen_invitation_fabric_swatch {
+    height: 48px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_fabric_name {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--mh-text-muted);
+}
+
+/* Dresscode Variant C: Vogue */
+.mayhen_invitation_vogue_wrap {
+    background: var(--mh-bg);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid var(--mh-border);
+}
+
+.mayhen_invitation_vogue_palette_bar {
+    display: flex;
+    height: 18px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.mayhen_invitation_vogue_bar_item {
+    flex: 1;
+}
+
+.mayhen_invitation_sketch_tag {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--mh-accent);
+    font-weight: 700;
+}
+
+/* Footer kết thiệp */
+.mayhen_curated_footer {
+    text-align: center;
+    padding: 30px 10px 10px 10px;
+    border-top: 1px solid var(--mh-border);
+    margin-top: 24px;
+}
+
+.mayhen_curated_footer p {
+    font-size: 12.5px;
+    color: var(--mh-text-muted);
+    margin-bottom: 8px;
+}
+
+.mayhen_curated_footer_couple {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    color: var(--mh-primary);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   10. HIỆU ỨNG DỰNG THIỆP TRỰC TIẾP (LIVE CRAFTING PREVIEW ANIMATION — MỤC 8)
+   Dựng từ trên xuống dưới, chi tiết xuất hiện từ trái sang phải như nghệ nhân vẽ
+   ========================================================================== */
+.is-crafting-live .mayhen_curated_craft_node {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: mayhenCraftSectionReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.is-crafting-live [data-curated-section="hero"] { animation-delay: 0.2s; }
+.is-crafting-live [data-curated-section="story"] { animation-delay: 0.8s; }
+.is-crafting-live [data-curated-section="parents"] { animation-delay: 1.4s; }
+.is-crafting-live [data-curated-section="countdown"] { animation-delay: 2.0s; }
+.is-crafting-live [data-curated-section="events"] { animation-delay: 2.6s; }
+.is-crafting-live [data-curated-section="timeline"] { animation-delay: 3.2s; }
+.is-crafting-live [data-curated-section="dresscode"] { animation-delay: 3.8s; }
+
+@keyframes mayhenCraftSectionReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+        clip-path: inset(0 100% 0 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* Responsive di động Safe Area */
+@media (max-width: 540px) {
+    .mayhen_curated_sections_flow {
+        padding-left: 12px;
+        padding-right: 12px;
+        box-shadow: none;
+    }
+    .mayhen_invitation_hero--arch .mayhen_invitation_hero_arch_wrap {
+        width: 210px;
+        height: 290px;
+    }
+    .mayhen_invitation_family_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_invitation_crest_small {
+        display: none;
+    }
+    .mayhen_invitation_ticket_card {
+        flex-direction: column;
+    }
+    .mayhen_invitation_ticket_stub {
+        width: 100%;
+        height: 40px;
+        border-left: none;
+        border-top: 1.5px dashed var(--mh-border);
+        writing-mode: horizontal-tb;
+    }
+    .mayhen_invitation_stub_barcode, .mayhen_invitation_stub_couple {
+        writing-mode: horizontal-tb;
+        margin: 0;
+    }
+}
+
