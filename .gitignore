@@ -101,6 +101,8 @@ Thumbs.db
 !/tests/Feature/Gate4CommercialExperienceInvariantsTest.php
 !/tests/Feature/GuestCrmAndRsvpLifecycleDeepTest.php
 !/tests/Feature/SeatingAndReceptionLifecycleDeepTest.php
+!/tests/Feature/StudioEditorAndAutosaveDeepTest.php
+!/tests/Feature/AdminPortalAndSystemAuditDeepTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

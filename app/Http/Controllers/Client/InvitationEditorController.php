@@ -560,6 +560,14 @@ class InvitationEditorController extends Controller
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền kiểm tra thiệp cưới này.');
 
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên.',
+            ], 403);
+        }
+
         $result = $guardian->inspect($invitation->wedding, $invitation);
 
         return response()->json([

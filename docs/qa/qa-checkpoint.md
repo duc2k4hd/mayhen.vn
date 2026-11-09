@@ -28,5 +28,17 @@
     * Bổ sung cảnh báo quá tải bàn tiệc (`is_over_capacity`, `warning`) khi kéo thả xếp khách trong Seating Studio.
     * Khách phát sinh (Walk-in) tại cửa tiệc tạo đầy đủ token, rsvp, check-in và tự động liên kết bàn tiệc.
     * Hủy điểm danh (Undo Check-in) dọn sạch timestamp và sĩ số khi nhân viên bấm nhầm.
-- **Test suite**: **569/569 tests PASSED** (2,850 assertions).
+  - CỤM C — Studio Builder, Autosave & Phát Hiện Xung Đột (HOÀN THÀNH 100%)
+    * Kiểm thử sâu cơ chế kiểm soát đồng thời lạc quan (Optimistic Concurrency Control): sửa nhiều tab trả 409 Conflict với `conflict: true` và `current_revision`.
+    * Tự động lọc sạch các URL `blob:` tạm thời trong `draft_config` và `wedding_delta`, ngăn lưu trữ asset tạm làm vỡ giao diện.
+    * Validate họ tên nghiêm ngặt: giới hạn tối đa 4 từ, tối đa 30 ký tự, cấm số và ký tự đặc biệt, chống XSS triệt để.
+    * Sửa lỗi TypeError 500 khi gọi `publishImpact` và `collisionCheck` mà wedding null (`BUG-STUDIO-001`).
+    * Sửa lỗi bỏ sót kiểm tra `is_locked` trên `consistencyCheck` (`BUG-STUDIO-002`).
+  - CỤM D — Admin Portal & Hệ Thống Kiểm Toán Toàn Diện (HOÀN THÀNH 100%)
+    * Phân quyền RBAC 3 lớp nghiêm ngặt (Admin, Manager, Staff): Staff chỉ đọc và duyệt wish, Manager quản lý thiệp/order, Admin quản trị tối cao.
+    * Khóa bất biến an toàn tài khoản: Quản trị viên tối cao không thể tự hạ quyền của chính mình; Manager không thể reset password của Super Admin.
+    * Khóa và mở khóa thiệp cưới (`lock`/`unlock`) với lý do chi tiết, chặn toàn diện mọi hành vi autosave và kiểm định khi bị khóa.
+    * Xuất khẩu CSV an toàn 100% kèm UTF-8 BOM và cơ chế lọc chống tấn công chèn công thức Excel (`=, +, -, @`).
+    * Ghi nhận đầy đủ nhật ký kiểm toán quản trị (`AuditLogger`) phục vụ tra soát minh bạch.
+- **Test suite**: **586/586 tests PASSED** (2,933 assertions).
 - **Code style**: **Laravel Pint PASSED**.

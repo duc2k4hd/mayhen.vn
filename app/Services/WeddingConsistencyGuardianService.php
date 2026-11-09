@@ -232,8 +232,19 @@ class WeddingConsistencyGuardianService
      *     advice: string
      * }
      */
-    public function evaluatePublishImpact(Wedding $wedding, array $newData): array
+    public function evaluatePublishImpact(?Wedding $wedding, array $newData): array
     {
+        if (! $wedding) {
+            return [
+                'has_critical_changes' => false,
+                'impacted_guests_count' => 0,
+                'impacted_rsvp_count' => 0,
+                'warning_level' => 'none',
+                'changes' => [],
+                'advice' => 'Không phát hiện thay đổi trọng yếu nào ảnh hưởng đến lịch trình của quan khách.',
+            ];
+        }
+
         $changes = [];
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
         $newExtra = is_array($newData['extra_data'] ?? null) ? $newData['extra_data'] : [];
@@ -484,8 +495,17 @@ class WeddingConsistencyGuardianService
      *     collisions: array<int, array{type: string, severity: string, title: string, message: string, suggestion: string}>
      * }
      */
-    public function detectCeremonyCollisions(Wedding $wedding, ?Invitation $invitation = null): array
+    public function detectCeremonyCollisions(?Wedding $wedding, ?Invitation $invitation = null): array
     {
+        if (! $wedding) {
+            return [
+                'has_collisions' => false,
+                'highest_severity' => 'none',
+                'collisions_count' => 0,
+                'collisions' => [],
+            ];
+        }
+
         $collisions = [];
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
 

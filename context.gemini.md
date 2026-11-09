@@ -123,6 +123,30 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 
 ---
 
+### Trạng thái Kiểm Định Toàn Diện Hệ Thống (Master QA Program) — 09/11/2026
+
+- **Vai trò thực thi:** Principal QA Engineer, Business Logic Auditor & Senior Laravel Bug Fixer.
+- **Hiện trạng kiểm thử tự động toàn diện:** **586/586 tests PASSED (100%)**, 2,933 assertions. Thời gian thực thi: ~11.2s.
+- **Code Formatter:** Laravel Pint **100% PASSED** (Agent style).
+- **Các cổng và phân hệ cốt lõi đã nghiệm thu:**
+  1. **50 Bất biến nghiệp vụ (Domain Invariants INV-01 -> INV-50):** Hoàn thành 100% qua 5 Feature Test Suites (`Gate0DomainInvariantsTest.php` đến `Gate4CommercialExperienceInvariantsTest.php`), giải quyết triệt để 12 lỗi kiến trúc.
+  2. **CỤM A — Guest CRM & RSVP Lifecycle:** Sửa lỗi xóa khách để lại phản hồi mồ côi (`BUG-GUEST-001`), sửa lỗi khóa nhầm khách cùng mạng NAT / Wi-Fi (`BUG-RSVP-001` / `QA-PRIV-009`). Đạt 100% với `GuestCrmAndRsvpLifecycleDeepTest.php` (7 tests, 50 assertions).
+  3. **CỤM B — Seating Planner & QR Reception Desk:** Sửa lỗi khách Declined chuyển sang Attending bị ghi nhận 0 người (`BUG-CHECKIN-001`), mở rộng validation token quét QR camera max:500 (`BUG-CHECKIN-002`), bổ sung cảnh báo quá tải bàn tiệc. Đạt 100% với `SeatingAndReceptionLifecycleDeepTest.php` (9 tests, 48 assertions).
+  4. **CỤM C — Studio Builder, Autosave & Conflict Detection:**
+     * Kiểm chứng cơ chế Optimistic Concurrency Control (OCC): xử lý nhiều tab sửa cùng lúc, trả HTTP 409 Conflict với `conflict: true` và `current_revision`.
+     * Tự động loại bỏ URL `blob:` tạm thời trong `draft_config` và `wedding_delta`.
+     * Sanitize và validate họ tên nghiêm ngặt (<= 4 từ, <= 30 ký tự, không số/ký tự đặc biệt, chống XSS).
+     * Sửa lỗi TypeError 500 khi `evaluatePublishImpact` hoặc `detectCeremonyCollisions` nhận wedding null (`BUG-STUDIO-001`).
+     * Bổ sung kiểm tra `is_locked` cho `consistencyCheck` đảm bảo chặn 403 đồng bộ khi thiệp bị khóa (`BUG-STUDIO-002`).
+     * Đạt 100% với `StudioEditorAndAutosaveDeepTest.php` (9 tests, 43 assertions).
+  5. **CỤM D — Admin Portal & System Audit:**
+     * Phân quyền RBAC 3 lớp nghiêm ngặt (Admin, Manager, Staff).
+     * Bất biến an toàn tài khoản: Quản trị viên tối cao không thể tự hạ quyền chính mình; Manager không thể reset password của Super Admin.
+     * Khóa và mở khóa thiệp cưới (`lock`/`unlock`) có lưu lý do và thời điểm.
+     * Xuất file CSV UTF-8 BOM kèm bộ lọc phòng vệ tấn công chèn công thức Excel (`=, +, -, @`).
+     * Ghi nhận và truy vấn nhật ký kiểm toán hành chính (`AuditLogger`).
+     * Đạt 100% với `AdminPortalAndSystemAuditDeepTest.php` (8 tests, 40 assertions).
+
 ### Trạng thái Studio đã xác minh — 06/11/2026
 
 - **QA-01 hoàn tất đối chiếu local:** cập nhật các test cũ sang 4 mẫu active, contract 10 section và cơ chế lưu riêng lời chúc cùng IP; giữ các ca kiểm tra danh sách, quyền chủ thiệp, RSVP, lọc nội dung, gallery, embed và đồng bộ Studio. Bổ sung ngoại lệ `.gitignore` cho 5 file test trước đó bị bỏ qua; giữ nguyên tên file cũ để không xóa test. Kiểm thử upload dùng storage giả và dọn file sau test. Toàn bộ suite PHP chạy trên SQLite in-memory đạt **176/176 test**; không suy rộng kết quả này cho MySQL production hoặc các mẫu không còn trong dự án.
