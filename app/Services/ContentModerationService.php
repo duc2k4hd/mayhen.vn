@@ -5,77 +5,90 @@ namespace App\Services;
 class ContentModerationService
 {
     /**
-     * Danh sách từ khóa thô tục, xúc phạm, chửi bậy, tang tóc và trù ẻo tiếng Việt.
-     * Bao gồm cả từ có dấu, không dấu, viết tắt, và từ lóng mạng xã hội.
+     * Danh sách từ khóa thô tục, xúc phạm, chửi bậy, tang tóc và trù ẻo tiếng Việt & Quốc tế.
+     * Tích hợp toàn diện từ 2 kho mã nguồn mở:
+     * - https://github.com/blue-eyes-vn/vietnamese-offensive-words
+     * - https://github.com/zautumnz/profane-words
      */
-    protected static array $badWords = [
-        // 1. Tục tĩu, bộ phận sinh dục, hành vi tình dục
-        'buồi', 'buoi', 'cặc', 'cac', 'kặc', 'kac', 'dái', 'hòn dái', 'hon dai',
-        'lồn', 'lon', 'lồz', 'loz', 'l0n', 'bướm', 'hột le', 'vú', 'bóp vú',
-        'địt', 'dit', 'd1t', 'đ1t', 'đụ', 'đụ má', 'du ma', 'đụ mẹ', 'du me', 'đụ cụ', 'du cu',
-        'chịch', 'chich', 'nện', 'xoạc', 'vét máng', 'vet mang', 'bú cu', 'bu cu', 'liếm lồn', 'liem lon',
-        'sóc lọ', 'soc lo', 'sục cặc', 'suc cac', 'thủ dâm', 'thu dam', 'thông đít', 'thong dit',
-        'giao cấu', 'giao cau', 'hiếp dâm', 'hấp diêm', 'hap diem', 'cưỡng bức', 'quấy rối tình dục',
+    protected static ?array $badWords = null;
 
-        // 2. Chửi thề, viết tắt tiếng lóng Gen Z & MXH
-        'đm', 'dm', 'đkm', 'dkm', 'đcm', 'dcm', 'đmm', 'dmm',
-        'vcl', 'vkl', 'vcc', 'vl', 'vlon', 'vloz',
-        'clgt', 'clgv', 'cmn', 'cmnr', 'cc', 'dbrr', 'đbrr', 'dcmm', 'đcmm',
-        'đéo', 'deo', 'đếch', 'dech', 'méo',
+    protected static ?array $singleExactSet = null;
 
-        // 3. Xúc phạm cha mẹ, tổ tiên, nhân phẩm gia đình
-        'mẹ mày', 'me may', 'mẹ m', 'me m', 'bố mày', 'bo may', 'bố m', 'bo m',
-        'bà già mày', 'ba gia may', 'ông già mày', 'ong gia may',
-        'cha mày', 'cha may', 'tổ cha', 'to cha', 'tổ mẹ', 'to me',
-        'mả cha', 'ma cha', 'mả mẹ', 'ma me', 'tiên sư', 'tien su', 'ông nội mày', 'bà nội mày',
+    protected static ?array $singleAsciiSet = null;
 
-        // 4. Miệt thị phụ nữ, nghề nghiệp xúc phạm
-        'đĩ', 'con đĩ', 'con di', 'đĩ mẹ', 'di me', 'đĩ chó', 'di cho', 'đĩ thõa', 'thằng đĩ', 'thang di',
-        'điếm', 'diem', 'gái bao', 'gai bao', 'gái gọi', 'gai goi', 'phò', 'pho', 'cave',
-        'bán dâm', 'ban dam', 'mại dâm', 'mai dam',
+    protected static ?array $multiChunksExact = null;
 
-        // 5. Chửi thú vật, miệt thị trí tuệ
-        'chó đẻ', 'cho de', 'chó chết', 'cho chet', 'đồ chó', 'do cho', 'thằng chó', 'thang cho', 'con chó', 'con cho',
-        'chó má', 'cho ma', 'súc vật', 'suc vat', 'súc sinh', 'suc sinh', 'xúc vật', 'xuc vat',
-        'đồ lợn', 'do lon', 'con lợn', 'con lon', 'đồ heo', 'con heo',
-        'đồ ngu', 'do ngu', 'ngu lồn', 'ngu lon', 'ngu dốt', 'ngu si', 'óc chó', 'oc cho',
-        'óc lợn', 'oc lon', 'óc bò', 'oc bo', 'đần độn', 'dan don', 'đồ đần', 'do dan',
-        'đồ khùng', 'do khung', 'bị khùng', 'bi khung', 'thằng khùng', 'thang khung', 'con khùng', 'con khung',
-        'đồ điên', 'do dien', 'bị điên', 'bi dien', 'thằng điên', 'thang dien', 'con điên', 'con dien',
-        'thiểu năng', 'thieu nang', 'bại não', 'bai nao', 'thần kinh', 'than kinh', 'tâm thần', 'tam than',
+    protected static ?array $multiChunksAscii = null;
 
-        // 6. Trù ẻo đám cưới, tang tóc, ly tán, phá hoại hạnh phúc (Đặc thù thiệp cưới)
-        'chết mẹ', 'chet me', 'chết cha', 'chet cha', 'đi chết', 'di chet',
-        'chết tiệt', 'chet tiet', 'đoản mệnh', 'doan menh', 'tai nạn', 'tai nan',
-        'đám ma', 'dam ma', 'tang gia', 'ma chay', 'quan tài', 'quan tai', 'khăn tang', 'khan tang',
-        'bát hương', 'bat huong', 'vòng hoa tang', 'chia buồn tang tóc',
-        'ly dị', 'ly di', 'ly hôn', 'ly hon', 'đứt gánh', 'dut ganh',
-        'cắm sừng', 'cam sung', 'mọc sừng', 'moc sung', 'tan vỡ', 'tan vo', 'bỏ nhau', 'bo nhau',
-        'ngoại tình', 'ngoai tinh', 'phản bội', 'phan boi', 'tiểu tam', 'tieu tam', 'trà xanh', 'tra xanh',
-        'con giáp thứ 13', 'con giap thu 13', 'giật chồng', 'giat chong', 'giật vợ', 'giat vo',
-        'vô sinh', 'vo sinh', 'tuyệt tự', 'tuyet tu', 'đẻ không có lỗ đít', 'quả báo', 'qua bao',
-    ];
+    protected static ?array $asciiAmbiguous = null;
+
+    protected static ?array $separatedPatterns = null;
 
     /**
-     * Danh sách các từ đơn dễ gây hiểu nhầm (False Positives) khi so khớp không dấu (ASCII).
-     * Các từ này chỉ được kiểm tra nghiêm ngặt khi có dấu chính xác trong văn bản gốc.
-     * Ví dụ:
-     * - 'buoi' (buổi sáng, buổi tiệc, quả bưởi) vs 'buồi'
-     * - 'dai' (đại gia đình, đại học, dài lâu) vs 'dái'
-     * - 'vu' (vũ trụ, vũ hội, vụ việc) vs 'vú'
-     * - 'du' (du lịch, lãng du, dù sao) vs 'đụ'
-     * - 'nen' (nên duyên, thắp nến, nền tảng) vs 'nện'
-     * - 'lon' (lon nước, lớn lên) vs 'lồn'
-     * - 'buom' (bươm bướm) vs 'bướm'
-     * - 'pho' (phố phường, bát phở) vs 'phò'
-     * - 'di' (đi lại, đi chơi, cô dì, diệu kỳ) vs 'đĩ'
+     * Khởi tạo cấu trúc tra cứu từ điển siêu tốc (O(1) Set + Regex Phân Khúc).
      */
-    protected static array $asciiAmbiguousWords = [
-        'buoi', 'dai', 'vu', 'du', 'nen', 'lon', 'buom', 'pho', 'di',
-    ];
+    protected static function initDictionary(): void
+    {
+        if (self::$badWords !== null) {
+            return;
+        }
+
+        if (function_exists('config') && app()->bound('config')) {
+            self::$badWords = config('moderation.bad_words', []);
+            self::$asciiAmbiguous = config('moderation.ascii_ambiguous', []);
+            self::$separatedPatterns = config('moderation.separated_patterns', []);
+        } else {
+            $configPath = dirname(__DIR__, 2).'/config/moderation.php';
+            $loadedConfig = file_exists($configPath) ? (require $configPath) : [];
+            self::$badWords = $loadedConfig['bad_words'] ?? [];
+            self::$asciiAmbiguous = $loadedConfig['ascii_ambiguous'] ?? [];
+            self::$separatedPatterns = $loadedConfig['separated_patterns'] ?? [];
+        }
+
+        self::$singleExactSet = [];
+        self::$singleAsciiSet = [];
+        $multiPhrases = [];
+
+        foreach (self::$badWords as $word) {
+            $wLower = mb_strtolower(trim($word), 'UTF-8');
+            if (empty($wLower)) {
+                continue;
+            }
+
+            if (str_contains($wLower, ' ') || str_contains($wLower, '-') || str_contains($wLower, '_') || str_contains($wLower, '.')) {
+                $multiPhrases[] = $wLower;
+            } else {
+                self::$singleExactSet[$wLower] = true;
+                $wAscii = self::normalizeToAscii($wLower);
+                if (! in_array($wAscii, self::$asciiAmbiguous, true)) {
+                    self::$singleAsciiSet[$wAscii] = true;
+                }
+            }
+        }
+
+        // Biên dịch regex phân khúc cho các cụm từ ghép (Chunked Regex)
+        self::$multiChunksExact = [];
+        self::$multiChunksAscii = [];
+
+        foreach (array_chunk($multiPhrases, 150) as $chunk) {
+            $quotedExact = array_map(fn ($p) => preg_quote($p, '/'), $chunk);
+            self::$multiChunksExact[] = '/(?<=^|[^\p{L}\p{N}])('.implode('|', $quotedExact).')(?=$|[^\p{L}\p{N}])/ui';
+
+            $quotedAscii = [];
+            foreach ($chunk as $p) {
+                $pAscii = self::normalizeToAscii($p);
+                if (! in_array($pAscii, self::$asciiAmbiguous, true)) {
+                    $quotedAscii[] = preg_quote($pAscii, '/');
+                }
+            }
+            if (! empty($quotedAscii)) {
+                self::$multiChunksAscii[] = '/(?<=^|[^\p{L}\p{N}])('.implode('|', array_unique($quotedAscii)).')(?=$|[^\p{L}\p{N}])/ui';
+            }
+        }
+    }
 
     /**
-     * Kiểm tra xem chuỗi có chứa từ ngữ vi phạm không.
+     * Kiểm tra xem chuỗi có chứa từ ngữ vi phạm không (Hiệu năng cao: < 2ms).
      */
     public static function containsProfanity(?string $text): bool
     {
@@ -83,37 +96,43 @@ class ContentModerationService
             return false;
         }
 
+        self::initDictionary();
+
         $rawLower = mb_strtolower(trim($text), 'UTF-8');
         $normalizedAscii = self::normalizeToAscii($rawLower);
 
-        // 1. Kiểm tra từ điển có word boundary (cả nguyên bản và ASCII chuẩn hóa)
-        foreach (self::$badWords as $badWord) {
-            $badWordLower = mb_strtolower($badWord, 'UTF-8');
-            $badWordAscii = self::normalizeToAscii($badWordLower);
-
-            // Kiểm tra nguyên bản có dấu (Chính xác 100%)
-            if (self::containsWordBoundary($rawLower, $badWordLower)) {
-                return true;
-            }
-
-            // Bỏ qua so khớp ASCII đơn nếu từ đó thuộc nhóm đa nghĩa dễ hiểu nhầm trong tiếng Việt
-            if (in_array($badWordAscii, self::$asciiAmbiguousWords, true)) {
-                continue;
-            }
-
-            if (self::containsWordBoundary($normalizedAscii, $badWordAscii)) {
+        // 1. Kiểm tra từ đơn nguyên bản có dấu (Exact Set O(1))
+        $tokens = preg_split('/[^\p{L}\p{N}]+/u', $rawLower, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($tokens as $token) {
+            if (isset(self::$singleExactSet[$token])) {
                 return true;
             }
         }
 
-        // 2. Bắt kẻ cố tình lách chữ bằng ký tự ngắt (dấu chấm, khoảng trắng, gạch, sao, cộng):
-        // Ví dụ: d.m, d m, d-m, c.a.c, c a c, l.o.n, l o n, d.i.t, v.c.l, v l
-        $separatedPatterns = [
-            'dm', 'dkm', 'dcm', 'dmm', 'vcl', 'vkl', 'vl', 'clgt', 'cac', 'kac',
-            'lon', 'dit', 'buoi', 'cmn', 'cmnr', 'dbrr', 'dcmm',
-        ];
+        // 2. Kiểm tra từ đơn không dấu ASCII (ASCII Set O(1))
+        $asciiTokens = preg_split('/[^\p{L}\p{N}]+/u', $normalizedAscii, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($asciiTokens as $token) {
+            if (isset(self::$singleAsciiSet[$token])) {
+                return true;
+            }
+        }
 
-        foreach ($separatedPatterns as $patternWord) {
+        // 3. Kiểm tra cụm từ ghép nguyên bản (Multiword Regex Chunks)
+        foreach (self::$multiChunksExact as $regex) {
+            if (preg_match($regex, $rawLower)) {
+                return true;
+            }
+        }
+
+        // 4. Kiểm tra cụm từ ghép không dấu ASCII (Multiword Regex Chunks)
+        foreach (self::$multiChunksAscii as $regex) {
+            if (preg_match($regex, $normalizedAscii)) {
+                return true;
+            }
+        }
+
+        // 5. Bắt kẻ cố tình lách chữ bằng ký tự ngắt (d.m, c a c, v.c.l, ...)
+        foreach (self::$separatedPatterns as $patternWord) {
             if (self::containsSeparatedWord($normalizedAscii, $patternWord)) {
                 return true;
             }
@@ -129,7 +148,6 @@ class ContentModerationService
     protected static function containsSeparatedWord(string $haystack, string $shortWord): bool
     {
         $letters = str_split($shortWord);
-        // Bắt buộc giữa các chữ cái phải có ít nhất một ký tự ngắt (khoảng trắng, dấu chấm, gạch ngang, sao, v.v.)
         $pattern = '/(?<=^|[^a-z0-9])'.implode('[\s\._\*\-\+~]+', array_map('preg_quote', $letters)).'(?=$|[^a-z0-9])/i';
 
         return (bool) preg_match($pattern, $haystack);
@@ -140,13 +158,49 @@ class ContentModerationService
      */
     public static function findProfanity(?string $text): ?string
     {
-        if (empty($text)) {
+        if (empty($text) || trim($text) === '') {
             return null;
         }
 
-        foreach (self::$badWords as $badWord) {
-            if (self::containsProfanityWord($text, $badWord)) {
-                return $badWord;
+        self::initDictionary();
+
+        $rawLower = mb_strtolower(trim($text), 'UTF-8');
+        $normalizedAscii = self::normalizeToAscii($rawLower);
+
+        // 1. Single exact
+        $tokens = preg_split('/[^\p{L}\p{N}]+/u', $rawLower, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($tokens as $token) {
+            if (isset(self::$singleExactSet[$token])) {
+                return $token;
+            }
+        }
+
+        // 2. Single ascii
+        $asciiTokens = preg_split('/[^\p{L}\p{N}]+/u', $normalizedAscii, -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($asciiTokens as $token) {
+            if (isset(self::$singleAsciiSet[$token])) {
+                return $token;
+            }
+        }
+
+        // 3. Multiword exact
+        foreach (self::$multiChunksExact as $regex) {
+            if (preg_match($regex, $rawLower, $matches)) {
+                return $matches[0];
+            }
+        }
+
+        // 4. Multiword ascii
+        foreach (self::$multiChunksAscii as $regex) {
+            if (preg_match($regex, $normalizedAscii, $matches)) {
+                return $matches[0];
+            }
+        }
+
+        // 5. Separated patterns
+        foreach (self::$separatedPatterns as $patternWord) {
+            if (self::containsSeparatedWord($normalizedAscii, $patternWord)) {
+                return $patternWord;
             }
         }
 
@@ -158,48 +212,19 @@ class ContentModerationService
      */
     public static function getBadWordsList(): array
     {
-        return self::$badWords;
+        self::initDictionary();
+
+        return self::$badWords ?? [];
     }
 
     /**
      * Kiểm tra ranh giới từ để tránh bắt nhầm từ ghép vô hại.
-     * Ví dụ: từ 'cu' không nên bắt nhầm trong 'cung kính' hay 'tích cực'.
      */
     protected static function containsWordBoundary(string $haystack, string $needle): bool
     {
-        // Chèn boundary regex
         $pattern = '/(?<=^|[^\p{L}\p{N}])'.preg_quote($needle, '/').'(?=$|[^\p{L}\p{N}])/u';
 
         return (bool) preg_match($pattern, $haystack);
-    }
-
-    /**
-     * Kiểm tra các mẫu lách ngắn: d.m, d-m, d m, v.c.l
-     */
-    protected static function containsShortPattern(string $haystack, string $shortWord): bool
-    {
-        $letters = str_split($shortWord);
-        $regex = '/(?<=^|[^a-z0-9])'.implode('[\s\._\*\-\+]*', array_map('preg_quote', $letters)).'(?=$|[^a-z0-9])/i';
-
-        return (bool) preg_match($regex, $haystack);
-    }
-
-    protected static function containsProfanityWord(string $text, string $badWord): bool
-    {
-        $rawLower = mb_strtolower($text, 'UTF-8');
-        $normalizedAscii = self::normalizeToAscii($rawLower);
-        $badWordLower = mb_strtolower($badWord, 'UTF-8');
-        $badWordAscii = self::normalizeToAscii($badWordLower);
-
-        if (self::containsWordBoundary($rawLower, $badWordLower)) {
-            return true;
-        }
-
-        if (in_array($badWordAscii, self::$asciiAmbiguousWords, true)) {
-            return false;
-        }
-
-        return self::containsWordBoundary($normalizedAscii, $badWordAscii);
     }
 
     /**

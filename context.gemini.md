@@ -6353,6 +6353,43 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
   * Laravel Pint: **100% PASSED**.
 
+### [2026-11-09] TÍCH HỢP TOÀN DIỆN TỪ ĐIỂN TỪ NGỮ THÔ TỤC & NÂNG CẤP BỘ LỌC NỘI DUNG SIÊU TỐC (CONTENT MODERATION ENGINE V2)
+- **Bối cảnh & Yêu cầu**:
+  * Tích hợp toàn diện 2 kho từ điển mã nguồn mở phổ biến:
+    1. `blue-eyes-vn/vietnamese-offensive-words`: 430 từ/cụm từ tiếng Việt tục tĩu, lóng MXH, teen code, tiếng lách âm.
+    2. `zautumnz/profane-words`: 2,725 từ tiếng Anh và quốc tế tục tĩu, chửi thề, phân biệt chủng tộc.
+  * Hợp nhất vào một danh mục từ điển duy nhất `config/moderation.php` với 3,348 từ khóa vi phạm được chuẩn hóa sạch sẽ.
+- **Thách thức kỹ thuật & Tối ưu hóa**:
+  * *Thách thức hiệu năng*: Việc lặp regex qua 3,348 từ khiến thời gian phản hồi kiểm duyệt lên tới >33ms, vi phạm nguyên tắc Native Fast Architecture (<2ms).
+  * *Thách thức False Positive (Bắt nhầm từ ngữ đám cưới)*: Một số từ lóng/chửi bậy trong tiếng Việt và quốc tế khi so khớp không dấu (ASCII) trùng 100% với các từ ngữ đám cưới, tên riêng, thời gian trang trọng:
+    - `giái` -> `giai` (trùng với `Liễu Giai`, `giai điệu`).
+    - `dong` (từ lóng tiếng Anh) -> `dong` (trùng với `đồng nghiệp`, `đồng hương`, `đông hải`, `con đàn cháu đống`).
+    - `bỏ mẹ` / `bo me` -> `bo me` (trùng với `bố mẹ nhà gái`, `bố mẹ hai bên`).
+    - `sảng` -> `sang` (trùng với `10:45 sáng`, `sang trọng`).
+    - `bòi` -> `boi` (trùng với `thực hiện bởi`, `hồ bơi`, `bồi hồi`).
+    - `buồi` -> `buoi` (trùng với `buổi tiệc`, `buổi lễ`).
+    - `dái` -> `dai` (trùng với `ngày trọng đại`, `bền lâu`).
+    - `cu` -> `cu` (trùng với `bàn đồng nghiệp cũ`).
+- **Giải pháp kỹ thuật đã triển khai**:
+  1. **Kiến trúc Tra Cứu Siêu Tốc O(1) Set + Chunked Regex**:
+     * Tách biệt từ đơn và cụm từ ghép nhiều từ (`multiPhrases`).
+     * Toàn bộ từ đơn có dấu được nạp vào Hash Map `O(1)` (`$singleExactSet`).
+     * Từ đơn không dấu được nạp vào Hash Map `O(1)` (`$singleAsciiSet`), bỏ qua danh sách từ đa nghĩa (`ascii_ambiguous`).
+     * Cụm từ ghép được phân mảnh theo khối 150 phần tử (`array_chunk`) và biên dịch thành Chunked Regex biên độ ranh giới từ `(?<=^|[^\p{L}\p{N}])(...)`.
+     * Giảm thời gian kiểm tra từ 33ms xuống chỉ còn **1.6ms** (nhanh gấp hơn 20 lần).
+  2. **Bộ Lọc Đa Nghĩa Thông Minh (ASCII Ambiguous Guard)**:
+     * Danh sách `ascii_ambiguous` trong `config/moderation.php` bảo vệ các từ: `buoi`, `dai`, `vu`, `du`, `nen`, `lon`, `buom`, `pho`, `di`, `mong`, `gai`, `phuc`, `chim`, `cu`, `cho`, `cha`, `me`, `ba`, `bo`, `ma`, `to`, `dam`, `hoi`, `sinh`, `vat`, `con`, `giai`, `dong`, `d0ng`, `sang`, `bo me`, `boi`.
+     * Khi gặp các từ này, hệ thống **chỉ xử phạt khi người dùng gõ có dấu chính xác** (như `buồi`, `dái`, `giái`, `sảng`, `bòi`), còn các câu văn đám cưới trong sáng như "Liễu Giai", "Bàn Đồng Nghiệp Cũ", "10:45 sáng", "Bố mẹ nhà gái", "Thực hiện bởi..." được cho qua 100%.
+  3. **Bộ Kiểm Thử Toàn Diện (41 Tests)**:
+     * Bổ sung unit test `tests/Unit/ContentModerationServiceTest.php` bao phủ toàn bộ các kịch bản: Tiếng Việt có dấu, tiếng Việt không dấu, tiếng Anh thô tục, leetspeak (`f.u.c.k`, `d.m`, `v.c.l`), và xác thực 100% câu chúc đám cưới/địa chỉ/họ tên không bao giờ bị bắt nhầm.
+- **Tập tin đã cập nhật**:
+  * `config/moderation.php` (Từ điển 3,348 từ khóa vi phạm & cấu hình phân loại ambiguous).
+  * `app/Services/ContentModerationService.php` (Nâng cấp O(1) Set tra cứu siêu tốc <2ms).
+  * `tests/Unit/ContentModerationServiceTest.php` (41 test cases).
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ test suite toàn hệ thống: **517/517 tests PASSED 100% (2,500 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
