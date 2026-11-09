@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e9e4da"/>
+      <stop offset="100%" stop-color="#cfc6b3"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bg)"/>
+  <g fill="none" stroke="#8a7f66" stroke-width="6" opacity="0.55">
+    <rect x="290" y="410" width="220" height="160" rx="10"/>
+    <circle cx="360" cy="465" r="18"/>
+    <path d="M300 545 L390 470 L440 510 L470 480 L500 545 Z"/>
+  </g>
+  <text x="400" y="640" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#6b6150" opacity="0.75">Ảnh cưới của bạn</text>
+</svg>
