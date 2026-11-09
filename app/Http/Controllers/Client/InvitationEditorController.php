@@ -443,6 +443,7 @@ class InvitationEditorController extends Controller
             'invitation' => $invitation,
             'wedding' => $wedding,
             'template' => $template,
+            'isCuratedSeven' => ! empty($config['is_curated_seven']) || ! empty($config['is_curated']),
             'guest' => $guest,
             'wishes' => $wishes,
             'wishSubmitUrl' => $wishSubmitUrl,

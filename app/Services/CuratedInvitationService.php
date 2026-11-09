@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\InvitationTemplate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
@@ -82,6 +83,31 @@ class CuratedInvitationService
                 'timeline' => 'variant_c',
                 'album' => 'variant_c',
             ],
+        ],
+    ];
+
+    /**
+     * Danh mục mapping chuẩn mực từ 4 phong cách Mây Hẹn sang Template gốc có sẵn (Master Prompt V3).
+     * Tuyệt đối không cho phép tạo template nhân tạo mới.
+     *
+     * @var array<string, array{primary: string, alternatives: array<string>}>
+     */
+    protected const STYLE_TEMPLATE_REGISTRY = [
+        'romantic' => [
+            'primary' => 'giua-muon-ngan-vi-sao',
+            'alternatives' => ['ngay-tinh-yeu-dom-hoa'],
+        ],
+        'minimal' => [
+            'primary' => 'hanh-phuc-mang-ten-chung-minh',
+            'alternatives' => [],
+        ],
+        'editorial' => [
+            'primary' => 'tron-kiep-nay-ben-nhau',
+            'alternatives' => [],
+        ],
+        'traditional' => [
+            'primary' => 'giua-muon-ngan-vi-sao',
+            'alternatives' => ['ngay-tinh-yeu-dom-hoa'],
         ],
     ];
 
@@ -404,6 +430,68 @@ class CuratedInvitationService
     public function isValidPalette(string $palette): bool
     {
         return array_key_exists($palette, self::PALETTES);
+    }
+
+    /**
+     * Tìm mẫu thiệp gốc có sẵn theo phong cách và bảng màu (Master Prompt V3).
+     * Tuyệt đối không trỏ về 'mayhen-curated'.
+     */
+    public function resolveNativeTemplate(string $style, string $palette): InvitationTemplate
+    {
+        if (! $this->isValidStyle($style)) {
+            $style = 'romantic';
+        }
+
+        $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
+        $targetSlug = $registry['primary'];
+
+        $template = InvitationTemplate::where('slug', $targetSlug)->first();
+
+        if (! $template) {
+            $template = InvitationTemplate::firstOrCreate(
+                ['slug' => $targetSlug],
+                [
+                    'name' => match ($targetSlug) {
+                        'giua-muon-ngan-vi-sao' => 'Giữa Muôn Ngàn Vì Sao',
+                        'hanh-phuc-mang-ten-chung-minh' => 'Hạnh Phúc Mang Tên Chúng Mình',
+                        'ngay-tinh-yeu-dom-hoa' => 'Ngày Tình Yêu Đơm Hoa',
+                        'tron-kiep-nay-ben-nhau' => 'Trọn Kiếp Này Bên Nhau',
+                        default => 'Mẫu Thiệp Mây Hẹn',
+                    },
+                    'category' => 'luxury',
+                    'thumbnail_url' => "/mau-thiep/{$targetSlug}/assets/thumbnail.webp",
+                    'demo_url' => "/xem-thu/{$targetSlug}",
+                    'is_active' => true,
+                    'is_featured' => true,
+                ]
+            );
+        }
+
+        return $template;
+    }
+
+    /**
+     * Chuyển đổi sang mẫu gốc khác trong cùng phong cách khi phối lại (Master Prompt V3).
+     */
+    public function resolveAlternativeTemplate(string $style, string $currentSlug): InvitationTemplate
+    {
+        if (! $this->isValidStyle($style)) {
+            $style = 'romantic';
+        }
+
+        $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
+        $candidates = array_merge([$registry['primary']], $registry['alternatives']);
+
+        $available = array_values(array_filter($candidates, fn ($s) => $s !== $currentSlug));
+
+        $targetSlug = ! empty($available) ? $available[array_rand($available)] : $currentSlug;
+
+        $template = InvitationTemplate::where('slug', $targetSlug)->first();
+        if (! $template) {
+            $template = $this->resolveNativeTemplate($style, 'ruby');
+        }
+
+        return $template;
     }
 
     /**

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
-use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
@@ -116,37 +115,8 @@ class CuratedInvitationController extends Controller
             ],
         ];
 
-        // 4. Tìm hoặc tự động khởi tạo template 'mayhen-curated' nếu chưa có trong DB
-        $template = InvitationTemplate::firstOrCreate(
-            ['slug' => 'mayhen-curated'],
-            [
-                'name' => 'Mây Hẹn Curated (Thiết Kế Tự Phối)',
-                'category' => 'curated',
-                'thumbnail_url' => '/mau-thiep/mayhen-curated/assets/thumbnail.webp',
-                'demo_url' => '/xem-thu/mayhen-curated',
-                'default_config' => [
-                    'tier' => 'pro',
-                    'complexity' => 'curated-adaptive',
-                    'setup_time' => '1 phút',
-                    'accent_color' => '#85182A',
-                    'font_serif' => 'Cormorant Garamond, Playfair Display',
-                    'animation' => 'live-crafting-editorial',
-                    'style_layout' => 'curated-7-section',
-                    'section_count' => 7,
-                    'supported_sections' => [
-                        'hero',
-                        'story',
-                        'parents',
-                        'countdown',
-                        'events',
-                        'timeline',
-                        'album',
-                    ],
-                ],
-                'is_active' => true,
-                'is_featured' => true,
-            ]
-        );
+        // 4. Lựa chọn một mẫu thiệp gốc thực sự trong 4 mẫu có sẵn (Master Prompt V3)
+        $template = $this->curatedService->resolveNativeTemplate($style, $palette);
 
         // 5. Thực hiện tạo trong Transaction
         $user = Auth::user();
@@ -163,7 +133,7 @@ class CuratedInvitationController extends Controller
 
         $presentationToken = Str::random(32);
 
-        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette, $presentationToken) {
+        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette, $style, $presentationToken) {
             $wedding = Wedding::create([
                 'user_id' => $user->id,
                 'groom_name' => $groomName,
@@ -171,7 +141,7 @@ class CuratedInvitationController extends Controller
                 'wedding_date' => $weddingDate,
                 'venue_name' => $venueName,
                 'venue_address' => $venueAddress,
-                'cover_photo_url' => '/mau-thiep/mayhen-curated/assets/hero-couple.webp',
+                'cover_photo_url' => url("/mau-thiep/{$template->slug}/assets/7da1e3a6d59c1a98.webp"),
                 'extra_data' => $extraData,
             ]);
 
@@ -185,9 +155,12 @@ class CuratedInvitationController extends Controller
                 'version_type' => 'general',
                 'template_version' => 'v1',
                 'custom_config' => [
-                    'curated_layout' => $curatedLayout, // Lưu bền vững layout ngẫu nhiên (Mục 10)
-                    'color_theme' => $palette,          // Lưu bền vững bảng màu (Mục 3)
+                    'curated_layout' => $curatedLayout,
+                    'color_theme' => $palette,
                     'is_curated' => true,
+                    'is_curated_seven' => true,
+                    'source_template_slug' => $template->slug,
+                    'style' => $style,
                     'presentation_token' => $presentationToken,
                     'first_presented_at' => null,
                 ],
@@ -289,35 +262,35 @@ class CuratedInvitationController extends Controller
     }
 
     /**
-     * Phối lại toàn bộ bố cục (Remix All) mà TUYỆT ĐỐI GIỮ NGUYÊN BẢNG MÀU (Mục 3, 9).
+     * Phối lại sang mẫu gốc khác cùng phong cách (Remix Native Template) - BẢO TOÀN MÀU SẮC (Master Prompt V3).
      */
     public function remix(Request $request, int $invitationId): JsonResponse
     {
-        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
 
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        $curatedLayout = $config['curated_layout'] ?? [];
-        $style = $curatedLayout['style'] ?? 'romantic';
-        // Bắt buộc giữ nguyên màu sắc do người dùng chọn (Mục 3)
-        $palette = $curatedLayout['palette'] ?? ($config['color_theme'] ?? 'ruby');
+        $style = $config['style'] ?? 'romantic';
+        $palette = $config['color_theme'] ?? 'ruby';
+        $currentSlug = $invitation->template?->slug ?? 'giua-muon-ngan-vi-sao';
 
-        // Phối lại ngẫu nhiên các section layout
-        $newLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
+        // Phối lại: Chuyển đổi sang mẫu gốc khác trong cùng phong cách (nếu có)
+        $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug);
 
-        $config['curated_layout'] = $newLayout;
-        $invitation->update([
-            'custom_config' => $config,
-            'revision_id' => (int) $invitation->revision_id + 1,
-        ]);
+        $config['source_template_slug'] = $newTemplate->slug;
+        $invitation->template_id = $newTemplate->id;
+        $invitation->custom_config = $config;
+        $invitation->revision_id = (int) $invitation->revision_id + 1;
+        $invitation->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã phối lại toàn bộ bố cục thành công!',
-            'layout' => $newLayout,
+            'message' => "Đã phối lại sang mẫu gốc [{$newTemplate->name}]!",
+            'template_slug' => $newTemplate->slug,
+            'template_name' => $newTemplate->name,
             'revision_id' => $invitation->revision_id,
         ]);
     }

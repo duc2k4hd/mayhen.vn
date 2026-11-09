@@ -103,5 +103,8 @@
     </script>
     @stack('scripts')
     <script type="module" src="{{ asset('assets/client/js/common/invitation-config.js') }}"></script>
+    @if(request()->boolean('crafting'))
+        <script src="{{ asset('assets/client/js/pages/native-crafting-presenter.js') }}?v={{ time() }}"></script>
+    @endif
 </body>
 </html>

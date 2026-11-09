@@ -6084,6 +6084,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Database records: Đã dọn sạch các bản ghi tương ứng trong bảng `invitation_templates`.
 - **Trạng thái hệ thống**: Kho mã nguồn sạch sẽ, không còn bất kỳ tệp tin hay logic cào mẫu bên ngoài nào.
 
+### [2026-11-09] THỰC THI MASTER PROMPT V3: TÁI SỬ DỤNG 100% MẪU THIỆP GỐC CÓ SẴN (NATIVE TEMPLATE FIRST, ZERO NEW DESIGN)
+- **Bối cảnh & Chỉ đạo cốt lõi của Người dùng**:
+  * Dừng hoàn toàn hướng phát triển thiệp tự chế `mayhen-curated` (không tự nghĩ ra bố cục HTML/CSS, không dùng 21 variants chắp vá).
+  * **Source of Truth**: 4 mẫu thiệp cưới gốc cao cấp trong `resources/views/client/invitations/`:
+    1. `giua-muon-ngan-vi-sao` (mẫu pilot ưu tiên)
+    2. `hanh-phuc-mang-ten-chung-minh`
+    3. `ngay-tinh-yeu-dom-hoa`
+    4. `tron-kiep-nay-ben-nhau`
+  * Khi người dùng tạo thiệp tự động qua AI (`/tao-thiep-tu-dong`), hệ thống lựa chọn có kiểm soát một mẫu thiệp gốc thực sự từ allowlist phong cách (`romantic`, `minimal`, `editorial`, `traditional`).
+  * **AI chỉ viết content** (`story_title`, `story_content`, `couple_quote`), hoàn toàn không viết hay can thiệp vào bố cục HTML/CSS.
+  * Render thiệp bằng **chính `template.blade.php`, `styles.css`, `script.js` và assets gốc của mẫu đó**.
+  * Chế độ Curated 7 Section: Hiển thị đúng 7 section chuẩn (1: Hero, 2: Story, 3: Parents, 4: Countdown, 5: Events, 6: Timeline, 7: Album 10 ảnh), ẩn Dresscode, Gift VietQR và RSVP/Interactive một cách an toàn thông qua biến `$isCuratedSeven`.
+  * Trình diễn hiệu ứng xuất hiện (Live Crafting) trên chính các phần tử thật của mẫu gốc đã render thông qua `native-crafting-presenter.js`.
+- **Các bước triển khai chi tiết**:
+  1. **Tài liệu Khảo sát Bắt buộc (`docs/MAY_HEN_CURATED_NATIVE_TEMPLATE_AUDIT.md`)**:
+     * Lập bảng khảo sát chi tiết 4 mẫu gốc: View thật, CSS/JS thật, selectors của 7 section, wrapper, assets nội bộ, cách inject dữ liệu, khả năng ẩn các section dư, bảng màu tương thích.
+  2. **Triển khai Adapter 7 Section cho Mẫu Pilot Đầu Tiên (`giua-muon-ngan-vi-sao`)**:
+     * Bổ sung cờ điều kiện `$isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));`.
+     * Bọc Section 7 (Dresscode), Section 9 (Gift VietQR) và Section 10 (Interactive/RSVP) trong `@if(! $isCuratedSeven)`.
+     * Khi `$isCuratedSeven = false`, mẫu giữ 100% nguyên bản 10 section chuẩn mực của Mây Hẹn; khi `$isCuratedSeven = true`, hiển thị gọn gàng 7 section chuẩn mực và footer kết thúc nhẹ nhàng.
+  3. **Tái cấu trúc `CuratedInvitationService.php`**:
+     * Xây dựng `STYLE_TEMPLATE_REGISTRY` mapping 4 phong cách sang template gốc:
+       - `romantic` $\rightarrow$ `giua-muon-ngan-vi-sao` (mẫu chính), `ngay-tinh-yeu-dom-hoa` (dự phòng)
+       - `minimal` $\rightarrow$ `hanh-phuc-mang-ten-chung-minh`
+       - `editorial` $\rightarrow$ `tron-kiep-nay-ben-nhau`
+       - `traditional` $\rightarrow$ `giua-muon-ngan-vi-sao` (palette ruby), `ngay-tinh-yeu-dom-hoa`
+     * Bổ sung `resolveNativeTemplate($style, $palette)` và `resolveAlternativeTemplate($style, $currentSlug)`.
+  4. **Tái cấu trúc `CuratedInvitationController.php`**:
+     * Gán trực tiếp `template_id` là ID của mẫu gốc thật sự trong bảng `invitation_templates`, lưu `is_curated_seven => true` và `source_template_slug`.
+     * Hàm `remix`: Chuyển đổi sang mẫu gốc khác cùng phong cách (nếu có), bảo toàn 100% bảng màu của người dùng.
+     * Cập nhật `preview.blade.php`: Hiển thị rõ "Mẫu nguồn: [tên mẫu]" trên thanh điều khiển.
+  5. **Xây dựng `native-crafting-presenter.js`**:
+     * Script trình diễn hiệu ứng progressive reveal nhẹ nhàng, tinh tế trên chính các phần tử thật của mẫu gốc khi có `?crafting=1`.
+     * Tôn trọng `prefers-reduced-motion: reduce`, hỗ trợ Skip/Replay 100% client-side, ngừng auto-scroll khi người dùng vuốt/chạm màn hình.
+  6. **Kiểm thử & Định dạng mã nguồn**:
+     * Suite test `tests/Feature/CuratedInvitationFlowTest.php`: **14/14 tests PASSED (93 assertions)**.
+     * Toàn bộ test suite dự án: **599/599 tests PASSED 100% (3,123 assertions)**.
+     * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --dirty --format agent`).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

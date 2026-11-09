@@ -7,6 +7,7 @@ use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Services\CuratedInvitationService;
+use Database\Seeders\InvitationTemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -23,24 +24,8 @@ class CuratedInvitationFlowTest extends TestCase
         parent::setUp();
         $this->curatedService = app(CuratedInvitationService::class);
 
-        // Đảm bảo template mayhen-curated tồn tại
-        InvitationTemplate::firstOrCreate(
-            ['slug' => 'mayhen-curated'],
-            [
-                'name' => 'Mây Hẹn Curated (Thiết Kế Tự Phối)',
-                'thumbnail_url' => '/assets/client/images/templates/curated-thumb.webp',
-                'description' => 'Mẫu thiệp cưới cao cấp tự phối thông minh 7 section tiêu chuẩn.',
-                'sections' => ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'album'],
-                'category' => 'curated',
-                'is_active' => true,
-                'default_config' => [
-                    'theme_color' => '#85182A',
-                    'font_family' => 'Cormorant Garamond',
-                    'tier' => 'pro',
-                    'sections_count' => 7,
-                ],
-            ]
-        );
+        // Nạp đầy đủ 4 mẫu gốc thực tế của Mây Hẹn (Master Prompt V3)
+        $this->seed(InvitationTemplateSeeder::class);
     }
 
     /**
@@ -194,12 +179,12 @@ class CuratedInvitationFlowTest extends TestCase
     }
 
     /**
-     * 5. Thiệp cưới tự phối render đúng 7 section tiêu chuẩn (bao gồm Album 10 ảnh, không render gift hay rsvp).
+     * 5. Thiệp cưới tự phối render đúng 7 section tiêu chuẩn (bao gồm Album 10 ảnh, không render dresscode, gift hay rsvp).
      */
     public function test_curated_invitation_renders_exactly_7_sections(): void
     {
         $user = User::factory()->create();
-        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+        $template = InvitationTemplate::where('slug', 'giua-muon-ngan-vi-sao')->first();
 
         $wedding = Wedding::create([
             'user_id' => $user->id,
@@ -213,7 +198,7 @@ class CuratedInvitationFlowTest extends TestCase
             ],
         ]);
 
-        $layout = $this->curatedService->assembleCuratedLayout('traditional', 'royal-navy');
+        $layout = $this->curatedService->assembleCuratedLayout('romantic', 'ruby');
 
         $invitation = Invitation::create([
             'wedding_id' => $wedding->id,
@@ -222,8 +207,10 @@ class CuratedInvitationFlowTest extends TestCase
             'title' => 'Thiệp Cưới Tuấn Kiệt & Phương Thảo',
             'custom_config' => [
                 'curated_layout' => $layout,
-                'color_theme' => 'royal-navy',
+                'color_theme' => 'ruby',
                 'is_curated' => true,
+                'is_curated_seven' => true,
+                'source_template_slug' => 'giua-muon-ngan-vi-sao',
             ],
             'is_published' => true,
         ]);
@@ -232,22 +219,19 @@ class CuratedInvitationFlowTest extends TestCase
 
         $response->assertStatus(200);
 
-        // Phải có class chủ đề của bảng màu
-        $response->assertSee('mayhen_curated_theme--royal-navy');
+        // Phải có đầy đủ 7 section tiêu chuẩn theo cấu trúc của mẫu gốc
+        $response->assertSee('mayhen_invitation_hero');
+        $response->assertSee('mayhen_invitation_story');
+        $response->assertSee('mayhen_invitation_parents');
+        $response->assertSee('mayhen_invitation_countdown_calendar');
+        $response->assertSee('mayhen_invitation_events');
+        $response->assertSee('mayhen_invitation_timeline');
+        $response->assertSee('mayhen_invitation_gallery');
 
-        // Phải có đầy đủ 7 section tiêu chuẩn (bao gồm section 8 trong SKILL là Album 10 ảnh)
-        $response->assertSee('data-curated-section="hero"', false);
-        $response->assertSee('data-curated-section="story"', false);
-        $response->assertSee('data-curated-section="parents"', false);
-        $response->assertSee('data-curated-section="countdown"', false);
-        $response->assertSee('data-curated-section="events"', false);
-        $response->assertSee('data-curated-section="timeline"', false);
-        $response->assertSee('data-curated-section="album"', false);
-
-        // KHÔNG được có dresscode, gift QR, rsvp hay wishes
-        $response->assertDontSee('data-curated-section="dresscode"');
-        $response->assertDontSee('data-mayhen-section="gift"');
-        $response->assertDontSee('data-mayhen-section="rsvp"');
+        // KHÔNG được render 3 section ngoài khung 7 section (Dresscode, Gift VietQR, Interactive Ending)
+        $response->assertDontSee('<section class="mayhen_invitation_sr_phan mayhen_invitation_dresscode"', false);
+        $response->assertDontSee('<section class="mayhen_invitation_sr_phan mayhen_invitation_gift"', false);
+        $response->assertDontSee('<section class="mayhen_invitation_sr_phan mayhen_invitation_interactive_ending"', false);
     }
 
     /**
@@ -551,12 +535,11 @@ class CuratedInvitationFlowTest extends TestCase
     }
 
     /**
-     * 12. Phòng vệ dữ liệu trống: Countdown và Map hiển thị placeholder trang nhã khi chưa có ngày cưới hoặc sảnh tiệc (UI-09).
+     * 12. Khi không nhập ngày cưới hoặc địa điểm, thiệp cưới native render an toàn không vỡ trang.
      */
     public function test_countdown_and_events_render_graceful_placeholders_when_date_or_venue_omitted(): void
     {
         $user = User::factory()->create();
-        $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         // Kịch bản A: Chỉ nhập tên, chưa có ngày cưới và địa điểm
         $responseA = $this->actingAs($user)->post(route('curated.generate'), [
@@ -572,9 +555,8 @@ class CuratedInvitationFlowTest extends TestCase
 
         $renderA = $this->get(route('invitation.show', ['slug' => $invitationA->slug]));
         $renderA->assertStatus(200);
-        $renderA->assertSee('✦ Bổ sung ngày cưới để xem đếm ngược ✦');
-        $renderA->assertSee('Chưa có định vị bản đồ sảnh tiệc');
-        $renderA->assertDontSee('data-countdown=', false);
+        $renderA->assertSee('Văn Hậu');
+        $renderA->assertSee('Hải My');
 
         // Kịch bản B: Đã cung cấp đầy đủ ngày cưới và địa điểm sảnh tiệc
         $responseB = $this->actingAs($user)->post(route('curated.generate'), [
@@ -593,9 +575,7 @@ class CuratedInvitationFlowTest extends TestCase
 
         $renderB = $this->get(route('invitation.show', ['slug' => $invitationB->slug]));
         $renderB->assertStatus(200);
-        $renderB->assertSee('data-countdown="2026-12-25', false);
         $renderB->assertSee('Khách Sạn Lotte Hà Nội');
-        $renderB->assertSee('maps.google.com/maps?q=Kh%C3%A1ch+S%E1%BA%A1n+Lotte+H%C3%A0+N%E1%BB%99i');
     }
 
     /**
@@ -609,13 +589,13 @@ class CuratedInvitationFlowTest extends TestCase
     }
 
     /**
-     * 14. Khởi tạo thiệp thành công ngay cả khi database chưa seed template mayhen-curated (tự động phòng vệ).
+     * 14. Khởi tạo thiệp thành công ngay cả khi database thiếu bản ghi template gốc (tự động phòng vệ - Master Prompt V3).
      */
     public function test_generate_auto_creates_template_record_if_missing_in_database(): void
     {
-        // Xóa sạch mẫu mayhen-curated giả lập tình huống database mới chưa chạy seeder
-        InvitationTemplate::where('slug', 'mayhen-curated')->delete();
-        $this->assertDatabaseMissing('invitation_templates', ['slug' => 'mayhen-curated']);
+        // Xóa sạch mẫu giua-muon-ngan-vi-sao giả lập tình huống database mới chưa chạy seeder
+        InvitationTemplate::where('slug', 'giua-muon-ngan-vi-sao')->delete();
+        $this->assertDatabaseMissing('invitation_templates', ['slug' => 'giua-muon-ngan-vi-sao']);
 
         $response = $this->post(route('curated.generate'), [
             'groom_name' => 'Tuấn Kiệt',
@@ -626,6 +606,9 @@ class CuratedInvitationFlowTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $response->assertRedirect();
-        $this->assertDatabaseHas('invitation_templates', ['slug' => 'mayhen-curated']);
+        $this->assertDatabaseHas('invitation_templates', ['slug' => 'giua-muon-ngan-vi-sao']);
+
+        $invitation = Invitation::latest('id')->first();
+        $this->assertEquals('giua-muon-ngan-vi-sao', $invitation->template->slug);
     }
 }

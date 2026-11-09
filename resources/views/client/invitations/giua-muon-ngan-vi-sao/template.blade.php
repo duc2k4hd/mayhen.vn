@@ -1,6 +1,10 @@
 @php
     $assetBase = url('/mau-thiep/giua-muon-ngan-vi-sao/assets');
     $isEmbed = request()->boolean('embed');
+    $invConfig = is_array($invitation->custom_config ?? null)
+        ? $invitation->custom_config
+        : (json_decode((string) ($invitation->custom_config ?? ''), true) ?? []);
+    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Giữa Muôn Ngàn Vì Sao';
 
@@ -196,7 +200,7 @@
 
 @section('title', $pageTitle)
 @section('meta_description', 'Trân trọng kính mời ' . $guestName . ' tới dự lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
-@section('body_class', ($isEmbed ? 'mayhen_invitation_embed_mode' : 'mayhen_invitation_sr_khoa'))
+@section('body_class', ($isEmbed || ($isCuratedSeven && request()->boolean('crafting')) ? 'mayhen_invitation_embed_mode' : 'mayhen_invitation_sr_khoa'))
 
 @push('fonts')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -238,7 +242,7 @@
     <canvas class="mayhen_invitation_sr_hat" aria-hidden="true"></canvas>
 
     <!-- ===================== SECTION 1: MÀN MỞ ĐẦU (OPENING / MÀN SAO RƠI) ===================== -->
-    <div class="mayhen_invitation_sr_cua mayhen_invitation_opening {{ $isEmbed ? 'mayhen_invitation_da_mo opened mayhen_door_hidden' : '' }}" style="{{ $isEmbed ? 'display: none !important;' : '' }}" data-thoi-gian="2200" role="dialog" aria-label="Thiệp mời cưới">
+    <div class="mayhen_invitation_sr_cua mayhen_invitation_opening {{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? 'mayhen_invitation_da_mo opened mayhen_door_hidden' : '' }}" style="{{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? 'display: none !important;' : '' }}" data-thoi-gian="2200" role="dialog" aria-label="Thiệp mời cưới">
         <div class="mayhen_invitation_sr_man">
             <div class="mayhen_invitation_sr_kicker">
                 <i class="mayhen_invitation_sr_orn"></i>
@@ -766,6 +770,7 @@
             </div>
         </section>
 
+        @if(! $isCuratedSeven)
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
@@ -819,6 +824,7 @@
                 </p>
             </div>
         </section>
+        @endif
 
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
@@ -866,6 +872,7 @@
             </div>
         </section>
 
+        @if(! $isCuratedSeven)
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR) ===================== -->
@@ -1244,6 +1251,16 @@
                 </p>
             </div>
         </section>
+        @else
+        <div class="mayhen_invitation_curated_footer" style="text-align: center; padding: 48px 20px 64px;">
+            <p class="mayhen_invitation_ladi_headline" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--mayhen-accent, #FCE39E); margin-bottom: 8px;">
+                {{ $groomName }} &amp; {{ $brideName }}
+            </p>
+            <p style="font-size: 0.82rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.75; color: var(--mayhen-text-muted, #CFA860);">
+                ✦ MÂY HẸN • QUIET LUXURY ✦
+            </p>
+        </div>
+        @endif
 
     </div>
 
