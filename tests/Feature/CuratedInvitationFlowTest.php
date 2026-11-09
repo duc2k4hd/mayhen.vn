@@ -174,7 +174,7 @@ class CuratedInvitationFlowTest extends TestCase
         $response->assertSee('Đức Minh &amp; Ngọc Linh', false);
         $response->assertSee('Phối lại');
         $response->assertSee('Xem lại');
-        $response->assertSee('Đổi Bố Cục Từng Mục');
+        $response->assertSee('Tùy Chỉnh Bố Cục Từng Mục');
         $response->assertSee('Xuất bản');
     }
 

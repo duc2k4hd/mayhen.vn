@@ -84,7 +84,7 @@
 
         <div class="mayhen_curated_topbar_right">
             {{-- NÚT MỞ BẢNG BỐ CỤC CHO MOBILE (DRAWER TOGGLE) --}}
-            <button type="button" class="mayhen_curated_btn_action btn_toggle_drawer" id="btnToggleSidebarDrawer" title="Mở bảng tùy biến bố cục 7 section">
+            <button type="button" class="mayhen_curated_btn_action btn_toggle_drawer" id="btnToggleSidebarDrawer" title="Mở bảng tùy biến bố cục AI">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
                 <span>Bố Cục</span>
             </button>
@@ -96,7 +96,7 @@
             </button>
 
             {{-- NÚT PHỐI LẠI TOÀN BỘ (REMIX LAYOUT) - BẢO TOÀN MÀU SẮC --}}
-            <button type="button" class="mayhen_curated_btn_action btn_remix" id="btnRemixAll" title="Phối lại ngẫu nhiên 7 mục - Giữ nguyên bảng màu">
+            <button type="button" class="mayhen_curated_btn_action btn_remix" id="btnRemixAll" title="AI phối lại phong cách mới - Giữ nguyên bảng màu">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                 <span>Phối lại</span>
             </button>
@@ -122,11 +122,11 @@
         <aside class="mayhen_curated_variants_sidebar" id="variantsSidebar">
             <div class="sidebar_header">
                 <div class="sidebar_header_top">
-                    <span class="sidebar_kicker">7 SECTION TIÊU CHUẨN</span>
+                    <span class="sidebar_kicker">AI GỢI Ý THIẾT KẾ</span>
                     <button type="button" class="sidebar_close_btn" id="btnCloseSidebarDrawer" aria-label="Đóng bảng tùy biến">&times;</button>
                 </div>
-                <h2 class="sidebar_title">Đổi Bố Cục Từng Mục</h2>
-                <p class="sidebar_desc">Tùy biến riêng lẻ 3 biến thể mỹ thuật của từng section</p>
+                <h2 class="sidebar_title">Tùy Chỉnh Bố Cục Từng Mục</h2>
+                <p class="sidebar_desc">Khám phá các phong cách thiết kế độc bản do AI gợi ý cho từng khoảnh khắc</p>
             </div>
 
             <div class="sidebar_sections_list">

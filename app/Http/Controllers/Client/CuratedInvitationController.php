@@ -290,7 +290,7 @@ class CuratedInvitationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Đã phối lại ngẫu nhiên toàn bộ 7 section bố cục!',
+            'message' => 'AI đã phối lại bố cục thiết kế mới thành công!',
             'layout' => $curatedLayout,
             'revision_id' => $invitation->revision_id,
         ]);

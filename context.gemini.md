@@ -6301,6 +6301,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Laravel Pint: **100% PASSED** chuẩn agent style.
   * Toàn bộ 476/476 test cases: **100% PASSED** (2,459 assertions).
 
+### [2026-11-09] CHUẨN HOÁ NỘI DUNG SIDEBAR PREVIEW: LOẠI BỎ THUẬT NGỮ NỘI BỘ, ĐỔI THÀNH THÔNG ĐIỆP AI CAO CẤP
+- **Bối cảnh & Tinh chỉnh nội dung**:
+  * Các từ ngữ kỹ thuật nội bộ như *"7 Section Tiêu Chuẩn"*, *"Tùy biến riêng lẻ 3 biến thể mỹ thuật của từng section"* làm lộ cấu trúc hệ thống, giảm tính ma thuật và sự sang trọng của sản phẩm.
+  * Đã chuyển đổi cả 3 dòng tiêu đề sidebar sang ngôn từ định vị AI Atelier cao cấp, tinh tế và tập trung vào trải nghiệm khách hàng:
+    - Dòng 1 (`sidebar_kicker`): `7 SECTION TIÊU CHUẨN` → `AI GỢI Ý THIẾT KẾ`
+    - Dòng 2 (`sidebar_title`): `Đổi Bố Cục Từng Mục` → `Tùy Chỉnh Bố Cục Từng Mục`
+    - Dòng 3 (`sidebar_desc`): `Tùy biến riêng lẻ 3 biến thể mỹ thuật của từng section` → `Khám phá các phong cách thiết kế độc bản do AI gợi ý cho từng khoảnh khắc`
+  * Đồng thời làm sạch các tooltip nút bấm: nút mở drawer và nút remix layout loại bỏ các con số nội bộ, hướng đến giá trị AI phối thiệp độc bản.
+- **Tập tin đã cập nhật**:
+  * `resources/views/client/pages/curated/preview.blade.php`
+  * `app/Http/Controllers/Client/CuratedInvitationController.php`
+  * `tests/Feature/CuratedInvitationFlowTest.php`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
+  * Laravel Pint: **100% PASSED**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
