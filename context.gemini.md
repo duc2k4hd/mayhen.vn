@@ -6040,8 +6040,9 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                * Tái cấu trúc hoàn toàn bố cục Love Story (Section 2) sang layout 1 cột thanh thoát, loại bỏ hiện tượng co cụm văn bản thành dải hẹp dưới 160px trên khung mobile.
                                * Redesign giao diện Preview Studio sang phong cách Atelier Quiet Luxury (tông màu Warm Ivory `#FAF8F5`, `#F6F3EE`, `#EAE3D9`, loại bỏ toàn bộ emoji, thay bằng SVG icons sắc sảo).
                              - **Giải pháp triển khai thực tế**:
-                               1. **Định tuyến & Chống 404 URL Khởi tạo**:
-                                  - Cấu hình route `GET /tao-thiep-tu-dong/khoi-tao` trỏ trực tiếp đến `CuratedInvitationController@create` (alias cho `curated.create`), cho phép truy cập hoặc gõ trực tiếp URL đều trả về giao diện Wizard 200 OK.
+                               1. **Định tuyến & Chống 404 URL Khởi tạo (Cả 2 Chiều GET & POST)**:
+                                  - *Lỗi GET URL*: Cấu hình route `GET /tao-thiep-tu-dong/khoi-tao` trỏ trực tiếp đến `CuratedInvitationController@create` (alias cho `curated.create`), cho phép truy cập hoặc gõ trực tiếp URL đều trả về giao diện Wizard 200 OK.
+                                  - *Lỗi POST submit 404 (`firstOrFail` ModelNotFound)*: Khi người dùng bấm tạo thiệp mà cơ sở dữ liệu local chưa seed mẫu `mayhen-curated`, lệnh `InvitationTemplate::where('slug', 'mayhen-curated')->firstOrFail()` ném ra `ModelNotFoundException` khiến Laravel render trang `404 Not Found` ngay tại request POST. Đã tái cấu trúc sang `firstOrCreate` với đầy đủ cấu hình mặc định chuẩn hóa, đồng thời chạy seeder vào database local. Giờ đây dù DB đã seed hay chưa seed, hệ thống vẫn tự động phòng vệ khởi tạo mẫu và redirect mượt mà 100%.
                                   - Xóa sạch bootstrap cache (`php artisan optimize:clear`) để loại bỏ cache cũ trên môi trường local.
                                2. **Gắn Fine-Grained `data-craft-unit` cho toàn bộ 7 Sections x 3 Biến thể (21 files Blade)**:
                                   - Đã gán class `.mayhen_curated_craft_unit` và thuộc tính `data-craft-unit` cho từng dòng văn bản, thẻ tên, khung ảnh, quote, thẻ lịch, vé mời, bản đồ trong `sections/hero/`, `sections/story/`, `sections/parents/`, `sections/countdown/`, `sections/events/`, `sections/timeline/`, và `sections/album/`.
@@ -6063,6 +6064,11 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                              - **Kết quả Kiểm Thử**:
                                * Toàn bộ 598/598 tests toàn hệ thống: **100% PASSED (3,122 assertions)** trong 69 giây.
                                * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --format agent`).
+
+                               6. **Bổ Sung Phòng Vệ Giảm Chuyển Động (CRAFT-11) & Tự Động Phục Hồi Template**:
+                                  - Tích hợp `window.matchMedia('(prefers-reduced-motion: reduce)')` trong `script.js` giúp người dùng bật chế độ giảm chuyển động xem ngay 100% thành phẩm không cần chờ animation.
+                                  - Bổ sung test case #14 tự động khởi tạo bản ghi template `mayhen-curated` nếu thiếu trong database, đảm bảo zero-config resilience.
+                                  - Hoàn tất 100% Definition of Done của Master Prompt V2. Toàn bộ 599/599 tests toàn hệ thống PASSED.
 
 ---
 

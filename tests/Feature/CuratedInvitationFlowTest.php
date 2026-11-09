@@ -607,4 +607,25 @@ class CuratedInvitationFlowTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn');
     }
+
+    /**
+     * 14. Khởi tạo thiệp thành công ngay cả khi database chưa seed template mayhen-curated (tự động phòng vệ).
+     */
+    public function test_generate_auto_creates_template_record_if_missing_in_database(): void
+    {
+        // Xóa sạch mẫu mayhen-curated giả lập tình huống database mới chưa chạy seeder
+        InvitationTemplate::where('slug', 'mayhen-curated')->delete();
+        $this->assertDatabaseMissing('invitation_templates', ['slug' => 'mayhen-curated']);
+
+        $response = $this->post(route('curated.generate'), [
+            'groom_name' => 'Tuấn Kiệt',
+            'bride_name' => 'Bảo Ngọc',
+            'style' => 'romantic',
+            'palette' => 'ruby',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect();
+        $this->assertDatabaseHas('invitation_templates', ['slug' => 'mayhen-curated']);
+    }
 }

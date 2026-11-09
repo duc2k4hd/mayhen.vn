@@ -116,8 +116,37 @@ class CuratedInvitationController extends Controller
             ],
         ];
 
-        // 4. Tìm template 'mayhen-curated'
-        $template = InvitationTemplate::where('slug', 'mayhen-curated')->firstOrFail();
+        // 4. Tìm hoặc tự động khởi tạo template 'mayhen-curated' nếu chưa có trong DB
+        $template = InvitationTemplate::firstOrCreate(
+            ['slug' => 'mayhen-curated'],
+            [
+                'name' => 'Mây Hẹn Curated (Thiết Kế Tự Phối)',
+                'category' => 'curated',
+                'thumbnail_url' => '/mau-thiep/mayhen-curated/assets/thumbnail.webp',
+                'demo_url' => '/xem-thu/mayhen-curated',
+                'default_config' => [
+                    'tier' => 'pro',
+                    'complexity' => 'curated-adaptive',
+                    'setup_time' => '1 phút',
+                    'accent_color' => '#85182A',
+                    'font_serif' => 'Cormorant Garamond, Playfair Display',
+                    'animation' => 'live-crafting-editorial',
+                    'style_layout' => 'curated-7-section',
+                    'section_count' => 7,
+                    'supported_sections' => [
+                        'hero',
+                        'story',
+                        'parents',
+                        'countdown',
+                        'events',
+                        'timeline',
+                        'album',
+                    ],
+                ],
+                'is_active' => true,
+                'is_featured' => true,
+            ]
+        );
 
         // 5. Thực hiện tạo trong Transaction
         $user = Auth::user();

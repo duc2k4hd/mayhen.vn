@@ -26,6 +26,21 @@
         const root = document.getElementById('mayhenCuratedRoot');
         if (!root || !root.classList.contains('is-crafting-live')) return;
 
+        // Đáp ứng CRAFT-11: Nếu người dùng bật giảm chuyển động, hiển thị ngay thành phẩm
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            root.classList.remove('is-crafting-live');
+            document.querySelectorAll('.mayhen_curated_craft_node').forEach(function (node) {
+                node.classList.add('is-crafting-revealed');
+            });
+            document.querySelectorAll('.mayhen_curated_craft_unit').forEach(function (unit) {
+                unit.classList.add('is-unit-revealed');
+            });
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'MAYHEN_CRAFTING_COMPLETE' }, '*');
+            }
+            return;
+        }
+
         // Quét toàn bộ các đơn vị hạt nhân (units) theo thứ tự DOM tự nhiên
         const units = Array.from(document.querySelectorAll('.mayhen_curated_craft_unit'));
         const fallbackNodes = Array.from(document.querySelectorAll('.mayhen_curated_craft_node'));
