@@ -303,25 +303,36 @@
         }
     }, { passive: true, once: true });
 
-    // Cuộn màn hình CHÍNH XÁC theo điểm ngọt thị giác (24% viewport)
-    const performPreciseScroll = (targetEl) => {
-        if (userInterrupted || !targetEl) return;
+    // Cuộn màn hình CHÍNH XÁC đến điểm ngọt thị giác (24% viewport) và CHỈ BẮT ĐẦU DỆT KHI ĐÃ ĐẾN ĐÍCH
+    const scrollToElementBeforeCrafting = (targetEl) => {
+        return new Promise((resolve) => {
+            if (userInterrupted || !targetEl) {
+                // Người dùng đang chủ động tương tác màn hình: giữ nguyên vị trí, chờ 120ms tạo nhịp
+                setTimeout(resolve, 120);
+                return;
+            }
 
-        const rect = targetEl.getBoundingClientRect();
-        const viewportH = window.innerHeight || 667;
+            const rect = targetEl.getBoundingClientRect();
+            const viewportH = window.innerHeight || 667;
 
-        // Điểm an toàn thoải mái trong tầm mắt (từ 14% đến 72% chiều cao màn hình)
-        const inComfortZone = rect.top >= (viewportH * 0.14) && rect.bottom <= (viewportH * 0.72);
-        if (inComfortZone) {
-            return;
-        }
+            // Nếu phần tử đã nằm êm ái trong tầm mắt (từ 15% đến 68% chiều cao màn hình)
+            const inComfortZone = rect.top >= (viewportH * 0.15) && rect.bottom <= (viewportH * 0.68);
+            if (inComfortZone) {
+                // Đã đúng điểm nhìn: dừng nghỉ nhẹ nhàng 180ms tạo sự tập trung trước khi dệt
+                setTimeout(resolve, 180);
+                return;
+            }
 
-        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        const targetScrollY = currentScrollY + rect.top - (viewportH * 0.24);
+            const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            const targetScrollY = Math.max(0, currentScrollY + rect.top - (viewportH * 0.24));
 
-        window.scrollTo({
-            top: Math.max(0, targetScrollY),
-            behavior: 'smooth'
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+            });
+
+            // Chờ chuyển động cuộn mượt hoàn tất và màn hình đứng yên hoàn toàn (450ms)
+            setTimeout(resolve, 450);
         });
     };
 
@@ -387,7 +398,7 @@
         }, 1200);
     };
 
-    const revealNextUnit = () => {
+    const revealNextUnit = async () => {
         if (isCompleted) return;
 
         if (currentIndex >= collectedUnits.length) {
@@ -407,19 +418,7 @@
             unit.containerEl.style.setProperty('max-height', 'none', 'important');
         }
 
-        // 2. Kích hoạt hiệu ứng quét vệt sáng hoàng gia (1.1s): Vệt sáng quét tới đâu, phần tử lộ ra theo sau đến đó
-        el.classList.remove('mayhen_is_hidden');
-        el.classList.add('mayhen_is_sweeping');
-
-        // Tạo vệt sáng hoàng gia (Beam) lướt đồng bộ cùng clip-path (Có phòng vệ void element)
-        const beam = document.createElement('div');
-        beam.className = 'mayhen_crafting_shimmer_beam';
-        attachBeamSafely(el, beam);
-
-        // 3. Cuộn màn hình chính xác theo điểm ngọt thị giác
-        performPreciseScroll(el);
-
-        // 4. Gửi thông điệp tiến trình chi tiết cho topbar Preview Studio
+        // 2. GIAI ĐOẠN 1: GỬI TIẾN TRÌNH CHO TOPBAR & CUỘN MÀN HÌNH ĐẾN ĐÚNG ĐIỂM TRƯỚC
         const percent = Math.min(100, Math.round(((currentIndex + 1) / collectedUnits.length) * 100));
         window.parent?.postMessage({
             type: 'MAYHEN_CRAFTING_STEP',
@@ -431,19 +430,45 @@
             percent: percent,
         }, '*');
 
-        // 5. Sau khi quét xong (SWEEP_ANIMATION_MS = 1100ms): cố định trạng thái hiển thị hoàn mỹ
-        setTimeout(() => {
-            el.classList.remove('mayhen_is_sweeping');
-            el.classList.add('mayhen_is_revealed', 'mayhen_invitation_visible');
-            el.style.setProperty('clip-path', 'none', 'important');
-            el.style.setProperty('transform', 'none', 'important');
-            if (beam.parentNode) beam.remove();
-        }, SWEEP_ANIMATION_MS);
+        // Cuộn màn hình đến đúng vị trí và ĐỢI MÀN HÌNH DỪNG YÊN HOÀN TOÀN
+        await scrollToElementBeforeCrafting(el);
+
+        // Kiểm tra an toàn: nếu người dùng bấm Skip trong lúc đang cuộn, dừng ngay
+        if (isCompleted) return;
+
+        // 3. GIAI ĐOẠN 2: BẮT ĐẦU DỆT KHI MÀN HÌNH ĐÃ ĐỨNG YÊN HOÀN TOÀN
+        // Kích hoạt vệt sáng hoàng gia quét chậm rãi 1.1s trên phần tử tĩnh
+        el.classList.remove('mayhen_is_hidden');
+        el.classList.add('mayhen_is_sweeping');
+
+        // Tạo vệt sáng hoàng gia (Beam) lướt đồng bộ cùng clip-path (Có phòng vệ void element)
+        const beam = document.createElement('div');
+        beam.className = 'mayhen_crafting_shimmer_beam';
+        attachBeamSafely(el, beam);
+
+        // Đợi vệt sáng quét xong (SWEEP_ANIMATION_MS = 1100ms)
+        await new Promise((res) => setTimeout(res, SWEEP_ANIMATION_MS));
+
+        if (isCompleted) return;
+
+        // Cố định trạng thái hiển thị hoàn mỹ của phần tử vừa dệt
+        el.classList.remove('mayhen_is_sweeping');
+        el.classList.add('mayhen_is_revealed', 'mayhen_invitation_visible');
+        el.style.setProperty('clip-path', 'none', 'important');
+        el.style.setProperty('transform', 'none', 'important');
+        if (beam.parentNode) beam.remove();
+
+        // 4. GIAI ĐOẠN 3: NHỊP NGHỈ CHIÊM NGƯỠNG (ATELIER SAVOR PAUSE)
+        // Dừng yên tĩnh 400ms - 600ms để người xem đọc nội dung, nhìn ngắm tên và câu chữ
+        const savorPause = Math.max(380, Math.min(650, calculatedStepDelay - 1500));
+        await new Promise((res) => setTimeout(res, savorPause));
+
+        if (isCompleted) return;
 
         currentIndex++;
 
-        // 6. Nhịp độ chuyển tiếp chậm rãi, sâu lắng (khoảng 1.5s - 2.2s mỗi phần tử, tổng thời gian ~45-50 giây)
-        setTimeout(revealNextUnit, calculatedStepDelay);
+        // Chuyển sang phần tử tiếp theo
+        revealNextUnit();
     };
 
     // Lắng nghe lệnh Skip và Replay từ Preview Studio

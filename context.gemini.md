@@ -6251,6 +6251,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Pint Formatter: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
   * Toàn bộ test suites: **100% PASSED** (476/476 tests, 2,459 assertions).
 
+### [2026-11-09] HOÀN THIỆN ĐỒNG BỘ ĐIỂM NHÌN: CUỘN ĐẾN ĐÚNG ĐIỂM DỪNG MỚI BẮT ĐẦU DỆT VỆT SÁNG (TWO-PHASE CRAFTING)
+- **Bối cảnh & Tinh chỉnh thẩm mỹ từ người dùng**:
+  * Hiện tượng "vừa cuộn vừa dệt" khiến vệt sáng bị rung chuyển theo camera, mắt người xem khó tập trung và giảm độ sắc nét, mượt mà của hiệu ứng hoàng gia.
+  * Yêu cầu: Khi camera cuộn đến đúng điểm chuẩn bị dệt và **màn hình đã dừng yên tĩnh hoàn toàn**, khi đó vệt sáng vàng kim mới bắt đầu quét qua.
+- **Giải pháp kỹ thuật (Two-Phase Precision Crafting)**:
+  1. **Tách Biệt Tuyệt Đối 2 Giai Đoạn**:
+     * *Giai đoạn 1 (Định vị & Cuộn camera)*: Hàm `scrollToElementBeforeCrafting(el)` kiểm tra vùng thoải mái tầm mắt (15% - 68% viewport). Nếu cần cuộn, camera lướt êm ái đến điểm ngọt 24% viewport và chờ `450ms` cho chuyển động cuộn dừng yên tĩnh 100%. Nếu đã ở trong vùng nhìn, dừng nghỉ tự nhiên `180ms`.
+     * *Giai đoạn 2 (Dệt trên nền tĩnh)*: Khi màn hình đã đứng yên hoàn toàn, vệt sáng hoàng gia mới bắt đầu quét chậm rãi `1.1s` từ trái sang phải, unroll clip-path một cách sắc nét, trong trẻo.
+     * *Giai đoạn 3 (Chiêm ngưỡng kết quả)*: Dừng nghỉ `400ms - 600ms` trước khi chuyển sang phần tử tiếp theo.
+  2. **Trải Nghiệm Thị Giác**:
+     * Khách hàng thấy màn hình cuộn xuống mượt mà như một ống kính điện ảnh, dừng lại êm ái, sau đó vệt sáng vàng kim lướt qua để lại dòng chữ tên cô dâu chú rể hoặc câu trích dẫn sắc nét, trang nhã.
+- **Tập tin đã cập nhật**:
+  * `public/assets/client/js/pages/native-crafting-presenter.js`.
+- **Kết quả Kiểm Thử**:
+  * Toàn bộ 601/601 tests PASSED 100% (3,135 assertions).
+  * Pint Formatter: 100% PASSED chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
