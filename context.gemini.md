@@ -6463,6 +6463,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **529/529 tests PASSED 100% (2,552 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH GATE 1 (KHÁCH MỜI, RSVP, BẢO TOÀN SĨ SỐ BÀN TIỆC & CHECK-IN TIẾP TÂN)
+- **Bối cảnh & Mục tiêu**:
+  * Thực thi kiểm toán, kiểm thử tự động và gia cố trực tiếp các bất biến nghiệp vụ cốt lõi tại **GATE 1 — QUẢN LÝ KHÁCH MỜI, RSVP, SƠ ĐỒ BÀN TIỆC (SEATING) & CHECK-IN TIẾP TÂN** theo 10 bất biến miền (`INV-11` đến `INV-20`) và 4 luồng liên thông E2E (`FLOW-01` đến `FLOW-04`).
+- **Các hạng mục kiểm toán & gia cố cốt lõi**:
+  1. **Bảo Toàn Đồng Bộ Hai Chiều Bất Biến Giữa `table_name` và `table_id` Tại Tầng ORM Model (`INV-15`)**:
+     * Bổ sung observer `saving` trên Model `Guest`: Tự động tra cứu `WeddingTable` theo tên khi gán `table_name` để điền `table_id`, tự động đồng bộ tên bàn khi gán `table_id`, và tự động gỡ cả 2 về `null` khi một trong hai trường bị xóa.
+     * Bổ sung observer `updated` trên Model `WeddingTable`: Khi đổi tên bàn tiệc, tự động cập nhật đồng loạt `table_name` trên toàn bộ khách thuộc bàn đó.
+  2. **Bảo Toàn Dữ Liệu Khách Mời Khi Xóa Bàn Tiệc Khỏi Sảnh (`INV-16`)**:
+     * Bổ sung observer `deleting` trên Model `WeddingTable`: Khi xóa một bàn tiệc, toàn bộ khách mời thuộc bàn được gỡ liên kết (`table_id = null`, `table_name = null`) an toàn tại tầng Model mà tuyệt đối không bị xóa khỏi danh sách khách.
+  3. **Vá Lỗi Bỏ Sót Đồng Bộ `table_id` Trong Bàn Xử Lý Ngoại Lệ Tiếp Tân (`CheckInController.php`)**:
+     * Trong phương thức `convertDeclined()`: Khi khách báo bận đổi ý sang tham dự và tiếp tân xếp bàn mới, bổ sung tra cứu `$matchedTable?->id` để lưu đồng bộ `table_id` cùng `table_name`.
+  4. **Kiểm Chứng Toàn Diện 10 Bất Biến Miền Gate 1**:
+     * `INV-11`: `guest_token` được sinh tự động ngẫu nhiên với độ dài >= 32 ký tự.
+     * `INV-12`: Sĩ số thực tế `actualAttendeesCount()` trả về `0` khi `declined`, trả về tổng người lớn + trẻ em khi `attending`, và trả về `expected_attendees` khi chưa phản hồi.
+     * `INV-13` & `INV-14`: Sĩ số chiếm dụng bàn tiệc `assigned_attendees_count` tự động co giãn theo phản hồi RSVP của từng khách trong bàn mà không cần tính toán lại thủ công.
+     * `INV-17` & `INV-18`: Điểm danh quét QR tự động ghi nhận sĩ số theo RSVP, quét lại khách đã điểm danh không làm tăng sĩ số tiệc cưới và trả về `already_checked_in = true`.
+     * `INV-19` & `INV-20`: Chặn gửi RSVP chéo giữa các đám cưới khác nhau (404), chặn chủ nhân thiệp tự gửi RSVP cho chính mình (403).
+     * Luồng liên thông xuyên suốt E2E (`FLOW-01` -> `FLOW-04`): Khách tạo 2 suất -> nộp RSVP 3 suất -> bàn tiệc tự nhảy 3 ghế -> tiếp tân quét QR nhận 3 suất -> chuyển sang bàn khác tự động cập nhật sĩ số 2 bàn.
+  5. **Bộ Kiểm Thử Tự Động Hóa Gate 1 (`tests/Feature/Gate1HeadcountAndSeatingInvariantsTest.php`)**:
+     * 8 kịch bản Feature Test tự động hóa bao phủ 100% các bất biến nghiệp vụ Gate 1.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `app/Models/Guest.php`
+  * `app/Models/WeddingTable.php`
+  * `app/Http/Controllers/Client/CheckInController.php`
+  * `.gitignore`
+  * `tests/Feature/Gate1HeadcountAndSeatingInvariantsTest.php`
+  * `docs/qa/test-run-ledger.csv`
+  * `docs/qa/qa-checkpoint.md`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ test suite toàn hệ thống: **537/537 tests PASSED 100% (2,590 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

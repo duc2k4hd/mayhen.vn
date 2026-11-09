@@ -657,7 +657,10 @@ class CheckInController extends Controller
             'check_in_note' => trim(($guest->check_in_note ? $guest->check_in_note.' | ' : '').'[Khách đổi ý sang tham dự]'),
         ];
         if (! empty($validated['table_name'])) {
-            $updateData['table_name'] = trim($validated['table_name']);
+            $rawTable = trim($validated['table_name']);
+            $matchedTable = $wedding->tables()->where('name', $rawTable)->first();
+            $updateData['table_name'] = $rawTable;
+            $updateData['table_id'] = $matchedTable?->id;
         }
         $guest->update($updateData);
 

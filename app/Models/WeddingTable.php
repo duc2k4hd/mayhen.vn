@@ -33,6 +33,22 @@ class WeddingTable extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::updated(function (WeddingTable $table) {
+            if ($table->wasChanged('name')) {
+                $table->guests()->update(['table_name' => $table->name]);
+            }
+        });
+
+        static::deleting(function (WeddingTable $table) {
+            $table->guests()->update([
+                'table_id' => null,
+                'table_name' => null,
+            ]);
+        });
+    }
+
     public function wedding(): BelongsTo
     {
         return $this->belongsTo(Wedding::class);
