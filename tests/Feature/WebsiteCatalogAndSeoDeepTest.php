@@ -248,4 +248,3 @@ class WebsiteCatalogAndSeoDeepTest extends TestCase
         $response->assertSee(route('templates.index'));
     }
 }
-

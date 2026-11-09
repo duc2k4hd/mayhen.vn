@@ -20,7 +20,9 @@ class AuthController extends Controller
     public function showLoginForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect($request->query('redirect', route('home')));
+            $safeRedirect = $this->resolveSafeRedirect($request->query('redirect'), route('home'));
+
+            return redirect($safeRedirect);
         }
 
         return view('client.pages.login', [
@@ -48,12 +50,9 @@ class AuthController extends Controller
             $this->syncOwnedInvitations($request, Auth::user());
             $request->session()->regenerate();
 
-            $redirectUrl = $request->input('redirect');
-            if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
-                return redirect($redirectUrl)->with('success', 'Đăng nhập thành công! Chào mừng bạn quay trở lại.');
-            }
+            $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('home'));
 
-            return redirect()->intended(route('home'))->with('success', 'Đăng nhập thành công! Chào mừng bạn quay trở lại.');
+            return redirect($safeRedirect)->with('success', 'Đăng nhập thành công! Chào mừng bạn quay trở lại.');
         }
 
         return back()->withInput($request->only('email', 'redirect'))->withErrors([
@@ -67,12 +66,9 @@ class AuthController extends Controller
     public function showRegisterForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            $redirectUrl = $request->query('redirect');
-            if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
-                return redirect($redirectUrl);
-            }
+            $safeRedirect = $this->resolveSafeRedirect($request->query('redirect'), route('home'));
 
-            return redirect()->route('home');
+            return redirect($safeRedirect);
         }
 
         return view('client.pages.register', [
@@ -112,12 +108,9 @@ class AuthController extends Controller
         $this->syncOwnedInvitations($request, $user);
         $request->session()->regenerate();
 
-        $redirectUrl = $request->input('redirect');
-        if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
-            return redirect($redirectUrl)->with('success', 'Đăng ký tài khoản thành công! Bạn có thể bắt đầu tạo thiệp ngay bây giờ.');
-        }
+        $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('home'));
 
-        return redirect()->route('home')->with('success', 'Đăng ký tài khoản thành công! Chào mừng bạn đến với Mây Hẹn.');
+        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Chào mừng bạn đến với Mây Hẹn.');
     }
 
     /**
@@ -133,6 +126,30 @@ class AuthController extends Controller
     }
 
     /**
+     * Giải quyết đường dẫn redirect an toàn, chống Open Redirect (AUTH-019).
+     */
+    protected function resolveSafeRedirect(?string $redirectUrl, string $fallback): string
+    {
+        if (empty($redirectUrl)) {
+            return $fallback;
+        }
+
+        $redirectUrl = trim($redirectUrl);
+
+        // Safe relative path: bắt đầu bằng / nhưng không phải // hoặc /\
+        if (str_starts_with($redirectUrl, '/') && ! str_starts_with($redirectUrl, '//') && ! str_contains($redirectUrl, '\\')) {
+            return $redirectUrl;
+        }
+
+        // Safe absolute URL trong cùng ứng dụng
+        if (filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
+            return $redirectUrl;
+        }
+
+        return $fallback;
+    }
+
+    /**
      * Đồng bộ các thiệp cưới được tạo lúc chưa đăng nhập sang tài khoản người dùng vừa đăng nhập.
      */
     protected function syncOwnedInvitations(Request $request, User $user): void
@@ -143,9 +160,17 @@ class AuthController extends Controller
                 ->whereIn('slug', $ownedSlugs)
                 ->get();
 
+            $guestUser = User::where('email', 'guest@mayhen.vn')->first();
+            $guestUserId = $guestUser ? (int) $guestUser->id : null;
+
             foreach ($invitations as $invitation) {
-                if ($invitation->wedding && (int) $invitation->wedding->user_id !== (int) $user->id) {
-                    $invitation->wedding->update(['user_id' => $user->id]);
+                // AUTH-013 & AUTH-014: Chỉ chuyển quyền sở hữu nếu thiệp chưa có chủ (user_id null hoặc thuộc về tài khoản tạm guest@mayhen.vn)
+                // Tuyệt đối không chiếm đoạt thiệp đã thuộc về tài khoản cá nhân khác
+                if ($invitation->wedding) {
+                    $currentOwnerId = (int) $invitation->wedding->user_id;
+                    if ($currentOwnerId === 0 || ($guestUserId !== null && $currentOwnerId === $guestUserId)) {
+                        $invitation->wedding->update(['user_id' => $user->id]);
+                    }
                 }
             }
         }

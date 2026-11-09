@@ -6722,20 +6722,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. `BUG-LOCK-002` (P1): Bổ sung kiểm tra `isLocked()` trên API phụ trợ `GuestController::getRsvpResponses` theo đúng `INV-12` & `PUB-006`.
   6. `BUG-SEARCH-001` (P2): Nâng cấp `TemplateController::index` tiếp nhận tham số tìm kiếm `q`, chuẩn hóa ASCII và slug matching nhạy bén cho kho mẫu.
   7. `BUG-ERR-001` (P2): Tạo trang báo lỗi 404 tùy chỉnh `resources/views/errors/404.blade.php` chuẩn phong cách Quiet Luxury, kế thừa `client.layouts.master` với 2 nút CTA quay lại an toàn.
+  8. `BUG-AUTH-001` (P1): Sửa lỗ hổng IDOR chiếm đoạt thiệp cưới (`syncOwnedInvitations`), chỉ cho phép chuyển quyền nếu thiệp thuộc về tài khoản tạm `guest@mayhen.vn` hoặc chưa có chủ, bảo toàn tuyệt đối quyền sở hữu của các tài khoản khác (`AUTH-014`).
+  9. `BUG-AUTH-002` (P1): Ngăn chặn triệt để tấn công Open Redirect trên toàn bộ quy trình đăng nhập và đăng ký qua hàm `resolveSafeRedirect()` (`AUTH-019`).
 - **Tập tin đã chỉnh sửa / tạo mới**:
   * `app/Http/Controllers/Client/GuestController.php`
   * `app/Http/Controllers/Client/TemplateController.php`
   * `app/Http/Controllers/Client/LiveWallController.php`
+  * `app/Http/Controllers/Client/AuthController.php`
   * `resources/views/errors/404.blade.php`
   * `resources/views/client/pages/templates.blade.php`
   * `public/assets/client/css/pages/templates.css`
   * `.gitignore`
   * `tests/Feature/WebsiteCatalogAndSeoDeepTest.php`
   * `tests/Feature/TemplateRenderAndMediaSecurityDeepTest.php`
+  * `tests/Feature/AuthLifecycleAndAccountDashboardDeepTest.php`
   * `docs/qa/bug-register.csv`
   * `docs/qa/qa-checkpoint.md`
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Toàn bộ test suite: **620/620 tests PASSED 100% (3,164 assertions)**.
+  * Toàn bộ test suite: **626/626 tests PASSED 100% (3,208 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
 ---

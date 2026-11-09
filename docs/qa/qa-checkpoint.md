@@ -81,5 +81,13 @@
       + Thiệp bị khóa (`is_locked: true`): người ngoài và chủ thiệp nhận màn hình khóa (`invitation-locked`), chặn 100% mọi API phụ trợ xem RSVP, gửi RSVP và gửi lời chúc (`BUG-LOCK-002`).
       + Thiệp hết hạn (`expires_at < now`): người ngoài nhận màn hình hết hạn (`invitation-expired`), từ chối nhận RSVP mới (410 Gone), chủ thiệp vẫn tra cứu được kỷ niệm.
       + Thiệp bảo vệ bằng mật mã: yêu cầu nhập đúng mật mã trong session trước khi cho phép xem thiệp (`INV-10`).
-- **Test suite**: **620/620 tests PASSED** (3,164 assertions).
+  - CỤM J — Đăng Ký, Đăng Nhập, Quản Lý Tài Khoản, Chống Open Redirect & Dashboard Cặp Đôi (HOÀN THÀNH 100%)
+    * Đăng ký tài khoản (`Register`): tạo tài khoản người dùng an toàn, mã hóa mật khẩu Bcrypt, phân quyền role `customer` và tự động đăng nhập.
+    * Đăng nhập (`Login`): kiểm tra thông tin chính xác, chống brute-force qua rate limiter `auth_attempts` (tối đa 15 lần/phút), nhớ phiên (`remember`).
+    * Phòng vệ tấn công chuyển hướng ngoài miền (`Open Redirect Defense` - `AUTH-019` / `BUG-AUTH-002`): giải quyết an toàn các liên kết redirect qua hàm `resolveSafeRedirect()`, bảo toàn chuyển hướng trang nội bộ (`AUTH-011`) và chặn đứng link phishing giả mạo.
+    * Cơ chế đồng bộ quyền thiệp từ phiên vãng lai (`Session Claiming` - `AUTH-013` & `AUTH-014` / `BUG-AUTH-001`): chỉ chuyển quyền sở hữu thiệp nếu thiệp thuộc về tài khoản tạm `guest@mayhen.vn` hoặc chưa có chủ (`user_id = 0/null`), tuyệt đối không cho phép ghi đè hay chiếm đoạt thiệp của tài khoản khác.
+    * Bảng điều khiển tài khoản cặp đôi (`Client Dashboard`): thống kê tổng số thiệp, khách mời dự kiến, phản hồi tham dự thực tế và danh sách lời chúc mới nhất.
+    * Nhân bản thiệp cưới (`Duplicate`): tạo bản sao mới với tiêu đề `(Bản Sao)`, slug ngẫu nhiên không trùng lặp, chuyển trạng thái về `is_published: false` và kiểm soát IDOR tuyệt đối.
+    * Xóa thiệp cưới (`Delete`): xác thực chặt chẽ quyền chủ sở hữu, từ chối người lạ truy cập (404 Not Found).
+- **Test suite**: **626/626 tests PASSED** (3,208 assertions).
 - **Code style**: **Laravel Pint PASSED**.

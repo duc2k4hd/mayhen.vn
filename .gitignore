@@ -108,6 +108,7 @@ Thumbs.db
 !/tests/Feature/CheckoutAndBillingWebhookDeepTest.php
 !/tests/Feature/WebsiteCatalogAndSeoDeepTest.php
 !/tests/Feature/TemplateRenderAndMediaSecurityDeepTest.php
+!/tests/Feature/AuthLifecycleAndAccountDashboardDeepTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

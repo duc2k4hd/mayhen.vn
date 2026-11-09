@@ -61,8 +61,8 @@ class TemplateController extends Controller
             }
 
             if ($search !== '') {
-                $unaccented = \Illuminate\Support\Str::ascii($search);
-                $slugSearch = \Illuminate\Support\Str::slug($search);
+                $unaccented = Str::ascii($search);
+                $slugSearch = Str::slug($search);
                 $query->where(function ($q) use ($search, $unaccented, $slugSearch) {
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('slug', 'like', "%{$search}%")
