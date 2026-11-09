@@ -331,6 +331,12 @@ class InvitationEditorController extends Controller
         }
 
         $template = $invitation->template;
+        if (! empty($config['is_curated'])) {
+            $curatedTemplate = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+            if ($curatedTemplate) {
+                $template = $curatedTemplate;
+            }
+        }
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
 
         // Trích xuất thông điệp cá nhân hóa (Invitation Persona) nếu có

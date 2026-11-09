@@ -365,6 +365,14 @@ html, body.mayhen_curated_preview_body {
     color: var(--curated-gold);
 }
 
+.mayhen_curated_btn_action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: var(--curated-border-dark);
+    color: var(--curated-text-muted);
+}
+
 .mayhen_curated_btn_action.btn_remix {
     background: var(--curated-gold-light);
     border-color: var(--curated-border-gold);

@@ -319,8 +319,8 @@
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>
-<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" data-palette="{{ $colorTheme }}" @yield('body_attributes')>
-    @if(request()->boolean('crafting'))
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ (request()->boolean('crafting') || request()->filled('recraft_section')) ? 'mayhen_is_crafting' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" data-palette="{{ $colorTheme }}" @yield('body_attributes')>
+    @if(request()->boolean('crafting') && !request()->filled('recraft_section'))
         {{-- RÈM LỤA KHỞI TẠO DỆT THIỆP (INITIAL ATELIER CURTAIN) --}}
         <div id="mayhenCraftingCurtain" aria-hidden="true">
             <span class="mayhen_curtain_crest">✦</span>
@@ -383,7 +383,7 @@
     </script>
     @stack('scripts')
     <script type="module" src="{{ asset('assets/client/js/common/invitation-config.js') }}"></script>
-    @if(request()->boolean('crafting'))
+    @if(request()->boolean('crafting') || request()->filled('recraft_section'))
         <script src="{{ asset('assets/client/js/pages/native-crafting-presenter.js') }}?v={{ time() }}"></script>
     @endif
 </body>

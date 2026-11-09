@@ -14,9 +14,12 @@
  * 100% Pure Native Vanilla JS, Zero External Libraries.
  */
 (() => {
-    // Chỉ kích hoạt khi có tham số ?crafting=1 trên URL
+    // Kích hoạt khi có tham số ?crafting=1 hoặc ?recraft_section=... trên URL
     const urlParams = new URLSearchParams(window.location.search);
-    if (!urlParams.has('crafting')) {
+    const isFullCrafting = urlParams.has('crafting');
+    const recraftSectionKey = urlParams.get('recraft_section');
+
+    if (!isFullCrafting && !recraftSectionKey) {
         return;
     }
 
@@ -26,7 +29,7 @@
     window.__MAYHEN_CRAFTING_BOOTED = true;
 
     // CẤU HÌNH NHỊP ĐỘ DỆT THIỆP CHUẨN MỰC (40S - 1 PHÚT)
-    const TARGET_TOTAL_DURATION_MS = 48000; // Mục tiêu ~48 giây toàn bộ bản thiệp
+    const TARGET_TOTAL_DURATION_MS = Math.floor(Math.random() * 40001) + 40000; // Random từ 40s - 80s
     const MIN_STEP_DELAY_MS = 1450;        // Nhịp bước tối thiểu 1.45s
     const MAX_STEP_DELAY_MS = 2500;        // Nhịp bước tối đa 2.5s
     const SWEEP_ANIMATION_MS = 1100;       // Thời gian vệt sáng hoàng gia lướt qua phần tử (1.1s)
@@ -331,8 +334,10 @@
                 behavior: 'smooth'
             });
 
-            // Chờ chuyển động cuộn mượt hoàn tất và màn hình đứng yên hoàn toàn (450ms)
-            setTimeout(resolve, 450);
+            // Chờ chuyển động cuộn mượt hoàn tất và màn hình đứng yên hoàn toàn theo cự ly cuộn
+            const scrollDistance = Math.abs(targetScrollY - currentScrollY);
+            const scrollDelay = Math.min(850, Math.max(450, Math.round(scrollDistance * 0.35)));
+            setTimeout(resolve, scrollDelay);
         });
     };
 
@@ -500,10 +505,115 @@
         }
     });
 
+    // Trình diễn dệt riêng một Section khi người dùng bấm đổi biến thể
+    const runSectionRecraft = async (sectionKey) => {
+        liftCurtain();
+        document.documentElement.classList.remove('mayhen_crafting_preparing');
+
+        // Mở tất cả các section bình thường để hiển thị trọn vẹn
+        document.querySelectorAll('.mayhen_crafting_section_waiting').forEach((sec) => {
+            sec.classList.remove('mayhen_crafting_section_waiting');
+            sec.classList.add('mayhen_crafting_section_active');
+            sec.style.setProperty('opacity', '1', 'important');
+            sec.style.setProperty('visibility', 'visible', 'important');
+            sec.style.setProperty('max-height', 'none', 'important');
+            sec.style.setProperty('overflow', 'visible', 'important');
+        });
+
+        // Tìm section mục tiêu trong DOM
+        const rule = SECTION_RULES.find((r) => r.key === sectionKey);
+        const targetSectionEl = document.querySelector(`[data-curated-section="${sectionKey}"]`)
+            || (rule ? document.querySelector(rule.container) : null);
+
+        if (!targetSectionEl) {
+            window.parent?.postMessage({ type: 'MAYHEN_SECTION_CRAFT_COMPLETE', section: sectionKey }, '*');
+            return;
+        }
+
+        // Thu thập các phần tử con của section này
+        const targetUnits = [];
+        if (rule) {
+            rule.unitSelectors.forEach((unitSel) => {
+                const els = targetSectionEl.querySelectorAll(unitSel.sel);
+                els.forEach((el) => {
+                    if (el && !targetUnits.some((u) => u.element === el || el.contains(u.element) || u.element.contains(el))) {
+                        targetUnits.push({
+                            element: el,
+                            label: unitSel.label,
+                        });
+                    }
+                });
+            });
+        }
+
+        if (targetUnits.length === 0) {
+            const craftUnits = targetSectionEl.querySelectorAll('.mayhen_curated_craft_unit');
+            if (craftUnits.length > 0) {
+                craftUnits.forEach((el, cIdx) => {
+                    targetUnits.push({
+                        element: el,
+                        label: `✦ Đang hoàn thiện chi tiết ${cIdx + 1}`,
+                    });
+                });
+            } else {
+                targetUnits.push({
+                    element: targetSectionEl,
+                    label: `✦ Đang hoàn thiện ${rule ? rule.title : 'bố cục'}`,
+                });
+            }
+        }
+
+        // Khóa ẩn các phần tử của section này trước khi dệt
+        targetUnits.forEach((u) => {
+            u.element.classList.add('mayhen_crafting_unit', 'mayhen_is_hidden');
+        });
+
+        // 1. CUỘN CAMERA ĐẾN ĐÚNG SECTION VỪA ĐỔI BIẾN THỂ VÀ CHỜ DỪNG ỔN ĐỊNH
+        await scrollToElementBeforeCrafting(targetSectionEl);
+
+        // 2. DỆT CHẬM RÃI TỪNG PHẦN TỬ CỦA SECTION VỚI VỆT SÁNG HOÀNG GIA
+        for (let i = 0; i < targetUnits.length; i++) {
+            const unit = targetUnits[i];
+            const el = unit.element;
+
+            await scrollToElementBeforeCrafting(el);
+
+            el.classList.remove('mayhen_is_hidden');
+            el.classList.add('mayhen_is_sweeping');
+
+            const beam = document.createElement('div');
+            beam.className = 'mayhen_crafting_shimmer_beam';
+            attachBeamSafely(el, beam);
+
+            await new Promise((res) => setTimeout(res, 950));
+
+            el.classList.remove('mayhen_is_sweeping');
+            el.classList.add('mayhen_is_revealed', 'mayhen_invitation_visible');
+            el.style.setProperty('clip-path', 'none', 'important');
+            el.style.setProperty('transform', 'none', 'important');
+            if (beam.parentNode) beam.remove();
+
+            await new Promise((res) => setTimeout(res, 220));
+        }
+
+        // 3. THÔNG BÁO HOÀN TẤT CHO PREVIEW STUDIO ĐỂ NHẢ KHÓA CÁC NÚT BIẾN THỂ
+        window.parent?.postMessage({
+            type: 'MAYHEN_SECTION_CRAFT_COMPLETE',
+            section: sectionKey,
+        }, '*');
+    };
+
     const runPresenter = () => {
+        // Nếu có tham số recraft_section: chỉ dệt lại đúng section đó
+        if (recraftSectionKey) {
+            runSectionRecraft(recraftSectionKey);
+            return;
+        }
+
         // Thu thập toàn bộ section containers
         SECTION_RULES.forEach((rule, rIdx) => {
-            const containerEl = document.querySelector(rule.container);
+            const containerEl = document.querySelector(`[data-curated-section="${rule.key}"]`) 
+                || document.querySelector(rule.container);
             if (!containerEl) return;
 
             if (!sectionContainers.includes(containerEl)) {

@@ -156,7 +156,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        if (e.data.type === 'MAYHEN_SECTION_CRAFT_COMPLETE') {
+            clearTimeout(window.__variantLockTimer);
+            setVariantControlsLocked(false);
+
+            if (craftingPill && craftingText) {
+                craftingText.textContent = '✦ Đã cập nhật xong bố cục!';
+                if (progressBar) progressBar.style.width = '100%';
+                if (progressPct) progressPct.textContent = '100%';
+                setTimeout(() => {
+                    craftingPill.classList.remove('is-active');
+                    craftingPill.style.display = 'none';
+                }, 1800);
+            }
+
+            // Highlight nhẹ thẻ section ở sidebar vừa dệt xong
+            document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
+            const card = document.querySelector(`.section_ctrl_card[data-section="${e.data.section}"]`);
+            if (card) {
+                card.style.borderColor = 'var(--curated-gold)';
+                setTimeout(() => { card.style.borderColor = ''; }, 2000);
+            }
+        }
+
         if (e.data.type === 'MAYHEN_CRAFTING_COMPLETE') {
+            clearTimeout(window.__variantLockTimer);
+            setVariantControlsLocked(false);
             if (progressBar) progressBar.style.width = '100%';
             if (progressPct) progressPct.textContent = '100%';
             endCraftingMode();
@@ -165,14 +190,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.data.type === 'MAYHEN_CURATED_SWITCH_SECTION') {
             const sec = e.data.section;
             const nextBtn = document.querySelector(`.btn_variant_nav.btn_next[data-section="${sec}"]`);
-            if (nextBtn) nextBtn.click();
+            if (nextBtn && !nextBtn.disabled) nextBtn.click();
         }
     });
+
+    // Helper khóa/mở các nút điều khiển biến thể khi đang dệt (tránh bấm liên tục)
+    function setVariantControlsLocked(locked) {
+        document.querySelectorAll('.btn_variant_nav, #btnRemixAll, #btnReplayCrafting').forEach(btn => {
+            btn.disabled = locked;
+            if (locked) {
+                btn.classList.add('is_locked_crafting');
+                btn.style.opacity = '0.45';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.classList.remove('is_locked_crafting');
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+            }
+        });
+    }
 
     // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting)
     const btnReplay = document.getElementById('btnReplayCrafting');
     if (btnReplay && iframe) {
         btnReplay.addEventListener('click', () => {
+            if (btnReplay.disabled) return;
+            setVariantControlsLocked(true);
             startCraftingMode();
             const baseUrl = iframe.src.split('?')[0];
             iframe.src = `${baseUrl}?crafting=1&embed=1&replay=${Date.now()}`;
@@ -183,7 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRemix = document.getElementById('btnRemixAll');
     if (btnRemix && iframe) {
         btnRemix.addEventListener('click', async () => {
-            btnRemix.disabled = true;
+            if (btnRemix.disabled) return;
+            setVariantControlsLocked(true);
             const originalText = btnRemix.innerHTML;
             btnRemix.innerHTML = '<span>Đang phối...</span>';
 
@@ -209,29 +253,49 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng thiệp
+                    // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng thiệp toàn trang
                     startCraftingMode();
                     const baseUrl = iframe.src.split('?')[0];
                     iframe.src = `${baseUrl}?crafting=1&embed=1&t=${Date.now()}`;
                 } else {
                     alert(data.message || 'Có lỗi xảy ra khi phối lại bố cục.');
+                    setVariantControlsLocked(false);
                 }
             } catch (err) {
                 console.error('Lỗi phối lại bố cục:', err);
                 alert('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+                setVariantControlsLocked(false);
             } finally {
-                btnRemix.disabled = false;
                 btnRemix.innerHTML = originalText;
             }
         });
     }
 
-    // 3. Đổi riêng biến thể từng section
+    // 3. Đổi riêng biến thể từng section: Cuộn đến đúng section đó, dệt lại phần đó, khóa các nút trong lúc dệt
     document.querySelectorAll('.btn_variant_nav[data-action="switch"]').forEach((btn) => {
         btn.addEventListener('click', async () => {
+            if (btn.disabled) return;
             const section = btn.dataset.section;
             const direction = btn.dataset.direction || 'next';
-            btn.disabled = true;
+            
+            // Khóa toàn bộ các nút điều khiển biến thể để tránh người dùng bấm đi bấm lại
+            setVariantControlsLocked(true);
+
+            // Bật pill trạng thái và highlight card section ở sidebar
+            if (craftingPill && craftingText) {
+                craftingPill.classList.add('is-active');
+                craftingPill.style.display = 'inline-flex';
+                craftingText.textContent = `✦ Đang dệt lại mục: ${sectionTitles[section] || section}...`;
+                if (progressBar) progressBar.style.width = '35%';
+                if (progressPct) progressPct.textContent = '35%';
+            }
+            document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
+            const targetCard = document.querySelector(`.section_ctrl_card[data-section="${section}"]`);
+            if (targetCard) targetCard.style.borderColor = 'var(--curated-gold)';
+
+            // Đổi nhãn nút bấm tạm thời để người dùng cảm nhận tương tác
+            const originalTitle = btn.getAttribute('title') || '';
+            btn.setAttribute('title', 'Đang cập nhật biến thể...');
 
             try {
                 const response = await fetch('/api/curated/switch-variant', {
@@ -256,19 +320,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         labelEl.textContent = variantNames[section][newVariant];
                     }
 
-                    // Tải lại iframe ở đúng vị trí (không chạy full crafting dài)
+                    // Tải lại iframe với chỉ thị recraft đúng section này: cuộn tới đó và dệt lại
                     if (iframe) {
                         const baseUrl = iframe.src.split('?')[0];
-                        iframe.src = `${baseUrl}?embed=1&t=${Date.now()}`;
+                        iframe.src = `${baseUrl}?embed=1&recraft_section=${section}&t=${Date.now()}`;
                     }
+
+                    // Bộ đếm phòng vệ an toàn 7s tự động nhả khóa nếu có sự cố mạng
+                    clearTimeout(window.__variantLockTimer);
+                    window.__variantLockTimer = setTimeout(() => {
+                        setVariantControlsLocked(false);
+                    }, 7000);
                 } else {
                     alert(data.message || 'Không thể đổi biến thể mục này.');
+                    setVariantControlsLocked(false);
                 }
             } catch (err) {
                 console.error('Lỗi đổi biến thể:', err);
                 alert('Có lỗi xảy ra khi đổi biến thể.');
+                setVariantControlsLocked(false);
             } finally {
-                btn.disabled = false;
+                btn.setAttribute('title', originalTitle);
             }
         });
     });

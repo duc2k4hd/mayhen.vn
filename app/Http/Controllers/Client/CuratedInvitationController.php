@@ -115,7 +115,7 @@ class CuratedInvitationController extends Controller
             ],
         ];
 
-        // 4. Lựa chọn một mẫu thiệp gốc thực sự trong 4 mẫu có sẵn (Master Prompt V3)
+        // 4. Tìm kiếm template gốc Native tương ứng với style
         $template = $this->curatedService->resolveNativeTemplate($style, $palette);
 
         // 5. Thực hiện tạo trong Transaction
@@ -266,7 +266,7 @@ class CuratedInvitationController extends Controller
     }
 
     /**
-     * Phối lại sang mẫu gốc khác cùng phong cách (Remix Native Template) - BẢO TOÀN MÀU SẮC (Master Prompt V3).
+     * Phối lại ngẫu nhiên toàn bộ bố cục 7 section - BẢO TOÀN MÀU SẮC & PHONG CÁCH.
      */
     public function remix(Request $request, int $invitationId): JsonResponse
     {
@@ -279,22 +279,19 @@ class CuratedInvitationController extends Controller
 
         $style = $config['style'] ?? 'romantic';
         $palette = $config['color_theme'] ?? 'ruby';
-        $currentSlug = $invitation->template?->slug ?? 'giua-muon-ngan-vi-sao';
 
-        // Phối lại: Chuyển đổi sang mẫu gốc khác trong cùng phong cách (nếu có)
-        $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug);
+        // Phối lại ngẫu nhiên toàn bộ 7 section bố cục (bảo toàn bảng màu và phong cách)
+        $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
 
-        $config['source_template_slug'] = $newTemplate->slug;
-        $invitation->template_id = $newTemplate->id;
+        $config['curated_layout'] = $curatedLayout;
         $invitation->custom_config = $config;
         $invitation->revision_id = (int) $invitation->revision_id + 1;
         $invitation->save();
 
         return response()->json([
             'success' => true,
-            'message' => "Đã phối lại sang mẫu gốc [{$newTemplate->name}]!",
-            'template_slug' => $newTemplate->slug,
-            'template_name' => $newTemplate->name,
+            'message' => 'Đã phối lại ngẫu nhiên toàn bộ 7 section bố cục!',
+            'layout' => $curatedLayout,
             'revision_id' => $invitation->revision_id,
         ]);
     }

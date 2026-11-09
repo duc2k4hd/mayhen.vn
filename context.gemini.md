@@ -6268,6 +6268,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ 601/601 tests PASSED 100% (3,135 assertions).
   * Pint Formatter: 100% PASSED chuẩn agent style.
 
+### [2026-11-09] HOÀN THIỆN ĐỔI BIẾN THỂ 7 SECTION: TỰ ĐỘNG CUỘN ĐẾN SECTION, DỆT LẠI VỆT SÁNG & KHÓA NÚT KHI ĐANG DỆT (SECTION RE-CRAFTING & CONTROL LOCKING)
+- **Bối cảnh & Yêu cầu từ người dùng**:
+  * Khi bấm các nút biến thể (`<` và `>`) trên sidebar Studio, trước đó chưa có phản hồi thị giác trực quan do template chưa áp dụng biến thể và chưa liên kết với hiệu ứng dệt.
+  * Yêu cầu: Khi bấm nút đổi biến thể nào thì tự động cuộn màn hình đến đúng section đó, dệt lại phần đó với vệt sáng hoàng gia; đồng thời trong suốt thời gian dệt phải khóa toàn bộ các nút biến thể để tránh người dùng bấm liên tục, dệt xong mới nhả ra.
+- **Giải pháp kỹ thuật đã triển khai**:
+  1. **Tích Hợp Mẫu Curated Đa Biến Thể Chuẩn Xác (`InvitationEditorController`)**:
+     * Kiểm tra cờ `is_curated` trong `custom_config` khi render thiệp qua `invitation.show` để nạp template `mayhen-curated`, kích hoạt toàn bộ 21 biến thể modular (3 biến thể mỹ thuật cho mỗi section trong 7 section).
+     * Sửa lỗi import thiếu namespace `InvitationTemplate` trong `CuratedInvitationController`, bảo toàn các kiểm thử tự tạo template gốc khi database thiếu bản ghi.
+  2. **Động Cơ Dệt Lại Riêng Section Mục Tiêu (`runSectionRecraft` trong `native-crafting-presenter.js`)**:
+     * Hỗ trợ tham số URL `recraft_section={sectionKey}`: Bỏ qua rèm che toàn màn hình, giữ nguyên các section khác đang hiển thị.
+     * Tự động xác định vùng container của section bằng `[data-curated-section="{sectionKey}"]` và thu thập các đơn vị nguyên tử (`.mayhen_curated_craft_unit` / selector chi tiết).
+     * Cuộn camera mượt mà trực tiếp đến section vừa đổi biến thể, tính toán độ trễ chính xác theo cự ly cuộn và chờ màn hình đứng yên hoàn toàn.
+     * Quét vệt sáng kim loại hoàng gia (`mayhen_crafting_shimmer_beam`) chậm rãi từng chi tiết của section mới.
+     * Khi hoàn tất, phát tín hiệu `MAYHEN_SECTION_CRAFT_COMPLETE` gửi ngược lại cửa sổ cha.
+  3. **Cơ Chế Khóa Nút Điều Khiển & Phản Hồi Trạng Thái Chuyên Nghiệp (`curated-preview.js` & `curated-preview.css`)**:
+     * Khi người dùng bấm nút `<` hoặc `>` (hoặc Remix): Hàm `setVariantControlsLocked(true)` lập tức vô hiệu hóa (`disabled`) toàn bộ các nút điều khiển biến thể `.btn_variant_nav`, `#btnRemixAll`, `#btnReplayCrafting`.
+     * Giao diện hiển thị rõ trạng thái đang bận với độ mờ `opacity: 0.45` và con trỏ `cursor: not-allowed`.
+     * Thanh trạng thái topbar `#craftingStatusPill` hiển thị thông điệp thơ mộng: *"✦ Đang dệt lại mục: [Tên Section]..."*.
+     * Khi nhận được postMessage `MAYHEN_SECTION_CRAFT_COMPLETE`: Tự động nhả khóa toàn bộ các nút (`setVariantControlsLocked(false)`), cập nhật pill *"✦ Đã cập nhật xong bố cục!"*, và viền sáng vàng kim `var(--curated-gold)` trên thẻ section ở sidebar trong 2 giây để xác nhận hoàn tất.
+     * Tích hợp bộ đếm an toàn 7 giây (Fail-Safe Timer) tự động nhả khóa nếu mạng bị nghẽn hoặc có gián đoạn.
+- **Tập tin đã cập nhật**:
+  * Backend:
+    - `app/Http/Controllers/Client/CuratedInvitationController.php`
+    - `app/Http/Controllers/Client/InvitationEditorController.php`
+  * Frontend & Layouts:
+    - `resources/views/client/layouts/invitation.blade.php`
+    - `public/assets/client/css/pages/curated-preview.css`
+    - `public/assets/client/js/pages/curated-preview.js`
+    - `public/assets/client/js/pages/native-crafting-presenter.js`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+  * Toàn bộ 476/476 test cases: **100% PASSED** (2,459 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
