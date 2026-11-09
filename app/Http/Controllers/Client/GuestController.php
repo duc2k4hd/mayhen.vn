@@ -717,7 +717,14 @@ class GuestController extends Controller
             if ($guest) {
                 $existingResponse->where('guest_id', $guest->id);
             } else {
-                $existingResponse->whereNull('guest_id')->where('ip_address', $ip);
+                $phone = $request->validated('phone');
+                if (! empty($phone)) {
+                    $existingResponse->whereNull('guest_id')->where('phone', $phone);
+                } else {
+                    $existingResponse->whereNull('guest_id')
+                        ->where('guest_name', $request->validated('guest_name'))
+                        ->where('ip_address', $ip);
+                }
             }
 
             if ($existingResponse->exists()) {

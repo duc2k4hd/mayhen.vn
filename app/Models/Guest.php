@@ -104,6 +104,10 @@ class Guest extends Model
                 $guest->table_id = $matchedId;
             }
         });
+
+        static::deleting(function (Guest $guest) {
+            $guest->response()->delete();
+        });
     }
 
     public function wedding(): BelongsTo

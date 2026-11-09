@@ -6598,6 +6598,37 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **553/553 tests PASSED 100% (2,752 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH KIỂM THỬ THỰC CHIẾN CỤM A (CRM KHÁCH MỜI & LUỒNG RSVP)
+- **Bối cảnh & Mục tiêu**:
+  * Chuyển từ kiểm định bất biến cấp cao sang kiểm thử thực chiến vi mô sâu trên **CỤM A (CRM Khách mời & Vòng đời phản hồi RSVP)** bao gồm 53 hạng mục chi tiết.
+- **Phát hiện lỗi & Gia cố mã nguồn**:
+  1. **Khắc phục lỗi xóa khách để lại phản hồi RSVP mồ côi (`BUG-GUEST-001` - P1)**:
+     * Trước khi sửa: Khi xóa một khách mời (`Guest::destroy`), bản ghi trong `guest_responses` chỉ bị set `guest_id = null`, dẫn đến việc số lượng phản hồi RSVP và sĩ số xác nhận tham dự của đám cưới vẫn bị cộng dồn ảo, làm sai lệch bảng điều khiển của cặp đôi.
+     * Giải pháp: Bổ sung hook `static::deleting` trong Model `Guest` tự động dọn sạch phản hồi liên kết (`$guest->response()->delete()`).
+  2. **Khắc phục lỗi khóa nhầm khách mời chung mạng NAT / Wi-Fi công cộng (`BUG-RSVP-001` - P1 / `QA-PRIV-009`)**:
+     * Trước khi sửa: Hàm `submitRsvp` khi không có `guest_token` chỉ kiểm tra tính duy nhất bằng `ip_address`, khiến hai khách mời khác nhau cùng truy cập từ một mạng Wi-Fi (chung IP NAT) bị chặn người thứ hai với lỗi 422 ("Bạn đã gửi xác nhận tham dự cho lễ cưới này rồi").
+     * Giải pháp: Cải tiến logic phân biệt khách mời nặc danh: Nếu có số điện thoại, kiểm tra trùng lặp theo `phone`; nếu không có số điện thoại, kiểm tra kết hợp `guest_name` và `ip_address`. Đảm bảo nhiều khách mời khác nhau trong cùng một văn phòng/gia đình đều gửi RSVP trơn tru.
+  3. **Bộ Kiểm Thử Thực Chiến Cụm A (`tests/Feature/GuestCrmAndRsvpLifecycleDeepTest.php`)**:
+     * 7 kịch bản Feature Test tự động hóa kiểm tra:
+       - Batch import với phân tách ký tự, khoảng trắng, lọc từ ngữ tục tĩu và tự động gán bàn tiệc `table_id`.
+       - Cascade delete xóa sạch phản hồi mồ côi.
+       - Cho phép nhiều khách chung IP NAT gửi RSVP thành công.
+       - Chặn gửi trùng RSVP theo số điện thoại (422).
+       - Cặp đôi cập nhật RSVP thủ công và reset về `pending`.
+       - Boundary validations khi cập nhật thông tin khách (tên rỗng, số người âm hoặc vượt quá 50).
+       - Phân quyền Tenant Isolation tuyệt đối (404 khi người lạ can thiệp khách mời thiệp khác).
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `app/Models/Guest.php`
+  * `app/Http/Controllers/Client/GuestController.php`
+  * `.gitignore`
+  * `tests/Feature/GuestCrmAndRsvpLifecycleDeepTest.php`
+  * `docs/qa/bug-register.csv`
+  * `docs/qa/qa-checkpoint.md`
+  * `docs/qa/runtime-inventory.md`
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Toàn bộ test suite: **560/560 tests PASSED 100% (2,802 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

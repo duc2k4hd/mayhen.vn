@@ -16,5 +16,11 @@
   - Cổng khởi đầu thành công sau thanh toán (`Post-Payment First Success Portal` - `TASK-VAL-26`): Điều hướng tức thì sang hướng dẫn onboarding 3 bước hành động cụ thể cho cặp đôi.
   - Chính sách âm thanh & Autoplay Policy Defense (`INV-47`, `INV-48`): `preload="none"`, `loop`, `playsinline`, yêu cầu cử chỉ chạm/bấm của người dùng trước khi phát nhạc, đồng bộ trạng thái nút Play/Pause nổi.
   - Bảo toàn dữ liệu vĩnh viễn sau ngày cưới (`INV-45`): Toàn bộ danh sách khách, số tiền mừng cưới, lời chúc và ảnh kỷ niệm được lưu giữ an toàn tuyệt đối.
-- **Test suite**: **553/553 tests PASSED** (2,752 assertions).
+- **Phân hệ chi tiết hoàn thành**:
+  - CỤM A — Quản Lý Khách Mời CRM & Vòng Đời Phản Hồi RSVP (HOÀN THÀNH 100%)
+    * Thêm khách lẻ, nhập nhanh hàng loạt (Batch Import), phân tách khoảng trắng, chuẩn hóa tiếng Việt.
+    * Tự động xóa phản hồi RSVP mồ côi khi xóa khách (`Guest::deleting`), chống làm sai lệch số liệu thống kê tiệc cưới.
+    * Sửa triệt để lỗi khóa nhầm chung mạng NAT / Wi-Fi công cộng (`QA-PRIV-009`), cho phép nhiều khách khác nhau gửi RSVP thành công.
+    * Chặn trùng lặp RSVP theo số điện thoại (422) và kiểm tra phân quyền Tenant Isolation tuyệt đối (404).
+- **Test suite**: **560/560 tests PASSED** (2,802 assertions).
 - **Code style**: **Laravel Pint PASSED**.
