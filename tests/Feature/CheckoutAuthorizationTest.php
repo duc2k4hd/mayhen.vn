@@ -438,3 +438,33 @@ test('a customer cannot create an order for an inactive plan', function () {
     $this->postJson(route('checkout.process'), checkoutInput($plan))->assertNotFound();
     $this->assertDatabaseCount('orders', 0);
 });
+
+test('a cancelled order transitions to paid and activates plan when valid payment arrives via webhook', function () {
+    $owner = User::factory()->create();
+    $invitation = makeCheckoutInvitation($owner);
+    $order = makeCheckoutOrder();
+    $order->update([
+        'invitation_id' => $invitation->id,
+        'status' => 'cancelled',
+    ]);
+
+    config(['services.sepay.webhook_secret' => 'test-secret']);
+    $payload = [
+        'content' => 'Chuyen khoan don hang '.$order->order_code,
+        'transferAmount' => $order->amount,
+        'transferType' => 'in',
+        'accountNumber' => '0012345678',
+    ];
+
+    $this->postJson(route('webhook.payment'), $payload, sepayHeaders($payload))
+        ->assertOk()
+        ->assertJson(['success' => true]);
+
+    $order->refresh();
+    expect($order->status)->toBe('paid');
+    expect($order->paid_at)->not->toBeNull();
+
+    $invitation->refresh();
+    expect($invitation->is_published)->toBeTrue();
+    expect($invitation->expires_at->isFuture())->toBeTrue();
+});

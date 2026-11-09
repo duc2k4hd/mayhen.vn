@@ -8,6 +8,7 @@ use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\AuditLogger;
 use App\Services\PostPaymentOnboardingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -216,8 +217,8 @@ class CheckoutController extends Controller
                 return response()->json(['success' => true, 'message' => 'Order already processed (idempotent)'], 200);
             }
 
-            if ($order->status !== 'pending') {
-                $this->recordWebhookLog('error', "Đơn hàng #{$orderCode} không ở trạng thái chờ thanh toán", $orderCode, $amount, $request->ip(), $content);
+            if ($order->status !== 'pending' && $order->status !== 'cancelled') {
+                $this->recordWebhookLog('error', "Đơn hàng #{$orderCode} không ở trạng thái có thể thanh toán (hiện tại: {$order->status})", $orderCode, $amount, $request->ip(), $content);
 
                 return response()->json(['success' => false, 'message' => 'Order cannot be paid in its current status'], 409);
             }
@@ -229,11 +230,23 @@ class CheckoutController extends Controller
                 return response()->json(['success' => false, 'message' => 'Payment amount mismatch'], 400);
             }
 
+            $wasCancelled = $order->status === 'cancelled';
+
             $order->update([
                 'status' => 'paid',
                 'paid_at' => now(),
                 'provider_transaction_id' => $providerTransId,
             ]);
+
+            if ($wasCancelled) {
+                AuditLogger::log(
+                    'revive_cancelled_order_payment',
+                    'Order',
+                    $order->id,
+                    "Đơn hàng #{$orderCode} đã hủy trước đó nhận được chuyển khoản thực tế thành công, tự động chuyển trạng thái sang Paid.",
+                    ['amount' => $amount, 'provider_transaction_id' => $providerTransId]
+                );
+            }
 
             if ($order->invitation) {
                 $durationDays = $order->plan ? (int) $order->plan->duration_days : 365;

@@ -91,4 +91,40 @@ class Invitation extends Model
 
         return false;
     }
+
+    /**
+     * Kiểm tra thiệp có đang bị quản trị viên khóa hay không.
+     */
+    public function isLocked(): bool
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        return ! empty($config['is_locked']);
+    }
+
+    /**
+     * Kiểm tra thiệp đã hết hạn lưu trữ trực tuyến hay chưa.
+     */
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null && $this->expires_at->isPast();
+    }
+
+    /**
+     * Kiểm tra khách vãng lai có được phép tương tác với thiệp hay không (Invariants: Published, Not Locked, Not Expired).
+     */
+    public function isInteractable(?User $user = null, ?Request $request = null): bool
+    {
+        if ($this->isOwner($user, $request)) {
+            return true;
+        }
+
+        if ($this->isLocked() || ! $this->is_published || $this->isExpired()) {
+            return false;
+        }
+
+        return true;
+    }
 }

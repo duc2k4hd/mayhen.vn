@@ -159,7 +159,7 @@ class TimeCapsuleController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        if (! empty($config['is_locked'])) {
+        if ($invitation->isLocked()) {
             return view('client.pages.invitation-locked', [
                 'invitation' => $invitation,
                 'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
@@ -167,6 +167,16 @@ class TimeCapsuleController extends Controller
         }
 
         $isOwner = $invitation->isOwner();
+
+        if (! $invitation->is_published && ! $isOwner) {
+            abort(404, 'Thiệp cưới chưa được xuất bản.');
+        }
+
+        if ($invitation->isExpired() && ! $isOwner) {
+            return view('client.pages.invitation-expired', [
+                'invitation' => $invitation,
+            ]);
+        }
 
         // Lấy danh sách phong bì (nếu chưa unlock thì ẩn content trên server để bảo mật)
         $capsules = $wedding->timeCapsules()->orderBy('unlock_date')->get()->map(function (WeddingTimeCapsule $c) use ($isOwner) {
@@ -219,8 +229,12 @@ class TimeCapsuleController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        if (! empty($config['is_locked'])) {
+        if ($invitation->isLocked()) {
             abort(403, 'Thiệp cưới tạm thời bị khóa.');
+        }
+
+        if (! $invitation->isInteractable()) {
+            abort(403, $invitation->isExpired() ? 'Thiệp cưới đã hết hạn lưu trữ trực tuyến.' : 'Thiệp cưới chưa được xuất bản.');
         }
 
         $request->validate([

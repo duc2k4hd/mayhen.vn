@@ -6431,6 +6431,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite toàn hệ thống: **521/521 tests PASSED 100% (2,518 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH GATE 0 (BẢO MẬT, QUYỀN SỞ HỮU, THANH TOÁN & BẤT BIẾN DỮ LIỆU)
+- **Bối cảnh & Mục tiêu**:
+  * Chuyển chế độ hoạt động sang **Principal QA Engineer, Business Logic Auditor & Senior Bug Fixer** theo chỉ thị `MAY_HEN_TOTAL_TESTER_MASTER_PROMPT.md`.
+  * Thực thi kiểm toán, kiểm thử tự động và gia cố trực tiếp các bất biến nghiệp vụ cốt lõi tại **GATE 0 — BẢO MẬT, QUYỀN SỞ HỮU, THANH TOÁN VÀ TÍNH TOÀN VẸN DỮ LIỆU**.
+- **Các hạng mục kiểm toán & gia cố cốt lõi**:
+  1. **Khắc phục Lỗ Hổng Bypass Trạng Thái Thiệp Cưới Trên Tuyến Tương Tác Phụ**:
+     * Trước đây các route tương tác phụ (`/photo-drop/{slug}`, `/thiep/{slug}/hop-thoi-gian`, `/ky-niem/{slug}`) chỉ kiểm tra `is_locked` mà bỏ sót kiểm tra `is_published` và `expires_at`.
+     * Bổ sung các phương thức nghiệp vụ miền chuẩn hóa trên Model `Invitation`: `isLocked()`, `isExpired()`, `isInteractable()`.
+     * Cập nhật đồng bộ `PhotoDropController`, `TimeCapsuleController` và `MemoryVaultController` để chặn toàn bộ khách vãng lai khi thiệp bị khóa (view `invitation-locked`), chưa xuất bản (view `invitation-unpublished` / 404), hoặc đã hết hạn (view `invitation-expired` / 410 / 403 JSON).
+  2. **Thanh Toán SePay / VietQR & Tính Lũy Đẳng (Idempotency)**:
+     * Kiểm chứng cơ chế xác thực HMAC-SHA256 (`X-SePay-Signature`) và cửa sổ timestamp chống replay (`abs(now()->timestamp - $timestamp) <= 300`).
+     * Kiểm chứng tính lũy đẳng: Gửi trùng lặp transaction ID từ webhook không bao giờ cộng dồn thời hạn lưu trữ thiệp cưới hai lần, trả về `200` với thông báo `"Order already processed (idempotent)"`.
+     * Gia cố chuyển trạng thái đơn hàng: Cho phép đơn hàng bị huỷ do quá hạn (`status: cancelled`) được tự động phục hồi an toàn sang `paid` khi tiền thực tế đổ về tài khoản ngân hàng, có ghi nhận `action: revive_cancelled_order_payment` vào Audit Log.
+  3. **Tài Liệu Hóa Xung Đột Đặc Tả (`docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`)**:
+     * Ghi nhận xung đột `SPEC_CONFLICT-01` giữa tài liệu miền (`transferAmount >= amount`) và mã nguồn thực tế (`transferAmount === amount`), giải thích cơ sở an toàn tài chính của việc đối soát chính xác 100%.
+  4. **Kiểm Thử Hồi Quy Miền Gate 0 (`tests/Feature/Gate0DomainInvariantsTest.php`)**:
+     * Xây dựng 7 kịch bản Feature Test tự động hóa kiểm thử toàn diện: Khóa thiệp, thiệp nháp chưa xuất bản, thiệp hết hạn, webhook lũy đẳng, và chuyển trạng thái đơn hàng.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `app/Models/Invitation.php`
+  * `app/Http/Controllers/Client/PhotoDropController.php`
+  * `app/Http/Controllers/Client/TimeCapsuleController.php`
+  * `app/Http/Controllers/Client/MemoryVaultController.php`
+  * `app/Http/Controllers/Client/CheckoutController.php`
+  * `tests/Feature/CheckoutAuthorizationTest.php`
+  * `tests/Feature/Gate0DomainInvariantsTest.php`
+  * `docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`
+  * `docs/qa/test-run-ledger.csv`
+  * `docs/qa/qa-checkpoint.md`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ test suite: **529/529 tests PASSED 100% (2,552 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

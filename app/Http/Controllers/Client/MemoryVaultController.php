@@ -32,15 +32,28 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        if (! empty($config['is_locked'])) {
+        if ($invitation->isLocked()) {
             return view('client.pages.invitation-locked', [
                 'invitation' => $invitation,
                 'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
             ]);
         }
 
-        $vaultConfig = $config['memory_vault'] ?? [];
         $isOwner = $invitation->isOwner();
+
+        if (! $invitation->is_published && ! $isOwner) {
+            return view('client.pages.invitation-unpublished', [
+                'invitation' => $invitation,
+            ]);
+        }
+
+        if ($invitation->isExpired() && ! $isOwner) {
+            return view('client.pages.invitation-expired', [
+                'invitation' => $invitation,
+            ]);
+        }
+
+        $vaultConfig = $config['memory_vault'] ?? [];
 
         // Kiểm tra điều kiện mở Két Kỷ Niệm:
         // Cặp đôi chủ động bật hoặc đám cưới đã diễn ra và được phép truy cập
@@ -133,7 +146,7 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        if (! empty($config['is_locked'])) {
+        if ($invitation->isLocked()) {
             return view('client.pages.invitation-locked', [
                 'invitation' => $invitation,
                 'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
@@ -199,7 +212,7 @@ class MemoryVaultController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        if (! empty($config['is_locked'])) {
+        if ($invitation->isLocked()) {
             return view('client.pages.invitation-locked', [
                 'invitation' => $invitation,
                 'lockReason' => $config['lock_reason'] ?? 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
