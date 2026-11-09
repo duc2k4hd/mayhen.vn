@@ -288,10 +288,23 @@ class SeatingPlannerController extends Controller
             $msg = "Đã gỡ khách \"{$guest->name}\" về danh sách chưa có bàn";
         }
 
+        $tableOverloaded = false;
+        $overCapacityMessage = null;
+        if (! empty($validated['table_id']) && isset($table)) {
+            $table->refresh();
+            if ($table->isOverCapacity()) {
+                $tableOverloaded = true;
+                $over = $table->assigned_attendees_count - $table->capacity;
+                $overCapacityMessage = "Lưu ý: Bàn \"{$table->name}\" đang bị quá tải ghế ({$table->assigned_attendees_count}/{$table->capacity} người, thừa {$over} chỗ).";
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => $msg,
+                'warning' => $overCapacityMessage,
+                'is_over_capacity' => $tableOverloaded,
                 'guest' => $guest,
             ]);
         }

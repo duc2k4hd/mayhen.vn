@@ -6629,6 +6629,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **560/560 tests PASSED 100% (2,802 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH KIỂM THỬ THỰC CHIẾN CỤM B (XẾP BÀN TIỆC & QR ĐIỂM DANH LỄ TÂN)
+- **Bối cảnh & Mục tiêu**:
+  * Thực thi kiểm toán sâu vào mã nguồn thực tế của phân hệ **Xếp Bàn Tiệc & QR Điểm Danh Lễ Tân** (`SeatingPlannerController.php`, `CheckInController.php`, `WeddingTable.php`, `Guest.php`) bao gồm 44 hạng mục chi tiết.
+- **Phát hiện lỗi & Gia cố mã nguồn**:
+  1. **Khắc phục lỗi khách đổi ý từ Declined sang Tham Dự bị ghi nhận 0 suất ăn (`BUG-CHECKIN-001` - P1)**:
+     * Trước khi sửa: Trong `CheckInController::convertDeclined`, khi lễ tân bấm tiếp nhận khách đổi ý mà không nhập số lượng mới, code gọi `$guest->actualAttendeesCount()`. Do khách đang ở trạng thái `declined`, hàm này trả về 0, dẫn tới việc khách được điểm danh với 0 suất ăn và `adults_count = 0`, làm sai lệch dự trù cỗ cưới của nhà hàng.
+     * Giải pháp: Fallback chuẩn xác về `max(1, (int) ($guest->expected_attendees ?: 1))`, đảm bảo khách luôn được tính đúng số suất ăn dự kiến ban đầu.
+  2. **Khắc phục lỗi quét QR máy ảnh chứa URL đầy đủ bị từ chối 422 (`BUG-CHECKIN-002` - P1)**:
+     * Trước khi sửa: Hàm `processScan` có sẵn logic bóc tách token từ URL đầy đủ (`?token=...` hoặc `/diem-danh/...`), nhưng validation rule ở đầu hàm lại giới hạn cứng `'token' => ['nullable', 'string', 'max:64']`. Các ứng dụng camera/QR scanner khi quét link đầy đủ (dài >75 ký tự) bị validator chặn ngay lập tức với lỗi HTTP 422 trước khi kịp bóc tách token.
+     * Giải pháp: Nâng giới hạn validation của `token` lên `max:500`, cho phép tiếp nhận mọi định dạng quét QR camera mượt mà 100%.
+  3. **Cải tiến phản hồi quá tải bàn tiệc trong Studio Xếp Bàn (`TASK-VAL-22`)**:
+     * Cập nhật `SeatingPlannerController::assignGuest` trả về `is_over_capacity` và cảnh báo chi tiết `warning` kèm số chỗ thừa khi kéo thả xếp khách vượt quá sức chứa bàn tiệc.
+  4. **Bộ Kiểm Thử Thực Chiến Cụm B (`tests/Feature/SeatingAndReceptionLifecycleDeepTest.php`)**:
+     * 9 kịch bản Feature Test tự động hóa kiểm tra:
+       - Tạo bàn tiệc tự động chia tọa độ canvas và tự động link khách cùng tên bàn.
+       - Cảnh báo quá tải sức chứa bàn tiệc (isOverCapacity) với số chỗ thừa chuẩn xác.
+       - Đổi tên bàn tiệc tự động cascade sang toàn bộ khách trong bàn.
+       - Xóa bàn tiệc không xóa khách (set null an toàn).
+       - Bóc tách token linh hoạt từ URL đầy đủ (`?token=...` và `/diem-danh/...`), chống quét lại điểm danh 2 lần.
+       - Chuyển khách declined sang attending ghi nhận đúng suất ăn $\ge 1$.
+       - Đón tiếp khách phát sinh (Walk-in) tại sảnh tạo đủ token, rsvp và check-in.
+       - Hủy điểm danh (Undo) dọn sạch timestamp khi nhân viên ấn nhầm.
+       - Phân quyền Tenant Isolation tuyệt đối (404 khi người lạ can thiệp bàn tiệc thiệp khác).
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `app/Http/Controllers/Client/CheckInController.php`
+  * `app/Http/Controllers/Client/SeatingPlannerController.php`
+  * `.gitignore`
+  * `tests/Feature/SeatingAndReceptionLifecycleDeepTest.php`
+  * `docs/qa/bug-register.csv`
+  * `docs/qa/qa-checkpoint.md`
+  * `docs/qa/runtime-inventory.md`
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Toàn bộ test suite: **569/569 tests PASSED 100% (2,850 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

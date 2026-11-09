@@ -22,5 +22,11 @@
     * Tự động xóa phản hồi RSVP mồ côi khi xóa khách (`Guest::deleting`), chống làm sai lệch số liệu thống kê tiệc cưới.
     * Sửa triệt để lỗi khóa nhầm chung mạng NAT / Wi-Fi công cộng (`QA-PRIV-009`), cho phép nhiều khách khác nhau gửi RSVP thành công.
     * Chặn trùng lặp RSVP theo số điện thoại (422) và kiểm tra phân quyền Tenant Isolation tuyệt đối (404).
-- **Test suite**: **560/560 tests PASSED** (2,802 assertions).
+  - CỤM B — Xếp Bàn Tiệc (Seating Planner) & QR Điểm Danh Lễ Tân (HOÀN THÀNH 100%)
+    * Sửa lỗi chuyển khách Declined sang Attending bị ghi nhận 0 suất ăn (`BUG-CHECKIN-001`), tự động fallback về số lượng dự kiến ban đầu.
+    * Sửa lỗi quét QR camera chứa URL đầy đủ bị từ chối 422 do validation max:64 (`BUG-CHECKIN-002`), mở rộng max:500 và bóc tách token linh hoạt.
+    * Bổ sung cảnh báo quá tải bàn tiệc (`is_over_capacity`, `warning`) khi kéo thả xếp khách trong Seating Studio.
+    * Khách phát sinh (Walk-in) tại cửa tiệc tạo đầy đủ token, rsvp, check-in và tự động liên kết bàn tiệc.
+    * Hủy điểm danh (Undo Check-in) dọn sạch timestamp và sĩ số khi nhân viên bấm nhầm.
+- **Test suite**: **569/569 tests PASSED** (2,850 assertions).
 - **Code style**: **Laravel Pint PASSED**.

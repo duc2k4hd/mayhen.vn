@@ -186,7 +186,7 @@ class CheckInController extends Controller
         }
 
         $validated = $request->validate([
-            'token' => ['nullable', 'string', 'max:64'],
+            'token' => ['nullable', 'string', 'max:500'],
             'guest_id' => ['nullable', 'integer'],
             'attendees' => ['nullable', 'integer', 'min:1', 'max:50'],
             'note' => ['nullable', 'string', 'max:255'],
@@ -649,7 +649,9 @@ class CheckInController extends Controller
         ]);
 
         $guest = $wedding->guests()->with('response')->findOrFail($guestId);
-        $attendees = ! empty($validated['attendees']) ? (int) $validated['attendees'] : $guest->actualAttendeesCount();
+        $attendees = ! empty($validated['attendees'])
+            ? (int) $validated['attendees']
+            : max(1, (int) ($guest->expected_attendees ?: 1));
 
         $updateData = [
             'checked_in_at' => now(),
