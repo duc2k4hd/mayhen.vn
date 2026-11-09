@@ -26,7 +26,7 @@
      data-should-animate="{{ !empty($shouldAnimate) ? '1' : '0' }}">
     
     {{-- THANH ĐIỀU KHIỂN TRÊN CÙNG (STUDIO TOPBAR) --}}
-    <header class="mayhen_curated_topbar">
+    <header class="mayhen_curated_topbar {{ !empty($shouldAnimate) ? 'is_crafting' : '' }}">
         <div class="mayhen_curated_topbar_left">
             <a href="{{ route('curated.create') }}" class="mayhen_curated_btn_back" title="Quay lại bảng tạo thiệp">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -69,7 +69,7 @@
             </div>
 
             {{-- LIVE CRAFTING PROGRESS PILL & SKIP --}}
-            <div class="mayhen_curated_crafting_pill" id="craftingStatusPill" style="{{ empty($shouldAnimate) ? 'display: none;' : '' }}">
+            <div class="mayhen_curated_crafting_pill {{ !empty($shouldAnimate) ? 'is-active' : '' }}" id="craftingStatusPill" style="{{ empty($shouldAnimate) ? 'display: none;' : '' }}">
                 <span class="crafting_spinner"></span>
                 <span class="crafting_status_text" id="craftingStatusText">Đang phác thảo thiệp...</span>
                 <div class="crafting_progress_wrap" id="craftingProgressWrap">
@@ -202,7 +202,7 @@
                     {{-- MÀN HÌNH CHÍNH (IFRAME) --}}
                     <div class="phone_screen">
                         <iframe 
-                            src="{{ route('invitation.show', ['slug' => $invitation->slug]) }}{{ (!empty($shouldAnimate)) ? '?crafting=1' : '' }}" 
+                            src="{{ route('invitation.show', array_filter(['slug' => $invitation->slug, 'crafting' => !empty($shouldAnimate) ? 1 : null, 'embed' => 1])) }}" 
                             id="curatedPreviewIframe" 
                             class="curated_preview_iframe"
                             title="Thiệp Cưới Tự Phối {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}"

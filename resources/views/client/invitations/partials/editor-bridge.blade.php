@@ -75,7 +75,14 @@
     .mayhen_embed_mode .ladi-animation-hidden,
     .mayhen_embed_mode [class*="ladi-animation-hidden"],
     .mayhen_embed_mode [class*="_rv"],
-    .mayhen_embed_mode [class*="sr_hien"] {
+    .mayhen_embed_mode [class*="sr_hien"],
+    .mayhen_embed_mode:not(.mayhen_is_crafting) .mayhen_invitation_reveal,
+    .mayhen_embed_mode:not(.mayhen_is_crafting) [class*="mayhen_invitation_reveal"],
+    .mayhen_embed_mode:not(.mayhen_is_crafting) .mayhen_invitation_hero_card,
+    .mayhen_embed_mode .mayhen_invitation_reveal.mayhen_invitation_visible,
+    html.mayhen_embed_mode .mayhen_invitation_visible,
+    body.mayhen_embed_mode .mayhen_invitation_visible,
+    .mayhen_embed_mode .mayhen_invitation_visible {
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
@@ -170,7 +177,15 @@
                 el.remove();
             });
 
-            // Tự click nút mở phong bì hoặc nút mở thiệp nếu có
+            // Cưỡng chế hiển thị toàn bộ các phần tử reveal khi nhúng trong iframe xem thử bình thường
+            if (!new URLSearchParams(window.location.search).has('crafting')) {
+                document.querySelectorAll('.mayhen_invitation_reveal, [class*="mayhen_invitation_reveal"]').forEach(function(el) {
+                    el.classList.add('mayhen_invitation_visible');
+                    el.style.setProperty('opacity', '1', 'important');
+                    el.style.setProperty('visibility', 'visible', 'important');
+                    el.style.setProperty('transform', 'none', 'important');
+                });
+            }
             var openTriggers = document.querySelectorAll(
                 '.mayhen_invitation_open_btn, #mayhen_open_invitation_btn, #BUTTON18, [id*="open_btn"]'
             );

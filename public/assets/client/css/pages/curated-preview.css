@@ -194,6 +194,7 @@ html, body.mayhen_curated_preview_body {
 
 /* Khi đang crafting / trình diễn thiệp, ẩn Viewport Switcher để thanh tiến trình dệt thiệp chiếm trọn vị trí trung tâm trang trọng */
 .mayhen_curated_topbar.is_crafting .mayhen_curated_viewport_switcher,
+.mayhen_curated_topbar:has(.mayhen_curated_crafting_pill.is-active) .mayhen_curated_viewport_switcher,
 .mayhen_curated_topbar_center.is_crafting .mayhen_curated_viewport_switcher,
 .mayhen_curated_topbar_center:has(.mayhen_curated_crafting_pill.is-active) .mayhen_curated_viewport_switcher {
     display: none !important;

@@ -219,9 +219,9 @@ class TemplateController extends Controller
         $ifNoneMatch = request()->header('If-None-Match');
         $ifModifiedSince = request()->header('If-Modified-Since');
 
-        // Phản hồi 304 Not Modified tức thì (0ms body transfer)
-        if (! config('app.debug') && ((($ifNoneMatch && trim($ifNoneMatch) === $etag) ||
-            ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified)))) {
+        // Phản hồi 304 Not Modified tức thì khi file không đổi (0ms body transfer)
+        if ((($ifNoneMatch && trim($ifNoneMatch) === $etag) ||
+            ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified))) {
             return response('', 304, [
                 'ETag' => $etag,
                 'Last-Modified' => gmdate('D, d M Y H:i:s', $lastModified).' GMT',
@@ -230,11 +230,9 @@ class TemplateController extends Controller
         }
 
         $isStaticMedia = in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'svg', 'gif', 'woff', 'woff2', 'ttf', 'otf', 'mp3']);
-        $cacheControl = config('app.debug')
-            ? 'no-cache, no-store, must-revalidate'
-            : ($isStaticMedia
-                ? 'public, max-age=31536000, immutable'
-                : 'public, max-age=86400, stale-while-revalidate=604800');
+        $cacheControl = $isStaticMedia
+            ? 'public, max-age=86400, stale-while-revalidate=604800'
+            : (config('app.debug') ? 'no-cache, must-revalidate' : 'public, max-age=86400, stale-while-revalidate=604800');
 
         $headers = [
             'Content-Type' => $mimeTypes[$extension] ?? 'application/octet-stream',

@@ -6167,6 +6167,63 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite dự án: **599/599 tests PASSED 100% (3,123 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
 
+### [2026-11-09] KHẮC PHỤC TRIỆT ĐỂ LỖI MÀN HÌNH TRẮNG LIVE PREVIEW & NÂNG CẤP LIVE CRAFTING V5
+- **Bối cảnh & Vấn đề xử lý**:
+  * Người dùng phản ánh lỗi **"Không thấy màn live preview"** (màn hình điện thoại trắng trơn sau khi dệt xong 100% hoặc khi mở lại xem thử).
+  * Lỗi "show cả trang web ra ngay từ đầu" do hiện tượng FOUC khi vừa tải iframe.
+  * Trải nghiệm dệt thiệp AI cần hoàn hảo: mượt mà, tuần tự từng hàng, từng thẻ từ trên xuống dưới, từ trái sang phải, cuộn chính xác 26% tầm mắt và mượt mà cuộn về đầu trang sau khi hoàn tất.
+- **Nguyên nhân cốt lõi đã phát hiện**:
+  1. *Lỗi Entity URL Blade*: Trong `preview.blade.php`, cú pháp `?crafting=1&amp;embed=1` bên trong `{{ }}` bị Blade escape lần 2 thành `&amp;amp;embed=1`. Trình duyệt nhận tham số `amp;embed=1`, dẫn đến `request()->boolean('embed')` trả về false, khiến `$isEmbed = false`. Mẫu thiệp không kích hoạt chế độ nhúng Studio, khóa cuộn và đóng màn mở đầu.
+  2. *Lỗi khôi phục Animation State*: Trong các mẫu gốc (như `hanh-phuc-mang-ten-chung-minh`), các thẻ mang class `.mayhen_invitation_reveal` có CSS mặc định là `opacity: 0`. Khi `native-crafting-presenter.js` kết thúc sau 800ms và gỡ bỏ `mayhen_is_revealed`, các phần tử bị trả về `opacity: 0` do thiếu class `.mayhen_invitation_visible`.
+  3. *Lỗi Reload URL thiếu tham số*: Trong `curated-preview.js`, các hàm reload iframe sau khi đổi biến thể hoặc remix thiếu tham số `&embed=1`.
+- **Giải pháp kỹ thuật đã triển khai (Native Crafting Presenter V5)**:
+  1. **Chuẩn hóa URL Iframe trong Blade**: Sử dụng `route('invitation.show', array_filter(['slug' => $invitation->slug, 'crafting' => !empty($shouldAnimate) ? 1 : null, 'embed' => 1]))` đảm bảo 100% tham số `embed=1` và `crafting=1` được truyền chính xác, không bị lỗi escape ký tự.
+  2. **Cưỡng chế hiển thị trong `editor-bridge.blade.php`**: Bổ sung luật CSS cho `.mayhen_embed_mode:not(.mayhen_is_crafting) .mayhen_invitation_reveal` và `.mayhen_invitation_visible` luôn có `opacity: 1 !important; transform: none !important;`, ngăn chặn hoàn toàn việc nội dung bị ẩn trắng khi ở chế độ xem thử.
+  3. **Chống FOUC an toàn với `mayhen_crafting_preparing`**: Class trên thẻ `<html>` khóa ẩn tức thời các section trong khi rèm lụa `#mayhenCraftingCurtain` đang che màn hình. Sau khi JS gán class ẩn `.mayhen_is_hidden` lên từng thẻ con, `mayhen_crafting_preparing` được gỡ bỏ và rèm lụa mở ra nhẹ nhàng, triệt tiêu 100% hiện tượng lóe nội dung cũ.
+  4. **Nâng cấp Native Crafting Presenter V5**:
+     * Tự động thêm `.mayhen_invitation_visible` khi tiết lộ từng thẻ để đồng bộ vĩnh viễn với engine của template.
+     * Khi dệt xong 100%: Tự động cuộn mượt mà (`window.scrollTo({ top: 0, behavior: 'smooth' })`) về đầu trang sau 450ms, giúp người dùng chiêm ngưỡng toàn bộ tác phẩm thiệp từ bìa Hero Cover trang trọng.
+     * Bổ sung đầy đủ `&embed=1` trong toàn bộ các luồng remix và đổi biến thể của `curated-preview.js`.
+  5. **Bổ sung Feature Test Mới**: Tạo test `tests/Feature/CuratedInvitationPreviewLiveTest.php` tự động kiểm tra chế độ nhúng iframe, chế độ dệt thiệp AI và bảo vệ không bị màn hình trắng.
+- **Tập tin đã cập nhật**:
+  * Layout: `resources/views/client/layouts/invitation.blade.php`.
+  * Bridge: `resources/views/client/invitations/partials/editor-bridge.blade.php`.
+  * View: `resources/views/client/pages/curated/preview.blade.php`.
+  * Scripts:
+    - `public/assets/client/js/pages/curated-preview.js`
+    - `public/assets/client/js/pages/native-crafting-presenter.js`
+  * Tests: `tests/Feature/CuratedInvitationPreviewLiveTest.php`.
+- **Kết quả Kiểm Thử**:
+  * `CuratedInvitationPreviewLiveTest` & `CuratedInvitationFlowTest`: **15/15 tests PASSED (104 assertions)**.
+  * Toàn bộ test suite dự án: **601/601 tests PASSED 100% (3,135 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
+
+### [2026-11-09] KHẮC PHỤC TRIỆT ĐỂ 4 LỖI LIVE PREVIEW & NÂNG CẤP LIVE CRAFTING V7
+- **Bối cảnh & Vấn đề giải quyết**:
+  1. *Ảnh 1: Kho mẫu thiệp vỡ thumbnail*: Các mẫu cũ cào từ bên ngoài ("Songhy V4 Đỏ Burgundy", "Hạc Sen Đỏ", "Song Hy Xanh") bị kẹt trong Cache danh sách mẫu (`mayhen_templates_list_...`) sau khi xóa khỏi database. Đã thực thi `php artisan cache:clear` dọn sạch 100% rác bộ nhớ cache.
+  2. *Ảnh 2: Lỗi vỡ ảnh cổng vòm & hiện chữ cắt ngang*: File `7da1e3a6d59c1a98.webp` bị gán cứng trong `CuratedInvitationController` khiến mẫu `hanh-phuc-mang-ten-chung-minh` bị HTTP 404, hiển thị alt text cắt ngang. Đã chuyển thành `'cover_photo_url' => null` và cập nhật database để fallback tự động về ảnh gốc `hero-couple.webp`.
+  3. *Ảnh 2: Layout Topbar bị đè chữ*: Header và pill chưa có class `is_crafting` và `is-active` từ Blade ban đầu, làm Viewport Switcher và Crafting Pill cùng hiển thị đè lên nhau. Đã bổ sung Blade logic và CSS selector mạnh mẽ ẩn triệt để Viewport Switcher khi đang crafting.
+  4. *Ảnh 2: Màu sắc Ruby chưa áp dụng*: Cổng vòm `.mayhen_invitation_hero_frame` và body mang màu xanh rêu cứng đè lên bảng màu. Đã chuyển toàn bộ `<style id="mayhenPaletteThemeStyles">` xuống cuối thẻ `<head>` và bổ sung override gradient đầy đủ cho 4 bảng màu (Ruby, Dusty Rose, Royal Navy, Warm Amber).
+  5. *Ảnh 3 & Video: Màn hình trắng tinh & Hiệu ứng vệt sáng chưa chuẩn*:
+     * Crash DOM do gọi `appendChild` trực tiếp vào void element (`<img>`). Đã bổ sung `attachBeamSafely` tự động gắn beam vào thẻ cha an toàn 100%.
+     * Phần tử lộ trước khi vệt sáng quét qua: Khóa triệt để các phần tử chưa dệt với `mayhen_is_hidden` và đồng bộ `clip-path` mở rộng chính xác theo bước quét của vệt sáng.
+     * Nâng cấp vệt sáng hoàng gia lộng lẫy (Royal Gold Shimmer Beam) với gradient vàng kim đa tầng, hào quang 4 lớp và đốm sao tinh hoa Quiet Luxury.
+     * Tối ưu tốc độ tải trang: Kích hoạt 304 Not Modified và cache static assets trong `TemplateController::asset`, loại bỏ tắc nghẽn PHP đơn luồng.
+- **Tập tin đã cập nhật**:
+  * Controllers:
+    - `app/Http/Controllers/Client/CuratedInvitationController.php`
+    - `app/Http/Controllers/Client/TemplateController.php`
+  * Layout & Views:
+    - `resources/views/client/layouts/invitation.blade.php`
+    - `resources/views/client/invitations/partials/editor-bridge.blade.php`
+    - `resources/views/client/pages/curated/preview.blade.php`
+  * CSS & Scripts:
+    - `public/assets/client/css/pages/curated-preview.css`
+    - `public/assets/client/js/pages/native-crafting-presenter.js`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Pint Formatter: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
+  * Cache: Đã làm sạch toàn bộ cache ứng dụng.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

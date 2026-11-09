@@ -2,9 +2,14 @@
     $isEmbed = ($isEmbed ?? false) 
         || request()->boolean('embed') 
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+
+    $invConfig = (isset($invitation) && is_array($invitation->custom_config)) 
+        ? $invitation->custom_config 
+        : (isset($invitation) ? json_decode((string) ($invitation->custom_config ?? '{}'), true) : []);
+    $colorTheme = $invConfig['color_theme'] ?? ($invConfig['curated_layout']['palette'] ?? request()->query('palette', ''));
 @endphp
 <!DOCTYPE html>
-<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }}">
+<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting mayhen_crafting_preparing' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -41,16 +46,25 @@
                 overflow-x: hidden !important;
                 background-color: #FAF8F5 !important;
             }
-            /* 2. ẨN TOÀN BỘ NỘI DUNG THIỆP NGAY TỪ ĐẦU (TUYỆT ĐỐI KHÔNG SHOW TRƯỚC KHI DỆT) */
-            body.mayhen_is_crafting .mayhen_invitation_section,
-            body.mayhen_is_crafting section,
-            body.mayhen_is_crafting footer,
-            body.mayhen_is_crafting [data-mayhen-section] {
+            /* Chống FOUC: Khi đang nạp trang dệt, toàn bộ nội dung được ẩn tuyệt đối dưới rèm lụa */
+            html.mayhen_crafting_preparing body .mayhen_invitation_section,
+            html.mayhen_crafting_preparing body .mayhen_invitation_hero_card,
+            html.mayhen_crafting_preparing body [data-mayhen-section],
+            html.mayhen_crafting_preparing body .mayhen_invitation_reveal {
+                opacity: 0 !important;
+                visibility: hidden !important;
+            }
+            /* Khóa triệt để các section chưa tạo: KHÔNG ĐƯỢC PHÉP HIỂN THỊ TRƯỚC */
+            html.mayhen_is_crafting .mayhen_crafting_section_waiting {
                 opacity: 0 !important;
                 visibility: hidden !important;
                 pointer-events: none !important;
+                max-height: 0 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            /* 3. RÈM LỤA ATELIER CANVAS BAN ĐẦU (SILK CURTAIN STATE) */
+            /* 2. RÈM LỤA ATELIER CANVAS BAN ĐẦU (SILK CURTAIN STATE - CHE TOÀN MÀN HÌNH CHỐNG FOUC) */
             #mayhenCraftingCurtain {
                 position: fixed;
                 top: 0;
@@ -64,7 +78,7 @@
                 align-items: center;
                 justify-content: center;
                 gap: 16px;
-                transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.75s ease;
+                transition: opacity 0.25s ease, visibility 0.25s ease;
                 pointer-events: none;
             }
             #mayhenCraftingCurtain.is-hidden {
@@ -130,10 +144,182 @@
         </style>
     @endif
 
+    {{-- BỘ CHUYỂN ĐỔI BẢNG MÀU CHUẨN QUIET LUXURY (PALETTE THEME OVERRIDE - NẰM CUỐI THẺ HEAD ĐẢM BẢO ƯU TIÊN TUYỆT ĐỐI) --}}
+    @if(!empty($colorTheme))
+        <style id="mayhenPaletteThemeStyles">
+            @if($colorTheme === 'ruby')
+                /* BẢNG MÀU ĐỎ RƯỢU VANG & VÀNG ANTIQUE (ROYAL VELVET RUBY) */
+                :root {
+                    --mayhen-primary: #85182A !important;
+                    --mayhen-bg-cream: #FAF7F2 !important;
+                    --mayhen-bg-ivory: #FFFDF9 !important;
+                    --mayhen-bg-sage-soft: #F9ECEE !important;
+                    --mayhen-sage-light: #C97A88 !important;
+                    --mayhen-sage-main: #85182A !important;
+                    --mayhen-sage-dark: #5E0E1C !important;
+                    --mayhen-forest-deep: #5E0E1C !important;
+                    --mayhen-forest-ink: #3D0812 !important;
+                    --mayhen-gold-antique: #CFA860 !important;
+                    --mayhen-gold-light: #F4E2B8 !important;
+                    --mayhen-gold-deep: #967332 !important;
+                    --mayhen-text-main: #1F1D1A !important;
+                    --mayhen-border-gold: rgba(207, 168, 96, 0.45) !important;
+                    --mayhen-border-sage: rgba(133, 24, 42, 0.28) !important;
+                    --mayhen-invitation-accent: #85182A !important;
+                    --mayhen-invitation-accent-bright: #9E1F34 !important;
+                    --mayhen-invitation-accent-deep: #5E0E1C !important;
+                    --mayhen-invitation-door-wine: #5E0E1C !important;
+                    --mayhen-invitation-bg-crimson: #85182A !important;
+                    --mayhen-invitation-bg-crimson-deep: #5E0E1C !important;
+                }
+                body.mayhen_invitation_body,
+                html body {
+                    background-color: #FAF7F2 !important;
+                }
+                .mayhen_invitation_hero_frame {
+                    background: linear-gradient(145deg, #CFA860, #85182A) !important;
+                }
+                .mayhen_invitation_section--sage {
+                    background: linear-gradient(180deg, #F9ECEE 0%, #FAF7F2 100%) !important;
+                }
+                .mayhen_invitation_hero_card {
+                    background: rgba(255, 253, 249, 0.96) !important;
+                    border-color: rgba(207, 168, 96, 0.55) !important;
+                }
+                .mayhen_invitation_hero_badge, .mayhen_invitation_eyebrow {
+                    color: #85182A !important;
+                }
+                .mayhen_invitation_hero_date_pill {
+                    background: #5E0E1C !important;
+                    color: #F4E2B8 !important;
+                    border-color: #CFA860 !important;
+                }
+                .mayhen_invitation_script_title, .mayhen_invitation_title {
+                    color: #5E0E1C !important;
+                }
+                .mayhen_invitation_family_side {
+                    color: #85182A !important;
+                }
+                .mayhen_invitation_calendar_day--active {
+                    background: #85182A !important;
+                    color: #FFFFFF !important;
+                }
+                .mayhen_invitation_calendar_day--active svg {
+                    fill: #CFA860 !important;
+                }
+                .mayhen_invitation_countdown_item, .mayhen_invitation_countdown_box {
+                    background: #5E0E1C !important;
+                    color: #F4E2B8 !important;
+                    border-color: rgba(207, 168, 96, 0.4) !important;
+                }
+                .mayhen_invitation_party_card {
+                    border-color: rgba(207, 168, 96, 0.4) !important;
+                }
+                .mayhen_invitation_map_btn, .mayhen_invitation_submit_btn {
+                    background: #85182A !important;
+                    color: #FFFFFF !important;
+                }
+                .mayhen_invitation_door {
+                    background: linear-gradient(165deg, #741525 0%, #4f0b17 55%, #3d0812 100%) !important;
+                }
+            @elseif($colorTheme === 'dusty-rose')
+                /* BẢNG MÀU HỒNG TRO & CHAMPAGNE LỤA (DUSTY ROSE) */
+                :root {
+                    --mayhen-primary: #A26B6B !important;
+                    --mayhen-bg-cream: #FFFDF9 !important;
+                    --mayhen-bg-sage-soft: #FCF4F4 !important;
+                    --mayhen-sage-light: #E0BCBC !important;
+                    --mayhen-sage-main: #A26B6B !important;
+                    --mayhen-sage-dark: #7D4E4E !important;
+                    --mayhen-forest-deep: #7D4E4E !important;
+                    --mayhen-forest-ink: #4E2E2E !important;
+                    --mayhen-gold-antique: #C5A880 !important;
+                    --mayhen-gold-light: #F0DFC8 !important;
+                    --mayhen-border-sage: rgba(162, 107, 107, 0.28) !important;
+                    --mayhen-invitation-accent: #A26B6B !important;
+                    --mayhen-invitation-accent-deep: #7D4E4E !important;
+                }
+                body.mayhen_invitation_body,
+                html body {
+                    background-color: #FFFDF9 !important;
+                }
+                .mayhen_invitation_hero_frame {
+                    background: linear-gradient(145deg, #C5A880, #A26B6B) !important;
+                }
+                .mayhen_invitation_hero_badge, .mayhen_invitation_eyebrow { color: #A26B6B !important; }
+                .mayhen_invitation_hero_date_pill { background: #7D4E4E !important; color: #F0DFC8 !important; border-color: #C5A880 !important; }
+                .mayhen_invitation_script_title, .mayhen_invitation_title { color: #7D4E4E !important; }
+                .mayhen_invitation_calendar_day--active { background: #A26B6B !important; color: #FFFFFF !important; }
+                .mayhen_invitation_countdown_item, .mayhen_invitation_countdown_box { background: #7D4E4E !important; color: #F0DFC8 !important; }
+                .mayhen_invitation_door { background: linear-gradient(165deg, #A26B6B 0%, #7D4E4E 100%) !important; }
+            @elseif($colorTheme === 'royal-navy')
+                /* BẢNG MÀU XANH HOÀNG GIA & ÁNH BẠC (ROYAL NAVY) */
+                :root {
+                    --mayhen-primary: #1B2A4A !important;
+                    --mayhen-bg-cream: #F8FAFC !important;
+                    --mayhen-bg-sage-soft: #EFF4FA !important;
+                    --mayhen-sage-light: #7E96BF !important;
+                    --mayhen-sage-main: #2A406C !important;
+                    --mayhen-sage-dark: #1B2A4A !important;
+                    --mayhen-forest-deep: #0F1A30 !important;
+                    --mayhen-forest-ink: #0A1222 !important;
+                    --mayhen-gold-antique: #9FAEC2 !important;
+                    --mayhen-gold-light: #E2E8F0 !important;
+                    --mayhen-border-sage: rgba(27, 42, 74, 0.25) !important;
+                    --mayhen-invitation-accent: #1B2A4A !important;
+                    --mayhen-invitation-accent-deep: #0F1A30 !important;
+                }
+                body.mayhen_invitation_body,
+                html body {
+                    background-color: #F8FAFC !important;
+                }
+                .mayhen_invitation_hero_frame {
+                    background: linear-gradient(145deg, #9FAEC2, #1B2A4A) !important;
+                }
+                .mayhen_invitation_hero_badge, .mayhen_invitation_eyebrow { color: #1B2A4A !important; }
+                .mayhen_invitation_hero_date_pill { background: #0F1A30 !important; color: #E2E8F0 !important; border-color: #9FAEC2 !important; }
+                .mayhen_invitation_script_title, .mayhen_invitation_title { color: #0F1A30 !important; }
+                .mayhen_invitation_calendar_day--active { background: #1B2A4A !important; color: #FFFFFF !important; }
+                .mayhen_invitation_countdown_item, .mayhen_invitation_countdown_box { background: #0F1A30 !important; color: #E2E8F0 !important; }
+                .mayhen_invitation_door { background: linear-gradient(165deg, #2A406C 0%, #1B2A4A 100%) !important; }
+            @elseif($colorTheme === 'warm-amber')
+                /* BẢNG MÀU NÂU HỔ PHÁCH & HOÀNG HÔN ẤM (WARM AMBER) */
+                :root {
+                    --mayhen-primary: #8C4724 !important;
+                    --mayhen-bg-cream: #FFFBF5 !important;
+                    --mayhen-bg-sage-soft: #FDF4ED !important;
+                    --mayhen-sage-light: #DCA180 !important;
+                    --mayhen-sage-main: #8C4724 !important;
+                    --mayhen-sage-dark: #6E3416 !important;
+                    --mayhen-forest-deep: #5C2D15 !important;
+                    --mayhen-forest-ink: #3B1B0A !important;
+                    --mayhen-gold-antique: #D4A373 !important;
+                    --mayhen-gold-light: #F7E5D2 !important;
+                    --mayhen-border-sage: rgba(140, 71, 36, 0.28) !important;
+                    --mayhen-invitation-accent: #8C4724 !important;
+                    --mayhen-invitation-accent-deep: #5C2D15 !important;
+                }
+                body.mayhen_invitation_body,
+                html body {
+                    background-color: #FFFBF5 !important;
+                }
+                .mayhen_invitation_hero_frame {
+                    background: linear-gradient(145deg, #D4A373, #8C4724) !important;
+                }
+                .mayhen_invitation_hero_badge, .mayhen_invitation_eyebrow { color: #8C4724 !important; }
+                .mayhen_invitation_hero_date_pill { background: #5C2D15 !important; color: #F7E5D2 !important; border-color: #D4A373 !important; }
+                .mayhen_invitation_script_title, .mayhen_invitation_title { color: #5C2D15 !important; }
+                .mayhen_invitation_calendar_day--active { background: #8C4724 !important; color: #FFFFFF !important; }
+                .mayhen_invitation_countdown_item, .mayhen_invitation_countdown_box { background: #5C2D15 !important; color: #F7E5D2 !important; }
+                .mayhen_invitation_door { background: linear-gradient(165deg, #8C4724 0%, #5C2D15 100%) !important; }
+            @endif
+        </style>
+    @endif
+
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>
-<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" @yield('body_attributes')>
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" data-palette="{{ $colorTheme }}" @yield('body_attributes')>
     @if(request()->boolean('crafting'))
         {{-- RÈM LỤA KHỞI TẠO DỆT THIỆP (INITIAL ATELIER CURTAIN) --}}
         <div id="mayhenCraftingCurtain" aria-hidden="true">

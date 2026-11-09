@@ -169,19 +169,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting) — 100% Client-Side, không tốn tài nguyên server
+    // 1. Nút Xem lại quá trình dựng thiệp (Replay Crafting)
     const btnReplay = document.getElementById('btnReplayCrafting');
     if (btnReplay && iframe) {
         btnReplay.addEventListener('click', () => {
             startCraftingMode();
-            try {
-                if (iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({ type: 'MAYHEN_REPLAY_CRAFTING' }, '*');
-                    return;
-                }
-            } catch (e) {}
             const baseUrl = iframe.src.split('?')[0];
-            iframe.src = `${baseUrl}?crafting=1&replay=${Date.now()}`;
+            iframe.src = `${baseUrl}?crafting=1&embed=1&replay=${Date.now()}`;
         });
     }
 
@@ -218,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng thiệp
                     startCraftingMode();
                     const baseUrl = iframe.src.split('?')[0];
-                    iframe.src = `${baseUrl}?crafting=1&t=${Date.now()}`;
+                    iframe.src = `${baseUrl}?crafting=1&embed=1&t=${Date.now()}`;
                 } else {
                     alert(data.message || 'Có lỗi xảy ra khi phối lại bố cục.');
                 }
@@ -265,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Tải lại iframe ở đúng vị trí (không chạy full crafting dài)
                     if (iframe) {
                         const baseUrl = iframe.src.split('?')[0];
-                        iframe.src = `${baseUrl}?crafting=0&t=${Date.now()}`;
+                        iframe.src = `${baseUrl}?embed=1&t=${Date.now()}`;
                     }
                 } else {
                     alert(data.message || 'Không thể đổi biến thể mục này.');

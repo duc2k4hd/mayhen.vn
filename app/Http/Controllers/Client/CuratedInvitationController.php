@@ -141,7 +141,7 @@ class CuratedInvitationController extends Controller
                 'wedding_date' => $weddingDate,
                 'venue_name' => $venueName,
                 'venue_address' => $venueAddress,
-                'cover_photo_url' => url("/mau-thiep/{$template->slug}/assets/7da1e3a6d59c1a98.webp"),
+                'cover_photo_url' => null,
                 'extra_data' => $extraData,
             ]);
 
@@ -230,6 +230,10 @@ class CuratedInvitationController extends Controller
             $config['presentation_token'] = null;
             $invitation->custom_config = $config;
             $invitation->saveQuietly();
+        }
+
+        if ($request->boolean('crafting')) {
+            $shouldAnimate = true;
         }
 
         $curatedLayout = $config['curated_layout'] ?? [];
