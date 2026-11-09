@@ -6072,46 +6072,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 ---
 
-### [2026-11-09] NÂNG CẤP KHO MẪU THIỆP & TINH CHỈNH MẪU THỬ NGHIỆM PILOT (SONG HỶ ENGINE)
-- **Bối cảnh & Yêu cầu của người dùng**:
-  1. Người dùng yêu cầu mở rộng kho mẫu thiệp cưới phong phú hàng trăm mẫu từ nguồn Song Hỷ (`https://songhy.online/kho-mau-thiep`) để phân loại vào các chủ đề (romantic, minimal, editorial, traditional), khi người dùng chọn phong cách thì hệ thống ngẫu nhiên chọn ra mẫu phù hợp để tạo thiệp.
-  2. **YÊU CẦU NGHIÊM NGẶT**: Tuyệt đối **KHÔNG cào ồ ạt** tất cả 114 mẫu thiệp về một lúc! Phải làm chuẩn chỉnh 1-2 mẫu thử nghiệm trước (mẫu đầu tiên: `minimalism-do-dam`), đối chiếu trực tiếp giữa `http://127.0.0.1:8000/xem-thu/minimalism-do-dam` và `https://songhy.online/invite/minimalism-do-dam`. Khi nào mẫu pilot đạt độ hoàn mỹ cao, người dùng xem ưng ý thì người dùng mới chủ động ra lệnh cào toàn bộ.
-- **Phân tích nguyên nhân mẫu cào về ban đầu bị "xấu vãi" & Cách xử lý triệt để**:
-  1. **Lỗi Typography (CORS Chặn Toàn Bộ Phông Chữ Nghệ Thuật)**:
-     - *Hiện tượng*: Tất cả các phông chữ nghệ thuật uốn lượn đặc trưng (`Viaoda Libre`, `The Nautigal`, `Ms Madi`, `EB Garamond`, `Lora`, `Cormorant Garamond`, `Uchen`) bị trình duyệt chặn tải (CORS Policy) khi kéo từ domain bên ngoài -> Toàn bộ thiệp fallback về Times New Roman thô kệch.
-     - *Khắc phục*: Tải trọn bộ 9 file font (`.ttf`, `.woff2`) về lưu trữ trực tiếp tại `resources/views/client/invitations/minimalism-do-dam/assets/fonts/`, phục vụ nội bộ qua route `templates.asset` của Mây Hẹn (100% Local Assets, không CORS). Đồng thời nạp bổ sung Google Fonts CDN qua `@push('fonts')` để đảm bảo dự phòng 2 lớp.
-  2. **Lỗi Ảnh Placeholder (Thiệp hiển thị toàn icon máy ảnh rỗng)**:
-     - *Hiện tượng*: Các vị trí ảnh hero và album ảnh cưới bị nạp bằng các file `.svg` 777 bytes (placeholder camera màu xám) thay vì ảnh cưới thật của cô dâu chú rể.
-     - *Khắc phục*: Thay thế 100% placeholder SVG bằng ảnh cưới WebP thực tế chất lượng cao (`img_4.webp`, `img_7.webp` đến `img_13.webp`).
-  3. **Lỗi Hoạt Họa Mở Phong Bì (Envelope Unroll & Particle Burst)**:
-     - *Hiện tượng*: Bấm nút "Mở thiệp" thì màn hình biến mất đột ngột không có hiệu ứng, thiếu âm thanh và pháo hoa.
-     - *Khắc phục*: Tích hợp đầy đủ hệ thống animation từ `envelope-animations.css` (`seal-break`, `seal-ring`, `envelope-away`, `particle-burst`). Viết lại `script.js` thuần vanilla: phát chuông âm thanh 4 lớp (AudioContext chime C-major arpeggio), hiệu ứng nổ pháo hoa hạt sáng lấp lánh (32 particle burst) và phong bì bay vút lên bầu trời mượt mà 1.3s trước khi cuộn nhẹ vào thân thiệp.
-  4. **Album Ảnh 3D Coverflow & Lightbox**:
-     - *Khắc phục*: Tích hợp xoay ảnh 3D chiều sâu (perspective: 1000px, translateX/translateZ/rotateY), điều khiển bằng nút next/prev, chấm tròn dot navigation, chạm vuốt swipe trên mobile và click phóng to ảnh qua dialog lightbox.
-  5. **Chuẩn Hóa 100% Khung 10 Section & BEM Class `mayhen_invitation_*` (Tuân thủ triệt để Skills & Docs)**:
-     - *Khắc phục*: Tái thiết kế toàn bộ `template.blade.php`, `styles.css`, `script.js` sang chuẩn BEM `mayhen_invitation_*`, loại bỏ sạch sẽ 100% class rác và ID của bên thứ ba (`songhy-*`, `mdd-*`, `miu-*`, không Tailwind).
-     - Đầy đủ 10 Section tiêu chuẩn có gắn `data-mayhen-section="..."` và hợp đồng Live Sync `data-sync-target="..."`:
-       1. Section 1 (Opening): `mayhen_invitation_opening` phong bì hoàng gia đỏ rượu, tem sáp niêm phong, tự động ẩn khi `$isEmbed = true`.
-       2. Section 2 (Hero Cover): `mayhen_invitation_hero` ảnh Polaroid Save The Date bồng bềnh và tên uyên ương thư pháp.
-       3. Section 3 (Love Story & Quote): `mayhen_invitation_story` đoạn văn tự sự và trích dẫn tình yêu.
-       4. Section 4 (Family & Couple): `mayhen_invitation_parents` 2 cột song thân phụ mẫu Nhà Trai & Nhà Gái, ngày giờ cử hành tại tư gia.
-       5. Section 5 (Countdown & Calendar): `mayhen_invitation_countdown_calendar` đếm ngược thời gian thực và lịch cưới màu kem khoanh tròn trái tim.
-       6. Section 6 (Events & Maps): `mayhen_invitation_events` thời gian tiệc, sảnh cưới, bản đồ nhúng và nút chỉ đường GPS.
-       7. Section 7 (Timeline): `mayhen_invitation_timeline` dòng thời gian hôn lễ với icon hoa văn thanh lịch.
-       8. Section 8 (Dresscode): `mayhen_invitation_dresscode` bảng 4 màu trang phục gợi ý.
-       9. Section 9 (Album 10 Photos): `mayhen_invitation_gallery` 3D Coverflow 10 ảnh cưới và dialog lightbox phóng to.
-       10. Section 10 (Interactive, Signature, RSVP, Wishes & Ending): Hộp mừng cưới VietQR, sổ ký tên điện tử canvas, form RSVP xác nhận, sổ lưu bút chúc phúc và lời cảm ơn kết thiệp. Tuyệt đối CẤM chèn ảnh cặp đôi vào Sổ ký tên & RSVP (chỉ dùng nền canvas và tem sáp hoàng gia).
-     - Khởi tạo đầy đủ `schema.json` (11 section mapping) tương thích 100% với Studio Tạo Thiệp (`/tao-thiep`) và Admin Editor.
-     - Nâng cấp `SonghyTemplateIngestionService` để mọi lần cào mẫu đều tự động làm sạch class bên thứ ba và sinh `schema.json` chuẩn Mây Hẹn.
-- **Tập tin đã tạo & cập nhật**:
-  * Command: `app/Console/Commands/IngestSonghyTemplateCommand.php`.
-  * Service: `app/Services/SonghyTemplateIngestionService.php`.
-  * Mẫu pilot: `resources/views/client/invitations/minimalism-do-dam/` (`template.blade.php`, `styles.css`, `script.js`, `schema.json`, `assets/`, `assets/fonts/`).
-  * Tests: `tests/Feature/SonghyIngestionTest.php` (3/3 passed, 26 assertions).
-- **Kết quả Kiểm Thử**:
-  * Test Suite `SonghyIngestionTest`: 3/3 passed (26 assertions).
-  * Test Suite `CuratedInvitationFlowTest`: 14/14 passed.
-  * Code formatting: 100% đạt chuẩn Pint agent format (`vendor/bin/pint --format agent`).
+### [2026-11-09] HỦY BỎ & XÓA SẠCH MODULE CÀO MẪU BÊN THỨ BA (CLEANUP SCRAPING MODULE)
+- **Quyết định của người dùng**: Người dùng yêu cầu hủy bỏ và xóa sạch toàn bộ module cào mẫu thiệp từ bên ngoài (`SonghyTemplateIngestionService`, Artisan command `mayhen:ingest-songhy`, các mẫu thiệp và file test liên quan), không áp dụng hướng tiếp cận cào mẫu web ngoài để bảo toàn 100% tính nguyên bản, đẳng cấp thiết kế độc bản thuần Mây Hẹn.
+- **Tập tin đã xóa sạch**:
+  * `app/Console/Commands/IngestSonghyTemplateCommand.php` (đã xóa)
+  * `app/Services/SonghyTemplateIngestionService.php` (đã xóa)
+  * `resources/views/client/invitations/minimalism-do-dam/` (đã xóa)
+  * `resources/views/client/invitations/thu-tinh-do/` (đã xóa)
+  * `tests/Feature/SonghyIngestionTest.php` (đã xóa)
+  * `500+ Tên Thiệp.txt` (đã xóa)
+  * Database records: Đã dọn sạch các bản ghi tương ứng trong bảng `invitation_templates`.
+- **Trạng thái hệ thống**: Kho mã nguồn sạch sẽ, không còn bất kỳ tệp tin hay logic cào mẫu bên ngoài nào.
 
 ---
 
