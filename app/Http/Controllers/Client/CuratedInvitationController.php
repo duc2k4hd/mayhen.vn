@@ -113,6 +113,18 @@ class CuratedInvitationController extends Controller
                 ['time' => '18:30', 'title' => 'Khai tiệc mừng'],
                 ['time' => '20:00', 'title' => 'Chụp hình & Tiễn khách'],
             ],
+            'gallery' => [
+                'gallery-1.webp',
+                'gallery-2.webp',
+                'gallery-3.webp',
+                'gallery-4.webp',
+                'gallery-5.webp',
+                'gallery-6.webp',
+                'gallery-7.webp',
+                'gallery-8.webp',
+                'gallery-9.webp',
+                'gallery-10.webp',
+            ],
         ];
 
         // 4. Tìm kiếm template gốc Native tương ứng với style

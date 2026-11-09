@@ -22,7 +22,7 @@
     
     <!-- Editorial text -->
     <text y="74" font-family="'Cormorant Garamond', Georgia, serif" font-size="19" font-style="italic" fill="#8C7355" letter-spacing="2">Khoảnh Khắc Kỷ Niệm</text>
-    <text y="98" font-family="'Inter', sans-serif" font-size="11" font-weight="600" text-transform="uppercase" fill="#A89885" letter-spacing="3">MÂY HẸN &bull; PHOTO</text>
+    <text y="98" font-family="'Inter', sans-serif" font-size="11" font-weight="600" text-transform="uppercase" fill="#A89885" letter-spacing="3">MÂY HẸN &#8226; PHOTO</text>
   </g>
 </svg>
 

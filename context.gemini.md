@@ -6317,6 +6317,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
   * Laravel Pint: **100% PASSED**.
 
+### [2026-11-09] KHẮC PHỤC TRIỆT ĐỂ LỖI HIỂN THỊ ẢNH ALBUM 10 KHOẢNH KHẮC (CURATED ALBUM ASSET REPAIR)
+- **Bối cảnh & Nguyên nhân cốt lõi**:
+  * Khi tạo thiệp tự phối thông minh, Section 7 (Album 10 Ảnh) bị lỗi hiển thị toàn bộ icon ảnh vỡ ("Ảnh cưới 1", "Ảnh cưới 2",...).
+  * *Nguyên nhân 1*: Trong file fallback `placeholder-photo.svg`, thẻ text chứa thực thể HTML `&bull;` không hợp lệ trong chuẩn cú pháp XML (`Entity 'bull' not defined`). Trình duyệt Chrome/Edge khi nạp file `image/svg+xml` gặp lỗi cú pháp XML đã tự động đánh dấu file hỏng và hiển thị icon broken image.
+  * *Nguyên nhân 2*: Thiệp tự phối mới khởi tạo chưa có mảng `gallery` trong `extra_data`, khiến 10 slot ảnh đồng loạt trỏ vào placeholder thay vì bộ ảnh cưới mẫu thực tế.
+- **Giải pháp kỹ thuật đã triển khai**:
+  1. **Sửa Lỗi Thực Thể XML trong SVG**:
+     * Thay thế `&bull;` thành thực thể số XML hợp chuẩn `&#8226;` trong `placeholder-photo.svg`. Đã kiểm chứng tính hợp lệ qua `simplexml_load_file` đạt kết quả `bool(true)`.
+  2. **Bổ Sung 10 Ảnh Cưới Mẫu Cục Bộ Chất Lượng Cao (100% Local Assets)**:
+     * Đồng bộ 10 file ảnh cưới WebP thực tế (`gallery-1.webp` đến `gallery-10.webp`) vào thư mục `resources/views/client/invitations/mayhen-curated/assets/`.
+     * Cập nhật `CuratedInvitationController@generate` tự động cấp mảng `gallery` 10 ảnh cưới mẫu mặc định vào `extra_data`.
+     * Cập nhật `template.blade.php` cơ chế fallback thông minh: Tự động trỏ lần lượt vào `gallery-{i}.webp`, đảm bảo cả 3 biến thể mỹ thuật của Album (Tạp chí bất đối xứng, Thước phim điện ảnh 35mm, Photobook mỹ thuật ghép tầng) đều hiển thị hình ảnh cưới rạng rỡ, sang trọng ngay khi vừa khởi tạo.
+- **Tập tin đã cập nhật**:
+  * `resources/views/client/invitations/mayhen-curated/assets/placeholder-photo.svg`
+  * `resources/views/client/invitations/mayhen-curated/assets/gallery-*.webp` (10 files)
+  * `resources/views/client/invitations/mayhen-curated/template.blade.php`
+  * `app/Http/Controllers/Client/CuratedInvitationController.php`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Phục vụ HTTP 200 OK Content-Type `image/webp`.
+  * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
+  * Laravel Pint: **100% PASSED**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

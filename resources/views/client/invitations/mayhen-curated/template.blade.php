@@ -98,7 +98,8 @@
     }
     for ($i = 0; $i < 10; $i++) {
         $photoPath = $rawGallery[$i] ?? ($rawGallery[(string) $i] ?? null);
-        $gallery[$i] = $resolveAsset($photoPath, 'placeholder-photo.svg');
+        $fallback = 'gallery-' . ($i + 1) . '.webp';
+        $gallery[$i] = $resolveAsset($photoPath, $fallback);
     }
 
     // 4. Lời ngỏ & Chuyện tình yêu
