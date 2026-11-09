@@ -27,8 +27,13 @@ class SecurityHeaders
         // 4. Referrer-Policy chuẩn khuyến nghị của Google (Bảo mật + Tối ưu 100% cho SEO & Analytics)
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // 5. Khóa quyền truy cập phần cứng nhạy cảm
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        // 5. Cấp quyền camera cho chính trang web (Phục vụ máy quét QR điểm danh), khóa micro & vị trí
+        $response->headers->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
+
+        // 6. Kích hoạt Strict-Transport-Security (HSTS) trên môi trường HTTPS
+        if ($request->isSecure() || config('app.env') === 'production') {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
 
         return $response;
     }

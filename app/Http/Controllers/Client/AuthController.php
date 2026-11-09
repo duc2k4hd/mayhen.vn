@@ -67,7 +67,12 @@ class AuthController extends Controller
     public function showRegisterForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect($request->query('redirect', route('home')));
+            $redirectUrl = $request->query('redirect');
+            if ($redirectUrl && filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
+                return redirect($redirectUrl);
+            }
+
+            return redirect()->route('home');
         }
 
         return view('client.pages.register', [

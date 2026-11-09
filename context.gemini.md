@@ -6390,6 +6390,47 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite toàn hệ thống: **517/517 tests PASSED 100% (2,500 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] BẢO MẬT HỆ THỐNG: KIỂM TOÁN VÀ KHẮC PHỤC TOÀN DIỆN 13 LỖ HỔNG (SECURITY AUDIT & HARDENING)
+- **Bối cảnh & Yêu cầu**:
+  * Thực hiện rà soát bảo mật mã nguồn (White-Box Code Audit & Static Vulnerability Analysis) cho toàn bộ hệ thống Laravel Mây Hẹn (mayhen.vn).
+  * Phát hiện và phân loại theo 4 cấp độ: Critical (1), High (3), Medium (5), Low/Info (4).
+- **Chi tiết các hạng mục đã vá & gia cố bảo mật**:
+  1. **CRITICAL — Khắc phục lộ mã nguồn gốc qua Route tải Asset Template (`TemplateController.php`)**:
+     * Bắt buộc tệp tải về phải nằm trong thư mục con `assets/` của mẫu thiệp hoặc là `styles.css`/`script.js`.
+     * Áp dụng Whitelist phần mở rộng tệp tin nghiêm ngặt (`['jpg', 'jpeg', 'png', 'webp', 'svg', 'gif', 'mp3', 'woff', 'woff2', 'ttf', 'otf', 'css', 'js']`). Chặn tuyệt đối tải các file `.blade.php`, `.php`, `.json`, `.env` (trả về 404).
+  2. **HIGH — Bảo vệ Mã PIN Tiếp Tân & Chống Lộ Dữ Liệu Khách Mời (Luật 91/2025/QH15) (`CheckInController.php`)**:
+     * Loại bỏ hoàn toàn fallback theo ngày cưới công khai (`$wedding->wedding_date->format('dmy')`).
+     * Tự động sinh mã PIN ngẫu nhiên bảo mật 6 chữ số bằng `random_int(100000, 999999)` và lưu vào `custom_config['checkin_pin']`.
+     * Dùng `hash_equals()` khi xác thực mã PIN để chống tấn công Timing Attack.
+  3. **HIGH — Tối ưu Truy Vấn Token Rà Soát Gia Đình, Chống DoS Cạn Kiệt Bộ Nhớ (`TwoFamilyApprovalService.php`)**:
+     * Thay thế việc nạp toàn bộ thiệp cưới trong DB vào RAM PHP bằng câu truy vấn JSON trực tiếp ở tầng Database: `Invitation::where('custom_config->family_approvals->groom_family->token', $token)->orWhere(...)`.
+  4. **MEDIUM — Khắc phục Lỗ hổng Điều Hướng Mở (Open Redirect) (`AuthController.php`)**:
+     * Trong `showRegisterForm()`, kiểm tra nghiêm ngặt `$redirectUrl` bắt buộc phải bắt đầu bằng `url('/')` trước khi chuyển hướng người dùng đã đăng nhập.
+  5. **MEDIUM — Giới Hạn Tần Suất (Rate Limiting) Cho Polling Trạng Thái Đơn Hàng (`routes/web.php`)**:
+     * Bổ sung `middleware('throttle:60,1')` cho route `GET /api/checkout/status/{orderCode}`.
+  6. **MEDIUM — So Sánh Mật Khẩu Thiệp Cưới An Toàn (`InvitationEditorController.php`)**:
+     * Trong `unlockPassword()`, hỗ trợ cả mật mã băm bcrypt và so sánh chuỗi thời gian cố định `hash_equals()`.
+  7. **LOW — Cấp Quyền Camera Cho Máy Quét QR Điểm Danh & Kích Hoạt HSTS (`SecurityHeaders.php`)**:
+     * Sửa `Permissions-Policy` từ `camera=()` thành `camera=(self), microphone=(), geolocation=()` để máy quét QR của lễ tân hoạt động trên trình duyệt di động.
+     * Kích hoạt `Strict-Transport-Security: max-age=31536000; includeSubDomains` khi chạy HTTPS/Production.
+  8. **LOW — Tăng Độ Dài Mật Khẩu Tối Thiểu Khi Admin Đặt Lại (`UserController.php`)**:
+     * Nâng từ `min:6` lên `min:8` đồng bộ với tiêu chuẩn bảo mật mật khẩu toàn hệ thống.
+  9. **Kiểm thử tự động hóa**:
+     * Bổ sung `tests/Feature/SecurityVulnerabilityRemediationTest.php` kiểm tra toàn diện 4 kịch bản bảo mật: chặn tải source code, chặn Open Redirect, xác thực mã PIN ngẫu nhiên & chống đoán theo ngày cưới, và kiểm tra Permissions-Policy header.
+- **Tập tin đã chỉnh sửa**:
+  * `app/Http/Controllers/Client/TemplateController.php`
+  * `app/Http/Controllers/Client/CheckInController.php`
+  * `app/Services/TwoFamilyApprovalService.php`
+  * `app/Http/Controllers/Client/AuthController.php`
+  * `app/Http/Controllers/Client/InvitationEditorController.php`
+  * `app/Http/Controllers/Admin/UserController.php`
+  * `app/Http/Middleware/SecurityHeaders.php`
+  * `routes/web.php`
+  * `tests/Feature/SecurityVulnerabilityRemediationTest.php`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ test suite toàn hệ thống: **521/521 tests PASSED 100% (2,518 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

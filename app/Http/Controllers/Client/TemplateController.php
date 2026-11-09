@@ -180,26 +180,12 @@ class TemplateController extends Controller
         }
 
         $cleanPath = ltrim(str_replace(['\\', "\0"], ['/', ''], $path), '/');
-        $targetPath = $baseDir.DIRECTORY_SEPARATOR.$cleanPath;
-        $realTarget = realpath($targetPath);
 
-        // Fallback thư mục assets/ nếu chưa tìm thấy
-        if ($realTarget === false || ! is_file($realTarget) || ! str_starts_with($realTarget, $realBaseDir)) {
-            $fallbackPath = $baseDir.DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.$cleanPath;
-            $realTarget = realpath($fallbackPath);
-        }
-
-        if ($realTarget === false || ! is_file($realTarget) || ! str_starts_with($realTarget, $realBaseDir)) {
-            abort(404, 'Asset not found');
-        }
-
-        $fullPath = $realTarget;
-
-        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-        $mimeTypes = [
+        // Security Defense (Whitelist Extensions): Chặn tuyệt đối tải file mã nguồn PHP/Blade/JSON/ENV
+        $extension = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
+        $allowedExtensions = [
             'css' => 'text/css; charset=UTF-8',
             'js' => 'application/javascript; charset=UTF-8',
-            'json' => 'application/json',
             'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
             'png' => 'image/png',
@@ -212,6 +198,40 @@ class TemplateController extends Controller
             'ttf' => 'font/ttf',
             'otf' => 'font/otf',
         ];
+
+        if (! array_key_exists($extension, $allowedExtensions)) {
+            abort(404, 'Asset not found');
+        }
+
+        // Ưu tiên tìm trong thư mục con assets/
+        $assetsDir = $baseDir.DIRECTORY_SEPARATOR.'assets';
+        $realAssetsDir = realpath($assetsDir);
+        $realTarget = false;
+
+        if ($realAssetsDir !== false) {
+            $candidatePath = $assetsDir.DIRECTORY_SEPARATOR.$cleanPath;
+            $realCandidate = realpath($candidatePath);
+            if ($realCandidate !== false && is_file($realCandidate) && str_starts_with($realCandidate, $realAssetsDir)) {
+                $realTarget = $realCandidate;
+            }
+        }
+
+        // Fallback: chỉ cho phép styles.css hoặc script.js ở thư mục gốc của mẫu
+        if ($realTarget === false && in_array($cleanPath, ['styles.css', 'script.js'], true)) {
+            $rootCandidate = $baseDir.DIRECTORY_SEPARATOR.$cleanPath;
+            $realRoot = realpath($rootCandidate);
+            if ($realRoot !== false && is_file($realRoot) && str_starts_with($realRoot, $realBaseDir)) {
+                $realTarget = $realRoot;
+            }
+        }
+
+        if ($realTarget === false || ! is_file($realTarget)) {
+            abort(404, 'Asset not found');
+        }
+
+        $fullPath = $realTarget;
+
+        $mimeTypes = $allowedExtensions;
 
         $lastModified = filemtime($fullPath);
         $etag = sprintf('"%x-%x"', $lastModified, filesize($fullPath));

@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -782,7 +783,19 @@ class InvitationEditorController extends Controller
             'password.required' => 'Vui lòng nhập mật mã bảo mật.',
         ]);
 
-        if ($expectedPassword && trim((string) $request->input('password')) === trim((string) $expectedPassword)) {
+        $inputPassword = trim((string) $request->input('password'));
+        $isValid = false;
+
+        if ($expectedPassword) {
+            $expectedStr = trim((string) $expectedPassword);
+            if (str_starts_with($expectedStr, '$2y$') || str_starts_with($expectedStr, '$2a$')) {
+                $isValid = Hash::check($inputPassword, $expectedStr);
+            } else {
+                $isValid = hash_equals($expectedStr, $inputPassword);
+            }
+        }
+
+        if ($isValid) {
             session()->put("unlocked_invitation_{$invitation->id}", true);
 
             return redirect()->route('invitation.show', $slug);

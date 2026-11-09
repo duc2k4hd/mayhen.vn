@@ -80,32 +80,39 @@ class TwoFamilyApprovalService
      */
     public function findByToken(string $token): ?array
     {
-        $invitations = Invitation::with('wedding')
+        // Tối ưu hiệu năng & Chống DoS OOM: Truy vấn JSON trực tiếp ở tầng Database
+        $invitation = Invitation::with('wedding')
             ->whereNotNull('custom_config')
-            ->get();
+            ->where(function ($query) use ($token) {
+                $query->where('custom_config->family_approvals->groom_family->token', $token)
+                    ->orWhere('custom_config->family_approvals->bride_family->token', $token);
+            })
+            ->first();
 
-        foreach ($invitations as $invitation) {
-            $config = is_array($invitation->custom_config)
-                ? $invitation->custom_config
-                : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! $invitation) {
+            return null;
+        }
 
-            $approvals = $config['family_approvals'] ?? [];
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-            if (($approvals['groom_family']['token'] ?? '') === $token) {
-                return [
-                    'invitation' => $invitation,
-                    'side' => 'groom_family',
-                    'data' => $approvals['groom_family'],
-                ];
-            }
+        $approvals = $config['family_approvals'] ?? [];
 
-            if (($approvals['bride_family']['token'] ?? '') === $token) {
-                return [
-                    'invitation' => $invitation,
-                    'side' => 'bride_family',
-                    'data' => $approvals['bride_family'],
-                ];
-            }
+        if (($approvals['groom_family']['token'] ?? '') === $token) {
+            return [
+                'invitation' => $invitation,
+                'side' => 'groom_family',
+                'data' => $approvals['groom_family'],
+            ];
+        }
+
+        if (($approvals['bride_family']['token'] ?? '') === $token) {
+            return [
+                'invitation' => $invitation,
+                'side' => 'bride_family',
+                'data' => $approvals['bride_family'],
+            ];
         }
 
         return null;

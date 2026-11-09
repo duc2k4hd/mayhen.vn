@@ -138,7 +138,7 @@ class CheckInController extends Controller
         $inputPin = trim((string) $request->input('pin'));
         $correctPin = $this->getReceptionistPin($invitation);
 
-        if ($inputPin !== $correctPin) {
+        if (! hash_equals($correctPin, $inputPin)) {
             // Kiểm tra mã PIN ca trực tiếp tân (TASK-VAL-23)
             $shift = app(StaffShiftHandoverService::class)->authenticateShiftPin($invitation, $inputPin);
             if ($shift) {
@@ -936,13 +936,14 @@ class CheckInController extends Controller
             return (string) $config['checkin_pin'];
         }
 
-        // Mặc định sinh PIN 6 số cố định theo ngày cưới hoặc ID thiệp
-        $wedding = $invitation->wedding;
-        if ($wedding && $wedding->wedding_date) {
-            return $wedding->wedding_date->format('dmy'); // ví dụ 151226
-        }
+        // Bảo mật: Sinh mã PIN ngẫu nhiên bảo mật 6 chữ số và lưu vào cấu hình thiệp
+        // Không dùng ngày cưới hay ID công khai để chống lộ dữ liệu khách mời (Luật 91/2025/QH15)
+        $securePin = (string) random_int(100000, 999999);
+        $config['checkin_pin'] = $securePin;
+        $invitation->custom_config = $config;
+        $invitation->saveQuietly();
 
-        return str_pad((string) ($invitation->id * 7919 % 1000000), 6, '0', STR_PAD_LEFT);
+        return $securePin;
     }
 
     /**

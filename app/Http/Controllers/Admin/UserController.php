@@ -134,7 +134,7 @@ class UserController extends Controller
     public function resetPassword(Request $request, int $id): RedirectResponse
     {
         $request->validate([
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::findOrFail($id);
