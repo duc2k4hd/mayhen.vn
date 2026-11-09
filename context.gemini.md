@@ -6495,6 +6495,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite toàn hệ thống: **537/537 tests PASSED 100% (2,590 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH GATE 2 (STUDIO TẠO THIỆP & ĐỒNG BỘ DỮ LIỆU HAI CHIỀU)
+- **Bối cảnh & Mục tiêu**:
+  * Thực thi kiểm toán, kiểm thử tự động và gia cố trực tiếp các bất biến nghiệp vụ cốt lõi tại **GATE 2 — STUDIO TẠO THIỆP & ĐỒNG BỘ DỮ LIỆU HAI CHIỀU** theo 10 bất biến miền (`INV-31` đến `INV-40`) và tiêu chuẩn thiệp cưới `mayhen-invitation-standards`.
+- **Các hạng mục kiểm toán & gia cố cốt lõi**:
+  1. **Bảo Toàn Dữ Liệu Khi Chuyển Đổi Mẫu Thiệp Cưới (`INV-38`)**:
+     * Kiểm chứng cơ chế phân tách giữa dữ liệu đám cưới cốt lõi (`weddings`) và giao diện hiển thị (`invitations.template_id`).
+     * Đổi giữa các mẫu thiệp không bao giờ làm mất tên cặp đôi, phụ mẫu, ngày cưới, địa chỉ sảnh tiệc, hay câu chuyện tình yêu.
+     * Tự động lưu trữ snapshot bản xuất bản trước đó `_previous_published_snapshot` trong `custom_config` phục vụ tính năng hoàn tác khẩn cấp (Emergency Rollback Safeguard - TASK-VAL-11).
+  2. **Hợp Đồng Nhúng Studio & Handshake Hai Chiều (`INV-34` & `INV-36`)**:
+     * Kiểm chứng chế độ nhúng Studio (`$isEmbed = true` / `?embed=1&mode=editor`): Cưỡng chế mở sẵn cánh thiệp (`opened`), loại bỏ toàn bộ màn mở đầu và lớp che mờ, giải phóng overflow trap, cưỡng chế `.card-wrapper { display: block !important; }` để không bao giờ bị màn hình trắng.
+     * Kiểm chứng handshake 2 chiều: 100% template kế thừa layout `invitation.blade.php` tự động gửi `MAYHEN_BRIDGE_READY` và tiếp nhận chỉ thị `MAYHEN_SYNC_INPUT`.
+     * Tiêu đề trang xem thử tuân thủ chuẩn `INV-39`: `Xem thử: "{Tên Template}" | Mây Hẹn`.
+  3. **Cấm Tuyệt Đối Ảnh Người Trong Ký Tên & RSVP (`INV-37`)**:
+     * Kiểm chứng toàn diện 5 template (`giua-muon-ngan-vi-sao`, `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`, `mayhen-curated`): 100% phần Ký tên điện tử và RSVP chỉ sử dụng tem sáp (wax seal), họa tiết trang trí divider ornament SVG, và canvas vẽ thuần, tuyệt đối không chứa ảnh chụp cặp đôi hay ảnh stock người lạ.
+  4. **Hợp Đồng Live Sync Động (`INV-33`)**:
+     * Kiểm tra sự hiện diện đầy đủ của các thuộc tính `data-sync-target` (`groom_name`, `bride_name`, `groom_father`, `bride_father`, `wedding_date_digits`, `event_party_address`) trên toàn bộ các mẫu thiệp.
+  5. **Bộ Kiểm Thử Tự Động Hóa Gate 2 (`tests/Feature/Gate2TemplateStudioAndSyncInvariantsTest.php`)**:
+     * 4 kịch bản Feature Test tự động hóa bao phủ 89 assertions.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `.gitignore`
+  * `tests/Feature/Gate2TemplateStudioAndSyncInvariantsTest.php`
+  * `docs/qa/test-run-ledger.csv`
+  * `docs/qa/qa-checkpoint.md`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ test suite toàn hệ thống: **541/541 tests PASSED 100% (2,679 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -96,6 +96,7 @@ Thumbs.db
 !/tests/Feature/SecurityVulnerabilityRemediationTest.php
 !/tests/Feature/Gate0DomainInvariantsTest.php
 !/tests/Feature/Gate1HeadcountAndSeatingInvariantsTest.php
+!/tests/Feature/Gate2TemplateStudioAndSyncInvariantsTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
