@@ -71,7 +71,13 @@
             {{-- LIVE CRAFTING PROGRESS PILL & SKIP --}}
             <div class="mayhen_curated_crafting_pill" id="craftingStatusPill" style="{{ empty($shouldAnimate) ? 'display: none;' : '' }}">
                 <span class="crafting_spinner"></span>
-                <span class="crafting_status_text" id="craftingStatusText">Đang trình bày thiệp...</span>
+                <span class="crafting_status_text" id="craftingStatusText">Đang phác thảo thiệp...</span>
+                <div class="crafting_progress_wrap" id="craftingProgressWrap">
+                    <div class="crafting_progress_track">
+                        <div class="crafting_progress_bar" id="craftingProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <span class="crafting_progress_pct" id="craftingProgressPct">0%</span>
+                </div>
                 <button type="button" class="crafting_btn_skip" id="btnSkipCrafting" title="Bỏ qua và xem ngay thiệp thành phẩm">Bỏ qua ›</button>
             </div>
         </div>

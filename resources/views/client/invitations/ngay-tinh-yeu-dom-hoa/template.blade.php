@@ -161,6 +161,10 @@
         '#e8b4b8' => 'Hồng Đất',
     ];
 
+    // Xác định chế độ tinh tuyển 7 Section (Curated Seven)
+    $invConfig = $invitation->custom_config ?? [];
+    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
+
     // --- 9. ẢNH ---
     $heroPhotoUrl      = $resolveAsset('assets/images/hero-couple.webp',           $wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null));
     $saveDatePhotoUrl  = $resolveAsset('assets/images/section2-couple-banner.webp', $extraData['save_date_photo_url'] ?? ($extraData['couple_banner_url'] ?? null));
@@ -241,10 +245,10 @@
      data-signature-endpoint="{{ $wishEndpoint }}">
 
     {{-- ==================== MÀN MỞ ĐẦU — CÁNH CỬA ĐÔI SONG HỶ ==================== --}}
-    <div class="mayhen_invitation_opening{{ $isEmbed ? ' mayhen_invitation_opening--hidden' : '' }}"
+    <div class="mayhen_invitation_opening{{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? ' mayhen_invitation_opening--hidden' : '' }}"
          data-mayhen-section="opening"
          aria-label="Cánh cửa mở thiệp"
-         @if($isEmbed) style="display:none!important;" @endif>
+         @if($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) style="display:none!important;" @endif>
         <div class="mayhen_invitation_cloud_door mayhen_invitation_cloud_door--left" data-ignore-autoscroll="true"></div>
         <div class="mayhen_invitation_cloud_door mayhen_invitation_cloud_door--right" data-ignore-autoscroll="true"></div>
         <div class="mayhen_invitation_envelope" data-ignore-autoscroll="true">
@@ -258,6 +262,7 @@
 
     {{-- Nhạc nền --}}
     <audio class="mayhen_invitation_audio" loop playsinline data-sync-target="music_url"
+        preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}"
         @if(!empty($musicUrl)) src="{{ $musicUrl }}" @endif></audio>
 
     {{-- Nút đĩa than nhạc --}}
@@ -674,6 +679,7 @@
         </div>
     </section>
 
+    @if(! $isCuratedSeven)
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
     {{-- ==================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ==================== --}}
@@ -707,6 +713,7 @@
             <p class="mayhen_invitation_dresscode_note" data-sync-target="dresscode_note">{{ $dresscodeNote }}</p>
         </div>
     </section>
+    @endif
 
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
@@ -740,6 +747,25 @@
         </button>
     </section>
 
+    @if($isCuratedSeven)
+        {{-- CHÂN TRANG ĐỘC BẢN CHO BẢN TỰ PHỐI 7 SECTION (CURATED LUXURY FOOTER) --}}
+        <footer class="mayhen_invitation_curated_footer" style="padding: 3rem 1.5rem 4rem; text-align: center; background: rgba(142, 1, 1, 0.04); border-top: 1px solid rgba(197, 168, 128, 0.35);">
+            <div style="font-size: 1.1rem; color: #8E0101; margin-bottom: 0.5rem;">✦</div>
+            <h3 style="font-family: var(--mayhen-font-serif, 'Cormorant Garamond', serif); font-size: 1.35rem; color: #1F1D1A; margin: 0 0 0.5rem 0; font-weight: 600;">
+                {{ $groomName }} &amp; {{ $brideName }}
+            </h3>
+            <p style="font-size: 0.82rem; color: #7A726A; margin: 0 0 1.25rem 0; letter-spacing: 0.05em;">
+                Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
+            </p>
+            <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #8E0101; border: 1px solid rgba(142, 1, 1, 0.35); padding: 5px 14px; border-radius: 999px;">
+                <span>Mây Hẹn</span>
+                <span>&bull;</span>
+                <span>Atelier Curated</span>
+            </div>
+        </footer>
+    @endif
+
+    @if(! $isCuratedSeven)
     <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
     {{-- ==================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR ==================== --}}
@@ -927,6 +953,7 @@
 
         <p class="mayhen_invitation_ending_text" data-sync-target="thank_you_quote">{{ $endingText }}</p>
     </footer>
+    @endif
 
     {{-- ==================== LIGHTBOX MODAL ==================== --}}
     <div class="mayhen_invitation_modal_backdrop mayhen_invitation_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">

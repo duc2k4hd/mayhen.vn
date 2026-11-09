@@ -213,6 +213,10 @@
     $sigEndpoint    = '';
     $cssVersion     = '2.0.0';
     $jsVersion      = '2.0.0';
+
+    // Xác định chế độ tinh tuyển 7 Section (Curated Seven)
+    $invConfig = $invitation->custom_config ?? [];
+    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
 @endphp
 
 @push('styles')
@@ -221,7 +225,7 @@
 
 @section('content')
 <div
-    class="mayhen_invitation_root {{ $isEmbed ? 'mayhen_invitation_root--embed mayhen_invitation_root--opened' : 'mayhen_invitation_root--locked' }}"
+    class="mayhen_invitation_root {{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? 'mayhen_invitation_root--embed mayhen_invitation_root--opened' : 'mayhen_invitation_root--locked' }}"
     data-is-embed="{{ $isEmbed ? 'true' : 'false' }}"
     data-wedding-date="{{ $weddingDate->format('Y-m-d') }}"
     data-rsvp-endpoint="{{ $rsvpEndpoint }}"
@@ -307,9 +311,9 @@
 
     {{-- =========================================================================
          MÀN MỞ THIỆP: CÁNH CỬA ĐỎ SONG HỶ
-         Tự động ẩn hoàn toàn khi $isEmbed === true
+         Tự động ẩn hoàn toàn khi $isEmbed === true hoặc khi đang dệt thiệp AI (?crafting=1)
          ========================================================================= --}}
-    @if (!$isEmbed)
+    @if (!$isEmbed && !($isCuratedSeven && request()->boolean('crafting')))
     <section class="mayhen_invitation_opening" aria-label="Màn hình mở thiệp cưới" data-mayhen-section="opening">
         <div class="mayhen_invitation_opening__door mayhen_invitation_opening__door--left" aria-hidden="true"></div>
         <div class="mayhen_invitation_opening__door mayhen_invitation_opening__door--right" aria-hidden="true"></div>
@@ -789,6 +793,7 @@
             </div>
         </section>
 
+        @if(! $isCuratedSeven)
         <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
         {{-- ==================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ==================== --}}
@@ -821,6 +826,7 @@
                 <p class="mayhen_invitation_dresscode_note" data-sync-target="dresscode_note">{{ $dresscodeNote }}</p>
             </div>
         </section>
+        @endif
 
         <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
@@ -967,6 +973,25 @@
             </div>
         </section>
 
+        @if($isCuratedSeven)
+            {{-- CHÂN TRANG ĐỘC BẢN CHO BẢN TỰ PHỐI 7 SECTION (CURATED LUXURY FOOTER) --}}
+            <footer class="mayhen_invitation_curated_footer" style="padding: 3rem 1.5rem 4rem; text-align: center; background: rgba(200, 35, 51, 0.04); border-top: 1px solid rgba(197, 168, 128, 0.35);">
+                <div style="font-size: 1.1rem; color: #C82333; margin-bottom: 0.5rem;">✦</div>
+                <h3 style="font-family: var(--mayhen-font-serif, 'Cormorant Garamond', serif); font-size: 1.35rem; color: #1F1D1A; margin: 0 0 0.5rem 0; font-weight: 600;">
+                    {{ $groomName }} &amp; {{ $brideName }}
+                </h3>
+                <p style="font-size: 0.82rem; color: #7A726A; margin: 0 0 1.25rem 0; letter-spacing: 0.05em;">
+                    Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
+                </p>
+                <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #C82333; border: 1px solid rgba(200, 35, 51, 0.35); padding: 5px 14px; border-radius: 999px;">
+                    <span>Mây Hẹn</span>
+                    <span>&bull;</span>
+                    <span>Atelier Curated</span>
+                </div>
+            </footer>
+        @endif
+
+        @if(! $isCuratedSeven)
         <div class="mayhen_invitation_divider" aria-hidden="true"></div>
 
         {{-- ==================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR ==================== --}}
@@ -1312,6 +1337,7 @@
                 </div>
             </div>
         </footer>
+        @endif
     </main>
 
     {{-- ==================== LIGHTBOX MODAL CHO ALBUM & QR ==================== --}}

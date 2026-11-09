@@ -57,6 +57,9 @@
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 
+    $invConfig = $invitation->custom_config ?? [];
+    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
+
     // 2. Song Thân Hai Họ & Địa Chỉ Tư Gia
     $groomFather = $data['groom_father'] ?? ($extraData['groom_father'] ?? ($wedding->groom_parents ?? 'Nguyễn Đắc Cường'));
     $groomMother = $data['groom_mother'] ?? ($extraData['groom_mother'] ?? 'Đặng Thị Hương');
@@ -198,8 +201,8 @@
     </div>
 
     {{-- ==================== MÀN MỞ THIỆP PHONG BÌ / CÁNH CỬA SONG HỶ ==================== --}}
-    <div class="mayhen_invitation_opening {{ $isEmbed ? 'mayhen_invitation_opening--opened' : '' }}"
-         style="{{ $isEmbed ? 'display: none !important;' : '' }}"
+    <div class="mayhen_invitation_opening {{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? 'mayhen_invitation_opening--opened' : '' }}"
+         style="{{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? 'display: none !important;' : '' }}"
          aria-label="Màn hình mở thiệp">
         <div class="mayhen_invitation_door mayhen_invitation_door--left"></div>
         <div class="mayhen_invitation_door mayhen_invitation_door--right"></div>
@@ -553,6 +556,7 @@
     </section>
 
     {{-- ==================== SECTION 7: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ==================== --}}
+    @if(! $isCuratedSeven)
     <section class="mayhen_invitation_section mayhen_invitation_dresscode"
              data-mayhen-section="dresscode"
              style="background-image: url('{{ $resolveAsset('bg-paper-sage.webp') }}');">
@@ -589,6 +593,7 @@
             </p>
         </div>
     </section>
+    @endif
 
     {{-- ==================== SECTION 8: KHOẢNH KHẮC HẠNH PHÚC (ALBUM 10 PHOTOS) ==================== --}}
     <section class="mayhen_invitation_section mayhen_invitation_section--sage mayhen_invitation_gallery"
@@ -616,6 +621,25 @@
         </button>
     </section>
 
+    @if($isCuratedSeven)
+        {{-- CHÂN TRANG ĐỘC BẢN CHO BẢN TỰ PHỐI 7 SECTION (CURATED LUXURY FOOTER) --}}
+        <footer class="mayhen_invitation_curated_footer" style="padding: 3rem 1.5rem 4rem; text-align: center; background: rgba(35, 54, 40, 0.05); border-top: 1px solid rgba(197, 168, 128, 0.35);">
+            <div style="font-size: 1.1rem; color: #233628; margin-bottom: 0.5rem;">✦</div>
+            <h3 style="font-family: var(--mayhen-font-serif, 'Cormorant Garamond', serif); font-size: 1.35rem; color: #1F1D1A; margin: 0 0 0.5rem 0; font-weight: 600;">
+                {{ $groomName }} &amp; {{ $brideName }}
+            </h3>
+            <p style="font-size: 0.82rem; color: #7A726A; margin: 0 0 1.25rem 0; letter-spacing: 0.05em;">
+                Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
+            </p>
+            <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #233628; border: 1px solid rgba(35, 54, 40, 0.35); padding: 5px 14px; border-radius: 999px;">
+                <span>Mây Hẹn</span>
+                <span>&bull;</span>
+                <span>Atelier Curated</span>
+            </div>
+        </footer>
+    @endif
+
+    @if(! $isCuratedSeven)
     {{-- ==================== SECTION 9: HỘP MỪNG CƯỚI (WEDDING GIFT & VIETQR) ==================== --}}
     <section class="mayhen_invitation_section mayhen_invitation_gift"
              data-mayhen-section="gift"
@@ -815,6 +839,7 @@
             {{ $endingText }}
         </p>
     </footer>
+    @endif
 
     {{-- ==================== LIGHTBOX TRÌNH CHIẾU ẢNH ==================== --}}
     <div class="mayhen_invitation_lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh phóng to">
@@ -830,7 +855,7 @@
     <div class="mayhen_invitation_toast" role="status" aria-live="polite"></div>
 
     {{-- ==================== LOCAL AUDIO PLAYER ==================== --}}
-    <audio class="mayhen_invitation_audio" src="{{ $resolveAsset('music.mp3') }}" preload="auto" loop playsinline></audio>
+    <audio class="mayhen_invitation_audio" src="{{ $resolveAsset('music.mp3') }}" preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}" loop playsinline></audio>
 </div>
 @endsection
 

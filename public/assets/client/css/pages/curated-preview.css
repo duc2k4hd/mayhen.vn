@@ -59,8 +59,14 @@ html, body.mayhen_curated_preview_body {
 .mayhen_curated_topbar_left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     min-width: 0;
+    flex-shrink: 0;
+}
+
+.mayhen_curated_btn_back,
+.mayhen_curated_brand_badge {
+    flex-shrink: 0;
 }
 
 .mayhen_curated_btn_back {
@@ -125,11 +131,22 @@ html, body.mayhen_curated_preview_body {
     border-radius: 999px;
     font-size: 12.5px;
     white-space: nowrap;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media (min-width: 1100px) {
     .mayhen_curated_info_pill {
         display: flex;
+    }
+}
+
+@media (max-width: 1380px) {
+    .mayhen_curated_info_pill .info_tag,
+    .mayhen_curated_info_pill .info_sep:nth-of-type(2),
+    .mayhen_curated_info_pill .info_sep:nth-of-type(3) {
+        display: none;
     }
 }
 
@@ -169,7 +186,17 @@ html, body.mayhen_curated_preview_body {
 .mayhen_curated_topbar_center {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    justify-content: center;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+/* Khi đang crafting / trình diễn thiệp, ẩn Viewport Switcher để thanh tiến trình dệt thiệp chiếm trọn vị trí trung tâm trang trọng */
+.mayhen_curated_topbar.is_crafting .mayhen_curated_viewport_switcher,
+.mayhen_curated_topbar_center.is_crafting .mayhen_curated_viewport_switcher,
+.mayhen_curated_topbar_center:has(.mayhen_curated_crafting_pill.is-active) .mayhen_curated_viewport_switcher {
+    display: none !important;
 }
 
 .mayhen_curated_viewport_switcher {
@@ -214,14 +241,55 @@ html, body.mayhen_curated_preview_body {
 .mayhen_curated_crafting_pill {
     display: none;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     background: rgba(197, 168, 128, 0.15);
     border: 1px solid var(--curated-border-gold);
     color: var(--curated-gold);
-    padding: 5px 14px;
+    padding: 6px 14px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.crafting_status_text {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.crafting_progress_wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.crafting_progress_track {
+    width: 64px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.crafting_progress_bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--curated-gold), #FCE39E);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+    box-shadow: 0 0 8px rgba(207, 168, 96, 0.6);
+}
+
+.crafting_progress_pct {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--curated-gold);
+    min-width: 28px;
 }
 
 .crafting_btn_skip {

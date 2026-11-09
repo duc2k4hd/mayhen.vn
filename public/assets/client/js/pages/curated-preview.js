@@ -69,6 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const btnSkip = document.getElementById('btnSkipCrafting');
+    const progressBar = document.getElementById('craftingProgressBar');
+    const progressPct = document.getElementById('craftingProgressPct');
+    const topbar = document.querySelector('.mayhen_curated_topbar');
+
     if (btnSkip && iframe) {
         btnSkip.addEventListener('click', () => {
             try {
@@ -80,9 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper: Bật trạng thái Live Crafting
     function startCraftingMode() {
+        if (topbar) topbar.classList.add('is_crafting');
         if (craftingPill && craftingText) {
             craftingPill.classList.add('is-active');
-            craftingText.textContent = 'Đang trình bày thiệp...';
+            craftingPill.style.display = 'inline-flex';
+            craftingText.textContent = 'Đang phác thảo thiệp...';
+            if (progressBar) progressBar.style.width = '0%';
+            if (progressPct) progressPct.textContent = '0%';
             if (btnSkip) btnSkip.style.display = 'inline-block';
         }
     }
@@ -91,10 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (craftingPill && craftingText) {
             craftingText.textContent = '✦ Thiệp của bạn đã sẵn sàng!';
             if (btnSkip) btnSkip.style.display = 'none';
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressPct) progressPct.textContent = '100%';
             setTimeout(() => {
                 craftingPill.classList.remove('is-active');
+                craftingPill.style.display = 'none';
+                if (topbar) topbar.classList.remove('is_crafting');
                 document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
-            }, 3000);
+            }, 2400);
+        } else {
+            if (topbar) topbar.classList.remove('is_crafting');
         }
         // Gỡ token/query khỏi URL để F5 hoặc back/forward không replay
         try {
@@ -125,8 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (craftingPill && craftingText) {
                 craftingPill.classList.add('is-active');
                 craftingPill.style.display = 'inline-flex';
-                const title = sectionTitles[e.data.section] || e.data.section;
-                craftingText.textContent = `✦ Đang hoàn thiện: ${title} (${e.data.step}/${e.data.total})...`;
+                craftingText.textContent = e.data.detailTitle || `✦ Đang hoàn thiện: ${e.data.sectionTitle || e.data.section}...`;
+            }
+            if (progressBar) {
+                progressBar.style.width = `${e.data.percent || 0}%`;
+            }
+            if (progressPct) {
+                progressPct.textContent = `${e.data.percent || 0}%`;
             }
 
             // Highlight nhẹ thẻ section ở sidebar tương ứng
@@ -138,6 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (e.data.type === 'MAYHEN_CRAFTING_COMPLETE') {
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressPct) progressPct.textContent = '100%';
             endCraftingMode();
         }
 

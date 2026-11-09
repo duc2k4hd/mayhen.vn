@@ -6123,6 +6123,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      * Toàn bộ test suite dự án: **599/599 tests PASSED 100% (3,123 assertions)**.
      * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --dirty --format agent`).
 
+### [2026-11-09] HOÀN TẤT KIẾN TRÚC LIVE CRAFTING CHỐNG FOUC & CHUẨN HÓA CẢ 4 MẪU THIỆP GỐC
+- **Bối cảnh & Yêu cầu của Người dùng**:
+  * Khắc phục triệt để hiện tượng tải chậm và lỗi "show cả trang web ra ngay từ đầu rồi mới giật cục" (FOUC — Flash Of Unstyled Content) trong luồng `/tao-thiep-tu-dong`.
+  * Nâng cấp trải nghiệm dệt thiệp AI chuyên nghiệp: xuất hiện từng thẻ, từng hàng, từng phần tử từ trên xuống dưới, cùng hàng thì từ trái sang phải, kèm vệt sáng hoàng gia lộng lẫy và tự động cuộn chính xác theo tầm mắt.
+  * Khắc phục hiện tượng các nút bấm và nhãn trạng thái bị chèn ép, đè chữ lên nhau trên thanh Topbar của Preview Studio.
+  * Áp dụng đồng bộ và chuẩn xác chế độ Curated 7 Section cho toàn bộ 4 mẫu thiệp cưới gốc thật:
+    1. `giua-muon-ngan-vi-sao`
+    2. `hanh-phuc-mang-ten-chung-minh`
+    3. `ngay-tinh-yeu-dom-hoa`
+    4. `tron-kiep-nay-ben-nhau`
+- **Các giải pháp kỹ thuật đã triển khai**:
+  1. **Kiến trúc Chống FOUC 3 Tầng Siêu Tốc (Three-Layer Anti-FOUC)**:
+     * *Tầng 1 (Critical CSS trong `<head>`)*: `resources/views/client/layouts/invitation.blade.php` tiêm CSS ẩn tức thời toàn bộ section (`opacity: 0; visibility: hidden;`) ngay khi phát hiện `?crafting=1`, trước cả khi trình duyệt dựng DOM, chặn đứng 100% hiện tượng lóe nội dung cũ.
+     * *Tầng 2 (Màn rèm lụa Atelier `#mayhenCraftingCurtain`)*: Phủ toàn màn hình với biểu trưng Mây Hẹn Atelier ánh kim và thông điệp trang trọng *"Đang dệt tác phẩm độc bản..."*, che chắn trong lúc JavaScript thu thập DOM.
+     * *Tầng 3 (Hạ rèm tuần tự qua `liftCurtain()`)*: `native-crafting-presenter.js` chỉ mở rèm sau khi đã gắn class ẩn `.mayhen_is_hidden` lên từng phần tử, sau đó dệt mượt mà từng chi tiết.
+  2. **Tối Ưu Tốc Độ Tải Mẫu & Băng Thông Âm Thanh**:
+     * Toàn bộ 4 mẫu thiệp gốc đều được cấu hình `preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}"` trên thẻ `<audio>`, loại bỏ việc trình duyệt ngốn băng thông tải file MP3 khi đang dệt thiệp, giúp thiệp load nhanh tức thời.
+     * Tự động vô hiệu hóa cánh cửa mở thiệp mặc định của cả 4 mẫu khi đang dệt (`?crafting=1`), tránh xung đột sự kiện mở thiệp.
+  3. **Chuẩn Hóa Bộ 4 Mẫu Thiệp Gốc với Adapter 7 Section (`$isCuratedSeven`)**:
+     * Áp dụng đầy đủ cho `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`, `giua-muon-ngan-vi-sao`.
+     * Giữ nguyên vẹn 7 section mỹ thuật (Hero, Story, Parents, Countdown, Events, Timeline, Album 10 ảnh).
+     * Bọc Section 7 (Dresscode), Section 9 (Gift VietQR) và Section 10 (Interactive / RSVP / Lưu bút) trong `@if(! $isCuratedSeven)`.
+     * Bổ sung chân trang độc bản `mayhen_invitation_curated_footer` thanh lịch ngay sau Album ảnh cưới khi ở chế độ Curated.
+  4. **Nâng Cấp Giao Diện Topbar Preview Studio Chống Tràn & Chống Đè Chữ**:
+     * Tách biệt rõ ràng trạng thái `.is_crafting`: Trong khi đang dệt thiệp, tự động ẩn Viewport Switcher để thanh tiến trình (Progress bar, phần trăm, vệt quay, nút Bỏ qua) chiếm trọn vị trí trung tâm trang nhã.
+     * Giới hạn độ rộng tối đa và cắt tỉa thông minh nhãn thông tin (`info_pill`) trên các màn hình dưới 1380px, gán `flex-shrink: 0` cho các nút điều hướng để triệt tiêu hoàn toàn lỗi chồng lấn giao diện.
+     * Bổ sung tính năng Xem lại (Replay) 100% client-side, cuộn mượt về đầu trang và dệt lại tuần tự không cần tải lại trang.
+- **Tập tin đã cập nhật**:
+  * Layout: `resources/views/client/layouts/invitation.blade.php`.
+  * Templates:
+    - `resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`
+    - `resources/views/client/invitations/hanh-phuc-mang-ten-chung-minh/template.blade.php`
+    - `resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/template.blade.php`
+    - `resources/views/client/invitations/tron-kiep-nay-ben-nhau/template.blade.php`
+  * Preview Page & Assets:
+    - `resources/views/client/pages/curated/preview.blade.php`
+    - `public/assets/client/css/pages/curated-preview.css`
+    - `public/assets/client/js/pages/curated-preview.js`
+    - `public/assets/client/js/pages/native-crafting-presenter.js`
+- **Kết quả Kiểm Thử**:
+  * `CuratedInvitationFlowTest`: **14/14 tests PASSED (93 assertions)**.
+  * Toàn bộ test suite dự án: **599/599 tests PASSED 100% (3,123 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

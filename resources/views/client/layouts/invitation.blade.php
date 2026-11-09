@@ -4,7 +4,7 @@
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
 @endphp
 <!DOCTYPE html>
-<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}">
+<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -25,6 +25,90 @@
 
     {{-- Stylesheets của từng mẫu thiệp --}}
     @stack('styles')
+
+    {{-- PHÒNG VỆ HIỂN THỊ CHẾ ĐỘ DỆT THIỆP AI (ZERO FLASH OF CONTENT - CRITICAL HEAD CSS) --}}
+    @if(request()->boolean('crafting'))
+        <style id="mayhenCraftingInitialCurtainStyles">
+            /* 1. Mở sẵn cánh cửa thiệp 3D & ẩn các dock âm thanh không cần thiết khi dệt */
+            .mayhen_invitation_opening,
+            .mayhen_invitation_sr_cua,
+            .mayhen_invitation_music_dock,
+            .mayhen_client_bottom_nav_wrapper {
+                display: none !important;
+            }
+            html.mayhen_is_crafting,
+            body.mayhen_is_crafting {
+                overflow-x: hidden !important;
+                background-color: #FAF8F5 !important;
+            }
+            /* 2. ẨN TOÀN BỘ NỘI DUNG THIỆP NGAY TỪ ĐẦU (TUYỆT ĐỐI KHÔNG SHOW TRƯỚC KHI DỆT) */
+            body.mayhen_is_crafting .mayhen_invitation_section,
+            body.mayhen_is_crafting section,
+            body.mayhen_is_crafting footer,
+            body.mayhen_is_crafting [data-mayhen-section] {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+            /* 3. RÈM LỤA ATELIER CANVAS BAN ĐẦU (SILK CURTAIN STATE) */
+            #mayhenCraftingCurtain {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: radial-gradient(circle at 50% 40%, #FFFDF9 0%, #F5EFEB 100%);
+                z-index: 999999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+                transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.75s ease;
+                pointer-events: none;
+            }
+            #mayhenCraftingCurtain.is-hidden {
+                opacity: 0 !important;
+                visibility: hidden !important;
+            }
+            .mayhen_curtain_crest {
+                font-size: 26px;
+                color: #9C7A4A;
+                line-height: 1;
+                animation: mayhenCrestPulse 2s infinite ease-in-out;
+            }
+            .mayhen_curtain_brand {
+                font-family: 'Cormorant Garamond', Georgia, serif;
+                font-size: 20px;
+                font-weight: 600;
+                letter-spacing: 4px;
+                color: #1F1D1A;
+                text-transform: uppercase;
+            }
+            .mayhen_curtain_line {
+                width: 48px;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #C5A880, transparent);
+            }
+            .mayhen_curtain_status {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-size: 11px;
+                font-weight: 500;
+                letter-spacing: 1.5px;
+                color: #7A726A;
+                text-transform: uppercase;
+                animation: mayhenTextBreathe 1.8s infinite ease-in-out;
+            }
+            @keyframes mayhenCrestPulse {
+                0%, 100% { transform: scale(0.92); opacity: 0.65; }
+                50% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 10px rgba(197, 168, 128, 0.75)); }
+            }
+            @keyframes mayhenTextBreathe {
+                0%, 100% { opacity: 0.45; }
+                50% { opacity: 0.95; }
+            }
+        </style>
+    @endif
 
     @php
         $hideBottomNav = ($isEmbed ?? false) || request()->boolean('embed') || request()->has('hide_nav') || request()->has('in_modal') || request()->has('popup');
@@ -49,7 +133,17 @@
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>
-<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" @yield('body_attributes')>
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting' : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" @yield('body_attributes')>
+    @if(request()->boolean('crafting'))
+        {{-- RÈM LỤA KHỞI TẠO DỆT THIỆP (INITIAL ATELIER CURTAIN) --}}
+        <div id="mayhenCraftingCurtain" aria-hidden="true">
+            <span class="mayhen_curtain_crest">✦</span>
+            <div class="mayhen_curtain_brand">Mây Hẹn Atelier</div>
+            <div class="mayhen_curtain_line"></div>
+            <div class="mayhen_curtain_status">Đang dệt tác phẩm độc bản...</div>
+        </div>
+    @endif
+
     {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
     @include('client.components.rehearsal-bar')
 

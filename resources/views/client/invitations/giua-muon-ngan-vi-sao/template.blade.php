@@ -1296,7 +1296,7 @@
     </div>
 
     <!-- ===================== NHẠC NỀN & NÚT NHẠC NỔI ===================== -->
-    <audio class="mayhen_invitation_audio mayhen_invitation_audio_music" style="display: none;" loop src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
+    <audio class="mayhen_invitation_audio mayhen_invitation_audio_music" style="display: none;" loop preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}" src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
     <div class="mayhen_invitation_music_dock mayhen_invitation_music_btn mayhen_invitation_wb_music_btn" role="button" tabindex="0" aria-label="Bật / Tắt nhạc nền">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
