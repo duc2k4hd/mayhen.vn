@@ -883,6 +883,13 @@ class GuestController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
 
+        if ($invitation->isLocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới tạm thời bị khóa do yêu cầu từ Quản trị viên.',
+            ], 403);
+        }
+
         if (! $invitation->isOwner()) {
             return response()->json([
                 'success' => false,

@@ -382,4 +382,3 @@ test('collision check detects identical ceremony times between groom and bride h
     $collisions = $response->json('data.collisions');
     expect($collisions[0]['type'])->toBe('ceremony_overlap');
 });
-

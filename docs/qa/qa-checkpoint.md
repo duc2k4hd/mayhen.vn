@@ -47,5 +47,39 @@
     * Hộp thời gian (`Time Capsule`): bảo vệ tuyệt đối nội dung thư gửi tương lai (ẩn content null khi niêm phong), chặn mở khóa trước ngày `unlock_date`.
     * Sổ kỷ yếu lưu bút số (`Editorial Keepsake Book`) dàn trang trang trọng các lời chúc đã duyệt theo thứ tự thời gian.
     * Trợ lý soạn thảo tin nhắn cảm ơn cá nhân hóa (`PersonalThankYouService`) tự động gắn nhãn và ghép danh xưng chuẩn mực cho từng khách mời.
-- **Test suite**: **592/592 tests PASSED** (2,982 assertions).
+  - CỤM F — Đối Tác Studio, Bàn Giao Thiệp & Tên Miền Tùy Chỉnh (HOÀN THÀNH 100%)
+    * Quy trình bàn giao thiệp cưới (`Handover Code`): sinh mã 6 ký tự ngẫu nhiên hạn 30 ngày, tái tạo mã mới và thu hồi mã.
+    * Cách ly dữ liệu đa studio (Multi-tenant Studio Isolation): Studio A không thể xem, chỉnh sửa hay nhận thiệp của Studio B.
+    * Quy trình khách hàng nhận thiệp (`Claim`): chuyển quyền sở hữu `user_id`, hủy mã bàn giao, lưu vết lịch sử `handover_history` và đồng bộ session tức thì.
+    * Tên miền phụ (`Vanity Subdomain`): bảo vệ các từ khóa cấm/hệ thống (`admin`, `api`, `pay`...), định dạng regex chuẩn RFC.
+    * Tên miền riêng (`Custom Domain`): chặn cấu hình domain nội bộ hệ thống (`mayhen.vn`), xác minh bản ghi CNAME qua `DomainDnsService`.
+    * Sửa lỗi TypeError trên `LiveWallController::verifyPin` khi thiệp bị khóa (`BUG-LIVEWALL-001`).
+  - CỤM G — Thanh Toán VietQR, Webhook SePay & Vòng Đời Giấy Phép Thiệp (HOÀN THÀNH 100%)
+    * Tạo đơn hàng (`Order`): kiểm tra nghiêm ngặt gói dịch vụ đang mở bán (`is_active: true`), sinh mã đơn hàng chuẩn format `MH` + 10 ký tự, tích hợp URL VietQR thanh toán chuẩn ngân hàng thụ hưởng.
+    * Xác thực chữ ký số HMAC-SHA256 (`X-SePay-Signature`) và kiểm soát độ trôi thời gian (`X-SePay-Timestamp` <= 300s) chống tấn công Replay Attack.
+    * Kiểm tra số tài khoản thụ hưởng, loại trừ an toàn giao dịch tiền ra (`transferType: out`), phát hiện và từ chối giao dịch lệch số tiền (thừa/thiếu 400).
+    * Cơ chế đảm bảo Idempotency: xử lý lặp lại webhook không gây nhân bản giao dịch hay cộng dồn hạn sai lệch.
+    * Chống dùng chung mã giao dịch cổng (`provider_transaction_id`) cho 2 đơn khác nhau (409 Conflict).
+    * Hồi sinh đơn hàng đã hủy nếu khách chuyển khoản thực tế thành công (`revive_cancelled_order_payment`).
+    * Cộng dồn thông minh hạn sử dụng thiệp (`expires_at`) nếu thiệp còn hạn.
+    * Phân quyền quản trị: duyệt thủ công (`approve`), hoàn tiền (`refund`) và hủy đơn (`cancel`).
+  - CỤM H — Website Marketing, Kho Mẫu & Khám Phá, Tối Ưu Hóa SEO & Trang Lỗi 404 (HOÀN THÀNH 100%)
+    * Trang chủ (`Home`): hiển thị Hero, CTA, carousel mẫu nổi bật, danh sách gallery mẫu chuẩn giao diện Quiet Luxury.
+    * Kho mẫu (`Templates Gallery`): bộ lọc đa chiều theo phong cách (`category`), gói cước (`tier`: free/plus/pro), sắp xếp nổi bật & phổ biến (`featured`/`popular`).
+    * Tìm kiếm kho mẫu đa ngôn ngữ & không dấu (`CAT-005`, `CAT-006`, `WEB-019`): tìm kiếm theo tên, chuyển hóa ASCII và slug matching nhạy bén (`BUG-SEARCH-001`).
+    * Trang chi tiết mẫu (`Template Detail`): nạp thông tin, hiển thị 3 mẫu tương tự, chặn mẫu inactive với 404 Not Found (`CAT-015`).
+    * Sơ đồ trang web (`Sitemap XML`): sinh XML chuẩn `sitemaps.org` với Content-Type `application/xml`, cache 24h và bao gồm toàn bộ marketing URLs.
+    * File cấu hình robot (`robots.txt`): cho phép trang công khai, chặn triệt để lập chỉ mục các route nhạy cảm (`/admin/`, `/api/`, `/tai-khoan/`, `/thiep/`, `/thanh-toan/`).
+    * Trang báo lỗi 404 trang nhã (`resources/views/errors/404.blade.php` - `BUG-ERR-001`): kế thừa layout chung, typography Editorial và 2 nút CTA đưa người dùng quay lại an toàn.
+  - CỤM I — Hiển Thị 10 Section Chuẩn, Bảo Mật Truy Cập & Phục Vụ Tài Nguyên Media (HOÀN THÀNH 100%)
+    * Khung 10 Section chuẩn: kiểm thử cấu trúc hiển thị, dữ liệu đám cưới, hợp đồng `data-sync-target` và chính sách âm thanh (`loop`, `data-sync-target="music_url"`).
+    * Chế độ nhúng Studio (`?embed=1`): tự động gán class `mayhen_embed_mode mayhen_template_auto_opened`, thiết lập cờ `window.__MAYHEN_IS_EMBED = true` và ngăn chặn class khóa cuộn `no-scroll`.
+    * Máy chủ phân phối asset mẫu thiệp (`/mau-thiep/{slug}/assets/{path}`): chống directory traversal (`..`), kiểm soát nghiêm ngặt whitelist extension (css, js, ảnh, font, mp3; chặn tuyệt đối php, blade, json, env) và hỗ trợ ETag 304 Not Modified.
+    * Cổng tải lên media (`/tao-thiep/upload-asset`): kiểm tra MIME types, chặn file thực thi giả mạo, giới hạn kích thước 20MB và cô lập lưu trữ tại `weddings/photos`.
+    * Phân quyền xuất bản & vòng đời thiệp:
+      + Thiệp chưa xuất bản (`is_published: false`): người ngoài nhận màn hình chờ (`invitation-unpublished`), chủ thiệp xem trước đầy đủ.
+      + Thiệp bị khóa (`is_locked: true`): người ngoài và chủ thiệp nhận màn hình khóa (`invitation-locked`), chặn 100% mọi API phụ trợ xem RSVP, gửi RSVP và gửi lời chúc (`BUG-LOCK-002`).
+      + Thiệp hết hạn (`expires_at < now`): người ngoài nhận màn hình hết hạn (`invitation-expired`), từ chối nhận RSVP mới (410 Gone), chủ thiệp vẫn tra cứu được kỷ niệm.
+      + Thiệp bảo vệ bằng mật mã: yêu cầu nhập đúng mật mã trong session trước khi cho phép xem thiệp (`INV-10`).
+- **Test suite**: **620/620 tests PASSED** (3,164 assertions).
 - **Code style**: **Laravel Pint PASSED**.

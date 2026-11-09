@@ -126,7 +126,7 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 ### Trạng thái Kiểm Định Toàn Diện Hệ Thống (Master QA Program) — 09/11/2026
 
 - **Vai trò thực thi:** Principal QA Engineer, Business Logic Auditor & Senior Laravel Bug Fixer.
-- **Hiện trạng kiểm thử tự động toàn diện:** **592/592 tests PASSED (100%)**, 2,982 assertions. Thời gian thực thi: ~11.1s.
+- **Hiện trạng kiểm thử tự động toàn diện:** **598/598 tests PASSED (100%)**, 3,025 assertions. Thời gian thực thi: ~11.2s.
 - **Code Formatter:** Laravel Pint **100% PASSED** (Agent style).
 - **Các cổng và phân hệ cốt lõi đã nghiệm thu:**
   1. **50 Bất biến nghiệp vụ (Domain Invariants INV-01 -> INV-50):** Hoàn thành 100% qua 5 Feature Test Suites (`Gate0DomainInvariantsTest.php` đến `Gate4CommercialExperienceInvariantsTest.php`), giải quyết triệt để 12 lỗi kiến trúc.
@@ -154,6 +154,14 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
      * Sổ kỷ yếu lưu bút số (`Editorial Keepsake Book`) dàn trang trang trọng các lời chúc đã duyệt theo thứ tự thời gian.
      * Trợ lý soạn thảo tin nhắn cảm ơn cá nhân hóa (`PersonalThankYouService`) tự động gắn nhãn và ghép danh xưng chuẩn mực cho từng khách mời.
      * Đạt 100% với `MonetaryGiftsAndKeepsakeLifecycleDeepTest.php` (6 tests, 49 assertions).
+  7. **CỤM F — Đối Tác Studio, Bàn Giao Thiệp & Tên Miền Tùy Chỉnh:**
+     * Quy trình bàn giao thiệp cưới (`Handover Code`): sinh mã 6 ký tự ngẫu nhiên hạn 30 ngày, tái tạo mã mới và thu hồi mã.
+     * Cách ly dữ liệu đa studio (Multi-tenant Studio Isolation): Studio A không thể xem, chỉnh sửa hay nhận thiệp của Studio B.
+     * Quy trình khách hàng nhận thiệp (`Claim`): chuyển quyền sở hữu `user_id`, hủy mã bàn giao, lưu vết lịch sử `handover_history` và đồng bộ session tức thì.
+     * Tên miền phụ (`Vanity Subdomain`): bảo vệ các từ khóa cấm/hệ thống (`admin`, `api`, `pay`...), định dạng regex chuẩn RFC.
+     * Tên miền riêng (`Custom Domain`): chặn cấu hình domain nội bộ hệ thống (`mayhen.vn`), xác minh bản ghi CNAME qua `DomainDnsService`.
+     * Sửa lỗi TypeError trên `LiveWallController::verifyPin` khi thiệp bị khóa (`BUG-LIVEWALL-001`).
+     * Đạt 100% với `PartnerHandoverAndCustomDomainDeepTest.php` (6 tests, 43 assertions).
 
 ### Trạng thái Studio đã xác minh — 06/11/2026
 
@@ -6694,6 +6702,40 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * `docs/qa/runtime-inventory.md`
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
   * Toàn bộ test suite: **569/569 tests PASSED 100% (2,850 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH KIỂM THỬ THỰC CHIẾN CỤM C, D, E, F, G, H & I (TOÀN DIỆN HỆ THỐNG)
+- **Bối cảnh & Mục tiêu**:
+  * Thực thi kiểm toán, phát hiện lỗi sâu (deep bug fixing), tự động hóa kiểm thử và gia cố toàn diện các phân hệ:
+    - **CỤM C**: Studio Builder, Autosave, OCC (`StudioEditorAndAutosaveDeepTest.php`).
+    - **CỤM D**: Admin Portal, RBAC 3 lớp, Super Admin Safety & Audit Log (`AdminPortalAndSystemAuditDeepTest.php`).
+    - **CỤM E**: Sổ Mừng Cưới, Hộp Thời Gian & Lưu Bút Keepsake (`MonetaryGiftsAndKeepsakeLifecycleDeepTest.php`).
+    - **CỤM F**: Đối Tác Studio B2B, Bàn Giao Thiệp, Custom Domain DNS & Live Wall (`PartnerHandoverAndCustomDomainDeepTest.php`).
+    - **CỤM G**: Đơn Hàng, Thanh Toán VietQR, Webhook SePay & Gia Hạn Thiệp (`CheckoutAndBillingWebhookDeepTest.php`).
+    - **CỤM H**: Website Marketing, Kho Mẫu & Khám Phá, SEO & Trang 404 (`WebsiteCatalogAndSeoDeepTest.php`).
+    - **CỤM I**: Khung 10 Section, Bảo Mật Xuất Bản, Asset Server & Upload Media (`TemplateRenderAndMediaSecurityDeepTest.php`).
+- **Phát hiện lỗi & Gia cố mã nguồn**:
+  1. `BUG-STUDIO-001` (P1): Sửa lỗi 500 TypeError khi gọi `publishImpact` và `collisionCheck` mà wedding null trong `WeddingConsistencyGuardianService.php`.
+  2. `BUG-STUDIO-002` (P2): Bổ sung kiểm tra `is_locked` trên API `consistencyCheck` trong `InvitationEditorController.php`.
+  3. `BUG-GIFT-001` (P1): Đồng bộ hóa phương thức xác thực `isOwner()` trong `GiftManagementController.php`, hỗ trợ đầy đủ session vãng lai và partner.
+  4. `BUG-LIVEWALL-001` (P2): Sửa kiểu trả về của `LiveWallController::verifyPin` thành `View|RedirectResponse`, chống crash PHP 8.5 khi thiệp bị khóa.
+  5. `BUG-LOCK-002` (P1): Bổ sung kiểm tra `isLocked()` trên API phụ trợ `GuestController::getRsvpResponses` theo đúng `INV-12` & `PUB-006`.
+  6. `BUG-SEARCH-001` (P2): Nâng cấp `TemplateController::index` tiếp nhận tham số tìm kiếm `q`, chuẩn hóa ASCII và slug matching nhạy bén cho kho mẫu.
+  7. `BUG-ERR-001` (P2): Tạo trang báo lỗi 404 tùy chỉnh `resources/views/errors/404.blade.php` chuẩn phong cách Quiet Luxury, kế thừa `client.layouts.master` với 2 nút CTA quay lại an toàn.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `app/Http/Controllers/Client/GuestController.php`
+  * `app/Http/Controllers/Client/TemplateController.php`
+  * `app/Http/Controllers/Client/LiveWallController.php`
+  * `resources/views/errors/404.blade.php`
+  * `resources/views/client/pages/templates.blade.php`
+  * `public/assets/client/css/pages/templates.css`
+  * `.gitignore`
+  * `tests/Feature/WebsiteCatalogAndSeoDeepTest.php`
+  * `tests/Feature/TemplateRenderAndMediaSecurityDeepTest.php`
+  * `docs/qa/bug-register.csv`
+  * `docs/qa/qa-checkpoint.md`
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Toàn bộ test suite: **620/620 tests PASSED 100% (3,164 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
 ---

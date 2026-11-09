@@ -276,6 +276,37 @@
             </div>
         </header>
 
+        {{-- Search & Discovery Bar (CAT-005 & WEB-019) --}}
+        <div class="mayhen_templates_search_wrap">
+            <form action="{{ route('templates.index') }}" method="GET" class="mayhen_templates_search_form" role="search">
+                @if(!empty($currentCategory) && $currentCategory !== 'all')
+                    <input type="hidden" name="category" value="{{ $currentCategory }}">
+                @endif
+                @if(!empty($currentTier) && $currentTier !== 'all')
+                    <input type="hidden" name="tier" value="{{ $currentTier }}">
+                @endif
+                @if(!empty($currentSort))
+                    <input type="hidden" name="sort" value="{{ $currentSort }}">
+                @endif
+                <div class="mayhen_templates_search_input_group">
+                    <svg class="mayhen_templates_search_icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="search" 
+                           name="q" 
+                           value="{{ $currentSearch ?? '' }}" 
+                           class="mayhen_templates_search_input" 
+                           placeholder="Tìm kiếm mẫu thiệp (vd: Thước phim tình yêu, Hạc Bạch, Vintage, Minimal...)" 
+                           aria-label="Tìm kiếm mẫu thiệp cưới">
+                    @if(!empty($currentSearch))
+                        <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => $currentTier, 'sort' => $currentSort])) }}" class="mayhen_templates_search_clear" title="Xóa tìm kiếm">&times;</a>
+                    @endif
+                    <button type="submit" class="mayhen_templates_search_submit">Tìm Kiếm</button>
+                </div>
+            </form>
+        </div>
+
         {{-- Category Filter Bar --}}
         <nav class="mayhen_templates_filter_bar" aria-label="Bộ lọc mẫu thiệp theo phong cách">
             <a href="{{ route('templates.index', array_filter(['tier' => $currentTier, 'sort' => $currentSort])) }}" class="mayhen_templates_filter_pill {{ empty($currentCategory) || $currentCategory === 'all' ? 'mayhen_templates_filter_pill_active' : '' }}">
@@ -326,8 +357,12 @@
         {{-- Meta Bar --}}
         <div class="mayhen_templates_meta_bar">
             <span class="mayhen_templates_meta_count">
-                <span class="mayhen_templates_meta_count_desktop">Hiển thị <strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp cưới đang sẵn sàng</span>
-                <span class="mayhen_templates_meta_count_mobile"><strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp</span>
+                @if(!empty($currentSearch))
+                    <span>Kết quả tìm kiếm cho: "<strong>{{ $currentSearch }}</strong>" ({{ $templates->count() }} mẫu)</span>
+                @else
+                    <span class="mayhen_templates_meta_count_desktop">Hiển thị <strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp cưới đang sẵn sàng</span>
+                    <span class="mayhen_templates_meta_count_mobile"><strong>{{ $templates->count() }}</strong> / {{ $totalCount }} mẫu thiệp</span>
+                @endif
             </span>
             <div class="mayhen_templates_sort_group">
                 <span class="mayhen_templates_sort_label">Sắp xếp:</span>

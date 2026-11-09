@@ -96,7 +96,7 @@ class LiveWallController extends Controller
     /**
      * Xác thực mã PIN để mở màn hình trình chiếu.
      */
-    public function verifyPin(Request $request, string $slug): RedirectResponse
+    public function verifyPin(Request $request, string $slug): View|RedirectResponse
     {
         $invitation = Invitation::where('slug', $slug)->firstOrFail();
         $config = is_array($invitation->custom_config)

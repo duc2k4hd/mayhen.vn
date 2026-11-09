@@ -8,6 +8,7 @@ use App\Models\InvitationTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class TemplateController extends Controller
@@ -20,10 +21,12 @@ class TemplateController extends Controller
         $category = (string) $request->query('category', 'all');
         $tier = (string) $request->query('tier', 'all');
         $sort = (string) $request->query('sort', 'featured');
+        $search = trim((string) $request->query('q', ''));
 
-        $cacheKey = "mayhen_templates_list_{$category}_{$tier}_{$sort}";
+        $searchKey = $search !== '' ? '_'.md5($search) : '';
+        $cacheKey = "mayhen_templates_list_{$category}_{$tier}_{$sort}{$searchKey}";
 
-        $rawTemplates = Cache::remember($cacheKey, 1800, function () use ($category, $tier, $sort) {
+        $rawTemplates = Cache::remember($cacheKey, 1800, function () use ($category, $tier, $sort, $search) {
             $query = InvitationTemplate::query()->where('is_active', true);
 
             if ($category && $category !== 'all') {
@@ -40,6 +43,36 @@ class TemplateController extends Controller
                 } else {
                     $query->where('default_config->tier', $tier);
                 }
+            }
+
+            if ($search !== '') {
+                $unaccented = Str::ascii($search);
+                $slugSearch = Str::slug($search);
+                $query->where(function ($q) use ($search, $unaccented, $slugSearch) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$unaccented}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+
+                    if ($slugSearch !== '') {
+                        $q->orWhere('slug', 'like', "%{$slugSearch}%");
+                    }
+                });
+            }
+
+            if ($search !== '') {
+                $unaccented = \Illuminate\Support\Str::ascii($search);
+                $slugSearch = \Illuminate\Support\Str::slug($search);
+                $query->where(function ($q) use ($search, $unaccented, $slugSearch) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$unaccented}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+
+                    if ($slugSearch !== '') {
+                        $q->orWhere('slug', 'like', "%{$slugSearch}%");
+                    }
+                });
             }
 
             if ($sort === 'popular') {
@@ -62,6 +95,7 @@ class TemplateController extends Controller
             'currentCategory' => $category === 'all' ? null : $category,
             'currentTier' => $tier === 'all' ? null : $tier,
             'currentSort' => $sort,
+            'currentSearch' => $search,
             'totalCount' => $totalCount,
         ]);
     }

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\Order;
@@ -20,8 +19,11 @@ class Gate0DomainInvariantsTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private Wedding $wedding;
+
     private Invitation $invitation;
+
     private InvitationTemplate $template;
 
     protected function setUp(): void
