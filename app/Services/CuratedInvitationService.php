@@ -513,7 +513,6 @@ class CuratedInvitationService
      *     story_title: string,
      *     story_subtitle: string,
      *     story_content: string,
-     *     dresscode_note: string,
      *     ceremony_type: string,
      *     content_source: string
      * }
@@ -552,7 +551,6 @@ class CuratedInvitationService
      *     story_title: string,
      *     story_subtitle: string,
      *     story_content: string,
-     *     dresscode_note: string,
      *     ceremony_type: string,
      *     content_source: string
      * }|null
@@ -563,12 +561,11 @@ class CuratedInvitationService
             $prompt = "Bạn là biên tập viên thiệp cưới cao cấp của Mây Hẹn (mayhen.vn), mang phong cách Quiet Luxury, tinh tế, trang nhã.\n"
                 ."Hãy viết lời ngỏ thiệp cưới cho chú rể {$groom} và cô dâu {$bride} theo phong cách '{$style}'.\n"
                 ."Ngân sách từ ngữ bắt buộc:\n"
-                ."- couple_quote: 12-25 từ (câu trích dẫn tình yêu sâu sắc).\n"
-                ."- story_title: 3-7 từ (tiêu đề lời ngỏ trang trọng).\n"
-                ."- story_subtitle: 5-12 từ (phụ đề hoặc lời dẫn ngắn).\n"
+                ."- couple_quote: 12-25 từ (câu trích dẫn tình yêu sâu sắc, lắng đọng).\n"
+                ."- story_title: 3-7 từ (tiêu đề lời ngỏ trang trọng, súc tích).\n"
+                ."- story_subtitle: 5-10 từ (phụ đề hoặc lời dẫn ngắn).\n"
                 ."- story_content: 45-65 từ (đoạn văn lời ngỏ tình cảm, chân thành, tuyệt đối không bịa đặt ngày tháng hoặc sự kiện chưa được cung cấp).\n"
-                ."- dresscode_note: 10-20 từ (gợi ý trang phục thanh lịch).\n"
-                .'Trả về định dạng JSON thuần túy có các khóa: couple_quote, story_title, story_subtitle, story_content, dresscode_note.';
+                .'Trả về định dạng JSON thuần túy có các khóa: couple_quote, story_title, story_subtitle, story_content.';
 
             $response = Http::timeout(config('services.curated_ai.timeout', 5))
                 ->withHeaders([
@@ -582,7 +579,7 @@ class CuratedInvitationService
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'response_format' => ['type' => 'json_object'],
-                    'max_tokens' => 350,
+                    'max_tokens' => 300,
                     'temperature' => 0.7,
                 ]);
 
@@ -599,7 +596,6 @@ class CuratedInvitationService
                             'story_title' => trim((string) ($parsed['story_title'] ?? 'Chuyện Tình Chúng Mình')),
                             'story_subtitle' => trim((string) ($parsed['story_subtitle'] ?? 'Hành Trình Gặp Gỡ & Kết Duyên')),
                             'story_content' => trim((string) $parsed['story_content']),
-                            'dresscode_note' => trim((string) ($parsed['dresscode_note'] ?? 'Trang phục trang nhã, lịch sự.')),
                         ];
                     }
                 }
@@ -619,7 +615,6 @@ class CuratedInvitationService
      *     story_title: string,
      *     story_subtitle: string,
      *     story_content: string,
-     *     dresscode_note: string,
      *     ceremony_type: string,
      *     content_source: string
      * }
@@ -636,29 +631,25 @@ class CuratedInvitationService
                 'couple_quote' => 'Hạnh phúc là mỗi ngày thức dậy, biết có một người luôn ở bên thấu hiểu và sẻ chia.',
                 'story_title' => 'Bình Yên Giản Dị',
                 'story_subtitle' => 'Hành Trình Cùng Nhau Trưởng Thành',
-                'story_content' => "Không cần hoa mỹ hay lời hẹn ước xa xôi, tình yêu của {$groom} và {$bride} lớn lên từ những sẻ chia bình dị. Hôm nay, trước sự chứng kiến của gia đình và bạn bè thân quý, chúng mình chính thức nắm tay nhau bước vào chặng đường hôn nhân hạnh phúc.",
-                'dresscode_note' => 'Trang phục trang nhã, ưu tiên tông màu be, trắng ngà hoặc xanh nhạt.',
+                'story_content' => "Không cần hoa mỹ hay lời hẹn ước xa xôi, tình yêu của {$groom} và {$bride} lớn lên từ những sẻ chia bình dị. Trước sự chứng kiến của gia đình và bạn bè thân quý, chúng mình chính thức nắm tay nhau bước vào chặng đường hôn nhân hạnh phúc.",
             ]),
             'editorial' => array_merge($base, [
                 'couple_quote' => 'Tình yêu đẹp nhất là khi hai tâm hồn tự do tìm thấy chốn bình yên sâu thẳm trong nhau.',
                 'story_title' => 'Bản Tình Ca Riêng',
                 'story_subtitle' => 'Từng Trang Viết Cho Hạnh Phúc',
                 'story_content' => "Giữa thế giới tấp nập, định mệnh đã dẫn lối để {$groom} và {$bride} nhận ra nhau. Chúng mình tìm thấy ở nhau sự ấm áp và niềm tin son sắt. Sự hiện diện cùng lời chúc phúc của bạn là món quà trân quý nhất trong ngày trọng đại này.",
-                'dresscode_note' => 'Tone màu ấm, sang trọng (Nâu đất, Vàng champagne, Đen thanh lịch).',
             ]),
             'traditional' => array_merge($base, [
                 'couple_quote' => 'Trăm năm kết tóc se duyên — Nghĩa tình vẹn tròn, sắt son một lòng.',
                 'story_title' => 'Chuyện Trăm Năm',
                 'story_subtitle' => 'Nên Duyên Vợ Chồng — Vẹn Tròn Hiếu Nghĩa',
-                'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ấn sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
-                'dresscode_note' => 'Trang phục lịch sự, trang nhã để buổi lễ thêm phần long trọng và ấm cúng.',
+                'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ân sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
             ]),
             default => array_merge($base, [ // 'romantic'
-                'couple_quote' => 'Giữa muôn ngàn tinh tú, em là ánh sáng ấm áp nhất soi rọi cuộc đời anh.',
+                'couple_quote' => 'Giữa muôn ngàn vì sao sáng, em là ánh sáng ấm áp nhất soi rọi cuộc đời anh.',
                 'story_title' => 'Chuyện Tình Chúng Mình',
                 'story_subtitle' => 'Hành Trình Gặp Gỡ & Kết Duyên',
                 'story_content' => "Có những cuộc gặp gỡ như đã được định sẵn. Đi qua những năm tháng thanh xuân, {$groom} và {$bride} nhận ra bàn tay này là để nắm chặt suốt cuộc đời. Chúng mình rất mong được chia sẻ khoảnh khắc thiêng liêng này cùng những người thân yêu nhất.",
-                'dresscode_note' => 'Gam màu pastel, hồng tro, be hoặc trắng để hòa cùng không gian lãng mạn.',
             ]),
         };
     }

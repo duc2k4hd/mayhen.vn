@@ -303,7 +303,7 @@ class TemplateController extends Controller
         AuditLogger::log(
             'scan_templates',
             'InvitationTemplate',
-            null,
+            0,
             "Quét và đồng bộ {$syncedCount} mẫu thiệp cưới từ kho mã nguồn",
             ['synced_count' => $syncedCount]
         );

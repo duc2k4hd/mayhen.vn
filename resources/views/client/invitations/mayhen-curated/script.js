@@ -17,88 +17,115 @@
      * Trình bày thiệp mượt mà theo từng hàng/từng mục (Progressive Fine-Grained Crafting)
      * Thời lượng ~18-20 giây, không nhảy cóc, không giật màn hình về đầu khi xong.
      */
+    /**
+     * Trình bày thiệp mượt mà theo từng chi tiết hạt nhân (Fine-Grained Progressive Crafting)
+     * Tiết lộ từng dòng chữ, từng khung ảnh từ trên xuống dưới, trái sang phải (~18-22s).
+     * Auto-scroll thông minh, dừng ngay khi người dùng chạm, kết thúc dừng tại chỗ.
+     */
     function initLiveCraftingScroll() {
         const root = document.getElementById('mayhenCuratedRoot');
         if (!root || !root.classList.contains('is-crafting-live')) return;
 
-        const sections = [
-            'hero',
-            'story',
-            'parents',
-            'countdown',
-            'events',
-            'timeline',
-            'album'
-        ];
+        // Quét toàn bộ các đơn vị hạt nhân (units) theo thứ tự DOM tự nhiên
+        const units = Array.from(document.querySelectorAll('.mayhen_curated_craft_unit'));
+        const fallbackNodes = Array.from(document.querySelectorAll('.mayhen_curated_craft_node'));
+        const revealTargets = units.length > 0 ? units : fallbackNodes;
 
-        // Nhịp thời gian trình bày từng section (~2.6s mỗi section, tổng ~18-20s)
-        const stepInterval = 2600;
-        let activeTimers = [];
+        if (revealTargets.length === 0) return;
+
+        let currentIndex = 0;
+        let activeTimer = null;
         let isUserInteracting = false;
 
-        // Phát hiện người dùng chủ động cuộn để tạm dừng auto-scroll tự động
-        window.addEventListener('wheel', function () {
+        // Phát hiện người dùng chủ động tương tác để tạm dừng auto-scroll
+        const markInteracted = function () {
             isUserInteracting = true;
-        }, { passive: true });
-        window.addEventListener('touchmove', function () {
-            isUserInteracting = true;
-        }, { passive: true });
+        };
+        window.addEventListener('wheel', markInteracted, { passive: true });
+        window.addEventListener('touchmove', markInteracted, { passive: true });
+        window.addEventListener('pointerdown', markInteracted, { passive: true });
         window.addEventListener('keydown', function (e) {
             if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Space'].indexOf(e.code) !== -1) {
                 isUserInteracting = true;
             }
         });
 
-        function revealStep(index) {
-            if (index >= sections.length) {
+        function revealNextUnit() {
+            if (currentIndex >= revealTargets.length) {
                 finishCrafting();
                 return;
             }
 
-            const secKey = sections[index];
-            const secEl = document.querySelector('[data-curated-section="' + secKey + '"]');
-
-            if (secEl) {
-                secEl.classList.add('is-crafting-revealed');
-                secEl.classList.add('is-crafting-active-scan');
-
-                setTimeout(function () {
-                    secEl.classList.remove('is-crafting-active-scan');
-                }, 1200);
-
-                // Cuộn nhẹ nhàng đến mục đang trình diễn nếu người dùng chưa can thiệp
-                if (!isUserInteracting) {
-                    const rect = secEl.getBoundingClientRect();
-                    const targetY = window.scrollY + rect.top - 60;
-                    window.scrollTo({
-                        top: Math.max(0, targetY),
-                        behavior: 'smooth'
-                    });
+            const el = revealTargets[currentIndex];
+            if (el) {
+                // Tiết lộ section cha nếu chưa được mở
+                const parentSection = el.closest('.mayhen_curated_craft_node');
+                if (parentSection && !parentSection.classList.contains('is-crafting-revealed')) {
+                    parentSection.classList.add('is-crafting-revealed');
                 }
 
-                // Gửi thông điệp cập nhật tiến trình cho Studio Preview bên ngoài
+                // Tiết lộ unit hiện tại
+                el.classList.add('is-unit-revealed');
+                el.classList.add('is-unit-drawing');
+
+                setTimeout(function () {
+                    el.classList.remove('is-unit-drawing');
+                }, 500);
+
+                // Auto-scroll nhẹ nhàng và thông minh: chỉ cuộn khi unit nằm sâu sát đáy vùng nhìn
+                if (!isUserInteracting) {
+                    const rect = el.getBoundingClientRect();
+                    const viewHeight = window.innerHeight;
+                    if (rect.bottom > viewHeight * 0.78 || rect.top < 40) {
+                        const targetY = window.scrollY + rect.top - Math.round(viewHeight * 0.32);
+                        window.scrollTo({
+                            top: Math.max(0, targetY),
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+
+                // Gửi cập nhật tiến trình chính xác cho Studio Preview bên ngoài
                 if (window.parent && window.parent !== window) {
+                    const secKey = parentSection ? parentSection.getAttribute('data-curated-section') : 'curated';
                     window.parent.postMessage({
                         type: 'MAYHEN_CRAFTING_STEP',
-                        step: index + 1,
-                        total: sections.length,
+                        step: currentIndex + 1,
+                        total: revealTargets.length,
                         section: secKey,
                     }, '*');
                 }
             }
 
-            const timer = setTimeout(function () {
-                revealStep(index + 1);
-            }, stepInterval);
-            activeTimers.push(timer);
+            currentIndex++;
+
+            // Tính toán nhịp thời gian tự nhiên theo loại phần tử: ảnh/card cần thời gian lâu hơn dòng text ngắn
+            let stepDelay = 420;
+            if (el && (el.querySelector('img') || el.classList.contains('mayhen_invitation_gallery_item') || el.classList.contains('mayhen_invitation_ticket_card'))) {
+                stepDelay = 580;
+            } else if (el && el.tagName === 'H2') {
+                stepDelay = 480;
+            }
+
+            activeTimer = setTimeout(revealNextUnit, stepDelay);
         }
 
         function finishCrafting() {
-            clearAllTimers();
+            if (activeTimer) {
+                clearTimeout(activeTimer);
+                activeTimer = null;
+            }
+
+            // Hiện toàn bộ section và units
             document.querySelectorAll('.mayhen_curated_craft_node').forEach(function (node) {
                 node.classList.add('is-crafting-revealed');
                 node.classList.remove('is-crafting-active-scan');
             });
+            document.querySelectorAll('.mayhen_curated_craft_unit').forEach(function (unit) {
+                unit.classList.add('is-unit-revealed');
+                unit.classList.remove('is-unit-drawing');
+            });
+
             root.classList.remove('is-crafting-live');
 
             // Giữ nguyên vị trí đang xem, tuyệt đối KHÔNG tự động nhảy về đầu trang!
@@ -109,16 +136,8 @@
             }
         }
 
-        function clearAllTimers() {
-            activeTimers.forEach(function (t) { clearTimeout(t); });
-            activeTimers = [];
-        }
-
-        // Bắt đầu trình diễn từ mục 1 (Hero) sau 300ms ổn định DOM
-        const startTimer = setTimeout(function () {
-            revealStep(0);
-        }, 300);
-        activeTimers.push(startTimer);
+        // Bắt đầu trình diễn sau 300ms ổn định DOM
+        activeTimer = setTimeout(revealNextUnit, 300);
 
         // Lắng nghe lệnh Skip hoặc Replay từ cửa sổ cha Studio
         window.addEventListener('message', function (e) {
@@ -127,15 +146,22 @@
             if (e.data.type === 'MAYHEN_CRAFTING_SKIP') {
                 finishCrafting();
             } else if (e.data.type === 'MAYHEN_REPLAY_CRAFTING') {
-                clearAllTimers();
+                if (activeTimer) clearTimeout(activeTimer);
                 isUserInteracting = false;
+                currentIndex = 0;
                 window.scrollTo({ top: 0, behavior: 'instant' });
+
                 document.querySelectorAll('.mayhen_curated_craft_node').forEach(function (node) {
                     node.classList.remove('is-crafting-revealed');
                     node.classList.remove('is-crafting-active-scan');
                 });
+                document.querySelectorAll('.mayhen_curated_craft_unit').forEach(function (unit) {
+                    unit.classList.remove('is-unit-revealed');
+                    unit.classList.remove('is-unit-drawing');
+                });
+
                 root.classList.add('is-crafting-live');
-                revealStep(0);
+                activeTimer = setTimeout(revealNextUnit, 300);
             }
         });
     }

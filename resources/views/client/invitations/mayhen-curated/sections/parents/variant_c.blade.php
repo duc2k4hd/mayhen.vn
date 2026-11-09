@@ -11,10 +11,12 @@
             <img src="{{ $assetBase }}/corner-ornament.svg" alt="Corner" class="mayhen_invitation_corner_tl">
             <img src="{{ $assetBase }}/corner-ornament.svg" alt="Corner" class="mayhen_invitation_corner_tr">
             
-            <div class="mayhen_invitation_family_kicker">HIẾU NGHĨA SONG THÂN</div>
-            <h2 class="mayhen_invitation_family_title">Kính Báo Hôn Lễ</h2>
+            <div class="mayhen_curated_craft_unit" data-craft-unit="parents_header">
+                <div class="mayhen_invitation_family_kicker">HIẾU NGHĨA SONG THÂN</div>
+                <h2 class="mayhen_invitation_family_title">Kính Báo Hôn Lễ</h2>
+            </div>
             
-            <div class="mayhen_invitation_formal_ancestor_wrap">
+            <div class="mayhen_invitation_formal_ancestor_wrap mayhen_curated_craft_unit" data-craft-unit="parents_family">
                 <div class="mayhen_invitation_formal_side">
                     <h4>NHÀ TRAI</h4>
                     <p class="mayhen_invitation_family_groom_father" data-sync-target="groom_father">Trưởng nam: <strong>{{ $groomName }}</strong></p>

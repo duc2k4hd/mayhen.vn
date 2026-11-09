@@ -8,14 +8,14 @@
     @endif
 
     <div class="mayhen_invitation_gallery_inner">
-        <div class="mayhen_invitation_gallery_header">
+        <div class="mayhen_invitation_gallery_header mayhen_curated_craft_unit" data-craft-unit="album_header">
             <span class="mayhen_invitation_gallery_kicker">THE LOVE FILM &bull; 10 SCENES</span>
             <h2 class="mayhen_invitation_gallery_title">Thước Phim Hạnh Phúc</h2>
             <p class="mayhen_invitation_gallery_desc">Mỗi bức ảnh là một thước phim đẹp đẽ khắc ghi chặng đường bên nhau</p>
         </div>
 
         {{-- Dải phim Filmstrip 10 khung hình --}}
-        <div class="mayhen_invitation_filmstrip_container">
+        <div class="mayhen_invitation_filmstrip_container mayhen_curated_craft_unit" data-craft-unit="album_filmstrip">
             <div class="mayhen_invitation_filmstrip_perforations top_perf">
                 @for($p = 0; $p < 16; $p++)<span></span>@endfor
             </div>

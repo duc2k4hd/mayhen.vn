@@ -7,7 +7,7 @@
         </div>
     @endif
     <div class="mayhen_invitation_countdown_inner">
-        <div class="mayhen_invitation_circle_date_wrap">
+        <div class="mayhen_invitation_circle_date_wrap mayhen_curated_craft_unit" data-craft-unit="countdown_calendar">
             <div class="mayhen_invitation_gold_ring">
                 <span class="mayhen_invitation_ring_sub">{{ $weddingDayOfWeek }}</span>
                 <span class="mayhen_invitation_ring_day" data-sync-target="wedding_date_digits">{{ $weddingDay }}</span>
@@ -16,7 +16,7 @@
         </div>
 
         @if($hasCustomWeddingDate && $weddingDate)
-            <div class="mayhen_invitation_countdown mayhen_invitation_countdown--circular" data-countdown="{{ $weddingDate->toIso8601String() }}">
+            <div class="mayhen_invitation_countdown mayhen_invitation_countdown--circular mayhen_curated_craft_unit" data-craft-unit="countdown_clock" data-countdown="{{ $weddingDate->toIso8601String() }}">
                 <div class="mayhen_invitation_cd_ring_item">
                     <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
                     <span class="mayhen_invitation_cd_lbl">NGÀY</span>

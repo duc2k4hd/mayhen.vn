@@ -7,10 +7,12 @@
         </div>
     @endif
     <div class="mayhen_invitation_parents_inner">
-        <div class="mayhen_invitation_family_kicker">GIA ĐÌNH &amp; UYÊN ƯƠNG</div>
-        <h2 class="mayhen_invitation_family_title">Hai Bên Gia Đình</h2>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="parents_header">
+            <div class="mayhen_invitation_family_kicker">GIA ĐÌNH &amp; UYÊN ƯƠNG</div>
+            <h2 class="mayhen_invitation_family_title">Hai Bên Gia Đình</h2>
+        </div>
         
-        <div class="mayhen_invitation_family_parchment_list">
+        <div class="mayhen_invitation_family_parchment_list mayhen_curated_craft_unit" data-craft-unit="parents_family">
             <div class="mayhen_invitation_family_parchment_item">
                 <div class="mayhen_invitation_parchment_badge">ĐẠI DIỆN NHÀ TRAI</div>
                 <div class="mayhen_invitation_parchment_names">
@@ -31,7 +33,7 @@
         </div>
 
         {{-- Uyên Ương Card --}}
-        <div class="mayhen_invitation_couple_cards_grid">
+        <div class="mayhen_invitation_couple_cards_grid mayhen_curated_craft_unit" data-craft-unit="parents_couple">
             <div class="mayhen_invitation_couple_card">
                 <img src="{{ $groomPhotoUrl }}" alt="{{ $groomName }}" class="mayhen_invitation_groom_photo" data-sync-target="groom_photo_url">
                 <div class="mayhen_invitation_couple_card_info">

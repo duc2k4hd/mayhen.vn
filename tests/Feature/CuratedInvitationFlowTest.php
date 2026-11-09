@@ -30,7 +30,7 @@ class CuratedInvitationFlowTest extends TestCase
                 'name' => 'Mây Hẹn Curated (Thiết Kế Tự Phối)',
                 'thumbnail_url' => '/assets/client/images/templates/curated-thumb.webp',
                 'description' => 'Mẫu thiệp cưới cao cấp tự phối thông minh 7 section tiêu chuẩn.',
-                'sections' => ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'dresscode'],
+                'sections' => ['hero', 'story', 'parents', 'countdown', 'events', 'timeline', 'album'],
                 'category' => 'curated',
                 'is_active' => true,
                 'default_config' => [
@@ -187,10 +187,10 @@ class CuratedInvitationFlowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Đức Minh &amp; Ngọc Linh', false);
-        $response->assertSee('Phối lại bố cục 🎲');
-        $response->assertSee('Xem lại dựng thiệp ↺');
+        $response->assertSee('Phối lại');
+        $response->assertSee('Xem lại');
         $response->assertSee('Đổi Bố Cục Từng Mục');
-        $response->assertSee('Xuất bản thiệp 🚀');
+        $response->assertSee('Xuất bản');
     }
 
     /**
@@ -210,7 +210,6 @@ class CuratedInvitationFlowTest extends TestCase
             'venue_address' => 'Phạm Văn Đồng, Thủ Đức',
             'extra_data' => [
                 'couple_quote' => 'Trăm năm một chữ tình.',
-                'dresscode_note' => 'Trang phục trang nhã.',
             ],
         ]);
 
@@ -520,7 +519,6 @@ class CuratedInvitationFlowTest extends TestCase
                                 'story_title' => 'Khúc Ca Duyên Nợ',
                                 'story_subtitle' => 'Từng Nhịp Bước Bình Yên',
                                 'story_content' => 'Từ những ngày đầu gặp gỡ đến khoảnh khắc hẹn ước trăm năm, tình yêu của chúng mình luôn được nuôi dưỡng bằng sự bao dung và chân thành.',
-                                'dresscode_note' => 'Tone màu pastel trang nhã.',
                             ]),
                         ],
                     ],
@@ -598,5 +596,15 @@ class CuratedInvitationFlowTest extends TestCase
         $renderB->assertSee('data-countdown="2026-12-25', false);
         $renderB->assertSee('Khách Sạn Lotte Hà Nội');
         $renderB->assertSee('maps.google.com/maps?q=Kh%C3%A1ch+S%E1%BA%A1n+Lotte+H%C3%A0+N%E1%BB%99i');
+    }
+
+    /**
+     * 13. Truy cập GET vào endpoint khởi tạo thiệp tự động hiển thị trực tiếp trang Wizard tạo thiệp mà không bị 404.
+     */
+    public function test_get_generate_route_renders_wizard_create_page(): void
+    {
+        $response = $this->get('/tao-thiep-tu-dong/khoi-tao');
+        $response->assertStatus(200);
+        $response->assertSee('Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn');
     }
 }

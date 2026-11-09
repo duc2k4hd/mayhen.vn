@@ -7,8 +7,10 @@
         </div>
     @endif
     <div class="mayhen_invitation_timeline_inner">
-        <div class="mayhen_invitation_timeline_kicker">SCHEDULE</div>
-        <h2 class="mayhen_invitation_timeline_title">Mốc Thời Gian</h2>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="timeline_header">
+            <div class="mayhen_invitation_timeline_kicker">SCHEDULE</div>
+            <h2 class="mayhen_invitation_timeline_title">Mốc Thời Gian</h2>
+        </div>
         
         <div class="mayhen_invitation_timeline_steps_wrap">
             @php
@@ -20,7 +22,7 @@
                 ];
             @endphp
             @foreach($timelineData as $idx => $item)
-                <div class="mayhen_invitation_timeline_step_row">
+                <div class="mayhen_invitation_timeline_step_row mayhen_curated_craft_unit" data-craft-unit="timeline_item_{{ $idx }}">
                     <span class="mayhen_invitation_step_num">0{{ $idx + 1 }}</span>
                     <span class="mayhen_invitation_step_time" data-sync-target="timeline.{{ $idx }}.time">{{ $item['time'] ?? '' }}</span>
                     <span class="mayhen_invitation_step_sep">&mdash;</span>

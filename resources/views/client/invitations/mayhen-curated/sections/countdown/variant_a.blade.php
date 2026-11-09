@@ -7,11 +7,13 @@
         </div>
     @endif
     <div class="mayhen_invitation_countdown_inner">
-        <div class="mayhen_invitation_countdown_kicker">SAVE THE DATE</div>
-        <h2 class="mayhen_invitation_countdown_title">Đếm Ngược Ngày Chung Đôi</h2>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="countdown_header">
+            <div class="mayhen_invitation_countdown_kicker">SAVE THE DATE</div>
+            <h2 class="mayhen_invitation_countdown_title">Đếm Ngược Ngày Chung Đôi</h2>
+        </div>
         
         {{-- Tờ Lịch Tháng Cổ Điển --}}
-        <div class="mayhen_invitation_calendar_tear_box">
+        <div class="mayhen_invitation_calendar_tear_box mayhen_curated_craft_unit" data-craft-unit="countdown_calendar">
             <div class="mayhen_invitation_calendar_tear_header">
                 <span class="mayhen_invitation_calendar_month_year">Tháng {{ $weddingMonth }} · {{ $weddingYear }}</span>
                 <span class="mayhen_invitation_calendar_day_name">{{ $weddingDayOfWeek }}</span>
@@ -26,7 +28,7 @@
 
         {{-- Đồng Hồ 4 Số --}}
         @if($hasCustomWeddingDate && $weddingDate)
-            <div class="mayhen_invitation_countdown" data-countdown="{{ $weddingDate->toIso8601String() }}">
+            <div class="mayhen_invitation_countdown mayhen_curated_craft_unit" data-craft-unit="countdown_clock" data-countdown="{{ $weddingDate->toIso8601String() }}">
                 <div class="mayhen_invitation_cd_item">
                     <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
                     <span class="mayhen_invitation_cd_lbl">Ngày</span>

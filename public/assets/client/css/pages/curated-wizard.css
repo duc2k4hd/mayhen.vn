@@ -51,7 +51,7 @@
 }
 
 .mayhen_curated_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 36px;
     line-height: 1.2;
     font-weight: 600;
@@ -124,7 +124,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 20px;
     font-weight: 700;
 }
@@ -135,7 +135,7 @@
 }
 
 .mayhen_curated_step_heading {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 24px;
     line-height: 1.25;
     font-weight: 600;
@@ -282,7 +282,7 @@
 }
 
 .mayhen_curated_style_name {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 20px;
     font-weight: 600;
     color: var(--curated-charcoal);
@@ -413,7 +413,7 @@
 }
 
 .summary_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 24px;
     color: var(--curated-charcoal);
     margin: 0 0 16px 0;
@@ -498,7 +498,7 @@
 }
 
 .mayhen_curated_btn_generate .btn_text {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 21px;
     font-weight: 600;
     letter-spacing: 1px;

@@ -7,16 +7,16 @@
         </div>
     @endif
     <div class="mayhen_invitation_story_inner">
-        <div class="mayhen_invitation_story_kicker">LOVE STORY</div>
-        <h2 class="mayhen_invitation_ladi_headline_story" data-sync-target="story_title">{{ $storyTitle }}</h2>
-        <div class="mayhen_invitation_story_arch_box">
+        <div class="mayhen_invitation_story_kicker mayhen_curated_craft_unit" data-craft-unit="story_kicker">LOVE STORY</div>
+        <h2 class="mayhen_invitation_ladi_headline_story mayhen_curated_craft_unit" data-craft-unit="story_title" data-sync-target="story_title">{{ $storyTitle }}</h2>
+        <div class="mayhen_invitation_story_arch_box mayhen_curated_craft_unit" data-craft-unit="story_photo">
             <img src="{{ $saveDatePhotoUrl }}" alt="Kỷ niệm" class="mayhen_invitation_story_img" data-sync-target="save_date_photo_url">
         </div>
-        <blockquote class="mayhen_invitation_quote_text" data-sync-target="couple_quote">
+        <blockquote class="mayhen_invitation_quote_text mayhen_curated_craft_unit" data-craft-unit="story_quote" data-sync-target="couple_quote">
             &ldquo;{{ $coupleQuote }}&rdquo;
         </blockquote>
-        <h3 class="mayhen_invitation_story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
-        <p class="mayhen_invitation_story_content" data-sync-target="story_content">{{ $storyContent }}</p>
+        <h3 class="mayhen_invitation_story_subtitle mayhen_curated_craft_unit" data-craft-unit="story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
+        <p class="mayhen_invitation_story_content mayhen_curated_craft_unit" data-craft-unit="story_content" data-sync-target="story_content">{{ $storyContent }}</p>
     </div>
 </section>
 

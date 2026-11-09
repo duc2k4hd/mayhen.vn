@@ -513,36 +513,57 @@
     color: var(--mh-primary);
 }
 
-/* Story Variant C: Magazine Split */
-.mayhen_invitation_story--magazine .mayhen_invitation_story_split_grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+/* Story Variant C: Magazine Editorial (1 cột thoáng đãng trên mobile / iframe) */
+.mayhen_invitation_story--magazine .mayhen_invitation_story_magazine_wrap {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    text-align: left;
-    margin-top: 16px;
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.mayhen_invitation_story--magazine .mayhen_invitation_story_polaroid_box {
+    margin: 16px auto;
+    width: 100%;
+    max-width: 270px;
+}
+
+.mayhen_invitation_story--magazine .mayhen_invitation_story_body_box {
+    margin-top: 8px;
+    max-width: 440px;
+    padding: 0 12px;
 }
 
 .mayhen_invitation_story_polaroid {
     background: #FFFFFF;
-    padding: 8px 8px 16px 8px;
+    padding: 10px 10px 16px 10px;
     border: 1px solid var(--mh-border);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.08);
+    border-radius: 6px;
+    transform: rotate(-1.5deg);
+    transition: transform 0.3s ease;
+}
+
+.mayhen_invitation_story_polaroid:hover {
+    transform: rotate(0deg);
 }
 
 .mayhen_invitation_story_polaroid img {
     width: 100%;
-    height: 180px;
+    height: 190px;
     object-fit: cover;
+    border-radius: 3px;
 }
 
 .mayhen_invitation_story_polaroid_caption {
-    font-size: 11px;
+    font-size: 11.5px;
     font-style: italic;
     text-align: center;
     color: var(--mh-text-muted);
-    margin-top: 6px;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+}
 }
 
 /* ==========================================================================
@@ -1657,53 +1678,68 @@
 
 /* ==========================================================================
    10. HIỆU ỨNG DỰNG THIỆP TỪNG HÀNG/TỪNG DÒNG (PROGRESSIVE CRAFTING)
-   Trình bày trang nhã, không nhảy section đột ngột, tốc độ chuẩn mực ~18-22s
+   Trình bày trang nhã, reveal từng chi tiết hạt nhân (unit), tốc độ chuẩn mực ~18-22s
    ========================================================================== */
 .is-crafting-live .mayhen_curated_craft_node {
-    opacity: 0.12;
-    filter: blur(2px);
-    transform: translateY(12px);
-    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
-                filter 0.5s ease;
+    opacity: 0.15;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
 }
 
 .is-crafting-live .mayhen_curated_craft_node.is-crafting-revealed {
     opacity: 1 !important;
-    filter: blur(0) !important;
-    transform: translateY(0) !important;
 }
 
-.is-crafting-live .mayhen_curated_craft_node.is-crafting-active-scan::after {
+/* Các đơn vị hạt nhân (Fine-Grained Reveal Units) */
+.is-crafting-live .mayhen_curated_craft_unit {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(2px);
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 0.45s ease;
+    will-change: opacity, transform;
+}
+
+.is-crafting-live .mayhen_curated_craft_unit.is-unit-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    filter: blur(0) !important;
+}
+
+.is-crafting-live .mayhen_curated_craft_unit.is-unit-drawing {
+    position: relative;
+}
+
+.is-crafting-live .mayhen_curated_craft_unit.is-unit-drawing::after {
     content: '';
     position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, transparent, var(--mh-accent), #FFFFFF, var(--mh-accent), transparent);
-    box-shadow: 0 0 14px var(--mh-accent);
+    bottom: -2px;
     left: 0;
-    animation: mayhenFineScan 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--mh-accent), #FFFFFF, var(--mh-accent), transparent);
+    box-shadow: 0 0 10px var(--mh-accent);
+    animation: mayhenUnitScan 0.5s ease forwards;
     pointer-events: none;
-    z-index: 30;
+    z-index: 20;
 }
 
-@keyframes mayhenFineScan {
-    0% { left: 0%; opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { left: 100%; opacity: 0; }
+@keyframes mayhenUnitScan {
+    0% { transform: scaleX(0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .is-crafting-live .mayhen_curated_craft_node {
+    .is-crafting-live .mayhen_curated_craft_node,
+    .is-crafting-live .mayhen_curated_craft_unit {
         opacity: 1 !important;
         filter: none !important;
         transform: none !important;
         transition: none !important;
     }
-    .is-crafting-live .mayhen_curated_craft_node::after {
+    .is-crafting-live .mayhen_curated_craft_unit::after {
         display: none !important;
     }
 }

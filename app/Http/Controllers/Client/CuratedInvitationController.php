@@ -99,7 +99,6 @@ class CuratedInvitationController extends Controller
             'story_title' => $aiContent['story_title'],
             'story_subtitle' => $aiContent['story_subtitle'],
             'story_content' => $aiContent['story_content'],
-            'dresscode_note' => $aiContent['dresscode_note'],
             'ceremony_type' => $aiContent['ceremony_type'],
             'party_time' => '18:00',
             'party_venue' => $venueName,

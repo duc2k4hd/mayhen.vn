@@ -1020,7 +1020,7 @@ select.mayhen_account_form_input {
 }
 
 .mayhen_qr_modal_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 26px;
     font-weight: 600;
     color: #1F1D1A;

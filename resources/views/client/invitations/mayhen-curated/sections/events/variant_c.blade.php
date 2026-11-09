@@ -7,10 +7,12 @@
         </div>
     @endif
     <div class="mayhen_invitation_events_inner">
-        <div class="mayhen_invitation_events_kicker">SCHEDULE &amp; VENUES</div>
-        <h2 class="mayhen_invitation_events_title">Thông Tin Hôn Lễ</h2>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="events_header">
+            <div class="mayhen_invitation_events_kicker">SCHEDULE &amp; VENUES</div>
+            <h2 class="mayhen_invitation_events_title">Thông Tin Hôn Lễ</h2>
+        </div>
         
-        <div class="mayhen_invitation_events_split_cards">
+        <div class="mayhen_invitation_events_split_cards mayhen_curated_craft_unit" data-craft-unit="events_ticket">
             {{-- Cột 1: Lễ Thành Hôn / Gia Tiên --}}
             <div class="mayhen_invitation_event_card_half">
                 <span class="mayhen_invitation_event_tag">NGHI LỄ GIA TIÊN</span>
@@ -42,7 +44,7 @@
 
         {{-- Khung Bản Đồ --}}
         @if($hasVenueInfo && !empty($partyMapLink))
-            <div class="mayhen_invitation_map_box">
+            <div class="mayhen_invitation_map_box mayhen_curated_craft_unit" data-craft-unit="events_map">
                 <iframe src="{{ $partyMapLink }}" class="mayhen_invitation_map_iframe" loading="lazy" allowfullscreen title="Bản đồ chỉ đường"></iframe>
                 <div class="mayhen_invitation_map_footer_bar">
                     <span class="mayhen_invitation_map_address_text" data-sync-target="event_party_address">📍 {{ $partyAddress }}</span>
@@ -50,7 +52,7 @@
                 </div>
             </div>
         @else
-            <div class="mayhen_invitation_map_placeholder">
+            <div class="mayhen_invitation_map_placeholder mayhen_curated_craft_unit" data-craft-unit="events_map">
                 <div class="mayhen_invitation_map_ph_icon">📍</div>
                 <p class="mayhen_invitation_map_ph_title">Chưa có định vị bản đồ sảnh tiệc</p>
                 <span class="mayhen_invitation_map_ph_hint">Bổ sung địa chỉ sảnh tiệc trong Studio để hiển thị bản đồ dẫn đường tương tác</span>

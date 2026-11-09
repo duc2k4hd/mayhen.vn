@@ -8,7 +8,7 @@
     @endif
 
     <div class="mayhen_invitation_gallery_inner">
-        <div class="mayhen_invitation_gallery_header">
+        <div class="mayhen_invitation_gallery_header mayhen_curated_craft_unit" data-craft-unit="album_header">
             <span class="mayhen_invitation_gallery_kicker">OUR PHOTOBOOK</span>
             <h2 class="mayhen_invitation_gallery_title">Kỷ Niệm Gắn Kết</h2>
             <div class="mayhen_invitation_gallery_crest_line">
@@ -17,7 +17,7 @@
         </div>
 
         {{-- Lưới so le 2 cột nhịp nhàng (Collage Masonry) --}}
-        <div class="mayhen_invitation_gallery_collage_grid">
+        <div class="mayhen_invitation_gallery_collage_grid mayhen_curated_craft_unit" data-craft-unit="album_collage">
             <div class="collage_col collage_col--left">
                 @foreach([0, 2, 4, 6, 8] as $i)
                     <div class="mayhen_invitation_gallery_item collage_card collage_card--{{ $i % 4 == 0 ? 'tall' : 'standard' }}" data-index="{{ $i }}">

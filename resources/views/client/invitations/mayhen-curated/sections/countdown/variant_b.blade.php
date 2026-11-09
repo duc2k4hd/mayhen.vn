@@ -7,12 +7,14 @@
         </div>
     @endif
     <div class="mayhen_invitation_countdown_inner">
-        <div class="mayhen_invitation_countdown_kicker">COUNTDOWN</div>
-        <h2 class="mayhen_invitation_countdown_title">Từng Nhịp Đập Tiến Gần</h2>
-        <p class="mayhen_invitation_countdown_desc">Chỉ còn ít ngày nữa để cùng nhau viết nên khoảnh khắc đẹp nhất cuộc đời</p>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="countdown_header">
+            <div class="mayhen_invitation_countdown_kicker">COUNTDOWN</div>
+            <h2 class="mayhen_invitation_countdown_title">Từng Nhịp Đập Tiến Gần</h2>
+            <p class="mayhen_invitation_countdown_desc">Chỉ còn ít ngày nữa để cùng nhau viết nên khoảnh khắc đẹp nhất cuộc đời</p>
+        </div>
         
         @if($hasCustomWeddingDate && $weddingDate)
-            <div class="mayhen_invitation_countdown mayhen_invitation_countdown--pill" data-countdown="{{ $weddingDate->toIso8601String() }}">
+            <div class="mayhen_invitation_countdown mayhen_invitation_countdown--pill mayhen_curated_craft_unit" data-craft-unit="countdown_clock" data-countdown="{{ $weddingDate->toIso8601String() }}">
                 <div class="mayhen_invitation_cd_pill_box">
                     <span class="mayhen_invitation_cd_val mayhen_invitation_cd_day">00</span>
                     <span class="mayhen_invitation_cd_lbl">DAYS</span>

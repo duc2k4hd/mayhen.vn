@@ -629,7 +629,7 @@
 }
 
 .mayhen_guest_modal_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 22px;
     font-weight: 600;
     color: #1F1D1A;

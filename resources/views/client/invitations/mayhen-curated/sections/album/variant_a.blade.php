@@ -8,7 +8,7 @@
     @endif
 
     <div class="mayhen_invitation_gallery_inner">
-        <div class="mayhen_invitation_gallery_header">
+        <div class="mayhen_invitation_gallery_header mayhen_curated_craft_unit" data-craft-unit="album_header">
             <span class="mayhen_invitation_gallery_kicker">SWEET MOMENTS</span>
             <h2 class="mayhen_invitation_gallery_title">Khoảnh Khắc Hạnh Phúc</h2>
             <div class="mayhen_invitation_gallery_crest_line">
@@ -19,7 +19,7 @@
         {{-- Khung trình diễn 10 ảnh --}}
         <div class="mayhen_invitation_gallery_editorial_wrap">
             {{-- Ảnh tiêu điểm lớn (Photo 0) --}}
-            <div class="mayhen_invitation_gallery_item gallery_item--feature" data-index="0">
+            <div class="mayhen_invitation_gallery_item gallery_item--feature mayhen_curated_craft_unit" data-craft-unit="album_feature" data-index="0">
                 <div class="gallery_item_inner">
                     <img src="{{ $gallery[0] }}" alt="Khoảnh khắc 1" class="mayhen_invitation_gallery_img" data-sync-target="gallery.0" loading="lazy">
                     <span class="gallery_badge">Tiêu Điểm &bull; #01</span>
@@ -29,7 +29,7 @@
             {{-- Lưới 9 ảnh tiếp nối (Photos 1 đến 9) --}}
             <div class="mayhen_invitation_gallery_grid_9">
                 @for($i = 1; $i < 10; $i++)
-                    <div class="mayhen_invitation_gallery_item gallery_item--sub" data-index="{{ $i }}">
+                    <div class="mayhen_invitation_gallery_item gallery_item--sub mayhen_curated_craft_unit" data-craft-unit="album_sub_{{ $i }}" data-index="{{ $i }}">
                         <div class="gallery_item_inner">
                             <img src="{{ $gallery[$i] }}" alt="Khoảnh khắc {{ $i + 1 }}" class="mayhen_invitation_gallery_img" data-sync-target="gallery.{{ $i }}" loading="lazy">
                             <span class="gallery_index_pill">#0{{ $i + 1 }}</span>

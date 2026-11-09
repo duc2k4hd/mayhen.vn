@@ -7,12 +7,12 @@
         </div>
     @endif
     <div class="mayhen_invitation_story_inner">
-        <div class="mayhen_invitation_story_seal">
+        <div class="mayhen_invitation_story_seal mayhen_curated_craft_unit" data-craft-unit="story_seal">
             <img src="{{ $assetBase }}/wax-seal.svg" alt="Seal" class="mayhen_invitation_seal_icon">
         </div>
-        <h2 class="mayhen_invitation_ladi_headline_story" data-sync-target="story_title">{{ $storyTitle }}</h2>
-        <h3 class="mayhen_invitation_story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
-        <div class="mayhen_invitation_story_letter_card">
+        <h2 class="mayhen_invitation_ladi_headline_story mayhen_curated_craft_unit" data-craft-unit="story_title" data-sync-target="story_title">{{ $storyTitle }}</h2>
+        <h3 class="mayhen_invitation_story_subtitle mayhen_curated_craft_unit" data-craft-unit="story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
+        <div class="mayhen_invitation_story_letter_card mayhen_curated_craft_unit" data-craft-unit="story_letter">
             <blockquote class="mayhen_invitation_quote_text" data-sync-target="couple_quote">
                 &ldquo;{{ $coupleQuote }}&rdquo;
             </blockquote>

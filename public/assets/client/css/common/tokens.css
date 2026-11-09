@@ -33,7 +33,7 @@
     /* Typography */
     --mayhen-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
     --mayhen-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --mayhen-font-script: 'Cormorant Garamond', Georgia, serif;
+    --mayhen-font-script: var(--mayhen-font-serif);
 
     /* Fluid Typography Scale */
     --mayhen-font-size-display: clamp(2.25rem, 5vw, 3.75rem);

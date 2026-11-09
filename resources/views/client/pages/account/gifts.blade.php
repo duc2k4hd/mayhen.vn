@@ -12,6 +12,10 @@
     <span>Sổ mừng cưới</span>
 @endsection
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}?v={{ file_exists(public_path('assets/client/css/pages/account.css')) ? filemtime(public_path('assets/client/css/pages/account.css')) : '1.0' }}">
+@endpush
+
 @section('account_content')
     <!-- Header Thông Tin & Thao Tác -->
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
@@ -353,7 +357,7 @@
     </div>
 
     <!-- Modal Chỉnh Sửa Khoản Mừng Cưới -->
-    <div id="mayhen-edit-gift-modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+    <div id="mayhen-edit-gift-modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="mayhen-edit-gift-title" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
         <div class="mayhen_account_modal_backdrop" onclick="closeEditGiftModal()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(31, 29, 26, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"></div>
         <div class="mayhen_account_modal_dialog" style="position: relative; background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(31, 29, 26, 0.2); z-index: 10000;">
             <div class="mayhen_account_modal_header" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #F0EBE3;">
@@ -441,7 +445,7 @@
                 if (ackCheckbox) ackCheckbox.checked = ack;
 
                 if (editModal) {
-                    editModal.style.display = 'flex';
+                    editModal.style.setProperty('display', 'flex', 'important');
                     editModal.classList.add('is-open');
                     document.body.style.overflow = 'hidden';
                 }
@@ -452,7 +456,7 @@
     function closeEditGiftModal() {
         const modal = document.getElementById('mayhen-edit-gift-modal');
         if (modal) {
-            modal.style.display = 'none';
+            modal.style.setProperty('display', 'none', 'important');
             modal.classList.remove('is-open');
             document.body.style.overflow = '';
         }

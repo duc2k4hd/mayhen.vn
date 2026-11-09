@@ -7,11 +7,13 @@
         </div>
     @endif
     <div class="mayhen_invitation_parents_inner">
-        <div class="mayhen_invitation_family_kicker">HAI BÊN GIA ĐÌNH</div>
-        <h2 class="mayhen_invitation_family_title">Song Thân Phụ Mẫu</h2>
-        <p class="mayhen_invitation_family_notice">Trân trọng kính báo tin Lễ Thành Hôn của hai con chúng tôi</p>
+        <div class="mayhen_curated_craft_unit" data-craft-unit="parents_header">
+            <div class="mayhen_invitation_family_kicker">HAI BÊN GIA ĐÌNH</div>
+            <h2 class="mayhen_invitation_family_title">Song Thân Phụ Mẫu</h2>
+            <p class="mayhen_invitation_family_notice">Trân trọng kính báo tin Lễ Thành Hôn của hai con chúng tôi</p>
+        </div>
         
-        <div class="mayhen_invitation_family_grid">
+        <div class="mayhen_invitation_family_grid mayhen_curated_craft_unit" data-craft-unit="parents_family">
             {{-- Nhà Trai --}}
             <div class="mayhen_invitation_family_card mayhen_invitation_family_card--groom">
                 <h4 class="mayhen_invitation_family_groom_title">NHÀ TRAI</h4>
@@ -38,7 +40,7 @@
         </div>
 
         {{-- Chân dung & Bio Uyên Ương --}}
-        <div class="mayhen_invitation_couple_portraits_wrap">
+        <div class="mayhen_invitation_couple_portraits_wrap mayhen_curated_craft_unit" data-craft-unit="parents_couple">
             <div class="mayhen_invitation_couple_col">
                 <div class="mayhen_invitation_groom_photo_box">
                     <img src="{{ $groomPhotoUrl }}" alt="{{ $groomName }}" class="mayhen_invitation_groom_photo" data-sync-target="groom_photo_url">

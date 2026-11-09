@@ -6015,6 +6015,55 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
                                * Toàn bộ 474/474 tests toàn hệ thống: **100% PASSED (2,456 assertions)** trong 9.4 giây.
                                * Laravel Pint: Đạt chuẩn agent style không có lỗi (`vendor/bin/pint --format agent`).
 
+                        226. **Phòng Vệ Độc Lập CSS & Triệt Tiêu Bung Modal Sổ Mừng Cưới (Fix Triệt Để Mất CSS Sổ Mừng Cưới)**:
+                             - **Bối cảnh & Vấn đề**:
+                               * Tại trang Sổ mừng cưới `/tai-khoan/thiep/{id}/so-mung-cuoi` (`resources/views/client/pages/account/gifts.blade.php`), khi trình duyệt người dùng bị lưu cache file CSS hoặc khi kế thừa đa tầng qua `account/layout.blade.php`, form modal "Chỉnh Sửa Khoản Mừng Cưới" có nguy cơ hiển thị lộ liễu dưới đáy bảng danh sách thay vì là hộp thoại popup ẩn.
+                             - **Giải pháp xử lý**:
+                               * Nhúng trực tiếp `@push('styles')` nạp `account.css` kèm tham số cache-busting timestamp `filemtime` ngay trong `gifts.blade.php` để đảm bảo trình duyệt luôn nạp đúng stylesheet mới nhất dù Blade có kế thừa qua layout con.
+                               * Tăng cường phòng vệ inline style trên `#mayhen-edit-gift-modal`: đặt `display: none !important;` mặc định.
+                               * Cập nhật JavaScript sử dụng `editModal.style.setProperty('display', 'flex', 'important')` và `modal.style.setProperty('display', 'none', 'important')` để đảm bảo modal chỉ xuất hiện khi người dùng chủ động nhấn nút sửa, ngăn chặn triệt để tình trạng lộ form dưới chân trang.
+                             - **Tập tin đã cập nhật**:
+                               * `resources/views/client/pages/account/gifts.blade.php`.
+                             - **Kết quả Kiểm Thử**:
+                               * `ClientGiftManagementTest.php`: 10/10 tests passed.
+                               * `GuestAndGiftExportPrintFilterTest.php`: 6/6 tests passed.
+                               * `CuratedInvitationFlowTest.php`: 12/12 tests passed.
+                               * Laravel Pint: Đạt chuẩn agent style (`vendor/bin/pint --format agent`).
+
+---
+
+                        227. **Nâng Cấp Toàn Diện Trải Nghiệm Dựng Thiệp V2, Khắc Phục Lỗi 404 Route Khởi Tạo & Chuẩn Hóa Atelier Quiet Luxury**:
+                             - **Bối cảnh & Nhiệm vụ theo Master Prompt V2 (`MAY_HEN_CURATED_CRAFTING_V2_VISUAL_UX_FIX_MASTER_PROMPT.md`)**:
+                               * Khắc phục triệt để lỗi `404 Not Found` khi người dùng truy cập trực tiếp bằng phương thức GET vào đường dẫn `/tao-thiep-tu-dong/khoi-tao`.
+                               * Nâng cấp hiệu ứng trình diễn dựng thiệp từ cấp độ block sơ sài sang cấp độ hạt nhân chi tiết (Fine-grained progressive crafting choreography).
+                               * Cơ chế phòng vệ First-visit-only presentation (One-time presentation token): Chỉ phát hoạt họa ở lần tạo thiệp đầu tiên, khi reload/F5, back/forward hoặc copy link URL thì hiển thị 100% Instant SSR tĩnh, loại bỏ tình trạng nhấp nháy hoặc tự động phát lại.
+                               * Tái cấu trúc hoàn toàn bố cục Love Story (Section 2) sang layout 1 cột thanh thoát, loại bỏ hiện tượng co cụm văn bản thành dải hẹp dưới 160px trên khung mobile.
+                               * Redesign giao diện Preview Studio sang phong cách Atelier Quiet Luxury (tông màu Warm Ivory `#FAF8F5`, `#F6F3EE`, `#EAE3D9`, loại bỏ toàn bộ emoji, thay bằng SVG icons sắc sảo).
+                             - **Giải pháp triển khai thực tế**:
+                               1. **Định tuyến & Chống 404 URL Khởi tạo**:
+                                  - Cấu hình route `GET /tao-thiep-tu-dong/khoi-tao` trỏ trực tiếp đến `CuratedInvitationController@create` (alias cho `curated.create`), cho phép truy cập hoặc gõ trực tiếp URL đều trả về giao diện Wizard 200 OK.
+                                  - Xóa sạch bootstrap cache (`php artisan optimize:clear`) để loại bỏ cache cũ trên môi trường local.
+                               2. **Gắn Fine-Grained `data-craft-unit` cho toàn bộ 7 Sections x 3 Biến thể (21 files Blade)**:
+                                  - Đã gán class `.mayhen_curated_craft_unit` và thuộc tính `data-craft-unit` cho từng dòng văn bản, thẻ tên, khung ảnh, quote, thẻ lịch, vé mời, bản đồ trong `sections/hero/`, `sections/story/`, `sections/parents/`, `sections/countdown/`, `sections/events/`, `sections/timeline/`, và `sections/album/`.
+                               3. **Điều phối Hoạt họa Dựng Thiệp Thông Minh (`script.js` & `styles.css`)**:
+                                  - Xây dựng animation tuần tự theo nhịp điệu tự nhiên: text ngắn ~420ms, ảnh/card ~580ms, tổng thời lượng ~18-22s.
+                                  - Tích hợp auto-scroll thông minh: chỉ cuộn mượt khi phần tử nằm sâu sát đáy viewport (`rect.bottom > viewHeight * 0.78`), tự động ngắt cuộn ngay khi người dùng chạm vuốt (touch/wheel/keyboard), kết thúc dừng tại chỗ và TUYỆT ĐỐI KHÔNG nhảy giật về đầu trang.
+                                  - Hỗ trợ đầy đủ hành động Bỏ qua (`MAYHEN_CRAFTING_SKIP`) và Xem lại dựng thiệp (`MAYHEN_REPLAY_CRAFTING`) 100% client-side, không gọi backend AI, không tốn tài nguyên server.
+                               4. **Tái Cấu Trúc Bố Cục Love Story Magazine**:
+                                  - Bố cục 1 cột hoàn hảo cho mobile/iframe, ảnh Polaroid `max-width: 270px` căn giữa với góc nghiêng nhẹ và bóng đổ êm dịu, typography thoáng đãng, dễ đọc.
+                               5. **Redesign Giao Diện Preview Sang Tông Màu Atelier Quiet Luxury**:
+                                  - Chuyển toàn bộ màu nền và thanh điều khiển sang dải màu Warm Ivory/Beige thanh lịch (`#FAF8F5`, `#F6F3EE`, viền `#EAE3D9`, text `#1F1D1A`).
+                                  - Thay thế toàn bộ emoji trên topbar buttons bằng các SVG icons tối giản, sắc sảo.
+                                  - Gọi `history.replaceState` client-side để xóa token khỏi URL ngay sau khi kích hoạt, đảm bảo an toàn 2 lớp chống replay khi F5.
+                             - **Tập tin đã cập nhật**:
+                               * Routes & Controllers: `routes/web.php`, `app/Http/Controllers/Client/CuratedInvitationController.php`, `app/Http/Controllers/Admin/TemplateController.php`.
+                               * Views & Scripts Template: `resources/views/client/invitations/mayhen-curated/` (`script.js`, `styles.css`, `template.blade.php`, và 21 section blade templates).
+                               * Views & Assets Preview: `resources/views/client/pages/curated/preview.blade.php`, `public/assets/client/css/pages/curated-preview.css`, `public/assets/client/js/pages/curated-preview.js`.
+                               * Tests: `tests/Feature/CuratedInvitationFlowTest.php` (13/13 tests passed), `tests/Feature/ClientGuestManagementTest.php`.
+                             - **Kết quả Kiểm Thử**:
+                               * Toàn bộ 598/598 tests toàn hệ thống: **100% PASSED (3,122 assertions)** trong 69 giây.
+                               * Laravel Pint: Đạt chuẩn 100% agent style (`vendor/bin/pint --format agent`).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

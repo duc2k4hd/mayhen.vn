@@ -102,22 +102,31 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     }
 
-    // Kích hoạt ngay lúc vào trang nếu có query param crafting=1 hoặc pt
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasCraftingParam = urlParams.get('crafting') === '1' || urlParams.has('pt') || (iframe && iframe.src.indexOf('crafting=1') !== -1);
-    if (hasCraftingParam) {
+    // Kích hoạt animation CHỈ KHI server cấp quyền trình diễn lần đầu tiên (First-Visit-Only)
+    const shouldAnimate = appEl.dataset.shouldAnimate === '1';
+    if (shouldAnimate) {
         startCraftingMode();
+        // Xóa ngay token khỏi URL để F5, Back/Forward không bao giờ bị phát lại
+        try {
+            history.replaceState({}, '', window.location.pathname);
+        } catch (e) {}
+    } else {
+        if (craftingPill) {
+            craftingPill.classList.remove('is-active');
+            craftingPill.style.display = 'none';
+        }
     }
 
-    // Lắng nghe postMessage trực tiếp từ iframe khi mỗi section được dựng
+    // Lắng nghe postMessage trực tiếp từ iframe khi từng chi tiết được dựng
     window.addEventListener('message', (e) => {
         if (!e.data || typeof e.data !== 'object') return;
 
         if (e.data.type === 'MAYHEN_CRAFTING_STEP') {
             if (craftingPill && craftingText) {
                 craftingPill.classList.add('is-active');
+                craftingPill.style.display = 'inline-flex';
                 const title = sectionTitles[e.data.section] || e.data.section;
-                craftingText.textContent = `✦ Đang phác thảo: Mục ${e.data.step}/${e.data.total} (${title})...`;
+                craftingText.textContent = `✦ Đang hoàn thiện: ${title} (${e.data.step}/${e.data.total})...`;
             }
 
             // Highlight nhẹ thẻ section ở sidebar tương ứng
@@ -161,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnRemix.addEventListener('click', async () => {
             btnRemix.disabled = true;
             const originalText = btnRemix.innerHTML;
-            btnRemix.innerHTML = '<span>Đang phối... ⏳</span>';
+            btnRemix.innerHTML = '<span>Đang phối...</span>';
 
             try {
                 const response = await fetch(`/api/curated/remix/${invitationId}`, {

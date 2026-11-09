@@ -5,17 +5,17 @@
  */
 
 :root {
-    --curated-bg: #12100E;
-    --curated-panel-bg: #181512;
-    --curated-card-bg: #221E1A;
-    --curated-card-hover: #2A2520;
-    --curated-border-dark: rgba(255, 255, 255, 0.08);
-    --curated-border-gold: rgba(197, 168, 128, 0.35);
-    --curated-text-white: #FAF8F5;
-    --curated-text-muted: #9E958A;
-    --curated-gold: #C5A880;
-    --curated-gold-hover: #D8BD98;
-    --curated-gold-light: rgba(197, 168, 128, 0.12);
+    --curated-bg: #F6F3EE;
+    --curated-panel-bg: #FAF8F5;
+    --curated-card-bg: #FFFFFF;
+    --curated-card-hover: #FDFCFB;
+    --curated-border-dark: #EAE3D9;
+    --curated-border-gold: rgba(197, 168, 128, 0.5);
+    --curated-text-white: #1F1D1A;
+    --curated-text-muted: #7A726A;
+    --curated-gold: #9C7A4A;
+    --curated-gold-hover: #7E6135;
+    --curated-gold-light: rgba(197, 168, 128, 0.15);
 }
 
 html, body.mayhen_curated_preview_body {
@@ -40,13 +40,14 @@ html, body.mayhen_curated_preview_body {
    1. TOPBAR (STUDIO NAVIGATION)
    ========================================================================== */
 .mayhen_curated_topbar {
-    height: 60px;
+    height: 64px;
     flex-shrink: 0;
     z-index: 100;
-    background: rgba(24, 21, 18, 0.95);
+    background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--curated-border-dark);
+    box-shadow: 0 2px 14px rgba(31, 29, 26, 0.04);
     padding: 0 20px;
     display: flex;
     align-items: center;
@@ -96,7 +97,7 @@ html, body.mayhen_curated_preview_body {
 }
 
 .mayhen_curated_brand_badge .brand_name {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -133,7 +134,7 @@ html, body.mayhen_curated_preview_body {
 }
 
 .mayhen_curated_info_pill .info_names {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 16px;
     font-weight: 600;
     color: var(--curated-gold);
@@ -459,7 +460,7 @@ html, body.mayhen_curated_preview_body {
 }
 
 .sidebar_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 24px;
     font-weight: 600;
     color: var(--curated-text-white);
@@ -632,7 +633,7 @@ html, body.mayhen_curated_preview_body {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at center, #1C1916 0%, #12100E 100%);
+    background: radial-gradient(circle at center, #FAF8F5 0%, #EAE5DE 100%);
 }
 
 .mayhen_curated_phone_wrapper {
@@ -659,9 +660,9 @@ html, body.mayhen_curated_preview_body {
 .mayhen_curated_phone_bezel {
     width: 100%;
     height: 100%;
-    background: #000000;
+    background: #1F1D1A;
     border: 10px solid #2B2824;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(197, 168, 128, 0.35);
+    box-shadow: 0 28px 70px rgba(31, 29, 26, 0.18), 0 0 0 1px rgba(197, 168, 128, 0.35);
     border-radius: 46px;
     position: relative;
     box-sizing: border-box;
@@ -816,7 +817,7 @@ html, body.mayhen_curated_preview_body {
 }
 
 .modal_title {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: var(--mayhen-font-serif);
     font-size: 28px;
     font-weight: 600;
     color: var(--curated-text-white);

@@ -6212,7 +6212,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 
 /* Quote */
 .mayhen_home_faq_postcard_quote {
-    font-family: var(--mayhen-font-script, 'Cormorant Garamond', Georgia, serif);
+    font-family: var(--mayhen-font-serif);
     font-size: 0.98rem;
     font-style: italic;
     color: #57534E;
