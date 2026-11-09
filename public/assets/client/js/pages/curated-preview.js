@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (craftingPill && craftingText) {
             craftingPill.classList.add('is-active');
             craftingPill.style.display = 'inline-flex';
-            craftingText.textContent = 'Đang phác thảo thiệp...';
+            craftingText.textContent = '✦ Khởi tạo bản thiết kế độc bản...';
             if (progressBar) progressBar.style.width = '0%';
             if (progressPct) progressPct.textContent = '0%';
             if (btnSkip) btnSkip.style.display = 'inline-block';
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function endCraftingMode() {
         if (craftingPill && craftingText) {
-            craftingText.textContent = '✦ Thiệp của bạn đã sẵn sàng!';
+            craftingText.textContent = '✦ Tuyệt tác thiệp cưới của bạn đã sẵn sàng!';
             if (btnSkip) btnSkip.style.display = 'none';
             if (progressBar) progressBar.style.width = '100%';
             if (progressPct) progressPct.textContent = '100%';
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 craftingPill.style.display = 'none';
                 if (topbar) topbar.classList.remove('is_crafting');
                 document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
-            }, 2400);
+            }, 3200);
         } else {
             if (topbar) topbar.classList.remove('is_crafting');
         }

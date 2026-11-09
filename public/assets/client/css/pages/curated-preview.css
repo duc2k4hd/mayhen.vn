@@ -255,22 +255,24 @@ html, body.mayhen_curated_preview_body {
 }
 
 .crafting_status_text {
-    max-width: 200px;
+    max-width: 360px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
 }
 
 .crafting_progress_wrap {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .crafting_progress_track {
-    width: 64px;
-    height: 4px;
+    width: 90px;
+    height: 5px;
     background: rgba(255, 255, 255, 0.16);
     border-radius: 999px;
     overflow: hidden;
@@ -282,8 +284,8 @@ html, body.mayhen_curated_preview_body {
     width: 0%;
     background: linear-gradient(90deg, var(--curated-gold), #FCE39E);
     border-radius: 999px;
-    transition: width 0.35s ease;
-    box-shadow: 0 0 8px rgba(207, 168, 96, 0.6);
+    transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 10px rgba(207, 168, 96, 0.8);
 }
 
 .crafting_progress_pct {

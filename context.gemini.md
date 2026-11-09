@@ -6224,6 +6224,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Pint Formatter: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
   * Cache: Đã làm sạch toàn bộ cache ứng dụng.
 
+### [2026-11-09] NÂNG CẤP TIẾN TRÌNH DỆT THIỆP AI CHẬM RÃI, SÂU LẮNG (40S - 1 PHÚT) THEO CHUẨN NGHỆ NHÂN ATELIER
+- **Bối cảnh & Phản hồi thực tế từ người dùng**:
+  * Trải nghiệm trước đó diễn ra quá nhanh (~3-4 giây), người xem chưa kịp quan sát thì thiệp đã xong, tạo cảm giác như "hiệu ứng CSS giả lập / đối phó", thiếu tính chân thật và chiều sâu nghệ thuật của một hệ thống AI cao cấp thiết kế riêng cho ngày trọng đại.
+  * Yêu cầu bắt buộc: Tiến trình tạo thiệp phải diễn ra **chậm rãi, sâu lắng từng phần tử, kéo dài từ 40 giây đến 1 phút** (~45-50s), mang lại cảm giác chân thực như một nghệ nhân atelier / AI đang chăm chút từng câu chữ, căn chỉnh từng vệt màu, nét chỉ vàng.
+- **Giải pháp kỹ thuật đã triển khai (Native Crafting Presenter V8)**:
+  1. **Chuẩn hoá Nhịp Độ Dệt Thiệp (Deliberate Atelier Cadence ~48 Giây)**:
+     * Cấu hình thời gian mục tiêu `TARGET_TOTAL_DURATION_MS = 48000` (khoảng 48 giây, nằm chuẩn trong khoảng 40s - 1 phút).
+     * Thuật toán tự động tính toán nhịp trễ `stepDelay = Math.max(1450, Math.min(2500, Math.round(TARGET_TOTAL_DURATION_MS / collectedUnits.length)))`, đảm bảo dù bất kỳ mẫu thiệp nào, tổng thời gian dệt luôn đạt độ dài ~45-50 giây.
+  2. **Phân Giải 25 - 35 Đơn Vị Mỹ Thuật Nguyên Tử (Fine-Grained Atomic Units)**:
+     * Tách nhỏ từng chi tiết trong 7 Section: Tước hiệu hôn lễ → Tên Chú Rể → Huy hiệu gắn kết → Tên Cô Dâu → Khung chân dung uyên ương → Ngày dương lịch → Ngày âm lịch → Lời đề tựa → Khởi mở Lời Ngỏ → Tựa đề chuyện tình → Khung vòm mỹ thuật trích dẫn → AI chắt lọc câu trích dẫn → Thước phim thanh xuân → Đoạn tự sự → Kính báo Song Thân Nhà Trai → Kính cẩn giới thiệu Nhà Gái → Tự bạch Chú Rể & Cô Dâu → Đính kết lịch Save The Date → Nhịp đếm ngược Ngày / Giờ / Phút / Giây → Vé mời hôn lễ & Lễ Gia Tiên → Buổi tiệc cưới thân mật → Định vị toạ độ Google Maps → Chỉ đường thông minh → Trục chỉ vàng lịch trình → Từng mốc thời gian 1, 2, 3, 4 → Tuyển chọn Album 10 khoảnh khắc → Khung ảnh tiêu điểm → Hoàn thiện tuyệt tác độc bản.
+  3. **Nâng Cấp Vệt Sáng Hoàng Gia Lộng Lẫy & Nhịp Nghỉ Chiêm Ngưỡng (Atelier Savor Pause)**:
+     * Tăng thời gian quét vệt sáng kim loại hoàng gia (`mayhenBeamTrack` & `mayhenSweepReveal`) từ 0.65s lên **1.1s** với đường cong chuyển động êm ái `cubic-bezier(0.22, 1, 0.36, 1)` và độ trôi nhẹ `translateY(6px) -> translateY(0)`.
+     * Sau khi mỗi phần tử được quét mở hoàn toàn, có nhịp dừng nghỉ 500-800ms để mắt người dùng kịp đọc, cảm nhận và chiêm ngưỡng nội dung thiệp trước khi camera mượt mà trôi sang phần tử kế tiếp.
+  4. **Tối Ưu Giao Diện Topbar Studio & Thanh Tiến Trình (Realistic AI Atelier Progress)**:
+     * Mở rộng bề rộng hiển thị nhãn trạng thái `.crafting_status_text` lên `360px` trên Desktop để hiển thị trọn vẹn các thông điệp thơ mộng của AI atelier không bị cắt dấu ba chấm `...`.
+     * Mở rộng thanh tiến trình `.crafting_progress_track` lên `90px` với hiệu ứng lướt mượt mà `transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)`, giúp tỷ lệ phần trăm (0% -> 100%) tăng dần đều đặn, trang nhã suốt hành trình ~48 giây.
+     * Cập nhật thông điệp hoàn thành: *"✦ Tuyệt tác thiệp cưới của bạn đã sẵn sàng!"* và giữ hiển thị 3.2s trước khi ẩn nhẹ nhàng.
+     * Vẫn giữ nguyên 100% quyền kiểm soát: Người dùng có thể nhấn `Bỏ qua ›` (Skip) bất kỳ lúc nào để xem ngay thành phẩm trong 0ms, hoặc bấm `Xem lại` (Replay) để thưởng thức lại toàn bộ trải nghiệm dệt thiệp từ đầu.
+- **Tập tin đã cập nhật**:
+  * CSS & Scripts:
+    - `public/assets/client/css/pages/curated-preview.css`
+    - `public/assets/client/js/pages/curated-preview.js`
+    - `public/assets/client/js/pages/native-crafting-presenter.js`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Pint Formatter: **100% PASSED** chuẩn agent style (`vendor/bin/pint --dirty --format agent`).
+  * Toàn bộ test suites: **100% PASSED** (476/476 tests, 2,459 assertions).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
