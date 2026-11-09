@@ -131,21 +131,19 @@ html, body.mayhen_curated_preview_body {
     border-radius: 999px;
     font-size: 12.5px;
     white-space: nowrap;
-    max-width: 400px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
+    flex-shrink: 0;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1024px) {
     .mayhen_curated_info_pill {
         display: flex;
     }
 }
 
-@media (max-width: 1380px) {
+@media (max-width: 1280px) {
     .mayhen_curated_info_pill .info_tag,
-    .mayhen_curated_info_pill .info_sep:nth-of-type(2),
-    .mayhen_curated_info_pill .info_sep:nth-of-type(3) {
+    .mayhen_curated_info_pill .info_sep:last-of-type {
         display: none;
     }
 }

@@ -6339,6 +6339,20 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
   * Laravel Pint: **100% PASSED**.
 
+### [2026-11-09] KHẮC PHỤC LỖI TRÀN & CẮT CHỮ TRÊN THANH TOPBAR STUDIO (INFO PILL TEXT CLIPPING FIX)
+- **Bối cảnh & Nguyên nhân**:
+  * Trên thanh topbar Studio, viên nhãn thông tin `.mayhen_curated_info_pill` chứa quá nhiều thông tin chi tiết kỹ thuật nội bộ (*"Mẫu nguồn: Trọn Kiếp Này Bên Nhau"*) kết hợp với giới hạn cứng `max-width: 400px` và `overflow: hidden`, dẫn đến việc tên phong cách và bảng màu bị cắt cụt lửng lơ (`• T...`).
+- **Giải pháp xử lý**:
+  1. Loại bỏ thông tin nội bộ không cần thiết (*"Mẫu nguồn: ..."*), chỉ giữ lại các thông tin giá trị nhất cho khách hàng: **Tên cặp đôi** • **Phong cách AI** • **Tên bảng màu & Chấm màu**.
+  2. Bỏ giới hạn cứng `max-width: 400px`, cho phép pill co giãn tự nhiên theo nội dung chữ với `flex-shrink: 0; white-space: nowrap`.
+  3. Tối ưu breakpoint responsive `@media (max-width: 1280px)` để ẩn nhẹ nhàng nhãn phong cách khi màn hình thu nhỏ, đảm bảo văn bản luôn hiển thị trọn vẹn 100%, không bao giờ bị cắt chữ.
+- **Tập tin đã cập nhật**:
+  * `resources/views/client/pages/curated/preview.blade.php`
+  * `public/assets/client/css/pages/curated-preview.css`
+- **Kết quả Kiểm Thử & Định Dạng**:
+  * Toàn bộ 476/476 tests: **100% PASSED** (2,459 assertions).
+  * Laravel Pint: **100% PASSED**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

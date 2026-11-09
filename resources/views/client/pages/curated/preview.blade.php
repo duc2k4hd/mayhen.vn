@@ -40,8 +40,6 @@
             <div class="mayhen_curated_info_pill">
                 <span class="info_names">{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}</span>
                 <span class="info_sep">&bull;</span>
-                <span class="info_tag" title="Mẫu thiết kế nguồn nguyên bản Mây Hẹn">Mẫu nguồn: <strong>{{ $template->name ?? 'Giữa Muôn Ngàn Vì Sao' }}</strong></span>
-                <span class="info_sep">&bull;</span>
                 <span class="info_tag">{{ $styles[$currentStyle]['name'] ?? 'Lãng Mạn' }}</span>
                 <span class="info_sep">&bull;</span>
                 <span class="info_palette_badge" title="Bảng màu: {{ $palettes[$currentPalette]['name'] ?? $currentPalette }}">
