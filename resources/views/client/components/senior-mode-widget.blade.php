@@ -17,8 +17,8 @@
         @php
             $weddingData = isset($wedding) && $wedding ? $wedding : (isset($invitation) && $invitation->wedding ? $invitation->wedding : null);
             $extra = $weddingData && is_array($weddingData->extra_data) ? $weddingData->extra_data : (json_decode($weddingData->extra_data ?? '[]', true) ?? []);
-            $groomPhone = $extra['groom_phone'] ?? ($extra['event_party_phone'] ?? null);
-            $bridePhone = $extra['bride_phone'] ?? null;
+            $groomPhone = $extra['groom_phone'] ?? ($weddingData->groom_phone ?? ($extra['event_party_phone'] ?? null));
+            $bridePhone = $extra['bride_phone'] ?? ($weddingData->bride_phone ?? null);
             $mapUrl = $extra['event_party_map_url'] ?? ($extra['google_map_url'] ?? null);
         @endphp
 

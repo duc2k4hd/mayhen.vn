@@ -6522,6 +6522,68 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite toàn hệ thống: **541/541 tests PASSED 100% (2,679 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH GATE 3 (VÒNG ĐỜI KỶ NIỆM & TRẢI NGHIỆM SAU CƯỚI)
+- **Bối cảnh & Mục tiêu**:
+  * Thực thi kiểm toán, kiểm thử tự động và gia cố trực tiếp các bất biến nghiệp vụ cốt lõi tại **GATE 3 — VÒNG ĐỜI KỶ NIỆM & TRẢI NGHIỆM SAU CƯỚI** theo 10 bất biến miền (`INV-41` đến `INV-50`).
+- **Các hạng mục kiểm toán & gia cố cốt lõi**:
+  1. **Khóa Cứng Hộp Thời Gian Bảo Vệ Thông Điệp (`INV-44`)**:
+     * Kiểm chứng cơ chế bảo vệ của `TimeCapsuleController`: Chặn mở niêm phong trước `unlock_date`, trả về HTTP 422 Unprocessable Content.
+  2. **Kiểm Duyệt Nội Dung Sau Cưới (`INV-42` & `INV-43`)**:
+     * 100% ảnh Photo Drop chưa duyệt (`is_approved = false`) bị chặn không hiển thị trên Live Wall, Két Kỷ Niệm.
+     * 100% lời chúc chưa duyệt bị ẩn khỏi Sổ Lưu Bút và Live Feed.
+  3. **Tự Động Mở Khóa Két Kỷ Niệm (`INV-41`)**:
+     * Trước ngày cưới: Chuyển hướng khách mời về thiệp cưới công khai kèm thông báo tiệc cưới chưa diễn ra.
+     * Sau ngày cưới: Tự động mở quyền truy cập Két Kỷ Niệm và album ảnh tiệc cưới.
+  4. **Xuất File An Toàn Chống CSV Formula Injection (`INV-49` & `INV-50`)**:
+     * Xuất danh sách khách mời chuẩn UTF-8 BOM `\xEF\xBB\xBF` hiển thị chuẩn tiếng Việt trên mọi phiên bản Excel.
+     * Vô hiệu hóa triệt để tấn công CSV Formula Injection (CWE-1236) bằng cách chèn dấu nháy đơn `'` trước các ký tự `=`, `+`, `-`, `@`.
+  5. **Gói Lưu Trữ Kỷ Niệm Ngoại Tuyến Độc Lập (`TASK-VAL-18`)**:
+     * Kiểm chứng `PortableWeddingArchiveService` xuất file ZIP hoàn chỉnh gồm ảnh, lời chúc, và `index.html` ngoại tuyến.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `.gitignore`
+  * `tests/Feature/Gate3KeepsakeAndPostWeddingInvariantsTest.php`
+  * `docs/qa/test-run-ledger.csv`
+  * `docs/qa/qa-checkpoint.md`
+
+### [2026-11-09] MÂY HẸN TOTAL PRODUCT TESTER — HOÀN THÀNH GATE 4 (TỐI ƯU HÓA TRẢI NGHIỆM KHÁCH HÀNG, ĐA THIẾT BỊ & NGHIỆM THU THƯƠNG MẠI)
+- **Bối cảnh & Mục tiêu**:
+  * Hoàn tất cổng nghiệm thu cuối cùng **GATE 4** trong chương trình Total Product Tester, bao phủ toàn bộ trải nghiệm người dùng, trợ năng người lớn tuổi, bảo mật quyền riêng tư cá nhân theo Luật 91/2025/QH15 & Nghị định 13/2023/NĐ-CP, quy chuẩn âm thanh Autoplay, và luồng khởi đầu thành công sau thanh toán.
+- **Các hạng mục kiểm toán & gia cố cốt lõi**:
+  1. **Chế Độ Dành Cho Người Lớn Tuổi (Senior-Friendly Guest Mode - TASK-VAL-01 / INV-50)**:
+     * Tích hợp widget `#mayhen_senior_widget` với nút `#mayhen_senior_toggle` chuẩn trợ năng (`aria-label`, `aria-pressed`).
+     * Khi kích hoạt, áp dụng class `.mayhen_senior_mode` phóng to cỡ chữ, tăng độ tương phản, ẩn các hiệu ứng hoa bay (`.mayhen_petal`) gây xao nhãng.
+     * Cung cấp thanh hỗ trợ nhanh với các nút gọi điện thoại trực tiếp (`tel:`) cho chú rể, cô dâu và nút mở Google Maps dẫn đường.
+     * Tối ưu hóa `senior-mode-widget.blade.php` tự động nhận diện số điện thoại từ cả `extra_data` và thuộc tính model `Wedding`.
+  2. **Thanh Tổng Duyệt Trước Khi Gửi Thiệp (Pre-Publish Rehearsal Bar - TASK-VAL-08)**:
+     * Phân quyền nghiêm ngặt: Chỉ Chủ thiệp (Owner) mới có quyền kích hoạt chế độ Rehearsal (`?rehearsal=1`). Khách vãng lai và người dùng khác hoàn toàn không thấy thanh tổng duyệt.
+     * Hỗ trợ mô phỏng persona (Khách VIP, Bạn bè, Gia đình, Đồng nghiệp) với lời ngỏ và số bàn mẫu.
+     * Bất biến bảo toàn dữ liệu: Quá trình diễn tập diễn ra hoàn toàn trên bộ nhớ đệm render, tuyệt đối không tạo thêm bản ghi rác trong cơ sở dữ liệu (`guests` count giữ nguyên).
+  3. **Sổ Tay Bãi Đỗ Xe Thông Minh (Interactive Parking Concierge - TASK-VAL-05)**:
+     * Ẩn hoàn toàn khi chưa được cấu hình.
+     * Khi kích hoạt (`parking_guide.enabled = true`), hiển thị nút bấm `#mayhen-parking-btn-trigger` mở modal `#mayhen-parking-modal` với hướng dẫn chi tiết vị trí đỗ ô tô, xe máy, thang máy/lối lên sảnh, và lưu ý vé xe.
+  4. **Trung Tâm Minh Bạch Quyền Riêng Tư (Privacy Consent - TASK-VAL-24 / Luật 91/2025/QH15 & Nghị định 13/2023/NĐ-CP)**:
+     * Chặn truy cập trái phép bằng HTTP 404 (chống rà quét ID thiệp của cặp đôi khác).
+     * Cho phép chủ sở hữu thiết lập chính sách che số tài khoản mừng cưới với người lạ (`named_guests_only`) và giới hạn thời gian lưu trữ số điện thoại khách mời (`phone_retention_days`).
+  5. **Cổng Khởi Đầu Thành Công Sau Thanh Toán (Post-Payment First Success Portal - TASK-VAL-26)**:
+     * Khi đơn hàng chuyển trạng thái `paid`, khách hàng được điều hướng tới trang First Success (`checkout.first_success`) với hướng dẫn 3 bước hành động cụ thể: (1) Xem & chia sẻ link thiệp chính thức, (2) Bố trí sơ đồ bàn tiệc & QR lễ tân, (3) Cài đặt bảo vệ số tài khoản ngân hàng.
+  6. **Chính Sách Âm Thanh Nền & Autoplay Policy Defense (`INV-47`, `INV-48`)**:
+     * Thẻ `<audio>` trên thiệp di động thiết lập `preload="none"`, `loop`, `playsinline` để tiết kiệm băng thông.
+     * Âm thanh chỉ phát khi người dùng có thao tác chạm (touch/click) mở thiệp hoặc bấm nút Play, xử lý ngoại lệ `.catch()` mượt mà khi trình duyệt chặn autoplay.
+     * Nút Play/Pause nổi trên giao diện phản ánh đồng bộ chính xác trạng thái phát của thẻ `<audio>`.
+  7. **Bảo Toàn Dữ Liệu Vĩnh Viễn Sau Ngày Cưới (`INV-45`)**:
+     * Sau khi ngày cưới kết thúc (`wedding_date->isPast()`), toàn bộ danh sách khách mời, số tiền mừng cưới, lời chúc và ảnh Photo Drop được lưu giữ an toàn tuyệt đối.
+  8. **Bộ Kiểm Thử Tự Động Hóa Gate 4 (`tests/Feature/Gate4CommercialExperienceInvariantsTest.php`)**:
+     * 7 kịch bản Feature Test tự động hóa bao phủ 52 assertions, **100% PASSING**.
+- **Tập tin đã chỉnh sửa / tạo mới**:
+  * `resources/views/client/components/senior-mode-widget.blade.php`
+  * `.gitignore`
+  * `tests/Feature/Gate4CommercialExperienceInvariantsTest.php`
+  * `docs/qa/test-run-ledger.csv`
+  * `docs/qa/qa-checkpoint.md`
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Toàn bộ test suite: **553/553 tests PASSED 100% (2,752 assertions)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
