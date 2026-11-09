@@ -40,5 +40,12 @@
     * Khóa và mở khóa thiệp cưới (`lock`/`unlock`) với lý do chi tiết, chặn toàn diện mọi hành vi autosave và kiểm định khi bị khóa.
     * Xuất khẩu CSV an toàn 100% kèm UTF-8 BOM và cơ chế lọc chống tấn công chèn công thức Excel (`=, +, -, @`).
     * Ghi nhận đầy đủ nhật ký kiểm toán quản trị (`AuditLogger`) phục vụ tra soát minh bạch.
-- **Test suite**: **586/586 tests PASSED** (2,933 assertions).
+  - CỤM E — Tiền Mừng Cưới, VietQR, Sổ Kỷ Niệm & Hậu Đám Cưới (HOÀN THÀNH 100%)
+    * Sửa lỗi phân quyền sổ mừng cưới chặn chủ thiệp session và partner (`BUG-GIFT-001`), đồng bộ chuẩn hóa `isOwner()`.
+    * CRUD sổ mừng cưới, thống kê tài chính thời gian thực (tổng tiền mừng, tiền mặt, chuyển khoản, trung bình mỗi khách, trạng thái cảm ơn).
+    * Xuất file CSV UTF-8 BOM và bản in khổ A4 đối soát tài chính sau hôn lễ kèm bộ lọc phòng vệ tấn công chèn công thức.
+    * Hộp thời gian (`Time Capsule`): bảo vệ tuyệt đối nội dung thư gửi tương lai (ẩn content null khi niêm phong), chặn mở khóa trước ngày `unlock_date`.
+    * Sổ kỷ yếu lưu bút số (`Editorial Keepsake Book`) dàn trang trang trọng các lời chúc đã duyệt theo thứ tự thời gian.
+    * Trợ lý soạn thảo tin nhắn cảm ơn cá nhân hóa (`PersonalThankYouService`) tự động gắn nhãn và ghép danh xưng chuẩn mực cho từng khách mời.
+- **Test suite**: **592/592 tests PASSED** (2,982 assertions).
 - **Code style**: **Laravel Pint PASSED**.

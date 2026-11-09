@@ -126,7 +126,7 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
 ### Trạng thái Kiểm Định Toàn Diện Hệ Thống (Master QA Program) — 09/11/2026
 
 - **Vai trò thực thi:** Principal QA Engineer, Business Logic Auditor & Senior Laravel Bug Fixer.
-- **Hiện trạng kiểm thử tự động toàn diện:** **586/586 tests PASSED (100%)**, 2,933 assertions. Thời gian thực thi: ~11.2s.
+- **Hiện trạng kiểm thử tự động toàn diện:** **592/592 tests PASSED (100%)**, 2,982 assertions. Thời gian thực thi: ~11.1s.
 - **Code Formatter:** Laravel Pint **100% PASSED** (Agent style).
 - **Các cổng và phân hệ cốt lõi đã nghiệm thu:**
   1. **50 Bất biến nghiệp vụ (Domain Invariants INV-01 -> INV-50):** Hoàn thành 100% qua 5 Feature Test Suites (`Gate0DomainInvariantsTest.php` đến `Gate4CommercialExperienceInvariantsTest.php`), giải quyết triệt để 12 lỗi kiến trúc.
@@ -146,6 +146,14 @@ Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đ
      * Xuất file CSV UTF-8 BOM kèm bộ lọc phòng vệ tấn công chèn công thức Excel (`=, +, -, @`).
      * Ghi nhận và truy vấn nhật ký kiểm toán hành chính (`AuditLogger`).
      * Đạt 100% với `AdminPortalAndSystemAuditDeepTest.php` (8 tests, 40 assertions).
+  6. **CỤM E — Tiền Mừng Cưới, VietQR, Sổ Kỷ Niệm & Hậu Đám Cưới:**
+     * Sửa lỗi phân quyền sổ mừng cưới chặn chủ thiệp vãng lai qua session hoặc partner (`BUG-GIFT-001`), đồng bộ chuẩn hóa `isOwner()`.
+     * CRUD sổ mừng cưới, tự động tổng hợp số liệu tài chính thời gian thực (tổng tiền, tiền mặt, chuyển khoản, trung bình/khách, đã cảm ơn).
+     * Xuất file CSV UTF-8 BOM và bản in khổ A4 đối soát tài chính sau tiệc cưới có phòng vệ chống formula injection.
+     * Hộp thời gian (`Time Capsule`): bảo vệ tuyệt mật nội dung thư gửi tương lai (ẩn content null khi niêm phong), chặn mở khóa trước ngày `unlock_date`.
+     * Sổ kỷ yếu lưu bút số (`Editorial Keepsake Book`) dàn trang trang trọng các lời chúc đã duyệt theo thứ tự thời gian.
+     * Trợ lý soạn thảo tin nhắn cảm ơn cá nhân hóa (`PersonalThankYouService`) tự động gắn nhãn và ghép danh xưng chuẩn mực cho từng khách mời.
+     * Đạt 100% với `MonetaryGiftsAndKeepsakeLifecycleDeepTest.php` (6 tests, 49 assertions).
 
 ### Trạng thái Studio đã xác minh — 06/11/2026
 

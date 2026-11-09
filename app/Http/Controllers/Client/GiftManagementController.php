@@ -362,7 +362,15 @@ class GiftManagementController extends Controller
             abort(404);
         }
 
-        if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
+        if ($invitation->isOwner()) {
+            return;
+        }
+
+        if (auth()->check() && auth()->user()->partner && (int) $wedding->partner_id === (int) auth()->user()->partner->id) {
+            return;
+        }
+
+        if (auth()->check() && auth()->user()->isAdmin()) {
             return;
         }
 
