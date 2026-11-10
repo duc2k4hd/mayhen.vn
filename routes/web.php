@@ -146,6 +146,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/so-luu-but/in', [WishManagementController::class, 'print'])->name('wishes.print');
     Route::post('/thiep/{id}/so-luu-but/{wishId}/phan-hoi', [WishManagementController::class, 'reply'])->name('wishes.reply');
     Route::post('/thiep/{id}/so-luu-but/{wishId}/an-hien', [WishManagementController::class, 'toggleVisibility'])->name('wishes.toggle_visibility');
+    Route::post('/thiep/{id}/so-luu-but/{wishId}/ghim', [WishManagementController::class, 'togglePin'])->name('wishes.toggle_pin');
+    Route::post('/thiep/{id}/so-luu-but/che-do-kiem-duyet', [WishManagementController::class, 'updateModerationMode'])->name('wishes.update_moderation_mode');
     Route::post('/thiep/{id}/so-luu-but/duyet-tat-ca', [WishManagementController::class, 'approveAll'])->name('wishes.approve_all');
     Route::delete('/thiep/{id}/so-luu-but/{wishId}', [WishManagementController::class, 'destroy'])->name('wishes.destroy');
 
@@ -214,6 +216,7 @@ Route::prefix('tai-khoan')->group(function () {
     Route::put('/khach-moi/{id}', [GuestController::class, 'update'])->middleware('throttle:60,1')->name('guests.update');
     Route::post('/khach-moi/{id}/toggle-sent', [GuestController::class, 'toggleSent'])->middleware('throttle:60,1')->name('guests.toggle_sent');
     Route::post('/khach-moi/{id}/rsvp-thu-cong', [GuestController::class, 'manualRsvp'])->middleware('throttle:60,1')->name('guests.manual_rsvp');
+    Route::post('/khach-moi/{id}/tai-tao-token', [GuestController::class, 'regenerateToken'])->middleware('throttle:30,1')->name('guests.regenerate_token');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
 
     // Phân Phối Thiệp Cưới & Quản Lý Kênh Gửi (Wedding Invitation Delivery & Campaign Dispatch - Section 30 Master PRD V3)

@@ -114,22 +114,63 @@
         </div>
     </div>
 
-    <!-- 4 Stats Cards Grid -->
-    <div class="mayhen_account_kpi_grid" style="margin-bottom: 24px;">
+    <!-- Moderation Mode Control Card -->
+    <div class="mayhen_account_form_card" style="margin-bottom: 24px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: #FAF8F5; border: 1px solid #EFE8DD;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #EFE8DD; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                🛡️
+            </div>
+            <div>
+                <div style="font-size: 15px; font-weight: 600; color: #1F1D1A; display: flex; align-items: center; gap: 8px;">
+                    <span>Chế Độ Xuất Bản Lời Chúc:</span>
+                    @if($moderationMode === 'manual')
+                        <span class="mayhen_account_status_badge locked" style="font-size: 11px;">Kiểm Duyệt Trước</span>
+                    @else
+                        <span class="mayhen_account_status_badge published" style="font-size: 11px;">Tự Động Hiển Thị</span>
+                    @endif
+                </div>
+                <div style="font-size: 13px; color: #7A726A; margin-top: 2px;">
+                    @if($moderationMode === 'manual')
+                        Lời chúc mới của khách sẽ ở trạng thái chờ duyệt. Chỉ hiển thị trên thiệp sau khi bạn bấm <strong>Hiển thị</strong>.
+                    @else
+                        Mọi lời chúc công khai từ khách sẽ tự động hiển thị ngay trên thiệp cưới. Bạn có thể tạm ẩn bất kỳ lúc nào.
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <form action="{{ route('account.wishes.update_moderation_mode', $invitation->id) }}" method="POST" style="margin: 0;">
+            @csrf
+            @if($moderationMode === 'manual')
+                <input type="hidden" name="moderation_mode" value="auto">
+                <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="white-space: nowrap;">
+                    ⚡ Chuyển Sang Tự Động Hiển Thị
+                </button>
+            @else
+                <input type="hidden" name="moderation_mode" value="manual">
+                <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="white-space: nowrap;">
+                    🛡️ Bật Kiểm Duyệt Trước
+                </button>
+            @endif
+        </form>
+    </div>
+
+    <!-- 6 Stats Cards Grid -->
+    <div class="mayhen_account_kpi_grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Tổng Lời Chúc Phúc</span>
+                <span class="mayhen_account_kpi_title">Tổng Lời Chúc</span>
                 <svg class="mayhen_account_kpi_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
             </div>
             <div class="mayhen_account_kpi_val">{{ number_format($totalWishes) }}</div>
-            <div class="mayhen_account_kpi_desc">Lời chúc từ gia đình & bạn bè</div>
+            <div class="mayhen_account_kpi_desc">Lời chúc gửi tới đôi uyên ương</div>
         </div>
 
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Đã Gửi Lời Cảm Ơn</span>
+                <span class="mayhen_account_kpi_title">Đã Cảm Ơn</span>
                 <svg class="mayhen_account_kpi_icon" style="color: #2E7D32;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -141,7 +182,7 @@
 
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Chờ Phản Hồi</span>
+                <span class="mayhen_account_kpi_title">Chờ Cảm Ơn</span>
                 <svg class="mayhen_account_kpi_icon" style="color: #F57F17;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 6 12 12 16 14"></polyline>
@@ -153,14 +194,32 @@
 
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Tạm Ẩn Khỏi Thiệp</span>
+                <span class="mayhen_account_kpi_title">Tạm Ẩn / Chờ Duyệt</span>
                 <svg class="mayhen_account_kpi_icon" style="color: #8C827A;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                     <line x1="1" y1="1" x2="23" y2="23"></line>
                 </svg>
             </div>
             <div class="mayhen_account_kpi_val">{{ number_format($hiddenCount) }}</div>
-            <div class="mayhen_account_kpi_desc">Lời chúc không hiển thị công khai</div>
+            <div class="mayhen_account_kpi_desc">Chưa hiển thị trên thiệp</div>
+        </div>
+
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Đã Ghim Nổi Bật</span>
+                <span style="font-size: 16px;">📌</span>
+            </div>
+            <div class="mayhen_account_kpi_val" style="color: #B78103;">{{ number_format($pinnedCount) }}</div>
+            <div class="mayhen_account_kpi_desc">Ưu tiên hiển thị trên đầu</div>
+        </div>
+
+        <div class="mayhen_account_kpi_card">
+            <div class="mayhen_account_kpi_header">
+                <span class="mayhen_account_kpi_title">Lời Chúc Bí Mật</span>
+                <span style="font-size: 16px;">🔒</span>
+            </div>
+            <div class="mayhen_account_kpi_val" style="color: #6A1B9A;">{{ number_format($privateCount) }}</div>
+            <div class="mayhen_account_kpi_desc">Chỉ cô dâu chú rể đọc được</div>
         </div>
     </div>
 
@@ -177,8 +236,11 @@
 
             <select name="status" class="mayhen_account_input" style="height: 38px; width: auto;" onchange="this.form.submit()">
                 <option value="">-- Tất cả trạng thái --</option>
+                <option value="pinned" {{ $filterStatus === 'pinned' ? 'selected' : '' }}>📌 Đã ghim nổi bật</option>
+                <option value="private" {{ $filterStatus === 'private' ? 'selected' : '' }}>🔒 Lời chúc bí mật (Riêng tư)</option>
                 <option value="pending" {{ $filterStatus === 'pending' ? 'selected' : '' }}>Chờ phản hồi cảm ơn</option>
                 <option value="replied" {{ $filterStatus === 'replied' ? 'selected' : '' }}>Đã gửi lời cảm ơn</option>
+                <option value="approved" {{ $filterStatus === 'approved' ? 'selected' : '' }}>Đang hiển thị công khai</option>
                 <option value="hidden" {{ $filterStatus === 'hidden' ? 'selected' : '' }}>Tạm ẩn khỏi thiệp</option>
             </select>
 
@@ -208,16 +270,31 @@
     @if($wishes->isNotEmpty())
         <div class="mayhen_account_wishes_grid">
             @foreach($wishes as $wish)
-                <div class="mayhen_account_form_card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 16px;">
+                <div class="mayhen_account_form_card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 16px; position: relative; {{ $wish->is_pinned ? 'border: 1px solid #E5C378; background: #FFFDF9;' : '' }}">
                     <div>
                         <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
                             <div>
-                                <h3 style="font-size: 16px; font-weight: 600; color: #1F1D1A; margin: 0;">
-                                    {{ $wish->name }}
-                                </h3>
-                                <span style="font-size: 12px; color: #8C827A;">
-                                    {{ $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '' }}
-                                </span>
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <h3 style="font-size: 16px; font-weight: 600; color: #1F1D1A; margin: 0;">
+                                        {{ $wish->name }}
+                                    </h3>
+                                    @if($wish->is_pinned)
+                                        <span class="mayhen_account_status_badge" style="background: #FFF8E1; color: #B78103; border: 1px solid #FFE082; font-size: 11px;">
+                                            📌 Đã Ghim
+                                        </span>
+                                    @endif
+                                    @if($wish->is_private)
+                                        <span class="mayhen_account_status_badge" style="background: #F3E5F5; color: #6A1B9A; border: 1px solid #E1BEE7; font-size: 11px;">
+                                            🔒 Bí Mật
+                                        </span>
+                                    @endif
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8C827A; margin-top: 2px;">
+                                    <span>{{ $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '' }}</span>
+                                    @if($wish->guest)
+                                        <span>&bull; Khách mời: <strong style="color: #4A453E;">{{ $wish->guest->name }}</strong> @if($wish->guest->group_name)({{ $wish->guest->group_name }})@endif</span>
+                                    @endif
+                                </div>
                             </div>
 
                             <div style="display: flex; align-items: center; gap: 6px;">
@@ -230,6 +307,14 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Chữ ký số điện tử (nếu có) -->
+                        @if($wish->signature_url)
+                            <div style="margin-bottom: 12px; padding: 6px 12px; background: #FFFFFF; border: 1px dashed #D8CEBD; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 11px; color: #7A726A;">✍️ Chữ ký tay:</span>
+                                <img src="{{ $wish->signature_url }}" alt="Chữ ký {{ $wish->name }}" style="height: 32px; max-width: 140px; object-fit: contain;">
+                            </div>
+                        @endif
 
                         <!-- Nội dung lời chúc -->
                         <div style="background: #FAF8F5; border-left: 3px solid #C5A880; border-radius: 4px 8px 8px 4px; padding: 12px 14px; font-size: 14px; color: #2C2824; font-style: italic; line-height: 1.5; margin-bottom: 16px;">
@@ -266,17 +351,26 @@
                         </form>
 
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                            <form action="{{ route('account.wishes.toggle_visibility', [$invitation->id, $wish->id]) }}" method="POST" style="margin: 0;">
-                                @csrf
-                                <button type="submit" style="background: none; border: 1px solid #EAE3D9; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #5A534B; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
-                                    {{ $wish->is_approved ? '👁️ Tạm ẩn' : '✓ Hiển thị' }}
-                                </button>
-                            </form>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <form action="{{ route('account.wishes.toggle_pin', [$invitation->id, $wish->id]) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" title="{{ $wish->is_pinned ? 'Bỏ ghim' : 'Ghim lời chúc lên đầu' }}" style="background: {{ $wish->is_pinned ? '#FFF8E1' : 'none' }}; border: 1px solid {{ $wish->is_pinned ? '#FFE082' : '#EAE3D9' }}; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: {{ $wish->is_pinned ? '#B78103' : '#5A534B' }}; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                                        📌 {{ $wish->is_pinned ? 'Bỏ Ghim' : 'Ghim' }}
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('account.wishes.toggle_visibility', [$invitation->id, $wish->id]) }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" style="background: none; border: 1px solid #EAE3D9; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #5A534B; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                                        {{ $wish->is_approved ? '👁️ Tạm ẩn' : '✓ Hiển thị' }}
+                                    </button>
+                                </form>
+                            </div>
 
                             <form action="{{ route('account.wishes.destroy', [$invitation->id, $wish->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lời chúc này?');" style="margin: 0;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" style="background: none; border: 1px solid #FFCDD2; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #C62828; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                                <button type="submit" style="background: none; border: 1px solid #FFCDD2; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #C62828; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
                                     🗑️ Xóa
                                 </button>
                             </form>

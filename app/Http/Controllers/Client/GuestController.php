@@ -27,6 +27,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -160,6 +161,8 @@ class GuestController extends Controller
             'table_id' => $tableId,
             'phone' => $request->validated('phone'),
             'expected_attendees' => $request->validated('expected_attendees') ?? 1,
+            'max_attendees' => $request->validated('max_attendees') ? (int) $request->validated('max_attendees') : null,
+            'event_ids' => $request->validated('event_ids'),
             'guest_token' => Str::random(32),
         ]);
 
@@ -480,6 +483,9 @@ class GuestController extends Controller
             'table_name' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:20'],
             'expected_attendees' => ['required', 'integer', 'min:1', 'max:50'],
+            'max_attendees' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'event_ids' => ['nullable', 'array'],
+            'event_ids.*' => ['integer'],
         ], [
             'name.required' => 'Vui lòng nhập tên khách mời.',
             'expected_attendees.required' => 'Vui lòng nhập số người tham dự dự kiến.',
@@ -508,6 +514,8 @@ class GuestController extends Controller
             'table_id' => $tableId,
             'phone' => array_key_exists('phone', $validated) ? ($validated['phone'] ?? null) : $guest->phone,
             'expected_attendees' => (int) $validated['expected_attendees'],
+            'max_attendees' => array_key_exists('max_attendees', $validated) ? ($validated['max_attendees'] ? (int) $validated['max_attendees'] : null) : $guest->max_attendees,
+            'event_ids' => array_key_exists('event_ids', $validated) ? $validated['event_ids'] : $guest->event_ids,
         ]);
 
         // Cảnh báo quá tải bàn tiệc nếu việc thay đổi số người làm vượt sức chứa của bàn (Flow 09)
@@ -536,6 +544,40 @@ class GuestController extends Controller
         }
 
         return $redirect;
+    }
+
+    /**
+     * Thu hồi link thiệp cũ và tái tạo mã định danh token mới cho khách mời.
+     */
+    public function regenerateToken(Request $request, int $guestId): JsonResponse|RedirectResponse
+    {
+        $guest = Guest::with('wedding.invitations')->findOrFail($guestId);
+        $this->authorizeGuestManagement($guest->wedding);
+
+        $oldToken = $guest->guest_token;
+        $newToken = $guest->revokeAndRegenerateToken();
+
+        AuditLogger::log(
+            'GUEST_TOKEN_REVOKED',
+            'Guest',
+            $guest->id,
+            "Chủ tiệc đã thu hồi token cũ [{$oldToken}] và cấp mã mới [{$newToken}] cho khách mời {$guest->name}"
+        );
+
+        $invitation = $guest->wedding->invitations()->first();
+        $newUrl = $invitation ? route('invitation.show', ['slug' => $invitation->slug, 'token' => $newToken]) : null;
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã thu hồi liên kết cũ và tái tạo mã thiệp mới cho khách \"{$guest->name}\" thành công!",
+                'guest_id' => $guest->id,
+                'new_token' => $newToken,
+                'invitation_url' => $newUrl,
+            ]);
+        }
+
+        return back()->with('success', "Đã thu hồi mã cũ và cấp liên kết thiệp mới cho khách \"{$guest->name}\" thành công!");
     }
 
     /**
@@ -807,112 +849,161 @@ class GuestController extends Controller
             if (! is_string($guestToken) || $guestToken === '' || strlen($guestToken) > 64) {
                 abort(404);
             }
+
+            // Phòng vệ kiểm tra token đã bị thu hồi (Revoked Token - Section 29 Master PRD V3)
+            $isRevoked = $wedding->guests()
+                ->whereJsonContains('revoked_tokens', $guestToken)
+                ->exists();
+
+            if ($isRevoked) {
+                $revokedNotice = 'Đường link thiệp mời này đã được chủ tiệc thu hồi và cấp lại mã mới. Quý khách vui lòng liên hệ cô dâu chú rể để nhận đường link thiệp mới nhất.';
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'is_revoked' => true,
+                        'message' => $revokedNotice,
+                    ], 422);
+                }
+
+                return back()->with('rsvp_error', $revokedNotice);
+            }
         }
         $ip = $request->ip();
 
         $allowRsvpUpdate = ! empty($config['allow_rsvp_update']);
         $resultStatus = null; // 'created' or 'updated'
 
-        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp, $allowRsvpUpdate, &$resultStatus): bool {
-            $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
-            $guest = $guestToken === null
-                ? null
-                : $lockedWedding->guests()->where('guest_token', $guestToken)->firstOrFail();
+        try {
+            $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp, $allowRsvpUpdate, &$resultStatus): bool {
+                $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
+                $guest = $guestToken === null
+                    ? null
+                    : $lockedWedding->guests()->where('guest_token', $guestToken)->firstOrFail();
 
-            $existingResponse = GuestResponse::where('wedding_id', $lockedWedding->id);
-            if ($guest) {
-                $existingResponse->where('guest_id', $guest->id);
-            } else {
-                $phone = $request->validated('phone');
-                if (! empty($phone)) {
-                    $existingResponse->whereNull('guest_id')->where('phone', $phone);
+                // Kiểm tra số suất tối đa được phép (Headcount Policy - Section 29 Master PRD V3)
+                if ($guest && $guest->max_attendees > 0 && $request->validated('attending_status') === 'attending') {
+                    $adults = (int) ($request->validated('adults_count') ?? 1);
+                    $children = (int) ($request->validated('children_count') ?? 0);
+                    $totalAttendees = $adults + $children;
+
+                    if ($totalAttendees > $guest->max_attendees) {
+                        throw new \InvalidArgumentException("Số lượng người tham dự ({$totalAttendees} người) vượt quá số suất thiệp mời cho phép (tối đa {$guest->max_attendees} suất). Vui lòng điều chỉnh lại hoặc liên hệ cô dâu chú rể để được sắp xếp chu đáo.");
+                    }
+                }
+
+                // Kiểm tra phạm vi sự kiện được phân quyền (Event Scope - Section 29 Master PRD V3)
+                if ($guest && $request->filled('event_id')) {
+                    $eventId = (int) $request->input('event_id');
+                    if (! $guest->isEventAllowed($eventId)) {
+                        throw new \InvalidArgumentException('Rất tiếc, thiệp mời của quý khách không thuộc phạm vi sự kiện này. Vui lòng liên hệ cô dâu chú rể.');
+                    }
+                }
+
+                $existingResponse = GuestResponse::where('wedding_id', $lockedWedding->id);
+                if ($guest) {
+                    $existingResponse->where('guest_id', $guest->id);
                 } else {
-                    $existingResponse->whereNull('guest_id')
-                        ->where('guest_name', $request->validated('guest_name'))
-                        ->where('ip_address', $ip);
-                }
-            }
-
-            if ($existingResponse->exists()) {
-                $existing = $existingResponse->first();
-                // Chỉ cho phép cập nhật khi khách cần tái xác nhận dời lịch HOẶC có token cá nhân và chủ thiệp bật allow_rsvp_update
-                $canUpdate = $existing && ($existing->needs_reconfirmation || ($guest !== null && $allowRsvpUpdate));
-
-                if ($canUpdate) {
-                    GuestResponseLog::create([
-                        'guest_response_id' => $existing->id,
-                        'wedding_id' => $lockedWedding->id,
-                        'guest_id' => $guest?->id,
-                        'previous_status' => $existing->attending_status,
-                        'new_status' => $request->validated('attending_status'),
-                        'previous_adults' => $existing->adults_count ?? 1,
-                        'new_adults' => $request->validated('adults_count') ?? 1,
-                        'previous_children' => $existing->children_count ?? 0,
-                        'new_children' => $request->validated('children_count') ?? 0,
-                        'previous_dietary' => $existing->dietary_requirements,
-                        'new_dietary' => $request->validated('dietary_requirements'),
-                        'previous_wishes' => $existing->wishes,
-                        'new_wishes' => $request->validated('wishes'),
-                        'source' => 'guest_online',
-                        'ip_address' => $ip,
-                    ]);
-
-                    $existing->update([
-                        'attending_status' => $request->validated('attending_status'),
-                        'adults_count' => $request->validated('adults_count') ?? 1,
-                        'children_count' => $request->validated('children_count') ?? 0,
-                        'dietary_requirements' => $request->validated('dietary_requirements'),
-                        'wishes' => $request->validated('wishes'),
-                        'needs_reconfirmation' => false,
-                        'is_late' => $isLateRsvp,
-                        'reconfirmed_at' => now(),
-                        'ip_address' => $ip,
-                    ]);
-
-                    AuditLogger::log(
-                        'RSVP_UPDATED',
-                        'GuestResponse',
-                        $existing->id,
-                        "Khách {$existing->guest_name} đã cập nhật lại phản hồi RSVP sang {$request->validated('attending_status')}"
-                    );
-
-                    $resultStatus = 'updated';
-
-                    return true;
+                    $phone = $request->validated('phone');
+                    if (! empty($phone)) {
+                        $existingResponse->whereNull('guest_id')->where('phone', $phone);
+                    } else {
+                        $existingResponse->whereNull('guest_id')
+                            ->where('guest_name', $request->validated('guest_name'))
+                            ->where('ip_address', $ip);
+                    }
                 }
 
-                return false;
-            }
+                if ($existingResponse->exists()) {
+                    $existing = $existingResponse->first();
+                    // Chỉ cho phép cập nhật khi khách cần tái xác nhận dời lịch HOẶC có token cá nhân và chủ thiệp bật allow_rsvp_update
+                    $canUpdate = $existing && ($existing->needs_reconfirmation || ($guest !== null && $allowRsvpUpdate));
 
-            GuestResponse::create([
-                'wedding_id' => $lockedWedding->id,
-                'guest_id' => $guest?->id,
-                'guest_name' => $request->validated('guest_name'),
-                'phone' => $request->validated('phone'),
-                'attending_status' => $request->validated('attending_status'),
-                'adults_count' => $request->validated('adults_count') ?? 1,
-                'children_count' => $request->validated('children_count') ?? 0,
-                'dietary_requirements' => $request->validated('dietary_requirements'),
-                'wishes' => $request->validated('wishes'),
-                'is_late' => $isLateRsvp,
-                'is_wishes_public' => true,
-                'ip_address' => $ip,
-            ]);
+                    if ($canUpdate) {
+                        GuestResponseLog::create([
+                            'guest_response_id' => $existing->id,
+                            'wedding_id' => $lockedWedding->id,
+                            'guest_id' => $guest?->id,
+                            'previous_status' => $existing->attending_status,
+                            'new_status' => $request->validated('attending_status'),
+                            'previous_adults' => $existing->adults_count ?? 1,
+                            'new_adults' => $request->validated('adults_count') ?? 1,
+                            'previous_children' => $existing->children_count ?? 0,
+                            'new_children' => $request->validated('children_count') ?? 0,
+                            'previous_dietary' => $existing->dietary_requirements,
+                            'new_dietary' => $request->validated('dietary_requirements'),
+                            'previous_wishes' => $existing->wishes,
+                            'new_wishes' => $request->validated('wishes'),
+                            'source' => 'guest_online',
+                            'ip_address' => $ip,
+                        ]);
 
-            if (! empty($request->validated('wishes'))) {
-                WeddingWish::create([
+                        $existing->update([
+                            'attending_status' => $request->validated('attending_status'),
+                            'adults_count' => $request->validated('adults_count') ?? 1,
+                            'children_count' => $request->validated('children_count') ?? 0,
+                            'dietary_requirements' => $request->validated('dietary_requirements'),
+                            'wishes' => $request->validated('wishes'),
+                            'needs_reconfirmation' => false,
+                            'is_late' => $isLateRsvp,
+                            'reconfirmed_at' => now(),
+                            'ip_address' => $ip,
+                        ]);
+
+                        AuditLogger::log(
+                            'RSVP_UPDATED',
+                            'GuestResponse',
+                            $existing->id,
+                            "Khách {$existing->guest_name} đã cập nhật lại phản hồi RSVP sang {$request->validated('attending_status')}"
+                        );
+
+                        $resultStatus = 'updated';
+
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                GuestResponse::create([
                     'wedding_id' => $lockedWedding->id,
+                    'guest_id' => $guest?->id,
+                    'guest_name' => $request->validated('guest_name'),
+                    'phone' => $request->validated('phone'),
+                    'attending_status' => $request->validated('attending_status'),
+                    'adults_count' => $request->validated('adults_count') ?? 1,
+                    'children_count' => $request->validated('children_count') ?? 0,
+                    'dietary_requirements' => $request->validated('dietary_requirements'),
+                    'wishes' => $request->validated('wishes'),
+                    'is_late' => $isLateRsvp,
+                    'is_wishes_public' => true,
                     'ip_address' => $ip,
-                    'name' => $request->validated('guest_name'),
-                    'message' => $request->validated('wishes'),
-                    'is_approved' => true,
                 ]);
+
+                if (! empty($request->validated('wishes'))) {
+                    WeddingWish::create([
+                        'wedding_id' => $lockedWedding->id,
+                        'ip_address' => $ip,
+                        'name' => $request->validated('guest_name'),
+                        'message' => $request->validated('wishes'),
+                        'is_approved' => true,
+                    ]);
+                }
+
+                $resultStatus = 'created';
+
+                return true;
+            });
+        } catch (\InvalidArgumentException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'headcount_exceeded' => true,
+                    'message' => $e->getMessage(),
+                ], 422);
             }
 
-            $resultStatus = 'created';
-
-            return true;
-        });
+            return back()->with('rsvp_error', $e->getMessage());
+        }
 
         if (! $created) {
             if ($request->wantsJson()) {
@@ -997,11 +1088,61 @@ class GuestController extends Controller
 
         $ip = $request->ip();
 
+        // 1. Phân giải danh tính khách mời nếu có token
+        $guestId = null;
+        if ($guestToken = $request->input('guest_token')) {
+            $matchedGuest = Guest::where('wedding_id', $wedding->id)->where('guest_token', $guestToken)->first();
+            if ($matchedGuest) {
+                $guestId = $matchedGuest->id;
+            }
+        }
+
+        // 2. Xử lý lưu ảnh chữ ký điện tử (Signature Canvas) nếu có
+        $signatureUrl = null;
+        $signatureData = $request->input('signature_data');
+        if ($signatureData && is_string($signatureData) && str_starts_with($signatureData, 'data:image/')) {
+            try {
+                if (preg_match('/^data:image\/(\w+);base64,/', $signatureData, $typeMatches)) {
+                    $imageType = strtolower($typeMatches[1]);
+                    if (in_array($imageType, ['png', 'jpeg', 'webp'], true)) {
+                        $base64Str = substr($signatureData, strpos($signatureData, ',') + 1);
+                        $decoded = base64_decode($base64Str);
+                        if ($decoded !== false && strlen($decoded) <= 1024 * 1024) { // Tối đa 1MB
+                            $filename = 'signatures/'.$slug.'/'.Str::uuid().'.'.($imageType === 'jpeg' ? 'jpg' : $imageType);
+                            Storage::disk('public')->put($filename, $decoded);
+                            $signatureUrl = Storage::url($filename);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                $signatureUrl = null;
+            }
+        }
+
+        // 3. Quyết định chế độ duyệt & quyền riêng tư
+        $isPrivate = (bool) $request->boolean('is_private');
+        $moderationMode = $wedding->getWishModerationMode();
+
+        if ($isPrivate) {
+            $isApproved = false; // Lời chúc riêng tư không hiển thị ra ngoài công khai
+            $successMsg = 'Lời chúc riêng tư của bạn đã được gửi an toàn tới cô dâu & chú rể!';
+        } elseif ($moderationMode === 'manual') {
+            $isApproved = false; // Chế độ kiểm duyệt trước
+            $successMsg = 'Lời chúc của bạn đã được gửi thành công và đang chờ cô dâu & chú rể duyệt hiển thị!';
+        } else {
+            $isApproved = true; // Chế độ tự động hiển thị
+            $successMsg = 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!';
+        }
+
         $wish = WeddingWish::create([
             'wedding_id' => $wedding->id,
+            'guest_id' => $guestId,
             'name' => $request->validated('name'),
             'message' => $request->validated('message'),
-            'is_approved' => true,
+            'is_approved' => $isApproved,
+            'is_pinned' => false,
+            'is_private' => $isPrivate,
+            'signature_url' => $signatureUrl,
             'ip_address' => $ip,
         ]);
 
@@ -1011,6 +1152,8 @@ class GuestController extends Controller
                 'wish_id' => $wish->id,
                 'name' => $wish->name,
                 'message' => $wish->message,
+                'is_private' => $isPrivate,
+                'is_approved' => $isApproved,
             ]);
         } catch (\Throwable $e) {
             // Safe fallback
@@ -1019,12 +1162,15 @@ class GuestController extends Controller
         return response()->json([
             'success' => true,
             'is_update' => false,
-            'message' => 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!',
+            'message' => $successMsg,
             'wish' => [
                 'id' => $wish->id,
                 'name' => $wish->name,
                 'message' => $wish->message,
                 'reply' => $wish->reply,
+                'is_private' => $isPrivate,
+                'is_approved' => $isApproved,
+                'signature_url' => $wish->signature_url,
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ],
@@ -1127,7 +1273,9 @@ class GuestController extends Controller
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $this->ensureInvitationInteractable($invitation);
         $wishes = $invitation->wedding->wishes()
-            ->where('is_approved', true)
+            ->visibleOnInvitation()
+            ->orderByDesc('is_pinned')
+            ->latest()
             ->take(50)
             ->get()
             ->map(fn ($wish) => [
@@ -1135,6 +1283,8 @@ class GuestController extends Controller
                 'name' => $wish->name,
                 'message' => $wish->message,
                 'reply' => $wish->reply,
+                'is_pinned' => (bool) $wish->is_pinned,
+                'signature_url' => $wish->signature_url,
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ]);

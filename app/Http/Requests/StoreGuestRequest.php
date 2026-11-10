@@ -31,6 +31,9 @@ class StoreGuestRequest extends FormRequest
             'table_name' => 'nullable|string|max:100',
             'phone' => 'nullable|string|max:20',
             'expected_attendees' => 'nullable|integer|min:1|max:20',
+            'max_attendees' => 'nullable|integer|min:1|max:50',
+            'event_ids' => 'nullable|array',
+            'event_ids.*' => 'integer',
         ];
     }
 }

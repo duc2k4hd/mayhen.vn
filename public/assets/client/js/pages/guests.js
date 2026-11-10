@@ -226,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableInput = document.getElementById('edit-guest-table');
         const phoneInput = document.getElementById('edit-guest-phone');
         const attendeesInput = document.getElementById('edit-guest-attendees');
+        const maxAttendeesInput = document.getElementById('edit-guest-max-attendees');
 
         document.querySelectorAll('.mayhen_guest_open_edit_btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -236,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const table = btn.getAttribute('data-guest-table') || '';
                 const phone = btn.getAttribute('data-guest-phone') || '';
                 const attendees = btn.getAttribute('data-guest-attendees') || '1';
+                const maxAttendees = btn.getAttribute('data-guest-max-attendees') || '';
 
                 if (editForm) editForm.action = updateUrl;
                 if (nameInput) nameInput.value = name;
@@ -244,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (tableInput) tableInput.value = table;
                 if (phoneInput) phoneInput.value = phone;
                 if (attendeesInput) attendeesInput.value = attendees;
+                if (maxAttendeesInput) maxAttendeesInput.value = maxAttendees;
 
                 openModal(editModal);
             });

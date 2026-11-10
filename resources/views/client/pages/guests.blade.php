@@ -247,6 +247,11 @@
                         </div>
 
                         <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Suất tối đa (+1 Policy)</label>
+                            <input type="number" name="max_attendees" class="mayhen_guest_form_input" min="1" max="20" placeholder="VD: 2 suất">
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
                             <label class="mayhen_guest_form_label">Số điện thoại (tùy chọn)</label>
                             <input type="tel" name="phone" class="mayhen_guest_form_input" placeholder="0912345678">
                         </div>
@@ -350,7 +355,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                             <th>Xưng Hô</th>
                             <th>Nhóm</th>
                             <th>Bàn Tiệc</th>
-                            <th>Số Dự Kiến</th>
+                            <th>Số Suất Mời</th>
                             <th>Lượt Mở Thiệp</th>
                             <th>Phản Hồi RSVP</th>
                             <th>Điểm Danh</th>
@@ -383,7 +388,14 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                         <span style="color: #A0988E; font-size: 12px;">Chưa xếp</span>
                                     @endif
                                 </td>
-                                <td>{{ $g->expected_attendees }} người</td>
+                                <td>
+                                    <div style="font-weight: 600; color: #1F1D1A;">{{ $g->expected_attendees }} người</div>
+                                    @if($g->max_attendees)
+                                        <div style="font-size: 11px; color: #9C7A4A; font-weight: 600;" title="Số suất tối đa được phép xác nhận tham dự (+1 Policy)">
+                                            (Tối đa {{ $g->max_attendees }} suất)
+                                        </div>
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($g->isOpened())
                                         <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; background:#EFF6FF; color:#1D4ED8; font-size:11px; font-weight:600;" title="Lần mở gần nhất: {{ $g->last_opened_at?->format('H:i d/m/Y') }} ({{ $g->last_device ?? 'Thiết bị lạ' }})">
@@ -476,12 +488,25 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                         data-guest-table="{{ $g->table_name ?? '' }}"
                                         data-guest-phone="{{ $g->phone ?? '' }}"
                                         data-guest-attendees="{{ $g->expected_attendees }}"
+                                        data-guest-max-attendees="{{ $g->max_attendees ?? '' }}"
                                         data-update-url="{{ route('guests.update', $g->id) }}">
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                             <path d="M12 20h9"></path>
                                             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                         </svg>
                                     </button>
+
+                                    <!-- Nút Thu Hồi & Tái Tạo Link Mới (Section 29 Master PRD V3) -->
+                                    <form action="{{ route('guests.regenerate_token', $g->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn thu hồi link thiệp cũ và cấp link mới cho khách này? Link cũ sẽ bị vô hiệu hóa tức thì.');" style="margin: 0; display: inline-block;">
+                                        @csrf
+                                        <button type="submit" class="mayhen_guest_icon_btn" title="Thu hồi link cũ & Tái tạo link mới">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="23 4 23 10 17 10"></polyline>
+                                                <polyline points="1 20 1 14 7 14"></polyline>
+                                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
 
                                     <!-- Nút Cập Nhật RSVP Thủ Công -->
                                     <button type="button" class="mayhen_guest_icon_btn mayhen_guest_icon_btn_rsvp mayhen_guest_open_rsvp_btn"
@@ -570,6 +595,14 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                         <div>
                             <label class="mayhen_guest_form_label">Số người dự kiến</label>
                             <input type="number" name="expected_attendees" id="edit-guest-attendees" min="1" max="20" required class="mayhen_guest_form_input">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 12px;">
+                        <label class="mayhen_guest_form_label">Số suất tối đa được phép xác nhận (+1 Policy)</label>
+                        <input type="number" name="max_attendees" id="edit-guest-max-attendees" min="1" max="50" class="mayhen_guest_form_input" placeholder="Để trống nếu không giới hạn">
+                        <div style="font-size: 11px; color: #8C827A; margin-top: 4px;">
+                            Giới hạn số người khách được chọn khi phản hồi RSVP. Ví dụ: nhập 2 nếu chỉ cho phép dẫn thêm tối đa 1 người (+1).
                         </div>
                     </div>
 

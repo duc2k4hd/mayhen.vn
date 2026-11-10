@@ -32,6 +32,7 @@ class SubmitRsvpRequest extends FormRequest
             'children_count' => ['nullable', 'integer', 'min:0', 'max:10'],
             'dietary_requirements' => ['nullable', 'string', 'max:500', new NoProfanity],
             'wishes' => ['nullable', 'string', 'max:1000', new NoProfanity],
+            'event_id' => ['nullable', 'integer'],
         ];
     }
 }

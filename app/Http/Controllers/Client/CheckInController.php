@@ -765,7 +765,16 @@ class CheckInController extends Controller
      */
     public function guestConcierge(Request $request, string $guestToken): View
     {
-        $guest = Guest::with(['wedding.invitations.template'])->where('guest_token', $guestToken)->firstOrFail();
+        $guest = Guest::with(['wedding.invitations.template'])->where('guest_token', $guestToken)->first();
+
+        if (! $guest) {
+            $isRevoked = Guest::whereJsonContains('revoked_tokens', $guestToken)->exists();
+            if ($isRevoked) {
+                abort(410, 'Liên kết thiệp mời này đã được thu hồi và cấp mã mới. Quý khách vui lòng liên hệ cô dâu chú rể để nhận liên kết mới nhất.');
+            }
+            abort(404, 'Không tìm thấy thông tin khách mời.');
+        }
+
         $wedding = $guest->wedding;
         $invitation = $wedding->invitations()->first();
 

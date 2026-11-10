@@ -32,6 +32,9 @@ class Guest extends Model
         'open_count',
         'last_device',
         'sent_at',
+        'max_attendees',
+        'event_ids',
+        'revoked_tokens',
     ];
 
     protected $attributes = [
@@ -50,6 +53,9 @@ class Guest extends Model
             'last_opened_at' => 'datetime',
             'sent_at' => 'datetime',
             'open_count' => 'integer',
+            'max_attendees' => 'integer',
+            'event_ids' => 'array',
+            'revoked_tokens' => 'array',
         ];
     }
 
@@ -61,6 +67,56 @@ class Guest extends Model
     public function isOpened(): bool
     {
         return $this->open_count > 0 || $this->opened_at !== null;
+    }
+
+    /**
+     * Số lượng người tối đa khách được phép xác nhận tham dự.
+     */
+    public function getAllowedMaxAttendees(): int
+    {
+        return (int) ($this->max_attendees ?: ($this->expected_attendees ?: 1));
+    }
+
+    /**
+     * Kiểm tra khách có được phân quyền tham dự sự kiện cụ thể hay không.
+     */
+    public function isEventAllowed(?int $eventId): bool
+    {
+        if ($eventId === null || empty($this->event_ids)) {
+            return true;
+        }
+
+        return in_array((int) $eventId, array_map('intval', (array) $this->event_ids), true);
+    }
+
+    /**
+     * Thu hồi token hiện tại và tái tạo token mới cho khách mời.
+     */
+    public function revokeAndRegenerateToken(): string
+    {
+        $oldToken = $this->guest_token;
+        $revoked = (array) ($this->revoked_tokens ?? []);
+        if (! empty($oldToken) && ! in_array($oldToken, $revoked, true)) {
+            $revoked[] = $oldToken;
+        }
+
+        $newToken = Str::random(32);
+        $this->update([
+            'guest_token' => $newToken,
+            'revoked_tokens' => $revoked,
+        ]);
+
+        return $newToken;
+    }
+
+    /**
+     * Kiểm tra token có nằm trong danh sách đã bị thu hồi hay không.
+     */
+    public function isTokenRevoked(string $token): bool
+    {
+        $revoked = (array) ($this->revoked_tokens ?? []);
+
+        return in_array($token, $revoked, true);
     }
 
     /**

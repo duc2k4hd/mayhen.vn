@@ -401,12 +401,22 @@
             @forelse($wishes as $wish)
                 <article class="mayhen_print_wish_card">
                     <div class="mayhen_print_wish_header">
-                        <div class="mayhen_print_wish_sender">{{ $wish->sender_name }}</div>
+                        <div class="mayhen_print_wish_sender">
+                            {{ $wish->sender_name }}
+                            @if($wish->is_pinned)
+                                <span style="font-size: 11px; color: #B78103; font-weight: 500; margin-left: 4px;">[📌 Ghim]</span>
+                            @endif
+                        </div>
                         <div class="mayhen_print_wish_time">{{ $wish->created_at ? $wish->created_at->format('d/m/Y H:i') : '' }}</div>
                     </div>
                     <div class="mayhen_print_wish_message">
                         “{{ $wish->message }}”
                     </div>
+                    @if($wish->signature_url)
+                        <div style="margin-top: 8px; text-align: right;">
+                            <img src="{{ $wish->signature_url }}" alt="Chữ ký {{ $wish->sender_name }}" style="height: 28px; max-width: 120px; object-fit: contain;">
+                        </div>
+                    @endif
                     @if($wish->reply)
                         <div class="mayhen_print_wish_reply">
                             <div class="mayhen_print_wish_reply_title">

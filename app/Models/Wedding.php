@@ -242,4 +242,28 @@ class Wedding extends Model
             'extra_data' => $extra,
         ]);
     }
+
+    /**
+     * Lấy chế độ kiểm duyệt lời chúc ('auto' hoặc 'manual').
+     */
+    public function getWishModerationMode(): string
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+
+        return $extra['wish_moderation_mode'] ?? 'auto';
+    }
+
+    /**
+     * Cập nhật chế độ kiểm duyệt lời chúc ('auto' hoặc 'manual').
+     */
+    public function setWishModerationMode(string $mode): void
+    {
+        $mode = in_array($mode, ['auto', 'manual'], true) ? $mode : 'auto';
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+        $extra['wish_moderation_mode'] = $mode;
+
+        $this->update([
+            'extra_data' => $extra,
+        ]);
+    }
 }

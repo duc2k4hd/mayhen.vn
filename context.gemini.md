@@ -8053,6 +8053,96 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **921/921 tests PASSED 100% (4,904 assertions in 21.37s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 67. PHÂN BỔ SUẤT MỜI TỐI ĐA, PHÂN VÙNG SỰ KIỆN & CƠ CHẾ THU HỒI MÃ ĐỊNH DANH KHÁCH MỜI (GUEST INVITATION SCOPING, MAX HEADCOUNT POLICY & TOKEN REVOCATION COCKPIT — SECTION 29 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện cơ chế cá nhân hóa thiệp cưới chuyên sâu theo chuẩn Section 29 Master PRD V3:
+  1. *Chính sách số suất tối đa (+1 Policy / Max Headcount)*: Giới hạn số người khách được chọn khi gửi phản hồi RSVP (ví dụ: chỉ cho phép dẫn thêm tối đa 1 người đi cùng, tránh tình trạng 1 thiệp đăng ký 4-5 người làm vỡ kế hoạch bàn tiệc).
+  2. *Phân vùng sự kiện được mời (Event Scope Assignment)*: Chỉ định phạm vi sự kiện cụ thể cho từng khách mời (chỉ dự Lễ Vu Quy, chỉ dự Tiệc Thành Hôn, hoặc toàn bộ sự kiện cưới).
+  3. *Cơ chế thu hồi và tái tạo mã định danh (Token Revocation & Regenerate)*: Cho phép chủ thiệp thu hồi tức thời đường link cũ khi gửi nhầm hoặc bị lộ, tự động vô hiệu hóa token cũ (chặn gửi RSVP và trả về HTTP 410 khi truy cập thiệp) và cấp đường link cá nhân hóa mới an toàn.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_213302_add_scoping_and_headcount_to_guests_table.php` bổ sung vào bảng `guests`:
+       * `max_attendees` (unsignedSmallInteger, nullable): Số suất tối đa khách được phép xác nhận.
+       * `event_ids` (json, nullable): Danh sách ID các sự kiện cưới mà khách được mời tham dự.
+       * `revoked_tokens` (json, nullable): Mảng lưu vết lịch sử các mã token cũ đã bị thu hồi để ngăn chặn tái sử dụng link cũ.
+  2. **Model Eloquent ([Guest.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Guest.php))**:
+     - Bổ sung `$fillable`: `'max_attendees'`, `'event_ids'`, `'revoked_tokens'`.
+     - Bổ sung `$casts`: `'max_attendees' => 'integer'`, `'event_ids' => 'array'`, `'revoked_tokens' => 'array'`.
+     - Helper methods:
+       * `getAllowedMaxAttendees(): int`: Trả về `max_attendees` hoặc fallback `expected_attendees` / 1.
+       * `isEventAllowed(?int $eventId): bool`: Kiểm tra khách có thuộc phạm vi sự kiện hay không (mặc định cho phép toàn bộ nếu chưa phân vùng).
+       * `revokeAndRegenerateToken(): string`: Đưa token cũ vào mảng `revoked_tokens`, sinh mã token 32 ký tự mới duy nhất và lưu DB.
+       * `isTokenRevoked(string $token): bool`: Kiểm tra token có nằm trong danh sách đã bị thu hồi hay không.
+  3. **Controller & Requests ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php), [StoreGuestRequest.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Requests/StoreGuestRequest.php), [SubmitRsvpRequest.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Requests/SubmitRsvpRequest.php))**:
+     - Endpoint mới: `POST /tai-khoan/khach-moi/{id}/tai-tao-token` (`guests.regenerate_token`):
+       * Kiểm tra phân quyền chủ tiệc an toàn (`authorizeGuestManagement`).
+       * Thực thi `$guest->revokeAndRegenerateToken()`.
+       * Ghi vết kiểm toán bất biến `AuditLogger::log('GUEST_TOKEN_REVOKED', ...)`.
+       * Trả về JSON hoặc redirect kèm flash message và đường link thiệp mới.
+     - Hàm `store` & `update`: Xác thực và lưu trữ `max_attendees`, `event_ids`.
+     - Hàm `submitRsvp`:
+       * Phát hiện và chặn tức thời mọi yêu cầu RSVP sử dụng token đã bị thu hồi, trả về HTTP 422 JSON `{ success: false, is_revoked: true, message: "..." }`.
+       * Thực thi Headcount Policy: Khi khách có `max_attendees > 0` và chọn tham dự, nếu `adults + children > max_attendees`, từ chối và trả về HTTP 422 JSON `{ success: false, headcount_exceeded: true, max_attendees: X, message: "..." }`.
+       * Thực thi Event Scoping: Nếu khách gửi `event_id` không nằm trong `event_ids` được phân quyền, từ chối và trả về HTTP 422 JSON.
+  4. **Phòng Vệ Truy Cập Thiệp & Concierge ([InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php) & [CheckInController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/CheckInController.php))**:
+     - Khi mở thiệp cưới công khai hoặc trang Concierge bằng token đã bị thu hồi: Tự động chặn và trả về HTTP 410 (Gone) thông báo link thiệp đã được cấp mã mới.
+  5. **Giao Diện Khách Mời ([guests.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/guests.blade.php) & [guests.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/guests.js))**:
+     - Form Thêm khách: Bổ sung ô nhập "Suất tối đa (+1 Policy)".
+     - Bảng danh sách: Bổ sung nhãn `(Tối đa X suất)` trong cột Số Suất Mời.
+     - Cột Thao tác: Bổ sung nút bấm icon "Thu hồi link cũ & Tái tạo link mới" có hộp thoại xác nhận JavaScript chuẩn mực.
+     - Modal Sửa thông tin khách: Bổ sung ô nhập "Số suất tối đa được phép xác nhận (+1 Policy)" đồng bộ dữ liệu thời gian thực qua data-attribute.
+  6. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/GuestScopingAndHeadcountPolicyTest.php` với **10 kịch bản kiểm thử độc lập (30 assertions)**: 100% PASSED (thêm khách có scoping và max attendees, cập nhật max attendees, thu hồi và tái tạo token mới, chặn người lạ tái tạo token trả về 404, chặn token bị thu hồi gửi RSVP trả về 422 `is_revoked: true`, mở thiệp bằng token bị thu hồi trả về 410, chặn RSVP vượt quá suất cho phép trả về 422 `headcount_exceeded: true`, cho phép RSVP đúng số suất cho phép, chặn gửi RSVP sự kiện ngoài phạm vi phân quyền, và cho phép khách không giới hạn gửi RSVP bình thường).
+     - Toàn bộ test suite hệ thống: **931/931 tests PASSED 100% (4,934 assertions in 26.08s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+### 68. KIỂM DUYỆT LỜI CHÚC & SỔ LƯU BÚT NÂNG CAO (GUESTBOOK & WISH MODERATION DESK — SECTION 34 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện hệ thống kiểm duyệt lời chúc, sổ lưu bút và chữ ký điện tử cao cấp theo Section 34 Master PRD V3:
+  1. *Chế độ kiểm duyệt linh hoạt (Moderation Modes)*: Cặp đôi chủ động lựa chọn giữa `auto` (Tự động hiển thị công khai ngay khi khách gửi) và `manual` (Kiểm duyệt trước: Lời chúc mới phải qua phê duyệt của chủ thiệp mới xuất hiện trên thiệp).
+  2. *Ghim lời chúc nổi bật (`is_pinned`)*: Ghim những lời chúc tâm đắc nhất của người thân, gia đình lên vị trí đầu tiên của sổ lưu bút và thiệp cưới.
+  3. *Lời chúc riêng tư / bí mật (`is_private`)*: Khách mời có thể gửi những lời nhắn nhủ thân mật bí mật chỉ cô dâu chú rể đọc được trong trang quản lý, tuyệt đối không xuất hiện trên thiệp công khai.
+  4. *Tích hợp chữ ký điện tử (`signature_url`)*: Lưu trữ và hiển thị nét vẽ chữ ký tay từ canvas cảm ứng/bút vẽ của khách mời.
+  5. *Định danh khách mời gắn liền (`guest_id`)*: Tự động phân giải và liên kết với hồ sơ khách mời trong danh bạ khi gửi qua link thiệp cá nhân hóa.
+  6. *Kỷ yếu in ấn & xuất dữ liệu*: Nâng cấp trang in kỷ yếu A4 Quiet Luxury và xuất CSV Excel UTF-8 BOM đầy đủ các trường mới.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_220000_add_moderation_and_pins_to_wedding_wishes_table.php` bổ sung:
+       * `guest_id` (foreignId nullable, references `guests.id`, onDelete('set null')).
+       * `is_pinned` (boolean, default false): Đánh dấu ghim lên đầu.
+       * `is_private` (boolean, default false): Lời nhắn bí mật chỉ gửi riêng cho chủ thiệp.
+       * `signature_url` (string 500, nullable): Đường dẫn ảnh chữ ký tay PNG/WebP.
+       * Các index tối ưu hiệu năng: `['wedding_id', 'is_pinned', 'created_at']` và `['wedding_id', 'is_approved', 'is_private']`.
+  2. **Model Eloquent ([WeddingWish.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/WeddingWish.php) & [Wedding.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Wedding.php))**:
+     - `WeddingWish`: Thêm fillable, casts boolean cho `is_pinned`, `is_private`. Quan hệ `guest(): BelongsTo`. Scope `scopeVisibleOnInvitation($query)` lọc các lời chúc công khai (`is_approved = true` và `is_private = false`).
+     - `Wedding`: Bổ sung helper methods `getWishModerationMode(): string` và `setWishModerationMode(string $mode): void`.
+  3. **Form Request ([SubmitWishRequest.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Requests/SubmitWishRequest.php))**:
+     - Bổ sung validation và chuẩn hóa cho `is_private` (boolean), `signature_data` (chuỗi base64 tối đa 500KB), `guest_token` (string tối đa 64 ký tự).
+  4. **Controller Thiệp Công Khai ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - Hàm `submitWish`:
+       * Phân giải `guest_token` -> liên kết đúng `guest_id`.
+       * Xử lý giải mã và lưu trữ an toàn ảnh chữ ký canvas (`storage/app/public/signatures/{slug}/...`).
+       * Tự động xác định trạng thái `is_approved`: Nếu là tin nhắn riêng tư (`is_private = true`) -> `is_approved = false`; nếu chế độ kiểm duyệt là `manual` -> `is_approved = false`; nếu `auto` -> `is_approved = true`.
+       * Trả về thông điệp JSON phù hợp ngữ cảnh (đã đăng, chờ duyệt, hoặc gửi riêng tư an toàn).
+     - Hàm `getWishes`:
+       * Áp dụng `scopeVisibleOnInvitation()`.
+       * Sắp xếp ưu tiên `orderByDesc('is_pinned')->latest()`.
+       * Trả về `is_pinned` và `signature_url`.
+  5. **Controller Quản Lý Sổ Lưu Bút ([WishManagementController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/WishManagementController.php))**:
+     - `index`: Thống kê mở rộng thêm `$pinnedCount`, `$privateCount`, `$moderationMode`. Eager load `guest`. Hỗ trợ các bộ lọc mới: `pinned`, `private`, `approved`. Sắp xếp ưu tiên ghim lên trước.
+     - `togglePin(int $invitationId, int $wishId)`: Bật/tắt ghim lời chúc tâm đắc (`account.wishes.toggle_pin`).
+     - `updateModerationMode(Request $request, int $invitationId)`: Chuyển đổi qua lại giữa chế độ `auto` và `manual` (`account.wishes.update_moderation_mode`).
+     - `exportCsv`: Mở rộng xuất file CSV có các cột mới: `Khách Mời Gắn Liền`, `Ghim Nổi Bật`, `Riêng Tư (Bí Mật)`, `Chữ Ký Số (URL)`.
+  6. **Giao Diện Khách Hàng ([wishes.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/wishes.blade.php) & [wishes-print.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/wishes-print.blade.php))**:
+     - Thêm Banner Chế Độ Kiểm Duyệt (Moderation Mode Control Banner): Hiển thị trạng thái hiện tại kèm nút chuyển đổi tức thời.
+     - Grid 6 thẻ KPI: Tổng lời chúc, Đã cảm ơn, Chờ cảm ơn, Tạm ẩn/chờ duyệt, Đã ghim nổi bật, Lời chúc bí mật.
+     - Dropdown bộ lọc mở rộng: Lọc theo lời chúc đã ghim, lời chúc riêng tư, lời chúc đang hiển thị.
+     - Wish Card: Hiển thị badge `📌 Đã Ghim` (Muted Gold), badge `🔒 Bí Mật`, định danh khách mời, khung hiển thị chữ ký tay điện tử, và nút 📌 Ghim/Bỏ ghim.
+     - Trang in kỷ yếu A4: Hiển thị nhãn `[📌 Ghim]` và ảnh chữ ký tay của khách mời trong từng trang in kỷ niệm.
+  7. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/WishModerationAndGuestbookTest.php` với **9 kịch bản kiểm thử độc lập (34 assertions)**: 100% PASSED (gửi lời chúc ở chế độ auto được duyệt ngay, gửi ở chế độ manual chuyển vào chờ duyệt, gửi lời chúc riêng tư luôn có `is_approved = false` và không xuất hiện trên thiệp, gửi kèm chữ ký canvas và guest token liên kết đúng `guest_id`, `getWishes` ưu tiên lời chúc ghim lên đầu và loại bỏ lời chúc ẩn/riêng tư, chủ tiệc ghim và bỏ ghim lời chúc, cập nhật chế độ kiểm duyệt, phản hồi cảm ơn và xuất CSV có các trường mới, chặn người lạ can thiệp quản lý lời chúc).
+     - Toàn bộ test suite hệ thống: **940/940 tests PASSED 100% (4,968 assertions in 27.64s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
 
 
 

@@ -29,9 +29,12 @@ class WishManagementController extends Controller
         $repliedCount = $wedding->wishes()->whereNotNull('reply')->count();
         $pendingReplyCount = $totalWishes - $repliedCount;
         $hiddenCount = $wedding->wishes()->where('is_approved', false)->count();
+        $pinnedCount = $wedding->wishes()->where('is_pinned', true)->count();
+        $privateCount = $wedding->wishes()->where('is_private', true)->count();
+        $moderationMode = $wedding->getWishModerationMode();
 
         // Xử lý bộ lọc và tìm kiếm
-        $query = $wedding->wishes();
+        $query = $wedding->wishes()->with('guest');
 
         if ($search = trim((string) $request->query('q'))) {
             $query->where(function ($q) use ($search) {
@@ -47,9 +50,15 @@ class WishManagementController extends Controller
             $query->whereNull('reply');
         } elseif ($filterStatus === 'hidden') {
             $query->where('is_approved', false);
+        } elseif ($filterStatus === 'pinned') {
+            $query->where('is_pinned', true);
+        } elseif ($filterStatus === 'private') {
+            $query->where('is_private', true);
+        } elseif ($filterStatus === 'approved') {
+            $query->where('is_approved', true);
         }
 
-        $wishes = $query->latest()->paginate(12)->withQueryString();
+        $wishes = $query->orderByDesc('is_pinned')->latest()->paginate(12)->withQueryString();
 
         return view('client.pages.account.wishes', [
             'invitation' => $invitation,
@@ -59,9 +68,55 @@ class WishManagementController extends Controller
             'repliedCount' => $repliedCount,
             'pendingReplyCount' => $pendingReplyCount,
             'hiddenCount' => $hiddenCount,
+            'pinnedCount' => $pinnedCount,
+            'privateCount' => $privateCount,
+            'moderationMode' => $moderationMode,
             'filterSearch' => $search,
             'filterStatus' => $filterStatus,
         ]);
+    }
+
+    /**
+     * Bật / Tắt ghim lời chúc tâm đắc lên đầu sổ lưu bút & thiệp.
+     */
+    public function togglePin(int $invitationId, int $wishId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeInvitationOwner($wedding);
+
+        $wish = WeddingWish::where('wedding_id', $wedding->id)->findOrFail($wishId);
+        $newPin = ! $wish->is_pinned;
+        $wish->update(['is_pinned' => $newPin]);
+
+        $msg = $newPin
+            ? "Đã ghim lời chúc của \"{$wish->name}\" lên vị trí nổi bật nhất!"
+            : "Đã bỏ ghim lời chúc của \"{$wish->name}\".";
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Cập nhật chế độ kiểm duyệt lời chúc ('auto' hoặc 'manual').
+     */
+    public function updateModerationMode(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeInvitationOwner($wedding);
+
+        $request->validate([
+            'moderation_mode' => ['required', 'in:auto,manual'],
+        ]);
+
+        $mode = $request->input('moderation_mode');
+        $wedding->setWishModerationMode($mode);
+
+        $msg = $mode === 'manual'
+            ? 'Đã chuyển sang chế độ: Duyệt trước khi hiển thị (Lời chúc mới cần chủ thiệp phê duyệt).'
+            : 'Đã chuyển sang chế độ: Tự động hiển thị (Lời chúc mới sẽ xuất hiện ngay trên thiệp cưới).';
+
+        return back()->with('success', $msg);
     }
 
     /**
@@ -150,7 +205,7 @@ class WishManagementController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeInvitationOwner($wedding);
 
-        $query = $wedding->wishes();
+        $query = $wedding->wishes()->with('guest');
 
         if ($search = trim((string) $request->query('q'))) {
             $query->where(function ($q) use ($search) {
@@ -168,9 +223,13 @@ class WishManagementController extends Controller
             $query->where('is_approved', false);
         } elseif ($filterStatus === 'approved') {
             $query->where('is_approved', true);
+        } elseif ($filterStatus === 'pinned') {
+            $query->where('is_pinned', true);
+        } elseif ($filterStatus === 'private') {
+            $query->where('is_private', true);
         }
 
-        $wishes = $query->latest()->get();
+        $wishes = $query->orderByDesc('is_pinned')->latest()->get();
         $filename = 'so-luu-but-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
 
         return response()->streamDownload(function () use ($wishes) {
@@ -180,21 +239,30 @@ class WishManagementController extends Controller
             fputcsv($handle, [
                 'STT',
                 'Người Chúc Phúc',
+                'Khách Mời Gắn Liền',
                 'Nội Dung Lời Chúc',
                 'Lời Cảm Ơn Của Cặp Đôi',
                 'Trạng Thái Hiển Thị',
+                'Ghim Nổi Bật',
+                'Riêng Tư (Bí Mật)',
+                'Chữ Ký Số (URL)',
                 'Thời Gian Gửi',
                 'Thời Gian Cảm Ơn',
             ]);
 
             $index = 1;
             foreach ($wishes as $w) {
+                $guestInfo = $w->guest ? ($w->guest->name.($w->guest->group_name ? " ({$w->guest->group_name})" : '')) : '';
                 fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $w->name,
+                    $guestInfo,
                     $w->message,
                     $w->reply ?? '',
                     $w->is_approved ? 'Hiển thị' : 'Tạm ẩn',
+                    $w->is_pinned ? 'Có' : 'Không',
+                    $w->is_private ? 'Có' : 'Không',
+                    $w->signature_url ?? '',
                     $w->created_at ? $w->created_at->format('d/m/Y H:i') : '',
                     $w->replied_at ? $w->replied_at->format('d/m/Y H:i') : '',
                 ]));

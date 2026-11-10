@@ -343,7 +343,14 @@ class InvitationEditorController extends Controller
             }
 
             abort_unless($wedding, 404);
-            $guest = $wedding->guests()->where('guest_token', $guestToken)->firstOrFail();
+            $guest = $wedding->guests()->where('guest_token', $guestToken)->first();
+            if (! $guest) {
+                $isRevoked = $wedding->guests()->whereJsonContains('revoked_tokens', $guestToken)->exists();
+                if ($isRevoked) {
+                    abort(410, 'Đường link thiệp mời này đã được thu hồi và cấp mã mới. Quý khách vui lòng liên hệ cô dâu chú rể để nhận đường link mới nhất.');
+                }
+                abort(404);
+            }
             $rsvpRouteParameters['token'] = $guestToken;
         }
         $rsvpSubmitUrl = route('rsvp.submit', $rsvpRouteParameters);

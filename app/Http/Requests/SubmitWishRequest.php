@@ -17,6 +17,7 @@ class SubmitWishRequest extends FormRequest
         $this->merge([
             'name' => is_string($this->name) ? strip_tags(trim($this->name)) : $this->name,
             'message' => is_string($this->message) ? strip_tags(trim($this->message)) : $this->message,
+            'is_private' => filter_var($this->is_private, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
         ]);
     }
 
@@ -25,6 +26,9 @@ class SubmitWishRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100', new NoProfanity],
             'message' => ['required', 'string', 'max:1000', new NoProfanity],
+            'is_private' => ['nullable', 'boolean'],
+            'signature_data' => ['nullable', 'string', 'max:500000'],
+            'guest_token' => ['nullable', 'string', 'max:64'],
         ];
     }
 
