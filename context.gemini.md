@@ -7331,6 +7331,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Bộ kiểm thử tính năng: `tests/Feature/CuratedInvitationFlowTest.php` (17 tests) và `tests/Feature/CuratedInvitationPreviewLiveTest.php` (3 tests): **20/20 tests PASSED 100%**.
      - Laravel Pint: **100% PASSED** (Agent style).
 
+### 42. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-08: ENTITLEMENTS & SUBSCRIPTION STATE MACHINE (10/11/2026)
+- **Mục tiêu**: Thống nhất Một Nguồn Sự Thật Duy Nhất (Single Source of Truth) quản lý vòng đời đăng ký và cấp phát quyền lợi thiệp cưới, giải quyết triệt để sự thiếu đồng bộ giữa gói cước, đơn hàng, gia hạn, hoàn tiền và tính năng cao cấp.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Máy Trạng Thái Vòng Đời & Ma Trận Quyền Lợi ([EntitlementStateMachineService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/EntitlementStateMachineService.php))**:
+     - **5 Trạng thái vòng đời bất biến**:
+       * `trial`: Thiệp dùng thử miễn phí trong 7 ngày đầu.
+       * `active`: Thiệp có đơn hàng đã thanh toán và đang trong thời hạn hiển thị.
+       * `grace_period`: Thiệp đã quá hạn nhưng đang trong **thời gian ân hạn 7 ngày sau cưới** — giữ nguyên toàn bộ quyền lợi để không gián đoạn quan khách.
+       * `expired`: Thiệp đã hết hạn quá thời gian ân hạn — khóa toàn bộ quyền lợi cao cấp.
+       * `refunded`: Đơn hàng bị hoàn tiền — tự động thu hồi và khóa ngay lập tức toàn bộ tính năng cao cấp.
+     - **Ma trận 8 quyền lợi độc bản (`ENTITLEMENT_CATALOG`)**:
+       * `remove_branding`: Bỏ nhãn hiệu Mây Hẹn (Gói Pro).
+       * `custom_domain`: Tên miền riêng độc bản (Gói Pro).
+       * `multi_family_invitations`: Nhân bản thiệp Nhà Trai / Nhà Gái (Gói Pro).
+       * `live_guest_photo_drop`: Khách tải ảnh bàn tiệc Live Photo Drop (Plus, Pro).
+       * `background_music`: Nhạc nền MP3 du dương (Plus, Pro).
+       * `unlimited_rsvps`: Xác nhận tham dự RSVP không giới hạn (Plus, Pro).
+       * `export_excel_crm`: Xuất danh bạ và sổ kế toán ra Excel UTF-8 BOM (Plus, Pro).
+       * `extended_storage`: Lưu trữ kỷ niệm dài hạn (Plus, Pro).
+     - **Cơ chế Can Thiệp Ngoại Lệ (Admin Entitlement Override)**:
+       * Cho phép Manager và Super Admin cấp (`grant`), thu hồi (`revoke`) hoặc khôi phục mặc định (`reset`) từng tính năng ngoại lệ cho thiệp cưới.
+       * Bắt buộc cung cấp lý do kiểm toán (tối thiểu 6 ký tự) và lưu vết metadata (`admin_id`, `reason`, `updated_at`) trong `custom_config`.
+       * Tự động xóa bộ nhớ đệm `Cache::forget("invitation_{slug}")` khi có bất kỳ thay đổi quyền lợi nào.
+  2. **Đồng Bộ Hóa Đơn Hàng & Vòng Đời ([OrderController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/OrderController.php))**:
+     - Khi duyệt đơn thanh toán (`approve`, `confirmApproval`): Kích hoạt `EntitlementStateMachineService::applyPaidOrder()`, tự động cộng dồn thời hạn nối tiếp nếu thiệp còn hạn hoặc kích hoạt hạn mới từ `now()`.
+     - Khi hoàn tiền đơn hàng (`refund`, `confirmRefundPayout`): Kích hoạt `EntitlementStateMachineService::applyRefundedOrder()`, lập tức đưa thiệp về trạng thái hết hạn và thu hồi quyền lợi cao cấp.
+  3. **Giao Diện Quản Trị Khách Hàng ([show.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/show.blade.php) & [routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php))**:
+     - Bổ sung **Tab 7: Quyền Lợi & Gói Cước** trong trang chi tiết thiệp cưới (`admin.invitations.show`).
+     - Banner vòng đời gói cước: Tên gói, giá, thời hạn, nhãn badge trạng thái màu Quiet Luxury, cảnh báo khi thiệp trong thời gian ân hạn hoặc đã hoàn tiền.
+     - Bảng ma trận 8 Quyền Lợi: Hiển thị tên quyền lợi, key, gói hỗ trợ, trạng thái cấp quyền (Được cấp / Bị khóa), trạng thái ngoại lệ thủ công và Menu can thiệp Admin (`override_entitlement`).
+     - Phân quyền bảo mật: Route `POST /admin/invitations/{id}/override-entitlement` được bảo vệ bởi middleware `admin.manager`, chặn 403 Forbidden đối với nhân viên quyền Staff.
+  4. **Kết Quả Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite: `tests/Feature/AdminEntitlementStateMachineTest.php` gồm **4 kịch bản kiểm thử độc lập (33 assertions)**: 100% PASSED.
+     - Bộ 4 test suites liên quan đến đơn hàng, phân quyền và máy trạng thái NXT (`AdminOrderRefundAndRenewalTest`, `AdminNxtIntegrityAndAccessControlTest`, `AdminGuestJourneyE2ERunnerTest`, `AdminEntitlementStateMachineTest`): **28/28 tests PASSED (161 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -51,6 +51,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}/export-wishes', [AdminInvitationController::class, 'exportWishes'])->name('export_wishes');
         Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->middleware('admin.manager')->name('lock');
         Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
+        Route::post('/{id}/override-entitlement', [AdminInvitationController::class, 'overrideEntitlement'])->middleware('admin.manager')->name('override_entitlement');
     });
 
     // Quản lý Mẫu thiệp cưới (Templates Engine)

@@ -8,6 +8,7 @@ use App\Models\OrderReconciliation;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\EntitlementStateMachineService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -338,15 +339,12 @@ class OrderController extends Controller
             ]);
 
             if ($order->invitation) {
-                $duration = $order->plan ? (int) $order->plan->duration_days : 365;
-                $currentExpiresAt = $order->invitation->expires_at;
-                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
-
                 $order->invitation->update([
                     'is_published' => true,
                     'published_at' => $order->invitation->published_at ?? now(),
-                    'expires_at' => $baseDate->copy()->addDays($duration),
                 ]);
+
+                EntitlementStateMachineService::applyPaidOrder($order->invitation, $order);
             }
 
             OrderReconciliation::create([
@@ -411,15 +409,12 @@ class OrderController extends Controller
             ]);
 
             if ($order->invitation) {
-                $duration = $order->plan ? (int) $order->plan->duration_days : 365;
-                $currentExpiresAt = $order->invitation->expires_at;
-                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
-
                 $order->invitation->update([
                     'is_published' => true,
                     'published_at' => $order->invitation->published_at ?? now(),
-                    'expires_at' => $baseDate->copy()->addDays($duration),
                 ]);
+
+                EntitlementStateMachineService::applyPaidOrder($order->invitation, $order);
             }
         });
 
@@ -562,7 +557,7 @@ class OrderController extends Controller
             ]);
 
             if ($order->invitation) {
-                $order->invitation->update(['expires_at' => now()]);
+                EntitlementStateMachineService::applyRefundedOrder($order->invitation, $order);
             }
 
             OrderReconciliation::create([
@@ -634,9 +629,7 @@ class OrderController extends Controller
             ]);
 
             if ($order->invitation) {
-                $order->invitation->update([
-                    'expires_at' => now(),
-                ]);
+                EntitlementStateMachineService::applyRefundedOrder($order->invitation, $order);
             }
 
             OrderReconciliation::create([

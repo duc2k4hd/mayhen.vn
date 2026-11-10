@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\EntitlementStateMachineService;
 use App\Services\GuestJourneyRehearsalService;
 use App\Services\InvitationQualityPassportService;
 use Carbon\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InvitationController extends Controller
@@ -133,6 +135,12 @@ class InvitationController extends Controller
         // Invitation Quality Passport (Innovation #2)
         $qualityPassport = InvitationQualityPassportService::inspect($invitation);
 
+        // Entitlements & Subscription State Machine (NXT-08)
+        $subscriptionState = EntitlementStateMachineService::getSubscriptionState($invitation);
+        $stateLabel = EntitlementStateMachineService::getStateLabel($subscriptionState);
+        $activePlan = EntitlementStateMachineService::getActivePlan($invitation);
+        $grantedEntitlements = EntitlementStateMachineService::getGrantedEntitlements($invitation);
+
         return view('admin.pages.invitations.show', [
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
@@ -140,6 +148,10 @@ class InvitationController extends Controller
             'allTemplates' => $allTemplates,
             'isSafeLens' => $isSafeLens,
             'qualityPassport' => $qualityPassport,
+            'subscriptionState' => $subscriptionState,
+            'stateLabel' => $stateLabel,
+            'activePlan' => $activePlan,
+            'grantedEntitlements' => $grantedEntitlements,
         ]);
     }
 
@@ -609,5 +621,63 @@ class InvitationController extends Controller
         );
 
         return back()->with('success', "Đã mở khóa thiệp cưới \"{$invitation->slug}\" thành công.");
+    }
+
+    /**
+     * Admin can thiệp cấp quyền hoặc thu hồi quyền lợi ngoại lệ (NXT-08).
+     */
+    public function overrideEntitlement(Request $request, int $id): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user || (! $user->isManager() && ! $user->isSuperAdmin())) {
+            abort(403, 'Chỉ Quản lý (Manager) hoặc Quản trị viên tối cao mới có quyền can thiệp ngoại lệ gói cước.');
+        }
+
+        $validFeatures = array_keys(EntitlementStateMachineService::ENTITLEMENT_CATALOG);
+
+        $request->validate([
+            'feature_key' => ['required', 'string', 'in:'.implode(',', $validFeatures)],
+            'action' => ['required', 'string', 'in:grant,revoke,reset'],
+            'reason' => ['required', 'string', 'min:6', 'max:255'],
+        ], [
+            'reason.required' => 'Vui lòng cung cấp lý do can thiệp ngoại lệ để lưu vào Nhật ký kiểm toán.',
+            'reason.min' => 'Lý do can thiệp ngoại lệ phải có tối thiểu 6 ký tự.',
+        ]);
+
+        $invitation = Invitation::findOrFail($id);
+        $featureKey = $request->input('feature_key');
+        $action = $request->input('action');
+        $reason = trim((string) $request->input('reason'));
+
+        $grant = match ($action) {
+            'grant' => true,
+            'revoke' => false,
+            'reset' => null,
+        };
+
+        EntitlementStateMachineService::setOverride($invitation, $featureKey, $grant, $reason, $user->id);
+
+        $featureLabel = EntitlementStateMachineService::ENTITLEMENT_CATALOG[$featureKey]['label'] ?? $featureKey;
+        $actionText = match ($action) {
+            'grant' => "Cấp ngoại lệ tính năng [{$featureLabel}]",
+            'revoke' => "Thu hồi ngoại lệ tính năng [{$featureLabel}]",
+            'reset' => "Đặt lại tính năng [{$featureLabel}] về mặc định của gói cước",
+        };
+
+        AuditLogger::log(
+            'override_entitlement',
+            'Invitation',
+            $invitation->id,
+            "{$actionText} của thiệp \"{$invitation->slug}\". Lý do: {$reason}",
+            [
+                'invitation_id' => $invitation->id,
+                'slug' => $invitation->slug,
+                'feature_key' => $featureKey,
+                'action' => $action,
+                'reason' => $reason,
+            ]
+        );
+
+        return back()->with('success', "Đã cập nhật quyền lợi: {$actionText} thành công.");
     }
 }

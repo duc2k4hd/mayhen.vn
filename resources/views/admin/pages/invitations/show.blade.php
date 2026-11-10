@@ -360,6 +360,9 @@
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-orders">
                             Đơn Hàng ({{ $invitation->orders->count() }})
                         </button>
+                        <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-entitlements">
+                            Quyền Lợi &amp; Gói Cước ({{ count($grantedEntitlements) }})
+                        </button>
                     </nav>
                 </div>
 
@@ -709,6 +712,167 @@
                                             </td>
                                         </tr>
                                     @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 7: Entitlements & Subscription State Machine (NXT-08) -->
+                    <div id="tab-entitlements" class="mayhen_admin_tab_pane">
+                        <div style="margin-bottom: 20px; padding: 18px 20px; border-radius: 8px; background: #FAF8F5; border: 1px solid var(--mh-admin-sand);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
+                                <div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-gold); letter-spacing: 0.08em; margin-bottom: 4px;">
+                                        Trạng Thái Gói Cước &amp; Vòng Đời Đăng Ký (State Machine)
+                                    </div>
+                                    <h4 style="font-size: 1.15rem; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0 0 6px;">
+                                        {{ $activePlan->name }}
+                                        <span style="font-size: 0.8125rem; font-family: sans-serif; font-weight: 400; color: var(--mh-admin-muted);">
+                                            ({{ number_format($activePlan->price, 0, ',', '.') }}đ &bull; {{ $activePlan->duration_days }} ngày)
+                                        </span>
+                                    </h4>
+                                    <div style="font-size: 0.8125rem; color: #555;">
+                                        Thời hạn hiển thị: <strong>{{ $invitation->expires_at ? $invitation->expires_at->format('d/m/Y H:i:s') : 'Vĩnh viễn' }}</strong>
+                                        @if ($invitation->expires_at)
+                                            <span style="color: var(--mh-admin-muted);">({{ $invitation->expires_at->diffForHumans() }})</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-bottom: 4px;">Máy trạng thái (Single Source of Truth)</div>
+                                    <span class="mayhen_admin_badge" style="font-size: 0.875rem; padding: 6px 14px; font-weight: 600;
+                                        @if($subscriptionState === 'active') background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7;
+                                        @elseif($subscriptionState === 'trial') background: #FFF3E0; color: #E65100; border: 1px solid #FFE082;
+                                        @elseif($subscriptionState === 'grace_period') background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A;
+                                        @elseif($subscriptionState === 'refunded') background: #EDE7F6; color: #512DA8; border: 1px solid #D1C4E9;
+                                        @else background: #ECEFF1; color: #455A64; border: 1px solid #CFD8DC;
+                                        @endif
+                                    ">
+                                        {{ $stateLabel }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if ($subscriptionState === 'grace_period')
+                                <div style="margin-top: 12px; padding: 10px 14px; background: #FFF8E1; border-left: 3px solid #FFA000; font-size: 0.8125rem; color: #8C6D00;">
+                                    ⚠️ <strong>Cảnh Báo Ân Hạn (Grace Period):</strong> Thiệp đã quá hạn nhưng đang trong 7 ngày ân hạn sau cưới. Toàn bộ quyền lợi vẫn được giữ nguyên vẹn để quan khách không bị gián đoạn.
+                                </div>
+                            @elseif ($subscriptionState === 'refunded')
+                                <div style="margin-top: 12px; padding: 10px 14px; background: #FFEBEE; border-left: 3px solid #C62828; font-size: 0.8125rem; color: #C62828;">
+                                    ↺ <strong>Đã Hoàn Tiền (Refunded):</strong> Đơn hàng đã hoàn tất hoàn tiền. Mọi tính năng cao cấp đã tự động khóa theo cơ chế bất biến.
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Ma trận quyền lợi Entitlements Grid -->
+                        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
+                                    Ma Trận Cấp Quyền &amp; Tính Năng Độc Bản (Entitlement Matrix)
+                                </h4>
+                                <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
+                                    Xác định tự động từ Gói cước + Trạng thái thanh toán, hỗ trợ Can thiệp ngoại lệ (Admin Override)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mayhen_admin_table_wrapper">
+                            <table class="mayhen_admin_table">
+                                <thead>
+                                    <tr>
+                                        <th>Quyền Lợi &amp; Tính Năng</th>
+                                        <th>Gói Hỗ Trợ</th>
+                                        <th>Trạng Thái Cấp Quyền</th>
+                                        <th>Can Thiệp Ngoại Lệ</th>
+                                        <th style="text-align: right;">Hành Động Admin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($grantedEntitlements as $fKey => $ent)
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 600; color: var(--mh-admin-charcoal); font-size: 0.8125rem;">
+                                                    {{ $ent['label'] }}
+                                                </div>
+                                                <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
+                                                    {{ $ent['description'] }}
+                                                </div>
+                                                <div style="font-size: 0.6875rem; color: #9C8C7D; font-family: monospace;">
+                                                    key: {{ $fKey }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                                    @foreach ($ent['plans'] as $pSlug)
+                                                        <span class="mayhen_admin_badge" style="font-size: 0.6875rem; text-transform: uppercase; background: #F0ECE4; color: #4A453E;">
+                                                            {{ $pSlug }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if ($ent['is_granted'])
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_success" style="font-size: 0.75rem;">
+                                                        ✓ Được Cấp Quyền
+                                                    </span>
+                                                @else
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger" style="font-size: 0.75rem;">
+                                                        ✕ Đang Bị Khóa
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($ent['is_overridden'])
+                                                    <div style="font-size: 0.75rem;">
+                                                        <span class="mayhen_admin_badge" style="background: #FFF3E0; color: #E65100; border: 1px solid #FFE082;">
+                                                            ⚡ Ngoại lệ thủ công
+                                                        </span>
+                                                        @if ($ent['override_reason'])
+                                                            <div style="font-size: 0.6875rem; color: #555; margin-top: 4px;">
+                                                                Lý do: <em>{{ $ent['override_reason'] }}</em>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <span style="font-size: 0.75rem; color: #9E9E9E;">
+                                                        Mặc định theo gói
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <details style="position: relative; display: inline-block; text-align: left;">
+                                                    <summary class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" style="cursor: pointer; list-style: none;">
+                                                        Can Thiệp &dtrif;
+                                                    </summary>
+                                                    <div style="position: absolute; right: 0; top: 100%; z-index: 50; width: 280px; padding: 12px; background: #FFFFFF; border: 1px solid var(--mh-admin-sand); box-shadow: 0 4px 14px rgba(0,0,0,0.12); border-radius: 8px; margin-top: 4px;">
+                                                        <form action="{{ route('admin.invitations.override_entitlement', $invitation->id) }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="feature_key" value="{{ $fKey }}">
+                                                            <div style="font-size: 0.75rem; font-weight: 700; margin-bottom: 6px;">
+                                                                Can thiệp: {{ $ent['label'] }}
+                                                            </div>
+                                                            <div style="margin-bottom: 8px;">
+                                                                <label style="font-size: 0.6875rem; color: var(--mh-admin-muted);">Thao tác:</label>
+                                                                <select name="action" class="mayhen_admin_select" style="width: 100%; font-size: 0.75rem; padding: 4px 6px;">
+                                                                    <option value="grant" {{ $ent['is_granted'] ? 'disabled' : '' }}>Cấp quyền ngoại lệ (Grant)</option>
+                                                                    <option value="revoke" {{ !$ent['is_granted'] ? 'disabled' : '' }}>Thu hồi ngoại lệ (Revoke)</option>
+                                                                    <option value="reset" {{ !$ent['is_overridden'] ? 'disabled' : '' }}>Đặt lại về mặc định (Reset)</option>
+                                                                </select>
+                                                            </div>
+                                                            <div style="margin-bottom: 8px;">
+                                                                <label style="font-size: 0.6875rem; color: var(--mh-admin-muted);">Lý do kiểm toán (*):</label>
+                                                                <input type="text" name="reason" class="mayhen_admin_input" required placeholder="Lý do (>=6 ký tự)" style="width: 100%; font-size: 0.75rem; padding: 4px 6px;">
+                                                            </div>
+                                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" style="width: 100%; font-size: 0.75rem;">
+                                                                Lưu Ngoại Lệ
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </details>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
+use Illuminate\Support\Facades\Cache;
 
 class EntitlementStateMachineService
 {
@@ -135,6 +136,16 @@ class EntitlementStateMachineService
      */
     public static function canAccessFeature(Invitation $invitation, string $featureKey): bool
     {
+        // 1. Kiểm tra quyền ngoại lệ (Admin Entitlement Override) nếu có
+        $customConfig = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $overrides = $customConfig['entitlement_overrides'] ?? [];
+        if (array_key_exists($featureKey, $overrides) && $overrides[$featureKey] !== null) {
+            return (bool) $overrides[$featureKey];
+        }
+
         $state = self::getSubscriptionState($invitation);
 
         // Khi thiệp đã hoàn tiền hoặc hết hạn quá 7 ngày -> Khóa toàn bộ quyền lợi cao cấp
@@ -159,22 +170,69 @@ class EntitlementStateMachineService
     }
 
     /**
-     * Lấy danh mục toàn bộ quyền lợi kèm cờ trạng thái cấp phát thực tế.
+     * Lấy danh mục toàn bộ quyền lợi kèm cờ trạng thái cấp phát thực tế và thông tin can thiệp.
      *
-     * @return array<string, array{label: string, description: string, is_granted: bool}>
+     * @return array<string, array{label: string, description: string, plans: array<string>, is_granted: bool, is_overridden: bool, override_reason: ?string, override_at: ?string}>
      */
     public static function getGrantedEntitlements(Invitation $invitation): array
     {
+        $customConfig = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        $overrides = $customConfig['entitlement_overrides'] ?? [];
+        $overrideMeta = $customConfig['entitlement_override_meta'] ?? [];
+
         $result = [];
         foreach (self::ENTITLEMENT_CATALOG as $key => $meta) {
+            $isOverridden = array_key_exists($key, $overrides) && $overrides[$key] !== null;
+            $metaData = $overrideMeta[$key] ?? [];
+
             $result[$key] = [
                 'label' => $meta['label'],
                 'description' => $meta['description'],
+                'plans' => $meta['plans'],
                 'is_granted' => self::canAccessFeature($invitation, $key),
+                'is_overridden' => $isOverridden,
+                'override_reason' => $metaData['reason'] ?? null,
+                'override_at' => $metaData['updated_at'] ?? null,
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * Admin can thiệp cấp quyền hoặc thu hồi quyền lợi ngoại lệ (Admin Override).
+     */
+    public static function setOverride(Invitation $invitation, string $featureKey, ?bool $grant, string $reason, int $adminUserId): void
+    {
+        $customConfig = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if (! isset($customConfig['entitlement_overrides'])) {
+            $customConfig['entitlement_overrides'] = [];
+        }
+        if (! isset($customConfig['entitlement_override_meta'])) {
+            $customConfig['entitlement_override_meta'] = [];
+        }
+
+        if ($grant === null) {
+            unset($customConfig['entitlement_overrides'][$featureKey]);
+            unset($customConfig['entitlement_override_meta'][$featureKey]);
+        } else {
+            $customConfig['entitlement_overrides'][$featureKey] = $grant;
+            $customConfig['entitlement_override_meta'][$featureKey] = [
+                'granted' => $grant,
+                'reason' => $reason,
+                'admin_id' => $adminUserId,
+                'updated_at' => now()->toIso8601String(),
+            ];
+        }
+
+        $invitation->update(['custom_config' => $customConfig]);
+        Cache::forget("invitation_{$invitation->slug}");
     }
 
     /**
@@ -183,11 +241,11 @@ class EntitlementStateMachineService
     public static function applyPaidOrder(Invitation $invitation, Order $order): void
     {
         $plan = $order->plan;
-        $durationDays = $plan ? (int) $plan->duration_days : 180;
+        $durationDays = $plan ? (int) $plan->duration_days : 365;
 
         // Nếu thiệp đang active và chưa hết hạn: Cộng dồn nối tiếp
         if ($invitation->expires_at && $invitation->expires_at->isFuture()) {
-            $newExpiry = $invitation->expires_at->addDays($durationDays);
+            $newExpiry = $invitation->expires_at->copy()->addDays($durationDays);
         } else {
             $newExpiry = now()->addDays($durationDays);
         }
@@ -196,7 +254,7 @@ class EntitlementStateMachineService
             'expires_at' => $newExpiry,
         ]);
 
-        Invitation::clearCache($invitation->slug);
+        Cache::forget("invitation_{$invitation->slug}");
     }
 
     /**
@@ -208,7 +266,7 @@ class EntitlementStateMachineService
             'expires_at' => now(),
         ]);
 
-        Invitation::clearCache($invitation->slug);
+        Cache::forget("invitation_{$invitation->slug}");
     }
 
     /**
