@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
 use App\Models\User;
+use App\Models\Wedding;
 use App\Services\AuditLogger;
 use App\Services\IncidentResponseAndEscalationService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +44,12 @@ class SupportController extends Controller
         if ($request->filled('assigned_to')) {
             $query->where('assigned_to', $request->assigned_to);
         }
+
+        // Hàng đợi VIP Concierge: Đám cưới diễn ra trong vòng 48 giờ tới (Innovation #16)
+        $vipWeddingUserIds = Wedding::whereBetween('wedding_date', [Carbon::today(), Carbon::today()->addDays(2)])
+            ->pluck('user_id')
+            ->unique()
+            ->all();
 
         // Hàng đợi lọc nhanh: VIP 48h, Sự cố vận hành, Đã leo thang
         if ($request->input('queue') === 'vip_48h') {

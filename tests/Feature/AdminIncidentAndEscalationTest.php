@@ -190,3 +190,20 @@ test('manager can run sla breach scanner route', function () {
     $response->assertRedirect();
     $response->assertSessionHas('success');
 });
+
+test('admin support index page renders cleanly without errors across all queues', function () {
+    $response = $this->actingAs($this->superAdmin)->get(route('admin.support.index'));
+    $response->assertStatus(200);
+    $response->assertSee('Trung Tâm Hỗ Trợ Khách Hàng');
+    $response->assertSee('Quá Hạn SLA');
+    $response->assertSee('Sự Cố Vận Hành');
+
+    $vipResponse = $this->actingAs($this->superAdmin)->get(route('admin.support.index', ['queue' => 'vip_48h']));
+    $vipResponse->assertStatus(200);
+
+    $escResponse = $this->actingAs($this->superAdmin)->get(route('admin.support.index', ['queue' => 'escalated']));
+    $escResponse->assertStatus(200);
+
+    $incResponse = $this->actingAs($this->superAdmin)->get(route('admin.support.index', ['queue' => 'incidents']));
+    $incResponse->assertStatus(200);
+});
