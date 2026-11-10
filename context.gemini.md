@@ -8304,6 +8304,52 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ test suite hệ thống: **969/969 tests PASSED 100% (5,118 assertions in 23.46s)**.
   - Laravel Pint: **100% PASSED**.
 
+---
+
+## 74. ĐỀ ÁN 74: TRUNG TÂM KHỞI TẠO THIỆP TỪNG BƯỚC & ONBOARDING WIZARD CHO CẶP ĐÔI MỚI (CLIENT STEP-BY-STEP ONBOARDING WIZARD — SECTION 21.2 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Xây dựng trải nghiệm dẫn dắt khách hàng mới đăng ký (Onboarding Wizard) theo đúng quy chuẩn Section 21.2 Master PRD V3. Giúp cặp đôi không bị bỡ ngỡ, thiết lập nhanh chóng tấm thiệp cưới đầu tiên qua quy trình 4 bước tinh giản chuẩn Quiet Luxury:
+  1. *Bước 1: Nhu cầu & Vai trò (`role_intent`)*: Cặp đôi tự làm thiệp cưới / Làm hộ người thân bạn bè / Wedding Planner & Studio cưới.
+  2. *Bước 2: Chọn phong cách thiệp (`template_id`)*: Grid mẫu thiệp với ảnh thumbnail, badge phong cách, xem thử mẫu tức thời (`/mau-thiep/{slug}/xem-thu`) và nút chọn mẫu nổi bật.
+  3. *Bước 3: Thông tin uyên ương & hôn lễ*: Tên Chú Rể, Tên Cô Dâu, Ngày cưới (tự động đồng bộ Countdown), Tên sảnh tiệc và Địa chỉ tổ chức (mở chỉ đường Google Maps).
+  4. *Bước 4: Xem lại & Khởi tạo thiệp số*: Thẻ tóm tắt thông tin trang nhã, khởi tạo thiệp tự động qua `InvitationTemplateService::saveInvitation` và điều hướng trực tiếp vào Studio Editor (`/tao-thiep?edit={slug}`) để trải nghiệm chỉnh sửa thời gian thực.
+  5. *Lưu nháp từng bước (Draft Persistence)*: Tự động lưu tiến trình từng bước vào phiên (`session('onboarding_draft')`), thanh tiến trình % trực quan (25% -> 50% -> 75% -> 100%), hỗ trợ làm lại từ đầu (`route('onboarding.reset')`).
+  6. *Tích hợp luồng đăng ký (Registration Flow)*: Khách hàng mới đăng ký tài khoản tự động được chào đón và chuyển hướng tới `/onboarding` để bắt đầu tạo thiệp.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Routes ([routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - `GET /onboarding` (`onboarding.index`) -> `OnboardingController::index`.
+     - `POST /onboarding/luu-buoc` (`onboarding.save_step`) -> `OnboardingController::saveStep` (throttle 30/phút).
+     - `POST /onboarding/hoan-tat` (`onboarding.complete`) -> `OnboardingController::complete` (throttle 20/phút).
+     - `POST /onboarding/lam-lai` (`onboarding.reset`) -> `OnboardingController::reset`.
+  2. **Controller ([OnboardingController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/OnboardingController.php))**:
+     - `index()`: Nạp danh sách mẫu thiệp cưới đang hoạt động, nạp draft từ session, render view onboarding.
+     - `saveStep()`: Validate và lưu dữ liệu nháp từng bước, trả về JSON `{ success: true, next_step: ... }`.
+     - `complete()`: Validate tổng thể, gọi `InvitationTemplateService::saveInvitation`, xóa session nháp, ghi `AuditLogger::log('ONBOARDING_COMPLETED', ...)` và redirect tới Studio Editor kèm flash message chúc mừng.
+     - `reset()`: Xóa session nháp và chuyển về bước 1.
+  3. **Controller Đăng Ký ([AuthController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/AuthController.php))**:
+     - Cập nhật `register()`: Chuyển hướng người dùng mới đăng ký mặc định tới `route('onboarding.index')`.
+  4. **Giao diện ([resources/views/client/pages/onboarding.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/onboarding.blade.php))**:
+     - Kế thừa layout `client.layouts.master`.
+     - Bố cục 4 bước với Stepper Progress Bar chuẩn Quiet Luxury.
+     - Khung Intent Cards, Grid chọn mẫu thiệp, Form thông tin cưới và Thẻ tóm tắt xác nhận.
+  5. **Styling & Scripting**:
+     - CSS: [onboarding.css](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/css/pages/onboarding.css) (100% Pure Vanilla CSS, class prefix `mayhen_onboarding_*`, responsive đa thiết bị).
+     - JS: [onboarding.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/onboarding.js) (Native ES Modules, xử lý chuyển bước, autosave ngầm, cập nhật % tiến trình và summary).
+  6. **Kiểm thử ([tests/Feature/ClientOnboardingWizardTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/ClientOnboardingWizardTest.php))**:
+     - `test_guest_is_redirected_to_login_when_accessing_onboarding`: Khách chưa đăng nhập bị chuyển về login.
+     - `test_authenticated_user_can_view_onboarding_wizard`: Xem giao diện wizard đầy đủ 4 bước và mẫu thiệp.
+     - `test_user_can_save_step_1_intent`: Lưu mục đích sử dụng.
+     - `test_user_can_save_step_2_template`: Lưu mẫu thiệp đã chọn.
+     - `test_user_can_save_step_3_couple_info`: Lưu thông tin cặp đôi và ngày cưới.
+     - `test_save_step_validates_required_fields`: Bắt lỗi validation khi thiếu trường bắt buộc.
+     - `test_user_can_complete_onboarding_and_create_invitation`: Tạo `Wedding`, `Invitation`, ghi AuditLog, xóa draft và redirect tới Studio Editor.
+     - `test_new_registered_user_is_redirected_to_onboarding`: Đăng ký mới tự động chuyển hướng vào Onboarding.
+     - `test_user_can_reset_onboarding_draft`: Đặt lại draft từ đầu thành công.
+- **Kết quả kiểm thử & Định dạng mã**:
+  - Pest test suite Đề án 74: **9/9 tests PASSED 100% (43 assertions in 658ms)**.
+  - Toàn bộ test suite hệ thống: **978/978 tests PASSED 100% (5,161 assertions in 25.31s)**.
+  - Laravel Pint: **100% PASSED**.
+
+
 
 
 

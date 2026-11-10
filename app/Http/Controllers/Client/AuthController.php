@@ -120,9 +120,9 @@ class AuthController extends Controller
         $this->syncOwnedInvitations($request, $user);
         $request->session()->regenerate();
 
-        $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('home'));
+        $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('onboarding.index'));
 
-        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Chào mừng bạn đến với Mây Hẹn.');
+        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Bắt đầu tạo thiệp cưới của bạn ngay nhé.');
     }
 
     /**

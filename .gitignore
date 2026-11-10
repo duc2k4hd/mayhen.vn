@@ -140,6 +140,7 @@ Thumbs.db
 !/tests/Feature/PostWeddingLifecycleAndPrivacyTest.php
 !/tests/Feature/InvitationAnalyticsAndFunnelTest.php
 !/tests/Feature/GuestSmartCsvImportAndSegmentationTest.php
+!/tests/Feature/ClientOnboardingWizardTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

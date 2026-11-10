@@ -17,6 +17,7 @@ use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
+use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
@@ -108,6 +109,14 @@ Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->mi
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->middleware('throttle:60,1')->name('checkout.status');
 Route::post('/api/payments/sepay/webhook', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
 Route::post('/api/webhook/payment', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment.legacy');
+
+// Onboarding Wizard Cho Cặp Đôi Mới (Section 21.2 Master PRD V3)
+Route::middleware('auth')->prefix('onboarding')->name('onboarding.')->group(function () {
+    Route::get('/', [OnboardingController::class, 'index'])->name('index');
+    Route::post('/luu-buoc', [OnboardingController::class, 'saveStep'])->middleware('throttle:30,1')->name('save_step');
+    Route::post('/hoan-tat', [OnboardingController::class, 'complete'])->middleware('throttle:20,1')->name('complete');
+    Route::post('/lam-lai', [OnboardingController::class, 'reset'])->name('reset');
+});
 
 // User Account Portal (Cặp đôi / Khách hàng)
 Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function () {

@@ -50,7 +50,7 @@ class AuthLifecycleAndAccountDashboardDeepTest extends TestCase
             'password_confirmation' => 'SecurePass123',
         ]);
 
-        $response->assertRedirect(route('home'));
+        $response->assertRedirect(route('onboarding.index'));
         $this->assertAuthenticated();
 
         $user = User::where('email', 'cuong.nguyen@mayhen.test')->first();

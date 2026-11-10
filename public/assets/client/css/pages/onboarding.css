@@ -1,0 +1,567 @@
+/**
+ * MAYHEN.VN — ONBOARDING WIZARD STYLESHEET
+ * Quiet Luxury Aesthetic (100% Native Vanilla CSS)
+ * Mandatory Prefix: mayhen_onboarding_*
+ */
+
+.mayhen_onboarding_page {
+    background: #FAF8F5;
+    min-height: calc(100vh - 80px);
+    padding: 40px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #2C2824;
+}
+
+.mayhen_onboarding_container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Header */
+.mayhen_onboarding_header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.mayhen_onboarding_badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #9C7A4A;
+    background: rgba(197, 168, 128, 0.15);
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.mayhen_onboarding_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 38px;
+    font-weight: 500;
+    color: #1F1D1A;
+    margin: 0 0 10px 0;
+    line-height: 1.25;
+}
+
+.mayhen_onboarding_subtitle {
+    font-size: 15px;
+    color: #7A726A;
+    margin: 0 auto;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+/* Stepper Track */
+.mayhen_onboarding_stepper {
+    position: relative;
+    margin: 0 auto 40px;
+    max-width: 650px;
+}
+
+.mayhen_onboarding_step_track {
+    position: absolute;
+    top: 18px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #E5DCCD;
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.mayhen_onboarding_step_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C5A880, #9C7A4A);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mayhen_onboarding_step_nodes {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_onboarding_node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+}
+
+.mayhen_onboarding_node_circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 2px solid #D8CEBD;
+    color: #7A726A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.mayhen_onboarding_node_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #8C827A;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.mayhen_onboarding_node.active .mayhen_onboarding_node_circle {
+    background: #1F1D1A;
+    border-color: #1F1D1A;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.25);
+}
+
+.mayhen_onboarding_node.active .mayhen_onboarding_node_label {
+    color: #1F1D1A;
+    font-weight: 600;
+}
+
+.mayhen_onboarding_node.completed .mayhen_onboarding_node_circle {
+    background: #9C7A4A;
+    border-color: #9C7A4A;
+    color: #FFFFFF;
+}
+
+.mayhen_onboarding_node.completed .mayhen_onboarding_node_label {
+    color: #9C7A4A;
+}
+
+/* Main Card */
+.mayhen_onboarding_card {
+    background: #FFFFFF;
+    border: 1px solid #EFE8DD;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+.mayhen_onboarding_step_title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #1F1D1A;
+    margin: 0 0 8px 0;
+}
+
+.mayhen_onboarding_step_desc {
+    font-size: 14px;
+    color: #7A726A;
+    margin: 0 0 28px 0;
+    line-height: 1.5;
+}
+
+/* Step 1: Intent Cards */
+.mayhen_onboarding_intent_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.mayhen_onboarding_intent_card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    border: 1px solid #E5DCCD;
+    border-radius: 12px;
+    background: #FFFDF9;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.mayhen_onboarding_intent_card:hover {
+    border-color: #C5A880;
+    background: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_onboarding_intent_card.selected {
+    border-color: #9C7A4A;
+    background: #FAF6EF;
+    box-shadow: 0 0 0 2px rgba(156, 122, 74, 0.2);
+}
+
+.mayhen_onboarding_radio {
+    display: none;
+}
+
+.mayhen_onboarding_intent_icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FAF8F5;
+    border-radius: 50%;
+    border: 1px solid #EFE8DD;
+}
+
+.mayhen_onboarding_intent_title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 4px 0;
+}
+
+.mayhen_onboarding_intent_text {
+    font-size: 13px;
+    color: #7A726A;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Step 2: Templates Grid */
+.mayhen_onboarding_templates_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.mayhen_onboarding_template_card {
+    border: 1px solid #E5DCCD;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #FFFFFF;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_onboarding_template_card:hover {
+    border-color: #C5A880;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_onboarding_template_card.selected {
+    border-color: #9C7A4A;
+    box-shadow: 0 0 0 2px #9C7A4A, 0 8px 24px rgba(156, 122, 74, 0.15);
+}
+
+.mayhen_onboarding_template_media {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    background: #EFE8DD;
+    overflow: hidden;
+}
+
+.mayhen_onboarding_template_media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.mayhen_onboarding_template_card:hover .mayhen_onboarding_template_media img {
+    transform: scale(1.04);
+}
+
+.mayhen_onboarding_template_badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: rgba(31, 29, 26, 0.85);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+}
+
+.mayhen_onboarding_template_info {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.mayhen_onboarding_template_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 6px 0;
+}
+
+.mayhen_onboarding_template_desc {
+    font-size: 12px;
+    color: #7A726A;
+    margin: 0 0 14px 0;
+    line-height: 1.45;
+    flex-grow: 1;
+}
+
+.mayhen_onboarding_template_actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mayhen_onboarding_btn_preview {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #D8CEBD;
+    background: #FAF8F5;
+    color: #4A453E;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.mayhen_onboarding_btn_preview:hover {
+    background: #EFE8DD;
+    color: #1F1D1A;
+}
+
+.mayhen_onboarding_btn_select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid #C5A880;
+    background: #FFFFFF;
+    color: #9C7A4A;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_onboarding_btn_select:hover,
+.mayhen_onboarding_btn_select.active {
+    background: #9C7A4A;
+    color: #FFFFFF;
+    border-color: #9C7A4A;
+}
+
+/* Step 3: Form Grid */
+.mayhen_onboarding_form_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.mayhen_onboarding_form_group {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_onboarding_label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4A453E;
+    margin-bottom: 6px;
+}
+
+.mayhen_onboarding_input {
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #D1C7BD;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1F1D1A;
+    background: #FFFFFF;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_onboarding_input:focus {
+    outline: none;
+    border-color: #9C7A4A;
+    box-shadow: 0 0 0 3px rgba(156, 122, 74, 0.15);
+}
+
+.mayhen_onboarding_hint {
+    font-size: 11px;
+    color: #8C827A;
+    margin-top: 5px;
+}
+
+/* Step 4: Summary Card */
+.mayhen_onboarding_summary_card {
+    background: #FAF8F5;
+    border: 1px solid #EFE8DD;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.mayhen_onboarding_summary_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #EFE8DD;
+    font-size: 14px;
+}
+
+.mayhen_onboarding_summary_row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.mayhen_onboarding_summary_label {
+    color: #7A726A;
+}
+
+.mayhen_onboarding_summary_value {
+    color: #1F1D1A;
+    text-align: right;
+    max-width: 60%;
+}
+
+/* Action Buttons */
+.mayhen_onboarding_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid #F0ECE4;
+}
+
+.mayhen_onboarding_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.mayhen_onboarding_btn_primary {
+    background: #1F1D1A;
+    color: #FFFFFF;
+}
+
+.mayhen_onboarding_btn_primary:hover {
+    background: #38342E;
+    transform: translateY(-1px);
+}
+
+.mayhen_onboarding_btn_gold {
+    background: linear-gradient(135deg, #C5A880, #9C7A4A);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.35);
+}
+
+.mayhen_onboarding_btn_gold:hover {
+    background: linear-gradient(135deg, #B8935D, #856436);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(156, 122, 74, 0.45);
+}
+
+.mayhen_onboarding_btn_outline {
+    background: #FFFFFF;
+    border: 1px solid #D8CEBD;
+    color: #4A453E;
+}
+
+.mayhen_onboarding_btn_outline:hover {
+    background: #FAF8F5;
+    border-color: #B8935D;
+    color: #1F1D1A;
+}
+
+/* Footer Help */
+.mayhen_onboarding_footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+    font-size: 13px;
+    color: #8C827A;
+    flex-wrap: wrap;
+}
+
+.mayhen_onboarding_footer a {
+    color: #9C7A4A;
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mayhen_onboarding_page {
+        padding: 20px 14px 60px;
+    }
+
+    .mayhen_onboarding_card {
+        padding: 24px 18px;
+    }
+
+    .mayhen_onboarding_title {
+        font-size: 28px;
+    }
+
+    .mayhen_onboarding_step_title {
+        font-size: 22px;
+    }
+
+    .mayhen_onboarding_step_nodes {
+        padding: 0 10px;
+    }
+
+    .mayhen_onboarding_node_label {
+        font-size: 10px;
+    }
+
+    .mayhen_onboarding_form_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_onboarding_form_group[style*="grid-column: span 2;"] {
+        grid-column: span 1 !important;
+    }
+
+    .mayhen_onboarding_templates_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_onboarding_intent_card {
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .mayhen_onboarding_actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .mayhen_onboarding_btn {
+        width: 100%;
+    }
+}
+
