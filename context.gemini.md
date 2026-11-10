@@ -6766,9 +6766,10 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * `docs/qa/visual-review.md`
   * `docs/qa/screenshots/*.png` (116 ảnh chụp trực quan thực tế)
   * `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php`
+  * `tests/Feature/PartnerHandoverAndCustomDomainDeepTest.php` (Bổ sung 3 test cases: cách ly đa khách hàng 404, xác minh DNS CNAME thành công/thất bại, và vòng đời gỡ bỏ domain)
   * `app/Http/Controllers/Client/TemplateController.php` (Tối ưu Native Fast: loại bỏ khối lặp WHERE q trong `index()`, mã lỗi `BUG-SEARCH-002`)
   * `docs/qa/bug-register.csv` (Cập nhật 27 bugs đã giải quyết triệt để)
-  * `docs/qa/test-run-ledger.csv` (Bổ sung kịch bản `QA-CATALOG-QUERY-DEDUPLICATE-001`)
+  * `docs/qa/test-run-ledger.csv` (Bổ sung các kịch bản `QA-CATALOG-QUERY-DEDUPLICATE-001`, `QA-DOMAIN-TENANT-ISOLATION-001`, `QA-DOMAIN-DNS-VERIFY-001`, `QA-DOMAIN-RESET-LIFECYCLE-001`)
 - **Kiểm Định Trực Quan Bằng Ảnh Chụp Thực Tế (Visual Screenshots Capture)**:
   * Đã kích hoạt Google Chrome Headless Engine (`--headless=new`) trên server cục bộ `http://127.0.0.1:8000`.
   * Tự động chụp và lưu trữ **116 tệp ảnh PNG thực tế** tại `docs/qa/screenshots/` cho 29 màn hình giao diện (toàn bộ 4 mẫu thiệp gốc Giữa Muôn Ngàn, Hạnh Phúc Mang Tên, Ngày Tình Yêu Đơm Hoa, Trọn Kiếp Này, chi tiết mẫu, dịch vụ, điều khoản, bảo mật, tiếp thị, đăng nhập, đăng ký, lỗi 404, bàn lễ tân, guest concierge, photo drop, thiệp cưới công khai, cổng quản trị admin login, đối tác đăng ký, không gian đối tác portal, trình chiếu live wall, và hộp lưu giữ thời gian) qua 4 kích thước màn hình tiêu biểu (`375x812`, `430x932`, `768x1024`, `1440x900`).
@@ -6776,7 +6777,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Kiểm Định Chịu Tải Đồng Thời & Lũy Đẳng (Concurrency & Spike Load Test)**:
   * Tạo lập `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php` kiểm tra thực chiến quét QR dồn dập, đồng bộ bàn tiệc đồng loạt không deadlock, đón tiếp khách phát sinh nguyên tử và chống replay attack webhook SePay.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Toàn bộ test suite: **630/630 tests PASSED 100% (3,248 assertions in 12.2s)**.
+  * Toàn bộ test suite: **633/633 tests PASSED 100% (3,268 assertions in 12.4s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
 ---

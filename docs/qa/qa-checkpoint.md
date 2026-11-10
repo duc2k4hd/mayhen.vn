@@ -89,7 +89,7 @@
     * Bảng điều khiển tài khoản cặp đôi (`Client Dashboard`): thống kê tổng số thiệp, khách mời dự kiến, phản hồi tham dự thực tế và danh sách lời chúc mới nhất.
     * Nhân bản thiệp cưới (`Duplicate`): tạo bản sao mới với tiêu đề `(Bản Sao)`, slug ngẫu nhiên không trùng lặp, chuyển trạng thái về `is_published: false` và kiểm soát IDOR tuyệt đối.
     * Xóa thiệp cưới (`Delete`): xác thực chặt chẽ quyền chủ sở hữu, từ chối người lạ truy cập (404 Not Found).
-- **Test suite**: **630/630 tests PASSED 100%** (3,248 assertions in 13.0s).
+- **Test suite**: **633/633 tests PASSED 100%** (3,268 assertions in 12.4s).
 - **Code style**: **Laravel Pint PASSED** (Agent style 100%).
 - **Kiểm định chịu tải đồng thời & Lũy đẳng (Concurrency & Spike Load)**:
   * `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php`: 4 bài test thực chiến kiểm tra quét dồn dập nhiều lần cùng 1 token (idempotent, không nhân đôi sĩ số), đón khách phát sinh (walk-in) nguyên tử, điểm danh đồng loạt cùng bàn tiệc không deadlock, và chống replay attack webhook SePay.
@@ -102,4 +102,4 @@
   * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`: Đồng bộ hóa 5,070 kịch bản kiểm thử sang trạng thái `PASS` kèm tệp test và bằng chứng xác minh cụ thể.
   * `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv`: Cập nhật 702 ca kiểm thử màn hình với liên kết ảnh thực tế và trạng thái `VISUAL_PASS` / `CODE_VERIFIED_RESPONSIVE`.
   * `docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`: Giải quyết toàn diện 5 điểm mâu thuẫn đặc tả (`SPEC_CONFLICT-01` đến `SPEC_CONFLICT-05`).
-  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 630 tests, 3,248 assertions, 116 screenshots và 26 bugs P0/P1/P2 được xử lý triệt để.
+  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 633 tests, 3,268 assertions, 116 screenshots và 27 bugs P0/P1/P2/P3 được xử lý triệt để.

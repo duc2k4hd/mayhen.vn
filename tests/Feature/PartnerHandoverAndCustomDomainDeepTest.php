@@ -306,3 +306,154 @@ test('live projection wall supports pin verification and handles locked status g
     ]);
     $resLockedVerify->assertStatus(200);
 });
+
+test('custom domain tenant isolation denies unauthorized users with 404', function () {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $template = InvitationTemplate::where('is_active', true)->first();
+
+    $wedding = Wedding::create([
+        'user_id' => $owner->id,
+        'groom_name' => 'Tuấn Anh',
+        'bride_name' => 'Lan Phương',
+        'wedding_date' => '2026-12-25',
+    ]);
+
+    $invitation = Invitation::create([
+        'wedding_id' => $wedding->id,
+        'template_id' => $template->id,
+        'user_id' => $owner->id,
+        'slug' => 'thiep-tuan-lan-'.uniqid(),
+    ]);
+
+    // Stranger không thể xem trang cấu hình tên miền -> 404
+    $this->actingAs($stranger)
+        ->get(route('account.invitations.domain', $invitation->id))
+        ->assertStatus(404);
+
+    // Stranger không thể cập nhật subdomain -> 404
+    $this->actingAs($stranger)
+        ->post(route('account.invitations.domain.subdomain', $invitation->id), [
+            'subdomain' => 'tuanlan-wedding',
+        ])
+        ->assertStatus(404);
+
+    // Stranger không thể cập nhật custom domain -> 404
+    $this->actingAs($stranger)
+        ->post(route('account.invitations.domain.custom', $invitation->id), [
+            'custom_domain' => 'tuanlan.wedding',
+        ])
+        ->assertStatus(404);
+
+    // Stranger không thể gửi verify DNS -> 404
+    $this->actingAs($stranger)
+        ->post(route('account.invitations.domain.verify', $invitation->id))
+        ->assertStatus(404);
+
+    // Stranger không thể gỡ bỏ tên miền -> 404
+    $this->actingAs($stranger)
+        ->delete(route('account.invitations.domain.destroy', $invitation->id))
+        ->assertStatus(404);
+});
+
+test('custom domain dns verification transitions domain to active or failed state correctly', function () {
+    $owner = User::factory()->create();
+    $template = InvitationTemplate::where('is_active', true)->first();
+
+    $wedding = Wedding::create([
+        'user_id' => $owner->id,
+        'groom_name' => 'Hoàng Nam',
+        'bride_name' => 'Thanh Thảo',
+        'wedding_date' => '2026-11-20',
+    ]);
+
+    $invitation = Invitation::create([
+        'wedding_id' => $wedding->id,
+        'template_id' => $template->id,
+        'user_id' => $owner->id,
+        'slug' => 'thiep-nam-thao-'.uniqid(),
+    ]);
+
+    // 1. Cấu hình domain hợp lệ và verify thành công
+    $this->actingAs($owner)->post(route('account.invitations.domain.custom', $invitation->id), [
+        'custom_domain' => 'namthao.wedding',
+    ]);
+
+    $resVerifySuccess = $this->actingAs($owner)->post(route('account.invitations.domain.verify', $invitation->id));
+    $resVerifySuccess->assertSessionHas('status');
+
+    $domain = WeddingDomain::where('invitation_id', $invitation->id)->first();
+    expect($domain->status)->toBe('active')
+        ->and($domain->ssl_status)->toBe('active')
+        ->and($domain->dns_verified_at)->not->toBeNull();
+
+    // 2. Cấu hình domain lỗi (chứa 'fail') và verify thất bại
+    $this->actingAs($owner)->post(route('account.invitations.domain.custom', $invitation->id), [
+        'custom_domain' => 'namthao-fail.wedding',
+    ]);
+
+    $resVerifyFail = $this->actingAs($owner)->post(route('account.invitations.domain.verify', $invitation->id));
+    $resVerifyFail->assertSessionHas('error');
+
+    $domain->refresh();
+    expect($domain->status)->toBe('failed');
+});
+
+test('custom domain lifecycle supports removing subdomain, custom domain, and full domain reset', function () {
+    $owner = User::factory()->create();
+    $template = InvitationTemplate::where('is_active', true)->first();
+
+    $wedding = Wedding::create([
+        'user_id' => $owner->id,
+        'groom_name' => 'Đức Thịnh',
+        'bride_name' => 'Mai Anh',
+        'wedding_date' => '2026-12-30',
+    ]);
+
+    $invitation = Invitation::create([
+        'wedding_id' => $wedding->id,
+        'template_id' => $template->id,
+        'user_id' => $owner->id,
+        'slug' => 'thiep-thinh-mai-'.uniqid(),
+    ]);
+
+    // Gán cả subdomain và custom domain
+    $this->actingAs($owner)->post(route('account.invitations.domain.subdomain', $invitation->id), [
+        'subdomain' => 'thinh-mai-2026',
+    ]);
+    $this->actingAs($owner)->post(route('account.invitations.domain.custom', $invitation->id), [
+        'custom_domain' => 'thinhmai.wedding',
+    ]);
+
+    $domain = WeddingDomain::where('invitation_id', $invitation->id)->first();
+    expect($domain->subdomain)->toBe('thinh-mai-2026')
+        ->and($domain->custom_domain)->toBe('thinhmai.wedding');
+
+    // 1. Gỡ bỏ chỉ subdomain
+    $resDelSub = $this->actingAs($owner)->delete(route('account.invitations.domain.destroy', $invitation->id), [
+        'type' => 'subdomain',
+    ]);
+    $resDelSub->assertSessionHas('status', 'Đã gỡ bỏ tên miền phụ thành công.');
+
+    $domain->refresh();
+    expect($domain->subdomain)->toBeNull()
+        ->and($domain->custom_domain)->toBe('thinhmai.wedding');
+
+    // 2. Gỡ bỏ chỉ custom domain
+    $resDelCustom = $this->actingAs($owner)->delete(route('account.invitations.domain.destroy', $invitation->id), [
+        'type' => 'custom_domain',
+    ]);
+    $resDelCustom->assertSessionHas('status', 'Đã gỡ bỏ tên miền riêng thành công.');
+
+    $domain->refresh();
+    expect($domain->custom_domain)->toBeNull();
+
+    // 3. Gán lại và xóa toàn bộ (type=all)
+    $domain->update(['subdomain' => 'thinh-mai-again']);
+    $resDelAll = $this->actingAs($owner)->delete(route('account.invitations.domain.destroy', $invitation->id), [
+        'type' => 'all',
+    ]);
+    $resDelAll->assertSessionHas('status', 'Đã xóa toàn bộ cấu hình tên miền của thiệp cưới.');
+
+    expect(WeddingDomain::where('invitation_id', $invitation->id)->exists())->toBeFalse();
+});
