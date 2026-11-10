@@ -7072,7 +7072,8 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Nhân viên (`staff`) truy cập các tác vụ nghiệp vụ nhưng bị chặn khỏi các cấu hình tối cao (`admin.settings.*`, `admin.jobs.*`).
      - Quản lý (`manager`) có quyền duyệt đơn, hoàn tiền, hủy đơn, quản lý coupon và xử lý ticket.
      - Quản trị viên cấp cao (`admin`) sở hữu toàn quyền quản trị, bảo mật và cấu hình hệ thống.
-  4. **Kiểm Thử Vòng Đời Vận Hành End-to-End (UAT Testing)**:
+  4. **Kiểm Thử Vòng Đời Vận Hành End-to-End (UAT Testing) & One-Case Timeline (Innovation #5)**:
+     - Tích hợp One-Case Timeline vào hồ sơ Customer 360 ([users/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/users/show.blade.php)): Hợp nhất thiệp cưới, lịch sử giao dịch và danh sách yêu cầu hỗ trợ (Support Tickets) trong cùng một màn hình tập trung.
      - Vòng đời đơn hàng: Đơn pending phát sinh -> Tự động vào Action Inbox P0 -> Quản lý duyệt kèm mã tham chiếu đối soát -> Hoàn tất và tự động xóa khỏi danh sách khẩn P0.
      - Vòng đời Radar: Đám cưới thiếu thông tin bị gắn cờ đỏ rủi ro cao -> Cặp đôi cập nhật địa điểm & ảnh -> Điểm sẵn sàng tăng và tự động rời khỏi danh sách rủi ro.
      - Vòng đời Ticket: Tiếp nhận ticket mới -> Staff phản hồi ghi nhận SLA -> Chuyển trạng thái sang `in_progress` -> Manager chuyển sang `resolved`.

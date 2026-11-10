@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SupportTicket;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
@@ -11,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserController extends Controller
@@ -94,7 +96,7 @@ class UserController extends Controller
     }
 
     /**
-     * Display detailed user information including their weddings and order history.
+     * Display detailed user information including their weddings, order history, and support tickets.
      */
     public function show(int $id): View
     {
@@ -104,10 +106,14 @@ class UserController extends Controller
         ])->findOrFail($id);
 
         $totalSpent = $user->orders->where('status', 'paid')->sum('amount');
+        $supportTickets = Schema::hasTable('support_tickets')
+            ? SupportTicket::where('user_id', $user->id)->latest()->get()
+            : collect();
 
         return view('admin.pages.users.show', [
             'user' => $user,
             'totalSpent' => $totalSpent,
+            'supportTickets' => $supportTickets,
         ]);
     }
 

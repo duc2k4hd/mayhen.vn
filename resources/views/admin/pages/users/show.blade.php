@@ -195,6 +195,60 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Support Tickets Card (One-Case Timeline - Innovation #5) -->
+            <div class="mayhen_admin_card">
+                <div class="mayhen_admin_card_header">
+                    <div class="mayhen_admin_card_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                        <span>Yêu Cầu Hỗ Trợ (Support Tickets — {{ count($supportTickets ?? []) }})</span>
+                    </div>
+                    <a href="{{ route('admin.support.index', ['search' => $user->name]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                        Xem tất cả &rarr;
+                    </a>
+                </div>
+
+                <div class="mayhen_admin_table_responsive">
+                    <table class="mayhen_admin_table">
+                        <thead>
+                            <tr>
+                                <th>Mã Ticket</th>
+                                <th>Tiêu Đề</th>
+                                <th>Phân Loại</th>
+                                <th>Ưu Tiên</th>
+                                <th>Trạng Thái</th>
+                                <th>Thời Gian</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($supportTickets as $t)
+                                <tr>
+                                    <td><code>{{ $t->ticket_code }}</code></td>
+                                    <td><strong>{{ Str::limit($t->subject, 35) }}</strong></td>
+                                    <td><span class="mayhen_admin_badge mayhen_admin_badge--neutral">{{ $t->category_label }}</span></td>
+                                    <td><span class="mayhen_admin_badge {{ $t->priority_badge_class }}">{{ $t->priority_label }}</span></td>
+                                    <td><span class="mayhen_admin_badge {{ $t->status_badge_class }}">{{ $t->status_label }}</span></td>
+                                    <td>{{ $t->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.support.show', $t->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                            Xem &nearr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; color: #7A756E; padding: 24px;">
+                                        Khách hàng chưa gửi ticket hỗ trợ nào.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Right: Profile Info & RBAC & Password -->
