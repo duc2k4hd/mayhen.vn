@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
+use App\Models\WeddingWish;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -52,6 +56,17 @@ class AppServiceProvider extends ServiceProvider
             $key = (string) ($request->user()?->id ?: $request->ip());
 
             return Limit::perMinute(30)->by($key);
+        });
+
+        // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực)
+        View::composer('admin.layouts.master', function ($view) {
+            if (Auth::check() && method_exists(Auth::user(), 'canAccessAdminPanel') && Auth::user()->canAccessAdminPanel()) {
+                $pendingOrders = Order::where('status', 'pending')->count();
+                $pendingWishes = WeddingWish::where('is_approved', false)->count();
+
+                $view->with('pendingOrdersBadge', $pendingOrders);
+                $view->with('pendingWishesBadge', $pendingWishes);
+            }
         });
     }
 }

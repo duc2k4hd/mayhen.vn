@@ -325,6 +325,150 @@
     gap: 16px;
 }
 
+/* Quick Search / Command Palette Trigger Button */
+.mayhen_admin_quick_search_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #FAF8F5;
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-sm);
+    padding: 6px 14px;
+    font-size: 0.8125rem;
+    color: var(--mh-admin-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.mayhen_admin_quick_search_btn:hover {
+    background: #FFFFFF;
+    border-color: var(--mh-admin-gold);
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_quick_search_text {
+    font-size: 0.8125rem;
+}
+
+.mayhen_admin_kbd {
+    background: #FFFFFF;
+    border: 1px solid #D5CFC6;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+    font-size: 0.6875rem;
+    font-family: inherit;
+    font-weight: 600;
+    padding: 1px 6px;
+    color: #8C847A;
+}
+
+@media (max-width: 640px) {
+    .mayhen_admin_quick_search_text {
+        display: none;
+    }
+    .mayhen_admin_kbd {
+        display: none;
+    }
+}
+
+/* Command Palette Modal (Quick Navigation) */
+.mayhen_admin_cmd_palette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(27, 24, 21, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12vh;
+}
+
+.mayhen_admin_cmd_palette.is-open {
+    display: flex;
+}
+
+.mayhen_admin_cmd_dialog {
+    background: #FFFFFF;
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    width: 90%;
+    max-width: 580px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_admin_cmd_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--mh-admin-border-subtle);
+    background: #FAF8F5;
+}
+
+.mayhen_admin_cmd_input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9375rem;
+    color: var(--mh-admin-charcoal);
+    outline: none;
+    font-family: inherit;
+}
+
+.mayhen_admin_cmd_list {
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mayhen_admin_cmd_item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--mh-admin-radius-sm);
+    color: var(--mh-admin-charcoal);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background 0.1s ease;
+    cursor: pointer;
+}
+
+.mayhen_admin_cmd_item:hover,
+.mayhen_admin_cmd_item.is-selected {
+    background: #F4EFE6;
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_cmd_item_meta {
+    font-size: 0.75rem;
+    color: #8C847A;
+    margin-left: auto;
+}
+
+.mayhen_admin_cmd_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #FAF8F5;
+    border-top: 1px solid var(--mh-admin-border-subtle);
+    font-size: 0.71875rem;
+    color: #8C847A;
+}
+
 /* User Profile Pill & Dropdown */
 .mayhen_admin_user_dropdown_wrap {
     position: relative;

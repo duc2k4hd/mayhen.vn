@@ -6845,9 +6845,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Sửa `app/Services/AuditLogger.php`: Bổ sung hàm đệ quy `sanitizeDetails()` tự động che giấu (`***REDACTED***`) toàn bộ key nhạy cảm (`password`, `secret`, `token`, `bank_account`, `card_number`, `api_key`).
      - Bổ sung ghi log kiểm toán sự kiện đăng nhập (`admin_login`) và đăng xuất (`admin_logout`) trong `AuthController.php`.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Tạo mới file test: `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` với 5 kịch bản kiểm thử độc lập (32 assertions), 100% PASSED.
-  * Toàn bộ test suite: **658/658 tests PASSED 100% (3,399 assertions in 18.0s)**.
+  * Tạo mới file test: `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` với 6 kịch bản kiểm thử độc lập (38 assertions), 100% PASSED.
+  * Toàn bộ test suite: **659/659 tests PASSED 100% (3,405 assertions in 14.7s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
+
+### 25. HOÀN THIỆN WAVE 02 — ADMIN SHELL & UX FOUNDATIONS (QUIET LUXURY COMMAND CENTER)
+- **Mục tiêu**: Nâng cấp toàn diện bộ khung shell Admin và trải nghiệm người vận hành chuyên nghiệp theo phong cách Quiet Luxury Atelier.
+- **Các thành phần đã triển khai**:
+  1. **Hộp Tìm Kiếm Nhanh Toàn Cục & Command Palette (`Ctrl+K` / `/`)**:
+     - Thêm nút Quick Search trên Topbar ([master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php#L207)) kèm phím tắt hiển thị `Ctrl K`.
+     - Dựng Command Palette Modal bằng Pure Vanilla CSS & JS ([admin-core.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/admin/js/common/admin-core.js#L110)), cho phép quản trị viên nhấn `Ctrl+K`, `Cmd+K` hoặc `/` (khi không focus input) để tìm kiếm tức thì và nhảy nhanh đến bất kỳ phân hệ nào (Dashboard, Thiệp cưới, Mẫu thiệp, Đơn hàng, Webhooks, Lời chúc, RSVP, Người dùng, Gói cước, Ngân hàng, Storage, Audit logs).
+     - Điều khiển bằng bàn phím hoàn hảo: phím mũi tên Lên/Xuống để duyệt danh sách, Enter để mở trang, phím `Escape` đóng nhanh.
+  2. **Hệ Thống Badge Thông Báo Vận Hành Thời Gian Thực (Operational Badges)**:
+     - Tạo View Composer trong [AppServiceProvider.php](file:///d:/Project/Laravel/mayhen.vn/app/Providers/AppServiceProvider.php#L59) tự động tính toán số đơn hàng chờ đối soát (`pendingOrdersBadge`) và số lời chúc chờ kiểm duyệt (`pendingWishesBadge`) từ DB thật.
+     - Hiển thị huy hiệu số lượng thực tế trên Sidebar menu Đơn hàng và Lời chúc, giúp đội ngũ vận hành nhận biết ngay lập tức các việc cần xử lý mà không cần click vào từng trang.
+  3. **Trải Nghiệm Responsive & Xử Lý Phím Tắt Toàn Cục**:
+     - Phím `Escape` tự động đóng thông minh: Command Palette, Dropdown tài khoản quản trị và Menu Mobile Drawer.
+     - Layout co giãn mượt mà trên desktop, laptop màn hình nhỏ và thiết bị di động (375px - 768px).
+- **Kết quả Kiểm Thử**:
+  * Bổ sung kịch bản kiểm thử tự động trong `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` xác thực hiển thị Command Palette và Badge dữ liệu thực tế.
+  * Toàn bộ test suite: **659/659 tests PASSED 100% (3,405 assertions)**, Laravel Pint đạt chuẩn 100%.
 
 ---
 

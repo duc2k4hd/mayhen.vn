@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\Wedding;
+use App\Models\WeddingWish;
 use App\Services\AuditLogger;
 use Database\Seeders\InvitationTemplateSeeder;
 
@@ -192,4 +193,74 @@ test('BUG-ADM-004 fix: AuditLogger automatically redacts sensitive credentials a
 
     expect($actions)->toContain('admin_login')
         ->and($actions)->toContain('admin_logout');
+});
+
+test('Wave 02: Admin master layout renders command palette and real-time operational notification badges', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $customer = User::factory()->create(['role' => 'customer']);
+    $plan = Plan::firstOrCreate(
+        ['slug' => 'plus'],
+        [
+            'name' => 'Gói Plus Hoàng Kim',
+            'price' => 299000,
+            'duration_days' => 365,
+            'max_invitations' => 1,
+            'is_active' => true,
+        ]
+    );
+
+    $wedding = Wedding::create([
+        'user_id' => $customer->id,
+        'groom_name' => 'Thành Nam',
+        'bride_name' => 'Bảo Trân',
+        'wedding_date' => '2026-11-20',
+    ]);
+
+    // Create 2 pending orders
+    Order::create([
+        'user_id' => $customer->id,
+        'plan_id' => $plan->id,
+        'order_code' => 'MH'.now()->format('ymd').'PEND1',
+        'amount' => 299000,
+        'status' => 'pending',
+    ]);
+    Order::create([
+        'user_id' => $customer->id,
+        'plan_id' => $plan->id,
+        'order_code' => 'MH'.now()->format('ymd').'PEND2',
+        'amount' => 299000,
+        'status' => 'pending',
+    ]);
+
+    // Create 3 unapproved wishes
+    WeddingWish::create([
+        'wedding_id' => $wedding->id,
+        'name' => 'Khách Mời 1',
+        'message' => 'Chúc mừng hai bạn trăm năm hạnh phúc!',
+        'is_approved' => false,
+    ]);
+    WeddingWish::create([
+        'wedding_id' => $wedding->id,
+        'name' => 'Khách Mời 2',
+        'message' => 'Chúc hai bạn sớm sinh quý tử!',
+        'is_approved' => false,
+    ]);
+    WeddingWish::create([
+        'wedding_id' => $wedding->id,
+        'name' => 'Khách Mời 3',
+        'message' => 'Happy wedding!',
+        'is_approved' => false,
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+    $response->assertStatus(200);
+
+    // Verify Command Palette triggers and items exist in the HTML
+    $response->assertSee('mayhen_admin_command_trigger', false);
+    $response->assertSee('mayhen_admin_command_palette', false);
+    $response->assertSee('Ctrl K', false);
+
+    // Verify operational notification badges render real counts
+    $response->assertSee('title="2 đơn hàng chờ đối soát"', false);
+    $response->assertSee('title="3 lời chúc chờ duyệt"', false);
 });

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initUserDropdown();
     initCopyHelpers();
+    initCommandPalette();
 });
 
 /**
@@ -102,6 +103,128 @@ function initCopyHelpers() {
                 showToast('Đã sao chép: ' + textToCopy);
             }
         });
+    });
+}
+
+/**
+ * 4. Command Palette (Ctrl+K / Quick Navigation)
+ */
+function initCommandPalette() {
+    const trigger = document.getElementById('mayhen_admin_command_trigger');
+    const palette = document.getElementById('mayhen_admin_command_palette');
+    const input = document.getElementById('mayhen_admin_command_input');
+    const list = document.getElementById('mayhen_admin_command_list');
+
+    if (!palette || !input || !list) return;
+
+    const openPalette = () => {
+        palette.classList.add('is-open');
+        input.value = '';
+        filterItems('');
+        setTimeout(() => input.focus(), 50);
+    };
+
+    const closePalette = () => {
+        palette.classList.remove('is-open');
+    };
+
+    if (trigger) {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPalette();
+        });
+    }
+
+    palette.addEventListener('click', (e) => {
+        if (e.target === palette) {
+            closePalette();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+K or Cmd+K
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (palette.classList.contains('is-open')) {
+                closePalette();
+            } else {
+                openPalette();
+            }
+        }
+
+        // Press / when not inside input or textarea
+        if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault();
+            openPalette();
+        }
+
+        // Escape closes palette
+        if (e.key === 'Escape' && palette.classList.contains('is-open')) {
+            e.preventDefault();
+            closePalette();
+        }
+    });
+
+    function filterItems(query) {
+        const q = query.trim().toLowerCase();
+        const items = list.querySelectorAll('.mayhen_admin_cmd_item');
+        let hasVisible = false;
+
+        items.forEach((item, index) => {
+            const text = (item.getAttribute('data-search') || item.innerText).toLowerCase();
+            if (!q || text.includes(q)) {
+                item.style.display = 'flex';
+                hasVisible = true;
+                if (!list.querySelector('.mayhen_admin_cmd_item.is-selected')) {
+                    item.classList.add('is-selected');
+                }
+            } else {
+                item.style.display = 'none';
+                item.classList.remove('is-selected');
+            }
+        });
+
+        // Ensure first visible item is selected
+        const visibleItems = Array.from(items).filter((it) => it.style.display !== 'none');
+        visibleItems.forEach((it, idx) => {
+            it.classList.toggle('is-selected', idx === 0);
+        });
+    }
+
+    input.addEventListener('input', () => {
+        filterItems(input.value);
+    });
+
+    input.addEventListener('keydown', (e) => {
+        const visibleItems = Array.from(list.querySelectorAll('.mayhen_admin_cmd_item')).filter(
+            (it) => it.style.display !== 'none'
+        );
+
+        if (!visibleItems.length) return;
+
+        let currentIndex = visibleItems.findIndex((it) => it.classList.contains('is-selected'));
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (currentIndex < visibleItems.length - 1) {
+                visibleItems[currentIndex]?.classList.remove('is-selected');
+                visibleItems[currentIndex + 1]?.classList.add('is-selected');
+                visibleItems[currentIndex + 1]?.scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (currentIndex > 0) {
+                visibleItems[currentIndex]?.classList.remove('is-selected');
+                visibleItems[currentIndex - 1]?.classList.add('is-selected');
+                visibleItems[currentIndex - 1]?.scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const selected = visibleItems[currentIndex] || visibleItems[0];
+            if (selected) {
+                window.location.href = selected.href;
+            }
+        }
     });
 }
 

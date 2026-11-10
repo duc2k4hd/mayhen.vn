@@ -78,6 +78,9 @@
                         </svg>
                     </span>
                     <span>Lời Chúc & RSVP</span>
+                    @if (($pendingWishesBadge ?? 0) > 0)
+                        <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $pendingWishesBadge }} lời chúc chờ duyệt">{{ $pendingWishesBadge }}</span>
+                    @endif
                 </a>
 
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
@@ -90,6 +93,9 @@
                         </svg>
                     </span>
                     <span>Đơn Hàng & Doanh Thu</span>
+                    @if (($pendingOrdersBadge ?? 0) > 0)
+                        <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $pendingOrdersBadge }} đơn hàng chờ đối soát">{{ $pendingOrdersBadge }}</span>
+                    @endif
                 </a>
 
                 <!-- Section 4: Người Dùng & Tài Khoản -->
@@ -200,6 +206,16 @@
 
                 <!-- Topbar Actions & User Dropdown -->
                 <div class="mayhen_admin_topbar_right">
+                    <!-- Quick Command Search Trigger -->
+                    <button type="button" class="mayhen_admin_quick_search_btn" id="mayhen_admin_command_trigger" title="Tìm nhanh menu hoặc thao tác (Phím tắt: Ctrl+K hoặc /)" aria-label="Tìm kiếm nhanh">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span class="mayhen_admin_quick_search_text">Tìm trang hoặc thao tác...</span>
+                        <kbd class="mayhen_admin_kbd">Ctrl K</kbd>
+                    </button>
+
                     <div class="mayhen_admin_user_dropdown_wrap">
                         <button type="button" class="mayhen_admin_user_pill" aria-label="Tài khoản Quản trị">
                             <div class="mayhen_admin_user_avatar">
@@ -286,6 +302,80 @@
 
                 @yield('content')
             </main>
+        </div>
+    </div>
+
+    <!-- Command Palette (Ctrl+K Quick Navigation) -->
+    <div class="mayhen_admin_cmd_palette" id="mayhen_admin_command_palette" role="dialog" aria-modal="true" aria-label="Tìm kiếm trang nhanh">
+        <div class="mayhen_admin_cmd_dialog">
+            <div class="mayhen_admin_cmd_header">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" class="mayhen_admin_cmd_input" id="mayhen_admin_command_input" placeholder="Gõ tên trang, phân hệ hoặc thao tác cần tìm..." autocomplete="off">
+                <kbd class="mayhen_admin_kbd">ESC để đóng</kbd>
+            </div>
+            <div class="mayhen_admin_cmd_list" id="mayhen_admin_command_list">
+                <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_cmd_item" data-search="kpi dashboard tổng quan báo cáo số liệu">
+                    <span>📊 Bảng Điều Khiển (KPI Dashboard)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/dashboard</span>
+                </a>
+                <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_cmd_item" data-search="thiệp cưới khách hàng dự án weddings invitations">
+                    <span>💌 Thiệp Cưới Khách Hàng</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/invitations</span>
+                </a>
+                <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_cmd_item" data-search="kho mẫu thiệp cưới templates giao diện">
+                    <span>🎨 Kho Mẫu Thiệp Cưới</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/templates</span>
+                </a>
+                <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_cmd_item" data-search="đơn hàng doanh thu thanh toán sepay vietqr orders">
+                    <span>💰 Đơn Hàng & Doanh Thu</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/orders</span>
+                </a>
+                <a href="{{ route('admin.orders.webhooks') }}" class="mayhen_admin_cmd_item" data-search="webhook sepay vietqr đối soát thanh toán giao dịch">
+                    <span>⚡ Nhật Ký Webhook VietQR / SePay</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/orders/webhooks/audit</span>
+                </a>
+                <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_cmd_item" data-search="lời chúc sổ lưu bút guestbook kiểm duyệt">
+                    <span>✍️ Kiểm Duyệt Lời Chúc Mừng</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/wishes</span>
+                </a>
+                <a href="{{ route('admin.wishes.rsvps') }}" class="mayhen_admin_cmd_item" data-search="rsvp khách mời xác nhận tham dự attendance">
+                    <span>📋 Giám Sát Phản Hồi RSVP</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/wishes/rsvps</span>
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="mayhen_admin_cmd_item" data-search="người dùng tài khoản phân quyền rbac users staff manager">
+                    <span>👥 Quản Lý Người Dùng & Phân Quyền</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/users</span>
+                </a>
+                @if (Auth::user()?->isSuperAdmin())
+                    <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_cmd_item" data-search="gói cước dịch vụ bảng giá plans pricing">
+                        <span>⭐ Gói Dịch Vụ & Bảng Giá</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/plans</span>
+                    </a>
+                    <a href="{{ route('admin.settings.banking') }}" class="mayhen_admin_cmd_item" data-search="ngân hàng vietqr sepay tài khoản thụ hưởng banking">
+                        <span>🏦 Ngân Hàng & VietQR</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/banking</span>
+                    </a>
+                    <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_cmd_item" data-search="thanh tra bộ nhớ lưu trữ storage media inspector">
+                        <span>💾 Thanh Tra Bộ Nhớ Lưu Trữ</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/storage</span>
+                    </a>
+                    <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_cmd_item" data-search="nhật ký kiểm toán audit logs trail lịch sử thao tác">
+                        <span>📜 Nhật Ký Quản Trị (Audit Logs)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/audit-logs</span>
+                    </a>
+                @endif
+                <a href="{{ route('home') }}" class="mayhen_admin_cmd_item" target="_blank" data-search="trang chủ website khách hàng landing home">
+                    <span>🌐 Xem Trang Khách Hàng (Website) &nearr;</span>
+                    <span class="mayhen_admin_cmd_item_meta">mayhen.vn</span>
+                </a>
+            </div>
+            <div class="mayhen_admin_cmd_footer">
+                <span>Dùng phím <kbd class="mayhen_admin_kbd">&uarr;</kbd> <kbd class="mayhen_admin_kbd">&darr;</kbd> để chọn &bull; <kbd class="mayhen_admin_kbd">Enter</kbd> để mở</span>
+                <span>ESC để đóng</span>
+            </div>
         </div>
     </div>
 

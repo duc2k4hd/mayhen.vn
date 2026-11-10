@@ -11,8 +11,8 @@
 |:---:|---|---|:---:|
 | **Wave 00** | **Evidence & Inventory** | Kiểm kê 100% routes, controls, permissions, thiết lập catalog CSV, sổ bug | **COMPLETED** |
 | **Wave 01** | **P0 Security & Money** | Vá 4 lỗi P0/P1, củng cố RBAC, đối soát ngân hàng bắt buộc, bảo vệ Super Admin | **COMPLETED** |
-| **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, phím tắt Escape, data tables, modals, filters | **READY** |
-| **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, chi tiết khách hàng 360, hỗ trợ xem thiệp an toàn | **QUEUED** |
+| **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, phím tắt Escape, data tables, modals, filters | **COMPLETED** |
+| **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, chi tiết khách hàng 360, hỗ trợ xem thiệp an toàn | **READY** |
 | **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **QUEUED** |
 | **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **QUEUED** |
 | **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **QUEUED** |
