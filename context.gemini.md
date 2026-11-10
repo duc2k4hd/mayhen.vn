@@ -7016,6 +7016,46 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **695/695 tests PASSED 100% (3,639 assertions in 14.55s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 31. HOÀN THIỆN WAVE 08 — DATA, INTELLIGENCE & WEDDING READINESS RADAR
+- **Mục tiêu**: Hoàn thiện toàn diện các công cụ trí tuệ vận hành và phân tích chuyên sâu: Radar Sẵn Sàng Ngày Cưới (`ADM-A20` / Innovation #1), Hộp Thư Tác Vụ Tập Trung (`ADM-A21`) và Thám Tử Đối Soát Tài Chính (`ADM-A22` / Innovation #9).
+- **Các thành phần đã triển khai**:
+  1. **Dịch Vụ Radar Sẵn Sàng Ngày Cưới ([WeddingReadinessRadarService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingReadinessRadarService.php))**:
+     - Tự động quét các đám cưới có lịch tổ chức trong phạm vi chân trời thời gian chỉ định (7, 14, 30, 60, 90 ngày).
+     - Thuật toán chấm điểm sẵn sàng đa chiều (Thang điểm 0 - 100):
+       * `Địa điểm & Bản đồ` (25 điểm): Có tên sảnh tiệc và địa chỉ đón tiếp khách hay chưa.
+       * `Hình ảnh đại diện & Bìa thiệp` (25 điểm): Có ảnh cưới chính của cô dâu chú rể hay chưa.
+       * `Nhạc nền ngày cưới` (15 điểm): Đã cấu hình giai điệu âm thanh hay chưa.
+       * `Khách mời & Sức chứa bàn tiệc` (20 điểm): Kiểm tra quá tải sĩ số tham dự RSVP so với tổng số ghế bàn tiệc thực tế.
+       * `Xuất bản thiệp mời` (15 điểm): Có ít nhất 1 bản thiệp cưới đã công bố trực tuyến hay chưa.
+     - Phân loại rủi ro thông minh:
+       * `Đỏ (Red)`: Điểm < 60% — Rủi ro cao, thiếu thông tin thiết yếu sát ngày cưới, cần CSKH liên hệ gấp.
+       * `Vàng (Yellow)`: Điểm 60% - 79% — Cần lưu ý bổ sung chi tiết.
+       * `Xanh (Green)`: Điểm >= 80% — Đám cưới hoàn hảo, sẵn sàng 100%.
+  2. **Giao Diện Phân Hệ Trí Tuệ Vận Hành ([Admin/IntelligenceController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/IntelligenceController.php))**:
+     - **Radar Sẵn Sàng Ngày Cưới** ([radar.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/radar.blade.php)):
+       * Bảng điều khiển 4 KPI: Tổng đám cưới theo dõi, Rủi ro cao (đỏ), Cần bổ sung (vàng), Sẵn sàng (xanh) và Điểm sẵn sàng trung bình.
+       * Thanh đo tiến độ (score progress gauge) trực quan, checklist 5 tiêu chuẩn cốt lõi (📍Địa điểm, 🖼️Ảnh bìa, 🎵Nhạc, 🪑Bàn tiệc, 🌐Xuất bản).
+       * Điều hướng 1-click đến xem thiệp khách hàng hoặc hồ sơ Customer 360.
+     - **Hộp Thư Tác Vụ Tập Trung (Action Inbox)** ([inbox.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/inbox.blade.php)):
+       * Gom tụ toàn bộ công việc vận hành cần giải quyết trong ngày từ khắp các phân hệ:
+         - **P0 — Khẩn cấp**: Đơn hàng chờ đối soát ngân hàng (`Order::where('status', 'pending')`).
+         - **P1 — Mức độ cao**: Ticket hỗ trợ khẩn cấp (`SupportTicket`), đám cưới rủi ro cao trong 7 ngày tới, lời chúc mừng chờ duyệt (`WeddingWish`).
+         - **P2 — Bình thường**: Tác vụ nền thất bại (`failed_jobs`) cần retry.
+       * Bộ lọc phân loại theo mức độ ưu tiên `P0`, `P1`, `P2`.
+     - **Thám Tử Đối Soát Tài Chính (Finance Reconciliation Detective)** ([reconciliation.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/reconciliation.blade.php)):
+       * Đối chiếu tự động giữa số tiền kỳ vọng trên đơn hàng với số tiền thực nhận ghi nhận từ webhook SePay/VietQR.
+       * Tự động phát hiện và gắn nhãn: Khớp lệnh 100% (`matched`), Chuyển thiếu tiền (`underpaid`), Chuyển thừa tiền (`overpaid`), Chờ khớp lệnh (`pending_match`).
+       * Tính toán chênh lệch dòng tiền thời gian thực ngăn chặn thất thoát doanh thu.
+  3. **Tích Hợp Widget Trực Tiếp Lên Dashboard & Điều Hướng Quản Trị**:
+     - Tích hợp widget **Radar Sẵn Sàng Ngày Cưới (14 Ngày Tới)** trực tiếp trên Dashboard chính ([dashboard.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/dashboard.blade.php)) cảnh báo ngay các đám cưới rủi ro cao trên trang nhất.
+     - Thêm nút mở nhanh **Action Inbox** trong banner cảnh báo vận hành và Lối tắt vận hành nhanh.
+     - Bổ sung menu Sidebar: `Hộp Thư Tác Vụ` và `Radar Sẵn Sàng Ngày Cưới` trong Section 1; `Thám Tử Đối Soát` trong Section 3 ([master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php)).
+     - Cập nhật Command Palette (`Ctrl+K`) với các shortcut tương ứng.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave08DataAndIntelligenceTest.php` với 6 kịch bản kiểm thử độc lập (41 assertions), 100% PASSED.
+  * Toàn bộ test suite: **701/701 tests PASSED 100% (3,680 assertions in 16.45s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuestController as AdminGuestController;
+use App\Http\Controllers\Admin\IntelligenceController as AdminIntelligenceController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -150,5 +151,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/purge', [AdminJobMonitorController::class, 'purge'])->name('purge');
         Route::post('/{uuid}/retry', [AdminJobMonitorController::class, 'retry'])->name('retry');
         Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
+    });
+
+    // Trung Tâm Trí Tuệ Vận Hành & Radar (Wave 08 - ADM-A20, A21, A22)
+    Route::prefix('intelligence')->name('intelligence.')->group(function () {
+        Route::get('/radar', [AdminIntelligenceController::class, 'readinessRadar'])->name('radar');
+        Route::get('/inbox', [AdminIntelligenceController::class, 'actionInbox'])->name('inbox');
+        Route::get('/reconciliation', [AdminIntelligenceController::class, 'reconciliationDetective'])->name('reconciliation');
     });
 });

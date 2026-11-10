@@ -11,11 +11,16 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\WeddingWish;
 use App\Services\AuditLogger;
+use App\Services\WeddingReadinessRadarService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected WeddingReadinessRadarService $radarService
+    ) {}
+
     /**
      * Display the Admin KPI & Metrics Dashboard.
      */
@@ -58,6 +63,11 @@ class DashboardController extends Controller
         $pendingWishesCount = WeddingWish::where('is_approved', false)->count();
         $lockedInvitationsCount = Invitation::where('custom_config->is_locked', true)->count();
 
+        // Wedding Readiness Radar Summary (14-day window)
+        $radarSummary = $this->radarService->scan(14);
+        $radarKpis = $radarSummary['kpis'];
+        $highRiskWeddings = $radarSummary['items']->where('risk_level', 'red')->take(3);
+
         return view('admin.pages.dashboard', [
             'totalRevenue' => $totalRevenue,
             'paidOrdersCount' => $paidOrdersCount,
@@ -76,6 +86,8 @@ class DashboardController extends Controller
             'pendingOrdersCount' => $pendingOrdersCount,
             'pendingWishesCount' => $pendingWishesCount,
             'lockedInvitationsCount' => $lockedInvitationsCount,
+            'radarKpis' => $radarKpis,
+            'highRiskWeddings' => $highRiskWeddings,
         ]);
     }
 }

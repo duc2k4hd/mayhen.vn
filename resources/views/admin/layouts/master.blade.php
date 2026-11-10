@@ -35,8 +35,8 @@
 
             <!-- Nav Menu Sections -->
             <nav class="mayhen_admin_nav_menu" aria-label="Menu quản trị chính">
-                <!-- Section 1: Tổng Quan -->
-                <div class="mayhen_admin_menu_section">Tổng Quan</div>
+                <!-- Section 1: Tổng Quan & Trí Tuệ Vận Hành -->
+                <div class="mayhen_admin_menu_section">Tổng Quan & Trí Tuệ</div>
                 <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.dashboard') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,6 +47,27 @@
                         </svg>
                     </span>
                     <span>Bảng Điều Khiển (KPI)</span>
+                </a>
+
+                <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.inbox') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                        </svg>
+                    </span>
+                    <span>Hộp Thư Tác Vụ</span>
+                </a>
+
+                <a href="{{ route('admin.intelligence.radar') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.radar') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                            <path d="M2 12h20"></path>
+                        </svg>
+                    </span>
+                    <span>Radar Sẵn Sàng Ngày Cưới</span>
                 </a>
 
                 <!-- Section 2: Vận Hành Thiệp Cưới -->
@@ -96,7 +117,7 @@
 
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
                 <div class="mayhen_admin_menu_section">Kinh Doanh & Doanh Thu</div>
-                <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.orders.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.orders.*') && !request()->routeIs('admin.intelligence.reconciliation') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -107,6 +128,14 @@
                     @if (($pendingOrdersBadge ?? 0) > 0)
                         <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $pendingOrdersBadge }} đơn hàng chờ đối soát">{{ $pendingOrdersBadge }}</span>
                     @endif
+                </a>
+                <a href="{{ route('admin.intelligence.reconciliation') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.reconciliation') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                    <span>Thám Tử Đối Soát</span>
                 </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.plans.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
@@ -383,6 +412,18 @@
                 <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_cmd_item" data-search="kpi dashboard tổng quan báo cáo số liệu">
                     <span>📊 Bảng Điều Khiển (KPI Dashboard)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/dashboard</span>
+                </a>
+                <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_cmd_item" data-search="action inbox hộp thư tác vụ việc cần làm p0 p1 p2 khẩn cấp">
+                    <span>📥 Hộp Thư Tác Vụ Vận Hành (Action Inbox)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/inbox</span>
+                </a>
+                <a href="{{ route('admin.intelligence.radar') }}" class="mayhen_admin_cmd_item" data-search="radar sẵn sàng ngày cưới readiness kiểm tra thiếu sót đám cưới rủi ro">
+                    <span>📡 Radar Sẵn Sàng Ngày Cưới (Readiness Radar)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/radar</span>
+                </a>
+                <a href="{{ route('admin.intelligence.reconciliation') }}" class="mayhen_admin_cmd_item" data-search="đối soát thám tử tài chính ngân hàng sepay vietqr khớp lệnh sai lệch thừa thiếu">
+                    <span>⚖️ Thám Tử Đối Soát Tài Chính (Reconciliation)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/reconciliation</span>
                 </a>
                 <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_cmd_item" data-search="thiệp cưới khách hàng dự án weddings invitations">
                     <span>💌 Thiệp Cưới Khách Hàng</span>

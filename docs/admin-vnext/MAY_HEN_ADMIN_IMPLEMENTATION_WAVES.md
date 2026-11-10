@@ -17,8 +17,8 @@
 | **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **COMPLETED** |
 | **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **COMPLETED** |
 | **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **COMPLETED** |
-| **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **READY** |
-| **Wave 09** | **Hardening & UAT** | Kiểm thử hồi quy toàn diện cross-module, responsive đa màn hình, kiểm định phát hành | **QUEUED** |
+| **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **COMPLETED** |
+| **Wave 09** | **Hardening & UAT** | Kiểm thử hồi quy toàn diện cross-module, responsive đa màn hình, kiểm định phát hành | **READY** |
 
 ---
 
@@ -82,9 +82,11 @@
 - [x] Viết bộ test `tests/Feature/AdminVNextWave07SupportAndOpsTest.php` (11 tests, 54 assertions pass 100%).
 
 ### Wave 08: Intelligence & Wedding Readiness Radar
-- [ ] Tích hợp công cụ Radar sẵn sàng ngày cưới: Tự động phát hiện thiệp sắp cưới nhưng chưa có địa điểm, thiếu nhạc, ảnh lỗi hoặc lệch ngày.
-- [ ] Action Inbox tập trung: Tự động gom các việc quan trọng P0/P1 cần giải quyết trong ngày.
-- [ ] Đối soát doanh thu khớp 100% giữa số liệu đơn hàng và sổ cái thanh toán.
+- [x] Tích hợp công cụ Radar sẵn sàng ngày cưới: Tự động quét và chấm điểm sẵn sàng đa chiều ([WeddingReadinessRadarService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingReadinessRadarService.php), view: [radar.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/radar.blade.php)) phát hiện thiệp sắp cưới thiếu địa điểm, thiếu ảnh, thiếu nhạc, quá tải bàn tiệc hoặc chưa xuất bản.
+- [x] Action Inbox tập trung ([inbox.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/inbox.blade.php)): Tự động gom tụ các việc quan trọng P0/P1/P2 cần giải quyết trong ngày từ khắp các phân hệ.
+- [x] Thám tử đối soát doanh thu ([reconciliation.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/reconciliation.blade.php)): Đối chiếu tự động số liệu đơn hàng và sao kê webhook SePay/VietQR, phát hiện chuyển thiếu/thừa tiền.
+- [x] Widget Radar trực tiếp trên Dashboard ([dashboard.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/dashboard.blade.php)) cảnh báo ngay các đám cưới rủi ro cao trong 14 ngày tới.
+- [x] Viết bộ test `tests/Feature/AdminVNextWave08DataAndIntelligenceTest.php` (6 tests, 41 assertions pass 100%).
 
 ### Wave 09: Hardening, Parity & Production Release Readiness
 - [ ] Kiểm thử toàn diện 100% test cases với Pest.

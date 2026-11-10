@@ -36,6 +36,9 @@
             </div>
 
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_btn mayhen_admin_btn--primary mayhen_admin_btn_sm">
+                    📥 Mở Action Inbox &rarr;
+                </a>
                 @if (($pendingOrdersCount ?? 0) > 0)
                     <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
                         Xem Đơn Chờ &rarr;
@@ -173,6 +176,14 @@
             </h3>
 
             <div class="mayhen_admin_quick_actions">
+                <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_quick_btn" style="background: #FDFBF7; border-color: var(--mh-admin-gold);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                        <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                    </svg>
+                    <span>Action Inbox</span>
+                </a>
+
                 @if (Auth::user() && Auth::user()->isSuperAdmin())
                     <form action="{{ route('admin.templates.scan_discovery') }}" method="POST" style="margin: 0;">
                         @csrf
@@ -242,6 +253,69 @@
                 @endif
             </div>
         </div>
+    </div>
+
+    <!-- Wedding Readiness Radar Widget (14-Day Horizon) -->
+    <div class="mayhen_admin_card" style="margin-top: 24px; margin-bottom: 0; padding: 20px 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: #FAF3E0; color: var(--mh-admin-gold); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                    📡
+                </div>
+                <div>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
+                        Radar Sẵn Sàng Ngày Cưới (14 Ngày Tới)
+                    </h3>
+                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                        Tự động phát hiện thiếu sót thông tin trước ngày cưới &bull; Điểm sẵn sàng trung bình: <strong>{{ $radarKpis['avg_score'] }}%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                @if(($radarKpis['high_risk_count'] ?? 0) > 0)
+                    <span class="mayhen_admin_badge mayhen_admin_badge--danger">
+                        {{ $radarKpis['high_risk_count'] }} đám cưới rủi ro cao
+                    </span>
+                @else
+                    <span class="mayhen_admin_badge mayhen_admin_badge--success">
+                        ✓ 100% Sẵn sàng an toàn
+                    </span>
+                @endif
+                <a href="{{ route('admin.intelligence.radar') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                    Mở Toàn Bộ Radar &rarr;
+                </a>
+            </div>
+        </div>
+
+        @if(isset($highRiskWeddings) && $highRiskWeddings->isNotEmpty())
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                @foreach($highRiskWeddings as $rw)
+                    <div style="padding: 12px 16px; background: #FFF5F5; border-radius: 8px; border-left: 3px solid #C0392B; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.875rem; color: #900;">
+                                {{ $rw['couple'] }} (Ngày cưới: {{ $rw['wedding_date'] ? $rw['wedding_date']->format('d/m/Y') : '—' }} — còn {{ $rw['days_remaining'] }} ngày)
+                            </div>
+                            <div style="font-size: 0.75rem; color: #555; margin-top: 3px;">
+                                Thiếu sót: {{ collect($rw['issues'])->pluck('title')->join(', ') }}
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: 700; font-size: 0.85rem; color: #C0392B;">Điểm: {{ $rw['score'] }}%</span>
+                            @if($rw['primary_invitation'])
+                                <a href="{{ route('admin.invitations.show', $rw['primary_invitation']->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">Xem thiệp</a>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div style="padding: 14px 16px; background: #F6FAF7; border-radius: 8px; border-left: 3px solid #27AE60; font-size: 0.85rem; color: #1B5E20; display: flex; align-items: center; gap: 8px;">
+                <span>✨</span>
+                <span>Tuyệt vời! Không có đám cưới nào gặp rủi ro lớn trong vòng 14 ngày tới. Tất cả các cặp đôi đều đã chuẩn bị đầy đủ thông tin cốt lõi.</span>
+            </div>
+        @endif
     </div>
 
     <!-- 2-Column Split: Recent Orders & Top Templates -->
