@@ -28,6 +28,9 @@
             </p>
         </div>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" id="mayhen-open-banking-btn" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">
+                <span>⚙️ Cài Đặt Tài Khoản & QR</span>
+            </button>
             <a href="{{ route('account.gifts.print', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'method' => $filterMethod, 'group' => $filterGroup, 'ack' => $filterAck])) }}" target="_blank" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -51,6 +54,47 @@
                 </svg>
                 <span>Ghi Nhận Mừng Cưới</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Banner Trạng Thái Hiển Thị QR Nhận Quà (Section 35 PRD V3) -->
+    <div class="mayhen_account_form_card" style="margin-bottom: 24px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: #FAF8F5; border: 1px solid #EFE8DD;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #EFE8DD; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                🎁
+            </div>
+            <div>
+                <div style="font-size: 15px; font-weight: 600; color: #1F1D1A; display: flex; align-items: center; gap: 8px;">
+                    <span>Hộp Mừng Cưới & Mã VietQR Công Khai:</span>
+                    @if($isGiftQrEnabled)
+                        <span class="mayhen_account_status_badge published" style="font-size: 11px;">Đang Hiển Thị</span>
+                    @else
+                        <span class="mayhen_account_status_badge locked" style="font-size: 11px;">Đang Tạm Khóa / Ẩn</span>
+                    @endif
+                </div>
+                <div style="font-size: 13px; color: #7A726A; margin-top: 2px;">
+                    @if($isGiftQrEnabled)
+                        Mã VietQR và số tài khoản ngân hàng đang hiển thị công khai trên thiệp cưới. Quan khách có thể quét mã gửi quà mừng trực tiếp.
+                    @else
+                        Mã QR và thông tin tài khoản đang được ẩn hoàn toàn khỏi thiệp cưới công khai (Bảo vệ riêng tư hôn lễ).
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <form action="{{ route('account.gifts.toggle_qr', $invitation->id) }}" method="POST" style="margin: 0;">
+                @csrf
+                @if($isGiftQrEnabled)
+                    <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="white-space: nowrap; color: #C62828; border-color: #FFCDD2;">
+                        🔒 Tạm Khóa / Ẩn QR Khỏi Thiệp
+                    </button>
+                @else
+                    <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="white-space: nowrap;">
+                        🔓 Bật Hiển Thị QR Công Khai
+                    </button>
+                @endif
+            </form>
         </div>
     </div>
 
@@ -412,60 +456,138 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal Cài Đặt Đa Tài Khoản Ngân Hàng & Bảo Mật (Section 35 PRD V3) -->
+    <div id="mayhen-banking-modal" class="mayhen_account_modal_backdrop" style="display: none; position: fixed; inset: 0; background: rgba(31, 29, 26, 0.6); z-index: 1050; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+        <div class="mayhen_account_modal_dialog" style="background: #FFFFFF; border-radius: 20px; max-width: 680px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 1px solid #EAE3D9; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="mayhen_account_modal_header" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid #F0EBE3;">
+                <div>
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #1F1D1A; margin: 0;">
+                        Cài Đặt Tài Khoản Ngân Hàng & Mã QR Nhận Quà
+                    </h3>
+                    <p style="font-size: 13px; color: #7A726A; margin: 2px 0 0 0;">
+                        Hỗ trợ đa tài khoản (Nhà trai / Nhà gái) và VietQR tự động.
+                    </p>
+                </div>
+                <button type="button" onclick="closeBankingModal()" style="background: none; border: none; font-size: 20px; color: #8C827A; cursor: pointer; padding: 4px;">✕</button>
+            </div>
+
+            <form action="{{ route('account.gifts.update_banking', $invitation->id) }}" method="POST" style="display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+                @csrf
+                <div class="mayhen_account_modal_body" style="padding: 24px; overflow-y: auto; flex: 1;">
+                    <!-- Trạng thái hiển thị công khai -->
+                    <div style="background: #FAF8F5; border: 1px solid #EFE8DD; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="is_gift_qr_enabled" value="1" {{ $isGiftQrEnabled ? 'checked' : '' }} style="width: 20px; height: 20px; accent-color: #C5A880;">
+                            <div>
+                                <span style="font-size: 14px; font-weight: 600; color: #1F1D1A;">Cho phép hiển thị Hộp Mừng Cưới & QR trên thiệp công khai</span>
+                                <div style="font-size: 12px; color: #7A726A; margin-top: 2px;">
+                                    Bỏ chọn nếu bạn muốn tắt hoàn toàn tính năng quét mã QR trên thiệp cưới.
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Danh sách tài khoản ngân hàng -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <h4 style="font-size: 14px; font-weight: 600; color: #1F1D1A; margin: 0;">
+                            Danh Sách Tài Khoản Nhận Quà Mừng
+                        </h4>
+                        <button type="button" id="mayhen-add-bank-row-btn" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="font-size: 12px; padding: 4px 10px;">
+                            + Thêm Tài Khoản
+                        </button>
+                    </div>
+
+                    <div id="mayhen-bank-accounts-container">
+                        @forelse($bankAccounts as $idx => $acc)
+                            <div class="mayhen_bank_account_row" style="background: #FFFFFF; border: 1px solid #E8DFD3; border-radius: 12px; padding: 16px; margin-bottom: 14px; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #9C7A4A;">Tài Khoản #{{ $idx + 1 }}</span>
+                                    <button type="button" class="mayhen-remove-bank-row-btn" style="background: none; border: none; color: #C62828; font-size: 12px; cursor: pointer; padding: 4px 8px;">✕ Xóa bỏ</button>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Nhãn tài khoản *</label>
+                                        <input type="text" name="accounts[{{ $idx }}][label]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Ví dụ: Nhà Trai (Chú Rể)" value="{{ $acc['label'] ?? '' }}">
+                                    </div>
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Tên ngân hàng *</label>
+                                        <input type="text" name="accounts[{{ $idx }}][bank_name]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Ví dụ: MB Bank, Vietcombank..." value="{{ $acc['bank_name'] ?? '' }}">
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Số tài khoản *</label>
+                                        <input type="text" name="accounts[{{ $idx }}][bank_account_number]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Nhập số tài khoản..." value="{{ $acc['bank_account_number'] ?? '' }}">
+                                    </div>
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Tên chủ tài khoản (In hoa) *</label>
+                                        <input type="text" name="accounts[{{ $idx }}][account_holder]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px; text-transform: uppercase;" placeholder="NGUYEN VAN A" value="{{ $acc['account_holder'] ?? '' }}">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="mayhen_account_form_label" style="font-size: 12px;">Ảnh mã QR tùy chọn (Để trống sẽ tự sinh mã VietQR chuẩn)</label>
+                                    <input type="url" name="accounts[{{ $idx }}][qr_image_url]" class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="https://..." value="{{ $acc['qr_image_url'] ?? '' }}">
+                                </div>
+                            </div>
+                        @empty
+                            <div class="mayhen_bank_account_row" style="background: #FFFFFF; border: 1px solid #E8DFD3; border-radius: 12px; padding: 16px; margin-bottom: 14px; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <span style="font-size: 13px; font-weight: 600; color: #9C7A4A;">Tài Khoản #1</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Nhãn tài khoản *</label>
+                                        <input type="text" name="accounts[0][label]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Ví dụ: Nhà Trai (Chú Rể)" value="Tài Khoản Mừng Cưới">
+                                    </div>
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Tên ngân hàng *</label>
+                                        <input type="text" name="accounts[0][bank_name]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Ví dụ: MB Bank, Vietcombank...">
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Số tài khoản *</label>
+                                        <input type="text" name="accounts[0][bank_account_number]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="Nhập số tài khoản...">
+                                    </div>
+                                    <div>
+                                        <label class="mayhen_account_form_label" style="font-size: 12px;">Tên chủ tài khoản (In hoa) *</label>
+                                        <input type="text" name="accounts[0][account_holder]" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px; text-transform: uppercase;" placeholder="NGUYEN VAN A">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="mayhen_account_form_label" style="font-size: 12px;">Ảnh mã QR tùy chọn (Để trống sẽ tự sinh mã VietQR chuẩn)</label>
+                                    <input type="url" name="accounts[0][qr_image_url]" class="mayhen_account_form_input" style="height: 38px; font-size: 13px;" placeholder="https://...">
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Xác thực mật khẩu bảo vệ Account Takeover (Section 35 PRD V3) -->
+                    <div style="background: #FFF8E1; border: 1px solid #FFE082; border-radius: 12px; padding: 14px 18px; margin-top: 16px;">
+                        <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
+                            <span style="font-size: 18px;">🛡️</span>
+                            <div>
+                                <span style="font-size: 13px; font-weight: 600; color: #B78103;">Xác Thực Mật Khẩu Bảo Mật (Chống Chiếm Đoạt Tài Khoản)</span>
+                                <div style="font-size: 12px; color: #6D4C41; margin-top: 2px;">
+                                    Để bảo vệ an toàn cho quà mừng cưới của bạn, hệ thống yêu cầu xác nhận mật khẩu đăng nhập trước khi áp dụng thay đổi thông tin ngân hàng.
+                                </div>
+                            </div>
+                        </div>
+                        <label class="mayhen_account_form_label" style="font-size: 12px; color: #4E342E;">Mật khẩu tài khoản hiện tại của bạn *</label>
+                        <input type="password" name="current_password" required class="mayhen_account_form_input" style="height: 38px; font-size: 13px; max-width: 320px;" placeholder="Nhập mật khẩu để xác nhận...">
+                    </div>
+                </div>
+
+                <div class="mayhen_account_modal_footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #F0EBE3; background: #FAF8F5; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                    <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeBankingModal()">Hủy</button>
+                    <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Xác Nhận & Cập Nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const editModal = document.getElementById('mayhen-edit-gift-modal');
-        const editForm = document.getElementById('mayhen-edit-gift-form');
-        const nameInput = document.getElementById('modal-sender-name');
-        const groupInput = document.getElementById('modal-sender-group');
-        const amountInput = document.getElementById('modal-amount');
-        const methodSelect = document.getElementById('modal-payment-method');
-        const notesInput = document.getElementById('modal-notes');
-        const ackCheckbox = document.getElementById('modal-acknowledged');
-
-        document.querySelectorAll('.mayhen-edit-gift-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const updateUrl = btn.getAttribute('data-update-url');
-                const name = btn.getAttribute('data-sender-name') || '';
-                const group = btn.getAttribute('data-sender-group') || '';
-                const amount = btn.getAttribute('data-amount') || '0';
-                const method = btn.getAttribute('data-payment-method') || 'cash';
-                const notes = btn.getAttribute('data-notes') || '';
-                const ack = btn.getAttribute('data-acknowledged') === '1';
-
-                if (editForm) editForm.action = updateUrl;
-                if (nameInput) nameInput.value = name;
-                if (groupInput) groupInput.value = group;
-                if (amountInput) amountInput.value = amount;
-                if (methodSelect) methodSelect.value = method;
-                if (notesInput) notesInput.value = notes;
-                if (ackCheckbox) ackCheckbox.checked = ack;
-
-                if (editModal) {
-                    editModal.style.setProperty('display', 'flex', 'important');
-                    editModal.classList.add('is-open');
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        });
-    });
-
-    function closeEditGiftModal() {
-        const modal = document.getElementById('mayhen-edit-gift-modal');
-        if (modal) {
-            modal.style.setProperty('display', 'none', 'important');
-            modal.classList.remove('is-open');
-            document.body.style.overflow = '';
-        }
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeEditGiftModal();
-        }
-    });
-</script>
+    <script type="module" src="{{ asset('assets/client/js/pages/gifts.js') }}?v={{ file_exists(public_path('assets/client/js/pages/gifts.js')) ? filemtime(public_path('assets/client/js/pages/gifts.js')) : '1.0' }}"></script>
 @endpush

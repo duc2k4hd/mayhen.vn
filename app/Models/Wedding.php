@@ -266,4 +266,125 @@ class Wedding extends Model
             'extra_data' => $extra,
         ]);
     }
+
+    /**
+     * Kiểm tra trạng thái bật/tắt hiển thị mã QR và thông tin mừng cưới công khai trên thiệp.
+     */
+    public function isGiftQrEnabled(): bool
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+
+        // Mặc định là true nếu đã có thông tin ngân hàng, hoặc theo cờ cấu hình chủ động
+        return (bool) ($extra['is_gift_qr_enabled'] ?? true);
+    }
+
+    /**
+     * Bật hoặc tắt hiển thị mã QR mừng cưới công khai.
+     */
+    public function setGiftQrEnabled(bool $enabled): void
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+        $extra['is_gift_qr_enabled'] = $enabled;
+
+        $this->update([
+            'extra_data' => $extra,
+        ]);
+    }
+
+    /**
+     * Lấy danh sách đa tài khoản ngân hàng nhận mừng cưới (Nhà trai / Nhà gái / Cặp đôi).
+     * Tự động fallback từ cấu hình cũ nếu chưa lưu danh sách mới.
+     */
+    public function getBankAccounts(): array
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+
+        if (! empty($extra['bank_accounts']) && is_array($extra['bank_accounts'])) {
+            return $extra['bank_accounts'];
+        }
+
+        // Tự động xây dựng danh sách fallback từ các trường cũ
+        $fallback = [];
+
+        if (! empty($extra['groom_bank_account']) || ! empty($extra['groom_bank_name'])) {
+            $fallback[] = [
+                'id' => 'ba_groom',
+                'label' => 'Nhà Trai (Chú Rể)',
+                'bank_name' => $extra['groom_bank_name'] ?? 'Vietcombank',
+                'bank_account_number' => $extra['groom_bank_account'] ?? '',
+                'account_holder' => $extra['groom_account_name'] ?? ($this->groom_name ?? 'Chú Rể'),
+                'qr_image_url' => $extra['qr_groom_image'] ?? null,
+                'is_active' => true,
+            ];
+        }
+
+        if (! empty($extra['bride_bank_account']) || ! empty($extra['bride_bank_name'])) {
+            $fallback[] = [
+                'id' => 'ba_bride',
+                'label' => 'Nhà Gái (Cô Dâu)',
+                'bank_name' => $extra['bride_bank_name'] ?? 'Techcombank',
+                'bank_account_number' => $extra['bride_bank_account'] ?? '',
+                'account_holder' => $extra['bride_account_name'] ?? ($this->bride_name ?? 'Cô Dâu'),
+                'qr_image_url' => $extra['qr_bride_image'] ?? null,
+                'is_active' => true,
+            ];
+        }
+
+        if (empty($fallback) && (! empty($this->bank_account_number) || ! empty($this->bank_name))) {
+            $fallback[] = [
+                'id' => 'ba_default',
+                'label' => 'Tài Khoản Mừng Cưới',
+                'bank_name' => $this->bank_name ?? 'Ngân Hàng',
+                'bank_account_number' => $this->bank_account_number ?? '',
+                'account_holder' => $this->bank_account_name ?? ($this->groom_name.' & '.$this->bride_name),
+                'qr_image_url' => null,
+                'is_active' => true,
+            ];
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Cập nhật danh sách tài khoản ngân hàng nhận mừng cưới.
+     */
+    public function setBankAccounts(array $accounts): void
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+        $extra['bank_accounts'] = array_values($accounts);
+
+        // Đồng bộ ngược lại các trường phẳng truyền thống cho tương thích ngược
+        if (! empty($accounts[0])) {
+            $this->bank_name = $accounts[0]['bank_name'] ?? $this->bank_name;
+            $this->bank_account_number = $accounts[0]['bank_account_number'] ?? $this->bank_account_number;
+            $this->bank_account_name = $accounts[0]['account_holder'] ?? $this->bank_account_name;
+        }
+
+        $this->extra_data = $extra;
+        $this->save();
+    }
+
+    /**
+     * Masking số tài khoản ngân hàng bảo vệ an toàn PII và nguyên tắc Least Privilege (Section 35 PRD V3).
+     * Ví dụ: "0123456789" -> "012****789"
+     */
+    public static function maskAccountNumber(?string $accountNumber): string
+    {
+        if (empty($accountNumber)) {
+            return '—';
+        }
+
+        $clean = preg_replace('/\s+/', '', (string) $accountNumber);
+        $len = strlen($clean);
+
+        if ($len <= 4) {
+            return str_repeat('*', $len);
+        }
+
+        if ($len <= 7) {
+            return substr($clean, 0, 2).str_repeat('*', $len - 4).substr($clean, -2);
+        }
+
+        return substr($clean, 0, 3).'****'.substr($clean, -3);
+    }
 }

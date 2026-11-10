@@ -154,6 +154,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Sổ Mừng Cưới & Quản Lý Tiền Mừng
     Route::get('/thiep/{id}/so-mung-cuoi', [GiftManagementController::class, 'index'])->name('gifts.index');
     Route::post('/thiep/{id}/so-mung-cuoi', [GiftManagementController::class, 'store'])->name('gifts.store');
+    Route::post('/thiep/{id}/so-mung-cuoi/bat-tat-qr', [GiftManagementController::class, 'toggleQr'])->name('gifts.toggle_qr');
+    Route::post('/thiep/{id}/so-mung-cuoi/tai-khoan-ngan-hang', [GiftManagementController::class, 'updateBanking'])->name('gifts.update_banking');
     Route::put('/thiep/{id}/so-mung-cuoi/{giftId}', [GiftManagementController::class, 'update'])->name('gifts.update');
     Route::post('/thiep/{id}/so-mung-cuoi/{giftId}/cam-on', [GiftManagementController::class, 'toggleAcknowledge'])->name('gifts.toggle_ack');
     Route::delete('/thiep/{id}/so-mung-cuoi/{giftId}', [GiftManagementController::class, 'destroy'])->name('gifts.destroy');

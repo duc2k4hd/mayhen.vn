@@ -8142,6 +8142,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **940/940 tests PASSED 100% (4,968 assertions in 27.64s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 69. TRUNG TÂM QUẢN LÝ QUÀ MỪNG, ĐA TÀI KHOẢN NGÂN HÀNG, KHÓA CÔNG KHAI QR & NHẬT KÝ KIỂM TOÁN THAY ĐỔI NHẠY CẢM (WEDDING GIFT REGISTRY, BANK ACCOUNTS & QR SECURITY CENTER — SECTION 35 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện quy chuẩn an toàn tài chính và quản lý quà mừng cưới theo Section 35 Master PRD V3:
+  1. *Khóa / Bật công khai QR nhận quà (`is_gift_qr_enabled`)*: Quà mừng và mã VietQR chỉ hiển thị công khai trên thiệp khi chủ tiệc chủ động bật. Có nút khóa/ẩn tức thì khỏi thiệp để bảo vệ sự riêng tư.
+  2. *Hỗ trợ Đa tài khoản ngân hàng (Multi Bank Accounts)*: Hỗ trợ lưu nhiều tài khoản với nhãn phân định rõ ràng (Nhà Trai / Nhà Gái / Chú Rể / Cô Dâu), tên ngân hàng, số tài khoản, tên chủ tài khoản in hoa, ảnh QR tùy biến hoặc tự sinh VietQR chuẩn quốc gia.
+  3. *Phòng vệ chống chiếm đoạt tài khoản (Account Takeover Defense)*: Yêu cầu xác thực mật khẩu tài khoản hiện tại (`current_password`) khi cập nhật thông tin ngân hàng nhạy cảm.
+  4. *Nhật ký kiểm toán bất biến (Audit Logging)*: Ghi nhận sự kiện `BANK_ACCOUNT_UPDATED` và `GIFT_QR_VISIBILITY_TOGGLED` phục vụ đối soát và phát hiện hành vi bất thường.
+  5. *Quy chuẩn che giấu số tài khoản (Masking PII Least Privilege)*: Hàm `Wedding::maskAccountNumber()` che giấu số tài khoản ngân hàng (`012****789`) cho các màn hình quản trị và bảo mật.
+  6. *Phòng vệ Template & Preview*: Section Hộp Mừng Cưới trên thiệp chỉ render khi `$wedding->isGiftQrEnabled()` là true, an toàn tuyệt đối ngay cả trong chế độ xem thử (preview) khi `$wedding` là null.
+- **Chi tiết triển khai**:
+  1. **Model Eloquent ([Wedding.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Wedding.php))**:
+     - `isGiftQrEnabled(): bool`: Kiểm tra trạng thái bật/tắt QR (mặc định true nếu đã cấu hình, hoặc theo cờ cấu hình).
+     - `setGiftQrEnabled(bool $enabled): void`: Cập nhật trạng thái hiển thị.
+     - `getBankAccounts(): array`: Lấy danh sách đa tài khoản ngân hàng từ `extra_data['bank_accounts']` với logic fallback tự động từ các trường cũ.
+     - `setBankAccounts(array $accounts): void`: Lưu danh sách đa tài khoản và đồng bộ ngược về các trường phẳng cho tương thích ngược.
+     - `maskAccountNumber(?string $accountNumber): string`: Che giấu số tài khoản ngân hàng bảo vệ PII.
+  2. **Controller Quản Lý Quà Mừng ([GiftManagementController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GiftManagementController.php))**:
+     - Endpoint mới: `POST /tai-khoan/thiep/{id}/so-mung-cuoi/bat-tat-qr` (`account.gifts.toggle_qr`): Bật/tắt nhanh hiển thị QR trên thiệp công khai kèm ghi `AuditLogger::log('GIFT_QR_VISIBILITY_TOGGLED', ...)`.
+     - Endpoint mới: `POST /tai-khoan/thiep/{id}/so-mung-cuoi/tai-khoan-ngan-hang` (`account.gifts.update_banking`): Cập nhật đa tài khoản nhận quà mừng, bắt buộc xác thực `current_password`, ghi nhận `AuditLogger::log('BANK_ACCOUNT_UPDATED', ...)`.
+     - `index`: Truyền thêm `$isGiftQrEnabled` và `$bankAccounts` vào view.
+  3. **Module JavaScript Độc Lập ([gifts.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/gifts.js))**:
+     - 100% Native Pure Vanilla JavaScript (Zero jQuery/framework).
+     - Loại bỏ hoàn toàn script inline trong Blade, tách thành file độc lập `assets/client/js/pages/gifts.js`.
+     - Quản lý đóng/mở modal sửa quà mừng, modal cài đặt ngân hàng, thêm/xóa dòng tài khoản động, phím Escape.
+  4. **Giao Diện Khách Hàng ([gifts.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/gifts.blade.php))**:
+     - Header: Thêm nút "⚙️ Cài Đặt Tài Khoản & QR" mở modal cấu hình.
+     - Banner Trạng Thái Hiển Thị QR Nhận Quà (Gift QR Public Visibility Banner): Thể hiện rõ trạng thái Đang Hiển Thị / Đang Tạm Khóa kèm nút chuyển đổi tức thì.
+     - Modal Cài Đặt Đa Tài Khoản Ngân Hàng & Bảo Mật (`#mayhen-banking-modal`): Cho phép thêm/sửa/xóa nhiều tài khoản (Nhà trai/Nhà gái), tùy chọn tắt/bật QR, và ô nhập mật khẩu xác thực bảo mật chống chiếm đoạt tài khoản.
+  5. **Mẫu Thiệp Cưới ([template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php))**:
+     - Section Hộp Mừng Cưới & VietQR tuân thủ điều kiện `@if(! $isCuratedSeven && ($isEmbed || ($wedding ? $wedding->isGiftQrEnabled() : true)))`, tự động ẩn khi chủ tiệc tắt QR và hoạt động mượt mà trong chế độ xem thử (preview).
+  6. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/WeddingGiftAndBankingSecurityTest.php` với **5 kịch bản kiểm thử độc lập (25 assertions)**: 100% PASSED (bật/tắt QR công khai và ghi audit log, cập nhật đa tài khoản ngân hàng khi nhập đúng mật khẩu, chặn cập nhật và giữ nguyên dữ liệu khi mật khẩu sai hoặc thiếu, kiểm tra hàm masking bảo vệ PII, và chặn người lạ thao tác qua IDOR).
+     - Toàn bộ test suite hệ thống: **945/945 tests PASSED 100% (4,993 assertions in 28.64s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
 
 
 

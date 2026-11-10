@@ -872,7 +872,7 @@
             </div>
         </section>
 
-        @if(! $isCuratedSeven)
+        @if(! $isCuratedSeven && ($isEmbed || ($wedding ? $wedding->isGiftQrEnabled() : true)))
         <div class="mayhen_invitation_sr_vach mayhen_invitation_divider" aria-hidden="true"></div>
 
         <!-- ===================== SECTION 9: HỘP MỪNG CƯỚI & VIETQR (WEDDING GIFT & VIETQR) ===================== -->

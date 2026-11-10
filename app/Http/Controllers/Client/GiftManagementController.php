@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\WeddingGift;
+use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -89,6 +90,8 @@ class GiftManagementController extends Controller
             'filterMethod' => $methodFilter,
             'filterGroup' => $groupFilter,
             'filterAck' => $ackFilter,
+            'isGiftQrEnabled' => $wedding->isGiftQrEnabled(),
+            'bankAccounts' => $wedding->getBankAccounts(),
         ]);
     }
 
@@ -349,7 +352,95 @@ class GiftManagementController extends Controller
             'filterMethod' => $methodFilter,
             'filterGroup' => $groupFilter,
             'filterAck' => $ackFilter,
+            'isGiftQrEnabled' => $wedding->isGiftQrEnabled(),
+            'bankAccounts' => $wedding->getBankAccounts(),
         ]);
+    }
+
+    /**
+     * Bật hoặc tắt trạng thái hiển thị mã QR mừng cưới công khai trên thiệp cưới.
+     */
+    public function toggleQr(int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $wedding = $invitation->wedding;
+        $newState = ! $wedding->isGiftQrEnabled();
+        $wedding->setGiftQrEnabled($newState);
+
+        AuditLogger::log('GIFT_QR_VISIBILITY_TOGGLED', 'Wedding', $wedding->id, 'Bật tắt hiển thị QR mừng cưới công khai', [
+            'invitation_id' => $invitation->id,
+            'wedding_id' => $wedding->id,
+            'is_gift_qr_enabled' => $newState,
+        ]);
+
+        $msg = $newState
+            ? 'Đã bật hiển thị mã QR và hộp mừng cưới công khai trên thiệp.'
+            : 'Đã tạm khóa và ẩn mã QR mừng cưới khỏi thiệp cưới công khai.';
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Cập nhật thông tin đa tài khoản ngân hàng & QR mừng cưới.
+     * Yêu cầu xác thực mật khẩu tài khoản hiện tại để bảo vệ chống chiếm đoạt tài khoản (Section 35 PRD V3).
+     */
+    public function updateBanking(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $wedding = $invitation->wedding;
+
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'is_gift_qr_enabled' => ['nullable', 'boolean'],
+            'accounts' => ['required', 'array', 'min:1'],
+            'accounts.*.label' => ['required', 'string', 'max:100'],
+            'accounts.*.bank_name' => ['required', 'string', 'max:100'],
+            'accounts.*.bank_account_number' => ['required', 'string', 'max:50'],
+            'accounts.*.account_holder' => ['required', 'string', 'max:100'],
+            'accounts.*.qr_image_url' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu tài khoản của bạn để xác thực thay đổi thông tin ngân hàng nhạy cảm.',
+            'current_password.current_password' => 'Mật khẩu xác nhận không chính xác.',
+            'accounts.required' => 'Vui lòng cung cấp ít nhất một tài khoản ngân hàng nhận mừng cưới.',
+            'accounts.*.bank_name.required' => 'Tên ngân hàng là bắt buộc.',
+            'accounts.*.bank_account_number.required' => 'Số tài khoản ngân hàng là bắt buộc.',
+            'accounts.*.account_holder.required' => 'Tên chủ tài khoản là bắt buộc.',
+        ]);
+
+        $oldAccounts = $wedding->getBankAccounts();
+        $newAccountsInput = $request->input('accounts', []);
+        $formattedAccounts = [];
+
+        foreach ($newAccountsInput as $idx => $acc) {
+            $formattedAccounts[] = [
+                'id' => $acc['id'] ?? ('ba_'.Str::random(8)),
+                'label' => trim((string) ($acc['label'] ?? 'Tài Khoản')),
+                'bank_name' => trim((string) ($acc['bank_name'] ?? '')),
+                'bank_account_number' => trim((string) ($acc['bank_account_number'] ?? '')),
+                'account_holder' => mb_strtoupper(trim((string) ($acc['account_holder'] ?? ''))),
+                'qr_image_url' => ! empty($acc['qr_image_url']) ? trim((string) $acc['qr_image_url']) : null,
+                'is_active' => true,
+            ];
+        }
+
+        $wedding->setBankAccounts($formattedAccounts);
+        $wedding->setGiftQrEnabled((bool) $request->boolean('is_gift_qr_enabled'));
+
+        // Ghi nhật ký kiểm toán bất biến
+        AuditLogger::log('BANK_ACCOUNT_UPDATED', 'Wedding', $wedding->id, 'Cập nhật tài khoản ngân hàng nhận quà mừng', [
+            'invitation_id' => $invitation->id,
+            'wedding_id' => $wedding->id,
+            'user_id' => auth()->id(),
+            'old_accounts_count' => count($oldAccounts),
+            'new_accounts_count' => count($formattedAccounts),
+            'is_gift_qr_enabled' => $wedding->isGiftQrEnabled(),
+        ]);
+
+        return back()->with('success', 'Đã cập nhật thông tin tài khoản ngân hàng và mã QR mừng cưới an toàn thành công!');
     }
 
     /**
