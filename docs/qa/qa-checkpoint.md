@@ -89,17 +89,19 @@
     * Bảng điều khiển tài khoản cặp đôi (`Client Dashboard`): thống kê tổng số thiệp, khách mời dự kiến, phản hồi tham dự thực tế và danh sách lời chúc mới nhất.
     * Nhân bản thiệp cưới (`Duplicate`): tạo bản sao mới với tiêu đề `(Bản Sao)`, slug ngẫu nhiên không trùng lặp, chuyển trạng thái về `is_published: false` và kiểm soát IDOR tuyệt đối.
     * Xóa thiệp cưới (`Delete`): xác thực chặt chẽ quyền chủ sở hữu, từ chối người lạ truy cập (404 Not Found).
-- **Test suite**: **633/633 tests PASSED 100%** (3,268 assertions in 12.4s).
+- **Test suite**: **653/653 tests PASSED 100%** (3,364 assertions in 13.1s).
 - **Code style**: **Laravel Pint PASSED** (Agent style 100%).
 - **Kiểm định chịu tải đồng thời & Lũy đẳng (Concurrency & Spike Load)**:
   * `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php`: 4 bài test thực chiến kiểm tra quét dồn dập nhiều lần cùng 1 token (idempotent, không nhân đôi sĩ số), đón khách phát sinh (walk-in) nguyên tử, điểm danh đồng loạt cùng bàn tiệc không deadlock, và chống replay attack webhook SePay.
+- **Kiểm định kịch bản chuyên sâu E2E (Cross-module E2E Deep Scenarios)**:
+  * `tests/Feature/CrossExplicitE2EDeepScenariosTest.php`: 20 bài test chuyên sâu thực chiến kiểm chứng toàn diện từ DEEP-01 đến DEEP-20 (RSVP tăng sĩ số, giải phóng ghế bàn khi declined, đồng bộ CRM và bàn tiệc, khóa thiệp đa cổng, lũy đẳng webhook SePay, cách ly bản nháp và bản xuất bản, autosave xung đột revision, render mẫu Native AI, phòng chống CSV formula injection, kiểm duyệt ngôn từ, bàn giao đối tác studio, bảo vệ PII...).
 - **Kiểm định trực quan thực tế (Live Visual Screenshots)**:
   * 116 tệp ảnh chụp PNG thực tế tại `docs/qa/screenshots/` cho 29 màn hình giao diện then chốt trên 4 kích thước màn hình tiêu biểu (`375x812`, `430x932`, `768x1024`, `1440x900`).
 - **Danh mục chức năng & Ma trận kiểm thử (Traceability & QA Matrix)**:
   * `docs/qa/feature-traceability.csv`: Tạo lập hoàn tất đối chiếu 782/782 hạng mục vi mô xuyên suốt 32 nhóm chức năng với routes, controllers, views, css, js, database và feature tests tương ứng.
   * `docs/qa/MAY_HEN_FUNCTION_CATALOG.md`: Cập nhật 100% đánh dấu `[x]` và trạng thái `CODE_VERIFIED_ACCEPTED` trên 782 hạng mục.
   * `docs/qa/MAY_HEN_FEATURE_INVENTORY.csv`: Bảng kiểm kê chính thức 782 tính năng phân loại mức ưu tiên P0/P1/P2.
-  * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`: Đồng bộ hóa 5,070 kịch bản kiểm thử sang trạng thái `PASS` kèm tệp test và bằng chứng xác minh cụ thể.
+  * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`: Đồng bộ hóa 5,090 kịch bản kiểm thử (100%) sang trạng thái `PASS` kèm tệp test và bằng chứng xác minh cụ thể.
   * `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv`: Cập nhật 702 ca kiểm thử màn hình với liên kết ảnh thực tế và trạng thái `VISUAL_PASS` / `CODE_VERIFIED_RESPONSIVE`.
   * `docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`: Giải quyết toàn diện 5 điểm mâu thuẫn đặc tả (`SPEC_CONFLICT-01` đến `SPEC_CONFLICT-05`).
-  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 633 tests, 3,268 assertions, 116 screenshots và 27 bugs P0/P1/P2/P3 được xử lý triệt để.
+  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 653 tests, 3,364 assertions, 116 screenshots và 27 bugs P0/P1/P2/P3 được xử lý triệt để.

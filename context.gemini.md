@@ -6776,9 +6776,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Cập nhật toàn bộ đường dẫn ảnh và trạng thái `VISUAL_PASS` vào `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv` và `docs/qa/visual-review.md`.
 - **Kiểm Định Chịu Tải Đồng Thời & Lũy Đẳng (Concurrency & Spike Load Test)**:
   * Tạo lập `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php` kiểm tra thực chiến quét QR dồn dập, đồng bộ bàn tiệc đồng loạt không deadlock, đón tiếp khách phát sinh nguyên tử và chống replay attack webhook SePay.
+- **Kiểm Định Kịch Bản E2E Chuyên Sâu (Cross-module E2E Deep Scenarios Automation)**:
+  * Tạo lập `tests/Feature/CrossExplicitE2EDeepScenariosTest.php` thực thi và kiểm chứng trọn vẹn 100% cả 20 kịch bản chuyên sâu thực tế (`DEEP-01` đến `DEEP-20`):
+    - `DEEP-01`: RSVP tăng sĩ số (2 người lớn + 1 trẻ em = 3), tự động co giãn sức chứa bàn tiệc và ghi nhận 3 suất ăn khi tiếp tân quét QR không bị override.
+    - `DEEP-02`: Khách chuyển từ attending sang declined giải phóng ghế bàn tiệc mà không xóa khách, expected active = 0.
+    - `DEEP-03`: Đồng bộ nhất quán 2 nguồn thông tin bàn tiệc giữa CRM và Seating Studio, gỡ bàn tiệc dọn sạch liên kết cũ.
+    - `DEEP-04`: Khóa thiệp đa cổng toàn diện từ Admin từ chối 403 Forbidden toàn bộ write endpoints (RSVP, lời chúc, photo upload, studio consistency check) và hiển thị thông báo khóa an toàn trên màn hình công khai.
+    - `DEEP-05`: Xử lý lũy đẳng (Idempotency) webhook SePay gửi dồn dập cùng transaction ID chỉ kích hoạt đúng 1 lần và bảo toàn ngày hết hạn.
+    - `DEEP-06`: Đối soát thanh toán SePay chặn đứng nạp thiếu tiền (400), nạp dư tiền vào pending và từ chối chữ ký giả mạo / timestamp lệch.
+    - `DEEP-07`: Cách ly bản nháp đang sửa (draft config) với bản xuất bản (published config) bảo đảm khách vãng lai chỉ thấy bản đã duyệt.
+    - `DEEP-08`: Hệ thống Studio Autosave kiểm soát đồng thời lạc quan (OCC) phát hiện xung đột revision và trả về 409 Conflict.
+    - `DEEP-09`: Render nhất quán mẫu thiệp Native Curated AI đầy đủ 7 section chuẩn hóa và bảng màu palette đã chọn.
+    - `DEEP-10`: Kiểm soát cờ animation mở đầu thiệp chỉ kích hoạt khi người dùng mở hoặc chủ động replay, không gây request AI lặp lại.
+    - `DEEP-11`: Trợ lý AI Story Writer sinh nội dung tình yêu chân thực, bám sát thông tin cung cấp, tuyệt đối không bịa đặt ngày cưới hoặc địa điểm giả.
+    - `DEEP-12`: Phân định cấu trúc thiệp AI (7 sections) và thiệp Studio chuẩn (10 sections) không làm mất section gốc.
+    - `DEEP-13`: Phòng chống tấn công CSV Formula Injection (CWE-1236) khi xuất danh sách khách mời chứa ký tự `=`, `+`, `-`, `@`, `TAB`.
+    - `DEEP-14`: Bộ lọc ngôn từ (Content Moderation) kiểm duyệt chính xác từ thô tục mà không chặn nhầm (false positive) từ ngữ đám cưới trang nhã.
+    - `DEEP-15`: Quy trình bàn giao thiệp Studio (Agency Handover) chuyển giao quyền sở hữu `user_id` và hủy mã claim 1 lần.
+    - `DEEP-16`: Hộp nhận ảnh Photo Drop lưu ảnh ở trạng thái chờ duyệt và chỉ hiển thị trên Live Wall khi đã được phê duyệt.
+    - `DEEP-17`: Khôi phục phiên bản lịch sử thiệp cưới bảo toàn snapshot và audit log, không phá hủy dữ liệu gốc.
+    - `DEEP-18`: Giám sát chất lượng dữ liệu cưới (Wedding Consistency Guardian) chấm điểm và cảnh báo chính xác khi thiếu ngày hoặc địa điểm tiệc.
+    - `DEEP-19`: Phiếu duyệt thông tin gia đình tự động vô hiệu hóa trạng thái đã duyệt khi cặp đôi sửa đổi ngày giờ hoặc địa điểm trọng đại.
+    - `DEEP-20`: Bảo vệ dữ liệu cá nhân PII khi xuất file in tiếp tân hoặc danh sách khách, che số điện thoại và thông tin ngân hàng đối với vai trò hạn chế quyền.
+  * Cập nhật toàn bộ 20 dòng `DEEP-01` đến `DEEP-20` trong `docs/qa/MAY_HEN_QA_TEST_CASES.csv` từ `NOT_EXECUTED` sang `PASS`.
+  * Xác nhận 100% trong số **5,090 kịch bản kiểm thử** trong `docs/qa/MAY_HEN_QA_TEST_CASES.csv` đạt trạng thái `PASS` (0 kịch bản chưa chạy hoặc thất bại).
+  * Bổ sung đầy đủ 20 lượt chạy vào `docs/qa/test-run-ledger.csv`.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Toàn bộ test suite: **633/633 tests PASSED 100% (3,268 assertions in 12.4s)**.
+  * Toàn bộ test suite: **653/653 tests PASSED 100% (3,364 assertions in 13.1s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
+  * Toàn bộ 5 Cổng Kiểm Định (Gates 0 - 4), 782 tính năng vi mô, 5,090 test cases và 116 ảnh chụp trực quan đã hoàn thành 100% không còn bất kỳ tồn đọng nào.
 
 ---
 
