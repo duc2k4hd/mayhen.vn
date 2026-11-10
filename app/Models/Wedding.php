@@ -53,6 +53,11 @@ class Wedding extends Model
         return $this->hasMany(Invitation::class);
     }
 
+    public function invitation(): HasOne
+    {
+        return $this->hasOne(Invitation::class)->latestOfMany();
+    }
+
     public function guests(): HasMany
     {
         return $this->hasMany(Guest::class);

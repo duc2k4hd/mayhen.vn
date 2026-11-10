@@ -125,6 +125,8 @@ Thumbs.db
 !/tests/Feature/AdminPrivacyRetentionTest.php
 !/tests/Feature/AdminRealFunnelAnalyticsTest.php
 !/tests/Feature/AdminIncidentAndEscalationTest.php
+!/tests/Feature/AdminReleaseControlTest.php
+!/tests/Feature/AdminReliableMessagingDispatchTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

@@ -137,6 +137,16 @@
                     <span>Rescue Cockpit Ngày Cưới</span>
                 </a>
 
+                <a href="{{ route('admin.messaging.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.messaging.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </span>
+                    <span>Phát Tin Thiệp Mời</span>
+                </a>
+
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
                 <div class="mayhen_admin_menu_section">Kinh Doanh & Doanh Thu</div>
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.orders.*') && !request()->routeIs('admin.intelligence.reconciliation') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -279,6 +289,16 @@
                         @if (($failedJobsBadge ?? 0) > 0)
                             <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" style="background: #C0392B; color: #fff;" title="{{ $failedJobsBadge }} tác vụ lỗi cần xử lý">{{ $failedJobsBadge }}</span>
                         @endif
+                    </a>
+
+                    <a href="{{ route('admin.release.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.release.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                <line x1="4" y1="22" x2="4" y2="15"></line>
+                            </svg>
+                        </span>
+                        <span>Kiểm Soát Phát Hành (Rollout)</span>
                     </a>
                 @endif
             </nav>

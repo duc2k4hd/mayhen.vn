@@ -7505,3 +7505,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
        * Xác minh bộ lọc khung thời gian hoạt động chuẩn xác.
      - Cụm test toàn diện 9 test suites Post-VNext: **59/59 tests PASSED 100% (341 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
+### 47. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-11: RELEASE & ROLLBACK CONTROL CENTER (10/11/2026)
+- **Mục tiêu**: Xây dựng Trung tâm Kiểm Soát Phát Hành & Hoàn Tác (Release & Rollback Cockpit) theo chuẩn cấp doanh nghiệp, bảo vệ tính ổn định của hệ thống tiệc cưới trong những ngày cao điểm.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Lược Đồ Cơ Sở Dữ Liệu & Model ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_164257_create_system_feature_flags_table.php) & [SystemFeatureFlag.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/SystemFeatureFlag.php))**:
+     - Bảng `system_feature_flags` lưu trữ: `key`, `name`, `description`, `category` (`core`, `commerce`, `collaboration`, `ai`, `safety`), `is_enabled`, `rollout_percentage` (0-100%), `target_roles`, `kill_switch_active`, `kill_switch_reason`, `last_toggled_by`, `last_toggled_at`.
+  2. **Dịch Vụ Kiểm Soát Vận Hành ([ReleaseAndRollbackService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/ReleaseAndRollbackService.php))**:
+     - **Sticky Evaluation Engine (`isFeatureEnabled`)**: Phân luồng người dùng nhất quán dựa trên hàm băm `crc32("{$key}:{$user->id}") % 100`. Cùng một người dùng luôn có trải nghiệm đồng nhất qua các phiên truy cập.
+     - **Bảng Kiểm Tra Sẵn Sàng Nền Tảng (`runPreflightChecklist`)**: Tự động đo lường độ trễ DB (ms), kiểm tra Cache Engine, quyền ghi Storage, rà soát migrations chưa chạy, số lượng failed jobs và an toàn mã khóa `APP_KEY`.
+     - **Bộ Cắt Khẩn Cấp (Kill Switch & Rollback)**: Ngay lập tức đóng băng tính năng bị nghi ngờ lỗi dù tỷ lệ rollout đang là 100%, ghi vết lý do vào Audit Log.
+     - **Chế Độ Phòng Vệ Khẩn Cấp (Emergency Safe Mode)**: Phong tỏa toàn bộ các tác vụ nền nặng (AI Story, batch process) để bảo toàn 100% CPU/RAM phục vụ tải thiệp và check-in ngày cưới.
+  3. **Bộ Điều Khiển & Giao Diện Admin ([ReleaseControlController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/ReleaseControlController.php) & [index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/release/index.blade.php))**:
+     - Preflight Readiness Cockpit trực quan hóa 6 chốt an toàn kèm đèn tín hiệu xanh/vàng/đỏ và độ trễ mili-giây.
+     - Danh sách Feature Flags phân nhóm với thanh trượt tỷ lệ tiếp cận %, nút chuyển đổi và nút "⚡ Kill Switch" khẩn cấp.
+     - Menu **Kiểm Soát Phát Hành (Rollout)** tích hợp vào thanh điều hướng bên [master.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+  4. **Kiểm Thử Hồi Quy**:
+     - Tạo mới test suite `tests/Feature/AdminReleaseControlTest.php` gồm **6 kịch bản kiểm thử độc lập (40 assertions)**: 100% PASSED.
+
+### 48. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-07: RELIABLE MESSAGING DISPATCH (10/11/2026)
+- **Mục tiêu**: Xây dựng Động cơ Phát Tin Thiệp Mời Tin Cậy qua Zalo ZNS / SMS Brandname / Link Thiệp Định Danh, tích hợp cơ chế chống trùng số điện thoại, cá nhân hóa danh xưng theo vai vế và quy trình phê duyệt 2 bước (Dual Approval).
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Lược Đồ Cơ Sở Dữ Liệu & Model ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_165053_create_messaging_dispatches_tables.php), [MessagingDispatch.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/MessagingDispatch.php), [MessagingDispatchLog.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/MessagingDispatchLog.php))**:
+     - Bảng `messaging_dispatches`: `wedding_id`, `campaign_name`, `channel` (`zalo_zns`, `sms_brandname`, `invitation_link`), `status` (`draft`, `dry_run_ready`, `processing`, `completed`, `failed`), `filter_group`, `total_recipients`, `deduplicated_count`, `successful_count`, `unit_cost_vnd`, `total_cost_vnd`, `message_template`, `created_by`, `approved_by`.
+     - Bảng `messaging_dispatch_logs`: Chi tiết từng tin gửi kèm số điện thoại, tên khách, nội dung cá nhân hóa đã render, trạng thái (`dry_run`, `sent`, `skipped_duplicate`), mã đối soát nhà mạng `provider_ref`.
+     - Bổ sung quan hệ `invitation(): HasOne` vào [Wedding.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/Wedding.php).
+  2. **Dịch Vụ Vận Hành Phát Tin ([ReliableMessagingDispatchService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/ReliableMessagingDispatchService.php))**:
+     - **Deduplication Engine (Chống gửi trùng SĐT)**: Tự động phát hiện và loại bỏ các số điện thoại trùng lặp trong cùng đợt gửi hoặc đã nhận tin thành công trong vòng 24 giờ qua, giúp bảo vệ người nhận khỏi bị spam và tiết kiệm chi phí viễn thông.
+     - **Personalization Formatter**: Tự động thay thế chuẩn xác 6 thẻ động: `[DANH_XUNG]`, `[TEN_KHACH]`, `[CAP_DOI]`, `[NGAY_CUOI]`, `[LINK_THIEP]`, `[NHOM_KHACH]`.
+     - **Dry-Run Engine**: Chạy kiểm thử không tốn phí, sinh sẵn 100% mẫu tin nhắn xem trước và tính toán chính xác tổng chi phí viễn thông.
+     - **Dual Approval Dispatch**: Bắt buộc Quản lý trở lên phê duyệt mới được chuyển sang phát tin thực tế, cập nhật tự động cờ `guests.is_sent = true` và lưu vết Audit Log.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị ([MessagingDispatchController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/MessagingDispatchController.php), [index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/messaging/index.blade.php), [create.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/messaging/create.blade.php), [show.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/messaging/show.blade.php))**:
+     - Bảng điều phối chiến dịch với 4 thẻ KPI: Tổng chiến dịch, Tin gửi thành công, Chi phí viễn thông, Số tin tiết kiệm nhờ chống trùng.
+     - Bàn kiểm soát 2 bước: Bước 1 Dry-Run &rarr; Bước 2 Phê Duyệt Phát Tin Thật.
+     - Bảng nhật ký xem trước tin nhắn đã cá nhân hóa từng khách mời.
+     - Tích hợp menu **Phát Tin Thiệp Mời** vào thanh điều hướng bên [master.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+  4. **Kiểm Thử Hồi Quy Toàn Bộ**:
+     - Tạo mới test suite `tests/Feature/AdminReliableMessagingDispatchTest.php` gồm **5 kịch bản kiểm thử độc lập (38 assertions)**: 100% PASSED.
+     - Cụm test toàn diện hệ thống: **182/182 tests PASSED 100% (1.058 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.

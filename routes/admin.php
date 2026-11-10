@@ -7,9 +7,11 @@ use App\Http\Controllers\Admin\GuestController as AdminGuestController;
 use App\Http\Controllers\Admin\IntelligenceController as AdminIntelligenceController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
+use App\Http\Controllers\Admin\MessagingDispatchController as AdminMessagingDispatchController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
+use App\Http\Controllers\Admin\ReleaseControlController as AdminReleaseControlController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
@@ -196,5 +198,24 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/requests/{id}/reject', [AdminPrivacyOperationsController::class, 'rejectErasureRequest'])->middleware('admin.manager')->name('reject_erasure');
         Route::post('/requests/{id}/execute', [AdminPrivacyOperationsController::class, 'executeErasure'])->middleware('admin.manager')->name('execute_erasure');
         Route::get('/dsar-download/{token}', [AdminPrivacyOperationsController::class, 'downloadDsarExport'])->name('download_dsar_export');
+    });
+
+    // Kiểm Soát Phát Hành & Hoàn Tác (NXT-11: Release & Rollback Control Center)
+    Route::prefix('release-control')->name('release.')->group(function () {
+        Route::get('/', [AdminReleaseControlController::class, 'index'])->name('index');
+        Route::post('/flags/{id}/toggle', [AdminReleaseControlController::class, 'toggleFlag'])->middleware('admin.manager')->name('toggle_flag');
+        Route::post('/flags/{id}/kill-switch', [AdminReleaseControlController::class, 'triggerKillSwitch'])->middleware('admin.manager')->name('kill_switch');
+        Route::post('/flags/{id}/reset-kill-switch', [AdminReleaseControlController::class, 'resetKillSwitch'])->middleware('admin.manager')->name('reset_kill_switch');
+        Route::post('/safe-mode', [AdminReleaseControlController::class, 'toggleSafeMode'])->middleware('admin.super')->name('toggle_safe_mode');
+    });
+
+    // Phát Tin Thiệp Mời Tin Cậy & Chống Trùng (NXT-07: Reliable Messaging Dispatch)
+    Route::prefix('messaging')->name('messaging.')->group(function () {
+        Route::get('/', [AdminMessagingDispatchController::class, 'index'])->name('index');
+        Route::get('/create', [AdminMessagingDispatchController::class, 'create'])->name('create');
+        Route::post('/', [AdminMessagingDispatchController::class, 'store'])->name('store');
+        Route::get('/{dispatch}', [AdminMessagingDispatchController::class, 'show'])->name('show');
+        Route::post('/{dispatch}/dry-run', [AdminMessagingDispatchController::class, 'dryRun'])->name('dry_run');
+        Route::post('/{dispatch}/dispatch', [AdminMessagingDispatchController::class, 'dispatchReal'])->middleware('admin.manager')->name('dispatch_real');
     });
 });
