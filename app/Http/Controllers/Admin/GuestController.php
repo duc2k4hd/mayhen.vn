@@ -421,4 +421,62 @@ class GuestController extends Controller
 
         return back()->with('success', $msg);
     }
+
+    /**
+     * Zero-Surprise Campaign Launch (Innovation #15).
+     * Xem trước chiến dịch gửi thông báo thiệp cưới: phân đoạn khách, mô phỏng OpenGraph Card Zalo/SMS.
+     */
+    public function campaignPreview(Request $request): View
+    {
+        $selectedWeddingId = $request->input('wedding_id');
+
+        $activeWedding = null;
+        if (! empty($selectedWeddingId)) {
+            $activeWedding = Wedding::with(['guests.response', 'invitations.template', 'user'])->find((int) $selectedWeddingId);
+        }
+
+        if (! $activeWedding) {
+            $activeWedding = Wedding::with(['guests.response', 'invitations.template', 'user'])->latest('wedding_date')->first();
+        }
+
+        $allWeddings = Wedding::select('id', 'groom_name', 'bride_name', 'wedding_date')
+            ->orderByDesc('wedding_date')
+            ->limit(50)
+            ->get();
+
+        $metrics = [
+            'total_guests' => 0,
+            'sent_count' => 0,
+            'unsent_count' => 0,
+            'attending_count' => 0,
+            'declined_count' => 0,
+            'no_response_count' => 0,
+            'send_rate' => 0,
+        ];
+
+        if ($activeWedding) {
+            $guests = $activeWedding->guests;
+            $total = $guests->count();
+            $sent = $guests->where('is_sent', true)->count();
+            $attending = $guests->filter(fn ($g) => $g->response?->attending_status === 'attending')->count();
+            $declined = $guests->filter(fn ($g) => $g->response?->attending_status === 'declined')->count();
+            $noResponse = $total - $attending - $declined;
+
+            $metrics = [
+                'total_guests' => $total,
+                'sent_count' => $sent,
+                'unsent_count' => max(0, $total - $sent),
+                'attending_count' => $attending,
+                'declined_count' => $declined,
+                'no_response_count' => max(0, $noResponse),
+                'send_rate' => $total > 0 ? (int) round(($sent / $total) * 100) : 0,
+            ];
+        }
+
+        return view('admin.pages.guests.campaign_preview', [
+            'activeWedding' => $activeWedding,
+            'allWeddings' => $allWeddings,
+            'metrics' => $metrics,
+        ]);
+    }
 }

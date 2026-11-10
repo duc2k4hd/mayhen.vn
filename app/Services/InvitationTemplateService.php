@@ -1383,4 +1383,84 @@ class InvitationTemplateService
             'curated_compatible' => $curatedCompatible,
         ];
     }
+
+    /**
+     * Extract Template Visual DNA (Innovation #10).
+     * Phân tích dấu ấn Art Direction: Font chữ, bảng màu, spacing rhythm, paper texture.
+     *
+     * @return array<string, mixed>
+     */
+    public static function extractVisualDna(string $slug): array
+    {
+        $templateDir = resource_path("views/client/invitations/{$slug}");
+        $cssPath = "{$templateDir}/styles.css";
+        $schemaPath = "{$templateDir}/schema.json";
+
+        $cssContent = File::exists($cssPath) ? File::get($cssPath) : '';
+        $schemaData = File::exists($schemaPath) ? (json_decode(File::get($schemaPath), true) ?? []) : [];
+
+        // 1. Detect Typography (Heading Serif & Body Sans)
+        $fonts = [];
+        if (preg_match_all('/font-family:\s*([^;\}]+)/i', $cssContent, $fontMatches)) {
+            foreach ($fontMatches[1] as $fm) {
+                $clean = trim(str_replace(['"', "'"], '', explode(',', $fm)[0]));
+                if ($clean && ! in_array($clean, $fonts, true) && ! in_array(strtolower($clean), ['inherit', 'sans-serif', 'serif', 'system-ui'])) {
+                    $fonts[] = $clean;
+                }
+            }
+        }
+        $headingFont = $fonts[0] ?? 'Playfair Display';
+        $bodyFont = $fonts[1] ?? 'Inter';
+
+        // 2. Detect Color Palette (HEX Colors)
+        $colors = [];
+        if (preg_match_all('/#([a-f0-9]{6}|[a-f0-9]{3})\b/i', $cssContent, $colorMatches)) {
+            $hexCounts = array_count_values(array_map('strtoupper', $colorMatches[0]));
+            arsort($hexCounts);
+            $colors = array_slice(array_keys($hexCounts), 0, 6);
+        }
+
+        if (empty($colors)) {
+            $colors = ['#FAF8F5', '#1F1D1A', '#C5A880', '#EFE8DD'];
+        }
+
+        // 3. Detect Theme Classification
+        $category = $schemaData['category'] ?? '';
+        if (str_contains(strtolower($cssContent), 'gold') || str_contains(strtolower($slug), 'gold') || str_contains(strtolower($category), 'luxury')) {
+            $theme = 'Muted Gold / Hoàng Gia Sang Trọng';
+        } elseif (str_contains(strtolower($cssContent), 'rose') || str_contains(strtolower($slug), 'rose') || str_contains(strtolower($category), 'romantic')) {
+            $theme = 'Dusty Rose / Lãng Mạn Thơ Mộng';
+        } elseif (str_contains(strtolower($cssContent), 'sage') || str_contains(strtolower($slug), 'sage') || str_contains(strtolower($category), 'minimal')) {
+            $theme = 'Sage Green / Tối Giản Thiên Nhiên';
+        } else {
+            $theme = 'Warm Cream & Ivory / Quiet Luxury Cổ Điển';
+        }
+
+        // 4. Paper Texture & Border Style
+        $hasBorder = str_contains($cssContent, 'border:') || str_contains($cssContent, 'border-radius');
+        $hasPaperTexture = str_contains($cssContent, 'texture') || str_contains($cssContent, 'paper') || str_contains($cssContent, 'noise');
+
+        // 5. Brand Harmony Score (0-100)
+        $brandHarmony = 100;
+        $violations = [];
+        foreach ($colors as $c) {
+            if (in_array(strtoupper($c), ['#FF00FF', '#00FFFF', '#00FF00', '#FF0000'])) {
+                $brandHarmony -= 20;
+                $violations[] = "Màu {$c} có độ chói cao, không phù hợp với chuẩn Quiet Luxury.";
+            }
+        }
+
+        return [
+            'slug' => $slug,
+            'heading_font' => $headingFont,
+            'body_font' => $bodyFont,
+            'fonts' => $fonts,
+            'palette' => $colors,
+            'theme' => $theme,
+            'has_border' => $hasBorder,
+            'has_paper_texture' => $hasPaperTexture,
+            'brand_harmony' => max(0, $brandHarmony),
+            'violations' => $violations,
+        ];
+    }
 }

@@ -80,9 +80,13 @@ class TemplateController extends Controller
         // Comprehensive Schema & Code Integrity Inspection (Wave 04)
         $audit = InvitationTemplateService::inspectTemplateIntegrity($template->slug);
 
+        // Template Visual DNA (Innovation #10)
+        $visualDna = InvitationTemplateService::extractVisualDna($template->slug);
+
         return view('admin.pages.templates.edit', [
             'template' => $template,
             'audit' => $audit,
+            'visualDna' => $visualDna,
             'schemaExists' => $audit['files']['schema_json']['exists'] ?? false,
             'rawSchema' => $audit['raw_schema'] ?? [],
             'sectionsReport' => $audit['sections_report'] ?? [],

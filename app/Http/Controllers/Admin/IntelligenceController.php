@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\SupportTicket;
+use App\Models\User;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Services\WeddingReadinessRadarService;
@@ -260,6 +262,97 @@ class IntelligenceController extends Controller
             'items' => $reconciledItems,
             'kpis' => $kpis,
             'currentStatus' => $request->input('status'),
+        ]);
+    }
+
+    /**
+     * Delight Recovery Planner (Innovation #13).
+     * Phát hiện các cặp đôi gặp khó khăn hoặc bị kẹt khi tạo thiệp trong Studio để CSKH chủ động hỗ trợ.
+     */
+    public function delightRecovery(Request $request): View
+    {
+        $stuckCases = collect();
+
+        // 1. Paid but no published invitation (Gặp khó khăn sau khi thanh toán)
+        $paidUsers = User::whereHas('orders', function ($q) {
+            $q->where('status', 'paid');
+        })->with(['orders.plan', 'weddings.invitations'])->get();
+
+        foreach ($paidUsers as $user) {
+            $hasPublished = $user->weddings->flatMap->invitations->contains('is_published', true);
+            if (! $hasPublished) {
+                $lastOrder = $user->orders->sortByDesc('paid_at')->first();
+                $stuckCases->push([
+                    'type' => 'paid_unpublished',
+                    'severity' => 'high',
+                    'title' => 'Đã thanh toán nhưng chưa xuất bản thiệp',
+                    'user' => $user,
+                    'wedding' => $user->weddings->first(),
+                    'last_activity' => $lastOrder?->paid_at?->diffForHumans() ?? 'Gần đây',
+                    'reason' => 'Khách đã mua gói '.($lastOrder?->plan?->name ?? 'dịch vụ').' nhưng chưa công bố thiệp. Có thể gặp khó khăn khâu tải ảnh hoặc chọn nhạc.',
+                    'action_label' => 'Liên hệ hỗ trợ hoàn thiện',
+                ]);
+            }
+        }
+
+        // 2. Drafts abandoned (Bản nháp bị bỏ dở > 3 ngày)
+        $abandonedDrafts = Invitation::where('is_published', false)
+            ->where('updated_at', '<', now()->subDays(3))
+            ->with(['wedding.user', 'template'])
+            ->latest('updated_at')
+            ->take(20)
+            ->get();
+
+        foreach ($abandonedDrafts as $draft) {
+            if (! $stuckCases->contains(fn ($c) => ($c['user']->id ?? null) === $draft->wedding?->user_id)) {
+                $stuckCases->push([
+                    'type' => 'stuck_draft',
+                    'severity' => 'medium',
+                    'title' => 'Bản nháp ngừng cập nhật > 3 ngày',
+                    'user' => $draft->wedding?->user,
+                    'wedding' => $draft->wedding,
+                    'invitation' => $draft,
+                    'last_activity' => $draft->updated_at?->diffForHumans() ?? 'Vài ngày trước',
+                    'reason' => 'Đã chọn mẫu '.($draft->template?->name ?? 'thiệp').' nhưng chưa hoàn tất thông tin đôi uyên ương hoặc ngày cưới.',
+                    'action_label' => 'Nhắn tin hỏi thăm tiến độ',
+                ]);
+            }
+        }
+
+        // 3. High Views but 0 RSVPs (Lượt xem cao bất thường nhưng 0 phản hồi RSVP)
+        $zeroRsvps = Invitation::where('is_published', true)
+            ->where('view_count', '>=', 30)
+            ->whereDoesntHave('wedding.guests.response')
+            ->with(['wedding.user', 'template'])
+            ->latest('view_count')
+            ->take(10)
+            ->get();
+
+        foreach ($zeroRsvps as $zeroInv) {
+            $stuckCases->push([
+                'type' => 'zero_rsvps',
+                'severity' => 'medium',
+                'title' => 'Thiệp đạt '.$zeroInv->view_count.' lượt xem nhưng 0 phản hồi RSVP',
+                'user' => $zeroInv->wedding?->user,
+                'wedding' => $zeroInv->wedding,
+                'invitation' => $zeroInv,
+                'last_activity' => $zeroInv->updated_at?->diffForHumans() ?? 'Gần đây',
+                'reason' => 'Khách xem nhiều nhưng chưa ai xác nhận tham dự. Cần kiểm tra form RSVP hoặc cài đặt hạn chót phản hồi.',
+                'action_label' => 'Kiểm tra kỹ thuật thiệp',
+            ]);
+        }
+
+        $kpis = [
+            'total' => $stuckCases->count(),
+            'high_priority' => $stuckCases->where('severity', 'high')->count(),
+            'paid_unpublished' => $stuckCases->where('type', 'paid_unpublished')->count(),
+            'stuck_drafts' => $stuckCases->where('type', 'stuck_draft')->count(),
+            'zero_rsvps' => $stuckCases->where('type', 'zero_rsvps')->count(),
+        ];
+
+        return view('admin.pages.intelligence.delight_recovery', [
+            'cases' => $stuckCases,
+            'kpis' => $kpis,
         ]);
     }
 }

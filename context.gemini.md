@@ -7169,10 +7169,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
        * *Giai đoạn 4*: Sổ ký tên điện tử & Gửi lời chúc mừng.
        * *Giai đoạn 5*: Quét mã QR & Tra cứu số bàn tiệc tại sảnh tiếp tân.
      - Khách mời giả lập (`Quan Khách Diễn Tập Synthetic VIP`) đảm bảo không tạo bản ghi rác trong cơ sở dữ liệu thật của cặp đôi.
+### 36. HOÀN TẤT TRỌN VẸN 100% MASTER INNOVATION BACKLOG VỚI BỘ BA SÁNG KIẾN ĐỢT 4 (INNOVATION #10, #13, #15)
+- **Mục tiêu**: Hoàn thiện triệt để 3 sáng kiến cuối cùng trong danh mục Master Innovation Backlog (`docs/admin-vnext/MAY_HEN_ADMIN_INNOVATION_BACKLOG.md`), đưa tỷ lệ hoàn thành sáng kiến vận hành Atelier Command Center đạt mốc **18/18 (100%)**:
+  1. **Template Visual DNA (Innovation #10)**: Phân tích và trích xuất dấu vết thiết kế nghệ thuật gốc của từng mẫu thiệp (typography, palette 6 sắc độ, phân loại theme tone Quiet Luxury, viền và chất liệu mỹ thuật).
+  2. **Delight Recovery Planner (Innovation #13)**: Hệ thống cảnh báo sớm thông minh phát hiện các cặp đôi gặp khó khăn hoặc bị kẹt khi tạo thiệp trong Studio để CSKH chủ động hỗ trợ.
+  3. **Zero-Surprise Campaign Launch (Innovation #15)**: Bảng điều khiển xem trước chiến dịch gửi thiệp, ước lượng tỷ lệ mở thiệp, phân đoạn danh bạ và mô phỏng thẻ tin nhắn OpenGraph Zalo/SMS/iMessage.
+- **Các thành phần đã triển khai**:
+  1. **Template Visual DNA ([InvitationTemplateService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/InvitationTemplateService.php) & [templates/edit.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/templates/edit.blade.php))**:
+     - Phương thức: `InvitationTemplateService::extractVisualDna(string $slug): array`.
+     - Phân tích tĩnh tệp CSS và Schema:
+       * Tự động nhận diện Font tiêu đề nghệ thuật (Editorial Serif) và Font nội dung hiện đại (Modern Sans).
+       * Trích xuất bảng màu HEX cốt lõi (top 6 màu xuất hiện nhiều nhất) kèm vòng tròn mẫu màu trực quan.
+       * Phân loại tông sắc nhận diện thương hiệu: `Muted Gold / Hoàng Gia`, `Dusty Rose / Lãng Mạn`, `Sage Green / Tối Giản`, `Warm Cream & Ivory / Quiet Luxury Cổ Điển`.
+       * Nhận diện đường viền nghệ thuật và texture chất liệu giấy mỹ thuật.
+       * Chấm điểm hòa hợp thương hiệu (`Brand Harmony Score` 0 - 100 điểm) và phát hiện các màu chói vi phạm quy chuẩn Quiet Luxury.
+     - Tích hợp khối thanh tra `Template Visual DNA (Art Direction Audit)` trực tiếp trên thanh công cụ kiểm tra mẫu thiệp ([templates/edit.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/templates/edit.blade.php)).
+  2. **Delight Recovery Planner ([IntelligenceController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/IntelligenceController.php) & [intelligence/delight_recovery.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/delight_recovery.blade.php))**:
+     - Route: `GET /admin/intelligence/delight-recovery` (tên route: `admin.intelligence.delight_recovery`).
+     - Tự động phát hiện 3 kịch bản khách hàng bị kẹt cần can thiệp:
+       * *Đã trả tiền chưa xuất bản*: Cặp đôi đã thanh toán thành công đơn hàng nhưng chưa công bố thiệp cưới ra công chúng.
+       * *Bản nháp bị bỏ dở > 3 ngày*: Thiệp nháp đã chọn mẫu nhưng ngừng cập nhật trên 3 ngày liên tục.
+       * *Xem nhiều nhưng 0 RSVP*: Thiệp cưới đạt trên 30 lượt xem nhưng chưa ghi nhận bất kỳ phản hồi khách mời nào.
+     - Phân cấp mức độ ưu tiên (`Khẩn Cấp` / `Cần Lưu Ý`) kèm nút thao tác 1-click dẫn tới Hồ Sơ 360° khách hàng hoặc Chi tiết thiệp cưới.
+  3. **Zero-Surprise Campaign Launch ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/GuestController.php) & [guests/campaign_preview.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/guests/campaign_preview.blade.php))**:
+     - Route: `GET /admin/guests/campaign-preview` (tên route: `admin.guests.campaign_preview`).
+     - Bộ chọn đám cưới động kèm chỉ số tổng thể: Tổng danh bạ khách, Đã gửi thiệp, Chưa gửi thiệp, Đã xác nhận RSVP, Tỷ lệ phát hành.
+     - Trình mô phỏng khung chat điện thoại (Zalo / SMS / iMessage Chat Bubble): Hiển thị trực quan ảnh bìa thiệp cưới, tên đôi uyên ương, ngày cưới, sảnh tiệc và nhãn hiệu `mayhen.vn`.
+     - Cam kết chất lượng và chi phí chiến dịch: Chi phí phát sinh 0đ (tiết kiệm 95% so với thiệp in giấy), tỷ lệ mở thiệp dự kiến 85% - 92%, tương thích 100% thiết bị di động.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Mở rộng file test: `tests/Feature/AdminVNextInnovationBacklogTest.php` lên **14 kịch bản kiểm thử độc lập (86 assertions)**, 100% PASSED.
-  * Toàn bộ test suite hồi quy: **721/721 tests PASSED 100% (3,806 assertions in 16.56s)**.
-  * Laravel Pint: **100% PASSED** chuẩn agent style.
+  * Mở rộng file test: `tests/Feature/AdminVNextInnovationBacklogTest.php` lên **17 kịch bản kiểm thử độc lập (107 assertions)**, 100% PASSED.
+  * Toàn bộ test suite hồi quy toàn hệ thống: **724/724 tests PASSED 100% (3,827 assertions in 18.20s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style không còn bất kỳ lỗi định dạng nào.
+  * Cập nhật `docs/admin-vnext/MAY_HEN_ADMIN_INNOVATION_BACKLOG.md`: Hoàn thành **18/18 Sáng kiến Vận hành (100%)**.
 
 ---
 

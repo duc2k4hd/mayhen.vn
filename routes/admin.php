@@ -87,10 +87,11 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/unlock', [AdminUserController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });
 
-    // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05 & Innovation #8 Rescue Mode)
+    // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05 & Innovation #8, #15)
     Route::prefix('guests')->name('guests.')->group(function () {
         Route::get('/', [AdminGuestController::class, 'index'])->name('index');
         Route::get('/rescue', [AdminGuestController::class, 'rescueDesk'])->name('rescue');
+        Route::get('/campaign-preview', [AdminGuestController::class, 'campaignPreview'])->name('campaign_preview');
         Route::get('/export-csv', [AdminGuestController::class, 'exportCsv'])->name('export');
         Route::post('/{id}/toggle-checkin', [AdminGuestController::class, 'toggleCheckIn'])->name('toggle_checkin');
         Route::post('/{id}/assign-table', [AdminGuestController::class, 'quickAssignTable'])->name('assign_table');
@@ -160,10 +161,11 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
     });
 
-    // Trung Tâm Trí Tuệ Vận Hành & Radar (Wave 08 - ADM-A20, A21, A22)
+    // Trung Tâm Trí Tuệ Vận Hành & Radar (Wave 08 - ADM-A20, A21, A22 & Innovation #13)
     Route::prefix('intelligence')->name('intelligence.')->group(function () {
         Route::get('/radar', [AdminIntelligenceController::class, 'readinessRadar'])->name('radar');
         Route::get('/inbox', [AdminIntelligenceController::class, 'actionInbox'])->name('inbox');
         Route::get('/reconciliation', [AdminIntelligenceController::class, 'reconciliationDetective'])->name('reconciliation');
+        Route::get('/delight-recovery', [AdminIntelligenceController::class, 'delightRecovery'])->name('delight_recovery');
     });
 });

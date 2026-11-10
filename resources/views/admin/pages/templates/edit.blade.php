@@ -177,6 +177,65 @@
 
         <!-- Right: Schema Validator Inspector Card -->
         <div class="mayhen_admin_schema_card">
+            <!-- Template Visual DNA Inspector (Innovation #10) -->
+            @if(isset($visualDna))
+                <div class="mayhen_admin_card" style="margin-bottom: 20px; background: #FFFDF9; border-left: 4px solid var(--mh-admin-gold); padding: 18px 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.25rem;">🧬</span>
+                                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
+                                    Template Visual DNA (Art Direction Audit)
+                                </h3>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                                Dấu vết thiết kế nguyên bản & độ hòa hợp nhận diện thương hiệu Quiet Luxury
+                            </div>
+                        </div>
+                        <span class="mayhen_admin_badge {{ $visualDna['brand_harmony'] >= 80 ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_warning' }}">
+                            {{ $visualDna['brand_harmony'] }}/100 Harmony
+                        </span>
+                    </div>
+
+                    <!-- DNA Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div style="background: rgba(255,255,255,0.7); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle);">
+                            <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--mh-admin-muted); font-weight: 600;">Font Tiêu Đề (Editorial Serif)</div>
+                            <div style="font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-charcoal); font-family: 'Playfair Display', serif; margin-top: 2px;">
+                                {{ $visualDna['heading_font'] }}
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(255,255,255,0.7); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle);">
+                            <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--mh-admin-muted); font-weight: 600;">Font Nội Dung (Modern Sans)</div>
+                            <div style="font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 2px;">
+                                {{ $visualDna['body_font'] }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Swatches Palette -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: var(--mh-admin-charcoal); margin-bottom: 6px;">
+                            Bảng Màu Tông Sắc Nhận Diện: <span style="font-weight: 400; color: var(--mh-admin-muted);">{{ $visualDna['theme'] }}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            @foreach($visualDna['palette'] as $hex)
+                                <div style="display: flex; align-items: center; gap: 6px; background: #fff; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                                    <span style="width: 14px; height: 14px; border-radius: 3px; background-color: {{ $hex }}; border: 1px solid rgba(0,0,0,0.1); display: inline-block;"></span>
+                                    <code style="font-size: 0.6875rem;">{{ $hex }}</code>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); display: flex; gap: 14px; flex-wrap: wrap; border-top: 1px dashed var(--mh-admin-border); padding-top: 10px;">
+                        <span>Viền & Khung: <strong>{{ $visualDna['has_border'] ? 'Có đường viền nghệ thuật' : 'Không viền' }}</strong></span>
+                        <span>Texture Giấy: <strong>{{ $visualDna['has_paper_texture'] ? 'Có chất liệu mỹ thuật' : 'Phẳng tối giản' }}</strong></span>
+                    </div>
+                </div>
+            @endif
+
             <!-- Status Banner -->
             <div class="mayhen_admin_schema_status_banner {{ $isCanonicalValid ? 'valid' : 'invalid' }}">
                 @if ($isCanonicalValid)
