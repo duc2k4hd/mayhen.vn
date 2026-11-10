@@ -278,7 +278,7 @@ class CuratedInvitationController extends Controller
     }
 
     /**
-     * Phối lại ngẫu nhiên toàn bộ bố cục 7 section - BẢO TOÀN MÀU SẮC & PHONG CÁCH.
+     * Chuyển đổi sang mẫu gốc khác trong cùng phong cách - BẢO TOÀN MÀU SẮC & PHONG CÁCH (Master Prompt V3).
      */
     public function remix(Request $request, int $invitationId): JsonResponse
     {
@@ -291,18 +291,28 @@ class CuratedInvitationController extends Controller
 
         $style = $config['style'] ?? 'romantic';
         $palette = $config['color_theme'] ?? 'ruby';
+        $currentSlug = $invitation->template->slug ?? ($config['source_template_slug'] ?? 'giua-muon-ngan-vi-sao');
 
-        // Phối lại ngẫu nhiên toàn bộ 7 section bố cục (bảo toàn bảng màu và phong cách)
+        // Chọn mẫu gốc khác trong cùng phong cách
+        $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug);
+
+        // Bảo toàn dữ liệu 7 section
         $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
 
         $config['curated_layout'] = $curatedLayout;
+        $config['source_template_slug'] = $newTemplate->slug;
+        $config['color_theme'] = $palette;
+
+        $invitation->template_id = $newTemplate->id;
         $invitation->custom_config = $config;
         $invitation->revision_id = (int) $invitation->revision_id + 1;
         $invitation->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'AI đã phối lại bố cục thiết kế mới thành công!',
+            'message' => 'Đã chuyển sang mẫu tuyển chọn ['.$newTemplate->name.'] thành công!',
+            'template_name' => $newTemplate->name,
+            'template_slug' => $newTemplate->slug,
             'layout' => $curatedLayout,
             'revision_id' => $invitation->revision_id,
         ]);

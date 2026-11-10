@@ -28,11 +28,11 @@
     }
     window.__MAYHEN_CRAFTING_BOOTED = true;
 
-    // CẤU HÌNH NHỊP ĐỘ DỆT THIỆP CHUẨN MỰC (40S - 1 PHÚT)
-    const TARGET_TOTAL_DURATION_MS = Math.floor(Math.random() * 40001) + 40000; // Random từ 40s - 80s
-    const MIN_STEP_DELAY_MS = 1450;        // Nhịp bước tối thiểu 1.45s
-    const MAX_STEP_DELAY_MS = 2500;        // Nhịp bước tối đa 2.5s
-    const SWEEP_ANIMATION_MS = 1100;       // Thời gian vệt sáng hoàng gia lướt qua phần tử (1.1s)
+    // CẤU HÌNH NHỊP ĐỘ DỆT THIỆP CHUẨN MỰC (16S - 20S THEO MASTER PROMPT V3)
+    const TARGET_TOTAL_DURATION_MS = 18000; // Tổng thời gian ~18 giây, gãy gọn, tinh tế
+    const MIN_STEP_DELAY_MS = 850;         // Nhịp bước tối thiểu 0.85s
+    const MAX_STEP_DELAY_MS = 1250;        // Nhịp bước tối đa 1.25s
+    const SWEEP_ANIMATION_MS = 650;        // Thời gian vệt sáng hoàng gia lướt qua phần tử (0.65s)
 
     const liftCurtain = () => {
         const curtain = document.getElementById('mayhenCraftingCurtain');
@@ -79,6 +79,7 @@
         /* 1. KHÓA TRIỆT ĐỂ CÁC SECTION CHƯA TẠO: TUYỆT ĐỐI KHÔNG HIỂN THỊ TRƯỚC */
         html.mayhen_is_crafting .mayhen_crafting_section_waiting,
         body.mayhen_is_crafting .mayhen_crafting_section_waiting {
+            display: none !important;
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
@@ -86,10 +87,10 @@
             overflow: hidden !important;
             margin: 0 !important;
             padding: 0 !important;
-            transition: opacity 0.5s ease;
         }
         html.mayhen_is_crafting .mayhen_crafting_section_active,
         body.mayhen_is_crafting .mayhen_crafting_section_active {
+            display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: auto !important;
@@ -97,34 +98,35 @@
             overflow: visible !important;
         }
 
-        /* 2. KHÓA ẨN CÁC PHẦN TỬ CON CHƯA TỚI LƯỢT DỆT */
+        /* 2. KHÓA ẨN CÁC PHẦN TỬ CON CHƯA TỚI LƯỢT DỆT (DÙNG INSET CHÍNH XÁC 100%) */
         .mayhen_crafting_unit {
             position: relative;
-            will-change: clip-path, opacity, transform;
+            will-change: clip-path, opacity;
         }
         .mayhen_crafting_unit.mayhen_is_hidden {
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
-            clip-path: polygon(0 0, 0 0, 0 100%, 0 100%) !important;
+            clip-path: inset(0 100% 0 0) !important;
         }
 
-        /* 3. HIỆU ỨNG VỆT SÁNG QUÉT TỚI ĐÂU, PHẦN TỬ LỘ RA CHẬM RÃI VÀ DỊU ÊM ĐẾN ĐÓ (1.1s) */
+        /* 3. HIỆU ỨNG VỆT SÁNG QUÉT TỚI ĐÂU, PHẦN TỬ LỘ RA TỚI ĐÓ (0.65s ĐỒNG BỘ 100%) */
         .mayhen_crafting_unit.mayhen_is_sweeping {
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: auto !important;
-            animation: mayhenSweepReveal 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+            animation: mayhenSweepReveal 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
         }
         @keyframes mayhenSweepReveal {
             0% {
-                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-                transform: translateY(6px);
+                clip-path: inset(0 100% 0 0);
                 opacity: 0.15;
             }
+            15% {
+                opacity: 1;
+            }
             100% {
-                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-                transform: translateY(0);
+                clip-path: inset(0 0% 0 0);
                 opacity: 1;
             }
         }
@@ -135,30 +137,30 @@
             clip-path: none !important;
             pointer-events: auto !important;
             transform: none !important;
-            transition: opacity 0.35s ease, transform 0.35s ease;
+            transition: opacity 0.25s ease;
         }
 
-        /* 4. VỆT SÁNG HOÀNG GIA LỘNG LẪY (ROYAL GOLD SHIMMER BEAM 1.1s) */
+        /* 4. VỆT SÁNG HOÀNG GIA LỘNG LẪY (ROYAL 24K GOLD SHIMMER BEAM 0.65s) */
         .mayhen_crafting_shimmer_beam {
             position: absolute;
-            top: -20%;
-            left: -20%;
-            width: 95px;
-            height: 140%;
+            top: -25%;
+            left: -40px;
+            width: 80px;
+            height: 150%;
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(207, 168, 96, 0.15) 15%, 
+                rgba(207, 168, 96, 0.2) 15%, 
                 rgba(255, 235, 175, 0.95) 45%, 
-                #FFFFFF 58%, 
-                rgba(255, 235, 175, 0.95) 70%, 
-                rgba(207, 168, 96, 0.3) 85%, 
+                #FFFFFF 55%, 
+                rgba(255, 225, 140, 0.95) 65%, 
+                rgba(207, 168, 96, 0.35) 85%, 
                 transparent 100%
             );
-            box-shadow: 0 0 18px #FFFFFF, 0 0 36px rgba(255, 225, 140, 0.95), 0 0 65px rgba(207, 168, 96, 0.75), 0 0 95px rgba(207, 168, 96, 0.35);
-            transform: skewX(-20deg);
+            box-shadow: 0 0 16px #FFFFFF, 0 0 32px rgba(255, 224, 130, 0.95), 0 0 55px rgba(212, 175, 55, 0.75), 0 0 85px rgba(197, 160, 89, 0.35);
+            transform: skewX(-18deg);
             pointer-events: none;
             z-index: 999;
-            animation: mayhenBeamTrack 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: mayhenBeamTrack 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         .mayhen_crafting_shimmer_beam::after {
             content: '✦';
@@ -167,14 +169,14 @@
             left: 55%;
             transform: translate(-50%, -50%);
             color: #FFFDF9;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1;
-            text-shadow: 0 0 8px #FFFFFF, 0 0 18px #FFE29F;
-            opacity: 0.95;
+            text-shadow: 0 0 8px #FFFFFF, 0 0 18px #FFE082, 0 0 25px #FFD700;
+            opacity: 1;
         }
         @keyframes mayhenBeamTrack {
             0% {
-                left: -20%;
+                left: -40px;
                 opacity: 0;
             }
             15% {
@@ -184,7 +186,7 @@
                 opacity: 1;
             }
             100% {
-                left: 108%;
+                left: calc(100% - 10px);
                 opacity: 0;
             }
         }
@@ -336,7 +338,7 @@
 
             // Chờ chuyển động cuộn mượt hoàn tất và màn hình đứng yên hoàn toàn theo cự ly cuộn
             const scrollDistance = Math.abs(targetScrollY - currentScrollY);
-            const scrollDelay = Math.min(850, Math.max(450, Math.round(scrollDistance * 0.35)));
+            const scrollDelay = Math.min(380, Math.max(180, Math.round(scrollDistance * 0.18)));
             setTimeout(resolve, scrollDelay);
         });
     };
@@ -353,6 +355,7 @@
         sectionContainers.forEach((sec) => {
             sec.classList.remove('mayhen_crafting_section_waiting');
             sec.classList.add('mayhen_crafting_section_active');
+            sec.style.setProperty('display', 'block', 'important');
             sec.style.setProperty('opacity', '1', 'important');
             sec.style.setProperty('visibility', 'visible', 'important');
             sec.style.setProperty('max-height', 'none', 'important');
@@ -372,10 +375,12 @@
         });
 
         // 3. Bảo vệ toàn diện: cưỡng chế hiển thị 100% tất cả thẻ reveal trong trang
-        document.querySelectorAll('.mayhen_invitation_reveal, [class*="mayhen_invitation_reveal"]').forEach((el) => {
+        document.querySelectorAll('.mayhen_invitation_reveal, [class*="mayhen_invitation_reveal"], .mayhen_invitation_section, [data-mayhen-section]').forEach((el) => {
             el.classList.add('mayhen_invitation_visible');
+            el.style.setProperty('display', 'block', 'important');
             el.style.setProperty('opacity', '1', 'important');
             el.style.setProperty('visibility', 'visible', 'important');
+            el.style.setProperty('clip-path', 'none', 'important');
             el.style.setProperty('transform', 'none', 'important');
         });
 
@@ -400,7 +405,7 @@
             });
             document.body.classList.remove('mayhen_is_crafting');
             document.documentElement.classList.remove('mayhen_is_crafting');
-        }, 1200);
+        }, 800);
     };
 
     const revealNextUnit = async () => {
@@ -414,73 +419,82 @@
         const unit = collectedUnits[currentIndex];
         const el = unit.element;
 
-        // 1. Mở section cha nếu chưa mở (Section Staging: tạo tới đâu mới mở tới đó)
-        if (unit.containerEl && unit.containerEl.classList.contains('mayhen_crafting_section_waiting')) {
-            unit.containerEl.classList.remove('mayhen_crafting_section_waiting');
-            unit.containerEl.classList.add('mayhen_crafting_section_active');
-            unit.containerEl.style.setProperty('opacity', '1', 'important');
-            unit.containerEl.style.setProperty('visibility', 'visible', 'important');
-            unit.containerEl.style.setProperty('max-height', 'none', 'important');
+        try {
+            // 1. Mở section cha nếu chưa mở (Section Staging: tạo tới đâu mới mở tới đó)
+            if (unit.containerEl && (unit.containerEl.classList.contains('mayhen_crafting_section_waiting') || unit.containerEl.style.display === 'none')) {
+                unit.containerEl.classList.remove('mayhen_crafting_section_waiting');
+                unit.containerEl.classList.add('mayhen_crafting_section_active');
+                unit.containerEl.style.setProperty('display', 'block', 'important');
+                unit.containerEl.style.setProperty('opacity', '1', 'important');
+                unit.containerEl.style.setProperty('visibility', 'visible', 'important');
+                unit.containerEl.style.setProperty('max-height', 'none', 'important');
+            }
+
+            // 2. GIAI ĐOẠN 1: GỬI TIẾN TRÌNH CHO TOPBAR & CUỘN MÀN HÌNH ĐẾN ĐÚNG ĐIỂM TRƯỚC
+            const percent = Math.min(100, Math.round(((currentIndex + 1) / collectedUnits.length) * 100));
+            window.parent?.postMessage({
+                type: 'MAYHEN_CRAFTING_STEP',
+                section: unit.sectionKey,
+                sectionTitle: unit.sectionTitle,
+                detailTitle: unit.label,
+                step: currentIndex + 1,
+                total: collectedUnits.length,
+                percent: percent,
+            }, '*');
+
+            // Cuộn màn hình đến đúng vị trí và ĐỢI MÀN HÌNH DỪNG YÊN
+            await scrollToElementBeforeCrafting(el);
+
+            if (isCompleted) return;
+
+            // 3. GIAI ĐOẠN 2: BẮT ĐẦU DỆT KHI MÀN HÌNH ĐÃ ĐỨNG YÊN HOÀN TOÀN
+            el.classList.remove('mayhen_is_hidden');
+            el.classList.add('mayhen_is_sweeping');
+
+            // Tạo vệt sáng hoàng gia (Beam) lướt đồng bộ cùng clip-path (Có phòng vệ void element)
+            const beam = document.createElement('div');
+            beam.className = 'mayhen_crafting_shimmer_beam';
+            attachBeamSafely(el, beam);
+
+            // Đợi vệt sáng quét xong (SWEEP_ANIMATION_MS = 650ms)
+            await new Promise((res) => setTimeout(res, SWEEP_ANIMATION_MS));
+
+            if (isCompleted) return;
+
+            // Cố định trạng thái hiển thị hoàn mỹ của phần tử vừa dệt
+            el.classList.remove('mayhen_is_sweeping');
+            el.classList.add('mayhen_is_revealed', 'mayhen_invitation_visible');
+            el.style.setProperty('clip-path', 'none', 'important');
+            el.style.setProperty('transform', 'none', 'important');
+            if (beam.parentNode) beam.remove();
+
+            // 4. GIAI ĐOẠN 3: NHỊP NGHỈ CHIÊM NGƯỠNG (ATELIER SAVOR PAUSE)
+            await new Promise((res) => setTimeout(res, 200));
+
+            if (isCompleted) return;
+
+            currentIndex++;
+            revealNextUnit();
+        } catch (err) {
+            console.warn('[MayHen Crafting] Error in step, triggering fail-safe:', err);
+            revealAllInstantly();
         }
-
-        // 2. GIAI ĐOẠN 1: GỬI TIẾN TRÌNH CHO TOPBAR & CUỘN MÀN HÌNH ĐẾN ĐÚNG ĐIỂM TRƯỚC
-        const percent = Math.min(100, Math.round(((currentIndex + 1) / collectedUnits.length) * 100));
-        window.parent?.postMessage({
-            type: 'MAYHEN_CRAFTING_STEP',
-            section: unit.sectionKey,
-            sectionTitle: unit.sectionTitle,
-            detailTitle: unit.label,
-            step: currentIndex + 1,
-            total: collectedUnits.length,
-            percent: percent,
-        }, '*');
-
-        // Cuộn màn hình đến đúng vị trí và ĐỢI MÀN HÌNH DỪNG YÊN HOÀN TOÀN
-        await scrollToElementBeforeCrafting(el);
-
-        // Kiểm tra an toàn: nếu người dùng bấm Skip trong lúc đang cuộn, dừng ngay
-        if (isCompleted) return;
-
-        // 3. GIAI ĐOẠN 2: BẮT ĐẦU DỆT KHI MÀN HÌNH ĐÃ ĐỨNG YÊN HOÀN TOÀN
-        // Kích hoạt vệt sáng hoàng gia quét chậm rãi 1.1s trên phần tử tĩnh
-        el.classList.remove('mayhen_is_hidden');
-        el.classList.add('mayhen_is_sweeping');
-
-        // Tạo vệt sáng hoàng gia (Beam) lướt đồng bộ cùng clip-path (Có phòng vệ void element)
-        const beam = document.createElement('div');
-        beam.className = 'mayhen_crafting_shimmer_beam';
-        attachBeamSafely(el, beam);
-
-        // Đợi vệt sáng quét xong (SWEEP_ANIMATION_MS = 1100ms)
-        await new Promise((res) => setTimeout(res, SWEEP_ANIMATION_MS));
-
-        if (isCompleted) return;
-
-        // Cố định trạng thái hiển thị hoàn mỹ của phần tử vừa dệt
-        el.classList.remove('mayhen_is_sweeping');
-        el.classList.add('mayhen_is_revealed', 'mayhen_invitation_visible');
-        el.style.setProperty('clip-path', 'none', 'important');
-        el.style.setProperty('transform', 'none', 'important');
-        if (beam.parentNode) beam.remove();
-
-        // 4. GIAI ĐOẠN 3: NHỊP NGHỈ CHIÊM NGƯỠNG (ATELIER SAVOR PAUSE)
-        // Dừng yên tĩnh 400ms - 600ms để người xem đọc nội dung, nhìn ngắm tên và câu chữ
-        const savorPause = Math.max(380, Math.min(650, calculatedStepDelay - 1500));
-        await new Promise((res) => setTimeout(res, savorPause));
-
-        if (isCompleted) return;
-
-        currentIndex++;
-
-        // Chuyển sang phần tử tiếp theo
-        revealNextUnit();
     };
 
-    // Lắng nghe lệnh Skip và Replay từ Preview Studio
+    // Lắng nghe lệnh Skip, Replay và Scroll to Section từ Preview Studio
     window.addEventListener('message', (e) => {
         if (!e.data || typeof e.data !== 'object') return;
         if (e.data.type === 'MAYHEN_CRAFTING_SKIP') {
             revealAllInstantly();
+        }
+        if (e.data.type === 'MAYHEN_SCROLL_TO_SECTION') {
+            const sec = e.data.section;
+            const rule = SECTION_RULES.find((r) => r.key === sec);
+            const targetEl = document.querySelector(`[data-curated-section="${sec}"]`)
+                || (rule ? document.querySelector(rule.container) : null);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         if (e.data.type === 'MAYHEN_REPLAY_CRAFTING') {
             isCompleted = false;
@@ -664,8 +678,7 @@
             return;
         }
 
-        // TÍNH TOÁN NHỊP BƯỚC THÔNG MINH CHO TỔNG THỜI GIAN 40S - 1 PHÚT:
-        // Đảm bảo dù bất kỳ mẫu thiệp nào, tổng thời gian dệt thiệp luôn rơi vào khoảng ~45-50 giây
+        // TÍNH TOÁN NHỊP BƯỚC THÔNG MINH CHO TỔNG THỜI GIAN 16S - 20S (MASTER PROMPT V3)
         calculatedStepDelay = Math.max(
             MIN_STEP_DELAY_MS,
             Math.min(MAX_STEP_DELAY_MS, Math.round(TARGET_TOTAL_DURATION_MS / collectedUnits.length))
@@ -700,8 +713,16 @@
         // Bóc rèm Atelier nhẹ nhàng (220ms)
         liftCurtain();
 
-        // Khởi động dệt với nhịp nghỉ tao nhã ban đầu (450ms)
-        setTimeout(revealNextUnit, 450);
+        // Fail-safe Watchdog Timer: Sau tối đa 25s nếu chưa xong, tự động giải phóng 100% không bao giờ để thiệp bị trắng
+        setTimeout(() => {
+            if (!isCompleted) {
+                console.info('[MayHen Crafting] Watchdog timer triggered - revealing full invitation.');
+                revealAllInstantly();
+            }
+        }, 25000);
+
+        // Khởi động dệt với nhịp nghỉ tao nhã ban đầu (350ms)
+        setTimeout(revealNextUnit, 350);
     };
 
     if (document.readyState === 'loading') {

@@ -116,36 +116,37 @@
     {{-- KHÔNG GIAN LÀM VIỆC CHÍNH (STUDIO WORKSPACE) --}}
     <main class="mayhen_curated_workspace">
         
-        {{-- BẢNG ĐIỀU KHIỂN BIẾN THỂ 7 SECTION (SIDEBAR CONTROLLER) --}}
+        {{-- BẢNG THÔNG TIN MẪU THIỆP TUYỂN CHỌN (SIDEBAR PANEL) --}}
         <aside class="mayhen_curated_variants_sidebar" id="variantsSidebar">
             <div class="sidebar_header">
                 <div class="sidebar_header_top">
-                    <span class="sidebar_kicker">AI GỢI Ý THIẾT KẾ</span>
+                    <span class="sidebar_kicker">MÂY HẸN ATELIER &bull; NATIVE TEMPLATE</span>
                     <button type="button" class="sidebar_close_btn" id="btnCloseSidebarDrawer" aria-label="Đóng bảng tùy biến">&times;</button>
                 </div>
                 <h2 class="sidebar_title">Tùy Chỉnh Bố Cục Từng Mục</h2>
-                <p class="sidebar_desc">Khám phá các phong cách thiết kế độc bản do AI gợi ý cho từng khoảnh khắc</p>
+                <p class="sidebar_desc">Tác phẩm thiệp cưới nguyên bản được cá nhân hoá từ bộ sưu tập cao cấp của Mây Hẹn</p>
+            </div>
+
+            {{-- THẺ MẪU NGUỒN NGUYÊN BẢN --}}
+            <div class="sidebar_template_badge_box" style="margin: 0 1.25rem 1.25rem; padding: 1.15rem; background: rgba(197, 168, 128, 0.08); border: 1px solid rgba(197, 168, 128, 0.35); border-radius: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+                    <span style="font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #9C7A4A; font-weight: 600;">✦ Mẫu Nguồn Nguyên Bản</span>
+                    <span style="font-size: 0.72rem; padding: 2px 8px; background: rgba(197, 168, 128, 0.2); border-radius: 999px; color: #5C4326; font-weight: 500;">7 Section</span>
+                </div>
+                <h3 class="template_source_name" id="templateSourceName" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; color: #1F1D1A; margin: 0 0 0.35rem 0; font-weight: 600;">
+                    {{ $template->name }}
+                </h3>
+                <p style="font-size: 0.8rem; color: #7A726A; margin: 0 0 0.85rem 0; line-height: 1.45;">
+                    Phong cách <strong>{{ $styles[$currentStyle]['name'] ?? 'Lãng Mạn' }}</strong> kết hợp bảng màu <strong>{{ $palettes[$currentPalette]['short_name'] ?? 'Đỏ Ruby' }}</strong>.
+                </p>
+                <button type="button" class="btn_remix_sidebar" id="btnRemixSidebar" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: #1F1D1A; color: #FFFDF9; border: none; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    <span>Đổi Sang Mẫu Khác Cùng Gu</span>
+                </button>
             </div>
 
             <div class="sidebar_sections_list">
-                @php
-                    $curatedSections = $curatedLayout['sections'] ?? [
-                        'hero' => 'variant_a',
-                        'story' => 'variant_a',
-                        'parents' => 'variant_a',
-                        'countdown' => 'variant_a',
-                        'events' => 'variant_a',
-                        'timeline' => 'variant_a',
-                        'album' => 'variant_a',
-                    ];
-                @endphp
-
                 @foreach($sectionDefinitions as $secKey => $secDef)
-                    @php
-                        $activeVariant = $curatedSections[$secKey] ?? 'variant_a';
-                        $variantData = $secDef['variants'][$activeVariant] ?? null;
-                        $variantName = is_array($variantData) ? ($variantData['name'] ?? 'Kiểu Mặc Định') : ($variantData ?? 'Kiểu Mặc Định');
-                    @endphp
                     <div class="section_ctrl_card" data-section="{{ $secKey }}">
                         <div class="section_ctrl_head">
                             <span class="section_ctrl_num">#0{{ $loop->iteration }}</span>
@@ -153,20 +154,11 @@
                         </div>
 
                         <div class="section_ctrl_body">
-                            <div class="section_ctrl_variant_info">
-                                <span class="variant_badge">Biến thể</span>
-                                <span class="section_ctrl_variant_label" id="label-{{ $secKey }}">
-                                    {{ $variantName }}
+                            <div class="section_ctrl_variant_info" style="width: 100%;">
+                                <span class="variant_badge" style="background: rgba(35, 54, 40, 0.08); color: #233628;">Nguyên bản</span>
+                                <span class="section_ctrl_variant_label" id="label-{{ $secKey }}" style="color: #4A453E; font-size: 0.82rem;">
+                                    {{ $secDef['description'] ?? 'Thiết kế chuẩn mực theo mẫu gốc' }}
                                 </span>
-                            </div>
-
-                            <div class="section_ctrl_nav_btns">
-                                <button type="button" class="btn_variant_nav btn_prev" data-action="switch" data-section="{{ $secKey }}" data-direction="prev" title="Biến thể trước">
-                                    ‹
-                                </button>
-                                <button type="button" class="btn_variant_nav btn_next" data-action="switch" data-section="{{ $secKey }}" data-direction="next" title="Biến thể kế tiếp">
-                                    ›
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -177,7 +169,7 @@
                 <div class="sidebar_palette_lock">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="palette_lock_svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     <div class="palette_lock_text">
-                        <strong>Bảo toàn màu sắc:</strong> Tông màu <span class="palette_highlight">{{ $palettes[$currentPalette]['short_name'] ?? ($palettes[$currentPalette]['name'] ?? 'đã chọn') }}</span> được cố định bất biến khi đổi bố cục.
+                        <strong>Bảo toàn màu sắc:</strong> Tông màu <span class="palette_highlight">{{ $palettes[$currentPalette]['short_name'] ?? ($palettes[$currentPalette]['name'] ?? 'đã chọn') }}</span> được áp dụng đồng bộ trên toàn bộ thiệp.
                     </div>
                 </div>
             </div>
@@ -200,7 +192,7 @@
                     {{-- MÀN HÌNH CHÍNH (IFRAME) --}}
                     <div class="phone_screen">
                         <iframe 
-                            src="{{ route('invitation.show', array_filter(['slug' => $invitation->slug, 'crafting' => !empty($shouldAnimate) ? 1 : null, 'embed' => 1])) }}" 
+                            src="{{ route('invitation.show', array_filter(['slug' => $invitation->slug, 'crafting' => !empty($shouldAnimate) ? 1 : null, 'embed' => 1, 'palette' => $currentPalette])) }}" 
                             id="curatedPreviewIframe" 
                             class="curated_preview_iframe"
                             title="Thiệp Cưới Tự Phối {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}"

@@ -110,4 +110,3 @@ class InvitationTemplateRelease extends Model
         };
     }
 }
-

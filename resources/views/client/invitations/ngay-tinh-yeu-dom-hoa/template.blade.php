@@ -162,8 +162,10 @@
     ];
 
     // Xác định chế độ tinh tuyển 7 Section (Curated Seven)
-    $invConfig = $invitation->custom_config ?? [];
-    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
+    $invConfig = is_array($invitation->custom_config ?? null) 
+        ? $invitation->custom_config 
+        : (json_decode((string) ($invitation->custom_config ?? '{}'), true) ?? []);
+    $isCuratedSeven = ! empty($isCuratedSeven) || ! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']);
 
     // --- 9. ẢNH ---
     $heroPhotoUrl      = $resolveAsset('assets/images/hero-couple.webp',           $wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null));

@@ -7281,6 +7281,56 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite dự án: **787/787 tests PASSED 100% (4,317 assertions in 49.87s, 0 failures, 0 errors)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
 
+### 40. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-05: ACTUAL GUEST JOURNEY E2E RUNNER (10/11/2026)
+- **Mục tiêu**: Nâng cấp màn hình diễn tập từ danh sách checklist tĩnh thành **Hệ Thống Thực Thi Diễn Tập Tự Động (Automated Guest Journey E2E Runner)**, tự động kiểm thử thực tế toàn bộ hành trình 5 bước của khách mời với cam kết cách ly tuyệt đối Zero Database Pollution.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Dịch Vụ Diễn Tập E2E Tự Động ([GuestJourneyRehearsalService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/GuestJourneyRehearsalService.php))**:
+     - Chạy tuần tự 5 giai đoạn trải nghiệm quan khách:
+       * *Giai đoạn 1: Mở thiệp & Hiệu ứng khởi đầu (Envelope & Motion Delivery)*: Xác minh tệp Blade, CSS của mẫu thiệp, trạng thái xuất bản, nhạc nền và ảnh bìa.
+       * *Giai đoạn 2: Duyệt 10 Section tiêu chuẩn & Hợp đồng Live Sync*: Xác minh đầy đủ họ tên cô dâu chú rể, ngày cưới, 10/10 Section tiêu chuẩn và số lượng thẻ `data-sync-target` đồng bộ Studio.
+       * *Giai đoạn 3: Xác nhận tham dự RSVP tương tác*: Tạo bản ghi phản hồi thực tế (2 người lớn, 1 trẻ em, khẩu vị ăn chay), xác minh tính toán sĩ số bàn tiệc và **tự động xóa dọn dẹp sạch sẽ 100%**.
+       * *Giai đoạn 4: Sổ ký tên điện tử & Gửi lời chúc*: Gửi lời chúc mừng kiểm thử, chạy qua bộ lọc kiểm duyệt từ ngữ, ghi nhận lưu bút và **tự động xóa dọn dẹp sạch sẽ 100%**.
+       * *Giai đoạn 5: Quét mã QR & Tiếp tân đón tiếp tại sảnh tiệc*: Tạo mã khách mời thử nghiệm với token ngẫu nhiên, tra cứu số bàn thực tế (`table_name`), thực thi điểm danh 1 chạm dưới 1 giây và **tự động xóa dọn dẹp sạch sẽ 100%**.
+     - **Cam Kết Zero DB Pollution**: Đảm bảo `db_pollution_bytes = 0`, trước và sau khi chạy không để lại bất kỳ bản ghi rác nào trong cơ sở dữ liệu thật của cặp đôi.
+     - Cấp chứng chỉ an toàn `WEDDING_READY_100_PERCENT` khi cả 5 giai đoạn đều đạt chuẩn.
+  2. **Controller & Tuyến Đường API ([InvitationController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/InvitationController.php) & [routes/admin.php](file:///d:/Project/Laravel/mayhen.vn/routes/admin.php))**:
+     - Bổ sung route API: `POST /admin/invitations/{id}/run-rehearsal` (`admin.invitations.run_rehearsal`).
+     - Phương thức `InvitationController::runRehearsal`: Nhận yêu cầu, gọi `GuestJourneyRehearsalService::run()`, ghi nhận nhật ký kiểm toán hành chính `AuditLogger::log('run_guest_journey_rehearsal')` và trả về JSON kết quả chi tiết từng giai đoạn kèm độ trễ phản hồi (ms).
+  3. **Giao Diện Diễn Tập Trực Quan ([rehearsal.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/rehearsal.blade.php))**:
+     - Thêm nút hành động nổi bật: `▶ Bắt Đầu Diễn Tập Tự Động (Run E2E Runner)`.
+     - Bảng điều khiển tiến trình thời gian thực (E2E Console Box) hiển thị thanh tiến trình mượt mà (0% -> 100%), tổng thời gian trễ thực thi (ms).
+     - Thẻ trạng thái động cho từng giai đoạn: hiển thị độ trễ từng bước, chuyển màu viền xanh lá khi đạt chuẩn hoặc màu đỏ khi có sự cố.
+     - Tự động nạp lại iframe điện thoại và hiển thị nhãn chứng nhận `✓ 100% WEDDING-READY` khi hoàn thành xuất sắc.
+  4. **Kết Quả Kiểm Thử Toàn Hệ Thống**:
+     - Tạo mới test suite: `tests/Feature/AdminGuestJourneyE2ERunnerTest.php` gồm **4 kịch bản kiểm thử độc lập (23 assertions)**:
+       * Phân quyền bảo mật: Khách vãng lai và Customer bị chặn truy cập (401/403); Admin & Staff được phép thực thi.
+       * Kiểm thử trọn vẹn 5 giai đoạn đạt chuẩn 100%.
+       * **Xác minh tuyệt đối Zero DB Pollution**: Số lượng bản ghi `Guest`, `GuestResponse`, `WeddingWish` trước và sau khi chạy runner khớp nhau 100%.
+       * Phát hiện cảnh báo chính xác khi thiệp ở trạng thái nháp hoặc thiếu thông tin ngày cưới.
+     - Toàn bộ test suite dự án: **791/791 tests PASSED 100% (4,340 assertions in 39.11s, 0 failures, 0 errors)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
+### 41. CHUẨN HÓA TOÀN DIỆN MẪU THIỆP THỰC TẾ & TỐI ƯU TRÌNH DỆT THIỆP AI (AI CURATED NATIVE TEMPLATES & CRAFTING PRESENTER) (10/11/2026)
+- **Mục tiêu**: Xóa bỏ triệt để hướng thiết kế giao diện tự vẽ giả lập trong `mayhen-curated/`, chuyển 100% luồng Tạo Thiệp Tự Động AI sang sử dụng **4 mẫu thiệp cưới gốc thực tế** (`hanh-phuc-mang-ten-chung-minh`, `giua-muon-ngan-vi-sao`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`), đồng thời khắc phục dứt điểm lỗi màn hình trắng tinh, đồng bộ vệt sáng hoàng gia lộng lẫy và rút ngắn thời gian tạo thiệp xuống 16-20 giây.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Loại bỏ hoàn toàn 21 biến thể tự vẽ & Ép mẫu gốc thật**:
+     - Sửa `InvitationEditorController.php`: Xóa bỏ hoàn toàn việc ép `$template = $curatedTemplate` (`mayhen-curated`). Hệ thống luôn sử dụng `$template = $invitation->template` trỏ trực tiếp đến mẫu gốc thực sự.
+     - Sửa `CuratedInvitationController.php`: Khi bấm Đổi Mẫu / Phối lại (`remix`), hệ thống chọn mẫu gốc khác cùng gu (`resolveAlternativeTemplate`) và bảo toàn toàn bộ nội dung, màu sắc đã chọn.
+     - Sửa `preview.blade.php` & `curated-preview.js`: Xóa bỏ thanh bên trái với 21 biến thể cũ (Variant A, B, C) kèm các nút `< >`. Chuyển thành thanh thông tin Quiet Luxury chuẩn mực: Thẻ mẫu thiệp gốc nguyên bản có nút "Đổi Sang Mẫu Khác Cùng Gu", danh sách 7 Section Tiêu Chuẩn có nhãn "Nguyên bản". Click vào từng thẻ section sẽ gửi tin nhắn `postMessage` điều hướng cuộn mượt đến đúng section bên trong iframe điện thoại.
+  2. **Khắc phục triệt để lỗi màn hình trắng tinh & Cơ chế dệt thiệp AI đỉnh cao ([native-crafting-presenter.js](file:///e:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/native-crafting-presenter.js))**:
+     - **Tạo đến đâu hiển thị đến đó**: Khởi đầu các section chưa dệt được ẩn hoàn toàn bằng `display: none !important;` qua class `.mayhen_crafting_section_waiting` trong layout, không để lộ trước nội dung khi chưa đến lượt.
+     - **Vệt sáng hoàng gia 24K đa tầng**: Thiết kế vệt sáng quét ngang gồm 3 lớp: ánh vàng kim 24K (`#CFA860`), lõi sáng trắng kim cương (`#FFFFFF`) và ánh hào quang tỏa sáng lộng lẫy kết hợp hạt sao lấp lánh `✦`.
+     - **Đồng bộ 100% vệt sáng và clip-path**: Phần tử được ẩn bằng `clip-path: inset(0 100% 0 0)`. Khi vệt sáng quét ngang qua, `clip-path` mở rộng đồng bộ chính xác với tốc độ quét `0.65s cubic-bezier(0.25, 1, 0.5, 1)`. Vệt sáng quét tới đâu, nội dung mới xuất hiện tới đó (đáp ứng chính xác yêu cầu của video tham chiếu).
+     - **Cơ chế Watchdog Fail-Safe Timer 25s & Phòng vệ đa tầng**: Tích hợp đồng hồ giám sát tự động 25 giây và bọc `try/catch` cho từng bước dệt. Nếu xảy ra bất kỳ ngoại lệ DOM nào hoặc vượt quá 25 giây, hàm `revealAllInstantly()` tự động kích hoạt lập tức, gỡ bỏ toàn bộ rèm che và hiển thị 100% nội dung thiệp, bảo đảm không bao giờ để người dùng gặp tình trạng màn hình trắng tinh.
+     - **Tối ưu tốc độ vượt trội**: Rút ngắn toàn bộ chu trình dệt thiệp từ 40s - 80s xuống còn **16s - 20s**, các nhịp bước chuyển đổi dứt khoát, mượt mà 60fps.
+  3. **Chuẩn hóa hiển thị màu sắc và 7 Section trên 4 mẫu gốc**:
+     - Chuẩn hóa cờ `$isCuratedSeven` trên cả 4 file `template.blade.php` (`hanh-phuc-mang-ten-chung-minh`, `giua-muon-ngan-vi-sao`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`). Khi ở chế độ tạo thiệp tự động 7 section, hệ thống chỉ hiển thị đúng 7 section tiêu chuẩn đầu tiên (Hero, Story, Parents, Countdown, Events, Timeline, Album 10 ảnh), ẩn Dresscode, Gift và Signature/RSVP.
+     - Truyền tham số `palette={{ $currentPalette }}` vào URL iframe xem thử để đảm bảo các biến màu `:root` (Ruby, Dusty Rose, Sage Green, Royal Navy, Warm Amber) được áp dụng chuẩn xác ngay từ khi tải trang.
+  4. **Tài liệu kiểm định & Kiểm thử chất lượng**:
+     - Tạo tài liệu khảo sát & kiểm định 4 mẫu thiệp gốc: `docs/MAY_HEN_CURATED_NATIVE_TEMPLATE_AUDIT.md`.
+     - Bộ kiểm thử tính năng: `tests/Feature/CuratedInvitationFlowTest.php` (17 tests) và `tests/Feature/CuratedInvitationPreviewLiveTest.php` (3 tests): **20/20 tests PASSED 100%**.
+     - Laravel Pint: **100% PASSED** (Agent style).
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

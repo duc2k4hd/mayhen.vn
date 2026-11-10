@@ -57,8 +57,10 @@
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
         : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
 
-    $invConfig = $invitation->custom_config ?? [];
-    $isCuratedSeven = isset($isCuratedSeven) ? (bool) $isCuratedSeven : (! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']));
+    $invConfig = is_array($invitation->custom_config ?? null) 
+        ? $invitation->custom_config 
+        : (json_decode((string) ($invitation->custom_config ?? '{}'), true) ?? []);
+    $isCuratedSeven = ! empty($isCuratedSeven) || ! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']);
 
     // 2. Song Thân Hai Họ & Địa Chỉ Tư Gia
     $groomFather = $data['groom_father'] ?? ($extraData['groom_father'] ?? ($wedding->groom_parents ?? 'Nguyễn Đắc Cường'));

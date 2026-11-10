@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\GuestJourneyRehearsalService;
 use App\Services\InvitationQualityPassportService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -250,6 +251,35 @@ class InvitationController extends Controller
             'wedding' => $invitation->wedding,
             'template' => $invitation->template,
             'rehearsalGuest' => $rehearsalGuest,
+        ]);
+    }
+
+    /**
+     * Chạy Diễn Tập Tự Động Toàn Diện E2E Runner (NXT-05).
+     */
+    public function runRehearsal(Request $request, int $id): JsonResponse
+    {
+        $invitation = Invitation::with(['wedding.tables', 'template'])->findOrFail($id);
+
+        $results = GuestJourneyRehearsalService::run($invitation, $request->user());
+
+        AuditLogger::log(
+            'run_guest_journey_rehearsal',
+            'Invitation',
+            $invitation->id,
+            "Thực thi diễn tập tự động E2E cho thiệp #{$invitation->id} ({$invitation->slug}). Kết quả: {$results['overall_status']} ({$results['stages_passed']}/5 bước đạt chuẩn)",
+            [
+                'invitation_id' => $invitation->id,
+                'overall_status' => $results['overall_status'],
+                'stages_passed' => $results['stages_passed'],
+                'total_latency_ms' => $results['total_latency_ms'],
+                'db_pollution_bytes' => $results['db_pollution_bytes'],
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'data' => $results,
         ]);
     }
 

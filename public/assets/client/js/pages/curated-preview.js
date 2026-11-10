@@ -218,129 +218,76 @@ document.addEventListener('DOMContentLoaded', () => {
             setVariantControlsLocked(true);
             startCraftingMode();
             const baseUrl = iframe.src.split('?')[0];
-            iframe.src = `${baseUrl}?crafting=1&embed=1&replay=${Date.now()}`;
+            iframe.src = `${baseUrl}?crafting=1&embed=1&palette=${currentPalette}&replay=${Date.now()}`;
         });
     }
 
-    // 2. Nút Phối lại toàn bộ bố cục (Remix All) — BẢO TOÀN MÀU SẮC BẤT BIẾN
-    const btnRemix = document.getElementById('btnRemixAll');
-    if (btnRemix && iframe) {
-        btnRemix.addEventListener('click', async () => {
-            if (btnRemix.disabled) return;
-            setVariantControlsLocked(true);
-            const originalText = btnRemix.innerHTML;
-            btnRemix.innerHTML = '<span>Đang phối...</span>';
+    // 2. Nút Đổi mẫu khác cùng gu (Remix Mẫu Nguồn) — BẢO TOÀN MÀU SẮC BẤT BIẾN
+    const handleRemix = async () => {
+        const btnRemix = document.getElementById('btnRemixAll');
+        const btnRemixSidebar = document.getElementById('btnRemixSidebar');
+        if (btnRemix?.disabled || btnRemixSidebar?.disabled) return;
 
-            try {
-                const response = await fetch(`/api/curated/remix/${invitationId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                });
+        setVariantControlsLocked(true);
+        const originalText = btnRemix ? btnRemix.innerHTML : '';
+        if (btnRemix) btnRemix.innerHTML = '<span>Đang đổi...</span>';
+        if (btnRemixSidebar) btnRemixSidebar.innerHTML = '<span>Đang tuyển chọn...</span>';
 
-                const data = await response.json();
-                if (data.success && data.layout) {
-                    // Cập nhật nhãn biến thể trong sidebar
-                    const sections = data.layout.sections || {};
-                    Object.keys(sections).forEach((secKey) => {
-                        const variantKey = sections[secKey];
-                        const labelEl = document.getElementById(`label-${secKey}`);
-                        if (labelEl && variantNames[secKey] && variantNames[secKey][variantKey]) {
-                            labelEl.textContent = variantNames[secKey][variantKey];
-                        }
-                    });
+        try {
+            const response = await fetch(`/api/curated/remix/${invitationId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
 
-                    // Tải lại iframe để hiển thị bố cục mới với hiệu ứng dựng thiệp toàn trang
-                    startCraftingMode();
-                    const baseUrl = iframe.src.split('?')[0];
-                    iframe.src = `${baseUrl}?crafting=1&embed=1&t=${Date.now()}`;
-                } else {
-                    alert(data.message || 'Có lỗi xảy ra khi phối lại bố cục.');
-                    setVariantControlsLocked(false);
+            const data = await response.json();
+            if (data.success) {
+                // Cập nhật tên mẫu nguồn trên sidebar
+                const nameEl = document.getElementById('templateSourceName');
+                if (nameEl && data.template_name) {
+                    nameEl.textContent = data.template_name;
                 }
-            } catch (err) {
-                console.error('Lỗi phối lại bố cục:', err);
-                alert('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+
+                // Tải lại iframe để hiển thị mẫu mới với hiệu ứng dựng thiệp
+                startCraftingMode();
+                const baseUrl = iframe.src.split('?')[0];
+                iframe.src = `${baseUrl}?crafting=1&embed=1&palette=${currentPalette}&t=${Date.now()}`;
+            } else {
+                alert(data.message || 'Có lỗi xảy ra khi đổi mẫu.');
                 setVariantControlsLocked(false);
-            } finally {
-                btnRemix.innerHTML = originalText;
             }
-        });
-    }
+        } catch (err) {
+            console.error('Lỗi đổi mẫu tuyển chọn:', err);
+            alert('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+            setVariantControlsLocked(false);
+        } finally {
+            if (btnRemix) btnRemix.innerHTML = originalText;
+            if (btnRemixSidebar) btnRemixSidebar.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><span>Đổi Sang Mẫu Khác Cùng Gu</span>';
+        }
+    };
 
-    // 3. Đổi riêng biến thể từng section: Cuộn đến đúng section đó, dệt lại phần đó, khóa các nút trong lúc dệt
-    document.querySelectorAll('.btn_variant_nav[data-action="switch"]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-            if (btn.disabled) return;
-            const section = btn.dataset.section;
-            const direction = btn.dataset.direction || 'next';
-            
-            // Khóa toàn bộ các nút điều khiển biến thể để tránh người dùng bấm đi bấm lại
-            setVariantControlsLocked(true);
+    const btnRemixAll = document.getElementById('btnRemixAll');
+    if (btnRemixAll) btnRemixAll.addEventListener('click', handleRemix);
 
-            // Bật pill trạng thái và highlight card section ở sidebar
-            if (craftingPill && craftingText) {
-                craftingPill.classList.add('is-active');
-                craftingPill.style.display = 'inline-flex';
-                craftingText.textContent = `✦ Đang dệt lại mục: ${sectionTitles[section] || section}...`;
-                if (progressBar) progressBar.style.width = '35%';
-                if (progressPct) progressPct.textContent = '35%';
-            }
-            document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
-            const targetCard = document.querySelector(`.section_ctrl_card[data-section="${section}"]`);
-            if (targetCard) targetCard.style.borderColor = 'var(--curated-gold)';
+    const btnRemixSidebar = document.getElementById('btnRemixSidebar');
+    if (btnRemixSidebar) btnRemixSidebar.addEventListener('click', handleRemix);
 
-            // Đổi nhãn nút bấm tạm thời để người dùng cảm nhận tương tác
-            const originalTitle = btn.getAttribute('title') || '';
-            btn.setAttribute('title', 'Đang cập nhật biến thể...');
-
-            try {
-                const response = await fetch('/api/curated/switch-variant', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        invitation_id: invitationId,
-                        section: section,
-                        direction: direction,
-                    }),
-                });
-
-                const data = await response.json();
-                if (data.success && data.layout) {
-                    const newVariant = data.layout.sections[section];
-                    const labelEl = document.getElementById(`label-${section}`);
-                    if (labelEl && variantNames[section] && variantNames[section][newVariant]) {
-                        labelEl.textContent = variantNames[section][newVariant];
-                    }
-
-                    // Tải lại iframe với chỉ thị recraft đúng section này: cuộn tới đó và dệt lại
-                    if (iframe) {
-                        const baseUrl = iframe.src.split('?')[0];
-                        iframe.src = `${baseUrl}?embed=1&recraft_section=${section}&t=${Date.now()}`;
-                    }
-
-                    // Bộ đếm phòng vệ an toàn 7s tự động nhả khóa nếu có sự cố mạng
-                    clearTimeout(window.__variantLockTimer);
-                    window.__variantLockTimer = setTimeout(() => {
-                        setVariantControlsLocked(false);
-                    }, 7000);
-                } else {
-                    alert(data.message || 'Không thể đổi biến thể mục này.');
-                    setVariantControlsLocked(false);
-                }
-            } catch (err) {
-                console.error('Lỗi đổi biến thể:', err);
-                alert('Có lỗi xảy ra khi đổi biến thể.');
-                setVariantControlsLocked(false);
-            } finally {
-                btn.setAttribute('title', originalTitle);
+    // 3. Chạm vào thẻ section ở sidebar: cuộn camera trong iframe đến section đó
+    document.querySelectorAll('.section_ctrl_card').forEach((card) => {
+        card.addEventListener('click', () => {
+            const sec = card.dataset.section;
+            if (sec && iframe) {
+                document.querySelectorAll('.section_ctrl_card').forEach(c => c.style.borderColor = '');
+                card.style.borderColor = 'var(--curated-gold)';
+                try {
+                    iframe.contentWindow?.postMessage({
+                        type: 'MAYHEN_SCROLL_TO_SECTION',
+                        section: sec
+                    }, '*');
+                } catch (e) {}
             }
         });
     });

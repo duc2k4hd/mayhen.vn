@@ -46,7 +46,7 @@
                 overflow-x: hidden !important;
                 background-color: #FAF8F5 !important;
             }
-            /* Chống FOUC: Khi đang nạp trang dệt, toàn bộ nội dung được ẩn tuyệt đối dưới rèm lụa */
+            /* Chống FOUC: Khi đang nạp trang dệt, toàn bộ nội dung được ẩn an toàn */
             html.mayhen_crafting_preparing body .mayhen_invitation_section,
             html.mayhen_crafting_preparing body .mayhen_invitation_hero_card,
             html.mayhen_crafting_preparing body [data-mayhen-section],
@@ -54,8 +54,10 @@
                 opacity: 0 !important;
                 visibility: hidden !important;
             }
-            /* Khóa triệt để các section chưa tạo: KHÔNG ĐƯỢC PHÉP HIỂN THỊ TRƯỚC */
-            html.mayhen_is_crafting .mayhen_crafting_section_waiting {
+            /* Khóa triệt để các section chưa tạo: TUYỆT ĐỐI KHÔNG HIỂN THỊ TRƯỚC */
+            html.mayhen_is_crafting .mayhen_crafting_section_waiting,
+            body.mayhen_is_crafting .mayhen_crafting_section_waiting {
+                display: none !important;
                 opacity: 0 !important;
                 visibility: hidden !important;
                 pointer-events: none !important;
@@ -64,7 +66,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            /* 2. RÈM LỤA ATELIER CANVAS BAN ĐẦU (SILK CURTAIN STATE - CHE TOÀN MÀN HÌNH CHỐNG FOUC) */
+            /* 2. RÈM LỤA ATELIER BAN ĐẦU (SILK CURTAIN CHỐNG FOUC NHẸ NHÀNG) */
             #mayhenCraftingCurtain {
                 position: fixed;
                 top: 0;
