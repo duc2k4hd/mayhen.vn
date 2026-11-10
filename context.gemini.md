@@ -6892,6 +6892,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **666/666 tests PASSED 100% (3,454 assertions in 13.57s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent format.
 
+### 27. HOÀN THIỆN WAVE 04 — TEMPLATES ENGINE & NATIVE CURATED GOVERNANCE
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản trị kho mẫu thiệp cưới (`ADM-A07`), kiểm định 10 Canonical Sections, phòng vệ 100% tài sản cục bộ (Local Assets Defense), hợp đồng Live Sync và bảo toàn nguyên lý AI Curated Native.
+- **Các thành phần đã triển khai**:
+  1. **Công cụ Thanh Tra Chất Lượng Kiến Trúc Mẫu Thiệp (`InvitationTemplateService::inspectTemplateIntegrity`)**:
+     - Thêm phương thức tĩnh `inspectTemplateIntegrity(string $slug): array` trong [InvitationTemplateService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/InvitationTemplateService.php#L1230) quét tự động toàn bộ source code của mẫu thiệp trên đĩa:
+       * **Files & Structure**: Xác minh sự tồn tại của `schema.json`, `template.blade.php`, `styles.css`, `script.js` và thư mục `assets/`.
+       * **10 Canonical Sections Checklist**: Kiểm tra đủ 10 phần tiêu chuẩn (`hero`, `story`, `parents`, `countdown_calendar`, `events`, `timeline`, `dresscode`, `album`, `gift`, `ending`) và chuẩn Album 10 ảnh (`wedding.extra_data.gallery`).
+       * **Contract Live Sync (`data-sync-target`)**: Regex quét tự động toàn bộ thuộc tính binding hai chiều trong `template.blade.php`, xác thực bắt buộc có trường thông tin cốt lõi (`groom_name`, `bride_name`).
+       * **Local Assets Defense**: Quét toàn bộ nội dung Blade, CSS và Schema để phát hiện các tên miền server ngoài (`ladicdn.com`, `builder.27biggroup.com`, `unsplash.com`, `iili.io`, `imgbb.com`...). Đảm bảo 100% asset được tải cục bộ trong thư mục `assets/` của mẫu.
+       * **Layout & BEM Prefix**: Xác minh có `@extends('client.layouts.invitation')` và tuân thủ tiền tố class `mayhen_invitation_*`.
+       * **Curated Parity**: Kiểm tra khả năng tương thích 7 section tiêu chuẩn cho chế độ hiển thị Curated Native (`curated_compatible`).
+       * **Chấm điểm QA tự động**: Tính điểm chất lượng từ 0 - 100% dựa trên 6 tiêu chí kiến trúc nghiêm ngặt.
+  2. **Giao Diện Bảng Thanh Tra Atelier Governance Inspector**:
+     - Nâng cấp [TemplateController.php@edit](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/TemplateController.php#L76) và view [templates/edit.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/templates/edit.blade.php#L178):
+       * Hiển thị điểm QA chất lượng (`Điểm QA: 100%`).
+       * Grid 4 huy hiệu tiêu chuẩn kiến trúc: `Live Sync Contract` (số lượng targets), `Local Assets Defense` (100% Cục bộ), `Layout Inheritance` (Layout Chung), `Curated Parity` (7 Phần Native).
+       * Danh mục 10 Canonical Sections trực quan với nhãn `✓ Đạt chuẩn` hoặc `✗ Còn thiếu`.
+  3. **Vận Hành Kho Mẫu Thiệp (Active, Featured, Tier & Discovery Scan)**:
+     - Cho phép quản lý cập nhật phân hạng gói (`tier`: Free, Plus, Pro), danh mục phong cách và bật/tắt kích hoạt/ghim nổi bật tức thì (hỗ trợ cả AJAX JSON và form standard).
+     - Tự động xóa cache mẫu thiệp (`InvitationTemplate::clearTemplateCaches`) và ghi nhận đầy đủ `AuditLogger` khi thay đổi cấu hình hoặc kích hoạt quét thư mục tự động (`scanDiscovery`).
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave04TemplatesGovernanceTest.php` với 5 kịch bản kiểm thử độc lập (41 assertions), 100% PASSED.
+  * Toàn bộ test suite: **671/671 tests PASSED 100% (3,495 assertions in 13.45s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

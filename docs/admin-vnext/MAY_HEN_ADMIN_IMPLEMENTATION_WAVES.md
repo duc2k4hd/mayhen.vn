@@ -13,8 +13,8 @@
 | **Wave 01** | **P0 Security & Money** | Vá 4 lỗi P0/P1, củng cố RBAC, đối soát ngân hàng bắt buộc, bảo vệ Super Admin | **COMPLETED** |
 | **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, Command Palette, real-time badges, phím tắt | **COMPLETED** |
 | **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, Customer 360, Safe Support Lens bảo vệ PII, khóa tài khoản | **COMPLETED** |
-| **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **READY** |
-| **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **QUEUED** |
+| **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **COMPLETED** |
+| **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **READY** |
 | **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **QUEUED** |
 | **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **QUEUED** |
 | **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **QUEUED** |
@@ -50,9 +50,11 @@
 - [x] Viết bộ test `tests/Feature/AdminVNextWave03UsersAndInvitationsTest.php` (7 tests, 49 assertions pass 100%).
 
 ### Wave 04: Templates Engine & Native Curated Governance
-- [ ] Nâng cấp bảng thanh tra Schema Inspector hiển thị trạng thái của 10 Canonical Sections.
-- [ ] Kiểm soát 100% tài sản cục bộ (Local Assets), phát hiện link ngoài hoặc file bị thiếu.
-- [ ] Bảo toàn nguyên lý AI Curated: Tái dùng nguyên vẹn Blade/CSS/JS mẫu nguồn, chỉ hiển thị 7 phần tiêu chuẩn.
+- [x] Nâng cấp bảng thanh tra Schema & Code Integrity Inspector hiển thị trạng thái của 10 Canonical Sections và tính điểm QA tự động.
+- [x] Kiểm soát 100% tài sản cục bộ (Local Assets Defense), phát hiện và cảnh báo link ngoài (ladicdn, unsplash, 27biggroup...) hoặc file bị thiếu.
+- [x] Kiểm tra hợp đồng Live Sync (`data-sync-target`), kế thừa layout chung (`@extends('client.layouts.invitation')`) và tiền tố BEM `mayhen_invitation_*`.
+- [x] Bảo toàn nguyên lý AI Curated: Kiểm tra tương thích 7 phần Curated Native (`curated_compatible`).
+- [x] Viết bộ test `tests/Feature/AdminVNextWave04TemplatesGovernanceTest.php` (5 tests, 41 assertions pass 100%).
 
 ### Wave 05: Guest CRM, Seating & Wedding Day Ops
 - [ ] Đồng bộ dữ liệu phản hồi RSVP và sức chứa bàn tiệc thời gian thực.

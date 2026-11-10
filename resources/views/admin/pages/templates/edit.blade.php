@@ -185,8 +185,8 @@
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                     </svg>
                     <div>
-                        <strong style="font-size: 0.875rem;">Đạt Chuển 10/10 Section Tiêu Chuẩn</strong><br>
-                        <span style="font-size: 0.75rem;">Schema hợp lệ tuyệt đối theo chuẩn Studio Mây Hẹn.</span>
+                        <strong style="font-size: 0.875rem;">Đạt Chuẩn 10/10 Section Tiêu Chuẩn (Điểm QA: {{ $audit['score'] ?? 100 }}%)</strong><br>
+                        <span style="font-size: 0.75rem;">Mẫu thiệp cưới tương thích hoàn hảo với Studio Tạo Thiệp & Admin.</span>
                     </div>
                 @else
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -195,14 +195,51 @@
                         <line x1="12" y1="16" x2="12.01" y2="16"></line>
                     </svg>
                     <div>
-                        <strong style="font-size: 0.875rem;">Chưa Đủ 10 Section Tiêu Chuẩn</strong><br>
+                        <strong style="font-size: 0.875rem;">Chưa Đủ 10 Section Tiêu Chuẩn (Điểm QA: {{ $audit['score'] ?? 0 }}%)</strong><br>
                         <span style="font-size: 0.75rem;">Cần bổ sung các section còn thiếu để hiển thị trơn tru.</span>
                     </div>
                 @endif
             </div>
 
+            <!-- Architectural Governance Badges (Wave 04) -->
+            <div style="padding: 14px 18px; border-bottom: 1px solid var(--mh-admin-border-subtle); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.75rem;">
+                <div style="padding: 8px 10px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                    <div style="font-weight: 700; color: var(--mh-admin-muted); margin-bottom: 2px;">Live Sync Contract</div>
+                    <strong style="color: #1B5E20;">{{ $audit['sync_count'] ?? 0 }} targets</strong> bound
+                    <span style="color: #7A756E;">({{ ($audit['has_essential_sync'] ?? false) ? 'Đủ tên đôi lứa' : 'Thiếu tên' }})</span>
+                </div>
+
+                <div style="padding: 8px 10px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                    <div style="font-weight: 700; color: var(--mh-admin-muted); margin-bottom: 2px;">Local Assets Defense</div>
+                    @if ($audit['is_local_assets_only'] ?? true)
+                        <strong style="color: #1B5E20;">100% Cục Bộ</strong>
+                        <span style="color: #7A756E;">({{ $audit['local_asset_count'] ?? 0 }} tệp)</span>
+                    @else
+                        <strong style="color: #C62828;">Phát hiện link ngoài</strong>
+                    @endif
+                </div>
+
+                <div style="padding: 8px 10px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                    <div style="font-weight: 700; color: var(--mh-admin-muted); margin-bottom: 2px;">Layout Inheritance</div>
+                    @if ($audit['extends_invitation'] ?? false)
+                        <strong style="color: #1B5E20;">Layout Chung (✓)</strong>
+                    @else
+                        <strong style="color: #C62828;">Chưa kế thừa layout</strong>
+                    @endif
+                </div>
+
+                <div style="padding: 8px 10px; background: #FAF8F5; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                    <div style="font-weight: 700; color: var(--mh-admin-muted); margin-bottom: 2px;">Curated Parity</div>
+                    @if ($audit['curated_compatible'] ?? false)
+                        <strong style="color: #1B5E20;">7 Phần Native (✓)</strong>
+                    @else
+                        <strong style="color: #F57F17;">Chưa đủ 7 phần</strong>
+                    @endif
+                </div>
+            </div>
+
             <!-- Schema Details -->
-            <div style="padding: 16px 20px; border-bottom: 1px solid var(--mh-admin-border-subtle); font-size: 0.75rem; color: #7A756E;">
+            <div style="padding: 12px 18px; border-bottom: 1px solid var(--mh-admin-border-subtle); font-size: 0.75rem; color: #7A756E; line-height: 1.5;">
                 Tệp cấu hình: <code>resources/views/client/invitations/{{ $template->slug }}/schema.json</code><br>
                 Trạng thái tệp: <strong>{{ $schemaExists ? 'Đã tồn tại' : 'Chưa có file JSON' }}</strong> &bull; Album 10 ảnh: <strong>{{ $galleryValid ? 'Đã chuẩn hóa' : 'Chưa có field gallery' }}</strong>
             </div>

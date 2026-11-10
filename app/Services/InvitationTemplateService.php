@@ -1225,4 +1225,162 @@ class InvitationTemplateService
 
         return array_merge($existing, $changes);
     }
+
+    /**
+     * Comprehensive QA Audit of an Invitation Template (Wave 04 - Atelier Governance).
+     * Inspects 10 Canonical Sections, Contract Live Sync data-sync-target, Local Assets Defense, CSS BEM Prefix, and AI Curated Parity.
+     *
+     * @return array<string, mixed>
+     */
+    public static function inspectTemplateIntegrity(string $slug): array
+    {
+        $templateDir = resource_path("views/client/invitations/{$slug}");
+        $schemaPath = "{$templateDir}/schema.json";
+        $bladePath = "{$templateDir}/template.blade.php";
+        $cssPath = "{$templateDir}/styles.css";
+        $jsPath = "{$templateDir}/script.js";
+        $assetsDir = "{$templateDir}/assets";
+
+        $schemaExists = File::exists($schemaPath);
+        $bladeExists = File::exists($bladePath);
+        $cssExists = File::exists($cssPath);
+        $jsExists = File::exists($jsPath);
+        $assetsExists = File::isDirectory($assetsDir);
+
+        // 1. Files & Structure Check
+        $filesReport = [
+            'schema_json' => ['exists' => $schemaExists, 'path' => "resources/views/client/invitations/{$slug}/schema.json"],
+            'template_blade' => ['exists' => $bladeExists, 'path' => "resources/views/client/invitations/{$slug}/template.blade.php"],
+            'styles_css' => ['exists' => $cssExists, 'path' => "resources/views/client/invitations/{$slug}/styles.css"],
+            'script_js' => ['exists' => $jsExists, 'path' => "resources/views/client/invitations/{$slug}/script.js"],
+            'assets_dir' => ['exists' => $assetsExists, 'path' => "resources/views/client/invitations/{$slug}/assets"],
+        ];
+
+        // 2. Canonical Sections (10/10)
+        $rawSchema = [];
+        $sectionsReport = [];
+        $galleryValid = false;
+
+        if ($schemaExists) {
+            $rawSchema = json_decode(File::get($schemaPath), true) ?? [];
+            $presentSectionIds = collect($rawSchema['sections'] ?? [])->pluck('id')->filter()->all();
+
+            $canonicalSections = self::CANONICAL_SECTION_ORDER;
+            $canonicalDefinitions = self::getCanonicalSections();
+
+            foreach ($canonicalSections as $canonId) {
+                $isPassed = in_array($canonId, $presentSectionIds, true);
+                $title = $canonicalDefinitions[$canonId]['title'] ?? ucfirst(str_replace('_', ' ', $canonId));
+
+                $sectionsReport[] = [
+                    'id' => $canonId,
+                    'title' => $title,
+                    'passed' => $isPassed,
+                ];
+            }
+
+            foreach ($rawSchema['sections'] ?? [] as $sec) {
+                foreach ($sec['fields'] ?? [] as $f) {
+                    if (($f['key'] ?? '') === 'wedding.extra_data.gallery') {
+                        $galleryValid = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        $canonicalCount = collect($sectionsReport)->where('passed', true)->count();
+        $isCanonicalValid = ($canonicalCount >= 10);
+
+        // 3. Contract Live Sync Check (data-sync-target)
+        $bladeContent = $bladeExists ? File::get($bladePath) : '';
+        $cssContent = $cssExists ? File::get($cssPath) : '';
+
+        preg_match_all('/data-sync-target=["\']([^"\']+)["\']/', $bladeContent, $syncMatches);
+        $syncTargets = array_values(array_unique($syncMatches[1] ?? []));
+        $syncCount = count($syncTargets);
+        $hasEssentialSync = in_array('groom_name', $syncTargets, true) && in_array('bride_name', $syncTargets, true);
+
+        // 4. Layout Inheritance & Embed Defense
+        $extendsInvitation = str_contains($bladeContent, "@extends('client.layouts.invitation')")
+            || str_contains($bladeContent, '@extends("client.layouts.invitation")');
+        $hasEmbedGuard = str_contains($bladeContent, '$isEmbed')
+            || str_contains($cssContent, '.card-wrapper')
+            || $extendsInvitation;
+
+        // 5. CSS Prefixing Check (mayhen_invitation_*)
+        $usesBEMPrefix = str_contains($cssContent, 'mayhen_invitation_')
+            || str_contains($bladeContent, 'mayhen_invitation_');
+
+        // 6. 100% Local Assets Defense (Detection of external domains)
+        $externalDomains = ['ladicdn.com', 'builder.27biggroup.com', 'unsplash.com', 'iili.io', 'imgbb.com', 'cloudinary.com'];
+        $externalViolations = [];
+
+        foreach ([$bladeContent, $cssContent, json_encode($rawSchema)] as $corpus) {
+            foreach ($externalDomains as $domain) {
+                if (str_contains($corpus, $domain)) {
+                    $externalViolations[] = $domain;
+                }
+            }
+        }
+        $externalViolations = array_values(array_unique($externalViolations));
+        $isLocalAssetsOnly = empty($externalViolations);
+
+        $localAssetFiles = $assetsExists ? File::allFiles($assetsDir) : [];
+        $localAssetCount = count($localAssetFiles);
+
+        // 7. Curated Native Parity (7 Sections Subset)
+        $curatedCanonical = ['hero', 'story', 'parents', 'countdown_calendar', 'events', 'timeline', 'album'];
+        $curatedPassedCount = collect($sectionsReport)
+            ->whereIn('id', $curatedCanonical)
+            ->where('passed', true)
+            ->count();
+        $curatedCompatible = ($curatedPassedCount >= 7);
+
+        // 8. Overall Quality Score (0 - 100%)
+        $checksPassed = 0;
+        $totalChecks = 6;
+
+        if ($schemaExists && $bladeExists && $cssExists) {
+            $checksPassed++;
+        }
+        if ($isCanonicalValid) {
+            $checksPassed++;
+        }
+        if ($hasEssentialSync) {
+            $checksPassed++;
+        }
+        if ($extendsInvitation) {
+            $checksPassed++;
+        }
+        if ($isLocalAssetsOnly) {
+            $checksPassed++;
+        }
+        if ($curatedCompatible) {
+            $checksPassed++;
+        }
+
+        $score = (int) round(($checksPassed / $totalChecks) * 100);
+
+        return [
+            'slug' => $slug,
+            'score' => $score,
+            'files' => $filesReport,
+            'raw_schema' => $rawSchema,
+            'sections_report' => $sectionsReport,
+            'canonical_passed_count' => $canonicalCount,
+            'is_canonical_valid' => $isCanonicalValid,
+            'gallery_valid' => $galleryValid,
+            'sync_targets' => $syncTargets,
+            'sync_count' => $syncCount,
+            'has_essential_sync' => $hasEssentialSync,
+            'extends_invitation' => $extendsInvitation,
+            'has_embed_guard' => $hasEmbedGuard,
+            'uses_bem_prefix' => $usesBEMPrefix,
+            'is_local_assets_only' => $isLocalAssetsOnly,
+            'external_violations' => $externalViolations,
+            'local_asset_count' => $localAssetCount,
+            'curated_compatible' => $curatedCompatible,
+        ];
+    }
 }

@@ -77,54 +77,17 @@ class TemplateController extends Controller
     {
         $template = InvitationTemplate::withCount('invitations')->findOrFail($id);
 
-        // Schema Integrity Inspection
-        $schemaFilePath = resource_path("views/client/invitations/{$template->slug}/schema.json");
-        $schemaExists = File::exists($schemaFilePath);
-        $rawSchema = [];
-        $sectionsReport = [];
-        $isCanonicalValid = false;
-        $galleryValid = false;
-
-        if ($schemaExists) {
-            $rawSchema = json_decode(File::get($schemaFilePath), true) ?? [];
-            $presentSectionIds = collect($rawSchema['sections'] ?? [])->pluck('id')->filter()->all();
-
-            $canonicalSections = InvitationTemplateService::CANONICAL_SECTION_ORDER;
-            $canonicalDefinitions = InvitationTemplateService::getCanonicalSections();
-
-            foreach ($canonicalSections as $canonId) {
-                $isPassed = in_array($canonId, $presentSectionIds, true);
-                $title = $canonicalDefinitions[$canonId]['title'] ?? ucfirst(str_replace('_', ' ', $canonId));
-
-                $sectionsReport[] = [
-                    'id' => $canonId,
-                    'title' => $title,
-                    'passed' => $isPassed,
-                ];
-            }
-
-            // Check 10/10 section completeness
-            $passedCount = collect($sectionsReport)->where('passed', true)->count();
-            $isCanonicalValid = ($passedCount >= 10);
-
-            // Check Album 10 photos standard
-            foreach ($rawSchema['sections'] ?? [] as $sec) {
-                foreach ($sec['fields'] ?? [] as $f) {
-                    if (($f['key'] ?? '') === 'wedding.extra_data.gallery') {
-                        $galleryValid = true;
-                        break 2;
-                    }
-                }
-            }
-        }
+        // Comprehensive Schema & Code Integrity Inspection (Wave 04)
+        $audit = InvitationTemplateService::inspectTemplateIntegrity($template->slug);
 
         return view('admin.pages.templates.edit', [
             'template' => $template,
-            'schemaExists' => $schemaExists,
-            'rawSchema' => $rawSchema,
-            'sectionsReport' => $sectionsReport,
-            'isCanonicalValid' => $isCanonicalValid,
-            'galleryValid' => $galleryValid,
+            'audit' => $audit,
+            'schemaExists' => $audit['files']['schema_json']['exists'] ?? false,
+            'rawSchema' => $audit['raw_schema'] ?? [],
+            'sectionsReport' => $audit['sections_report'] ?? [],
+            'isCanonicalValid' => $audit['is_canonical_valid'] ?? false,
+            'galleryValid' => $audit['gallery_valid'] ?? false,
         ]);
     }
 
