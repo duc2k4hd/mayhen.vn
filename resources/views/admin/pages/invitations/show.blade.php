@@ -186,6 +186,49 @@
 
         <!-- Right: Information & Tabs -->
         <div>
+            <!-- Invitation Quality Passport (Innovation #2) -->
+            @if (isset($qualityPassport))
+                <div class="mayhen_admin_card" style="background: linear-gradient(135deg, #FFFDF9 0%, #FAF6EE 100%); border-left: 4px solid var(--mh-admin-gold); margin-bottom: 20px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 1.3rem;">🎖️</span>
+                                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif;">
+                                    Hộ Chiếu Chất Lượng Thiệp Cưới (Quality Passport)
+                                </h3>
+                            </div>
+                            <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">
+                                Đánh giá tính sẵn sàng và mức độ hoàn thiện trước khi gửi đến khách mời &bull; Kiểm định lúc {{ $qualityPassport['inspected_at'] }}
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="text-align: right;">
+                                <div style="font-size: 1.4rem; font-weight: 700; color: {{ $qualityPassport['score'] >= 80 ? '#1B5E20' : ($qualityPassport['score'] >= 60 ? '#E65100' : '#C62828') }};">
+                                    {{ $qualityPassport['score'] }}/100
+                                </div>
+                                <span class="mayhen_admin_badge {{ $qualityPassport['score'] >= 80 ? 'mayhen_admin_badge_success' : ($qualityPassport['score'] >= 60 ? 'mayhen_admin_badge_warning' : 'mayhen_admin_badge_danger') }}">
+                                    Hạng {{ $qualityPassport['grade'] }}: {{ $qualityPassport['grade_label'] }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist items -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; padding: 12px; border: 1px solid rgba(229, 220, 205, 0.6);">
+                        @foreach ($qualityPassport['checklist'] as $item)
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 0.95rem; line-height: 1.2;">{{ $item['passed'] ? '✅' : '❌' }}</span>
+                                <div>
+                                    <strong style="font-size: 0.8125rem; color: var(--mh-admin-charcoal);">{{ $item['title'] }}</strong>
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">{{ $item['description'] }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             <!-- Wedding Main Info Card -->
             <div class="mayhen_admin_card">
                 <div class="mayhen_admin_card_header">

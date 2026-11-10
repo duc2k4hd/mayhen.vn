@@ -52,14 +52,38 @@
                 </div>
             @endforeach
 
+            {{-- Operational Memory / Incident SOP Cards (Innovation #17) --}}
+            @if(!empty($sopCards))
+                <div class="mayhen_admin_card" style="margin-top: 20px; background: #FFFDF9; border-left: 4px solid var(--mh-admin-gold); padding: 16px 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.2rem;">💡</span>
+                            <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Sổ Tay Vận Hành & SOP Cứu Nguy Nhanh (Operational Memory)</strong>
+                        </div>
+                        <span style="font-size: 0.75rem; color: var(--mh-admin-muted);">Bấm để tự động chèn mẫu câu trả lời chuẩn Quiet Luxury</span>
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        @foreach($sopCards as $sop)
+                            <button type="button" 
+                                    class="mayhen_admin_btn mayhen_admin_btn--ghost mayhen_admin_btn_sm sop-insert-btn"
+                                    style="font-size: 0.75rem; border: 1px dashed var(--mh-admin-border); background: #FAF7F2; text-align: left;"
+                                    data-template="{{ $sop['reply_template'] }}">
+                                📝 {{ $sop['title'] }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- Form phản hồi --}}
             @if(!in_array($ticket->status, ['closed']))
-                <div class="mayhen_admin_card" style="margin-top: 20px;">
+                <div class="mayhen_admin_card" style="margin-top: 14px;">
                     <h3 style="font-size: 0.9rem; font-weight: 700; margin: 0 0 14px;">Gửi Phản Hồi</h3>
                     <form method="POST" action="{{ route('admin.support.reply', $ticket) }}">
                         @csrf
-                        <textarea name="body" rows="6" required minlength="5" maxlength="5000"
-                                  placeholder="Nhập nội dung phản hồi..."
+                        <textarea id="reply-body-textarea" name="body" rows="6" required minlength="5" maxlength="5000"
+                                  placeholder="Nhập nội dung phản hồi hoặc chọn mẫu SOP bên trên..."
                                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.875rem; resize: vertical; line-height: 1.6; box-sizing: border-box;">{{ old('body') }}</textarea>
                         @error('body')
                             <div style="color: #C0392B; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
@@ -164,5 +188,26 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var textarea = document.getElementById('reply-body-textarea');
+                if (!textarea) return;
+
+                document.querySelectorAll('.sop-insert-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var templateText = this.getAttribute('data-template') || '';
+                        if (!textarea.value.trim()) {
+                            textarea.value = templateText;
+                        } else {
+                            textarea.value += "\n\n" + templateText;
+                        }
+                        textarea.focus();
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection
 

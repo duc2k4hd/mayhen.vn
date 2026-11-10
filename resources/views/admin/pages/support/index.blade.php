@@ -46,6 +46,16 @@
             <div style="font-size: 0.75rem; color: #C0392B; margin-top: 4px; font-weight: 600;">Chưa giải quyết</div>
         </div>
 
+        <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid #8E44AD; background: #FAF5FC;">
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #8E44AD; margin-bottom: 6px;">
+                👑 VIP Concierge (48h)
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #8E44AD;">
+                {{ number_format($kpis['vip_48h'] ?? 0, 0, ',', '.') }}
+            </div>
+            <div style="font-size: 0.75rem; color: #8E44AD; margin-top: 4px; font-weight: 600;">Cưới trong 48h tới</div>
+        </div>
+
         @if($kpis['avg_first_response_hours'] !== null)
         <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid #27AE60;">
             <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 6px;">
@@ -57,6 +67,16 @@
             <div style="font-size: 0.75rem; color: #7A756E; margin-top: 4px;">Giờ phản hồi đầu tiên</div>
         </div>
         @endif
+    </div>
+
+    {{-- Quick Filter Tabs (Innovation #16) --}}
+    <div style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="{{ route('admin.support.index') }}" class="mayhen_admin_btn {{ !request('queue') ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm">
+            Tất Cả Tickets
+        </a>
+        <a href="{{ route('admin.support.index', ['queue' => 'vip_48h']) }}" class="mayhen_admin_btn {{ request('queue') === 'vip_48h' ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm" style="border-color: #8E44AD; color: {{ request('queue') === 'vip_48h' ? '#fff' : '#8E44AD' }}; background: {{ request('queue') === 'vip_48h' ? '#8E44AD' : 'transparent' }}; font-weight: 600;">
+            👑 Hàng Đợi VIP Concierge (Cưới Trong 48h) ({{ $kpis['vip_48h'] ?? 0 }})
+        </a>
     </div>
 
     {{-- Bộ lọc & Tìm kiếm --}}
@@ -166,6 +186,9 @@
                                        title="{{ $ticket->subject }}">
                                         {{ Str::limit($ticket->subject, 60) }}
                                     </a>
+                                    @if(in_array($ticket->user_id, $vipWeddingUserIds ?? []))
+                                        <span class="mayhen_admin_badge" style="background: #F3E5F5; color: #7B1FA2; border: 1px solid #E1BEE7; margin-left: 4px; font-size: 0.6875rem;" title="Khách hàng có đám cưới trong vòng 48h tới">👑 VIP 48h</span>
+                                    @endif
                                 </td>
                                 <td style="font-size: 0.8rem;">{{ $ticket->user->name ?? '—' }}</td>
                                 <td>

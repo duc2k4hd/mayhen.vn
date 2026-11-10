@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
 use App\Models\User;
+use App\Models\Wedding;
 use App\Services\AuditLogger;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -41,6 +43,16 @@ class SupportController extends Controller
             $query->where('assigned_to', $request->assigned_to);
         }
 
+        // Hàng đợi VIP Concierge: Đám cưới diễn ra trong vòng 48 giờ tới (Innovation #16)
+        $vipWeddingUserIds = Wedding::whereBetween('wedding_date', [Carbon::today(), Carbon::today()->addDays(2)])
+            ->pluck('user_id')
+            ->unique()
+            ->all();
+
+        if ($request->input('queue') === 'vip_48h') {
+            $query->whereIn('user_id', $vipWeddingUserIds);
+        }
+
         // Tìm kiếm theo tiêu đề hoặc mã ticket
         if ($request->filled('search')) {
             $term = $request->search;
@@ -58,6 +70,7 @@ class SupportController extends Controller
             'open' => SupportTicket::where('status', 'open')->count(),
             'in_progress' => SupportTicket::where('status', 'in_progress')->count(),
             'urgent' => SupportTicket::where('priority', 'urgent')->whereIn('status', ['open', 'in_progress'])->count(),
+            'vip_48h' => SupportTicket::whereIn('user_id', $vipWeddingUserIds)->whereIn('status', ['open', 'in_progress'])->count(),
         ];
 
         // SLA: Thời gian phản hồi trung bình (giờ) — tính từ những ticket đã có phản hồi
@@ -73,7 +86,7 @@ class SupportController extends Controller
         // Danh sách staff để filter / assign
         $staffList = User::whereIn('role', ['admin', 'manager', 'staff'])->orderBy('name')->get(['id', 'name', 'role']);
 
-        return view('admin.pages.support.index', compact('tickets', 'kpis', 'staffList'));
+        return view('admin.pages.support.index', compact('tickets', 'kpis', 'staffList', 'vipWeddingUserIds'));
     }
 
     /**
@@ -85,7 +98,35 @@ class SupportController extends Controller
 
         $staffList = User::whereIn('role', ['admin', 'manager', 'staff'])->orderBy('name')->get(['id', 'name']);
 
-        return view('admin.pages.support.show', compact('ticket', 'staffList'));
+        // Operational Memory & Incident SOP Cards (Innovation #17)
+        $sopCards = [
+            [
+                'id' => 'audio_safari',
+                'title' => 'Âm thanh không tự phát trên iPhone Safari',
+                'category' => 'template',
+                'reply_template' => 'Chào bạn, trên các thiết bị iPhone/iPad, trình duyệt Safari của Apple có chính sách bảo mật ngăn website tự ý phát âm thanh khi chưa có tương tác chạm màn hình từ người dùng. Bạn hoàn toàn yên tâm nhé: ngay khi quan khách bấm vào nút "Mở Thiệp" hoặc chạm nhẹ vào bất kỳ điểm nào trên thiệp, nhạc nền du dương sẽ tự động cất lên ngay lập tức.',
+            ],
+            [
+                'id' => 'qr_pin_rescue',
+                'title' => 'Quên mã PIN sảnh tiệc / Cần hỗ trợ điểm danh ngày cưới',
+                'category' => 'technical',
+                'reply_template' => 'Chào bạn, đội ngũ Atelier Mây Hẹn đã kiểm tra hệ thống tiếp tân cho tiệc cưới của bạn. Để xử lý gấp tại sảnh tiệc, bạn có thể sử dụng màn hình Rescue Cockpit ngày cưới trên hệ thống quản trị hoặc đăng nhập lại tài khoản chủ tiệc. Toàn bộ quan khách quét mã QR đều được điểm danh tức thời mà không lo bị nghẽn mạng.',
+            ],
+            [
+                'id' => 'venue_change_last_minute',
+                'title' => 'Đổi sảnh tiệc hoặc địa chỉ đón tiếp giờ chót',
+                'category' => 'invitation',
+                'reply_template' => 'Chào bạn, Mây Hẹn đã cập nhật thông tin địa điểm sảnh tiệc mới trực tiếp vào hệ thống thiệp của bạn. Toàn bộ quan khách khi truy cập link thiệp cưới hoặc quét mã QR trên phong bì sẽ thấy ngay địa chỉ và bản đồ Google Maps mới nhất mà bạn không cần phải in ấn lại thiệp giấy.',
+            ],
+            [
+                'id' => 'vietqr_activation',
+                'title' => 'Đối soát kích hoạt gói dịch vụ qua VietQR / SePay',
+                'category' => 'billing',
+                'reply_template' => 'Chào bạn, Mây Hẹn đã hoàn tất việc đối chiếu mã giao dịch thanh toán chuyển khoản trên hệ thống ngân hàng và đã kích hoạt thành công gói dịch vụ cho bạn. Bạn có thể tiếp tục tùy chỉnh và công bố thiệp cưới ngay bây giờ nhé.',
+            ],
+        ];
+
+        return view('admin.pages.support.show', compact('ticket', 'staffList', 'sopCards'));
     }
 
     /**

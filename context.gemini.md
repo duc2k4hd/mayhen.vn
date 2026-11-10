@@ -7116,6 +7116,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite hồi quy: **715/715 tests PASSED 100% (3,773 assertions in 15.37s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 34. HOÀN THIỆN BỘ BA SÁNG KIẾN VẬN HÀNH TIẾP THEO (INNOVATION #2, #16, #17)
+- **Mục tiêu**: Nâng cấp các sáng kiến chất lượng cao trong phân hệ thiệp cưới và trung tâm hỗ trợ:
+  1. **Invitation Quality Passport (Innovation #2)**: Hộ chiếu kiểm định chất lượng thiệp cưới trước xuất bản.
+  2. **Proactive VIP Wedding Concierge Queue (Innovation #16)**: Hàng đợi ưu tiên VIP cho các cặp đôi cưới trong vòng 48h.
+  3. **Operational Memory / Incident SOP Cards (Innovation #17)**: Thư viện kinh nghiệm xử lý sự cố hỗ trợ nhân viên phản hồi nhanh chuẩn Quiet Luxury.
+- **Các thành phần đã triển khai**:
+  1. **Dịch Vụ Hộ Chiếu Chất Lượng Thiệp Cưới ([InvitationQualityPassportService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/InvitationQualityPassportService.php))**:
+     - Kiểm định toàn diện đa chiều: Khung 10 Section tiêu chuẩn của mẫu, Hợp đồng Live Sync `data-sync-target`, Phòng vệ tài nguyên cục bộ 100% (Zero External CDN), Đầy đủ thông tin cặp đôi, Địa điểm sảnh tiệc, Ảnh bìa, Nhạc nền và Tỉ lệ sức chứa bàn tiệc.
+     - Chấm điểm chất lượng 0 - 100 điểm và phân hạng: `A+` (Quiet Luxury Certified), `A` (Ready to Publish), `B` (Cần bổ sung), `C` (Chưa đạt).
+     - Tích hợp thẻ hiển thị trực quan nổi bật trên đầu trang chi tiết thiệp cưới ([invitations/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/show.blade.php)).
+  2. **Hàng Đợi VIP Concierge 48h ([SupportController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/SupportController.php) & [support/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/index.blade.php))**:
+     - Tự động nhận diện các khách hàng có ngày cưới diễn ra trong vòng 48 giờ tới (`Wedding::whereBetween('wedding_date', [today, today+2])`).
+     - Bổ sung tab lọc nhanh `👑 Hàng Đợi VIP Concierge (Cưới Trong 48h)` kèm KPI số lượng riêng biệt.
+     - Gắn huy hiệu phát sáng `👑 VIP 48h` cạnh tiêu đề ticket trên danh sách để nhân viên ưu tiên xử lý khẩn cấp.
+  3. **Sổ Tay Xử Lý Sự Cố Nhanh & SOP Phản Hồi ([support/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/show.blade.php))**:
+     - Cung cấp danh mục các kịch bản sự cố điển hình ngày cưới:
+       * *Âm thanh không tự phát trên iPhone Safari* (Chính sách Autoplay của Apple).
+       * *Quên mã PIN sảnh tiệc / Lỗi điểm danh check-in ngày cưới*.
+       * *Đổi sảnh tiệc hoặc địa chỉ đón tiếp giờ chót*.
+       * *Đối soát kích hoạt gói dịch vụ qua VietQR / SePay*.
+     - Nút 1-click chèn câu trả lời mẫu chuẩn phong cách Quiet Luxury vào khung soạn thảo phản hồi qua Native Vanilla JS.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Mở rộng file test: `tests/Feature/AdminVNextInnovationBacklogTest.php` lên 11 kịch bản kiểm thử độc lập (69 assertions), 100% PASSED.
+  * Toàn bộ test suite hồi quy: **718/718 tests PASSED 100% (3,789 assertions in 16.19s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

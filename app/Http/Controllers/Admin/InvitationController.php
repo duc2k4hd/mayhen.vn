@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\InvitationQualityPassportService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -127,12 +128,16 @@ class InvitationController extends Controller
             );
         }
 
+        // Invitation Quality Passport (Innovation #2)
+        $qualityPassport = InvitationQualityPassportService::inspect($invitation);
+
         return view('admin.pages.invitations.show', [
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
             'template' => $invitation->template,
             'allTemplates' => $allTemplates,
             'isSafeLens' => $isSafeLens,
+            'qualityPassport' => $qualityPassport,
         ]);
     }
 
