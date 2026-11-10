@@ -172,6 +172,14 @@
 
                         <!-- 2. Hệ sinh thái công cụ hỗ trợ đám cưới (Feature Grid 2 cột cân xứng) -->
                         <div class="mayhen_account_card_actions" style="margin-top: 10px; padding-top: 10px;">
+                            <a href="{{ route('account.planner.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Kế hoạch việc cần làm & dự toán chi phí">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M9 11l3 3L22 4"></path>
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                </svg>
+                                <span>Kế Hoạch & Chi Phí</span>
+                            </a>
+
                             <a href="{{ route('account.events.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý đa sự kiện: Lễ Vu Quy, Thành Hôn, Tiệc Cưới">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10"></circle>

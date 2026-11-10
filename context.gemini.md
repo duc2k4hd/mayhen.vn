@@ -7782,6 +7782,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **872/872 tests PASSED 100% (4,663 assertions in 20.28s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 59. HỆ THỐNG KẾ HOẠCH & SỔ DỰ TOÁN NGÂN SÁCH CƯỚI (WEDDING PLANNER CHECKLIST & BUDGET MANAGEMENT ENGINE) (10/11/2026)
+- **Mục tiêu**: Xây dựng phân hệ Lập kế hoạch chuẩn bị cưới và Quản lý dự toán ngân sách chi tiết theo Section 36 của Master PRD V3, giúp cô dâu chú rể theo dõi toàn bộ việc cần làm theo 7 giai đoạn cưới Việt Nam, kiểm soát hạn mức ngân sách, thực chi và công nợ nhà cung cấp.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_240000_create_wedding_planner_tables.php` tạo 2 bảng:
+       * `wedding_checklist_tasks`: `wedding_id`, `category`, `phase` (`12_months`, `6_months`, `3_months`, `1_month`, `1_week`, `wedding_day`, `post_wedding`), `title`, `description`, `assignee_name`, `due_date`, `priority` (`urgent`, `high`, `medium`, `low`), `status` (`pending`, `in_progress`, `completed`, `cancelled`), `completed_at`, `display_order`.
+       * `wedding_budget_items`: `wedding_id`, `category` (9 nhóm chuẩn: `venue_catering`, `attire_jewelry`, `photography_video`, `invitations_favors`, `decor_flowers`, `ceremony_offerings`, `entertainment_music`, `contingency`, `other`), `item_name`, `estimated_cost`, `actual_cost`, `paid_amount`, `vendor_name`, `vendor_contact`, `notes`, `is_paid_in_full`, `display_order`.
+     - Model: `app/Models/WeddingChecklistTask.php` (helpers `isCompleted()`, `isOverdue()`, accessors `phase_label`, `priority_label`).
+     - Model: `app/Models/WeddingBudgetItem.php` (accessors `pending_amount`, `variance`, `category_label`).
+     - Cập nhật `app/Models/Wedding.php`: quan hệ `checklistTasks(): HasMany`, `budgetItems(): HasMany`, accessor `target_budget`.
+  2. **Dịch Vụ Nghiệp Vụ ([WeddingPlannerService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingPlannerService.php))**:
+     - `getPlanSummary(Wedding $wedding)`: Tổng hợp toàn diện tiến độ % checklist, việc quá hạn, tổng dự toán, thực chi, đã cọc/trả, còn thiếu, chênh lệch ngân sách và cơ cấu % theo từng nhóm chi phí.
+     - `seedDefaultChecklist(Wedding $wedding)`: Tự động khởi tạo bộ checklist 16 công việc chuẩn mực văn hóa cưới hỏi Việt Nam (dạm ngõ, đặt sảnh, chụp pre-wedding, váy cưới, nhẫn cưới, thiệp Mây Hẹn, tráp mâm quả, gửi thiệp Zalo, xếp bàn, diễn tập QR, lễ gia tiên, đón khách, cảm ơn sau cưới, khóa time capsule) được tính toán ngày đến hạn tự động lùi theo `wedding_date` của cặp đôi.
+     - Quản lý vòng đời task (`createTask`, `updateTask`, `toggleTask`, `deleteTask`) và khoản chi (`createBudgetItem`, `updateBudgetItem`, `deleteBudgetItem`).
+     - `updateTargetBudget(Wedding $wedding, int $targetBudget)`: Cập nhật ngân sách mục tiêu.
+     - `exportBudgetCsv(Wedding $wedding)`: Xuất bảng tính kế toán dự toán chi phí đám cưới định dạng CSV có UTF-8 BOM hiển thị chuẩn tiếng Việt trên Excel, làm sạch chống tấn công Formula Injection (`CsvSanitizerService`).
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Client Controller: `app/Http/Controllers/Client/WeddingPlannerController.php` (`index`, `seedDefaults`, `storeTask`, `updateTask`, `toggleTask`, `destroyTask`, `storeBudgetItem`, `updateBudgetItem`, `destroyBudgetItem`, `updateTargetBudget`, `exportBudgetCsv`).
+     - Client View: `resources/views/client/pages/account/planner/index.blade.php`:
+       * Giao diện Quiet Luxury hai phân hệ chuyển đổi mượt mà qua Tabs: "Danh Mục Việc Cần Làm (Checklist)" & "Dự Toán Ngân Sách (Budget Planner)".
+       * Tab Checklist: 4 thẻ KPI tiến độ, thanh tiến độ sinh động, danh sách việc theo từng giai đoạn (Phase Accordion), checkbox toggle realtime, modal thêm/sửa việc.
+       * Tab Budget: 4 thẻ KPI tài chính, thanh cơ cấu chi phí đa sắc màu thuần CSS, bảng chi tiết từng khoản chi có tính toán chênh lệch (+/-) tự động, modal thêm/sửa khoản chi và cập nhật ngân sách mục tiêu.
+     - CSS & JS: `public/assets/client/css/pages/planner.css` (prefix `mayhen_planner_*`) và `public/assets/client/js/pages/planner.js` (Native ES Modules, Zero Frameworks, Optimistic UI update).
+     - Tích hợp nút **Kế Hoạch & Chi Phí** vào Feature Grid danh sách thiệp `resources/views/client/pages/account/invitations.blade.php`.
+  4. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/WeddingPlannerAndBudgetTest.php` gồm **6 kịch bản kiểm thử độc lập (50 assertions)**: 100% PASSED (bao gồm khởi tạo 16 việc mẫu, thêm/sửa/toggle hoàn thành task, quản lý dự toán ngân sách và tính toán chênh lệch, cập nhật hạn mức, xuất CSV có BOM, và cô lập tenant 404).
+     - Toàn bộ test suite hệ thống: **878/878 tests PASSED 100% (4,713 assertions in 21.40s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 
 

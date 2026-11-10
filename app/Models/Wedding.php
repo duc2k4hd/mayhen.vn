@@ -113,6 +113,23 @@ class Wedding extends Model
         return $this->hasMany(OutboundWebhook::class)->latest('id');
     }
 
+    public function checklistTasks(): HasMany
+    {
+        return $this->hasMany(WeddingChecklistTask::class)->orderBy('display_order')->orderBy('due_date');
+    }
+
+    public function budgetItems(): HasMany
+    {
+        return $this->hasMany(WeddingBudgetItem::class)->orderBy('display_order')->orderBy('id');
+    }
+
+    public function getTargetBudgetAttribute(): int
+    {
+        $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
+
+        return (int) ($extra['target_budget'] ?? 0);
+    }
+
     /**
      * Lấy danh sách các sự kiện đang hoạt động (active), tự động fallback nếu chưa có.
      */

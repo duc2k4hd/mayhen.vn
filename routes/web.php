@@ -26,6 +26,7 @@ use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingEventController;
+use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
 use App\Http\Controllers\Partner\PartnerDashboardController;
@@ -166,6 +167,19 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::put('/thiep/{id}/webhooks/{webhookId}', [WebhookController::class, 'update'])->name('webhooks.update');
     Route::delete('/thiep/{id}/webhooks/{webhookId}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
     Route::post('/thiep/{id}/webhooks/{webhookId}/ping', [WebhookController::class, 'ping'])->name('webhooks.ping');
+
+    // Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới (Wedding Planner & Budget Engine - Master PRD V3 Section 36)
+    Route::get('/thiep/{id}/ke-hoach-cuoi', [WeddingPlannerController::class, 'index'])->name('planner.index');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/khoi-tao-mau', [WeddingPlannerController::class, 'seedDefaults'])->name('planner.seed_defaults');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/cong-viec', [WeddingPlannerController::class, 'storeTask'])->name('planner.tasks.store');
+    Route::put('/thiep/{id}/ke-hoach-cuoi/cong-viec/{taskId}', [WeddingPlannerController::class, 'updateTask'])->name('planner.tasks.update');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/cong-viec/{taskId}/hoan-thanh', [WeddingPlannerController::class, 'toggleTask'])->name('planner.tasks.toggle');
+    Route::delete('/thiep/{id}/ke-hoach-cuoi/cong-viec/{taskId}', [WeddingPlannerController::class, 'destroyTask'])->name('planner.tasks.destroy');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/ngan-sach', [WeddingPlannerController::class, 'storeBudgetItem'])->name('planner.budget.store');
+    Route::put('/thiep/{id}/ke-hoach-cuoi/ngan-sach/{itemId}', [WeddingPlannerController::class, 'updateBudgetItem'])->name('planner.budget.update');
+    Route::delete('/thiep/{id}/ke-hoach-cuoi/ngan-sach/{itemId}', [WeddingPlannerController::class, 'destroyBudgetItem'])->name('planner.budget.destroy');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/muc-tieu-ngan-sach', [WeddingPlannerController::class, 'updateTargetBudget'])->name('planner.budget.target');
+    Route::get('/thiep/{id}/ke-hoach-cuoi/xuat-ngan-sach-csv', [WeddingPlannerController::class, 'exportBudgetCsv'])->name('planner.budget.export');
 });
 
 // Guest Management & RSVP
