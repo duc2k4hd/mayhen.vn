@@ -121,6 +121,7 @@ Thumbs.db
 !/tests/Feature/AdminTemplateReleaseLabTest.php
 !/tests/Feature/AdminGuestJourneyE2ERunnerTest.php
 !/tests/Feature/AdminEntitlementStateMachineTest.php
+!/tests/Feature/AdminIncidentAndEscalationTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

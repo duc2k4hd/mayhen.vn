@@ -56,6 +56,26 @@
             <div style="font-size: 0.75rem; color: #8E44AD; margin-top: 4px; font-weight: 600;">Cưới trong 48h tới</div>
         </div>
 
+        <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid #D35400; background: #FFF8F0;">
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #D35400; margin-bottom: 6px;">
+                ⚠️ Quá Hạn SLA (Escalated)
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #D35400;">
+                {{ number_format($kpis['escalated'] ?? 0, 0, ',', '.') }}
+            </div>
+            <div style="font-size: 0.75rem; color: #D35400; margin-top: 4px; font-weight: 600;">Đã leo thang Quản lý</div>
+        </div>
+
+        <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid #C0392B; background: #FDF2E9;">
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #C0392B; margin-bottom: 6px;">
+                🔥 Sự Cố Vận Hành (Incidents)
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #C0392B;">
+                {{ number_format($kpis['incidents'] ?? 0, 0, ',', '.') }}
+            </div>
+            <div style="font-size: 0.75rem; color: #C0392B; margin-top: 4px; font-weight: 600;">War Room đang mở</div>
+        </div>
+
         @if($kpis['avg_first_response_hours'] !== null)
         <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid #27AE60;">
             <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 6px;">
@@ -69,14 +89,29 @@
         @endif
     </div>
 
-    {{-- Quick Filter Tabs (Innovation #16) --}}
-    <div style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <a href="{{ route('admin.support.index') }}" class="mayhen_admin_btn {{ !request('queue') ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm">
-            Tất Cả Tickets
-        </a>
-        <a href="{{ route('admin.support.index', ['queue' => 'vip_48h']) }}" class="mayhen_admin_btn {{ request('queue') === 'vip_48h' ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm" style="border-color: #8E44AD; color: {{ request('queue') === 'vip_48h' ? '#fff' : '#8E44AD' }}; background: {{ request('queue') === 'vip_48h' ? '#8E44AD' : 'transparent' }}; font-weight: 600;">
-            👑 Hàng Đợi VIP Concierge (Cưới Trong 48h) ({{ $kpis['vip_48h'] ?? 0 }})
-        </a>
+    {{-- Quick Filter Tabs (Innovation #16 & NXT-09) --}}
+    <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{{ route('admin.support.index') }}" class="mayhen_admin_btn {{ !request('queue') ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm">
+                Tất Cả Tickets
+            </a>
+            <a href="{{ route('admin.support.index', ['queue' => 'vip_48h']) }}" class="mayhen_admin_btn {{ request('queue') === 'vip_48h' ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm" style="border-color: #8E44AD; color: {{ request('queue') === 'vip_48h' ? '#fff' : '#8E44AD' }}; background: {{ request('queue') === 'vip_48h' ? '#8E44AD' : 'transparent' }}; font-weight: 600;">
+                👑 VIP Concierge (48h) ({{ $kpis['vip_48h'] ?? 0 }})
+            </a>
+            <a href="{{ route('admin.support.index', ['queue' => 'escalated']) }}" class="mayhen_admin_btn {{ request('queue') === 'escalated' ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm" style="border-color: #D35400; color: {{ request('queue') === 'escalated' ? '#fff' : '#D35400' }}; background: {{ request('queue') === 'escalated' ? '#D35400' : 'transparent' }}; font-weight: 600;">
+                ⚠️ Quá Hạn SLA ({{ $kpis['escalated'] ?? 0 }})
+            </a>
+            <a href="{{ route('admin.support.index', ['queue' => 'incidents']) }}" class="mayhen_admin_btn {{ request('queue') === 'incidents' ? 'mayhen_admin_btn--primary' : 'mayhen_admin_btn--ghost' }} mayhen_admin_btn_sm" style="border-color: #C0392B; color: {{ request('queue') === 'incidents' ? '#fff' : '#C0392B' }}; background: {{ request('queue') === 'incidents' ? '#C0392B' : 'transparent' }}; font-weight: 600;">
+                🔥 Sự Cố Vận Hành ({{ $kpis['incidents'] ?? 0 }})
+            </a>
+        </div>
+
+        <form action="{{ route('admin.support.scan_sla') }}" method="POST">
+            @csrf
+            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn--secondary mayhen_admin_btn_sm" title="Quét tự động phát hiện vi phạm SLA và leo thang lên Quản lý">
+                ⚡ Quét Vi Phạm SLA Trực Ban
+            </button>
+        </form>
     </div>
 
     {{-- Bộ lọc & Tìm kiếm --}}
@@ -188,6 +223,16 @@
                                     </a>
                                     @if(in_array($ticket->user_id, $vipWeddingUserIds ?? []))
                                         <span class="mayhen_admin_badge" style="background: #F3E5F5; color: #7B1FA2; border: 1px solid #E1BEE7; margin-left: 4px; font-size: 0.6875rem;" title="Khách hàng có đám cưới trong vòng 48h tới">👑 VIP 48h</span>
+                                    @endif
+                                    @if($ticket->is_incident)
+                                        <span class="mayhen_admin_badge" style="background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; margin-left: 4px; font-size: 0.6875rem;" title="Sự cố vận hành">
+                                            🔥 SỰ CỐ {{ strtoupper($ticket->incident_severity) }}
+                                        </span>
+                                    @endif
+                                    @if($ticket->isEscalated())
+                                        <span class="mayhen_admin_badge" style="background: #FFF3E0; color: #E65100; border: 1px solid #FFE082; margin-left: 4px; font-size: 0.6875rem;" title="{{ $ticket->escalation_reason }}">
+                                            ⚠️ LEO THANG
+                                        </span>
                                     @endif
                                 </td>
                                 <td style="font-size: 0.8rem;">{{ $ticket->user->name ?? '—' }}</td>

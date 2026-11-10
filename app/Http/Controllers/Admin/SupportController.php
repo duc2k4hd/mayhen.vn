@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
 use App\Models\User;
-use App\Models\Wedding;
 use App\Services\AuditLogger;
-use Carbon\Carbon;
+use App\Services\IncidentResponseAndEscalationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class SupportController extends Controller
@@ -43,14 +43,13 @@ class SupportController extends Controller
             $query->where('assigned_to', $request->assigned_to);
         }
 
-        // Hàng đợi VIP Concierge: Đám cưới diễn ra trong vòng 48 giờ tới (Innovation #16)
-        $vipWeddingUserIds = Wedding::whereBetween('wedding_date', [Carbon::today(), Carbon::today()->addDays(2)])
-            ->pluck('user_id')
-            ->unique()
-            ->all();
-
+        // Hàng đợi lọc nhanh: VIP 48h, Sự cố vận hành, Đã leo thang
         if ($request->input('queue') === 'vip_48h') {
             $query->whereIn('user_id', $vipWeddingUserIds);
+        } elseif ($request->input('queue') === 'incidents') {
+            $query->where('is_incident', true);
+        } elseif ($request->input('queue') === 'escalated') {
+            $query->whereNotNull('escalated_at');
         }
 
         // Tìm kiếm theo tiêu đề hoặc mã ticket
@@ -71,6 +70,8 @@ class SupportController extends Controller
             'in_progress' => SupportTicket::where('status', 'in_progress')->count(),
             'urgent' => SupportTicket::where('priority', 'urgent')->whereIn('status', ['open', 'in_progress'])->count(),
             'vip_48h' => SupportTicket::whereIn('user_id', $vipWeddingUserIds)->whereIn('status', ['open', 'in_progress'])->count(),
+            'escalated' => SupportTicket::whereNotNull('escalated_at')->whereIn('status', ['open', 'in_progress'])->count(),
+            'incidents' => SupportTicket::where('is_incident', true)->whereIn('status', ['open', 'in_progress'])->count(),
         ];
 
         // SLA: Thời gian phản hồi trung bình (giờ) — tính từ những ticket đã có phản hồi
@@ -182,6 +183,11 @@ class SupportController extends Controller
 
         $newStatus = $request->status;
 
+        // Chặn đóng sự cố nghiêm trọng nếu chưa có biên bản Postmortem (NXT-09)
+        if ($newStatus === 'resolved' && $ticket->is_incident && empty($ticket->root_cause)) {
+            return back()->with('error', 'Đây là Sự cố vận hành. Bắt buộc hoàn tất Biên bản Postmortem (Nguyên nhân gốc & Biện pháp khắc phục) tại khung Điều Phối Sự Cố trước khi đóng.');
+        }
+
         if (! $ticket->canTransitionTo($newStatus)) {
             return back()->with('error', "Không thể chuyển từ '{$ticket->status_label}' sang '{$newStatus}'.");
         }
@@ -232,5 +238,108 @@ class SupportController extends Controller
         );
 
         return back()->with('success', $assignedUser ? "Đã giao cho {$assignedUser->name}." : 'Đã bỏ giao việc.');
+    }
+
+    /**
+     * Khai báo sự cố vận hành chính thức (NXT-09).
+     */
+    public function declareIncident(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user || (! $user->isManager() && ! $user->isSuperAdmin())) {
+            abort(403, 'Chỉ Quản lý hoặc Quản trị viên tối cao mới có quyền khai báo Sự Cố Vận Hành.');
+        }
+
+        $request->validate([
+            'severity' => ['required', 'in:sev1,sev2,sev3'],
+            'reason' => ['required', 'string', 'min:6', 'max:255'],
+        ], [
+            'reason.required' => 'Vui lòng cung cấp lý do khai báo sự cố vận hành.',
+            'reason.min' => 'Lý do khai báo sự cố phải có tối thiểu 6 ký tự.',
+        ]);
+
+        IncidentResponseAndEscalationService::declareIncident(
+            $ticket,
+            $request->input('severity'),
+            $request->input('reason'),
+            $user->id
+        );
+
+        return back()->with('success', 'Đã công bố Sự Cố Vận Hành ['.strtoupper($request->input('severity'))."] cho ticket #{$ticket->ticket_code}.");
+    }
+
+    /**
+     * Khép kín sự cố bằng biên bản Postmortem điều tra nguyên nhân gốc (NXT-09).
+     */
+    public function resolveIncident(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user || (! $user->isManager() && ! $user->isSuperAdmin())) {
+            abort(403, 'Chỉ Quản lý hoặc Quản trị viên tối cao mới có quyền đóng sự cố và ký duyệt Postmortem.');
+        }
+
+        $request->validate([
+            'root_cause' => ['required', 'string', 'min:10', 'max:5000'],
+            'mitigation_action' => ['required', 'string', 'min:10', 'max:5000'],
+            'postmortem_notes' => ['required', 'string', 'min:10', 'max:5000'],
+        ], [
+            'root_cause.required' => 'Bắt buộc làm rõ nguyên nhân gốc rễ (Root Cause) của sự cố.',
+            'root_cause.min' => 'Mô tả nguyên nhân gốc phải có tối thiểu 10 ký tự.',
+            'mitigation_action.required' => 'Bắt buộc ghi nhận biện pháp khắc phục (Mitigation Action).',
+            'mitigation_action.min' => 'Mô tả biện pháp khắc phục phải có tối thiểu 10 ký tự.',
+            'postmortem_notes.required' => 'Bắt buộc ghi nhận bài học rút ra và quy trình phòng ngừa tái diễn.',
+            'postmortem_notes.min' => 'Bài học rút ra phải có tối thiểu 10 ký tự.',
+        ]);
+
+        IncidentResponseAndEscalationService::resolveWithPostmortem(
+            $ticket,
+            $request->input('root_cause'),
+            $request->input('mitigation_action'),
+            $request->input('postmortem_notes'),
+            $user->id
+        );
+
+        return back()->with('success', "Đã ký duyệt biên bản Postmortem và đóng sự cố #{$ticket->ticket_code} thành công.");
+    }
+
+    /**
+     * Leo thang ticket thủ công lên cấp Quản lý hoặc Super Admin (NXT-09).
+     */
+    public function escalate(Request $request, SupportTicket $ticket): RedirectResponse
+    {
+        $request->validate([
+            'level' => ['required', 'in:manager,super_admin'],
+            'reason' => ['required', 'string', 'min:6', 'max:255'],
+        ]);
+
+        $ticket->update([
+            'escalated_at' => now(),
+            'escalation_level' => $request->input('level'),
+            'escalation_reason' => $request->input('reason'),
+        ]);
+
+        AuditLogger::log(
+            'ticket_manual_escalated',
+            'SupportTicket',
+            $ticket->id,
+            "Leo thang ticket [{$ticket->ticket_code}] lên [{$request->input('level')}]. Lý do: {$request->input('reason')}"
+        );
+
+        return back()->with('success', "Đã leo thang ticket #{$ticket->ticket_code} lên cấp ".strtoupper($request->input('level')).'.');
+    }
+
+    /**
+     * Kích hoạt quét tự động các ticket quá hạn SLA để leo thang (NXT-09).
+     */
+    public function scanSlaBreaches(): RedirectResponse
+    {
+        $escalated = IncidentResponseAndEscalationService::checkAndEscalateTickets();
+
+        $count = $escalated->count();
+        if ($count > 0) {
+            return back()->with('warning', "Đã quét và phát hiện {$count} ticket vi phạm hạn SLA. Toàn bộ đã được tự động leo thang lên Quản lý.");
+        }
+
+        return back()->with('success', 'Toàn bộ ticket đang trong hạn cam kết SLA. Không phát hiện vi phạm.');
     }
 }

@@ -7367,6 +7367,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Bộ 4 test suites liên quan đến đơn hàng, phân quyền và máy trạng thái NXT (`AdminOrderRefundAndRenewalTest`, `AdminNxtIntegrityAndAccessControlTest`, `AdminGuestJourneyE2ERunnerTest`, `AdminEntitlementStateMachineTest`): **28/28 tests PASSED (161 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
 
+### 43. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-09: SUPPORT ESCALATION & INCIDENT RESPONSE (10/11/2026)
+- **Mục tiêu**: Xóa bỏ hoàn toàn khoảng hở quy trình hỗ trợ khách hàng, xây dựng hệ thống tự động leo thang hạn cam kết dịch vụ (SLA Auto-Escalation) và quy trình điều phối sự cố vận hành khép kín bằng Biên bản Postmortem bắt buộc.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Cơ Sở Dữ Liệu & Model ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_160000_add_escalation_and_incident_to_support_tickets_table.php) & [SupportTicket.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/SupportTicket.php))**:
+     - Bổ sung 12 trường dữ liệu cho bảng `support_tickets`:
+       * Quản lý SLA & Leo thang: `sla_deadline_at`, `escalated_at`, `escalation_level` (`manager`, `super_admin`), `escalation_reason`.
+       * Quản trị Sự cố: `is_incident`, `incident_severity` (`sev1`, `sev2`, `sev3`), `incident_declared_at`, `incident_declared_by`.
+       * Khép kín Postmortem: `root_cause`, `mitigation_action`, `postmortem_notes`, `customer_confirmed_resolved_at`.
+     - Model casts datetime, quan hệ `incidentDeclarer()`, và các helper methods: `isEscalated()`, `isBreached()`.
+  2. **Dịch Vụ Điều Phối Sự Cố ([IncidentResponseAndEscalationService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/IncidentResponseAndEscalationService.php))**:
+     - **Tính toán hạn SLA động**:
+       * Đám cưới VIP diễn ra trong vòng 48h (`vip_48h`) hoặc mức độ khẩn cấp (`urgent`): Thời hạn phản hồi tối đa là **60 phút (1 giờ)**.
+       * Mức cao (`high`): 4 giờ; Trung bình (`medium`): 12 giờ; Thấp (`low`): 24 giờ.
+     - **Động cơ tự động quét & leo thang vi phạm SLA (`checkAndEscalateTickets`)**:
+       * Quét tự động các ticket đang mở quá hạn SLA mà chưa được xử lý.
+       * Chuyển cấp xử lý lên Quản lý (`manager`), ghi nhận lý do và bắn log kiểm toán tự động.
+     - **Khai báo sự cố vận hành chính thức (`declareIncident`)**:
+       * Thiết lập trạng thái War Room, nâng ưu tiên lên `urgent`, phân cấp SEV-1 (Critical: liệt thiệp/tiệc cưới), SEV-2 (Major), SEV-3 (Minor).
+     - **Biên bản Postmortem bắt buộc (`resolveWithPostmortem`)**:
+       * Chặn đứng việc đóng sự cố trực tiếp qua nút thông thường nếu chưa lập biên bản.
+       * Bắt buộc ghi nhận 3 phần đúc kết: Nguyên nhân gốc rễ, Biện pháp khắc phục đã triển khai và Bài học rút kinh nghiệm để không bao giờ tái diễn.
+  3. **Giao Diện Quản Trị Hỗ Trợ ([index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/index.blade.php), [show.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/show.blade.php) & [routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php))**:
+     - **Trang danh sách (`admin.support.index`)**:
+       * 2 Thẻ KPI mới: "⚠️ Quá Hạn SLA (Escalated)" và "🔥 Sự Cố Vận Hành (Incidents)".
+       * 2 Hàng đợi lọc nhanh: `👑 VIP Concierge (48h)`, `⚠️ Quá Hạn SLA`, `🔥 Sự Cố Vận Hành`.
+       * Nút hành động trực ban: `⚡ Quét Vi Phạm SLA Trực Ban` kích hoạt quét và leo thang hàng loạt theo thời gian thực.
+       * Huy hiệu động hiển thị trực quan mức độ sự cố và trạng thái leo thang ngay trên từng dòng ticket.
+     - **Trang chi tiết (`admin.support.show`)**:
+       * Banner đỏ rực công bố Sự Cố Vận Hành và War Room đang mở, hoặc Banner cam thông báo Ticket đã leo thang cấp Quản lý/Super Admin.
+       * Khung Điều Phối Sự Cố & Postmortem Desk: Cho phép Khai báo sự cố SEV-1/2/3, Chuyển cấp xử lý thủ công, hoặc Lập biên bản điều tra nguyên nhân gốc để ký duyệt đóng sự cố an toàn.
+     - Phân quyền bảo mật: Các route điều phối sự cố (`declare_incident`, `resolve_incident`, `escalate`, `scan_sla`) được bảo vệ nghiêm ngặt bởi middleware `admin.manager`, chặn 403 đối với Staff.
+  4. **Kết Quả Kiểm Thử Toàn Hệ Thống**:
+     - Tạo mới test suite: `tests/Feature/AdminIncidentAndEscalationTest.php` gồm **5 kịch bản kiểm thử độc lập (28 assertions)**: 100% PASSED.
+     - Cụm test toàn diện 6 test suites NXT (`AdminOrderRefundAndRenewalTest`, `AdminNxtIntegrityAndAccessControlTest`, `AdminTemplateReleaseLabTest`, `AdminGuestJourneyE2ERunnerTest`, `AdminEntitlementStateMachineTest`, `AdminIncidentAndEscalationTest`): **42/42 tests PASSED 100% (242 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

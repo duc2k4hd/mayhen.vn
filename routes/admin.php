@@ -159,10 +159,14 @@ Route::middleware('admin.auth')->group(function () {
     // Trung tâm Hỗ trợ Khách hàng (Wave 07 - ADM-A18)
     Route::prefix('support')->name('support.')->group(function () {
         Route::get('/', [AdminSupportController::class, 'index'])->name('index');
+        Route::post('/scan-sla-breaches', [AdminSupportController::class, 'scanSlaBreaches'])->middleware('admin.manager')->name('scan_sla');
         Route::get('/{ticket}', [AdminSupportController::class, 'show'])->name('show');
         Route::post('/{ticket}/reply', [AdminSupportController::class, 'reply'])->name('reply');
         Route::post('/{ticket}/status', [AdminSupportController::class, 'updateStatus'])->middleware('admin.manager')->name('update_status');
         Route::post('/{ticket}/assign', [AdminSupportController::class, 'assignTo'])->middleware('admin.manager')->name('assign');
+        Route::post('/{ticket}/escalate', [AdminSupportController::class, 'escalate'])->middleware('admin.manager')->name('escalate');
+        Route::post('/{ticket}/declare-incident', [AdminSupportController::class, 'declareIncident'])->middleware('admin.manager')->name('declare_incident');
+        Route::post('/{ticket}/resolve-incident', [AdminSupportController::class, 'resolveIncident'])->middleware('admin.manager')->name('resolve_incident');
     });
 
     // Giám sát Queue & Failed Jobs (Wave 07 - ADM-A19)

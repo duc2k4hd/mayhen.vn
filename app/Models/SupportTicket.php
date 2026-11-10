@@ -23,12 +23,29 @@ class SupportTicket extends Model
         'first_responded_at',
         'resolved_at',
         'closed_at',
+        'sla_deadline_at',
+        'escalated_at',
+        'escalation_level',
+        'escalation_reason',
+        'is_incident',
+        'incident_severity',
+        'incident_declared_at',
+        'incident_declared_by',
+        'root_cause',
+        'mitigation_action',
+        'postmortem_notes',
+        'customer_confirmed_resolved_at',
     ];
 
     protected $casts = [
         'first_responded_at' => 'datetime',
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
+        'sla_deadline_at' => 'datetime',
+        'escalated_at' => 'datetime',
+        'is_incident' => 'boolean',
+        'incident_declared_at' => 'datetime',
+        'customer_confirmed_resolved_at' => 'datetime',
     ];
 
     // -------------------------------------------------------------------------
@@ -48,6 +65,25 @@ class SupportTicket extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(SupportTicketReply::class, 'ticket_id')->orderBy('created_at');
+    }
+
+    public function incidentDeclarer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'incident_declared_by');
+    }
+
+    public function isEscalated(): bool
+    {
+        return $this->escalated_at !== null;
+    }
+
+    public function isBreached(): bool
+    {
+        if (in_array($this->status, ['resolved', 'closed'], true)) {
+            return false;
+        }
+
+        return $this->sla_deadline_at && $this->sla_deadline_at->isPast();
     }
 
     // -------------------------------------------------------------------------
