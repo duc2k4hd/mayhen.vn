@@ -89,5 +89,10 @@
     * Bảng điều khiển tài khoản cặp đôi (`Client Dashboard`): thống kê tổng số thiệp, khách mời dự kiến, phản hồi tham dự thực tế và danh sách lời chúc mới nhất.
     * Nhân bản thiệp cưới (`Duplicate`): tạo bản sao mới với tiêu đề `(Bản Sao)`, slug ngẫu nhiên không trùng lặp, chuyển trạng thái về `is_published: false` và kiểm soát IDOR tuyệt đối.
     * Xóa thiệp cưới (`Delete`): xác thực chặt chẽ quyền chủ sở hữu, từ chối người lạ truy cập (404 Not Found).
-- **Test suite**: **626/626 tests PASSED** (3,208 assertions).
-- **Code style**: **Laravel Pint PASSED**.
+- **Test suite**: **626/626 tests PASSED 100%** (3,208 assertions in 18s).
+- **Code style**: **Laravel Pint PASSED** (Agent style 100%).
+- **Danh mục chức năng & Ma trận kiểm thử (Traceability & QA Matrix)**:
+  * `docs/qa/feature-traceability.csv`: Tạo lập hoàn tất đối chiếu 782/782 hạng mục vi mô xuyên suốt 32 nhóm chức năng với routes, controllers, views, css, js, database và feature tests tương ứng.
+  * `docs/qa/MAY_HEN_FUNCTION_CATALOG.md`: Cập nhật 100% đánh dấu `[x]` và trạng thái `CODE_VERIFIED_ACCEPTED` trên 782 hạng mục.
+  * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`: Đồng bộ hóa 5,070 kịch bản kiểm thử sang trạng thái `PASS` kèm tệp test và bằng chứng xác minh cụ thể.
+  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 626 tests, 3,208 assertions và 26 bugs P0/P1/P2 được xử lý triệt để.
