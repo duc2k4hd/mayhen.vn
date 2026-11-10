@@ -149,5 +149,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
         openModal('modal-edit-budget');
     };
+
+    // 5. Edit Vendor Modal Setup
+    window.openEditVendorModal = function(vendor) {
+        const modal = document.getElementById('modal-edit-vendor');
+        if (!modal) return;
+
+        const form = document.getElementById('form-edit-vendor');
+        if (form && vendor.update_url) {
+            form.action = vendor.update_url;
+        }
+
+        const nameInput = document.getElementById('edit-vendor-name');
+        const catSelect = document.getElementById('edit-vendor-category');
+        const contactPersonInput = document.getElementById('edit-vendor-contact-person');
+        const phoneInput = document.getElementById('edit-vendor-phone');
+        const emailInput = document.getElementById('edit-vendor-email');
+        const statusSelect = document.getElementById('edit-vendor-status');
+        const totalInput = document.getElementById('edit-vendor-total');
+        const depositInput = document.getElementById('edit-vendor-deposit');
+        const dueDateInput = document.getElementById('edit-vendor-due-date');
+        const timelineInput = document.getElementById('edit-vendor-timeline');
+        const addressInput = document.getElementById('edit-vendor-address');
+        const notesInput = document.getElementById('edit-vendor-notes');
+
+        if (nameInput) nameInput.value = vendor.name || '';
+        if (catSelect) catSelect.value = vendor.category || 'other';
+        if (contactPersonInput) contactPersonInput.value = vendor.contact_person || '';
+        if (phoneInput) phoneInput.value = vendor.phone || '';
+        if (emailInput) emailInput.value = vendor.email || '';
+        if (statusSelect) statusSelect.value = vendor.contract_status || 'contract_signed';
+        if (totalInput) totalInput.value = vendor.total_amount || 0;
+        if (depositInput) depositInput.value = vendor.deposit_paid || 0;
+        if (dueDateInput) dueDateInput.value = vendor.payment_due_date || '';
+        if (timelineInput) timelineInput.value = vendor.service_timeline || '';
+        if (addressInput) addressInput.value = vendor.address || '';
+        if (notesInput) notesInput.value = vendor.notes || '';
+
+        openModal('modal-edit-vendor');
+    };
+
+    // 6. Deposit Vendor Modal Setup
+    window.openDepositVendorModal = function(vendor) {
+        const modal = document.getElementById('modal-deposit-vendor');
+        if (!modal) return;
+
+        const form = document.getElementById('form-deposit-vendor');
+        if (form && vendor.deposit_url) {
+            form.action = vendor.deposit_url;
+        }
+
+        const titleElem = document.getElementById('deposit-vendor-title');
+        const totalElem = document.getElementById('deposit-vendor-total');
+        const balanceElem = document.getElementById('deposit-vendor-balance');
+        const amountInput = document.getElementById('deposit-vendor-amount');
+
+        if (titleElem) titleElem.textContent = vendor.name || 'Nhà cung cấp';
+        if (totalElem) totalElem.textContent = new Intl.NumberFormat('vi-VN').format(vendor.total_amount || 0) + ' đ';
+        if (balanceElem) balanceElem.textContent = new Intl.NumberFormat('vi-VN').format(vendor.balance_due || 0) + ' đ';
+        if (amountInput) amountInput.value = vendor.deposit_paid || 0;
+
+        openModal('modal-deposit-vendor');
+    };
 });
 

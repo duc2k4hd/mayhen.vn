@@ -7998,6 +7998,61 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **912/912 tests PASSED 100% (4,881 assertions in 23.45s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 66. DANH BẠ NHÀ CUNG CẤP CƯỚI & THEO DÕI TIẾN ĐỘ THANH TOÁN HỢP ĐỒNG (WEDDING VENDOR DIRECTORY & CONTRACT PAYMENT TRACKER — SECTION 36 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản lý danh bạ đối tác / nhà cung cấp dịch vụ cưới và theo dõi tiến độ thanh toán, đặt cọc hợp đồng (Wedding Vendor Directory & Contract Tracker) trong Trung tâm Kế Hoạch Cưới (Wedding Planner — Section 36 Master PRD V3). Giúp các cặp đôi quản lý tập trung mọi thông tin hợp đồng từ sảnh tiệc, quay phim, chụp ảnh, hoa tươi, trang phục đến âm nhạc; tự động tính toán tổng giá trị ký kết, số tiền đã cọc và công nợ còn phải trả vào ngày diễn ra hôn lễ.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_211517_create_wedding_vendors_table.php` tạo bảng `wedding_vendors`:
+       * `wedding_id` (foreign key constrained với cascadeOnDelete).
+       * `name` (tên thương hiệu / nhà cung cấp dịch vụ cưới).
+       * `category` (lĩnh vực: `venue`, `catering`, `photography`, `attire`, `makeup`, `decor`, `music_mc`, `wedding_planner`, `favors`, `transport`, `other`).
+       * `contact_person` (người phụ trách / đầu mối liên hệ).
+       * `phone`, `email`, `address`.
+       * `contract_status` (trạng thái hợp đồng: `contacting`, `contract_signed`, `in_progress`, `completed`, `cancelled`).
+       * `total_amount` (tổng giá trị hợp đồng dịch vụ, unsignedBigInteger).
+       * `deposit_paid` (số tiền đã đặt cọc / thanh toán lũy kế, unsignedBigInteger, default 0).
+       * `payment_due_date` (hạn chót thanh toán đợt tiếp theo, date nullable).
+       * `service_timeline` (lịch trình phục vụ trong ngày cưới).
+       * `notes` (ghi chú điều khoản, cam kết).
+       * Đánh chỉ mục: `[wedding_id, category]`, `[wedding_id, contract_status]`.
+  2. **Model Eloquent ([WeddingVendor.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/WeddingVendor.php) & [Wedding.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Wedding.php))**:
+     - Model: `WeddingVendor` với đầy đủ casts integer/date, quan hệ `belongsTo(Wedding::class)`.
+     - Accessors & Helpers:
+       * `balance_due`: Tự động tính số tiền còn thiếu (`max(0, total_amount - deposit_paid)`).
+       * `category_label`: Nhãn tiếng Việt thân thiện theo danh mục (Sảnh tiệc, Quay phim, Váy cưới, Make up...).
+       * `status_label`: Nhãn trạng thái hợp đồng (Đang liên hệ, Đã ký hợp đồng, Đang thực hiện, Đã tất toán, Đã hủy).
+     - Model `Wedding`: Bổ sung quan hệ `vendors(): HasMany` sắp xếp `latest('id')`.
+  3. **Mở Rộng Dịch Vụ Wedding Planner ([WeddingPlannerService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingPlannerService.php))**:
+     - Hàm `getPlanSummary(Wedding $wedding)`: Bổ sung chỉ số vendors:
+       * `total`: Tổng số đối tác.
+       * `signed`: Số đối tác đã ký hợp đồng.
+       * `total_contract`: Tổng giá trị các hợp đồng ký kết.
+       * `total_deposit`: Tổng số tiền đã đặt cọc.
+       * `total_balance_due`: Tổng công nợ còn phải thanh toán ngày cưới.
+       * `categories_count`: Phân bổ số lượng theo từng danh mục.
+     - Hàm `seedDefaultVendors(Wedding $wedding)`: Khởi tạo sẵn 8 nhà cung cấp dịch vụ cưới thiết yếu theo phong cách cưới Việt Nam (Sảnh tiệc & Nhà hàng, Studio Chụp ảnh & Phóng sự, Váy cưới & Vest, Trang điểm & Làm tóc, Trang trí Gia tiên & Hoa tươi, MC & Ban nhạc, Mâm quả & Xe hoa, Thiệp cưới Mây Hẹn).
+     - Hàm `exportVendorsCsv(Wedding $wedding)`: Xuất danh bạ nhà cung cấp ra file CSV UTF-8 có BOM chống lỗi font tiếng Việt trên Microsoft Excel, tự động làm sạch chống tấn công CSV Injection qua `CsvSecuritySanitizer`.
+  4. **Controller & Endpoints ([WeddingPlannerController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/WeddingPlannerController.php) & [routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - Bổ sung 6 endpoints:
+       * `POST /tai-khoan/thiep/{id}/ke-hoach-cuoi/khoi-tao-nha-cung-cap-mau` (`account.planner.vendors.seed_defaults`): Khởi tạo 8 đối tác mẫu.
+       * `POST /tai-khoan/thiep/{id}/ke-hoach-cuoi/nha-cung-cap` (`account.planner.vendors.store`): Thêm đối tác mới.
+       * `PUT /tai-khoan/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}` (`account.planner.vendors.update`): Sửa thông tin đối tác & hợp đồng.
+       * `DELETE /tai-khoan/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}` (`account.planner.vendors.destroy`): Xóa đối tác.
+       * `POST /tai-khoan/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}/thanh-toan-coc` (`account.planner.vendors.deposit`): Cập nhật nhanh số tiền cọc.
+       * `GET /tai-khoan/thiep/{id}/ke-hoach-cuoi/xuat-nha-cung-cap-csv` (`account.planner.vendors.export`): Xuất danh bạ ra file CSV.
+  5. **Giao Diện & Trải Nghiệm Người Dùng ([index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/planner/index.blade.php) & [planner.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/planner.js))**:
+     - Bổ sung Tab 3: *"Đối Tác & Hợp Đồng (Vendors)"* trên thanh điều hướng Wedding Planner.
+     - 4 Thẻ KPI: Tổng Nhà Cung Cấp, Tổng Giá Trị Hợp Đồng, Đã Đặt Cọc, và Còn Phải Trả Ngày Cưới.
+     - Bảng danh bạ chi tiết: Tên nhà cung cấp, đầu mối hotline, trạng thái hợp đồng với màu sắc trực quan, tổng giá trị, số tiền đã cọc, số tiền còn thiếu, lịch trình triển khai và nút thao tác nhanh.
+     - 3 Modals chuyên dụng:
+       * `#modal-create-vendor`: Thêm mới nhà cung cấp dịch vụ cưới.
+       * `#modal-edit-vendor`: Chỉnh sửa toàn diện điều khoản và thông tin hợp đồng.
+       * `#modal-deposit-vendor`: Cập nhật nhanh số tiền cọc lũy kế với hiển thị trực quan số tiền còn thiếu.
+  6. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/WeddingVendorManagementTest.php` với **9 kịch bản kiểm thử độc lập (23 assertions)**: 100% PASSED (chặn khách chưa đăng nhập redirect về login, chặn truy cập trái phép trả về 404, chủ thiệp xem tab vendors với đầy đủ 4 thẻ KPI, khởi tạo 8 đối tác mẫu, thêm mới nhà cung cấp, cập nhật nhà cung cấp, cập nhật nhanh tiền cọc, xóa nhà cung cấp, và xuất file CSV UTF-8 BOM chuẩn an toàn).
+     - Toàn bộ test suite hệ thống: **921/921 tests PASSED 100% (4,904 assertions in 21.37s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 
 

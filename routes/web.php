@@ -183,6 +183,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::delete('/thiep/{id}/ke-hoach-cuoi/ngan-sach/{itemId}', [WeddingPlannerController::class, 'destroyBudgetItem'])->name('planner.budget.destroy');
     Route::post('/thiep/{id}/ke-hoach-cuoi/muc-tieu-ngan-sach', [WeddingPlannerController::class, 'updateTargetBudget'])->name('planner.budget.target');
     Route::get('/thiep/{id}/ke-hoach-cuoi/xuat-ngan-sach-csv', [WeddingPlannerController::class, 'exportBudgetCsv'])->name('planner.budget.export');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/nha-cung-cap', [WeddingPlannerController::class, 'storeVendor'])->name('planner.vendors.store');
+    Route::put('/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}', [WeddingPlannerController::class, 'updateVendor'])->name('planner.vendors.update');
+    Route::delete('/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}', [WeddingPlannerController::class, 'destroyVendor'])->name('planner.vendors.destroy');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/nha-cung-cap/{vendorId}/thanh-toan-coc', [WeddingPlannerController::class, 'depositVendor'])->name('planner.vendors.deposit');
+    Route::post('/thiep/{id}/ke-hoach-cuoi/khoi-tao-nha-cung-cap-mau', [WeddingPlannerController::class, 'seedDefaultVendors'])->name('planner.vendors.seed_defaults');
+    Route::get('/thiep/{id}/ke-hoach-cuoi/xuat-nha-cung-cap-csv', [WeddingPlannerController::class, 'exportVendorsCsv'])->name('planner.vendors.export');
 
     // Thông Báo Dời Lịch Cưới & Tái Xác Nhận RSVP (Luồng G - Master PRD V3 Section 61)
     Route::get('/thiep/{id}/thong-bao-doi-lich', [WeddingRescheduleController::class, 'index'])->name('reschedule.index');

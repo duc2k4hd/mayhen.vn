@@ -46,7 +46,7 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Thêm Việc Cần Làm</span>
                 </button>
-            @else
+            @elseif($activeTab === 'budget')
                 <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="openModal('modal-target-budget')">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
                     <span>Hạn Mức Ngân Sách</span>
@@ -58,6 +58,24 @@
                 <button type="button" class="mayhen_account_btn mayhen_account_btn_primary" onclick="openModal('modal-create-budget')">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Thêm Khoản Chi</span>
+                </button>
+            @else
+                @if($vendors->isEmpty())
+                    <form action="{{ route('account.planner.vendors.seed_defaults', $invitation->id) }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                            <span>Khởi Tạo 8 Đối Tác Mẫu</span>
+                        </button>
+                    </form>
+                @endif
+                <a href="{{ route('account.planner.vendors.export', $invitation->id) }}" class="mayhen_account_btn mayhen_account_btn_outline">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Xuất CSV Danh Bạ</span>
+                </a>
+                <button type="button" class="mayhen_account_btn mayhen_account_btn_primary" onclick="openModal('modal-create-vendor')">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Thêm Nhà Cung Cấp</span>
                 </button>
             @endif
         </div>
@@ -91,6 +109,14 @@
             <span>Dự Toán Ngân Sách (Budget Planner)</span>
             <span style="font-size: 11px; background: {{ $activeTab === 'budget' ? '#9C7A4A' : '#EAE3D9' }}; color: {{ $activeTab === 'budget' ? '#FFF' : '#7A726A' }}; padding: 1px 6px; border-radius: 10px;">
                 {{ number_format($summary['budget']['total_actual'] ?: $summary['budget']['total_estimated']) }} đ
+            </span>
+        </a>
+        <a href="{{ route('account.planner.index', ['id' => $invitation->id, 'tab' => 'vendors']) }}" 
+           class="mayhen_planner_tab_btn {{ $activeTab === 'vendors' ? 'active' : '' }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Nhà Cung Cấp &amp; Hợp Đồng</span>
+            <span style="font-size: 11px; background: {{ $activeTab === 'vendors' ? '#9C7A4A' : '#EAE3D9' }}; color: {{ $activeTab === 'vendors' ? '#FFF' : '#7A726A' }}; padding: 1px 6px; border-radius: 10px;">
+                {{ $summary['vendors']['total'] ?? 0 }}
             </span>
         </a>
     </div>
@@ -248,7 +274,7 @@
             @endforeach
         @endif
 
-    @else
+    @elseif($activeTab === 'budget')
         {{-- ==================== TAB 2: BUDGET PLANNER ==================== --}}
         {{-- KPI Budget Grid --}}
         <div class="mayhen_planner_kpi_grid">
@@ -444,6 +470,189 @@
                                         </button>
 
                                         <form action="{{ route('account.planner.budget.destroy', ['id' => $invitation->id, 'itemId' => $item->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khoản chi này?');" style="margin: 0; display: inline-block;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="mayhen_planner_icon_btn mayhen_planner_icon_btn_del" title="Xóa">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    @else
+        {{-- TAB 3: NHÀ CUNG CẤP & HỢP ĐỒNG (VENDORS) --}}
+        {{-- 4 KPI Summary Cards for Vendors --}}
+        <div class="mayhen_planner_summary_grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+            <div class="mayhen_planner_summary_card">
+                <span class="mayhen_planner_summary_label">Tổng Nhà Cung Cấp</span>
+                <span class="mayhen_planner_summary_val">{{ $summary['vendors']['total'] }} đơn vị</span>
+                <span class="mayhen_planner_summary_desc">Đã ký kết: {{ $summary['vendors']['signed'] }} đối tác</span>
+            </div>
+
+            <div class="mayhen_planner_summary_card">
+                <span class="mayhen_planner_summary_label">Tổng Giá Trị Hợp Đồng</span>
+                <span class="mayhen_planner_summary_val">{{ number_format($summary['vendors']['total_contract']) }} đ</span>
+                <span class="mayhen_planner_summary_desc">Cam kết dịch vụ cưới</span>
+            </div>
+
+            <div class="mayhen_planner_summary_card">
+                <span class="mayhen_planner_summary_label">Đã Đặt Cọc</span>
+                <span class="mayhen_planner_summary_val" style="color: #2E7D32;">{{ number_format($summary['vendors']['total_deposit']) }} đ</span>
+                <span class="mayhen_planner_summary_desc">Tiền cọc giữ lịch</span>
+            </div>
+
+            <div class="mayhen_planner_summary_card">
+                <span class="mayhen_planner_summary_label">Còn Phải Trả Ngày Cưới</span>
+                <span class="mayhen_planner_summary_val" style="color: #C62828;">{{ number_format($summary['vendors']['total_balance_due']) }} đ</span>
+                <span class="mayhen_planner_summary_desc">Công nợ cần tất toán</span>
+            </div>
+        </div>
+
+        {{-- Vendors Table Card --}}
+        <div class="mayhen_planner_table_card">
+            @if($vendors->isEmpty())
+                <div style="padding: 48px 24px; text-align: center;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C5A880" stroke-width="1.5" style="margin-bottom: 16px;">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #1F1D1A; margin: 0 0 8px 0;">
+                        Chưa có đối tác / nhà cung cấp nào
+                    </h3>
+                    <p style="font-size: 14px; color: #7A726A; max-width: 480px; margin: 0 auto 20px auto;">
+                        Quản lý toàn bộ danh bạ đơn vị dịch vụ từ sảnh tiệc, quay phim, chụp ảnh, hoa cưới đến xe hoa. Theo dõi hợp đồng, tiền cọc và công nợ cần thanh toán trong ngày cưới.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                        <form action="{{ route('account.planner.vendors.seed_defaults', $invitation->id) }}" method="POST" style="margin: 0;">
+                            @csrf
+                            <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                                <span>Khởi Tạo 8 Đối Tác Mẫu</span>
+                            </button>
+                        </form>
+                        <button type="button" class="mayhen_account_btn mayhen_account_btn_primary" onclick="openModal('modal-create-vendor')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Thêm Nhà Cung Cấp Đầu Tiên</span>
+                        </button>
+                    </div>
+                </div>
+            @else
+                <div style="overflow-x: auto;">
+                    <table class="mayhen_planner_table">
+                        <thead>
+                            <tr>
+                                <th>Nhà Cung Cấp &amp; Hạng Mục</th>
+                                <th>Đầu Mối &amp; Hotline</th>
+                                <th>Trạng Thái HĐ</th>
+                                <th>Tổng Giá Trị</th>
+                                <th>Đã Đặt Cọc</th>
+                                <th>Còn Phải Trả</th>
+                                <th>Lịch Trình Ngày Cưới</th>
+                                <th style="text-align: right;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($vendors as $v)
+                                <tr>
+                                    <td>
+                                        <div style="font-weight: 600; color: #1F1D1A; font-size: 14px;">{{ $v->name }}</div>
+                                        <span class="mayhen_planner_cat_badge" style="background: #FAF8F5; color: #9C7A4A; border: 1px solid #EAE3D9; margin-top: 4px; display: inline-block;">
+                                            {{ $v->category_label }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($v->contact_person)
+                                            <div style="font-weight: 500; color: #4A453E;">{{ $v->contact_person }}</div>
+                                        @endif
+                                        @if($v->phone)
+                                            <div style="font-size: 12px; margin-top: 2px;">
+                                                <a href="tel:{{ $v->phone }}" style="color: #9C7A4A; text-decoration: none; font-weight: 600;">📞 {{ $v->phone }}</a>
+                                            </div>
+                                        @else
+                                            <span style="color: #A0988E; font-size: 12px;">Chưa có SĐT</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusColors = [
+                                                'contacting' => ['bg' => '#FFFBEB', 'text' => '#92400E'],
+                                                'contract_signed' => ['bg' => '#EFF6FF', 'text' => '#1E40AF'],
+                                                'in_progress' => ['bg' => '#FAF5FF', 'text' => '#6B21A8'],
+                                                'completed' => ['bg' => '#ECFDF5', 'text' => '#065F46'],
+                                                'cancelled' => ['bg' => '#FEF2F2', 'text' => '#991B1B'],
+                                            ];
+                                            $stCol = $statusColors[$v->contract_status] ?? ['bg' => '#F3F4F6', 'text' => '#374151'];
+                                        @endphp
+                                        <span class="mayhen_planner_badge" style="background: {{ $stCol['bg'] }}; color: {{ $stCol['text'] }}; font-weight: 600;">
+                                            {{ $v->status_label }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong style="color: #1F1D1A;">{{ number_format($v->total_amount) }} đ</strong>
+                                    </td>
+                                    <td>
+                                        <span style="color: #2E7D32; font-weight: 600;">{{ number_format($v->deposit_paid) }} đ</span>
+                                    </td>
+                                    <td>
+                                        @if($v->balance_due > 0)
+                                            <strong style="color: #C62828;">{{ number_format($v->balance_due) }} đ</strong>
+                                        @else
+                                            <span style="color: #2E7D32; font-size: 12px; font-weight: 600;">✓ Đã tất toán</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($v->service_timeline)
+                                            <div style="font-size: 12px; color: #4A453E;">{{ $v->service_timeline }}</div>
+                                        @endif
+                                        @if($v->payment_due_date)
+                                            <div style="font-size: 11px; color: #8C827A; margin-top: 2px;">
+                                                Hạn TT: <strong>{{ $v->payment_due_date->format('d/m/Y') }}</strong>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: right; white-space: nowrap;">
+                                        <button type="button" class="mayhen_planner_icon_btn"
+                                                onclick="openDepositVendorModal({
+                                                    id: {{ $v->id }},
+                                                    name: @js($v->name),
+                                                    total_amount: {{ $v->total_amount }},
+                                                    deposit_paid: {{ $v->deposit_paid }},
+                                                    balance_due: {{ $v->balance_due }},
+                                                    deposit_url: @js(route('account.planner.vendors.deposit', ['id' => $invitation->id, 'vendorId' => $v->id]))
+                                                })"
+                                                title="Cập nhật tiền cọc">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                        </button>
+
+                                        <button type="button" class="mayhen_planner_icon_btn"
+                                                onclick="openEditVendorModal({
+                                                    id: {{ $v->id }},
+                                                    name: @js($v->name),
+                                                    category: @js($v->category),
+                                                    contact_person: @js($v->contact_person),
+                                                    phone: @js($v->phone),
+                                                    email: @js($v->email),
+                                                    address: @js($v->address),
+                                                    contract_status: @js($v->contract_status),
+                                                    total_amount: {{ $v->total_amount }},
+                                                    deposit_paid: {{ $v->deposit_paid }},
+                                                    payment_due_date: @js($v->payment_due_date?->format('Y-m-d')),
+                                                    service_timeline: @js($v->service_timeline),
+                                                    notes: @js($v->notes),
+                                                    update_url: @js(route('account.planner.vendors.update', ['id' => $invitation->id, 'vendorId' => $v->id]))
+                                                })"
+                                                title="Sửa thông tin đối tác">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                        </button>
+
+                                        <form action="{{ route('account.planner.vendors.destroy', ['id' => $invitation->id, 'vendorId' => $v->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đối tác này?');" style="margin: 0; display: inline-block;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="mayhen_planner_icon_btn mayhen_planner_icon_btn_del" title="Xóa">
@@ -752,6 +961,243 @@
             <div class="mayhen_planner_modal_footer">
                 <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeModal('modal-target-budget')">Hủy</button>
                 <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Lưu Hạn Mức</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal 6: Thêm đối tác / nhà cung cấp --}}
+<div class="mayhen_planner_modal" id="modal-create-vendor">
+    <div class="mayhen_planner_modal_content">
+        <div class="mayhen_planner_modal_header">
+            <h3 class="mayhen_planner_modal_title">Thêm Đối Tác / Nhà Cung Cấp</h3>
+            <button type="button" class="mayhen_planner_icon_btn" onclick="closeModal('modal-create-vendor')">&times;</button>
+        </div>
+        <form action="{{ route('account.planner.vendors.store', $invitation->id) }}" method="POST">
+            @csrf
+            <div class="mayhen_planner_modal_body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Tên thương hiệu / Nhà cung cấp *</label>
+                        <input type="text" name="name" required placeholder="Ví dụ: White Palace, TuArt Wedding..." style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Lĩnh vực / Hạng mục *</label>
+                        <select name="category" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px;">
+                            <option value="venue">Trung tâm tiệc cưới & Khách sạn</option>
+                            <option value="catering">Tiệc bàn & Ẩm thực outside</option>
+                            <option value="photography">Quay phim & Chụp ảnh phóng sự</option>
+                            <option value="attire">Váy cưới, Vest & Áo dài</option>
+                            <option value="makeup">Trang điểm & Làm tóc cô dâu</option>
+                            <option value="decor">Trang trí gia tiên & Sảnh tiệc</option>
+                            <option value="music_mc">MC, Ban nhạc & Vũ đoàn</option>
+                            <option value="wedding_planner">Wedding Planner điều phối</option>
+                            <option value="favors">Quà tặng cảm ơn & Thiệp</option>
+                            <option value="transport">Xe hoa & Xe đưa đón</option>
+                            <option value="other">Nhà cung cấp khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Người phụ trách / Liên hệ</label>
+                        <input type="text" name="contact_person" placeholder="Anh Hưng (Quản lý), Chị Lan..." style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Số điện thoại liên hệ</label>
+                        <input type="text" name="phone" placeholder="0901234567" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Email liên hệ</label>
+                        <input type="email" name="email" placeholder="contact@vendor.com" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Trạng thái hợp đồng *</label>
+                        <select name="contract_status" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px;">
+                            <option value="contacting">Đang liên hệ / Báo giá</option>
+                            <option value="contract_signed" selected>Đã ký hợp đồng</option>
+                            <option value="in_progress">Đang thực hiện</option>
+                            <option value="completed">Đã hoàn tất & Nghiệm thu</option>
+                            <option value="cancelled">Hủy bỏ hợp đồng</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Tổng giá trị hợp đồng (VND) *</label>
+                        <input type="number" name="total_amount" required min="0" value="0" step="100000" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Đã đặt cọc / Thanh toán (VND)</label>
+                        <input type="number" name="deposit_paid" min="0" value="0" step="100000" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Hạn thanh toán đợt tiếp theo</label>
+                        <input type="date" name="payment_due_date" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Thời gian phục vụ / Triển khai</label>
+                        <input type="text" name="service_timeline" placeholder="Ví dụ: 08:00 - 13:00 Ngày cưới..." style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Địa chỉ làm việc / Sảnh tiệc / Studio</label>
+                    <input type="text" name="address" placeholder="Địa chỉ chi nhánh hoặc vị trí phục vụ..." style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Ghi chú hợp đồng & Điều khoản cam kết</label>
+                    <textarea name="notes" rows="2" placeholder="Cam kết bồi thường, điều khoản phát sinh..." style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;"></textarea>
+                </div>
+            </div>
+            <div class="mayhen_planner_modal_footer">
+                <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeModal('modal-create-vendor')">Hủy</button>
+                <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Thêm Đối Tác</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal 7: Chỉnh sửa đối tác / nhà cung cấp --}}
+<div class="mayhen_planner_modal" id="modal-edit-vendor">
+    <div class="mayhen_planner_modal_content">
+        <div class="mayhen_planner_modal_header">
+            <h3 class="mayhen_planner_modal_title">Chỉnh Sửa Thông Tin Đối Tác</h3>
+            <button type="button" class="mayhen_planner_icon_btn" onclick="closeModal('modal-edit-vendor')">&times;</button>
+        </div>
+        <form id="form-edit-vendor" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="mayhen_planner_modal_body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Tên thương hiệu / Nhà cung cấp *</label>
+                        <input type="text" id="edit-vendor-name" name="name" required style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Lĩnh vực / Hạng mục *</label>
+                        <select id="edit-vendor-category" name="category" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px;">
+                            <option value="venue">Trung tâm tiệc cưới & Khách sạn</option>
+                            <option value="catering">Tiệc bàn & Ẩm thực outside</option>
+                            <option value="photography">Quay phim & Chụp ảnh phóng sự</option>
+                            <option value="attire">Váy cưới, Vest & Áo dài</option>
+                            <option value="makeup">Trang điểm & Làm tóc cô dâu</option>
+                            <option value="decor">Trang trí gia tiên & Sảnh tiệc</option>
+                            <option value="music_mc">MC, Ban nhạc & Vũ đoàn</option>
+                            <option value="wedding_planner">Wedding Planner điều phối</option>
+                            <option value="favors">Quà tặng cảm ơn & Thiệp</option>
+                            <option value="transport">Xe hoa & Xe đưa đón</option>
+                            <option value="other">Nhà cung cấp khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Người phụ trách / Liên hệ</label>
+                        <input type="text" id="edit-vendor-contact-person" name="contact_person" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Số điện thoại</label>
+                        <input type="text" id="edit-vendor-phone" name="phone" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Email</label>
+                        <input type="email" id="edit-vendor-email" name="email" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Trạng thái hợp đồng *</label>
+                        <select id="edit-vendor-status" name="contract_status" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px;">
+                            <option value="contacting">Đang liên hệ / Báo giá</option>
+                            <option value="contract_signed">Đã ký hợp đồng</option>
+                            <option value="in_progress">Đang thực hiện</option>
+                            <option value="completed">Đã hoàn tất & Nghiệm thu</option>
+                            <option value="cancelled">Hủy bỏ hợp đồng</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Tổng giá trị hợp đồng (VND) *</label>
+                        <input type="number" id="edit-vendor-total" name="total_amount" required min="0" step="100000" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Đã đặt cọc / Thanh toán (VND)</label>
+                        <input type="number" id="edit-vendor-deposit" name="deposit_paid" min="0" step="100000" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Hạn thanh toán đợt tiếp theo</label>
+                        <input type="date" id="edit-vendor-due-date" name="payment_due_date" style="width: 100%; padding: 10px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Thời gian phục vụ / Triển khai</label>
+                        <input type="text" id="edit-vendor-timeline" name="service_timeline" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Địa chỉ làm việc / Sảnh tiệc / Studio</label>
+                    <input type="text" id="edit-vendor-address" name="address" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Ghi chú hợp đồng & Điều khoản</label>
+                    <textarea id="edit-vendor-notes" name="notes" rows="2" style="width: 100%; padding: 10px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 13px; box-sizing: border-box;"></textarea>
+                </div>
+            </div>
+            <div class="mayhen_planner_modal_footer">
+                <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeModal('modal-edit-vendor')">Hủy</button>
+                <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Lưu Thay Đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal 8: Cập nhật nhanh số tiền cọc đối tác --}}
+<div class="mayhen_planner_modal" id="modal-deposit-vendor">
+    <div class="mayhen_planner_modal_content">
+        <div class="mayhen_planner_modal_header">
+            <h3 class="mayhen_planner_modal_title">Cập Nhật Thanh Toán / Đặt Cọc</h3>
+            <button type="button" class="mayhen_planner_icon_btn" onclick="closeModal('modal-deposit-vendor')">&times;</button>
+        </div>
+        <form id="form-deposit-vendor" method="POST">
+            @csrf
+            <div class="mayhen_planner_modal_body">
+                <div style="background: #F9F6F0; padding: 14px 16px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #1F1D1A; font-size: 14px;" id="deposit-vendor-title">Nhà cung cấp</div>
+                    <div style="font-size: 13px; color: #7A726A; margin-top: 4px;">
+                        Tổng hợp đồng: <strong id="deposit-vendor-total" style="color: #1F1D1A;">0 đ</strong>
+                        | Còn thiếu: <strong id="deposit-vendor-balance" style="color: #C62828;">0 đ</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">Số tiền đã thanh toán lũy kế (VND) *</label>
+                    <input type="number" id="deposit-vendor-amount" name="deposit_paid" required min="0" step="100000" style="width: 100%; padding: 12px 14px; border: 1px solid #D8CEBD; border-radius: 8px; font-size: 16px; font-weight: 700; color: #2E7D32; box-sizing: border-box;">
+                    <div style="font-size: 12px; color: #8C827A; margin-top: 4px;">
+                        Nhập số tiền đã thanh toán tích lũy đến hiện tại.
+                    </div>
+                </div>
+            </div>
+            <div class="mayhen_planner_modal_footer">
+                <button type="button" class="mayhen_account_btn mayhen_account_btn_outline" onclick="closeModal('modal-deposit-vendor')">Hủy</button>
+                <button type="submit" class="mayhen_account_btn mayhen_account_btn_primary">Cập Nhật Tiền Cọc</button>
             </div>
         </form>
     </div>

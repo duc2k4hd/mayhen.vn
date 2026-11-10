@@ -28,13 +28,14 @@ class WeddingPlannerController extends Controller
         $this->authorizeAccess($wedding);
 
         $activeTab = $request->query('tab', 'checklist');
-        if (! in_array($activeTab, ['checklist', 'budget'])) {
+        if (! in_array($activeTab, ['checklist', 'budget', 'vendors'])) {
             $activeTab = 'checklist';
         }
 
         $summary = $this->plannerService->getPlanSummary($wedding);
         $tasks = $wedding->checklistTasks()->get();
         $budgetItems = $wedding->budgetItems()->get();
+        $vendors = $wedding->vendors()->get();
 
         // Nhóm task theo giai đoạn (Phase)
         $tasksByPhase = [
@@ -54,6 +55,7 @@ class WeddingPlannerController extends Controller
             'tasks' => $tasks,
             'tasksByPhase' => $tasksByPhase,
             'budgetItems' => $budgetItems,
+            'vendors' => $vendors,
             'activeTab' => $activeTab,
         ]);
     }
@@ -323,6 +325,170 @@ class WeddingPlannerController extends Controller
 
         $csv = $this->plannerService->exportBudgetCsv($wedding);
         $filename = 'du-toan-ngan-sach-cuoi-'.($wedding->groom_name ? Str::slug($wedding->groom_name.'-'.$wedding->bride_name) : 'mayhen').'.csv';
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Thêm nhà cung cấp dịch vụ cưới mới.
+     */
+    public function storeVendor(Request $request, int $id): JsonResponse|RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:190',
+            'category' => 'required|string|in:venue,catering,photography,photo_video,attire,bridal,makeup,decor,music_mc,wedding_planner,favors,invitation_print,transport,car_transport,trap_an_hoi,other',
+            'contact_person' => 'nullable|string|max:190',
+            'phone' => 'nullable|string|max:32',
+            'email' => 'nullable|email|max:190',
+            'address' => 'nullable|string|max:255',
+            'contract_status' => 'required|string|in:contacting,contract_signed,in_progress,completed,cancelled',
+            'total_amount' => 'required|integer|min:0',
+            'deposit_paid' => 'nullable|integer|min:0',
+            'payment_due_date' => 'nullable|date',
+            'service_timeline' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $vendor = $wedding->vendors()->create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm nhà cung cấp dịch vụ thành công.',
+                'vendor' => $vendor,
+            ]);
+        }
+
+        return redirect()->route('account.planner.index', ['id' => $id, 'tab' => 'vendors'])
+            ->with('success', 'Đã thêm nhà cung cấp dịch vụ thành công.');
+    }
+
+    /**
+     * Cập nhật thông tin đối tác / nhà cung cấp dịch vụ.
+     */
+    public function updateVendor(Request $request, int $id, int $vendorId): JsonResponse|RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $vendor = $wedding->vendors()->findOrFail($vendorId);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:190',
+            'category' => 'required|string|in:venue,catering,photography,photo_video,attire,bridal,makeup,decor,music_mc,wedding_planner,favors,invitation_print,transport,car_transport,trap_an_hoi,other',
+            'contact_person' => 'nullable|string|max:190',
+            'phone' => 'nullable|string|max:32',
+            'email' => 'nullable|email|max:190',
+            'address' => 'nullable|string|max:255',
+            'contract_status' => 'required|string|in:contacting,contract_signed,in_progress,completed,cancelled',
+            'total_amount' => 'required|integer|min:0',
+            'deposit_paid' => 'nullable|integer|min:0',
+            'payment_due_date' => 'nullable|date',
+            'service_timeline' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $vendor->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật nhà cung cấp thành công.',
+                'vendor' => $vendor->fresh(),
+            ]);
+        }
+
+        return redirect()->route('account.planner.index', ['id' => $id, 'tab' => 'vendors'])
+            ->with('success', 'Đã cập nhật nhà cung cấp thành công.');
+    }
+
+    /**
+     * Xóa nhà cung cấp khỏi danh sách.
+     */
+    public function destroyVendor(Request $request, int $id, int $vendorId): JsonResponse|RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $vendor = $wedding->vendors()->findOrFail($vendorId);
+        $vendor->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa nhà cung cấp khỏi danh mục.',
+            ]);
+        }
+
+        return redirect()->route('account.planner.index', ['id' => $id, 'tab' => 'vendors'])
+            ->with('success', 'Đã xóa nhà cung cấp khỏi danh mục.');
+    }
+
+    /**
+     * Cập nhật nhanh số tiền đã đặt cọc cho nhà cung cấp.
+     */
+    public function depositVendor(Request $request, int $id, int $vendorId): JsonResponse|RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $vendor = $wedding->vendors()->findOrFail($vendorId);
+
+        $validated = $request->validate([
+            'deposit_paid' => 'required|integer|min:0',
+        ]);
+
+        $vendor->update(['deposit_paid' => $validated['deposit_paid']]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật số tiền cọc cho nhà cung cấp.',
+                'deposit_paid' => $vendor->deposit_paid,
+                'balance_due' => $vendor->balance_due,
+            ]);
+        }
+
+        return redirect()->route('account.planner.index', ['id' => $id, 'tab' => 'vendors'])
+            ->with('success', 'Đã cập nhật số tiền cọc cho nhà cung cấp.');
+    }
+
+    /**
+     * Khởi tạo sẵn bộ đối tác / nhà cung cấp cưới mẫu.
+     */
+    public function seedDefaultVendors(int $id): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $count = $this->plannerService->seedDefaultVendors($wedding);
+
+        return redirect()->route('account.planner.index', ['id' => $id, 'tab' => 'vendors'])
+            ->with('success', "Đã khởi tạo thành công {$count} nhà cung cấp dịch vụ cưới mẫu.");
+    }
+
+    /**
+     * Xuất danh bạ nhà cung cấp cưới ra file CSV UTF-8 BOM.
+     */
+    public function exportVendorsCsv(int $id): Response
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($id);
+        $wedding = $invitation->wedding;
+        $this->authorizeAccess($wedding);
+
+        $csv = $this->plannerService->exportVendorsCsv($wedding);
+        $filename = 'danh-ba-doi-tac-nha-cung-cap-cuoi-'.($wedding->groom_name ? Str::slug($wedding->groom_name.'-'.$wedding->bride_name) : 'mayhen').'.csv';
 
         return response($csv, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',

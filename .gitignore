@@ -130,6 +130,10 @@ Thumbs.db
 !/tests/Feature/AdminAiObservatoryTest.php
 !/tests/Feature/AdminCustomerDelightFeedbackTest.php
 !/tests/Feature/AdminOperationsReplayTest.php
+!/tests/Feature/WeddingMediaAndStorageQuotaTest.php
+!/tests/Feature/InvitationDeliveryAndDispatchTest.php
+!/tests/Feature/RsvpRevisionAndReengagementTest.php
+!/tests/Feature/WeddingVendorManagementTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

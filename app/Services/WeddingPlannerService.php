@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Wedding;
 use App\Models\WeddingBudgetItem;
 use App\Models\WeddingChecklistTask;
+use App\Models\WeddingVendor;
 use Carbon\Carbon;
 
 class WeddingPlannerService
@@ -86,6 +87,13 @@ class WeddingPlannerService
                 'effective_spent' => $effectiveSpent,
                 'remaining_from_target' => $remainingFromTarget,
                 'category_breakdown' => $categoryBreakdown,
+            ],
+            'vendors' => [
+                'total' => $wedding->vendors()->count(),
+                'signed' => $wedding->vendors()->whereIn('contract_status', ['contract_signed', 'in_progress', 'completed'])->count(),
+                'total_contract' => (int) $wedding->vendors()->sum('total_amount'),
+                'total_deposit' => (int) $wedding->vendors()->sum('deposit_paid'),
+                'total_balance_due' => (int) $wedding->vendors()->get()->sum(fn (WeddingVendor $v) => $v->balance_due),
             ],
         ];
     }
@@ -526,6 +534,171 @@ class WeddingPlannerService
         }
 
         // Tạo nội dung CSV kèm UTF-8 BOM
+        $handle = fopen('php://temp', 'r+');
+        foreach ($rows as $row) {
+            $sanitizedRow = array_map(function ($val) {
+                return is_string($val) ? $this->csvSanitizer->sanitize($val) : $val;
+            }, $row);
+            fputcsv($handle, $sanitizedRow);
+        }
+        rewind($handle);
+        $csvContent = stream_get_contents($handle);
+        fclose($handle);
+
+        return "\xEF\xBB\xBF".$csvContent;
+    }
+
+    /**
+     * Khởi tạo danh bạ đối tác / nhà cung cấp dịch vụ cưới mẫu.
+     */
+    public function seedDefaultVendors(Wedding $wedding): int
+    {
+        if ($wedding->vendors()->exists()) {
+            return 0;
+        }
+
+        $defaults = [
+            [
+                'name' => 'Trung Tâm Hội Nghị & Tiệc Cưới',
+                'category' => 'venue',
+                'contact_person' => 'Bộ phận Quản lý Sảnh Tiệc',
+                'contract_status' => 'contacting',
+                'total_amount' => 120000000,
+                'deposit_paid' => 20000000,
+                'service_timeline' => '17:30 - 21:30 Đón khách & Tiệc',
+                'notes' => 'Gói bao gồm thực đơn 30 bàn + nước uống + âm thanh ánh sáng cơ bản',
+                'display_order' => 1,
+            ],
+            [
+                'name' => 'Studio Chụp Ảnh & Phóng Sự Cưới',
+                'category' => 'photo_video',
+                'contact_person' => 'Trưởng nhóm Nhiếp ảnh',
+                'contract_status' => 'contract_signed',
+                'total_amount' => 18000000,
+                'deposit_paid' => 5000000,
+                'service_timeline' => '07:00 - 12:00 Lễ gia tiên & 17:30 - 21:30 Tiệc tối',
+                'notes' => 'Gói 2 máy chụp phóng sự + 1 máy quay highlight 4K',
+                'display_order' => 2,
+            ],
+            [
+                'name' => 'Tiệm Váy Cưới & Trang Phục Hôn Lễ',
+                'category' => 'bridal',
+                'contact_person' => 'Chuyên viên tư vấn trang phục',
+                'contract_status' => 'contract_signed',
+                'total_amount' => 15000000,
+                'deposit_paid' => 5000000,
+                'service_timeline' => 'Lấy trang phục trước 1 ngày, trả sau lễ 1 ngày',
+                'notes' => 'Gồm 2 váy cưới cao cấp + 2 vest chú rể + 6 bộ áo dài bưng quả',
+                'display_order' => 3,
+            ],
+            [
+                'name' => 'Chuyên Viên Trang Điểm & Làm Tóc',
+                'category' => 'makeup',
+                'contact_person' => 'Make-up Artist',
+                'contract_status' => 'contract_signed',
+                'total_amount' => 6000000,
+                'deposit_paid' => 2000000,
+                'service_timeline' => '05:30 sáng làm lễ gia tiên & 16:00 chiều dặm phấn tiệc tối',
+                'notes' => 'Trang điểm cô dâu chính + dặm tóc + trang điểm 2 mẹ',
+                'display_order' => 4,
+            ],
+            [
+                'name' => 'Đơn Vị Trang Trí Gia Tiên & Rạp Cưới',
+                'category' => 'decor',
+                'contact_person' => 'Điều phối viên Decor',
+                'contract_status' => 'in_progress',
+                'total_amount' => 25000000,
+                'deposit_paid' => 10000000,
+                'service_timeline' => 'Thi công hoàn thiện trước ngày cưới 1 ngày',
+                'notes' => 'Bàn thờ gia tiên hoa tươi tông kem vàng + backdrop chụp hình sảnh tiệc',
+                'display_order' => 5,
+            ],
+            [
+                'name' => 'Đơn Vị Mâm Quả & Tráp Ăn Hỏi Truyền Thống',
+                'category' => 'trap_an_hoi',
+                'contact_person' => 'Chủ cơ sở Tráp cưới',
+                'contract_status' => 'contacting',
+                'total_amount' => 8000000,
+                'deposit_paid' => 2000000,
+                'service_timeline' => 'Giao tráp tại nhà trai lúc 06:30 sáng ngày ăn hỏi',
+                'notes' => 'Bộ 6 tráp rồng phượng truyền thống kèm tráp cau trầu dặm ngõ',
+                'display_order' => 6,
+            ],
+            [
+                'name' => 'MC Dẫn Chương Trình & Ban Nhạc Sảnh Tiệc',
+                'category' => 'mc_music',
+                'contact_person' => 'MC Điều phối tiệc',
+                'contract_status' => 'contacting',
+                'total_amount' => 7000000,
+                'deposit_paid' => 0,
+                'service_timeline' => 'Có mặt lúc 18:00 khớp kịch bản, dẫn lễ từ 18:45',
+                'notes' => '1 MC song ngữ + ban nhạc acoustic 3 nhạc công đón khách',
+                'display_order' => 7,
+            ],
+            [
+                'name' => 'Dịch Vụ Thuê Xe Hoa Rước Dâu',
+                'category' => 'car_transport',
+                'contact_person' => 'Tài xế trưởng đoàn',
+                'contract_status' => 'contacting',
+                'total_amount' => 5000000,
+                'deposit_paid' => 1000000,
+                'service_timeline' => '07:30 sáng tập kết tại nhà trai xuất phát sang nhà gái',
+                'notes' => 'Xe hoa Mercedes kết hoa tươi + 1 xe 16 chỗ chở hai họ',
+                'display_order' => 8,
+            ],
+        ];
+
+        foreach ($defaults as $v) {
+            $wedding->vendors()->create($v);
+        }
+
+        return count($defaults);
+    }
+
+    /**
+     * Xuất file CSV danh bạ nhà cung cấp cưới chuẩn UTF-8 BOM.
+     */
+    public function exportVendorsCsv(Wedding $wedding): string
+    {
+        $vendors = $wedding->vendors()->get();
+
+        $rows = [];
+        $rows[] = [
+            'STT',
+            'Tên Nhà Cung Cấp',
+            'Hạng Mục',
+            'Người Phụ Trách',
+            'Số Điện Thoại',
+            'Email',
+            'Địa Chỉ',
+            'Trạng Thái Hợp Đồng',
+            'Tổng Giá Trị (VND)',
+            'Đã Cọc (VND)',
+            'Còn Phải Trả (VND)',
+            'Hạn Thanh Toán',
+            'Thời Gian Phục Vụ',
+            'Ghi Chú',
+        ];
+
+        foreach ($vendors as $idx => $v) {
+            $rows[] = [
+                $idx + 1,
+                $v->name,
+                $v->category_label,
+                $v->contact_person ?? '',
+                $v->phone ?? '',
+                $v->email ?? '',
+                $v->address ?? '',
+                $v->status_label,
+                $v->total_amount,
+                $v->deposit_paid,
+                $v->balance_due,
+                $v->payment_due_date ? $v->payment_due_date->format('d/m/Y') : '',
+                $v->service_timeline ?? '',
+                $v->notes ?? '',
+            ];
+        }
+
         $handle = fopen('php://temp', 'r+');
         foreach ($rows as $row) {
             $sanitizedRow = array_map(function ($val) {

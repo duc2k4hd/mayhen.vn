@@ -128,6 +128,11 @@ class Wedding extends Model
         return $this->hasMany(WeddingBudgetItem::class)->orderBy('display_order')->orderBy('id');
     }
 
+    public function vendors(): HasMany
+    {
+        return $this->hasMany(WeddingVendor::class)->orderBy('display_order')->orderBy('id');
+    }
+
     public function rescheduleLogs(): HasMany
     {
         return $this->hasMany(WeddingRescheduleLog::class)->latest('id');
