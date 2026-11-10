@@ -6756,9 +6756,14 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Tập tin đã chỉnh sửa / tạo mới**:
   * `docs/qa/feature-traceability.csv`
   * `docs/qa/MAY_HEN_FUNCTION_CATALOG.md`
+  * `docs/qa/MAY_HEN_FEATURE_INVENTORY.csv`
   * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`
+  * `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv`
+  * `docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`
   * `docs/qa/release-gates.md`
   * `docs/qa/qa-checkpoint.md`
+  * `docs/qa/security-review.md`
+  * `docs/qa/visual-review.md`
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
   * Toàn bộ test suite: **626/626 tests PASSED 100% (3,208 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
