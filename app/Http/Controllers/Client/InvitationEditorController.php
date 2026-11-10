@@ -10,6 +10,7 @@ use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
+use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
@@ -177,6 +178,7 @@ class InvitationEditorController extends Controller
             'revision_id' => 'required_with:invitation_id|nullable|integer|min:0',
         ]);
 
+        $existing = null;
         $invitationId = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
         if ($invitationId) {
             $existing = Invitation::with('wedding')->findOrFail($invitationId);
@@ -214,6 +216,48 @@ class InvitationEditorController extends Controller
             $customConfig = is_array($decoded) ? $decoded : [];
         } else {
             $customConfig = is_array($rawConfig) ? $rawConfig : [];
+        }
+
+        // Kiểm tra và phát hiện thay đổi thông tin tài khoản ngân hàng mừng cưới (Section 35 Master PRD V3)
+        if (! empty($existing) && $existing->wedding) {
+            $oldWeddingExtra = is_array($existing->wedding->extra_data) ? $existing->wedding->extra_data : (json_decode((string) $existing->wedding->extra_data, true) ?? []);
+            $oldGroomBank = (string) ($oldWeddingExtra['groom_bank_account'] ?? ($existing->wedding->bank_account_number ?? ''));
+            $oldGroomBankName = (string) ($oldWeddingExtra['groom_bank_name'] ?? ($existing->wedding->bank_name ?? ''));
+            $oldBrideBank = (string) ($oldWeddingExtra['bride_bank_account'] ?? '');
+            $oldBrideBankName = (string) ($oldWeddingExtra['bride_bank_name'] ?? '');
+
+            $newWeddingExtra = (array) ($rawWedding['extra_data'] ?? []);
+            $newGroomBank = (string) ($newWeddingExtra['groom_bank_account'] ?? ($rawWedding['bank_account_number'] ?? ''));
+            $newGroomBankName = (string) ($newWeddingExtra['groom_bank_name'] ?? ($rawWedding['bank_name'] ?? ''));
+            $newBrideBank = (string) ($newWeddingExtra['bride_bank_account'] ?? '');
+            $newBrideBankName = (string) ($newWeddingExtra['bride_bank_name'] ?? '');
+
+            $isBankChanged = ($oldGroomBank !== $newGroomBank) || ($oldGroomBankName !== $newGroomBankName) || ($oldBrideBank !== $newBrideBank) || ($oldBrideBankName !== $newBrideBankName);
+
+            if ($isBankChanged) {
+                AuditLogger::log(
+                    'BANK_ACCOUNT_CHANGED',
+                    'Wedding',
+                    $existing->wedding->id,
+                    "Tài khoản mừng cưới của thiệp [{$existing->slug}] đã được cập nhật.",
+                    [
+                        'invitation_id' => $existing->id,
+                        'invitation_slug' => $existing->slug,
+                        'old_accounts' => [
+                            'groom' => $oldGroomBank ? "{$oldGroomBankName} - {$oldGroomBank}" : null,
+                            'bride' => $oldBrideBank ? "{$oldBrideBankName} - {$oldBrideBank}" : null,
+                        ],
+                        'new_accounts' => [
+                            'groom' => $newGroomBank ? "{$newGroomBankName} - {$newGroomBank}" : null,
+                            'bride' => $newBrideBank ? "{$newBrideBankName} - {$newBrideBank}" : null,
+                        ],
+                        'user_id' => $user->id,
+                        'ip' => $request->ip(),
+                    ]
+                );
+
+                $customConfig['last_bank_updated_at'] = now()->toIso8601String();
+            }
         }
 
         $invitation = $this->templateService->saveInvitation($user, $template->id, [
@@ -461,6 +505,29 @@ class InvitationEditorController extends Controller
             }
         }
 
+        // Dynamic Open Graph & Social Card Preview (Section 27 Master PRD V3)
+        $groomName = $wedding->groom_name ?? 'Chú Rể';
+        $brideName = $wedding->bride_name ?? 'Cô Dâu';
+        $weddingDateFormatted = $wedding->wedding_date ? $wedding->wedding_date->format('d/m/Y') : '';
+        $weddingExtra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+        $partyTime = $weddingExtra['party_time'] ?? ($weddingExtra['event_party_time'] ?? '11:00');
+        $venueName = $wedding->venue_name ?: ($weddingExtra['party_venue'] ?? ($wedding->venue_address ?? 'Tư gia'));
+
+        if ($guest) {
+            $salutation = ! empty($guest->salutation) ? trim($guest->salutation) : 'Quý khách';
+            $ogTitle = "Kính mời {$salutation} {$guest->name} tới dự lễ cưới {$groomName} & {$brideName}";
+            $ogDescription = "Trân trọng kính mời {$salutation} {$guest->name} tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
+        } else {
+            $ogTitle = ! empty($config['og_title']) ? $config['og_title'] : "Thiệp cưới {$groomName} & {$brideName} — Mây Hẹn";
+            $ogDescription = ! empty($config['og_description']) ? $config['og_description'] : "Trân trọng kính mời quý khách tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
+        }
+
+        $ogImage = $wedding->cover_photo_url ?: ($weddingExtra['hero_photo_url'] ?? ($template?->thumbnail_url ?? null));
+        if ($ogImage && ! str_starts_with($ogImage, 'http')) {
+            $ogImage = url($ogImage);
+        }
+        $ogUrl = request()->fullUrl();
+
         $viewData = [
             'invitation' => $invitation,
             'wedding' => $wedding,
@@ -483,6 +550,10 @@ class InvitationEditorController extends Controller
             'isRsvpClosed' => $isRsvpClosed,
             'isRsvpLate' => $isRsvpLate,
             'rsvpClosedNotice' => $config['rsvp_closed_notice'] ?? null,
+            'ogTitle' => $ogTitle,
+            'ogDescription' => $ogDescription,
+            'ogImage' => $ogImage,
+            'ogUrl' => $ogUrl,
         ];
 
         if ($customView && view()->exists($customView)) {

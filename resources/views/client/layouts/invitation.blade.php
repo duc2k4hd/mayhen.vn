@@ -22,6 +22,24 @@
         <meta name="description" content="{{ $metaDescription }}">
     @endif
 
+    {{-- Dynamic Open Graph & Rich Social Link Preview (Section 27 Master PRD V3) --}}
+    <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
+    <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
+    @if(!empty($ogImage))
+        <meta property="og:image" content="{{ $ogImage }}">
+    @endif
+    <meta property="og:url" content="{{ $ogUrl ?? url()->current() }}">
+
+    {{-- Twitter Cards --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
+    <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
+    @if(!empty($ogImage))
+        <meta name="twitter:image" content="{{ $ogImage }}">
+    @endif
+
     {{-- Favicon chuẩn Mây Hẹn --}}
     @include('client.components.favicon')
 

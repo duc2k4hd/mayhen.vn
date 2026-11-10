@@ -438,6 +438,67 @@
             </div>
         </div>
 
+        <!-- Khối 9: Giám Sát An Toàn Tài Khoản Nhận Tiền Mừng & Mã QR (Section 35 Master PRD V3) -->
+        @php
+            $wExtra = is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []);
+            $groomBankAcc = $wExtra['groom_bank_account'] ?? ($wedding->bank_account_number ?? '');
+            $groomBankName = $wExtra['groom_bank_name'] ?? ($wedding->bank_name ?? '');
+            $brideBankAcc = $wExtra['bride_bank_account'] ?? '';
+            $brideBankName = $wExtra['bride_bank_name'] ?? '';
+            $lastBankUpdated = !empty($config['last_bank_updated_at']) ? \Carbon\Carbon::parse($config['last_bank_updated_at'])->format('d/m/Y H:i') : null;
+        @endphp
+        <div class="mayhen_account_section" style="margin-bottom: 28px;">
+            <div class="mayhen_account_section_header">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h3 class="mayhen_account_section_title" style="margin: 0;">9. Giám Sát An Toàn Tài Khoản Nhận Quà Mừng (Anti-Tamper Shield)</h3>
+                        <span style="background: #DEF7EC; color: #03543F; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #0E9F6E;"></span>
+                            Đang Bảo Vệ
+                        </span>
+                    </div>
+                </div>
+                <p class="mayhen_account_section_desc" style="margin-top: 4px;">Hệ thống tự động giám sát và ghi vết kiểm toán (Audit Trail) bất biến đối với mọi thao tác cập nhật số tài khoản ngân hàng và mã QR mừng cưới nhằm ngăn chặn triệt để rủi ro giả mạo hoặc chiếm đoạt tiền mừng.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                {{-- Tài khoản Nhà Trai --}}
+                <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px 16px;">
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #9C7A4A; font-weight: 700; margin-bottom: 6px;">Tài Khoản Mừng Cưới Nhà Trai</div>
+                    @if($groomBankAcc)
+                        <div style="font-size: 14px; font-weight: 700; color: #1F1D1A;">{{ $groomBankAcc }}</div>
+                        <div style="font-size: 12px; color: #7A726A; margin-top: 2px;">{{ $groomBankName ?: 'Ngân hàng' }}</div>
+                    @else
+                        <div style="font-size: 13px; color: #94A3B8; font-style: italic;">Chưa thiết lập tài khoản Nhà Trai</div>
+                    @endif
+                </div>
+
+                {{-- Tài khoản Nhà Gái --}}
+                <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px 16px;">
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #9C7A4A; font-weight: 700; margin-bottom: 6px;">Tài Khoản Mừng Cưới Nhà Gái</div>
+                    @if($brideBankAcc)
+                        <div style="font-size: 14px; font-weight: 700; color: #1F1D1A;">{{ $brideBankAcc }}</div>
+                        <div style="font-size: 12px; color: #7A726A; margin-top: 2px;">{{ $brideBankName ?: 'Ngân hàng' }}</div>
+                    @else
+                        <div style="font-size: 13px; color: #94A3B8; font-style: italic;">Chưa thiết lập tài khoản Nhà Gái</div>
+                    @endif
+                </div>
+            </div>
+
+            <div style="background: #FFFDF9; border: 1px dashed #C5A880; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12.5px;">
+                <div style="color: #6B635B;">
+                    @if($lastBankUpdated)
+                        🛡️ <span>Lần cập nhật tài khoản gần nhất: <strong>{{ $lastBankUpdated }}</strong>. Mọi thay đổi đều được ghi vết bảo mật.</span>
+                    @else
+                        🛡️ <span>Thông tin tài khoản ngân hàng được khóa an toàn theo định danh của cặp đôi.</span>
+                    @endif
+                </div>
+                <a href="{{ route('invitation.create', ['edit' => $invitation->slug]) }}" class="mayhen_account_btn mayhen_account_btn_sm mayhen_account_btn_outline" style="text-decoration: none; font-size: 12px;">
+                    <span>Chỉnh Sửa Trong Studio</span>
+                </a>
+            </div>
+        </div>
+
         <!-- Nút Lưu Cài Đặt -->
         <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-bottom: 40px;">
             <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">

@@ -7868,6 +7868,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **888/888 tests PASSED 100% (4,759 assertions in 25.97s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 62. DYNAMIC OPEN GRAPH CÁ NHÂN HÓA & KIỂM SOÁT AN TOÀN TÀI KHOẢN MỪNG CƯỚI (PERSONALIZED SOCIAL PREVIEW & BANK ACCOUNT ANTI-TAMPER ENGINE — SECTION 27 & 35 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện cơ chế xem trước đường link thiệp cưới trên Zalo / Facebook Messenger có cá nhân hóa theo từng quan khách khi gửi link kèm mã định danh token (Section 27), đồng thời thiết lập hệ thống giám sát kiểm toán chống giả mạo số tài khoản ngân hàng và mã QR nhận quà mừng (Section 35 Master PRD V3).
+- **Chi tiết triển khai**:
+  1. **Dynamic Open Graph & Rich Social Card Preview ([InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php))**:
+     - Trong `show()`: Tự động trích xuất thông tin khách mời khi có tham số `?token=...`:
+       * Khi có khách mời (`$guest`): Tiêu đề Open Graph được cá nhân hóa trang trọng: `Kính mời {Danh xưng} {Tên khách} tới dự lễ cưới {Chú Rể} & {Cô Dâu}` kèm lời tựa chi tiết thời gian hôn lễ và địa điểm sảnh tiệc.
+       * Khi chia sẻ link chung (không token): Ưu tiên nội dung tùy biến cặp đôi đã cài đặt trong settings (`og_title`, `og_description`), hoặc tự động sinh theo cặp đôi: `Thiệp cưới {Chú Rể} & {Cô Dâu} — Mây Hẹn`.
+       * Tự động chuyển đổi ảnh bìa đại diện (`ogImage`) sang URL tuyệt đối hợp lệ.
+  2. **Bảo Vệ View & Thẻ Thao Tác Mạng Xã Hội ([invitation.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/layouts/invitation.blade.php) & [public-invitation.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/public-invitation.blade.php))**:
+     - Tích hợp đầy đủ các thẻ tiêu chuẩn: `og:site_name`, `og:type` (`article`), `og:title`, `og:description`, `og:image`, `og:url`.
+     - Bổ sung định dạng Twitter Card: `twitter:card` (`summary_large_image`), `twitter:title`, `twitter:description`, `twitter:image`.
+  3. **Giám Sát An Toàn Tài Khoản Ngân Hàng Mừng Cưới (Bank Anti-Tamper Engine - Section 35)**:
+     - Trong `InvitationEditorController::store()`: So sánh thông tin số tài khoản và ngân hàng Nhà Trai / Nhà Gái giữa bản ghi hiện tại và dữ liệu mới cập nhật (`groom_bank_account`, `groom_bank_name`, `bride_bank_account`, `bride_bank_name`, `bank_account_number`).
+     - Khi phát hiện có sự thay đổi:
+       * Tự động ghi vết vào nhật ký kiểm toán bất biến qua `AuditLogger::log('BANK_ACCOUNT_CHANGED', ...)` lưu lại chi tiết tài khoản cũ và mới, ID cặp đôi và IP truy cập.
+       * Tự động lưu mốc thời gian `last_bank_updated_at` trong cấu hình thiệp cưới.
+  4. **Giao Diện Quản Trị Cài Đặt ([settings.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/settings.blade.php))**:
+     - Bổ sung Khối 9: **Giám Sát An Toàn Tài Khoản Nhận Quà Mừng (Anti-Tamper Shield)** kèm huy hiệu xanh "Đang Bảo Vệ".
+     - Hiển thị trực quan thông tin tài khoản Nhà Trai, Nhà Gái và mốc thời gian cập nhật gần nhất.
+     - Cung cấp nút chuyển nhanh vào Studio tạo thiệp để chỉnh sửa khi có nhu cầu thay đổi.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/DynamicOpenGraphAndBankSecurityAuditTest.php` gồm **5 kịch bản kiểm thử độc lập (27 assertions)**: 100% PASSED (render Open Graph cá nhân hóa theo token khách mời, render Open Graph mặc định khi không token, ghi đè thẻ meta khi có cấu hình tùy biến, kích hoạt Audit Log bất biến và cập nhật timestamp khi đổi tài khoản ngân hàng trong Studio, và hiển thị huy hiệu an toàn cùng thông tin tài khoản trong trang settings).
+     - Toàn bộ test suite hệ thống: **893/893 tests PASSED 100% (4,786 assertions in 19.83s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 
 

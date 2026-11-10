@@ -10,11 +10,21 @@
 
     @include('client.components.favicon')
 
-    <!-- Open Graph for Zalo / Facebook -->
+    <!-- Open Graph for Zalo / Facebook & Social Link Preview (Section 27 Master PRD V3) -->
+    <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Thiệp mời cưới: &quot;{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}&quot; | {{ config('app.name') }}">
-    <meta property="og:description" content="Hôn lễ được tổ chức vào ngày {{ $wedding->wedding_date->format('d.m.Y') }} tại {{ $wedding->venue_name }}. Kính mời quý khách tới tham dự.">
-    <meta property="og:image" content="{{ $wedding->cover_photo_url }}">
+    <meta property="og:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . config('app.name')) }}">
+    <meta property="og:description" content="{{ $ogDescription ?? ('Hôn lễ được tổ chức vào ngày ' . ($wedding->wedding_date ? $wedding->wedding_date->format('d.m.Y') : '') . ' tại ' . $wedding->venue_name . '. Kính mời quý khách tới tham dự.') }}">
+    <meta property="og:image" content="{{ $ogImage ?? $wedding->cover_photo_url }}">
+    <meta property="og:url" content="{{ $ogUrl ?? url()->current() }}">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . config('app.name')) }}">
+    <meta name="twitter:description" content="{{ $ogDescription ?? ('Hôn lễ được tổ chức vào ngày ' . ($wedding->wedding_date ? $wedding->wedding_date->format('d.m.Y') : '') . ' tại ' . $wedding->venue_name . '. Kính mời quý khách tới tham dự.') }}">
+    @if(!empty($ogImage ?? $wedding->cover_photo_url))
+        <meta name="twitter:image" content="{{ $ogImage ?? $wedding->cover_photo_url }}">
+    @endif
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
