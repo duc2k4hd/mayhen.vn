@@ -7811,6 +7811,35 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **878/878 tests PASSED 100% (4,713 assertions in 21.40s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 60. TRUNG TÂM THÔNG BÁO DỜI LỊCH CƯỚI & TÁI XÁC NHẬN RSVP (WEDDING RESCHEDULE & RE-CONFIRMATION CENTER — LUỒNG G MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Xây dựng phân hệ Thông báo thay đổi ngày cưới và khảo sát lại RSVP theo đúng Luồng G & Section 61 của Master PRD V3, giải quyết trọn vẹn tình huống thực tế khi cặp đôi cần dời ngày cưới hoặc đổi địa điểm sảnh tiệc sau khi đã phát hành thiệp cưới.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_250000_create_wedding_reschedule_logs_table.php`:
+       * Bảng `wedding_reschedule_logs`: `wedding_id`, `invitation_id`, `old_date`, `new_date`, `old_venue`, `new_venue`, `reason`, `rsvp_action` (`keep_existing`, `request_reconfirm`), `affected_guests_count`, `notified_guests_count`.
+       * Bổ sung 2 cột vào bảng `guest_responses`: `needs_reconfirmation` (boolean, default false) và `reconfirmed_at` (timestamp, nullable).
+     - Model: `app/Models/WeddingRescheduleLog.php` (accessor `rsvp_action_label`).
+     - Cập nhật model `app/Models/GuestResponse.php`: khai báo `$fillable`, cast datetime cho `reconfirmed_at`, boolean cho `needs_reconfirmation`.
+     - Cập nhật model `app/Models/Wedding.php`: quan hệ `rescheduleLogs(): HasMany`.
+  2. **Dịch Vụ Nghiệp Vụ ([WeddingRescheduleService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingRescheduleService.php))**:
+     - `getRescheduleData(Wedding $wedding, Invitation $invitation)`: Đánh giá tác động số lượng khách mời bị ảnh hưởng, số khách đã gửi thiệp, số khách đã báo tham dự, lịch hiện tại và lịch sử dời lịch.
+     - `executeReschedule(Wedding $wedding, Invitation $invitation, array $data)`: Cập nhật ngày cưới mới (`wedding_date`), địa điểm mới, tự động đồng bộ sự kiện chính trong `wedding_events`, thiết lập `needs_reconfirmation = true` cho toàn bộ khách nếu chọn chế độ yêu cầu xác nhận lại, tạo bản ghi log và ghi Audit Log `WEDDING_RESCHEDULED`.
+     - `generateZaloMessage(Guest $guest, Wedding $wedding, ?WeddingRescheduleLog $log)`: Tự động tạo nội dung tin nhắn Zalo/SMS trang trọng gửi quan khách (thông báo ngày cũ -> ngày mới, địa điểm, lý do và đính kèm đường link thiệp cá nhân hóa có token).
+  3. **Tích Hợp Tái Xác Nhận RSVP ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - Trong `submitRsvp()`: Cho phép khách mời có phản hồi được đánh dấu `needs_reconfirmation = true` được quyền gửi lại phản hồi cho ngày cưới mới (chuyển đổi từ tham dự sang từ chối hoặc ngược lại), tự động xóa cờ `needs_reconfirmation = false` và lưu `reconfirmed_at = now()`.
+  4. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Client Controller: `app/Http/Controllers/Client/WeddingRescheduleController.php` (`index`, `submit`, `message`).
+     - Client View: `resources/views/client/pages/account/reschedule/index.blade.php`:
+       * Thẻ cảnh báo tác động trực quan kèm 4 chỉ số KPI: Tổng khách, Đã gửi thiệp, Đã báo tham dự, Cần xác nhận lại.
+       * Form thiết lập ngày cưới mới, sảnh tiệc mới, lý do và tùy chọn xử lý RSVP ("Giữ nguyên phản hồi cũ" hoặc "Yêu cầu xác nhận lại").
+       * Bảng nhật ký các đợt dời lịch cưới trong quá khứ.
+       * Bảng danh sách quan khách kèm nút sao chép nhanh tin nhắn Zalo gửi từng người (fetch API realtime, chép thẳng vào clipboard).
+     - Tích hợp nút **Dời Lịch Cưới** vào Feature Grid danh sách thiệp `resources/views/client/pages/account/invitations.blade.php`.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/WeddingRescheduleWorkflowTest.php` gồm **5 kịch bản kiểm thử độc lập (29 assertions)**: 100% PASSED (bao gồm kiểm thử đánh giá tác động, dời ngày cưới và đồng bộ sự kiện cưới, cho phép khách tái xác nhận RSVP ngày mới, tạo tin nhắn Zalo có token cá nhân hóa, và cô lập tenant 404).
+     - Toàn bộ test suite hệ thống: **883/883 tests PASSED 100% (4,742 assertions in 21.47s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 
 

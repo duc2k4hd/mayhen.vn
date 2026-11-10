@@ -567,6 +567,8 @@ class GuestController extends Controller
                     'children_count' => $children,
                     'dietary_requirements' => $validated['dietary_requirements'] ?? null,
                     'wishes' => $validated['notes'] ?? null,
+                    'needs_reconfirmation' => false,
+                    'reconfirmed_at' => now(),
                     'ip_address' => $request->ip(),
                 ]
             );
@@ -763,6 +765,22 @@ class GuestController extends Controller
             }
 
             if ($existingResponse->exists()) {
+                $existing = $existingResponse->first();
+                if ($existing && $existing->needs_reconfirmation) {
+                    $existing->update([
+                        'attending_status' => $request->validated('attending_status'),
+                        'adults_count' => $request->validated('adults_count') ?? 1,
+                        'children_count' => $request->validated('children_count') ?? 0,
+                        'dietary_requirements' => $request->validated('dietary_requirements'),
+                        'wishes' => $request->validated('wishes'),
+                        'needs_reconfirmation' => false,
+                        'reconfirmed_at' => now(),
+                        'ip_address' => $ip,
+                    ]);
+
+                    return true;
+                }
+
                 return false;
             }
 

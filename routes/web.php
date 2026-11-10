@@ -27,6 +27,7 @@ use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingPlannerController;
+use App\Http\Controllers\Client\WeddingRescheduleController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
 use App\Http\Controllers\Partner\PartnerDashboardController;
@@ -180,6 +181,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::delete('/thiep/{id}/ke-hoach-cuoi/ngan-sach/{itemId}', [WeddingPlannerController::class, 'destroyBudgetItem'])->name('planner.budget.destroy');
     Route::post('/thiep/{id}/ke-hoach-cuoi/muc-tieu-ngan-sach', [WeddingPlannerController::class, 'updateTargetBudget'])->name('planner.budget.target');
     Route::get('/thiep/{id}/ke-hoach-cuoi/xuat-ngan-sach-csv', [WeddingPlannerController::class, 'exportBudgetCsv'])->name('planner.budget.export');
+
+    // Thông Báo Dời Lịch Cưới & Tái Xác Nhận RSVP (Luồng G - Master PRD V3 Section 61)
+    Route::get('/thiep/{id}/thong-bao-doi-lich', [WeddingRescheduleController::class, 'index'])->name('reschedule.index');
+    Route::post('/thiep/{id}/thong-bao-doi-lich/thuc-hien', [WeddingRescheduleController::class, 'submit'])->name('reschedule.submit');
+    Route::get('/api/thiep/{id}/thong-bao-doi-lich/mau-tin/{guestId}', [WeddingRescheduleController::class, 'message'])->name('reschedule.message');
 });
 
 // Guest Management & RSVP

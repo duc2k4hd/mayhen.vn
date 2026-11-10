@@ -123,6 +123,11 @@ class Wedding extends Model
         return $this->hasMany(WeddingBudgetItem::class)->orderBy('display_order')->orderBy('id');
     }
 
+    public function rescheduleLogs(): HasMany
+    {
+        return $this->hasMany(WeddingRescheduleLog::class)->latest('id');
+    }
+
     public function getTargetBudgetAttribute(): int
     {
         $extra = is_array($this->extra_data) ? $this->extra_data : (json_decode((string) $this->extra_data, true) ?? []);
