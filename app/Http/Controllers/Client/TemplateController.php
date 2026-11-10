@@ -60,21 +60,6 @@ class TemplateController extends Controller
                 });
             }
 
-            if ($search !== '') {
-                $unaccented = Str::ascii($search);
-                $slugSearch = Str::slug($search);
-                $query->where(function ($q) use ($search, $unaccented, $slugSearch) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('slug', 'like', "%{$search}%")
-                        ->orWhere('slug', 'like', "%{$unaccented}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-
-                    if ($slugSearch !== '') {
-                        $q->orWhere('slug', 'like', "%{$slugSearch}%");
-                    }
-                });
-            }
-
             if ($sort === 'popular') {
                 $query->orderByRaw("CAST(JSON_UNQUOTE(JSON_EXTRACT(default_config, '$.stats.pairs_used')) AS UNSIGNED) DESC");
             } else {
