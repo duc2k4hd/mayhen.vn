@@ -7544,3 +7544,24 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tạo mới test suite `tests/Feature/AdminReliableMessagingDispatchTest.php` gồm **5 kịch bản kiểm thử độc lập (38 assertions)**: 100% PASSED.
      - Cụm test toàn diện hệ thống: **182/182 tests PASSED 100% (1.058 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
+### 49. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-12: AI QUALITY & COST OBSERVATORY (10/11/2026)
+- **Mục tiêu**: Xây dựng Đài Quan Sát Chất Lượng & Chi Phí AI (AI Observatory) theo chuẩn doanh nghiệp, đo lường chi phí token thực tế, độ trễ phản hồi, kiểm duyệt Brand Safety và tỷ lệ kích hoạt Fallback dự phòng.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Lược Đồ Cơ Sở Dữ Liệu & Model ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_170631_create_ai_observatory_tables.php) & [AiUsageLog.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/AiUsageLog.php))**:
+     - Bảng `ai_usage_logs`: `user_id`, `wedding_id`, `feature_name` (`story_generator`, `rsvp_wording`, `concierge_qa`), `provider` (`gemini-1.5-flash`, `gemini-1.5-pro`, `heuristic_fallback`), `prompt_tokens`, `completion_tokens`, `total_tokens`, `cost_vnd` (decimal 10,4), `latency_ms`, `status` (`success`, `fallback_applied`, `blocked_safety`, `failed`), `safety_rating`, `user_action` (`accepted`, `edited`, `rejected`, `pending`), `prompt_preview`, `output_preview`, `error_message`.
+  2. **Dịch Vụ Đo Lường & An Toàn AI ([AiQualityAndCostObservatoryService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/AiQualityAndCostObservatoryService.php))**:
+     - **Công thức quy đổi Token & Chi phí VND (`calculateTokenCost`)**: Áp dụng tỷ giá tham chiếu 25.400 VND/USD, định mức chi tiết cho Gemini 1.5 Flash ($0.075 / 1M prompt, $0.30 / 1M completion) và Gemini 1.5 Pro ($1.25 / 1M prompt, $5.00 / 1M completion), Heuristic Fallback hoàn toàn miễn phí 0đ.
+     - **Bộ Lọc Văn Hóa & Kiểm Duyệt An Toàn (`checkSafetyGuardrails`)**: Tự động phát hiện các từ khóa nhạy cảm, tiêu cực, vi phạm thuần phong mỹ tục ngày cưới Việt Nam và chặn đứng các yêu cầu độc hại (`blocked_safety`).
+     - **Động Cơ Dự Phòng Văn Bản Quiet Luxury (`getHeuristicFallback`)**: Tự động kích hoạt khi nhà cung cấp AI gặp sự cố hoặc timeout mạng, cung cấp những đoạn văn tình yêu, lời mời và phản hồi concierge chuẩn phong cách Quiet Luxury trang nhã viết sẵn.
+     - **Thống Kê Toàn Cảnh Đài Quan Sát (`getObservatoryMetrics`)**: Tính toán tổng chi phí VND, tổng tokens, độ trễ trung bình ms, tỷ lệ fallback %, tỷ lệ chấp nhận nội dung của khách hàng (Acceptance Rate %), phân bổ theo provider và các sự cố an toàn.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị ([AiObservatoryController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/AiObservatoryController.php) & [index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/ai_observatory/index.blade.php))**:
+     - 5 Thẻ KPI nổi bật: Tổng Chi Phí AI (VND), Tổng Tokens Tiêu Thụ, Độ Trễ Trung Bình (ms), Tỷ Lệ Fallback Dự Phòng (%), Tỷ Lệ Chấp Nhận Nội Dung (%).
+     - Phòng Thử Nghiệm Sandbox: Cho phép Quản trị viên chạy giả lập câu lệnh prompt, kiểm tra bộ lọc an toàn và đo lường chi phí/độ trễ tức thời.
+     - Bảng nhật ký sử dụng AI có nút tương tác cập nhật hành vi khách hàng (`accepted`, `edited`, `rejected`).
+     - Tích hợp menu **Đài Quan Sát AI (Tokens & Cost)** vào thanh điều hướng bên [master.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+  4. **Kiểm Thử Hồi Quy Toàn Bộ**:
+     - Tạo mới test suite `tests/Feature/AdminAiObservatoryTest.php` gồm **6 kịch bản kiểm thử độc lập (29 assertions)**: 100% PASSED.
+     - Cụm test toàn diện hệ thống: **188/188 tests PASSED 100% (1.087 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+

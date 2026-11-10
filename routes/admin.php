@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuestController as AdminGuestController;
@@ -217,5 +219,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{dispatch}', [AdminMessagingDispatchController::class, 'show'])->name('show');
         Route::post('/{dispatch}/dry-run', [AdminMessagingDispatchController::class, 'dryRun'])->name('dry_run');
         Route::post('/{dispatch}/dispatch', [AdminMessagingDispatchController::class, 'dispatchReal'])->middleware('admin.manager')->name('dispatch_real');
+    });
+
+    // Đài Quan Sát Chất Lượng & Chi Phí AI (NXT-12: AI Quality & Cost Observatory)
+    Route::prefix('ai-observatory')->name('ai_observatory.')->group(function () {
+        Route::get('/', [AdminAiObservatoryController::class, 'index'])->name('index');
+        Route::post('/simulate', [AdminAiObservatoryController::class, 'simulate'])->middleware('admin.manager')->name('simulate');
+        Route::post('/{id}/action', [AdminAiObservatoryController::class, 'recordAction'])->name('record_action');
     });
 });

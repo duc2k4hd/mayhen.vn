@@ -81,6 +81,16 @@
                     <span>Phễu Chuyển Đổi Vận Hành</span>
                 </a>
 
+                <a href="{{ route('admin.ai_observatory.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.ai_observatory.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                    <span>Đài Quan Sát AI (Tokens & Cost)</span>
+                </a>
+
                 <!-- Section 2: Vận Hành Thiệp Cưới -->
                 <div class="mayhen_admin_menu_section">Vận Hành Thiệp Cưới</div>
                 <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.invitations.*') ? 'mayhen_admin_nav_link_active' : '' }}">
