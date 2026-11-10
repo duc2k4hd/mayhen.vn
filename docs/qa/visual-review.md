@@ -90,18 +90,31 @@
 
 ### 2.8. Bộ Sưu Tập Ảnh Chụp Trực Quan Bằng Headless Chrome (Physical Visual Artifacts)
 - **Công cụ chụp**: Google Chrome Headless Engine (`--headless=new`, `--disable-gpu`) trực tiếp trên máy chủ thử nghiệm cục bộ `http://127.0.0.1:8000`.
-- **Tổng số ảnh đã chụp và lưu trữ**: **44 tệp ảnh PNG** trong thư mục `docs/qa/screenshots/`:
+- **Tổng số ảnh đã chụp và lưu trữ**: **96 tệp ảnh PNG** trong thư mục `docs/qa/screenshots/`:
   * **Trang chủ (`home`)**: `home_M375.png` (184 KB), `home_M430.png` (253 KB), `home_T768.png` (478 KB), `home_D1440.png` (647 KB).
   * **Kho mẫu (`templates`)**: `templates_M375.png` (118 KB), `templates_M430.png` (149 KB), `templates_T768.png` (244 KB), `templates_D1440.png` (314 KB).
   * **Chi tiết mẫu (`template-detail`)**: `template-detail_M375.png` (297 KB), `template-detail_M430.png` (355 KB), `template-detail_T768.png` (663 KB), `template-detail_D1440.png` (554 KB).
-  * **Xem thử thiệp (`preview`)**: `preview_M375.png` (31 KB), `preview_M430.png` (34 KB), `preview_T768.png` (45 KB), `preview_D1440.png` (52 KB).
+  * **Xem thử thiệp Giữa Muôn Ngàn Vì Sao (`preview`)**: `preview_M375.png` (31 KB), `preview_M430.png` (34 KB), `preview_T768.png` (45 KB), `preview_D1440.png` (52 KB).
   * **Bảng giá (`pricing`)**: `pricing_M375.png` (79 KB), `pricing_M430.png` (92 KB), `pricing_T768.png` (109 KB), `pricing_D1440.png` (176 KB).
   * **Về Mây Hẹn (`about`)**: `about_M375.png` (68 KB), `about_M430.png` (90 KB), `about_T768.png` (142 KB), `about_D1440.png` (144 KB).
   * **Liên hệ (`contact`)**: `contact_M375.png` (121 KB), `contact_M430.png` (153 KB), `contact_T768.png` (221 KB), `contact_D1440.png` (281 KB).
   * **Hỏi đáp (`faq`)**: `faq_M375.png` (70 KB), `faq_M430.png` (92 KB), `faq_T768.png` (135 KB), `faq_D1440.png` (136 KB).
+  * **Dịch vụ (`services`)**: `services_M375.png` (85 KB), `services_M430.png` (97 KB), `services_T768.png` (113 KB), `services_D1440.png` (133 KB).
+  * **Điều khoản dịch vụ (`terms`)**: `terms_M375.png` (62 KB), `terms_M430.png` (79 KB), `terms_T768.png` (112 KB), `terms_D1440.png` (123 KB).
+  * **Chính sách bảo mật (`privacy`)**: `privacy_M375.png` (67 KB), `privacy_M430.png` (88 KB), `privacy_T768.png` (121 KB), `privacy_D1440.png` (127 KB).
+  * **Mẫu Hạnh Phúc Mang Tên Chúng Mình (`tpl_hanhphuc`)**: `tpl_hanhphuc_M375.png` (113 KB), `tpl_hanhphuc_M430.png` (128 KB), `tpl_hanhphuc_T768.png` (166 KB), `tpl_hanhphuc_D1440.png` (168 KB).
+  * **Mẫu Ngày Tình Yêu Đơm Hoa (`tpl_ngaytinh`)**: `tpl_ngaytinh_M375.png` (99 KB), `tpl_ngaytinh_M430.png` (121 KB), `tpl_ngaytinh_T768.png` (135 KB), `tpl_ngaytinh_D1440.png` (128 KB).
+  * **Mẫu Trọn Kiếp Này Bên Nhau (`tpl_tronkiep`)**: `tpl_tronkiep_M375.png` (58 KB), `tpl_tronkiep_M430.png` (62 KB), `tpl_tronkiep_T768.png` (78 KB), `tpl_tronkiep_D1440.png` (81 KB).
+  * **Chi tiết mẫu Hạnh Phúc Mang Tên (`detail_hanhphuc`)**: `detail_hanhphuc_M375.png` (88 KB), `detail_hanhphuc_M430.png` (118 KB), `detail_hanhphuc_T768.png` (172 KB), `detail_hanhphuc_D1440.png` (290 KB).
+  * **Chi tiết mẫu Ngày Tình Yêu (`detail_ngaytinh`)**: `detail_ngaytinh_M375.png` (78 KB), `detail_ngaytinh_M430.png` (107 KB), `detail_ngaytinh_T768.png` (142 KB), `detail_ngaytinh_D1440.png` (261 KB).
+  * **Chi tiết mẫu Trọn Kiếp Này (`detail_tronkiep`)**: `detail_tronkiep_M375.png` (225 KB), `detail_tronkiep_M430.png` (263 KB), `detail_tronkiep_T768.png` (422 KB), `detail_tronkiep_D1440.png` (434 KB).
   * **Đăng nhập (`login`)**: `login_M375.png` (134 KB), `login_M430.png` (160 KB), `login_T768.png` (251 KB), `login_D1440.png` (378 KB).
   * **Đăng ký (`register`)**: `register_M375.png` (137 KB), `register_M430.png` (164 KB), `register_T768.png` (254 KB), `register_D1440.png` (386 KB).
   * **Trang lỗi 404 (`error404`)**: `error404_M375.png` (60 KB), `error404_M430.png` (69 KB), `error404_T768.png` (93 KB), `error404_D1440.png` (121 KB).
+  * **Cổng Lễ Tân Điểm Danh (`reception`)**: `reception_M375.png` (44 KB), `reception_M430.png` (49 KB), `reception_T768.png` (62 KB), `reception_D1440.png` (90 KB).
+  * **Sổ Tay Khách Mời Cá Nhân Hóa (`concierge`)**: `concierge_M375.png` (59 KB), `concierge_M430.png` (70 KB), `concierge_T768.png` (95 KB), `concierge_D1440.png` (99 KB).
+  * **Tải Ảnh Kỷ Niệm Photo Drop (`photodrop`)**: `photodrop_M375.png` (57 KB), `photodrop_M430.png` (75 KB), `photodrop_T768.png` (107 KB), `photodrop_D1440.png` (125 KB).
+  * **Thiệp Cưới Hoạt Động Trực Tiếp (`invitation_live`)**: `invitation_live_M375.png` (61 KB), `invitation_live_M430.png` (69 KB), `invitation_live_T768.png` (88 KB), `invitation_live_D1440.png` (100 KB).
 - **Kết quả nghiệm thu ảnh thực tế**:
   * 100% không phát sinh lỗi tràn ngang (Zero horizontal overflow).
   * Căn lề, lề an toàn (safe area) và khoảng cách ngón tay cái chạm (touch target $\ge 48\text{px}$) đạt chuẩn công thái học.
