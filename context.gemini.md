@@ -7960,6 +7960,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **907/907 tests PASSED 100% (4,847 assertions in 21.26s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 65. CƠ CHẾ CẬP NHẬT LẠI PHẢN HỒI RSVP & NHẬT KÝ BIẾN ĐỘNG SỐ LƯỢNG KHÁCH (RSVP RE-ENGAGEMENT & RESPONSE REVISION LOGS — SECTION 31 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện cơ chế cho phép quan khách cập nhật lại thông tin phản hồi tham dự (RSVP Re-engagement) khi có sự thay đổi lịch trình hoặc số lượng người đi cùng bằng liên kết cá nhân (Section 31 Master PRD V3). Đảm bảo bảo vệ chống ghi đè nặc danh trên đường dẫn công khai, ghi nhận lịch sử biến động số lượng khách (Revision Logs) và cung cấp quyền kiểm soát bật/tắt chính sách cho cặp đôi trong Cài đặt thiệp cưới.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_210709_create_guest_response_logs_table.php` tạo bảng `guest_response_logs`:
+       * `guest_response_id` (foreign key constrained với cascadeOnDelete).
+       * `wedding_id`, `guest_id` (foreign keys liên kết ngữ cảnh).
+       * `previous_status`, `new_status` (trạng thái tham dự trước và sau khi đổi).
+       * `previous_adults`, `new_adults` (số người lớn trước và sau).
+       * `previous_children`, `new_children` (số trẻ em trước và sau).
+       * `previous_dietary`, `new_dietary` (yêu cầu ăn uống/dị ứng trước và sau).
+       * `previous_wishes`, `new_wishes` (lời chúc trước và sau).
+       * `source` (nguồn thay đổi: `guest_online` từ liên kết khách hoặc `manual_host` do chủ thiệp điều chỉnh).
+       * `ip_address`, `timestamps()`.
+       * Đánh chỉ mục: `[guest_response_id, created_at]`, `[wedding_id, created_at]`.
+  2. **Model Eloquent ([GuestResponseLog.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/GuestResponseLog.php) & [GuestResponse.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/GuestResponse.php))**:
+     - Model: `GuestResponseLog` với đầy đủ casts integer, quan hệ `belongsTo(GuestResponse::class)`, `belongsTo(Wedding::class)`, `belongsTo(Guest::class)`.
+     - Model: `GuestResponse` bổ sung quan hệ `logs(): HasMany` sắp xếp `latest('id')`.
+  3. **Cấu Hình Cặp Đôi Trong Cài Đặt ([AccountController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/AccountController.php) & [settings.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/settings.blade.php))**:
+     - Mở rộng hàm `updateSettings`: Xác thực và lưu trữ `allow_rsvp_update` (boolean) trong `custom_config`.
+     - View `settings.blade.php`: Bổ sung tùy chọn checkbox *"Cho phép khách cập nhật lại phản hồi (RSVP Revisions)"* trong Khối 3: Phản Hồi Khách Mời & Lời Chúc.
+  4. **Thực Thi Quy Trình Cập Nhật Thông Minh ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - Trong `submitRsvp()`:
+       * Kiểm tra phản hồi đã tồn tại (`$existingResponse->exists()`):
+       * Chặn hoàn toàn thao tác cập nhật đối với link công khai không có token (đạt chuẩn chống giả mạo, spam và bảo vệ kết quả bài test an ninh).
+       * Khi truy cập bằng token cá nhân (`$guest !== null`) VÀ chủ thiệp bật `allow_rsvp_update == true` (hoặc khách thuộc diện dời lịch cưới cần tái xác nhận `needs_reconfirmation`): Cho phép cập nhật lại phản hồi mới!
+       * Tự động lưu vết lịch sử vào `GuestResponseLog` ghi nhận đầy đủ trạng thái và số lượng cũ -> mới.
+       * Ghi vết kiểm toán bất biến `AuditLogger::log('RSVP_UPDATED', ...)`.
+       * Bắn Outbound Webhook sự kiện `rsvp.updated` qua `OutboundWebhookService`.
+       * Phản hồi JSON trả về `success: true, is_updated: true` kèm thông điệp cảm ơn cập nhật thành công.
+       * Khi `allow_rsvp_update == false`: Giữ vững cơ chế khóa an toàn trả về HTTP 422 từ chối thay đổi.
+     - Trong `manualRsvp()`:
+       * Khi chủ tiệc điều chỉnh trạng thái RSVP thủ công cho khách mời, tự động ghi nhận bản ghi `GuestResponseLog` với nguồn `source = 'manual_host'`, bảo đảm tính minh bạch 100%.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/RsvpRevisionAndReengagementTest.php` với **5 kịch bản kiểm thử độc lập (34 assertions)**: 100% PASSED (gửi lần đầu tạo response mới không log, cập nhật lại qua token khi bật `allow_rsvp_update` thành công kèm `GuestResponseLog` và cờ `is_updated: true`, chặn cập nhật khi `allow_rsvp_update = false` trả HTTP 422, chủ tiệc điều chỉnh thủ công ghi nhận log `manual_host`, và cấu hình `allow_rsvp_update` lưu trữ chính xác trong account settings).
+     - Toàn bộ test suite hệ thống: **912/912 tests PASSED 100% (4,881 assertions in 23.45s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
 
 
 

@@ -90,4 +90,3 @@ class WeddingMediaController extends Controller
         }
     }
 }
-

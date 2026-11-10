@@ -159,6 +159,14 @@
                     </div>
                 </label>
 
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-top: 8px;">
+                    <input type="checkbox" name="allow_rsvp_update" value="1" {{ old('allow_rsvp_update', $config['allow_rsvp_update'] ?? false) ? 'checked' : '' }} style="width: 18px; height: 18px; accent-color: #C5A880; margin-top: 2px;">
+                    <div>
+                        <strong style="font-size: 14px; color: #1F1D1A; display: block;">Cho phép khách cập nhật lại phản hồi (RSVP Revisions)</strong>
+                        <span style="font-size: 12px; color: #7A726A;">Cho phép quan khách đổi ý hoặc thay đổi số lượng người đi cùng bằng liên kết cá nhân của mình, tự động lưu vết lịch sử biến động.</span>
+                    </div>
+                </label>
+
                 <div style="margin-top: 8px; max-width: 500px;">
                     <label class="mayhen_account_form_label" for="setting-rsvp-deadline">Hạn chót tiếp nhận phản hồi RSVP</label>
                     <input type="date" name="rsvp_deadline" id="setting-rsvp-deadline" value="{{ old('rsvp_deadline', $config['rsvp_deadline'] ?? '') }}" class="mayhen_account_form_input" style="max-width: 320px;">

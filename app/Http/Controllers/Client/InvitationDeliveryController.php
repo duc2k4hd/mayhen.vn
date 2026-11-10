@@ -175,4 +175,3 @@ class InvitationDeliveryController extends Controller
         abort(403, 'Bạn không có quyền truy cập quản lý phân phối thiệp cưới này.');
     }
 }
-

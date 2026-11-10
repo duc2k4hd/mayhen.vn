@@ -8,10 +8,12 @@ use App\Http\Requests\SubmitRsvpRequest;
 use App\Http\Requests\SubmitWishRequest;
 use App\Models\Guest;
 use App\Models\GuestResponse;
+use App\Models\GuestResponseLog;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
+use App\Services\AuditLogger;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
@@ -562,6 +564,26 @@ class GuestController extends Controller
             $adults = $status === 'attending' ? (int) ($validated['adults_count'] ?? $guest->expected_attendees) : 0;
             $children = $status === 'attending' ? (int) ($validated['children_count'] ?? 0) : 0;
 
+            if ($guest->response) {
+                GuestResponseLog::create([
+                    'guest_response_id' => $guest->response->id,
+                    'wedding_id' => $guest->wedding_id,
+                    'guest_id' => $guest->id,
+                    'previous_status' => $guest->response->attending_status,
+                    'new_status' => $status,
+                    'previous_adults' => $guest->response->adults_count ?? 1,
+                    'new_adults' => $adults,
+                    'previous_children' => $guest->response->children_count ?? 0,
+                    'new_children' => $children,
+                    'previous_dietary' => $guest->response->dietary_requirements,
+                    'new_dietary' => $validated['dietary_requirements'] ?? null,
+                    'previous_wishes' => $guest->response->wishes,
+                    'new_wishes' => $validated['notes'] ?? null,
+                    'source' => 'manual_host',
+                    'ip_address' => $request->ip(),
+                ]);
+            }
+
             GuestResponse::updateOrCreate(
                 ['guest_id' => $guest->id],
                 [
@@ -788,7 +810,10 @@ class GuestController extends Controller
         }
         $ip = $request->ip();
 
-        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp): bool {
+        $allowRsvpUpdate = ! empty($config['allow_rsvp_update']);
+        $resultStatus = null; // 'created' or 'updated'
+
+        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp, $allowRsvpUpdate, &$resultStatus): bool {
             $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
             $guest = $guestToken === null
                 ? null
@@ -810,7 +835,28 @@ class GuestController extends Controller
 
             if ($existingResponse->exists()) {
                 $existing = $existingResponse->first();
-                if ($existing && $existing->needs_reconfirmation) {
+                // Chỉ cho phép cập nhật khi khách cần tái xác nhận dời lịch HOẶC có token cá nhân và chủ thiệp bật allow_rsvp_update
+                $canUpdate = $existing && ($existing->needs_reconfirmation || ($guest !== null && $allowRsvpUpdate));
+
+                if ($canUpdate) {
+                    GuestResponseLog::create([
+                        'guest_response_id' => $existing->id,
+                        'wedding_id' => $lockedWedding->id,
+                        'guest_id' => $guest?->id,
+                        'previous_status' => $existing->attending_status,
+                        'new_status' => $request->validated('attending_status'),
+                        'previous_adults' => $existing->adults_count ?? 1,
+                        'new_adults' => $request->validated('adults_count') ?? 1,
+                        'previous_children' => $existing->children_count ?? 0,
+                        'new_children' => $request->validated('children_count') ?? 0,
+                        'previous_dietary' => $existing->dietary_requirements,
+                        'new_dietary' => $request->validated('dietary_requirements'),
+                        'previous_wishes' => $existing->wishes,
+                        'new_wishes' => $request->validated('wishes'),
+                        'source' => 'guest_online',
+                        'ip_address' => $ip,
+                    ]);
+
                     $existing->update([
                         'attending_status' => $request->validated('attending_status'),
                         'adults_count' => $request->validated('adults_count') ?? 1,
@@ -822,6 +868,15 @@ class GuestController extends Controller
                         'reconfirmed_at' => now(),
                         'ip_address' => $ip,
                     ]);
+
+                    AuditLogger::log(
+                        'RSVP_UPDATED',
+                        'GuestResponse',
+                        $existing->id,
+                        "Khách {$existing->guest_name} đã cập nhật lại phản hồi RSVP sang {$request->validated('attending_status')}"
+                    );
+
+                    $resultStatus = 'updated';
 
                     return true;
                 }
@@ -854,6 +909,8 @@ class GuestController extends Controller
                 ]);
             }
 
+            $resultStatus = 'created';
+
             return true;
         });
 
@@ -870,7 +927,8 @@ class GuestController extends Controller
 
         // Bắn Outbound Webhook (nếu có cấu hình)
         try {
-            app(OutboundWebhookService::class)->dispatch($wedding, 'rsvp.submitted', [
+            $webhookEvent = $resultStatus === 'updated' ? 'rsvp.updated' : 'rsvp.submitted';
+            app(OutboundWebhookService::class)->dispatch($wedding, $webhookEvent, [
                 'guest_name' => $request->validated('guest_name'),
                 'phone' => $request->validated('phone'),
                 'attending_status' => $request->validated('attending_status'),
@@ -878,22 +936,32 @@ class GuestController extends Controller
                 'children_count' => (int) ($request->validated('children_count') ?? 0),
                 'dietary_requirements' => $request->validated('dietary_requirements'),
                 'wishes' => $request->validated('wishes'),
+                'is_updated' => $resultStatus === 'updated',
             ]);
         } catch (\Throwable $e) {
             // Safe fallback
         }
 
         if ($request->wantsJson()) {
+            $msg = $resultStatus === 'updated'
+                ? 'Cảm ơn quý khách! Phản hồi tham dự của quý khách đã được cập nhật thành công.'
+                : ($request->validated('attending_status') === 'attending'
+                    ? 'Cảm ơn quý khách đã xác nhận tham dự! Chúng tôi rất hân hạnh được đón tiếp.'
+                    : 'Cảm ơn quý khách đã gửi phản hồi! Chúng tôi rất tiếc vì quý khách chưa thể sắp xếp tham dự.');
+
             return response()->json([
                 'success' => true,
+                'is_updated' => $resultStatus === 'updated',
                 'attending_status' => $request->validated('attending_status'),
-                'message' => $request->validated('attending_status') === 'attending'
-                    ? 'Cảm ơn quý khách đã xác nhận tham dự! Chúng tôi rất hân hạnh được đón tiếp.'
-                    : 'Cảm ơn quý khách đã gửi phản hồi! Chúng tôi rất tiếc vì quý khách chưa thể sắp xếp tham dự.',
+                'message' => $msg,
             ]);
         }
 
-        return back()->with('rsvp_success', 'Cảm ơn quý khách! Phản hồi đã được ghi nhận.');
+        $flashMsg = $resultStatus === 'updated'
+            ? 'Cảm ơn quý khách! Phản hồi tham dự đã được cập nhật thành công.'
+            : 'Cảm ơn quý khách! Phản hồi đã được ghi nhận.';
+
+        return back()->with('rsvp_success', $flashMsg);
     }
 
     /**

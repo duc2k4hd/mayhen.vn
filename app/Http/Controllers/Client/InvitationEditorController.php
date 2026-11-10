@@ -598,7 +598,7 @@ class InvitationEditorController extends Controller
         if ($invitationId = $request->input('invitation_id')) {
             $invitation = Invitation::with('wedding')->find($invitationId);
             if ($invitation && $invitation->wedding) {
-                $storageService = app(\App\Services\WeddingStorageService::class);
+                $storageService = app(WeddingStorageService::class);
                 if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
                     $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
 

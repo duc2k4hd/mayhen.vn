@@ -255,6 +255,7 @@ class AccountController extends Controller
             'password' => ['nullable', 'string', 'max:20'],
             'allow_wishes' => ['nullable', 'boolean'],
             'allow_rsvp' => ['nullable', 'boolean'],
+            'allow_rsvp_update' => ['nullable', 'boolean'],
             'rsvp_deadline' => ['nullable', 'date'],
             'rsvp_lock_after_deadline' => ['nullable', 'boolean'],
             'rsvp_closed_notice' => ['nullable', 'string', 'max:500'],
@@ -291,6 +292,7 @@ class AccountController extends Controller
         $config['password'] = $request->filled('password') ? trim((string) $request->input('password')) : null;
         $config['allow_wishes'] = $request->boolean('allow_wishes', true);
         $config['allow_rsvp'] = $request->boolean('allow_rsvp', true);
+        $config['allow_rsvp_update'] = $request->boolean('allow_rsvp_update', false);
         $config['rsvp_deadline'] = $request->input('rsvp_deadline') ?: null;
         $config['rsvp_lock_after_deadline'] = $request->boolean('rsvp_lock_after_deadline', false);
         $config['rsvp_closed_notice'] = $request->input('rsvp_closed_notice') ? trim((string) $request->input('rsvp_closed_notice')) : null;
