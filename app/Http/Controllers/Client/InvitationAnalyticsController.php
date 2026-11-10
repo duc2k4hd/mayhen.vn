@@ -56,4 +56,3 @@ class InvitationAnalyticsController extends Controller
         ]);
     }
 }
-

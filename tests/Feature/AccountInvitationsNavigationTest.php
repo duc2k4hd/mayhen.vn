@@ -124,4 +124,22 @@ class AccountInvitationsNavigationTest extends TestCase
         $response->assertSee('Bị Khóa');
         $response->assertSee('Tạm Khóa Bởi Quản Trị');
     }
+
+    public function test_card_media_image_onerror_has_infinite_loop_protection(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('account.invitations'));
+
+        $response->assertStatus(200);
+        // Kiểm tra cơ chế chống lặp vô hạn this.onerror=null
+        $response->assertSee('onerror="this.onerror=null;', false);
+    }
+
+    public function test_template_asset_gracefully_falls_back_when_image_is_missing(): void
+    {
+        // Khi gọi 1 ảnh không tồn tại trong mẫu mayhen-curated, tự động fallback về ảnh mặc định thay vì 404
+        $response = $this->get('/mau-thiep/mayhen-curated/assets/non_existent_random_photo.webp');
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'image/webp');
+    }
 }

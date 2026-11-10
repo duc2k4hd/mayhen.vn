@@ -483,7 +483,7 @@
                             <tr>
                                 <td>
                                     <div style="display: flex; align-items: center; gap: 10px;">
-                                        <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--mh-admin-border);" onerror="this.src='{{ asset('assets/client/images/template-placeholder.webp') }}';">
+                                        <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--mh-admin-border);" onerror="this.onerror=null; this.src='{{ asset('assets/client/images/template-placeholder.webp') }}';">
                                         <div>
                                             <div style="font-weight: 600; font-size: 0.84375rem;">{{ $tpl->name }}</div>
                                             <div style="font-size: 0.6875rem; color: var(--mh-admin-muted);">{{ $tpl->category_label }}</div>

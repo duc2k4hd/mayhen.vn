@@ -59,13 +59,13 @@
                     $groomName = $wedding->groom_name ?? 'Chú Rể';
                     $brideName = $wedding->bride_name ?? 'Cô Dâu';
                     $templateName = $inv->template->name ?? 'Mẫu Thiệp Mây Hẹn';
-                    $coverPhoto = $wedding->cover_photo_url ?? ($inv->template->thumbnail_url ?? asset('assets/client/images/hero-default.webp'));
+                    $coverPhoto = $wedding->cover_photo_url ?: ($inv->template->thumbnail_url ?: asset('assets/client/images/hero-default.webp'));
                     $isLocked = !empty($inv->custom_config['is_locked']);
                     $guestCount = $wedding ? $wedding->guests->count() : 0;
                 @endphp
                 <div class="mayhen_account_invitation_card">
                     <div class="mayhen_account_card_media">
-                        <img src="{{ $coverPhoto }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_account_card_img" onerror="this.src='{{ asset('assets/client/images/hero-default.webp') }}'">
+                        <img src="{{ $coverPhoto }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_account_card_img" onerror="this.onerror=null; this.src='{{ asset('assets/client/images/hero-default.webp') }}';">
                         <span class="mayhen_account_card_badge">{{ $templateName }}</span>
 
                         <div style="position: absolute; bottom: 10px; right: 10px;">

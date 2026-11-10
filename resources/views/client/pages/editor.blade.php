@@ -395,7 +395,7 @@
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
-                                                                 onerror="this.src='{{ $defaultImgUrl }}'">
+                                                                 onerror="this.onerror=null; this.src='{{ $defaultImgUrl }}'">
                                                             <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
                                                                 <input type="hidden" 
                                                                        id="{{ $gId }}"
@@ -485,7 +485,7 @@
                                                              alt="Mã QR {{ $sideLabel }}" 
                                                              class="mayhen_vietqr_img" 
                                                              id="preview_thumb_{{ $fieldId }}"
-                                                             onerror="this.src='{{ $selectedTemplate->thumbnail_url }}'">
+                                                             onerror="this.onerror=null; this.src='{{ $selectedTemplate->thumbnail_url }}'">
                                                     </div>
                                                     <div class="mayhen_vietqr_fields">
                                                         <select class="mayhen_client_form_input mayhen_vietqr_bank_select" 
@@ -591,7 +591,7 @@
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"
-                                                     onerror="this.src='{{ $defaultFieldUrl }}'">
+                                                     onerror="this.onerror=null; this.src='{{ $defaultFieldUrl }}'">
                                                 <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
                                                     <input type="hidden" 
                                                            id="{{ $fieldId }}" 

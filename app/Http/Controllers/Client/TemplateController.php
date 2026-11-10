@@ -248,7 +248,23 @@ class TemplateController extends Controller
         }
 
         if ($realTarget === false || ! is_file($realTarget)) {
-            abort(404, 'Asset not found');
+            // Phòng vệ ảnh lỗi: Nếu là file ảnh không tìm thấy trong mẫu, thử fallback về ảnh mẫu mặc định
+            if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'svg'], true)) {
+                $assetsDir = $baseDir.DIRECTORY_SEPARATOR.'assets';
+                $fallbacks = ['thumbnail.webp', 'hero-couple.webp', 'placeholder-photo.svg'];
+                foreach ($fallbacks as $fb) {
+                    $fbPath = realpath($assetsDir.DIRECTORY_SEPARATOR.$fb);
+                    if ($fbPath !== false && is_file($fbPath)) {
+                        $realTarget = $fbPath;
+                        $extension = strtolower(pathinfo($fbPath, PATHINFO_EXTENSION));
+                        break;
+                    }
+                }
+            }
+
+            if ($realTarget === false || ! is_file($realTarget)) {
+                abort(404, 'Asset not found');
+            }
         }
 
         $fullPath = $realTarget;

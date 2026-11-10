@@ -66,7 +66,7 @@
             $groomName = $wedding->groom_name ?? 'Chú Rể';
             $brideName = $wedding->bride_name ?? 'Cô Dâu';
             $templateName = $activeInvitation->template->name ?? 'Mẫu Thiệp Mây Hẹn';
-            $coverPhoto = $wedding->cover_photo_url ?? ($activeInvitation->template->thumbnail_url ?? asset('assets/client/images/hero-default.webp'));
+            $coverPhoto = $wedding->cover_photo_url ?: ($activeInvitation->template->thumbnail_url ?: asset('assets/client/images/hero-default.webp'));
             $isLocked = !empty($activeInvitation->custom_config['is_locked']);
             
             // Tính số ngày đếm ngược
@@ -80,7 +80,7 @@
         @endphp
         <div class="mayhen_account_hero_wedding">
             <div class="mayhen_account_hero_photo_wrap">
-                <img src="{{ $coverPhoto }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_account_hero_photo" onerror="this.src='{{ asset('assets/client/images/hero-default.webp') }}'">
+                <img src="{{ $coverPhoto }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_account_hero_photo" onerror="this.onerror=null; this.src='{{ asset('assets/client/images/hero-default.webp') }}';">
                 <div class="mayhen_account_hero_photo_overlay">
                     <span class="mayhen_account_hero_template_badge">{{ $templateName }}</span>
                     <h2 class="mayhen_account_hero_couple_name">{{ $groomName }} & {{ $brideName }}</h2>

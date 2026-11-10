@@ -138,7 +138,7 @@
             @endphp
 
             <div class="mayhen_admin_qr_image_box">
-                <img src="{{ $qrUrl }}" alt="VietQR Demo Preview" loading="lazy" onerror="this.src='{{ asset('assets/client/images/vietqr-placeholder.png') }}';">
+                <img src="{{ $qrUrl }}" alt="VietQR Demo Preview" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('assets/client/images/vietqr-placeholder.png') }}';">
             </div>
 
             <div style="font-weight: 700; font-size: 0.9375rem; color: var(--mh-admin-charcoal);">

@@ -8239,6 +8239,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **960/960 tests PASSED 100% (5,068 assertions in 24.03s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 72. SỬA LỖI VÒNG LẶP ONERROR VÔ HẠN (INFINITE RECURSIVE ONERROR LOOP & IMAGE FALLBACK DEFENSE) TẠI TRANG /TAI-KHOAN/THIEP (10/11/2026)
+- **Hiện tượng**: Trang `/tai-khoan/thiep` bị treo và load vô hạn. Bảng điều khiển Console xuất hiện hàng trăm lỗi lặp liên tục:
+  `hero-default.webp:1 GET http://127.0.0.1:8000/assets/client/images/hero-default.webp 404 (Not Found) - onerror @ thiep:1667`
+  kèm lỗi `Failed to load resource: /mau-thiep/mayhen-curated/assets/7da1e3a6d59c1a98.webp:1 404 (Not Found)`.
+- **Nguyên nhân gốc rễ (Root Cause Analysis)**:
+  1. *Vòng lặp vô hạn `onerror` (Infinite Recursion)*: Thẻ `<img>` trong `invitations.blade.php` và `dashboard.blade.php` có khai báo `onerror="this.src='{{ asset('assets/client/images/hero-default.webp') }}'"`. Khi ảnh ban đầu bị lỗi (404), trình duyệt kích hoạt sự kiện `onerror` và gán `this.src` thành `hero-default.webp`.
+  2. *Tệp ảnh fallback không tồn tại*: Thư mục `public/assets/client/images` chưa được tạo và tệp `hero-default.webp` không tồn tại (trả về 404).
+  3. *Thiếu `this.onerror = null;`*: Do không hủy bỏ bộ lắng nghe lỗi trước khi gán lại `this.src`, việc `hero-default.webp` trả về 404 tiếp tục kích hoạt lại sự kiện `onerror`, tạo thành một vòng lặp đệ quy vô hạn với hàng trăm request mỗi giây làm nghẽn CPU và thread mạng của trình duyệt.
+  4. *Lệch đường dẫn ảnh mặc định*: Mẫu thiệp `mayhen-curated` tham chiếu đến tệp `7da1e3a6d59c1a98.webp` (vốn là asset của mẫu `giua-muon-ngan-vi-sao`) khiến ảnh ban đầu trả về 404 và khởi phát lỗi.
+- **Giải pháp xử lý triệt để 4 lớp phòng vệ (4-Layer Defense)**:
+  1. *Lớp 1: Khử sạch vòng lặp vô hạn bằng `this.onerror = null;`*: Cập nhật toàn bộ các thuộc tính `onerror` trong Blade (`invitations.blade.php`, `dashboard.blade.php`, `admin/pages/dashboard.blade.php`, `admin/pages/settings/banking.blade.php`, `editor.blade.php`) thành `onerror="this.onerror=null; this.src='...';"`. Điều này đảm bảo sự kiện `onerror` chỉ được chạy tối đa 1 lần duy nhất, loại bỏ hoàn toàn khả năng lặp vô hạn ngay cả khi ảnh fallback gặp sự cố.
+  2. *Lớp 2: Khởi tạo đầy đủ thư mục và tệp ảnh dự phòng*: Tạo thư mục `public/assets/client/images/` và cung cấp đầy đủ các tệp ảnh fallback chuẩn: `hero-default.webp`, `template-placeholder.webp`, `vietqr-placeholder.png`.
+  3. *Lớp 3: Phòng vệ ảnh lỗi tự động tại `TemplateController::asset`*: Nâng cấp Controller phân phối asset mẫu thiệp; nếu một tệp ảnh (`jpg`, `jpeg`, `png`, `webp`, `svg`) được yêu cầu nhưng không tìm thấy trong thư mục của mẫu đó, hệ thống sẽ tự động tìm kiếm và trả về tệp ảnh đại diện sẵn có của mẫu (`thumbnail.webp`, `hero-couple.webp`) với mã trạng thái HTTP 200 thay vì trả về 404 làm gãy giao diện.
+  4. *Lớp 4: Chuẩn hóa dữ liệu ảnh bìa*: Cập nhật ảnh bìa của đám cưới mẫu sang `/mau-thiep/mayhen-curated/assets/hero-couple.webp` và chuyển giá trị mặc định của trường `wedding.cover_photo_url` trong `InvitationTemplateService` về `thumbnail.webp`.
+- **Kiểm thử**:
+  - Mở rộng `tests/Feature/AccountInvitationsNavigationTest.php` với 2 kịch bản kiểm thử:
+    * `test_card_media_image_onerror_has_infinite_loop_protection`: Xác thực 100% thẻ `<img>` có gắn `this.onerror=null`.
+    * `test_template_asset_gracefully_falls_back_when_image_is_missing`: Xác thực gọi asset ảnh không tồn tại tự động fallback HTTP 200.
+  - Toàn bộ test suite hệ thống: **962/962 tests PASSED 100% (5,073 assertions in 25.72s)**.
+  - Laravel Pint: **100% PASSED**.
+
 
 
 

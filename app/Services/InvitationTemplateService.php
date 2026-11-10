@@ -106,7 +106,7 @@ class InvitationTemplateService
                         'label' => 'Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)',
                         'type' => 'image',
                         'required' => false,
-                        'default' => '7da1e3a6d59c1a98.webp',
+                        'default' => 'thumbnail.webp',
                         'placeholder' => 'Đường dẫn ảnh bìa',
                     ],
                     [
