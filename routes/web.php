@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ClientSupportController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\FamilyApprovalController;
@@ -107,6 +108,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
     Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');
     Route::post('/doi-mat-khau', [AccountController::class, 'updatePassword'])->name('password.update');
+
+    // Trung Tâm Hỗ Trợ & Yêu Cầu Cặp Đôi (Client Support Desk)
+    Route::get('/ho-tro', [ClientSupportController::class, 'index'])->name('support.index');
+    Route::post('/ho-tro', [ClientSupportController::class, 'store'])->name('support.store');
+    Route::get('/ho-tro/{ticketCode}', [ClientSupportController::class, 'show'])->name('support.show');
+    Route::post('/ho-tro/{ticketCode}/phan-hoi', [ClientSupportController::class, 'reply'])->name('support.reply');
 
     // Cài Đặt Chi Tiết & Nhân Bản Thiệp Cưới
     Route::get('/thiep/{id}/cai-dat', [AccountController::class, 'settings'])->name('invitations.settings');

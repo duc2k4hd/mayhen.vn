@@ -7406,3 +7406,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
+
+
+### 44. TRIỂN KHAI CỔNG HỖ TRỢ KHÁCH HÀNG (CLIENT SUPPORT DESK) & KHỞI TẠO TICKET CLIENT THẬT (10/11/2026)
+- **Mục tiêu**: Xây dựng luồng tạo và theo dõi yêu cầu hỗ trợ trực tiếp từ giao diện khách hàng (Client Account Portal), hoàn thiện vòng lặp giao tiếp 2 chiều giữa Cặp đôi và CSKH Mây Hẹn, kết nối hoàn hảo với Incident War Room & SLA Escalation Engine tại Admin.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Controller & Route Khách Hàng ([ClientSupportController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/ClientSupportController.php) & [routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - Route danh sách: `GET /tai-khoan/ho-tro` (`account.support.index`).
+     - Route gửi yêu cầu: `POST /tai-khoan/ho-tro` (`account.support.store`).
+     - Route chi tiết ticket: `GET /tai-khoan/ho-tro/{ticketCode}` (`account.support.show`).
+     - Route gửi phản hồi: `POST /tai-khoan/ho-tro/{ticketCode}/phan-hoi` (`account.support.reply`).
+     - Tự động gán mã `ticket_code` duy nhất dạng `TK-XXXXXXXX`.
+     - Tự động nhận diện cặp đôi có tiệc cưới trong vòng 48 giờ tới để kích hoạt chế độ **VIP Concierge 48h (SLA hạn phản hồi 60 phút)** và ưu tiên hàng đợi khẩn cấp.
+     - Kiểm soát an toàn dữ liệu: Khách hàng chỉ có thể xem và phản hồi trên ticket của chính mình (chặn 404/không lộ thông tin cặp đôi khác).
+     - Bảo vệ tính riêng tư: Ẩn hoàn toàn các ghi chú nội bộ (`is_internal_note = true`) của đội ngũ Admin, chỉ hiển thị trao đổi công khai.
+     - Khi khách hàng phản hồi trên ticket đã giải quyết (`resolved`), hệ thống tự động mở lại trạng thái `in_progress`.
+     - Ghi nhận Audit Log chi tiết (`support.ticket_submitted_by_client`, `support.client_reply_sent`).
+  2. **Giao Diện Tài Khoản Khách Hàng ([support/index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/support/index.blade.php) & [support/show.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/support/show.blade.php))**:
+     - Bổ sung Tab **Hỗ Trợ & Yêu Cầu** trên thanh điều hướng [layout.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/layout.blade.php).
+     - Banner VIP Concierge 48h màu vàng quý phái tự động xuất hiện khi tiệc cưới cận kề.
+     - Bộ 3 thẻ tóm tắt trạng thái: Tổng số yêu cầu, Đang xử lý, Đã hoàn tất.
+     - Biểu mẫu tạo ticket trang nhã: Chọn phân loại (Kỹ thuật thiệp, Gói cước & Đơn hàng, Nội dung thiệp, Chung), mức độ khẩn cấp, tiêu đề và mô tả chi tiết.
+     - Trang chi tiết ticket: Huy hiệu trạng thái, hạn cam kết SLA, nhân viên hỗ trợ phụ trách, nội dung yêu cầu gốc và dòng thời gian trao đổi 2 chiều phản hồi mượt mà.
+  3. **Khởi Tạo Ticket Mẫu Thực Tế Trong Cơ Sở Dữ Liệu**:
+     - Đã tạo thành công ticket thật từ phía khách hàng (User ID: 2 - Khách Trải Nghiệm / Cặp đôi Minh Tuấn & Thu Hà):
+       * **Mã Ticket**: `TK-F8FAF1F7`
+       * **Tiêu đề**: *"Cần hỗ trợ đổi ảnh bìa gấp và kiểm tra mã QR tiệc cưới ngày mai"*
+       * **Phân loại**: `invitation`
+       * **Mức độ**: `urgent` (VIP Concierge)
+       * **Trạng thái**: `open`
+       * **Hạn cam kết SLA**: 60 phút từ khi tạo.
+       * Ticket đã hiển thị trực tiếp đồng thời trên cả **Admin Support Desk (`/admin/support`)** và **Client Account Support (`/tai-khoan/ho-tro`)**.
+  4. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite: `tests/Feature/ClientSupportTicketTest.php` gồm **6 kịch bản kiểm thử độc lập (28 assertions)**: 100% PASSED.
+     - Cụm test toàn diện 7 test suites NXT: **49/49 tests PASSED 100% (277 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
