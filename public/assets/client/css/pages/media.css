@@ -1,0 +1,142 @@
+/**
+ * May Hen - Wedding Media & Storage Quota Cockpit Styles
+ * Strict Vanilla CSS - Prefix: mayhen_media_*
+ */
+
+.mayhen_media_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.mayhen_media_meter_wrapper {
+    background: #FAF8F5;
+    border: 1px solid #EAE3D9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.mayhen_media_meter_track {
+    height: 12px;
+    background: #E5DCCD;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    margin: 12px 0 8px;
+}
+
+.mayhen_media_meter_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C5A880 0%, #9C7A4A 100%);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.mayhen_media_meter_fill--warning {
+    background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+}
+
+.mayhen_media_meter_fill--danger {
+    background: linear-gradient(90deg, #EF4444 0%, #B91C1C 100%);
+}
+
+.mayhen_media_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.mayhen_media_item {
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_media_item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(31, 29, 26, 0.06);
+}
+
+.mayhen_media_thumb_box {
+    position: relative;
+    width: 100%;
+    height: 170px;
+    background: #FAF8F5;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_media_thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mayhen_media_badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.mayhen_media_badge--cover {
+    background: rgba(156, 122, 74, 0.9);
+    color: #FFFFFF;
+}
+
+.mayhen_media_badge--gallery {
+    background: rgba(31, 29, 26, 0.85);
+    color: #FAF8F5;
+}
+
+.mayhen_media_badge--guest {
+    background: rgba(14, 159, 110, 0.9);
+    color: #FFFFFF;
+}
+
+.mayhen_media_info {
+    padding: 14px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mayhen_media_filename {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1F1D1A;
+    word-break: break-all;
+    margin-bottom: 4px;
+}
+
+.mayhen_media_meta {
+    font-size: 12px;
+    color: #8C827A;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.mayhen_media_actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    border-top: 1px solid #FAF8F5;
+    padding-top: 10px;
+}

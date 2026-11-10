@@ -11,6 +11,7 @@ use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
@@ -26,6 +27,7 @@ use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingEventController;
+use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
 use App\Http\Controllers\Client\WishManagementController;
@@ -186,6 +188,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/thong-bao-doi-lich', [WeddingRescheduleController::class, 'index'])->name('reschedule.index');
     Route::post('/thiep/{id}/thong-bao-doi-lich/thuc-hien', [WeddingRescheduleController::class, 'submit'])->name('reschedule.submit');
     Route::get('/api/thiep/{id}/thong-bao-doi-lich/mau-tin/{guestId}', [WeddingRescheduleController::class, 'message'])->name('reschedule.message');
+
+    // Kho Tệp Media & Quản Lý Dung Lượng Lưu Trữ Cưới (Master PRD V3 Section 26)
+    Route::get('/thiep/{id}/kho-tep', [WeddingMediaController::class, 'index'])->name('wedding_media.index');
+    Route::delete('/thiep/{id}/kho-tep', [WeddingMediaController::class, 'destroy'])->name('wedding_media.destroy');
+    Route::get('/api/thiep/{id}/dung-luong', [WeddingMediaController::class, 'quota'])->name('wedding_media.quota');
 });
 
 // Guest Management & RSVP
@@ -202,6 +209,13 @@ Route::prefix('tai-khoan')->group(function () {
     Route::post('/khach-moi/{id}/toggle-sent', [GuestController::class, 'toggleSent'])->middleware('throttle:60,1')->name('guests.toggle_sent');
     Route::post('/khach-moi/{id}/rsvp-thu-cong', [GuestController::class, 'manualRsvp'])->middleware('throttle:60,1')->name('guests.manual_rsvp');
     Route::delete('/khach-moi/{id}', [GuestController::class, 'destroy'])->name('guests.destroy');
+
+    // Phân Phối Thiệp Cưới & Quản Lý Kênh Gửi (Wedding Invitation Delivery & Campaign Dispatch - Section 30 Master PRD V3)
+    Route::get('/thiep/{id}/phan-phoi/xem-truoc/{guestId}', [InvitationDeliveryController::class, 'preview'])->middleware('throttle:60,1')->name('guests.delivery.preview');
+    Route::post('/khach-moi/{guestId}/phan-phoi', [InvitationDeliveryController::class, 'dispatchSingle'])->middleware('throttle:60,1')->name('guests.delivery.single');
+    Route::post('/thiep/{id}/phan-phoi-hang-loat', [InvitationDeliveryController::class, 'dispatchBatch'])->middleware('throttle:30,1')->name('guests.delivery.batch');
+    Route::get('/thiep/{id}/phan-phoi/thong-ke', [InvitationDeliveryController::class, 'stats'])->middleware('throttle:60,1')->name('guests.delivery.stats');
+    Route::get('/thiep/{id}/phan-phoi/lich-su', [InvitationDeliveryController::class, 'history'])->middleware('throttle:60,1')->name('guests.delivery.history');
 
     // Bảng Điều Khiển Ngày Cưới Realtime (Live Command Center - TASK-V2-02)
     Route::get('/thiep/{id}/dieu-phoi', [LiveCoordinationController::class, 'index'])->name('coordination.index');

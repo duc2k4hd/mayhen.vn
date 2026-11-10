@@ -721,6 +721,163 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 10. Trung Tâm Phân Phối Thiệp Cưới (Section 30 Campaign Dispatch Cockpit)
+    const deliveryModal = document.getElementById('mayhen_modal_delivery_cockpit');
+    const openDeliveryBtn = document.getElementById('btn-open-delivery-modal');
+    const closeDeliveryBtn = document.getElementById('delivery-modal-close');
+    const doneDeliveryBtn = document.getElementById('delivery-btn-done');
+    const deliveryBackdrop = document.getElementById('delivery-modal-backdrop');
+    const dispatchBatchBtn = document.getElementById('delivery-btn-dispatch-batch');
+    const historyContainer = document.getElementById('delivery-history-container');
+    const historyCount = document.getElementById('delivery-history-count');
+
+    async function loadDeliveryHistory() {
+        if (!historyContainer || !dispatchBatchBtn) return;
+        const batchUrl = dispatchBatchBtn.getAttribute('data-batch-url') || '';
+        // Trích xuất invitationId từ batchUrl (/tai-khoan/thiep/{id}/phan-phoi-hang-loat)
+        const match = batchUrl.match(/\/thiep\/(\d+)\//);
+        if (!match) return;
+        const invId = match[1];
+
+        historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #8C827A; font-size: 13px;">Đang tải nhật ký gửi thiệp...</div>';
+
+        try {
+            const res = await fetch(`/tai-khoan/thiep/${invId}/phan-phoi/lich-su`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.success && data.data && data.data.data) {
+                const list = data.data.data;
+                if (historyCount) historyCount.textContent = `Tổng cộng: ${data.data.total} lượt`;
+
+                if (list.length === 0) {
+                    historyContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #8C827A; font-size: 13px;">Chưa có lượt gửi thiệp nào được ghi nhận.</div>';
+                    return;
+                }
+
+                let html = '<table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">';
+                html += '<tr style="background: #F8F6F2; border-bottom: 1px solid #E5DCCD; font-weight: 600; color: #4A453E;"><th style="padding: 8px 12px;">Khách Mời</th><th style="padding: 8px 12px;">Kênh</th><th style="padding: 8px 12px;">Trạng Thái</th><th style="padding: 8px 12px;">Thời Gian</th></tr>';
+
+                list.forEach(item => {
+                    const guestName = item.guest ? `${item.guest.salutation || ''} ${item.guest.name}` : 'Khách mời';
+                    const channelBadge = `<span style="padding: 2px 6px; border-radius: 4px; background: #EAE6DF; font-weight: 600; text-transform: uppercase; font-size: 10px;">${item.channel}</span>`;
+                    const statusBadge = item.status === 'sent' || item.status === 'delivered'
+                        ? '<span style="color: #2E7D32; font-weight: 600;">✓ Thành công</span>'
+                        : '<span style="color: #C62828; font-weight: 600;">✗ Thất bại</span>';
+                    const sentAt = item.sent_at ? new Date(item.sent_at).toLocaleString('vi-VN') : '—';
+
+                    html += `<tr style="border-bottom: 1px solid #F0ECE4;">
+                        <td style="padding: 8px 12px; font-weight: 500; color: #1F1D1A;">${guestName}</td>
+                        <td style="padding: 8px 12px;">${channelBadge}</td>
+                        <td style="padding: 8px 12px;">${statusBadge}</td>
+                        <td style="padding: 8px 12px; color: #7A726A;">${sentAt}</td>
+                    </tr>`;
+                });
+
+                html += '</table>';
+                historyContainer.innerHTML = html;
+            }
+        } catch (err) {
+            console.error('Lỗi tải lịch sử gửi:', err);
+            historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #C62828; font-size: 13px;">Không thể tải lịch sử gửi. Vui lòng thử lại.</div>';
+        }
+    }
+
+    if (openDeliveryBtn && deliveryModal) {
+        openDeliveryBtn.addEventListener('click', () => {
+            deliveryModal.style.display = 'block';
+            openModal(deliveryModal);
+            loadDeliveryHistory();
+        });
+    }
+
+    if (closeDeliveryBtn && deliveryModal) {
+        closeDeliveryBtn.addEventListener('click', () => {
+            closeModal(deliveryModal);
+            deliveryModal.style.display = 'none';
+        });
+    }
+
+    if (doneDeliveryBtn && deliveryModal) {
+        doneDeliveryBtn.addEventListener('click', () => {
+            closeModal(deliveryModal);
+            deliveryModal.style.display = 'none';
+        });
+    }
+
+    if (deliveryBackdrop && deliveryModal) {
+        deliveryBackdrop.addEventListener('click', () => {
+            closeModal(deliveryModal);
+            deliveryModal.style.display = 'none';
+        });
+    }
+
+    if (dispatchBatchBtn) {
+        dispatchBatchBtn.addEventListener('click', async () => {
+            const batchUrl = dispatchBatchBtn.getAttribute('data-batch-url');
+            const channel = document.getElementById('delivery-batch-channel')?.value || 'copy';
+            const template = document.getElementById('delivery-batch-template')?.value || '';
+            const scope = document.getElementById('delivery-batch-scope')?.value || 'unsent';
+
+            // Thu thập guest IDs từ DOM
+            const guestRows = document.querySelectorAll('.mayhen_guest_toggle_sent_btn');
+            const guestIds = [];
+            guestRows.forEach(btn => {
+                const id = btn.getAttribute('data-guest-id');
+                const isSent = btn.classList.contains('mayhen_guest_sent_active');
+                if (id) {
+                    if (scope === 'all' || (scope === 'unsent' && !isSent)) {
+                        guestIds.push(parseInt(id));
+                    }
+                }
+            });
+
+            if (guestIds.length === 0) {
+                alert('Không tìm thấy khách mời nào phù hợp với điều kiện để gửi thiệp.');
+                return;
+            }
+
+            if (!confirm(`Bạn có chắc chắn muốn phát hành thiệp cưới qua kênh [${channel.toUpperCase()}] cho ${guestIds.length} khách mời?`)) {
+                return;
+            }
+
+            dispatchBatchBtn.disabled = true;
+            dispatchBatchBtn.textContent = 'Đang xử lý phân phối...';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const res = await fetch(batchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        guest_ids: guestIds,
+                        channel: channel,
+                        custom_template: template || null,
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Thành công! Đã ghi nhận gửi ${data.result.successful}/${data.result.total} thiệp cưới.`);
+                    // Tải lại trang để đồng bộ toàn bộ bảng
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra khi phân phối thiệp.');
+                }
+            } catch (err) {
+                console.error('Lỗi dispatch batch:', err);
+                alert('Lỗi kết nối khi gửi thiệp hàng loạt.');
+            } finally {
+                dispatchBatchBtn.disabled = false;
+                dispatchBatchBtn.textContent = 'Bắt Đầu Ghi Nhận Phân Phối Hàng Loạt';
+            }
+        });
+    }
+
     function openModal(modalEl) {
         modalEl.classList.add('is-open');
         document.body.style.overflow = 'hidden';

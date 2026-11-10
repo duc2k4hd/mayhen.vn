@@ -7893,6 +7893,74 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **893/893 tests PASSED 100% (4,786 assertions in 19.83s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 63. TRUNG TÂM QUẢN LÝ KHO TỆP ẢNH CƯỚI & KIỂM SOÁT HẠN MỨC DUNG LƯỢNG (WEDDING MEDIA LIBRARY & STORAGE QUOTA COCKPIT — SECTION 26 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Xây dựng kho lưu trữ media tập trung và bảng điều khiển dung lượng lưu trữ (Storage Quota Cockpit) theo từng thiệp cưới và gói dịch vụ (Free: 50MB, Plus: 250MB, Pro: 1024MB) theo chuẩn Section 26 Master PRD V3. Giúp cặp đôi quản lý, xem trước, xóa dọn dẹp các tệp ảnh album/cover cưới đã tải lên, đồng thời ngăn chặn tải lên vượt hạn mức với mã lỗi `quota_exceeded`.
+- **Chi tiết triển khai**:
+  1. **Wedding Storage Service ([WeddingStorageService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingStorageService.php))**:
+     - Định nghĩa hạn mức dung lượng theo gói dịch vụ (`TIER_QUOTAS_MB`: free/trial => 50MB, plus/premium => 250MB, pro => 1024MB).
+     - Hàm `getStorageUsage(Invitation $invitation)`: Quét toàn bộ tệp tin ảnh cưới trong thư mục `weddings/photos`, `weddings/avatars`, `weddings/gallery`, tính toán tổng byte sử dụng, phần trăm tiêu thụ, số lượng tệp và hạn mức cho phép.
+     - Hàm `canUpload(Invitation $invitation, int $incomingBytes)`: Kiểm tra dung lượng tệp mới tải lên, trả về `allowed: false` nếu vượt quá quota.
+     - Hàm `getMediaFiles(Invitation $invitation)`: Quét và trả về danh sách tệp đính kèm đầy đủ thông tin: tên tệp, dung lượng format (KB/MB), ngày tải lên, định dạng, URL hiển thị và trạng thái tệp đang được sử dụng trong thiệp.
+     - Hàm `deleteMediaFile(Invitation $invitation, string $filePath)`: Phòng vệ chống Path Traversal (`basename`), kiểm tra quyền sở hữu tệp tin, xóa tệp vật lý trên `Storage::disk('public')` và ghi nhật ký kiểm toán bất biến `AuditLogger::log('MEDIA_FILE_DELETED', ...)`.
+  2. **Wedding Media Controller ([WeddingMediaController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/WeddingMediaController.php))**:
+     - Cung cấp 3 endpoints quản lý:
+       * `GET /tai-khoan/thiep/{invitation}/kho-tep` (`account.wedding_media.index`): Giao diện Cockpit hiển thị thanh tiến trình dung lượng, bảng danh sách ảnh và nút thao tác xóa.
+       * `DELETE /tai-khoan/thiep/{invitation}/kho-tep` (`account.wedding_media.destroy`): Xóa tệp ảnh giải phóng dung lượng.
+       * `GET /tai-khoan/thiep/{invitation}/kho-tep/quota` (`account.wedding_media.quota`): Endpoint API JSON thời gian thực phục vụ Studio Editor và Dashboard kiểm tra hạn mức tức thì.
+  3. **Tích Hợp Chặn Upload Vượt Hạn Mức Trong Studio ([InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php))**:
+     - Trong phương thức `uploadPhoto()`: Tích hợp `WeddingStorageService::canUpload()`.
+     - Khi phát hiện tệp tải lên làm tổng dung lượng vượt quá hạn mức gói dịch vụ, tự động từ chối và trả về HTTP 422 JSON:
+       `{ "success": false, "quota_exceeded": true, "message": "Dung lượng lưu trữ của gói dịch vụ đã đạt giới hạn..." }`.
+  4. **Giao Diện Người Dùng & Điều Hướng**:
+     - Giao diện `resources/views/client/pages/account/media/index.blade.php`: Thiết kế Quiet Luxury, hiển thị thẻ Gauge thanh phần trăm dung lượng với màu sắc trực quan (Xanh < 75%, Vàng cam 75-90%, Đỏ > 90%), danh sách thumbnail ảnh kèm badge "Đang Sử Dụng", kích thước tệp và nút Xóa có xác nhận an toàn.
+     - Bổ sung nút bấm "Kho Tệp & Dung Lượng" tại danh sách thiệp cưới trong `resources/views/client/pages/account/invitations.blade.php`.
+     - File style độc lập chuẩn BEM Pure CSS: `public/assets/client/css/pages/media.css`.
+  5. **Kiểm Thử Tự Động**:
+     - Tạo mới Feature Test Suite `tests/Feature/WeddingMediaAndStorageQuotaTest.php` với **6 kịch bản kiểm thử độc lập (18 assertions)**: 100% PASSED (chặn truy cập trái phép khi không phải chủ thiệp, hiển thị Cockpit dung lượng và danh sách ảnh, API JSON quota đo lường thời gian thực, xóa tệp ảnh thành công giải phóng dung lượng có Audit Log, chặn xóa ảnh ngoài thư mục hợp lệ, và chặn upload ảnh vượt hạn mức gói Free 50MB trả mã lỗi `quota_exceeded`).
+     - Toàn bộ test suite hệ thống: **899/899 tests PASSED 100% (4,804 assertions in 20.04s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+### 64. HỆ THỐNG PHÂN PHỐI THIỆP CƯỚI & THEO DÕI TRẠNG THÁI GỬI TỰ ĐỘNG (WEDDING INVITATION DELIVERY & CAMPAIGN DISPATCH COCKPIT — SECTION 30 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Xây dựng phân hệ Quản lý phân phối thiệp cưới và Theo dõi trạng thái gửi thiệp (Campaign Dispatch Cockpit) theo chuẩn Section 30 Master PRD V3. Giúp cặp đôi theo dõi chính xác số lượng thiệp đã gửi, phân loại theo 4 kênh phân phối (Sao chép tin nhắn cá nhân hóa, Zalo, SMS, Email), soạn thảo văn bản với merge fields tự động, thực hiện phát hành thiệp hàng loạt (Batch Dispatch) và đo lường tỷ lệ mở thiệp sau khi gửi.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_205556_create_guest_deliveries_table.php` tạo bảng `guest_deliveries` lưu vết toàn bộ nỗ lực gửi thiệp:
+       * `wedding_id`, `guest_id` (foreign keys có cascadeOnDelete).
+       * `channel` (string: `copy`, `zalo`, `sms`, `email`).
+       * `status` (string: `queued`, `sent`, `delivered`, `failed`).
+       * `recipient` (số điện thoại hoặc email người nhận).
+       * `message_body` (nội dung tin nhắn cá nhân hóa đã merge).
+       * `sent_at` (thời điểm gửi thực tế).
+       * `batch_id` (mã định danh đợt phát hành hàng loạt).
+       * Đánh chỉ mục hiệu năng cao: `[wedding_id, channel]`, `[guest_id, status]`, `batch_id`.
+  2. **Model & Quan Hệ Eloquent**:
+     - Model: [GuestDelivery.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/GuestDelivery.php): Khai báo casts `sent_at` datetime, quan hệ `belongsTo(Wedding::class)` và `belongsTo(Guest::class)`, helper methods `isSuccessful()`, `isFailed()`.
+     - Model [Guest.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Guest.php): Bổ sung quan hệ `deliveries(): HasMany`.
+     - Model [Wedding.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Wedding.php): Bổ sung quan hệ `guestDeliveries(): HasMany`.
+  3. **Invitation Delivery Service ([InvitationDeliveryService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/InvitationDeliveryService.php))**:
+     - `getDefaultTemplate(string $channel)`: Bộ mẫu tin nhắn chuẩn cho từng kênh (Copy, Zalo, SMS không dấu, Email trang trọng).
+     - `buildPersonalizedMessage(Guest $guest, Wedding $wedding, ?Invitation $invitation, ?string $template)`: Thay thế tự động các Merge Fields:
+       `{salutation}`, `{guest_name}`, `{groom_name}`, `{bride_name}`, `{couple_names}`, `{wedding_date}`, `{venue_name}`, `{invitation_url}` (kèm token định danh khách mời).
+     - `dispatchSingle(Guest $guest, string $channel, ?string $customMessage)`: Tạo bản ghi `GuestDelivery`, tự động cập nhật `Guest::update(['is_sent' => true, 'sent_at' => now()])` và ghi nhật ký kiểm toán bất biến `AuditLogger::log('INVITATION_DELIVERY_SENT', ...)`.
+     - `dispatchBatch(Wedding $wedding, array $guestIds, string $channel, ?string $customTemplate)`: Xử lý phát hành thiệp hàng loạt, gắn `batch_id`, trả về kết quả số lượng thành công/thất bại.
+     - `getDeliveryStats(Wedding $wedding)`: Tổng hợp các chỉ số chiến dịch: tổng khách, đã gửi thiệp, chưa gửi, số khách đã mở thiệp sau khi gửi (`opened_after_sent`), tỷ lệ mở (`open_rate`) và phân loại số lượng theo từng kênh.
+  4. **Invitation Delivery Controller ([InvitationDeliveryController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationDeliveryController.php))**:
+     - Đăng ký 5 endpoints:
+       * `GET /tai-khoan/thiep/{id}/phan-phoi/xem-truoc/{guestId}` (`guests.delivery.preview`): Xem trước nội dung tin nhắn cá nhân hóa.
+       * `POST /tai-khoan/khach-moi/{guestId}/phan-phoi` (`guests.delivery.single`): Gửi thiệp cho 1 khách mời.
+       * `POST /tai-khoan/thiep/{id}/phan-phoi-hang-loat` (`guests.delivery.batch`): Phát hành thiệp hàng loạt theo đối tượng đã chọn.
+       * `GET /tai-khoan/thiep/{id}/phan-phoi/thong-ke` (`guests.delivery.stats`): API JSON thống kê số liệu chiến dịch.
+       * `GET /tai-khoan/thiep/{id}/phan-phoi/lich-su` (`guests.delivery.history`): Danh sách nhật ký nỗ lực gửi thiệp có phân trang.
+  5. **Giao Diện Khách Mời ([guests.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/guests.blade.php) & [guests.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/guests.js))**:
+     - Bổ sung nút bấm header: "Phân Phối Thiệp & Kênh Gửi" nổi bật.
+     - Bổ sung thẻ thống kê thứ 6: "Đã Gửi Thiệp Cưới" hiển thị tiến độ số thiệp đã gửi / tổng số khách và tỷ lệ mở.
+     - Tích hợp Modal Cockpit: Bảng điều khiển chiến dịch gồm 4 thẻ chỉ số, form phát hành hàng loạt có chọn kênh (Copy/Zalo/SMS/Email), textarea tùy biến mẫu tin có thẻ tag merge fields, và bảng nhật ký nỗ lực gửi gần nhất.
+  6. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/InvitationDeliveryAndDispatchTest.php` với **8 kịch bản kiểm thử độc lập (43 assertions)**: 100% PASSED (chặn truy cập trái phép khi không phải chủ thiệp, xem trước nội dung tin nhắn có đầy đủ merge fields, gửi đơn lẻ qua copy channel cập nhật `is_sent` và lưu `GuestDelivery`, gửi đơn lẻ qua Zalo với custom message, phát hành hàng loạt cho nhiều khách, thống kê tỷ lệ mở/gửi chính xác, xem lịch sử phân phối phân trang, và hiển thị đầy đủ giao diện Cockpit trên view khách mời).
+     - Toàn bộ test suite hệ thống: **907/907 tests PASSED 100% (4,847 assertions in 21.26s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
 
 
 

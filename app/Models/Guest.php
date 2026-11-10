@@ -194,4 +194,9 @@ class Guest extends Model
     {
         return $this->hasMany(WeddingGift::class);
     }
+
+    public function deliveries(): HasMany
+    {
+        return $this->hasMany(GuestDelivery::class);
+    }
 }

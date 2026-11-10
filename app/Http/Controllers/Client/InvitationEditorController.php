@@ -14,6 +14,7 @@ use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
+use App\Services\WeddingStorageService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -571,9 +572,44 @@ class InvitationEditorController extends Controller
         $request->validate([
             'file' => 'required|file|mimes:jpeg,png,jpg,webp,gif,heic|max:20480',
             'template_slug' => 'nullable|string',
+            'invitation_id' => 'nullable|integer',
         ]);
 
         $file = $request->file('file');
+
+        // Kiểm tra Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
+        if ($invitationId = $request->input('invitation_id')) {
+            $invitation = Invitation::with('wedding')->find($invitationId);
+            if ($invitation && $invitation->wedding) {
+                $storageService = app(WeddingStorageService::class);
+                if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
+                    $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Dung lượng lưu trữ của thiệp cưới đã vượt quá giới hạn gói ({$usage['limit_mb']} MB). Bạn đã dùng {$usage['used_mb']} MB. Vui lòng nâng cấp gói hoặc dọn bớt ảnh trong Kho Tệp.",
+                        'quota_exceeded' => true,
+                    ], 422);
+                }
+            }
+        }
+
+        // Kiểm tra Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
+        if ($invitationId = $request->input('invitation_id')) {
+            $invitation = Invitation::with('wedding')->find($invitationId);
+            if ($invitation && $invitation->wedding) {
+                $storageService = app(\App\Services\WeddingStorageService::class);
+                if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
+                    $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Dung lượng lưu trữ của thiệp cưới đã vượt quá giới hạn gói ({$usage['limit_mb']} MB). Bạn đã dùng {$usage['used_mb']} MB. Vui lòng nâng cấp gói hoặc dọn bớt ảnh trong Kho Tệp.",
+                        'quota_exceeded' => true,
+                    ], 422);
+                }
+            }
+        }
         $allowedExtensions = ['jpeg', 'png', 'jpg', 'webp', 'gif', 'heic'];
         $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         if (! in_array($ext, $allowedExtensions, true)) {

@@ -15,6 +15,7 @@ use App\Rules\NoProfanity;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
+use App\Services\InvitationDeliveryService;
 use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
@@ -108,10 +109,13 @@ class GuestController extends Controller
 
         $guests = $guestsQuery->latest()->get();
 
+        $deliveryStats = app(InvitationDeliveryService::class)->getDeliveryStats($wedding);
+
         return view('client.pages.guests', [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'guests' => $guests,
+            'deliveryStats' => $deliveryStats,
             'totalInvited' => $totalInvited,
             'totalGuestsCount' => $totalGuestsCount,
             'totalResponses' => $totalResponses,

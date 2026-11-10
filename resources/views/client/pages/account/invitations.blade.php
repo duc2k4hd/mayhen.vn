@@ -276,6 +276,15 @@
                                 <span>Dời Lịch Cưới</span>
                             </a>
 
+                            <a href="{{ route('account.wedding_media.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý kho tệp hình ảnh & hạn mức dung lượng lưu trữ">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>Kho Tệp & Dung Lượng</span>
+                            </a>
+
                             <button type="button" 
                                 class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm mayhen_account_qr_trigger"
                                 data-invitation-url="{{ url('/thiep/' . $inv->slug) }}"

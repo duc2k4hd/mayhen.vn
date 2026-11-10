@@ -118,6 +118,11 @@ class Wedding extends Model
         return $this->hasMany(WeddingChecklistTask::class)->orderBy('display_order')->orderBy('due_date');
     }
 
+    public function guestDeliveries(): HasMany
+    {
+        return $this->hasMany(GuestDelivery::class)->latest('id');
+    }
+
     public function budgetItems(): HasMany
     {
         return $this->hasMany(WeddingBudgetItem::class)->orderBy('display_order')->orderBy('id');

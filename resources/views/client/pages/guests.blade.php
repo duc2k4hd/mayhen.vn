@@ -66,6 +66,13 @@
                 </p>
             </div>
             <div class="mayhen_guest_header_actions">
+                <button type="button" id="btn-open-delivery-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    <span>Phân Phối Thiệp &amp; Kênh Gửi</span>
+                </button>
                 <button type="button" id="btn-open-presend-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -161,6 +168,11 @@
                 <span class="mayhen_guest_stat_label">Đã Mở Xem Thiệp</span>
                 <span class="mayhen_guest_stat_number" style="color: #1D4ED8;">{{ number_format($openedCount ?? 0) }}</span>
                 <span class="mayhen_guest_stat_desc">Khách đã mở link thiệp</span>
+            </div>
+            <div class="mayhen_guest_stat_card">
+                <span class="mayhen_guest_stat_label">Đã Gửi Thiệp Cưới</span>
+                <span class="mayhen_guest_stat_number" style="color: #9C7A4A;">{{ number_format($deliveryStats['sent_guests'] ?? 0) }}/{{ number_format($totalGuestsCount) }}</span>
+                <span class="mayhen_guest_stat_desc">Tỷ lệ mở: {{ $deliveryStats['open_rate'] ?? 0 }}%</span>
             </div>
         </div>
 
@@ -898,6 +910,111 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
             <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
                 <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="thankyou-btn-done">
                     Hoàn Tất & Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Trung Tâm Phân Phối Thiệp Cưới & Quản Lý Kênh Gửi (Section 30 Master PRD V3) --}}
+    <div class="mayhen_guest_modal" id="mayhen_modal_delivery_cockpit" style="display: none;" role="dialog" aria-modal="true">
+        <div class="mayhen_guest_modal_backdrop" id="delivery-modal-backdrop"></div>
+        <div class="mayhen_guest_modal_dialog" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
+            <div class="mayhen_guest_modal_header">
+                <div>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">CAMPAIGN DISPATCH COCKPIT — SECTION 30</span>
+                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Chiến Dịch Phân Phối Thiệp Cưới &amp; Kênh Gửi</h3>
+                </div>
+                <button type="button" class="mayhen_guest_modal_close" id="delivery-modal-close" aria-label="Đóng">&times;</button>
+            </div>
+            <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
+                {{-- 4 Thẻ chỉ số phân phối --}}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                    <div style="background: #EBF5FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 12px 14px;">
+                        <span style="font-size: 11px; color: #1E40AF; text-transform: uppercase; font-weight: 700; display: block;">Đã Gửi Thiệp</span>
+                        <strong style="font-size: 22px; color: #1E40AF;">{{ $deliveryStats['sent_guests'] ?? 0 }}</strong>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">khách đã nhận lời mời</span>
+                    </div>
+                    <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px;">
+                        <span style="font-size: 11px; color: #92400E; text-transform: uppercase; font-weight: 700; display: block;">Chưa Gửi Thiệp</span>
+                        <strong style="font-size: 22px; color: #92400E;">{{ $deliveryStats['unsent_guests'] ?? 0 }}</strong>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">khách đang chờ phát thiệp</span>
+                    </div>
+                    <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; padding: 12px 14px;">
+                        <span style="font-size: 11px; color: #065F46; text-transform: uppercase; font-weight: 700; display: block;">Đã Mở Xem Thiệp</span>
+                        <strong style="font-size: 22px; color: #065F46;">{{ $deliveryStats['opened_after_sent'] ?? 0 }}</strong>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">lượt tiếp cận thực tế</span>
+                    </div>
+                    <div style="background: #FAF5FF; border: 1px solid #E9D5FF; border-radius: 10px; padding: 12px 14px;">
+                        <span style="font-size: 11px; color: #6B21A8; text-transform: uppercase; font-weight: 700; display: block;">Tỷ Lệ Mở / Gửi</span>
+                        <strong style="font-size: 22px; color: #6B21A8;">{{ $deliveryStats['open_rate'] ?? 0 }}%</strong>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">hiệu suất chiến dịch</span>
+                    </div>
+                </div>
+
+                {{-- Khối gửi thiệp hàng loạt --}}
+                <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 15px; font-weight: 700; color: #1F1D1A; margin: 0;">🚀 Phát Hành Thiệp Mời Hàng Loạt</h4>
+                        <span style="font-size: 12px; color: #8C827A;">Tự động gắn mã token và merge fields</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Kênh Phân Phối</label>
+                            <select id="delivery-batch-channel" class="mayhen_guest_toolbar_select" style="width: 100%;">
+                                <option value="copy">📋 Sao chép văn bản cá nhân hóa</option>
+                                <option value="zalo">💬 Tin nhắn Zalo kèm thiệp</option>
+                                <option value="sms">📱 Tin nhắn SMS thương hiệu</option>
+                                <option value="email">✉️ Thư mời điện tử Email</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Đối Tượng Áp Dụng</label>
+                            <select id="delivery-batch-scope" class="mayhen_guest_toolbar_select" style="width: 100%;">
+                                <option value="unsent">Chỉ khách chưa gửi ({{ $deliveryStats['unsent_guests'] ?? 0 }} khách)</option>
+                                <option value="all">Tất cả khách mời ({{ $totalGuestsCount }} khách)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">
+                            Mẫu Lời Mời Cá Nhân Hóa (Merge Fields)
+                        </label>
+                        <textarea id="delivery-batch-template" rows="3" style="width: 100%; border: 1px solid #D1C7BD; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; line-height: 1.5; box-sizing: border-box;" placeholder="Nhập lời mời tùy biến hoặc để trống để dùng mẫu mặc định..."></textarea>
+                        <div style="font-size: 11px; color: #8C827A; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 6px;">
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{salutation}</span>
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{guest_name}</span>
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{couple_names}</span>
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{wedding_date}</span>
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{venue_name}</span>
+                            <span style="background: #EAE6DF; padding: 2px 6px; border-radius: 4px;">{invitation_url}</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" id="delivery-btn-dispatch-batch" class="mayhen_guest_btn mayhen_guest_btn_gold"
+                            data-batch-url="{{ route('guests.delivery.batch', $invitation->id) }}"
+                            style="box-shadow: 0 4px 12px rgba(197, 168, 128, 0.4);">
+                            <span>Bắt Đầu Ghi Nhận Phân Phối Hàng Loạt</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Báo cáo lịch sử phân phối gần đây --}}
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0;">📜 Nhật Ký Nỗ Lực Gửi Gần Nhất</h4>
+                        <span style="font-size: 12px; color: #8C827A;" id="delivery-history-count">Đang tải...</span>
+                    </div>
+                    <div id="delivery-history-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #E5DCCD; border-radius: 8px;">
+                        {{-- Render qua JS --}}
+                    </div>
+                </div>
+            </div>
+            <div class="mayhen_guest_modal_footer" style="justify-content: flex-end;">
+                <button type="button" class="mayhen_guest_btn mayhen_guest_btn_primary" id="delivery-btn-done">
+                    Đóng Cửa Sổ
                 </button>
             </div>
         </div>
