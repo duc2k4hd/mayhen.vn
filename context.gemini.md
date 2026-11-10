@@ -8260,6 +8260,51 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ test suite hệ thống: **962/962 tests PASSED 100% (5,073 assertions in 25.72s)**.
   - Laravel Pint: **100% PASSED**.
 
+---
+
+## 73. ĐỀ ÁN 73: TRUNG TÂM NHẬP KHÁCH MỜI ĐA KÊNH, XỬ LÝ TỆP CSV THÔNG MINH, TẢI TỆP MẪU CHUẨN & PHÂN NHÓM KHÁCH CƯỚI ĐỘNG (GUEST SMART CSV IMPORT, COLUMN AUTO-DETECTION, DUPLICATE RESOLUTION & SMART DYNAMIC SEGMENTATION — SECTION 28 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**:
+  1. *Tải tệp CSV mẫu chuẩn (Standard CSV Template Download)*: Cung cấp endpoint cho phép người dùng tải tệp CSV mẫu có gắn sẵn UTF-8 BOM (`\xEF\xBB\xBF`) để Microsoft Excel hiển thị tiếng Việt có dấu hoàn hảo không bị vỡ font; bao gồm các cột tiêu đề chuẩn: 'Họ và Tên', 'Danh Xưng', 'Nhóm Khách', 'Số Lượng Mời', 'Số Điện Thoại', 'Bàn Tiệc', 'Ghi Chú'.
+  2. *Tự động phát hiện dấu phân cách (Smart Delimiter Auto-Detection)*: Tự động phân tích dòng đầu tiên của tệp tải lên để phân biệt dấu phẩy (`,`), dấu chấm phẩy (`;` — thường gặp khi xuất từ Windows/Excel tiếng Việt tại Việt Nam và châu Âu) hoặc dấu tab (`\t`), đảm bảo đọc chính xác 100% không làm gãy cột.
+  3. *Tự động nhận diện tiêu đề cột thông minh (Header Auto-Mapping & Fuzzy Match)*: Nhận diện linh hoạt cả tiếng Việt lẫn tiếng Anh cho các cột: Họ tên (`ho va ten`, `full name`, `guest`), Xưng hô (`danh xung`, `salutation`), Nhóm (`nhom`, `group`), Số lượng (`so luong`, `attendees`), Điện thoại (`dien thoai`, `phone`), Bàn tiệc (`ban`, `table`), Ghi chú (`ghi chu`, `notes`).
+  4. *Chuẩn hóa số điện thoại Việt Nam (Vietnam Phone Number Sanitizer)*: Tự động làm sạch ký tự lạ, chuyển đổi đầu số quốc tế `+84...` sang định dạng số di động nội địa `0...` giữ nguyên số 0 ở đầu.
+  5. *Lọc kiểm duyệt ngôn từ vi phạm (Profanity Filtering via ContentModerationService)*: Tự động loại bỏ các dòng chứa từ ngữ thô tục, xúc phạm hoặc vi phạm tiêu chuẩn cộng đồng trước khi lưu vào Database.
+  6. *Chiến lược giải quyết trùng lặp (Duplicate Resolution Modes)*: Cho phép người dùng tùy chọn:
+     - `skip`: Bỏ qua nếu đã tồn tại khách trùng Số điện thoại hoặc trùng (Họ tên + Nhóm khách).
+     - `update`: Cập nhật thông tin mới nhất (số người, bàn tiệc, ghi chú `check_in_note`) vào bản ghi hiện có.
+  7. *Phân đoạn khách mời động (Smart Dynamic Segmentation)*: Bổ sung bộ lọc phân loại bên đại diện gia đình: Nhà Trai (`?side=groom`), Nhà Gái (`?side=bride`) kết hợp thanh công cụ Quick Dynamic Segments 1-click (Tất cả, Nhà Trai, Nhà Gái, Chưa Phản Hồi, Sẽ Tham Dự, Đã Mở Thiệp, Đã Điểm Danh).
+  8. *Kiểm toán bất biến (Audit Logging)*: Tự động ghi nhật ký `GUEST_CSV_IMPORTED` với số lượng bản ghi tạo mới, cập nhật và bỏ qua.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Routes ([routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - `GET /tai-khoan/thiep/{id}/khach-moi/mau-csv` (`guests.csv_template`) -> `GuestController::downloadCsvTemplate`.
+     - `POST /tai-khoan/thiep/{id}/khach-moi/nhap-csv` (`guests.import_csv`) -> `GuestController::importCsv`.
+  2. **Controller ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - `downloadCsvTemplate(int $invitationId): Response`: Xuất tệp CSV mẫu có UTF-8 BOM và các dòng dữ liệu mẫu sinh động.
+     - `importCsv(Request $request, int $invitationId): RedirectResponse`: Xử lý phân tích tệp CSV, nhận diện delimiter, khớp header, lọc profanity, chuẩn hóa SĐT, xử lý trùng lặp theo mode và ghi AuditLog.
+     - `index()`: Bổ sung `$sideFilter = $request->query('side')` phân loại Nhà Trai / Nhà Gái.
+     - Dọn dẹp triệt để các đoạn mã trùng lặp phương thức do lần replace trước đó.
+  3. **Giao diện ([resources/views/client/pages/guests.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/guests.blade.php))**:
+     - Tab thứ 3 trong khung thêm khách: `Nhập Từ Tệp CSV (Excel)` với icon SVG chuẩn.
+     - Khung tải tệp mẫu CSV có hướng dẫn chi tiết.
+     - Form upload tệp CSV với tùy chọn xử lý trùng lặp (`skip` / `update`), xưng hô mặc định, nhóm mặc định.
+     - Thanh Quick Dynamic Segments với các pill lọc nhanh Nhà Trai, Nhà Gái, RSVP, Trạng thái mở thiệp, Điểm danh.
+     - Bổ sung `<select name="side">` vào toolbar lọc.
+  4. **JavaScript ([public/assets/client/js/pages/guests.js](file:///d:/Project/Laravel/mayhen.vn/public/assets/client/js/pages/guests.js))**:
+     - Cập nhật bộ quản lý tabs hỗ trợ linh hoạt 3 panes (`single`, `batch`, `csv`) bằng Vanilla JS không phụ thuộc bên ngoài.
+  5. **Kiểm thử ([tests/Feature/GuestSmartCsvImportAndSegmentationTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/GuestSmartCsvImportAndSegmentationTest.php))**:
+     - `test_user_can_download_standard_csv_template`: Xác thực tải tệp CSV mẫu có UTF-8 BOM, HTTP 200, đúng headers.
+     - `test_user_can_import_csv_with_comma_delimiter`: Xác thực import delimiter `,` tạo khách thành công và ghi AuditLog.
+     - `test_user_can_import_csv_with_semicolon_delimiter_and_phone_normalization`: Xác thực delimiter `;` và chuẩn hóa số điện thoại `+84...` -> `0...`.
+     - `test_csv_import_handles_duplicate_skip_mode`: Xác thực chế độ bỏ qua không ghi đè khách cũ.
+     - `test_csv_import_handles_duplicate_update_mode`: Xác thực chế độ cập nhật dữ liệu khách trùng.
+     - `test_csv_import_filters_profane_rows`: Xác thực chặn các dòng chứa từ ngữ vi phạm.
+     - `test_guest_segmentation_filter_by_side_and_status`: Xác thực bộ lọc phân nhóm Nhà Trai / Nhà Gái và trạng thái đã mở thiệp.
+- **Kết quả kiểm thử & Định dạng mã**:
+  - Pest test suite Đề án 73: **7/7 tests PASSED 100% (45 assertions in 576ms)**.
+  - Toàn bộ test suite hệ thống: **969/969 tests PASSED 100% (5,118 assertions in 23.46s)**.
+  - Laravel Pint: **100% PASSED**.
+
+
 
 
 

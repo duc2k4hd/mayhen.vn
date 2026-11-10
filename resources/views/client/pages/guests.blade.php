@@ -208,7 +208,17 @@
                         <line x1="3" y1="12" x2="3.01" y2="12"></line>
                         <line x1="3" y1="18" x2="3.01" y2="18"></line>
                     </svg>
-                    <span>Nhập Nhanh Nhiều Khách (Hàng Loạt)</span>
+                    <span>Nhập Nhanh Nhiều Khách</span>
+                </button>
+                <button type="button" class="mayhen_guest_add_tab_btn" data-tab-target="csv">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="8" y1="13" x2="16" y2="13"></line>
+                        <line x1="8" y1="17" x2="16" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Nhập Từ Tệp CSV (Excel)</span>
                 </button>
             </div>
 
@@ -295,6 +305,96 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                     </div>
                 </form>
             </div>
+
+            <!-- CSV Smart Import Form -->
+            <div class="mayhen_guest_tab_pane" id="tab-csv" style="display: none;">
+                <div style="background: #FDFBF7; border: 1px dashed #D8CEBD; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div style="font-weight: 600; color: #2C2824; font-size: 14px; margin-bottom: 4px;">📥 Tải Tệp CSV Mẫu Chuẩn (Excel Ready)</div>
+                        <p style="font-size: 12px; color: #7A726A; margin: 0; line-height: 1.5;">
+                            Tệp mẫu đã cấu hình sẵn UTF-8 BOM chống lỗi font tiếng Việt trên Microsoft Excel, tự nhận diện cột Họ tên, Xưng hô, Nhóm, Số người, SĐT, Bàn tiệc và Ghi chú.
+                        </p>
+                    </div>
+                    <a href="{{ route('guests.csv_template', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" style="white-space: nowrap; font-size: 13px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Tải Tệp CSV Mẫu</span>
+                    </a>
+                </div>
+
+                <form action="{{ route('guests.import_csv', $invitation->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mayhen_guest_form_grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                        <div class="mayhen_guest_form_field" style="grid-column: span 2;">
+                            <label class="mayhen_guest_form_label">Chọn tệp CSV từ máy tính *</label>
+                            <input type="file" name="csv_file" accept=".csv,text/csv,text/plain" required class="mayhen_guest_form_input" style="padding: 6px 10px; height: auto;">
+                            <span style="font-size: 11px; color: #8C827A; margin-top: 4px; display: block;">Hệ thống tự động phát hiện dấu phân cách (dấu phẩy, dấu chấm phẩy, tab). Dung lượng tối đa 5MB.</span>
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Chế độ xử lý trùng lặp</label>
+                            <select name="duplicate_mode" class="mayhen_guest_form_select">
+                                <option value="skip" selected>Bỏ qua nếu đã tồn tại (Khuyên dùng)</option>
+                                <option value="update">Cập nhật thông tin khách trùng</option>
+                            </select>
+                            <span style="font-size: 11px; color: #8C827A; margin-top: 4px; display: block;">Trùng khi khớp SĐT hoặc khớp (Họ tên + Nhóm).</span>
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Xưng hô mặc định</label>
+                            <input type="text" name="default_salutation" value="Thân mời" class="mayhen_guest_form_input" placeholder="Thân mời">
+                            <span style="font-size: 11px; color: #8C827A; margin-top: 4px; display: block;">Dùng khi dòng không có cột xưng hô.</span>
+                        </div>
+
+                        <div class="mayhen_guest_form_field">
+                            <label class="mayhen_guest_form_label">Nhóm khách mặc định</label>
+                            <input type="text" name="default_group" value="Bạn Bè" class="mayhen_guest_form_input" placeholder="Bạn Bè">
+                            <span style="font-size: 11px; color: #8C827A; margin-top: 4px; display: block;">Dùng khi dòng không có cột nhóm.</span>
+                        </div>
+
+                        <div style="display: flex; align-items: flex-end;">
+                            <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary" style="height: 42px; width: 100%;">
+                                + Tải Lên & Nhập Danh Sách
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Dynamic Segments -->
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; scrollbar-width: thin;">
+            <a href="{{ route('guests.index', $invitation->id) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ empty($filterSide) && empty($filterStatus) && empty($filterGroup) ? '#C5A880' : '#E5DCCD' }}; background: {{ empty($filterSide) && empty($filterStatus) && empty($filterGroup) ? '#C5A880' : '#fff' }}; color: {{ empty($filterSide) && empty($filterStatus) && empty($filterGroup) ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                Tất Cả ({{ $totalGuestsCount }})
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'side' => 'groom']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterSide ?? '') === 'groom' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterSide ?? '') === 'groom' ? '#C5A880' : '#fff' }}; color: {{ ($filterSide ?? '') === 'groom' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                🤵 Nhà Trai
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'side' => 'bride']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterSide ?? '') === 'bride' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterSide ?? '') === 'bride' ? '#C5A880' : '#fff' }}; color: {{ ($filterSide ?? '') === 'bride' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                👰 Nhà Gái
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'status' => 'pending']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterStatus ?? '') === 'pending' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterStatus ?? '') === 'pending' ? '#C5A880' : '#fff' }}; color: {{ ($filterStatus ?? '') === 'pending' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                ⏳ Chưa Phản Hồi
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'status' => 'attending']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterStatus ?? '') === 'attending' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterStatus ?? '') === 'attending' ? '#C5A880' : '#fff' }}; color: {{ ($filterStatus ?? '') === 'attending' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                ✅ Sẽ Tham Dự
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'status' => 'opened']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterStatus ?? '') === 'opened' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterStatus ?? '') === 'opened' ? '#C5A880' : '#fff' }}; color: {{ ($filterStatus ?? '') === 'opened' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                👁 Đã Mở Thiệp
+            </a>
+            <a href="{{ route('guests.index', ['id' => $invitation->id, 'status' => 'checked_in']) }}"
+               style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12px; border-radius: 20px; border: 1px solid {{ ($filterStatus ?? '') === 'checked_in' ? '#C5A880' : '#E5DCCD' }}; background: {{ ($filterStatus ?? '') === 'checked_in' ? '#C5A880' : '#fff' }}; color: {{ ($filterStatus ?? '') === 'checked_in' ? '#fff' : '#4A453E' }}; white-space: nowrap;">
+                🎫 Đã Điểm Danh
+            </a>
         </div>
 
         <!-- Filter & Search Toolbar -->
@@ -307,6 +407,12 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                     </svg>
                     <input type="text" name="q" value="{{ $filterSearch }}" placeholder="Tìm kiếm theo tên, SĐT hoặc bàn..." class="mayhen_guest_search_input">
                 </div>
+
+                <select name="side" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
+                    <option value="">-- Bên đại diện --</option>
+                    <option value="groom" {{ ($filterSide ?? '') === 'groom' ? 'selected' : '' }}>🤵 Họ Nhà Trai</option>
+                    <option value="bride" {{ ($filterSide ?? '') === 'bride' ? 'selected' : '' }}>👰 Họ Nhà Gái</option>
+                </select>
 
                 <select name="group" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
                     <option value="">-- Tất cả nhóm khách --</option>
@@ -333,7 +439,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                     <option value="not_checked_in" {{ $filterStatus === 'not_checked_in' ? 'selected' : '' }}>○ Chưa điểm danh</option>
                 </select>
 
-                @if($filterSearch || $filterGroup || ($filterTable ?? '') || $filterStatus)
+                @if($filterSearch || $filterGroup || ($filterSide ?? '') || ($filterTable ?? '') || $filterStatus)
                     <a href="{{ route('guests.index', $invitation->id) }}" class="mayhen_guest_reset_link">
                         Đặt lại
                     </a>

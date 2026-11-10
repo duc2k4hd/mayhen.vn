@@ -139,6 +139,7 @@ Thumbs.db
 !/tests/Feature/WeddingGiftAndBankingSecurityTest.php
 !/tests/Feature/PostWeddingLifecycleAndPrivacyTest.php
 !/tests/Feature/InvitationAnalyticsAndFunnelTest.php
+!/tests/Feature/GuestSmartCsvImportAndSegmentationTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

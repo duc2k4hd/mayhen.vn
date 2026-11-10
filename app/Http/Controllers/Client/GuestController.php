@@ -26,6 +26,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -82,6 +83,14 @@ class GuestController extends Controller
             $guestsQuery->where('group_name', $groupFilter);
         }
 
+        if ($sideFilter = $request->query('side')) {
+            if ($sideFilter === 'groom') {
+                $guestsQuery->where('group_name', 'like', '%Nhà Trai%');
+            } elseif ($sideFilter === 'bride') {
+                $guestsQuery->where('group_name', 'like', '%Nhà Gái%');
+            }
+        }
+
         if ($tableFilter = $request->query('table')) {
             $guestsQuery->where('table_name', $tableFilter);
         }
@@ -131,6 +140,7 @@ class GuestController extends Controller
             'availableTables' => $availableTables,
             'filterSearch' => $search,
             'filterGroup' => $groupFilter,
+            'filterSide' => $sideFilter,
             'filterTable' => $tableFilter,
             'filterStatus' => $statusFilter,
         ]);
@@ -179,6 +189,328 @@ class GuestController extends Controller
         }
 
         return $redirect;
+    }
+
+    /**
+     * Tải tệp CSV mẫu chuẩn để chuẩn bị danh sách khách mời (Section 28.3 PRD V3).
+     */
+    public function downloadCsvTemplate(int $invitationId): Response
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+
+        $headers = [
+            'Họ và Tên',
+            'Danh Xưng',
+            'Nhóm Khách',
+            'Số Lượng Mời',
+            'Số Điện Thoại',
+            'Bàn Tiệc',
+            'Ghi Chú',
+        ];
+
+        $sampleRows = [
+            [
+                'Bác Nguyễn Văn Hùng',
+                'Kính mời Bác',
+                'Họ Nhà Trai',
+                '2',
+                '0912345678',
+                'Bàn VIP 01',
+                'Người lớn tuổi cần ngồi gần lối đi',
+            ],
+            [
+                'Bạn Lê Thị Mai',
+                'Thân mời',
+                'Bạn Đại Học',
+                '1',
+                '0987654321',
+                'Bàn 06',
+                'Bạn thân cùng lớp đại học',
+            ],
+            [
+                'Gia đình Chú Tuấn',
+                'Kính mời Gia đình',
+                'Đồng Nghiệp',
+                '3',
+                '0901234567',
+                'Bàn 08',
+                'Có 1 em bé đi cùng',
+            ],
+        ];
+
+        $fp = fopen('php://temp', 'r+');
+        // UTF-8 BOM
+        fwrite($fp, "\xEF\xBB\xBF");
+        fputcsv($fp, $headers);
+        foreach ($sampleRows as $row) {
+            fputcsv($fp, $row);
+        }
+        rewind($fp);
+        $csv = stream_get_contents($fp);
+        fclose($fp);
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="mau_danh_sach_khach_moi_mayhen.csv"',
+        ]);
+    }
+
+    /**
+     * Nhập danh sách khách mời thông minh từ tệp CSV (Section 28.3 PRD V3).
+     */
+    public function importCsv(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeGuestManagement($wedding);
+
+        $request->validate([
+            'csv_file' => ['required', 'file', 'max:5120'],
+            'duplicate_mode' => ['required', 'string', 'in:skip,update'],
+            'default_salutation' => ['nullable', 'string', 'max:50'],
+            'default_group' => ['nullable', 'string', 'max:50'],
+        ], [
+            'csv_file.required' => 'Vui lòng chọn tệp CSV để tải lên.',
+            'csv_file.file' => 'Tệp tải lên không hợp lệ.',
+            'csv_file.max' => 'Dung lượng tệp CSV tối đa là 5MB.',
+        ]);
+
+        $file = $request->file('csv_file');
+        $duplicateMode = $request->input('duplicate_mode', 'skip');
+        $defaultSalutation = $request->input('default_salutation') ?: 'Thân mời';
+        $defaultGroup = $request->input('default_group') ?: 'Bạn Bè';
+
+        $content = file_get_contents($file->getRealPath());
+        if ($content === false || trim($content) === '') {
+            return back()->with('error', 'Tệp CSV tải lên bị rỗng.');
+        }
+
+        // Bỏ UTF-8 BOM nếu có
+        if (str_starts_with($content, "\xEF\xBB\xBF")) {
+            $content = substr($content, 3);
+        }
+
+        $lines = preg_split("/\r\n|\n|\r/", trim($content));
+        if (empty($lines)) {
+            return back()->with('error', 'Tệp CSV không chứa dòng dữ liệu nào.');
+        }
+
+        // Tự phát hiện delimiter (, ; hoặc \t)
+        $firstLine = $lines[0];
+        $commaCount = substr_count($firstLine, ',');
+        $semicolonCount = substr_count($firstLine, ';');
+        $tabCount = substr_count($firstLine, "\t");
+
+        $delimiter = ',';
+        if ($semicolonCount > $commaCount && $semicolonCount > $tabCount) {
+            $delimiter = ';';
+        } elseif ($tabCount > $commaCount && $tabCount > $semicolonCount) {
+            $delimiter = "\t";
+        }
+
+        $parsedRows = [];
+        foreach ($lines as $line) {
+            if (trim($line) === '') {
+                continue;
+            }
+            $parsed = str_getcsv($line, $delimiter);
+            if (! empty($parsed)) {
+                $parsedRows[] = $parsed;
+            }
+        }
+
+        if (empty($parsedRows)) {
+            return back()->with('error', 'Không thể đọc dữ liệu từ tệp CSV.');
+        }
+
+        // Kiểm tra xem dòng đầu có phải là Header không
+        $headerRow = $parsedRows[0];
+        $headerRowLower = array_map(fn ($col) => mb_strtolower(trim($col), 'UTF-8'), $headerRow);
+
+        $nameCol = null;
+        $salutationCol = null;
+        $groupCol = null;
+        $attendeesCol = null;
+        $phoneCol = null;
+        $tableCol = null;
+        $notesCol = null;
+
+        $hasHeader = false;
+        foreach ($headerRowLower as $idx => $colName) {
+            $normalized = Str::slug($colName, ' ');
+            if (preg_match('/(ho va ten|ho ten|ten|name|full name|guest)/i', $normalized)) {
+                $nameCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(danh xung|xung ho|salutation)/i', $normalized)) {
+                $salutationCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(nhom|group|phan loai)/i', $normalized)) {
+                $groupCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(so luong|so nguoi|suat moi|headcount|attendees)/i', $normalized)) {
+                $attendeesCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(dien thoai|sdt|phone|mobile|lien he)/i', $normalized)) {
+                $phoneCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(ban|ban tiec|table)/i', $normalized)) {
+                $tableCol = $idx;
+                $hasHeader = true;
+            } elseif (preg_match('/(ghi chu|note|luu y)/i', $normalized)) {
+                $notesCol = $idx;
+                $hasHeader = true;
+            }
+        }
+
+        $startIndex = 0;
+        if ($hasHeader && $nameCol !== null) {
+            $startIndex = 1;
+        } else {
+            // Fallback vị trí mặc định
+            $nameCol = 0;
+            $salutationCol = 1;
+            $groupCol = 2;
+            $attendeesCol = 3;
+            $phoneCol = 4;
+            $tableCol = 5;
+            $notesCol = 6;
+        }
+
+        $createdCount = 0;
+        $updatedCount = 0;
+        $skippedCount = 0;
+
+        DB::transaction(function () use (
+            $parsedRows, $startIndex, $wedding, $nameCol, $salutationCol, $groupCol,
+            $attendeesCol, $phoneCol, $tableCol, $notesCol, $defaultSalutation, $defaultGroup,
+            $duplicateMode, &$createdCount, &$updatedCount, &$skippedCount
+        ) {
+            $totalRows = count($parsedRows);
+            for ($i = $startIndex; $i < $totalRows; $i++) {
+                $row = $parsedRows[$i];
+                $name = isset($row[$nameCol]) ? trim($row[$nameCol]) : '';
+                if ($name === '') {
+                    continue;
+                }
+
+                // Lọc bỏ từ ngữ vi phạm
+                if (ContentModerationService::containsProfanity($name)) {
+                    $skippedCount++;
+
+                    continue;
+                }
+
+                $salutation = ($salutationCol !== null && isset($row[$salutationCol]) && trim($row[$salutationCol]) !== '')
+                    ? trim($row[$salutationCol])
+                    : $defaultSalutation;
+
+                $group = ($groupCol !== null && isset($row[$groupCol]) && trim($row[$groupCol]) !== '')
+                    ? trim($row[$groupCol])
+                    : $defaultGroup;
+
+                $attendees = 2;
+                if ($attendeesCol !== null && isset($row[$attendeesCol])) {
+                    $val = preg_replace('/[^0-9]/', '', trim($row[$attendeesCol]));
+                    if ($val !== '' && is_numeric($val)) {
+                        $attendees = max(1, (int) $val);
+                    }
+                }
+
+                $phone = null;
+                if ($phoneCol !== null && isset($row[$phoneCol])) {
+                    $rawPhone = trim($row[$phoneCol]);
+                    // Chuẩn hóa số điện thoại: loại bỏ dấu cách, gạch nối, chấm
+                    $cleanedPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
+                    if (str_starts_with($cleanedPhone, '+84')) {
+                        $cleanedPhone = '0'.substr($cleanedPhone, 3);
+                    }
+                    if ($cleanedPhone !== '') {
+                        $phone = Str::limit($cleanedPhone, 20, '');
+                    }
+                }
+
+                $table = ($tableCol !== null && isset($row[$tableCol])) ? trim($row[$tableCol]) : null;
+                $tableClean = $table ? Str::limit($table, 100, '') : null;
+                $tableId = null;
+                if (! empty($tableClean)) {
+                    $matchedTable = $wedding->tables()->where('name', $tableClean)->first();
+                    $tableId = $matchedTable?->id;
+                }
+
+                $notes = ($notesCol !== null && isset($row[$notesCol])) ? trim($row[$notesCol]) : null;
+                $notesClean = $notes ? Str::limit($notes, 255, '') : null;
+
+                // Kiểm tra trùng lặp theo số điện thoại hoặc (tên + nhóm)
+                $existingGuest = null;
+                if ($phone) {
+                    $existingGuest = Guest::where('wedding_id', $wedding->id)->where('phone', $phone)->first();
+                }
+                if (! $existingGuest) {
+                    $existingGuest = Guest::where('wedding_id', $wedding->id)
+                        ->where('name', $name)
+                        ->where('group_name', $group)
+                        ->first();
+                }
+
+                if ($existingGuest) {
+                    if ($duplicateMode === 'skip') {
+                        $skippedCount++;
+
+                        continue;
+                    } elseif ($duplicateMode === 'update') {
+                        $existingGuest->update([
+                            'name' => Str::limit($name, 190, ''),
+                            'salutation' => Str::limit($salutation, 50, ''),
+                            'group_name' => Str::limit($group, 50, ''),
+                            'expected_attendees' => $attendees,
+                            'table_name' => $tableClean ?: $existingGuest->table_name,
+                            'table_id' => $tableId ?: $existingGuest->table_id,
+                            'check_in_note' => $notesClean ?: $existingGuest->check_in_note,
+                        ]);
+                        $updatedCount++;
+
+                        continue;
+                    }
+                }
+
+                // Tạo khách mới
+                Guest::create([
+                    'wedding_id' => $wedding->id,
+                    'name' => Str::limit($name, 190, ''),
+                    'salutation' => Str::limit($salutation, 50, ''),
+                    'group_name' => Str::limit($group, 50, ''),
+                    'table_name' => $tableClean,
+                    'table_id' => $tableId,
+                    'phone' => $phone,
+                    'expected_attendees' => $attendees,
+                    'guest_token' => Str::random(32),
+                    'check_in_note' => $notesClean,
+                ]);
+                $createdCount++;
+            }
+        });
+
+        // Ghi nhật ký kiểm toán bất biến
+        AuditLogger::log(
+            'GUEST_CSV_IMPORTED',
+            'wedding',
+            $wedding->id,
+            "Nhập danh sách khách mời qua tệp CSV: tạo mới {$createdCount}, cập nhật {$updatedCount}, bỏ qua {$skippedCount}.",
+            ['created' => $createdCount, 'updated' => $updatedCount, 'skipped' => $skippedCount, 'mode' => $duplicateMode]
+        );
+
+        $msg = "Đã xử lý tệp CSV thành công: Thêm mới {$createdCount} khách mời";
+        if ($updatedCount > 0) {
+            $msg .= ", cập nhật {$updatedCount} khách";
+        }
+        if ($skippedCount > 0) {
+            $msg .= ", bỏ qua {$skippedCount} dòng (trùng lặp hoặc lỗi)";
+        }
+        $msg .= '.';
+
+        return back()->with('success', $msg);
     }
 
     /**
@@ -292,6 +624,14 @@ class GuestController extends Controller
 
         if ($groupFilter = $request->query('group')) {
             $guestsQuery->where('group_name', $groupFilter);
+        }
+
+        if ($sideFilter = $request->query('side')) {
+            if ($sideFilter === 'groom') {
+                $guestsQuery->where('group_name', 'like', '%Nhà Trai%');
+            } elseif ($sideFilter === 'bride') {
+                $guestsQuery->where('group_name', 'like', '%Nhà Gái%');
+            }
         }
 
         if ($tableFilter = $request->query('table')) {

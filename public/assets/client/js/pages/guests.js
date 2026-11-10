@@ -4,10 +4,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Chuyển đổi Tabs thêm khách (Single vs Batch)
+    // 1. Chuyển đổi Tabs thêm khách (Single vs Batch vs CSV)
     const tabButtons = document.querySelectorAll('.mayhen_guest_add_tab_btn');
-    const singlePane = document.getElementById('tab-single');
-    const batchPane = document.getElementById('tab-batch');
+    const panes = {
+        single: document.getElementById('tab-single'),
+        batch: document.getElementById('tab-batch'),
+        csv: document.getElementById('tab-csv')
+    };
 
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -16,13 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tabButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            if (target === 'single') {
-                if (singlePane) singlePane.style.display = 'block';
-                if (batchPane) batchPane.style.display = 'none';
-            } else if (target === 'batch') {
-                if (singlePane) singlePane.style.display = 'none';
-                if (batchPane) batchPane.style.display = 'block';
-            }
+            Object.keys(panes).forEach(key => {
+                if (panes[key]) {
+                    panes[key].style.display = (key === target) ? 'block' : 'none';
+                }
+            });
         });
     });
 

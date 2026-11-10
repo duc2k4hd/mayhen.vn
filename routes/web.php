@@ -215,6 +215,8 @@ Route::prefix('tai-khoan')->group(function () {
     Route::get('/thiep/{id}/khach-moi', [GuestController::class, 'index'])->name('guests.index');
     Route::post('/thiep/{id}/khach-moi', [GuestController::class, 'store'])->middleware('throttle:60,1')->name('guests.store');
     Route::post('/thiep/{id}/khach-moi/nhap-nhanh', [GuestController::class, 'batchStore'])->middleware('throttle:30,1')->name('guests.batch_store');
+    Route::get('/thiep/{id}/khach-moi/mau-csv', [GuestController::class, 'downloadCsvTemplate'])->name('guests.csv_template');
+    Route::post('/thiep/{id}/khach-moi/nhap-csv', [GuestController::class, 'importCsv'])->middleware('throttle:30,1')->name('guests.import_csv');
     Route::get('/thiep/{id}/khach-moi/xuat-csv', [GuestController::class, 'exportCsv'])->name('guests.export');
     Route::get('/thiep/{id}/khach-moi/in', [GuestController::class, 'print'])->name('guests.print');
     Route::get('/thiep/{id}/khach-moi/kiem-tra-truoc-gui', [GuestController::class, 'preSendValidation'])->middleware('throttle:30,1')->name('guests.pre_send_validation');
