@@ -7622,3 +7622,76 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Cụm test toàn diện hệ thống: **188/188 tests PASSED 100% (1.087 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
 
+### 50. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-13: CUSTOMER DELIGHT FEEDBACK LOOP (10/11/2026)
+- **Mục tiêu**: Thu thập chỉ số CSAT & NPS thực tế từ khách hàng tạo thiệp, phân loại đánh giá và tự động sinh ticket hỗ trợ khẩn cấp (`urgent`) khi khách chấm <= 2 sao để đội ngũ CSKH can thiệp kịp thời.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Lược Đồ Cơ Sở Dữ Liệu & Model**:
+     - Migration: `2026_11_10_173825_create_customer_feedbacks_table.php`.
+     - Model: `app/Models/CustomerFeedback.php` (`wedding_id`, `user_id`, `invitation_id`, `rating`, `nps_score`, `feedback_category`, `comment`, `is_action_required`, `action_status`, `resolution_notes`, `resolved_by`, `resolved_at`).
+  2. **Dịch Vụ Customer Delight ([CustomerDelightService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/CustomerDelightService.php))**:
+     - Ghi nhận phản hồi CSAT & NPS, tự động mở ticket hỗ trợ khi rating <= 2 sao.
+     - Thống kê chỉ số NPS (Promoters - Detractors), CSAT trung bình, phân bổ danh mục góp ý (UI, thanh toán, template, âm nhạc, tính năng).
+     - Xử lý kế hoạch hành động khắc phục cho từng phản hồi.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Controller: `IntelligenceController@feedbackLoop`, `IntelligenceController@resolveFeedbackAction`.
+     - Route & View: `admin.intelligence.feedback_loop` tại `resources/views/admin/pages/intelligence/feedback_loop.blade.php`.
+     - Client API: `POST /api/feedback/submit`.
+     - Tích hợp menu Sidebar Admin và Command Palette `Ctrl+K`.
+  4. **Kiểm Thử**:
+     - Tạo mới test suite: `tests/Feature/AdminCustomerDelightFeedbackTest.php` (6/6 tests passed).
+
+### 51. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-14: READ-ONLY OPERATIONS REPLAY SANDBOX (10/11/2026)
+- **Mục tiêu**: Xây dựng Buồng Phóng Tái Hiện Vận Hành (Operations Replay Sandbox), ghép nối toàn bộ dòng sự kiện lịch sử (Timeline) của một tiệc cưới theo thời gian thực (đơn hàng, chỉnh sửa thiệp, gửi tin nhắn, phản hồi RSVP, lưu vết audit), tự động cảnh báo bất thường và bảo vệ dữ liệu PII với cơ chế Safe Support Lens.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Dịch Vụ Tái Hiện Lịch Sử Vận Hành ([OperationsReplayService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/OperationsReplayService.php))**:
+     - `assembleTimeline`: Thu thập và sắp xếp các sự kiện từ bảng `orders`, `invitations`, `guests`, `guest_responses`, `messaging_dispatches`, `audit_logs`.
+     - `detectAnomalies`: Phát hiện tự động sự cố thanh toán treo > 15 phút, tỷ lệ phản hồi rsvp kém, lỗi gửi tin nhắn.
+     - Cơ chế che dấu dữ liệu nhạy cảm PII mặc định (email, phone, tên).
+     - Kính hỗ trợ an toàn (Safe Support Lens): Super Admin mở khóa xem PII có xác nhận và lưu vết Audit Log `unmask_replay_pii`.
+  2. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Controller: `OperationsReplayController@index`, `OperationsReplayController@show`.
+     - Views: `resources/views/admin/pages/intelligence/replay/index.blade.php`, `resources/views/admin/pages/intelligence/replay/show.blade.php`.
+     - Tích hợp menu Sidebar Admin và Command Palette `Ctrl+K`.
+  3. **Kiểm Thử**:
+     - Tạo mới test suite: `tests/Feature/AdminOperationsReplayTest.php` (6/6 tests passed).
+
+### 52. KHẮC PHỤC LỖI DUPLICATE CLASS IMPORT VÀ RELATIONNOTFOUNDEXCEPTION SUPPORT DESK (10/11/2026)
+- **Khắc phục lỗi duplicate alias trong `routes/admin.php`**: Xóa dòng lặp `use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController` tại dòng 5, phục hồi toàn bộ 127 routes admin sạch sẽ.
+- **Khắc phục lỗi 500 quan hệ `user` trên `SupportTicketReply`**: Bổ sung `public function user(): BelongsTo` trỏ tới `user_id` trong `app/Models/SupportTicketReply.php`, duy trì song song cả `user()` và `author()`. Viết thêm test case bảo vệ trong `tests/Feature/ClientSupportTicketTest.php` (7/7 tests passed).
+
+### 53. TÍCH HỢP & CHUẨN HÓA TOÀN DIỆN MẪU THIỆP CƯỚI "HẮC BẠCH TRAO DUYÊN" (10/11/2026)
+- **Mục tiêu**: Chuẩn hóa và tích hợp 100% mẫu thiệp cưới phong cách Black & White Editorial Quiet Luxury "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`) tuân thủ nghiêm ngặt **8 Nguyên Tắc Chuẩn Hóa Mẫu Thiệp Cưới** của Mây Hẹn.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Tài Nguyên Ngoại Tuyến 100% Cục Bộ (Zero External Assets)**:
+     - 54 tệp tài nguyên gồm toàn bộ ảnh cưới chất lượng cao, icon đồ họa và bài hát đám cưới MP3 offline `wedding-song.mp3` được đặt trực tiếp trong:
+       * `resources/views/client/invitations/hac-bach-trao-duyen/assets/`
+       * `public/mau-thiep/hac-bach-trao-duyen/assets/`
+  2. **Cấu Trúc Giao Diện 10 Section Tiêu Chuẩn ([template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen/template.blade.php))**:
+     - Kế thừa layout chuẩn `@extends('client.layouts.invitation')`.
+     - Đầy đủ 10 Section tiêu chuẩn:
+       * Section 1: Opening Envelope — Phong bì Hoàng Gia 3D dập nổi tem sáp Monogram hé lộ thiệp.
+       * Section 2: Hero Cover — Ảnh cưới lớn, tên dâu rể, monogram và ngày cưới.
+       * Section 3: Love Story — 3 mốc kỷ niệm (Lần đầu gặp gỡ, Ngày nhận lời yêu, Mãi bên nhau nhé).
+       * Section 4: Family & Couple — Cha mẹ hai bên, nhẫn cưới, chân dung cô dâu và chú rể.
+       * Section 5: Countdown & Calendar — Khung vòm Save The Date, lịch tháng cưới và đồng hồ đếm ngược Ngày-Giờ-Phút-Giây.
+       * Section 6: Events & Location — Thời gian, địa điểm tiệc cưới tại tư gia, nút Google Maps.
+       * Section 7: Timeline — Lịch trình 3 mốc nghi lễ (Ăn hỏi, Rước dâu, Tiệc cưới & Thành hôn).
+       * Section 8: Dresscode — Gợi ý bảng màu trang phục (Đen Huyền Bí, Đỏ Bordeaux, Vàng Ánh Kim, Trắng Kem).
+       * Section 9: Album 10 Photos — Bố cục lưới ảnh cưới editorial so le kèm lightbox phóng to toàn màn hình.
+       * Section 10: Gift, Interactive & Ending — Hộp mừng cưới QR kèm nút copy STK; Sổ lưu bút & Canvas Ký Tên Trực Tiếp (**ZERO couple photos**); Form RSVP xác nhận tham dự gửi thông tin; Lời cảm ơn chân thành Footer.
+  3. **Hợp Đồng Live Sync Tuyệt Đối (`data-sync-target`)**:
+     - Gắn đầy đủ `data-sync-target` cho mọi vị trí hiển thị dữ liệu: `groom_name`, `bride_name`, `wedding_date`, `wedding_lunar_date`, `groom_father`, `groom_mother`, `bride_father`, `bride_mother`, `party_time`, `party_venue`, `event_party_address`, `groom_bank_account`, `groom_bank_name`, `bride_bank_account`, `bride_bank_name`, `dresscode_note`, `footer_thank_you_text`.
+  4. **Phòng Vệ Chế Độ Nhúng Studio Editor (`$isEmbed = true`)**:
+     - Thêm class `mayhen_invitation_ladjihe38udhd_embed_mode` vào body khi nhúng iframe `?embed=1`.
+     - Cưỡng chế ẩn màn mở đầu `display: none !important;`, bỏ khóa cuộn trên `html`/`body`, khử animation ban đầu để toàn bộ các section hiển thị tức thời, sắc nét trong Studio Editor.
+  5. **Bộ Khóa Cấu Hình Chuẩn ([schema.json](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen/schema.json))**:
+     - Định nghĩa schema chuẩn 10 sections với đầy đủ key field: `wedding.groom_name`, `wedding.bride_name`, `wedding.wedding_date`, `wedding.extra_data.*`.
+  6. **Đăng Ký Seeder & CSDL ([InvitationTemplateSeeder.php](file:///d:/Project/Laravel/mayhen.vn/database/seeders/InvitationTemplateSeeder.php))**:
+     - Khai báo mẫu thiệp `hac-bach-trao-duyen` (Tier: `free`, Category: `luxury`, Style: `black-white-editorial`).
+  7. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/HacBachTraoDuyenTemplateTest.php` gồm **6 kịch bản kiểm thử độc lập (49 assertions)**: 100% PASSED.
+     - Cập nhật định dạng chuẩn INV-39 cho tiêu đề xem thử, test suite `Gate2TemplateStudioAndSyncInvariantsTest.php` đạt **4/4 tests PASSED (107 assertions)**.
+     - Toàn bộ test suite dự án: **836/836 tests PASSED 100% (4,513 assertions in 18.24s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
