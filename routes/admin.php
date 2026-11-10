@@ -11,11 +11,13 @@ use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController
 use App\Http\Controllers\Admin\MessagingDispatchController as AdminMessagingDispatchController;
 use App\Http\Controllers\Admin\OperationsReplayController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
 use App\Http\Controllers\Admin\ReleaseControlController as AdminReleaseControlController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\Admin\SystemResilienceController as AdminSystemResilienceController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
@@ -194,10 +196,6 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/feedback/{id}/resolve', [AdminIntelligenceController::class, 'resolveFeedbackAction'])->name('resolve_feedback');
         Route::get('/replay', [OperationsReplayController::class, 'index'])->name('replay.index');
         Route::get('/replay/{type}/{id}', [OperationsReplayController::class, 'show'])->name('replay.show');
-        Route::get('/feedback-loop', [AdminIntelligenceController::class, 'feedbackLoop'])->name('feedback_loop');
-        Route::post('/feedback/{id}/resolve', [AdminIntelligenceController::class, 'resolveFeedbackAction'])->name('resolve_feedback');
-        Route::get('/replay', [OperationsReplayController::class, 'index'])->name('replay.index');
-        Route::get('/replay/{type}/{id}', [OperationsReplayController::class, 'show'])->name('replay.show');
     });
 
     // Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (NXT-10: Privacy Operations & Retention Jobs)
@@ -234,5 +232,26 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminAiObservatoryController::class, 'index'])->name('index');
         Route::post('/simulate', [AdminAiObservatoryController::class, 'simulate'])->middleware('admin.manager')->name('simulate');
         Route::post('/{id}/action', [AdminAiObservatoryController::class, 'recordAction'])->name('record_action');
+    });
+
+    // Kiểm Soát Sức Chống Chịu & Tải Cao (NXT-15: System Resilience & Chaos Cockpit)
+    Route::prefix('resilience')->name('resilience.')->group(function () {
+        Route::get('/', [AdminSystemResilienceController::class, 'index'])->name('index');
+        Route::post('/simulate-checkin', [AdminSystemResilienceController::class, 'simulateCheckIn'])->middleware('admin.manager')->name('simulate_checkin');
+        Route::post('/simulate-webhook', [AdminSystemResilienceController::class, 'simulateWebhook'])->middleware('admin.manager')->name('simulate_webhook');
+        Route::post('/simulate-chaos', [AdminSystemResilienceController::class, 'simulateChaos'])->middleware('admin.manager')->name('simulate_chaos');
+        Route::post('/create-snapshot', [AdminSystemResilienceController::class, 'createSnapshot'])->middleware('admin.super')->name('create_snapshot');
+    });
+
+    // Quản Trị Mạng Lưới Đối Tác & Quyết Toán Hoa Hồng Studio (Partner & Agency Governance)
+    Route::prefix('partners')->name('partners.')->group(function () {
+        Route::get('/', [AdminPartnerController::class, 'index'])->name('index');
+        Route::get('/commissions', [AdminPartnerController::class, 'commissions'])->name('commissions');
+        Route::get('/commissions/export', [AdminPartnerController::class, 'exportCommissions'])->name('commissions.export');
+        Route::post('/commissions/{id}/settle', [AdminPartnerController::class, 'settle'])->middleware('admin.manager')->name('commissions.settle');
+        Route::get('/{id}', [AdminPartnerController::class, 'show'])->name('show');
+        Route::post('/{id}/approve', [AdminPartnerController::class, 'approve'])->middleware('admin.manager')->name('approve');
+        Route::post('/{id}/suspend', [AdminPartnerController::class, 'suspend'])->middleware('admin.manager')->name('suspend');
+        Route::put('/{id}/commission-rate', [AdminPartnerController::class, 'updateRate'])->middleware('admin.manager')->name('update_rate');
     });
 });

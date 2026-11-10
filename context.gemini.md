@@ -7659,7 +7659,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Khắc phục lỗi duplicate alias trong `routes/admin.php`**: Xóa dòng lặp `use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController` tại dòng 5, phục hồi toàn bộ 127 routes admin sạch sẽ.
 - **Khắc phục lỗi 500 quan hệ `user` trên `SupportTicketReply`**: Bổ sung `public function user(): BelongsTo` trỏ tới `user_id` trong `app/Models/SupportTicketReply.php`, duy trì song song cả `user()` và `author()`. Viết thêm test case bảo vệ trong `tests/Feature/ClientSupportTicketTest.php` (7/7 tests passed).
 
-### 53. TÍCH HỢP & CHUẨN HÓA TOÀN DIỆN MẪU THIỆP CƯỚI "HẮC BẠCH TRAO DUYÊN" (10/11/2026)
+### 54. ĐỀ ÁN NXT-15: ĐÀI KIỂM SOÁT SỨC CHỐNG CHỊU HỆ THỐNG & TẢI CAO (SYSTEM RESILIENCE COCKPIT) (10/11/2026)
+- **Mục tiêu**: Thiết lập đài quan sát và kiểm định sức chống chịu, khả năng đối phó với bão tải cao (High-Concurrency Storms) và sự cố ngoại vi (Circuit Breakers) theo lộ trình Post-VNext NXT-15.
+- **Chi tiết triển khai**:
+  1. **Dịch Vụ Lõi ([SystemResilienceService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/SystemResilienceService.php))**:
+     - `getResilienceMetrics()`: Đo lường độ trễ Database query latency (ms), Cache latency (ms), kiểm tra failed queue jobs, dung lượng ổ đĩa storage, tính toán tổng điểm Resilience Score (0 - 100%).
+     - `simulateConcurrencyCheckIn($weddingId, $concurrencyLevel)`: Giả lập bão check-in đồng thời với cơ chế khóa `lockForUpdate` và tính chất Idempotent bảo toàn số ghế bàn tiệc, chống nhân đôi điểm danh khi retry.
+     - `simulateWebhookStorm($requestsCount)`: Giả lập bão Webhook SePay/VietQR trùng lặp mã giao dịch trong cùng mili-giây, xác thực khóa nguyên tử `Cache::lock` chống nhân đôi giao dịch (double-spending).
+     - `simulateExternalDependencyChaos($serviceName)`: Giả lập đứt gãy mạng dịch vụ bên ngoài (Zalo ZNS / SMS / Gemini AI), chứng minh cơ chế Circuit Breaker và Fallback êm dịu.
+     - `createEmergencyBackupSnapshot($adminId)`: Tạo snapshot dữ liệu khẩn cấp các bảng cốt lõi (`users`, `weddings`, `invitations`, `guests`, `orders`), tính mã băm SHA-256 bảo đảm chống giả mạo, ghi nhận Audit Log.
+  2. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Controller: `SystemResilienceController` (`index`, `simulateCheckIn`, `simulateWebhook`, `simulateChaos`, `createSnapshot`).
+     - Views: `resources/views/admin/pages/resilience/index.blade.php`.
+     - Routes: Nhóm `admin.resilience.*` trong `routes/admin.php`.
+  3. **Kiểm Thử**:
+     - Tạo mới test suite `tests/Feature/AdminSystemResilienceTest.php` gồm **6 kịch bản kiểm thử độc lập (20 assertions)**: 100% PASSED.
+
+### 55. PHÂN HỆ QUẢN TRỊ ĐỐI TÁC STUDIO & QUYẾT TOÁN HOA HỒNG B2B (PARTNER GOVERNANCE & COMMISSION SETTLEMENT) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản trị mạng lưới đối tác Studio cưới & Wedding Planner, giám sát chính sách chiết khấu và thực hiện quyết toán hoa hồng B2B có chứng từ ngân hàng bắt buộc theo tiêu chuẩn Master PRD V3 và chuẩn tài chính P0.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_200000_add_settlement_fields_to_partner_commissions_table.php` bổ sung 4 trường quyết toán tài chính: `payout_reference_code` (mã giao dịch ngân hàng thật), `reconciled_at` (thời điểm đối soát), `reconciled_by` (ID quản trị viên đối soát), `reconciliation_note` (ghi chú nghiệp vụ).
+     - Cập nhật model `app/Models/PartnerCommission.php`: khai báo `$fillable`, cast datetime cho `reconciled_at`, quan hệ `reconciledBy(): BelongsTo`.
+  2. **Dịch Vụ Nghiệp Vụ ([PartnerManagementService.php](file:///d:/Project/Laravel\mayhen.vn/app/Services/PartnerManagementService.php))**:
+     - `getPartnerNetworkMetrics()`: Đo lường tổng đối tác, đối tác hoạt động, hồ sơ chờ duyệt, đối tác bị đình chỉ, số lượng đám cưới B2B quản lý, hoa hồng phát sinh, hoa hồng đã chi trả, công nợ ví đối tác hiện tại.
+     - `getPartnersList($filters, $perPage)`: Tìm kiếm đa trường (tên, mã đối tác, SĐT, email), lọc theo trạng thái (`active`, `pending`, `suspended`) và hạng (`silver`, `gold`, `platinum`).
+     - `approvePartner($partner, $adminId)`: Duyệt hồ sơ đối tác, kích hoạt trạng thái `active`, nâng role user thành `partner`, ghi Audit Log `PARTNER_APPROVED`.
+     - `suspendPartner($partner, $reason, $adminId)`: Đình chỉ đối tác với lý do cụ thể lưu trong `custom_config`, ghi Audit Log `PARTNER_SUSPENDED`.
+     - `updateCommissionRate($partner, $rate, $tier, $adminId)`: Cập nhật tỷ lệ hoa hồng (0 - 100%) và hạng đối tác, ghi Audit Log `PARTNER_RATE_UPDATED`.
+     - `settleCommission($commission, $bankRef, $note, $adminId)`: Quyết toán hoa hồng chuẩn tài chính P0, bắt buộc mã chứng từ chuyển khoản ngân hàng thật (`bank_reference_code`), dùng khóa bi quan `lockForUpdate`, trừ số dư ví đối tác khi rút tiền (`payout`), ghi Audit Log `PARTNER_COMMISSION_SETTLED`.
+     - `getCommissionsForExport($filters)`: Trích xuất danh sách đối soát hoa hồng phục vụ xuất báo cáo kế toán.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Controller: `app/Http/Controllers/Admin/PartnerController.php` (`index`, `show`, `approve`, `suspend`, `updateRate`, `commissions`, `settle`, `exportCommissions`).
+     - Views Pure Vanilla CSS:
+       * `resources/views/admin/pages/partners/index.blade.php`: Danh sách đối tác, 4 thẻ KPI, bảng lọc, badge hạng đối tác.
+       * `resources/views/admin/pages/partners/show.blade.php`: Hồ sơ chi tiết đối tác, số dư ví, form cập nhật chiết khấu, danh sách đám cưới do đối tác quản lý và lịch sử hoa hồng.
+       * `resources/views/admin/pages/partners/commissions.blade.php`: Sổ quyết toán hoa hồng, lọc đa chiều, modal nhập chứng từ ngân hàng, xuất file CSV đối soát tài chính (có UTF-8 BOM hiển thị chuẩn tiếng Việt trên Excel).
+     - Tích hợp Menu Sidebar Admin và phím tắt Command Palette `Ctrl+K`.
+  4. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/AdminPartnerManagementTest.php` gồm **9 kịch bản kiểm thử độc lập (36 assertions)**: 100% PASSED (bao gồm kiểm thử tích cực duyệt đối tác, cập nhật tỷ lệ chiết khấu, quyết toán thành công và kiểm thử âm tính từ chối quyết toán khi thiếu mã ngân hàng).
+     - Toàn bộ test suite hệ thống: **852/852 tests PASSED 100% (4,571 assertions in 20.85s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 - **Mục tiêu**: Chuẩn hóa và tích hợp 100% mẫu thiệp cưới phong cách Black & White Editorial Quiet Luxury "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`) tuân thủ nghiêm ngặt **8 Nguyên Tắc Chuẩn Hóa Mẫu Thiệp Cưới** của Mây Hẹn.
 - **Chi tiết các thành phần đã triển khai**:
   1. **Tài Nguyên Ngoại Tuyến 100% Cục Bộ (Zero External Assets)**:

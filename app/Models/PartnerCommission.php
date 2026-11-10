@@ -18,12 +18,17 @@ class PartnerCommission extends Model
         'type',
         'status',
         'description',
+        'payout_reference_code',
+        'reconciled_at',
+        'reconciled_by',
+        'reconciliation_note',
     ];
 
     protected function casts(): array
     {
         return [
             'amount' => 'decimal:2',
+            'reconciled_at' => 'datetime',
         ];
     }
 
@@ -40,6 +45,11 @@ class PartnerCommission extends Model
     public function wedding(): BelongsTo
     {
         return $this->belongsTo(Wedding::class);
+    }
+
+    public function reconciledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reconciled_by');
     }
 
     public function getFormattedAmountAttribute(): string

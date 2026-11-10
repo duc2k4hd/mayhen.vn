@@ -216,6 +216,29 @@
                     <span>Mã Giảm Giá & Ưu Đãi</span>
                 </a>
 
+                <!-- Section: Mạng Lưới Đối Tác & Studio -->
+                <div class="mayhen_admin_menu_section">Đối Tác & Studio B2B</div>
+                <a href="{{ route('admin.partners.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.partners.index') || request()->routeIs('admin.partners.show') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </span>
+                    <span>Mạng Lưới Đối Tác</span>
+                </a>
+                <a href="{{ route('admin.partners.commissions') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.partners.commissions*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </span>
+                    <span>Quyết Toán Hoa Hồng</span>
+                </a>
+
                 <!-- Section 4: Người Dùng & Hỗ Trợ -->
                 <div class="mayhen_admin_menu_section">Người Dùng & Hỗ Trợ</div>
                 <a href="{{ route('admin.users.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.users.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -328,6 +351,15 @@
                             </svg>
                         </span>
                         <span>Kiểm Soát Phát Hành (Rollout)</span>
+                    </a>
+
+                    <a href="{{ route('admin.resilience.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.resilience.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </span>
+                        <span>Sức Chống Chịu & Tải Cao</span>
                     </a>
                 @endif
             </nav>
@@ -561,6 +593,14 @@
                     <span>🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/support</span>
                 </a>
+                <a href="{{ route('admin.partners.index') }}" class="mayhen_admin_cmd_item" data-search="đối tác studio wedding planner b2b agency mạng lưới hoa hồng commissions chiết khấu">
+                    <span>🤝 Mạng Lưới Đối Tác & Studio (B2B)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/partners</span>
+                </a>
+                <a href="{{ route('admin.partners.commissions') }}" class="mayhen_admin_cmd_item" data-search="quyết toán hoa hồng đối tác chi trả đối soát payout commissions bank">
+                    <span>💳 Quyết Toán Hoa Hồng Đối Tác</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/partners/commissions</span>
+                </a>
                 @if (Auth::user()?->isSuperAdmin())
                     <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_cmd_item" data-search="gói cước dịch vụ bảng giá plans pricing">
                         <span>⭐ Gói Dịch Vụ & Bảng Giá</span>
@@ -585,6 +625,10 @@
                     <a href="{{ route('admin.jobs.index') }}" class="mayhen_admin_cmd_item" data-search="hàng đợi failed jobs queue worker tác vụ nền lỗi retry">
                         <span>⚙️ Giám Sát Hàng Đợi (Queue & Jobs)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/system/jobs</span>
+                    </a>
+                    <a href="{{ route('admin.resilience.index') }}" class="mayhen_admin_cmd_item" data-search="resilience sức chống chịu tải cao concurrency chaos webhook burst snapshot sha256">
+                        <span>🛡️ Sức Chống Chịu & Tải Cao (Resilience)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/resilience</span>
                     </a>
                 @endif
                 <a href="{{ route('home') }}" class="mayhen_admin_cmd_item" target="_blank" data-search="trang chủ website khách hàng landing home">
