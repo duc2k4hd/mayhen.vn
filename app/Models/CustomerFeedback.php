@@ -113,4 +113,3 @@ class CustomerFeedback extends Model
         return $query->where('action_status', 'pending_review');
     }
 }
-

@@ -7447,6 +7447,19 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Cụm test toàn diện Admin Post-VNext: **189/189 tests PASSED 100% (1.147 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
 
+### 53. KHẮC PHỤC LỖI 500 RELATION NOT FOUND "USER" TRÊN MODEL SUPPORTTICKETREPLY (10/11/2026)
+- **Hiện tượng**: Khi khách hàng truy cập xem chi tiết yêu cầu hỗ trợ tại `/tai-khoan/ho-tro/{code}` (ví dụ: `TK-8853E388`), hệ thống ném ngoại lệ `Illuminate\Database\Eloquent\RelationNotFoundException: Call to undefined relationship [user] on model [App\Models\SupportTicketReply]`.
+- **Nguyên nhân**:
+  * Trong `ClientSupportController.php:129`, code eager load `with('user')` và view `client/pages/account/support/show.blade.php` gọi `$reply->user`.
+  * Trong khi Model `SupportTicketReply.php` trước đây chỉ khai báo quan hệ `public function author(): BelongsTo`.
+- **Giải pháp**:
+  * Bổ sung quan hệ `public function user(): BelongsTo` vào `app/Models/SupportTicketReply.php` trỏ tới `user_id`.
+  * Duy trì song song cả `user()` và `author()` để đảm bảo tương thích ngược 100% giữa phân hệ Client Portal và Admin Desk.
+- **Kiểm thử**:
+  * Bổ sung kịch bản kiểm thử vào `tests/Feature/ClientSupportTicketTest.php` xác nhận render trơn tru các phản hồi của khách và chuyên viên CSKH: 100% PASSED (7/7 tests, 32 assertions).
+  * Chạy toàn bộ test suite hồi quy toàn hệ thống: **831/831 tests PASSED 100% (4.450 assertions in 22.24s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -152,3 +152,45 @@ test('client can reply to their ticket and reopens resolved ticket', function ()
     $ticket->refresh();
     expect($ticket->status)->toBe('in_progress');
 });
+
+test('client can view ticket details with staff and client replies without relation exception', function () {
+    $user = User::factory()->create(['name' => 'Cô Dâu Minh Thư', 'role' => 'customer']);
+    $staff = User::factory()->create(['name' => 'Chuyên Viên Hỗ Trợ Lan Anh', 'role' => 'staff']);
+
+    $ticket = SupportTicket::create([
+        'ticket_code' => SupportTicket::generateCode(),
+        'user_id' => $user->id,
+        'subject' => 'Hỗ trợ đổi nhạc nền thiệp cưới',
+        'category' => 'invitation',
+        'priority' => 'medium',
+        'status' => 'open',
+        'body' => 'Nhờ đổi nhạc nền bài Beautiful in White giúp mình.',
+        'sla_deadline_at' => now()->addHours(12),
+    ]);
+
+    // Tạo reply của khách hàng
+    SupportTicketReply::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $user->id,
+        'body' => 'File mp3 mình gửi kèm qua email rồi ạ.',
+        'is_staff_reply' => false,
+        'is_internal_note' => false,
+    ]);
+
+    // Tạo reply của chuyên viên CSKH
+    SupportTicketReply::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $staff->id,
+        'body' => 'Chào bạn, Mây Hẹn đã nhận được file và cập nhật nhạc nền thành công!',
+        'is_staff_reply' => true,
+        'is_internal_note' => false,
+    ]);
+
+    // Khi truy cập /tai-khoan/ho-tro/{code}, không được ném RelationNotFoundException
+    $response = $this->actingAs($user)->get(route('account.support.show', $ticket->ticket_code));
+
+    $response->assertOk();
+    $response->assertSee('File mp3 mình gửi kèm qua email');
+    $response->assertSee('Mây Hẹn đã nhận được file');
+    $response->assertSee('Chuyên Viên Mây Hẹn');
+});
