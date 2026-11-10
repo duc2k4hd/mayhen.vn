@@ -22,6 +22,7 @@ class UserController extends Controller
     {
         $search = trim((string) $request->input('q', ''));
         $role = $request->input('role');
+        $status = $request->input('status');
 
         $query = User::query()
             ->withCount('weddings')
@@ -55,6 +56,15 @@ class UserController extends Controller
             $query->where('role', $role);
         }
 
+        // 3. Status Filter (Active / Locked)
+        if ($status === 'locked') {
+            $query->where('is_locked', true);
+        } elseif ($status === 'active') {
+            $query->where(function ($q) {
+                $q->where('is_locked', false)->orWhereNull('is_locked');
+            });
+        }
+
         $users = $query->latest('id')->paginate(15)->withQueryString();
 
         // Summary Counts for Navigation Tabs
@@ -66,17 +76,20 @@ class UserController extends Controller
         $managerCount = User::where('role', 'manager')->count();
         $staffCount = User::where('role', 'staff')->count();
         $partnerCount = User::where('role', 'partner')->count();
+        $lockedCount = User::where('is_locked', true)->count();
 
         return view('admin.pages.users.index', [
             'users' => $users,
             'currentSearch' => $search,
             'currentRole' => $role,
+            'currentStatus' => $status,
             'totalCount' => $totalCount,
             'customerCount' => $customerCount,
             'adminCount' => $adminCount,
             'managerCount' => $managerCount,
             'staffCount' => $staffCount,
             'partnerCount' => $partnerCount,
+            'lockedCount' => $lockedCount,
         ]);
     }
 
@@ -168,12 +181,95 @@ class UserController extends Controller
     }
 
     /**
+     * Lock a user account (ADM-A04-014).
+     */
+    public function lock(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:255',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        // Security Defense 1: Cannot lock own account
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Bạn không thể tự khóa tài khoản của chính mình.');
+        }
+
+        // Security Defense 2: Cannot lock the last remaining active Super Admin
+        if ($user->isSuperAdmin()) {
+            if (! Auth::user()?->isSuperAdmin()) {
+                return back()->with('error', 'Chỉ Quản trị viên cấp cao mới có quyền khóa tài khoản Quản trị viên.');
+            }
+
+            $activeAdminCount = User::where('role', 'admin')->where(function ($q) {
+                $q->where('is_locked', false)->orWhereNull('is_locked');
+            })->count();
+
+            if ($activeAdminCount <= 1) {
+                return back()->with('error', 'Không thể khóa Quản trị viên cấp cao duy nhất còn hoạt động trong hệ thống.');
+            }
+        }
+
+        $reason = trim((string) $request->input('reason', ''));
+        if ($reason === '') {
+            $reason = 'Khóa bởi Quản trị viên do vi phạm quy chế hoặc yêu cầu nghiệp vụ.';
+        }
+
+        $user->update([
+            'is_locked' => true,
+            'lock_reason' => $reason,
+            'locked_at' => now(),
+        ]);
+
+        AuditLogger::log(
+            'lock_user',
+            'User',
+            $user->id,
+            "Khóa tài khoản {$user->email} ({$user->name}) với lý do: {$reason}",
+            ['user_id' => $user->id, 'reason' => $reason]
+        );
+
+        return back()->with('success', "Đã khóa tài khoản {$user->name} thành công.");
+    }
+
+    /**
+     * Unlock a user account (ADM-A04-015).
+     */
+    public function unlock(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+
+        // Security Defense: Manager cannot unlock Super Admin unless is Super Admin
+        if ($user->isSuperAdmin() && ! Auth::user()?->isSuperAdmin()) {
+            return back()->with('error', 'Chỉ Quản trị viên cấp cao mới có quyền mở khóa tài khoản Quản trị viên.');
+        }
+
+        $user->update([
+            'is_locked' => false,
+            'lock_reason' => null,
+            'locked_at' => null,
+        ]);
+
+        AuditLogger::log(
+            'unlock_user',
+            'User',
+            $user->id,
+            "Mở khóa tài khoản {$user->email} ({$user->name})",
+            ['user_id' => $user->id]
+        );
+
+        return back()->with('success', "Đã mở khóa tài khoản {$user->name} thành công.");
+    }
+
+    /**
      * Export users list as UTF-8 BOM CSV.
      */
     public function exportCsv(Request $request): StreamedResponse
     {
         $search = trim((string) $request->input('q', ''));
         $role = $request->input('role');
+        $status = $request->input('status');
 
         $query = User::query()
             ->withCount('weddings')
@@ -205,6 +301,14 @@ class UserController extends Controller
             $query->where('role', $role);
         }
 
+        if ($status === 'locked') {
+            $query->where('is_locked', true);
+        } elseif ($status === 'active') {
+            $query->where(function ($q) {
+                $q->where('is_locked', false)->orWhereNull('is_locked');
+            });
+        }
+
         $users = $query->latest('id')->get();
 
         $filename = 'danh-sach-nguoi-dung-mayhen-'.now()->format('Ymd-His').'.csv';
@@ -221,6 +325,7 @@ class UserController extends Controller
                 'Email',
                 'Số Điện Thoại',
                 'Vai Trò (Phân Quyền)',
+                'Trạng Thái',
                 'Số Thiệp Cưới Đã Tạo',
                 'Tổng Tiền Đã Thanh Toán (VNĐ)',
                 'Ngày Tham Gia',
@@ -229,6 +334,7 @@ class UserController extends Controller
             $index = 1;
             foreach ($users as $user) {
                 $totalSpent = $user->orders->sum('amount');
+                $statusLabel = $user->isLocked() ? "Đã khóa ({$user->lock_reason})" : 'Hoạt động';
                 fputcsv($handle, CsvSanitizerService::row([
                     $index++,
                     $user->id,
@@ -236,6 +342,7 @@ class UserController extends Controller
                     $user->email,
                     $user->phone ?? 'Chưa cập nhật',
                     $user->role_label,
+                    $statusLabel,
                     $user->weddings_count,
                     $totalSpent,
                     $user->created_at ? $user->created_at->format('d/m/Y H:i:s') : 'N/A',

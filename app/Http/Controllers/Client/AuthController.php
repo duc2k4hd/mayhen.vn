@@ -47,7 +47,19 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
-            $this->syncOwnedInvitations($request, Auth::user());
+            $user = Auth::user();
+            if ($user && $user->isLocked()) {
+                $reason = $user->lock_reason ?: 'Tài khoản của bạn đã bị khóa tạm thời. Vui lòng liên hệ ban quản trị.';
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                    'email' => "Tài khoản của bạn đã bị khóa. Lý do: {$reason}",
+                ]);
+            }
+
+            $this->syncOwnedInvitations($request, $user);
             $request->session()->regenerate();
 
             $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('home'));

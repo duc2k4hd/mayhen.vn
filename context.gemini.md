@@ -6866,6 +6866,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Bổ sung kịch bản kiểm thử tự động trong `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` xác thực hiển thị Command Palette và Badge dữ liệu thực tế.
   * Toàn bộ test suite: **659/659 tests PASSED 100% (3,405 assertions)**, Laravel Pint đạt chuẩn 100%.
 
+### 26. HOÀN THIỆN WAVE 03 — USERS & INVITATIONS OPERATIONS (CUSTOMER 360 & SAFE SUPPORT LENS)
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản trị dự án cưới, chi tiết khách hàng Customer 360 hai chiều, chu kỳ khóa tài khoản và chế độ hỗ trợ xem thiệp an toàn Safe Support Lens (tuân thủ Luật 91/2025/QH15).
+- **Các thành phần đã triển khai**:
+  1. **Cơ chế Khóa / Mở Khóa Tài Khoản Người Dùng (`ADM-A04-014` / `ADM-A04-015`)**:
+     - Tạo migration `2026_11_10_030058_add_lock_columns_to_users_table.php` bổ sung 3 cột `is_locked`, `lock_reason`, `locked_at` vào bảng `users`.
+     - Cập nhật model [User.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/User.php): Khai báo fillable, cast boolean/datetime, helper `isLocked()`.
+     - Thắt chặt bảo mật trong middleware [AdminAuthenticate.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Middleware/AdminAuthenticate.php), controller [Admin/AuthController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/AuthController.php) và [Client/AuthController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/AuthController.php): Ngay lập tức từ chối đăng nhập và vô hiệu hóa session nếu tài khoản bị khóa, phản hồi lý do khóa cụ thể.
+     - Thêm phương thức `lock(Request $request, int $id)` và `unlock(int $id)` trong [UserController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/UserController.php):
+       * Chốt chặn 1: Admin không thể tự khóa tài khoản của chính mình.
+       * Chốt chặn 2: Hệ thống ngăn chặn việc khóa tài khoản Super Admin duy nhất còn hoạt động.
+       * Chốt chặn 3: Chỉ Quản trị viên cấp cao mới có thẩm quyền khóa/mở khóa tài khoản Quản trị viên.
+       * Tự động ghi nhận chi tiết vào `AuditLogger`.
+     - Bổ sung bộ lọc trạng thái `status` (Tất cả, Hoạt động, Đã bị khóa) trên trang danh sách [users/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/users/index.blade.php) và xuất CSV có cột trạng thái khóa.
+     - Dựng Card "Trạng Thái Tài Khoản" trực quan trên [users/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/users/show.blade.php).
+  2. **Safe Support Lens (Kính Hỗ Trợ An Toàn & Che Dấu PII - Innovation #7 / `ADM-A06-025`)**:
+     - Tích hợp thanh điều khiển Safe Support Lens trên đầu trang chi tiết thiệp cưới [invitations/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/show.blade.php).
+     - Mặc định kích hoạt chế độ che giấu PII (`safe_lens=1`): Tự động che số tài khoản ngân hàng mừng cưới (`********8910`), che tên chủ thẻ (`NGUYEN ***`), che số điện thoại khách mời trong danh sách khách (`0912***678`) và trong bảng RSVP (`0987***321`), đảm bảo tuân thủ tuyệt đối Luật Bảo vệ dữ liệu cá nhân (91/2025/QH15).
+     - Khi quản trị viên yêu cầu mở xem đầy đủ (`safe_lens=0`), hệ thống hiển thị cảnh báo, xác nhận và **tự động ghi nhận sự kiện `view_unmasked_pii` vào `AuditLogger`** với admin ID, IP và thiệp slug để kiểm toán truy vết.
+  3. **Hệ Thống Liên Kết Hai Chiều Customer 360 (Closed-Loop Navigation)**:
+     - Trên trang thiệp cưới [invitations/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/show.blade.php): Liên kết trực tiếp tên chủ sở hữu đến hồ sơ khách hàng `/admin/users/{id}`, bổ sung Tab "Đơn Hàng" hiển thị toàn bộ đơn phát sinh gắn với thiệp đó liên kết thẳng sang `/admin/orders/{id}`.
+     - Trên trang khách hàng [users/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/users/show.blade.php): Liên kết ngược lại các thiệp cưới đã tạo và đơn hàng đã thanh toán.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave03UsersAndInvitationsTest.php` với 7 kịch bản kiểm thử độc lập (49 assertions), 100% PASSED.
+  * Toàn bộ test suite: **666/666 tests PASSED 100% (3,454 assertions in 13.57s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent format.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -38,6 +38,40 @@
         </div>
     </div>
 
+    @php
+        $maskPhone = fn(?string $p) => $isSafeLens && !empty($p) ? (strlen($p) > 6 ? substr($p, 0, 4) . '***' . substr($p, -3) : '***') : ($p ?? '—');
+        $maskBankAcc = fn(?string $b) => $isSafeLens && !empty($b) ? (strlen($b) > 4 ? str_repeat('*', max(4, strlen($b) - 4)) . substr($b, -4) : '****') : ($b ?? '—');
+        $maskBankName = fn(?string $n) => $isSafeLens && !empty($n) ? (explode(' ', $n)[0] . ' ***') : ($n ?? '—');
+    @endphp
+
+    <!-- Safe Support Lens Bar (ADM-A06-025 / Innovation #7) -->
+    <div style="margin-bottom: 16px; padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; {{ $isSafeLens ? 'background: #F1F8F5; border: 1px solid #C8E6C9;' : 'background: #FFF8E1; border: 1px solid #FFE082;' }}">
+        <div style="display: flex; align-items: center; gap: 10px; font-size: 0.8125rem;">
+            <span style="font-size: 1.1rem;">{{ $isSafeLens ? '🛡️' : '⚠️' }}</span>
+            <div>
+                @if ($isSafeLens)
+                    <strong style="color: #2E7D32;">Safe Support Lens: ĐANG BẬT</strong> &mdash; 
+                    <span style="color: #555;">Thông tin cá nhân (STK ngân hàng, SĐT khách) đã được tự động che giấu tuân thủ Luật Bảo vệ dữ liệu cá nhân (91/2025/QH15).</span>
+                @else
+                    <strong style="color: #F57F17;">Safe Support Lens: ĐANG TẮT</strong> &mdash; 
+                    <span style="color: #555;">Đang hiển thị toàn bộ PII thực tế. Hành động xem không che đã được ghi nhận vào Nhật ký kiểm toán.</span>
+                @endif
+            </div>
+        </div>
+
+        <div>
+            @if ($isSafeLens)
+                <a href="{{ route('admin.invitations.show', ['id' => $invitation->id, 'safe_lens' => 0]) }}" class="mayhen_admin_btn mayhen_admin_btn_sm" style="background: #FFFFFF; border: 1px solid #C8E6C9; color: #2E7D32;" onclick="return confirm('CẢNH BÁO: Bỏ che PII sẽ hiển thị công khai STK ngân hàng và số điện thoại khách hàng. Hành động này sẽ được ghi vào Nhật ký kiểm toán. Bạn có chắc chắn?');">
+                    Bỏ Che PII (Xem Đầy Đủ)
+                </a>
+            @else
+                <a href="{{ route('admin.invitations.show', ['id' => $invitation->id, 'safe_lens' => 1]) }}" class="mayhen_admin_btn mayhen_admin_btn_sm mayhen_admin_btn_primary">
+                    Kích Hoạt Lại Safe Lens
+                </a>
+            @endif
+        </div>
+    </div>
+
     <!-- 2 Columns Layout: Left Phone Mockup | Right Details -->
     <div class="mayhen_admin_detail_layout">
         <!-- Left: Live Phone Mockup -->
@@ -182,7 +216,9 @@
                             <div class="mayhen_admin_info_label">Chủ Sở Hữu (Tài Khoản)</div>
                             <div class="mayhen_admin_info_val">
                                 @if ($wedding->user)
-                                    {{ $wedding->user->name }} ({{ $wedding->user->email }})
+                                    <a href="{{ route('admin.users.show', $wedding->user->id) }}" style="color: var(--mh-admin-gold); text-decoration: underline; font-weight: 600;" title="Xem hồ sơ khách hàng Customer 360">
+                                        {{ $wedding->user->name }} ({{ $wedding->user->email }}) &nearr;
+                                    </a>
                                 @else
                                     Khách Vãng Lai
                                 @endif
@@ -213,8 +249,8 @@
                             <div class="mayhen_admin_info_label">Tài Khoản Mừng Cưới</div>
                             <div class="mayhen_admin_info_val">
                                 @if ($wedding->bank_name || $wedding->bank_account_number)
-                                    {{ $wedding->bank_name }} &bull; {{ $wedding->bank_account_number }}<br>
-                                    <span style="font-size: 0.8125rem; color: #7A756E;">Chủ TK: {{ $wedding->bank_account_name }}</span>
+                                    {{ $wedding->bank_name }} &bull; <code>{{ $maskBankAcc($wedding->bank_account_number) }}</code><br>
+                                    <span style="font-size: 0.8125rem; color: #7A756E;">Chủ TK: {{ $maskBankName($wedding->bank_account_name) }}</span>
                                 @else
                                     Chưa thiết lập
                                 @endif
@@ -250,6 +286,9 @@
                         </button>
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-config">
                             Hồ Sơ Kỹ Thuật (Schema)
+                        </button>
+                        <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-orders">
+                            Đơn Hàng ({{ $invitation->orders->count() }})
                         </button>
                     </nav>
                 </div>
@@ -289,7 +328,7 @@
                                         <tr>
                                             <td><strong>{{ $guest->name }}</strong></td>
                                             <td><span class="mayhen_admin_badge mayhen_admin_badge_muted">{{ $guest->group_name ?? 'Chung' }}</span></td>
-                                            <td>{{ $guest->phone ?? '—' }}</td>
+                                            <td><code>{{ $maskPhone($guest->phone) }}</code></td>
                                             <td>
                                                 <span class="mayhen_admin_badge {{ $guest->is_sent ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_warning' }}">
                                                     {{ $guest->is_sent ? 'Đã gửi thiệp' : 'Chưa gửi' }}
@@ -368,7 +407,7 @@
                                                     <span style="font-size: 0.6875rem; color: #7A756E;">({{ $resp->adults_count ?? 1 }} lớn, {{ $resp->children_count }} trẻ em)</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $resp->phone ?? '—' }}</td>
+                                            <td><code>{{ $maskPhone($resp->phone) }}</code></td>
                                             <td style="max-width: 220px; font-size: 0.75rem;">{{ $resp->dietary_requirements ?? '—' }}</td>
                                             <td>{{ $resp->created_at ? $resp->created_at->format('d/m/Y H:i') : '—' }}</td>
                                         </tr>
@@ -543,6 +582,65 @@
                                     @endif
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 6: Orders & Payments (Customer 360 Deep Link) -->
+                    <div id="tab-orders" class="mayhen_admin_tab_pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Tổng cộng <strong>{{ $invitation->orders->count() }}</strong> đơn hàng phát sinh gắn liền với thiệp cưới này.
+                            </div>
+                            <a href="{{ route('admin.orders.index', ['q' => $invitation->slug]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                Tra Cứu Toàn Bộ Đơn Hàng &rarr;
+                            </a>
+                        </div>
+
+                        <div class="mayhen_admin_table_responsive">
+                            <table class="mayhen_admin_table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã Đơn Hàng</th>
+                                        <th>Gói Dịch Vụ</th>
+                                        <th>Số Tiền</th>
+                                        <th>Phương Thức</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($invitation->orders as $ord)
+                                        <tr>
+                                            <td><code>{{ $ord->order_code }}</code></td>
+                                            <td><strong>{{ $ord->plan->name ?? 'Gói Dịch Vụ' }}</strong></td>
+                                            <td><strong style="color: #1B5E20;">{{ number_format($ord->amount, 0, ',', '.') }}đ</strong></td>
+                                            <td><span style="text-transform: uppercase; font-size: 0.75rem;">{{ $ord->payment_method }}</span></td>
+                                            <td>
+                                                @if ($ord->isPaid())
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
+                                                @elseif ($ord->status === 'cancelled')
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger">Đã Hủy</span>
+                                                @else
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_warning">Chờ Thanh Toán</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $ord->created_at->format('d/m/Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ route('admin.orders.show', $ord->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                                                    Chi Tiết Đơn &nearr;
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" style="text-align: center; color: #7A756E; padding: 24px;">
+                                                Chưa có đơn hàng thanh toán nào liên kết với thiệp cưới này.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

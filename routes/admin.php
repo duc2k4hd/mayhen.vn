@@ -73,6 +73,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->middleware('admin.manager')->name('reset_password');
+        Route::post('/{id}/lock', [AdminUserController::class, 'lock'])->middleware('admin.manager')->name('lock');
+        Route::post('/{id}/unlock', [AdminUserController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });
 
     // Quản lý Lời chúc & Giám sát RSVP

@@ -34,12 +34,19 @@
             <span>Cộng Tác Viên (Studio)</span>
             <span class="mayhen_admin_user_tab_count">{{ $partnerCount }}</span>
         </a>
+        <a href="{{ route('admin.users.index', ['status' => 'locked']) }}" class="mayhen_admin_user_tab_item {{ $currentStatus === 'locked' ? 'active' : '' }}" style="{{ $currentStatus === 'locked' ? 'border-color: #C62828; color: #C62828;' : '' }}">
+            <span style="{{ $lockedCount > 0 ? 'color: #C62828; font-weight: 600;' : '' }}">Bị Khóa</span>
+            <span class="mayhen_admin_user_tab_count" style="{{ $lockedCount > 0 ? 'background: #FFEBEE; color: #C62828;' : '' }}">{{ $lockedCount }}</span>
+        </a>
     </div>
 
     <!-- Filter & Search Bar -->
     <form action="{{ route('admin.users.index') }}" method="GET" class="mayhen_admin_filter_bar">
         @if ($currentRole)
             <input type="hidden" name="role" value="{{ $currentRole }}">
+        @endif
+        @if ($currentStatus)
+            <input type="hidden" name="status" value="{{ $currentStatus }}">
         @endif
 
         <div class="mayhen_admin_search_box">
@@ -60,7 +67,7 @@
             <span>Tìm Kiếm</span>
         </button>
 
-        @if ($currentSearch || $currentRole)
+        @if ($currentSearch || $currentRole || $currentStatus)
             <a href="{{ route('admin.users.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
                 <span>Đặt Lại</span>
             </a>
@@ -81,7 +88,7 @@
             </div>
 
             <div>
-                <a href="{{ route('admin.users.export', ['q' => $currentSearch, 'role' => $currentRole]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                <a href="{{ route('admin.users.export', ['q' => $currentSearch, 'role' => $currentRole, 'status' => $currentStatus]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -124,7 +131,11 @@
                                         {{ strtoupper(mb_substr($u->name ?? 'U', 0, 1, 'UTF-8')) }}
                                     </div>
                                     <div>
-                                        <strong style="font-size: 0.9375rem; color: var(--mh-admin-charcoal);">{{ $u->name }}</strong><br>
+                                        <strong style="font-size: 0.9375rem; color: var(--mh-admin-charcoal);">{{ $u->name }}</strong>
+                                        @if ($u->isLocked())
+                                            <span class="mayhen_admin_badge mayhen_admin_badge_danger" style="margin-left: 6px; font-size: 0.6875rem;">Đã khóa</span>
+                                        @endif
+                                        <br>
                                         <span style="font-size: 0.75rem; color: #7A756E;">{{ $u->email }}</span>
                                         @if ($u->phone)
                                             <br><span style="font-size: 0.75rem; color: #7A756E;">{{ $u->phone }}</span>

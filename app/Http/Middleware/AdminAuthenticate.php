@@ -38,6 +38,20 @@ class AdminAuthenticate
                 ->withErrors(['email' => 'Tài khoản của bạn không có quyền truy cập không gian quản trị.']);
         }
 
+        if (method_exists($user, 'isLocked') && $user->isLocked()) {
+            $reason = $user->lock_reason ?: 'Tài khoản đã bị tạm khóa bởi Quản trị viên.';
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $reason], 403);
+            }
+
+            return redirect()->route('admin.login')
+                ->withErrors(['email' => "Tài khoản của bạn đã bị khóa. Lý do: {$reason}"]);
+        }
+
         return $next($request);
     }
 }

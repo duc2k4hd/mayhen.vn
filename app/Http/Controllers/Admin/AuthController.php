@@ -86,6 +86,19 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => $message])->withInput($request->only('email'));
             }
 
+            if ($user->isLocked()) {
+                $reason = $user->lock_reason ?: 'Tài khoản quản trị đã bị tạm khóa bởi Quản trị viên.';
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['message' => "Tài khoản bị khóa: {$reason}"], 403);
+                }
+
+                return back()->withErrors(['email' => "Tài khoản của bạn đã bị khóa. Lý do: {$reason}"])->withInput($request->only('email'));
+            }
+
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
 

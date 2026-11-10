@@ -26,6 +26,9 @@ class User extends Authenticatable
         'phone',
         'password',
         'role',
+        'is_locked',
+        'lock_reason',
+        'locked_at',
     ];
 
     /**
@@ -48,7 +51,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_locked' => 'boolean',
+            'locked_at' => 'datetime',
         ];
+    }
+
+    public function isLocked(): bool
+    {
+        return (bool) $this->is_locked;
     }
 
     public function weddings(): HasMany

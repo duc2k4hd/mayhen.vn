@@ -86,7 +86,7 @@ class InvitationController extends Controller
     /**
      * Display the detailed monitoring view and live phone mockup of an invitation.
      */
-    public function show(int $id): View
+    public function show(Request $request, int $id): View
     {
         $invitation = Invitation::query()
             ->with([
@@ -113,11 +113,26 @@ class InvitationController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Safe Support Lens (ADM-A06-025 / Innovation #7):
+        // Default is TRUE (PII masked for groom/bride bank info and guest phone numbers)
+        $isSafeLens = $request->input('safe_lens', '1') !== '0';
+
+        if (! $isSafeLens) {
+            AuditLogger::log(
+                'view_unmasked_pii',
+                'Invitation',
+                $invitation->id,
+                "Xem dữ liệu PII đầy đủ (không che) của thiệp \"{$invitation->slug}\"",
+                ['invitation_id' => $invitation->id, 'slug' => $invitation->slug]
+            );
+        }
+
         return view('admin.pages.invitations.show', [
             'invitation' => $invitation,
             'wedding' => $invitation->wedding,
             'template' => $invitation->template,
             'allTemplates' => $allTemplates,
+            'isSafeLens' => $isSafeLens,
         ]);
     }
 

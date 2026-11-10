@@ -27,9 +27,17 @@
                     };
                 @endphp
                 <span class="mayhen_admin_role_badge {{ $roleClass }}">{{ $user->role_label }}</span>
+                @if ($user->isLocked())
+                    <span class="mayhen_admin_badge mayhen_admin_badge_danger" style="margin-left: 6px;">Tài Khoản Đang Bị Khóa</span>
+                @else
+                    <span class="mayhen_admin_badge mayhen_admin_badge_success" style="margin-left: 6px;">Hoạt Động</span>
+                @endif
             </div>
             <div class="mayhen_admin_page_subtitle">
                 Email: <strong>{{ $user->email }}</strong> &bull; SĐT: <strong>{{ $user->phone ?? 'Chưa cập nhật' }}</strong> &bull; Tham gia: <strong>{{ $user->created_at->format('d/m/Y') }}</strong>
+                @if ($user->isLocked())
+                    &bull; <span style="color: #C62828;">Khóa lúc: {{ $user->locked_at ? $user->locked_at->format('d/m/Y H:i') : 'N/A' }} ({{ $user->lock_reason }})</span>
+                @endif
             </div>
         </div>
 
@@ -210,6 +218,70 @@
                             <div style="font-size: 1.15rem; font-weight: 700; color: var(--mh-admin-charcoal);">{{ $user->weddings->count() }}</div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Account Security & Lock / Unlock Status Card (ADM-A04-014 / 015) -->
+            <div class="mayhen_admin_card" style="{{ $user->isLocked() ? 'border-color: #FFCDD2; background-color: #FFF9F9;' : '' }}">
+                <div class="mayhen_admin_card_header">
+                    <div class="mayhen_admin_card_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: {{ $user->isLocked() ? '#C62828' : 'var(--mh-admin-gold)' }};">
+                            @if ($user->isLocked())
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            @else
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                            @endif
+                        </svg>
+                        <span>Trạng Thái Tài Khoản</span>
+                    </div>
+                </div>
+
+                <div class="mayhen_admin_card_body">
+                    @if ($user->isLocked())
+                        <div style="padding: 12px; background: #FFEBEE; border-radius: 8px; border: 1px solid #FFCDD2; color: #C62828; margin-bottom: 14px; font-size: 0.8125rem;">
+                            <strong>Tài khoản này đang bị khóa!</strong><br>
+                            Lý do: <em>{{ $user->lock_reason }}</em><br>
+                            Thời gian khóa: {{ $user->locked_at ? $user->locked_at->format('d/m/Y H:i:s') : 'N/A' }}
+                        </div>
+
+                        @if (Auth::user()?->isAdmin())
+                            <form action="{{ route('admin.users.unlock', $user->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn muốn mở khóa tài khoản này?');">
+                                    Mở Khóa Tài Khoản
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        <div style="font-size: 0.8125rem; color: #2E7D32; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #2E7D32;"></span>
+                            Tài khoản đang hoạt động bình thường và được phép đăng nhập.
+                        </div>
+
+                        @if (Auth::user()?->isAdmin() && $user->id !== Auth::id())
+                            <form action="{{ route('admin.users.lock', $user->id) }}" method="POST">
+                                @csrf
+                                <div style="margin-bottom: 10px;">
+                                    <input 
+                                        type="text" 
+                                        name="reason" 
+                                        class="mayhen_admin_form_input" 
+                                        placeholder="Nhập lý do khóa (Spam, vi phạm điều khoản...)" 
+                                        style="font-size: 0.8125rem; padding: 7px 10px;"
+                                    >
+                                </div>
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_sm" style="width: 100%; color: #C62828; background: #FFEBEE; border-color: #FFCDD2;" onclick="return confirm('Bạn có chắc chắn muốn khóa tài khoản này không? Người dùng sẽ không thể đăng nhập.');">
+                                    Khóa Tài Khoản Này
+                                </button>
+                            </form>
+                        @elseif ($user->id === Auth::id())
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
+                                Đây là tài khoản của chính bạn (không thể tự khóa).
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </div>
 

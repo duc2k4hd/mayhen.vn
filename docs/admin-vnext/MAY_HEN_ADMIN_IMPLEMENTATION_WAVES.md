@@ -11,9 +11,9 @@
 |:---:|---|---|:---:|
 | **Wave 00** | **Evidence & Inventory** | Kiểm kê 100% routes, controls, permissions, thiết lập catalog CSV, sổ bug | **COMPLETED** |
 | **Wave 01** | **P0 Security & Money** | Vá 4 lỗi P0/P1, củng cố RBAC, đối soát ngân hàng bắt buộc, bảo vệ Super Admin | **COMPLETED** |
-| **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, phím tắt Escape, data tables, modals, filters | **COMPLETED** |
-| **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, chi tiết khách hàng 360, hỗ trợ xem thiệp an toàn | **READY** |
-| **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **QUEUED** |
+| **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, Command Palette, real-time badges, phím tắt | **COMPLETED** |
+| **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, Customer 360, Safe Support Lens bảo vệ PII, khóa tài khoản | **COMPLETED** |
+| **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **READY** |
 | **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **QUEUED** |
 | **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **QUEUED** |
 | **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **QUEUED** |
@@ -31,21 +31,23 @@
 - [x] Khởi tạo catalog phân rã `MAY_HEN_ADMIN_ATOMIC_FUNCTIONS.csv` và `MAY_HEN_ADMIN_TEST_CASES.csv`.
 
 ### Wave 01: P0 Security & Money
-- [ ] Khắc phục `BUG-ADM-001`: Cho phép role `staff` đăng nhập qua form `/admin/login` thông qua `canAccessAdminPanel()`.
-- [ ] Khắc phục `BUG-ADM-002`: Bảo vệ tài khoản Super Admin duy nhất khỏi việc bị hạ quyền.
-- [ ] Khắc phục `BUG-ADM-003`: Bắt buộc nhập mã tham chiếu giao dịch ngân hàng và lý do đối soát khi duyệt đơn thủ công.
-- [ ] Khắc phục `BUG-ADM-004`: Khử độc/masking mảng `details` trong `AuditLogger` và ghi nhận nhật ký đăng nhập/đăng xuất.
-- [ ] Viết bộ test `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` xác thực 100% các bản sửa lỗi.
+- [x] Khắc phục `BUG-ADM-001`: Cho phép role `staff` đăng nhập qua form `/admin/login` thông qua `canAccessAdminPanel()`.
+- [x] Khắc phục `BUG-ADM-002`: Bảo vệ tài khoản Super Admin duy nhất khỏi việc bị hạ quyền.
+- [x] Khắc phục `BUG-ADM-003`: Bắt buộc nhập mã tham chiếu giao dịch ngân hàng và lý do đối soát khi duyệt đơn thủ công.
+- [x] Khắc phục `BUG-ADM-004`: Khử độc/masking mảng `details` trong `AuditLogger` và ghi nhận nhật ký đăng nhập/đăng xuất.
+- [x] Viết bộ test `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` xác thực 100% các bản sửa lỗi.
 
 ### Wave 02: Admin Shell & UX Foundations
-- [ ] Hoàn thiện trải nghiệm bàn phím (Escape đóng modal/drawer, phím tắt tìm kiếm).
-- [ ] Cải thiện độ tương phản bảng dữ liệu, trạng thái rỗng (empty state) giàu thông điệp hướng dẫn.
-- [ ] Tối ưu hóa responsive trên laptop màn hình thấp và thiết bị di động (375px, 430px, 768px).
+- [x] Hoàn thiện trải nghiệm bàn phím (Command Palette `Ctrl+K` / `Cmd+K` / `/`, Escape đóng modal/drawer, phím tắt tìm kiếm).
+- [x] Hệ thống huy hiệu vận hành thời gian thực (real-time badge counts: đơn chờ duyệt, lời chúc chờ duyệt) tích hợp View Composer.
+- [x] Cải thiện độ tương phản bảng dữ liệu, trạng thái rỗng (empty state) giàu thông điệp hướng dẫn.
+- [x] Tối ưu hóa responsive trên laptop màn hình thấp và thiết bị di động (375px, 430px, 768px).
 
 ### Wave 03: Users & Invitations Operations
-- [ ] Hoàn thiện thông tin Customer 360 (kết nối đơn hàng, thiệp cưới và nhật ký).
-- [ ] Bổ sung cơ chế xem thiệp khách (Safe Support View) dưới quyền read-only, che dấu PII.
-- [ ] Quản lý chu kỳ khóa / mở khóa và gia hạn thiệp cưới kèm audit trail.
+- [x] Hoàn thiện thông tin Customer 360 (kết nối hai chiều đơn hàng, thiệp cưới, chi tiêu và nhật ký kiểm toán).
+- [x] Triển khai Safe Support Lens (Innovation #7): Chế độ xem thiệp cưới khách hàng che giấu PII (STK ngân hàng, SĐT) tuân thủ Luật 91/2025/QH15, ghi nhận audit log khi mở che.
+- [x] Quản lý chu kỳ khóa / mở khóa tài khoản người dùng (`ADM-A04-014` / `ADM-A04-015`) với cơ chế phòng vệ chống tự khóa và bảo vệ Super Admin duy nhất.
+- [x] Viết bộ test `tests/Feature/AdminVNextWave03UsersAndInvitationsTest.php` (7 tests, 49 assertions pass 100%).
 
 ### Wave 04: Templates Engine & Native Curated Governance
 - [ ] Nâng cấp bảng thanh tra Schema Inspector hiển thị trạng thái của 10 Canonical Sections.
