@@ -7701,42 +7701,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **852/852 tests PASSED 100% (4,571 assertions in 20.85s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
-- **Mục tiêu**: Chuẩn hóa và tích hợp 100% mẫu thiệp cưới phong cách Black & White Editorial Quiet Luxury "Hắc Bạch Trao Duyên" (`hac-bach-trao-duyen`) tuân thủ nghiêm ngặt **8 Nguyên Tắc Chuẩn Hóa Mẫu Thiệp Cưới** của Mây Hẹn.
-- **Chi tiết các thành phần đã triển khai**:
-  1. **Tài Nguyên Ngoại Tuyến 100% Cục Bộ (Zero External Assets)**:
-     - 54 tệp tài nguyên gồm toàn bộ ảnh cưới chất lượng cao, icon đồ họa và bài hát đám cưới MP3 offline `wedding-song.mp3` được đặt trực tiếp trong:
-       * `resources/views/client/invitations/hac-bach-trao-duyen/assets/`
-       * `public/mau-thiep/hac-bach-trao-duyen/assets/`
-  2. **Cấu Trúc Giao Diện 10 Section Tiêu Chuẩn ([template.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen/template.blade.php))**:
-     - Kế thừa layout chuẩn `@extends('client.layouts.invitation')`.
-     - Đầy đủ 10 Section tiêu chuẩn:
-       * Section 1: Opening Envelope — Phong bì Hoàng Gia 3D dập nổi tem sáp Monogram hé lộ thiệp.
-       * Section 2: Hero Cover — Ảnh cưới lớn, tên dâu rể, monogram và ngày cưới.
-       * Section 3: Love Story — 3 mốc kỷ niệm (Lần đầu gặp gỡ, Ngày nhận lời yêu, Mãi bên nhau nhé).
-       * Section 4: Family & Couple — Cha mẹ hai bên, nhẫn cưới, chân dung cô dâu và chú rể.
-       * Section 5: Countdown & Calendar — Khung vòm Save The Date, lịch tháng cưới và đồng hồ đếm ngược Ngày-Giờ-Phút-Giây.
-       * Section 6: Events & Location — Thời gian, địa điểm tiệc cưới tại tư gia, nút Google Maps.
-       * Section 7: Timeline — Lịch trình 3 mốc nghi lễ (Ăn hỏi, Rước dâu, Tiệc cưới & Thành hôn).
-       * Section 8: Dresscode — Gợi ý bảng màu trang phục (Đen Huyền Bí, Đỏ Bordeaux, Vàng Ánh Kim, Trắng Kem).
-       * Section 9: Album 10 Photos — Bố cục lưới ảnh cưới editorial so le kèm lightbox phóng to toàn màn hình.
-       * Section 10: Gift, Interactive & Ending — Hộp mừng cưới QR kèm nút copy STK; Sổ lưu bút & Canvas Ký Tên Trực Tiếp (**ZERO couple photos**); Form RSVP xác nhận tham dự gửi thông tin; Lời cảm ơn chân thành Footer.
-  3. **Hợp Đồng Live Sync Tuyệt Đối (`data-sync-target`)**:
-     - Gắn đầy đủ `data-sync-target` cho mọi vị trí hiển thị dữ liệu: `groom_name`, `bride_name`, `wedding_date`, `wedding_lunar_date`, `groom_father`, `groom_mother`, `bride_father`, `bride_mother`, `party_time`, `party_venue`, `event_party_address`, `groom_bank_account`, `groom_bank_name`, `bride_bank_account`, `bride_bank_name`, `dresscode_note`, `footer_thank_you_text`.
-  4. **Phòng Vệ Chế Độ Nhúng Studio Editor (`$isEmbed = true`)**:
-     - Thêm class `mayhen_invitation_ladjihe38udhd_embed_mode` vào body khi nhúng iframe `?embed=1`.
-     - Cưỡng chế ẩn màn mở đầu `display: none !important;`, bỏ khóa cuộn trên `html`/`body`, khử animation ban đầu để toàn bộ các section hiển thị tức thời, sắc nét trong Studio Editor.
-  5. **Bộ Khóa Cấu Hình Chuẩn ([schema.json](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/invitations/hac-bach-trao-duyen/schema.json))**:
-     - Định nghĩa schema chuẩn 10 sections với đầy đủ key field: `wedding.groom_name`, `wedding.bride_name`, `wedding.wedding_date`, `wedding.extra_data.*`.
-  6. **Đăng Ký Seeder & CSDL ([InvitationTemplateSeeder.php](file:///d:/Project/Laravel/mayhen.vn/database/seeders/InvitationTemplateSeeder.php))**:
-     - Khai báo mẫu thiệp `hac-bach-trao-duyen` (Tier: `free`, Category: `luxury`, Style: `black-white-editorial`).
-  7. **Kiểm Thử Toàn Diện**:
-     - Tạo mới test suite `tests/Feature/HacBachTraoDuyenTemplateTest.php` gồm **7 kịch bản kiểm thử độc lập (51 assertions)**: 100% PASSED (kiểm tra cả trang chi tiết `/mau-thiep/hac-bach-trao-duyen`, trang xem thử `/xem-thu/hac-bach-trao-duyen`, live sync, embed mode và an toàn assets).
-     - Cập nhật định dạng chuẩn INV-39 cho tiêu đề xem thử, test suite `Gate2TemplateStudioAndSyncInvariantsTest.php` đạt **4/4 tests PASSED (107 assertions)**.
-     - Toàn bộ test suite dự án: **837/837 tests PASSED 100% (4,515 assertions)**.
+### 56. KIẾN TRÚC ĐA SỰ KIỆN CƯỚI & LỊCH TRÌNH CHI TIẾT (MULTI-EVENT WEDDING ARCHITECTURE & TIMELINES) (10/11/2026)
+- **Mục tiêu**: Nâng cấp hệ thống thiệp cưới từ đơn sự kiện sang kiến trúc Đa Sự Kiện Cưới (Multi-Event Architecture) theo Mục 25 của Master PRD V3, phục vụ chuẩn văn hóa cưới hỏi Việt Nam (Lễ Ăn Hỏi, Lễ Vu Quy, Lễ Thành Hôn, Tiệc Cưới...).
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_210000_create_wedding_events_table.php` tạo bảng `wedding_events` với các trường: `wedding_id`, `name`, `event_type` (`ceremony_bride`, `ceremony_groom`, `engagement`, `banquet`, `after_party`, `other`), `event_date`, `event_time`, `lunar_date`, `venue_name`, `venue_address`, `map_url`, `dress_code`, `description`, `display_order`, `is_active`.
+     - Model: `app/Models/WeddingEvent.php` với các accessors thân thiện `type_label`, `formatted_date_time`, `isPast()`.
+     - Cập nhật `app/Models/Wedding.php`: quan hệ `events(): HasMany`, helper `getActiveEvents()` và cơ chế tự động đồng bộ dự phòng `syncEventsFromPrimaryDetails()` đảm bảo **tương thích ngược 100%** cho các đám cưới cũ chưa có sự kiện riêng.
+  2. **Dịch Vụ Nghiệp Vụ ([WeddingEventService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingEventService.php))**:
+     - `getEventsForWedding(Wedding $wedding)`: Lấy danh sách sự kiện kèm fallback tự động.
+     - `createEvent()`, `updateEvent()`, `deleteEvent()`: Quản lý vòng đời sự kiện có ghi nhận Audit Log.
+     - `reorderEvents()`: Sắp xếp thứ tự hiển thị lịch trình.
+     - `getPublicEventsPayload()`: Xuất payload JSON phục vụ Studio Editor và trang thiệp trực tuyến.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Client Controller: `app/Http/Controllers/Client/WeddingEventController.php` (`index`, `store`, `update`, `destroy`, `apiEvents`).
+     - Client View: `resources/views/client/pages/account/events/index.blade.php` (Timeline trực quan, form modal thêm/sửa, badge phân loại lễ, Google Maps link, dresscode).
+     - Tích hợp nút **Sự Kiện & Lễ** vào Feature Grid danh sách thiệp `resources/views/client/pages/account/invitations.blade.php`.
+     - Super Admin Show: Mở rộng tab **Sự Kiện Cưới** trong `resources/views/admin/pages/invitations/show.blade.php` để giám sát lịch trình chi tiết của đám cưới.
+  4. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/WeddingMultiEventTest.php` gồm **7 kịch bản kiểm thử độc lập (28 assertions)**: 100% PASSED (bao gồm kiểm thử tự động khởi tạo sự kiện từ dữ liệu cũ, thêm mới, sửa, bảo vệ không cho xóa sự kiện cuối cùng, cô lập tenant bảo mật và API JSON).
+     - Toàn bộ test suite hệ thống: **859/859 tests PASSED 100% (4,599 assertions in 26.36s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
-  8. **Lưu Ý Đặc Biệt Về Kiến Trúc Phục Vụ Asset Mẫu Thiệp (Zero Public Template Collision)**:
-     - Tuyệt đối **KHÔNG TẠO** thư mục tĩnh `public/mau-thiep/{slug}/` trên đĩa. Trong môi trường PHP Built-in Server (`php artisan serve`), thư mục tĩnh này sẽ xung đột và chiếm quyền ưu tiên trước router Laravel đối với URI `/mau-thiep/{slug}`, gây ra lỗi `404 Not Found - The requested resource /mau-thiep/... was not found on this server`.
-     - Toàn bộ assets (ảnh, CSS, JS, font, audio) của mọi mẫu thiệp cưới trong Mây Hẹn đều được quản trị tập trung bên trong `resources/views/client/invitations/{slug}/` và được phục vụ an toàn, tốc độ cao qua route `Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])`.
 
 
 

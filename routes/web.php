@@ -24,6 +24,7 @@ use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
+use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
 use App\Http\Controllers\Partner\PartnerDashboardController;
@@ -77,6 +78,7 @@ Route::get('/api/editor/collision-check/{id}', [InvitationEditorController::clas
 Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 'readinessCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.readiness_check');
 Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
 Route::get('/api/editor/family-approval/{id}', [FamilyApprovalController::class, 'status'])->middleware(['auth', 'throttle:30,1'])->name('family_approval.status');
+Route::get('/api/thiep/{id}/events', [WeddingEventController::class, 'apiEvents'])->name('invitation.events.api');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');
@@ -150,6 +152,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::delete('/thiep/{id}/so-mung-cuoi/{giftId}', [GiftManagementController::class, 'destroy'])->name('gifts.destroy');
     Route::get('/thiep/{id}/so-mung-cuoi/xuat-csv', [GiftManagementController::class, 'exportCsv'])->name('gifts.export');
     Route::get('/thiep/{id}/so-mung-cuoi/in', [GiftManagementController::class, 'print'])->name('gifts.print');
+
+    // Quản Lý Đa Sự Kiện Cưới (Multi-Event Architecture & Timelines - Master PRD V3)
+    Route::get('/thiep/{id}/su-kien', [WeddingEventController::class, 'index'])->name('events.index');
+    Route::post('/thiep/{id}/su-kien', [WeddingEventController::class, 'store'])->name('events.store');
+    Route::put('/thiep/{id}/su-kien/{eventId}', [WeddingEventController::class, 'update'])->name('events.update');
+    Route::delete('/thiep/{id}/su-kien/{eventId}', [WeddingEventController::class, 'destroy'])->name('events.destroy');
 });
 
 // Guest Management & RSVP

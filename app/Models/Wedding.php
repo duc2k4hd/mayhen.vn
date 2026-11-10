@@ -103,6 +103,47 @@ class Wedding extends Model
         return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
     }
 
+    public function events(): HasMany
+    {
+        return $this->hasMany(WeddingEvent::class)->orderBy('display_order')->orderBy('event_date')->orderBy('event_time');
+    }
+
+    /**
+     * Lấy danh sách các sự kiện đang hoạt động (active), tự động fallback nếu chưa có.
+     */
+    public function getActiveEvents()
+    {
+        $events = $this->events()->where('is_active', true)->get();
+
+        if ($events->isEmpty() && $this->wedding_date) {
+            $this->syncEventsFromPrimaryDetails();
+
+            return $this->events()->where('is_active', true)->get();
+        }
+
+        return $events;
+    }
+
+    /**
+     * Đồng bộ khởi tạo sự kiện mặc định từ thông tin chính của đám cưới (bảo toàn 100% tương thích ngược).
+     */
+    public function syncEventsFromPrimaryDetails(): WeddingEvent
+    {
+        return $this->events()->firstOrCreate(
+            ['wedding_id' => $this->id, 'event_type' => 'banquet'],
+            [
+                'name' => 'Tiệc Cưới & Mừng Hạnh Phúc',
+                'event_date' => $this->wedding_date ?: now()->addDays(30),
+                'event_time' => '11:00',
+                'lunar_date' => $this->extra_data['event_party_lunar'] ?? null,
+                'venue_name' => $this->venue_name ?: 'Trung Tâm Tiệc Cưới',
+                'venue_address' => $this->venue_address ?: ($this->extra_data['event_party_address'] ?? null),
+                'display_order' => 1,
+                'is_active' => true,
+            ]
+        );
+    }
+
     /**
      * Sinh mã bàn giao mới có thời hạn hiệu lực (mặc định 30 ngày) cho Studio/Agency.
      */

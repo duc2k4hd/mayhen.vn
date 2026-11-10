@@ -96,6 +96,7 @@ class InvitationController extends Controller
         $invitation = Invitation::query()
             ->with([
                 'wedding.user',
+                'wedding.events',
                 'wedding.guests' => function ($q) {
                     $q->latest('id');
                 },

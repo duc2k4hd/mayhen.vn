@@ -354,6 +354,9 @@
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-gifts">
                             Sổ Mừng Cưới ({{ $wedding->gifts->count() }})
                         </button>
+                        <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-events">
+                            Sự Kiện Cưới ({{ $wedding->events->count() }})
+                        </button>
                         <button type="button" class="mayhen_admin_tab_btn" data-tab-target="tab-config">
                             Hồ Sơ Kỹ Thuật (Schema)
                         </button>
@@ -622,6 +625,68 @@
                                         <tr>
                                             <td colspan="7" style="text-align: center; color: #7A756E; padding: 24px;">
                                                 Chưa có khoản mừng cưới nào được ghi nhận cho thiệp này.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4.5: Events & Timelines -->
+                    <div id="tab-events" class="mayhen_admin_tab_pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 0.84375rem; color: var(--mh-admin-muted);">
+                                Quản lý đa sự kiện cưới: <strong>{{ $wedding->events->count() }}</strong> sự kiện / nghi lễ độc lập.
+                            </div>
+                        </div>
+
+                        <div class="mayhen_admin_table_responsive">
+                            <table class="mayhen_admin_table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Sự Kiện</th>
+                                        <th>Phân Loại</th>
+                                        <th>Thời Gian</th>
+                                        <th>Địa Điểm & Địa Chỉ</th>
+                                        <th>Dresscode</th>
+                                        <th style="text-align: right;">Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($wedding->events as $event)
+                                        <tr>
+                                            <td><strong style="color: #1F1D1A;">{{ $event->name }}</strong></td>
+                                            <td>
+                                                <span class="mayhen_admin_badge mayhen_admin_badge_info">{{ $event->type_label }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ $event->formatted_date_time }}</strong>
+                                                @if($event->lunar_date)
+                                                    <div style="font-size: 0.75rem; color: #8C827A;">{{ $event->lunar_date }}</div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <strong>{{ $event->venue_name }}</strong>
+                                                @if($event->venue_address)
+                                                    <div style="font-size: 0.75rem; color: #8C827A;">{{ $event->venue_address }}</div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span style="font-size: 0.8125rem;">{{ $event->dress_code ?? '—' }}</span>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                @if($event->is_active)
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">Hiển thị</span>
+                                                @else
+                                                    <span class="mayhen_admin_badge mayhen_admin_badge_muted">Đang ẩn</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; color: #7A756E; padding: 24px;">
+                                                Chưa có sự kiện con nào được tạo riêng.
                                             </td>
                                         </tr>
                                     @endforelse
