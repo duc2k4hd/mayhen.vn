@@ -20,6 +20,7 @@ class CreateOrderRequest extends FormRequest
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
             'payment_method' => 'required|in:vietqr,sepay,bank_transfer',
+            'coupon_code' => 'nullable|string|max:50',
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -371,5 +372,34 @@ class SettingController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Màn hình thanh tra SEO, Sitemap XML & Trạng thái index (Wave 06 - ADM-A17).
+     */
+    public function seoInspector(): View
+    {
+        $hasSitemapCache = Cache::has('mayhen_sitemap_xml');
+        $sitemapUrl = url('/sitemap.xml');
+        $robotsUrl = url('/robots.txt');
+
+        return view('admin.pages.settings.seo', compact('hasSitemapCache', 'sitemapUrl', 'robotsUrl'));
+    }
+
+    /**
+     * Xóa cache Sitemap XML để crawler nhận diện ngay các thay đổi mới nhất.
+     */
+    public function clearSitemapCache(): RedirectResponse
+    {
+        Cache::forget('mayhen_sitemap_xml');
+
+        AuditLogger::log(
+            'seo_sitemap_cache_cleared',
+            'System',
+            0,
+            'Xóa bộ nhớ đệm (Cache) XML Sitemap toàn hệ thống'
+        );
+
+        return back()->with('success', 'Đã xóa bộ nhớ đệm Sitemap XML thành công. File sitemap.xml sẽ được tự động tạo mới vào lượt truy cập tiếp theo.');
     }
 }

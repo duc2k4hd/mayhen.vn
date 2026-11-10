@@ -108,6 +108,23 @@
                         <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $pendingOrdersBadge }} đơn hàng chờ đối soát">{{ $pendingOrdersBadge }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.plans.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                    </span>
+                    <span>Gói Cước & Đăng Ký</span>
+                </a>
+                <a href="{{ route('admin.coupons.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.coupons.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                    </span>
+                    <span>Mã Giảm Giá & Ưu Đãi</span>
+                </a>
 
                 <!-- Section 4: Người Dùng & Tài Khoản -->
                 <div class="mayhen_admin_menu_section">Người Dùng & Tài Khoản</div>
@@ -154,6 +171,17 @@
                             </svg>
                         </span>
                         <span>Thanh Tra Bộ Nhớ Lưu Trữ</span>
+                    </a>
+
+                    <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.seo*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                        </span>
+                        <span>Thanh Tra SEO & Sitemap</span>
                     </a>
 
                     <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.audit_logs') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -344,6 +372,14 @@
                     <span>💰 Đơn Hàng & Doanh Thu</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/orders</span>
                 </a>
+                <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_cmd_item" data-search="gói cước bảng giá plans subscription pricing đăng ký gói">
+                    <span>📦 Gói Cước & Đăng Ký</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/plans</span>
+                </a>
+                <a href="{{ route('admin.coupons.index') }}" class="mayhen_admin_cmd_item" data-search="mã giảm giá ưu đãi coupons khuyến mãi promotion voucher discount">
+                    <span>🎟️ Mã Giảm Giá & Khuyến Mãi</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/coupons</span>
+                </a>
                 <a href="{{ route('admin.orders.webhooks') }}" class="mayhen_admin_cmd_item" data-search="webhook sepay vietqr đối soát thanh toán giao dịch">
                     <span>⚡ Nhật Ký Webhook VietQR / SePay</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/orders/webhooks/audit</span>
@@ -376,6 +412,10 @@
                     <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_cmd_item" data-search="thanh tra bộ nhớ lưu trữ storage media inspector">
                         <span>💾 Thanh Tra Bộ Nhớ Lưu Trữ</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/storage</span>
+                    </a>
+                    <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_cmd_item" data-search="thanh tra seo sitemap xml google robots meta search index">
+                        <span>🌐 Thanh Tra SEO & Sitemap XML</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/seo</span>
                     </a>
                     <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_cmd_item" data-search="nhật ký kiểm toán audit logs trail lịch sử thao tác">
                         <span>📜 Nhật Ký Quản Trị (Audit Logs)</span>

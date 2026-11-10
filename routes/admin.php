@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuestController as AdminGuestController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -97,12 +99,32 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
+    // Quản lý Gói Cước & Đăng Ký (Wave 06 - ADM-A10)
+    Route::prefix('plans')->name('plans.')->group(function () {
+        Route::get('/', [AdminPlanController::class, 'index'])->name('index');
+        Route::get('/{plan}/edit', [AdminPlanController::class, 'edit'])->name('edit');
+        Route::put('/{plan}', [AdminPlanController::class, 'update'])->middleware('admin.super')->name('update');
+        Route::post('/{plan}/toggle-active', [AdminPlanController::class, 'toggleActive'])->middleware('admin.super')->name('toggle_active');
+    });
+
+    // Quản lý Mã Giảm Giá & Ưu Đãi (Wave 06 - ADM-A11)
+    Route::prefix('coupons')->name('coupons.')->group(function () {
+        Route::get('/', [AdminCouponController::class, 'index'])->name('index');
+        Route::post('/', [AdminCouponController::class, 'store'])->middleware('admin.manager')->name('store');
+        Route::put('/{coupon}', [AdminCouponController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::post('/{coupon}/toggle-active', [AdminCouponController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle_active');
+        Route::delete('/{coupon}', [AdminCouponController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::get('/export-csv', [AdminCouponController::class, 'exportCsv'])->name('export');
+    });
+
     // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ (Yêu cầu Quản trị viên cấp cao)
     Route::prefix('settings')->middleware('admin.super')->name('settings.')->group(function () {
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');
         Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');
         Route::put('/plans/{id}', [AdminSettingController::class, 'updatePlan'])->name('plans.update');
         Route::post('/plans/{id}/toggle-active', [AdminSettingController::class, 'togglePlanActive'])->name('plans.toggle_active');
+        Route::get('/seo', [AdminSettingController::class, 'seoInspector'])->name('seo');
+        Route::post('/seo/clear-sitemap', [AdminSettingController::class, 'clearSitemapCache'])->name('seo.clear_sitemap');
         Route::get('/banking', [AdminSettingController::class, 'banking'])->name('banking');
         Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');

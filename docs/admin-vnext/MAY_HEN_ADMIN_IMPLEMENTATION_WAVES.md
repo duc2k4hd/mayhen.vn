@@ -15,8 +15,8 @@
 | **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, Customer 360, Safe Support Lens bảo vệ PII, khóa tài khoản | **COMPLETED** |
 | **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **COMPLETED** |
 | **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **COMPLETED** |
-| **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **READY** |
-| **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **QUEUED** |
+| **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **COMPLETED** |
+| **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **READY** |
 | **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **QUEUED** |
 | **Wave 09** | **Hardening & UAT** | Kiểm thử hồi quy toàn diện cross-module, responsive đa màn hình, kiểm định phát hành | **QUEUED** |
 
@@ -65,9 +65,13 @@
 - [x] Viết bộ test `tests/Feature/AdminVNextWave05GuestAndWeddingOpsTest.php` (4 tests, 35 assertions pass 100%).
 
 ### Wave 06: Commerce, Subscriptions & SEO
-- [ ] Cấu hình gói dịch vụ và bảng giá với bản chụp snapshot lịch sử cho đơn cũ.
-- [ ] Cơ chế quản lý mã giảm giá (Coupon) chống gian lận và cộng dồn sai quy định.
-- [ ] Tối ưu hóa các trang nội dung tĩnh, SEO meta tags và sơ đồ sitemap công khai.
+- [x] Tạo phân hệ quản trị Gói cước [Admin/PlanController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/PlanController.php) và giao diện [plans/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/plans/index.blade.php), [plans/edit.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/plans/edit.blade.php).
+- [x] Bản chụp Snapshot Lịch Sử: Bảo toàn 100% số tiền kế toán đối soát của các đơn hàng cũ khi giá gói dịch vụ được điều chỉnh.
+- [x] Thiết lập bảng `coupons`, model `Coupon.php` và phân hệ Quản lý Mã Giảm Giá [Admin/CouponController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/CouponController.php) với quy tắc chuẩn hóa chữ hoa, giới hạn lượt dùng, hạn dùng và chống giảm vượt trần (cap).
+- [x] Tích hợp áp dụng mã giảm giá thời gian thực trong [CheckoutController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/CheckoutController.php) (`/api/checkout/apply-coupon`).
+- [x] Phân hệ Thanh tra SEO & Sitemap XML [admin/pages/settings/seo.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/settings/seo.blade.php) và hành động xóa cache sitemap thời gian thực.
+- [x] Xuất danh sách Coupon dạng CSV UTF-8 BOM khử độc dấu formula injection.
+- [x] Viết bộ test `tests/Feature/AdminVNextWave06CommerceAndGrowthTest.php` (9 tests, 55 assertions pass 100%).
 
 ### Wave 07: Support Center, Jobs & System Diagnostics
 - [ ] Khung tiếp nhận và xử lý yêu cầu hỗ trợ (Support Ticket) theo thời hạn cam kết SLA.

@@ -6942,6 +6942,43 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **675/675 tests PASSED 100% (3,530 assertions in 13.59s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 29. HOÀN THIỆN WAVE 06 — COMMERCE, SUBSCRIPTIONS & SEO GROWTH
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản trị Gói cước & Đăng ký (`ADM-A10`), Phân hệ Mã giảm giá & Ưu đãi chống gian lận (`ADM-A11`) và Quản trị SEO/Sitemap XML (`ADM-A17`).
+- **Các thành phần đã triển khai**:
+  1. **Quản Trị Gói Cước & Đăng Ký (`Admin/PlanController`)**:
+     - Tạo mới [Admin/PlanController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/PlanController.php) và giao diện [plans/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/plans/index.blade.php), [plans/edit.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/plans/edit.blade.php):
+       * Bảng điều khiển 4 KPI: Tổng số gói cước, Số gói đang mở bán, Tổng đơn hàng thành công, Doanh thu thực tế tích lũy từ gói.
+       * Grid thẻ gói cước Quiet Luxury với huy hiệu Gói Trọng Tâm (`slug: plus`), bảng giá thanh toán 1 lần, thời hạn lưu trữ, số thiệp tối đa và danh sách đặc quyền/tính năng động.
+       * Form chỉnh sửa cấu hình gói cước, hỗ trợ thêm/xóa tính năng linh hoạt và bật/tắt mở bán tức thì.
+       * **Bảo Toàn Snapshot Lịch Sử (Plan Snapshot Invariant)**: Đảm bảo 100% số tiền kế toán đối soát của các đơn hàng cũ đã thanh toán KHÔNG bị thay đổi hồi tố khi Admin cập nhật giá gói mới.
+       * Ghi nhận đầy đủ biến động giá cũ -> giá mới vào `AuditLogger`.
+  2. **Quản Trị Mã Giảm Giá & Ưu Đãi (`Admin/CouponController`)**:
+     - Thiết lập migration `create_coupons_table` và model [Coupon.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Coupon.php):
+       * Các trường: `code` (unique, uppercase), `name`, `discount_type` (`percent`, `fixed`), `discount_value`, `min_order_amount`, `max_discount_amount`, `usage_limit`, `used_count`, `starts_at`, `expires_at`, `is_active`.
+       * Phương thức nghiệp vụ: `isValid($orderAmount)`, `calculateDiscount($orderAmount)` (chống giảm âm, chống giảm vượt trần max_discount_amount và không vượt quá giá trị đơn hàng), `incrementUsage()`.
+     - Tạo mới [Admin/CouponController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/CouponController.php) và giao diện [coupons/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/coupons/index.blade.php):
+       * 4 KPI cards: Tổng mã ưu đãi, Đang có hiệu lực, Lượt đã sử dụng, Mã đã hết hạn.
+       * Bộ lọc trạng thái (`active`, `expired`, `exhausted`, `inactive`) và tìm kiếm từ khóa.
+       * Bảng dữ liệu trực quan với thanh tiến độ sử dụng (`used_count / usage_limit`), sao chép mã 1-click.
+       * Modal tạo mã với chuẩn hóa tự động viết hoa (uppercase), regex `/^[A-Z0-9_\-]+$/`, kiểm tra trần phần trăm (<= 100%).
+       * Phòng vệ Xóa An Toàn: Nếu mã đã có lượt dùng trong quá khứ, tự động chuyển sang Vô hiệu hóa thay vì xóa cứng để bảo vệ tính toàn vẹn sổ cái đối soát kế toán.
+       * Xuất CSV chuẩn UTF-8 BOM kèm khử độc CSV Injection với `CsvSanitizerService`.
+  3. **Tích Hợp Khuyến Mãi Vào Checkout Client**:
+     - Bổ sung trường `coupon_code` vào [CreateOrderRequest.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Requests/CreateOrderRequest.php).
+     - Thêm endpoint công khai `POST /api/checkout/apply-coupon` trong [CheckoutController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/CheckoutController.php) kiểm tra tính hợp lệ và trả về số tiền giảm cùng giá cuối cùng thời gian thực.
+     - Tự động áp dụng mức giảm và tăng `used_count` khi đơn hàng được tạo.
+  4. **Thanh Tra SEO & Xóa Cache Sitemap XML**:
+     - Bổ sung `seoInspector()` và `clearSitemapCache()` trong [SettingController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/SettingController.php) và giao diện [settings/seo.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/settings/seo.blade.php).
+     - Cho phép xóa bộ nhớ đệm `mayhen_sitemap_xml` 1-click để công cụ tìm kiếm Googlebot nhận diện ngay các thay đổi mới nhất kèm audit trail.
+  5. **Tích Hợp Menu Quản Trị & Command Palette**:
+     - Thêm mục `Gói Cước & Đăng Ký` và `Mã Giảm Giá & Ưu Đãi` vào Sidebar menu Section 3 ([master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php)).
+     - Thêm mục `Thanh Tra SEO & Sitemap` vào Sidebar Section 5.
+     - Bổ sung phím tắt tìm kiếm vào Command Palette `Ctrl+K`.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave06CommerceAndGrowthTest.php` với 9 kịch bản kiểm thử độc lập (55 assertions), 100% PASSED.
+  * Toàn bộ test suite: **684/684 tests PASSED 100% (3,585 assertions in 15.07s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
+use App\Models\Coupon;
 use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
@@ -79,12 +80,23 @@ class CheckoutController extends Controller
 
         $orderCode = 'MH'.strtoupper(Str::random(10));
 
+        $orderAmount = $plan->price;
+        $couponCode = strtoupper(trim((string) $request->input('coupon_code', '')));
+        if (! empty($couponCode)) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            if ($coupon && $coupon->isValid($plan->price)) {
+                $discount = $coupon->calculateDiscount($plan->price);
+                $orderAmount = max(0, $plan->price - $discount);
+                $coupon->incrementUsage();
+            }
+        }
+
         $order = Order::create([
             'order_code' => $orderCode,
             'user_id' => $user->id,
             'plan_id' => $plan->id,
             'invitation_id' => $invitationId,
-            'amount' => $plan->price,
+            'amount' => $orderAmount,
             'status' => 'pending',
             'payment_method' => $request->validated('payment_method'),
         ]);
@@ -309,6 +321,54 @@ class CheckoutController extends Controller
         return view('client.pages.checkout-first-success', [
             'order' => $order,
             'guide' => $guide,
+        ]);
+    }
+
+    /**
+     * Kiểm tra tính hợp lệ và tính mức giảm của mã ưu đãi (Wave 06 - ADM-A11).
+     */
+    public function applyCoupon(Request $request): JsonResponse
+    {
+        $code = strtoupper(trim((string) $request->input('code', '')));
+        $planId = $request->input('plan_id');
+
+        if (empty($code) || ! $planId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng cung cấp mã ưu đãi và gói dịch vụ hợp lệ.',
+            ], 422);
+        }
+
+        $plan = Plan::where('is_active', true)->find($planId);
+        if (! $plan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gói dịch vụ không tồn tại hoặc đã tạm dừng.',
+            ], 404);
+        }
+
+        $coupon = Coupon::where('code', $code)->first();
+        if (! $coupon || ! $coupon->isValid($plan->price)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không hợp lệ, đã hết hạn hoặc chưa đạt điều kiện đơn hàng.',
+            ], 422);
+        }
+
+        $discount = $coupon->calculateDiscount($plan->price);
+        $finalAmount = max(0, $plan->price - $discount);
+
+        return response()->json([
+            'success' => true,
+            'coupon' => [
+                'code' => $coupon->code,
+                'name' => $coupon->name,
+                'discount_type' => $coupon->discount_type,
+                'discount_value' => $coupon->discount_value,
+                'discount_amount' => $discount,
+                'final_amount' => $finalAmount,
+            ],
+            'message' => "Áp dụng mã ưu đãi \"{$coupon->code}\" thành công! Giảm ".number_format($discount, 0, ',', '.').'đ',
         ]);
     }
 }

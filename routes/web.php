@@ -92,6 +92,7 @@ Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('thrott
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::get('/thanh-toan/thanh-cong/{orderCode}', [CheckoutController::class, 'firstSuccess'])->name('checkout.first_success');
+Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->middleware('throttle:30,1')->name('checkout.apply_coupon');
 Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:20,1')->name('checkout.process');
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->middleware('throttle:60,1')->name('checkout.status');
 Route::post('/api/payments/sepay/webhook', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
