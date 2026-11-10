@@ -7441,3 +7441,33 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tạo mới test suite: `tests/Feature/ClientSupportTicketTest.php` gồm **6 kịch bản kiểm thử độc lập (28 assertions)**: 100% PASSED.
      - Cụm test toàn diện 7 test suites NXT: **49/49 tests PASSED 100% (277 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
+
+### 45. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-10: PRIVACY OPERATIONS & RETENTION JOBS / ANONYMIZATION ENGINE (10/11/2026)
+- **Mục tiêu**: Xóa bỏ rủi ro rò rỉ dữ liệu cá nhân (PII), thiết lập cơ chế tự động ẩn danh hóa dữ liệu khách mời theo chu kỳ lưu trữ (180 ngày sau ngày cưới), quy trình xử lý yêu cầu quyền lãng quên (DSAR Erasure Dual Approval) và link tải dữ liệu an toàn có hạn 24 giờ; đồng thời **bảo tồn 100% chứng từ kế toán và hóa đơn thanh toán** theo Luật Kế toán 88/2015/QH13 và Luật Bảo vệ Dữ Liệu Cá Nhân 91/2025/QH15.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Cơ Sở Dữ Liệu & Model ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_162250_create_privacy_erasure_requests_table.php) & [PrivacyErasureRequest.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/PrivacyErasureRequest.php))**:
+     - Bảng `privacy_erasure_requests` lưu vết yêu cầu DSAR: `request_code` (dạng `DSAR-DEL-XXXXXXXX`), `user_id`, `wedding_id`, `requested_by_type`, `requester_email`, `requester_name`, `reason`, `status` (`pending`, `approved`, `rejected`, `executed`), `retention_scope`, `reviewed_by`, `reviewed_at`, `review_notes`, `executed_at`, `affected_records_count`, `accounting_records_preserved`.
+     - Phân định trạng thái rõ ràng, casts datetime, JSON thống kê và cờ bảo vệ kế toán.
+  2. **Dịch Vụ Vận Hành Lưu Trữ ([PrivacyRetentionService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/PrivacyRetentionService.php))**:
+     - **Quét đám cưới quá hạn (`scanRetentionEligibleWeddings`)**: Quét các tiệc cưới đã diễn ra quá 180 ngày chưa dọn dẹp PII, tính toán số lượng số điện thoại khách mời và phản hồi RSVP có chứa IP/ghi chú dị ứng cần ẩn danh.
+     - **Ẩn danh hóa PII khách mời (`anonymizeWeddingGuestPii`)**:
+       * Hỗ trợ chế độ `dryRun` an toàn trước khi chạy thật.
+       * Cưỡng chế xóa `guests.phone = null`, chuyển `guest_responses.dietary_requirements = '[ANONYMIZED]'` và băm/đặt `ip_address = '127.0.0.1'`.
+       * Đánh dấu metadata `extra_data['guest_pii_anonymized_at']` để không quét trùng lặp.
+     - **Thực thi quyền lãng quên tài khoản (`anonymizeUserAccount`)**:
+       * Đổi email người dùng thành `anonymized_{id}_{hash}@deleted.mayhen.vn`, đặt tên thành `[Tài khoản đã ẩn danh]`, khóa tài khoản.
+       * Ẩn danh toàn bộ tiệc cưới của người dùng.
+       * **BẢO TỒN NGUYÊN VẸN ĐƠN HÀNG KẾ TOÁN**: Bảng `orders` của người dùng không bao giờ bị xóa, giữ nguyên `amount`, `status = paid`, `provider_transaction_id` và thời gian thanh toán để phục vụ thanh tra thuế.
+     - **Token tải file DSAR an toàn (`generateSecureDownloadToken` & `verifyAndConsumeDownloadToken`)**:
+       * Link tải có thời hạn chính xác **24 giờ**, giới hạn tối đa 3 lần tải nhằm ngăn chặn phát tán file PII ra bên ngoài.
+  3. **Bộ Điều Khiển & Giao Diện Admin ([PrivacyOperationsController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/PrivacyOperationsController.php), [routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php) & [index.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/privacy/index.blade.php))**:
+     - 4 Thẻ KPI: Tiệc Cưới Quá Hạn Lưu Trữ, Yêu Cầu Chờ Duyệt, Đã Ẩn Danh Hóa An Toàn, Chứng Từ Kế Toán Được Bảo Toàn.
+     - Bàn Điều Phối Yêu Cầu DSAR Erasure: Quy trình phê duyệt 2 bước (Dual Approval) — Quản lý kiểm tra danh tính và bấm Duyệt, sau đó mới được Thực thi ẩn danh hóa.
+     - Máy Quét Tự Động Lưu Trữ (180 Ngày): Bảng hiển thị danh sách tiệc cưới quá hạn kèm hộp chọn checkbox để chạy dọn dẹp hàng loạt (`executeRetentionBatch`).
+     - Tích hợp mục **Quyền Riêng Tư & Lưu Trữ** vào thanh điều hướng bên [master.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+     - Phân quyền nghiêm ngặt: Toàn bộ thao tác phê duyệt, từ chối, thực thi và dọn dẹp hàng loạt đều được bảo vệ bởi middleware `admin.manager`, chặn quyền đối với nhân viên Staff.
+  4. **Kết Quả Kiểm Thử Toàn Hệ Thống**:
+     - Tạo mới test suite: `tests/Feature/AdminPrivacyRetentionTest.php` gồm **6 kịch bản kiểm thử độc lập (38 assertions)**: 100% PASSED.
+     - Cụm test toàn diện 8 test suites Post-VNext: **55/55 tests PASSED 100% (315 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.

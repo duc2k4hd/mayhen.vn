@@ -122,6 +122,7 @@ Thumbs.db
 !/tests/Feature/AdminGuestJourneyE2ERunnerTest.php
 !/tests/Feature/AdminEntitlementStateMachineTest.php
 !/tests/Feature/ClientSupportTicketTest.php
+!/tests/Feature/AdminPrivacyRetentionTest.php
 !/tests/Feature/AdminIncidentAndEscalationTest.php
 !/tests/Unit/
 /tests/Unit/*

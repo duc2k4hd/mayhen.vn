@@ -192,6 +192,15 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.privacy.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.privacy.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </span>
+                    <span>Quyền Riêng Tư & Lưu Trữ</span>
+                </a>
+
                 <!-- Section 5: Hệ Thống & Cài Đặt (Chỉ Quản trị viên cấp cao) -->
                 @if (Auth::user()?->isSuperAdmin())
                     <div class="mayhen_admin_menu_section">Hệ Thống & Cài Đặt</div>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\InvitationController as AdminInvitationController
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
@@ -184,5 +185,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/inbox', [AdminIntelligenceController::class, 'actionInbox'])->name('inbox');
         Route::get('/reconciliation', [AdminIntelligenceController::class, 'reconciliationDetective'])->name('reconciliation');
         Route::get('/delight-recovery', [AdminIntelligenceController::class, 'delightRecovery'])->name('delight_recovery');
+    });
+
+    // Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (NXT-10: Privacy Operations & Retention Jobs)
+    Route::prefix('privacy')->name('privacy.')->group(function () {
+        Route::get('/', [AdminPrivacyOperationsController::class, 'index'])->name('index');
+        Route::post('/batch-retention', [AdminPrivacyOperationsController::class, 'executeRetentionBatch'])->middleware('admin.manager')->name('batch_retention');
+        Route::post('/requests/{id}/approve', [AdminPrivacyOperationsController::class, 'approveErasureRequest'])->middleware('admin.manager')->name('approve_erasure');
+        Route::post('/requests/{id}/reject', [AdminPrivacyOperationsController::class, 'rejectErasureRequest'])->middleware('admin.manager')->name('reject_erasure');
+        Route::post('/requests/{id}/execute', [AdminPrivacyOperationsController::class, 'executeErasure'])->middleware('admin.manager')->name('execute_erasure');
+        Route::get('/dsar-download/{token}', [AdminPrivacyOperationsController::class, 'downloadDsarExport'])->name('download_dsar_export');
     });
 });
