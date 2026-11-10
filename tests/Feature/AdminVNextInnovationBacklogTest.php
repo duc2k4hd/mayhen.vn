@@ -262,7 +262,10 @@ class AdminVNextInnovationBacklogTest extends TestCase
             'expected_attendees' => 2,
         ]);
 
-        $response = $this->actingAs($this->superAdmin)->get(route('admin.users.export_personal_data', $this->customer->id));
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.users.export_personal_data', [
+            'id' => $this->customer->id,
+            'dsar_reason' => 'Yêu cầu trích xuất dữ liệu cá nhân theo quy chuẩn Luật 91/2025/QH15',
+        ]));
 
         $response->assertStatus(200);
         $this->assertStringContainsString('application/json', $response->headers->get('Content-Type'));
@@ -277,7 +280,10 @@ class AdminVNextInnovationBacklogTest extends TestCase
         $this->assertEquals('customer_inno@mayhen.vn', $data['personal_profile']['email']);
         $this->assertCount(1, $data['weddings']);
 
-        $logs = AuditLogger::getRecentLogs(20, 'export_personal_data');
+        // Masking check (NXT-02)
+        $this->assertStringContainsString('****', $data['weddings'][0]['guests'][0]['phone']);
+
+        $logs = AuditLogger::getRecentLogs(20, 'export_personal_data_dsar');
         $this->assertNotEmpty($logs);
         $this->assertEquals((string) $this->customer->id, $logs[0]['target_id']);
     }

@@ -32,5 +32,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="SEPAY_WEBHOOK_SECRET" value="sepay_mayhen_test_secret_key"/>
+        <env name="SEPAY_BANK_ACCOUNT" value="103870000000"/>
     </php>
 </phpunit>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderReconciliation;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -224,6 +226,8 @@ class OrderController extends Controller
             'plan',
             'invitation.wedding',
             'invitation.template',
+            'reconciliations.creator',
+            'reconciliations.approver',
         ])->findOrFail($id);
 
         return view('admin.pages.orders.show', [
@@ -231,18 +235,39 @@ class OrderController extends Controller
             'user' => $order->user,
             'plan' => $order->plan,
             'invitation' => $order->invitation,
+            'reconciliations' => $order->reconciliations->sortByDesc('id'),
         ]);
     }
 
     /**
-     * Manually approve a pending order with reconciliation evidence and activate the wedding invitation plan.
+     * Manually approve a pending order with strict financial evidence and Dual Approval support (NXT-01).
      */
     public function approve(Request $request, int $id): RedirectResponse
     {
+        if (! $request->filled('reconciliation_note')) {
+            $fallbackNote = $request->input('notes') ?? $request->input('note') ?? $request->input('reason');
+            if ($fallbackNote) {
+                $request->merge(['reconciliation_note' => $fallbackNote]);
+            }
+        }
+
+        if (! $request->filled('reference_code')) {
+            $fallbackRef = $request->input('transaction_id') ?? $request->input('ref_code');
+            if ($fallbackRef) {
+                $request->merge(['reference_code' => $fallbackRef]);
+            }
+        }
+
         $request->validate([
-            'reference_code' => ['nullable', 'string', 'max:100'],
-            'reconciliation_note' => ['nullable', 'string', 'max:255'],
-            'note' => ['nullable', 'string', 'max:255'],
+            'reference_code' => ['required', 'string', 'min:4', 'max:100'],
+            'reconciliation_note' => ['required', 'string', 'min:6', 'max:255'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'bank_account_number' => ['nullable', 'string', 'max:64'],
+        ], [
+            'reference_code.required' => 'Mã tham chiếu / mã giao dịch ngân hàng là bắt buộc để đảm bảo tính toàn vẹn tài chính.',
+            'reference_code.min' => 'Mã tham chiếu ngân hàng phải có tối thiểu 4 ký tự.',
+            'reconciliation_note.required' => 'Lý do đối soát chứng từ là bắt buộc đối với phê duyệt thủ công.',
+            'reconciliation_note.min' => 'Lý do đối soát phải có tối thiểu 6 ký tự để phục vụ kiểm toán.',
         ]);
 
         $order = Order::with(['plan', 'invitation'])->findOrFail($id);
@@ -252,17 +277,137 @@ class OrderController extends Controller
         }
 
         $refCode = trim((string) $request->input('reference_code'));
-        if ($refCode === '') {
-            $refCode = 'MANUAL-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4));
+        $note = trim((string) $request->input('reconciliation_note'));
+        $bankName = trim((string) $request->input('bank_name')) ?: null;
+        $bankAccount = trim((string) $request->input('bank_account_number')) ?: null;
+
+        // Anti-replay check: Không cho phép dùng lại mã giao dịch ngân hàng đã thanh toán thành công
+        $duplicateExists = Order::where('provider_transaction_id', $refCode)
+            ->where('id', '!=', $order->id)
+            ->where('status', 'paid')
+            ->exists();
+
+        if ($duplicateExists) {
+            return back()->with('error', "Mã giao dịch ngân hàng [{$refCode}] đã được ghi nhận cho một đơn hàng khác. Tuyệt đối không đối soát trùng lặp.");
         }
 
-        $note = trim((string) ($request->input('reconciliation_note') ?: ($request->input('note') ?: 'Duyệt đối soát thủ công từ sao kê ngân hàng.')));
+        $currentUser = Auth::user();
+        $isSuperAdmin = $currentUser && $currentUser->isSuperAdmin();
+        $requestDualApproval = $request->boolean('dual_approval', false);
 
-        DB::transaction(function () use ($order, $refCode) {
+        // Nếu người dùng chọn quy trình phê duyệt kép Maker-Checker (hoặc không phải Super Admin và yêu cầu duyệt 2 bước)
+        if ($requestDualApproval && ! $isSuperAdmin) {
+            // Manager đề xuất (Maker): Tạo đề xuất đối soát, chuyển cờ pending_approval, chờ Super Admin duyệt
+            OrderReconciliation::create([
+                'order_id' => $order->id,
+                'creator_id' => $currentUser->id,
+                'approver_id' => null,
+                'action_type' => 'manual_approval',
+                'status' => 'pending',
+                'amount' => $order->amount,
+                'reference_code' => $refCode,
+                'bank_name' => $bankName,
+                'bank_account_number' => $bankAccount,
+                'reconciliation_note' => $note,
+            ]);
+
+            $order->update(['reconciliation_status' => 'pending_approval']);
+
+            AuditLogger::log(
+                'request_order_approval',
+                'Order',
+                $order->id,
+                "Quản lý đề xuất đối soát thủ công đơn #{$order->order_code} (Mã GD: {$refCode}). Chờ Super Admin phê duyệt.",
+                [
+                    'order_code' => $order->order_code,
+                    'reference_code' => $refCode,
+                    'note' => $note,
+                ]
+            );
+
+            return back()->with('success', "Đã tạo hồ sơ đề xuất đối soát cho đơn #{$order->order_code}. Yêu cầu đang chờ Super Admin phê duyệt (Dual Approval).");
+        }
+
+        // Phê duyệt trực tiếp có chứng từ đối soát (Super Admin hoặc Manager có thẩm quyền)
+        DB::transaction(function () use ($order, $refCode, $note, $bankName, $bankAccount, $currentUser, $isSuperAdmin) {
             $order->update([
                 'status' => 'paid',
                 'paid_at' => now(),
                 'provider_transaction_id' => $refCode,
+                'reconciliation_status' => 'approved',
+            ]);
+
+            if ($order->invitation) {
+                $duration = $order->plan ? (int) $order->plan->duration_days : 365;
+                $currentExpiresAt = $order->invitation->expires_at;
+                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
+
+                $order->invitation->update([
+                    'is_published' => true,
+                    'published_at' => $order->invitation->published_at ?? now(),
+                    'expires_at' => $baseDate->copy()->addDays($duration),
+                ]);
+            }
+
+            OrderReconciliation::create([
+                'order_id' => $order->id,
+                'creator_id' => $currentUser->id,
+                'approver_id' => $currentUser->id,
+                'action_type' => 'manual_approval',
+                'status' => 'approved',
+                'amount' => $order->amount,
+                'reference_code' => $refCode,
+                'bank_name' => $bankName,
+                'bank_account_number' => $bankAccount,
+                'reconciliation_note' => $note,
+                'review_note' => $isSuperAdmin ? 'Super Admin trực tiếp đối soát và phê duyệt' : 'Quản lý đối soát và phê duyệt trực tiếp',
+                'reconciled_at' => now(),
+            ]);
+        });
+
+        AuditLogger::log(
+            'approve_order',
+            'Order',
+            $order->id,
+            ($isSuperAdmin ? 'Super Admin' : 'Quản lý')." duyệt đối soát thành công đơn #{$order->order_code} (Mã GD: {$refCode}). Lý do: {$note}",
+            [
+                'order_code' => $order->order_code,
+                'amount' => $order->amount,
+                'reference_code' => $refCode,
+                'note' => $note,
+            ]
+        );
+
+        return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} kèm chứng từ đối soát thành công.");
+    }
+
+    /**
+     * Super Admin phê duyệt đề xuất đối soát từ Maker (Dual Approval - NXT-01).
+     */
+    public function confirmApproval(Request $request, int $reconciliationId): RedirectResponse
+    {
+        $reconciliation = OrderReconciliation::with(['order.plan', 'order.invitation'])->findOrFail($reconciliationId);
+
+        if (! $reconciliation->isPending()) {
+            return back()->with('info', 'Yêu cầu đối soát này đã được xử lý trước đó.');
+        }
+
+        $order = $reconciliation->order;
+        $currentUser = Auth::user();
+
+        DB::transaction(function () use ($reconciliation, $order, $currentUser, $request) {
+            $reconciliation->update([
+                'approver_id' => $currentUser->id,
+                'status' => 'approved',
+                'reconciled_at' => now(),
+                'review_note' => $request->input('review_note', 'Super Admin phê duyệt hợp lệ'),
+            ]);
+
+            $order->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+                'provider_transaction_id' => $reconciliation->reference_code,
+                'reconciliation_status' => 'approved',
             ]);
 
             if ($order->invitation) {
@@ -279,54 +424,240 @@ class OrderController extends Controller
         });
 
         AuditLogger::log(
-            'approve_order',
+            'confirm_dual_approval',
             'Order',
             $order->id,
-            "Duyệt đối soát thủ công đơn hàng #{$order->order_code} (Mã GD: {$refCode}). Lý do: {$note}",
-            [
-                'order_code' => $order->order_code,
-                'amount' => $order->amount,
-                'reference_code' => $refCode,
-                'note' => $note,
-            ]
+            "Super Admin phê duyệt (Dual Approval) đối soát đơn #{$order->order_code} (Mã GD: {$reconciliation->reference_code}).",
+            ['order_code' => $order->order_code, 'reconciliation_id' => $reconciliation->id]
         );
 
-        return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} kèm chứng từ đối soát thành công.");
+        return back()->with('success', "Đã phê duyệt đối soát và kích hoạt đơn hàng #{$order->order_code} thành công.");
     }
 
     /**
-     * Hoàn tiền cho đơn hàng và thu hồi thời hạn lưu trữ trực tuyến (FLOW-13).
-     * Dữ liệu thiệp cưới, khách mời và kỷ niệm vẫn được bảo toàn nguyên vẹn.
+     * Super Admin từ chối đề xuất đối soát từ Maker.
      */
-    public function refund(Request $request, int $id): RedirectResponse
+    public function rejectApproval(Request $request, int $reconciliationId): RedirectResponse
     {
-        $order = Order::with(['plan', 'invitation'])->findOrFail($id);
+        $request->validate([
+            'reason' => ['required', 'string', 'min:4', 'max:255'],
+        ]);
+
+        $reconciliation = OrderReconciliation::with('order')->findOrFail($reconciliationId);
+
+        $reconciliation->update([
+            'approver_id' => Auth::id(),
+            'status' => 'rejected',
+            'review_note' => $request->input('reason'),
+        ]);
+
+        $reconciliation->order->update(['reconciliation_status' => 'rejected']);
+
+        AuditLogger::log(
+            'reject_dual_approval',
+            'Order',
+            $reconciliation->order_id,
+            "Từ chối đối soát đơn #{$reconciliation->order->order_code}. Lý do: {$request->input('reason')}"
+        );
+
+        return back()->with('warning', "Đã từ chối đề xuất đối soát cho đơn #{$reconciliation->order->order_code}.");
+    }
+
+    /**
+     * Tạo đề nghị hoàn tiền có chứng từ và thông tin thụ hưởng (NXT-01).
+     */
+    public function requestRefund(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'reason' => ['required', 'string', 'min:6', 'max:255'],
+            'customer_bank_name' => ['required', 'string', 'max:100'],
+            'customer_bank_account' => ['required', 'string', 'max:64'],
+            'customer_bank_holder' => ['required', 'string', 'max:100'],
+            'refund_amount' => ['nullable', 'integer', 'min:1000'],
+        ], [
+            'reason.required' => 'Vui lòng cung cấp lý do đề nghị hoàn tiền.',
+            'customer_bank_name.required' => 'Tên ngân hàng nhận lại tiền của khách là bắt buộc.',
+            'customer_bank_account.required' => 'Số tài khoản nhận lại tiền của khách là bắt buộc.',
+            'customer_bank_holder.required' => 'Tên chủ tài khoản nhận lại tiền là bắt buộc.',
+        ]);
+
+        $order = Order::findOrFail($id);
 
         if (! $order->isPaid()) {
-            return back()->with('error', 'Chỉ có thể hoàn tiền cho đơn hàng đã thanh toán thành công.');
+            return back()->with('error', 'Chỉ có thể tạo đề nghị hoàn tiền cho đơn hàng đã thanh toán thành công.');
         }
 
-        $reason = trim((string) $request->input('reason', 'Hoàn tiền theo yêu cầu khách hàng hoặc chính sách bảo hành'));
+        if ($order->isRefundPending()) {
+            return back()->with('info', 'Đơn hàng này đang có một hồ sơ hoàn tiền chờ phê duyệt.');
+        }
 
-        DB::transaction(function () use ($order) {
+        $refundAmount = (int) ($request->input('refund_amount') ?: $order->amount);
+        if ($refundAmount > $order->amount) {
+            return back()->with('error', 'Số tiền hoàn không được vượt quá giá trị đơn hàng.');
+        }
+
+        $reason = trim((string) $request->input('reason'));
+        $bankName = trim((string) $request->input('customer_bank_name'));
+        $bankAccount = trim((string) $request->input('customer_bank_account'));
+        $bankHolder = trim((string) $request->input('customer_bank_holder'));
+
+        OrderReconciliation::create([
+            'order_id' => $order->id,
+            'creator_id' => Auth::id(),
+            'action_type' => 'refund_request',
+            'status' => 'pending',
+            'amount' => $refundAmount,
+            'reference_code' => 'REQ-REF-'.$order->order_code,
+            'bank_name' => $bankName,
+            'bank_account_number' => $bankAccount,
+            'bank_account_holder' => $bankHolder,
+            'reconciliation_note' => $reason,
+        ]);
+
+        $order->update([
+            'reconciliation_status' => 'refund_pending',
+            'refund_amount' => $refundAmount,
+        ]);
+
+        AuditLogger::log(
+            'request_refund',
+            'Order',
+            $order->id,
+            "Đề xuất hoàn tiền đơn #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ sang STK {$bankAccount} ({$bankName}). Lý do: {$reason}",
+            ['order_code' => $order->order_code, 'refund_amount' => $refundAmount, 'bank_account' => $bankAccount]
+        );
+
+        return back()->with('success', "Đã tạo hồ sơ đề nghị hoàn tiền cho đơn #{$order->order_code}. Vui lòng thực hiện chuyển khoản và xác nhận chứng từ chi trả.");
+    }
+
+    /**
+     * Xác nhận đã chuyển khoản ngân hàng hoàn tiền thật và thu hồi dịch vụ (NXT-01).
+     */
+    public function confirmRefundPayout(Request $request, int $id): RedirectResponse
+    {
+        $request->validate([
+            'payout_reference_code' => ['required', 'string', 'min:4', 'max:100'],
+            'payout_note' => ['nullable', 'string', 'max:255'],
+        ], [
+            'payout_reference_code.required' => 'Mã giao dịch chuyển khoản hoàn tiền thực tế là bắt buộc để chứng minh tiền đã hoàn về tài khoản khách.',
+            'payout_reference_code.min' => 'Mã giao dịch chuyển khoản phải có tối thiểu 4 ký tự.',
+        ]);
+
+        $order = Order::with('invitation')->findOrFail($id);
+
+        if (! $order->isPaid() && ! $order->isRefundPending()) {
+            return back()->with('error', 'Chỉ có thể xác nhận hoàn tiền cho đơn hàng đã thanh toán hoặc đang chờ hoàn tiền.');
+        }
+
+        $payoutRef = trim((string) $request->input('payout_reference_code'));
+        $payoutNote = trim((string) ($request->input('payout_note') ?: 'Đã chuyển tiền hoàn qua Internet Banking'));
+        $refundAmount = $order->refund_amount ?: $order->amount;
+
+        DB::transaction(function () use ($order, $payoutRef, $payoutNote, $refundAmount) {
             $order->update([
                 'status' => 'refunded',
+                'reconciliation_status' => 'refund_completed',
+                'refunded_at' => now(),
+                'refund_amount' => $refundAmount,
             ]);
 
-            // Thu hồi thời hạn lưu trữ trực tuyến, thiệp chuyển sang trạng thái hết hạn nhưng dữ liệu không bị xóa
             if ($order->invitation) {
-                $order->invitation->update([
-                    'expires_at' => now(),
-                ]);
+                $order->invitation->update(['expires_at' => now()]);
             }
+
+            OrderReconciliation::create([
+                'order_id' => $order->id,
+                'creator_id' => Auth::id(),
+                'approver_id' => Auth::id(),
+                'action_type' => 'refund_payout',
+                'status' => 'completed',
+                'amount' => $refundAmount,
+                'reference_code' => $payoutRef,
+                'reconciliation_note' => $payoutNote,
+                'reconciled_at' => now(),
+            ]);
+
+            OrderReconciliation::where('order_id', $order->id)
+                ->where('action_type', 'refund_request')
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'completed',
+                    'approver_id' => Auth::id(),
+                    'reconciled_at' => now(),
+                    'review_note' => "Đã chi trả thành công với mã GD {$payoutRef}",
+                ]);
         });
 
         AuditLogger::log(
             'refund_order',
             'Order',
             $order->id,
-            "Hoàn tiền đơn hàng #{$order->order_code} số tiền ".number_format($order->amount, 0, ',', '.')."đ. Lý do: {$reason}",
-            ['order_code' => $order->order_code, 'amount' => $order->amount, 'reason' => $reason]
+            "Xác nhận đã chuyển khoản hoàn tiền cho đơn #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ (Mã GD hoàn: {$payoutRef}).",
+            ['order_code' => $order->order_code, 'payout_reference' => $payoutRef, 'amount' => $refundAmount]
+        );
+
+        return back()->with('success', "Đã ghi nhận chứng từ và hoàn tất hoàn tiền cho đơn hàng #{$order->order_code}.");
+    }
+
+    /**
+     * Hoàn tiền cho đơn hàng có chứng từ đối soát (tương thích ngược và an toàn tài chính).
+     */
+    public function refund(Request $request, int $id): RedirectResponse
+    {
+        $order = Order::with(['plan', 'invitation'])->findOrFail($id);
+
+        if (! $order->isPaid() && ! $order->isRefundPending()) {
+            return back()->with('error', 'Chỉ có thể hoàn tiền cho đơn hàng đã thanh toán thành công.');
+        }
+
+        // Nếu request gửi thông tin chuyển tiền thực tế
+        if ($request->filled('payout_reference_code')) {
+            return $this->confirmRefundPayout($request, $id);
+        }
+
+        // Nếu request gửi thông tin tài khoản nhận lại tiền
+        if ($request->filled('customer_bank_account')) {
+            return $this->requestRefund($request, $id);
+        }
+
+        // Nếu là Super Admin thực hiện trực tiếp kèm lý do
+        $reason = trim((string) $request->input('reason', 'Hoàn tiền theo yêu cầu khách hàng hoặc chính sách bảo hành'));
+        $refCode = trim((string) $request->input('reference_code')) ?: ('REF-PAY-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4)));
+        $refundAmount = (int) ($request->input('refund_amount') ?: $order->amount);
+
+        DB::transaction(function () use ($order, $refCode, $reason, $refundAmount) {
+            $order->update([
+                'status' => 'refunded',
+                'reconciliation_status' => 'refund_completed',
+                'refunded_at' => now(),
+                'refund_amount' => $refundAmount,
+            ]);
+
+            if ($order->invitation) {
+                $order->invitation->update([
+                    'expires_at' => now(),
+                ]);
+            }
+
+            OrderReconciliation::create([
+                'order_id' => $order->id,
+                'creator_id' => Auth::id(),
+                'approver_id' => Auth::id(),
+                'action_type' => 'refund_payout',
+                'status' => 'completed',
+                'amount' => $refundAmount,
+                'reference_code' => $refCode,
+                'reconciliation_note' => $reason,
+                'reconciled_at' => now(),
+            ]);
+        });
+
+        AuditLogger::log(
+            'refund_order',
+            'Order',
+            $order->id,
+            "Hoàn tiền đơn hàng #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ. Lý do: {$reason}",
+            ['order_code' => $order->order_code, 'amount' => $refundAmount, 'reason' => $reason, 'reference_code' => $refCode]
         );
 
         return back()->with('success', "Đã hoàn tiền đơn hàng #{$order->order_code} và cập nhật trạng thái lưu trữ thành công.");

@@ -71,6 +71,10 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->middleware('admin.manager')->name('approve');
         Route::post('/{id}/refund', [AdminOrderController::class, 'refund'])->middleware('admin.manager')->name('refund');
+        Route::post('/{id}/refund-request', [AdminOrderController::class, 'requestRefund'])->middleware('admin.manager')->name('request_refund');
+        Route::post('/{id}/refund-confirm', [AdminOrderController::class, 'confirmRefundPayout'])->middleware('admin.manager')->name('confirm_refund');
+        Route::post('/reconciliations/{reconciliationId}/approve', [AdminOrderController::class, 'confirmApproval'])->middleware('admin.super')->name('reconciliations.approve');
+        Route::post('/reconciliations/{reconciliationId}/reject', [AdminOrderController::class, 'rejectApproval'])->middleware('admin.super')->name('reconciliations.reject');
         Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->middleware('admin.manager')->name('cancel');
     });
 
@@ -79,7 +83,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
         Route::get('/export-csv', [AdminUserController::class, 'exportCsv'])->name('export');
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
-        Route::get('/{id}/export-personal-data', [AdminUserController::class, 'exportPersonalData'])->name('export_personal_data');
+        Route::get('/{id}/export-personal-data', [AdminUserController::class, 'exportPersonalData'])->middleware('admin.super')->name('export_personal_data');
         Route::post('/{id}/anonymize', [AdminUserController::class, 'anonymize'])->middleware('admin.super')->name('anonymize');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->middleware('admin.manager')->name('reset_password');

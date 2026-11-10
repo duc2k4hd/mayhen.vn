@@ -7202,6 +7202,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Laravel Pint: **100% PASSED** chuẩn agent style không còn bất kỳ lỗi định dạng nào.
   * Cập nhật `docs/admin-vnext/MAY_HEN_ADMIN_INNOVATION_BACKLOG.md`: Hoàn thành **18/18 Sáng kiến Vận hành (100%)**.
 
+### 37. TRIỂN KHAI HOÀN TẤT BỘ BA ĐỀ ÁN VẬN HÀNH THỰC TẾ WAVE A: NXT-01, NXT-02, NXT-03 (POST VNEXT ROADMAP — 10/11/2026)
+- **Mục tiêu**: Thực thi nghiêm ngặt theo báo cáo rà soát và định hướng vận hành thực tế `docs/admin-vnext/MAY_HEN_ADMIN_POST_VNEXT_REVIEW_AND_NEXT_ROADMAP_2026-11-10.md`, khắc phục triệt để các rủi ro tài chính P0, phân quyền dữ liệu cá nhân DSAR PII P0 và tính nhất quán check-in/xếp bàn ngày cưới P1.
+- **Chi tiết các đề án đã triển khai**:
+  1. **NXT-01 — Finance Evidence Ledger & Dual Approval (Bảo Toàn Toàn Vẹn Tài Chính & Phê Duyệt Kép)**:
+     - **Database Migration**: Tạo bảng kê đối soát chứng từ `order_reconciliations` (`order_id`, `creator_id`, `approver_id`, `action_type`, `status`, `amount`, `reference_code`, `bank_name`, `bank_account_number`, `bank_account_holder`, `reconciliation_note`, `review_note`, `reconciled_at`). Bổ sung vào bảng `orders`: `reconciliation_status`, `refund_amount`, `refunded_at`.
+     - **Model & Quan hệ**: `App\Models\OrderReconciliation` liên kết `Order`, `creator` (Maker), `approver` (Checker). Bổ sung phương thức `order->reconciliations()`, `order->isRefundPending()`, `order->isReconciliationPending()`.
+     - **Triệt tiêu mã giả & Anti-replay**: Bắt buộc nhập `reference_code` (tối thiểu 4 ký tự) và `reconciliation_note` (tối thiểu 6 ký tự). Chặn hoàn toàn việc phát sinh mã giả `MANUAL-...`. Kiểm tra anti-replay không cho phép tái sử dụng mã giao dịch ngân hàng đã thanh toán thành công của đơn hàng khác.
+     - **Maker-Checker Dual Approval**: Khi Manager chọn duyệt quy trình phê duyệt kép (`dual_approval = true`), hồ sơ chuyển sang trạng thái `pending_approval`, thiệp cưới chưa kích hoạt. Super Admin đóng vai trò Checker kiểm tra sao kê ngân hàng chính thức để phê duyệt (`orders.reconciliations.approve`) hoặc từ chối (`orders.reconciliations.reject`).
+     - **Quy trình hoàn tiền có chứng từ chi trả thực tế**:
+       * Giai đoạn 1 (`orders.request_refund`): Tạo đề nghị hoàn tiền có thông tin ngân hàng thụ hưởng của khách hàng (`customer_bank_name`, `customer_bank_account`, `customer_bank_holder`), lý do chi tiết. Trạng thái đơn chuyển `refund_pending`, bảo vệ quyền lợi khách hàng không thu hồi thiệp cưới vội vàng.
+       * Giai đoạn 2 (`orders.confirm_refund`): Sau khi kế toán chuyển khoản hoàn tiền qua Internet Banking, nhập mã giao dịch ngân hàng chi trả thật (`payout_reference_code`). Đơn hàng chuyển `status = 'refunded'`, lưu vết ledger `completed`, thiệp cưới chuyển về trạng thái hết hạn lưu trữ trực tuyến (`expires_at = now()`), bảo tồn 100% dữ liệu kỷ niệm.
+     - **Giao diện Admin**: Cập nhật `resources/views/admin/pages/orders/show.blade.php` hiển thị Sổ cái đối soát tài chính (`Finance Evidence Ledger`), hộp thông báo Dual Approval chờ duyệt, Form đối soát bắt buộc mã GD thật, Form đề nghị hoàn tiền và Form xác nhận chi trả ngân hàng.
+  2. **NXT-02 — Fine-Grained Access Policy Center & Data Protection (Phân Quyền & Bảo Vệ PII DSAR)**:
+     - **Phân quyền chặt chẽ**: Đưa route `/admin/users/{id}/export-personal-data` sang middleware `admin.super`. Chặn 403 tuyệt đối với Staff và Manager.
+     - **Lý do kiểm toán bắt buộc**: Bắt buộc nhập `dsar_reason` (tối thiểu 10 ký tự) và tùy chọn `ticket_code` trước khi cho phép trích xuất hồ sơ cá nhân theo Luật 91/2025/QH15.
+     - **Data Minimization & Masking**: Mặc định tự động che mờ số tài khoản ngân hàng của cặp đôi (VD: `190****3456`) và số điện thoại của quan khách (VD: `098****655`), chỉ mở che mờ khi có yêu cầu kiểm toán khắt khe (`unmask = 1`).
+     - **Lưu vết kiểm toán bất biến**: `AuditLogger::log('export_personal_data_dsar')` lưu IP truy cập, lý do `dsar_reason`, cờ `is_masked` và danh tính Admin thực hiện.
+     - **Giao diện Admin**: Cập nhật `resources/views/admin/pages/users/show.blade.php` thay thế đường link tải trực tiếp bằng Modal Popup nhập lý do kiểm toán theo quy chuẩn bảo vệ quyền riêng tư.
+  3. **NXT-03 — Wedding-Day Consistency Transaction Engine (Nhất Quán Dữ Liệu Ngày Cưới)**:
+     - **Idempotent Check-in**: Cập nhật `GuestController::toggleCheckIn` hỗ trợ tham số rõ ràng `action: 'check_in' | 'undo_check_in'` và `idempotency_key`, bọc trong `DB::transaction` với `lockForUpdate()`. Loại bỏ hoàn toàn lỗi double-click hoặc retry mạng lật ngược trạng thái điểm danh của khách.
+     - **Kiểm soát sức chứa bàn tiệc nguyên tử (Capacity Guardian)**: `GuestController::quickAssignTable` kiểm tra tổng sĩ số đã ngồi và số chỗ khách cần trong `DB::transaction` có `lockForUpdate()`. Chặn đứng lỗi overcapacity (HTTP 422), chỉ cho phép xếp vượt số ghế khi bật cờ `allow_overflow = true` kèm lý do kê thêm ghế và ghi audit log.
+     - **Tạo bàn dự phòng đồng thời an toàn**: `GuestController::createEmergencyTable` khóa dòng `Wedding` để đồng bộ hóa, tự động xử lý trùng tên bàn `Bàn Dự Phòng #count (suffix)` và đảm bảo trật tự hiển thị `display_order` tăng tuần tự độc bản.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới test suite chuyên sâu: `tests/Feature/AdminNxtIntegrityAndAccessControlTest.php` với **14 kịch bản kiểm thử độc lập (77 assertions)** bao phủ toàn bộ các tình huống âm tính, anti-replay, maker-checker, overcapacity và DSAR.
+  * Cập nhật các file test hồi quy: `AdminOrderTest.php`, `AdminOrderRefundAndRenewalTest.php`, `AdminVNextInnovationBacklogTest.php`, `AdminRbacRoleTest.php`, `CheckoutAndBillingWebhookDeepTest.php`.
+  * Toàn bộ test suite toàn dự án: **778/778 tests PASSED 100% (4,264 assertions in 72.01s, 0 failures, 0 errors)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style không còn bất kỳ lỗi định dạng nào.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

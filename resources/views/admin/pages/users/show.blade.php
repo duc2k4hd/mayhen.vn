@@ -42,9 +42,11 @@
         </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a href="{{ route('admin.users.export_personal_data', $user->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline" title="Trích xuất toàn bộ dữ liệu cá nhân JSON theo Luật 91/2025/QH15">
-                📥 Xuất Dữ Liệu PII (DSAR)
-            </a>
+            @if (Auth::user()?->isSuperAdmin())
+                <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="document.getElementById('mayhen_admin_dsar_modal').style.display='flex';" title="Trích xuất toàn bộ dữ liệu cá nhân JSON theo Luật 91/2025/QH15">
+                    📥 Xuất Dữ Liệu PII (DSAR)
+                </button>
+            @endif
             <a href="{{ route('admin.users.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
                 &larr; Quay Lại Danh Sách
             </a>
@@ -454,14 +456,20 @@
                         Quản trị vòng đời dữ liệu cá nhân, quyền tiếp cận và quyền được quên theo Luật Bảo vệ dữ liệu cá nhân.
                     </div>
 
-                    <!-- DSAR Export Button -->
+                    <!-- DSAR Export Button & Form -->
                     <div style="margin-bottom: 16px;">
-                        <a href="{{ route('admin.users.export_personal_data', $user->id) }}" class="mayhen_admin_btn mayhen_admin_btn--secondary" style="width: 100%; justify-content: center;">
-                            📥 Trích Xuất Dữ Liệu Cá Nhân (JSON)
-                        </a>
-                        <div style="font-size: 0.75rem; color: #8C827A; margin-top: 4px;">
-                            Xuất toàn bộ thông tin cá nhân, thiệp cưới, khách mời, lời chúc và đơn hàng.
-                        </div>
+                        @if (Auth::user()?->isSuperAdmin())
+                            <button type="button" class="mayhen_admin_btn mayhen_admin_btn--secondary" style="width: 100%; justify-content: center;" onclick="document.getElementById('mayhen_admin_dsar_modal').style.display='flex';">
+                                📥 Trích Xuất Dữ Liệu Cá Nhân (DSAR JSON)
+                            </button>
+                            <div style="font-size: 0.75rem; color: #8C827A; margin-top: 4px;">
+                                Yêu cầu lý do kiểm toán, tự động che mờ số tài khoản ngân hàng và SĐT theo Luật 91/2025/QH15.
+                            </div>
+                        @else
+                            <div style="padding: 10px; background: #FAF8F5; border-radius: 6px; font-size: 0.75rem; color: var(--mh-admin-muted);">
+                                🔒 Chỉ Quản trị viên cấp cao (Super Admin) mới có thẩm quyền trích xuất dữ liệu cá nhân DSAR.
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Anonymize Action -->
@@ -486,4 +494,55 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal DSAR Access Request (NXT-02 - Luật 91/2025/QH15) -->
+    @if (Auth::user()?->isSuperAdmin())
+        <div id="mayhen_admin_dsar_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+            <div style="background: #FFFFFF; border-radius: 12px; width: 90%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;">
+                <div style="background: var(--mh-admin-surface); padding: 16px 20px; border-bottom: 1px solid var(--mh-admin-border); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: 700; font-size: 1rem; color: var(--mh-admin-charcoal);">
+                        📥 Trích Xuất Dữ Liệu Cá Nhân DSAR
+                    </div>
+                    <button type="button" onclick="document.getElementById('mayhen_admin_dsar_modal').style.display='none';" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--mh-admin-muted);">&times;</button>
+                </div>
+
+                <form action="{{ route('admin.users.export_personal_data', $user->id) }}" method="GET" style="padding: 20px;">
+                    <div style="font-size: 0.8125rem; color: #4B5563; line-height: 1.5; margin-bottom: 16px; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 12px; border-radius: 6px;">
+                        <strong>Bảo Vệ Quyền Riêng Tư (Luật 91/2025/QH15):</strong><br>
+                        Hành động trích xuất hồ sơ cá nhân sẽ được ghi vào Nhật ký kiểm toán bất biến (Audit Log) kèm địa chỉ IP và danh tính của bạn.
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                            Lý Do Trích Xuất Kiểm Toán (Tối thiểu 10 ký tự) <span style="color: #DC2626;">*</span>
+                        </label>
+                        <textarea name="dsar_reason" required minlength="10" rows="3" class="mayhen_admin_form_input" style="width: 100%; font-size: 0.8125rem;" placeholder="VD: Khách hàng gửi yêu cầu cung cấp hồ sơ cá nhân qua email/ticket hỗ trợ..."></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                            Mã Ticket Hỗ Trợ Kèm Theo (Tùy chọn)
+                        </label>
+                        <input type="text" name="ticket_code" class="mayhen_admin_form_input" style="width: 100%; font-size: 0.8125rem;" placeholder="VD: TK-20261110-001">
+                    </div>
+
+                    <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="unmask_checkbox" name="unmask" value="1">
+                        <label for="unmask_checkbox" style="font-size: 0.75rem; color: #4B5563; cursor: pointer;">
+                            Mở che mờ dữ liệu (Unmasking PII — Yêu cầu kiểm toán khắt khe)
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="document.getElementById('mayhen_admin_dsar_modal').style.display='none';">
+                            Hủy Bỏ
+                        </button>
+                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary">
+                            Xác Nhận & Xuất File JSON
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 @endsection

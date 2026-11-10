@@ -400,9 +400,10 @@ test('admin manual order approval refund and cancellation flow', function () {
         'payment_method' => 'bank_transfer',
     ]);
 
-    // 1. Quản lý duyệt thủ công đơn hàng -> status chuyển sang Paid, thiệp được kích hoạt
+    // 1. Quản lý duyệt thủ công đơn hàng kèm chứng từ đối soát -> status chuyển sang Paid, thiệp được kích hoạt
     $resApprove = $this->actingAs($manager)->post(route('admin.orders.approve', $order->id), [
-        'note' => 'Đã đối soát khớp sao kê ngân hàng',
+        'reference_code' => 'FT2609999999',
+        'reconciliation_note' => 'Đã đối soát khớp sao kê ngân hàng',
     ]);
     $resApprove->assertSessionHas('success');
 

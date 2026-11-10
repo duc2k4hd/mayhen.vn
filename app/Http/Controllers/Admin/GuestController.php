@@ -14,6 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GuestController extends Controller
@@ -102,52 +103,130 @@ class GuestController extends Controller
     }
 
     /**
-     * Toggle check-in state for a guest on wedding day.
+     * Toggle check-in state for a guest on wedding day with strict idempotent semantics & locking (NXT-03).
      */
     public function toggleCheckIn(Request $request, int $id): JsonResponse|RedirectResponse
     {
-        $guest = Guest::with('wedding')->findOrFail($id);
-        $isCheckedIn = $guest->isCheckedIn();
+        $action = $request->input('action'); // 'check_in', 'undo_check_in', or null (safe idempotent toggle)
+        $idempotencyKey = $request->header('X-Idempotency-Key') ?? $request->input('idempotency_key');
+        $note = $request->input('note');
 
-        if ($isCheckedIn) {
-            $guest->update([
-                'checked_in_at' => null,
-                'checked_in_attendees' => 0,
-            ]);
-            $msg = "Đã hủy điểm danh cho quan khách \"{$guest->name}\".";
-            $action = 'cancel_check_in';
-        } else {
+        $result = DB::transaction(function () use ($id, $action, $note) {
+            $guest = Guest::where('id', $id)->lockForUpdate()->firstOrFail();
+            $alreadyCheckedIn = $guest->isCheckedIn();
+
+            if ($action === 'check_in') {
+                if ($alreadyCheckedIn) {
+                    return [
+                        'guest' => $guest,
+                        'is_checked_in' => true,
+                        'status_changed' => false,
+                        'message' => "Quan khách \"{$guest->name}\" đã được điểm danh đón tiếp trước đó.",
+                        'action_logged' => null,
+                    ];
+                }
+
+                $attendees = $guest->actualAttendeesCount();
+                $guest->update([
+                    'checked_in_at' => now(),
+                    'checked_in_attendees' => $attendees,
+                    'check_in_note' => $note ?: $guest->check_in_note,
+                ]);
+
+                return [
+                    'guest' => $guest,
+                    'is_checked_in' => true,
+                    'status_changed' => true,
+                    'message' => "Đã điểm danh đón tiếp thành công quan khách \"{$guest->name}\" ({$attendees} người).",
+                    'action_logged' => 'check_in',
+                ];
+            }
+
+            if ($action === 'undo_check_in') {
+                if (! $alreadyCheckedIn) {
+                    return [
+                        'guest' => $guest,
+                        'is_checked_in' => false,
+                        'status_changed' => false,
+                        'message' => "Quan khách \"{$guest->name}\" chưa được điểm danh.",
+                        'action_logged' => null,
+                    ];
+                }
+
+                $guest->update([
+                    'checked_in_at' => null,
+                    'checked_in_attendees' => 0,
+                ]);
+
+                return [
+                    'guest' => $guest,
+                    'is_checked_in' => false,
+                    'status_changed' => true,
+                    'message' => "Đã hủy điểm danh cho quan khách \"{$guest->name}\".",
+                    'action_logged' => 'cancel_check_in',
+                ];
+            }
+
+            // Fallback toggle nếu không chỉ định rõ action (vẫn bảo vệ lockForUpdate nguyên tử)
+            if ($alreadyCheckedIn) {
+                $guest->update([
+                    'checked_in_at' => null,
+                    'checked_in_attendees' => 0,
+                ]);
+
+                return [
+                    'guest' => $guest,
+                    'is_checked_in' => false,
+                    'status_changed' => true,
+                    'message' => "Đã hủy điểm danh cho quan khách \"{$guest->name}\".",
+                    'action_logged' => 'cancel_check_in',
+                ];
+            }
+
             $attendees = $guest->actualAttendeesCount();
             $guest->update([
                 'checked_in_at' => now(),
                 'checked_in_attendees' => $attendees,
+                'check_in_note' => $note ?: $guest->check_in_note,
             ]);
-            $msg = "Đã điểm danh đón tiếp thành công quan khách \"{$guest->name}\" ({$attendees} người).";
-            $action = 'check_in';
-        }
 
-        AuditLogger::log(
-            $action,
-            'Guest',
-            $guest->id,
-            $msg,
-            [
-                'wedding_id' => $guest->wedding_id,
-                'guest_name' => $guest->name,
-                'is_checked_in' => ! $isCheckedIn,
-            ]
-        );
+            return [
+                'guest' => $guest,
+                'is_checked_in' => true,
+                'status_changed' => true,
+                'message' => "Đã điểm danh đón tiếp thành công quan khách \"{$guest->name}\" ({$attendees} người).",
+                'action_logged' => 'check_in',
+            ];
+        });
+
+        $guest = $result['guest'];
+
+        if ($result['action_logged']) {
+            AuditLogger::log(
+                $result['action_logged'],
+                'Guest',
+                $guest->id,
+                $result['message'],
+                [
+                    'wedding_id' => $guest->wedding_id,
+                    'guest_name' => $guest->name,
+                    'is_checked_in' => $result['is_checked_in'],
+                    'idempotency_key' => $idempotencyKey,
+                ]
+            );
+        }
 
         if ($request->expectsJson() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'is_checked_in' => ! $isCheckedIn,
+                'is_checked_in' => $result['is_checked_in'],
+                'status_changed' => $result['status_changed'],
                 'checked_in_at' => $guest->fresh()->checked_in_at?->format('d/m/Y H:i'),
-                'message' => $msg,
+                'message' => $result['message'],
             ]);
         }
 
-        return back()->with('success', $msg);
+        return back()->with('success', $result['message']);
     }
 
     /**
@@ -332,51 +411,107 @@ class GuestController extends Controller
     }
 
     /**
-     * Quick 1-click assign table for walk-in / extra guest in Rescue Mode.
+     * Quick 1-click assign table for walk-in / extra guest in Rescue Mode with Capacity Enforcement (NXT-03).
      */
     public function quickAssignTable(Request $request, int $id): JsonResponse|RedirectResponse
     {
         $request->validate([
             'table_id' => 'required|integer|exists:wedding_tables,id',
+            'allow_overflow' => 'nullable|boolean',
+            'overflow_reason' => 'nullable|string|max:255',
         ]);
 
-        $guest = Guest::with('wedding')->findOrFail($id);
-        $table = WeddingTable::where('wedding_id', $guest->wedding_id)->findOrFail((int) $request->input('table_id'));
+        $tableId = (int) $request->input('table_id');
+        $allowOverflow = $request->boolean('allow_overflow', false);
+        $overflowReason = trim((string) $request->input('overflow_reason', ''));
 
-        $guest->update([
-            'table_id' => $table->id,
-            'table_name' => $table->name,
-        ]);
+        $result = DB::transaction(function () use ($id, $tableId, $allowOverflow, $overflowReason) {
+            $guest = Guest::where('id', $id)->lockForUpdate()->firstOrFail();
+            $table = WeddingTable::where('wedding_id', $guest->wedding_id)
+                ->where('id', $tableId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $msg = "Đã xếp quan khách \"{$guest->name}\" vào bàn \"{$table->name}\" thành công.";
+            $guestSeats = $guest->actualAttendeesCount();
+
+            // Tính tổng số chỗ đã xếp hiện tại của bàn (loại trừ chính khách này nếu đã ngồi trước)
+            $currentOccupants = Guest::where('table_id', $table->id)
+                ->where('id', '!=', $guest->id)
+                ->get();
+            $currentOccupancy = (int) $currentOccupants->sum(fn ($g) => $g->actualAttendeesCount());
+
+            $newTotal = $currentOccupancy + $guestSeats;
+
+            if ($newTotal > $table->capacity && ! $allowOverflow) {
+                return [
+                    'success' => false,
+                    'error_code' => 'OVER_CAPACITY',
+                    'capacity' => $table->capacity,
+                    'current_occupancy' => $currentOccupancy,
+                    'needed_seats' => $guestSeats,
+                    'table_name' => $table->name,
+                    'message' => "Bàn tiệc \"{$table->name}\" không đủ chỗ (Sức chứa {$table->capacity}, hiện có {$currentOccupancy}, cần {$guestSeats} chỗ). Vui lòng chọn bàn khác hoặc kích hoạt chế độ Kê thêm ghế (Overflow) kèm lý do.",
+                ];
+            }
+
+            $guest->update([
+                'table_id' => $table->id,
+                'table_name' => $table->name,
+            ]);
+
+            $isOverCapacity = $newTotal > $table->capacity;
+            $msg = "Đã xếp quan khách \"{$guest->name}\" ({$guestSeats} người) vào bàn \"{$table->name}\" thành công.".($isOverCapacity ? " (Kê thêm ghế: {$overflowReason})" : '');
+
+            return [
+                'success' => true,
+                'guest' => $guest,
+                'table' => $table,
+                'message' => $msg,
+                'is_over_capacity' => $isOverCapacity,
+                'overflow_reason' => $overflowReason,
+            ];
+        });
+
+        if (! $result['success']) {
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json($result, 422);
+            }
+
+            return back()->with('error', $result['message']);
+        }
+
+        $guest = $result['guest'];
+        $table = $result['table'];
 
         AuditLogger::log(
             'rescue_assign_table',
             'Guest',
             $guest->id,
-            $msg,
+            $result['message'],
             [
                 'wedding_id' => $guest->wedding_id,
                 'guest_id' => $guest->id,
                 'table_id' => $table->id,
                 'table_name' => $table->name,
+                'is_over_capacity' => $result['is_over_capacity'],
+                'overflow_reason' => $result['overflow_reason'],
             ]
         );
 
         if ($request->expectsJson() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => $msg,
+                'message' => $result['message'],
                 'table_id' => $table->id,
                 'table_name' => $table->name,
             ]);
         }
 
-        return back()->with('success', $msg);
+        return back()->with('success', $result['message']);
     }
 
     /**
-     * Create emergency overflow table for walk-in guests on wedding day.
+     * Create emergency overflow table for walk-in guests on wedding day with race-condition defense (NXT-03).
      */
     public function createEmergencyTable(Request $request, int $weddingId): RedirectResponse
     {
@@ -386,24 +521,35 @@ class GuestController extends Controller
             'zone' => 'nullable|string|max:100',
         ]);
 
-        $wedding = Wedding::findOrFail($weddingId);
-        $count = $wedding->tables()->count() + 1;
-        $name = trim((string) $request->input('name'));
-        if ($name === '') {
-            $name = "Bàn Dự Phòng #{$count}";
-        }
+        $nameInput = trim((string) $request->input('name'));
         $capacity = (int) ($request->input('capacity') ?: 10);
         $zone = trim((string) $request->input('zone')) ?: 'Khu Dự Phòng';
 
-        $nextOrder = (int) ($wedding->tables()->max('display_order') ?? 0) + 1;
+        $table = DB::transaction(function () use ($weddingId, $nameInput, $capacity, $zone) {
+            // Khóa wedding để tránh race condition khi nhiều lễ tân tạo bàn đồng thời
+            $wedding = Wedding::where('id', $weddingId)->lockForUpdate()->firstOrFail();
 
-        $table = $wedding->tables()->create([
-            'name' => $name,
-            'capacity' => $capacity,
-            'zone' => $zone,
-            'display_order' => $nextOrder,
-            'notes' => 'Tạo khẩn cấp từ Rescue Cockpit ngày cưới',
-        ]);
+            $count = $wedding->tables()->count() + 1;
+            $name = $nameInput !== '' ? $nameInput : "Bàn Dự Phòng #{$count}";
+
+            // Kiểm tra trùng tên bàn trong wedding, nếu trùng tự đánh số thêm
+            $baseName = $name;
+            $suffix = 1;
+            while ($wedding->tables()->where('name', $name)->exists()) {
+                $name = "{$baseName} ({$suffix})";
+                $suffix++;
+            }
+
+            $nextOrder = (int) ($wedding->tables()->max('display_order') ?? 0) + 1;
+
+            return $wedding->tables()->create([
+                'name' => $name,
+                'capacity' => $capacity,
+                'zone' => $zone,
+                'display_order' => $nextOrder,
+                'notes' => 'Tạo khẩn cấp từ Rescue Cockpit ngày cưới',
+            ]);
+        });
 
         $msg = "Đã tạo khẩn cấp bàn tiệc \"{$table->name}\" ({$capacity} chỗ) thành công.";
 
@@ -413,7 +559,7 @@ class GuestController extends Controller
             $table->id,
             $msg,
             [
-                'wedding_id' => $wedding->id,
+                'wedding_id' => $weddingId,
                 'table_name' => $table->name,
                 'capacity' => $capacity,
             ]

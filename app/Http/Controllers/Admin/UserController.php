@@ -364,9 +364,46 @@ class UserController extends Controller
 
     /**
      * Export all personal data for a customer (Luật 91/2025/QH15 - Quyền tiếp cận dữ liệu cá nhân DSAR).
+     * Yêu cầu quyền Super Admin, bắt buộc nhập lý do DSAR, áp dụng Data Minimization & Masking (NXT-02).
      */
     public function exportPersonalData(Request $request, int $id): StreamedResponse
     {
+        // 1. Phân quyền chặt chẽ: Chỉ Super Admin có quyền xuất DSAR
+        if (! Auth::user()?->isSuperAdmin()) {
+            abort(403, 'Chỉ Quản trị viên cấp cao (Super Admin) mới có thẩm quyền trích xuất dữ liệu cá nhân DSAR theo Luật 91/2025/QH15.');
+        }
+
+        // 2. Bắt buộc lý do kiểm toán hợp lệ
+        $request->validate([
+            'dsar_reason' => ['required', 'string', 'min:10', 'max:255'],
+            'ticket_code' => ['nullable', 'string', 'max:50'],
+        ], [
+            'dsar_reason.required' => 'Lý do trích xuất hồ sơ cá nhân (DSAR) là bắt buộc theo Luật 91/2025/QH15.',
+            'dsar_reason.min' => 'Lý do trích xuất phải có tối thiểu 10 ký tự để phục vụ lưu vết kiểm toán.',
+        ]);
+
+        $reason = trim((string) $request->input('dsar_reason'));
+        $ticketCode = trim((string) $request->input('ticket_code')) ?: null;
+        $isMasked = ! $request->boolean('unmask', false);
+
+        $maskBank = function (?string $num) use ($isMasked): ?string {
+            if (! $isMasked || empty($num)) {
+                return $num;
+            }
+            $len = strlen($num);
+
+            return $len > 6 ? substr($num, 0, 3).str_repeat('*', max(2, $len - 6)).substr($num, -3) : '****';
+        };
+
+        $maskPhone = function (?string $phone) use ($isMasked): ?string {
+            if (! $isMasked || empty($phone)) {
+                return $phone;
+            }
+            $len = strlen($phone);
+
+            return $len >= 7 ? substr($phone, 0, 3).'****'.substr($phone, -3) : '****';
+        };
+
         $user = User::with([
             'weddings.invitations.template',
             'weddings.guests.response',
@@ -382,6 +419,13 @@ class UserController extends Controller
             'system' => 'Mây Hẹn (mayhen.vn)',
             'compliance' => 'Luật Bảo Vệ Dữ Liệu Cá Nhân Việt Nam (Luật 91/2025/QH15) — Right to Access (DSAR)',
             'exported_at' => now()->toIso8601String(),
+            'dsar_metadata' => [
+                'legal_basis' => 'Điều 9, 10 Luật 91/2025/QH15 — Quyền được biết và tiếp cận dữ liệu',
+                'dsar_reason' => $reason,
+                'ticket_code' => $ticketCode,
+                'is_pii_masked' => $isMasked,
+                'request_ip' => $request->ip(),
+            ],
             'operator' => [
                 'id' => Auth::id(),
                 'name' => Auth::user()?->name,
@@ -391,7 +435,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone,
+                'phone' => $maskPhone($user->phone),
                 'role' => $user->role,
                 'role_label' => $user->role_label,
                 'is_locked' => (bool) $user->is_locked,
@@ -399,7 +443,7 @@ class UserController extends Controller
                 'created_at' => $user->created_at?->toIso8601String(),
                 'updated_at' => $user->updated_at?->toIso8601String(),
             ],
-            'weddings' => $user->weddings->map(function ($w) {
+            'weddings' => $user->weddings->map(function ($w) use ($maskBank, $maskPhone) {
                 return [
                     'id' => $w->id,
                     'groom_name' => $w->groom_name,
@@ -411,7 +455,7 @@ class UserController extends Controller
                     'venue_address' => $w->venue_address,
                     'bank_info' => [
                         'bank_name' => $w->bank_name,
-                        'bank_account_number' => $w->bank_account_number,
+                        'bank_account_number' => $maskBank($w->bank_account_number),
                         'bank_account_name' => $w->bank_account_name,
                     ],
                     'invitations' => $w->invitations->map(fn ($inv) => [
@@ -423,15 +467,17 @@ class UserController extends Controller
                         'created_at' => $inv->created_at?->toIso8601String(),
                     ]),
                     'guests_count' => $w->guests->count(),
-                    'guests' => $w->guests->map(fn ($g) => [
-                        'id' => $g->id,
-                        'name' => $g->name,
-                        'phone' => $g->phone,
-                        'group_name' => $g->group_name,
-                        'table_name' => $g->table_name,
-                        'checked_in_at' => $g->checked_in_at?->toIso8601String(),
-                        'rsvp_status' => $g->response?->attending_status,
-                    ]),
+                    'guests' => $w->guests->map(function ($g) use ($maskPhone) {
+                        return [
+                            'id' => $g->id,
+                            'name' => $g->name,
+                            'phone' => $maskPhone($g->phone),
+                            'group_name' => $g->group_name,
+                            'table_name' => $g->table_name,
+                            'checked_in_at' => $g->checked_in_at?->toIso8601String(),
+                            'rsvp_status' => $g->response?->attending_status,
+                        ];
+                    }),
                     'wishes' => $w->wishes->map(fn ($wish) => [
                         'id' => $wish->id,
                         'name' => $wish->name,
@@ -466,11 +512,18 @@ class UserController extends Controller
         ];
 
         AuditLogger::log(
-            'export_personal_data',
+            'export_personal_data_dsar',
             'User',
             $user->id,
-            "Trích xuất toàn bộ dữ liệu cá nhân (DSAR) của tài khoản {$user->email} ({$user->name}) theo Luật 91/2025/QH15",
-            ['user_id' => $user->id, 'operator_id' => Auth::id()]
+            "Super Admin xuất hồ sơ dữ liệu cá nhân (DSAR) của tài khoản {$user->email} ({$user->name}). Lý do: {$reason}".($ticketCode ? " [Ticket: {$ticketCode}]" : ''),
+            [
+                'user_id' => $user->id,
+                'operator_id' => Auth::id(),
+                'operator_ip' => $request->ip(),
+                'dsar_reason' => $reason,
+                'ticket_code' => $ticketCode,
+                'is_masked' => $isMasked,
+            ]
         );
 
         $filename = "mayhen_dsar_export_user_{$user->id}_".now()->format('Ymd_His').'.json';

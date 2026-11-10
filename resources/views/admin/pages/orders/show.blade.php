@@ -19,8 +19,14 @@
                 <span>Đơn Hàng #{{ $order->order_code }}</span>
                 @if ($order->isPaid())
                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
+                @elseif ($order->status === 'refunded')
+                    <span class="mayhen_admin_badge" style="background: #FEF3C7; color: #92400E;">Đã Hoàn Tiền</span>
                 @elseif ($order->status === 'cancelled')
                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Đã Hủy</span>
+                @elseif ($order->isRefundPending())
+                    <span class="mayhen_admin_badge" style="background: #EDE9FE; color: #5B21B6;">Chờ Chuyển Tiền Hoàn</span>
+                @elseif ($order->isReconciliationPending())
+                    <span class="mayhen_admin_badge" style="background: #FFF7ED; color: #C2410C; border: 1px solid #FFEDD5;">Chờ Duyệt Đối Soát (Maker-Checker)</span>
                 @else
                     <span class="mayhen_admin_badge mayhen_admin_badge_warning">Chờ Chuyển Khoản</span>
                 @endif
@@ -169,6 +175,93 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Finance Evidence Ledger Card (NXT-01) -->
+            <div class="mayhen_admin_card">
+                <div class="mayhen_admin_card_header">
+                    <div class="mayhen_admin_card_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold);">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>Sổ Cái Đối Soát Tài Chính & Chứng Từ (Finance Evidence Ledger — {{ count($reconciliations) }})</span>
+                    </div>
+                </div>
+
+                <div class="mayhen_admin_table_responsive">
+                    <table class="mayhen_admin_table">
+                        <thead>
+                            <tr>
+                                <th>Thời Gian</th>
+                                <th>Nghiệp Vụ</th>
+                                <th>Mã Giao Dịch</th>
+                                <th>Số Tiền</th>
+                                <th>Người Đề Xuất / Duyệt</th>
+                                <th>Trạng Thái</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($reconciliations as $rec)
+                                <tr>
+                                    <td style="font-size: 0.75rem; white-space: nowrap;">
+                                        {{ $rec->created_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td>
+                                        <span class="mayhen_admin_badge mayhen_admin_badge--neutral" style="font-size: 0.75rem;">
+                                            {{ $rec->action_type_label }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <code style="font-size: 0.8125rem; font-weight: 700; color: var(--mh-admin-charcoal);">
+                                            {{ $rec->reference_code }}
+                                        </code>
+                                        @if ($rec->bank_name || $rec->bank_account_number)
+                                            <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                                                {{ $rec->bank_name }}: {{ $rec->bank_account_number }}
+                                                @if ($rec->bank_account_holder)
+                                                    ({{ $rec->bank_account_holder }})
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="font-weight: 700; font-size: 0.875rem; color: #1B5E20; white-space: nowrap;">
+                                        {{ number_format($rec->amount, 0, ',', '.') }}đ
+                                    </td>
+                                    <td style="font-size: 0.8125rem;">
+                                        <div><strong>Maker:</strong> {{ $rec->creator?->name ?? 'Hệ thống' }}</div>
+                                        <div><strong>Checker:</strong> {{ $rec->approver?->name ?? '—' }}</div>
+                                    </td>
+                                    <td>
+                                        @if ($rec->isApproved() || $rec->isCompleted())
+                                            <span class="mayhen_admin_badge mayhen_admin_badge_success">{{ $rec->status_label }}</span>
+                                        @elseif ($rec->isRejected())
+                                            <span class="mayhen_admin_badge mayhen_admin_badge_danger">{{ $rec->status_label }}</span>
+                                        @else
+                                            <span class="mayhen_admin_badge mayhen_admin_badge_warning">{{ $rec->status_label }}</span>
+                                        @endif
+                                    </td>
+                                    <td style="font-size: 0.75rem; max-width: 200px;">
+                                        <div>{{ $rec->reconciliation_note }}</div>
+                                        @if ($rec->review_note)
+                                            <div style="color: var(--mh-admin-gold); margin-top: 2px;"><em>Kiểm toán: {{ $rec->review_note }}</em></div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; color: var(--mh-admin-muted); padding: 24px;">
+                                        Chưa có bản ghi đối soát tài chính thủ công nào cho đơn hàng này.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Right: Plan, Associated Invitation & Admin Actions -->
@@ -246,28 +339,87 @@
             <div class="mayhen_admin_card">
                 <div class="mayhen_admin_card_header">
                     <div class="mayhen_admin_card_title">
-                        <span>Hành Động Quản Trị</span>
+                        <span>Hành Động Quản Trị & Đối Soát (NXT-01)</span>
                     </div>
                 </div>
 
-                <div class="mayhen_admin_card_body" style="display: flex; flex-direction: column; gap: 10px;">
-                    @if ($order->status === 'pending')
+                <div class="mayhen_admin_card_body" style="display: flex; flex-direction: column; gap: 12px;">
+                    @php
+                        $pendingRecon = $reconciliations->firstWhere('status', 'pending');
+                    @endphp
+
+                    {{-- 1. Dual Approval Review Box (Khi đang có đề xuất chờ duyệt) --}}
+                    @if ($order->isReconciliationPending() && $pendingRecon)
+                        <div style="background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 8px; padding: 14px;">
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: #9A3412; margin-bottom: 6px;">
+                                ⚠️ Đề Xuất Đối Soát Chờ Phê Duyệt (Dual Approval)
+                            </div>
+                            <div style="font-size: 0.75rem; color: #7C2D12; line-height: 1.5; margin-bottom: 10px;">
+                                <strong>Người đề xuất:</strong> {{ $pendingRecon->creator?->name ?? 'Quản lý' }}<br>
+                                <strong>Mã GD ngân hàng:</strong> <code>{{ $pendingRecon->reference_code }}</code><br>
+                                <strong>Lý do:</strong> {{ $pendingRecon->reconciliation_note }}
+                            </div>
+
+                            @if (Auth::user()?->isSuperAdmin())
+                                <div style="display: flex; gap: 8px; flex-direction: column;">
+                                    <form action="{{ route('admin.orders.reconciliations.approve', $pendingRecon->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Xác nhận phê duyệt đối soát và kích hoạt đơn hàng #{{ $order->order_code }}?');">
+                                            ✓ Phê Duyệt Đối Soát & Kích Hoạt
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('admin.orders.reconciliations.reject', $pendingRecon->id) }}" method="POST">
+                                        @csrf
+                                        <input type="text" name="reason" placeholder="Nhập lý do từ chối..." required class="mayhen_admin_input" style="width: 100%; font-size: 0.75rem; padding: 6px 8px; margin-bottom: 6px;">
+                                        <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_danger" style="width: 100%;" onclick="return confirm('Từ chối đề xuất đối soát này?');">
+                                            ✕ Từ Chối Đề Xuất
+                                        </button>
+                                    </form>
+                                </div>
+                            @else
+                                <div style="font-size: 0.75rem; color: #9A3412; font-style: italic;">
+                                    Đang chờ Quản trị viên cấp cao (Super Admin) kiểm tra sao kê ngân hàng và phê duyệt.
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- 2. Đơn hàng Pending: Form Đối soát thủ công --}}
+                    @if ($order->status === 'pending' && ! $order->isReconciliationPending())
                         <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" style="background: #FAF8F5; border: 1px solid var(--mh-admin-border-subtle); padding: 14px; border-radius: 8px;">
                             @csrf
                             <div style="font-size: 0.8125rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-bottom: 8px;">
-                                Đối Soát & Kích Hoạt Thủ Công
+                                Đối Soát & Duyệt Thanh Toán Thủ Công
                             </div>
                             <div style="margin-bottom: 8px;">
-                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">Mã GD Ngân Hàng / Tham Chiếu <span style="color: #DC2626;">*</span></label>
+                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                    Mã GD Ngân Hàng / Tham Chiếu Thật <span style="color: #DC2626;">*</span>
+                                </label>
                                 <input type="text" name="reference_code" required placeholder="VD: FT26312984920..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
                             </div>
-                            <div style="margin-bottom: 12px;">
-                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">Ghi Chú Đối Soát</label>
-                                <input type="text" name="reconciliation_note" placeholder="VD: Đã kiểm tra sao kê VietinBank khớp số tiền..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                            <div style="margin-bottom: 8px;">
+                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                    Ngân Hàng Nhận (Tùy chọn)
+                                </label>
+                                <input type="text" name="bank_name" placeholder="VD: VietinBank, Vietcombank..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
                             </div>
-                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn đã nhận được tiền vào tài khoản ngân hàng và muốn kích hoạt gói cho đơn hàng #{{ $order->order_code }} không?');">
-                                ✓ Duyệt & Kích Hoạt Gói
-                            </button>
+                            <div style="margin-bottom: 12px;">
+                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                    Ghi Chú Đối Soát Chứng Từ <span style="color: #DC2626;">*</span>
+                                </label>
+                                <input type="text" name="reconciliation_note" required placeholder="VD: Đã kiểm tra sao kê khớp số tiền {{ number_format($order->amount, 0, ',', '.') }}đ..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                            </div>
+
+                            @if (Auth::user()?->isSuperAdmin())
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn đã nhận được tiền vào tài khoản ngân hàng và muốn kích hoạt gói cho đơn hàng #{{ $order->order_code }} không?');">
+                                    ✓ Duyệt Thanh Toán Thủ Công (Super Admin)
+                                </button>
+                            @else
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Tạo đề xuất đối soát thanh toán cho đơn hàng #{{ $order->order_code }} gửi Super Admin duyệt?');">
+                                    📝 Đề Xuất Duyệt Thanh Toán (Maker-Checker)
+                                </button>
+                            @endif
                         </form>
 
                         <form action="{{ route('admin.orders.cancel', $order->id) }}" method="POST">
@@ -276,23 +428,99 @@
                                 ✕ Hủy Đơn Hàng Này
                             </button>
                         </form>
-                    @elseif ($order->isPaid())
+                    @endif
+
+                    {{-- 3. Đơn hàng đang có yêu cầu hoàn tiền (Refund Pending) --}}
+                    @if ($order->isRefundPending())
+                        <div style="background: #F5F3FF; border: 1px solid #DDD6FE; border-radius: 8px; padding: 14px;">
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: #5B21B6; margin-bottom: 6px;">
+                                ↺ Hồ Sơ Đề Nghị Hoàn Tiền Chờ Chi Trả
+                            </div>
+                            <div style="font-size: 0.75rem; color: #6D28D9; line-height: 1.5; margin-bottom: 10px;">
+                                <strong>Số tiền hoàn:</strong> {{ number_format($order->refund_amount ?: $order->amount, 0, ',', '.') }}đ<br>
+                                Vui lòng chuyển khoản ngân hàng hoàn tiền cho khách, sau đó nhập mã GD chuyển tiền bên dưới để xác nhận hoàn tất.
+                            </div>
+
+                            <form action="{{ route('admin.orders.confirm_refund', $order->id) }}" method="POST">
+                                @csrf
+                                <div style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; color: #4C1D95; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Mã GD Chuyển Khoản Hoàn Tiền <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="text" name="payout_reference_code" required placeholder="VD: FT263991823..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-size: 0.75rem; color: #4C1D95; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Ghi chú chi trả
+                                    </label>
+                                    <input type="text" name="payout_note" placeholder="VD: Đã hoàn tiền qua Internet Banking VietinBank..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <button type="submit" class="mayhen_admin_btn" style="width: 100%; background: #7C3AED; color: #FFFFFF;" onclick="return confirm('Xác nhận tiền đã được chuyển thành công về tài khoản của khách và hoàn tất thu hồi thiệp cưới?');">
+                                    ✓ Xác Nhận Đã Chuyển Tiền Hoàn
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+
+                    {{-- 4. Đơn hàng đã thanh toán thành công (Paid) và chưa yêu cầu hoàn tiền --}}
+                    @if ($order->isPaid() && ! $order->isRefundPending())
                         <div style="padding: 12px; background-color: var(--mh-admin-success-bg); color: var(--mh-admin-success-text); border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
                             Đơn hàng đã được thanh toán và kích hoạt thành công.
                         </div>
 
-                        <form action="{{ route('admin.orders.refund', $order->id) }}" method="POST" style="margin-top: 8px;">
-                            @csrf
-                            <input type="hidden" name="reason" value="Hoàn tiền theo yêu cầu khách hàng">
-                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%; color: var(--mh-admin-danger); border-color: var(--mh-admin-danger);" onclick="return confirm('Bạn có chắc chắn muốn hoàn tiền đơn hàng #{{ $order->order_code }}? Thiệp cưới sẽ được chuyển về trạng thái hết hạn lưu trữ trực tuyến, dữ liệu kỷ niệm của khách vẫn được bảo tồn.');">
-                                ↺ Hoàn Tiền Đơn Hàng (Refund)
-                            </button>
-                        </form>
-                    @elseif ($order->status === 'refunded')
-                        <div style="padding: 12px; background-color: #FEF3C7; color: #92400E; border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
-                            Đơn hàng này đã được hoàn tiền (Refunded).
+                        {{-- Form Đề Nghị Hoàn Tiền Có Chứng Từ --}}
+                        <div style="background: #FAF8F5; border: 1px solid var(--mh-admin-border-subtle); padding: 14px; border-radius: 8px; margin-top: 4px;">
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-bottom: 8px;">
+                                Tạo Đề Nghị Hoàn Tiền (Refund Request)
+                            </div>
+                            <form action="{{ route('admin.orders.request_refund', $order->id) }}" method="POST">
+                                @csrf
+                                <div style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Số Tiền Hoàn (VNĐ) <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="number" name="refund_amount" value="{{ $order->amount }}" max="{{ $order->amount }}" required class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Ngân Hàng Thụ Hưởng Của Khách <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="text" name="customer_bank_name" required placeholder="VD: Vietcombank, MB Bank..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Số Tài Khoản Của Khách <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="text" name="customer_bank_account" required placeholder="VD: 1029384756..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Tên Chủ Tài Khoản <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="text" name="customer_bank_holder" required placeholder="VD: NGUYEN VAN A" class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">
+                                        Lý Do Đề Nghị Hoàn Tiền <span style="color: #DC2626;">*</span>
+                                    </label>
+                                    <input type="text" name="reason" required placeholder="VD: Khách hàng đổi ngày cưới, yêu cầu hủy gói..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                                </div>
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%; color: var(--mh-admin-danger); border-color: var(--mh-admin-danger);" onclick="return confirm('Tạo đề nghị hoàn tiền cho đơn hàng #{{ $order->order_code }}?');">
+                                    ↺ Tạo Hồ Sơ Đề Nghị Hoàn Tiền
+                                </button>
+                            </form>
                         </div>
-                    @else
+                    @endif
+
+                    {{-- 5. Đơn hàng đã hoàn tiền (Refunded) --}}
+                    @if ($order->status === 'refunded')
+                        <div style="padding: 12px; background-color: #FEF3C7; color: #92400E; border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
+                            Đơn hàng này đã được hoàn tiền (Refunded).@if($order->refunded_at) (Thời gian: {{ $order->refunded_at->format('d/m/Y H:i') }})@endif
+                        </div>
+                    @endif
+
+                    {{-- 6. Đơn hàng đã hủy (Cancelled) --}}
+                    @if ($order->status === 'cancelled')
                         <div style="padding: 12px; background-color: var(--mh-admin-danger-bg); color: var(--mh-admin-danger-text); border-radius: 6px; font-size: 0.8125rem; text-align: center; font-weight: 600;">
                             Đơn hàng đã ở trạng thái hủy.
                         </div>

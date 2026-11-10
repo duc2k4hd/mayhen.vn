@@ -187,8 +187,11 @@ class AdminOrderRefundAndRenewalTest extends TestCase
             'payment_method' => 'sepay',
         ]);
 
-        // Admin duyệt đơn hàng
-        $response = $this->actingAs($this->admin)->post(route('admin.orders.approve', $order->id));
+        // Admin duyệt đơn hàng kèm chứng từ đối soát thật (NXT-01)
+        $response = $this->actingAs($this->admin)->post(route('admin.orders.approve', $order->id), [
+            'reference_code' => 'FT26091800101',
+            'reconciliation_note' => 'Đã đối soát sao kê ngân hàng thành công',
+        ]);
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
@@ -213,7 +216,10 @@ class AdminOrderRefundAndRenewalTest extends TestCase
             'payment_method' => 'sepay',
         ]);
 
-        $this->actingAs($this->admin)->post(route('admin.orders.approve', $order->id));
+        $this->actingAs($this->admin)->post(route('admin.orders.approve', $order->id), [
+            'reference_code' => 'FT26091800102',
+            'reconciliation_note' => 'Duyệt gia hạn thiệp cưới đã hết hạn',
+        ]);
 
         $this->invitation->refresh();
         // Thời hạn mới tính từ now() + 90 ngày
