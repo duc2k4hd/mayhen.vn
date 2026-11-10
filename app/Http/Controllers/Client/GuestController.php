@@ -815,6 +815,20 @@ class GuestController extends Controller
             return back()->with('rsvp_error', $msg);
         }
 
+        // 0.2. Kiểm tra chế độ đóng băng RSVP Hậu Sự Kiện (Post-Wedding RSVP Freezing - Section 36 PRD V3)
+        if ($invitation->isRsvpFrozen()) {
+            $msg = 'Hôn lễ đã diễn ra thành công tốt đẹp! Form xác nhận tham dự (RSVP) đã được đóng lại.';
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'is_frozen' => true,
+                    'message' => $msg,
+                ], 422);
+            }
+
+            return back()->with('rsvp_error', $msg);
+        }
+
         $rsvpDeadlineStr = $config['rsvp_deadline'] ?? null;
         $lockAfterDeadline = ! empty($config['rsvp_lock_after_deadline']);
         $isLateRsvp = false;

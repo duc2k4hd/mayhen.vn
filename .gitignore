@@ -137,6 +137,8 @@ Thumbs.db
 !/tests/Feature/GuestScopingAndHeadcountPolicyTest.php
 !/tests/Feature/WishModerationAndGuestbookTest.php
 !/tests/Feature/WeddingGiftAndBankingSecurityTest.php
+!/tests/Feature/PostWeddingLifecycleAndPrivacyTest.php
+!/tests/Feature/InvitationAnalyticsAndFunnelTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

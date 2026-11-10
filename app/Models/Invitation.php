@@ -54,6 +54,11 @@ class Invitation extends Model
         return $this->belongsTo(InvitationTemplate::class, 'template_id');
     }
 
+    public function views(): HasMany
+    {
+        return $this->hasMany(InvitationView::class);
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -127,5 +132,61 @@ class Invitation extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Kiểm tra xác nhận tham dự (RSVP) có đang bị đóng băng hậu sự kiện hay không.
+     */
+    public function isRsvpFrozen(): bool
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        $postWedding = $config['post_wedding'] ?? [];
+
+        // Đã chủ động đóng băng
+        if (! empty($postWedding['freeze_rsvp'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Kiểm tra có tự động chuyển hướng khách từ thiệp sang Bảo Tàng Kỷ Niệm Số hay không.
+     */
+    public function shouldRedirectToMemoryVault(): bool
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        return ! empty($config['post_wedding']['redirect_to_vault']);
+    }
+
+    /**
+     * Lấy cấu hình hậu sự kiện.
+     */
+    public function getPostWeddingConfig(): array
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        return $config['post_wedding'] ?? [];
+    }
+
+    /**
+     * Cập nhật cấu hình hậu sự kiện.
+     */
+    public function setPostWeddingConfig(array $data): void
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        $config['post_wedding'] = array_merge($config['post_wedding'] ?? [], $data);
+        $this->update(['custom_config' => $config]);
     }
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\LiveCoordinationController;
@@ -203,6 +204,10 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/kho-tep', [WeddingMediaController::class, 'index'])->name('wedding_media.index');
     Route::delete('/thiep/{id}/kho-tep', [WeddingMediaController::class, 'destroy'])->name('wedding_media.destroy');
     Route::get('/api/thiep/{id}/dung-luong', [WeddingMediaController::class, 'quota'])->name('wedding_media.quota');
+
+    // Báo Cáo Phân Tích Hiệu Suất Tương Tác & Lượng Truy Cập Thiệp Cưới (Master PRD V3 Section 19 & 42)
+    Route::get('/thiep/{id}/thong-ke', [InvitationAnalyticsController::class, 'index'])->name('invitations.analytics');
+    Route::get('/thiep/{id}/thong-ke/xuat-csv', [InvitationAnalyticsController::class, 'exportCsv'])->name('invitations.analytics.export');
 });
 
 // Guest Management & RSVP
@@ -235,6 +240,8 @@ Route::prefix('tai-khoan')->group(function () {
     // Két Lưu Trữ Kỷ Niệm Số & Sách Kỷ Yếu (Digital Memory Vault - TASK-V2-03 & TASK-V2-04)
     Route::get('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'settings'])->name('memory.settings');
     Route::post('/thiep/{id}/ky-niem', [MemoryVaultController::class, 'updateSettings'])->middleware('throttle:30,1')->name('memory.updateSettings');
+    Route::post('/thiep/{id}/hau-su-kien', [MemoryVaultController::class, 'postWeddingLifecycle'])->middleware('throttle:30,1')->name('memory.post_wedding_lifecycle');
+    Route::post('/thiep/{id}/hau-su-kien/xoa-du-lieu-nhay-cam', [MemoryVaultController::class, 'purgeGuestPii'])->middleware('throttle:10,1')->name('memory.purge_guest_pii');
     Route::get('/thiep/{id}/sach-ky-yeu', [MemoryVaultController::class, 'keepsakeBook'])->name('memory.keepsake_book');
     Route::get('/thiep/{id}/xuat-ky-niem-ngoai-tuyen', [MemoryVaultController::class, 'offlineArchive'])->middleware('throttle:10,1')->name('memory.offline_archive');
 

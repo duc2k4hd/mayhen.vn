@@ -12,6 +12,7 @@ use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
+use App\Services\WeddingAnalyticsService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use App\Services\WeddingStorageService;
@@ -28,7 +29,8 @@ class InvitationEditorController extends Controller
 {
     public function __construct(
         protected InvitationTemplateService $templateService,
-        protected WeddingMusicService $musicService
+        protected WeddingMusicService $musicService,
+        protected WeddingAnalyticsService $analyticsService
     ) {}
 
     /**
@@ -289,7 +291,7 @@ class InvitationEditorController extends Controller
     /**
      * Show published public invitation.
      */
-    public function show(string $slug): View
+    public function show(string $slug): View|RedirectResponse
     {
         $invitation = Invitation::with(['wedding.partner', 'template'])
             ->where('slug', $slug)
@@ -304,6 +306,11 @@ class InvitationEditorController extends Controller
         }
 
         $isOwner = $invitation->isOwner();
+
+        // 0. Tự động chuyển hướng sang Bảo Tàng Kỷ Niệm Số hậu sự kiện (Section 36 PRD V3)
+        if ($invitation->shouldRedirectToMemoryVault() && ! $isOwner && ! request()->query('preview')) {
+            return redirect()->route('memory.vault', $slug);
+        }
 
         // 1. Kiểm tra thời hạn lưu trữ của thiệp cưới
         if ($invitation->expires_at && $invitation->expires_at->isPast() && ! $isOwner) {
@@ -384,8 +391,12 @@ class InvitationEditorController extends Controller
         }
 
         // Tự động ghi nhận lượt mở thiệp và thiết bị truy cập nếu không phải chủ thiệp/admin
-        if (! $isOwner && $guest) {
-            $guest->recordOpen(request()->userAgent());
+        if (! $isOwner) {
+            $this->analyticsService->recordVisit($invitation, request(), $guest);
+
+            if ($guest) {
+                $guest->recordOpen(request()->userAgent());
+            }
         }
 
         $template = $invitation->template;

@@ -7,11 +7,13 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
+use App\Services\AuditLogger;
 use App\Services\PortableWeddingArchiveService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemoryVaultController extends Controller
@@ -154,12 +156,89 @@ class MemoryVaultController extends Controller
         }
 
         $vaultConfig = $config['memory_vault'] ?? [];
+        $postWeddingConfig = $invitation->getPostWeddingConfig();
+        $guestsCount = $wedding->guests()->count();
 
         return view('client.pages.account.memory-vault-settings', [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'vaultConfig' => $vaultConfig,
+            'postWeddingConfig' => $postWeddingConfig,
+            'guestsCount' => $guestsCount,
         ]);
+    }
+
+    /**
+     * Kích hoạt vòng đời hậu sự kiện: Đóng băng RSVP, tự động chuyển trang thiệp sang trang Kỷ Niệm (Section 36 PRD V3).
+     */
+    public function postWeddingLifecycle(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeOwner($wedding);
+
+        $validated = $request->validate([
+            'freeze_rsvp' => ['nullable', 'boolean'],
+            'redirect_to_vault' => ['nullable', 'boolean'],
+            'thank_you_letter' => ['nullable', 'string', 'max:3000', new NoProfanity],
+        ]);
+
+        $postWeddingData = [
+            'freeze_rsvp' => $request->boolean('freeze_rsvp'),
+            'redirect_to_vault' => $request->boolean('redirect_to_vault'),
+            'thank_you_letter' => ! empty($validated['thank_you_letter']) ? strip_tags(trim($validated['thank_you_letter'])) : null,
+            'updated_at' => now()->toIso8601String(),
+        ];
+
+        $invitation->setPostWeddingConfig($postWeddingData);
+
+        AuditLogger::log('POST_WEDDING_LIFECYCLE_TRIGGERED', 'Invitation', $invitation->id, 'Cập nhật cấu hình vòng đời hậu sự kiện và đóng băng RSVP', [
+            'wedding_id' => $wedding->id,
+            'freeze_rsvp' => $postWeddingData['freeze_rsvp'],
+            'redirect_to_vault' => $postWeddingData['redirect_to_vault'],
+        ]);
+
+        return back()->with('success', 'Đã lưu cấu hình vòng đời hậu sự kiện và đóng băng RSVP thành công!');
+    }
+
+    /**
+     * Quyền Được Lãng Quên: Làm sạch dữ liệu nhạy cảm PII của khách mời sau hôn lễ (Section 41.3 PRD V3 & Law 91/2025/QH15).
+     * Bắt buộc xác thực mật khẩu tài khoản hiện tại để bảo vệ dữ liệu.
+     */
+    public function purgeGuestPii(Request $request, int $invitationId): RedirectResponse
+    {
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $wedding = $invitation->wedding;
+        $this->authorizeOwner($wedding);
+
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu tài khoản của bạn để xác thực yêu cầu bảo mật này.',
+            'current_password.current_password' => 'Mật khẩu xác nhận không chính xác.',
+        ]);
+
+        // Làm sạch thông tin nhạy cảm của toàn bộ khách mời trong đám cưới
+        $guests = $wedding->guests()->get();
+        $purgedCount = 0;
+        foreach ($guests as $guest) {
+            $guest->update([
+                'phone' => null,
+                'guest_token' => 'purged_'.Str::uuid(),
+                'revoked_tokens' => null,
+                'check_in_note' => null,
+                'last_device' => null,
+            ]);
+            $purgedCount++;
+        }
+
+        AuditLogger::log('GUEST_PII_PURGED_PRIVACY', 'Wedding', $wedding->id, 'Làm sạch dữ liệu PII nhạy cảm của khách mời theo chính sách bảo vệ quyền riêng tư', [
+            'invitation_id' => $invitation->id,
+            'user_id' => auth()->id(),
+            'purged_guests_count' => $purgedCount,
+        ]);
+
+        return back()->with('success', "Đã làm sạch và bảo mật thành công thông tin nhạy cảm của {$purgedCount} khách mời theo quy chuẩn bảo vệ quyền riêng tư!");
     }
 
     /**

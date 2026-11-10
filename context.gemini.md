@@ -8176,6 +8176,71 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **945/945 tests PASSED 100% (4,993 assertions in 28.64s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 70. VÒNG ĐỜI HẬU SỰ KIỆN, ĐÓNG BĂNG KHÓA THIỆP, CHẾ ĐỘ TRANG KỶ NIỆM & XUẤT TRỌN BỘ DỮ LIỆU HÔN LỄ (POST-WEDDING LIFECYCLE, RSVP FREEZE & MEMORY TRANSITION — SECTION 36 & 41.3 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện vòng đời thiệp cưới sau ngày hôn lễ theo chuẩn Section 36 & 41.3 Master PRD V3:
+  1. *Đóng băng xác nhận tham dự (Freeze / Lock RSVP Post-Wedding)*: Sau khi đám cưới diễn ra hoặc khi chủ tiệc quyết định đóng sổ khách mời, tự động khóa cổng RSVP (`is_frozen: true`). Khách truy cập form RSVP sẽ nhận thông báo trang trọng lịch sự rằng tiệc cưới đã diễn ra viên mãn và cổng xác nhận đã khép lại.
+  2. *Chuyển đổi giao diện sang Trang Kỷ Niệm (Post-Wedding Memory Mode)*: Tùy chọn tự động điều hướng khách truy cập đường link thiệp cưới `/thiep/{slug}` sang Bảo Tàng Kỷ Niệm Số `/ky-niem/{slug}` để xem thư cảm ơn của đôi uyên ương, thư viện ảnh kỷ niệm, và lời chúc lưu bút.
+  3. *Tải trọn bộ dữ liệu lưu niệm hôn lễ ngoại tuyến (Comprehensive Wedding Offline Archive)*: Mở rộng `PortableWeddingArchiveService` đóng gói thêm `so_mung_cuoi_va_tien_mung.csv`, `lich_trinh_va_nha_cung_cap.json`, và `toan_bo_du_lieu_hon_le.json` (tổng hợp trọn gói wedding, invitation, guests, responses, wishes, gifts, events, tasks, vendors, memory media).
+  4. *Quyền Được Lãng Quên & Bảo Vệ Riêng Tư PII (Privacy Right to be Forgotten — Law 91/2025/QH15 & Section 41.3 PRD V3)*: Cho phép chủ tiệc dọn dẹp sạch số điện thoại (`phone = null`), ghi chú check-in, thiết bị đăng nhập, và vô hiệu hóa token định danh khách mời (`purged_uuid`), bắt buộc xác thực mật khẩu `current_password` và ghi nhật ký kiểm toán bất biến `AuditLogger::log('GUEST_PII_PURGED_PRIVACY', ...)`.
+- **Chi tiết triển khai**:
+  1. **Model Eloquent ([Invitation.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Invitation.php))**:
+     - `isRsvpFrozen(): bool`: Kiểm tra trạng thái đóng băng RSVP từ `custom_config['post_wedding']['is_frozen']`.
+     - `shouldRedirectToMemoryVault(): bool`: Kiểm tra cờ tự động chuyển hướng sang Memory Vault (`redirect_to_vault`).
+     - `getPostWeddingConfig(): array`: Trích xuất cấu hình vòng đời hậu hôn lễ với giá trị mặc định chuẩn mực.
+     - `setPostWeddingConfig(array $data): void`: Cập nhật cấu hình hậu sự kiện an toàn vào `custom_config`.
+  2. **Controller Phản Hồi Khách Mời ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - Chặn gửi RSVP khi thiệp đã đóng băng (`isRsvpFrozen() === true`), trả về thông báo lễ cưới đã diễn ra viên mãn và cổng xác nhận đã khép lại.
+  3. **Controller Hiển Thị Thiệp Cưới ([InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php))**:
+     - Tự động điều hướng khách vãng lai sang route `memory.vault` khi `shouldRedirectToMemoryVault()` là true.
+  4. **Service Đóng Gói Lưu Trữ ([PortableWeddingArchiveService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/PortableWeddingArchiveService.php))**:
+     - Bổ sung `exportGiftsCsv()` xuất sổ mừng cưới UTF-8 BOM kèm chống Excel Injection.
+     - Bổ sung `exportPlannerJson()` xuất danh sách công việc, dự toán và nhà cung cấp.
+     - Bổ sung `exportComprehensiveJson()` xuất trọn bộ dữ liệu toàn diện của hôn lễ.
+  5. **Controller Bảo Tàng Kỷ Niệm ([MemoryVaultController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/MemoryVaultController.php))**:
+     - Thêm action `postWeddingLifecycle(Request $request, int $invitationId)`: Xử lý cập nhật đóng băng RSVP, bật chuyển hướng memory vault, cập nhật thư cảm ơn, ghi `AuditLogger::log('POST_WEDDING_LIFECYCLE_TRIGGERED', ...)`.
+     - Thêm action `purgeGuestPii(Request $request, int $invitationId)`: Xử lý làm sạch PII khách mời tuân thủ luật bảo vệ dữ liệu cá nhân, yêu cầu `current_password`, ghi `AuditLogger::log('GUEST_PII_PURGED_PRIVACY', ...)`.
+  6. **Giao Diện Cài Đặt Kỷ Niệm ([memory-vault-settings.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/memory-vault-settings.blade.php))**:
+     - Bổ sung Card *"VÒNG ĐỜI HẬU SỰ KIỆN & ĐÓNG BĂNG THIỆP CƯỚI"*: Tùy chọn đóng băng RSVP, chuyển hướng khách sang Trang Kỷ Niệm, tùy chỉnh thông điệp cảm ơn sau hôn lễ.
+     - Bổ sung Card *"AN TOÀN DỮ LIỆU & QUYỀN RIÊNG TƯ (LUẬT 91/2025/QH15)"*: Cho phép dọn dẹp dữ liệu nhạy cảm PII với xác thực mật khẩu.
+  7. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/PostWeddingLifecycleAndPrivacyTest.php` với **7 kịch bản kiểm thử độc lập (29 assertions)**: 100% PASSED (chặn RSVP khi đóng băng, chuyển hướng trang kỷ niệm, chủ thiệp vẫn xem được thiệp gốc, cập nhật cấu hình vòng đời, làm sạch PII khách mời khi nhập đúng mật khẩu, chặn làm sạch khi mật khẩu sai, tải file lưu trữ offline hoàn chỉnh).
+     - Toàn bộ test suite hệ thống: **952/952 tests PASSED 100% (5,022 assertions in 36.10s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+### 71. HỆ THỐNG BÁO CÁO PHÂN TÍCH HIỆU SUẤT TƯƠNG TÁC & LƯỢNG TRUY CẬP THIỆP CƯỚI NÂNG CAO (WEDDING INVITATION REAL ANALYTICS, CONVERSION FUNNEL & DEVICE INTELLIGENCE — SECTION 19 & 42 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ đo lường tương tác và phân tích hiệu suất thiệp cưới thực tế theo Section 19, 42 & 49 Master PRD V3:
+  1. *Ghi nhận lượt xem thực tế & đo lường độc lập (Real Views & Unique Visitors)*: Tự động ghi nhận lượt xem thiệp cưới và tăng biến đếm `view_count` nguyên tử (atomic increment), kết hợp mã băm SHA-256 ẩn danh xoay vòng theo ngày (`hash(app_key . ip . ua . date)`) để đếm người xem độc lập mà không lưu IP thô, tuân thủ Luật 91/2025/QH15 & PRD Section 41.1.
+  2. *Phễu chuyển đổi quan khách (Wedding Interaction Funnel)*: Đo lường 100% dữ liệu thật qua 5 chặng: Khách Đã Gửi Link -> Khách Đã Mở Thiệp -> Khách Xác Nhận Tham Dự (RSVP) -> Khách Báo Sẽ Đến Dự -> Khách Gửi Lời Chúc Mừng Lưu Bút.
+  3. *Nhận diện thiết bị & ứng dụng In-App Browsers*: Phân tích User-Agent gọn nhẹ nhận diện Mobile, Tablet, Desktop; hệ điều hành iOS, Android, Windows, macOS; đặc biệt nhận diện chính xác các trình duyệt In-App phổ biến tại Việt Nam (Zalo, Facebook/Messenger) cùng Safari, Chrome, Edge.
+  4. *Biểu đồ lượng truy cập theo thời gian (Pure SVG / CSS Native Chart)*: Trực quan hóa số lượt xem và người xem độc lập 7 ngày gần nhất bằng Pure SVG & CSS thanh lịch chuẩn Quiet Luxury, tuyệt đối không dùng thư viện ngoài (Zero Chart.js / ApexCharts).
+  5. *Bảo vệ chống thao tác trái phép (Anti-IDOR)*: Ngăn chặn tuyệt đối người dùng lạ xem hoặc tải báo cáo của cặp đôi khác.
+  6. *Xuất báo cáo CSV chuẩn mực*: Hỗ trợ xuất dữ liệu nhật ký phân tích ra file CSV có gắn UTF-8 BOM và chống tấn công chèn công thức Excel (`=, +, -, @`).
+- **Chi tiết triển khai**:
+  1. **Database Migration & Model Eloquent**:
+     - Migration `2026_11_10_221939_create_invitation_views_table.php` tạo bảng `invitation_views` với các trường: `invitation_id`, `wedding_id`, `guest_id`, `visitor_hash` (SHA-256), `device_type`, `platform`, `browser`, `referer_host`, `viewed_at`, kèm các composite index tối ưu truy vấn thời gian thực.
+     - Model [InvitationView.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/InvitationView.php): Khai báo relations `invitation()`, `wedding()`, `guest()`, timestamps = false, cast `viewed_at` sang datetime.
+     - Model [Invitation.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Invitation.php) & [Wedding.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/Wedding.php): Bổ sung relation `views()` / `invitationViews()`.
+  2. **Service Phân Tích Hiệu Suất ([WeddingAnalyticsService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/WeddingAnalyticsService.php))**:
+     - `recordVisit(Invitation $invitation, Request $request, ?Guest $guest = null): ?InvitationView`: Bỏ qua chủ thiệp và web bot crawler; tăng atomic `view_count`; phân tích thiết bị/HĐH/trình duyệt; mã băm ẩn danh bảo vệ PII; chống flood 15 phút.
+     - `getInvitationDashboardStats(Invitation $invitation, int $days = 30): array`: Tính toán 6 chỉ số KPI, phễu chuyển đổi 5 chặng, phân bố thiết bị, phân bố ứng dụng, và chuỗi thời gian 7 ngày.
+     - `exportAnalyticsCsv(Invitation $invitation, int $days = 30): string`: Xuất file CSV UTF-8 BOM kèm chống Excel Injection.
+  3. **Controller & Route**:
+     - Controller [InvitationAnalyticsController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationAnalyticsController.php): `index` (xem dashboard phân tích) và `exportCsv` (xuất file CSV).
+     - Controller [InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php): Tích hợp tự động `$this->analyticsService->recordVisit(...)` vào `show()`.
+     - Tuyến đường `routes/web.php`:
+       * `GET /tai-khoan/thiep/{id}/thong-ke` (`account.invitations.analytics`)
+       * `GET /tai-khoan/thiep/{id}/thong-ke/xuat-csv` (`account.invitations.analytics.export`)
+  4. **Giao Diện Khách Hàng**:
+     - View [analytics.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/analytics.blade.php): Toolbar lọc thời gian (7/14/30/90 ngày), 6 thẻ KPI cao cấp, biểu đồ Pure CSS/SVG Bar Chart, Phễu chuyển đổi quan khách với thanh tiến trình gradient, 2 cột phân tích thiết bị & In-App Browsers, thông báo bảo mật Luật 91/2025/QH15.
+     - View [invitations.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/account/invitations.blade.php): Bổ sung nút hành động *"Thống Kê"* trực quan dẫn thẳng tới báo cáo phân tích.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới Feature Test Suite `tests/Feature/InvitationAnalyticsAndFunnelTest.php` với **8 kịch bản kiểm thử độc lập (46 assertions)**: 100% PASSED (chặn khách chưa đăng nhập, chống IDOR người lạ, chủ thiệp xem báo cáo với đầy đủ biểu đồ và phễu, khách công khai truy cập tự động tăng view_count và tạo bản ghi view ẩn danh, chủ thiệp xem không bị tính lượt xem, nhận diện chuẩn Zalo và Facebook in-app browser, liên kết guest_id khi có guest token, xuất CSV UTF-8 BOM chuẩn an toàn).
+     - Whitelist `tests/Feature/InvitationAnalyticsAndFunnelTest.php` trong `.gitignore`.
+     - Toàn bộ test suite hệ thống: **960/960 tests PASSED 100% (5,068 assertions in 24.03s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
+
 
 
 

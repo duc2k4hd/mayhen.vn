@@ -76,6 +76,75 @@ class PortableWeddingArchiveService
         $guestsCsvPath = $tempDir.'/danh_sach_khach_moi_va_rsvp.csv';
         File::put($guestsCsvPath, implode("\r\n", $csvLines));
 
+        // 2.1. Dữ liệu sổ mừng cưới và tiền mừng (Section 35 & 36 PRD V3)
+        $gifts = $wedding->gifts()->latest()->get();
+        $giftCsvLines = ["\xEF\xBB\xBF".'STT,Họ và Tên Người Mừng,Nhóm Khách,Số Tiền (VNĐ),Hình Thức,Đã Cảm Ơn,Ghi Chú,Thời Gian'];
+        $giftIdx = 1;
+        foreach ($gifts as $gft) {
+            $giftCsvLines[] = sprintf(
+                '"%d","%s","%s","%s","%s","%s","%s","%s"',
+                $giftIdx++,
+                str_replace('"', '""', $gft->sender_name),
+                str_replace('"', '""', (string) $gft->sender_group),
+                number_format((float) $gft->amount, 0, '', ''),
+                $gft->payment_method === 'bank_transfer' ? 'Chuyển khoản' : ($gft->payment_method === 'cash' ? 'Tiền mặt' : 'Khác'),
+                $gft->is_acknowledged ? 'Đã cảm ơn' : 'Chưa',
+                str_replace('"', '""', (string) $gft->notes),
+                $gft->created_at ? $gft->created_at->format('d/m/Y H:i') : ''
+            );
+        }
+        $giftCsvPath = $tempDir.'/so_mung_cuoi_va_tien_mung.csv';
+        File::put($giftCsvPath, implode("\r\n", $giftCsvLines));
+
+        // 2.2. Dữ liệu lịch trình và nhà cung cấp cưới (Vendors & Events)
+        $eventsData = $wedding->events()->orderBy('display_order')->get()->map(fn ($ev) => [
+            'name' => $ev->name,
+            'event_date' => $ev->event_date?->format('d/m/Y'),
+            'event_time' => $ev->event_time,
+            'venue_name' => $ev->venue_name,
+            'venue_address' => $ev->venue_address,
+        ])->toArray();
+
+        $vendorsData = $wedding->vendors()->orderBy('category')->get()->map(fn ($vd) => [
+            'category' => $vd->category,
+            'name' => $vd->name,
+            'contact_person' => $vd->contact_person,
+            'phone' => $vd->phone,
+            'status' => $vd->status,
+            'contract_amount' => $vd->contract_amount,
+            'paid_amount' => $vd->paid_amount,
+        ])->toArray();
+
+        $eventsAndVendorsPath = $tempDir.'/lich_trinh_va_nha_cung_cap.json';
+        File::put($eventsAndVendorsPath, json_encode([
+            'events' => $eventsData,
+            'vendors' => $vendorsData,
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        // 2.3. Trọn bộ dữ liệu hôn lễ chuẩn Data Portability (Law 91/2025/QH15)
+        $fullDump = [
+            'project' => 'Mây Hẹn (mayhen.vn)',
+            'exported_at' => now()->toIso8601String(),
+            'wedding' => [
+                'groom_name' => $groomName,
+                'bride_name' => $brideName,
+                'wedding_date' => $weddingDate,
+                'venue' => $venue,
+                'address' => $address,
+            ],
+            'statistics' => [
+                'total_guests' => $guests->count(),
+                'total_wishes' => $wishes->count(),
+                'total_gifts' => $gifts->count(),
+                'total_gift_amount' => (int) $gifts->sum('amount'),
+            ],
+            'wishes' => $wishesData,
+            'events' => $eventsData,
+            'vendors' => $vendorsData,
+        ];
+        $fullDumpPath = $tempDir.'/toan_bo_du_lieu_hon_le.json';
+        File::put($fullDumpPath, json_encode($fullDump, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
         // 3. Trang thiệp tĩnh ngoại tuyến index.html độc lập (Standalone Offline HTML)
         $htmlContent = $this->renderStandaloneHtml($wedding, $invitation, $wishes, $guests);
         $htmlPath = $tempDir.'/index.html';
@@ -107,6 +176,9 @@ class PortableWeddingArchiveService
                 'index.html' => hash_file('sha256', $htmlPath),
                 'loi_chuc_va_chu_ky.json' => hash_file('sha256', $wishesJsonPath),
                 'danh_sach_khach_moi_va_rsvp.csv' => hash_file('sha256', $guestsCsvPath),
+                'so_mung_cuoi_va_tien_mung.csv' => hash_file('sha256', $giftCsvPath),
+                'lich_trinh_va_nha_cung_cap.json' => hash_file('sha256', $eventsAndVendorsPath),
+                'toan_bo_du_lieu_hon_le.json' => hash_file('sha256', $fullDumpPath),
                 'HUONG_DAN_LUU_TRU_KY_NIEM.txt' => hash_file('sha256', $readmePath),
             ],
         ];
@@ -124,6 +196,9 @@ class PortableWeddingArchiveService
             $zip->addFile($htmlPath, 'index.html');
             $zip->addFile($wishesJsonPath, 'loi_chuc_va_chu_ky.json');
             $zip->addFile($guestsCsvPath, 'danh_sach_khach_moi_va_rsvp.csv');
+            $zip->addFile($giftCsvPath, 'so_mung_cuoi_va_tien_mung.csv');
+            $zip->addFile($eventsAndVendorsPath, 'lich_trinh_va_nha_cung_cap.json');
+            $zip->addFile($fullDumpPath, 'toan_bo_du_lieu_hon_le.json');
             $zip->addFile($readmePath, 'HUONG_DAN_LUU_TRU_KY_NIEM.txt');
             $zip->addFile($manifestPath, 'wedding_manifest.json');
             $zip->close();
