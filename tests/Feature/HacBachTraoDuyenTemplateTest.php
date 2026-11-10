@@ -6,6 +6,12 @@ beforeEach(function () {
     $this->seed(InvitationTemplateSeeder::class);
 });
 
+test('hac bach trao duyen template renders detail page successfully', function () {
+    $response = $this->get('/mau-thiep/hac-bach-trao-duyen');
+    $response->assertStatus(200);
+    $response->assertSee('Hắc Bạch Trao Duyên');
+});
+
 test('hac bach trao duyen template renders preview successfully', function () {
     $response = $this->get('/xem-thu/hac-bach-trao-duyen');
     $response->assertStatus(200);

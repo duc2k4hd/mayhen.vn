@@ -7689,9 +7689,13 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Đăng Ký Seeder & CSDL ([InvitationTemplateSeeder.php](file:///d:/Project/Laravel/mayhen.vn/database/seeders/InvitationTemplateSeeder.php))**:
      - Khai báo mẫu thiệp `hac-bach-trao-duyen` (Tier: `free`, Category: `luxury`, Style: `black-white-editorial`).
   7. **Kiểm Thử Toàn Diện**:
-     - Tạo mới test suite `tests/Feature/HacBachTraoDuyenTemplateTest.php` gồm **6 kịch bản kiểm thử độc lập (49 assertions)**: 100% PASSED.
+     - Tạo mới test suite `tests/Feature/HacBachTraoDuyenTemplateTest.php` gồm **7 kịch bản kiểm thử độc lập (51 assertions)**: 100% PASSED (kiểm tra cả trang chi tiết `/mau-thiep/hac-bach-trao-duyen`, trang xem thử `/xem-thu/hac-bach-trao-duyen`, live sync, embed mode và an toàn assets).
      - Cập nhật định dạng chuẩn INV-39 cho tiêu đề xem thử, test suite `Gate2TemplateStudioAndSyncInvariantsTest.php` đạt **4/4 tests PASSED (107 assertions)**.
-     - Toàn bộ test suite dự án: **836/836 tests PASSED 100% (4,513 assertions in 18.24s)**.
+     - Toàn bộ test suite dự án: **837/837 tests PASSED 100% (4,515 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+  8. **Lưu Ý Đặc Biệt Về Kiến Trúc Phục Vụ Asset Mẫu Thiệp (Zero Public Template Collision)**:
+     - Tuyệt đối **KHÔNG TẠO** thư mục tĩnh `public/mau-thiep/{slug}/` trên đĩa. Trong môi trường PHP Built-in Server (`php artisan serve`), thư mục tĩnh này sẽ xung đột và chiếm quyền ưu tiên trước router Laravel đối với URI `/mau-thiep/{slug}`, gây ra lỗi `404 Not Found - The requested resource /mau-thiep/... was not found on this server`.
+     - Toàn bộ assets (ảnh, CSS, JS, font, audio) của mọi mẫu thiệp cưới trong Mây Hẹn đều được quản trị tập trung bên trong `resources/views/client/invitations/{slug}/` và được phục vụ an toàn, tốc độ cao qua route `Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])`.
+
 
 
