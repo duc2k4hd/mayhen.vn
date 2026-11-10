@@ -83,4 +83,3 @@ class SystemFeatureFlag extends Model
         return 'mayhen_admin_badge--success';
     }
 }
-

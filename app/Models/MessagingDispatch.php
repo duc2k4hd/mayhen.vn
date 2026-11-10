@@ -91,4 +91,3 @@ class MessagingDispatch extends Model
         };
     }
 }
-

@@ -7403,6 +7403,15 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Cụm test toàn diện 6 test suites NXT (`AdminOrderRefundAndRenewalTest`, `AdminNxtIntegrityAndAccessControlTest`, `AdminTemplateReleaseLabTest`, `AdminGuestJourneyE2ERunnerTest`, `AdminEntitlementStateMachineTest`, `AdminIncidentAndEscalationTest`): **42/42 tests PASSED 100% (242 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
 
+### 50. KHẮC PHỤC LỖI DUPLICATE IMPORT TRONG ROUTES/ADMIN.PHP (10/11/2026)
+- **Hiện tượng**: Khi chạy `php artisan serve`, hệ thống báo lỗi `PHP Fatal error: Cannot use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController because the name is already in use in routes/admin.php on line 5`.
+- **Nguyên nhân**: Dòng 3 và dòng 5 của `routes/admin.php` khai báo trùng lặp `use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;`.
+- **Giải pháp**: Xóa bỏ khai báo trùng lặp tại dòng 5.
+- **Kiểm thử**:
+  * Lệnh `php artisan route:list --name=admin` chạy thành công toàn bộ **127 routes**.
+  * Chạy test suite `tests/Feature/AdminVNextInnovationBacklogTest.php` đạt **17/17 tests PASSED (108 assertions)**.
+  * Laravel Pint: **100% PASSED**.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*
