@@ -7723,5 +7723,30 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **859/859 tests PASSED 100% (4,599 assertions in 26.36s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 57. HỆ THỐNG OUTBOUND WEBHOOK & TỰ ĐỘNG HÓA THÔNG BÁO THỜI GIAN THỰC (OUTBOUND WEBHOOK DISPATCHER) (10/11/2026)
+- **Mục tiêu**: Thiết lập phân hệ Webhook đẩy ra ngoài (Outbound Webhooks) theo Mục 18 & Mục 30 của Master PRD V3, cho phép cô dâu chú rể và studio cưới kết nối tự động với Telegram Bot, Discord Webhook, Google Sheets AppScript, Zapier, n8n, CRM đối tác.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_220000_create_outbound_webhooks_tables.php` tạo 2 bảng:
+       * `outbound_webhooks`: `wedding_id`, `name`, `payload_url`, `secret` (khóa ký HMAC-SHA256 `whsec_*`), `events` (JSON: `rsvp.submitted`, `wish.created`, `gift.received`), `is_active`, `failure_count`, `last_dispatched_at`, `last_status_code`.
+       * `outbound_webhook_deliveries`: `outbound_webhook_id`, `event_type`, `payload`, `response_status`, `response_body`, `duration_ms`, `error_message`, `is_success`, `created_at`.
+     - Model: `app/Models/OutboundWebhook.php` (quan hệ `wedding`, `deliveries`, helper `generateSecret()`, `isCircuitBroken()`, `shouldDeliver()`).
+     - Model: `app/Models/OutboundWebhookDelivery.php`.
+     - Cập nhật `app/Models/Wedding.php`: quan hệ `outboundWebhooks(): HasMany`.
+  2. **Dịch Vụ Nghiệp Vụ ([OutboundWebhookService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/OutboundWebhookService.php))**:
+     - `dispatch($wedding, $eventType, $eventData)`: Lọc webhooks active có đăng ký sự kiện, đóng gói JSON payload chuẩn có UUID và mốc thời gian ISO 8601, ký số bảo vệ toàn vẹn dữ liệu bằng HMAC SHA-256 (`X-MayHen-Signature: sha256={hash}`), gửi HTTP POST timeout an toàn 4s, đo độ trễ `duration_ms` và lưu delivery log.
+     - `pingTest($webhook)`: Gửi gói tin giả lập test kết nối trực tiếp.
+     - Cơ chế ngắt mạch tự động (Circuit Breaker): Tự động cô lập và ngắt mạch nếu endpoint đối tác trả về mã lỗi 5xx hoặc timeout liên tiếp 10 lần, ghi Audit Log `WEBHOOK_CIRCUIT_BROKEN`.
+  3. **Tích Hợp Kích Hoạt Tự Động (Event Triggers)**:
+     - [GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php): Tự động bắn webhook `rsvp.submitted` khi có khách phản hồi tham dự, và `wish.created` khi có lời chúc phúc mới.
+  4. **Bộ Điều Khiển & Giao Diện Quản Trị**:
+     - Client Controller: `app/Http/Controllers/Client/WebhookController.php` (`index`, `store`, `update`, `destroy`, `ping`).
+     - Client View: `resources/views/client/pages/account/webhooks/index.blade.php` (giao diện Quiet Luxury, hiển thị secret key kèm nút copy, danh sách event badges, lịch sử 3 đợt bắn gần nhất, nút Ping Test fetch API realtime).
+     - Tích hợp nút **Webhook** vào Feature Grid danh sách thiệp `resources/views/client/pages/account/invitations.blade.php`.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/OutboundWebhookTest.php` gồm **7 kịch bản kiểm thử độc lập (31 assertions)**: 100% PASSED (bao gồm kiểm thử tự động sinh secret, bắn webhook khi khách nộp RSVP, kiểm tra chữ ký HMAC-SHA256, Ping Test, ngắt mạch Circuit Breaker khi lỗi 10 lần, và cô lập tenant 403).
+     - Toàn bộ test suite hệ thống: **866/866 tests PASSED 100% (4,630 assertions in 19.74s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 

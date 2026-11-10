@@ -24,6 +24,7 @@ use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
+use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
@@ -158,6 +159,13 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/su-kien', [WeddingEventController::class, 'store'])->name('events.store');
     Route::put('/thiep/{id}/su-kien/{eventId}', [WeddingEventController::class, 'update'])->name('events.update');
     Route::delete('/thiep/{id}/su-kien/{eventId}', [WeddingEventController::class, 'destroy'])->name('events.destroy');
+
+    // Tự Động Hóa & Outbound Webhook (Master PRD V3)
+    Route::get('/thiep/{id}/webhooks', [WebhookController::class, 'index'])->name('webhooks.index');
+    Route::post('/thiep/{id}/webhooks', [WebhookController::class, 'store'])->name('webhooks.store');
+    Route::put('/thiep/{id}/webhooks/{webhookId}', [WebhookController::class, 'update'])->name('webhooks.update');
+    Route::delete('/thiep/{id}/webhooks/{webhookId}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
+    Route::post('/thiep/{id}/webhooks/{webhookId}/ping', [WebhookController::class, 'ping'])->name('webhooks.ping');
 });
 
 // Guest Management & RSVP

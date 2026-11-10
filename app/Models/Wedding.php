@@ -108,6 +108,11 @@ class Wedding extends Model
         return $this->hasMany(WeddingEvent::class)->orderBy('display_order')->orderBy('event_date')->orderBy('event_time');
     }
 
+    public function outboundWebhooks(): HasMany
+    {
+        return $this->hasMany(OutboundWebhook::class)->latest('id');
+    }
+
     /**
      * Lấy danh sách các sự kiện đang hoạt động (active), tự động fallback nếu chưa có.
      */

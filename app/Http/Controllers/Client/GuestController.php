@@ -15,6 +15,7 @@ use App\Rules\NoProfanity;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
+use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
 use Illuminate\Contracts\View\View;
@@ -769,6 +770,21 @@ class GuestController extends Controller
             return back()->with('rsvp_error', 'Bạn đã gửi xác nhận tham dự cho lễ cưới này rồi.');
         }
 
+        // Bắn Outbound Webhook (nếu có cấu hình)
+        try {
+            app(OutboundWebhookService::class)->dispatch($wedding, 'rsvp.submitted', [
+                'guest_name' => $request->validated('guest_name'),
+                'phone' => $request->validated('phone'),
+                'attending_status' => $request->validated('attending_status'),
+                'adults_count' => (int) ($request->validated('adults_count') ?? 1),
+                'children_count' => (int) ($request->validated('children_count') ?? 0),
+                'dietary_requirements' => $request->validated('dietary_requirements'),
+                'wishes' => $request->validated('wishes'),
+            ]);
+        } catch (\Throwable $e) {
+            // Safe fallback
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -822,6 +838,17 @@ class GuestController extends Controller
             'is_approved' => true,
             'ip_address' => $ip,
         ]);
+
+        // Bắn Outbound Webhook thông báo lời chúc mới
+        try {
+            app(OutboundWebhookService::class)->dispatch($wedding, 'wish.created', [
+                'wish_id' => $wish->id,
+                'name' => $wish->name,
+                'message' => $wish->message,
+            ]);
+        } catch (\Throwable $e) {
+            // Safe fallback
+        }
 
         return response()->json([
             'success' => true,
