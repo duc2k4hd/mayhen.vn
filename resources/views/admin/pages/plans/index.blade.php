@@ -24,13 +24,46 @@
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Giá trị thực tế thu từ gói</div>
         </div>
 
-        <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; align-items: flex-start;">
+        <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;">
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 8px;">Xem bảng giá công khai của khách hàng:</div>
             <a href="{{ route('pricing') }}" target="_blank" class="mayhen_admin_btn mayhen_admin_btn_outline" style="font-size: 0.8125rem; width: 100%; text-align: center;">
                 Xem Landing Page Bảng Giá &nearr;
             </a>
         </div>
     </div>
+
+    <!-- Promise-to-Proof Monitor Banner (Innovation #6) -->
+    @if(isset($promiseAudit))
+        <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 18px 20px; border-radius: 12px; border-left: 4px solid {{ $promiseAudit['is_aligned'] ? '#2E7D32' : '#C62828' }}; background: {{ $promiseAudit['is_aligned'] ? '#F1F8F5' : '#FFF5F5' }};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span style="font-size: 1.4rem;">{{ $promiseAudit['is_aligned'] ? '🛡️' : '⚠️' }}</span>
+                    <div>
+                        <strong style="font-size: 0.95rem; color: {{ $promiseAudit['is_aligned'] ? '#1B5E20' : '#B71C1C' }};">
+                            Promise-to-Proof Monitor: {{ $promiseAudit['is_aligned'] ? '100% Khớp Đúng Lời Hứa Marketing' : 'Phát Hiện Sai Lệch Giữa CSDL & Landing Page' }}
+                        </strong>
+                        <div style="font-size: 0.8125rem; color: #555; margin-top: 2px;">
+                            Đối chiếu tự động giữa cam kết quyền lợi trên trang <code>/bang-gia</code> và cấu hình kỹ thuật thực tế trong hệ thống &bull; Kiểm tra lúc {{ $promiseAudit['checked_at'] }}
+                        </div>
+
+                        @if(! $promiseAudit['is_aligned'])
+                            <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 0.8125rem; color: #C62828;">
+                                @foreach($promiseAudit['discrepancies'] as $disc)
+                                    <li>{{ $disc }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+
+                <div>
+                    <span class="mayhen_admin_badge {{ $promiseAudit['is_aligned'] ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_danger' }}">
+                        {{ $promiseAudit['is_aligned'] ? 'Audit Verified' : 'Cần Khắc Phục' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Alert / Notice -->
     @if(session('success'))

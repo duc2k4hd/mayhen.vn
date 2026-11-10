@@ -39,6 +39,8 @@ Route::middleware('admin.auth')->group(function () {
     Route::prefix('invitations')->name('invitations.')->group(function () {
         Route::get('/', [AdminInvitationController::class, 'index'])->name('index');
         Route::get('/{id}', [AdminInvitationController::class, 'show'])->name('show');
+        Route::get('/{id}/simulate-impact', [AdminInvitationController::class, 'simulateImpact'])->name('simulate_impact');
+        Route::get('/{id}/rehearsal', [AdminInvitationController::class, 'syntheticRehearsal'])->name('rehearsal');
         Route::post('/{id}/toggle-publish', [AdminInvitationController::class, 'togglePublish'])->name('toggle_publish');
         Route::post('/{id}/extend', [AdminInvitationController::class, 'extend'])->name('extend');
         Route::post('/{id}/migrate-template', [AdminInvitationController::class, 'migrateTemplate'])->name('migrate_template');

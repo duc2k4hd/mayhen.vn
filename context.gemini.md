@@ -7142,6 +7142,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite hồi quy: **718/718 tests PASSED 100% (3,789 assertions in 16.19s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 35. HOÀN THIỆN TIẾP BỘ BA SÁNG KIẾN VẬN HÀNH (INNOVATION #3, #4, #6)
+- **Mục tiêu**: Hoàn thiện tiếp 3 sáng kiến độc đáo trong quản trị rủi ro thiệp cưới, diễn tập khách mời và giám sát cam kết gói cước:
+  1. **Promise-to-Proof Monitor (Innovation #6)**: Tự động đối chiếu cấu hình kỹ thuật của các gói cước trong CSDL với nội dung công bố trên Landing Page (`/bang-gia`).
+  2. **Pre-Wedding Change Impact Simulator (Innovation #3)**: Trình mô phỏng tác động trước khi thay đổi ngày cưới, chuyển mẫu thiệp hoặc khóa thiệp.
+  3. **Guest Journey Synthetic Rehearsal (Innovation #4)**: Môi trường Sandbox diễn tập 5 giai đoạn trải nghiệm của khách mời với cam kết không ô nhiễm CSDL (Zero DB Pollution).
+- **Các thành phần đã triển khai**:
+  1. **Promise-to-Proof Monitor ([PlanController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/PlanController.php) & [plans/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/plans/index.blade.php))**:
+     - Tự động đối chiếu 3 gói cước cốt lõi (`free`, `plus`, `pro`) giữa CSDL và Landing Page `/bang-gia`.
+     - Kiểm tra tính mở bán (`is_active`), mức giá niêm yết và sự hiện diện trong hệ thống.
+     - Hiển thị banner giám sát: Huy hiệu xanh `Audit Verified: 100% Khớp Đúng Lời Hứa Marketing` nếu đồng bộ hoàn hảo, hoặc cảnh báo chi tiết các điểm sai lệch để kịp thời điều chỉnh.
+  2. **Pre-Wedding Change Impact Simulator ([InvitationController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/InvitationController.php) & [invitations/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/show.blade.php))**:
+     - Route API: `GET /admin/invitations/{id}/simulate-impact`.
+     - Phân tích rủi ro và phạm vi ảnh hưởng khi đổi ngày cưới, đổi mẫu thiệp hoặc khóa thiệp:
+       * Tổng số khách mời trong danh bạ và số lượng khách đã xác nhận tham dự (RSVP `attending`).
+       * Số lượt xem link đã công bố và số lời chúc mừng đã nhận.
+       * Đánh giá mức độ rủi ro (`low`, `medium`, `high`) kèm khuyến nghị hành động nghiệp vụ cụ thể.
+     - Widget tương tác 1-click trực tiếp trong thanh công cụ quản trị của trang chi tiết thiệp.
+  3. **Guest Journey Synthetic Rehearsal ([InvitationController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/InvitationController.php) & [invitations/rehearsal.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/invitations/rehearsal.blade.php))**:
+     - Route: `GET /admin/invitations/{id}/rehearsal`.
+     - Màn hình mô phỏng chuyên dụng với Live Phone Mockup nạp thiệp ở chế độ Sandbox (`?embed=1&rehearsal=1`).
+     - Hướng dẫn và checklist 5 giai đoạn hành trình quan khách:
+       * *Giai đoạn 1*: Mở thiệp & Hiệu ứng chuyển động phong bì lụa.
+       * *Giai đoạn 2*: Duyệt 10 Section tiêu chuẩn & Hợp đồng Live Sync.
+       * *Giai đoạn 3*: Điền form phản hồi RSVP thử nghiệm.
+       * *Giai đoạn 4*: Sổ ký tên điện tử & Gửi lời chúc mừng.
+       * *Giai đoạn 5*: Quét mã QR & Tra cứu số bàn tiệc tại sảnh tiếp tân.
+     - Khách mời giả lập (`Quan Khách Diễn Tập Synthetic VIP`) đảm bảo không tạo bản ghi rác trong cơ sở dữ liệu thật của cặp đôi.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Mở rộng file test: `tests/Feature/AdminVNextInnovationBacklogTest.php` lên **14 kịch bản kiểm thử độc lập (86 assertions)**, 100% PASSED.
+  * Toàn bộ test suite hồi quy: **721/721 tests PASSED 100% (3,806 assertions in 16.56s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

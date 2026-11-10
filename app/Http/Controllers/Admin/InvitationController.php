@@ -10,6 +10,7 @@ use App\Services\CsvSanitizerService;
 use App\Services\InvitationQualityPassportService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -138,6 +139,117 @@ class InvitationController extends Controller
             'allTemplates' => $allTemplates,
             'isSafeLens' => $isSafeLens,
             'qualityPassport' => $qualityPassport,
+        ]);
+    }
+
+    /**
+     * Pre-Wedding Change Impact Simulator (Innovation #3).
+     * Mô phỏng phạm vi ảnh hưởng trước khi thay đổi ngày cưới, chuyển mẫu hoặc khóa thiệp.
+     */
+    public function simulateImpact(Request $request, int $id): JsonResponse
+    {
+        $changeType = $request->input('change_type', 'wedding_date');
+        $newValue = $request->input('new_value');
+
+        $invitation = Invitation::with([
+            'wedding.guests.response',
+            'wedding.wishes',
+            'wedding.tables',
+            'template',
+        ])->findOrFail($id);
+
+        $wedding = $invitation->wedding;
+        $totalGuests = $wedding ? $wedding->guests->count() : 0;
+        $confirmedRsvps = $wedding ? $wedding->guests->filter(function ($g) {
+            return $g->response && $g->response->attending_status === 'attending';
+        })->count() : 0;
+        $wishesCount = $wedding ? $wedding->wishes->count() : 0;
+        $tablesCount = $wedding ? $wedding->tables->count() : 0;
+
+        $warnings = [];
+        $severity = 'low';
+
+        if ($changeType === 'wedding_date') {
+            if ($confirmedRsvps > 0) {
+                $severity = 'high';
+                $warnings[] = "Có {$confirmedRsvps} quan khách đã bấm xác nhận tham dự (RSVP) cho ngày cưới cũ.";
+                $warnings[] = 'Lịch nhắc hẹn tự động và mã QR điểm danh của khách mời sẽ cần gửi lại qua Zalo/SMS.';
+            } else {
+                $severity = 'medium';
+                $warnings[] = "Tổng số {$totalGuests} khách trong danh bạ chưa nhận được ngày cưới mới.";
+            }
+
+            if ($invitation->is_published) {
+                $warnings[] = "Thiệp đang ở trạng thái CÔNG KHAI (đã có {$invitation->view_count} lượt xem). Khách truy cập sẽ thấy ngày mới ngay khi lưu.";
+            }
+        } elseif ($changeType === 'template') {
+            $severity = 'medium';
+            $warnings[] = 'Chuyển sang giao diện mẫu mới sẽ thay đổi cách dàn trang và vị trí album ảnh.';
+            $warnings[] = 'Cần kiểm tra lại Hộ Chiếu Chất Lượng (Quality Passport) sau khi chuyển đổi mẫu.';
+        } elseif ($changeType === 'lock') {
+            $severity = 'high';
+            $warnings[] = 'Khóa thiệp sẽ lập tức hiển thị màn hình thông báo tạm dừng đối với 100% quan khách truy cập link.';
+            $warnings[] = 'Toàn bộ form gửi lời chúc mừng và điểm danh QR tại sảnh tiệc sẽ tạm ngưng hoạt động.';
+        }
+
+        $recommendation = match ($severity) {
+            'high' => 'Hành động rủi ro cao: Vui lòng liên hệ và thống nhất trước với cô dâu chú rể trước khi thực hiện.',
+            'medium' => 'Hành động trung bình: Khuyên bạn nên mở bản xem thử trước khi xác nhận cập nhật.',
+            default => 'Hành động an toàn: Không ảnh hưởng lớn đến trải nghiệm khách mời.',
+        };
+
+        return response()->json([
+            'success' => true,
+            'change_type' => $changeType,
+            'new_value' => $newValue,
+            'severity' => $severity,
+            'invitation' => [
+                'id' => $invitation->id,
+                'slug' => $invitation->slug,
+                'is_published' => (bool) $invitation->is_published,
+                'view_count' => $invitation->view_count,
+            ],
+            'wedding' => [
+                'groom_name' => $wedding?->groom_name,
+                'bride_name' => $wedding?->bride_name,
+                'current_wedding_date' => $wedding?->wedding_date?->format('d/m/Y'),
+            ],
+            'metrics' => [
+                'total_guests' => $totalGuests,
+                'confirmed_rsvps' => $confirmedRsvps,
+                'wishes_count' => $wishesCount,
+                'tables_count' => $tablesCount,
+            ],
+            'warnings' => $warnings,
+            'recommendation' => $recommendation,
+        ]);
+    }
+
+    /**
+     * Guest Journey Synthetic Rehearsal (Innovation #4).
+     * Môi trường giả lập cho Admin / Staff diễn tập toàn bộ hành trình trải nghiệm của khách mời.
+     */
+    public function syntheticRehearsal(Request $request, int $id): View
+    {
+        $invitation = Invitation::with([
+            'wedding.tables',
+            'wedding.guests',
+            'template',
+        ])->findOrFail($id);
+
+        $rehearsalGuest = [
+            'name' => 'Quan Khách Diễn Tập (Synthetic VIP)',
+            'phone' => '0999888777',
+            'group_name' => 'Khách VIP Giả Lập',
+            'table_name' => $invitation->wedding?->tables?->first()?->name ?? 'Bàn Danh Dự 01',
+            'expected_attendees' => 2,
+        ];
+
+        return view('admin.pages.invitations.rehearsal', [
+            'invitation' => $invitation,
+            'wedding' => $invitation->wedding,
+            'template' => $invitation->template,
+            'rehearsalGuest' => $rehearsalGuest,
         ]);
     }
 

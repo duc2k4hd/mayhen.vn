@@ -29,7 +29,41 @@ class PlanController extends Controller
             'total_revenue' => Order::where('status', 'paid')->sum('amount'),
         ];
 
-        return view('admin.pages.plans.index', compact('plans', 'stats'));
+        // Promise-to-Proof Monitor (Innovation #6)
+        // Đối chiếu tự động giữa cam kết trên Landing Page (/bang-gia) và dữ liệu thực tế trong CSDL
+        $marketingTiers = [
+            'free' => ['name' => 'Gói Trải Nghiệm (Miễn Phí)', 'price' => 0, 'slug' => 'free'],
+            'plus' => ['name' => 'Gói Hạnh Phúc (Plus)', 'price' => 149000, 'slug' => 'plus'],
+            'pro' => ['name' => 'Gói Trọn Vẹn (Pro VIP)', 'price' => 299000, 'slug' => 'pro'],
+        ];
+
+        $isAligned = true;
+        $discrepancies = [];
+
+        foreach ($marketingTiers as $slug => $tier) {
+            $dbPlan = $plans->firstWhere('slug', $slug);
+            if (! $dbPlan) {
+                $isAligned = false;
+                $discrepancies[] = "Gói quảng cáo \"{$tier['name']}\" (slug: {$slug}) chưa có trong CSDL.";
+            } elseif ($dbPlan->price != $tier['price']) {
+                $isAligned = false;
+                $formattedDb = number_format($dbPlan->price, 0, ',', '.');
+                $formattedMkt = number_format($tier['price'], 0, ',', '.');
+                $discrepancies[] = "Giá bán gói \"{$dbPlan->name}\" trong CSDL ({$formattedDb}đ) lệch so với giá công bố Landing Page ({$formattedMkt}đ).";
+            } elseif (! $dbPlan->is_active) {
+                $isAligned = false;
+                $discrepancies[] = "Gói \"{$dbPlan->name}\" đang bị tạm tắt (inactive) trong khi vẫn đang mở quảng cáo trên Landing Page.";
+            }
+        }
+
+        $promiseAudit = [
+            'is_aligned' => $isAligned,
+            'discrepancies' => $discrepancies,
+            'checked_at' => now()->format('d/m/Y H:i'),
+            'advertised_count' => count($marketingTiers),
+        ];
+
+        return view('admin.pages.plans.index', compact('plans', 'stats', 'promiseAudit'));
     }
 
     /**

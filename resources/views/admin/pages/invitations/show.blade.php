@@ -28,7 +28,10 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{{ route('admin.invitations.rehearsal', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn--secondary" title="Mở môi trường giả lập kiểm tra toàn bộ luồng khách mời">
+                🎭 Diễn Tập Khách Mời
+            </a>
             <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
                 &larr; Quay Lại Danh Sách
             </a>
@@ -180,6 +183,30 @@
                             </button>
                         </form>
                     @endif
+                </div>
+
+                <!-- Pre-Wedding Change Impact Simulator (Innovation #3) -->
+                <div class="mayhen_admin_card" style="margin-top: 8px; margin-bottom: 0; padding: 14px; background: #FFFDF9; border: 1px dashed var(--mh-admin-gold);">
+                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-gold); margin-bottom: 6px;">
+                        🔍 Mô Phỏng Tác Động (Impact Simulator)
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--mh-admin-muted); margin: 0 0 8px; line-height: 1.4;">
+                        Mô phỏng hệ quả trước khi thay đổi ngày cưới, đổi mẫu thiệp hoặc khóa thiệp.
+                    </p>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn--ghost mayhen_admin_btn_sm btn-simulate-impact" data-type="wedding_date" style="flex: 1; font-size: 0.6875rem; padding: 5px 6px;">
+                            📅 Đổi Ngày Cưới
+                        </button>
+                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn--ghost mayhen_admin_btn_sm btn-simulate-impact" data-type="template" style="flex: 1; font-size: 0.6875rem; padding: 5px 6px;">
+                            🎨 Đổi Mẫu
+                        </button>
+                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn--ghost mayhen_admin_btn_sm btn-simulate-impact" data-type="lock" style="flex: 1; font-size: 0.6875rem; padding: 5px 6px;">
+                            🔒 Khóa Thiệp
+                        </button>
+                    </div>
+                    <div id="simulator-result" style="display: none; margin-top: 10px; padding: 10px 12px; background: #FFF9EB; border-radius: 6px; font-size: 0.75rem; border: 1px solid #FFE082;">
+                        <!-- Injected via Native JS -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -709,6 +736,37 @@
                 if (targetPane) targetPane.classList.add('active');
             });
         });
+
+        // Pre-Wedding Change Impact Simulator (Innovation #3)
+        const simResult = document.getElementById('simulator-result');
+        if (simResult) {
+            document.querySelectorAll('.btn-simulate-impact').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    simResult.style.display = 'block';
+                    simResult.innerHTML = '<em>Đang tính toán mô phỏng tác động...</em>';
+
+                    fetch('{{ route("admin.invitations.simulate_impact", $invitation->id) }}?change_type=' + encodeURIComponent(type))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                let html = '<div style="font-weight:700; color:' + (data.severity === 'high' ? '#C62828' : '#D97706') + '">Mức độ rủi ro: ' + data.severity.toUpperCase() + '</div>';
+                                html += '<div style="margin: 4px 0;"><strong>Phạm vi:</strong> ' + data.metrics.confirmed_rsvps + ' khách RSVP, ' + data.metrics.total_guests + ' khách danh bạ, ' + data.invitation.view_count + ' lượt xem link.</div>';
+                                if (data.warnings && data.warnings.length) {
+                                    html += '<ul style="margin: 4px 0 0; padding-left: 16px; color:#555;">';
+                                    data.warnings.forEach(w => { html += '<li>' + w + '</li>'; });
+                                    html += '</ul>';
+                                }
+                                html += '<div style="margin-top: 6px; font-style: italic; color: #8C827A;">' + data.recommendation + '</div>';
+                                simResult.innerHTML = html;
+                            }
+                        })
+                        .catch(() => {
+                            simResult.innerHTML = '<span style="color:#C62828;">Lỗi khi tải dữ liệu mô phỏng.</span>';
+                        });
+                });
+            });
+        }
     });
 </script>
 @endpush

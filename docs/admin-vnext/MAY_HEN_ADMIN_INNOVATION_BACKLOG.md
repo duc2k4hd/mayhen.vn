@@ -11,10 +11,10 @@
 |:---:|---|:---:|---|:---:|:---:|
 | 1 | **Wedding Readiness Radar** | A03 / A06 | Tự động quét và phát hiện các rủi ro trước ngày cưới (thiếu địa điểm, ảnh lỗi, âm thanh hỏng, lệch ngày). | **Cao (P1)** | **Đã hoàn thành (Wave 08)** |
 | 2 | **Invitation Quality Passport** | A06 / A07 | Hộ chiếu chất lượng từng thiệp: kiểm tra tài sản, khả năng tương thích mobile, đủ 10 section trước khi công bố. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
-| 3 | **Pre-Wedding Change Impact Simulator** | A06 / A10 | Mô phỏng phạm vi ảnh hưởng trước khi admin thay đổi ngày cưới, hủy sảnh tiệc hoặc đổi gói cước. | Trung bình (P2) | Đang nghiên cứu |
-| 4 | **Guest Journey Synthetic Rehearsal** | A12 / A13 | Khách mời giả lập kiểm tra luồng xem thiệp, RSVP và quét QR mà không ghi dữ liệu rác vào database thật. | Trung bình (P2) | Đang nghiên cứu |
+| 3 | **Pre-Wedding Change Impact Simulator** | A06 / A10 | Mô phỏng phạm vi ảnh hưởng trước khi admin thay đổi ngày cưới, hủy sảnh tiệc hoặc đổi gói cước. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
+| 4 | **Guest Journey Synthetic Rehearsal** | A12 / A13 | Khách mời giả lập kiểm tra luồng xem thiệp, RSVP và quét QR mà không ghi dữ liệu rác vào database thật. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
 | 5 | **One-Case Timeline** | A16 / A18 | Hợp nhất lịch sử giao dịch, sửa đổi thiệp, lời chúc, ticket vào một dòng thời gian thống nhất đã che PII. | **Cao (P1)** | **Đã hoàn thành (Wave 09)** |
-| 6 | **Promise-to-Proof Monitor** | A10 / A17 | Đối chiếu quyền lợi thực tế của gói cước với lời quảng cáo ngoài landing page để tránh sai lệch. | Trung bình (P2) | Đang nghiên cứu |
+| 6 | **Promise-to-Proof Monitor** | A10 / A17 | Đối chiếu quyền lợi thực tế của gói cước với lời quảng cáo ngoài landing page để tránh sai lệch. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
 | 7 | **Safe Support Lens** | A06 / A16 | Xem thiệp và vấn đề dưới góc nhìn của khách hàng dưới chế độ Read-Only, che số điện thoại và STK. | **Cao (P1)** | **Đã hoàn thành (Wave 03)** |
 | 8 | **Wedding Day Rescue Mode** | A13 / A14 | Bảng điều khiển sự cố ngày cưới: mạng chập chờn, check-in quá tải, khách chưa có bàn tiệc. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
 | 9 | **Finance Reconciliation Detective** | A09 | Đối chiếu tự động giao dịch SePay/VietQR với đơn hàng, phát hiện chuyển thiếu/thừa tiền hoặc trùng mã. | **Cao (P1)** | **Đã hoàn thành (Wave 08)** |
