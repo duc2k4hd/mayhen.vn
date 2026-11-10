@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
@@ -234,20 +235,34 @@ class OrderController extends Controller
     }
 
     /**
-     * Manually approve a pending order and activate the wedding invitation plan.
+     * Manually approve a pending order with reconciliation evidence and activate the wedding invitation plan.
      */
-    public function approve(int $id): RedirectResponse
+    public function approve(Request $request, int $id): RedirectResponse
     {
+        $request->validate([
+            'reference_code' => ['nullable', 'string', 'max:100'],
+            'reconciliation_note' => ['nullable', 'string', 'max:255'],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
         $order = Order::with(['plan', 'invitation'])->findOrFail($id);
 
         if ($order->isPaid()) {
             return back()->with('info', "Đơn hàng #{$order->order_code} đã được thanh toán trước đó.");
         }
 
-        DB::transaction(function () use ($order) {
+        $refCode = trim((string) $request->input('reference_code'));
+        if ($refCode === '') {
+            $refCode = 'MANUAL-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4));
+        }
+
+        $note = trim((string) ($request->input('reconciliation_note') ?: ($request->input('note') ?: 'Duyệt đối soát thủ công từ sao kê ngân hàng.')));
+
+        DB::transaction(function () use ($order, $refCode) {
             $order->update([
                 'status' => 'paid',
                 'paid_at' => now(),
+                'provider_transaction_id' => $refCode,
             ]);
 
             if ($order->invitation) {
@@ -267,11 +282,16 @@ class OrderController extends Controller
             'approve_order',
             'Order',
             $order->id,
-            "Duyệt thủ công đơn hàng #{$order->order_code} số tiền ".number_format($order->amount, 0, ',', '.').'đ',
-            ['order_code' => $order->order_code, 'amount' => $order->amount]
+            "Duyệt đối soát thủ công đơn hàng #{$order->order_code} (Mã GD: {$refCode}). Lý do: {$note}",
+            [
+                'order_code' => $order->order_code,
+                'amount' => $order->amount,
+                'reference_code' => $refCode,
+                'note' => $note,
+            ]
         );
 
-        return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} và kích hoạt bản quyền thiệp cưới thành công.");
+        return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} kèm chứng từ đối soát thành công.");
     }
 
     /**

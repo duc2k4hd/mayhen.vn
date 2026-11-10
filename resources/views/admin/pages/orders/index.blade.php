@@ -282,7 +282,8 @@
                                     @if ($order->status === 'pending')
                                         <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" style="margin: 0;">
                                             @csrf
-                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" onclick="return confirm('Bạn có chắc chắn đã nhận được tiền cho đơn hàng #{{ $order->order_code }} không?');" title="Duyệt thanh toán thủ công và kích hoạt thiệp">
+                                            <input type="hidden" name="reference_code" value="">
+                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" onclick="let ref = prompt('Vui lòng nhập mã tham chiếu giao dịch ngân hàng / sao kê đối soát cho đơn #{{ $order->order_code }}:'); if (!ref || ref.trim() === '') return false; this.form.reference_code.value = ref.trim();" title="Duyệt đối soát thanh toán thủ công">
                                                 Duyệt
                                             </button>
                                         </form>

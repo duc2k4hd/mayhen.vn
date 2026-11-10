@@ -110,9 +110,17 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $newRole = $request->input('role');
 
-        // Security Defense: Admin cannot demote their own account
+        // Security Defense 1: Admin cannot demote their own account
         if ($user->id === Auth::id() && $newRole !== 'admin') {
             return back()->with('error', 'Bạn không thể tự hạ quyền tài khoản Quản trị viên của chính mình.');
+        }
+
+        // Security Defense 2: Cannot demote the last Super Admin in the system (ADM-A05-009)
+        if ($user->role === 'admin' && $newRole !== 'admin') {
+            $adminCount = User::where('role', 'admin')->count();
+            if ($adminCount <= 1) {
+                return back()->with('error', 'Không thể hạ quyền Quản trị viên cấp cao duy nhất còn lại trong hệ thống.');
+            }
         }
 
         $user->update(['role' => $newRole]);

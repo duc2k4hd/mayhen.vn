@@ -252,10 +252,21 @@
 
                 <div class="mayhen_admin_card_body" style="display: flex; flex-direction: column; gap: 10px;">
                     @if ($order->status === 'pending')
-                        <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST">
+                        <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" style="background: #FAF8F5; border: 1px solid var(--mh-admin-border-subtle); padding: 14px; border-radius: 8px;">
                             @csrf
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-bottom: 8px;">
+                                Đối Soát & Kích Hoạt Thủ Công
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">Mã GD Ngân Hàng / Tham Chiếu <span style="color: #DC2626;">*</span></label>
+                                <input type="text" name="reference_code" required placeholder="VD: FT26312984920..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <label style="font-size: 0.75rem; color: #64748B; font-weight: 600; display: block; margin-bottom: 4px;">Ghi Chú Đối Soát</label>
+                                <input type="text" name="reconciliation_note" placeholder="VD: Đã kiểm tra sao kê VietinBank khớp số tiền..." class="mayhen_admin_input" style="width: 100%; font-size: 0.8125rem; padding: 6px 10px;">
+                            </div>
                             <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%;" onclick="return confirm('Bạn có chắc chắn đã nhận được tiền vào tài khoản ngân hàng và muốn kích hoạt gói cho đơn hàng #{{ $order->order_code }} không?');">
-                                ✓ Duyệt Thanh Toán Thủ Công
+                                ✓ Duyệt & Kích Hoạt Gói
                             </button>
                         </form>
 

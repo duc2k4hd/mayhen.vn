@@ -6823,6 +6823,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * 100% 653 tests (3,367 assertions) vượt qua, `vendor/bin/pint` đạt chuẩn.
   * Preview trong Studio Editor hiển thị nền đen huyền ảo `#030716` cùng dải ngân hà lấp lánh, văn bản và tên cặp đôi nổi bật rõ nét.
 
+### 24. TRIỂN KHAI ADMIN VNEXT / ATELIER COMMAND CENTER (WAVE 00 & WAVE 01)
+- **Bối cảnh & Mục tiêu**:
+  * Đảm nhiệm vai trò Principal Architect, Security & Operations Auditor để thực hiện kiểm toán toàn diện 100% hệ thống Quản trị Admin Mây Hẹn (`/admin`).
+  * Chuyển hóa Admin từ bộ khung CRUD thông thường thành **Buồng Điều Hành Tin Cậy (Atelier Command Center)** phục vụ thương mại thực tế với độ tin cậy tuyệt đối.
+- **Wave 00: Evidence & Inventory (Hoàn thành 100%)**:
+  1. Tạo lập `docs/admin-vnext/01_RUNTIME_ADMIN_INVENTORY.md`: Khảo sát thực tế toàn bộ 50 endpoints, 8 controllers, 3 middleware, stack Pure CSS/Native JS `mayhen_admin_*`, ma trận quyền và truy vết kiểm toán.
+  2. Tạo lập `docs/admin-vnext/02_ADMIN_BUG_REGISTER.md`: Sổ đăng ký theo dõi 4 lỗ hổng bảo mật & nghiệp vụ P0/P1 phát hiện qua kiểm toán code.
+  3. Tạo lập `docs/admin-vnext/MAY_HEN_ADMIN_IMPLEMENTATION_WAVES.md`: Lộ trình 10 làn sóng (Wave 00 đến Wave 09) từ kiểm kê, bảo mật, trải nghiệm, mở rộng nghiệp vụ đến kiểm thử UAT.
+  4. Tạo lập `docs/admin-vnext/MAY_HEN_ADMIN_INNOVATION_BACKLOG.md`: 18 đề xuất nâng cấp khác biệt hóa (Wedding Readiness Radar, Safe Support Lens, Finance Reconciliation Detective, v.v.).
+  5. Tạo lập `docs/admin-vnext/MAY_HEN_ADMIN_ATOMIC_FUNCTIONS.csv`: Catalog 534 chức năng vi mô được phân loại và ánh xạ route/permission/view.
+  6. Tạo lập `docs/admin-vnext/MAY_HEN_ADMIN_TEST_CASES.csv`: Ma trận 995 test cases kiểm thử tích cực, biên độ, bảo mật và phân quyền (`NOT_RUN` ban đầu).
+- **Wave 01: P0 Security & Money (Hoàn thành 100%)**:
+  1. **Khắc phục `BUG-ADM-001` (Staff Login Lockout)**:
+     - Sửa `app/Http/Controllers/Admin/AuthController.php` (`index`, `showLoginForm`, `login`): Chuyển kiểm tra từ `isAdmin()` sang `canAccessAdminPanel()`, cho phép tài khoản nhân viên `role = 'staff'` đăng nhập hợp lệ qua form `/admin/login` và truy cập đúng phạm vi quyền hạn.
+  2. **Khắc phục `BUG-ADM-002` (Super Admin Demotion Safety - `ADM-A05-009`)**:
+     - Sửa `app/Http/Controllers/Admin/UserController.php@changeRole`: Bổ sung chốt chặn bảo vệ Quản trị viên cấp cao duy nhất (`adminCount <= 1`), tuyệt đối ngăn chặn việc vô tình hạ quyền Super Admin cuối cùng gây khóa cửa hệ thống.
+  3. **Khắc phục `BUG-ADM-003` (Order Manual Reconciliation Evidence Guard - `ADM-A09-020`)**:
+     - Sửa `app/Http/Controllers/Admin/OrderController.php@approve` và giao diện `orders/show.blade.php`, `orders/index.blade.php`: Yêu cầu mã tham chiếu giao dịch ngân hàng / sao kê đối soát (`reference_code`) và ghi chú đối soát khi duyệt đơn thủ công, lưu vào `provider_transaction_id` và ghi nhận chi tiết vào audit trail.
+  4. **Khắc phục `BUG-ADM-004` (Audit Trail Redaction & Sign-in/Sign-out Logging)**:
+     - Sửa `app/Services/AuditLogger.php`: Bổ sung hàm đệ quy `sanitizeDetails()` tự động che giấu (`***REDACTED***`) toàn bộ key nhạy cảm (`password`, `secret`, `token`, `bank_account`, `card_number`, `api_key`).
+     - Bổ sung ghi log kiểm toán sự kiện đăng nhập (`admin_login`) và đăng xuất (`admin_logout`) trong `AuthController.php`.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave00AuditAndAuthTest.php` với 5 kịch bản kiểm thử độc lập (32 assertions), 100% PASSED.
+  * Toàn bộ test suite: **658/658 tests PASSED 100% (3,399 assertions in 18.0s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

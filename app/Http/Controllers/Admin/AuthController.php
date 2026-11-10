@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,12 +16,12 @@ class AuthController extends Controller
 {
     /**
      * Smart root entry for /admin.
-     * Redirects to /admin/dashboard if authenticated as admin,
+     * Redirects to /admin/dashboard if authenticated as admin/manager/staff,
      * otherwise redirects to /admin/login.
      */
     public function index(): RedirectResponse
     {
-        if (Auth::check() && Auth::user()->isAdmin()) {
+        if (Auth::check() && Auth::user()->canAccessAdminPanel()) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -32,7 +33,7 @@ class AuthController extends Controller
      */
     public function showLoginForm(): View|RedirectResponse
     {
-        if (Auth::check() && Auth::user()->isAdmin()) {
+        if (Auth::check() && Auth::user()->canAccessAdminPanel()) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -71,7 +72,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']], $remember)) {
             $user = Auth::user();
 
-            if (! $user || ! $user->isAdmin()) {
+            if (! $user || ! $user->canAccessAdminPanel()) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -87,6 +88,14 @@ class AuthController extends Controller
 
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
+
+            AuditLogger::log(
+                'admin_login',
+                'User',
+                $user->id,
+                "Quản trị viên {$user->email} ({$user->name}) đăng nhập thành công với vai trò {$user->role_label}",
+                ['role' => $user->role, 'ip' => $request->ip()]
+            );
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
@@ -116,6 +125,17 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        if ($user) {
+            AuditLogger::log(
+                'admin_logout',
+                'User',
+                $user->id,
+                "Quản trị viên {$user->email} ({$user->name}) đã đăng xuất khỏi không gian quản trị",
+                ['ip' => $request->ip()]
+            );
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

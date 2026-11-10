@@ -46,6 +46,7 @@ Thumbs.db
 !/tests/Feature/HacBachTraoDuyen2ResponsiveTest.php
 !/tests/Feature/HacBachTraoDuyenTemplateTest.php
 !/tests/Feature/GiuaMuonNganViSaoTemplateTest.php
+!/tests/Feature/AdminVNextWave00AuditAndAuthTest.php
 !/tests/Feature/LiveGuestPhotoDropTest.php
 !/tests/Feature/PartnerPortalTest.php
 !/tests/Feature/SeatingPlannerTest.php

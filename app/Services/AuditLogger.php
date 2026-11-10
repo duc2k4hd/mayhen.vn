@@ -13,6 +13,52 @@ class AuditLogger
     protected static string $logPath = 'logs/admin_audit.jsonl';
 
     /**
+     * Keys that must always be masked in audit logs.
+     */
+    protected const SENSITIVE_KEYS = [
+        'password',
+        'password_confirmation',
+        'secret',
+        'token',
+        'api_key',
+        'webhook_secret',
+        'card_number',
+        'cvv',
+        'bank_account',
+    ];
+
+    /**
+     * Redact sensitive fields recursively.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public static function sanitizeDetails(array $data): array
+    {
+        $sanitized = [];
+        foreach ($data as $key => $value) {
+            $normalizedKey = strtolower((string) $key);
+            $isSensitive = false;
+            foreach (self::SENSITIVE_KEYS as $sensitive) {
+                if (str_contains($normalizedKey, $sensitive)) {
+                    $isSensitive = true;
+                    break;
+                }
+            }
+
+            if ($isSensitive) {
+                $sanitized[$key] = '***REDACTED***';
+            } elseif (is_array($value)) {
+                $sanitized[$key] = self::sanitizeDetails($value);
+            } else {
+                $sanitized[$key] = $value;
+            }
+        }
+
+        return $sanitized;
+    }
+
+    /**
      * Record an administrative action into the audit log.
      *
      * @param  array<string, mixed>  $details
@@ -37,7 +83,7 @@ class AuditLogger
                 'target_type' => $targetType,
                 'target_id' => (string) $targetId,
                 'description' => $description,
-                'details' => $details,
+                'details' => self::sanitizeDetails($details),
                 'ip' => request()->ip(),
             ], JSON_UNESCAPED_UNICODE);
 
