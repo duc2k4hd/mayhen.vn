@@ -27,6 +27,16 @@ class Guest extends Model
         'checked_in_attendees',
         'check_in_note',
         'is_sent',
+        'opened_at',
+        'last_opened_at',
+        'open_count',
+        'last_device',
+        'sent_at',
+    ];
+
+    protected $attributes = [
+        'is_sent' => false,
+        'open_count' => 0,
     ];
 
     protected function casts(): array
@@ -36,12 +46,67 @@ class Guest extends Model
             'checked_in_attendees' => 'integer',
             'checked_in_at' => 'datetime',
             'is_sent' => 'boolean',
+            'opened_at' => 'datetime',
+            'last_opened_at' => 'datetime',
+            'sent_at' => 'datetime',
+            'open_count' => 'integer',
         ];
     }
 
     public function isCheckedIn(): bool
     {
         return $this->checked_in_at !== null;
+    }
+
+    public function isOpened(): bool
+    {
+        return $this->open_count > 0 || $this->opened_at !== null;
+    }
+
+    /**
+     * Ghi nhận lượt mở thiệp của khách mời.
+     */
+    public function recordOpen(?string $userAgent = null): void
+    {
+        $device = $this->detectDevice($userAgent);
+
+        $now = now();
+        $this->update([
+            'opened_at' => $this->opened_at ?: $now,
+            'last_opened_at' => $now,
+            'open_count' => $this->open_count + 1,
+            'last_device' => $device,
+        ]);
+    }
+
+    /**
+     * Nhận diện thiết bị truy cập từ User-Agent.
+     */
+    public function detectDevice(?string $userAgent): string
+    {
+        if (empty($userAgent)) {
+            return 'Không xác định';
+        }
+
+        $ua = strtolower($userAgent);
+
+        if (str_contains($ua, 'iphone')) {
+            return 'iPhone (iOS)';
+        }
+        if (str_contains($ua, 'ipad')) {
+            return 'iPad (iPadOS)';
+        }
+        if (str_contains($ua, 'android')) {
+            return 'Android Mobile';
+        }
+        if (str_contains($ua, 'macintosh') || str_contains($ua, 'mac os x')) {
+            return 'Mac Desktop';
+        }
+        if (str_contains($ua, 'windows')) {
+            return 'Windows PC';
+        }
+
+        return 'Trình duyệt khác';
     }
 
     /**

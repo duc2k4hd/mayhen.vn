@@ -60,6 +60,7 @@ class GuestController extends Controller
         $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
             return $g->checked_in_attendees ?: $g->expected_attendees;
         });
+        $openedCount = $allGuests->filter(fn (Guest $g) => $g->isOpened())->count();
 
         // Xử lý bộ lọc danh sách hiển thị
         $guestsQuery = $wedding->guests()->with('response');
@@ -91,6 +92,16 @@ class GuestController extends Controller
                 $guestsQuery->whereNotNull('checked_in_at');
             } elseif ($statusFilter === 'not_checked_in') {
                 $guestsQuery->whereNull('checked_in_at');
+            } elseif ($statusFilter === 'opened') {
+                $guestsQuery->where(function ($q) {
+                    $q->where('open_count', '>', 0)
+                        ->orWhereNotNull('opened_at');
+                });
+            } elseif ($statusFilter === 'not_opened') {
+                $guestsQuery->where(function ($q) {
+                    $q->where('open_count', '<=', 0)
+                        ->orWhereNull('open_count');
+                })->whereNull('opened_at');
             }
         }
 
@@ -107,6 +118,7 @@ class GuestController extends Controller
             'declinedCount' => $declinedCount,
             'responseRate' => $responseRate,
             'checkedInCount' => $checkedInCount,
+            'openedCount' => $openedCount,
             'availableGroups' => $availableGroups,
             'availableTables' => $availableTables,
             'filterSearch' => $search,
@@ -585,6 +597,28 @@ class GuestController extends Controller
         }
 
         return $redirect;
+    }
+
+    /**
+     * Bật/tắt trạng thái đã gửi thiệp cho khách mời.
+     */
+    public function toggleSent(Request $request, int $guestId): JsonResponse
+    {
+        $guest = Guest::with('wedding')->findOrFail($guestId);
+        $this->authorizeGuestManagement($guest->wedding);
+
+        $newSent = ! $guest->is_sent;
+        $guest->update([
+            'is_sent' => $newSent,
+            'sent_at' => $newSent ? now() : null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_sent' => $guest->is_sent,
+            'sent_at' => $guest->sent_at?->format('H:i d/m/Y'),
+            'message' => $guest->is_sent ? 'Đã đánh dấu đã gửi thiệp' : 'Đã hủy đánh dấu đã gửi thiệp',
+        ]);
     }
 
     /**

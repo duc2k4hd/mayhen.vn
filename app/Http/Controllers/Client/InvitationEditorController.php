@@ -331,6 +331,11 @@ class InvitationEditorController extends Controller
             ];
         }
 
+        // Tự động ghi nhận lượt mở thiệp và thiết bị truy cập nếu không phải chủ thiệp/admin
+        if (! $isOwner && $guest) {
+            $guest->recordOpen(request()->userAgent());
+        }
+
         $template = $invitation->template;
         $customView = $template ? "client.invitations.{$template->slug}.template" : null;
 

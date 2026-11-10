@@ -7748,5 +7748,40 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **866/866 tests PASSED 100% (4,630 assertions in 19.74s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 58. HỆ THỐNG ĐO LƯỜNG LƯỢT MỞ THIỆP & THEO DÕI THIẾT BỊ TRUY CẬP (GUEST OPEN & DEVICE TRACKING ENGINE) (10/11/2026)
+- **Mục tiêu**: Bổ sung phân hệ đo lường hành vi khách mời theo thời gian thực theo Master PRD V3, giúp các cặp đôi biết chính xác khách mời nào đã mở xem thiệp cưới, số lần mở, thời gian mở gần nhất và loại thiết bị sử dụng (iPhone, Android Mobile, iPad, Windows PC, Mac Desktop) để có kế hoạch nhắc nhở và chăm sóc khách mời tế nhị.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_230000_add_open_tracking_to_guests_table.php` bổ sung 5 trường cho bảng `guests`:
+       * `opened_at` (timestamp, nullable): Thời điểm mở thiệp lần đầu tiên.
+       * `last_opened_at` (timestamp, nullable): Thời điểm mở thiệp gần nhất.
+       * `open_count` (unsignedInteger, default 0): Tổng số lượt mở thiệp.
+       * `last_device` (string 50, nullable): Thiết bị truy cập gần nhất.
+       * `sent_at` (timestamp, nullable): Thời điểm đánh dấu gửi thiệp cho khách.
+     - Cập nhật model `app/Models/Guest.php`:
+       * Khai báo `$fillable`, `$attributes = ['is_sent' => false, 'open_count' => 0]`, `$casts` datetime và integer.
+       * Methods: `isOpened(): bool`, `recordOpen(?string $userAgent = null): void`, `detectDevice(?string $userAgent): string`.
+  2. **Tự Động Ghi Nhận Khi Khách Mở Link Thiệp Cá Nhân Hóa**:
+     - [InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php): Trong method `show()`, khi khách truy cập với `?token={guest_token}` và không phải là chủ thiệp (`!$isOwner && $guest`), tự động gọi `$guest->recordOpen(request()->userAgent())`.
+     - Cách ly an toàn: Chủ thiệp hoặc Admin khi xem thử link thiệp của khách (thông qua nút "Mở") sẽ KHÔNG làm tăng lượt xem để giữ số liệu đo lường phản ánh 100% sự thật.
+  3. **Bộ Điều Khiển & Bộ Lọc Nâng Cao**:
+     - [GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php):
+       * Bổ sung tính toán `$openedCount`: Tổng số khách đã mở xem thiệp ít nhất 1 lần.
+       * Mở rộng query lọc `status`:
+         - `opened`: Lọc khách đã mở thiệp (`open_count > 0` hoặc `opened_at` không null).
+         - `not_opened`: Lọc khách chưa từng mở thiệp (`open_count <= 0` và `opened_at` null).
+       * Method mới `toggleSent(Request $request, int $guestId): JsonResponse`: Bật/tắt trạng thái `is_sent` và ghi nhận `sent_at = now()`.
+     - Route mới: `POST /tai-khoan/khach-moi/{id}/toggle-sent` (name `guests.toggle_sent`).
+  4. **Giao Diện Quản Lý Khách Mời Pure Vanilla ([guests.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/client/pages/guests.blade.php))**:
+     - Thẻ KPI thứ 5: Hiển thị số lượng "Đã Mở Xem Thiệp" nổi bật trên lưới chỉ số khách mời.
+     - Bộ lọc dropdown: Thêm 2 tùy chọn "👁 Đã mở xem thiệp" và "○ Chưa mở thiệp".
+     - Cột dữ liệu bảng: Cột "Lượt Mở Thiệp" hiển thị badge xanh `Đã xem ({open_count})` kèm thiết bị và thời gian mở tương đối (`diffForHumans()`), hoặc `○ Chưa xem`.
+     - Nút Thao tác: Bổ sung nút Toggle "Đã gửi / Chưa gửi" với chấm trạng thái xanh/xám, gọi API fetch realtime cập nhật tức thì không cần reload trang.
+  5. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/GuestOpenTrackingTest.php` gồm **6 kịch bản kiểm thử độc lập (33 assertions)**: 100% PASSED (bao gồm nhận diện thiết bị, ghi nhận lượt mở, cách ly chủ thiệp, bộ lọc mở thiệp, toggle gửi thiệp và bảo vệ phân quyền tenant).
+     - Toàn bộ test suite hệ thống: **872/872 tests PASSED 100% (4,663 assertions in 20.28s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
+
 
 

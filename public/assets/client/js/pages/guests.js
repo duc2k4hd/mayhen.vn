@@ -681,6 +681,46 @@ document.addEventListener('DOMContentLoaded', () => {
         setupModalDismiss(thankyouModal);
     }
 
+    // 10. Toggle Đã Gửi Thiệp Cho Khách Mời (Guest Open & Device Tracking)
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    document.querySelectorAll('.mayhen_guest_toggle_sent_btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const url = btn.getAttribute('data-sent-url');
+            if (!url) return;
+            btn.disabled = true;
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || '',
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const dot = btn.querySelector('.mayhen_sent_dot');
+                    const text = btn.querySelector('.mayhen_sent_text');
+                    if (data.is_sent) {
+                        btn.classList.add('mayhen_guest_sent_active');
+                        if (dot) dot.style.background = '#16A34A';
+                        if (text) text.innerText = 'Đã gửi';
+                        btn.title = `Đã gửi lúc ${data.sent_at || ''} - Bấm để hủy`;
+                    } else {
+                        btn.classList.remove('mayhen_guest_sent_active');
+                        if (dot) dot.style.background = '#9CA3AF';
+                        if (text) text.innerText = 'Chưa gửi';
+                        btn.title = 'Bấm để đánh dấu đã gửi thiệp cho khách này';
+                    }
+                }
+            } catch (err) {
+                console.error('Lỗi cập nhật trạng thái gửi:', err);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    });
+
     function openModal(modalEl) {
         modalEl.classList.add('is-open');
         document.body.style.overflow = 'hidden';

@@ -157,6 +157,11 @@
                 <span class="mayhen_guest_stat_number" style="color: #C62828;">{{ number_format($declinedCount) }}</span>
                 <span class="mayhen_guest_stat_desc">Không thể sắp xếp dự tiệc</span>
             </div>
+            <div class="mayhen_guest_stat_card">
+                <span class="mayhen_guest_stat_label">Đã Mở Xem Thiệp</span>
+                <span class="mayhen_guest_stat_number" style="color: #1D4ED8;">{{ number_format($openedCount ?? 0) }}</span>
+                <span class="mayhen_guest_stat_desc">Khách đã mở link thiệp</span>
+            </div>
         </div>
 
         <!-- Response Progress Bar -->
@@ -302,6 +307,8 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
 
                 <select name="status" class="mayhen_guest_toolbar_select" onchange="this.form.submit()">
                     <option value="">-- Trạng thái RSVP & Điểm danh --</option>
+                    <option value="opened" {{ $filterStatus === 'opened' ? 'selected' : '' }}>👁 Đã mở xem thiệp</option>
+                    <option value="not_opened" {{ $filterStatus === 'not_opened' ? 'selected' : '' }}>○ Chưa mở thiệp</option>
                     <option value="attending" {{ $filterStatus === 'attending' ? 'selected' : '' }}>Đã xác nhận tham dự</option>
                     <option value="pending" {{ $filterStatus === 'pending' ? 'selected' : '' }}>Chưa gửi phản hồi</option>
                     <option value="declined" {{ $filterStatus === 'declined' ? 'selected' : '' }}>Từ chối / Không tham gia</option>
@@ -332,6 +339,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                             <th>Nhóm</th>
                             <th>Bàn Tiệc</th>
                             <th>Số Dự Kiến</th>
+                            <th>Lượt Mở Thiệp</th>
                             <th>Phản Hồi RSVP</th>
                             <th>Điểm Danh</th>
                             <th>Công Cụ Mời Zalo</th>
@@ -364,6 +372,19 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                     @endif
                                 </td>
                                 <td>{{ $g->expected_attendees }} người</td>
+                                <td>
+                                    @if ($g->isOpened())
+                                        <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; background:#EFF6FF; color:#1D4ED8; font-size:11px; font-weight:600;" title="Lần mở gần nhất: {{ $g->last_opened_at?->format('H:i d/m/Y') }} ({{ $g->last_device ?? 'Thiết bị lạ' }})">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            Đã xem ({{ $g->open_count }})
+                                        </span>
+                                        <div style="font-size: 10px; color: #64748B; margin-top: 2px;">
+                                            {{ $g->last_device ?? 'Di động' }} &bull; {{ $g->last_opened_at ? $g->last_opened_at->diffForHumans() : '' }}
+                                        </div>
+                                    @else
+                                        <span style="color: #94A3B8; font-size: 11px;">○ Chưa xem</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if ($g->response)
                                         @if ($g->response->attending_status === 'attending')
@@ -414,6 +435,13 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                         <a href="{{ $personalUrl }}" target="_blank" class="mayhen_guest_action_btn" style="text-decoration: none;" title="Xem thiệp với vai trò khách này">
                                             Mở
                                         </a>
+                                        <button type="button" class="mayhen_guest_action_btn mayhen_guest_toggle_sent_btn {{ $g->is_sent ? 'mayhen_guest_sent_active' : '' }}"
+                                            data-guest-id="{{ $g->id }}"
+                                            data-sent-url="{{ route('guests.toggle_sent', $g->id) }}"
+                                            title="{{ $g->is_sent ? 'Đã gửi lúc ' . ($g->sent_at?->format('H:i d/m/Y') ?? '') . ' - Bấm để hủy' : 'Bấm để đánh dấu đã gửi thiệp' }}">
+                                            <span class="mayhen_sent_dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:{{ $g->is_sent ? '#16A34A' : '#9CA3AF' }}; margin-right:4px;"></span>
+                                            <span class="mayhen_sent_text">{{ $g->is_sent ? 'Đã gửi' : 'Chưa gửi' }}</span>
+                                        </button>
                                     </div>
                                 </td>
                                 <td style="text-align: right; white-space: nowrap;">
