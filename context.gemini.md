@@ -7083,6 +7083,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 - **Trạng thái tổng thể lộ trình Admin VNext**: **HOÀN THÀNH TOÀN DIỆN 10/10 LÀN SÓNG (WAVE 00 → WAVE 09)**. Hệ thống quản trị Atelier Command Center của Mây Hẹn (`mayhen.vn`) đạt chất lượng thương mại sẵn sàng vận hành thực tế.
 
+### 33. TRIỂN KHAI BỘ 3 TÍNH NĂNG ĐỈNH CAO TỪ INNOVATION BACKLOG (INNOVATION #8, #14, #18)
+- **Mục tiêu**: Hoàn thiện 3 đề xuất nâng cấp mang tính đột phá và khác biệt hóa cao nhất từ `MAY_HEN_ADMIN_INNOVATION_BACKLOG.md`:
+  1. **Role-Aware Morning Brief (Innovation #18)**: Bản tin tóm tắt đầu ngày theo vai trò đăng nhập.
+  2. **Wedding Day Rescue Mode (Innovation #8)**: Bảng điều khiển sự cố ngày cưới, phân bổ bàn tiệc khẩn cấp cho khách walk-in và báo động quá tải sảnh tiệc.
+  3. **Privacy & Retention Map (Innovation #14 - Tuân thủ Luật 91/2025/QH15)**: Trích xuất toàn bộ dữ liệu cá nhân (DSAR Access Archive JSON) và cơ chế ẩn danh hóa dữ liệu (Right to be Forgotten) bảo toàn sổ cái kế toán.
+- **Các thành phần đã triển khai**:
+  1. **Role-Aware Morning Briefing ([DashboardController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/DashboardController.php) & [dashboard.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/dashboard.blade.php))**:
+     - Lời chào thời gian thực theo buổi (Sáng / Chiều / Tối) kèm tên và danh xưng vai trò quản trị thanh lịch (`Super Admin`, `Operations Manager`, `Staff`).
+     - Tự động phân tích và hiển thị thông số ưu tiên theo vai trò:
+       * **Admin & Manager**: Doanh thu 24h qua (`revenue_24h` + số đơn mới), số đơn hàng chờ thanh toán P0, đám cưới diễn ra HÔM NAY và cảnh báo rủi ro Radar (<14 ngày).
+       * **Staff**: Ticket hỗ trợ khách hàng đang mở, lời chúc mừng chờ duyệt, đám cưới HÔM NAY cần hỗ trợ check-in và rủi ro Radar.
+     - Lối tắt nhanh vào `🚨 Rescue Cockpit Ngày Cưới` và `📥 Action Inbox`.
+  2. **Wedding Day Rescue Mode ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/GuestController.php) & [rescue.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/guests/rescue.blade.php))**:
+     - Bảng điều khiển sự cố ngày cưới dành cho lễ tân / điều phối viên sự kiện:
+       * Bộ lọc đám cưới diễn ra HÔM NAY và toàn bộ đám cưới gần đây.
+       * Thước đo sức chứa sảnh tiệc (Capacity Gauge): Cảnh báo đỏ nổi bật **CẢNH BÁO QUÁ TẢI SẢNH TIỆC (OVERCAPACITY)** khi số khách xếp bàn vượt tổng số ghế thực tế.
+       * **Hàng đợi quan khách Walk-in / Chưa có bàn**: Danh sách khách mời chưa xếp bàn kèm thời điểm check-in; thao tác 1-click gán bàn tiệc tức thời (`route('admin.guests.assign_table')`) kèm thông tin số ghế còn trống của từng bàn.
+       * **Tạo Bàn Dự Phòng Khẩn Cấp**: Form tạo nhanh bàn tiệc mới (tên bàn, sức chứa, khu vực) ngay tại chỗ (`route('admin.guests.emergency_table')`) mà không làm gián đoạn tiệc cưới.
+       * Ghi nhật ký kiểm toán tự động `rescue_assign_table` và `create_emergency_table`.
+       * Tích hợp Menu Sidebar và Command Palette (`Ctrl+K`).
+  3. **Privacy & Retention Map ([UserController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/UserController.php) & [users/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/users/show.blade.php))**:
+     - **Trích xuất dữ liệu cá nhân DSAR JSON (`exportPersonalData`)**:
+       * Xuất toàn bộ hồ sơ khách hàng, danh sách đám cưới, thiệp mời, quan khách, phản hồi RSVP, lời chúc và lịch sử giao dịch thanh toán dưới định dạng JSON nén an toàn theo tiêu chuẩn Luật Bảo Vệ Dữ Liệu Cá Nhân 91/2025/QH15.
+     - **Ẩn danh hóa dữ liệu cá nhân (`anonymize`)**:
+       * Thực thi "Quyền được quên": Ẩn danh hóa họ tên (`Khách Hàng Đã Ẩn Danh #ID`), email (`anonymized_{id}_{timestamp}@deleted.mayhen.vn`), số điện thoại (`0000000000`), khóa tài khoản với lý do tuân thủ pháp lý.
+       * Xóa sạch thông tin nhạy cảm của bố mẹ hai bên và số tài khoản ngân hàng trên các thiệp cưới liên quan.
+       * **Bảo toàn sổ cái kế toán**: Giữ nguyên vẹn các bản ghi `Order` với mã đơn và số tiền đã thanh toán phục vụ đối soát thuế và kế toán tài chính.
+       * Phòng vệ bảo mật: Chặn tự ẩn danh chính mình và chặn ẩn danh tài khoản Quản trị viên/Quản lý.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextInnovationBacklogTest.php` với 8 kịch bản kiểm thử độc lập (53 assertions), 100% PASSED.
+  * Toàn bộ test suite hồi quy: **715/715 tests PASSED 100% (3,773 assertions in 15.37s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -16,17 +16,17 @@
 | 5 | **One-Case Timeline** | A16 / A18 | Hợp nhất lịch sử giao dịch, sửa đổi thiệp, lời chúc, ticket vào một dòng thời gian thống nhất đã che PII. | **Cao (P1)** | **Sẵn sàng triển khai** |
 | 6 | **Promise-to-Proof Monitor** | A10 / A17 | Đối chiếu quyền lợi thực tế của gói cước với lời quảng cáo ngoài landing page để tránh sai lệch. | Trung bình (P2) | Đang nghiên cứu |
 | 7 | **Safe Support Lens** | A06 / A16 | Xem thiệp và vấn đề dưới góc nhìn của khách hàng dưới chế độ Read-Only, che số điện thoại và STK. | **Cao (P1)** | **Sẵn sàng triển khai** |
-| 8 | **Wedding Day Rescue Mode** | A13 / A14 | Bảng điều khiển sự cố ngày cưới: mạng chập chờn, check-in quá tải, khách chưa có bàn tiệc. | Trung bình (P2) | Đang nghiên cứu |
-| 9 | **Finance Reconciliation Detective** | A09 | Đối chiếu tự động giao dịch SePay/VietQR với đơn hàng, phát hiện chuyển thiếu/thừa tiền hoặc trùng mã. | **Cao (P1)** | **Sẵn sàng triển khai** |
+| 8 | **Wedding Day Rescue Mode** | A13 / A14 | Bảng điều khiển sự cố ngày cưới: mạng chập chờn, check-in quá tải, khách chưa có bàn tiệc. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
+| 9 | **Finance Reconciliation Detective** | A09 | Đối chiếu tự động giao dịch SePay/VietQR với đơn hàng, phát hiện chuyển thiếu/thừa tiền hoặc trùng mã. | **Cao (P1)** | **Đã hoàn thành (Wave 08)** |
 | 10 | **Template Visual DNA** | A07 | Lưu dấu vết art direction mẫu (font, spacing, màu sắc) để phát hiện sai lệch giao diện sau nâng cấp. | Trung bình (P2) | Đang nghiên cứu |
-| 11 | **Native Template Fidelity Guard** | A07 / A08 | Giám sát chế độ AI Curated luôn tái dùng mã nguồn native của mẫu gốc, tuyệt đối không sinh layout tự chế. | **Cao (P1)** | **Sẵn sàng triển khai** |
-| 12 | **Issue-to-Action Cockpit** | A16 / A19 | Từ thông báo lỗi hệ thống/ảnh hỏng dẫn trực tiếp đến ticket xử lý và theo dõi kết quả khắc phục. | Trung bình (P2) | Đang nghiên cứu |
+| 11 | **Native Template Fidelity Guard** | A07 / A08 | Giám sát chế độ AI Curated luôn tái dùng mã nguồn native của mẫu gốc, tuyệt đối không sinh layout tự chế. | **Cao (P1)** | **Đã hoàn thành (Wave 04)** |
+| 12 | **Issue-to-Action Cockpit** | A16 / A19 | Từ thông báo lỗi hệ thống/ảnh hỏng dẫn trực tiếp đến ticket xử lý và theo dõi kết quả khắc phục. | Trung bình (P2) | **Đã hoàn thành (Wave 08)** |
 | 13 | **Delight Recovery Planner** | A03 / A04 | Phát hiện các cặp đôi gặp khó khăn khi tạo thiệp trong Studio để chủ động hỗ trợ kịp thời. | Thấp (P3) | Đang nghiên cứu |
-| 14 | **Privacy & Retention Map** | A04 / A23 | Sơ đồ quản lý vòng đời dữ liệu cá nhân (PII), hỗ trợ xuất hoặc xóa dữ liệu theo Luật 91/2025/QH15. | Trung bình (P2) | Đang nghiên cứu |
+| 14 | **Privacy & Retention Map** | A04 / A23 | Sơ đồ quản lý vòng đời dữ liệu cá nhân (PII), hỗ trợ xuất hoặc xóa dữ liệu theo Luật 91/2025/QH15. | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
 | 15 | **Zero-Surprise Campaign Launch** | A18 | Xem trước chiến dịch gửi thông báo (chi phí, phân đoạn khách, xem trước giao diện trên điện thoại). | Trung bình (P2) | Đang nghiên cứu |
 | 16 | **Proactive VIP Wedding Concierge Queue** | A16 | Tự động phân loại và ưu tiên hàng đợi hỗ trợ cho các đám cưới diễn ra trong vòng 48 giờ tới. | Trung bình (P2) | Đang nghiên cứu |
 | 17 | **Operational Memory / Incident Cards** | A16 / A25 | Thư viện kinh nghiệm xử lý sự cố (SOP) giúp nhân viên mới xử lý vấn đề của khách nhanh chóng. | Thấp (P3) | Đang nghiên cứu |
-| 18 | **Role-Aware Morning Brief** | A02 / A03 | Bản tin tóm tắt đầu ngày theo từng vai trò quản trị (Quản lý, Kế toán, Chăm sóc khách hàng). | Trung bình (P2) | Đang nghiên cứu |
+| 18 | **Role-Aware Morning Brief** | A02 / A03 | Bản tin tóm tắt đầu ngày theo từng vai trò quản trị (Quản lý, Kế toán, Chăm sóc khách hàng). | **Cao (P1)** | **Đã hoàn thành (Wave 09+)** |
 
 ---
 

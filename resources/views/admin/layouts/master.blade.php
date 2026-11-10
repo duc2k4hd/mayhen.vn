@@ -104,7 +104,7 @@
                     @endif
                 </a>
 
-                <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.index') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -113,6 +113,17 @@
                         </svg>
                     </span>
                     <span>Khách Mời & Check-in</span>
+                </a>
+
+                <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.rescue') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </span>
+                    <span>Rescue Cockpit Ngày Cưới</span>
                 </a>
 
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
@@ -460,6 +471,10 @@
                 <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_cmd_item" data-search="khách mời điểm danh check-in ngày cưới seating bàn tiệc guests">
                     <span>🎟️ Khách Mời & Điểm Danh Ngày Cưới</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/guests</span>
+                </a>
+                <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_cmd_item" data-search="rescue cockpit ngày cưới sự cố xếp bàn khẩn cấp overcapacity bàn dự phòng walk-in">
+                    <span>🚨 Rescue Cockpit Ngày Cưới (Sự Cố & Bàn Dự Phòng)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guests/rescue</span>
                 </a>
                 <a href="{{ route('admin.users.index') }}" class="mayhen_admin_cmd_item" data-search="người dùng tài khoản phân quyền rbac users staff manager">
                     <span>👥 Quản Lý Người Dùng & Phân Quyền</span>

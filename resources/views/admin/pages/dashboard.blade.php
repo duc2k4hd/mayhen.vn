@@ -8,6 +8,97 @@
 @endpush
 
 @section('content')
+    <!-- Role-Aware Morning Briefing Banner (Innovation #18) -->
+    @if (isset($morningBrief))
+        <div class="mayhen_admin_card mayhen_admin_morning_brief" style="background: linear-gradient(135deg, #FFFDF9 0%, #FAF6EE 100%); border-left: 4px solid var(--mh-admin-gold); padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(197, 168, 128, 0.08);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                        <span style="font-size: 1.25rem;">✨</span>
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif;">
+                            {{ $morningBrief['greeting'] }}
+                        </h2>
+                        <span class="mayhen_admin_badge mayhen_admin_badge_info" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            {{ $morningBrief['role_title'] }}
+                        </span>
+                    </div>
+                    <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin: 0;">
+                        {{ $morningBrief['date_str'] }} &bull; Điểm tin tóm tắt vận hành Atelier Command Center dành riêng cho bạn
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_btn mayhen_admin_btn--primary mayhen_admin_btn_sm">
+                        🚨 Rescue Cockpit Ngày Cưới &rarr;
+                    </a>
+                    <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm">
+                        📥 Action Inbox &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Role-Specific Operational Metrics Highlight -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: rgba(255,255,255,0.7); border-radius: 8px; padding: 14px; border: 1px solid rgba(229, 220, 205, 0.6);">
+                @if (in_array($morningBrief['role'], ['admin', 'manager']))
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">💰</span>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Doanh thu 24h qua</div>
+                            <strong style="font-size: 0.95rem; color: #1B5E20;">{{ number_format($morningBrief['revenue_24h'], 0, ',', '.') }}đ</strong>
+                            <span style="font-size: 0.7rem; color: var(--mh-admin-muted);">({{ $morningBrief['orders_24h'] }} đơn mới)</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">⚡</span>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Đơn hàng chờ duyệt (P0)</div>
+                            <strong style="font-size: 0.95rem; color: {{ $morningBrief['pending_orders_count'] > 0 ? '#C62828' : 'var(--mh-admin-charcoal)' }};">
+                                {{ $morningBrief['pending_orders_count'] }} đơn
+                            </strong>
+                        </div>
+                    </div>
+                @else
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">🎧</span>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Ticket hỗ trợ mở</div>
+                            <strong style="font-size: 0.95rem; color: {{ $morningBrief['open_tickets_count'] > 0 ? '#E65100' : 'var(--mh-admin-charcoal)' }};">
+                                {{ $morningBrief['open_tickets_count'] }} yêu cầu
+                            </strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">💌</span>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Lời chúc chờ duyệt</div>
+                            <strong style="font-size: 0.95rem; color: var(--mh-admin-charcoal);">{{ $morningBrief['pending_wishes_count'] }} lời chúc</strong>
+                        </div>
+                    </div>
+                @endif
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.2rem;">💍</span>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Đám cưới HÔM NAY</div>
+                        <strong style="font-size: 0.95rem; color: {{ $morningBrief['today_weddings_count'] > 0 ? '#0D47A1' : 'var(--mh-admin-charcoal)' }};">
+                            {{ $morningBrief['today_weddings_count'] }} đám cưới
+                        </strong>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.2rem;">📡</span>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">Radar Rủi ro (<14 ngày)</div>
+                        <strong style="font-size: 0.95rem; color: {{ $morningBrief['radar_high_risk_count'] > 0 ? '#C62828' : '#2E7D32' }};">
+                            {{ $morningBrief['radar_high_risk_count'] }} ca cần xử lý
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Operational Actionable Alerts Banner -->
     @if (($pendingOrdersCount ?? 0) > 0 || ($pendingWishesCount ?? 0) > 0 || ($lockedInvitationsCount ?? 0) > 0)
         <div class="mayhen_admin_card" style="background: #FFFDF9; border-left: 4px solid var(--mh-admin-gold); padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">

@@ -77,17 +77,22 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
         Route::get('/export-csv', [AdminUserController::class, 'exportCsv'])->name('export');
         Route::get('/{id}', [AdminUserController::class, 'show'])->name('show');
+        Route::get('/{id}/export-personal-data', [AdminUserController::class, 'exportPersonalData'])->name('export_personal_data');
+        Route::post('/{id}/anonymize', [AdminUserController::class, 'anonymize'])->middleware('admin.super')->name('anonymize');
         Route::post('/{id}/change-role', [AdminUserController::class, 'changeRole'])->middleware('admin.super')->name('change_role');
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->middleware('admin.manager')->name('reset_password');
         Route::post('/{id}/lock', [AdminUserController::class, 'lock'])->middleware('admin.manager')->name('lock');
         Route::post('/{id}/unlock', [AdminUserController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });
 
-    // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05)
+    // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05 & Innovation #8 Rescue Mode)
     Route::prefix('guests')->name('guests.')->group(function () {
         Route::get('/', [AdminGuestController::class, 'index'])->name('index');
+        Route::get('/rescue', [AdminGuestController::class, 'rescueDesk'])->name('rescue');
         Route::get('/export-csv', [AdminGuestController::class, 'exportCsv'])->name('export');
         Route::post('/{id}/toggle-checkin', [AdminGuestController::class, 'toggleCheckIn'])->name('toggle_checkin');
+        Route::post('/{id}/assign-table', [AdminGuestController::class, 'quickAssignTable'])->name('assign_table');
+        Route::post('/weddings/{weddingId}/emergency-table', [AdminGuestController::class, 'createEmergencyTable'])->name('emergency_table');
     });
 
     // Quản lý Lời chúc & Giám sát RSVP

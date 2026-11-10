@@ -41,7 +41,10 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="{{ route('admin.users.export_personal_data', $user->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline" title="Trích xuất toàn bộ dữ liệu cá nhân JSON theo Luật 91/2025/QH15">
+                📥 Xuất Dữ Liệu PII (DSAR)
+            </a>
             <a href="{{ route('admin.users.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
                 &larr; Quay Lại Danh Sách
             </a>
@@ -431,6 +434,53 @@
                                 Lưu Mật Khẩu Mới
                             </button>
                         </form>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Privacy & Retention Map Card (Innovation #14 - Luật 91/2025/QH15) -->
+            <div class="mayhen_admin_card" style="border-left: 4px solid #1565C0;">
+                <div class="mayhen_admin_card_header">
+                    <div class="mayhen_admin_card_title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #1565C0;">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>Quyền Dữ Liệu (Luật 91/2025/QH15)</span>
+                    </div>
+                </div>
+
+                <div class="mayhen_admin_card_body">
+                    <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 16px;">
+                        Quản trị vòng đời dữ liệu cá nhân, quyền tiếp cận và quyền được quên theo Luật Bảo vệ dữ liệu cá nhân.
+                    </div>
+
+                    <!-- DSAR Export Button -->
+                    <div style="margin-bottom: 16px;">
+                        <a href="{{ route('admin.users.export_personal_data', $user->id) }}" class="mayhen_admin_btn mayhen_admin_btn--secondary" style="width: 100%; justify-content: center;">
+                            📥 Trích Xuất Dữ Liệu Cá Nhân (JSON)
+                        </a>
+                        <div style="font-size: 0.75rem; color: #8C827A; margin-top: 4px;">
+                            Xuất toàn bộ thông tin cá nhân, thiệp cưới, khách mời, lời chúc và đơn hàng.
+                        </div>
+                    </div>
+
+                    <!-- Anonymize Action -->
+                    @if (Auth::user()?->isSuperAdmin() && ! $user->isAdmin())
+                        <div style="padding-top: 14px; border-top: 1px dashed var(--mh-admin-border);">
+                            <form action="{{ route('admin.users.anonymize', $user->id) }}" method="POST" onsubmit="return confirm('CẢNH BÁO BẢO MẬT:\n\nBạn sắp ẩn danh hóa toàn bộ thông tin cá nhân của người dùng này theo Luật 91/2025/QH15.\n\n- Họ tên, Email, SĐT và tài khoản ngân hàng sẽ bị xóa/che vĩnh viễn.\n- Sổ cái đơn hàng và thanh toán vẫn được giữ lại để đối soát kế toán.\n\nBạn có CHẮC CHẮN muốn tiếp tục?');">
+                                @csrf
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn--danger" style="width: 100%; justify-content: center;">
+                                    🛡️ Ẩn Danh Hóa PII (Quyền Được Quên)
+                                </button>
+                                <div style="font-size: 0.75rem; color: #C62828; margin-top: 4px;">
+                                    Hành động không thể đảo ngược. Chỉ áp dụng khi có yêu cầu hợp lệ từ chủ thể dữ liệu.
+                                </div>
+                            </form>
+                        </div>
+                    @elseif ($user->isAdmin())
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted); font-style: italic;">
+                            Không thể ẩn danh hóa tài khoản Quản trị viên/Quản lý.
+                        </div>
                     @endif
                 </div>
             </div>

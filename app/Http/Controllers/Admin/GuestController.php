@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Wedding;
+use App\Models\WeddingTable;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -246,5 +248,177 @@ class GuestController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Wedding Day Rescue Cockpit (Innovation #8).
+     * Bảng điều khiển sự cố ngày cưới: mạng chập chờn, khách walk-in chưa có bàn, cảnh báo quá tải sảnh tiệc.
+     */
+    public function rescueDesk(Request $request): View
+    {
+        $selectedWeddingId = $request->input('wedding_id');
+        $today = Carbon::today();
+
+        // 1. All weddings available for rescue mode (prioritize today's weddings)
+        $todayWeddings = Wedding::query()
+            ->whereDate('wedding_date', $today)
+            ->withCount(['guests', 'tables'])
+            ->get();
+
+        $activeWedding = null;
+        if (! empty($selectedWeddingId)) {
+            $activeWedding = Wedding::with(['tables.guests.response'])->find((int) $selectedWeddingId);
+        }
+
+        if (! $activeWedding && $todayWeddings->isNotEmpty()) {
+            $activeWedding = Wedding::with(['tables.guests.response'])->find($todayWeddings->first()->id);
+        }
+
+        if (! $activeWedding) {
+            $activeWedding = Wedding::with(['tables.guests.response'])->latest('wedding_date')->first();
+        }
+
+        $allWeddings = Wedding::select('id', 'groom_name', 'bride_name', 'wedding_date')
+            ->orderByDesc('wedding_date')
+            ->limit(50)
+            ->get();
+
+        $tables = collect();
+        $unassignedGuests = collect();
+        $checkedInCount = 0;
+        $totalCapacity = 0;
+        $assignedCount = 0;
+        $isOverCapacity = false;
+
+        if ($activeWedding) {
+            $tables = $activeWedding->tables;
+            $totalCapacity = (int) $tables->sum('capacity');
+
+            // Unassigned guests (no table_id and no table_name)
+            $unassignedGuests = Guest::where('wedding_id', $activeWedding->id)
+                ->whereNull('table_id')
+                ->where(function ($q) {
+                    $q->whereNull('table_name')->orWhere('table_name', '');
+                })
+                ->with('response')
+                ->latest('id')
+                ->get();
+
+            $assignedCount = (int) Guest::where('wedding_id', $activeWedding->id)
+                ->where(function ($q) {
+                    $q->whereNotNull('table_id')->orWhere(function ($sub) {
+                        $sub->whereNotNull('table_name')->where('table_name', '!=', '');
+                    });
+                })->count();
+
+            $checkedInCount = Guest::where('wedding_id', $activeWedding->id)
+                ->whereNotNull('checked_in_at')
+                ->count();
+
+            $isOverCapacity = $totalCapacity > 0 && $assignedCount > $totalCapacity;
+        }
+
+        return view('admin.pages.guests.rescue', [
+            'activeWedding' => $activeWedding,
+            'todayWeddings' => $todayWeddings,
+            'allWeddings' => $allWeddings,
+            'tables' => $tables,
+            'unassignedGuests' => $unassignedGuests,
+            'totalCapacity' => $totalCapacity,
+            'assignedCount' => $assignedCount,
+            'checkedInCount' => $checkedInCount,
+            'isOverCapacity' => $isOverCapacity,
+        ]);
+    }
+
+    /**
+     * Quick 1-click assign table for walk-in / extra guest in Rescue Mode.
+     */
+    public function quickAssignTable(Request $request, int $id): JsonResponse|RedirectResponse
+    {
+        $request->validate([
+            'table_id' => 'required|integer|exists:wedding_tables,id',
+        ]);
+
+        $guest = Guest::with('wedding')->findOrFail($id);
+        $table = WeddingTable::where('wedding_id', $guest->wedding_id)->findOrFail((int) $request->input('table_id'));
+
+        $guest->update([
+            'table_id' => $table->id,
+            'table_name' => $table->name,
+        ]);
+
+        $msg = "Đã xếp quan khách \"{$guest->name}\" vào bàn \"{$table->name}\" thành công.";
+
+        AuditLogger::log(
+            'rescue_assign_table',
+            'Guest',
+            $guest->id,
+            $msg,
+            [
+                'wedding_id' => $guest->wedding_id,
+                'guest_id' => $guest->id,
+                'table_id' => $table->id,
+                'table_name' => $table->name,
+            ]
+        );
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+                'table_id' => $table->id,
+                'table_name' => $table->name,
+            ]);
+        }
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Create emergency overflow table for walk-in guests on wedding day.
+     */
+    public function createEmergencyTable(Request $request, int $weddingId): RedirectResponse
+    {
+        $request->validate([
+            'name' => 'nullable|string|max:100',
+            'capacity' => 'nullable|integer|min:1|max:30',
+            'zone' => 'nullable|string|max:100',
+        ]);
+
+        $wedding = Wedding::findOrFail($weddingId);
+        $count = $wedding->tables()->count() + 1;
+        $name = trim((string) $request->input('name'));
+        if ($name === '') {
+            $name = "Bàn Dự Phòng #{$count}";
+        }
+        $capacity = (int) ($request->input('capacity') ?: 10);
+        $zone = trim((string) $request->input('zone')) ?: 'Khu Dự Phòng';
+
+        $nextOrder = (int) ($wedding->tables()->max('display_order') ?? 0) + 1;
+
+        $table = $wedding->tables()->create([
+            'name' => $name,
+            'capacity' => $capacity,
+            'zone' => $zone,
+            'display_order' => $nextOrder,
+            'notes' => 'Tạo khẩn cấp từ Rescue Cockpit ngày cưới',
+        ]);
+
+        $msg = "Đã tạo khẩn cấp bàn tiệc \"{$table->name}\" ({$capacity} chỗ) thành công.";
+
+        AuditLogger::log(
+            'create_emergency_table',
+            'WeddingTable',
+            $table->id,
+            $msg,
+            [
+                'wedding_id' => $wedding->id,
+                'table_name' => $table->name,
+                'capacity' => $capacity,
+            ]
+        );
+
+        return back()->with('success', $msg);
     }
 }

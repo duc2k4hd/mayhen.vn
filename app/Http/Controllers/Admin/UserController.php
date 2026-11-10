@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserController extends Controller
@@ -359,5 +360,187 @@ class UserController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Export all personal data for a customer (Luật 91/2025/QH15 - Quyền tiếp cận dữ liệu cá nhân DSAR).
+     */
+    public function exportPersonalData(Request $request, int $id): StreamedResponse
+    {
+        $user = User::with([
+            'weddings.invitations.template',
+            'weddings.guests.response',
+            'weddings.wishes',
+            'orders.plan',
+        ])->findOrFail($id);
+
+        $tickets = Schema::hasTable('support_tickets')
+            ? SupportTicket::where('user_id', $user->id)->with('replies')->get()
+            : collect();
+
+        $exportData = [
+            'system' => 'Mây Hẹn (mayhen.vn)',
+            'compliance' => 'Luật Bảo Vệ Dữ Liệu Cá Nhân Việt Nam (Luật 91/2025/QH15) — Right to Access (DSAR)',
+            'exported_at' => now()->toIso8601String(),
+            'operator' => [
+                'id' => Auth::id(),
+                'name' => Auth::user()?->name,
+                'email' => Auth::user()?->email,
+            ],
+            'personal_profile' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role' => $user->role,
+                'role_label' => $user->role_label,
+                'is_locked' => (bool) $user->is_locked,
+                'lock_reason' => $user->lock_reason,
+                'created_at' => $user->created_at?->toIso8601String(),
+                'updated_at' => $user->updated_at?->toIso8601String(),
+            ],
+            'weddings' => $user->weddings->map(function ($w) {
+                return [
+                    'id' => $w->id,
+                    'groom_name' => $w->groom_name,
+                    'bride_name' => $w->bride_name,
+                    'groom_parents' => $w->groom_parents,
+                    'bride_parents' => $w->bride_parents,
+                    'wedding_date' => $w->wedding_date?->format('Y-m-d'),
+                    'venue_name' => $w->venue_name,
+                    'venue_address' => $w->venue_address,
+                    'bank_info' => [
+                        'bank_name' => $w->bank_name,
+                        'bank_account_number' => $w->bank_account_number,
+                        'bank_account_name' => $w->bank_account_name,
+                    ],
+                    'invitations' => $w->invitations->map(fn ($inv) => [
+                        'id' => $inv->id,
+                        'slug' => $inv->slug,
+                        'template_name' => $inv->template?->name,
+                        'is_published' => (bool) $inv->is_published,
+                        'view_count' => $inv->view_count,
+                        'created_at' => $inv->created_at?->toIso8601String(),
+                    ]),
+                    'guests_count' => $w->guests->count(),
+                    'guests' => $w->guests->map(fn ($g) => [
+                        'id' => $g->id,
+                        'name' => $g->name,
+                        'phone' => $g->phone,
+                        'group_name' => $g->group_name,
+                        'table_name' => $g->table_name,
+                        'checked_in_at' => $g->checked_in_at?->toIso8601String(),
+                        'rsvp_status' => $g->response?->attending_status,
+                    ]),
+                    'wishes' => $w->wishes->map(fn ($wish) => [
+                        'id' => $wish->id,
+                        'name' => $wish->name,
+                        'message' => $wish->message,
+                        'is_approved' => (bool) $wish->is_approved,
+                        'created_at' => $wish->created_at?->toIso8601String(),
+                    ]),
+                ];
+            }),
+            'order_history' => $user->orders->map(function ($o) {
+                return [
+                    'id' => $o->id,
+                    'order_code' => $o->order_code,
+                    'plan_name' => $o->plan?->name,
+                    'amount' => $o->amount,
+                    'status' => $o->status,
+                    'payment_method' => $o->payment_method,
+                    'paid_at' => $o->paid_at?->toIso8601String(),
+                ];
+            }),
+            'support_tickets' => $tickets->map(function ($t) {
+                return [
+                    'id' => $t->id,
+                    'ticket_code' => $t->ticket_code,
+                    'subject' => $t->subject,
+                    'status' => $t->status,
+                    'priority' => $t->priority,
+                    'created_at' => $t->created_at?->toIso8601String(),
+                    'replies_count' => $t->replies->count(),
+                ];
+            }),
+        ];
+
+        AuditLogger::log(
+            'export_personal_data',
+            'User',
+            $user->id,
+            "Trích xuất toàn bộ dữ liệu cá nhân (DSAR) của tài khoản {$user->email} ({$user->name}) theo Luật 91/2025/QH15",
+            ['user_id' => $user->id, 'operator_id' => Auth::id()]
+        );
+
+        $filename = "mayhen_dsar_export_user_{$user->id}_".now()->format('Ymd_His').'.json';
+
+        return response()->streamDownload(function () use ($exportData) {
+            echo json_encode($exportData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }, $filename, [
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * Anonymize customer PII while preserving financial orders (Right to be Forgotten - Luật 91/2025/QH15).
+     */
+    public function anonymize(Request $request, int $id): RedirectResponse
+    {
+        $user = User::with('weddings')->findOrFail($id);
+
+        // Security Defense 1: Cannot anonymize own account
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Bạn không thể tự ẩn danh hóa tài khoản của chính mình.');
+        }
+
+        // Security Defense 2: Cannot anonymize Admin or Manager accounts
+        if ($user->isAdmin()) {
+            return back()->with('error', 'Không thể ẩn danh hóa tài khoản Quản trị viên hoặc Quản lý hệ thống.');
+        }
+
+        $oldEmail = $user->email;
+        $oldName = $user->name;
+        $anonymizedEmail = 'anonymized_'.$user->id.'_'.time().'@deleted.mayhen.vn';
+        $anonymizedName = 'Khách Hàng Đã Ẩn Danh #'.$user->id;
+
+        // 1. Mask User PII & Lock Account
+        $user->update([
+            'name' => $anonymizedName,
+            'email' => $anonymizedEmail,
+            'phone' => '0000000000',
+            'password' => Hash::make(Str::random(32)),
+            'remember_token' => null,
+            'is_locked' => true,
+            'locked_at' => now(),
+            'locked_by' => Auth::id(),
+            'lock_reason' => 'Đã ẩn danh hóa dữ liệu cá nhân theo yêu cầu (Luật 91/2025/QH15).',
+        ]);
+
+        // 2. Mask Wedding PII (couple parents, bank accounts)
+        foreach ($user->weddings as $wedding) {
+            $wedding->update([
+                'bank_account_number' => null,
+                'bank_account_name' => null,
+                'bank_name' => null,
+                'groom_parents' => null,
+                'bride_parents' => null,
+                'client_notes' => 'Dữ liệu cá nhân đã được ẩn danh theo Luật 91/2025/QH15.',
+            ]);
+        }
+
+        AuditLogger::log(
+            'anonymize_user_data',
+            'User',
+            $user->id,
+            "Ẩn danh hóa dữ liệu cá nhân tài khoản ID #{$user->id} ({$oldEmail}) theo Luật 91/2025/QH15",
+            [
+                'user_id' => $user->id,
+                'operator_id' => Auth::id(),
+                'anonymized_email' => $anonymizedEmail,
+            ]
+        );
+
+        return back()->with('success', "Đã hoàn tất ẩn danh hóa dữ liệu cá nhân cho tài khoản ID #{$user->id} theo đúng Luật 91/2025/QH15. Sổ cái tài chính vẫn được bảo toàn nguyên vẹn.");
     }
 }
