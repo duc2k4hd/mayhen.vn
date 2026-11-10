@@ -709,27 +709,32 @@
     white-space: nowrap;
 }
 
-.mayhen_admin_badge_success {
+.mayhen_admin_badge_success,
+.mayhen_admin_badge--success {
     background-color: var(--mh-admin-success-bg);
     color: var(--mh-admin-success-text);
 }
 
-.mayhen_admin_badge_warning {
+.mayhen_admin_badge_warning,
+.mayhen_admin_badge--warning {
     background-color: var(--mh-admin-warning-bg);
     color: var(--mh-admin-warning-text);
 }
 
-.mayhen_admin_badge_danger {
+.mayhen_admin_badge_danger,
+.mayhen_admin_badge--danger {
     background-color: var(--mh-admin-danger-bg);
     color: var(--mh-admin-danger-text);
 }
 
-.mayhen_admin_badge_info {
+.mayhen_admin_badge_info,
+.mayhen_admin_badge--info {
     background-color: var(--mh-admin-info-bg);
     color: var(--mh-admin-info-text);
 }
 
-.mayhen_admin_badge_muted {
+.mayhen_admin_badge_muted,
+.mayhen_admin_badge--neutral {
     background-color: #ECEAE4;
     color: #6C665D;
 }
@@ -750,22 +755,38 @@
     border: 1px solid transparent;
 }
 
-.mayhen_admin_btn_primary {
+.mayhen_admin_btn_primary,
+.mayhen_admin_btn--primary {
     background-color: var(--mh-admin-gold);
     color: #FFFFFF;
 }
-.mayhen_admin_btn_primary:hover {
+.mayhen_admin_btn_primary:hover,
+.mayhen_admin_btn--primary:hover {
     background-color: var(--mh-admin-gold-hover);
+    color: #FFFFFF;
 }
 
-.mayhen_admin_btn_outline {
+.mayhen_admin_btn_outline,
+.mayhen_admin_btn--secondary {
     background-color: var(--mh-admin-surface);
     border-color: var(--mh-admin-border);
     color: var(--mh-admin-charcoal);
 }
-.mayhen_admin_btn_outline:hover {
+.mayhen_admin_btn_outline:hover,
+.mayhen_admin_btn--secondary:hover {
     background-color: var(--mh-admin-bg);
     border-color: #D5CEBF;
+    color: var(--mh-admin-charcoal);
+}
+
+.mayhen_admin_btn--ghost {
+    background-color: transparent;
+    border-color: var(--mh-admin-border);
+    color: var(--mh-admin-charcoal);
+}
+.mayhen_admin_btn--ghost:hover {
+    background-color: #F4EFE6;
+    color: var(--mh-admin-charcoal);
 }
 
 .mayhen_admin_btn_sm {
@@ -774,13 +795,16 @@
     border-radius: 4px;
 }
 
-.mayhen_admin_btn_danger {
+.mayhen_admin_btn_danger,
+.mayhen_admin_btn--danger {
     background-color: var(--mh-admin-danger-bg);
     border-color: #FFCDD2;
     color: var(--mh-admin-danger-text);
 }
-.mayhen_admin_btn_danger:hover {
+.mayhen_admin_btn_danger:hover,
+.mayhen_admin_btn--danger:hover {
     background-color: #FFCDD2;
+    color: var(--mh-admin-danger-text);
 }
 
 /* Toast Alerts */
@@ -794,16 +818,25 @@
     font-size: 0.875rem;
 }
 
-.mayhen_admin_alert_success {
+.mayhen_admin_alert_success,
+.mayhen_admin_alert--success {
     background-color: var(--mh-admin-success-bg);
     color: var(--mh-admin-success-text);
     border: 1px solid #C8E6C9;
 }
 
-.mayhen_admin_alert_danger {
+.mayhen_admin_alert_danger,
+.mayhen_admin_alert--danger {
     background-color: var(--mh-admin-danger-bg);
     color: var(--mh-admin-danger-text);
     border: 1px solid #FFCDD2;
+}
+
+.mayhen_admin_alert_info,
+.mayhen_admin_alert--info {
+    background-color: var(--mh-admin-info-bg);
+    color: var(--mh-admin-info-text);
+    border: 1px solid #BEE3F8;
 }
 
 /* Mobile Overlay Drawer */
