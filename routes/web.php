@@ -30,6 +30,8 @@ use App\Http\Controllers\Partner\PartnerDashboardController;
 use App\Http\Controllers\Partner\PartnerProfileController;
 use App\Http\Controllers\Partner\PartnerRegistrationController;
 use App\Http\Controllers\Partner\PartnerWeddingController;
+use App\Services\CustomerDelightService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -269,6 +271,25 @@ Route::get('/dich-vu', [PageController::class, 'services'])->name('services');
 Route::get('/bang-gia', [PageController::class, 'pricing'])->name('pricing');
 Route::get('/tu-van-goi-cuoi', [PlanAdvisorController::class, 'index'])->name('pricing.advisor');
 Route::post('/api/tu-van-goi-cuoi/phan-tich', [PlanAdvisorController::class, 'analyze'])->middleware('throttle:30,1')->name('pricing.advisor.analyze');
+
+// Vòng Lặp Phản Hồi Trải Nghiệm Khách Hàng (Customer Delight Feedback API - NXT-13)
+Route::post('/api/feedback/submit', function (Request $request) {
+    $validated = $request->validate([
+        'milestone' => 'required|string|in:after_publish,after_payment,post_wedding,general',
+        'rating' => 'required|integer|min:1|max:5',
+        'category' => 'required|string|max:50',
+        'comment' => 'nullable|string|max:1000',
+        'wedding_id' => 'nullable|integer|exists:weddings,id',
+    ]);
+
+    $feedback = CustomerDelightService::recordFeedback($validated, $request->user());
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Cảm ơn bạn đã gửi ý kiến phản hồi cho Mây Hẹn!',
+        'feedback_id' => $feedback->id,
+    ]);
+})->middleware('throttle:20,1')->name('feedback.submit');
 Route::get('/huong-dan', [PageController::class, 'howItWorks'])->name('how-it-works');
 Route::get('/ve-may-hen', [PageController::class, 'about'])->name('about');
 Route::get('/lien-he', [PageController::class, 'contact'])->name('contact');

@@ -128,6 +128,8 @@ Thumbs.db
 !/tests/Feature/AdminReleaseControlTest.php
 !/tests/Feature/AdminReliableMessagingDispatchTest.php
 !/tests/Feature/AdminAiObservatoryTest.php
+!/tests/Feature/AdminCustomerDelightFeedbackTest.php
+!/tests/Feature/AdminOperationsReplayTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

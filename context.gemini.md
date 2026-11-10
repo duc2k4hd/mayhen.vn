@@ -7412,6 +7412,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Chạy test suite `tests/Feature/AdminVNextInnovationBacklogTest.php` đạt **17/17 tests PASSED (108 assertions)**.
   * Laravel Pint: **100% PASSED**.
 
+### 51. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-13: CUSTOMER DELIGHT FEEDBACK LOOP (10/11/2026)
+- **Mục tiêu**: Xây dựng Vòng Lặp Đo Lường CSAT / NPS & Can Thiệp Khách Hàng (Customer Delight Feedback Loop), đo lường mức độ hài lòng thực tế tại 3 cột mốc vàng (`after_publish`, `after_payment`, `post_wedding`), tự động kích hoạt ticket khẩn cấp khi điểm thấp để CSKH chủ động hỗ trợ.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Lược Đồ Cơ Sở Dữ Liệu & Model ([Migration](file:///d:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_173825_create_customer_feedbacks_table.php) & [CustomerFeedback.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/CustomerFeedback.php))**:
+     - Bảng `customer_feedbacks`: `user_id`, `wedding_id`, `milestone`, `rating` (1-5 sao), `sentiment` (`frustrated`, `neutral`, `satisfied`, `delighted`), `category` (`studio_editor`, `pricing`, `customer_service`, `guest_rsvp`, `template_design`), `comment`, `linked_ticket_id`, `action_status` (`pending_review`, `contacted`, `resolved`, `dismissed`), `action_plan_note`, `handled_by`, `handled_at`, `metadata`.
+  2. **Dịch Vụ Đo Lường & Vòng Lặp Hài Lòng ([CustomerDelightService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/CustomerDelightService.php))**:
+     - **Tự Động Kích Hoạt Ticket Khẩn Cấp (Proactive Delight Recovery)**: Khi khách hàng đánh giá <= 2 sao, hệ thống tự động sinh `SupportTicket` ưu tiên `urgent` liên kết thẳng mã ticket, chuyển trạng thái `pending_review` để CSKH giải tỏa khúc mắc kịp thời.
+     - **Bộ Chỉ Số CSAT / NPS Toàn Diện**: Tính toán điểm trung bình CSAT, tỷ lệ hài lòng (%), điểm Net Promoter Score (NPS = Promoters % - Detractors %), số lượng cảnh báo tiêu cực đang chờ can thiệp.
+     - **Quy Trình Can Thiệp CSKH (`resolveActionPlan`)**: Ghi nhận biên bản trao đổi thực tế, bồi hoàn hoặc hỗ trợ kỹ thuật, cập nhật trạng thái `resolved` kèm vết Audit Log.
+  3. **Bộ Điều Khiển & Giao Diện Quản Trị ([IntelligenceController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/IntelligenceController.php) & [feedback_loop.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/feedback_loop.blade.php))**:
+     - 4 Thẻ KPI nổi bật: Điểm CSAT TB, Tỷ Lệ Hài Lòng, Chỉ Số NPS, Cảnh Báo Cần Can Thiệp.
+     - Bộ lọc động theo Cột mốc, Số sao và Trạng thái can thiệp.
+     - Bảng nhật ký phản hồi có link 1-click sang Ticket SLA và Modal Native Vanilla JS nhập biên bản giải quyết.
+     - Tích hợp endpoint Client API: `POST /api/feedback/submit`.
+     - Tích hợp Menu **Phản Hồi CSAT & NPS** vào thanh điều hướng bên [master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+  4. **Kiểm Thử Hồi Quy**:
+     - Tạo mới test suite `tests/Feature/AdminCustomerDelightFeedbackTest.php` gồm **6 kịch bản kiểm thử độc lập (38 assertions)**: 100% PASSED.
+
+### 52. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-14: READ-ONLY OPERATIONS REPLAY (10/11/2026)
+- **Mục tiêu**: Xây dựng Buồng Tái Hiện Chuỗi Thao Tác Vận Hành Cô Lập (Read-Only Operations Replay Sandbox), giải quyết bài toán điều tra sự cố phức tạp bằng cách hợp nhất toàn bộ hành vi phân tán (Đơn hàng, Webhook, Sửa thiệp, RSVP, Check-in, Support Ticket, Audit Log) vào một dòng thời gian liên tục đã che PII an toàn.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Dịch Vụ Hợp Nhất & Dò Tìm Dị Thường ([OperationsReplayService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/OperationsReplayService.php))**:
+     - **Unified Chronological Assembler (`assembleTimeline`)**: Hợp nhất đa nguồn dữ liệu theo thứ tự thời gian tuyến tính, gán chỉ số bước (Step 1 &rarr; Step N) và tính toán khoảng trễ giữa các bước (`gap_from_prev_minutes`).
+     - **Bảo Vệ PII Tuyệt Đối (Zero PII Leakage Guarantee)**: Tự động che giấu email (`ng***h@mayhen.vn`), số điện thoại (`098****321`), tên khách mời (`Nguyễn Văn *`) tuân thủ nghiêm ngặt Luật Bảo Vệ Dữ Liệu Cá Nhân 91/2025/QH15.
+     - **Bộ Dò Tìm Dị Thường Tự Động (`detectAnomalies`)**: Phát hiện các khoảng trễ bất thường (> 48h), sự cố khẩn cấp (`urgent_incident`) hoặc phản ánh tiêu cực của khách hàng.
+  2. **Bộ Điều Khiển & Buồng Phóng Replay ([OperationsReplayController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/OperationsReplayController.php), [index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/replay/index.blade.php), [show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/replay/show.blade.php))**:
+     - Màn hình tra cứu đa phạm vi: Đám cưới (Wedding), Đơn hàng (Order Code) hoặc Khách hàng (User ID).
+     - Buồng Replay tương tác: Hộp cảnh báo dị thường, bộ điều khiển bước (Đầu, Trước, Tiếp, Cuối) và chế độ Auto-Play mô phỏng 2s/bước.
+     - Tích hợp Safe Support Lens: Cho phép Super Admin mở kính giải mã PII có xác nhận và ghi nhận vết Audit Log `unmask_replay_pii`.
+     - Tích hợp Menu **Tái Hiện Vận Hành (Replay)** vào thanh điều hướng bên [master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php) và Command Palette `Ctrl+K`.
+  3. **Kiểm Thử Hồi Quy**:
+     - Tạo mới test suite `tests/Feature/AdminOperationsReplayTest.php` gồm **6 kịch bản kiểm thử độc lập (21 assertions)**: 100% PASSED.
+     - Cụm test toàn diện Admin Post-VNext: **189/189 tests PASSED 100% (1.147 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

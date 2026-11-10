@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerFeedback;
 use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\SupportTicket;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
+use App\Services\CustomerDelightService;
 use App\Services\RealFunnelAnalyticsService;
 use App\Services\WeddingReadinessRadarService;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -377,5 +380,66 @@ class IntelligenceController extends Controller
             'funnel' => $funnel,
             'currentDays' => $days,
         ]);
+    }
+
+    /**
+     * Vòng Lặp Phản Hồi Trải Nghiệm Khách Hàng (Customer Delight Feedback Loop - NXT-13).
+     */
+    public function feedbackLoop(Request $request): View
+    {
+        $query = CustomerFeedback::with(['user', 'wedding', 'supportTicket', 'handler'])->latest('id');
+
+        if ($request->filled('milestone')) {
+            $query->where('milestone', $request->input('milestone'));
+        }
+
+        if ($request->filled('rating')) {
+            $query->where('rating', (int) $request->input('rating'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('action_status', $request->input('status'));
+        }
+
+        $feedbacks = $query->paginate(25)->withQueryString();
+        $metrics = CustomerDelightService::getDelightMetrics();
+
+        return view('admin.pages.intelligence.feedback_loop', [
+            'feedbacks' => $feedbacks,
+            'metrics' => $metrics,
+            'currentMilestone' => $request->input('milestone'),
+            'currentRating' => $request->input('rating'),
+            'currentStatus' => $request->input('status'),
+        ]);
+    }
+
+    /**
+     * Ghi nhận biên bản can thiệp CSKH cho phản hồi chưa hài lòng (NXT-13).
+     */
+    public function resolveFeedbackAction(Request $request, int $id): JsonResponse|RedirectResponse
+    {
+        $validated = $request->validate([
+            'action_plan_note' => 'required|string|max:1000',
+            'action_status' => 'required|in:contacted,resolved,dismissed',
+        ]);
+
+        $feedback = CustomerFeedback::findOrFail($id);
+
+        CustomerDelightService::resolveActionPlan(
+            $feedback,
+            $request->user(),
+            $validated['action_plan_note'],
+            $validated['action_status']
+        );
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã cập nhật biên bản can thiệp CSKH thành công.',
+                'feedback' => $feedback->fresh(),
+            ]);
+        }
+
+        return back()->with('success', 'Đã cập nhật biên bản can thiệp CSKH thành công.');
     }
 }

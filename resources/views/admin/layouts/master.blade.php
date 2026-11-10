@@ -91,6 +91,25 @@
                     <span>Đài Quan Sát AI (Tokens & Cost)</span>
                 </a>
 
+                <a href="{{ route('admin.intelligence.feedback_loop') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.feedback_loop') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </span>
+                    <span>Phản Hồi CSAT & NPS</span>
+                </a>
+
+                <a href="{{ route('admin.intelligence.replay.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.replay.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span>Tái Hiện Vận Hành (Replay)</span>
+                </a>
+
                 <!-- Section 2: Vận Hành Thiệp Cưới -->
                 <div class="mayhen_admin_menu_section">Vận Hành Thiệp Cưới</div>
                 <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.invitations.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -485,6 +504,14 @@
                 <a href="{{ route('admin.intelligence.reconciliation') }}" class="mayhen_admin_cmd_item" data-search="đối soát thám tử tài chính ngân hàng sepay vietqr khớp lệnh sai lệch thừa thiếu">
                     <span>⚖️ Thám Tử Đối Soát Tài Chính (Reconciliation)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/reconciliation</span>
+                </a>
+                <a href="{{ route('admin.intelligence.feedback_loop') }}" class="mayhen_admin_cmd_item" data-search="feedback đánh giá csat nps sự hài lòng khách hàng can thiệp delight">
+                    <span>🌟 Vòng Lặp Phản Hồi CSAT & NPS (Customer Delight)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/feedback-loop</span>
+                </a>
+                <a href="{{ route('admin.intelligence.replay.index') }}" class="mayhen_admin_cmd_item" data-search="replay tái hiện chuỗi sự kiện timeline lịch sử vận hành điều tra sự cố">
+                    <span>⏱️ Tái Hiện Chuỗi Vận Hành (Operations Replay)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/replay</span>
                 </a>
                 <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_cmd_item" data-search="thiệp cưới khách hàng dự án weddings invitations">
                     <span>💌 Thiệp Cưới Khách Hàng</span>

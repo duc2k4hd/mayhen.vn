@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\IntelligenceController as AdminIntelligenceContro
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
 use App\Http\Controllers\Admin\MessagingDispatchController as AdminMessagingDispatchController;
+use App\Http\Controllers\Admin\OperationsReplayController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
@@ -189,6 +190,14 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/inbox', [AdminIntelligenceController::class, 'actionInbox'])->name('inbox');
         Route::get('/reconciliation', [AdminIntelligenceController::class, 'reconciliationDetective'])->name('reconciliation');
         Route::get('/delight-recovery', [AdminIntelligenceController::class, 'delightRecovery'])->name('delight_recovery');
+        Route::get('/feedback-loop', [AdminIntelligenceController::class, 'feedbackLoop'])->name('feedback_loop');
+        Route::post('/feedback/{id}/resolve', [AdminIntelligenceController::class, 'resolveFeedbackAction'])->name('resolve_feedback');
+        Route::get('/replay', [OperationsReplayController::class, 'index'])->name('replay.index');
+        Route::get('/replay/{type}/{id}', [OperationsReplayController::class, 'show'])->name('replay.show');
+        Route::get('/feedback-loop', [AdminIntelligenceController::class, 'feedbackLoop'])->name('feedback_loop');
+        Route::post('/feedback/{id}/resolve', [AdminIntelligenceController::class, 'resolveFeedbackAction'])->name('resolve_feedback');
+        Route::get('/replay', [\App\Http\Controllers\Admin\OperationsReplayController::class, 'index'])->name('replay.index');
+        Route::get('/replay/{type}/{id}', [\App\Http\Controllers\Admin\OperationsReplayController::class, 'show'])->name('replay.show');
     });
 
     // Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (NXT-10: Privacy Operations & Retention Jobs)
