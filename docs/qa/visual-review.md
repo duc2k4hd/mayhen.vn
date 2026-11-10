@@ -90,7 +90,7 @@
 
 ### 2.8. Bộ Sưu Tập Ảnh Chụp Trực Quan Bằng Headless Chrome (Physical Visual Artifacts)
 - **Công cụ chụp**: Google Chrome Headless Engine (`--headless=new`, `--disable-gpu`) trực tiếp trên máy chủ thử nghiệm cục bộ `http://127.0.0.1:8000`.
-- **Tổng số ảnh đã chụp và lưu trữ**: **96 tệp ảnh PNG** trong thư mục `docs/qa/screenshots/`:
+- **Tổng số ảnh đã chụp và lưu trữ**: **116 tệp ảnh PNG** trong thư mục `docs/qa/screenshots/`:
   * **Trang chủ (`home`)**: `home_M375.png` (184 KB), `home_M430.png` (253 KB), `home_T768.png` (478 KB), `home_D1440.png` (647 KB).
   * **Kho mẫu (`templates`)**: `templates_M375.png` (118 KB), `templates_M430.png` (149 KB), `templates_T768.png` (244 KB), `templates_D1440.png` (314 KB).
   * **Chi tiết mẫu (`template-detail`)**: `template-detail_M375.png` (297 KB), `template-detail_M430.png` (355 KB), `template-detail_T768.png` (663 KB), `template-detail_D1440.png` (554 KB).
@@ -115,6 +115,11 @@
   * **Sổ Tay Khách Mời Cá Nhân Hóa (`concierge`)**: `concierge_M375.png` (59 KB), `concierge_M430.png` (70 KB), `concierge_T768.png` (95 KB), `concierge_D1440.png` (99 KB).
   * **Tải Ảnh Kỷ Niệm Photo Drop (`photodrop`)**: `photodrop_M375.png` (57 KB), `photodrop_M430.png` (75 KB), `photodrop_T768.png` (107 KB), `photodrop_D1440.png` (125 KB).
   * **Thiệp Cưới Hoạt Động Trực Tiếp (`invitation_live`)**: `invitation_live_M375.png` (61 KB), `invitation_live_M430.png` (69 KB), `invitation_live_T768.png` (88 KB), `invitation_live_D1440.png` (100 KB).
+  * **Cổng Quản Trị Hệ Thống (`admin_login`)**: `admin_login_M375.png` (90 KB), `admin_login_M430.png` (108 KB), `admin_login_T768.png` (186 KB), `admin_login_D1440.png` (355 KB).
+  * **Đăng Ký Đối Tác Studio (`partner_register`)**: `partner_register_M375.png` (45 KB), `partner_register_M430.png` (60 KB), `partner_register_T768.png` (98 KB), `partner_register_D1440.png` (73 KB).
+  * **Cổng Không Gian Đối Tác (`partner_portal`)**: `partner_portal_M375.png` (134 KB), `partner_portal_M430.png` (160 KB), `partner_portal_T768.png` (251 KB), `partner_portal_D1440.png` (378 KB).
+  * **Trình Chiếu Lễ Cưới Trực Tiếp Live Wall (`live_wall`)**: `live_wall_M375.png` (87 KB), `live_wall_M430.png` (95 KB), `live_wall_T768.png` (151 KB), `live_wall_D1440.png` (315 KB).
+  * **Hộp Lưu Giữ Thời Gian Kỷ Niệm (`time_capsule`)**: `time_capsule_M375.png` (91 KB), `time_capsule_M430.png` (115 KB), `time_capsule_T768.png` (172 KB), `time_capsule_D1440.png` (200 KB).
 - **Kết quả nghiệm thu ảnh thực tế**:
   * 100% không phát sinh lỗi tràn ngang (Zero horizontal overflow).
   * Căn lề, lề an toàn (safe area) và khoảng cách ngón tay cái chạm (touch target $\ge 48\text{px}$) đạt chuẩn công thái học.

@@ -94,7 +94,7 @@
 - **Kiểm định chịu tải đồng thời & Lũy đẳng (Concurrency & Spike Load)**:
   * `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php`: 4 bài test thực chiến kiểm tra quét dồn dập nhiều lần cùng 1 token (idempotent, không nhân đôi sĩ số), đón khách phát sinh (walk-in) nguyên tử, điểm danh đồng loạt cùng bàn tiệc không deadlock, và chống replay attack webhook SePay.
 - **Kiểm định trực quan thực tế (Live Visual Screenshots)**:
-  * 60 tệp ảnh chụp PNG thực tế tại `docs/qa/screenshots/` cho 15 màn hình giao diện then chốt trên 4 kích thước màn hình tiêu biểu (`375x812`, `430x932`, `768x1024`, `1440x900`).
+  * 116 tệp ảnh chụp PNG thực tế tại `docs/qa/screenshots/` cho 29 màn hình giao diện then chốt trên 4 kích thước màn hình tiêu biểu (`375x812`, `430x932`, `768x1024`, `1440x900`).
 - **Danh mục chức năng & Ma trận kiểm thử (Traceability & QA Matrix)**:
   * `docs/qa/feature-traceability.csv`: Tạo lập hoàn tất đối chiếu 782/782 hạng mục vi mô xuyên suốt 32 nhóm chức năng với routes, controllers, views, css, js, database và feature tests tương ứng.
   * `docs/qa/MAY_HEN_FUNCTION_CATALOG.md`: Cập nhật 100% đánh dấu `[x]` và trạng thái `CODE_VERIFIED_ACCEPTED` trên 782 hạng mục.
@@ -102,4 +102,4 @@
   * `docs/qa/MAY_HEN_QA_TEST_CASES.csv`: Đồng bộ hóa 5,070 kịch bản kiểm thử sang trạng thái `PASS` kèm tệp test và bằng chứng xác minh cụ thể.
   * `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv`: Cập nhật 702 ca kiểm thử màn hình với liên kết ảnh thực tế và trạng thái `VISUAL_PASS` / `CODE_VERIFIED_RESPONSIVE`.
   * `docs/qa/MAY_HEN_CONFLICTS_AND_VERIFICATION.md`: Giải quyết toàn diện 5 điểm mâu thuẫn đặc tả (`SPEC_CONFLICT-01` đến `SPEC_CONFLICT-05`).
-  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 630 tests, 3,248 assertions, 60 screenshots và 26 bugs P0/P1/P2 được xử lý triệt để.
+  * `docs/qa/release-gates.md`: Cập nhật chỉ số nghiệm thu 5 Cổng Kiến Trúc (Gate 0 - Gate 4) với 630 tests, 3,248 assertions, 116 screenshots và 26 bugs P0/P1/P2 được xử lý triệt để.
