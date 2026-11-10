@@ -71,11 +71,13 @@
         box-shadow: none !important;
     }
 
-    /* 4. Cưỡng chế các animation khởi đầu hiển thị ngay lập tức (không bị ẩn trắng khi chưa cuộn) */
+    /* 4. Cưỡng chế các animation khởi đầu hiển thị ngay lập tức (không bị ẩn trắng hoặc mờ nhòe khi chưa cuộn) */
     .mayhen_embed_mode .ladi-animation-hidden,
     .mayhen_embed_mode [class*="ladi-animation-hidden"],
     .mayhen_embed_mode [class*="_rv"],
     .mayhen_embed_mode [class*="sr_hien"],
+    .mayhen_embed_mode [class*="sr_con"],
+    .mayhen_embed_mode [class*="sr_anh_cho"],
     .mayhen_embed_mode:not(.mayhen_is_crafting) .mayhen_invitation_reveal,
     .mayhen_embed_mode:not(.mayhen_is_crafting) [class*="mayhen_invitation_reveal"],
     .mayhen_embed_mode:not(.mayhen_is_crafting) .mayhen_invitation_hero_card,
@@ -86,6 +88,7 @@
         opacity: 1 !important;
         visibility: visible !important;
         transform: none !important;
+        filter: none !important;
     }
 
     /* 5. Ẩn tuyệt đối 100% thanh điều hướng bottom nav dock khi nhúng trong iframe xem mẫu hoặc editor */
@@ -179,11 +182,12 @@
 
             // Cưỡng chế hiển thị toàn bộ các phần tử reveal khi nhúng trong iframe xem thử bình thường
             if (!new URLSearchParams(window.location.search).has('crafting')) {
-                document.querySelectorAll('.mayhen_invitation_reveal, [class*="mayhen_invitation_reveal"]').forEach(function(el) {
-                    el.classList.add('mayhen_invitation_visible');
+                document.querySelectorAll('.mayhen_invitation_reveal, [class*="mayhen_invitation_reveal"], [class*="sr_hien"], [class*="sr_con"], [class*="sr_anh_cho"]').forEach(function(el) {
+                    el.classList.add('mayhen_invitation_visible', 'mayhen_invitation_da_hien');
                     el.style.setProperty('opacity', '1', 'important');
                     el.style.setProperty('visibility', 'visible', 'important');
                     el.style.setProperty('transform', 'none', 'important');
+                    el.style.setProperty('filter', 'none', 'important');
                 });
             }
             var openTriggers = document.querySelectorAll(

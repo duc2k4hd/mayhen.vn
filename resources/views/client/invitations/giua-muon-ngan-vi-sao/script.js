@@ -921,8 +921,14 @@
 
     function batHienDan() {
         var ds = document.querySelectorAll('.' + P + 'sr_hien');
-        if (!('IntersectionObserver' in window)) {
-            ds.forEach(function (el) { el.classList.add(P + 'da_hien'); });
+        if (isEmbed || !('IntersectionObserver' in window)) {
+            ds.forEach(function (el) {
+                el.classList.add(P + 'da_hien');
+                el.style.opacity = '1';
+                el.style.transform = 'none';
+                el.style.filter = 'none';
+                el.style.visibility = 'visible';
+            });
             return;
         }
         var io = new IntersectionObserver(function (es) {
@@ -1714,9 +1720,11 @@
                 cua.classList.add(P + 'da_mo');
             }
             // Kích hoạt hiển thị toàn bộ phần tử
-            document.querySelectorAll('.' + P + 'sr_hien').forEach(function (el) {
+            document.querySelectorAll('.' + P + 'sr_hien, .' + P + 'sr_con, .' + P + 'sr_anh_cho, .' + P + 'sr_the').forEach(function (el) {
+                el.classList.add(P + 'da_hien');
                 el.style.opacity = '1';
                 el.style.transform = 'none';
+                el.style.filter = 'none';
                 el.style.visibility = 'visible';
             });
         }

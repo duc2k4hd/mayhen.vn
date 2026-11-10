@@ -3520,9 +3520,16 @@ body.mayhen_invitation_embed_mode .mayhen_invitation_sr_cua {
     pointer-events: none !important;
 }
 .mayhen_invitation_embed_mode .mayhen_invitation_sr_hien,
-body.mayhen_invitation_embed_mode .mayhen_invitation_sr_hien {
+.mayhen_invitation_embed_mode .mayhen_invitation_sr_con,
+.mayhen_invitation_embed_mode .mayhen_invitation_sr_anh_cho,
+.mayhen_invitation_embed_mode .mayhen_invitation_sr_the,
+body.mayhen_invitation_embed_mode .mayhen_invitation_sr_hien,
+body.mayhen_invitation_embed_mode .mayhen_invitation_sr_con,
+body.mayhen_invitation_embed_mode .mayhen_invitation_sr_anh_cho,
+body.mayhen_invitation_embed_mode .mayhen_invitation_sr_the {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
     visibility: visible !important;
 }
 .mayhen_invitation_embed_mode .mayhen_invitation_sr_khoa,
