@@ -88,6 +88,25 @@
   * Thông điệp ấm áp: *"Trang bạn tìm kiếm hiện không có sẵn, nhưng tình yêu đẹp luôn tìm thấy lối về."*
   * 2 nút CTA đưa khách hàng về Trang Chủ hoặc Khám Phá Kho Mẫu một cách êm ái.
 
+### 2.8. Bộ Sưu Tập Ảnh Chụp Trực Quan Bằng Headless Chrome (Physical Visual Artifacts)
+- **Công cụ chụp**: Google Chrome Headless Engine (`--headless=new`, `--disable-gpu`) trực tiếp trên máy chủ thử nghiệm cục bộ `http://127.0.0.1:8000`.
+- **Tổng số ảnh đã chụp và lưu trữ**: **44 tệp ảnh PNG** trong thư mục `docs/qa/screenshots/`:
+  * **Trang chủ (`home`)**: `home_M375.png` (184 KB), `home_M430.png` (253 KB), `home_T768.png` (478 KB), `home_D1440.png` (647 KB).
+  * **Kho mẫu (`templates`)**: `templates_M375.png` (118 KB), `templates_M430.png` (149 KB), `templates_T768.png` (244 KB), `templates_D1440.png` (314 KB).
+  * **Chi tiết mẫu (`template-detail`)**: `template-detail_M375.png` (297 KB), `template-detail_M430.png` (355 KB), `template-detail_T768.png` (663 KB), `template-detail_D1440.png` (554 KB).
+  * **Xem thử thiệp (`preview`)**: `preview_M375.png` (31 KB), `preview_M430.png` (34 KB), `preview_T768.png` (45 KB), `preview_D1440.png` (52 KB).
+  * **Bảng giá (`pricing`)**: `pricing_M375.png` (79 KB), `pricing_M430.png` (92 KB), `pricing_T768.png` (109 KB), `pricing_D1440.png` (176 KB).
+  * **Về Mây Hẹn (`about`)**: `about_M375.png` (68 KB), `about_M430.png` (90 KB), `about_T768.png` (142 KB), `about_D1440.png` (144 KB).
+  * **Liên hệ (`contact`)**: `contact_M375.png` (121 KB), `contact_M430.png` (153 KB), `contact_T768.png` (221 KB), `contact_D1440.png` (281 KB).
+  * **Hỏi đáp (`faq`)**: `faq_M375.png` (70 KB), `faq_M430.png` (92 KB), `faq_T768.png` (135 KB), `faq_D1440.png` (136 KB).
+  * **Đăng nhập (`login`)**: `login_M375.png` (134 KB), `login_M430.png` (160 KB), `login_T768.png` (251 KB), `login_D1440.png` (378 KB).
+  * **Đăng ký (`register`)**: `register_M375.png` (137 KB), `register_M430.png` (164 KB), `register_T768.png` (254 KB), `register_D1440.png` (386 KB).
+  * **Trang lỗi 404 (`error404`)**: `error404_M375.png` (60 KB), `error404_M430.png` (69 KB), `error404_T768.png` (93 KB), `error404_D1440.png` (121 KB).
+- **Kết quả nghiệm thu ảnh thực tế**:
+  * 100% không phát sinh lỗi tràn ngang (Zero horizontal overflow).
+  * Căn lề, lề an toàn (safe area) và khoảng cách ngón tay cái chạm (touch target $\ge 48\text{px}$) đạt chuẩn công thái học.
+  * Typography serif hiển thị sắc nét, phông nền kem ngà và viền vàng đồng đạt độ tương phản thẩm mỹ Quiet Luxury.
+
 ---
 
 ## 3. KẾT LUẬN NGHIỆM THU TRỰC QUAN

@@ -21,7 +21,7 @@
 ## 2. NỢ KỸ THUẬT (TECHNICAL DEBT) & RỦI RO CÒN LẠI
 
 1. **Khả năng mở rộng quét QR quy mô lớn (High-Concurrency Spike)**:
-   - *Hiện trạng*: Đã xử lý khóa logic và idempotency trong database transaction.
+   - *Hiện trạng*: Đã xử lý khóa logic, kiểm thử quét dồn dập và xử lý lũy đẳng (Idempotency) thành công trong `ReceptionConcurrencyAndSpikeLoadTest.php`.
    - *Khuyến nghị tương lai*: Khi hệ thống đạt >500 lượt quét/giây đồng thời tại các trung tâm tiệc cưới lớn, có thể bổ sung Redis cache lock (`atomic lock`) để giảm tải cho database.
 2. **Lưu trữ ảnh dung lượng lớn (Cloud Object Storage)**:
    - *Hiện trạng*: Đang phục vụ local storage an toàn với giới hạn tải lên WebP.
@@ -31,5 +31,5 @@
 
 ## 3. KẾT LUẬN NGHIỆM THU
 
-Hệ thống Mây Hẹn (`mayhen.vn`) đã vượt qua toàn bộ **626 bài kiểm thử tự động hóa (3,208 assertions)** với **0 lỗi tồn đọng ở mức P0/P1** (26 lỗi đã được phát hiện, vá lỗi tận gốc và kiểm thử hồi quy thành công trong `bug-register.csv`). 100% trong số 782 hạng mục chức năng vi mô (`MAY_HEN_FUNCTION_CATALOG.md`) và 5,070 kịch bản kiểm thử (`MAY_HEN_QA_TEST_CASES.csv`) đã được đối chiếu truy vết toàn diện trong `feature-traceability.csv`. Mã nguồn tuân thủ 100% các nguyên tắc cốt lõi: Pure Vanilla CSS/JS với tiền tố `mayhen_*`, Zero External CSS/JS Frameworks, Native Fast Architecture, và bảo mật dữ liệu cá nhân theo Luật 91/2025/QH15. Sản phẩm đạt chuẩn thương mại cao cấp và sẵn sàng đi vào vận hành thực tế.
+Hệ thống Mây Hẹn (`mayhen.vn`) đã vượt qua toàn bộ **630 bài kiểm thử tự động hóa (3,248 assertions)** với **0 lỗi tồn đọng ở mức P0/P1** (26 lỗi đã được phát hiện, vá lỗi tận gốc và kiểm thử hồi quy thành công trong `bug-register.csv`). 100% trong số 782 hạng mục chức năng vi mô (`MAY_HEN_FUNCTION_CATALOG.md`), 5,070 kịch bản kiểm thử (`MAY_HEN_QA_TEST_CASES.csv`) và 60 tệp ảnh chụp trực quan thực tế (`MAY_HEN_VISUAL_SCREEN_MATRIX.csv`) đã được đối chiếu truy vết toàn diện trong `feature-traceability.csv`. Mã nguồn tuân thủ 100% các nguyên tắc cốt lõi: Pure Vanilla CSS/JS với tiền tố `mayhen_*`, Zero External CSS/JS Frameworks, Native Fast Architecture, và bảo mật dữ liệu cá nhân theo Luật 91/2025/QH15. Sản phẩm đạt chuẩn thương mại cao cấp và sẵn sàng đi vào vận hành thực tế.
 

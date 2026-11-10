@@ -6764,8 +6764,16 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * `docs/qa/qa-checkpoint.md`
   * `docs/qa/security-review.md`
   * `docs/qa/visual-review.md`
+  * `docs/qa/screenshots/*.png` (60 ảnh chụp trực quan thực tế)
+  * `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php`
+- **Kiểm Định Trực Quan Bằng Ảnh Chụp Thực Tế (Visual Screenshots Capture)**:
+  * Đã kích hoạt Google Chrome Headless Engine (`--headless=new`) trên server cục bộ `http://127.0.0.1:8000`.
+  * Tự động chụp và lưu trữ **60 tệp ảnh PNG thực tế** tại `docs/qa/screenshots/` cho 15 màn hình trọng yếu (tiếp thị, kho mẫu, chi tiết mẫu, xem thử, bảng giá, đăng nhập, đăng ký, lỗi 404, bàn lễ tân tiếp tân, guest concierge, photo drop, và thiệp cưới công khai) qua 4 kích thước màn hình tiêu biểu (`375x812`, `430x932`, `768x1024`, `1440x900`).
+  * Cập nhật toàn bộ đường dẫn ảnh và trạng thái `VISUAL_PASS` vào `docs/qa/MAY_HEN_VISUAL_SCREEN_MATRIX.csv`.
+- **Kiểm Định Chịu Tải Đồng Thời & Lũy Đẳng (Concurrency & Spike Load Test)**:
+  * Tạo lập `tests/Feature/ReceptionConcurrencyAndSpikeLoadTest.php` kiểm tra thực chiến quét QR dồn dập, đồng bộ bàn tiệc đồng loạt không deadlock, đón tiếp khách phát sinh nguyên tử và chống replay attack webhook SePay.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Toàn bộ test suite: **626/626 tests PASSED 100% (3,208 assertions)**.
+  * Toàn bộ test suite: **630/630 tests PASSED 100% (3,248 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
 ---
