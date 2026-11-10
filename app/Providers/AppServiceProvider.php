@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Order;
+use App\Models\SupportTicket;
 use App\Models\WeddingWish;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -63,9 +65,13 @@ class AppServiceProvider extends ServiceProvider
             if (Auth::check() && method_exists(Auth::user(), 'canAccessAdminPanel') && Auth::user()->canAccessAdminPanel()) {
                 $pendingOrders = Order::where('status', 'pending')->count();
                 $pendingWishes = WeddingWish::where('is_approved', false)->count();
+                $openTickets = Schema::hasTable('support_tickets') ? SupportTicket::whereIn('status', ['open', 'in_progress'])->count() : 0;
+                $failedJobs = Schema::hasTable('failed_jobs') ? DB::table('failed_jobs')->count() : 0;
 
                 $view->with('pendingOrdersBadge', $pendingOrders);
                 $view->with('pendingWishesBadge', $pendingWishes);
+                $view->with('openTicketsBadge', $openTickets);
+                $view->with('failedJobsBadge', $failedJobs);
             }
         });
     }

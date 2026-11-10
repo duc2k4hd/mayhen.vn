@@ -6979,6 +6979,43 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **684/684 tests PASSED 100% (3,585 assertions in 15.07s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 30. HOÀN THIỆN WAVE 07 — SUPPORT CENTER, QUEUE JOBS MONITOR & SYSTEM DIAGNOSTICS
+- **Mục tiêu**: Hoàn thiện toàn diện Trung tâm Hỗ trợ Khách hàng (`ADM-A18`), Giám sát Hàng đợi & Tác vụ Lỗi nền (`ADM-A19`) và Tối ưu hóa Thanh tra Hệ thống & Bộ nhớ Lưu trữ.
+- **Các thành phần đã triển khai**:
+  1. **Trung Tâm Hỗ Trợ Khách Hàng (Support Ticket System - `ADM-A18`)**:
+     - Thiết lập migrations `create_support_tickets_table` và `create_support_ticket_replies_table`.
+     - Models [SupportTicket.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/SupportTicket.php) và [SupportTicketReply.php](file:///d:/Project/Laravel/mayhen.vn/app/Models/SupportTicketReply.php):
+       * Khóa sinh mã tự động duy nhất `generateCode()` dạng `TK-XXXXXXXX`.
+       * Tính toán chỉ số SLA thời gian phản hồi đầu tiên (`first_response_hours`) và tổng thời gian giải quyết (`resolution_hours`).
+       * Máy trạng thái `canTransitionTo()` kiểm soát chuyển đổi hợp lệ (`open` -> `in_progress` -> `resolved` -> `closed`), chống nhảy trạng thái trái phép.
+       * Huy hiệu UI màu sắc tương ứng theo phân loại, trạng thái và mức độ ưu tiên.
+     - Controller [Admin/SupportController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/SupportController.php) và Views [support/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/index.blade.php), [support/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/show.blade.php):
+       * Bảng điều khiển 5 KPI: Tổng ticket, Chờ xử lý, Đang xử lý, Khẩn cấp chưa xong, SLA phản hồi trung bình (giờ).
+       * Bộ lọc đa chiều: Theo trạng thái, mức ưu tiên, phân loại (kỹ thuật, thanh toán, thiệp cưới, chung), staff phụ trách và tìm kiếm theo mã/tiêu đề.
+       * Thread phản hồi 2 chiều giữa Khách hàng và Quản trị viên, hỗ trợ cờ **Ghi chú nội bộ** (`is_internal_note`) chỉ Staff/Admin thấy.
+       * Tự động ghi nhận mốc thời gian SLA khi Staff phản hồi lần đầu tiên và chuyển trạng thái ticket sang `in_progress`.
+       * Giao việc (Assign Staff) và cập nhật trạng thái với phân quyền Quản lý (`admin.manager`).
+       * Ghi vết đầy đủ mọi thao tác vào `AuditLogger`.
+  2. **Giám Sát Hàng Đợi & Tác Vụ Lỗi Nền (Queue & Failed Jobs Monitor - `ADM-A19`)**:
+     - Controller [Admin/JobMonitorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/JobMonitorController.php) và View [system/jobs.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/system/jobs.blade.php):
+       * Danh sách chi tiết các tác vụ nền thất bại từ bảng `failed_jobs` với trích xuất thông minh tên Job gốc (`displayName`), hàng đợi (`queue`), kết nối và thời điểm lỗi.
+       * Hiển thị chi tiết ngoại lệ (Exception Stack Trace) định dạng code/monospace dễ đọc, có thể mở rộng/thu gọn.
+       * Thao tác đơn lẻ: **Thử lại tác vụ (Retry Job)** thông qua `Artisan::call('queue:retry', ['id' => [$uuid]])` hoặc **Xóa bỏ tác vụ (Delete)**.
+       * Thao tác hàng loạt: **Thử lại tất cả (Retry All)** và **Xóa sạch toàn bộ (Purge All)** với bảo vệ cảnh báo xác nhận.
+       * Toàn bộ phân hệ được bảo vệ nghiêm ngặt chỉ dành cho Quản trị viên cấp cao (`admin.super`) và tự động ghi nhật ký kiểm toán `AuditLogger`.
+  3. **Huy Hiệu Thời Gian Thực & Điều Hướng Quản Trị (Admin Shell Integration)**:
+     - Bổ sung View Composer trong [AppServiceProvider.php](file:///d:/Project/Laravel/mayhen.vn/app/Providers/AppServiceProvider.php):
+       * Badge số lượng ticket đang chờ xử lý (`openTicketsBadge`).
+       * Badge số lượng tác vụ nền bị lỗi (`failedJobsBadge`) với cảnh báo đỏ rực rỡ.
+     - Sidebar Menu ([master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php)):
+       * Thêm `Trung Tâm Hỗ Trợ` vào Section 4 (Người Dùng & Hỗ Trợ).
+       * Thêm `Giám Sát Hàng Đợi (Queue)` vào Section 5 (Hệ Thống & Cài Đặt).
+     - Command Palette (`Ctrl+K`): Bổ sung `🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)` và `⚙️ Giám Sát Hàng Đợi (Queue & Jobs)`.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave07SupportAndOpsTest.php` với 11 kịch bản kiểm thử độc lập (54 assertions), 100% PASSED.
+  * Toàn bộ test suite: **695/695 tests PASSED 100% (3,639 assertions in 14.55s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -5,9 +5,11 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuestController as AdminGuestController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
+use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WishController as AdminWishController;
@@ -130,5 +132,23 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
         Route::get('/audit-logs', [AdminSettingController::class, 'auditLogs'])->name('audit_logs');
         Route::get('/audit-logs/export-csv', [AdminSettingController::class, 'exportAuditLogs'])->name('audit_logs.export');
+    });
+
+    // Trung tâm Hỗ trợ Khách hàng (Wave 07 - ADM-A18)
+    Route::prefix('support')->name('support.')->group(function () {
+        Route::get('/', [AdminSupportController::class, 'index'])->name('index');
+        Route::get('/{ticket}', [AdminSupportController::class, 'show'])->name('show');
+        Route::post('/{ticket}/reply', [AdminSupportController::class, 'reply'])->name('reply');
+        Route::post('/{ticket}/status', [AdminSupportController::class, 'updateStatus'])->middleware('admin.manager')->name('update_status');
+        Route::post('/{ticket}/assign', [AdminSupportController::class, 'assignTo'])->middleware('admin.manager')->name('assign');
+    });
+
+    // Giám sát Queue & Failed Jobs (Wave 07 - ADM-A19)
+    Route::prefix('system/jobs')->middleware('admin.super')->name('jobs.')->group(function () {
+        Route::get('/', [AdminJobMonitorController::class, 'index'])->name('index');
+        Route::post('/retry-all', [AdminJobMonitorController::class, 'retryAll'])->name('retry_all');
+        Route::post('/purge', [AdminJobMonitorController::class, 'purge'])->name('purge');
+        Route::post('/{uuid}/retry', [AdminJobMonitorController::class, 'retry'])->name('retry');
+        Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
     });
 });

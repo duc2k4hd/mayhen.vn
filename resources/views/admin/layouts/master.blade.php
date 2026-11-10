@@ -126,8 +126,8 @@
                     <span>Mã Giảm Giá & Ưu Đãi</span>
                 </a>
 
-                <!-- Section 4: Người Dùng & Tài Khoản -->
-                <div class="mayhen_admin_menu_section">Người Dùng & Tài Khoản</div>
+                <!-- Section 4: Người Dùng & Hỗ Trợ -->
+                <div class="mayhen_admin_menu_section">Người Dùng & Hỗ Trợ</div>
                 <a href="{{ route('admin.users.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.users.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -138,6 +138,18 @@
                         </svg>
                     </span>
                     <span>Quản Lý Người Dùng</span>
+                </a>
+
+                <a href="{{ route('admin.support.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.support.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                    </span>
+                    <span>Trung Tâm Hỗ Trợ</span>
+                    @if (($openTicketsBadge ?? 0) > 0)
+                        <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $openTicketsBadge }} ticket đang chờ xử lý">{{ $openTicketsBadge }}</span>
+                    @endif
                 </a>
 
                 <!-- Section 5: Hệ Thống & Cài Đặt (Chỉ Quản trị viên cấp cao) -->
@@ -195,6 +207,18 @@
                             </svg>
                         </span>
                         <span>Nhật Ký Quản Trị (Audit)</span>
+                    </a>
+
+                    <a href="{{ route('admin.jobs.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.jobs.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </span>
+                        <span>Giám Sát Hàng Đợi (Queue)</span>
+                        @if (($failedJobsBadge ?? 0) > 0)
+                            <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" style="background: #C0392B; color: #fff;" title="{{ $failedJobsBadge }} tác vụ lỗi cần xử lý">{{ $failedJobsBadge }}</span>
+                        @endif
                     </a>
                 @endif
             </nav>
@@ -400,6 +424,10 @@
                     <span>👥 Quản Lý Người Dùng & Phân Quyền</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/users</span>
                 </a>
+                <a href="{{ route('admin.support.index') }}" class="mayhen_admin_cmd_item" data-search="trung tâm hỗ trợ support tickets khiếu nại báo lỗi trợ giúp khách hàng">
+                    <span>🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/support</span>
+                </a>
                 @if (Auth::user()?->isSuperAdmin())
                     <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_cmd_item" data-search="gói cước dịch vụ bảng giá plans pricing">
                         <span>⭐ Gói Dịch Vụ & Bảng Giá</span>
@@ -420,6 +448,10 @@
                     <a href="{{ route('admin.settings.audit_logs') }}" class="mayhen_admin_cmd_item" data-search="nhật ký kiểm toán audit logs trail lịch sử thao tác">
                         <span>📜 Nhật Ký Quản Trị (Audit Logs)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/audit-logs</span>
+                    </a>
+                    <a href="{{ route('admin.jobs.index') }}" class="mayhen_admin_cmd_item" data-search="hàng đợi failed jobs queue worker tác vụ nền lỗi retry">
+                        <span>⚙️ Giám Sát Hàng Đợi (Queue & Jobs)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/system/jobs</span>
                     </a>
                 @endif
                 <a href="{{ route('home') }}" class="mayhen_admin_cmd_item" target="_blank" data-search="trang chủ website khách hàng landing home">

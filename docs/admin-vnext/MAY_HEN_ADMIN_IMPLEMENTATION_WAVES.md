@@ -16,8 +16,8 @@
 | **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **COMPLETED** |
 | **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **COMPLETED** |
 | **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **COMPLETED** |
-| **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **READY** |
-| **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **QUEUED** |
+| **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **COMPLETED** |
+| **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **READY** |
 | **Wave 09** | **Hardening & UAT** | Kiểm thử hồi quy toàn diện cross-module, responsive đa màn hình, kiểm định phát hành | **QUEUED** |
 
 ---
@@ -74,9 +74,12 @@
 - [x] Viết bộ test `tests/Feature/AdminVNextWave06CommerceAndGrowthTest.php` (9 tests, 55 assertions pass 100%).
 
 ### Wave 07: Support Center, Jobs & System Diagnostics
-- [ ] Khung tiếp nhận và xử lý yêu cầu hỗ trợ (Support Ticket) theo thời hạn cam kết SLA.
-- [ ] Theo dõi và xử lý các tác vụ nền (Queue Jobs) bị lỗi, không retry dồn dập.
-- [ ] Báo cáo dung lượng lưu trữ công khai và cảnh báo sớm tài nguyên.
+- [x] Khung tiếp nhận và xử lý yêu cầu hỗ trợ (Support Ticket) theo thời hạn cam kết SLA ([SupportController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/SupportController.php), views: [support/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/index.blade.php), [support/show.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/support/show.blade.php)).
+- [x] Máy trạng thái chuyển đổi trạng thái ticket an toàn (`canTransitionTo`), ghi nhận thời điểm phản hồi đầu tiên SLA và cờ ghi chú nội bộ (`is_internal_note`).
+- [x] Theo dõi và xử lý các tác vụ nền (Queue Jobs) bị lỗi ([JobMonitorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/JobMonitorController.php), view: [system/jobs.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/system/jobs.blade.php)) hỗ trợ thử lại đơn lẻ, thử lại tất cả (`queue:retry`) và dọn sạch hàng loạt (`purge`).
+- [x] Cảnh báo huy hiệu số lượng ticket chờ xử lý và tác vụ lỗi theo thời gian thực trên Sidebar Menu và Command Palette `Ctrl+K`.
+- [x] Thanh tra bộ nhớ lưu trữ công khai và phân loại dung lượng ([SettingController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/SettingController.php#L186), [settings/storage.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/settings/storage.blade.php)).
+- [x] Viết bộ test `tests/Feature/AdminVNextWave07SupportAndOpsTest.php` (11 tests, 54 assertions pass 100%).
 
 ### Wave 08: Intelligence & Wedding Readiness Radar
 - [ ] Tích hợp công cụ Radar sẵn sàng ngày cưới: Tự động phát hiện thiệp sắp cưới nhưng chưa có địa điểm, thiếu nhạc, ảnh lỗi hoặc lệch ngày.
