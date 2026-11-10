@@ -70,6 +70,17 @@
                     <span>Radar Sẵn Sàng Ngày Cưới</span>
                 </a>
 
+                <a href="{{ route('admin.intelligence.funnel') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.funnel') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </span>
+                    <span>Phễu Chuyển Đổi Vận Hành</span>
+                </a>
+
                 <!-- Section 2: Vận Hành Thiệp Cưới -->
                 <div class="mayhen_admin_menu_section">Vận Hành Thiệp Cưới</div>
                 <a href="{{ route('admin.invitations.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.invitations.*') ? 'mayhen_admin_nav_link_active' : '' }}">

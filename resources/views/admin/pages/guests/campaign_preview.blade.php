@@ -130,43 +130,68 @@
                 </div>
             </div>
 
-            <!-- Right: Zero-Surprise Quality & Cost Checklist -->
+            <!-- Right: Real Measured Campaign Delivery & Performance (NXT-06) -->
             <div class="mayhen_admin_card">
-                <div class="mayhen_admin_card_header">
+                <div class="mayhen_admin_card_header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                     <div class="mayhen_admin_card_title">
-                        <span>🛡️ Cam Kết Chất Lượng & Chi Phí Chiến Dịch</span>
+                        <span>📊 Hiệu Suất Chiến Dịch Đo Lường Thực Tế (Measured Analytics)</span>
                     </div>
+                    <span class="mayhen_admin_badge mayhen_admin_badge--success" style="font-size: 0.6875rem;">
+                        ✓ Dữ Liệu Đo Thật 100%
+                    </span>
                 </div>
 
                 <div class="mayhen_admin_card_body">
-                    <div style="display: flex; flex-direction: column; gap: 14px;">
-                        <div style="display: flex; gap: 10px; align-items: flex-start;">
-                            <span style="font-size: 1.1rem;">💰</span>
-                            <div>
-                                <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Chi Phí Phát Sinh: 0đ (Miễn Phí 100%)</strong>
-                                <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
-                                    Toàn bộ link thiệp mời và thông báo gửi qua Zalo/Mạng xã hội không tốn phí duy trì, tiết kiệm 95% so với in thiệp giấy truyền thống.
-                                </div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        {{-- Metric 1: Tỷ lệ phát hành / gửi thiệp --}}
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: 4px;">
+                                <strong style="color: var(--mh-admin-charcoal);">Tỷ Lệ Gửi Thiệp Mời:</strong>
+                                <span style="font-weight: 700; color: #2E7D32;">{{ $metrics['send_rate'] }}% ({{ $metrics['sent_count'] }}/{{ $metrics['total_guests'] }} khách)</span>
+                            </div>
+                            <div style="background: #EAE3D9; border-radius: 6px; height: 8px; overflow: hidden;">
+                                <div style="background: #2E7D32; height: 100%; width: {{ min(100, $metrics['send_rate']) }}%;"></div>
+                            </div>
+                            <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                                Tỷ lệ khách mời đã được gắn cờ phát hành link thiệp mời riêng tư.
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 10px; align-items: flex-start;">
-                            <span style="font-size: 1.1rem;">⚡</span>
-                            <div>
-                                <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Tỷ Lệ Mở Thiệp Dự Kiến: 85% - 92%</strong>
-                                <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
-                                    Trải nghiệm mở phong bì lụa và nhạc cưới du dương kích thích sự tò mò và cảm xúc của quan khách ngay khi nhận link.
-                                </div>
+                        {{-- Metric 2: Tỷ lệ phản hồi RSVP thực tế --}}
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: 4px;">
+                                <strong style="color: var(--mh-admin-charcoal);">Tỷ Lệ Phản Hồi RSVP Thực Tế:</strong>
+                                <span style="font-weight: 700; color: #0D47A1;">{{ $metrics['response_rate_on_sent'] }}% ({{ $metrics['response_count'] }} phản hồi)</span>
+                            </div>
+                            <div style="background: #EAE3D9; border-radius: 6px; height: 8px; overflow: hidden;">
+                                <div style="background: #0D47A1; height: 100%; width: {{ min(100, $metrics['response_rate_on_sent']) }}%;"></div>
+                            </div>
+                            <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                                Tính trên số khách đã gửi thiệp (Không dùng tỷ lệ ước tính ảo).
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 10px; align-items: flex-start;">
-                            <span style="font-size: 1.1rem;">📱</span>
-                            <div>
-                                <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Tương Thích Thiết Bị 100%</strong>
-                                <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
-                                    Hiển thị hoàn hảo trên iOS (iPhone/iPad), Android và Desktop không có độ trễ tải trang.
-                                </div>
+                        {{-- Metric 3: Tỷ lệ xác nhận tham dự --}}
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: 4px;">
+                                <strong style="color: var(--mh-admin-charcoal);">Tỷ Lệ Khách Đi / Phản Hồi:</strong>
+                                <span style="font-weight: 700; color: #D97706;">{{ $metrics['attending_rate_on_response'] }}% ({{ $metrics['attending_count'] }} khách tham dự)</span>
+                            </div>
+                            <div style="background: #EAE3D9; border-radius: 6px; height: 8px; overflow: hidden;">
+                                <div style="background: #D97706; height: 100%; width: {{ min(100, $metrics['attending_rate_on_response']) }}%;"></div>
+                            </div>
+                            <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); margin-top: 2px;">
+                                Số khách chắc chắn có mặt tại sảnh tiệc dựa trên dữ liệu biểu mẫu RSVP đã ghi nhận.
+                            </div>
+                        </div>
+
+                        {{-- Metric 4: Minh bạch chi phí nền tảng & viễn thông --}}
+                        <div style="padding: 12px; background: #FAF8F5; border-radius: 8px; border: 1px solid var(--mh-admin-border);">
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-bottom: 4px;">
+                                💳 Minh Bạch Về Chi Phí Phát Sinh
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted); line-height: 1.5;">
+                                {{ $metrics['cost_notice'] }}
                             </div>
                         </div>
                     </div>

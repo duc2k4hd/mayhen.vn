@@ -9,6 +9,7 @@ use App\Models\Wedding;
 use App\Models\WeddingTable;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\RealFunnelAnalyticsService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -590,34 +591,7 @@ class GuestController extends Controller
             ->limit(50)
             ->get();
 
-        $metrics = [
-            'total_guests' => 0,
-            'sent_count' => 0,
-            'unsent_count' => 0,
-            'attending_count' => 0,
-            'declined_count' => 0,
-            'no_response_count' => 0,
-            'send_rate' => 0,
-        ];
-
-        if ($activeWedding) {
-            $guests = $activeWedding->guests;
-            $total = $guests->count();
-            $sent = $guests->where('is_sent', true)->count();
-            $attending = $guests->filter(fn ($g) => $g->response?->attending_status === 'attending')->count();
-            $declined = $guests->filter(fn ($g) => $g->response?->attending_status === 'declined')->count();
-            $noResponse = $total - $attending - $declined;
-
-            $metrics = [
-                'total_guests' => $total,
-                'sent_count' => $sent,
-                'unsent_count' => max(0, $total - $sent),
-                'attending_count' => $attending,
-                'declined_count' => $declined,
-                'no_response_count' => max(0, $noResponse),
-                'send_rate' => $total > 0 ? (int) round(($sent / $total) * 100) : 0,
-            ];
-        }
+        $metrics = RealFunnelAnalyticsService::getWeddingCampaignDeliveryMetrics($activeWedding);
 
         return view('admin.pages.guests.campaign_preview', [
             'activeWedding' => $activeWedding,

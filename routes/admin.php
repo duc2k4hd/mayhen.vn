@@ -182,6 +182,7 @@ Route::middleware('admin.auth')->group(function () {
     // Trung Tâm Trí Tuệ Vận Hành & Radar (Wave 08 - ADM-A20, A21, A22 & Innovation #13)
     Route::prefix('intelligence')->name('intelligence.')->group(function () {
         Route::get('/radar', [AdminIntelligenceController::class, 'readinessRadar'])->name('radar');
+        Route::get('/funnel', [AdminIntelligenceController::class, 'funnel'])->name('funnel');
         Route::get('/inbox', [AdminIntelligenceController::class, 'actionInbox'])->name('inbox');
         Route::get('/reconciliation', [AdminIntelligenceController::class, 'reconciliationDetective'])->name('reconciliation');
         Route::get('/delight-recovery', [AdminIntelligenceController::class, 'delightRecovery'])->name('delight_recovery');

@@ -7471,3 +7471,37 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tạo mới test suite: `tests/Feature/AdminPrivacyRetentionTest.php` gồm **6 kịch bản kiểm thử độc lập (38 assertions)**: 100% PASSED.
      - Cụm test toàn diện 8 test suites Post-VNext: **55/55 tests PASSED 100% (315 assertions)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
+
+### 46. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-06: REAL FUNNEL & DELIVERY ANALYTICS (10/11/2026)
+- **Mục tiêu**: Khắc phục triệt để phát hiện **ADM-NEXT-P2-09** (các con số tỷ lệ mở 85-92%, tiết kiệm 95% bị hardcode tĩnh); xây dựng Động cơ Phễu Chuyển Đổi Thực Tế 5 chặng (Real Funnel Engine) và hệ thống đo lường hiệu suất chiến dịch gửi thiệp đo thật 100% từ cơ sở dữ liệu.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Bổ Sung Cột Lượt Xem Thiệp Cưới ([Migration](file:///e:/Project/Laravel/mayhen.vn/database/migrations/2026_11_10_163529_add_view_count_to_invitations_table.php) & [Invitation.php](file:///e:/Project/Laravel/mayhen.vn/app/Models/Invitation.php))**:
+     - Bổ sung cột `view_count` (`unsignedInteger`, mặc định 0) vào bảng `invitations`.
+     - Cập nhật `$fillable` trong model `Invitation`, giải quyết dứt điểm lỗi thiếu schema khi đếm view.
+  2. **Dịch Vụ Phân Tích Phễu Chuyển Đổi Thực Tế ([RealFunnelAnalyticsService.php](file:///e:/Project/Laravel/mayhen.vn/app/Services/RealFunnelAnalyticsService.php))**:
+     - **Phễu toàn hệ thống (`getGlobalFunnelMetrics`)**:
+       * Chặng 1: Khám phá & Lựa chọn mẫu (Lượt xem thiệp thực tế `view_count`).
+       * Chặng 2: Khởi tạo thiệp cưới trong Studio (`invitations.count`).
+       * Chặng 3: Chuyển đổi thanh toán thương mại (`orders.status = 'paid'`).
+       * Chặng 4: Phát hành & Gửi link cho khách mời (`guests.is_sent = true` trên tổng danh bạ).
+       * Chặng 5: Khách mời phản hồi tham dự (`guest_responses.count` & `attending`).
+       * Tính toán tỷ lệ chuyển đổi từng chặng (Step-by-Step Conversion) và bộ lọc thời gian (30, 60, 90 ngày).
+       * Áp dụng kỹ thuật clone query builder chống lỗi đột biến truy vấn (mutating query state).
+     - **Đo lường chiến dịch tiệc cưới cụ thể (`getWeddingCampaignDeliveryMetrics`)**:
+       * Tỷ lệ phát hành thiệp thật: `(sent_count / total_guests) * 100%`.
+       * Tỷ lệ phản hồi RSVP thật trên số thiệp đã gửi: `(responses / sent_count) * 100%`.
+       * Tỷ lệ khách chắc chắn tham dự: `(attending / responses) * 100%`.
+       * Minh bạch chi phí viễn thông: Ghi rõ miễn phí 100% khi tự chia sẻ link Zalo/MXH; tách bạch biểu phí viễn thông nếu gửi qua tổng đài SMS/ZNS đối tác.
+  3. **Bộ Điều Khiển, Định Tuyến & Giao Diện Admin ([IntelligenceController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/IntelligenceController.php), [GuestController.php](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/GuestController.php), [routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php))**:
+     - Route mới: `GET /admin/intelligence/funnel` (`admin.intelligence.funnel`).
+     - View mới [funnel.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/intelligence/funnel.blade.php): Trực quan hóa 5 chặng phễu với thanh tiến trình màu Quiet Luxury, bộ lọc thời gian và cam kết Anti-Fake Metrics Standard.
+     - Cập nhật [campaign_preview.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/pages/guests/campaign_preview.blade.php): Xóa bỏ vĩnh viễn toàn bộ chuỗi hardcode `85% - 92%` và `tiết kiệm 95%`, thay bằng khối **Hiệu Suất Chiến Dịch Đo Lường Thực Tế (Measured Analytics)** có nhãn `✓ Dữ Liệu Đo Thật 100%`.
+     - Tích hợp mục **Phễu Chuyển Đổi Vận Hành** vào thanh điều hướng bên [master.blade.php](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+  4. **Kết Quả Kiểm Thử Toàn Hệ Thống**:
+     - Tạo mới test suite: `tests/Feature/AdminRealFunnelAnalyticsTest.php` gồm **4 kịch bản kiểm thử độc lập (26 assertions)**: 100% PASSED.
+       * Xác minh đo lường chính xác 5 chặng phễu từ cơ sở dữ liệu thật.
+       * Xác minh `campaignPreview` chỉ hiển thị dữ liệu đo thật và **tuyệt đối không còn chứa các chuỗi hardcode cũ**.
+       * Xác minh bộ lọc khung thời gian hoạt động chuẩn xác.
+     - Cụm test toàn diện 9 test suites Post-VNext: **59/59 tests PASSED 100% (341 assertions)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.

@@ -28,6 +28,7 @@ class Invitation extends Model
         'is_published',
         'published_at',
         'expires_at',
+        'view_count',
     ];
 
     protected function casts(): array

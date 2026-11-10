@@ -9,6 +9,7 @@ use App\Models\SupportTicket;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
+use App\Services\RealFunnelAnalyticsService;
 use App\Services\WeddingReadinessRadarService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -353,6 +354,28 @@ class IntelligenceController extends Controller
         return view('admin.pages.intelligence.delight_recovery', [
             'cases' => $stuckCases,
             'kpis' => $kpis,
+        ]);
+    }
+
+    /**
+     * Bảng Điều Khiển Phễu Chuyển Đổi Vận Hành Toàn Hệ Thống (Real Funnel Analytics - NXT-06).
+     */
+    public function funnel(Request $request): View
+    {
+        $days = (int) $request->input('days', 0);
+        $startDate = null;
+        $endDate = null;
+
+        if ($days > 0) {
+            $startDate = now()->subDays($days);
+            $endDate = now();
+        }
+
+        $funnel = RealFunnelAnalyticsService::getGlobalFunnelMetrics($startDate, $endDate);
+
+        return view('admin.pages.intelligence.funnel', [
+            'funnel' => $funnel,
+            'currentDays' => $days,
         ]);
     }
 }
