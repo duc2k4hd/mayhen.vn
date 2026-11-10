@@ -3,6 +3,7 @@
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\Order;
+use App\Models\OrderReconciliation;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\Wedding;
@@ -145,7 +146,7 @@ test('admin can manually approve pending order and activate invitation', functio
     expect($freshInvitation->expires_at->isFuture())->toBeTrue();
 
     // Verify reconciliation ledger record
-    $recon = \App\Models\OrderReconciliation::where('order_id', $this->order->id)->first();
+    $recon = OrderReconciliation::where('order_id', $this->order->id)->first();
     expect($recon)->not->toBeNull();
     expect($recon->reference_code)->toBe('FT26091823901');
     expect($recon->status)->toBe('approved');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\InvitationTemplateRelease;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
@@ -12,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -354,5 +356,264 @@ class TemplateController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Màn hình Phòng Thí Nghiệm Phát Hành & Visual Regression Lab (NXT-04).
+     */
+    public function releaseLab(int $id): View
+    {
+        $template = InvitationTemplate::withCount('invitations')
+            ->with(['releases' => fn ($q) => $q->with(['creator', 'publisher'])->latest('id')])
+            ->findOrFail($id);
+
+        $preflight = InvitationTemplateService::runPreflightAudit($template->slug);
+        $visualDna = InvitationTemplateService::extractVisualDna($template->slug);
+
+        return view('admin.pages.templates.release_lab', [
+            'template' => $template,
+            'preflight' => $preflight,
+            'visualDna' => $visualDna,
+            'releases' => $template->releases,
+            'viewports' => $preflight['viewports'] ?? [375, 430, 768, 1440],
+        ]);
+    }
+
+    /**
+     * Tạo bản phát hành thử nghiệm mới (Staged Release).
+     */
+    public function createRelease(Request $request, int $id): RedirectResponse
+    {
+        $template = InvitationTemplate::findOrFail($id);
+
+        $validated = $request->validate([
+            'version' => [
+                'required',
+                'string',
+                'max:30',
+                'regex:/^v?\d+(\.\d+){1,2}$/',
+            ],
+            'rollout_percentage' => 'required|integer|min:0|max:100',
+            'release_notes' => 'nullable|string|max:2000',
+        ], [
+            'version.regex' => 'Định dạng phiên bản phải chuẩn Semantic Versioning (ví dụ: v1.0.0, v1.1, 2.0.1).',
+            'rollout_percentage.min' => 'Tỷ lệ triển khai tối thiểu là 0%.',
+            'rollout_percentage.max' => 'Tỷ lệ triển khai tối đa là 100%.',
+        ]);
+
+        // Đảm bảo không trùng version đã tồn tại của template này
+        $exists = $template->releases()->where('version', $validated['version'])->exists();
+        if ($exists) {
+            return back()->withErrors(['version' => "Phiên bản {$validated['version']} đã tồn tại trong lịch sử phát hành của mẫu thiệp này."])->withInput();
+        }
+
+        $preflight = InvitationTemplateService::runPreflightAudit($template->slug);
+
+        DB::transaction(function () use ($template, $validated, $preflight, $request) {
+            $release = InvitationTemplateRelease::create([
+                'template_id' => $template->id,
+                'version' => $validated['version'],
+                'release_status' => 'staged',
+                'rollout_percentage' => (int) $validated['rollout_percentage'],
+                'release_notes' => $validated['release_notes'] ?? null,
+                'preflight_snapshot' => $preflight,
+                'creator_id' => $request->user()?->id,
+            ]);
+
+            $template->update([
+                'staged_version' => $release->version,
+                'release_status' => 'staged',
+                'staged_at' => now(),
+            ]);
+
+            AuditLogger::log(
+                'create_template_release',
+                'InvitationTemplateRelease',
+                $release->id,
+                "Khởi tạo bản phát hành thử nghiệm '{$release->version}' cho mẫu '{$template->name}' (Rollout: {$release->rollout_percentage}%)",
+                [
+                    'template_id' => $template->id,
+                    'version' => $release->version,
+                    'rollout_percentage' => $release->rollout_percentage,
+                    'is_ready_for_release' => $preflight['is_ready_for_release'],
+                ]
+            );
+        });
+
+        return redirect()->route('admin.templates.release_lab', $template->id)
+            ->with('success', "Đã tạo bản phát hành thử nghiệm phiên bản \"{$validated['version']}\" thành công.");
+    }
+
+    /**
+     * Phê duyệt & Công bố phiên bản ra toàn hệ thống (Publish Release).
+     */
+    public function publishRelease(Request $request, int $id, int $releaseId): RedirectResponse
+    {
+        $template = InvitationTemplate::findOrFail($id);
+        $release = InvitationTemplateRelease::where('template_id', $template->id)->findOrFail($releaseId);
+
+        // Chạy lại Preflight Audit tại thời điểm phê duyệt
+        $preflight = InvitationTemplateService::runPreflightAudit($template->slug);
+        if (! $preflight['is_ready_for_release']) {
+            $blockerMsg = implode(', ', $preflight['blockers']);
+
+            return back()->withErrors([
+                'publish_error' => "Không thể công bố phiên bản vì chưa vượt qua Preflight Quality Gate: {$blockerMsg}",
+            ]);
+        }
+
+        DB::transaction(function () use ($template, $release, $preflight, $request) {
+            // Đánh dấu các bản published trước đó thành deprecated
+            InvitationTemplateRelease::where('template_id', $template->id)
+                ->where('release_status', 'published')
+                ->where('id', '!=', $release->id)
+                ->update(['release_status' => 'deprecated']);
+
+            $oldVersion = $template->current_version;
+
+            $release->update([
+                'release_status' => 'published',
+                'publisher_id' => $request->user()?->id,
+                'published_at' => now(),
+                'preflight_snapshot' => $preflight,
+            ]);
+
+            $template->update([
+                'previous_version' => $oldVersion,
+                'current_version' => $release->version,
+                'staged_version' => null,
+                'release_status' => 'published',
+                'rollout_percentage' => $release->rollout_percentage,
+                'release_notes' => $release->release_notes,
+                'published_at' => now(),
+            ]);
+
+            InvitationTemplate::clearTemplateCaches($template);
+
+            AuditLogger::log(
+                'publish_template_release',
+                'InvitationTemplateRelease',
+                $release->id,
+                "Công bố chính thức phiên bản '{$release->version}' cho mẫu '{$template->name}' (Từ bản cũ: '{$oldVersion}')",
+                [
+                    'template_id' => $template->id,
+                    'old_version' => $oldVersion,
+                    'new_version' => $release->version,
+                    'rollout_percentage' => $release->rollout_percentage,
+                ]
+            );
+        });
+
+        return redirect()->route('admin.templates.release_lab', $template->id)
+            ->with('success', "Đã công bố chính thức phiên bản \"{$release->version}\" cho mẫu thiệp \"{$template->name}\".");
+    }
+
+    /**
+     * Hoàn nguyên tức thì về phiên bản ổn định trước đó (1-Click Instant Rollback).
+     */
+    public function rollbackRelease(Request $request, int $id, int $releaseId): RedirectResponse
+    {
+        $template = InvitationTemplate::findOrFail($id);
+        $targetRelease = InvitationTemplateRelease::where('template_id', $template->id)->findOrFail($releaseId);
+
+        $validated = $request->validate([
+            'rollback_reason' => 'required|string|min:6|max:255',
+        ], [
+            'rollback_reason.required' => 'Bắt buộc nhập lý do hoàn nguyên (rollback) để lưu vết kiểm toán.',
+            'rollback_reason.min' => 'Lý do hoàn nguyên phải từ 6 ký tự trở lên.',
+        ]);
+
+        DB::transaction(function () use ($template, $targetRelease, $validated, $request) {
+            $currentVersion = $template->current_version;
+
+            // Đánh dấu bản phát hành hiện tại thành rolled_back
+            InvitationTemplateRelease::where('template_id', $template->id)
+                ->where('version', $currentVersion)
+                ->update([
+                    'release_status' => 'rolled_back',
+                    'rolled_back_at' => now(),
+                    'rollback_reason' => $validated['rollback_reason'],
+                ]);
+
+            // Chuyển bản targetRelease thành published
+            $targetRelease->update([
+                'release_status' => 'published',
+                'published_at' => now(),
+                'rollback_reason' => null,
+            ]);
+
+            $template->update([
+                'previous_version' => $currentVersion,
+                'current_version' => $targetRelease->version,
+                'staged_version' => null,
+                'release_status' => 'published',
+                'rollout_percentage' => 100, // Hoàn nguyên về mức an toàn 100%
+                'rolled_back_at' => now(),
+            ]);
+
+            InvitationTemplate::clearTemplateCaches($template);
+
+            AuditLogger::log(
+                'rollback_template_release',
+                'InvitationTemplateRelease',
+                $targetRelease->id,
+                "Hoàn nguyên khẩn cấp mẫu '{$template->name}' từ '{$currentVersion}' về '{$targetRelease->version}'. Lý do: {$validated['rollback_reason']}",
+                [
+                    'template_id' => $template->id,
+                    'rolled_back_from' => $currentVersion,
+                    'rolled_back_to' => $targetRelease->version,
+                    'reason' => $validated['rollback_reason'],
+                    'admin_id' => $request->user()?->id,
+                ]
+            );
+        });
+
+        return redirect()->route('admin.templates.release_lab', $template->id)
+            ->with('success', "Đã hoàn nguyên thành công mẫu thiệp \"{$template->name}\" về phiên bản an toàn \"{$targetRelease->version}\".");
+    }
+
+    /**
+     * Cập nhật tỷ lệ phân phối thử nghiệm (Canary Staged Rollout).
+     */
+    public function updateRollout(Request $request, int $id, int $releaseId): RedirectResponse|JsonResponse
+    {
+        $template = InvitationTemplate::findOrFail($id);
+        $release = InvitationTemplateRelease::where('template_id', $template->id)->findOrFail($releaseId);
+
+        $validated = $request->validate([
+            'rollout_percentage' => 'required|integer|min:0|max:100',
+        ]);
+
+        $newPercentage = (int) $validated['rollout_percentage'];
+
+        DB::transaction(function () use ($template, $release, $newPercentage) {
+            $release->update(['rollout_percentage' => $newPercentage]);
+
+            if ($release->release_status === 'published' || $release->release_status === 'staged') {
+                $template->update(['rollout_percentage' => $newPercentage]);
+            }
+
+            InvitationTemplate::clearTemplateCaches($template);
+
+            AuditLogger::log(
+                'update_template_rollout',
+                'InvitationTemplateRelease',
+                $release->id,
+                "Điều chỉnh tỷ lệ triển khai phiên bản '{$release->version}' lên {$newPercentage}%",
+                ['template_id' => $template->id, 'rollout_percentage' => $newPercentage]
+            );
+        });
+
+        $msg = "Đã cập nhật tỷ lệ triển khai thành công lên {$newPercentage}%.";
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'rollout_percentage' => $newPercentage,
+                'message' => $msg,
+            ]);
+        }
+
+        return back()->with('success', $msg);
     }
 }

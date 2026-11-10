@@ -7230,6 +7230,57 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite toàn dự án: **778/778 tests PASSED 100% (4,264 assertions in 72.01s, 0 failures, 0 errors)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style không còn bất kỳ lỗi định dạng nào.
 
+### 38. CHUẨN HÓA MÚI GIỜ VÀ ĐỊA PHƯƠNG HÓA CHO VIỆT NAM (ASIA/HO_CHI_MINH - GMT+7)
+- **Mục tiêu**: Thiết lập toàn bộ hệ thống dự án Mây Hẹn (`mayhen.vn`) hoạt động thống nhất theo thời gian chuẩn Việt Nam (GMT+7) và ngôn ngữ tiếng Việt.
+- **Các tệp đã cấu hình**:
+  1. `config/app.php`:
+     - `'timezone' => env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')`: Thiết lập múi giờ mặc định toàn hệ thống sang `Asia/Ho_Chi_Minh` (GMT+7).
+     - `'locale' => env('APP_LOCALE', 'vi')`: Ngôn ngữ hiển thị mặc định `vi`.
+     - `'fallback_locale' => env('APP_FALLBACK_LOCALE', 'vi')`: Ngôn ngữ dự phòng `vi`.
+     - `'faker_locale' => env('APP_FAKER_LOCALE', 'vi_VN')`: Dữ liệu mẫu tiếng Việt.
+  2. `.env` & `.env.example`:
+     - Bổ sung `APP_TIMEZONE=Asia/Ho_Chi_Minh`.
+     - Cập nhật `APP_LOCALE=vi`, `APP_FALLBACK_LOCALE=vi`, `APP_FAKER_LOCALE=vi_VN`.
+- **Xác minh thực tế**: Lệnh tinker xác nhận `config('app.timezone') === 'Asia/Ho_Chi_Minh'`, thời gian hiện tại khớp chính xác GMT+7 (offset +7 hours).
+
+### 39. TRIỂN KHAI HOÀN TẤT ĐỀ ÁN NXT-04: TEMPLATE RELEASE LAB & VISUAL REGRESSION (10/11/2026)
+- **Mục tiêu**: Thiết lập phòng thí nghiệm kiểm định trực quan đa độ phân giải và cơ chế quản trị phát hành mẫu thiệp (Template Release Governance), ngăn chặn triệt để rủi ro cập nhật Blade/CSS làm vỡ hàng loạt thiệp cưới khách hàng đang sử dụng.
+- **Chi tiết các thành phần đã triển khai**:
+  1. **Cơ Sở Dữ Liệu & Model Quản Trị Phiên Bản**:
+     - **Database Migration**: `2026_11_10_090000_create_template_release_management_tables.php`:
+       * Bổ sung vào bảng `invitation_templates`: `release_status` (`draft`, `staged`, `published`, `deprecated`), `previous_version`, `staged_version`, `rollout_percentage`, `release_notes`, `published_at`, `staged_at`, `rolled_back_at`.
+       * Tạo bảng `invitation_template_releases` (Sổ cái phiên bản mẫu thiệp): `template_id`, `version`, `release_status`, `rollout_percentage`, `release_notes`, `preflight_snapshot`, `creator_id` (Maker), `publisher_id` (Checker), `published_at`, `rolled_back_at`, `rollback_reason`.
+     - **Model & Quan hệ**: Tạo mới `App\Models\InvitationTemplateRelease` liên kết `InvitationTemplate`, `creator`, `publisher`. Bổ sung vào `App\Models\InvitationTemplate`: quan hệ `releases()`, các helper `isDraft()`, `isStaged()`, `isPublished()`, `canRollback()`.
+  2. **Dịch Vụ Kiểm Định Preflight Quality Gate ([InvitationTemplateService.php](file:///d:/Project/Laravel/mayhen.vn/app/Services/InvitationTemplateService.php))**:
+     - Bổ sung phương thức `InvitationTemplateService::runPreflightAudit(string $slug): array`:
+       * Kiểm tra sự tồn tại của đầy đủ tệp `schema.json`, `template.blade.php`, `styles.css`.
+       * Kiểm tra 10 Section Tiêu chuẩn (Hero, Story, Parents, Calendar, Events, Timeline, Dresscode, Album, Gift, Ending).
+       * Kiểm tra hợp đồng Live Sync (`data-sync-target` tối thiểu bắt buộc `groom_name`, `bride_name`).
+       * Quét an toàn tài nguyên cục bộ 100% (Zero External CDN): Chặn tuyệt đối URL từ các domain bên thứ ba như `ladicdn.com`, `builder.27biggroup.com`, `unsplash.com`, `iili.io`.
+       * Chấm điểm sẵn sàng phát hành `readiness_score` (0 - 100). Chặn không cho công bố nếu phát hiện vi phạm rủi ro (`blockers`).
+  3. **Backend Controller & Phân Quyền Quản Trị ([TemplateController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/TemplateController.php) & [routes/admin.php](file:///d:/Project/Laravel/mayhen.vn/routes/admin.php))**:
+     - `releaseLab($id)`: Nạp thông tin mẫu thiệp, kết quả Preflight Gate, Visual DNA và lịch sử phiên bản.
+     - `createRelease($request, $id)`: Xác thực chuẩn Semantic Versioning (vd: `v1.1.0`), tỷ lệ phân phối thử nghiệm canary (0 - 100%), lưu snapshot Preflight và kích hoạt trạng thái `staged`.
+     - `publishRelease($request, $id, $releaseId)`: Chạy kiểm tra Preflight Gate tại chỗ; phê duyệt công bố toàn hệ thống, chuyển version hiện tại thành `current_version`, lưu bản cũ thành `previous_version`, xóa cache và ghi audit log.
+     - `rollbackRelease($request, $id, $releaseId)`: **Hoàn nguyên tức thì (1-Click Instant Rollback)** về phiên bản an toàn trước đó; bắt buộc nhập lý do hoàn nguyên (>= 6 ký tự), đánh dấu bản lỗi thành `rolled_back`, đặt rollout 100% an toàn.
+     - `updateRollout($request, $id, $releaseId)`: Điều chỉnh tỷ lệ canary rollout (Web Form & AJAX JSON).
+     - Phân quyền: Áp dụng middleware `admin.manager`, chặn 403 / cảnh báo đối với tài khoản quyền Staff.
+  4. **Giao Diện Visual Regression Lab ([release_lab.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/templates/release_lab.blade.php) & [templates.css](file:///d:/Project/Laravel/mayhen.vn/public/assets/admin/css/pages/templates.css))**:
+     - Thiết kế chuẩn Quiet Luxury, 100% Pure HTML + Vanilla CSS + Native ES Modules.
+     - **Thanh công cụ Viewport Selector**: Chuyển đổi linh hoạt 4 độ phân giải chuẩn thiết bị di động & máy tính:
+       * 📱 `375px` (Mobile SE / Standard)
+       * 📱 `430px` (Mobile Pro Max / Large)
+       * 📟 `768px` (Tablet Mini / Air)
+       * 💻 `1440px` (Desktop / Laptop Editorial)
+     - **Chế độ So Sánh Song Song (Split Diff View)**: Nạp 2 khung Live Mockup Frame đối chiếu trực tiếp giữa Bản công khai (`Live`) và Bản thử nghiệm (`Staged`) để mắt thường của Admin dễ dàng phát hiện sai lệch bố cục.
+     - Thẻ Preflight Quality Gate Checklist: Thước đo chi tiết 10 Section, Live Sync Targets, Local Assets và chỉ số Brand Harmony.
+     - Sổ cái lịch sử phiên bản (Template Release Ledger) hiển thị người tạo, người duyệt, changelog và nút Rollback 1-click.
+  5. **Kết Quả Kiểm Thử Toàn Hệ Thống**:
+     - Tạo mới test suite: `tests/Feature/AdminTemplateReleaseLabTest.php` gồm **9 kịch bản kiểm thử độc lập (53 assertions)**: 100% PASSED.
+     - Cập nhật `.gitignore` theo dõi các file test liên quan.
+     - Toàn bộ test suite dự án: **787/787 tests PASSED 100% (4,317 assertions in 49.87s, 0 failures, 0 errors)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style không còn file dirty.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

@@ -234,6 +234,9 @@
                             <!-- Actions -->
                             <td>
                                 <div style="display: flex; gap: 6px;">
+                                    <a href="{{ route('admin.templates.release_lab', $tpl->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" style="color: var(--mh-admin-gold); font-weight: 600;" title="Phòng Thí Nghiệm Phát Hành & Visual Regression">
+                                        Release Lab 🧪
+                                    </a>
                                     <a href="{{ route('admin.templates.edit', $tpl->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" title="Chỉnh sửa thông tin & Soát lỗi Schema">
                                         Sửa & Schema &nearr;
                                     </a>

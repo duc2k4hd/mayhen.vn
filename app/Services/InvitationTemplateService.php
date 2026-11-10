@@ -1463,4 +1463,88 @@ class InvitationTemplateService
             'violations' => $violations,
         ];
     }
+
+    /**
+     * Chạy kiểm định toàn diện Preflight Quality Gate trước khi phát hành phiên bản mẫu thiệp (NXT-04).
+     *
+     * @return array{
+     *     slug: string,
+     *     is_ready_for_release: bool,
+     *     readiness_score: int,
+     *     blockers: array<int, string>,
+     *     warnings: array<int, string>,
+     *     metrics: array<string, mixed>,
+     *     viewports: array<int, int>
+     * }
+     */
+    public static function runPreflightAudit(string $slug): array
+    {
+        $integrity = self::inspectTemplateIntegrity($slug);
+        $visualDna = self::extractVisualDna($slug);
+
+        $blockers = [];
+        $warnings = [];
+
+        // 1. Files tồn tại
+        if (! ($integrity['files']['schema_json']['exists'] ?? false)) {
+            $blockers[] = 'Thiếu tệp schema.json khai báo cấu trúc dữ liệu.';
+        }
+        if (! ($integrity['files']['template_blade']['exists'] ?? false)) {
+            $blockers[] = 'Thiếu tệp template.blade.php giao diện chính.';
+        }
+        if (! ($integrity['files']['styles_css']['exists'] ?? false)) {
+            $blockers[] = 'Thiếu tệp styles.css định kiểu mỹ thuật.';
+        }
+
+        // 2. 10 Section Tiêu chuẩn
+        if (! ($integrity['is_canonical_valid'] ?? false)) {
+            $missingCount = 10 - ($integrity['canonical_passed_count'] ?? 0);
+            $blockers[] = "Mẫu thiệp chưa đủ 10 Section tiêu chuẩn (hiện có {$integrity['canonical_passed_count']}/10, thiếu {$missingCount} section).";
+        }
+
+        // 3. Hợp đồng Live Sync (data-sync-target)
+        if (($integrity['sync_count'] ?? 0) < 2 || ! ($integrity['has_essential_sync'] ?? false)) {
+            $blockers[] = 'Thiếu hợp đồng Live Sync tối thiểu (bắt buộc data-sync-target="groom_name" và "bride_name").';
+        }
+
+        // 4. Zero External CDN (100% Local Assets)
+        if (! ($integrity['is_local_assets_only'] ?? true)) {
+            $violationsList = implode(', ', $integrity['external_violations'] ?? []);
+            $blockers[] = "Phát hiện URL liên kết server bên thứ ba vi phạm quy chuẩn 100% Local Assets: {$violationsList}.";
+        }
+
+        // 5. Layout Kế Thừa & Phòng Vệ Embed
+        if (! ($integrity['extends_invitation'] ?? false)) {
+            $warnings[] = 'Template chưa kế thừa layout chuẩn @extends("client.layouts.invitation").';
+        }
+
+        // 6. Brand Harmony
+        if (($visualDna['brand_harmony'] ?? 100) < 80) {
+            $warnings[] = 'Bảng màu có một số sắc độ chói cần tinh chỉnh thêm theo phong cách Quiet Luxury.';
+        }
+
+        $isReady = empty($blockers);
+
+        // Tính điểm Readiness (0 - 100)
+        $score = $integrity['score'] ?? 0;
+        if (! $isReady) {
+            $score = min($score, 65);
+        }
+
+        return [
+            'slug' => $slug,
+            'is_ready_for_release' => $isReady,
+            'readiness_score' => $score,
+            'blockers' => $blockers,
+            'warnings' => $warnings,
+            'metrics' => [
+                'canonical_sections' => ($integrity['canonical_passed_count'] ?? 0).'/10',
+                'sync_targets_count' => $integrity['sync_count'] ?? 0,
+                'local_assets_count' => $integrity['local_asset_count'] ?? 0,
+                'brand_harmony_score' => $visualDna['brand_harmony'] ?? 100,
+                'theme' => $visualDna['theme'] ?? 'Quiet Luxury',
+            ],
+            'viewports' => [375, 430, 768, 1440],
+        ];
+    }
 }

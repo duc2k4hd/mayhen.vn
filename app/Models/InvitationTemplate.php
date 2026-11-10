@@ -20,6 +20,14 @@ class InvitationTemplate extends Model
         'demo_url',
         'default_config',
         'current_version',
+        'previous_version',
+        'staged_version',
+        'rollout_percentage',
+        'release_status',
+        'release_notes',
+        'published_at',
+        'staged_at',
+        'rolled_back_at',
         'is_active',
         'is_featured',
     ];
@@ -28,6 +36,10 @@ class InvitationTemplate extends Model
     {
         return [
             'default_config' => 'array',
+            'rollout_percentage' => 'integer',
+            'published_at' => 'datetime',
+            'staged_at' => 'datetime',
+            'rolled_back_at' => 'datetime',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ];
@@ -58,6 +70,31 @@ class InvitationTemplate extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class, 'template_id');
+    }
+
+    public function releases(): HasMany
+    {
+        return $this->hasMany(InvitationTemplateRelease::class, 'template_id')->latest('id');
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->release_status === 'draft';
+    }
+
+    public function isStaged(): bool
+    {
+        return $this->release_status === 'staged';
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->release_status === 'published';
+    }
+
+    public function canRollback(): bool
+    {
+        return ! empty($this->previous_version);
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Guest;
-use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\Order;
@@ -22,9 +21,13 @@ class AdminNxtIntegrityAndAccessControlTest extends TestCase
     use RefreshDatabase;
 
     protected User $superAdmin;
+
     protected User $manager;
+
     protected User $staff;
+
     protected User $customer;
+
     protected Plan $plan;
 
     protected function setUp(): void

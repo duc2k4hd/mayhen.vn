@@ -61,6 +61,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/{id}', [AdminTemplateController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle_active');
         Route::post('/{id}/toggle-featured', [AdminTemplateController::class, 'toggleFeatured'])->middleware('admin.manager')->name('toggle_featured');
+
+        // Template Release Lab & Visual Regression (NXT-04)
+        Route::get('/{id}/release-lab', [AdminTemplateController::class, 'releaseLab'])->name('release_lab');
+        Route::post('/{id}/releases', [AdminTemplateController::class, 'createRelease'])->middleware('admin.manager')->name('releases.create');
+        Route::post('/{id}/releases/{releaseId}/publish', [AdminTemplateController::class, 'publishRelease'])->middleware('admin.manager')->name('releases.publish');
+        Route::post('/{id}/releases/{releaseId}/rollback', [AdminTemplateController::class, 'rollbackRelease'])->middleware('admin.manager')->name('releases.rollback');
+        Route::post('/{id}/releases/{releaseId}/rollout', [AdminTemplateController::class, 'updateRollout'])->middleware('admin.manager')->name('releases.rollout');
     });
 
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR

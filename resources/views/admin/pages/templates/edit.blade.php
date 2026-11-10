@@ -35,6 +35,9 @@
             <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
                 &larr; Quay Lại Danh Sách
             </a>
+            <a href="{{ route('admin.templates.release_lab', $template->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline" style="color: var(--mh-admin-gold); font-weight: 600;">
+                Release Lab 🧪
+            </a>
             <a href="{{ route('templates.preview', $template->slug) }}" target="_blank" class="mayhen_admin_btn mayhen_admin_btn_primary">
                 Xem Thử Giao Diện &nearr;
             </a>
