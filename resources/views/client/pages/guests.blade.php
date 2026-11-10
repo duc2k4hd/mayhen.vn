@@ -391,6 +391,12 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                             <span class="mayhen_guest_badge_attending">
                                                 Tham gia ({{ $g->response->adults_count + $g->response->children_count }} người)
                                             </span>
+                                            @if($g->response->is_late)
+                                                <span style="display: inline-block; padding: 1px 6px; border-radius: 4px; background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 700; margin-left: 4px;" title="Phản hồi sau ngày hạn chót">Báo muộn</span>
+                                            @endif
+                                            @if($g->response->needs_reconfirmation)
+                                                <span style="display: inline-block; padding: 1px 6px; border-radius: 4px; background: #FEE2E2; color: #991B1B; font-size: 10px; font-weight: 700; margin-left: 4px;" title="Đám cưới đã dời lịch, cần khách gửi lại xác nhận">Chờ báo lại</span>
+                                            @endif
                                             @if($g->response->wishes)
                                                 <div style="font-size: 11px; color: #6B635B; margin-top: 4px; font-style: italic;">
                                                     "{{ Str::limit($g->response->wishes, 35) }}"
@@ -398,6 +404,9 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                             @endif
                                         @else
                                             <span class="mayhen_guest_badge_declined">Không tham gia</span>
+                                            @if($g->response->is_late)
+                                                <span style="display: inline-block; padding: 1px 6px; border-radius: 4px; background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 700; margin-left: 4px;" title="Phản hồi sau ngày hạn chót">Báo muộn</span>
+                                            @endif
                                         @endif
                                     @else
                                         <span class="mayhen_guest_badge_pending">Chưa phản hồi</span>

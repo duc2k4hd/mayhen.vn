@@ -71,4 +71,3 @@ class WeddingBudgetItem extends Model
         };
     }
 }
-

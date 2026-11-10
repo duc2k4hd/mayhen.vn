@@ -159,10 +159,25 @@
                     </div>
                 </label>
 
-                <div style="margin-top: 8px; max-width: 320px;">
+                <div style="margin-top: 8px; max-width: 500px;">
                     <label class="mayhen_account_form_label" for="setting-rsvp-deadline">Hạn chót tiếp nhận phản hồi RSVP</label>
-                    <input type="date" name="rsvp_deadline" id="setting-rsvp-deadline" value="{{ old('rsvp_deadline', $config['rsvp_deadline'] ?? '') }}" class="mayhen_account_form_input">
-                    <span style="font-size: 12px; color: #7A726A; display: block; margin-top: 4px;">Khách mở thiệp sau ngày này sẽ thấy thông báo đã kết thúc thời gian xác nhận.</span>
+                    <input type="date" name="rsvp_deadline" id="setting-rsvp-deadline" value="{{ old('rsvp_deadline', $config['rsvp_deadline'] ?? '') }}" class="mayhen_account_form_input" style="max-width: 320px;">
+                    <span style="font-size: 12px; color: #7A726A; display: block; margin-top: 4px;">Thời hạn để quan khách gửi phản hồi về tiệc cưới.</span>
+                </div>
+
+                <div style="margin-top: 12px; padding: 14px 16px; background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 10px; max-width: 580px;">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin-bottom: 12px;">
+                        <input type="checkbox" name="rsvp_lock_after_deadline" value="1" {{ old('rsvp_lock_after_deadline', $config['rsvp_lock_after_deadline'] ?? false) ? 'checked' : '' }} style="width: 18px; height: 18px; accent-color: #C5A880; margin-top: 2px;">
+                        <div>
+                            <strong style="font-size: 13px; color: #1F1D1A; display: block;">Khóa hoàn toàn cổng RSVP sau hạn chót</strong>
+                            <span style="font-size: 12px; color: #7A726A;">Khi bật, khách quá hạn sẽ không thể gửi phản hồi. Khi tắt, khách vẫn có thể gửi nhưng hệ thống sẽ gắn nhãn "Báo muộn".</span>
+                        </div>
+                    </label>
+
+                    <div>
+                        <label class="mayhen_account_form_label" for="setting-rsvp-closed-notice" style="font-size: 13px;">Lời nhắn khi cổng RSVP đã đóng</label>
+                        <input type="text" name="rsvp_closed_notice" id="setting-rsvp-closed-notice" value="{{ old('rsvp_closed_notice', $config['rsvp_closed_notice'] ?? '') }}" placeholder="Ví dụ: Cổng xác nhận đã đóng để gia đình chốt số lượng bàn tiệc. Vui lòng liên hệ trực tiếp cô dâu chú rể!" class="mayhen_account_form_input" style="font-size: 13px;">
+                    </div>
                 </div>
             </div>
         </div>

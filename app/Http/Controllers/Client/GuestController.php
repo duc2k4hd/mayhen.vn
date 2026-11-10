@@ -18,6 +18,7 @@ use App\Services\GentleReminderPlannerService;
 use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -734,6 +735,45 @@ class GuestController extends Controller
             return back()->with('rsvp_error', 'Bạn là chủ nhân của thiệp cưới này.');
         }
 
+        // 0.1. Kiểm tra chính sách và hạn chót RSVP (RSVP-03 Policy)
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        $allowRsvp = $config['allow_rsvp'] ?? true;
+        if (! $allowRsvp) {
+            $msg = 'Tính năng xác nhận tham dự (RSVP) hiện đang tạm đóng theo cài đặt của cô dâu chú rể.';
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+
+            return back()->with('rsvp_error', $msg);
+        }
+
+        $rsvpDeadlineStr = $config['rsvp_deadline'] ?? null;
+        $lockAfterDeadline = ! empty($config['rsvp_lock_after_deadline']);
+        $isLateRsvp = false;
+
+        if ($rsvpDeadlineStr) {
+            $deadline = Carbon::parse($rsvpDeadlineStr)->endOfDay();
+            if (Carbon::now()->isAfter($deadline)) {
+                if ($lockAfterDeadline) {
+                    $closedNotice = ! empty($config['rsvp_closed_notice'])
+                        ? $config['rsvp_closed_notice']
+                        : "Hạn chót xác nhận tham dự đã khép lại vào ngày {$deadline->format('d/m/Y')} để gia đình chốt số lượng bàn tiệc. Xin vui lòng liên hệ trực tiếp cô dâu chú rể nếu bạn muốn điều chỉnh thông tin!";
+
+                    if ($request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'is_closed' => true,
+                            'message' => $closedNotice,
+                        ], 422);
+                    }
+
+                    return back()->with('rsvp_error', $closedNotice);
+                }
+
+                $isLateRsvp = true;
+            }
+        }
+
         $query = $request->query();
         $guestToken = null;
         if (array_key_exists('token', $query)) {
@@ -744,7 +784,7 @@ class GuestController extends Controller
         }
         $ip = $request->ip();
 
-        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request): bool {
+        $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp): bool {
             $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
             $guest = $guestToken === null
                 ? null
@@ -774,6 +814,7 @@ class GuestController extends Controller
                         'dietary_requirements' => $request->validated('dietary_requirements'),
                         'wishes' => $request->validated('wishes'),
                         'needs_reconfirmation' => false,
+                        'is_late' => $isLateRsvp,
                         'reconfirmed_at' => now(),
                         'ip_address' => $ip,
                     ]);
@@ -794,6 +835,7 @@ class GuestController extends Controller
                 'children_count' => $request->validated('children_count') ?? 0,
                 'dietary_requirements' => $request->validated('dietary_requirements'),
                 'wishes' => $request->validated('wishes'),
+                'is_late' => $isLateRsvp,
                 'is_wishes_public' => true,
                 'ip_address' => $ip,
             ]);

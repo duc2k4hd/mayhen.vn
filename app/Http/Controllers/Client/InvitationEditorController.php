@@ -445,6 +445,22 @@ class InvitationEditorController extends Controller
             }
         }
 
+        // Trích xuất thông tin hạn chót và chính sách RSVP (RSVP-03 Policy)
+        $rsvpDeadlineStr = $config['rsvp_deadline'] ?? null;
+        $isRsvpClosed = false;
+        $isRsvpLate = false;
+        $rsvpDeadlineDate = null;
+        if ($rsvpDeadlineStr) {
+            $rsvpDeadlineDate = Carbon::parse($rsvpDeadlineStr)->endOfDay();
+            if (Carbon::now()->isAfter($rsvpDeadlineDate)) {
+                if (! empty($config['rsvp_lock_after_deadline'])) {
+                    $isRsvpClosed = true;
+                } else {
+                    $isRsvpLate = true;
+                }
+            }
+        }
+
         $viewData = [
             'invitation' => $invitation,
             'wedding' => $wedding,
@@ -463,6 +479,10 @@ class InvitationEditorController extends Controller
             'isRehearsal' => $isRehearsal,
             'rehearsalGroup' => $rehearsalGroup,
             'availableGroups' => $availableGroups,
+            'rsvpDeadline' => $rsvpDeadlineDate,
+            'isRsvpClosed' => $isRsvpClosed,
+            'isRsvpLate' => $isRsvpLate,
+            'rsvpClosedNotice' => $config['rsvp_closed_notice'] ?? null,
         ];
 
         if ($customView && view()->exists($customView)) {

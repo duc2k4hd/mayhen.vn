@@ -18,6 +18,7 @@ class GuestResponse extends Model
         'attending_status',
         'needs_reconfirmation',
         'reconfirmed_at',
+        'is_late',
         'adults_count',
         'children_count',
         'dietary_requirements',
@@ -33,6 +34,7 @@ class GuestResponse extends Model
             'children_count' => 'integer',
             'is_wishes_public' => 'boolean',
             'needs_reconfirmation' => 'boolean',
+            'is_late' => 'boolean',
             'reconfirmed_at' => 'datetime',
         ];
     }

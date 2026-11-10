@@ -256,6 +256,8 @@ class AccountController extends Controller
             'allow_wishes' => ['nullable', 'boolean'],
             'allow_rsvp' => ['nullable', 'boolean'],
             'rsvp_deadline' => ['nullable', 'date'],
+            'rsvp_lock_after_deadline' => ['nullable', 'boolean'],
+            'rsvp_closed_notice' => ['nullable', 'string', 'max:500'],
             'music_url' => ['nullable', 'string', 'max:500'],
             'music_autoplay' => ['nullable', 'boolean'],
             'og_title' => ['nullable', 'string', 'max:190'],
@@ -290,6 +292,8 @@ class AccountController extends Controller
         $config['allow_wishes'] = $request->boolean('allow_wishes', true);
         $config['allow_rsvp'] = $request->boolean('allow_rsvp', true);
         $config['rsvp_deadline'] = $request->input('rsvp_deadline') ?: null;
+        $config['rsvp_lock_after_deadline'] = $request->boolean('rsvp_lock_after_deadline', false);
+        $config['rsvp_closed_notice'] = $request->input('rsvp_closed_notice') ? trim((string) $request->input('rsvp_closed_notice')) : null;
         $config['music_url'] = $request->input('music_url') ?: null;
         $config['music_autoplay'] = $request->boolean('music_autoplay', true);
         $config['og_title'] = $request->input('og_title') ?: null;

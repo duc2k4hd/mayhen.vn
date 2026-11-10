@@ -7840,6 +7840,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Toàn bộ test suite hệ thống: **883/883 tests PASSED 100% (4,742 assertions in 21.47s)**.
      - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
 
+### 61. THỰC THI HẠN CHÓT XÁC NHẬN THAM DỰ & CHÍNH SÁCH KHÓA RSVP (RSVP DEADLINE ENFORCEMENT & STATUS POLICY — TEST CASE RSVP-03 MASTER PRD V3) (10/11/2026)
+- **Mục tiêu**: Hoàn thiện toàn diện cơ chế kiểm soát hạn chót tiếp nhận phản hồi quan khách (RSVP Deadline) và chính sách khóa cổng tự động theo đúng Test Case RSVP-03 của Master PRD V3, giúp cặp đôi linh hoạt chốt số lượng mâm cỗ hoặc vẫn tiếp nhận khách báo muộn có gắn nhãn cảnh báo.
+- **Chi tiết triển khai**:
+  1. **Cơ Sở Dữ Liệu & Migration**:
+     - Migration: `2026_11_10_260000_add_is_late_to_guest_responses_table.php` bổ sung cột `is_late` (boolean, default false, indexed) vào bảng `guest_responses`.
+     - Model: `app/Models/GuestResponse.php`: Thêm `is_late` vào `$fillable` và khai báo cast boolean trong `$casts`.
+  2. **Cấu Hình Cặp Đôi Trong Cài Đặt Thiệp ([AccountController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/AccountController.php))**:
+     - Mở rộng hàm `updateSettings`: Xác thực và lưu trữ các trường cấu hình trong `custom_config`:
+       * `rsvp_deadline` (date, nullable): Ngày hết hạn xác nhận tham dự.
+       * `rsvp_lock_after_deadline` (boolean): Có cưỡng chế khóa hẳn cổng gửi RSVP khi đã qua hạn chót hay không.
+       * `rsvp_closed_notice` (string, max 500, nullable): Lời nhắn giải thích tùy biến của cặp đôi khi cổng đăng ký đã đóng.
+  3. **Thực Thi Chính Sách Tại Endpoint Tiếp Nhận ([GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/GuestController.php))**:
+     - Trong `submitRsvp()`:
+       * Kiểm tra cờ `allow_rsvp`: Nếu bị tắt bởi chủ thiệp, trả về HTTP 422 `success: false` thông báo tính năng tạm đóng.
+       * So khớp ngày hiện tại với `rsvp_deadline` (được tính đến cuối ngày `endOfDay()`):
+         - Nếu đã quá hạn VÀ `rsvp_lock_after_deadline == true`: Chặn hoàn toàn thao tác gửi, trả về HTTP 422 kèm `is_closed: true` và lời nhắn tùy biến `rsvp_closed_notice` (hoặc thông báo mặc định).
+         - Nếu đã quá hạn VÀ `rsvp_lock_after_deadline == false`: Cho phép nộp phản hồi bình thường, nhưng tự động ghi nhận `is_late = true` vào cơ sở dữ liệu.
+         - Nếu gửi trong hạn: Lưu phản hồi bình thường với `is_late = false`.
+  4. **Bảo Vệ View Thiệp Mời Cưới ([InvitationEditorController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/InvitationEditorController.php))**:
+     - Trích xuất và truyền đầy đủ `$rsvpDeadline`, `$isRsvpClosed`, `$isRsvpLate`, `$rsvpClosedNotice` xuống view thiệp để giao diện form thiệp có thể hiển thị banner cảnh báo hoặc vô hiệu hóa nút gửi tương ứng.
+  5. **Giao Diện Quản Trị & Danh Sách Khách Mời**:
+     - View `resources/views/client/pages/account/settings.blade.php`: Bổ sung ô nhập hạn chót, checkbox bật/tắt chính sách "Khóa hoàn toàn cổng RSVP sau hạn chót", và ô nhập lời nhắn khi cổng đóng.
+     - View `resources/views/client/pages/guests.blade.php`: Bổ sung nhãn màu vàng cam `Muộn` (tooltip "Phản hồi sau ngày hạn chót") bên cạnh thẻ trạng thái tham dự, và nhãn đỏ `Chờ báo lại` đối với khách thuộc đám cưới dời lịch chưa tái xác nhận.
+  6. **Kiểm Thử Toàn Diện**:
+     - Tạo mới test suite `tests/Feature/RsvpDeadlineAndPolicyEnforcementTest.php` gồm **5 kịch bản kiểm thử độc lập (17 assertions)**: 100% PASSED (chặn khi tắt allow_rsvp, gửi thành công trong hạn với is_late = false, chặn HTTP 422 kèm lời nhắn tùy biến khi quá hạn và bật khóa, cho phép gửi nhưng đánh dấu is_late = true khi quá hạn và tắt khóa, và cập nhật thành công cấu hình trong account settings).
+     - Toàn bộ test suite hệ thống: **888/888 tests PASSED 100% (4,759 assertions in 25.97s)**.
+     - Laravel Pint: **100% PASSED** chuẩn agent style PSR-12 sạch sẽ.
+
 
 
 
