@@ -222,25 +222,28 @@ class TemplateController extends Controller
             abort(404, 'Asset not found');
         }
 
-        // Ưu tiên tìm trong thư mục con assets/
-        $assetsDir = $baseDir.DIRECTORY_SEPARATOR.'assets';
-        $realAssetsDir = realpath($assetsDir);
         $realTarget = false;
 
-        if ($realAssetsDir !== false) {
-            $candidatePath = $assetsDir.DIRECTORY_SEPARATOR.$cleanPath;
-            $realCandidate = realpath($candidatePath);
-            if ($realCandidate !== false && is_file($realCandidate) && str_starts_with($realCandidate, $realAssetsDir)) {
-                $realTarget = $realCandidate;
-            }
-        }
-
-        // Fallback: chỉ cho phép styles.css hoặc script.js ở thư mục gốc của mẫu
-        if ($realTarget === false && in_array($cleanPath, ['styles.css', 'script.js'], true)) {
+        // Ưu tiên styles.css và script.js ở thư mục gốc của mẫu
+        if (in_array($cleanPath, ['styles.css', 'script.js'], true)) {
             $rootCandidate = $baseDir.DIRECTORY_SEPARATOR.$cleanPath;
             $realRoot = realpath($rootCandidate);
             if ($realRoot !== false && is_file($realRoot) && str_starts_with($realRoot, $realBaseDir)) {
                 $realTarget = $realRoot;
+            }
+        }
+
+        // Tìm trong thư mục con assets/ nếu chưa tìm thấy
+        if ($realTarget === false) {
+            $assetsDir = $baseDir.DIRECTORY_SEPARATOR.'assets';
+            $realAssetsDir = realpath($assetsDir);
+
+            if ($realAssetsDir !== false) {
+                $candidatePath = $assetsDir.DIRECTORY_SEPARATOR.$cleanPath;
+                $realCandidate = realpath($candidatePath);
+                if ($realCandidate !== false && is_file($realCandidate) && str_starts_with($realCandidate, $realAssetsDir)) {
+                    $realTarget = $realCandidate;
+                }
             }
         }
 

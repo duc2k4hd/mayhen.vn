@@ -1107,7 +1107,7 @@ body.mayhen_editor_body_fullscreen {
     width: 100%;
     height: 100%;
     border: none;
-    background-color: #ffffff;
+    background-color: transparent;
     border-radius: 36px;
     overflow: hidden;
     display: block;

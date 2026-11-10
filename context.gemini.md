@@ -6802,9 +6802,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Xác nhận 100% trong số **5,090 kịch bản kiểm thử** trong `docs/qa/MAY_HEN_QA_TEST_CASES.csv` đạt trạng thái `PASS` (0 kịch bản chưa chạy hoặc thất bại).
   * Bổ sung đầy đủ 20 lượt chạy vào `docs/qa/test-run-ledger.csv`.
 - **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
-  * Toàn bộ test suite: **653/653 tests PASSED 100% (3,364 assertions in 13.1s)**.
+  * Toàn bộ test suite: **653/653 tests PASSED 100% (3,367 assertions)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
   * Toàn bộ 5 Cổng Kiểm Định (Gates 0 - 4), 782 tính năng vi mô, 5,090 test cases và 116 ảnh chụp trực quan đã hoàn thành 100% không còn bất kỳ tồn đọng nào.
+
+### 23. KHẮC PHỤC LỖI TRẮNG MÀN HÌNH PREVIEW STUDIO CHO MẪU "GIỮA MUÔN NGÀN VÌ SAO"
+- **Hiện tượng**:
+  * Khi truy cập `/tao-thiep?template=giua-muon-ngan-vi-sao`, màn hình mockup điện thoại bên phải hiển thị toàn bộ nội dung thiệp (ảnh cưới, chữ uốn lượn màu vàng/trắng "Minh Đức & Thu Huyền", ngày giờ cưới) nhưng phần nền bị trắng tinh (`#ffffff`), khiến chữ vàng nhạt bị chìm và mất hoàn toàn không gian vũ trụ đêm sao (`#030716` / starlight WebGL).
+- **Nguyên nhân gốc rễ**:
+  1. **Tệp Script Cũ Phủ Bóng (Shadowing Asset Bug)**: Thư mục `resources/views/client/invitations/giua-muon-ngan-vi-sao/assets/` tồn tại một file `script.js` cũ (28,964 bytes từ 29/10) với logic Three.js cũ `if (!cv || typeof THREE === 'undefined') return;` ở dòng 37. Do `TemplateController::asset` ưu tiên tìm kiếm trong thư mục con `assets/` trước thư mục gốc của mẫu, script này đã che mất script 70KB thực thụ (`script.js` ở thư mục gốc mẫu), khiến engine canvas sao rơi WebGL `window.SlideTemplates['sao-roi']` không bao giờ được kích hoạt, đồng thời lớp fallback CSS `mayhen_invitation_sr_khong_gl` cũng không được gán vào `<html>`.
+  2. **Màu nền Iframe trong Studio Editor**: Lớp `.mayhen_editor_iframe_viewport` trong `public/assets/client/css/pages/editor-v2.css` hardcode `background-color: #ffffff;`. Khi `body` của mẫu thiệp có `background: transparent;`, màu trắng của thẻ iframe cha xuyên thấu toàn bộ khung nhìn.
+  3. **Phòng vệ Nền Tối của Mẫu Thiệp**: Trong `resources/views/client/invitations/giua-muon-ngan-vi-sao/styles.css`, `body` và `body.mayhen_embed_mode` chưa cưỡng chế `background-color: var(--dem, #030716) !important;`.
+- **Giải pháp xử lý đã thực hiện**:
+  1. **Ưu tiên thư mục gốc cho styles/script trong Controller**: Sửa `app/Http/Controllers/Client/TemplateController.php` để đối với `styles.css` và `script.js`, controller luôn ưu tiên tìm tại thư mục gốc của mẫu thiệp trước khi tìm trong thư mục con `assets/`.
+  2. **Xóa tệp script cũ bị trùng**: Xóa tệp thừa `resources/views/client/invitations/giua-muon-ngan-vi-sao/assets/script.js` (28KB).
+  3. **Thiết lập nền trong suốt cho viewport iframe editor**: Sửa `public/assets/client/css/pages/editor-v2.css`, chuyển `.mayhen_editor_iframe_viewport` sang `background-color: transparent;` để template toàn quyền quyết định màu nền.
+  4. **Phòng vệ nền tối tức thì cho template**: Bổ sung `background-color: var(--dem, #030716) !important;` cho `html`, `body`, `body.mayhen_embed_mode`, `body.mayhen_invitation_embed_mode` và `.mayhen_invitation_sr_nen` trong `resources/views/client/invitations/giua-muon-ngan-vi-sao/styles.css`. Thêm gradient đêm sao CSS làm background mặc định để thiệp luôn có bầu trời sao ngay lập tức trước cả khi WebGL hoàn tất render.
+  5. **Bổ sung Feature Test tự động**: Cập nhật `tests/Feature/GiuaMuonNganViSaoTemplateTest.php` kiểm tra xác thực file CSS và file JS được tải chính xác từ thư mục gốc của mẫu (dung lượng JS > 50KB và đúng file `script.js`), thêm vào whitelist `.gitignore`.
+- **Kết quả nghiệm thu**:
+  * 100% 653 tests (3,367 assertions) vượt qua, `vendor/bin/pint` đạt chuẩn.
+  * Preview trong Studio Editor hiển thị nền đen huyền ảo `#030716` cùng dải ngân hà lấp lánh, văn bản và tên cặp đôi nổi bật rõ nét.
 
 ---
 
