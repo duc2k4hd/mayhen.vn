@@ -83,6 +83,17 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                    </span>
+                    <span>Khách Mời & Check-in</span>
+                </a>
+
                 <!-- Section 3: Kinh Doanh & Đơn Hàng -->
                 <div class="mayhen_admin_menu_section">Kinh Doanh & Doanh Thu</div>
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.orders.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -344,6 +355,10 @@
                 <a href="{{ route('admin.wishes.rsvps') }}" class="mayhen_admin_cmd_item" data-search="rsvp khách mời xác nhận tham dự attendance">
                     <span>📋 Giám Sát Phản Hồi RSVP</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/wishes/rsvps</span>
+                </a>
+                <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_cmd_item" data-search="khách mời điểm danh check-in ngày cưới seating bàn tiệc guests">
+                    <span>🎟️ Khách Mời & Điểm Danh Ngày Cưới</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guests</span>
                 </a>
                 <a href="{{ route('admin.users.index') }}" class="mayhen_admin_cmd_item" data-search="người dùng tài khoản phân quyền rbac users staff manager">
                     <span>👥 Quản Lý Người Dùng & Phân Quyền</span>

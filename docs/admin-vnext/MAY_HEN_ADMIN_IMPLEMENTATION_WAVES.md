@@ -14,8 +14,8 @@
 | **Wave 02** | **Admin Shell + UX Foundations** | Tối ưu hóa layout Quiet Luxury, Command Palette, real-time badges, phím tắt | **COMPLETED** |
 | **Wave 03** | **Users & Invitations** | Quản trị dự án cưới, Customer 360, Safe Support Lens bảo vệ PII, khóa tài khoản | **COMPLETED** |
 | **Wave 04** | **Templates & AI Curated** | Quản trị kho mẫu, Schema QA, 7 phần Curated Native, kiểm soát asset địa phương | **COMPLETED** |
-| **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **READY** |
-| **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **QUEUED** |
+| **Wave 05** | **Guest & Wedding Ops** | Quản lý khách mời, RSVP, sơ đồ bàn tiệc, quầy check-in, duyệt lời chúc | **COMPLETED** |
+| **Wave 06** | **Commerce & Growth** | Quản trị gói cước, gia hạn, coupon khuyến mãi, SEO & nội dung marketing | **READY** |
 | **Wave 07** | **Support & Ops** | Trung tâm hỗ trợ Ticket SLA, quản lý Job queue, giám sát lưu trữ, cảnh báo | **QUEUED** |
 | **Wave 08** | **Data & Intelligence** | Dashboard phân tích, Wedding Readiness Radar, phát hiện sai lệch báo cáo | **QUEUED** |
 | **Wave 09** | **Hardening & UAT** | Kiểm thử hồi quy toàn diện cross-module, responsive đa màn hình, kiểm định phát hành | **QUEUED** |
@@ -57,9 +57,12 @@
 - [x] Viết bộ test `tests/Feature/AdminVNextWave04TemplatesGovernanceTest.php` (5 tests, 41 assertions pass 100%).
 
 ### Wave 05: Guest CRM, Seating & Wedding Day Ops
-- [ ] Đồng bộ dữ liệu phản hồi RSVP và sức chứa bàn tiệc thời gian thực.
-- [ ] Kiểm duyệt lời chúc có bộ lọc ngôn từ thông minh, tránh chặn nhầm từ ngữ chúc phúc trang nhã.
-- [ ] Giám sát quầy lễ tân tiếp đón và quét mã QR không bị trùng lặp sĩ số.
+- [x] Tạo phân hệ quản trị khách mời tập trung [Admin/GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/GuestController.php) và giao diện [guests/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/guests/index.blade.php).
+- [x] Đồng bộ dữ liệu phản hồi RSVP, sĩ số tham dự thực tế và phân bổ bàn tiệc thời gian thực.
+- [x] Cơ chế điểm danh đón tiếp khách mời ngày cưới (Check-in Desk Toggle) hỗ trợ cả Web form và Tablet QR scanning API kèm audit log.
+- [x] Nâng cấp kiểm duyệt lời chúc trong [WishController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/WishController.php) với tính năng duyệt/xóa hàng loạt (`batchApprove`, `batchDelete`).
+- [x] Xuất danh bạ khách mời toàn hệ thống dạng CSV UTF-8 BOM khử độc dữ liệu chống CSV Injection.
+- [x] Viết bộ test `tests/Feature/AdminVNextWave05GuestAndWeddingOpsTest.php` (4 tests, 35 assertions pass 100%).
 
 ### Wave 06: Commerce, Subscriptions & SEO
 - [ ] Cấu hình gói dịch vụ và bảng giá với bản chụp snapshot lịch sử cho đơn cũ.

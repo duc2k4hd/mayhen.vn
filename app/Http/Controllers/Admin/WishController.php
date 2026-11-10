@@ -142,6 +142,54 @@ class WishController extends Controller
     }
 
     /**
+     * Batch approve multiple pending wishes (Wave 05).
+     */
+    public function batchApprove(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'wish_ids' => 'required|array',
+            'wish_ids.*' => 'integer|exists:wedding_wishes,id',
+        ]);
+
+        $ids = $validated['wish_ids'];
+        $count = WeddingWish::whereIn('id', $ids)->where('is_approved', false)->update(['is_approved' => true]);
+
+        AuditLogger::log(
+            'batch_approve_wishes',
+            'WeddingWish',
+            0,
+            "Duyệt hàng loạt {$count} lời chúc mừng quan khách",
+            ['wish_ids' => $ids, 'count' => $count]
+        );
+
+        return back()->with('success', "Đã duyệt hàng loạt {$count} lời chúc thành công.");
+    }
+
+    /**
+     * Batch delete inappropriate wishes (Wave 05).
+     */
+    public function batchDelete(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'wish_ids' => 'required|array',
+            'wish_ids.*' => 'integer|exists:wedding_wishes,id',
+        ]);
+
+        $ids = $validated['wish_ids'];
+        $count = WeddingWish::whereIn('id', $ids)->delete();
+
+        AuditLogger::log(
+            'batch_delete_wishes',
+            'WeddingWish',
+            0,
+            "Xóa hàng loạt {$count} lời chúc vi phạm",
+            ['wish_ids' => $ids, 'count' => $count]
+        );
+
+        return back()->with('success', "Đã xóa hàng loạt {$count} lời chúc thành công.");
+    }
+
+    /**
      * Display centralized RSVP report across the platform.
      */
     public function rsvps(Request $request): View

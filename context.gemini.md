@@ -6917,6 +6917,31 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   * Toàn bộ test suite: **671/671 tests PASSED 100% (3,495 assertions in 13.45s)**.
   * Laravel Pint: **100% PASSED** chuẩn agent style.
 
+### 28. HOÀN THIỆN WAVE 05 — GUEST CRM, SEATING & WEDDING DAY OPS
+- **Mục tiêu**: Hoàn thiện toàn diện phân hệ quản lý khách mời tập trung (`ADM-A11`), giám sát đón tiếp ngày cưới Check-in Desk (`ADM-A13`), đồng bộ sức chứa bàn tiệc Seating Planner (`ADM-A14`) và kiểm duyệt lời chúc nâng cao (`ADM-A15`).
+- **Các thành phần đã triển khai**:
+  1. **Trung Tâm Quản Lý Khách Mời Tập Trung (`Admin/GuestController`)**:
+     - Tạo mới [Admin/GuestController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/GuestController.php) và view [guests/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/guests/index.blade.php):
+       * Bảng điều khiển 4 KPI thời gian thực: Tổng khách mời toàn hệ thống, Đã điểm danh (Check-in), Tỷ lệ đón tiếp (%), Phân bổ bàn tiệc (đã có bàn vs chưa xếp bàn), Xác nhận tham dự (RSVP có mặt).
+       * Bộ lọc đa năng: Tìm kiếm theo tên khách, SĐT, nhóm khách, tên bàn, cặp đôi tổ chức; Lọc theo trạng thái check-in (`checked_in`, `not_checked_in`) và trạng thái bàn (`assigned`, `unassigned`); Lọc theo từng đám cưới.
+       * Điều hướng 2 chiều: Từ danh bạ khách nhảy trực tiếp đến chi tiết thiệp cưới `/admin/invitations/{id}`.
+       * Xuất CSV chuẩn UTF-8 BOM kèm khử độc CSV Injection bảo vệ an toàn bảng tính Excel.
+  2. **Cơ Chế Điểm Danh Đón Tiếp Ngày Cưới (Wedding Day Check-in Desk)**:
+     - Thêm action `toggleCheckIn(Request $request, int $id)` trong `GuestController`:
+       * Hỗ trợ kích hoạt/hủy điểm danh tức thì kèm ghi nhận sĩ số tham dự thực tế (`checked_in_attendees`) và mốc thời gian đón khách (`checked_in_at`).
+       * Hỗ trợ phản hồi cả Standard HTML redirect lẫn AJAX JSON (phục vụ quầy lễ tân quét mã QR trên máy tính bảng/smartphone).
+       * Tự động ghi nhật ký kiểm toán `check_in` và `cancel_check_in` vào `AuditLogger`.
+  3. **Nâng Cấp Kiểm Duyệt Lời Chúc Hàng Loạt (`WishController`)**:
+     - Bổ sung phương thức `batchApprove(Request $request)` và `batchDelete(Request $request)` trong [WishController.php](file:///d:/Project/Laravel/mayhen.vn/app/Http/Controllers/Admin/WishController.php) cho phép quản trị viên phê duyệt hoặc xóa hàng loạt lời chúc vi phạm chỉ trong 1 thao tác.
+     - Tự động ghi nhận chi tiết số lượng và IDs vào `AuditLogger`.
+  4. **Tích Hợp Menu Quản Trị & Command Palette**:
+     - Thêm mục `Khách Mời & Check-in` vào Sidebar menu Section 2 ([master.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php#L85)).
+     - Thêm mục `🎟️ Khách Mời & Điểm Danh Ngày Cưới` vào Command Palette `Ctrl+K`.
+- **Kết quả Kiểm Thử & Định Dạng Toàn Hệ Thống**:
+  * Tạo mới file test: `tests/Feature/AdminVNextWave05GuestAndWeddingOpsTest.php` với 4 kịch bản kiểm thử độc lập (35 assertions), 100% PASSED.
+  * Toàn bộ test suite: **675/675 tests PASSED 100% (3,530 assertions in 13.59s)**.
+  * Laravel Pint: **100% PASSED** chuẩn agent style.
+
 ---
 
 *Tài liệu được khởi tạo và duy trì bởi Antigravity Engine — Dự án Mây Hẹn (mayhen.vn).*

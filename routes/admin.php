@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\GuestController as AdminGuestController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
@@ -77,12 +78,21 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/unlock', [AdminUserController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
     });
 
+    // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05)
+    Route::prefix('guests')->name('guests.')->group(function () {
+        Route::get('/', [AdminGuestController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminGuestController::class, 'exportCsv'])->name('export');
+        Route::post('/{id}/toggle-checkin', [AdminGuestController::class, 'toggleCheckIn'])->name('toggle_checkin');
+    });
+
     // Quản lý Lời chúc & Giám sát RSVP
     Route::prefix('wishes')->name('wishes.')->group(function () {
         Route::get('/', [AdminWishController::class, 'index'])->name('index');
         Route::get('/export-csv', [AdminWishController::class, 'exportWishesCsv'])->name('export');
         Route::get('/rsvps', [AdminWishController::class, 'rsvps'])->name('rsvps');
         Route::get('/rsvps/export-csv', [AdminWishController::class, 'exportRsvpsCsv'])->name('rsvps.export');
+        Route::post('/batch-approve', [AdminWishController::class, 'batchApprove'])->name('batch_approve');
+        Route::post('/batch-delete', [AdminWishController::class, 'batchDelete'])->middleware('admin.manager')->name('batch_delete');
         Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
