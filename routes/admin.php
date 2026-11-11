@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
@@ -331,5 +332,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/redirects/{id}', [AdminSeoController::class, 'destroyRedirect'])->middleware('admin.manager')->name('redirects.destroy');
         Route::post('/redirects/{id}/toggle', [AdminSeoController::class, 'toggleRedirect'])->middleware('admin.manager')->name('redirects.toggle');
         Route::post('/clear-sitemap', [AdminSeoController::class, 'clearSitemap'])->name('clear_sitemap');
+    });
+
+    // Phân Hệ Quản Trị Thông Báo Công Khai, Banner & Popup (Mục 147 PRD V3)
+    Route::prefix('announcements')->name('announcements.')->group(function () {
+        Route::get('/', [AdminAnnouncementController::class, 'index'])->name('index');
+        Route::get('/create', [AdminAnnouncementController::class, 'create'])->name('create');
+        Route::post('/', [AdminAnnouncementController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [AdminAnnouncementController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminAnnouncementController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::delete('/{id}', [AdminAnnouncementController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::post('/{id}/toggle', [AdminAnnouncementController::class, 'toggle'])->middleware('admin.manager')->name('toggle');
     });
 });

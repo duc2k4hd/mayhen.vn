@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\SupportImpersonationController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AiCopywriterController;
+use App\Http\Controllers\Client\AnnouncementInteractionController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CheckInController;
@@ -121,9 +122,11 @@ Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->mid
 Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.reply');
 Route::post('/api/thiep/wishes/{wishId}/report', [ContentReportController::class, 'reportWish'])->middleware('throttle:30,1')->name('invitation.wish.report');
 Route::post('/api/thiep/photos/{photoId}/report', [ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
-Route::post('/api/thiep/wishes/{wishId}/report', [\App\Http\Controllers\Client\ContentReportController::class, 'reportWish'])->middleware('throttle:30,1')->name('invitation.wish.report');
-Route::post('/api/thiep/photos/{photoId}/report', [\App\Http\Controllers\Client\ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
 Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitation.download_archive');
+
+// Tương tác Thông Báo Công Khai & Banner (Mục 147 PRD V3)
+Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
+Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController::class, 'trackImpression'])->name('announcement.impression');
 
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');

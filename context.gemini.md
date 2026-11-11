@@ -9024,3 +9024,78 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 10 test files liên quan gần đây: **72/72 tests PASSED 100% (296 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 90. ĐỀ ÁN 90: PHÂN HỆ QUẢN TRỊ THÔNG BÁO CÔNG KHAI, BANNER & POPUP HỆ THỐNG (PUBLIC ANNOUNCEMENT BAR, SITE BANNERS & PROMOTIONAL POPUPS DESK — MỤC 147 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa dòng 147 trong Sitemap Super Admin PRD V3 ("147: Banner / Popup / Thông báo công khai"):
+  1. *Đa Dạng Vị Trí & Phân Loại Thông Báo*:
+     - Vị trí (`placement`):
+       * `top_bar`: Dải thông báo mảnh trang nhã trên đầu trang (Trang chủ, Blog, Mẫu thiệp, Bảng giá...).
+       * `client_dashboard`: Banner riêng biệt cho các cặp đôi trong Bảng điều khiển tài khoản.
+       * `modal_popup`: Hộp thoại Popup chào mừng hoặc thông báo sự kiện đặc biệt.
+     - Phân loại (`type`):
+       * `promotion`: Ưu đãi mùa cưới phong cách Quiet Luxury vàng Champagne (`#C5A880`).
+       * `info`: Tin tức, tính năng mới ra mắt (`#3B82F6`).
+       * `warning`: Cảnh báo bảo trì hệ thống / nâng cấp cổng thanh toán (`#F59E0B`).
+       * `danger`: Khẩn cấp / sự cố kỹ thuật (`#EF4444`).
+  2. *Cơ Chế Đóng & Hẹn Giờ Tự Động (Dismiss & Schedule Engine)*:
+     - Hẹn giờ tự động hiển thị theo khoảng thời gian (`starts_at` -> `ends_at`), chỉ hiển thị khi trong khung giờ hiệu lực.
+     - Cho phép người dùng đóng (`is_dismissible`), lưu trạng thái đã đóng vào `localStorage` theo ID thông báo để không làm phiền trải nghiệm duyệt trang.
+     - Theo dõi lượt xem (`views_count`) và lượt nhấn liên kết CTA (`clicks_count`).
+  3. *Cơ Sở Dữ Liệu & Model (`SiteAnnouncement`)*:
+     - Bảng `site_announcements`: lưu trữ tiêu đề, nội dung, phân loại, vị trí, CTA text/url, khung giờ hẹn lịch, bộ đếm impressions/clicks và người tạo.
+     - Scope `active()` và `forPlacement()` tối ưu hóa truy vấn O(1).
+  4. *Dịch Vụ Nghiệp Vụ Chuyên Sâu (`SiteAnnouncementService`)*:
+     - `getActiveAnnouncement($placement)`: Truy xuất nhanh thông báo hiện hành đang kích hoạt.
+     - `createAnnouncement()`, `updateAnnouncement()`, `toggleStatus()`, `deleteAnnouncement()`: Quản lý vòng đời thông báo kèm ghi vết kiểm toán toàn diện `AuditLogger::log()`.
+     - `getStatistics()`: Thống kê KPI thông báo đang hiển thị, đã lên lịch, đã hết hạn và tổng lượt click CTA.
+  5. *Trung Tâm Quản Trị Admin (`/admin/announcements`)*:
+     - Bảng danh sách trực quan, thống kê 4 thẻ KPI.
+     - Form thêm mới / chỉnh sửa với hỗ trợ hẹn giờ `datetime-local` và chọn vị trí / phân loại.
+     - Nút gạt bật/tắt nhanh (`toggle`) tức thời.
+     - Menu điều hướng Sidebar: Tích hợp mục "Banner & Thông Báo" trong nhóm *Truyền Thông & Nội Dung*.
+  6. *Giao Diện Hiển Thị Client*:
+     - `resources/views/client/components/announcement-bar.blade.php`: Dải banner thanh lịch, tương thích 100% Flow Layout của Mây Hẹn, tự động ghi nhận lượt xem qua API và đóng mượt mà bằng Vanilla JS.
+     - Nhúng tự động vào `resources/views/client/layouts/master.blade.php`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_112000_create_site_announcements_table.php`
+     - `app/Models/SiteAnnouncement.php`
+  2. **Services**:
+     - `app/Services/SiteAnnouncementService.php`
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminAnnouncementController.php`
+     - `app/Http/Controllers/Client/AnnouncementInteractionController.php`
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php) & [routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /admin/announcements` (`admin.announcements.index`)
+       * `GET /admin/announcements/create` (`admin.announcements.create`)
+       * `POST /admin/announcements` (`admin.announcements.store`)
+       * `GET /admin/announcements/{id}/edit` (`admin.announcements.edit`)
+       * `PUT /admin/announcements/{id}` (`admin.announcements.update`)
+       * `DELETE /admin/announcements/{id}` (`admin.announcements.destroy`)
+       * `POST /admin/announcements/{id}/toggle` (`admin.announcements.toggle`)
+       * `GET /thong-bao/{id}/click` (`announcement.click`)
+       * `POST /api/thong-bao/{id}/impression` (`announcement.impression`)
+  4. **Giao diện**:
+     - `resources/views/admin/pages/announcements/index.blade.php`
+     - `resources/views/admin/pages/announcements/form.blade.php`
+     - `resources/views/client/components/announcement-bar.blade.php`
+     - Cập nhật layout `resources/views/client/layouts/master.blade.php` & `resources/views/admin/layouts/master.blade.php`
+  5. **Kiểm thử tự động ([tests/Feature/AdminAnnouncementManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminAnnouncementManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Admin xem danh sách thông báo và bảng thống kê KPI.
+       2. Admin tạo thông báo mới kèm ghi log kiểm toán `ANNOUNCEMENT_CREATED`.
+       3. Admin cập nhật thông báo thành công.
+       4. Admin bật/tắt nhanh trạng thái thông báo (`toggle`).
+       5. Admin xóa thông báo.
+       6. Khách truy cập trang chủ hiển thị đúng thanh thông báo Top Bar.
+       7. Ẩn thông báo tự động khi thời gian bắt đầu ở tương lai hoặc thời gian kết thúc ở quá khứ.
+       8. Ghi nhận lượt bấm CTA và chuyển hướng đúng URL đích.
+       9. Ghi nhận lượt hiển thị (impression) qua API.
+       10. Chặn người dùng thường truy cập quản trị thông báo.
+     - Kết quả: **10/10 tests PASSED 100% (30 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 11 test files liên quan gần đây: **82/82 tests PASSED 100% (326 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

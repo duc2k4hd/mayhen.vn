@@ -5,6 +5,7 @@
 </head>
 <body class="@yield('body_class')">
     @include('client.components.impersonation-banner')
+    @include('client.components.announcement-bar')
 
     @unless(View::hasSection('hide_chrome'))
         @include('client.components.header')
