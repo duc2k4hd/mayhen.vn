@@ -8,6 +8,7 @@ use App\Models\SupportTicketReply;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Services\AuditLogger;
+use App\Services\CannedResponseService;
 use App\Services\IncidentResponseAndEscalationService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +18,12 @@ use Illuminate\View\View;
 
 class SupportController extends Controller
 {
+    public function __construct(
+        protected ?CannedResponseService $cannedService = null
+    ) {
+        $this->cannedService ??= app(CannedResponseService::class);
+    }
+
     /**
      * Danh sách tickets với KPI tổng quan.
      */
@@ -107,33 +114,8 @@ class SupportController extends Controller
 
         $staffList = User::whereIn('role', ['admin', 'manager', 'staff'])->orderBy('name')->get(['id', 'name']);
 
-        // Operational Memory & Incident SOP Cards (Innovation #17)
-        $sopCards = [
-            [
-                'id' => 'audio_safari',
-                'title' => 'Âm thanh không tự phát trên iPhone Safari',
-                'category' => 'template',
-                'reply_template' => 'Chào bạn, trên các thiết bị iPhone/iPad, trình duyệt Safari của Apple có chính sách bảo mật ngăn website tự ý phát âm thanh khi chưa có tương tác chạm màn hình từ người dùng. Bạn hoàn toàn yên tâm nhé: ngay khi quan khách bấm vào nút "Mở Thiệp" hoặc chạm nhẹ vào bất kỳ điểm nào trên thiệp, nhạc nền du dương sẽ tự động cất lên ngay lập tức.',
-            ],
-            [
-                'id' => 'qr_pin_rescue',
-                'title' => 'Quên mã PIN sảnh tiệc / Cần hỗ trợ điểm danh ngày cưới',
-                'category' => 'technical',
-                'reply_template' => 'Chào bạn, đội ngũ Atelier Mây Hẹn đã kiểm tra hệ thống tiếp tân cho tiệc cưới của bạn. Để xử lý gấp tại sảnh tiệc, bạn có thể sử dụng màn hình Rescue Cockpit ngày cưới trên hệ thống quản trị hoặc đăng nhập lại tài khoản chủ tiệc. Toàn bộ quan khách quét mã QR đều được điểm danh tức thời mà không lo bị nghẽn mạng.',
-            ],
-            [
-                'id' => 'venue_change_last_minute',
-                'title' => 'Đổi sảnh tiệc hoặc địa chỉ đón tiếp giờ chót',
-                'category' => 'invitation',
-                'reply_template' => 'Chào bạn, Mây Hẹn đã cập nhật thông tin địa điểm sảnh tiệc mới trực tiếp vào hệ thống thiệp của bạn. Toàn bộ quan khách khi truy cập link thiệp cưới hoặc quét mã QR trên phong bì sẽ thấy ngay địa chỉ và bản đồ Google Maps mới nhất mà bạn không cần phải in ấn lại thiệp giấy.',
-            ],
-            [
-                'id' => 'vietqr_activation',
-                'title' => 'Đối soát kích hoạt gói dịch vụ qua VietQR / SePay',
-                'category' => 'billing',
-                'reply_template' => 'Chào bạn, Mây Hẹn đã hoàn tất việc đối chiếu mã giao dịch thanh toán chuyển khoản trên hệ thống ngân hàng và đã kích hoạt thành công gói dịch vụ cho bạn. Bạn có thể tiếp tục tùy chỉnh và công bố thiệp cưới ngay bây giờ nhé.',
-            ],
-        ];
+        // Operational Memory & Incident SOP Cards / Canned Responses (Innovation #17 & Mục 17.1 PRD V3)
+        $sopCards = $this->cannedService->getActiveResponsesForTicket($ticket);
 
         return view('admin.pages.support.show', compact('ticket', 'staffList', 'sopCards'));
     }
@@ -166,6 +148,11 @@ class SupportController extends Controller
         // Chuyển status sang in_progress nếu đang open
         if ($ticket->status === 'open' && ! $isInternal) {
             $ticket->update(['status' => 'in_progress']);
+        }
+
+        // Tăng lượt sử dụng nếu phản hồi từ Macro
+        if ($request->filled('canned_response_id')) {
+            $this->cannedService->incrementUsage((int) $request->input('canned_response_id'));
         }
 
         AuditLogger::log(

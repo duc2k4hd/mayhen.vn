@@ -9867,3 +9867,70 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 18 test files admin gần nhất: **164/164 tests PASSED 100% (712 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 103. ĐỀ ÁN 103: PHÂN HỆ QUẢN TRỊ MẪU PHẢN HỒI NHANH / MACRO CSKH CHO TRUNG TÂM HỖ TRỢ (CANNED RESPONSES & CSKH MACROS REPOSITORY — MỤC 17.1 & SCREEN CONTRACT 05 PRD V3)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai kho lưu trữ mẫu phản hồi nhanh và macro hỗ trợ khách hàng theo chuẩn **Mục 17.1 & Screen contract 05 Master PRD V3 (Support, ticket và kiểm duyệt — Cung cấp canned response có kiểm soát, nội bộ note khác phản hồi gửi khách)**.
+  - **Nghiệp Vụ Hỗ Trợ Khách Hàng Tốc Độ Cao & Quiet Luxury**:
+    1. *Kho Lưu Trữ Mẫu Macro Động*:
+       - Thay thế hoàn toàn mảng `$sopCards` hardcode tĩnh bằng hệ thống quản trị CSDL linh hoạt.
+       - Phân loại rõ ràng theo 5 chủ đề cốt lõi: Mẫu Thiệp & Âm Nhạc (`template`), Thanh Toán & Gói Cước (`billing`), Kỹ Thuật & Mã QR Tiếp Tân (`technical`), Thông Tin & Sảnh Tiệc (`invitation`), Hỗ Trợ Chung (`general`).
+    2. *Hệ Thống Phím Tắt (Shortcuts) & Cơ Chế Chèn Biến Động (Merge Placeholders)*:
+       - Hỗ trợ gán phím tắt gọi nhanh dạng `:safari`, `:qrpin`, `:venue`, `:vietqr`, `:extend`.
+       - Tự động thay thế các biến placeholder động theo ngữ cảnh ticket: `{customer_name}` (họ tên dâu rể), `{ticket_code}` (mã ticket TK-XXXXXX), `{wedding_title}` (tên cặp đôi dâu rể), `{hotline}`, `{support_url}`.
+    3. *Tích Hợp Vào Màn Hình Chi Tiết Ticket (`admin.support.show`)*:
+       - Nạp danh sách các mẫu phản hồi active được sắp xếp theo mức độ phổ biến (`popular`).
+       - Một cú click chuột tự động chèn nội dung đã merge vào ô trả lời `textarea[name="body"]`.
+       - Tự động ghi nhận và tăng biến đếm `usage_count`, cập nhật mốc thời gian `last_used_at` khi phản hồi được gửi.
+    4. *Trung Tâm Quản Trị Mẫu Phản Hồi Toàn Diện (`admin.support.canned.index`)*:
+       - 4 Thẻ KPI: Tổng số mẫu, Đang kích hoạt, Lượt dùng tích lũy, Chủ đề phổ biến nhất.
+       - Lọc theo phân loại chủ đề và tìm kiếm toàn văn theo tiêu đề, phím tắt hoặc nội dung.
+       - Thao tác nhanh: Thêm mới mẫu qua Modal Pure CSS/JS, Chỉnh sửa, Bật/Tắt kích hoạt trực tiếp trên bảng và Xóa có xác nhận.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_142000_create_canned_responses_table.php`:
+       * Bảng `canned_responses`: `id`, `title` (string 150), `shortcut` (string 50 unique nullable), `category` (string 50), `body` (text), `is_active` (boolean default true), `usage_count` (unsigned int default 0), `last_used_at` (timestamp nullable), `created_by` (foreign key `users.id`), `timestamps`, indexes `['category', 'is_active']`, `usage_count`.
+  2. **Models**:
+     - `app/Models/CannedResponse.php`: Hằng số `CATEGORIES`, scopes `active()`, `forCategory()`, `popular()`, accessors `category_label`, `category_badge_class`, method `renderMergedBody(?SupportTicket $ticket = null)`.
+  3. **Services**:
+     - `app/Services/CannedResponseService.php`:
+       * `seedDefaultResponsesIfEmpty()`: Khởi tạo 5 mẫu SOP Cards chuẩn mực Quiet Luxury ban đầu.
+       * `getCannedKpis()`: Thống kê 4 thẻ KPI.
+       * `getFilteredResponses()`: Phân trang, lọc theo category và tìm kiếm từ khóa.
+       * `createResponse()`, `updateResponse()`, `deleteResponse()`, `toggleResponse()`: Thao tác CRUD kèm ghi `AuditLogger`.
+       * `incrementUsage()`: Tăng số lượt dùng và cập nhật `last_used_at`.
+       * `getActiveResponsesForTicket()`: Nạp danh sách macro active kèm render placeholder sẵn cho ticket.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminCannedResponseController.php`: Quản trị danh mục mẫu macro.
+     - Cập nhật `app/Http/Controllers/Admin/SupportController.php`: Nạp `$sopCards` động từ `CannedResponseService` và tự động tăng `usage_count` khi reply có gắn `canned_response_id`.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `support`:
+       * `GET /admin/support/canned-responses` (`admin.support.canned.index`)
+       * `POST /admin/support/canned-responses` (`admin.support.canned.store`)
+       * `PUT /admin/support/canned-responses/{canned}` (`admin.support.canned.update`)
+       * `DELETE /admin/support/canned-responses/{canned}` (`admin.support.canned.destroy`)
+       * `POST /admin/support/canned-responses/{canned}/toggle` (`admin.support.canned.toggle`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/support/canned/index.blade.php`:
+       * 4 Thẻ KPI Quiet Luxury: Tổng Mẫu Phản Hồi, Đang Kích Hoạt, Lượt Sử Dụng Tích Lũy, Chủ Đề Phổ Biến Nhất.
+       * Thanh Toolbar lọc theo chủ đề và ô tìm kiếm tức thì.
+       * Bảng danh sách mẫu kèm phím tắt code badge, xem trước nội dung, toggle kích hoạt và nút Sửa/Xóa.
+       * Modal Pure CSS/JS thêm và sửa mẫu với các nút chèn nhanh biến placeholder `{customer_name}`, `{wedding_title}`, `{ticket_code}`.
+     - Cập nhật `resources/views/admin/pages/support/show.blade.php`: Box SOP Cards hiển thị phím tắt, link sang kho mẫu và gán `data-canned-id` vào hidden field của form reply.
+     - Cập nhật Sidebar: Menu "Mẫu Phản Hồi CSKH" và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminCannedResponseManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminCannedResponseManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập kho mẫu phản hồi.
+       3. Super Admin truy cập thành công màn hình kho mẫu phản hồi và thấy các thẻ KPI.
+       4. Super Admin tạo mẫu phản hồi nhanh mới thành công.
+       5. Báo lỗi validation khi tạo phím tắt shortcut bị trùng lặp.
+       6. Super Admin cập nhật thông tin mẫu phản hồi nhanh thành công.
+       7. Super Admin có thể bật tắt trạng thái kích hoạt của mẫu.
+       8. Super Admin xóa mẫu phản hồi nhanh thành công.
+       9. Hàm `renderMergedBody` thay thế chính xác các placeholder với dữ liệu của ticket.
+       10. Màn hình chi tiết ticket nạp mẫu macro động và ghi nhận tăng biến đếm `usage_count` khi dùng.
+     - Kết quả: **10/10 tests PASSED 100% (35 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 19 test files admin gần nhất: **174/174 tests PASSED 100% (747 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

@@ -105,7 +105,10 @@
                             <span style="font-size: 1.2rem;">💡</span>
                             <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Sổ Tay Vận Hành & SOP Cứu Nguy Nhanh (Operational Memory)</strong>
                         </div>
-                        <span style="font-size: 0.75rem; color: var(--mh-admin-muted);">Bấm để tự động chèn mẫu câu trả lời chuẩn Quiet Luxury</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 0.75rem; color: var(--mh-admin-muted);">Bấm để tự động chèn mẫu câu trả lời chuẩn Quiet Luxury</span>
+                            <a href="{{ route('admin.support.canned.index') }}" target="_blank" style="font-size: 0.75rem; color: var(--mh-admin-gold); text-decoration: underline;">Quản lý kho mẫu &nearr;</a>
+                        </div>
                     </div>
 
                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -113,8 +116,12 @@
                             <button type="button" 
                                     class="mayhen_admin_btn mayhen_admin_btn--ghost mayhen_admin_btn_sm sop-insert-btn"
                                     style="font-size: 0.75rem; border: 1px dashed var(--mh-admin-border); background: #FAF7F2; text-align: left;"
-                                    data-template="{{ $sop['reply_template'] }}">
+                                    data-template="{{ $sop['reply_template'] }}"
+                                    data-canned-id="{{ $sop['id'] }}">
                                 📝 {{ $sop['title'] }}
+                                @if(!empty($sop['shortcut']))
+                                    <code style="font-size: 0.7rem; color: #B45309; background: #FEF3C7; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">{{ $sop['shortcut'] }}</code>
+                                @endif
                             </button>
                         @endforeach
                     </div>
@@ -127,6 +134,7 @@
                     <h3 style="font-size: 0.9rem; font-weight: 700; margin: 0 0 14px;">Gửi Phản Hồi</h3>
                     <form method="POST" action="{{ route('admin.support.reply', $ticket) }}">
                         @csrf
+                        <input type="hidden" name="canned_response_id" id="reply-canned-id" value="">
                         <textarea id="reply-body-textarea" name="body" rows="6" required minlength="5" maxlength="5000"
                                   placeholder="Nhập nội dung phản hồi hoặc chọn mẫu SOP bên trên..."
                                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.875rem; resize: vertical; line-height: 1.6; box-sizing: border-box;">{{ old('body') }}</textarea>
@@ -332,6 +340,11 @@
                 document.querySelectorAll('.sop-insert-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
                         var templateText = this.getAttribute('data-template') || '';
+                        var cannedId = this.getAttribute('data-canned-id') || '';
+                        var hiddenInput = document.getElementById('reply-canned-id');
+                        if (hiddenInput) {
+                            hiddenInput.value = cannedId;
+                        }
                         if (!textarea.value.trim()) {
                             textarea.value = templateText;
                         } else {

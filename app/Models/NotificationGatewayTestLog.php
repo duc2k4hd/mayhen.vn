@@ -86,4 +86,3 @@ class NotificationGatewayTestLog extends Model
         };
     }
 }
-

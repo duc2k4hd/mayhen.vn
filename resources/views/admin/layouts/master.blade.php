@@ -307,7 +307,7 @@
                     <span>Quản Lý Người Dùng</span>
                 </a>
 
-                <a href="{{ route('admin.support.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.support.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                <a href="{{ route('admin.support.index') }}" class="mayhen_admin_nav_link {{ (request()->routeIs('admin.support.*') && !request()->routeIs('admin.support.canned.*')) ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -317,6 +317,19 @@
                     @if (($openTicketsBadge ?? 0) > 0)
                         <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $openTicketsBadge }} ticket đang chờ xử lý">{{ $openTicketsBadge }}</span>
                     @endif
+                </a>
+
+                <a href="{{ route('admin.support.canned.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.support.canned.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </span>
+                    <span>Mẫu Phản Hồi CSKH</span>
                 </a>
 
                 <a href="{{ route('admin.moderation.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.moderation.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -793,6 +806,10 @@
                 <a href="{{ route('admin.support.index') }}" class="mayhen_admin_cmd_item" data-search="trung tâm hỗ trợ support tickets khiếu nại báo lỗi trợ giúp khách hàng">
                     <span>🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/support</span>
+                </a>
+                <a href="{{ route('admin.support.canned.index') }}" class="mayhen_admin_cmd_item" data-search="mẫu phản hồi nhanh macro cskh canned responses câu trả lời nhanh trợ giúp">
+                    <span>📝 Mẫu Phản Hồi Nhanh & Macro CSKH</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/support/canned-responses</span>
                 </a>
                 <a href="{{ route('admin.contacts.index') }}" class="mayhen_admin_cmd_item" data-search="liên hệ báo giá đặt hẹn showroom in thiệp contacts leads tư vấn">
                     <span>📬 Yêu Cầu Liên Hệ & Báo Giá (Leads)</span>

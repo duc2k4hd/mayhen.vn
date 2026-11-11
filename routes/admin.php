@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminBackupController;
+use App\Http\Controllers\Admin\AdminCannedResponseController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
@@ -277,6 +278,15 @@ Route::middleware('admin.auth')->group(function () {
 
     // Trung tâm Hỗ trợ Khách hàng (Wave 07 - ADM-A18)
     Route::prefix('support')->name('support.')->group(function () {
+        // Kho Quản Trị Mẫu Phản Hồi Nhanh & Macro CSKH (Mục 17.1 & Screen contract 05 PRD V3)
+        Route::prefix('canned-responses')->name('canned.')->group(function () {
+            Route::get('/', [AdminCannedResponseController::class, 'index'])->name('index');
+            Route::post('/', [AdminCannedResponseController::class, 'store'])->middleware('admin.manager')->name('store');
+            Route::put('/{canned}', [AdminCannedResponseController::class, 'update'])->middleware('admin.manager')->name('update');
+            Route::delete('/{canned}', [AdminCannedResponseController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+            Route::post('/{canned}/toggle', [AdminCannedResponseController::class, 'toggle'])->middleware('admin.manager')->name('toggle');
+        });
+
         Route::get('/', [AdminSupportController::class, 'index'])->name('index');
         Route::post('/scan-sla-breaches', [AdminSupportController::class, 'scanSlaBreaches'])->middleware('admin.manager')->name('scan_sla');
         Route::get('/{ticket}', [AdminSupportController::class, 'show'])->name('show');
