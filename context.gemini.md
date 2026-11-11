@@ -8733,3 +8733,44 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 6 test files liên quan gần đây: **41/41 tests PASSED 100% (128 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 84. ĐỀ ÁN 84: BỘ CÔNG CỤ TRỢ LÝ AI BIÊN TẬP NỘI DUNG CƯỚI TOÀN DIỆN (WEDDING AI COPYWRITING SUITE — MỤC 2.9 & 2.10 DOCX & SECTION 32 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 2.9 & 2.10 trong tài liệu gốc DOCX ("2.9. AI hỗ trợ nội dung: Gợi ý lời mời. Gợi ý lời cảm ơn. Gợi ý lời giới thiệu. Tối ưu câu chữ. Dịch ngôn ngữ. Kiểm tra lỗi chính tả. Không để AI tự bịa tên, giờ, địa chỉ hoặc thông tin gia đình. 2.10. Chức năng đa ngôn ngữ: Ưu tiên Tiếng Việt, Tiếng Anh, Tiếng Trung, Tiếng Hàn. Dữ liệu tên người và địa điểm phải giữ nguyên trừ khi người dùng cung cấp bản dịch phù hợp."):
+  1. *Dịch Vụ Nghiệp Vụ Toàn Diện (`WeddingAiCopywritingService`)*:
+     - `suggestInvitations()`: Biên soạn 3 phương án lời mời cưới chuẩn chỉnh văn phong Quiet Luxury, hỗ trợ 4 vai trò chủ hôn (`parents_both`: Hai bên gia đình, `parents_groom`: Nhà trai Lễ Thành Hôn, `parents_bride`: Nhà gái Lễ Vu Quy, `couple`: Đôi uyên ương thân mời) và 3 tông giọng (`formal`, `modern`, `intimate`).
+     - `suggestThankYouNotes()`: Tạo tâm thư tri ân quan khách, bạn bè thân thiết hoặc đấng sinh thành sau hôn lễ với 3 phong cách xúc động, trang nhã hoặc ngắn gọn ấm áp.
+     - `suggestIntroductions()`: Soạn lời dẫn chuyện và thông điệp mở đầu thiệp cưới kết hợp các mốc kỷ niệm đáng nhớ.
+     - `polishAndCheckGrammar()`: Soát lỗi chính tả tiếng Việt (`suy nghỉ` -> `suy nghĩ`, `chân trọng` -> `trân trọng`, `sắp sếp` -> `sắp xếp`...), chuẩn hóa khoảng trắng trước/sau dấu câu (`chào ,bạn` -> `chào, bạn`), nâng cấp từ ngữ bình dân thành chuẩn mực Quiet Luxury (`mời đến ăn cơm` -> `kính mời Quý khách đến chung vui bữa tiệc thân mật`, `nhớ đi đúng giờ` -> `sự hiện diện đúng giờ của Quý khách là niềm vinh hạnh to lớn`). Trả về chi tiết số lượng cải thiện, danh sách lỗi phát hiện & giải thích lý do.
+     - `translateContent()`: Dịch nội dung thiệp cưới sang Tiếng Anh (`en`), Tiếng Trung (`zh`), Tiếng Hàn (`ko`), Tiếng Việt (`vi`). Tích hợp thuật toán bảo toàn thực thể 100% (`preserveEntities` qua cơ chế Token Substitution), đảm bảo tên cô dâu, tên chú rể, tên cha mẹ và địa điểm tổ chức không bao giờ bị dịch sai lệch nghĩa thô theo đúng yêu cầu mục 2.9 & 2.10 DOCX.
+     - Tích hợp chặt chẽ `AiQualityAndCostObservatoryService`: kiểm tra từ khóa độc hại vi phạm văn hóa ngày cưới (`checkSafetyGuardrails`), tự động tính token và chi phí quy đổi VND, lưu nhật ký vào bảng `ai_usage_logs` (`recordUsage`).
+  2. *API Endpoints & Controller (`AiCopywriterController`)*:
+     - `POST /api/editor/ai/invitations` (`api.ai.invitations`)
+     - `POST /api/editor/ai/thank-you` (`api.ai.thank_you`)
+     - `POST /api/editor/ai/intro` (`api.ai.introduction`)
+     - `POST /api/editor/ai/polish` (`api.ai.polish`)
+     - `POST /api/editor/ai/translate` (`api.ai.translate`)
+     - Bảo vệ bởi rate limiter `throttle:30,1` chống spam request, tự động liên kết `user_id` và `wedding_id` vào log hệ thống.
+  3. *Giao Diện Studio Editor V2 (Pure Vanilla CSS + Native JS)*:
+     - Nút "✨ Trợ Lý AI" tích hợp trực tiếp trên Thanh công cụ dọc bên trái (Left Tool Rail) của Studio Editor V2.
+     - Banner kích hoạt nhanh gắn tại các phân đoạn trọng yếu: Lời Ngỏ (`story`), Lời Mời Cưới (`events`) và Tâm Thư Cảm Ơn (`gift`).
+     - Modal Trợ Lý AI Đa Phân Hệ (`#mayhen_ai_story_modal`) với thanh điều hướng 5 tab: 💌 Lời Mời Cưới, 📖 Lời Ngỏ & Kỷ Niệm, 🕊️ Lời Cảm Ơn, 💎 Soát Lỗi & Tinh Chỉnh, 🌐 Dịch Đa Ngôn Ngữ.
+     - Tích hợp nút "Áp Dụng Vào Thiệp" tự động điền vào các trường tương ứng của form và kích hoạt Live Sync cập nhật iframe preview thời gian thực, cùng nút "Sao Chép" 1-click tiện lợi.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services**:
+     - `app/Services/WeddingAiCopywritingService.php`
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Client/AiCopywriterController.php`
+     - Routes ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)): prefix `/api/editor/ai/*`.
+  3. **Giao diện & Assets**:
+     - Blade: `resources/views/client/pages/editor.blade.php`
+     - JS: `public/assets/client/js/pages/editor.js`
+     - CSS: `public/assets/client/css/pages/editor-v2.css`
+  4. **Kiểm thử tự động ([tests/Feature/WeddingAiCopywritingTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/WeddingAiCopywritingTest.php))**:
+     - 9 kịch bản kiểm thử: Gợi ý lời mời cưới với nhiều vai trò chủ hôn & tông giọng, sinh lời mời hiện đại cho đôi bạn trẻ, chặn đứng từ khóa nhạy cảm / xui xẻo vi phạm an toàn ngày cưới, sinh lời cảm ơn tri ân quan khách & bạn bè, sinh lời dẫn chuyện hôn lễ, soát lỗi chính tả & nâng tầm câu chữ Quiet Luxury, dịch nội dung sang Tiếng Anh bảo toàn 100% tên riêng và địa danh, dịch sang Tiếng Trung & Tiếng Hàn chuẩn nghi thức, ghi vết nhật ký và hạch toán chi phí token vào `ai_usage_logs`.
+     - Kết quả: **9/9 tests PASSED 100% (67 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 7 test files liên quan gần đây: **50/50 tests PASSED 100% (195 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

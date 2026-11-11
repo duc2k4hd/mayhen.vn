@@ -2131,154 +2131,604 @@ const initEditor = () => {
     }, true);
 
     // ----------------------------------------------------
-    // AI STORY WRITER (TASK-V1-04)
+    // WEDDING AI COPYWRITING SUITE (Đề Án 84 — Mục 2.9 & 2.10 DOCX)
     // ----------------------------------------------------
     const btnOpenAiStory = $('#btn-open-ai-story');
+    const btnRailAiCopywriter = $('#mayhen_rail_btn_ai_copywriter');
     const aiStoryModal = $('#mayhen_ai_story_modal');
     const aiStoryCloseBtn = $('#mayhen_ai_story_close_btn');
+    const aiNavTabs = $$('.mayhen_ai_nav_tab');
+    const aiTabPanes = $$('.mayhen_ai_tab_pane');
+    const btnOpenAiSuites = $$('.btn-open-ai-suite');
+
+    // Switch tab helper
+    const switchAiTab = (targetTab) => {
+        aiNavTabs.forEach(tab => {
+            const isActive = tab.getAttribute('data-ai-target') === targetTab;
+            tab.classList.toggle('is-active', isActive);
+            tab.style.fontWeight = isActive ? '600' : '500';
+            tab.style.color = isActive ? '#1F1D1A' : '#7A726A';
+            tab.style.background = isActive ? '#FFF' : 'transparent';
+            tab.style.border = isActive ? '1px solid #EAE3D9' : 'none';
+            if (isActive) tab.style.borderBottom = 'none';
+        });
+
+        aiTabPanes.forEach(pane => {
+            const isTarget = pane.id === `ai-pane-${targetTab}`;
+            pane.style.display = isTarget ? 'flex' : 'none';
+        });
+    };
+
+    if (aiNavTabs.length > 0) {
+        aiNavTabs.forEach(tab => {
+            on(tab, 'click', () => {
+                const target = tab.getAttribute('data-ai-target');
+                if (target) switchAiTab(target);
+            });
+        });
+    }
+
+    const openAiModal = (defaultTab = 'invitations') => {
+        if (!aiStoryModal) return;
+
+        // Auto sync couple names
+        const groomInp = $('[data-sync-key="wedding.groom_name"]') || $('input[name="wedding[groom_name]"]');
+        const brideInp = $('[data-sync-key="wedding.bride_name"]') || $('input[name="wedding[bride_name]"]');
+        const aiGroomInp = $('#ai-story-groom');
+        const aiBrideInp = $('#ai-story-bride');
+        if (aiGroomInp && groomInp && groomInp.value) aiGroomInp.value = groomInp.value;
+        if (aiBrideInp && brideInp && brideInp.value) aiBrideInp.value = brideInp.value;
+
+        switchAiTab(defaultTab);
+        aiStoryModal.classList.add('mayhen_editor_modal_open');
+    };
+
+    const closeAiModal = () => {
+        if (aiStoryModal) aiStoryModal.classList.remove('mayhen_editor_modal_open');
+    };
+
+    if (btnOpenAiStory) {
+        on(btnOpenAiStory, 'click', () => openAiModal('story'));
+    }
+    if (btnRailAiCopywriter) {
+        on(btnRailAiCopywriter, 'click', () => openAiModal('invitations'));
+    }
+    btnOpenAiSuites.forEach(btn => {
+        on(btn, 'click', () => {
+            const target = btn.getAttribute('data-default-ai-tab') || 'invitations';
+            openAiModal(target);
+        });
+    });
+
+    if (aiStoryCloseBtn) on(aiStoryCloseBtn, 'click', closeAiModal);
+    if (aiStoryModal) {
+        on(aiStoryModal, 'click', (e) => {
+            if (e.target === aiStoryModal) closeAiModal();
+        });
+    }
+
+    // Helper: copy text to clipboard with visual feedback
+    const copyToClipboard = async (text, btnElement) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            const origText = btnElement.innerText;
+            btnElement.innerText = '✓ Đã sao chép';
+            btnElement.style.background = '#2E7D32';
+            btnElement.style.color = '#FFF';
+            setTimeout(() => {
+                btnElement.innerText = origText;
+                btnElement.style.background = '';
+                btnElement.style.color = '';
+            }, 1500);
+        } catch (e) {
+            console.error('Failed to copy', e);
+        }
+    };
+
+    // --- TAB 1: LỜI MỜI CƯỚI ---
+    const btnGenAiInvitations = $('#btn-generate-ai-invitations');
+    const aiInvitationsResults = $('#ai-invitations-results');
+    if (btnGenAiInvitations && aiInvitationsResults) {
+        on(btnGenAiInvitations, 'click', async () => {
+            const groom = $('#ai-story-groom')?.value || $('[data-sync-key="wedding.groom_name"]')?.value || 'Chú Rể';
+            const bride = $('#ai-story-bride')?.value || $('[data-sync-key="wedding.bride_name"]')?.value || 'Cô Dâu';
+            const hostType = $('#ai-inv-host-type')?.value || 'parents_both';
+            const tone = $('#ai-inv-tone')?.value || 'formal';
+            const note = $('#ai-inv-note')?.value || '';
+            const originalBtnHtml = btnGenAiInvitations.innerHTML;
+
+            btnGenAiInvitations.disabled = true;
+            btnGenAiInvitations.innerHTML = '<span>⏳ Đang biên soạn 3 phương án lời mời...</span>';
+            aiInvitationsResults.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang chuẩn hóa nghi thức và văn phong Quiet Luxury...</div>';
+
+            try {
+                const url = window.__MAYHEN_AI_INVITATIONS_URL || '/api/editor/ai/invitations';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groom_name: groom,
+                        bride_name: bride,
+                        host_type: hostType,
+                        tone: tone,
+                        additional_note: note
+                    })
+                });
+
+                const data = await res.json();
+                if (data && data.success && data.options) {
+                    aiInvitationsResults.innerHTML = '';
+                    data.options.forEach(opt => {
+                        const card = document.createElement('div');
+                        card.style.cssText = 'border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px; background: #FCFAF7; display: flex; flex-direction: column; gap: 8px;';
+                        card.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${opt.tag}</span>
+                                    <strong style="font-size: 13px; color: #1F1D1A;">${opt.title}</strong>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn-copy-inv mayhen_client_button_base mayhen_client_button_sm" style="background: #FFF; border: 1px solid #D5C9B8; color: #5A534B; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Sao chép
+                                    </button>
+                                    <button type="button" class="btn-apply-inv mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Áp Dụng
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; color: #9C7A4A; font-style: italic;">${opt.subtitle}</div>
+                            <p style="font-size: 13px; color: #3A3530; line-height: 1.5; margin: 0;">${opt.content}</p>
+                        `;
+
+                        const copyBtn = card.querySelector('.btn-copy-inv');
+                        if (copyBtn) on(copyBtn, 'click', () => copyToClipboard(opt.content, copyBtn));
+
+                        const applyBtn = card.querySelector('.btn-apply-inv');
+                        if (applyBtn) {
+                            on(applyBtn, 'click', () => {
+                                const targetInp = $('[data-sync-key*="invitation_message"]') 
+                                    || $('[data-sync-key*="invitation_note"]') 
+                                    || $('[data-sync-key*="party_message"]') 
+                                    || $('textarea[name*="invitation_message"]') 
+                                    || $('textarea[name*="message"]');
+                                if (targetInp) {
+                                    targetInp.value = opt.content;
+                                    targetInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    targetInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                    applyBtn.innerText = '✓ Đã Áp Dụng!';
+                                    applyBtn.style.background = '#2E7D32';
+                                    setTimeout(() => closeAiModal(), 700);
+                                } else {
+                                    copyToClipboard(opt.content, applyBtn);
+                                }
+                            });
+                        }
+
+                        aiInvitationsResults.appendChild(card);
+                    });
+                } else {
+                    aiInvitationsResults.innerHTML = `<div style="color: #C62828; font-size: 13px; padding: 12px;">${data?.message || 'Không thể tạo gợi ý. Vui lòng thử lại.'}</div>`;
+                }
+            } catch (err) {
+                aiInvitationsResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi tạo gợi ý. Vui lòng thử lại.</div>';
+            } finally {
+                btnGenAiInvitations.disabled = false;
+                btnGenAiInvitations.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+
+    // --- TAB 2: LỜI NGỎ & KỶ NIỆM ---
     const aiGroomInp = $('#ai-story-groom');
     const aiBrideInp = $('#ai-story-bride');
     const aiKeywordsInp = $('#ai-story-keywords');
     const aiToneBtns = $$('.mayhen_ai_tone_btn');
     const btnGenAiStory = $('#btn-generate-ai-story');
     const aiStoryResults = $('#ai-story-results');
+    let selectedStoryTone = 'romantic';
 
-    let selectedTone = 'romantic';
-
-    if (btnOpenAiStory && aiStoryModal) {
-        on(btnOpenAiStory, 'click', () => {
-            const groomInp = $('[data-sync-key="wedding.groom_name"]') || $('input[name="wedding[groom_name]"]');
-            const brideInp = $('[data-sync-key="wedding.bride_name"]') || $('input[name="wedding[bride_name]"]');
-            if (aiGroomInp && groomInp && groomInp.value) aiGroomInp.value = groomInp.value;
-            if (aiBrideInp && brideInp && brideInp.value) aiBrideInp.value = brideInp.value;
-
-            aiStoryModal.classList.add('mayhen_editor_modal_open');
-        });
-
-        const closeAiModal = () => {
-            aiStoryModal.classList.remove('mayhen_editor_modal_open');
-        };
-
-        if (aiStoryCloseBtn) on(aiStoryCloseBtn, 'click', closeAiModal);
-        on(aiStoryModal, 'click', (e) => {
-            if (e.target === aiStoryModal) closeAiModal();
-        });
-
-        aiToneBtns.forEach(btn => {
-            on(btn, 'click', () => {
-                selectedTone = btn.getAttribute('data-tone') || 'romantic';
-                aiToneBtns.forEach(b => {
-                    const active = b === btn;
-                    b.classList.toggle('is-active', active);
-                    b.style.borderColor = active ? '#C5A880' : '#E5DCCD';
-                    b.style.background = active ? '#FAF8F5' : '#FFF';
-                    b.style.fontWeight = active ? '600' : 'normal';
-                });
+    aiToneBtns.forEach(btn => {
+        on(btn, 'click', () => {
+            selectedStoryTone = btn.getAttribute('data-tone') || 'romantic';
+            aiToneBtns.forEach(b => {
+                const active = b === btn;
+                b.classList.toggle('is-active', active);
+                b.style.borderColor = active ? '#C5A880' : '#E5DCCD';
+                b.style.background = active ? '#FAF8F5' : '#FFF';
+                b.style.fontWeight = active ? '600' : 'normal';
             });
         });
+    });
 
-        if (btnGenAiStory) {
-            on(btnGenAiStory, 'click', async () => {
-                const groom = aiGroomInp?.value || 'Chú Rể';
-                const bride = aiBrideInp?.value || 'Cô Dâu';
-                const keywords = aiKeywordsInp?.value || '';
-                const originalBtnHtml = btnGenAiStory.innerHTML;
+    if (btnGenAiStory) {
+        on(btnGenAiStory, 'click', async () => {
+            const groom = aiGroomInp?.value || 'Chú Rể';
+            const bride = aiBrideInp?.value || 'Cô Dâu';
+            const keywords = aiKeywordsInp?.value || '';
+            const originalBtnHtml = btnGenAiStory.innerHTML;
 
-                btnGenAiStory.disabled = true;
-                btnGenAiStory.innerHTML = '<span>⏳ Đang dệt nên câu chuyện...</span>';
-                if (aiStoryResults) {
-                    aiStoryResults.innerHTML = '<div style="text-align: center; padding: 24px; color: #7A726A; font-style: italic;">Đang phân tích kỷ niệm và tạo 3 phương án Quiet Luxury...</div>';
-                }
+            btnGenAiStory.disabled = true;
+            btnGenAiStory.innerHTML = '<span>⏳ Đang dệt nên câu chuyện...</span>';
+            if (aiStoryResults) {
+                aiStoryResults.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang phân tích kỷ niệm và tạo 3 phương án Quiet Luxury...</div>';
+            }
 
-                try {
-                    const aiUrl = window.__MAYHEN_AI_STORY_URL || '/api/editor/ai-story';
-                    const res = await fetch(aiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            groom_name: groom,
-                            bride_name: bride,
-                            keywords: keywords,
-                            tone: selectedTone
-                        })
-                    });
+            try {
+                const aiUrl = window.__MAYHEN_AI_STORY_URL || '/api/editor/ai-story';
+                const res = await fetch(aiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groom_name: groom,
+                        bride_name: bride,
+                        keywords: keywords,
+                        tone: selectedStoryTone
+                    })
+                });
 
-                    const data = await res.json();
-                    if (data && data.options && aiStoryResults) {
-                        aiStoryResults.innerHTML = '';
-                        data.options.forEach((opt) => {
-                            const card = document.createElement('div');
-                            card.style.border = '1px solid #EAE3D9';
-                            card.style.borderRadius = '12px';
-                            card.style.padding = '16px';
-                            card.style.background = '#FCFAF7';
-                            card.style.display = 'flex';
-                            card.style.flexDirection = 'column';
-                            card.style.gap = '8px';
+                const data = await res.json();
+                if (data && data.options && aiStoryResults) {
+                    aiStoryResults.innerHTML = '';
+                    data.options.forEach((opt) => {
+                        const card = document.createElement('div');
+                        card.style.cssText = 'border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px; background: #FCFAF7; display: flex; flex-direction: column; gap: 8px;';
 
-                            card.innerHTML = `
-                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${opt.style_name}</span>
-                                        <strong style="font-size: 14px; color: #1F1D1A;">${opt.title}</strong>
-                                    </div>
-                                    <button type="button" class="btn-apply-story mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 12px; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-                                        Áp Dụng Vào Thiệp
+                        card.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${opt.style_name || opt.tag}</span>
+                                    <strong style="font-size: 13px; color: #1F1D1A;">${opt.title}</strong>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn-copy-story mayhen_client_button_base mayhen_client_button_sm" style="background: #FFF; border: 1px solid #D5C9B8; color: #5A534B; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Sao chép
+                                    </button>
+                                    <button type="button" class="btn-apply-story mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Áp Dụng
                                     </button>
                                 </div>
-                                <div style="font-size: 13px; color: #9C7A4A; font-style: italic; font-weight: 500;">"${opt.subtitle}"</div>
-                                <p style="font-size: 13px; color: #4A443E; line-height: 1.5; margin: 0;">${opt.content}</p>
-                            `;
+                            </div>
+                            <div style="font-size: 12px; color: #9C7A4A; font-style: italic;">"${opt.subtitle}"</div>
+                            <p style="font-size: 13px; color: #3A3530; line-height: 1.5; margin: 0;">${opt.content}</p>
+                        `;
 
-                            const applyBtn = card.querySelector('.btn-apply-story');
-                            if (applyBtn) {
-                                on(applyBtn, 'click', () => {
-                                    const titleInp = $('[data-sync-key*="story_title"]') || $('input[name*="story_title"]');
-                                    const subInp = $('[data-sync-key*="story_subtitle"]') || $('input[name*="story_subtitle"]');
-                                    const contentInp = $('[data-sync-key*="story_content"]') || $('textarea[name*="story_content"]');
+                        const copyBtn = card.querySelector('.btn-copy-story');
+                        if (copyBtn) on(copyBtn, 'click', () => copyToClipboard(opt.content, copyBtn));
 
-                                    if (titleInp) {
-                                        titleInp.value = opt.title;
-                                        titleInp.dispatchEvent(new Event('input', { bubbles: true }));
-                                        titleInp.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
-                                    if (subInp) {
-                                        subInp.value = opt.subtitle;
-                                        subInp.dispatchEvent(new Event('input', { bubbles: true }));
-                                        subInp.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
-                                    if (contentInp) {
-                                        contentInp.value = opt.content;
-                                        contentInp.dispatchEvent(new Event('input', { bubbles: true }));
-                                        contentInp.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
+                        const applyBtn = card.querySelector('.btn-apply-story');
+                        if (applyBtn) {
+                            on(applyBtn, 'click', () => {
+                                const titleInp = $('[data-sync-key*="story_title"]') || $('input[name*="story_title"]');
+                                const subInp = $('[data-sync-key*="story_subtitle"]') || $('input[name*="story_subtitle"]');
+                                const contentInp = $('[data-sync-key*="story_content"]') || $('textarea[name*="story_content"]');
 
+                                if (titleInp) {
+                                    titleInp.value = opt.title;
+                                    titleInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    titleInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                                if (subInp) {
+                                    subInp.value = opt.subtitle;
+                                    subInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    subInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                                if (contentInp) {
+                                    contentInp.value = opt.content;
+                                    contentInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    contentInp.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+
+                                applyBtn.innerText = '✓ Đã Áp Dụng!';
+                                applyBtn.style.background = '#2E7D32';
+                                setTimeout(() => closeAiModal(), 700);
+                            });
+                        }
+
+                        aiStoryResults.appendChild(card);
+                    });
+                }
+            } catch (err) {
+                if (aiStoryResults) {
+                    aiStoryResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi tạo gợi ý. Vui lòng thử lại.</div>';
+                }
+            } finally {
+                btnGenAiStory.disabled = false;
+                btnGenAiStory.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+
+    // --- TAB 3: LỜI CẢM ƠN (THANK YOU) ---
+    const btnGenAiThankYou = $('#btn-generate-ai-thank-you');
+    const aiThankYouResults = $('#ai-thank-you-results');
+    if (btnGenAiThankYou && aiThankYouResults) {
+        on(btnGenAiThankYou, 'click', async () => {
+            const groom = $('#ai-story-groom')?.value || $('[data-sync-key="wedding.groom_name"]')?.value || 'Chú Rể';
+            const bride = $('#ai-story-bride')?.value || $('[data-sync-key="wedding.bride_name"]')?.value || 'Cô Dâu';
+            const audience = $('#ai-thank-audience')?.value || 'all_guests';
+            const tone = $('#ai-thank-tone')?.value || 'heartfelt';
+            const originalBtnHtml = btnGenAiThankYou.innerHTML;
+
+            btnGenAiThankYou.disabled = true;
+            btnGenAiThankYou.innerHTML = '<span>⏳ Đang tạo lời cảm ơn tri ân...</span>';
+            aiThankYouResults.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang dệt nên tâm thư ấm áp...</div>';
+
+            try {
+                const url = window.__MAYHEN_AI_THANK_YOU_URL || '/api/editor/ai/thank-you';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groom_name: groom,
+                        bride_name: bride,
+                        audience: audience,
+                        tone: tone
+                    })
+                });
+
+                const data = await res.json();
+                if (data && data.success && data.options) {
+                    aiThankYouResults.innerHTML = '';
+                    data.options.forEach(opt => {
+                        const card = document.createElement('div');
+                        card.style.cssText = 'border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px; background: #FCFAF7; display: flex; flex-direction: column; gap: 8px;';
+                        card.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${opt.tag}</span>
+                                    <strong style="font-size: 13px; color: #1F1D1A;">${opt.title}</strong>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn-copy-thank mayhen_client_button_base mayhen_client_button_sm" style="background: #FFF; border: 1px solid #D5C9B8; color: #5A534B; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Sao chép
+                                    </button>
+                                    <button type="button" class="btn-apply-thank mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                        Áp Dụng
+                                    </button>
+                                </div>
+                            </div>
+                            <p style="font-size: 13px; color: #3A3530; line-height: 1.5; margin: 0;">${opt.content}</p>
+                        `;
+
+                        const copyBtn = card.querySelector('.btn-copy-thank');
+                        if (copyBtn) on(copyBtn, 'click', () => copyToClipboard(opt.content, copyBtn));
+
+                        const applyBtn = card.querySelector('.btn-apply-thank');
+                        if (applyBtn) {
+                            on(applyBtn, 'click', () => {
+                                const targetInp = $('[data-sync-key*="thank_you"]') 
+                                    || $('[data-sync-key*="gift_thank"]') 
+                                    || $('textarea[name*="thank_you"]') 
+                                    || $('textarea[name*="gift"]');
+                                if (targetInp) {
+                                    targetInp.value = opt.content;
+                                    targetInp.dispatchEvent(new Event('input', { bubbles: true }));
+                                    targetInp.dispatchEvent(new Event('change', { bubbles: true }));
                                     applyBtn.innerText = '✓ Đã Áp Dụng!';
                                     applyBtn.style.background = '#2E7D32';
+                                    setTimeout(() => closeAiModal(), 700);
+                                } else {
+                                    copyToClipboard(opt.content, applyBtn);
+                                }
+                            });
+                        }
 
-                                    setTimeout(() => {
-                                        closeAiModal();
-                                    }, 800);
-                                });
-                            }
+                        aiThankYouResults.appendChild(card);
+                    });
+                } else {
+                    aiThankYouResults.innerHTML = `<div style="color: #C62828; font-size: 13px; padding: 12px;">${data?.message || 'Không thể tạo gợi ý. Vui lòng thử lại.'}</div>`;
+                }
+            } catch (err) {
+                aiThankYouResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi tạo gợi ý. Vui lòng thử lại.</div>';
+            } finally {
+                btnGenAiThankYou.disabled = false;
+                btnGenAiThankYou.innerHTML = originalBtnHtml;
+            }
+        });
+    }
 
-                            aiStoryResults.appendChild(card);
+    // --- TAB 4: SOÁT LỖI CHÍNH TẢ & TINH CHỈNH ---
+    const btnRunAiPolish = $('#btn-run-ai-polish');
+    const aiPolishInput = $('#ai-polish-input');
+    const aiPolishResults = $('#ai-polish-results');
+    if (btnRunAiPolish && aiPolishInput && aiPolishResults) {
+        on(btnRunAiPolish, 'click', async () => {
+            const text = aiPolishInput.value.trim();
+            if (!text) {
+                aiPolishResults.innerHTML = '<div style="color: #C62828; font-size: 12px; padding: 8px;">Vui lòng nhập hoặc dán văn bản cần kiểm tra.</div>';
+                return;
+            }
+
+            const style = $('#ai-polish-style')?.value || 'quiet_luxury';
+            const originalBtnHtml = btnRunAiPolish.innerHTML;
+
+            btnRunAiPolish.disabled = true;
+            btnRunAiPolish.innerHTML = '<span>⏳ Đang kiểm tra...</span>';
+            aiPolishResults.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang rà soát chính tả và đối chiếu phong cách Quiet Luxury...</div>';
+
+            try {
+                const url = window.__MAYHEN_AI_POLISH_URL || '/api/editor/ai/polish';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        style: style
+                    })
+                });
+
+                const data = await res.json();
+                if (data && data.success) {
+                    aiPolishResults.innerHTML = '';
+
+                    // Header thống kê
+                    const summaryBox = document.createElement('div');
+                    summaryBox.style.cssText = 'background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between;';
+                    summaryBox.innerHTML = `
+                        <div style="font-size: 12px; color: #1F1D1A;">
+                            <strong>Kết quả kiểm tra:</strong> Phát hiện <strong>${data.improvements_count}</strong> điểm cải tiến
+                        </div>
+                        <span style="background: ${data.improvements_count > 0 ? '#E8F5E9' : '#EDE7F6'}; color: ${data.improvements_count > 0 ? '#2E7D32' : '#512DA8'}; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px;">
+                            ${data.improvements_count > 0 ? '✓ Đã Tối Ưu' : '✓ Chuẩn Mực'}
+                        </span>
+                    `;
+                    aiPolishResults.appendChild(summaryBox);
+
+                    // Danh sách cải tiến
+                    if (data.improvements && data.improvements.length > 0) {
+                        const listWrap = document.createElement('div');
+                        listWrap.style.cssText = 'display: flex; flex-direction: column; gap: 6px;';
+                        data.improvements.forEach(item => {
+                            const itemEl = document.createElement('div');
+                            itemEl.style.cssText = 'font-size: 12px; color: #5A534B; background: #FFF; border: 1px dashed #D5C9B8; border-radius: 8px; padding: 6px 10px; display: flex; align-items: baseline; gap: 6px;';
+                            itemEl.innerHTML = `<span style="color: #9C7A4A; font-weight: 600;">•</span> <span>${item.reason}</span>`;
+                            listWrap.appendChild(itemEl);
+                        });
+                        aiPolishResults.appendChild(listWrap);
+                    }
+
+                    // Văn bản hoàn thiện
+                    const polishedCard = document.createElement('div');
+                    polishedCard.style.cssText = 'border: 1px solid #C5A880; border-radius: 12px; padding: 14px; background: #FFFDF9; display: flex; flex-direction: column; gap: 8px;';
+                    polishedCard.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <strong style="font-size: 12px; color: #9C7A4A; text-transform: uppercase; letter-spacing: 0.5px;">Văn bản sau tinh chỉnh Quiet Luxury</strong>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="btn-copy-polish mayhen_client_button_base mayhen_client_button_sm" style="background: #FFF; border: 1px solid #D5C9B8; color: #5A534B; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                    Sao chép
+                                </button>
+                                <button type="button" class="btn-replace-polish mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                    Thay thế vào ô nhập
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 13px; color: #1F1D1A; line-height: 1.5; margin: 0; font-family: 'Playfair Display', serif;">${data.polished}</p>
+                    `;
+
+                    const copyBtn = polishedCard.querySelector('.btn-copy-polish');
+                    if (copyBtn) on(copyBtn, 'click', () => copyToClipboard(data.polished, copyBtn));
+
+                    const replaceBtn = polishedCard.querySelector('.btn-replace-polish');
+                    if (replaceBtn) {
+                        on(replaceBtn, 'click', () => {
+                            aiPolishInput.value = data.polished;
+                            replaceBtn.innerText = '✓ Đã thay thế!';
+                            replaceBtn.style.background = '#2E7D32';
                         });
                     }
-                } catch (err) {
-                    if (aiStoryResults) {
-                        aiStoryResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi tạo gợi ý. Vui lòng thử lại.</div>';
-                    }
-                } finally {
-                    btnGenAiStory.disabled = false;
-                    btnGenAiStory.innerHTML = originalBtnHtml;
+
+                    aiPolishResults.appendChild(polishedCard);
+                } else {
+                    aiPolishResults.innerHTML = `<div style="color: #C62828; font-size: 13px; padding: 12px;">${data?.message || 'Không thể kiểm tra văn bản.'}</div>`;
                 }
-            });
-        }
+            } catch (err) {
+                aiPolishResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi kiểm tra. Vui lòng thử lại.</div>';
+            } finally {
+                btnRunAiPolish.disabled = false;
+                btnRunAiPolish.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+
+    // --- TAB 5: DỊCH ĐA NGÔN NGỮ (BẢO TOÀN TÊN RIÊNG) ---
+    const btnRunAiTranslate = $('#btn-run-ai-translate');
+    const aiTranslateInput = $('#ai-translate-input');
+    const aiTranslateResults = $('#ai-translate-results');
+    if (btnRunAiTranslate && aiTranslateInput && aiTranslateResults) {
+        on(btnRunAiTranslate, 'click', async () => {
+            const text = aiTranslateInput.value.trim();
+            if (!text) {
+                aiTranslateResults.innerHTML = '<div style="color: #C62828; font-size: 12px; padding: 8px;">Vui lòng nhập văn bản cần dịch.</div>';
+                return;
+            }
+
+            const targetLang = $('#ai-translate-lang')?.value || 'en';
+            const originalBtnHtml = btnRunAiTranslate.innerHTML;
+
+            // Tự động thu thập các thực thể cần bảo toàn từ form
+            const preserveEntities = [];
+            const groomName = $('[data-sync-key="wedding.groom_name"]')?.value;
+            const brideName = $('[data-sync-key="wedding.bride_name"]')?.value;
+            const partyAddress = $('[data-sync-key="wedding.extra_data.event_party_address"]')?.value;
+            if (groomName) preserveEntities.push(groomName);
+            if (brideName) preserveEntities.push(brideName);
+            if (partyAddress) preserveEntities.push(partyAddress);
+
+            btnRunAiTranslate.disabled = true;
+            btnRunAiTranslate.innerHTML = '<span>⏳ Đang dịch nghi thức cưới...</span>';
+            aiTranslateResults.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang dịch thuật và khóa an toàn 100% tên riêng...</div>';
+
+            try {
+                const url = window.__MAYHEN_AI_TRANSLATE_URL || '/api/editor/ai/translate';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': window.__MAYHEN_CSRF_TOKEN || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        target_lang: targetLang,
+                        preserve_entities: preserveEntities
+                    })
+                });
+
+                const data = await res.json();
+                if (data && data.success) {
+                    aiTranslateResults.innerHTML = '';
+
+                    const card = document.createElement('div');
+                    card.style.cssText = 'border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px; background: #FCFAF7; display: flex; flex-direction: column; gap: 8px;';
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: #EFE8DD; color: #6B5E4B; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${data.target_lang_name}</span>
+                                <strong style="font-size: 13px; color: #1F1D1A;">Bản Dịch Chuẩn Nghi Thức</strong>
+                            </div>
+                            <button type="button" class="btn-copy-trans mayhen_client_button_base mayhen_client_button_sm" style="background: #1F1D1A; color: #FFF; border: none; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;">
+                                Sao chép
+                            </button>
+                        </div>
+                        <p style="font-size: 13px; color: #1F1D1A; line-height: 1.5; margin: 0;">${data.translated_text}</p>
+                        ${data.preserved_items && data.preserved_items.length > 0 ? `
+                            <div style="font-size: 11px; color: #2E7D32; background: #E8F5E9; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>🔒 Đã bảo toàn nguyên vẹn tên riêng:</span>
+                                <strong>${data.preserved_items.join(', ')}</strong>
+                            </div>
+                        ` : ''}
+                    `;
+
+                    const copyBtn = card.querySelector('.btn-copy-trans');
+                    if (copyBtn) on(copyBtn, 'click', () => copyToClipboard(data.translated_text, copyBtn));
+
+                    aiTranslateResults.appendChild(card);
+                } else {
+                    aiTranslateResults.innerHTML = `<div style="color: #C62828; font-size: 13px; padding: 12px;">${data?.message || 'Không thể dịch nội dung.'}</div>`;
+                }
+            } catch (err) {
+                aiTranslateResults.innerHTML = '<div style="color: #C62828; font-size: 13px; padding: 12px;">Đã xảy ra lỗi khi dịch thuật. Vui lòng thử lại.</div>';
+            } finally {
+                btnRunAiTranslate.disabled = false;
+                btnRunAiTranslate.innerHTML = originalBtnHtml;
+            }
+        });
     }
 
     // ----------------------------------------------------

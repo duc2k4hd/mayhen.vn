@@ -1876,3 +1876,32 @@ body.mayhen_editor_body_fullscreen {
     color: #ffffff;
     border-color: #B45309;
 }
+
+/* ==========================================================================
+   WEDDING AI COPYWRITING SUITE (Mục 2.9 & 2.10 DOCX — Pure Vanilla)
+   ========================================================================== */
+.mayhen_ai_nav_tab {
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.mayhen_ai_nav_tab:hover {
+    color: #1F1D1A !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.mayhen_ai_nav_tab.is-active {
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.btn-open-ai-suite:hover,
+#btn-open-ai-story:hover,
+#btn-generate-ai-invitations:hover,
+#btn-generate-ai-story:hover,
+#btn-generate-ai-thank-you:hover,
+#btn-run-ai-polish:hover,
+#btn-run-ai-translate:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}

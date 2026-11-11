@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Client\AccountController;
+use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CheckInController;
@@ -91,6 +92,15 @@ Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uplo
 Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->middleware('throttle:editor_actions')->name('invitation.autosave');
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
 Route::post('/api/editor/ai-story', [InvitationEditorController::class, 'generateAiStory'])->middleware('throttle:editor_actions')->name('invitation.aiStory');
+
+// AI Wedding Copywriting Suite (Đề Án 84 — Mục 2.9 & 2.10 DOCX)
+Route::prefix('/api/editor/ai')->middleware('throttle:30,1')->group(function () {
+    Route::post('/invitations', [AiCopywriterController::class, 'invitations'])->name('api.ai.invitations');
+    Route::post('/thank-you', [AiCopywriterController::class, 'thankYou'])->name('api.ai.thank_you');
+    Route::post('/intro', [AiCopywriterController::class, 'introduction'])->name('api.ai.introduction');
+    Route::post('/polish', [AiCopywriterController::class, 'polish'])->name('api.ai.polish');
+    Route::post('/translate', [AiCopywriterController::class, 'translate'])->name('api.ai.translate');
+});
 Route::get('/api/editor/consistency-check/{id}', [InvitationEditorController::class, 'consistencyCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.consistency_check');
 Route::get('/api/editor/collision-check/{id}', [InvitationEditorController::class, 'collisionCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.collision_check');
 Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 'readinessCheck'])->middleware(['auth', 'throttle:30,1'])->name('invitation.readiness_check');
