@@ -81,4 +81,3 @@ class PaymentWebhookLog extends Model
         };
     }
 }
-

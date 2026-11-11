@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AdminSecurityController;
+use App\Http\Controllers\Admin\AdminSystemHealthController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -311,6 +312,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{uuid}/details', [AdminJobMonitorController::class, 'details'])->name('details');
         Route::post('/{uuid}/retry', [AdminJobMonitorController::class, 'retry'])->name('retry');
         Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
+    });
+
+    // Trạng Thái Dịch Vụ, Sức Khỏe Hạ Tầng & Nhật Ký Lỗi (Mục 158 PRD V3)
+    Route::prefix('system/health')->middleware('admin.super')->name('system.health.')->group(function () {
+        Route::get('/', [AdminSystemHealthController::class, 'index'])->name('index');
+        Route::post('/clear-log', [AdminSystemHealthController::class, 'clearLog'])->name('clear_log');
+        Route::get('/download-log', [AdminSystemHealthController::class, 'downloadLog'])->name('download_log');
     });
 
     // Trung Tâm Trí Tuệ Vận Hành & Radar (Wave 08 - ADM-A20, A21, A22 & Innovation #13)

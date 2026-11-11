@@ -9740,3 +9740,60 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 16 test files admin gần nhất: **144/144 tests PASSED 100% (640 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 101. ĐỀ ÁN 101: PHÂN HỆ QUẢN TRỊ TRẠNG THÁI DỊCH VỤ, THEO DÕI SỨC KHỎE HẠ TẦNG & NHẬT KÝ LỖI HỆ THỐNG (SERVICE HEALTH, SYSTEM METRICS & ERROR LOG VIEWER COCKPIT — MỤC 158 PRD V3)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm chỉ huy giám sát sức khỏe hạ tầng thời gian thực, đo lường tài nguyên runtime và thanh tra nhật ký lỗi theo chuẩn **Mục 158 Master PRD V3 (VẬN HÀNH -> Trạng thái dịch vụ / Error logs)**.
+  - **Nghiệp Vụ Giám Sát & Vận Hành Kỹ Thuật**:
+    1. *Kiểm Tra Trạng Thái Sức Khỏe Toàn Diện (Services Health Check)*: Giám sát liên tục 4 phân hệ cốt lõi:
+       - Cơ sở dữ liệu (Database Driver, trạng thái kết nối, đo độ trễ truy vấn ping latency ms).
+       - Bộ nhớ đệm (Cache Driver, kiểm tra đọc/ghi dữ liệu thực và đo độ trễ ms).
+       - Không gian lưu trữ (Storage & Disk, quyền ghi thư mục `storage/`, dung lượng trống GB, % đã sử dụng, dung lượng tệp log).
+       - Hàng đợi nền (Queue Worker, số lượng job pending, số lượng job lỗi failed).
+    2. *Thanh Tra Nhật Ký Lỗi Thời Gian Thực (High-Performance Log Viewer)*:
+       - Sử dụng thuật toán đọc ngược (Tail Stream Reader) chỉ nạp 2MB cuối file kèm `clearstatcache()` tránh nghẽn RAM khi log lớn.
+       - Tách các bản ghi log chính xác dựa trên mốc thời gian Monolog `[YYYY-MM-DD HH:MM:SS]`.
+       - Lọc theo cấp độ nghiêm trọng RFC 5424 (`ERROR`, `CRITICAL`, `WARNING`, `INFO`).
+       - Tìm kiếm theo từ khóa thông điệp, exception class hoặc file gây lỗi.
+       - Xem chi tiết Stack Trace dạng Collapsible Accordion (Pure CSS/JS) trực quan.
+    3. *Thao Tác Bảo Trì Nhật Ký*: Cho phép Super Admin làm sạch file log (`clearLaravelLog`) kèm vết kiểm toán `AuditLogger::log('SYSTEM_LOG_CLEARED')` và tải về file log gốc (`downloadLog`).
+    4. *Chỉ Số Tài Nguyên Runtime*: Theo dõi bộ nhớ PHP đang dùng (`memory_get_usage`), bộ nhớ đỉnh điểm (`memory_get_peak_usage`), cấu hình `memory_limit`, `max_execution_time`, upload limits và trạng thái nạp các extension cốt lõi (PDO, cURL, GD, Mbstring, OpenSSL, Zip, Intl).
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Kiến trúc Không Cần Bảng Mới (Zero Extra Table / Native Fast First)**:
+     - Khai thác trực tiếp tài nguyên subsystem của server và file `storage/logs/laravel.log`.
+  2. **Services**:
+     - `app/Services/SystemHealthService.php`:
+       * `getHealthKpis()`: Thống kê 4 thẻ KPI: Tình trạng dịch vụ, Lỗi hôm nay, Bộ nhớ PHP sử dụng, Không gian đĩa trống.
+       * `getHealthSummary()`: Kiểm tra chi tiết database, cache, storage, queue và môi trường.
+       * `parseLaravelLogs()`: Phân tích và bóc tách log lỗi thành cấu trúc dữ liệu chuẩn.
+       * `clearLaravelLog()`: Làm sạch tệp log và ghi audit log.
+       * `downloadLog()`: Tải file log nguyên bản.
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminSystemHealthController.php`: Điều phối 3 tabs giao diện, xóa log và tải log.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `system`:
+       * `GET /admin/system/health` (`admin.system.health.index`)
+       * `POST /admin/system/health/clear-log` (`admin.system.health.clear_log`)
+       * `GET /admin/system/health/download-log` (`admin.system.health.download_log`)
+  4. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/system/health/index.blade.php`:
+       * 4 Thẻ KPI: Tình Trạng Dịch Vụ, Lỗi Hệ Thống Hôm Nay, Bộ Nhớ PHP Sử Dụng, Không Gian Lưu Trữ Đĩa.
+       * Tab 1: Trạng Thái Các Dịch Vụ (Grid hiển thị Database, Cache, Storage, Queue và Environment).
+       * Tab 2: Nhật Ký Lỗi Hệ Thống (Bảng log, lọc cấp độ, tìm kiếm, accordion xem stack trace, nút Xóa Log, nút Tải Log).
+       * Tab 3: Chỉ Số Tài Nguyên Runtime (Bảng runtime PHP, memory limit, extensions).
+     - Cập nhật Sidebar: Menu "Trạng Thái Dịch Vụ & Lỗi" trong Section Vận Hành & Kỹ Thuật và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  5. **Kiểm thử tự động ([tests/Feature/AdminSystemHealthTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminSystemHealthTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập trạng thái dịch vụ.
+       3. Super Admin truy cập thành công màn hình sức khỏe hạ tầng và thấy 4 thẻ KPI.
+       4. Hàm `getHealthSummary()` trả về cấu trúc subsystems đầy đủ.
+       5. Phân tích `parseLaravelLogs()` bóc tách đúng timestamp, level, message từ file log.
+       6. Lọc nhật ký log theo cấp độ ERROR trả về đúng bản ghi tương ứng.
+       7. Tìm kiếm nhật ký log theo từ khóa trả về kết quả chính xác.
+       8. Thao tác làm sạch file log dọn sạch file `laravel.log` và ghi audit log.
+       9. Tải tệp log gốc trả về binary file download response với `text/plain`.
+       10. Tab `server-metrics` render thành công thông số runtime PHP.
+     - Kết quả: **10/10 tests PASSED 100% (41 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 17 test files admin gần nhất: **154/154 tests PASSED 100% (681 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

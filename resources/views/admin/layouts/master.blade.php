@@ -506,8 +506,17 @@
                         </span>
                         <span>Job Center (Tác Vụ Nền)</span>
                         @if (($failedJobsBadge ?? 0) > 0)
-                            <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" style="background: #C0392B; color: #fff;" title="{{ $failedJobsBadge }} tác vụ lỗi cần xử lý">{{ $failedJobsBadge }}</span>
+                            <span class="mayhen_admin_nav_badge mayhen_admin_badge_gold" style="background: #C0392B; color: #fff;" title="{{ $failedJobsBadge }} tác vụ lỗi cần xử lý">{{ $failedJobsBadge }}</span>
                         @endif
+                    </a>
+
+                    <a href="{{ route('admin.system.health.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.system.health.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </span>
+                        <span>Trạng Thái Dịch Vụ & Lỗi</span>
                     </a>
 
                     <a href="{{ route('admin.release.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.release.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -832,6 +841,10 @@
                     <a href="{{ route('admin.jobs.index') }}" class="mayhen_admin_cmd_item" data-search="hàng đợi failed jobs queue worker tác vụ nền lỗi retry">
                         <span>⚙️ Giám Sát Hàng Đợi (Queue & Jobs)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/system/jobs</span>
+                    </a>
+                    <a href="{{ route('admin.system.health.index') }}" class="mayhen_admin_cmd_item" data-search="trạng thái dịch vụ sức khỏe hạ tầng error logs laravel nhật ký lỗi system health metrics">
+                        <span>🩺 Trạng Thái Dịch Vụ & Nhật Ký Lỗi</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/system/health</span>
                     </a>
                     <a href="{{ route('admin.resilience.index') }}" class="mayhen_admin_cmd_item" data-search="resilience sức chống chịu tải cao concurrency chaos webhook burst snapshot sha256">
                         <span>🛡️ Sức Chống Chịu & Tải Cao (Resilience)</span>
