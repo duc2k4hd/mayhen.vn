@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuestController as AdminGuestController;
@@ -174,6 +175,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{ticket}/escalate', [AdminSupportController::class, 'escalate'])->middleware('admin.manager')->name('escalate');
         Route::post('/{ticket}/declare-incident', [AdminSupportController::class, 'declareIncident'])->middleware('admin.manager')->name('declare_incident');
         Route::post('/{ticket}/resolve-incident', [AdminSupportController::class, 'resolveIncident'])->middleware('admin.manager')->name('resolve_incident');
+    });
+
+    // Quản Lý Yêu Cầu Liên Hệ & Báo Giá (Mục 7.15 DOCX: Admin Contacts)
+    Route::prefix('contacts')->name('contacts.')->group(function () {
+        Route::get('/', [AdminContactController::class, 'index'])->name('index');
+        Route::put('/{contact}', [AdminContactController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
     // Giám sát Queue & Failed Jobs (Wave 07 - ADM-A19)

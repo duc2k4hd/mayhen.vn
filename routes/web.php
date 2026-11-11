@@ -29,6 +29,7 @@ use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingEventController;
+use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
@@ -217,6 +218,13 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Báo Cáo Phân Tích Hiệu Suất Tương Tác & Lượng Truy Cập Thiệp Cưới (Master PRD V3 Section 19 & 42)
     Route::get('/thiep/{id}/thong-ke', [InvitationAnalyticsController::class, 'index'])->name('invitations.analytics');
     Route::get('/thiep/{id}/thong-ke/xuat-csv', [InvitationAnalyticsController::class, 'exportCsv'])->name('invitations.analytics.export');
+
+    // Lưu Giữ Kỷ Niệm Hậu Sự Kiện & Chế Độ Kỷ Niệm (Mục 2.8 Master Prompt & Section 36 PRD V3)
+    Route::get('/thiep/{id}/luu-giu-ky-niem', [WeddingKeepsakeController::class, 'index'])->name('keepsake.index');
+    Route::post('/thiep/{id}/luu-giu-ky-niem', [WeddingKeepsakeController::class, 'update'])->name('keepsake.update');
+    Route::post('/thiep/{id}/luu-giu-ky-niem/toggle', [WeddingKeepsakeController::class, 'toggle'])->name('keepsake.toggle');
+    Route::get('/thiep/{id}/luu-giu-ky-niem/xuat-so-luu-niem', [WeddingKeepsakeController::class, 'exportBook'])->name('keepsake.export');
+    Route::get('/api/thiep/{id}/luu-giu-ky-niem/tin-nhan-cam-on/{guestId}', [WeddingKeepsakeController::class, 'getThankYouMessage'])->name('keepsake.thank_you_message');
 });
 
 // Guest Management & RSVP
@@ -373,6 +381,7 @@ Route::post('/api/feedback/submit', function (Request $request) {
 Route::get('/huong-dan', [PageController::class, 'howItWorks'])->name('how-it-works');
 Route::get('/ve-may-hen', [PageController::class, 'about'])->name('about');
 Route::get('/lien-he', [PageController::class, 'contact'])->name('contact');
+Route::post('/lien-he', [PageController::class, 'submitContact'])->middleware('throttle:10,1')->name('contact.submit');
 Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');

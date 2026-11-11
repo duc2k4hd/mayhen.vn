@@ -265,6 +265,16 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.contacts.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.contacts.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </span>
+                    <span>Liên Hệ & Báo Giá</span>
+                </a>
+
                 <a href="{{ route('admin.privacy.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.privacy.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -592,6 +602,10 @@
                 <a href="{{ route('admin.support.index') }}" class="mayhen_admin_cmd_item" data-search="trung tâm hỗ trợ support tickets khiếu nại báo lỗi trợ giúp khách hàng">
                     <span>🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/support</span>
+                </a>
+                <a href="{{ route('admin.contacts.index') }}" class="mayhen_admin_cmd_item" data-search="liên hệ báo giá đặt hẹn showroom in thiệp contacts leads tư vấn">
+                    <span>📬 Yêu Cầu Liên Hệ & Báo Giá (Leads)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/contacts</span>
                 </a>
                 <a href="{{ route('admin.partners.index') }}" class="mayhen_admin_cmd_item" data-search="đối tác studio wedding planner b2b agency mạng lưới hoa hồng commissions chiết khấu">
                     <span>🤝 Mạng Lưới Đối Tác & Studio (B2B)</span>

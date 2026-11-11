@@ -42,6 +42,9 @@
     {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
     @include('client.components.rehearsal-bar')
 
+    {{-- Banner Kỷ Niệm Hậu Sự Kiện & Lời Cảm Ơn (Mục 2.8 DOCX) --}}
+    @include('client.components.memorial-keepsake-banner')
+
     @if (isset($isOwner) && $isOwner && isset($invitation))
         {{-- Floating Top Bar dành riêng cho Chủ Nhân Thiệp --}}
         <header class="mayhen_invitation_demo_banner" style="background: rgba(28, 25, 23, 0.95); z-index: 9999;">

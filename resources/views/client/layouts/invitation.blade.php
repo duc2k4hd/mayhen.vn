@@ -353,6 +353,9 @@
     {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
     @include('client.components.rehearsal-bar')
 
+    {{-- Banner Kỷ Niệm Hậu Sự Kiện & Lời Cảm Ơn (Post-Wedding Keepsake & Memorial Mode - Mục 2.8 DOCX) --}}
+    @include('client.components.memorial-keepsake-banner')
+
     {{-- Nội dung nghệ thuật chính của mẫu thiệp cưới --}}
     @yield('content')
 

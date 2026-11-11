@@ -108,6 +108,11 @@ class Wedding extends Model
         return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
     }
 
+    public function keepsake(): HasOne
+    {
+        return $this->hasOne(WeddingKeepsake::class);
+    }
+
     public function events(): HasMany
     {
         return $this->hasMany(WeddingEvent::class)->orderBy('display_order')->orderBy('event_date')->orderBy('event_time');

@@ -303,24 +303,43 @@
                         </p>
                     </div>
 
-                    <div id="mayhen_contact_alert" class="mayhen_contact_alert_success">
-                        <strong>Cảm ơn bạn đã gửi thông tin!</strong> Chuyên viên tư vấn in ấn của {{ config('app.name', 'Mây Hẹn') }} đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.
-                    </div>
+                    @if(session('contact_success'))
+                        <div id="mayhen_contact_alert" class="mayhen_contact_alert_success" style="display: block;">
+                            <strong>Cảm ơn bạn đã gửi thông tin!</strong> Chuyên viên tư vấn in ấn của {{ config('app.name', 'Mây Hẹn') }} đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.
+                        </div>
+                    @endif
 
-                    <form id="mayhen_contact_form" onsubmit="event.preventDefault(); document.getElementById('mayhen_contact_alert').style.display='block'; this.reset();">
+                    @if($errors->any())
+                        <div style="background: #FDEDEC; border-left: 4px solid #E74C3C; color: #922B21; padding: 12px 18px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem;">
+                            <strong>Vui lòng kiểm tra lại thông tin:</strong>
+                            <ul style="margin: 6px 0 0 18px; padding: 0;">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form id="mayhen_contact_form" action="{{ route('contact.submit') }}" method="POST">
+                        @csrf
+                        {{-- Honeypot chống spam bot --}}
+                        <div style="display: none;" aria-hidden="true">
+                            <input type="text" name="company_fax_trap" tabindex="-1" autocomplete="off">
+                        </div>
+
                         <div class="mayhen_contact_row_2col">
                             <div class="mayhen_contact_field">
                                 <label class="mayhen_contact_label" for="contact_name">
                                     Họ và tên của bạn <span class="mayhen_contact_label_required">*</span>
                                 </label>
-                                <input type="text" id="contact_name" class="mayhen_contact_input" required placeholder="Ví dụ: Hoàng Yến & Minh Quân">
+                                <input type="text" id="contact_name" name="name" class="mayhen_contact_input" required value="{{ old('name') }}" placeholder="Ví dụ: Hoàng Yến & Minh Quân">
                             </div>
 
                             <div class="mayhen_contact_field">
                                 <label class="mayhen_contact_label" for="contact_phone">
                                     Số điện thoại / Zalo <span class="mayhen_contact_label_required">*</span>
                                 </label>
-                                <input type="tel" id="contact_phone" class="mayhen_contact_input" required placeholder="09xxxxxxxx (Nhận báo giá qua Zalo)">
+                                <input type="tel" id="contact_phone" name="phone" class="mayhen_contact_input" required value="{{ old('phone') }}" placeholder="09xxxxxxxx (Nhận báo giá qua Zalo)">
                             </div>
                         </div>
 
@@ -329,7 +348,7 @@
                                 <label class="mayhen_contact_label" for="contact_date">
                                     Ngày cưới dự kiến
                                 </label>
-                                <input type="date" id="contact_date" class="mayhen_contact_input">
+                                <input type="date" id="contact_date" name="wedding_date" value="{{ old('wedding_date') }}" class="mayhen_contact_input">
                                 <span class="mayhen_contact_help_text">Giúp chúng tôi cân đối lịch in để giao thiệp đúng hẹn.</span>
                             </div>
 
@@ -337,11 +356,11 @@
                                 <label class="mayhen_contact_label" for="contact_quantity">
                                     Số lượng thiệp dự kiến
                                 </label>
-                                <select id="contact_quantity" class="mayhen_contact_select">
-                                    <option value="30-100">Dưới 100 thiệp (Tiệc thân mật / in số lượng ít)</option>
-                                    <option value="100-250" selected>Từ 100 đến 250 thiệp (Quy mô phổ biến)</option>
-                                    <option value="250-400">Từ 250 đến 400 thiệp</option>
-                                    <option value="400+">Trên 400 thiệp (Ưu đãi chiết khấu xưởng)</option>
+                                <select id="contact_quantity" name="quantity" class="mayhen_contact_select">
+                                    <option value="30-100" {{ old('quantity') === '30-100' ? 'selected' : '' }}>Dưới 100 thiệp (Tiệc thân mật / in số lượng ít)</option>
+                                    <option value="100-250" {{ old('quantity', '100-250') === '100-250' ? 'selected' : '' }}>Từ 100 đến 250 thiệp (Quy mô phổ biến)</option>
+                                    <option value="250-400" {{ old('quantity') === '250-400' ? 'selected' : '' }}>Từ 250 đến 400 thiệp</option>
+                                    <option value="400+" {{ old('quantity') === '400+' ? 'selected' : '' }}>Trên 400 thiệp (Ưu đãi chiết khấu xưởng)</option>
                                 </select>
                             </div>
                         </div>
@@ -350,13 +369,13 @@
                             <label class="mayhen_contact_label" for="contact_need">
                                 Nhu cầu tư vấn chính <span class="mayhen_contact_label_required">*</span>
                             </label>
-                            <select id="contact_need" class="mayhen_contact_select" required>
-                                <option value="print-high-end">Tư vấn in thiệp cưới cao cấp (Ép kim, giấy dệt gân, tem sáp)</option>
-                                <option value="print-minimal">Tư vấn in thiệp cưới phong cách Tối giản (Minimalist / Thanh lịch)</option>
-                                <option value="print-fast">Cần in thiệp cưới gấp trong 3 - 5 ngày làm việc</option>
-                                <option value="visit-studio">Đặt hẹn đến xem mẫu giấy trực tiếp tại Studio</option>
-                                <option value="combo-online">Tư vấn gói đồng bộ Thiệp in truyền thống + Thiệp cưới online</option>
-                                <option value="partner">Hợp tác Studio / Wedding Planner</option>
+                            <select id="contact_need" name="need" class="mayhen_contact_select" required>
+                                <option value="print-high-end" {{ old('need') === 'print-high-end' ? 'selected' : '' }}>Tư vấn in thiệp cưới cao cấp (Ép kim, giấy dệt gân, tem sáp)</option>
+                                <option value="print-minimal" {{ old('need') === 'print-minimal' ? 'selected' : '' }}>Tư vấn in thiệp cưới phong cách Tối giản (Minimalist / Thanh lịch)</option>
+                                <option value="print-fast" {{ old('need') === 'print-fast' ? 'selected' : '' }}>Cần in thiệp cưới gấp trong 3 - 5 ngày làm việc</option>
+                                <option value="visit-studio" {{ old('need') === 'visit-studio' ? 'selected' : '' }}>Đặt hẹn đến xem mẫu giấy trực tiếp tại Studio</option>
+                                <option value="combo-online" {{ old('need') === 'combo-online' ? 'selected' : '' }}>Tư vấn gói đồng bộ Thiệp in truyền thống + Thiệp cưới online</option>
+                                <option value="partner" {{ old('need') === 'partner' ? 'selected' : '' }}>Hợp tác Studio / Wedding Planner</option>
                             </select>
                         </div>
 
@@ -364,7 +383,7 @@
                             <label class="mayhen_contact_label" for="contact_message">
                                 Ghi chú thêm về ý tưởng của bạn
                             </label>
-                            <textarea id="contact_message" class="mayhen_contact_textarea" placeholder="Ví dụ: Bạn mong muốn tone màu be nhạt, phong bì dập nổi họ tên cô dâu chú rể, hoặc cần in mẫu thử trước khi in hàng loạt..."></textarea>
+                            <textarea id="contact_message" name="message" class="mayhen_contact_textarea" placeholder="Ví dụ: Bạn mong muốn tone màu be nhạt, phong bì dập nổi họ tên cô dâu chú rể, hoặc cần in mẫu thử trước khi in hàng loạt...">{{ old('message') }}</textarea>
                         </div>
 
                         <button type="submit" class="mayhen_contact_submit_btn">

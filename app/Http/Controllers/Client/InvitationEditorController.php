@@ -293,7 +293,7 @@ class InvitationEditorController extends Controller
      */
     public function show(string $slug): View|RedirectResponse
     {
-        $invitation = Invitation::with(['wedding.partner', 'template'])
+        $invitation = Invitation::with(['wedding.partner', 'wedding.keepsake', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
 

@@ -8349,6 +8349,70 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ test suite hệ thống: **978/978 tests PASSED 100% (5,161 assertions in 25.31s)**.
   - Laravel Pint: **100% PASSED**.
 
+---
+
+## 75. ĐỀ ÁN 75: LƯU GIỮ KỶ NIỆM HẬU SỰ KIỆN, CHẾ ĐỘ THIỆP KỶ NIỆM (MEMORIAL MODE) & XUẤT SỔ LƯU NIỆM NGÀY CƯỚI (POST-WEDDING KEEPSAKE & MEMORIAL MODE — MỤC 2.8 DOCX & SECTION 36 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 2.8 trong tài liệu gốc DOCX "Chức năng tạo khác biệt: Lưu giữ kỷ niệm". Chuyển đổi thiệp cưới số sau ngày chung đôi thành trang lưu niệm vĩnh cửu, tôn vinh tình yêu và tri ân sâu sắc toàn bộ quan khách.
+  1. *Chế độ Thiệp Kỷ Niệm (Memorial Mode Switch)*: Switch toggle thời gian thực qua API JSON (`account.keepsake.toggle`); khi kích hoạt, thiệp cưới công khai tự động chào đón quan khách bằng banner tâm thư cảm ơn (`client.components.memorial-keepsake-banner`), video highlight ngày cưới, và tự động ẩn form RSVP xác nhận tham dự (`hide_rsvp`) cũng như ẩn thông tin mừng cưới (`hide_gifts`) nếu được cấu hình.
+  2. *Cấu hình Tâm thư & Video Highlight*: Cho phép cô dâu chú rể tùy biến tiêu đề (`thank_you_title`), bức tâm thư cảm ơn sâu sắc (`thank_you_message`), liên kết video phóng sự cưới recap (`video_url` hỗ trợ YouTube / Vimeo tự động chuyển đổi sang mã nhúng iframe), và ngày kỷ niệm hôn lễ.
+  3. *Sinh Mẫu Tin Nhắn Cảm Ơn Cá Nhân Hóa (Personalized Thank You Dispatcher)*: Động cơ tự động bóc tách danh xưng (`salutation`), tên quan khách và link kỷ niệm riêng biệt có gắn `token` để cặp đôi nhấp sao chép 1-click và gửi tri ân nhanh chóng qua Zalo / SMS / WhatsApp cho từng vị khách đã tham dự hoặc điểm danh tại sảnh tiệc.
+  4. *Sổ Lưu Niệm Ngày Cưới In Ấn Chuẩn A4 (Memorial Keepsake Book Export)*: Trang xuất bản độc bản mang phong cách Quiet Luxury dành riêng cho đọc trực tuyến và in ấn khổ giấy A4 (`window.print()` có CSS `@media print` phân trang ngắt trang hoàn hảo), bao gồm trang bìa trang trọng, tâm thư tri ân của uyên ương, thống kê số lượng lời chúc, toàn bộ lời chúc phúc lưu bút của bạn bè người thân và con dấu chứng thực Mây Hẹn Atelier.
+  5. *Nút điều hướng trên danh sách thiệp*: Bổ sung nút "Lưu Giữ Kỷ Niệm" trực quan trong hệ sinh thái công cụ hỗ trợ tại `resources/views/client/pages/account/invitations.blade.php`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_082540_create_wedding_keepsakes_table.php` (`wedding_id`, `invitation_id`, `is_enabled`, `thank_you_title`, `thank_you_message`, `video_url`, `highlight_photos`, `show_wishes`, `show_photos`, `show_video`, `hide_rsvp`, `hide_gifts`, `anniversary_date`, `last_exported_at`).
+     - `app/Models/WeddingKeepsake.php`: Quan hệ `wedding`, `invitation`, helper `daysSinceWedding()`, `getEmbeddedVideoUrl()`, accessor `milestone_label`.
+     - Cập nhật `app/Models/Wedding.php`: Bổ sung quan hệ `keepsake(): HasOne`.
+  2. **Service & Controller**:
+     - `app/Services/WeddingKeepsakeService.php`: `getOrCreateKeepsake()`, `updateKeepsake()`, `toggleKeepsakeMode()`, `generateThankYouMessage()`, `getMemorialBookData()`.
+     - `app/Http/Controllers/Client/WeddingKeepsakeController.php`: `index()`, `update()`, `toggle()`, `exportBook()`, `getThankYouMessage()`.
+     - Cập nhật `InvitationEditorController.php`: Eager load `wedding.keepsake` trong method `show`.
+  3. **Routes ([routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - `GET /tai-khoan/thiep/{id}/luu-giu-ky-niem` (`account.keepsake.index`)
+     - `POST /tai-khoan/thiep/{id}/luu-giu-ky-niem` (`account.keepsake.update`)
+     - `POST /tai-khoan/thiep/{id}/luu-giu-ky-niem/toggle` (`account.keepsake.toggle`)
+     - `GET /tai-khoan/thiep/{id}/luu-giu-ky-niem/xuat-so-luu-niem` (`account.keepsake.export`)
+     - `GET /tai-khoan/api/thiep/{id}/luu-giu-ky-niem/tin-nhan-cam-on/{guestId}` (`account.keepsake.thank_you_message`)
+  4. **Giao diện & Asset**:
+     - View Dashboard: `resources/views/client/pages/account/keepsake/index.blade.php`.
+     - View Sổ Lưu Niệm: `resources/views/client/pages/account/keepsake/memorial_book.blade.php`.
+     - View Component: `resources/views/client/components/memorial-keepsake-banner.blade.php` (tích hợp vào cả `layouts/invitation.blade.php` và `pages/public-invitation.blade.php`).
+     - CSS: `public/assets/client/css/pages/keepsake.css` (Pure Vanilla CSS, class prefix `mayhen_keepsake_*` và `mayhen_book_*`).
+     - JS: `public/assets/client/js/pages/keepsake.js` (Native ES Modules, toggle API ngầm, modal cá nhân hóa, clipboard copy).
+  5. **Kiểm thử ([tests/Feature/WeddingKeepsakeAndMemorialTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/WeddingKeepsakeAndMemorialTest.php))**:
+     - Đầy đủ 8 kịch bản kiểm thử: Phân quyền chủ thiệp, xem dashboard KPI, cập nhật tâm thư, toggle mode API JSON, xuất sổ lưu niệm A4, lấy tin nhắn cảm ơn từng khách, hiển thị banner kỷ niệm trên thiệp công khai.
+     - Kết quả: **8/8 tests PASSED 100% (24 assertions)**.
+
+---
+
+## 76. ĐỀ ÁN 76: KHẮC PHỤC FORM GIẢ TRANG LIÊN HỆ & PHÂN HỆ QUẢN TRỊ YÊU CẦU TƯ VẤN BÁO GIÁ (CLIENT REAL CONTACT SUBMISSION & ADMIN CONTACT DESK — MỤC 7.15 DOCX) (11/11/2026)
+- **Mục tiêu**:
+  1. *Khắc phục triệt để form liên hệ giả lập ở Client*: Xóa bỏ đoạn mock JS `event.preventDefault()` tại `resources/views/client/pages/contact.blade.php`. Chuyển đổi thành form POST gửi dữ liệu thật lên backend với CSRF protection, kiểm tra tính hợp lệ dữ liệu chặt chẽ và phòng vệ chống bot spam qua bẫy honeypot field ẩn (`company_fax_trap`).
+  2. *Hiện thực hóa phân hệ Admin Contacts (Mục 7.15 DOCX)*: `Admin Contacts: Liên hệ. Yêu cầu hỗ trợ. Phân loại. Trạng thái. Người phụ trách. Ghi chú.` Giúp bộ phận tư vấn & tiếp tân xưởng in của Mây Hẹn tiếp nhận leads, phân công chuyên viên tư vấn, theo dõi tiến trình báo giá và chốt đơn đặt in thiệp cưới thực tế.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database Migration & Model**:
+     - `database/migrations/2026_11_11_084006_create_contacts_table.php`: Các cột `name`, `phone`, `email`, `wedding_date`, `quantity`, `need`, `message`, `status`, `assigned_to`, `admin_notes`, `source`, `ip_address`, `user_agent`, `contacted_at`, `converted_at`, `timestamps`.
+     - `app/Models/Contact.php`: Quan hệ `assignedStaff(): BelongsTo(User::class, 'assigned_to')`, helper `getStatusLabelAttribute()`, `getNeedLabelAttribute()`, `getStatusBadgeStyle()`.
+  2. **Controller & Luồng Tiếp Nhận Client**:
+     - `App\Http\Controllers\Client\PageController::submitContact`: Bẫy honeypot chống spam, validate chặt chẽ (họ tên, SĐT, ngày cưới, số lượng, nhu cầu), lưu database, ghi nhật ký kiểm toán `AuditLogger::log('CONTACT_SUBMITTED', ...)`, hỗ trợ cả phản hồi JSON và chuyển hướng flash session `contact_success`.
+     - Route: `POST /lien-he` (`contact.submit`) kèm middleware `throttle:10,1`.
+  3. **Phân Hệ Quản Trị Admin Contact Desk**:
+     - Controller: `App\Http\Controllers\Admin\ContactController`:
+       * `index()`: Bộ lọc theo Trạng thái (Mới tiếp nhận, Đã liên hệ, Đang tư vấn, Đã báo giá, Đã chốt đơn, Đã đóng), Nhu cầu tư vấn (In thiệp cao cấp, In tối giản, In gấp, Hẹn đến studio, Combo in + online, Đối tác), Chuyên viên phụ trách, Tìm kiếm từ khóa.
+       * `update()`: Cập nhật trạng thái, phân công nhân viên, ghi chú nội bộ, tự động ghi nhận mốc thời gian `contacted_at` và `converted_at`, ghi AuditLog `CONTACT_UPDATED`.
+       * `destroy()`: Xóa lead rác/spam, ghi AuditLog `CONTACT_DELETED`.
+     - View: `resources/views/admin/pages/contacts/index.blade.php`: KPI Cards trực quan, bảng quản trị tương tác, liên kết gọi điện nhanh `tel:` và mở khung chat Zalo tức thời `zalo.me/{phone}`, modal xử lý phân công & ghi chú nội bộ.
+     - Routes: `routes/admin.php` nhóm `admin.contacts.*` được bảo vệ bởi middleware `admin.auth` và `admin.manager`.
+     - Tích hợp Menu Sidebar Admin & Command Palette (`resources/views/admin/layouts/master.blade.php`).
+  4. **Kiểm thử**:
+     - `tests/Feature/ClientContactSubmissionTest.php`: 4/4 tests PASSED (gửi form thường, gửi JSON API, validation, chặn honeypot spam bot).
+     - `tests/Feature/AdminContactManagementTest.php`: 4/4 tests PASSED (phân quyền admin, xem danh sách & lọc theo trạng thái, cập nhật trạng thái & phân công nhân viên, xóa lead).
+- **Kết quả kiểm thử & Định dạng mã**:
+  - Pest test suite Đề án 75 & 76: **16/16 tests PASSED 100% (55 assertions in 1.15s)**.
+  - Test suite Admin hệ thống: **204/204 tests PASSED 100% (1,165 assertions in 43.48s)**.
+  - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 
 
 
