@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Gói Dịch Vụ & Bảng Giá — Mây Hẹn')
+@section('title', 'Quản Lý Gói Dịch Vụ & Bảng Giá')
 @section('page_title', 'Gói Dịch Vụ & Bảng Giá Nền Tảng')
 
 @push('styles')

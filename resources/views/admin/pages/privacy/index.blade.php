@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (DSAR & Retention) — Mây Hẹn')
+@section('title', 'Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (DSAR & Retention)')
 @section('page_title', '🛡️ Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (NXT-10)')
 
 @section('content')

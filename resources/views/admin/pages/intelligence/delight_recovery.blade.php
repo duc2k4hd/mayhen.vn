@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Delight Recovery Planner — Mây Hẹn')
+@section('title', 'Delight Recovery Planner')
 @section('page_title', '💡 Delight Recovery Planner (Hỗ Trợ Cặp Đôi Gặp Khó Khăn)')
 
 @section('content')

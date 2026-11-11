@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Nhật Ký Quản Trị Hệ Thống — Mây Hẹn')
+@section('title', 'Nhật Ký Quản Trị Hệ Thống')
 @section('page_title', 'Nhật Ký Quản Trị Hệ Thống (Audit Logs)')
 
 @section('breadcrumb_parent')

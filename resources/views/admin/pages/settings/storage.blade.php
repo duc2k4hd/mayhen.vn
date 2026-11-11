@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Thanh Tra Bộ Nhớ Lưu Trữ — Mây Hẹn')
+@section('title', 'Thanh Tra Bộ Nhớ Lưu Trữ')
 @section('page_title', 'Thanh Tra Bộ Nhớ & Tối Ưu Tệp Lưu Trữ')
 
 @push('styles')

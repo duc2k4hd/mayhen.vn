@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Cấu Hình Ngân Hàng & VietQR — Mây Hẹn')
+@section('title', 'Cấu Hình Ngân Hàng & VietQR')
 @section('page_title', 'Cấu Hình Ngân Hàng & Cổng Thanh Toán SePay')
 
 @push('styles')

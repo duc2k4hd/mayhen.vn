@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Phát Tin Thiệp Mời Tin Cậy (Reliable Messaging Dispatch) — Mây Hẹn')
+@section('title', 'Phát Tin Thiệp Mời Tin Cậy (Reliable Messaging Dispatch)')
 @section('page_title', 'Phát Tin Thiệp Mời Tin Cậy')
 
 @section('content')

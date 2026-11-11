@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Đơn Hàng — Mây Hẹn')
+@section('title', 'Quản Lý Đơn Hàng')
 @section('page_title', 'Đơn Hàng & Đối Soát Doanh Thu')
 
 @push('styles')

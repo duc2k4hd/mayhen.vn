@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Rescue Cockpit Ngày Cưới — Mây Hẹn')
+@section('title', 'Rescue Cockpit Ngày Cưới')
 @section('page_title', '🚨 Wedding Day Rescue Cockpit (Sự Cố & Sắp Bàn Khẩn Cấp)')
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Mẫu Thiệp — Mây Hẹn')
+@section('title', 'Quản Lý Mẫu Thiệp')
 @section('page_title', 'Kho Mẫu Thiệp Cưới (Templates Engine)')
 
 @push('styles')

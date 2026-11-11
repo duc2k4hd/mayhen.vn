@@ -132,6 +132,17 @@
                     <span>Kho Mẫu Thiệp</span>
                 </a>
 
+                <a href="{{ route('admin.media.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.media.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </span>
+                    <span>Thư Viện Media</span>
+                </a>
+
                 <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.wishes.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -571,6 +582,10 @@
                 <a href="{{ route('admin.templates.index') }}" class="mayhen_admin_cmd_item" data-search="kho mẫu thiệp cưới templates giao diện">
                     <span>🎨 Kho Mẫu Thiệp Cưới</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/templates</span>
+                </a>
+                <a href="{{ route('admin.media.index') }}" class="mayhen_admin_cmd_item" data-search="thư viện phương tiện media ảnh nhạc mp3 dọn dẹp file mồ côi storage">
+                    <span>🖼️ Thư Viện Media & Dọn Dẹp File Mồ Côi</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/media</span>
                 </a>
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_cmd_item" data-search="đơn hàng doanh thu thanh toán sepay vietqr orders">
                     <span>💰 Đơn Hàng & Doanh Thu</span>

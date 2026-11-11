@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Tài Khoản: ' . $user->name . ' — Mây Hẹn')
+@section('title', 'Tài Khoản: ' . $user->name . '')
 @section('page_title', 'Hồ Sơ & Phân Quyền: ' . $user->name)
 
 @section('breadcrumb_parent')

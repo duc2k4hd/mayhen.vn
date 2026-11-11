@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Xem Trước Chiến Dịch Gửi Thiệp — Mây Hẹn')
+@section('title', 'Xem Trước Chiến Dịch Gửi Thiệp')
 @section('page_title', '📱 Zero-Surprise Campaign Launch (Xem Trước Chiến Dịch Gửi Thiệp)')
 
 @section('content')

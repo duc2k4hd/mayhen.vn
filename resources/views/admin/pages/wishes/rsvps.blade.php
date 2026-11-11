@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Báo Cáo Phản Hồi RSVP Quan Khách — Mây Hẹn')
+@section('title', 'Báo Cáo Phản Hồi RSVP Quan Khách')
 @section('page_title', 'Báo Cáo & Quản Lý Phản Hồi RSVP')
 
 @section('breadcrumb_parent')

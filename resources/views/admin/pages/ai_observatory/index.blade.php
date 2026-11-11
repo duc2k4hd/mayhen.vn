@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Đài Quan Sát Chi Phí & Chất Lượng AI (AI Quality & Cost Observatory) — Mây Hẹn')
+@section('title', 'Đài Quan Sát Chi Phí & Chất Lượng AI (AI Quality & Cost Observatory)')
 @section('page_title', 'Đài Quan Sát Chi Phí & Chất Lượng AI')
 
 @section('content')

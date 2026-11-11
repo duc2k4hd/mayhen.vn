@@ -8536,5 +8536,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Suite 6 feature tests: **37/37 tests PASSED 100% (148 assertions in 2.34s)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
+---
+
+## 80. ĐỀ ÁN 80: PHÂN HỆ QUẢN TRỊ MEDIA TẬP TRUNG, UPLOAD & DỌN DẸP TỆP MỒ CÔI (ADMIN MEDIA LIBRARY & ORPHANED ASSET CLEANER — MỤC 7.5 DOCX) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 7.5 trong tài liệu gốc DOCX: "7.5. Admin Media: Upload. Phân loại. Dung lượng. Loại file. Quyền sử dụng. File không còn được tham chiếu. Lưu trữ".
+  1. *Thư viện Phương tiện Tập trung (Media Library Desk)*:
+     - Thống kê toàn diện dung lượng lưu trữ trên hệ thống (`Storage::disk('public')`), phân loại tệp theo 5 danh mục:
+       * Kho nhạc nền cưới MP3 (`musics`)
+       * Ảnh cưới khách hàng tải lên (`weddings`, `guest_photos`, `paper_scans`)
+       * Tài nguyên đồ họa mẫu thiệp (`templates`)
+       * Biểu tượng, sticker, con dấu niêm phong sáp (`assets`)
+       * Tài liệu & khác (`other`)
+     - Phân loại theo định dạng: Âm thanh (Audio MP3/WAV/AAC), Hình ảnh (Image WebP/PNG/JPG/SVG), Tài liệu (PDF/CSV).
+     - Hỗ trợ xem trước ảnh sắc nét, trình phát âm thanh HTML5 Audio trực tiếp nghe thử nhạc nền tiệc cưới, sao chép URL 1-click và xóa tệp an toàn.
+  2. *Bộ tải lên tài nguyên mới (Media Uploader Modal)*:
+     - Cho phép quản trị viên tải tệp ảnh, nhạc nền MP3 hoặc tài liệu lên hệ thống (tối đa 20MB).
+     - Lựa chọn thư mục phân loại đích (`client/images`, `client/musics`, `admin/assets`, `weddings`).
+     - Ghi vết kiểm toán `MEDIA_UPLOADED` tự động.
+  3. *Thanh tra & Dọn dẹp Tệp Mồ côi (Orphaned Assets Scanner & Cleaner — Mục 7.5 DOCX)*:
+     - Tự động rà soát đối chiếu toàn bộ tệp tin trong Storage với Database (`weddings`, `guest_photos`, `paper_invitation_scans`, `invitation_templates`, `reviews`).
+     - Phát hiện chính xác các tệp rác mồ côi (ảnh khách tải lên lúc làm nháp nhưng hủy thiệp, ảnh cũ bị thay thế...).
+     - Báo cáo số lượng tệp và tổng dung lượng ổ đĩa có thể giải phóng.
+     - Cho phép quản trị viên chọn tất cả hoặc chọn lọc để xóa vĩnh viễn hàng loạt (`purgeOrphans`), giải phóng dung lượng server an toàn tuyệt đối, ghi vết kiểm toán `ORPHAN_MEDIA_PURGED`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Service**:
+     - `app/Services/MediaLibraryService.php`: `formatBytes()`, `getStorageStats()`, `listFiles()`, `detectOrphanedFiles()`.
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Admin/MediaController.php`: `index()`, `upload()`, `destroy()`, `orphans()`, `purgeOrphans()`.
+     - Routes ([routes/admin.php](file:///d:/Project/Laravel/mayhen.vn/routes/admin.php)):
+       * `GET /admin/media` (`admin.media.index`)
+       * `POST /admin/media/upload` (`admin.media.upload`)
+       * `DELETE /admin/media/destroy` (`admin.media.destroy`)
+       * `GET /admin/media/orphans` (`admin.media.orphans`)
+       * `POST /admin/media/purge-orphans` (`admin.media.purge_orphans`)
+  3. **Giao diện & Asset**:
+     - `resources/views/admin/pages/media/index.blade.php`: Lưới card media trực quan, player audio HTML5, modal upload.
+     - `resources/views/admin/pages/media/orphans.blade.php`: Bảng thanh tra tệp mồ côi kèm checkbox chọn hàng loạt và nút dọn dẹp.
+     - Tích hợp Menu Sidebar Admin và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  4. **Kiểm thử ([tests/Feature/AdminMediaManagementTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/AdminMediaManagementTest.php))**:
+     - 8 kịch bản kiểm thử: Chặn khách vãng lai và user thường, admin xem thống kê lưu trữ và phân loại categories, lọc media theo danh mục và tìm kiếm, tải lên tệp mới vào thư mục chọn, validate dung lượng và định dạng, xóa tệp media, quét phát hiện chính xác file mồ côi, dọn dẹp hàng loạt giải phóng dung lượng ổ đĩa.
+     - Kết quả: **8/8 tests PASSED 100% (26 assertions in 1.03s)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 7 feature tests mới: **45/45 tests PASSED 100% (174 assertions in 2.78s)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 
 

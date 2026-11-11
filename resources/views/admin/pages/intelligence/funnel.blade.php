@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Phễu Chuyển Đổi Vận Hành Thực Tế (Real Funnel Analytics) — Mây Hẹn')
+@section('title', 'Phễu Chuyển Đổi Vận Hành Thực Tế (Real Funnel Analytics)')
 @section('page_title', '📈 Phễu Chuyển Đổi Vận Hành Thực Tế (NXT-06)')
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Người Dùng — Mây Hẹn')
+@section('title', 'Quản Lý Người Dùng')
 @section('page_title', 'Quản Lý Tài Khoản & Phân Quyền')
 
 @push('styles')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Kiểm Soát Phát Hành & Hoàn Tác (Release & Rollback Cockpit) — Mây Hẹn')
+@section('title', 'Kiểm Soát Phát Hành & Hoàn Tác (Release & Rollback Cockpit)')
 @section('page_title', 'Kiểm Soát Phát Hành & Hoàn Tác')
 
 @section('content')

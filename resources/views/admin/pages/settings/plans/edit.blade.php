@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chỉnh Sửa Gói Dịch Vụ — Mây Hẹn')
+@section('title', 'Chỉnh Sửa Gói Dịch Vụ')
 @section('page_title', 'Chỉnh Sửa Gói: ' . $plan->name)
 
 @section('breadcrumb_parent')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Phòng Thí Nghiệm Phát Hành & Visual Regression: ' . $template->name . ' — Mây Hẹn')
+@section('title', 'Phòng Thí Nghiệm Phát Hành & Visual Regression: ' . $template->name . '')
 @section('page_title', 'Release Lab & Visual Regression: ' . $template->name)
 
 @section('breadcrumb_parent')

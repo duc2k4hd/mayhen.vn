@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Tái Hiện Chuỗi Vận Hành (Operations Replay) — Mây Hẹn')
+@section('title', 'Tái Hiện Chuỗi Vận Hành (Operations Replay)')
 @section('page_title', '⏱️ Read-Only Operations Replay (Tái Hiện Chuỗi Thao Tác Vận Hành Cô Lập)')
 
 @section('content')

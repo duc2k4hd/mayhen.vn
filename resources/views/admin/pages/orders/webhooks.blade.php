@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Nhật Ký Webhook Thanh Toán — Mây Hẹn')
+@section('title', 'Nhật Ký Webhook Thanh Toán')
 @section('page_title', 'Nhật Ký Đối Soát Webhook Thanh Toán')
 
 @section('breadcrumb_parent')

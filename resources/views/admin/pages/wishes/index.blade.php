@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Lời Chúc & Sổ Lưu Bút — Mây Hẹn')
+@section('title', 'Quản Lý Lời Chúc & Sổ Lưu Bút')
 @section('page_title', 'Lời Chúc & Kiểm Duyệt Sổ Lưu Bút')
 
 @push('styles')

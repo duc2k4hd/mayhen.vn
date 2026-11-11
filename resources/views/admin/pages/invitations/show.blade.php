@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chi Tiết Thiệp #' . $invitation->id . ' — Mây Hẹn')
+@section('title', 'Chi Tiết Thiệp #' . $invitation->id . '')
 @section('page_title', 'Chi Tiết Thiệp Cưới #' . $invitation->id)
 
 @section('breadcrumb_parent')

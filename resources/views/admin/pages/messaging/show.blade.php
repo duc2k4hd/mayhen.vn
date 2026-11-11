@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chi Tiết Đợt Phát Tin — ' . $dispatch->campaign_name . ' — Mây Hẹn')
+@section('title', 'Chi Tiết Đợt Phát Tin — ' . $dispatch->campaign_name . '')
 @section('page_title', 'Chi Tiết Đợt Phát Tin Thiệp Mời')
 
 @section('content')

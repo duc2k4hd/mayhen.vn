@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Buồng Replay Vận Hành: ' . strtoupper($type) . ' #' . $id . ' — Mây Hẹn')
+@section('title', 'Buồng Replay Vận Hành: ' . strtoupper($type) . ' #' . $id . '')
 @section('page_title', '⏱️ Read-Only Operations Replay (Hợp Nhất Chuỗi Hành Vi ' . strtoupper($type) . ' #' . $id . ')')
 
 @section('content')

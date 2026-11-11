@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Khách Mời & Điểm Danh — Mây Hẹn')
+@section('title', 'Quản Lý Khách Mời & Điểm Danh')
 @section('page_title', 'Quản Lý Khách Mời & Điểm Danh Ngày Cưới')
 
 @section('content')

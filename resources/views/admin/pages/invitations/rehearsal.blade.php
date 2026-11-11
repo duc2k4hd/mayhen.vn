@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Diễn Tập Trải Nghiệm Khách Mời — ' . ($wedding->groom_name ?? '') . ' & ' . ($wedding->bride_name ?? '') . ' — Mây Hẹn')
+@section('title', 'Diễn Tập Trải Nghiệm Khách Mời — ' . ($wedding->groom_name ?? '') . ' & ' . ($wedding->bride_name ?? '') . '')
 @section('page_title', '🎭 Guest Journey Synthetic Rehearsal (Diễn Tập Hành Trình Khách Mời)')
 
 @section('breadcrumb_parent')

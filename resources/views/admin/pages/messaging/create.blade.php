@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Tạo Đợt Phát Tin Thiệp Mới — Mây Hẹn')
+@section('title', 'Tạo Đợt Phát Tin Thiệp Mới')
 @section('page_title', 'Tạo Đợt Phát Tin Thiệp Mời')
 
 @section('content')

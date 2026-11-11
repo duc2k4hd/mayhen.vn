@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Vòng Lặp Phản Hồi Khách Hàng (Customer Delight Feedback Loop) — Mây Hẹn')
+@section('title', 'Vòng Lặp Phản Hồi Khách Hàng (Customer Delight Feedback Loop)')
 @section('page_title', '🌟 Customer Delight Feedback Loop (Vòng Lặp Đo Lường CSAT / NPS & Can Thiệp Khách Hàng)')
 
 @section('content')

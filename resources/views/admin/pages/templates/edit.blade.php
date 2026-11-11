@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chỉnh Sửa Mẫu: ' . $template->name . ' — Mây Hẹn')
+@section('title', 'Chỉnh Sửa Mẫu: ' . $template->name . '')
 @section('page_title', 'Chỉnh Sửa Mẫu & Soát Schema: ' . $template->name)
 
 @section('breadcrumb_parent')

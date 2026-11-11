@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Yêu Cầu Liên Hệ & Báo Giá — Mây Hẹn')
+@section('title', 'Quản Lý Yêu Cầu Liên Hệ & Báo Giá')
 @section('page_title', 'Quản Lý Yêu Cầu Liên Hệ & Báo Giá')
 
 @section('content')

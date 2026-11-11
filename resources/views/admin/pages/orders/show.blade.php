@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chi Tiết Đơn Hàng #' . $order->order_code . ' — Mây Hẹn')
+@section('title', 'Chi Tiết Đơn Hàng #' . $order->order_code . '')
 @section('page_title', 'Chi Tiết Đơn Hàng: #' . $order->order_code)
 
 @section('breadcrumb_parent')

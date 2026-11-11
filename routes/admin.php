@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\GuestController as AdminGuestController;
 use App\Http\Controllers\Admin\IntelligenceController as AdminIntelligenceController;
 use App\Http\Controllers\Admin\InvitationController as AdminInvitationController;
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MessagingDispatchController as AdminMessagingDispatchController;
 use App\Http\Controllers\Admin\OperationsReplayController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -79,6 +80,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/releases/{releaseId}/publish', [AdminTemplateController::class, 'publishRelease'])->middleware('admin.manager')->name('releases.publish');
         Route::post('/{id}/releases/{releaseId}/rollback', [AdminTemplateController::class, 'rollbackRelease'])->middleware('admin.manager')->name('releases.rollback');
         Route::post('/{id}/releases/{releaseId}/rollout', [AdminTemplateController::class, 'updateRollout'])->middleware('admin.manager')->name('releases.rollout');
+    });
+
+    // Quản Lý Thư Viện Phương Tiện & Dọn Dẹp File Mồ Côi (Mục 7.5 DOCX: Admin Media)
+    Route::prefix('media')->name('media.')->group(function () {
+        Route::get('/', [AdminMediaController::class, 'index'])->name('index');
+        Route::post('/upload', [AdminMediaController::class, 'upload'])->middleware('admin.manager')->name('upload');
+        Route::delete('/destroy', [AdminMediaController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::get('/orphans', [AdminMediaController::class, 'orphans'])->name('orphans');
+        Route::post('/purge-orphans', [AdminMediaController::class, 'purgeOrphans'])->middleware('admin.manager')->name('purge_orphans');
     });
 
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR

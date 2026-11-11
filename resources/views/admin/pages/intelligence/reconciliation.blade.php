@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Thám Tử Đối Soát Tài Chính — Mây Hẹn')
+@section('title', 'Thám Tử Đối Soát Tài Chính')
 @section('page_title', 'Thám Tử Đối Soát Tài Chính (Finance Reconciliation Detective)')
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Radar Sẵn Sàng Ngày Cưới — Mây Hẹn')
+@section('title', 'Radar Sẵn Sàng Ngày Cưới')
 @section('page_title', 'Radar Sẵn Sàng Ngày Cưới (Wedding Readiness Radar)')
 
 @section('content')

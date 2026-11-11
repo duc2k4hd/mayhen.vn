@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Giám Sát Hàng Đợi & Tác Vụ Lỗi — Mây Hẹn')
+@section('title', 'Giám Sát Hàng Đợi & Tác Vụ Lỗi')
 @section('page_title', 'Giám Sát Hàng Đợi & Tác Vụ Lỗi (Failed Jobs)')
 
 @section('content')

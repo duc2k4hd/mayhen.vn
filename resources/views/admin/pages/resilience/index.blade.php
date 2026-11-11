@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Đài Kiểm Soát Sức Chống Chịu & Tải Cao (System Resilience Cockpit) — Mây Hẹn')
+@section('title', 'Đài Kiểm Soát Sức Chống Chịu & Tải Cao (System Resilience Cockpit)')
 @section('page_title', 'Sức Chống Chịu & Kiểm Soát Tải Cao')
 
 @section('content')

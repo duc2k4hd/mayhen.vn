@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Admin Dashboard — Mây Hẹn')
+@section('title', 'Admin Dashboard')
 @section('page_title', 'Tổng Quan Vận Hành & Doanh Thu')
 
 @push('styles')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Trung Tâm Hỗ Trợ Khách Hàng — Mây Hẹn')
+@section('title', 'Trung Tâm Hỗ Trợ Khách Hàng')
 @section('page_title', 'Trung Tâm Hỗ Trợ Khách Hàng')
 
 @section('content')

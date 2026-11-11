@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Hộp Thư Tác Vụ Vận Hành — Mây Hẹn')
+@section('title', 'Hộp Thư Tác Vụ Vận Hành')
 @section('page_title', 'Hộp Thư Tác Vụ Vận Hành Tập Trung (Action Inbox)')
 
 @section('content')
