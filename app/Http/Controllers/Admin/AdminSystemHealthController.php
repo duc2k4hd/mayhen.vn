@@ -86,4 +86,3 @@ class AdminSystemHealthController extends Controller
         return $this->healthService->downloadLog();
     }
 }
-

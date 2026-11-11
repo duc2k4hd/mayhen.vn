@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
+use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
@@ -251,6 +252,14 @@ Route::middleware('admin.auth')->group(function () {
             Route::delete('/ip-rules/{id}', [AdminSecurityController::class, 'destroyIpRule'])->name('ip_rules.destroy');
             Route::put('/rate-limits', [AdminSecurityController::class, 'updateRateLimits'])->name('rate_limits.update');
             Route::post('/flush-cache', [AdminSecurityController::class, 'flushCache'])->name('flush_cache');
+        });
+
+        // Phân Hệ Cấu Hình Cổng Tin Nhắn SMS & Zalo ZNS (Mục 174 PRD V3)
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [AdminNotificationGatewayController::class, 'index'])->name('index');
+            Route::put('/{gateway}', [AdminNotificationGatewayController::class, 'update'])->name('update');
+            Route::post('/ping/{gateway}', [AdminNotificationGatewayController::class, 'ping'])->name('ping');
+            Route::post('/test-dispatch', [AdminNotificationGatewayController::class, 'sendTest'])->name('send_test');
         });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');

@@ -9797,3 +9797,73 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 17 test files admin gần nhất: **154/154 tests PASSED 100% (681 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 102. ĐỀ ÁN 102: PHÂN HỆ QUẢN TRỊ CẤU HÌNH NHÀ CUNG CẤP TIN NHẮN SMS & ZALO ZNS (SMS & ZALO NOTIFICATION SERVICE GATEWAYS CONFIGURATION & VERIFICATION COCKPIT — MỤC 174 PRD V3 & MỤC 13.5 DOCX)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm quản trị cấu hình và kiểm định kết nối các cổng truyền phát tin nhắn tự động (Zalo ZNS & SMS Brandname viễn thông) theo chuẩn **Mục 174 & 438 & 425 Master PRD V3 (CÀI ĐẶT -> Email / SMS / Zalo provider) & Mục 13.5 DOCX**.
+  - **Nghiệp Vụ Cổng Tin Nhắn & Kiểm Định Chuyên Sâu**:
+    1. *Cấu Hình Zalo ZNS (Zalo Notification Service)*:
+       - Tích hợp Official Account (OA ID), Zalo App ID, Secret Key, Access Token & Refresh Token.
+       - Hỗ trợ chuyển đổi linh hoạt giữa hai môi trường `sandbox` (mô phỏng an toàn không tốn phí) và `production` (phát tin chính thức).
+       - Cấu hình Template ID thiệp cưới đã kiểm duyệt (`zalo_default_template_id`) và Template ID mã OTP / xác nhận tham dự (`zalo_otp_template_id`).
+    2. *Cấu Hình SMS Brandname Viễn Thông*:
+       - Hỗ trợ các đối tác hạ tầng mạng: eSMS.vn, SpeedSMS, FPT Telecom SMS và Cổng giả lập nội bộ (Sandbox).
+       - Thiết lập khóa API Key, Secret Key, Tên thương hiệu viễn thông được cấp phép (`MAYHEN`, tối đa 11 ký tự).
+       - Phân loại hình tin nhắn: CSKH Thương Hiệu (`cskh_brandname`) và OTP Ưu Tiên Cao (`otp_brandname`), kèm đơn giá tham chiếu (VND/tin) phục vụ dự toán ngân sách.
+    3. *Bảo Vệ Tính Bí Mật & Chống Ghi Đè Secret Token*:
+       - Toàn bộ secret key (Zalo App Secret, Access Token, Refresh Token, SMS Secret) đều được che giấu dưới dạng `••••••••` trên giao diện HTML.
+       - Cơ chế bảo vệ: Khi lưu cấu hình, nếu người dùng giữ nguyên chuỗi `••••••••`, hệ thống tự động nhận diện và bảo toàn khóa bí mật gốc trong CSDL.
+    4. *Công Cụ Kiểm Thử Trực Tiếp & Đo Độ Trễ (Ping Gateway & Test Dispatch)*:
+       - Nút "Kiểm tra kết nối (Ping Gateway)": Kiểm tra thông số cấu hình và đo độ trễ mạng ms thời gian thực.
+       - Form "Gửi tin thử nghiệm trực tiếp": Cho phép Super Admin nhập số điện thoại, chọn kênh và mẫu tin để gửi kiểm thử.
+       - Tuân thủ Luật An ninh mạng & Bảo vệ dữ liệu cá nhân (Law 91/2025/QH15): Toàn bộ số điện thoại nhận tin kiểm thử tự động được che giấu PII (ví dụ: `098***6655`) trước khi lưu sổ nhật ký.
+    5. *Sổ Nhật Ký Kiểm Thử Gateway (Verification Logs)*:
+       - Lưu trữ chi tiết: Thời gian, Kênh, Nhà cung cấp, Số điện thoại (đã che PII), Mẫu tin, Trạng thái (Thành công / Mô phỏng / Thất bại), Độ trễ (ms), Phản hồi JSON và Quản trị viên thực hiện.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_141000_create_notification_gateway_test_logs_table.php`:
+       * Bảng `notification_gateway_test_logs`: `id`, `channel` (`zalo_zns`, `sms_brandname`, `email_smtp`), `provider` (`zalo`, `esms`, `speedsms`, `fptsms`, `mock_sandbox`), `recipient` (masked PII), `template_code`, `status` (`success`, `failed`, `simulated`), `latency_ms`, `response_code`, `response_payload` (json), `error_message`, `dispatched_by` (foreign key `users.id`), `created_at` (useCurrent), indexes `['channel', 'status']`, `created_at`.
+  2. **Models**:
+     - `app/Models/NotificationGatewayTestLog.php`: Quan hệ `dispatcher()`, scopes `recent()`, `forChannel()`, accessors `channel_label`, `status_label`, `status_badge_color`.
+     - `app/Models/PlatformSetting.php`: Bổ sung hằng số `GROUP_NOTIFICATIONS = 'notifications'`.
+  3. **Services**:
+     - `app/Services/NotificationGatewayConfigService.php`:
+       * `getDefaultDefinitions()`: Định nghĩa chi tiết cấu hình Zalo ZNS và SMS Brandname kèm metadata, default values và help text.
+       * `seedDefaultsIfEmpty()`: Tự động khởi tạo giá trị ban đầu nếu chưa có.
+       * `getGatewayConfigs()`: Lấy cấu hình đầy đủ kèm che secret (masked `••••••••`).
+       * `updateGatewayConfigs()`: Cập nhật cấu hình, bảo toàn các secret không bị sửa đổi nếu giữ nguyên `••••••••`, ghi `AuditLogger`.
+       * `getGatewayKpis()`: Thống kê 4 thẻ KPI: Trạng thái Zalo ZNS, Trạng thái SMS Brandname, Lượt thử nghiệm (24h), Tỷ lệ thành công (%).
+       * `testConnection()`: Ping kiểm tra kết nối với gateway, đo độ trễ ms.
+       * `dispatchTestMessage()`: Chuẩn hóa số điện thoại, che PII an toàn, gửi tin mô phỏng/live, lưu `NotificationGatewayTestLog` và ghi `AuditLogger`.
+       * `getTestLogs()`: Lấy danh sách lịch sử kiểm thử kèm thông tin người gửi.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminNotificationGatewayController.php`: Điều phối 3 tabs giao diện, cập nhật cấu hình, ping gateway và gửi tin thử nghiệm.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings`:
+       * `GET /admin/settings/notifications` (`admin.settings.notifications.index`)
+       * `PUT /admin/settings/notifications/{gateway}` (`admin.settings.notifications.update`)
+       * `POST /admin/settings/notifications/ping/{gateway}` (`admin.settings.notifications.ping`)
+       * `POST /admin/settings/notifications/test-dispatch` (`admin.settings.notifications.send_test`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/notifications/index.blade.php`:
+       * 4 Thẻ KPI Quiet Luxury: Cổng Zalo ZNS, Cổng SMS Brandname, Lượt Thử Nghiệm (24h), Tỷ Lệ Phản Hồi Thành Công.
+       * Tab 1: Cấu hình Zalo ZNS (Môi trường Sandbox/Live, App ID, Secret Key toggle mắt xem/ẩn, OA ID, Access Token, Refresh Token, Template IDs, nút Ping Zalo).
+       * Tab 2: Cấu hình SMS Brandname (Nhà mạng eSMS/SpeedSMS/FPT, API Key, Secret Key, Tên Brandname `MAYHEN`, loại tin CSKH/OTP, đơn giá, nút Ping SMS).
+       * Tab 3: Phòng Thử Nghiệm & Lịch Sử Gửi (Form gửi thử số điện thoại, chọn kênh, chọn template; Bảng lịch sử kiểm thử đo độ trễ ms, che PII).
+     - Cập nhật Sidebar: Menu "Cổng SMS & Zalo ZNS" trong nhóm Cài Đặt Hệ Thống và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminNotificationGatewayConfigTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminNotificationGatewayConfigTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập cấu hình cổng tin nhắn.
+       3. Super Admin truy cập thành công màn hình cấu hình cổng tin nhắn và thấy các thẻ KPI.
+       4. Super Admin cập nhật cấu hình cổng Zalo ZNS thành công.
+       5. Khi cập nhật với chuỗi masked secret thì giữ nguyên giá trị bí mật cũ trong database.
+       6. Super Admin cập nhật cấu hình cổng SMS Brandname thành công.
+       7. Super Admin có thể ping kiểm tra kết nối cổng Zalo ZNS và đo độ trễ phản hồi.
+       8. Super Admin có thể ping kiểm tra kết nối cổng SMS Brandname.
+       9. Super Admin gửi tin thử nghiệm thành công và số điện thoại được che PII an toàn.
+       10. Gửi tin thử nghiệm thất bại và báo lỗi khi số điện thoại không hợp lệ.
+     - Kết quả: **10/10 tests PASSED 100% (31 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 18 test files admin gần nhất: **164/164 tests PASSED 100% (712 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

@@ -26,6 +26,8 @@ class PlatformSetting extends Model
 
     public const GROUP_FEATURES = 'features';
 
+    public const GROUP_NOTIFICATIONS = 'notifications';
+
     protected $fillable = [
         'group',
         'key',
