@@ -50,7 +50,7 @@
                                     <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 2px;">{{ Str::limit($category->description, 50) }}</div>
                                 @endif
                             </td>
-                            <td style="padding: 14px 18px; color: #666; font-family: monospace; font-size: 0.8125rem;">
+                            <td style="padding: 14px 18px; color: #666; font-size: 0.8125rem;">
                                 {{ $category->slug }}
                             </td>
                             <td style="padding: 14px 18px; text-align: center; font-weight: 600; color: #C5A880;">

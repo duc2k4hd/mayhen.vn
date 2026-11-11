@@ -171,7 +171,7 @@
                             <span style="color: var(--admin-text-muted);">Chưa gán</span>
                             @endif
                         </td>
-                        <td style="padding: 0.85rem 1rem; font-family: monospace; font-size: 0.8rem; color: #B45309;">
+                        <td style="padding: 0.85rem 1rem; font-size: 0.8rem; color: #B45309;">
                             {{ $item->cname_target ?: $routingConfig['cname_target'] }}
                         </td>
                         <td style="padding: 0.85rem 1rem; text-align: center;">
@@ -302,7 +302,7 @@
                 </div>
                 <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
                     @foreach($routingConfig['blacklisted_subdomains'] as $sub)
-                    <span style="background: #fff; border: 1px solid var(--admin-border-color); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-family: monospace; color: #B45309;">
+                    <span style="background: #fff; border: 1px solid var(--admin-border-color); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; color: #B45309;">
                         {{ $sub }}
                     </span>
                     @endforeach
@@ -386,7 +386,7 @@
                         <tr>
                             <td style="padding: 6px 10px;">{{ $c['host'] ?? '' }}</td>
                             <td style="padding: 6px 10px; font-weight: 600;">CNAME</td>
-                            <td style="padding: 6px 10px; font-family: monospace; color: #7C3AED;">{{ $c['target'] ?? '' }}</td>
+                            <td style="padding: 6px 10px; color: #7C3AED;">{{ $c['target'] ?? '' }}</td>
                         </tr>
                         @endforeach
                     </table>
@@ -411,7 +411,7 @@
                         <tr>
                             <td style="padding: 6px 10px;">{{ $a['host'] ?? '' }}</td>
                             <td style="padding: 6px 10px; font-weight: 600;">A</td>
-                            <td style="padding: 6px 10px; font-family: monospace; color: #059669;">{{ $a['ip'] ?? '' }}</td>
+                            <td style="padding: 6px 10px; color: #059669;">{{ $a['ip'] ?? '' }}</td>
                         </tr>
                         @endforeach
                     </table>
@@ -428,7 +428,7 @@
                 @if(!empty($lookupResult['ns_records']))
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         @foreach($lookupResult['ns_records'] as $ns)
-                        <span style="background: #fff; border: 1px solid var(--admin-border-color); padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-family: monospace;">
+                        <span style="background: #fff; border: 1px solid var(--admin-border-color); padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">
                             {{ $ns['target'] ?? '' }}
                         </span>
                         @endforeach

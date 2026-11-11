@@ -36,7 +36,6 @@
             font-weight: 500;
         }
         .mayhen_admin_kpi_value {
-            font-family: 'Playfair Display', serif;
             font-size: 1.65rem;
             font-weight: 600;
             color: var(--mh-admin-charcoal, #2B2927);
@@ -97,7 +96,7 @@
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px 24px; border-left: 4px solid var(--mh-admin-primary, #A38048);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
                     Kho Sao Lưu & Phục Hồi Thảm Họa (Disaster Recovery Vault — Mục 180 PRD V3)
                 </h3>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.84375rem; margin: 0;">
@@ -201,7 +200,7 @@
     <div class="mayhen_admin_card" style="padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <div>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                     Danh Sách Bản Sao Lưu Trong Kho (Snapshot Vault)
                 </h4>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.8125rem; margin: 2px 0 0;">
@@ -232,7 +231,7 @@
                         @foreach($backups as $b)
                             <tr>
                                 <td>
-                                    <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927); font-family: monospace;">
+                                    <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927);">
                                         {{ $b->filename }}
                                     </div>
                                     @if($b->note)
@@ -241,7 +240,7 @@
                                         </div>
                                     @endif
                                     @if($b->sha256_checksum)
-                                        <div style="color: #8C6B37; font-family: monospace; font-size: 0.7rem; margin-top: 2px;">
+                                        <div style="color: #8C6B37; font-size: 0.7rem; margin-top: 2px;">
                                             SHA-256: {{ substr($b->sha256_checksum, 0, 16) }}...
                                         </div>
                                     @endif
@@ -254,7 +253,7 @@
                                         ~{{ number_format($b->records_count ?? 0) }} dòng
                                     </div>
                                 </td>
-                                <td style="font-weight: 500; font-family: monospace;">
+                                <td style="font-weight: 500;">
                                     {{ $b->formatted_size }}
                                 </td>
                                 <td style="color: var(--mh-admin-muted, #7A756D); white-space: nowrap;">
@@ -324,7 +323,7 @@
     <div id="logModal" class="mayhen_log_modal" onclick="closeLogModal(event)">
         <div class="mayhen_log_modal_content" onclick="event.stopPropagation()">
             <div style="padding: 16px 20px; border-bottom: 1px solid #EBE7DF; display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="font-family: 'Playfair Display', serif; margin: 0; font-size: 1.1rem; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="margin: 0; font-size: 1.1rem; color: var(--mh-admin-charcoal, #2B2927);">
                     Nhật Ký Kiểm Thử Phục Hồi Độc Lập (OPS-01 Test Restore Log)
                 </h4>
                 <button type="button" onclick="document.getElementById('logModal').style.display='none'" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #7A756D;">
@@ -333,7 +332,7 @@
             </div>
             <div style="padding: 20px; overflow-y: auto;">
                 <div id="modalFilename" style="font-family: monospace; font-weight: 600; color: #8C6B37; margin-bottom: 12px; font-size: 0.875rem;"></div>
-                <pre id="modalLogContent" style="background: #1E1E1E; color: #4AF626; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 0.8125rem; white-space: pre-wrap; line-height: 1.5; margin: 0;"></pre>
+                <pre id="modalLogContent" style="background: #1E1E1E; color: #4AF626; padding: 16px; border-radius: 8px; font-size: 0.8125rem; white-space: pre-wrap; line-height: 1.5; margin: 0;"></pre>
             </div>
             <div style="padding: 12px 20px; border-top: 1px solid #EBE7DF; display: flex; justify-content: flex-end;">
                 <button type="button" onclick="document.getElementById('logModal').style.display='none'" class="mayhen_admin_btn" style="background: #F4F1EA; border: 1px solid #D6D0C4; color: #5A554E; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8125rem;">

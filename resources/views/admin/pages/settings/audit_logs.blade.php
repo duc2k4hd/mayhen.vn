@@ -14,7 +14,7 @@
 @section('content')
     <!-- Intro Card -->
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px;">
-        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
+        <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
             Nhật Ký Truy Vết Hành Động Quản Trị Viên
         </h3>
         <p style="color: var(--mh-admin-muted); font-size: 0.84375rem; margin: 0;">
@@ -101,7 +101,7 @@
                         @endphp
                         <tr>
                             <!-- Timestamp -->
-                            <td style="font-size: 0.8125rem; color: var(--mh-admin-muted); font-family: monospace;">
+                            <td style="font-size: 0.8125rem; color: var(--mh-admin-muted);">
                                 {{ $time }}
                             </td>
 
@@ -139,7 +139,7 @@
                                     {{ $log['target_type'] ?? 'Hệ thống' }}
                                 </span>
                                 @if(!empty($log['target_id']))
-                                    <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); font-family: monospace;">
+                                    <div style="font-size: 0.6875rem; color: var(--mh-admin-muted);">
                                         #{{ $log['target_id'] }}
                                     </div>
                                 @endif
@@ -153,7 +153,7 @@
                             </td>
 
                             <!-- IP Address -->
-                            <td style="text-align: right; font-size: 0.75rem; color: var(--mh-admin-muted); font-family: monospace;">
+                            <td style="text-align: right; font-size: 0.75rem; color: var(--mh-admin-muted);">
                                 {{ $log['ip'] ?? '—' }}
                             </td>
                         </tr>

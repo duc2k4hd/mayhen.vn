@@ -118,7 +118,7 @@
         <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 8px;">
             Mẫu Tin Nhắn Gốc Của Đợt Gửi
         </div>
-        <div style="background: #FAF8F5; border: 1px solid #ECE7E1; border-radius: 8px; padding: 14px 18px; font-size: 0.85rem; color: #4A463F; white-space: pre-wrap; line-height: 1.5; font-family: monospace;">{{ $dispatch->message_template }}</div>
+        <div style="background: #FAF8F5; border: 1px solid #ECE7E1; border-radius: 8px; padding: 14px 18px; font-size: 0.85rem; color: #4A463F; white-space: pre-wrap; line-height: 1.5;">{{ $dispatch->message_template }}</div>
     </div>
 
     {{-- Recipients & Rendered Message Logs Table --}}
@@ -153,13 +153,13 @@
                                     </div>
                                 @endif
                             </td>
-                            <td style="padding: 14px 18px; vertical-align: top; font-family: monospace; font-size: 0.85rem; color: var(--mh-admin-charcoal);">
+                            <td style="padding: 14px 18px; vertical-align: top; font-size: 0.85rem; color: var(--mh-admin-charcoal);">
                                 {{ $log->phone }}
                             </td>
                             <td style="padding: 14px 18px; vertical-align: top;">
                                 <div style="font-size: 0.82rem; color: #4A463F; background: #FAF8F5; padding: 10px 14px; border-radius: 6px; border: 1px solid #ECE7E1; line-height: 1.45; white-space: pre-wrap;">{{ $log->rendered_message }}</div>
                                 @if($log->provider_ref)
-                                    <div style="font-size: 0.72rem; color: #27AE60; font-family: monospace; margin-top: 4px;">
+                                    <div style="font-size: 0.72rem; color: #27AE60; margin-top: 4px;">
                                         Mã đối soát: {{ $log->provider_ref }} ({{ $log->sent_at?->format('H:i d/m/Y') }})
                                     </div>
                                 @endif

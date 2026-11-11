@@ -253,7 +253,7 @@
                     <tr style="border-bottom: 1px solid #F5F1EB; font-size: 13.5px;">
                         <td style="padding: 14px 16px;">
                             <div style="font-weight: 600; color: #1F1D1A;">{{ $tmpl['name'] }}</div>
-                            <code style="font-size: 11px; color: #7A7265; background: #FAF8F5; padding: 2px 6px; border-radius: 3px; font-family: monospace;">{{ $tmpl['slug'] }}</code>
+                            <code style="font-size: 11px; color: #7A7265; background: #FAF8F5; padding: 2px 6px; border-radius: 3px;">{{ $tmpl['slug'] }}</code>
                         </td>
                         <td style="padding: 14px 16px; text-align: center;">
                             <span class="mayhen_admin_badge {{ $tmpl['tier'] === 'vip' ? 'mayhen_admin_badge--primary' : 'mayhen_admin_badge--secondary' }}">

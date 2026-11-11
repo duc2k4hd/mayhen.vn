@@ -204,7 +204,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
                         <div style="background: rgba(255,255,255,0.7); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--mh-admin-border-subtle);">
                             <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--mh-admin-muted); font-weight: 600;">Font Tiêu Đề (Editorial Serif)</div>
-                            <div style="font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-charcoal); font-family: 'Playfair Display', serif; margin-top: 2px;">
+                            <div style="font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 2px;">
                                 {{ $visualDna['heading_font'] }}
                             </div>
                         </div>

@@ -49,7 +49,7 @@
                 </p>
                 <div style="display: flex; gap: 8px; align-items: center; max-width: 650px;">
                     <input type="text" id="newPlainKeyInput" readonly value="{{ session('new_plain_key') }}" 
-                           style="flex: 1; font-family: monospace; font-size: 14px; padding: 10px 14px; background: #ffffff; border: 1px solid #d4a373; border-radius: 6px; color: #1F1D1A; font-weight: 600;">
+                           style="flex: 1; font-size: 14px; padding: 10px 14px; background: #ffffff; border: 1px solid #d4a373; border-radius: 6px; color: #1F1D1A; font-weight: 600;">
                     <button type="button" class="mayhen_admin_btn mayhen_admin_btn_primary" onclick="copyPlainKey()" id="copyKeyBtn" style="white-space: nowrap;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -494,7 +494,7 @@
                             </td>
                             <td>
                                 <div style="font-weight: 600; color: #1F1D1A; font-size: 13px;">{{ $del->webhook?->name ?? 'Webhook đã xóa' }}</div>
-                                <div style="font-size: 11px; color: #8A8175; font-family: monospace;">{{ Str::limit($del->webhook?->payload_url, 35) }}</div>
+                                <div style="font-size: 11px; color: #8A8175;">{{ Str::limit($del->webhook?->payload_url, 35) }}</div>
                             </td>
                             <td>
                                 <span class="mayhen_admin_badge mayhen_admin_badge_info" style="font-size: 11px;">{{ $del->event_type }}</span>
@@ -511,7 +511,7 @@
                             </td>
                             <td>
                                 @if($del->is_success)
-                                    <div style="font-size: 12px; color: #2D6A4F; font-family: monospace; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <div style="font-size: 12px; color: #2D6A4F; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         {{ $del->response_body ?: 'Thành công (OK)' }}
                                     </div>
                                 @else

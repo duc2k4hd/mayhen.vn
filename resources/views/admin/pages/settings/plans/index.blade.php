@@ -12,7 +12,7 @@
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
+                <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
                     Bảng Giá & Các Gói Đăng Ký Mây Hẹn
                 </h3>
                 <p style="color: var(--mh-admin-muted); font-size: 0.84375rem; margin: 0;">
@@ -47,7 +47,7 @@
                             <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
                                 {{ $plan->name }}
                             </h4>
-                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted); font-family: monospace;">
+                            <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
                                 slug: {{ $plan->slug }}
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                         @if($plan->price == 0)
                             Miễn Phí
                         @else
-                            {{ number_format($plan->price, 0, ',', '.') }}<span style="font-size: 1rem; font-family: 'Inter', sans-serif; font-weight: 500;">đ</span>
+                            {{ number_format($plan->price, 0, ',', '.') }}<span style="font-size: 1rem; font-weight: 500;">đ</span>
                         @endif
                     </div>
 

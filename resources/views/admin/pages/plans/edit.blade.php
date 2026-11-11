@@ -28,7 +28,7 @@
         <!-- Card Form -->
         <div class="mayhen_admin_card" style="background: #fff; border-radius: 14px; border: 1px solid var(--mh-admin-border-subtle); padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
             <div style="border-bottom: 1px solid var(--mh-admin-border-subtle); padding-bottom: 16px; margin-bottom: 24px;">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--mh-admin-charcoal); margin: 0 0 6px;">
+                <h3 style="font-size: 1.4rem; color: var(--mh-admin-charcoal); margin: 0 0 6px;">
                     Cấu Hình Gói Dịch Vụ: {{ $plan->name }}
                 </h3>
                 <p style="color: var(--mh-admin-muted); font-size: 0.8125rem; margin: 0;">

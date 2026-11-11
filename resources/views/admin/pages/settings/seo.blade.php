@@ -15,7 +15,7 @@
         <div class="mayhen_admin_card" style="background: #fff; border-radius: 14px; border: 1px solid var(--mh-admin-border-subtle); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                 <div>
-                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 6px; color: var(--mh-admin-charcoal);">
+                    <h3 style="font-size: 1.3rem; margin: 0 0 6px; color: var(--mh-admin-charcoal);">
                         Sơ Đồ Trang XML (Sitemap.xml)
                     </h3>
                     <p style="color: var(--mh-admin-muted); font-size: 0.8125rem; margin: 0;">
@@ -52,7 +52,7 @@
 
         <!-- Card: Robots.txt & Meta Tags -->
         <div class="mayhen_admin_card" style="background: #fff; border-radius: 14px; border: 1px solid var(--mh-admin-border-subtle); padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 16px; color: var(--mh-admin-charcoal);">
+            <h3 style="font-size: 1.3rem; margin: 0 0 16px; color: var(--mh-admin-charcoal);">
                 Quy Chuẩn SEO Toàn Nền Tảng
             </h3>
 

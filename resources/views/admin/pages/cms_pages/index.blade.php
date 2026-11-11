@@ -87,7 +87,7 @@
                                 </div>
                             @endif
                         </td>
-                        <td style="padding: 14px 18px; font-family: monospace; font-size: 0.8125rem; color: #666;">
+                        <td style="padding: 14px 18px; font-size: 0.8125rem; color: #666;">
                             /{{ $page->slug }}
                         </td>
                         <td style="padding: 14px 18px;">

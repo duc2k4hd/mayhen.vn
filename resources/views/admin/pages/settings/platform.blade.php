@@ -145,7 +145,7 @@
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px 24px; border-left: 4px solid var(--mh-admin-primary, #A38048);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
                     Trung Tâm Cấu Hình Nền Tảng An Toàn & Chẩn Đoán Kết Nối (Safe Cockpit)
                 </h3>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.84375rem; margin: 0;">
@@ -226,7 +226,7 @@
             <div id="diagnosticAlert" class="mayhen_diag_box">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div id="diagnosticMessage">Đang kiểm tra kết nối...</div>
-                    <div id="diagnosticLatency" style="font-weight: 600; font-family: monospace;"></div>
+                    <div id="diagnosticLatency" style="font-weight: 600;"></div>
                 </div>
             </div>
 
@@ -248,7 +248,7 @@
                     <div>
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
                             <span style="font-size: 1.5rem;">{{ $activeIcon }}</span>
-                            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                            <h2 style="font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                                 {{ $groupMeta['title'] }}
                             </h2>
                         </div>
@@ -318,7 +318,7 @@
                                                       id="field_{{ $field['key'] }}" 
                                                       rows="3" 
                                                       class="mayhen_admin_input" 
-                                                      style="width: 100%; resize: vertical; font-family: monospace; font-size: 0.8125rem;"
+                                                      style="width: 100%; resize: vertical; font-size: 0.8125rem;"
                                                       placeholder="{{ $field['is_secret'] ? '•••••••• (Để trống để giữ nguyên khóa bí mật)' : '' }}">{{ $field['is_secret'] ? '' : $field['value'] }}</textarea>
                                         @elseif($field['type'] === 'password')
                                             <div style="position: relative; max-width: 450px;">
@@ -365,7 +365,7 @@
             <div class="mayhen_admin_card" style="padding: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
-                        <h4 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                        <h4 style="font-size: 1.1rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                             Lịch Sử Cập Nhật & Hoàn Tác Cấu Hình (Safe Rollback)
                         </h4>
                         <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.8125rem; margin: 2px 0 0;">
@@ -403,10 +403,10 @@
                                         <td>
                                             <code>{{ $hist->key }}</code>
                                         </td>
-                                        <td style="color: #C62828; font-family: monospace; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        <td style="color: #C62828; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             {{ $hist->masked_old_value }}
                                         </td>
-                                        <td style="color: #2E7D32; font-family: monospace; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        <td style="color: #2E7D32; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             {{ $hist->masked_new_value }}
                                         </td>
                                         <td style="text-align: right; white-space: nowrap;">

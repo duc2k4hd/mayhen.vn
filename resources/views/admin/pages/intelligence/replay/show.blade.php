@@ -168,7 +168,7 @@
                         👤 Tác nhân: <strong>{{ $step['actor'] }}</strong>
                     </div>
                     @if(!empty($step['metadata']))
-                        <div style="font-family: monospace; font-size: 0.6875rem; background: #F5F5F5; padding: 2px 6px; border-radius: 4px;">
+                        <div style="font-size: 0.6875rem; background: #F5F5F5; padding: 2px 6px; border-radius: 4px;">
                             {{ json_encode($step['metadata']) }}
                         </div>
                     @endif

@@ -80,7 +80,7 @@
     font-size: 0.9375rem;
     font-weight: 700;
     color: var(--mh-admin-charcoal);
-    font-family: 'Playfair Display', serif;
+    font-family: var(--mh-admin-font, 'Open Sans', sans-serif);
 }
 
 .mayhen_admin_inv_date {
@@ -95,7 +95,7 @@
 }
 
 .mayhen_admin_inv_slug_pill {
-    font-family: monospace;
+   
     font-size: 0.75rem;
     background-color: #F0ECE4;
     padding: 3px 8px;

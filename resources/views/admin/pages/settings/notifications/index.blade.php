@@ -463,7 +463,7 @@
                                     {{ strtoupper($log->provider) }}
                                 </div>
                             </td>
-                            <td style="padding: 0.65rem 0.75rem; font-family: monospace; font-weight: 600; color: var(--admin-charcoal);">
+                            <td style="padding: 0.65rem 0.75rem; font-weight: 600; color: var(--admin-charcoal);">
                                 {{ $log->recipient }}
                             </td>
                             <td style="padding: 0.65rem 0.75rem; color: var(--admin-text-muted);">

@@ -77,11 +77,11 @@
             <div style="display: grid; grid-template-columns: 2fr 2fr 1fr 2fr auto; gap: 12px; align-items: end;">
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Đường Dẫn Cũ (Source Path) <span style="color: red;">*</span></label>
-                    <input type="text" name="source_path" value="{{ old('source_path') }}" required placeholder="/duong-dan-cu" style="width: 100%; padding: 9px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.8125rem; font-family: monospace;">
+                    <input type="text" name="source_path" value="{{ old('source_path') }}" required placeholder="/duong-dan-cu" style="width: 100%; padding: 9px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.8125rem;">
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Đích Đến Mới (Target URL) <span style="color: red;">*</span></label>
-                    <input type="text" name="target_url" value="{{ old('target_url') }}" required placeholder="/mau-thiep hoặc URL đầy đủ" style="width: 100%; padding: 9px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.8125rem; font-family: monospace;">
+                    <input type="text" name="target_url" value="{{ old('target_url') }}" required placeholder="/mau-thiep hoặc URL đầy đủ" style="width: 100%; padding: 9px 12px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 0.8125rem;">
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Mã Chuyển</label>
@@ -118,13 +118,13 @@
                 <tbody>
                     @forelse($redirects as $redirect)
                         <tr style="border-bottom: 1px solid var(--mh-admin-border-subtle);">
-                            <td style="padding: 12px 14px; font-family: monospace; color: #85182A; font-weight: 600;">
+                            <td style="padding: 12px 14px; color: #85182A; font-weight: 600;">
                                 {{ $redirect->source_path }}
                                 @if($redirect->note)
                                     <div style="font-family: inherit; font-size: 0.75rem; color: #888; font-weight: normal;">{{ $redirect->note }}</div>
                                 @endif
                             </td>
-                            <td style="padding: 12px 14px; font-family: monospace; color: #2E7D32;">
+                            <td style="padding: 12px 14px; color: #2E7D32;">
                                 &rarr; {{ $redirect->target_url }}
                             </td>
                             <td style="padding: 12px 14px;">
@@ -241,7 +241,7 @@
             <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px;">
                 Tự động thu thập URL các mẫu thiệp cưới công khai, bài viết cẩm nang và các trang tĩnh.
             </p>
-            <div style="font-size: 0.8125rem; font-family: monospace; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
+            <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
                 <a href="{{ $sitemapUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none;">{{ $sitemapUrl }} &nearr;</a>
             </div>
             <form action="{{ route('admin.seo.clear_sitemap') }}" method="POST">
@@ -257,7 +257,7 @@
             <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px;">
                 Chỉ định phạm vi crawl cho Googlebot, Bingbot; chặn index thư mục nhạy cảm (`/admin`, `/tai-khoan`).
             </p>
-            <div style="font-size: 0.8125rem; font-family: monospace; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
+            <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
                 <a href="{{ $robotsUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none;">{{ $robotsUrl }} &nearr;</a>
             </div>
             <a href="{{ $robotsUrl }}" target="_blank" style="display: inline-block; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border); background: #fff; font-size: 0.75rem; font-weight: 600; text-decoration: none; color: #1F1D1A;">

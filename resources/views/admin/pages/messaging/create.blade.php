@@ -87,12 +87,12 @@
 
                     {{-- Tags gợi ý nhanh --}}
                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #5D5852;">[DANH_XUNG]</span>
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #5D5852;">[TEN_KHACH]</span>
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #5D5852;">[CAP_DOI]</span>
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #5D5852;">[NGAY_CUOI]</span>
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #2980B9; font-weight: 700;">[LINK_THIEP]</span>
-                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; font-family: monospace; color: #5D5852;">[NHOM_KHACH]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #5D5852;">[DANH_XUNG]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #5D5852;">[TEN_KHACH]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #5D5852;">[CAP_DOI]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #5D5852;">[NGAY_CUOI]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #2980B9; font-weight: 700;">[LINK_THIEP]</span>
+                        <span style="padding: 2px 8px; border-radius: 4px; background: #FAF8F5; border: 1px solid #ECE7E1; font-size: 0.72rem; color: #5D5852;">[NHOM_KHACH]</span>
                     </div>
 
                     <textarea name="message_template" rows="7" required style="width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #D1CCC6; font-size: 0.88rem; font-family: inherit; line-height: 1.5;">{{ old('message_template', $defaultTemplate) }}</textarea>

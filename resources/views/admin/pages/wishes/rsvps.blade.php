@@ -168,7 +168,7 @@
                             <td>
                                 <div style="font-weight: 600; color: var(--mh-admin-charcoal);">{{ $rsvp->guest_name }}</div>
                                 @if(!empty($rsvp->phone))
-                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); font-family: monospace;">{{ $rsvp->phone }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">{{ $rsvp->phone }}</div>
                                 @endif
                                 @if(!empty($rsvp->ip_address))
                                     <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); opacity: 0.7;">IP: {{ $rsvp->ip_address }}</div>

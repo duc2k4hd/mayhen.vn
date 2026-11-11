@@ -20,8 +20,8 @@
   --mayhen-admin-error: #ae4549;
   --mayhen-admin-success: #39735d;
   --mayhen-admin-shadow: 0 24px 80px rgba(90, 55, 52, .09), 0 3px 14px rgba(90, 55, 52, .035);
-  --mayhen-admin-font-body: "Segoe UI", "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-  --mayhen-admin-font-display: Georgia, "Times New Roman", "Playfair Display", serif;
+  --mayhen-admin-font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mayhen-admin-font-display: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

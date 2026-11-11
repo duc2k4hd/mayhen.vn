@@ -56,7 +56,7 @@
                         @endphp
                         <tr>
                             <!-- Timestamp -->
-                            <td style="font-size: 0.8125rem; color: var(--mh-admin-muted); font-family: monospace;">
+                            <td style="font-size: 0.8125rem; color: var(--mh-admin-muted);">
                                 {{ $time }}
                             </td>
 
@@ -99,14 +99,14 @@
                                     {{ $log['message'] ?? 'Webhook request received' }}
                                 </div>
                                 @if(!empty($log['content']))
-                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); font-family: monospace;">
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
                                         Nội dung CK: "{{ $log['content'] }}"
                                     </div>
                                 @endif
                             </td>
 
                             <!-- IP Address -->
-                            <td style="text-align: right; font-size: 0.75rem; color: var(--mh-admin-muted); font-family: monospace;">
+                            <td style="text-align: right; font-size: 0.75rem; color: var(--mh-admin-muted);">
                                 {{ $log['ip'] ?? '—' }}
                             </td>
                         </tr>

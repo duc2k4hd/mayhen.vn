@@ -110,7 +110,7 @@
                         <tbody>
                             @foreach($requests as $req)
                                 <tr style="border-bottom: 1px solid var(--mh-admin-border);">
-                                    <td style="padding: 12px 16px; font-family: monospace; font-weight: 700; color: var(--mh-admin-gold);">
+                                    <td style="padding: 12px 16px; font-weight: 700; color: var(--mh-admin-gold);">
                                         {{ $req->request_code }}
                                     </td>
                                     <td style="padding: 12px 16px;">

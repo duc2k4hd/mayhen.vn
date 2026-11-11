@@ -166,7 +166,7 @@
                                 <div style="font-weight: 600; color: #1F1D1A; margin-bottom: 3px;">
                                     {{ $batch->name }}
                                 </div>
-                                <code style="font-size: 11px; color: #7A7265; background: #FAF8F5; padding: 2px 6px; border-radius: 3px; font-family: monospace;">{{ $batch->id }}</code>
+                                <code style="font-size: 11px; color: #7A7265; background: #FAF8F5; padding: 2px 6px; border-radius: 3px;">{{ $batch->id }}</code>
                             </td>
                             <td style="padding: 14px 16px; vertical-align: top;">
                                 <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; font-weight: 600;">
@@ -305,7 +305,7 @@
                                         {{ $job->category['name'] }}
                                     </span>
                                 </div>
-                                <code style="font-size: 11.5px; color: #5C5449; background: #F8F5EE; padding: 2px 6px; border-radius: 3px; font-family: monospace;">{{ $job->queue }}</code>
+                                <code style="font-size: 11.5px; color: #5C5449; background: #F8F5EE; padding: 2px 6px; border-radius: 3px;">{{ $job->queue }}</code>
                             </td>
                             <td style="padding: 14px 16px; vertical-align: top;">
                                 <div style="font-weight: 600; color: #1F1D1A; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">

@@ -1,16 +1,22 @@
 /**
  * MAYHEN.VN — ADMIN PANEL BASE STYLES
  * Pure Vanilla CSS & Isolated Layout
+ * Single Unified Font Family: Open Sans (Google Fonts)
  */
+
+:root {
+    --mh-admin-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: var(--mh-admin-font);
 }
 
 html, body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--mh-admin-font);
     background-color: #F8F9FA;
     color: #212529;
     font-size: 15px;
@@ -21,10 +27,16 @@ html, body {
 a {
     color: inherit;
     text-decoration: none;
+    font-family: inherit;
+}
+
+button, input, select, textarea {
+    font-family: var(--mh-admin-font);
 }
 
 button {
     font: inherit;
+    font-family: var(--mh-admin-font);
     cursor: pointer;
     background: none;
     border: none;
@@ -33,4 +45,5 @@ button {
 table {
     border-collapse: collapse;
     width: 100%;
+    font-family: inherit;
 }

@@ -17,7 +17,7 @@
         <div>
             <div class="mayhen_admin_page_title" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                 <span>{{ $template->name }}</span>
-                <span class="mayhen_admin_badge" style="background-color: #2C2824; color: #FAF8F5; font-family: monospace;">
+                <span class="mayhen_admin_badge" style="background-color: #2C2824; color: #FAF8F5;">
                     Phiên bản: {{ $template->current_version ?? 'v1.0.0' }}
                 </span>
                 @if ($template->release_status === 'published')

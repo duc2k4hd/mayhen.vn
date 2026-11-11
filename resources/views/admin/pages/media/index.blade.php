@@ -11,7 +11,7 @@
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #9C7A4A; font-weight: 700; margin-bottom: 4px;">
                 Mục 7.5 DOCX • Quản Trị Tài Nguyên Lưu Trữ
             </div>
-            <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 1.85rem; font-weight: 600; color: #1F1D1A; margin: 0;">
+            <h1 style="font-size: 1.85rem; font-weight: 600; color: #1F1D1A; margin: 0;">
                 Thư Viện Phương Tiện & Tài Nguyên Cưới
             </h1>
             <p style="font-size: 0.88rem; color: #7A726A; margin: 4px 0 0;">
@@ -208,7 +208,7 @@
 <div id="mayhen_upload_modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
     <div style="background: #FFFFFF; border-radius: 12px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 16px 36px rgba(0,0,0,0.2);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin: 0; color: #1F1D1A;">
+            <h3 style="font-size: 1.4rem; font-weight: 600; margin: 0; color: #1F1D1A;">
                 Tải Lên Tệp Media Mới
             </h3>
             <button type="button" onclick="document.getElementById('mayhen_upload_modal').style.display = 'none';" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #7A726A;">✕</button>

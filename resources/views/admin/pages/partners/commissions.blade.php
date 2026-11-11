@@ -105,7 +105,7 @@
                             <td>
                                 @if($comm->partner)
                                     <div style="font-weight: 600; color: #1F1D1A;">{{ $comm->partner->business_name }}</div>
-                                    <div style="font-size: 11px; font-family: monospace; color: #9C7A4A;">{{ $comm->partner->partner_code }}</div>
+                                    <div style="font-size: 11px; color: #9C7A4A;">{{ $comm->partner->partner_code }}</div>
                                 @else
                                     <span style="color: #8C827A;">Không xác định</span>
                                 @endif
@@ -189,7 +189,7 @@
 {{-- Modal Quyết Toán Có Bằng Chứng Ngân Hàng (P0) --}}
 <div id="settleModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
     <div style="background: #FFFFFF; border-radius: 16px; max-width: 480px; width: 90%; margin: 80px auto; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #1F1D1A; margin-bottom: 8px;">
+        <h3 style="font-size: 22px; color: #1F1D1A; margin-bottom: 8px;">
             Quyết Toán & Chi Trả Hoa Hồng
         </h3>
         <p style="font-size: 13px; color: #8C827A; margin-bottom: 16px;">
@@ -200,7 +200,7 @@
             @csrf
             <div style="margin-bottom: 16px;">
                 <label class="mayhen_admin_label" style="font-size: 12px;">Mã Giao Dịch Chuyển Khoản Ngân Hàng (Bắt buộc) <span style="color: #9B1C1C;">*</span></label>
-                <input type="text" name="bank_reference_code" class="mayhen_admin_input" style="width: 100%; font-family: monospace;" placeholder="Ví dụ: FT26315891234, VCB123984..." required minlength="4">
+                <input type="text" name="bank_reference_code" class="mayhen_admin_input" style="width: 100%;" placeholder="Ví dụ: FT26315891234, VCB123984..." required minlength="4">
                 <span style="font-size: 11px; color: #8C827A; display: block; margin-top: 4px;">
                     Mã chuẩn từ thông báo giao dịch ngân hàng thực tế để phục vụ đối soát kế toán.
                 </span>

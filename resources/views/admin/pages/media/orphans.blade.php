@@ -11,7 +11,7 @@
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #E65100; font-weight: 700; margin-bottom: 4px;">
                 Mục 7.5 DOCX • File Không Còn Được Tham Chiếu
             </div>
-            <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 1.85rem; font-weight: 600; color: #1F1D1A; margin: 0;">
+            <h1 style="font-size: 1.85rem; font-weight: 600; color: #1F1D1A; margin: 0;">
                 Thanh Tra & Dọn Dẹp Tệp Mồ Côi (Orphaned Media)
             </h1>
             <p style="font-size: 0.88rem; color: #7A726A; margin: 4px 0 0;">
@@ -135,7 +135,7 @@
     @else
         <div class="mayhen_admin_card" style="text-align: center; padding: 60px 20px; color: #7A726A;">
             <div style="font-size: 3rem; margin-bottom: 10px;">✨</div>
-            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: #1F1D1A; margin: 0 0 6px;">
+            <h3 style="font-size: 1.6rem; font-weight: 600; color: #1F1D1A; margin: 0 0 6px;">
                 Kho Lưu Trữ Sạch Sẽ & Tối Ưu Tuyệt Đối
             </h3>
             <p style="font-size: 0.88rem; max-width: 500px; margin: 0 auto;">

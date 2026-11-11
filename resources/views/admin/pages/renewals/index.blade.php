@@ -36,7 +36,6 @@
             font-weight: 500;
         }
         .mayhen_admin_kpi_value {
-            font-family: 'Playfair Display', serif;
             font-size: 1.65rem;
             font-weight: 600;
             color: var(--mh-admin-charcoal, #2B2927);
@@ -72,7 +71,7 @@
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px 24px; border-left: 4px solid var(--mh-admin-primary, #A38048);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
                     Giám Sát Vòng Đời, Hạn Dùng & Ân Hạn Thiệp Cưới (Mục 139 PRD V3 & Mục 13.4 DOCX)
                 </h3>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.84375rem; margin: 0;">
@@ -174,7 +173,7 @@
     <div class="mayhen_admin_card" style="padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <div>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                     Danh Sách Thiệp Cưới & Tình Trạng Lưu Trữ
                 </h4>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.8125rem; margin: 2px 0 0;">
@@ -303,7 +302,7 @@
     <div id="extendModal" class="mayhen_modal" onclick="closeExtendModal(event)">
         <div class="mayhen_modal_content" onclick="event.stopPropagation()">
             <div style="padding: 16px 20px; border-bottom: 1px solid #EBE7DF; display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="font-family: 'Playfair Display', serif; margin: 0; font-size: 1.1rem; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="margin: 0; font-size: 1.1rem; color: var(--mh-admin-charcoal, #2B2927);">
                     Gia Hạn Thời Hạn Lưu Trữ Thiệp Cưới
                 </h4>
                 <button type="button" onclick="document.getElementById('extendModal').style.display='none'" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #7A756D;">

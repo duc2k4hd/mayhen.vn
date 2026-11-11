@@ -8,19 +8,19 @@
     <div class="mayhen_admin_kpi_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Tổng Số Gói Cước</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 6px;">{{ $stats['total_plans'] }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 6px;">{{ $stats['total_plans'] }}</div>
             <div style="font-size: 0.8125rem; color: #2E7D32; margin-top: 4px;">{{ $stats['active_plans'] }} gói đang mở bán</div>
         </div>
 
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Tổng Đơn Hàng Thành Công</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #1B5E20; margin-top: 6px;">{{ number_format($stats['total_paid_orders']) }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #1B5E20; margin-top: 6px;">{{ number_format($stats['total_paid_orders']) }}</div>
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Đã hoàn tất thanh toán</div>
         </div>
 
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Doanh Thu Đăng Ký</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #85182A; margin-top: 6px;">{{ number_format($stats['total_revenue'], 0, ',', '.') }}đ</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #85182A; margin-top: 6px;">{{ number_format($stats['total_revenue'], 0, ',', '.') }}đ</div>
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Giá trị thực tế thu từ gói</div>
         </div>
 
@@ -89,14 +89,14 @@
                             <span class="mayhen_admin_badge {{ $plan->is_active ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_warning' }}" style="display: inline-block; padding: 2px 8px; font-size: 0.6875rem; border-radius: 4px; margin-bottom: 6px;">
                                 {{ $plan->is_active ? 'Đang Mở Bán' : 'Tạm Dừng' }}
                             </span>
-                            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--mh-admin-charcoal); margin: 0;">
+                            <h3 style="font-size: 1.4rem; color: var(--mh-admin-charcoal); margin: 0;">
                                 {{ $plan->name }}
                             </h3>
                             <code style="font-size: 0.75rem; color: var(--mh-admin-muted);">slug: {{ $plan->slug }}</code>
                         </div>
 
                         <div style="text-align: right;">
-                            <div style="font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #85182A;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #85182A;">
                                 {{ $plan->formatted_price }}
                             </div>
                             <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">

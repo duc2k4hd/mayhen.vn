@@ -10065,3 +10065,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 12 test files admin gần nhất: **120/120 tests PASSED 100% (466 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 106. ĐỀ ÁN 106: CHUẨN HÓA DUY NHẤT 1 FONT FAMILY OPEN SANS CHO TOÀN BỘ PHÂN HỆ QUẢN TRỊ ADMIN (UNIFIED GOOGLE FONT OPEN SANS)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Thực thi quy chuẩn nhất quán toàn diện: Toàn bộ các trang trong phân hệ Quản trị Admin (`resources/views/admin/` & `public/assets/admin/`) dùng **DUY NHẤT 1 font family 'Open Sans' của Google Fonts**.
+  - Nghiêm cấm tuyệt đối việc sử dụng font khác, không cho phép tự gọi link Google Font khác (`Inter`, `Playfair Display`, `Cormorant Garamond`, `Georgia`...) hoặc ghi đè font-family tự phát ngoài font đã được cấu hình tại CSS Root Layout.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Layouts & Khai báo Font Google**:
+     - `resources/views/admin/layouts/master.blade.php`: Thay thế link import font Google cũ thành duy nhất:
+       ```html
+       <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+       <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+       ```
+     - `resources/views/admin/auth/login.blade.php`: Nhúng link Google Fonts `Open Sans` đồng bộ, chuẩn hóa text SVG `M & H` sang `'Open Sans', sans-serif`.
+     - `resources/views/admin/pages/invoices/print.blade.php`: Chuẩn hóa link và body font sang `'Open Sans', sans-serif`.
+  2. **Cấu Hình CSS Root Layout**:
+     - `public/assets/admin/css/common/base.css`: Khai báo biến root `--mh-admin-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;` và áp dụng mặc định cho `*, *::before, *::after, html, body, button, input, select, textarea`.
+     - `public/assets/admin/css/common/layout.css`: Thiết lập `--mh-admin-font` trong `:root`, loại bỏ font `'Playfair Display'` tại `.mayhen_admin_sidebar_logo_mark` và chuyển sang dùng `var(--mh-admin-font)`.
+     - `public/assets/admin/css/pages/login.css`: Chuẩn hóa cả hai biến `--mayhen-admin-font-body` và `--mayhen-admin-font-display` thành `'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`.
+     - `public/assets/admin/css/pages/invitations.css` & `settings.css`: Chuyển đổi toàn bộ các lớp CSS có font-family Playfair sang `var(--mh-admin-font, 'Open Sans', sans-serif)`.
+  3. **Rà Soát & Khử Toàn Diện Inline Font Trong Toàn Bộ Views Admin**:
+     - Đã loại bỏ 100% các inline style khai báo font cũ (`Playfair Display`, `Cormorant Garamond`, `Georgia`, `Inter`) tại hơn 22 tệp view Blade:
+       * `dashboard.blade.php`
+       * `coupons/index.blade.php`
+       * `invitations/show.blade.php`
+       * `invoices/create.blade.php`, `invoices/index.blade.php`, `invoices/print.blade.php`, `invoices/show.blade.php`
+       * `media/index.blade.php`, `media/orphans.blade.php`
+       * `partners/commissions.blade.php`, `partners/show.blade.php`
+       * `plans/index.blade.php`, `plans/edit.blade.php`
+       * `renewals/index.blade.php`
+       * `reviews/index.blade.php`
+       * `settings/audit_logs.blade.php`, `settings/banking.blade.php`, `settings/platform.blade.php`, `settings/seo.blade.php`, `settings/backups/index.blade.php`, `settings/plans/index.blade.php`
+       * `templates/edit.blade.php`
+  4. **Kiểm Thử & Đảm Bảo Chất Lượng**:
+     - Kiểm tra toàn bộ codebase không còn bất kỳ font family ngoại vi nào.
+     - Suite 12 feature test files admin: **120/120 tests PASSED 100% (466 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

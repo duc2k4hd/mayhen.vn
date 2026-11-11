@@ -42,7 +42,7 @@
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
         {{-- Profile Card --}}
         <div class="mayhen_admin_card">
-            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #1F1D1A; margin-bottom: 16px;">
+            <h3 style="font-size: 20px; color: #1F1D1A; margin-bottom: 16px;">
                 Thông Tin Doanh Nghiệp & Liên Hệ
             </h3>
 
@@ -100,7 +100,7 @@
 
         {{-- Financial & Policy Management --}}
         <div class="mayhen_admin_card">
-            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #1F1D1A; margin-bottom: 16px;">
+            <h3 style="font-size: 20px; color: #1F1D1A; margin-bottom: 16px;">
                 Chính Sách & Ví Hoa Hồng
             </h3>
 
@@ -163,7 +163,7 @@
 
     {{-- Tabs / Danh sách Đám Cưới & Hoa Hồng --}}
     <div class="mayhen_admin_card mayhen_admin_mb_4">
-        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #1F1D1A; margin-bottom: 16px;">
+        <h3 style="font-size: 22px; color: #1F1D1A; margin-bottom: 16px;">
             Đám Cưới Do Đối Tác Quản Lý ({{ $weddings->total() }})
         </h3>
 
@@ -184,7 +184,7 @@
                         <tr>
                             <td>
                                 <strong style="color: #1F1D1A;">{{ $wedding->venue_name ?? 'Đám Cưới ' . $wedding->groom_name . ' & ' . $wedding->bride_name }}</strong>
-                                <div style="font-size: 11px; font-family: monospace; color: #8C827A;">#{{ $wedding->id }}</div>
+                                <div style="font-size: 11px; color: #8C827A;">#{{ $wedding->id }}</div>
                             </td>
                             <td>
                                 {{ $wedding->groom_name }} & {{ $wedding->bride_name }}
@@ -224,7 +224,7 @@
 
     {{-- Lịch Sử Hoa Hồng --}}
     <div class="mayhen_admin_card">
-        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #1F1D1A; margin-bottom: 16px;">
+        <h3 style="font-size: 22px; color: #1F1D1A; margin-bottom: 16px;">
             Lịch Sử Giao Dịch Hoa Hồng & Chi Trả ({{ $commissions->total() }})
         </h3>
 
@@ -308,7 +308,7 @@
 {{-- Modal Đình Chỉ Đối Tác --}}
 <div id="suspendModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
     <div style="background: #FFFFFF; border-radius: 16px; max-width: 480px; width: 90%; margin: 100px auto; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-        <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #9B1C1C; margin-bottom: 12px;">
+        <h3 style="font-size: 22px; color: #9B1C1C; margin-bottom: 12px;">
             Đình Chỉ Hoạt Động Đối Tác
         </h3>
         <p style="font-size: 13px; color: #555; margin-bottom: 16px;">

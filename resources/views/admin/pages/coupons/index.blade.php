@@ -8,25 +8,25 @@
     <div class="mayhen_admin_kpi_grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Tổng Mã Ưu Đãi</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 6px;">{{ $stats['total_coupons'] }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-top: 6px;">{{ $stats['total_coupons'] }}</div>
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Đã khởi tạo trong hệ thống</div>
         </div>
 
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Đang Có Hiệu Lực</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #1B5E20; margin-top: 6px;">{{ $stats['active_coupons'] }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #1B5E20; margin-top: 6px;">{{ $stats['active_coupons'] }}</div>
             <div style="font-size: 0.8125rem; color: #2E7D32; margin-top: 4px;">Sẵn sàng áp dụng cho giỏ hàng</div>
         </div>
 
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Lượt Đã Sử Dụng</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #85182A; margin-top: 6px;">{{ number_format($stats['total_used_count']) }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #85182A; margin-top: 6px;">{{ number_format($stats['total_used_count']) }}</div>
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Tổng lượt khách đã dùng</div>
         </div>
 
         <div class="mayhen_admin_kpi_card" style="background: #fff; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted); font-weight: 600;">Mã Đã Hết Hạn</div>
-            <div style="font-size: 1.75rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #D32F2F; margin-top: 6px;">{{ $stats['expired_coupons'] }}</div>
+            <div style="font-size: 1.75rem; font-weight: 700; color: #D32F2F; margin-top: 6px;">{{ $stats['expired_coupons'] }}</div>
             <div style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-top: 4px;">Đã qua thời gian khuyến mãi</div>
         </div>
     </div>
@@ -105,7 +105,7 @@
                             <!-- Code -->
                             <td style="padding: 14px 18px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #85182A; background: #FFF5F5; padding: 3px 8px; border-radius: 6px; border: 1px dashed #FFCDD2;">
+                                    <span style="font-size: 0.95rem; font-weight: 700; color: #85182A; background: #FFF5F5; padding: 3px 8px; border-radius: 6px; border: 1px dashed #FFCDD2;">
                                         {{ $coupon->code }}
                                     </span>
                                     <button type="button" onclick="navigator.clipboard.writeText('{{ $coupon->code }}'); alert('Đã sao chép mã {{ $coupon->code }}!');" title="Sao chép mã" style="border: none; background: none; cursor: pointer; color: var(--mh-admin-muted); font-size: 0.8125rem;">
@@ -206,7 +206,7 @@
     <div id="mayhen_coupon_modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
         <div style="background: #fff; width: 100%; max-width: 580px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden;">
             <div style="padding: 20px 24px; border-bottom: 1px solid var(--mh-admin-border-subtle); display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0; color: var(--mh-admin-charcoal);">
+                <h3 style="font-size: 1.3rem; margin: 0; color: var(--mh-admin-charcoal);">
                     Tạo Mã Giảm Giá Mới
                 </h3>
                 <button type="button" onclick="closeCreateCouponModal()" style="border: none; background: none; font-size: 1.25rem; cursor: pointer; color: var(--mh-admin-muted);">&times;</button>

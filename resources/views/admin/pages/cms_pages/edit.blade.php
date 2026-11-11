@@ -69,7 +69,7 @@
 
             <div style="margin-bottom: 18px;">
                 <label style="display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px;">Nội Dung Trang (Hỗ trợ định dạng HTML, thẻ &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;blockquote&gt;) <span style="color: red;">*</span></label>
-                <textarea name="content" rows="18" required style="width: 100%; padding: 14px; border: 1px solid var(--mh-admin-border); border-radius: 8px; font-size: 0.9375rem; font-family: monospace; line-height: 1.6;">{{ old('content', $page->content) }}</textarea>
+                <textarea name="content" rows="18" required style="width: 100%; padding: 14px; border: 1px solid var(--mh-admin-border); border-radius: 8px; font-size: 0.9375rem; line-height: 1.6;">{{ old('content', $page->content) }}</textarea>
             </div>
 
             <div style="margin-bottom: 10px;">

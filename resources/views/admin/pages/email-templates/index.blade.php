@@ -85,7 +85,7 @@
                                     {{ strtoupper($tmpl->channel) }}
                                 </span>
                             </div>
-                            <code style="font-size: 11.5px; color: #5C5449; background: #F8F5EE; padding: 2px 6px; border-radius: 3px; font-family: monospace;">{{ $tmpl->code }}</code>
+                            <code style="font-size: 11.5px; color: #5C5449; background: #F8F5EE; padding: 2px 6px; border-radius: 3px;">{{ $tmpl->code }}</code>
                         </td>
                         <td style="padding: 14px 16px; vertical-align: top;">
                             <div style="font-weight: 600; color: #1F1D1A; margin-bottom: 4px;">
@@ -103,7 +103,7 @@
                                     @php $varCount = 0; @endphp
                                     @foreach(array_keys($tmpl->variables) as $varKey)
                                         @if($varCount < 3)
-                                            <span style="font-size: 11px; background: #FAF8F5; border: 1px solid #EFE8DD; padding: 2px 6px; border-radius: 4px; color: #8C6D3B; font-family: monospace;">
+                                            <span style="font-size: 11px; background: #FAF8F5; border: 1px solid #EFE8DD; padding: 2px 6px; border-radius: 4px; color: #8C6D3B;">
                                                 @{{ {{ $varKey }} }}
                                             </span>
                                             @php $varCount++; @endphp

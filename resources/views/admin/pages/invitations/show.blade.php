@@ -220,7 +220,7 @@
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-size: 1.3rem;">🎖️</span>
-                                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif;">
+                                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
                                     Hộ Chiếu Chất Lượng Thiệp Cưới (Quality Passport)
                                 </h3>
                             </div>
@@ -790,9 +790,9 @@
                                     <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-gold); letter-spacing: 0.08em; margin-bottom: 4px;">
                                         Trạng Thái Gói Cước &amp; Vòng Đời Đăng Ký (State Machine)
                                     </div>
-                                    <h4 style="font-size: 1.15rem; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0 0 6px;">
+                                    <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0 0 6px;">
                                         {{ $activePlan->name }}
-                                        <span style="font-size: 0.8125rem; font-family: sans-serif; font-weight: 400; color: var(--mh-admin-muted);">
+                                        <span style="font-size: 0.8125rem; font-weight: 400; color: var(--mh-admin-muted);">
                                             ({{ number_format($activePlan->price, 0, ',', '.') }}đ &bull; {{ $activePlan->duration_days }} ngày)
                                         </span>
                                     </h4>
@@ -863,7 +863,7 @@
                                                 <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
                                                     {{ $ent['description'] }}
                                                 </div>
-                                                <div style="font-size: 0.6875rem; color: #9C8C7D; font-family: monospace;">
+                                                <div style="font-size: 0.6875rem; color: #9C8C7D;">
                                                     key: {{ $fKey }}
                                                 </div>
                                             </td>

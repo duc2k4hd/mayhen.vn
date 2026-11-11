@@ -14,7 +14,7 @@
                 <a href="{{ route('admin.invoices.index') }}" style="color: #8C6B37; text-decoration: none; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
                     ← Quay lại danh sách hóa đơn
                 </a>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                     Lập Yêu Cầu Hóa Đơn Cho Đơn Hàng
                 </h3>
             </div>
@@ -46,7 +46,7 @@
                                 Khách: {{ $order->user->name ?? 'N/A' }} ({{ $order->user->email ?? 'N/A' }})
                             </div>
                         </div>
-                        <div style="font-family: monospace; font-weight: 600; font-size: 1rem;">
+                        <div style="font-weight: 600; font-size: 1rem;">
                             {{ number_format($order->amount, 0, ',', '.') }} đ
                         </div>
                     </div>

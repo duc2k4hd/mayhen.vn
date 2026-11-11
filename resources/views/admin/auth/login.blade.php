@@ -10,6 +10,10 @@
     <title>Đăng nhập Quản Trị | Mây Hẹn</title>
     @include('client.components.favicon')
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
     <!-- Admin Isolated Login Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/login.css') }}">
 </head>
@@ -50,8 +54,8 @@
                             <ellipse cx="215" cy="133" rx="80" ry="95" stroke="currentColor" stroke-opacity=".50" stroke-width=".8" />
                             <ellipse cx="215" cy="133" rx="72" ry="87" stroke="currentColor" stroke-opacity=".29" stroke-width=".7" />
                             <path d="M196 133h38m-19-19v38" stroke="currentColor" stroke-opacity=".23" stroke-width=".7" />
-                            <text x="215" y="145" fill="#805052" font-family="Georgia, serif" font-style="italic" font-size="39" text-anchor="middle">M</text>
-                            <text x="215" y="167" fill="#9e7a68" font-family="Georgia, serif" font-style="italic" font-size="15" text-anchor="middle">&amp; H</text>
+                            <text x="215" y="145" fill="#805052" font-family="'Open Sans', sans-serif" font-style="italic" font-size="39" text-anchor="middle">M</text>
+                            <text x="215" y="167" fill="#9e7a68" font-family="'Open Sans', sans-serif" font-style="italic" font-size="15" text-anchor="middle">&amp; H</text>
                             <path d="M103 212c-1-37 27-55 33-88 5-29-10-49-17-66" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
                             <path d="M121 68c-19-3-27-14-24-30 17 3 26 12 24 30ZM129 94c-19-2-30-12-30-26 20 0 31 9 30 26ZM132 112c17-17 30-17 40-11-11 16-26 22-40 11ZM121 144c-21-9-32-7-43 6 18 10 32 9 43-6ZM106 184c17-17 29-17 39-11-9 17-24 22-39 11Z" fill="#c7a98c" fill-opacity=".20" stroke="currentColor" stroke-width="1" stroke-linejoin="round" />
                             <path d="M327 212c1-37-27-55-33-88-5-29 10-49 17-66" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />

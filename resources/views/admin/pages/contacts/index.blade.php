@@ -143,14 +143,14 @@
                             @endphp
                             <tr>
                                 <td>
-                                    <span style="font-family: monospace; font-weight: 600; color: var(--mh-admin-muted);">#{{ $item->id }}</span>
+                                    <span style="font-weight: 600; color: var(--mh-admin-muted);">#{{ $item->id }}</span>
                                 </td>
                                 <td>
                                     <div style="font-weight: 700; color: var(--mh-admin-charcoal); font-size: 0.95rem;">
                                         {{ $item->name }}
                                     </div>
                                     <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px;">
-                                        <a href="tel:{{ $item->phone }}" style="font-family: monospace; font-weight: 600; color: #2980B9; text-decoration: none;">
+                                        <a href="tel:{{ $item->phone }}" style="font-weight: 600; color: #2980B9; text-decoration: none;">
                                             📞 {{ $item->phone }}
                                         </a>
                                         <a href="https://zalo.me/{{ preg_replace('/[^0-9]/', '', $item->phone) }}" target="_blank" style="font-size: 0.75rem; background: #E8F4FD; color: #0068FF; padding: 2px 6px; border-radius: 4px; text-decoration: none; font-weight: 600;">

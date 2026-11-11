@@ -170,7 +170,7 @@
                             <td>
                                 <div style="font-weight: 600; color: var(--mh-admin-charcoal);">{{ $wish->sender_name }}</div>
                                 @if(!empty($wish->ip_address))
-                                    <div style="font-size: 0.6875rem; color: var(--mh-admin-muted); font-family: monospace;">IP: {{ $wish->ip_address }}</div>
+                                    <div style="font-size: 0.6875rem; color: var(--mh-admin-muted);">IP: {{ $wish->ip_address }}</div>
                                 @endif
                             </td>
 

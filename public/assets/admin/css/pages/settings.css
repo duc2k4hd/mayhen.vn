@@ -49,7 +49,7 @@
 }
 
 .mayhen_admin_plan_price {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--mh-admin-font, 'Open Sans', sans-serif);
     font-size: 2rem;
     font-weight: 700;
     color: var(--mh-admin-charcoal);

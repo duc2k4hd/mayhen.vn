@@ -6,7 +6,7 @@
     <title>Hóa Đơn #{{ $invoice->invoice_number ?? $invoice->id }} - Mây Hẹn Atelier</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -14,7 +14,7 @@
             padding: 0;
         }
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F4F1EA;
             color: #2B2927;
             padding: 30px;
@@ -39,7 +39,7 @@
             margin-bottom: 24px;
         }
         .brand_title {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Open Sans', sans-serif;
             font-size: 26px;
             font-weight: 700;
             color: #8C6B37;
@@ -60,14 +60,14 @@
             text-align: right;
         }
         .invoice_title {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Open Sans', sans-serif;
             font-size: 20px;
             font-weight: 700;
             color: #2B2927;
             text-transform: uppercase;
         }
         .invoice_number {
-            font-family: monospace;
+           
             font-size: 15px;
             font-weight: 700;
             color: #8C6B37;
@@ -280,8 +280,8 @@
                     </td>
                     <td style="text-align: center;">Gói</td>
                     <td style="text-align: center;">1</td>
-                    <td style="text-align: right; font-family: monospace;">{{ $invoice->formatted_subtotal }}</td>
-                    <td style="text-align: right; font-family: monospace; font-weight: 600;">{{ $invoice->formatted_subtotal }}</td>
+                    <td style="text-align: right;">{{ $invoice->formatted_subtotal }}</td>
+                    <td style="text-align: right; font-weight: 600;">{{ $invoice->formatted_subtotal }}</td>
                 </tr>
             </tbody>
         </table>

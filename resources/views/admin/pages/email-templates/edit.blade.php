@@ -75,7 +75,7 @@
                                 class="token-insert-btn" 
                                 data-token="@{{ {{ $varKey }} }}" 
                                 title="{{ $varDesc }}" 
-                                style="background: #FFFFFF; border: 1px solid #D8CEBD; border-radius: 4px; padding: 4px 8px; font-size: 12px; font-family: monospace; color: #8C6D3B; cursor: pointer; transition: all 0.2s;">
+                                style="background: #FFFFFF; border: 1px solid #D8CEBD; border-radius: 4px; padding: 4px 8px; font-size: 12px; color: #8C6D3B; cursor: pointer; transition: all 0.2s;">
                                 @{{ {{ $varKey }} }}
                             </button>
                         @endforeach
@@ -95,7 +95,7 @@
                     </label>
                     <span style="font-size: 11.5px; color: #7A7265;">Hỗ trợ HTML + Inline CSS Quiet Luxury</span>
                 </div>
-                <textarea name="body_html" id="template_body_html" rows="18" class="mayhen_admin_textarea" style="width: 100%; font-family: Consolas, Monaco, 'Courier New', monospace; font-size: 12.5px; line-height: 1.5; padding: 12px;" required>{{ old('body_html', $template->body_html) }}</textarea>
+                <textarea name="body_html" id="template_body_html" rows="18" class="mayhen_admin_textarea" style="width: 100%; font-size: 12.5px; line-height: 1.5; padding: 12px;" required>{{ old('body_html', $template->body_html) }}</textarea>
                 @error('body_html')
                     <div style="color: #C62828; font-size: 12px; margin-top: 4px;">{{ $message }}</div>
                 @enderror
@@ -105,7 +105,7 @@
                 <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 6px;">
                     Nội Dung Văn Bản Thuần (Plain Text Fallback)
                 </label>
-                <textarea name="body_text" rows="5" class="mayhen_admin_textarea" style="width: 100%; font-family: sans-serif; font-size: 13px; line-height: 1.5; padding: 10px;">{{ old('body_text', $template->body_text) }}</textarea>
+                <textarea name="body_text" rows="5" class="mayhen_admin_textarea" style="width: 100%; font-size: 13px; line-height: 1.5; padding: 10px;">{{ old('body_text', $template->body_text) }}</textarea>
                 <p style="font-size: 11.5px; color: #7A7265; margin-top: 4px;">Hiển thị cho các ứng dụng email không hỗ trợ HTML hoặc chế độ xem nhanh của đồng hồ thông minh.</p>
             </div>
 

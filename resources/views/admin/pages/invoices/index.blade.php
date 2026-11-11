@@ -36,7 +36,6 @@
             font-weight: 500;
         }
         .mayhen_admin_kpi_value {
-            font-family: 'Playfair Display', serif;
             font-size: 1.65rem;
             font-weight: 600;
             color: var(--mh-admin-charcoal, #2B2927);
@@ -54,7 +53,7 @@
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px 24px; border-left: 4px solid var(--mh-admin-primary, #A38048);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal, #2B2927);">
                     Phân Hệ Hóa Đơn Điện Tử & Phiếu Thu VAT (Mục 141 PRD V3 & Mục 9.4 DOCX)
                 </h3>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.84375rem; margin: 0;">
@@ -161,7 +160,7 @@
     <div class="mayhen_admin_card" style="padding: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <div>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="font-size: 1.15rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                     Sổ Quản Lý Hóa Đơn & Chứng Từ Thu Tiền
                 </h4>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.8125rem; margin: 2px 0 0;">
@@ -193,7 +192,7 @@
                             <tr>
                                 <td>
                                     @if($inv->invoice_number)
-                                        <a href="{{ route('admin.invoices.show', $inv->id) }}" style="font-weight: 600; color: #8C6B37; font-family: monospace; text-decoration: none;">
+                                        <a href="{{ route('admin.invoices.show', $inv->id) }}" style="font-weight: 600; color: #8C6B37; text-decoration: none;">
                                             {{ $inv->invoice_number }}
                                         </a>
                                     @else
@@ -201,7 +200,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.orders.show', $inv->order_id) }}" style="color: var(--mh-admin-charcoal, #2B2927); font-family: monospace; font-weight: 500;">
+                                    <a href="{{ route('admin.orders.show', $inv->order_id) }}" style="color: var(--mh-admin-charcoal, #2B2927); font-weight: 500;">
                                         #{{ $inv->order->order_code ?? $inv->order_id }}
                                     </a>
                                 </td>
@@ -215,13 +214,13 @@
                                         </div>
                                     @endif
                                     @if($inv->tax_id)
-                                        <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.7rem; font-family: monospace;">
+                                        <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.7rem;">
                                             MST: {{ $inv->tax_id }}
                                         </div>
                                     @endif
                                 </td>
                                 <td>
-                                    <div style="font-weight: 600; font-family: monospace; color: var(--mh-admin-charcoal, #2B2927);">
+                                    <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927);">
                                         {{ $inv->formatted_total }}
                                     </div>
                                     <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.7rem;">

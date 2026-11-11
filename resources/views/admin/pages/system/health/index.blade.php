@@ -279,7 +279,7 @@
                                     {{ $log['message'] }}
                                 </div>
                                 @if($log['stack_trace'])
-                                    <div id="trace-{{ $idx }}" style="display: none; margin-top: 10px; background: #2C2824; color: #FAF8F5; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 11px; max-height: 250px; overflow-y: auto; white-space: pre-wrap;">
+                                    <div id="trace-{{ $idx }}" style="display: none; margin-top: 10px; background: #2C2824; color: #FAF8F5; padding: 12px; border-radius: 6px; font-size: 11px; max-height: 250px; overflow-y: auto; white-space: pre-wrap;">
                                         {{ $log['stack_trace'] }}
                                     </div>
                                 @endif

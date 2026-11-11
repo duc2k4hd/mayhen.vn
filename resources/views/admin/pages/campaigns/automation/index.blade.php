@@ -135,7 +135,7 @@
                                 $offset = $rule->offset_days;
                                 $badgeBg = $offset < 0 ? '#2563EB' : ($offset === 0 ? '#DC2626' : '#7C3AED');
                             @endphp
-                            <span style="display: inline-block; padding: 0.35rem 0.65rem; border-radius: 4px; font-weight: 700; font-family: monospace; font-size: 0.85rem; color: #fff; background-color: {{ $badgeBg }};">
+                            <span style="display: inline-block; padding: 0.35rem 0.65rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; color: #fff; background-color: {{ $badgeBg }};">
                                 {{ $rule->offset_label }}
                             </span>
                         </td>
@@ -165,7 +165,7 @@
                                 {{ $chLabels[$rule->channel] ?? $rule->channel }}
                             </span>
                         </td>
-                        <td style="padding: 1rem; font-family: monospace; font-size: 0.85rem; color: var(--admin-charcoal);">
+                        <td style="padding: 1rem; font-size: 0.85rem; color: var(--admin-charcoal);">
                             {{ $rule->send_time }}
                         </td>
                         <td style="padding: 1rem; font-size: 0.85rem;">
@@ -342,7 +342,7 @@
                                 <span style="color: var(--admin-text-muted);">Tiệc #{{ $log->wedding_id }}</span>
                             @endif
                         </td>
-                        <td style="padding: 0.75rem 1rem; font-family: monospace; font-size: 0.85rem; color: #334155;">
+                        <td style="padding: 0.75rem 1rem; font-size: 0.85rem; color: #334155;">
                             {{ $log->recipient }}
                         </td>
                         <td style="padding: 0.75rem 1rem;">

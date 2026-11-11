@@ -10,7 +10,7 @@
 @section('content')
     <!-- Intro Card -->
     <div class="mayhen_admin_card" style="margin-bottom: 24px; padding: 20px;">
-        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
+        <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
             Tài Khoản Thu Tiền & Tích Hợp Webhook SePay
         </h3>
         <p style="color: var(--mh-admin-muted); font-size: 0.84375rem; margin: 0;">

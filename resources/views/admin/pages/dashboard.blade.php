@@ -15,7 +15,7 @@
                 <div>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
                         <span style="font-size: 1.25rem;">✨</span>
-                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0; font-family: 'Cormorant Garamond', Georgia, serif;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--mh-admin-charcoal); margin: 0;">
                             {{ $morningBrief['greeting'] }}
                         </h2>
                         <span class="mayhen_admin_badge mayhen_admin_badge_info" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">

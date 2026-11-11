@@ -71,7 +71,7 @@
                     Tự động rà soát kết nối DB, động cơ Cache, thư mục Storage, hàng đợi Worker và an toàn môi trường trước mỗi đợt rollout.
                 </p>
             </div>
-            <span style="font-size: 0.75rem; color: #7A756E; font-family: monospace;">Kiểm tra lúc: {{ now()->format('H:i:s d/m/Y') }}</span>
+            <span style="font-size: 0.75rem; color: #7A756E;">Kiểm tra lúc: {{ now()->format('H:i:s d/m/Y') }}</span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">

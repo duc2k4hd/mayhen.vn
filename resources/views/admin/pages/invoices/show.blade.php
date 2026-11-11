@@ -15,7 +15,7 @@
                 <a href="{{ route('admin.invoices.index') }}" style="color: #8C6B37; text-decoration: none; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px;">
                     ← Quay lại danh sách hóa đơn
                 </a>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
+                <h3 style="font-size: 1.35rem; margin: 0; color: var(--mh-admin-charcoal, #2B2927);">
                     Hóa Đơn Điện Tử: {{ $invoice->invoice_number ?? 'Dự Thảo (Chưa cấp số)' }}
                 </h3>
             </div>
@@ -47,7 +47,7 @@
         <div>
             <!-- Thông tin doanh nghiệp & khách hàng -->
             <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 24px;">
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927); border-bottom: 1px solid #F0ECE4; padding-bottom: 10px;">
+                <h4 style="font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927); border-bottom: 1px solid #F0ECE4; padding-bottom: 10px;">
                     Thông Tin Đơn Vị Mua Hàng
                 </h4>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 0.84375rem;">
@@ -76,7 +76,7 @@
 
             <!-- Bảng Dòng Sản Phẩm / Gói Cước -->
             <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 24px;">
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927); border-bottom: 1px solid #F0ECE4; padding-bottom: 10px;">
+                <h4 style="font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927); border-bottom: 1px solid #F0ECE4; padding-bottom: 10px;">
                     Chi Tiết Dịch Vụ Thanh Toán
                 </h4>
                 <table class="mayhen_admin_table" style="width: 100%; font-size: 0.84375rem;">
@@ -99,8 +99,8 @@
                                 </div>
                             </td>
                             <td style="text-align: center;">Gói</td>
-                            <td style="text-align: right; font-family: monospace;">{{ $invoice->formatted_subtotal }}</td>
-                            <td style="text-align: right; font-family: monospace; font-weight: 600;">{{ $invoice->formatted_subtotal }}</td>
+                            <td style="text-align: right;">{{ $invoice->formatted_subtotal }}</td>
+                            <td style="text-align: right; font-weight: 600;">{{ $invoice->formatted_subtotal }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -127,7 +127,7 @@
         <!-- Cột Phải: Trạng Thái & Thao Tác Quản Trị -->
         <div>
             <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 24px;">
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927);">
+                <h4 style="font-size: 1.1rem; margin: 0 0 16px; color: var(--mh-admin-charcoal, #2B2927);">
                     Hành Động Quản Trị
                 </h4>
 

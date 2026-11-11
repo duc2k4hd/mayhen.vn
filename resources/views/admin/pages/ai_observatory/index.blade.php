@@ -120,7 +120,7 @@
 
             <div style="margin-bottom: 14px;">
                 <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--mh-admin-charcoal); margin-bottom: 4px;">Câu Lệnh Kiểm Thử (Prompt)</label>
-                <textarea name="prompt" rows="2" placeholder="VD: Hãy viết một lời ngỏ lãng mạn cho tiệc cưới của Minh Tuấn và Thu Hà..." required style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid #D1CCC6; font-size: 0.88rem; font-family: inherit;">{{ session('simulated_prompt', 'Hãy viết một đoạn câu chuyện tình yêu phong cách Quiet Luxury cho cặp đôi Minh Tuấn & Thu Hà.') }}</textarea>
+                <textarea name="prompt" rows="2" placeholder="VD: Hãy viết một lời ngỏ lãng mạn cho tiệc cưới của Minh Tuấn và Thu Hà..." required style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid #D1CCC6; font-size: 0.88rem;">{{ session('simulated_prompt', 'Hãy viết một đoạn câu chuyện tình yêu phong cách Quiet Luxury cho cặp đôi Minh Tuấn & Thu Hà.') }}</textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
@@ -188,7 +188,7 @@
                                 <div style="font-weight: 700; color: var(--mh-admin-charcoal); font-size: 0.88rem;">
                                     {{ $log->feature_label }}
                                 </div>
-                                <div style="font-size: 0.75rem; color: #7A756E; font-family: monospace;">
+                                <div style="font-size: 0.75rem; color: #7A756E;">
                                     {{ $log->provider }}
                                 </div>
                             </td>

@@ -6,6 +6,7 @@
  */
 
 :root {
+    --mh-admin-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --mh-admin-bg: #F8F6F2;
     --mh-admin-surface: #FFFFFF;
     --mh-admin-sidebar-bg: #1B1815;
@@ -91,7 +92,7 @@
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
-    font-family: 'Playfair Display', serif;
+    font-family: var(--mh-admin-font);
     font-size: 1.25rem;
     font-weight: 700;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
