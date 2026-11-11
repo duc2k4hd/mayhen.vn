@@ -166,6 +166,17 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.gifts.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.gifts.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                            <rect x="2" y="7" width="20" height="5"></rect>
+                            <line x1="12" y1="22" x2="12" y2="7"></line>
+                        </svg>
+                    </span>
+                    <span>Sổ Mừng Cưới</span>
+                </a>
+
                 <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.index') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -855,6 +866,10 @@
                 <a href="{{ route('admin.wishes.rsvps') }}" class="mayhen_admin_cmd_item" data-search="rsvp khách mời xác nhận tham dự attendance">
                     <span>📋 Giám Sát Phản Hồi RSVP</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/wishes/rsvps</span>
+                </a>
+                <a href="{{ route('admin.gifts.index') }}" class="mayhen_admin_cmd_item" data-search="sổ mừng cưới quà mừng phong bì tiền mặt vietqr ngân hàng gift ledger shugi-bukuro quà tặng">
+                    <span>🧧 Sổ Mừng Cưới & Quản Lý Quà Tặng</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/gifts</span>
                 </a>
                 <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_cmd_item" data-search="khách mời điểm danh check-in ngày cưới seating bàn tiệc guests">
                     <span>🎟️ Khách Mời & Điểm Danh Ngày Cưới</span>

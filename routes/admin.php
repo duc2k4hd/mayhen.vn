@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminDomainManagerController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFeatureFlagController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
+use App\Http\Controllers\Admin\AdminGiftController;
 use App\Http\Controllers\Admin\AdminGuestImportController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvitationRevisionController;
@@ -252,6 +253,18 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/batch-delete', [AdminWishController::class, 'batchDelete'])->middleware('admin.manager')->name('batch_delete');
         Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+    });
+
+    // Phân Hệ Quản Trị Sổ Mừng Cưới & Quản Lý Quà Mừng (Mục 35 PRD V3 & ADM-GFT-01)
+    Route::prefix('gifts')->name('gifts.')->group(function () {
+        Route::get('/', [AdminGiftController::class, 'index'])->name('index');
+        Route::post('/', [AdminGiftController::class, 'store'])->name('store');
+        Route::put('/{id}', [AdminGiftController::class, 'update'])->name('update');
+        Route::post('/{id}/toggle-acknowledgement', [AdminGiftController::class, 'toggleAcknowledgement'])->name('toggle_acknowledgement');
+        Route::post('/batch-acknowledge', [AdminGiftController::class, 'batchAcknowledge'])->name('batch_acknowledge');
+        Route::delete('/{id}', [AdminGiftController::class, 'destroy'])->name('destroy');
+        Route::post('/batch-delete', [AdminGiftController::class, 'batchDelete'])->name('batch_delete');
+        Route::get('/export-csv', [AdminGiftController::class, 'export'])->name('export');
     });
 
     // Quản lý Gói Cước & Đăng Ký (Wave 06 - ADM-A10)

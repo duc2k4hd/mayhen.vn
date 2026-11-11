@@ -47,4 +47,28 @@ class WeddingGift extends Model
             default => 'Tiền mặt / Phong bì',
         };
     }
+
+    public function getFormattedAmountAttribute(): string
+    {
+        if ($this->payment_method === 'other' && $this->amount == 0) {
+            return 'Hiện vật';
+        }
+
+        return number_format($this->amount, 0, ',', '.').' đ';
+    }
+
+    public function scopeAcknowledged($query)
+    {
+        return $query->where('is_acknowledged', true);
+    }
+
+    public function scopePendingAcknowledgement($query)
+    {
+        return $query->where('is_acknowledged', false);
+    }
+
+    public function scopeByMethod($query, string $method)
+    {
+        return $query->where('payment_method', $method);
+    }
 }

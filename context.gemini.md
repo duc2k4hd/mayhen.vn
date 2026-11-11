@@ -10350,3 +10350,49 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 
 
+
+### [2026-11-11 16:04] - HOÀN THÀNH ĐỀ ÁN 113: PHÂN HỆ QUẢN TRỊ SỔ MỪNG CƯỚI KỸ THUẬT SỐ, QUẢN LÝ TÀI KHOẢN QUÀ MỪNG & ĐỐI SOÁT PHONG BÌ (DIGITAL WEDDING GIFT LEDGER, QR REGISTRY & FINANCIAL SHIELD — MỤC 35 PRD V3 & ADM-GFT-01)
+- **Mục tiêu**: Xây dựng phân hệ quản trị Sổ mừng cưới kỹ thuật số (Digital Wedding Gift Ledger / Shugi-bukuro) toàn diện, bảo vệ quyền riêng tư tài chính cá nhân bằng cơ chế che số tài khoản ngân hàng (Financial Privacy Shield Masking), giám sát 4 KPI tài chính quà mừng (tổng giá trị, tiền mặt/phong bì, chuyển khoản VietQR, hiện vật), tiến độ gửi lời cảm ơn tri ân, thao tác ghi nhận quà mừng trực tiếp tại bàn tiếp tân, xử lý hàng loạt và xuất sổ mừng cưới chi tiết định dạng CSV UTF-8 BOM.
+- **Thực hiện chi tiết**:
+  1. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/AdminGiftLedgerService.php` & `WeddingGift.php`)**:
+     - Cập nhật Model `WeddingGift`: Bổ sung accessors `formatted_amount` (định dạng `x.xxx.xxx đ` hoặc `Hiện vật`), scopes `scopeAcknowledged()`, `scopePendingAcknowledgement()`, `scopeByMethod()`.
+     - `maskAccountNumber(...)`: Che giấu số tài khoản ngân hàng của cô dâu chú rể (`******1234`), tuân thủ tuyệt đối quy định bảo vệ dữ liệu cá nhân Nghị định 13/2023/NĐ-CP và Luật 91/2025/QH15.
+     - `getLedgerData(...)`: Trích xuất 4 nhóm KPI tài chính:
+       * Tổng giá trị quà mừng (`total_amount` VNĐ) và tổng số lượt mừng (`total_count`)
+       * Tiền mặt / phong bì trực tiếp tại sảnh (`cash_amount` & `cash_count`)
+       * Chuyển khoản VietQR (`transfer_amount` & `transfer_count`)
+       * Quà hiện vật (`other_count`)
+       * Tiến độ gửi lời cảm ơn (`acknowledged_count` & `acknowledged_rate` %)
+     - `recordGift(...)`: Ghi nhận quà mừng mới có liên kết với khách mời trong danh bạ hoặc khách mới, kiểm tra transaction và ghi nhật ký kiểm toán `AuditLogger`.
+     - `updateGift(...)`: Chỉnh sửa thông tin quà mừng.
+     - `toggleAcknowledgement(...)`: Chuyển đổi trạng thái 1-chạm Đã cảm ơn / Chưa cảm ơn.
+     - `batchAcknowledge(...)`: Đánh dấu đã cảm ơn hàng loạt cho các quà mừng được chọn.
+     - `deleteGift(...)` & `batchDelete(...)`: Xóa đơn lẻ hoặc xóa hàng loạt có lưu audit log.
+     - `exportLedgerCsv(...)`: Xuất sổ mừng cưới đầy đủ định dạng CSV UTF-8 BOM chuẩn tiếng Việt cho gia đình lưu niệm.
+  2. **Controller & Định Tuyến An Toàn (`AdminGiftController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminGiftController.php` gồm các action `index`, `store`, `update`, `toggleAcknowledgement`, `batchAcknowledge`, `destroy`, `batchDelete`, `export`.
+     - Tuyến đường: `admin.gifts.*` (`index`, `store`, `update`, `toggle_acknowledgement`, `batch_acknowledge`, `destroy`, `batch_delete`, `export`) tích hợp vào prefix `admin/gifts`.
+  3. **Giao Diện Blade Chuẩn Quiet Luxury (`gifts/index.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Sổ Mừng Cưới Kỹ Thuật Số & Quản Lý Quà Mừng')`.
+     - Banner Financial Privacy Shield hiển thị thông tin tài khoản ngân hàng đã được mã hóa số tài khoản.
+     - 4 Thẻ KPI tài chính nổi bật, thanh lọc và tìm kiếm quà mừng đa chiều.
+     - Thanh công cụ Batch Action Toolbar (hiện tự động khi chọn checkbox: Đánh dấu đã cảm ơn hàng loạt, Xóa hàng loạt).
+     - Bảng danh sách sổ mừng cưới đầy đủ với cột Người mừng, Tiệc cưới, Bàn tiệc, Số tiền/Hiện vật, Hình thức, Nút 1-chạm toggle cảm ơn, Ghi chú và thao tác Sửa/Xóa.
+     - 2 Modal tiện ích: Modal Ghi nhận quà mừng mới (hỗ trợ dropdown chọn nhanh khách từ danh bạ để tự điền tên và nhóm), Modal Chỉnh sửa quà mừng.
+     - Cập nhật Sidebar Navigation ("Sổ Mừng Cưới") và Command Palette (`Ctrl + K`).
+  4. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminGiftLedgerTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_admin_can_view_gift_ledger_page`: Xem sổ mừng cưới và thông tin che số tài khoản.
+       * `test_unauthorized_user_cannot_access_gift_ledger`: Chặn khách vãng lai và user không có quyền.
+       * `test_mask_account_number_hides_sensitive_digits`: Kiểm tra hàm che số tài khoản chuẩn xác.
+       * `test_gift_ledger_calculates_financial_kpis_accurately`: Tính toán chính xác 4 chỉ số KPI tài chính quà mừng.
+       * `test_admin_can_record_new_gift_manually`: Thêm quà mừng thủ công vào sổ thành công.
+       * `test_admin_can_update_existing_gift`: Cập nhật quà mừng cưới.
+       * `test_admin_can_toggle_gift_acknowledgement`: Chuyển đổi trạng thái đã cảm ơn 1-chạm.
+       * `test_admin_can_batch_acknowledge_gifts`: Đánh dấu đã cảm ơn hàng loạt.
+       * `test_admin_can_delete_gift_and_batch_delete`: Xóa đơn lẻ và xóa hàng loạt.
+       * `test_admin_can_export_gift_ledger_csv_with_utf8_bom`: Xuất file CSV sổ mừng cưới chuẩn UTF-8 BOM.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 19 feature test files admin gần nhất: **192/192 tests PASSED 100% (802 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
