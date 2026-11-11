@@ -359,4 +359,3 @@ class AdminDomainManagerService
         return PlatformSetting::getValue('routing', 'cname_target', 'cname.mayhen.vn');
     }
 }
-

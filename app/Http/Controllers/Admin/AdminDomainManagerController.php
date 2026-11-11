@@ -145,4 +145,3 @@ class AdminDomainManagerController extends Controller
         }
     }
 }
-

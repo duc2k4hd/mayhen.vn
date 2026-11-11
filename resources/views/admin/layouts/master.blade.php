@@ -405,6 +405,16 @@
                     <span>Mẫu Email & Tin Nhắn</span>
                 </a>
 
+                <a href="{{ route('admin.campaigns.automation.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.campaigns.automation.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span>Tự Động Hóa Vòng Đời</span>
+                </a>
+
                 <a href="{{ route('admin.privacy.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.privacy.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -821,6 +831,10 @@
                 <a href="{{ route('admin.support.canned.index') }}" class="mayhen_admin_cmd_item" data-search="mẫu phản hồi nhanh macro cskh canned responses câu trả lời nhanh trợ giúp">
                     <span>📝 Mẫu Phản Hồi Nhanh & Macro CSKH</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/support/canned-responses</span>
+                </a>
+                <a href="{{ route('admin.campaigns.automation.index') }}" class="mayhen_admin_cmd_item" data-search="tự động hóa vòng đời ngày cưới drip campaigns lifecycle automation d-day reminder zalo sms email">
+                    <span>⏱️ Tự Động Hóa Vòng Đời Cưới (Drip Campaigns)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/campaigns/automation</span>
                 </a>
                 <a href="{{ route('admin.contacts.index') }}" class="mayhen_admin_cmd_item" data-search="liên hệ báo giá đặt hẹn showroom in thiệp contacts leads tư vấn">
                     <span>📬 Yêu Cầu Liên Hệ & Báo Giá (Leads)</span>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
+use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AdminSecurityController;
@@ -482,5 +483,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{template}/test', [AdminEmailTemplateController::class, 'sendTest'])->name('test');
         Route::post('/{template}/reset', [AdminEmailTemplateController::class, 'reset'])->middleware('admin.manager')->name('reset');
         Route::post('/{template}/toggle', [AdminEmailTemplateController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle');
+    });
+
+    // Phân Hệ Quản Trị Chiến Dịch Tự Động Hóa Vòng Đời Cưới (Mục 149 PRD V3 & ADM-AUTO-01)
+    Route::prefix('campaigns/automation')->name('campaigns.automation.')->group(function () {
+        Route::get('/', [AdminLifecycleAutomationController::class, 'index'])->name('index');
+        Route::put('/rules/{rule}', [AdminLifecycleAutomationController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::post('/rules/{rule}/toggle', [AdminLifecycleAutomationController::class, 'toggle'])->middleware('admin.manager')->name('toggle');
+        Route::post('/scan', [AdminLifecycleAutomationController::class, 'scan'])->middleware('admin.manager')->name('scan');
     });
 });

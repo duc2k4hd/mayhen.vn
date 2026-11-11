@@ -10003,3 +10003,65 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 20 test files admin gần nhất: **184/184 tests PASSED 100% (779 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 105. ĐỀ ÁN 105: PHÂN HỆ QUẢN TRỊ CHIẾN DỊCH TỰ ĐỘNG HÓA VÒNG ĐỜI NGÀY CƯỚI (WEDDING LIFECYCLE AUTOMATION & DRIP CAMPAIGNS COCKPIT — MỤC 149 PRD V3 & ADM-AUTO-01)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm điều hành chuỗi chiến dịch tự động hóa chăm sóc dâu rể theo từng mốc thời gian trước và sau ngày cưới (D-30 đến D+30) theo chuẩn **Mục 149 Master PRD V3 & ADM-AUTO-01**.
+  - **Chuỗi Kịch Bản Vòng Đời Cốt Lõi (Wedding Lifecycle Drip Milestones)**:
+    1. `D-30_GUESTLIST_PREP`: Nhắc dâu rể chốt danh sách & chia sẻ thiệp sớm (-30 ngày).
+    2. `D-14_EARLY_RSVP_CHECK`: Đánh giá tỷ lệ phản hồi & gửi link qua Zalo (-14 ngày).
+    3. `D-7_GENTLE_RSVP_REMINDER`: Kích hoạt nhắc nhở nhẹ nhàng khách chưa RSVP (-7 ngày).
+    4. `D-1_RECEPTION_PIN_READY`: Bàn giao mã PIN tiếp tân & màn hình sảnh tiệc (-1 ngày).
+    5. `D+1_THANKYOU_DISPATCH`: Nhắc gửi thiệp cảm ơn & tổng kết chúc phúc (+1 ngày).
+    6. `D+30_MEMORIES_ARCHIVE`: Thông báo tải tệp lưu trữ kỷ niệm cưới trọn đời (+30 ngày).
+  - **Tiêu chuẩn An Toàn, Idempotency & Bảo Mật Dữ Liệu**:
+    - **Ngăn Chặn Gửi Trùng (Idempotency Key)**: Mỗi tiệc cưới với một kịch bản cụ thể chỉ phát tin tối đa 1 lần, tự động bỏ qua nếu đã có log `dispatched` hoặc `simulated`.
+    - **Bảo Vệ Dữ Liệu Cá Nhân (Luật 91/2025/QH15)**: Toàn bộ số điện thoại và email lưu trữ trong sổ nhật ký (Audit Logs) đều được che giấu PII (ví dụ: `098****321`, `d****@gmail.com`).
+    - **Chế Độ Quét Thử Nghiệm An Toàn (Dry-Run Preview)**: Cho phép quản trị viên chạy thử nghiệm mô phỏng thuật toán khớp ngày cưới mà không phát sinh cước hay gửi tin nhắn thật đến khách hàng.
+    - **Vết Kiểm Toán Vận Hành (Audit Trail)**: Mọi thao tác cập nhật cấu hình kịch bản, chuyển trạng thái bật/tắt (toggle) và kích hoạt quét đều được ghi lại qua `AuditLogger`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Cơ Sở Dữ Liệu & Migrations**:
+     - Migration: `database/migrations/2026_11_11_143500_create_lifecycle_automations_tables.php` (Đã chạy).
+     - Bảng `lifecycle_automation_rules`: Quản lý danh mục kịch bản (`code`, `name`, `trigger_event`, `offset_days`, `channel`, `send_time`, `is_active`, `execution_count`, `last_executed_at`, index `lar_trigger_offset_active_idx`).
+     - Bảng `lifecycle_automation_logs`: Lưu vết phát tin (`rule_id`, `wedding_id`, `user_id`, `channel`, `recipient` đã che PII, `status`, `message_summary`, `dispatched_at`, `error_message`).
+  2. **Models & Services**:
+     - `app/Models/LifecycleAutomationRule.php`: Scope `active()`, accessor `offset_label` (D-30, D-Day, D+1, D+30), quan hệ `logs()`.
+     - `app/Models/LifecycleAutomationLog.php`: Scope `recent()`, quan hệ `rule()`, `wedding()`, `user()`.
+     - `app/Services/WeddingLifecycleAutomationService.php`:
+       * `seedDefaultRulesIfEmpty()`: Tự động khởi tạo 6 kịch bản vòng đời cưới chuẩn Quiet Luxury.
+       * `getAutomationKpis()`: Thống kê 4 thẻ KPI: Kịch Bản Vòng Đời, Đang Kích Hoạt, Phát Tin 24h Qua, Khớp Mốc Hôm Nay.
+       * `getRules()`, `updateRule()`, `toggleRule()`: Quản trị cấu hình kịch bản kèm `AuditLogger`.
+       * `scanAndExecute()`: Thuật toán quét tiệc cưới khớp mốc D-Day theo ngày cưới thực tế, hỗ trợ Dry-Run và kiểm tra Idempotency chống gửi lặp.
+       * `maskPii()`: Che giấu PII an toàn theo Luật 91/2025/QH15.
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminLifecycleAutomationController.php`: Quản lý 3 tabs giao diện (rules, scanner, logs), cập nhật rule, toggle kích hoạt và điều phối quét.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) tiền tố `campaigns/automation`:
+       * `GET /admin/campaigns/automation` (`admin.campaigns.automation.index`)
+       * `PUT /admin/campaigns/automation/rules/{rule}` (`admin.campaigns.automation.update`)
+       * `POST /admin/campaigns/automation/rules/{rule}/toggle` (`admin.campaigns.automation.toggle`)
+       * `POST /admin/campaigns/automation/scan` (`admin.campaigns.automation.scan`)
+  4. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/campaigns/automation/index.blade.php`:
+       * 4 Thẻ KPI: Kịch Bản Vòng Đời, Đang Kích Hoạt, Phát Tin 24h Qua, Khớp Mốc Hôm Nay.
+       * Tab 1: Kịch Bản Vòng Đời Cưới (Bảng timeline trực quan với badge D-30, D-14, D-7, D-1, D+1, D+30, kênh gửi, giờ gửi, trạng thái, nút sửa và toggle).
+       * Tab 2: Phòng Điều Hành Quét Tự Động (Form kích hoạt quét theo kịch bản cụ thể, toggle Dry-Run an toàn, hộp nguyên tắc bất biến Quiet Luxury).
+       * Tab 3: Sổ Nhật Ký Tự Động Hóa (Bảng audit log 30 tác vụ gần nhất, thông tin cặp đôi, kênh gửi, người nhận che PII, trạng thái và tóm tắt).
+       * Modal: Chỉnh sửa thông số kịch bản tự động hóa bằng Vanilla JS và Flex modal.
+     - Cập nhật Sidebar: Menu "Tự Động Hóa Vòng Đời" trong Section Nội Dung & Truyền Thông và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  5. **Kiểm thử tự động ([tests/Feature/AdminLifecycleAutomationTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminLifecycleAutomationTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập trung tâm tự động hóa.
+       3. Super Admin truy cập thành công màn hình tự động hóa và thấy 4 thẻ KPI cùng danh sách 6 kịch bản mặc định.
+       4. Admin có thể chuyển đổi giữa các tab rules, scanner và logs.
+       5. Admin manager có thể bật tắt kích hoạt kịch bản vòng đời cưới (toggle rule).
+       6. Admin manager cập nhật thông số kịch bản thành công và ghi nhật ký kiểm toán.
+       7. Admin chạy quét thử nghiệm dry-run tạo log trạng thái simulated mà không tăng `execution_count`.
+       8. Admin chạy quét thực thi phát tin thật tạo log dispatched và tăng `execution_count`.
+       9. Cơ chế chống gửi trùng lặp idempotency tự động bỏ qua nếu đã gửi trước đó.
+       10. Thông tin người nhận trong nhật ký được bảo vệ che PII theo Luật 91/2025/QH15.
+     - Kết quả: **10/10 tests PASSED 100% (49 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 12 test files admin gần nhất: **120/120 tests PASSED 100% (466 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
