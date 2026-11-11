@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Models\Order;
 use App\Models\SupportTicket;
 use App\Models\WeddingWish;
+use App\Services\FeatureFlagService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
@@ -58,6 +60,11 @@ class AppServiceProvider extends ServiceProvider
             $key = (string) ($request->user()?->id ?: $request->ip());
 
             return Limit::perMinute(30)->by($key);
+        });
+
+        // Blade Directives cho Cờ Tính Năng (Feature Flags)
+        Blade::if('feature', function (string $key) {
+            return app(FeatureFlagService::class)->isEnabled($key);
         });
 
         // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực)

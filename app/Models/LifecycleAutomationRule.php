@@ -99,4 +99,3 @@ class LifecycleAutomationRule extends Model
         };
     }
 }
-

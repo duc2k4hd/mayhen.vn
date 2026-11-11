@@ -252,6 +252,15 @@
                     </span>
                     <span>Hóa Đơn & Phiếu Thu VAT</span>
                 </a>
+                <a href="{{ route('admin.refunds.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.refunds.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"></polyline>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                        </svg>
+                    </span>
+                    <span>Sổ Hoàn Tiền & Khiếu Nại</span>
+                </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.plans.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -495,6 +504,16 @@
                             </svg>
                         </span>
                         <span>An Ninh & Rate Limits</span>
+                    </a>
+
+                    <a href="{{ route('admin.settings.flags.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.flags*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                <line x1="4" y1="22" x2="4" y2="15"></line>
+                            </svg>
+                        </span>
+                        <span>Cờ Tính Năng & Rollout</span>
                     </a>
 
                     <a href="{{ route('admin.settings.notifications.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.notifications*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -792,6 +811,10 @@
                     <span>🧾 Hóa Đơn Điện Tử & Phiếu Thu VAT</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/invoices</span>
                 </a>
+                <a href="{{ route('admin.refunds.index') }}" class="mayhen_admin_cmd_item" data-search="hoàn tiền khiếu nại tranh chấp trả lại tiền refund disputes hủy đơn chi trả">
+                    <span>🔄 Sổ Hoàn Tiền & Xử Lý Khiếu Nại</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/orders/refunds</span>
+                </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_cmd_item" data-search="gói cước bảng giá plans subscription pricing đăng ký gói">
                     <span>📦 Gói Cước & Đăng Ký</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/plans</span>
@@ -880,6 +903,10 @@
                     <a href="{{ route('admin.settings.security.index') }}" class="mayhen_admin_cmd_item" data-search="an ninh bảo mật firewall rate limits sổ đen ip blacklist whitelist brute force tấn công">
                         <span>🛡️ An Ninh Mạng & Rate Limits (Firewall)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/security</span>
+                    </a>
+                    <a href="{{ route('admin.settings.flags.index') }}" class="mayhen_admin_cmd_item" data-search="cờ tính năng feature flags rollout kill switch safe release cầu dao khẩn cấp thử nghiệm">
+                        <span>🚩 Cờ Tính Năng & Safe Rollout (Kill-Switch)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/flags</span>
                     </a>
                     <a href="{{ route('admin.settings.notifications.index') }}" class="mayhen_admin_cmd_item" data-search="cổng tin nhắn zalo zns sms brandname viễn thông esms speedsms gateway kiểm thử">
                         <span>💬 Cổng Tin Nhắn SMS & Zalo ZNS</span>

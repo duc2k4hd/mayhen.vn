@@ -341,4 +341,3 @@ class WeddingLifecycleAutomationService
         return substr($cleanPhone, 0, 2).'***';
     }
 }
-

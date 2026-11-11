@@ -79,4 +79,3 @@ class LifecycleAutomationLog extends Model
         };
     }
 }
-

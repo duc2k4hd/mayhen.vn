@@ -123,4 +123,3 @@ class AdminLifecycleAutomationController extends Controller
         }
     }
 }
-

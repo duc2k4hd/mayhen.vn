@@ -8,11 +8,13 @@ use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminDomainManagerController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
+use App\Http\Controllers\Admin\AdminFeatureFlagController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
+use App\Http\Controllers\Admin\AdminOrderRefundController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
@@ -111,12 +113,21 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/purge-orphans', [AdminMediaController::class, 'purgeOrphans'])->middleware('admin.manager')->name('purge_orphans');
     });
 
+    // Phân Hệ Quản Trị Sổ Hoàn Tiền, Khiếu Nại & Tranh Chấp Thanh Toán (Mục 140 PRD V3 & Mục 9.3 DOCX)
+    Route::prefix('orders/refunds')->name('refunds.')->group(function () {
+        Route::get('/', [AdminOrderRefundController::class, 'index'])->name('index');
+        Route::post('/', [AdminOrderRefundController::class, 'storeRequest'])->middleware('admin.manager')->name('store');
+        Route::post('/{id}/approve', [AdminOrderRefundController::class, 'approve'])->middleware('admin.manager')->name('approve');
+        Route::post('/{id}/reject', [AdminOrderRefundController::class, 'reject'])->middleware('admin.manager')->name('reject');
+        Route::get('/export-csv', [AdminOrderRefundController::class, 'export'])->name('export');
+    });
+
     // Quản lý Đơn hàng & Thanh toán SePay / VietQR
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('index');
         Route::get('/export-csv', [AdminOrderController::class, 'exportCsv'])->name('export');
         Route::get('/webhooks/audit', [AdminOrderController::class, 'webhooks'])->name('webhooks');
-        Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
+        Route::get('/{id}', [AdminOrderController::class, 'show'])->whereNumber('id')->name('show');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->middleware('admin.manager')->name('approve');
         Route::post('/{id}/refund', [AdminOrderController::class, 'refund'])->middleware('admin.manager')->name('refund');
         Route::post('/{id}/refund-request', [AdminOrderController::class, 'requestRefund'])->middleware('admin.manager')->name('request_refund');
@@ -274,6 +285,16 @@ Route::middleware('admin.auth')->group(function () {
             Route::delete('/{domain}', [AdminDomainManagerController::class, 'destroy'])->name('destroy');
             Route::post('/dns-lookup', [AdminDomainManagerController::class, 'lookup'])->name('lookup');
             Route::put('/routing-settings', [AdminDomainManagerController::class, 'updateSettings'])->name('settings');
+        });
+
+        // Phân Hệ Quản Trị Trung Tâm Phát Hành Tính Năng & Cờ Nền Tảng (Mục 178 PRD V3 & ADM-FLAG-01)
+        Route::prefix('flags')->name('flags.')->group(function () {
+            Route::get('/', [AdminFeatureFlagController::class, 'index'])->name('index');
+            Route::post('/', [AdminFeatureFlagController::class, 'store'])->name('store');
+            Route::post('/{key}/toggle', [AdminFeatureFlagController::class, 'toggle'])->name('toggle');
+            Route::put('/{key}/rollout', [AdminFeatureFlagController::class, 'updateRollout'])->name('rollout');
+            Route::post('/{key}/kill-switch', [AdminFeatureFlagController::class, 'toggleKillSwitch'])->name('kill_switch');
+            Route::delete('/{key}', [AdminFeatureFlagController::class, 'destroy'])->name('destroy');
         });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');

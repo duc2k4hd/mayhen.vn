@@ -10103,3 +10103,81 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Kiểm tra toàn bộ codebase không còn bất kỳ font family ngoại vi nào.
      - Suite 12 feature test files admin: **120/120 tests PASSED 100% (466 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### [2026-11-11 15:05] - HOÀN THÀNH ĐỀ ÁN 107: PHÂN HỆ QUẢN TRỊ SỔ HOÀN TIỀN, KHIẾU NẠI & ĐỐI SOÁT CHI TRẢ TÀI CHÍNH (REFUNDS & DISPUTE RESOLUTION COCKPIT — MỤC 140 PRD V3 & MỤC 9.3 DOCX)
+- **Mục tiêu**: Xây dựng trung tâm điều hành quản lý yêu cầu hoàn tiền, khiếu nại tài chính từ khách hàng theo cam kết Quiet Luxury "Chính sách bảo trợ & hoàn tiền 100% trong 48h nếu phát sinh lỗi kỹ thuật hệ thống", tuân thủ quy trình kiểm soát nội bộ Two-man Rule (Maker - Checker), tự động hạ cấp bảo vệ thiệp cưới và thu hồi hoa hồng đối tác nếu có.
+- **Thực hiện chi tiết**:
+  1. **Business Logic & Service Layer (`app/Services/OrderRefundService.php`)**:
+     - 4 Chỉ số KPI thời gian thực: Tổng tiền đã hoàn (VND), Số ca chờ duyệt (Pending SLA < 24h), Tỷ lệ hoàn tiền so với tổng đơn (Refund Rate %), Số ca từ chối / tranh chấp.
+     - Bộ lọc đa chiều: trạng thái (`pending`, `approved`, `rejected`), phương thức hoàn (`bank_transfer`, `vietqr_direct`, `system_credit`), khoảng ngày, tìm kiếm theo mã đơn / email / tên khách.
+     - `createRefundRequest(...)`: Tiếp nhận yêu cầu hoàn tiền kèm lý do chi tiết, kiểm tra đơn hàng hợp lệ, thiết lập trạng thái `pending_approval`.
+     - `approveRefund(...)`: Áp dụng quy tắc kiểm soát nội bộ **Two-man Rule** (người phê duyệt không được trùng người đề xuất `initiator_admin_id != approver_admin_id`), đánh dấu hoàn tiền thành công, tự động chuyển thiệp cưới về trạng thái chưa xuất bản (`is_published = false`) để bảo vệ tài nguyên, tự động đảo ngược/thu hồi hoa hồng đối tác (`PartnerCommission::status = 'reversed'`) nếu đơn hàng có liên kết mã đối tác.
+     - `rejectRefund(...)`: Từ chối hoàn tiền với lý do phản hồi minh bạch gửi khách.
+     - `exportCsv(...)`: Xuất sổ hoàn tiền định dạng UTF-8 CSV với BOM hỗ trợ mở trực tiếp bằng Excel không lỗi font tiếng Việt.
+  2. **Controller & Routes (`AdminOrderRefundController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminOrderRefundController.php` với các action `index`, `storeRequest`, `approve`, `reject`, `export`.
+     - Tuyến đường: `admin.refunds.index`, `admin.refunds.store`, `admin.refunds.approve`, `admin.refunds.reject`, `admin.refunds.export`.
+     - **Khắc phục Router Collision**: Đặt route prefix `orders/refunds` lên trước `orders` và cấu hình `->whereNumber('id')` cho `orders/{id}` để triệt tiêu lỗi ép kiểu tham số `id` trong Laravel Router.
+  3. **Giao Diện Blade Tối Ưu (`resources/views/admin/pages/orders/refunds/index.blade.php`)**:
+     - Thiết kế theo chuẩn giao diện May Hen Admin: Pure CSS/JS, 100% Font Open Sans `var(--mh-admin-font)`.
+     - Gồm 3 Tabs tiện ích:
+       * Tab 1: **Sổ Yêu Cầu Hoàn Tiền** (Bảng danh sách, Badge trạng thái, xem chứng từ đính kèm, nút Phê duyệt / Từ chối).
+       * Tab 2: **Tạo Yêu Cầu Hoàn Tiền** (Form tra cứu đơn hàng, chọn lý do, nhập số tài khoản ngân hàng thụ hưởng, ghi chú xử lý).
+       * Tab 3: **Quy Chuẩn Chính Sách Hoàn Tiền 100%** (Tài liệu nội bộ về SLA giải quyết < 24h, tiêu chuẩn hạ cấp dịch vụ, quy tắc Two-man Rule).
+     - 2 Modal tương tác mượt mà: Modal Phê Duyệt Hoàn Tiền (nhập mã tham chiếu ngân hàng Bank Reference) và Modal Từ Chối (nhập lý do cụ thể).
+  4. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminOrderRefundTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_super_admin_can_view_refunds_dashboard_and_kpis`: Xem bảng điều khiển và 4 thẻ KPI.
+       * `test_admin_can_create_refund_request_for_valid_order`: Tạo yêu cầu hoàn tiền thành công.
+       * `test_cannot_create_refund_request_for_already_refunded_order`: Chặn trùng lặp yêu cầu hoàn tiền.
+       * `test_approve_refund_enforces_two_man_rule_preventing_initiator_from_approving`: Kiểm soát Two-man Rule ngăn người đề xuất tự duyệt.
+       * `test_different_admin_can_approve_refund_and_deprecates_invitation`: Người thứ hai duyệt thành công và hạ cấp thiệp cưới `is_published = false`.
+       * `test_approving_refund_reverses_associated_partner_commission`: Thu hồi hoa hồng đối tác khi đơn hàng bị hoàn tiền.
+       * `test_admin_can_reject_refund_request_with_reason`: Từ chối yêu cầu kèm lý do.
+       * `test_filter_refunds_by_status`: Lọc danh sách theo trạng thái.
+       * `test_admin_can_export_refunds_csv_with_utf8_bom`: Xuất file CSV định dạng chuẩn UTF-8 BOM.
+       * `test_unauthorized_user_cannot_access_refunds_cockpit`: Chặn truy cập trái phép.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 13 feature test files admin gần nhất: **130/130 tests PASSED 100% (513 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### [2026-11-11 15:13] - HOÀN THÀNH ĐỀ ÁN 108: PHÂN HỆ QUẢN TRỊ TRUNG TÂM PHÁT HÀNH TÍNH NĂNG & CỜ NỀN TẢNG (FEATURE FLAGS & SAFE ROLLOUT COCKPIT — MỤC 178 PRD V3 & ADM-FLAG-01)
+- **Mục tiêu**: Xây dựng trung tâm điều hành phát hành tính năng an toàn cho toàn bộ nền tảng Mây Hẹn Atelier, cho phép kiểm soát bật/tắt toàn cục, điều chỉnh tỷ lệ phát hành thử nghiệm theo thuật toán băm nhất quán (Consistent Hash Rollout 0-100%), giới hạn vai trò áp dụng (Target Roles) và cầu dao ngắt khẩn cấp (Kill-Switch) bảo vệ hệ thống tức thời khi phát sinh sự cố.
+- **Thực hiện chi tiết**:
+  1. **Business Logic & Service Layer (`app/Services/FeatureFlagService.php`)**:
+     - `isEnabled(string $key, ?User $user = null): bool`: Kiểm tra trạng thái cờ với ưu tiên cao nhất cho Kill Switch (`kill_switch_active == true` -> `false`), kiểm tra `is_enabled`, phạm vi `target_roles`, tỷ lệ `rollout_percentage` dựa trên thuật toán băm nhất quán `abs(crc32($key . ':' . $identifier)) % 100 < $percentage` (giúp cùng một người dùng/khách vãng lai luôn có trải nghiệm nhất quán).
+     - Tích hợp caching tốc độ cao `Cache::remember` (TTL 10 phút) và cơ chế tự động xóa cache tức thì (`clearCache`) khi quản trị viên thực hiện toggle/chỉnh sửa.
+     - 4 Chỉ số KPI thời gian thực (`getMetrics()`): Tổng số cờ (Total Flags), Hoạt động 100% (Fully Active), Thử nghiệm Safe Rollout (Beta < 100%), Cầu dao khẩn cấp kích hoạt (Kill Switch Active).
+     - Quản lý thao tác an toàn: `toggle`, `updateRollout`, `activateKillSwitch` (bắt buộc nhập lý do), `deactivateKillSwitch`, `createFlag`, `deleteFlag` (bảo vệ các cờ thuộc phân loại `core` không cho xóa).
+     - Tự động ghi nhật ký kiểm toán hệ thống (`audit_logs`) sau mỗi thay đổi cấu hình cờ tính năng.
+  2. **Tích hợp Blade Directive Toàn Cục (`app/Providers/AppServiceProvider.php`)**:
+     - Khai báo Blade Directive `@feature('flag_key') ... @endfeature` cho phép kiểm tra cờ tính năng trực tiếp trong Blade views cực kỳ gọn gàng và tối ưu hiệu năng.
+  3. **Controller & Routes (`AdminFeatureFlagController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminFeatureFlagController.php` gồm các action `index`, `store`, `toggle`, `updateRollout`, `toggleKillSwitch`, `destroy`.
+     - Tuyến đường: `admin.settings.flags.*` (`index`, `store`, `toggle`, `rollout`, `kill_switch`, `destroy`) được bảo vệ nghiêm ngặt dưới middleware `admin.super`.
+  4. **Giao Diện Blade Tối Ưu (`resources/views/admin/pages/settings/flags/index.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Quản Trị Cờ Tính Năng & An Toàn Phát Hành')`.
+     - 4 Thẻ KPI trực quan, thanh bộ lọc phân loại danh mục (Lõi, AI, Thương mại, Cộng tác, An toàn), trạng thái và tìm kiếm từ khóa.
+     - Bảng danh sách cờ tính năng hiển thị chi tiết mã cờ, phân nhóm badge, thanh tiến trình Rollout %, trạng thái, người cập nhật và bộ nút thao tác: Toggle bật/tắt nhanh, Nút sửa Rollout %, Nút Cầu Dao Khẩn Cấp (nổi bật màu đỏ), Nút Xóa.
+     - 3 Modal tiện ích tương tác mượt mà: Modal Tạo Cờ Mới, Modal Điều Chỉnh Rollout % (slider 0-100% và checkbox vai trò), Modal Kích Hoạt Cầu Dao Khẩn Cấp (cảnh báo nguy cơ và bắt buộc nhập lý do ngắt).
+     - Cập nhật Sidebar Navigation & Command Palette trong `resources/views/admin/layouts/master.blade.php`.
+  5. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminFeatureFlagTest.php`)**:
+     - Viết mới 12 test case bao phủ toàn diện:
+       * `test_super_admin_can_view_feature_flags_cockpit_and_metrics`: Xem dashboard và danh sách cờ kèm metrics.
+       * `test_unauthorized_user_cannot_access_feature_flags_cockpit`: Chặn khách vãng lai và user không có quyền super admin.
+       * `test_super_admin_can_create_new_feature_flag`: Tạo cờ tính năng mới thành công.
+       * `test_cannot_create_feature_flag_with_duplicate_key`: Chặn tạo trùng lặp key cờ.
+       * `test_super_admin_can_toggle_feature_flag_state`: Toggle bật/tắt nhanh trạng thái cờ.
+       * `test_super_admin_can_update_rollout_percentage_and_target_roles`: Cập nhật tỷ lệ % rollout và vai trò áp dụng.
+       * `test_super_admin_can_activate_kill_switch_with_reason`: Kích hoạt cầu dao khẩn cấp, lưu lý do và ghi audit log.
+       * `test_super_admin_can_deactivate_kill_switch`: Hủy kích hoạt cầu dao khẩn cấp, khôi phục bình thường.
+       * `test_feature_flag_service_is_enabled_respects_kill_switch_and_rollout`: Kiểm tra logic service khi cờ bị kill-switch hoặc tắt toàn cục.
+       * `test_feature_flag_consistent_hashing_provides_deterministic_result`: Kiểm tra thuật toán băm nhất quán cho kết quả đồng nhất với cùng user.
+       * `test_cannot_delete_core_category_feature_flag`: Bảo vệ cờ cốt lõi không cho phép xóa.
+       * `test_super_admin_can_delete_non_core_feature_flag`: Xóa thành công cờ tính năng không phải core.
+     - Kết quả test: **12/12 tests PASSED 100%**.
+     - Tổng suite 14 feature test files admin gần nhất: **142/142 tests PASSED 100% (568 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
