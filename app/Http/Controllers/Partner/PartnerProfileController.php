@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Partner;
 
 use App\Http\Controllers\Controller;
+use App\Models\InvitationTemplate;
 use App\Models\Partner;
 use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
@@ -19,9 +20,11 @@ class PartnerProfileController extends Controller
     public function edit(): View
     {
         $partner = $this->resolvePartner();
+        $allTemplates = InvitationTemplate::where('is_active', true)->get();
 
         return view('partner.profile', [
             'partner' => $partner,
+            'allTemplates' => $allTemplates,
         ]);
     }
 
@@ -41,6 +44,13 @@ class PartnerProfileController extends Controller
             'logo' => ['nullable', 'file', 'mimes:jpeg,jpg,png,webp,svg', 'max:4096'],
             'footer_text' => ['nullable', 'string', 'max:150', new NoProfanity],
             'show_badge' => ['nullable', 'boolean'],
+            'bio' => ['nullable', 'string', 'max:500', new NoProfanity],
+            'exclusive_perk' => ['nullable', 'string', 'max:255', new NoProfanity],
+            'curated_template_ids' => ['nullable', 'array'],
+            'curated_template_ids.*' => ['integer', 'exists:invitation_templates,id'],
+            'facebook_url' => ['nullable', 'url', 'max:255'],
+            'instagram_url' => ['nullable', 'url', 'max:255'],
+            'tiktok_url' => ['nullable', 'url', 'max:255'],
         ], [
             'business_name.required' => 'Vui lòng nhập tên Studio hoặc thương hiệu của bạn.',
             'phone.required' => 'Vui lòng nhập số điện thoại.',
@@ -66,7 +76,7 @@ class PartnerProfileController extends Controller
             $partnerData['logo_url'] = Storage::disk('public')->url($path);
         }
 
-        // Cập nhật cấu hình co-branding
+        // Cập nhật cấu hình co-branding & showcase công khai
         $currentConfig = is_array($partner->custom_config) ? $partner->custom_config : [];
         $currentConfig['branding'] = [
             'footer_text' => ! empty($validated['footer_text'])
@@ -74,11 +84,23 @@ class PartnerProfileController extends Controller
                 : 'Đồng hành cùng '.$partnerData['business_name'],
             'show_badge' => $request->boolean('show_badge', true),
         ];
+
+        $currentConfig['showcase'] = [
+            'bio' => ! empty($validated['bio']) ? strip_tags(trim($validated['bio'])) : null,
+            'exclusive_perk' => ! empty($validated['exclusive_perk']) ? strip_tags(trim($validated['exclusive_perk'])) : null,
+            'curated_template_ids' => array_map('intval', $validated['curated_template_ids'] ?? []),
+            'social_links' => [
+                'facebook' => $validated['facebook_url'] ?? null,
+                'instagram' => $validated['instagram_url'] ?? null,
+                'tiktok' => $validated['tiktok_url'] ?? null,
+            ],
+        ];
+
         $partnerData['custom_config'] = $currentConfig;
 
         $partner->update($partnerData);
 
-        return back()->with('success', 'Đã cập nhật hồ sơ Studio và thương hiệu co-branding thành công!');
+        return back()->with('success', 'Đã cập nhật hồ sơ Studio và trang giới thiệu Showcase thành công!');
     }
 
     private function resolvePartner(): Partner

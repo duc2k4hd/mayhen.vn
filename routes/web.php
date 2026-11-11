@@ -30,6 +30,7 @@ use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\StationeryKitController;
+use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
@@ -419,6 +420,9 @@ Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/trang/{slug}', [PageController::class, 'showPage'])->name('page.show');
+
+// Studio Co-branded Showcase & Public Portfolio (Đề Án 85 — Mục 8.3 DOCX & Section 38 PRD V3)
+Route::get('/studio/{slug}', [StudioShowcaseController::class, 'show'])->name('studio.showcase');
 
 // Đăng Ký Đối Tác Studio & Wedding Planner (Public)
 Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');

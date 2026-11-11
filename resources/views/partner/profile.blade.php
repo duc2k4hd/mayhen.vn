@@ -14,8 +14,27 @@
     <div style="margin-bottom: 2rem;">
         <h1 class="dash_head_title" style="font-size: 1.85rem;">Hồ Sơ Thương Hiệu & Co-Branding</h1>
         <p class="dash_head_desc">
-            Cấu hình thông tin Studio để xuất hiện trang trọng ở phần chữ ký bảo chứng dưới chân thiệp cưới của khách hàng.
+            Cấu hình thông tin Studio để xuất hiện trang trọng ở phần chữ ký bảo chứng dưới chân thiệp cưới của khách hàng và trên trang giới thiệu riêng của Studio.
         </p>
+    </div>
+
+    {{-- Showcase Public Link Banner --}}
+    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <span style="font-size: 0.75rem; letter-spacing: 1px; color: #9C7A4A; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.25rem;">Trang Giới Thiệu Riêng Của Studio (Showcase)</span>
+            <div style="font-family: monospace; font-size: 0.95rem; color: #1F1D1A; word-break: break-all;">
+                {{ route('studio.showcase', $partner->slug) }}
+            </div>
+            <span style="font-size: 0.8rem; color: #7A726A;">Gửi link này cho khách hàng chụp ảnh cưới để tự động kích hoạt mã hoa hồng của bạn.</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="{{ route('studio.showcase', $partner->slug) }}" target="_blank" class="mayhen_partner_btn" style="background: #FFF; border: 1px solid #D8CEBD; color: #1F1D1A; padding: 0.5rem 1rem; font-size: 0.82rem; text-decoration: none;">
+                👁️ Xem Trang
+            </a>
+            <button type="button" class="mayhen_partner_btn" onclick="navigator.clipboard.writeText('{{ route('studio.showcase', $partner->slug) }}'); alert('Đã sao chép link giới thiệu Studio!');" style="background: #1F1D1A; color: #FFF; border: none; padding: 0.5rem 1rem; font-size: 0.82rem; cursor: pointer;">
+                📋 Sao Chép Link
+            </button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -149,9 +168,74 @@
                 </label>
             </div>
 
+            {{-- 3. Cấu hình Trang Giới Thiệu Riêng (Showcase) --}}
+            @php
+                $showcaseConfig = is_array($partner->custom_config) && isset($partner->custom_config['showcase'])
+                    ? $partner->custom_config['showcase']
+                    : [];
+                $curatedIds = $showcaseConfig['curated_template_ids'] ?? [];
+                $socialLinks = $showcaseConfig['social_links'] ?? [];
+            @endphp
+
+            <div style="border-top: 1px solid #EBE5DC; padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="font-size: 1.15rem; font-family: 'Playfair Display', serif; font-weight: 700; color: #1F1D1A; margin-bottom: 0.5rem;">
+                    🌐 Cấu Hình Trang Giới Thiệu Riêng (Showcase Công Khai)
+                </h3>
+                <p style="font-size: 0.85rem; color: #7A726A; margin-bottom: 1.25rem;">
+                    Trang web riêng của Studio tại <code>{{ url('/studio/' . $partner->slug) }}</code> giúp bạn tự tin gửi tới các cặp đôi để chọn mẫu thiệp cưới phù hợp.
+                </p>
+
+                <div class="form_group">
+                    <label class="form_label" for="bio">Đoạn Giới Thiệu Về Studio / Phong Cách Cưới</label>
+                    <textarea 
+                        name="bio" 
+                        id="bio" 
+                        class="form_input" 
+                        rows="3" 
+                        maxlength="500" 
+                        placeholder="Ví dụ: Studio chuyên phong cách ảnh cưới tối giản, thanh lịch, đồng hành cùng hơn 500+ cặp đôi tại Hà Nội..."
+                    >{{ old('bio', $showcaseConfig['bio'] ?? '') }}</textarea>
+                    <span class="form_hint">Tối đa 500 ký tự. Sẽ hiển thị ở phần đầu trang Showcase của bạn.</span>
+                </div>
+
+                <div class="form_group">
+                    <label class="form_label" for="exclusive_perk">Đặc Quyền Dành Cho Khách Hàng Của Bạn</label>
+                    <input 
+                        type="text" 
+                        name="exclusive_perk" 
+                        id="exclusive_perk" 
+                        class="form_input" 
+                        maxlength="255" 
+                        placeholder="Ví dụ: Tặng trọn bộ thiệp lưu niệm số cao cấp khi ký hợp đồng trọn gói..." 
+                        value="{{ old('exclusive_perk', $showcaseConfig['exclusive_perk'] ?? '') }}"
+                    >
+                </div>
+
+                @if(isset($allTemplates) && $allTemplates->count() > 0)
+                    <div class="form_group">
+                        <label class="form_label">Chọn Các Mẫu Thiệp Đưa Lên Trang Showcase Của Bạn</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
+                            @foreach($allTemplates as $tpl)
+                                <label style="display: flex; align-items: center; gap: 0.65rem; background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 8px; padding: 0.65rem 0.85rem; cursor: pointer; font-size: 0.85rem; color: #1F1D1A;">
+                                    <input 
+                                        type="checkbox" 
+                                        name="curated_template_ids[]" 
+                                        value="{{ $tpl->id }}" 
+                                        {{ in_array($tpl->id, $curatedIds) ? 'checked' : '' }}
+                                        style="width: 16px; height: 16px; accent-color: #C5A880; cursor: pointer;"
+                                    >
+                                    <span>{{ $tpl->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <span class="form_hint">Nếu không chọn mẫu nào, hệ thống sẽ tự động hiển thị các mẫu thiệp cưới nổi bật nhất.</span>
+                    </div>
+                @endif
+            </div>
+
             <div style="margin-top: 2rem;">
                 <button type="submit" class="mayhen_partner_btn mayhen_partner_btn--gold" style="padding: 0.85rem 1.75rem;">
-                    💾 Lưu Cập Nhật Thương Hiệu
+                    💾 Lưu Cập Nhật Thương Hiệu & Showcase
                 </button>
             </div>
         </form>

@@ -8774,3 +8774,37 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 7 test files liên quan gần đây: **50/50 tests PASSED 100% (195 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 85. ĐỀ ÁN 85: TRANG GIỚI THIỆU & DANH MỤC THIỆP TUYỂN CHỌN RIÊNG CỦA STUDIO ĐỐI TÁC (STUDIO CO-BRANDED SHOWCASE & PUBLIC PORTFOLIO — MỤC 8.3 DOCX & SECTION 38 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 8.3 trong tài liệu gốc DOCX ("8.3. White-label: Logo studio. Thông tin studio. Mẫu riêng. Trang giới thiệu riêng. Branding theo gói. Chính sách chia sẻ doanh thu. Không triển khai hệ thống đa domain phức tạp khi chưa có nhu cầu kinh doanh thực tế.") và quy chuẩn phân hệ B2B Studio Partner:
+  1. *Trang Giới Thiệu Riêng Công Khai Của Studio (`/studio/{slug}`)*:
+     - Cho phép mọi Studio và Wedding Planner đối tác có một trang đích (Showcase Landing Page) độc lập, chuyên nghiệp mang nhận diện Co-branding kép (`[Logo Studio] × [Mây Hẹn Atelier]`).
+     - Hiển thị đầy đủ thông tin thương hiệu Studio: Tên doanh nghiệp, Logo, Giới thiệu (Bio/Văn hóa Studio), Hotline, Địa chỉ showroom, Link Website / Fanpage.
+     - Huy hiệu danh dự bảo chứng: "ĐỐI TÁC CHỨNG NHẬN MÂY HẸN ATELIER".
+     - Khối thông báo đặc quyền độc quyền dành cho khách hàng của Studio (ví dụ: Giảm 10% gói thiệp hoặc tặng trọn bộ thiệp lưu niệm số).
+     - Nút "Chia Sẻ Bộ Sưu Tập" tích hợp copy link giới thiệu kèm visual feedback tooltip nhanh chóng để Studio gửi qua Zalo/Facebook cho các cặp đôi.
+  2. *Cơ Chế Tuyển Chọn Mẫu Thiệp (Curated Templates) & Tự Động Kích Hoạt Hoa Hồng*:
+     - Studio có thể tự do lựa chọn các mẫu thiệp cưới (`InvitationTemplate`) họ tâm đắc nhất đưa lên trang showcase riêng qua cấu hình `custom_config['showcase']['curated_template_ids']`. Nếu chưa chọn, hệ thống tự động hiển thị các mẫu nổi bật nhất.
+     - Khi khách hàng truy cập `/studio/{slug}`, hệ thống tự động ghi nhận mã giới thiệu của Studio vào Session (`partner_referral_id`, `partner_referral_code`).
+     - Mọi nút "Tạo Thiệp Ngay" trên trang showcase đều tự động truyền tham số `?template={slug}&ref={partner_code}`, đảm bảo khi cặp đôi tạo thiệp và thanh toán, doanh thu và hoa hồng B2B tự động được tính cho Studio thông qua `PartnerCommission`.
+  3. *Nâng Cấp Cổng Quản Trị Đối Tác (`PartnerProfileController` & `partner/profile.blade.php`)*:
+     - Bổ sung hộp liên kết công khai Showcase URL kèm nút "Xem Trang" và nút "Sao Chép Link".
+     - Bổ sung form cập nhật: Bio giới thiệu Studio (max 500 ký tự), Ưu đãi đặc quyền cho khách hàng, Checklist chọn mẫu thiệp đưa lên showcase.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Controller & Routes**:
+     - `app/Http/Controllers/Client/StudioShowcaseController.php`
+     - Cập nhật `app/Http/Controllers/Partner/PartnerProfileController.php`
+     - Route ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)): `GET /studio/{slug}` (`studio.showcase`).
+  2. **Giao diện & Assets**:
+     - Blade: `resources/views/client/pages/studio/showcase.blade.php`, cập nhật `resources/views/partner/profile.blade.php`.
+     - CSS: `public/assets/client/css/pages/studio.css` (Class prefix bắt buộc: `mayhen_studio_*`, chuẩn Quiet Luxury).
+     - JS: `public/assets/client/js/pages/studio.js` (Pure Vanilla JS ES Modules, clipboard interaction).
+  3. **Kiểm thử tự động ([tests/Feature/PartnerStudioShowcaseTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/PartnerStudioShowcaseTest.php))**:
+     - 5 kịch bản kiểm thử: Hiển thị trang showcase công khai thành công cho đối tác active với đầy đủ logo và thông tin, tự động lưu referral code và partner id vào session khi truy cập, trả về 404 khi slug không tồn tại hoặc đối tác bị suspended/pending, hiển thị chính xác các mẫu thiệp được Studio tuyển chọn, cho phép đối tác cập nhật bio, đặc quyền và curated templates trong hồ sơ profile.
+     - Kết quả: **5/5 tests PASSED 100% (22 assertions)**.
+  4. **Tổng kết chất lượng mã nguồn**:
+     - Suite 6 test files liên quan gần đây: **41/41 tests PASSED 100% (168 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
