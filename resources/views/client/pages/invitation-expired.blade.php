@@ -95,9 +95,23 @@
         </div>
         <h1 class="mayhen_status_title">Thiệp Cưới Đã Hết Hạn Lưu Trữ</h1>
         <p class="mayhen_status_desc">
-            Thời hạn hiển thị của thiệp cưới này đã kết thúc. Nếu bạn là chủ nhân của thiệp cưới, vui lòng đăng nhập tài khoản để gia hạn gói cước lưu trữ.
+            Thời hạn hiển thị của thiệp cưới này đã kết thúc. Nếu bạn là chủ nhân của thiệp cưới, bạn có thể gia hạn lưu trữ để tiếp tục lưu giữ kỷ niệm đẹp cho ngày chung đôi.
         </p>
-        <a href="{{ route('home') }}" class="mayhen_status_btn">Về Trang Chủ Mây Hẹn</a>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px;">
+            @if(auth()->check() && isset($invitation) && $invitation->wedding && auth()->id() === $invitation->wedding->user_id)
+                <a href="{{ route('account.invitations') }}" class="mayhen_status_btn" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);">
+                    ⚡ Gia Hạn Thiệp Ngay
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="mayhen_status_btn" style="background: #1F1D1A;">
+                    Đăng Nhập Gia Hạn
+                </a>
+            @endif
+            <a href="{{ route('home') }}" class="mayhen_status_btn" style="background: #FAF8F5; color: #1F1D1A; border: 1px solid #D8CEBD;">
+                Về Trang Chủ Mây Hẹn
+            </a>
+        </div>
     </div>
 </body>
 </html>

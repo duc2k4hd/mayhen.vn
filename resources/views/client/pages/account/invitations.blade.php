@@ -107,10 +107,30 @@
                             </span>
                         </div>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #8C827A;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #8C827A; flex-wrap: wrap; gap: 4px;">
                             <span>Khách mời: <strong>{{ $guestCount }}</strong></span>
                             @if($inv->expires_at)
-                                <span>Hết hạn: {{ $inv->expires_at->format('d/m/Y') }}</span>
+                                @php
+                                    $isExpired = $inv->expires_at->isPast();
+                                    $daysDiff = (int) now()->diffInDays($inv->expires_at, false);
+                                @endphp
+                                @if(!$isExpired && $daysDiff <= 14)
+                                    <span style="color: #B45309; font-weight: 600; background: #FEF3C7; padding: 2px 6px; border-radius: 4px;">
+                                        ⚠️ Còn {{ $daysDiff }} ngày
+                                    </span>
+                                @elseif($isExpired && abs($daysDiff) <= 7)
+                                    <span style="color: #C62828; font-weight: 600; background: #FFEBEE; padding: 2px 6px; border-radius: 4px;">
+                                        ⏳ Ân hạn (còn {{ 7 - abs($daysDiff) }} ngày)
+                                    </span>
+                                @elseif($isExpired)
+                                    <span style="color: #616161; font-weight: 600; background: #EEEEEE; padding: 2px 6px; border-radius: 4px;">
+                                        🔒 Hết hạn lưu trữ
+                                    </span>
+                                @else
+                                    <span>Hạn dùng: {{ $inv->expires_at->format('d/m/Y') }}</span>
+                                @endif
+                            @else
+                                <span>Không thời hạn</span>
                             @endif
                         </div>
 
@@ -394,6 +414,12 @@
                                     Tạm Khóa Bởi Quản Trị
                                 </button>
                             @endif
+
+                            {{-- Nút Tự Phục Vụ Gia Hạn & Nâng Cấp Hạn Dùng (Mục 13.4 DOCX) --}}
+                            <button type="button" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm btn-open-renewal-modal" data-invitation-id="{{ $inv->id }}" style="width: 100%; margin-top: 6px; border-color: #C5A880; color: #9C7A4A; font-weight: 600;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Gia Hạn & Nâng Cấp</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -420,5 +446,173 @@
             </a>
         </div>
     @endif
+
+    {{-- Modal Tự Phục Vụ Gia Hạn & Nâng Cấp Hạn Dùng Thiệp Cưới (Mục 13.4 DOCX) --}}
+    <div id="mayhen_renewal_modal" style="display: none; position: fixed; inset: 0; background: rgba(31, 29, 26, 0.7); backdrop-filter: blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25); display: flex; flex-direction: column;">
+            <div style="padding: 18px 24px; border-bottom: 1px solid #EAE3D9; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">⚡</span>
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #1F1D1A; margin: 0;">Gia Hạn & Nâng Cấp Thời Lượng</h3>
+                </div>
+                <button type="button" id="btn-close-renewal-modal" style="background: none; border: none; font-size: 20px; color: #7A726A; cursor: pointer; padding: 4px;">✕</button>
+            </div>
+            
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 18px;">
+                {{-- Thông tin hiện tại --}}
+                <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <span style="font-size: 11px; letter-spacing: 1px; color: #9C7A4A; font-weight: 700; text-transform: uppercase;">Trạng Thái Hạn Dùng</span>
+                        <h4 id="renewal-inv-title" style="font-size: 14px; color: #1F1D1A; margin: 2px 0;">Đang tải...</h4>
+                        <span id="renewal-inv-expiry" style="font-size: 12px; color: #7A726A;">Hạn hiện tại: ...</span>
+                    </div>
+                    <span id="renewal-status-badge" style="padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #EFE8DD; color: #6B5E4B;">Đang kiểm tra</span>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 10px;">Chọn gói gia hạn / nâng cấp mong muốn:</h4>
+                    <div id="renewal-plans-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang tải danh sách gói...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 16px 24px; background: #FAF8F5; border-top: 1px solid #EAE3D9; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <button type="button" id="btn-cancel-renewal" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">Đóng</button>
+                <button type="button" id="btn-proceed-renewal" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; border: none;" disabled>
+                    Tiến Hành Gia Hạn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('mayhen_renewal_modal');
+                const btnClose = document.getElementById('btn-close-renewal-modal');
+                const btnCancel = document.getElementById('btn-cancel-renewal');
+                const btnProceed = document.getElementById('btn-proceed-renewal');
+                const plansList = document.getElementById('renewal-plans-list');
+                const invTitle = document.getElementById('renewal-inv-title');
+                const invExpiry = document.getElementById('renewal-inv-expiry');
+                const statusBadge = document.getElementById('renewal-status-badge');
+
+                let currentInvitationId = null;
+                let selectedPlanId = null;
+
+                const closeModal = () => {
+                    if (modal) modal.style.display = 'none';
+                    selectedPlanId = null;
+                    if (btnProceed) btnProceed.disabled = true;
+                };
+
+                if (btnClose) btnClose.addEventListener('click', closeModal);
+                if (btnCancel) btnCancel.addEventListener('click', closeModal);
+                if (modal) {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) closeModal();
+                    });
+                }
+
+                document.querySelectorAll('.btn-open-renewal-modal').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        currentInvitationId = btn.getAttribute('data-invitation-id');
+                        if (!currentInvitationId || !modal) return;
+
+                        modal.style.display = 'flex';
+                        plansList.innerHTML = '<div style="text-align: center; padding: 20px; color: #7A726A; font-style: italic;">Đang tải thông tin...</div>';
+
+                        try {
+                            const res = await fetch(`/tai-khoan/thiep/${currentInvitationId}/vong-doi`, {
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            const data = await res.json();
+
+                            if (data && data.success && data.lifecycle) {
+                                const lc = data.lifecycle;
+                                if (invTitle) invTitle.innerText = data.title;
+                                if (invExpiry) invExpiry.innerText = `Hạn dùng hiện tại: ${lc.expires_at_formatted}`;
+                                if (statusBadge) {
+                                    statusBadge.innerText = lc.status_label;
+                                    statusBadge.className = `mayhen_badge ${lc.badge_class}`;
+                                }
+
+                                plansList.innerHTML = '';
+                                if (lc.renewal_options && lc.renewal_options.length > 0) {
+                                    lc.renewal_options.forEach((opt, idx) => {
+                                        const card = document.createElement('label');
+                                        card.style.cssText = 'display: flex; align-items: center; justify-content: space-between; border: 1px solid #EAE3D9; border-radius: 10px; padding: 12px 16px; background: #FFF; cursor: pointer; transition: all 0.2s ease;';
+                                        card.innerHTML = `
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <input type="radio" name="renewal_plan" value="${opt.plan_id}" ${idx === 0 ? 'checked' : ''} style="accent-color: #C5A880; width: 18px; height: 18px; cursor: pointer;">
+                                                <div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <strong style="font-size: 14px; color: #1F1D1A;">${opt.name}</strong>
+                                                        <span style="font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: ${opt.is_upgrade ? '#FEF3C7' : '#EFE8DD'}; color: ${opt.is_upgrade ? '#B45309' : '#6B5E4B'};">${opt.type_label}</span>
+                                                    </div>
+                                                    <span style="font-size: 12px; color: #7A726A;">Thời lượng: +${opt.duration_label}</span>
+                                                </div>
+                                            </div>
+                                            <strong style="font-size: 15px; color: #9C7A4A;">${opt.formatted_price}</strong>
+                                        `;
+
+                                        const radio = card.querySelector('input[type="radio"]');
+                                        radio.addEventListener('change', () => {
+                                            selectedPlanId = opt.plan_id;
+                                            if (btnProceed) btnProceed.disabled = false;
+                                        });
+
+                                        if (idx === 0) {
+                                            selectedPlanId = opt.plan_id;
+                                            if (btnProceed) btnProceed.disabled = false;
+                                        }
+
+                                        plansList.appendChild(card);
+                                    });
+                                }
+                            }
+                        } catch (err) {
+                            plansList.innerHTML = '<div style="color: #C62828; padding: 12px; text-align: center;">Không thể nạp thông tin. Vui lòng thử lại.</div>';
+                        }
+                    });
+                });
+
+                if (btnProceed) {
+                    btnProceed.addEventListener('click', async () => {
+                        if (!currentInvitationId || !selectedPlanId) return;
+
+                        btnProceed.disabled = true;
+                        btnProceed.innerText = 'Đang chuyển hướng...';
+
+                        try {
+                            const res = await fetch(`/tai-khoan/thiep/${currentInvitationId}/gia-han`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ plan_id: selectedPlanId })
+                            });
+                            const data = await res.json();
+
+                            if (data && data.success && data.checkout_url) {
+                                window.location.href = data.checkout_url;
+                            } else {
+                                alert(data?.message || 'Có lỗi xảy ra khi tạo yêu cầu.');
+                                btnProceed.disabled = false;
+                                btnProceed.innerText = 'Tiến Hành Gia Hạn';
+                            }
+                        } catch (err) {
+                            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                            btnProceed.disabled = false;
+                            btnProceed.innerText = 'Tiến Hành Gia Hạn';
+                        }
+                    });
+                }
+            });
+        </script>
+    @endpush
 @endsection
 

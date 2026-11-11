@@ -17,6 +17,7 @@ use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
+use App\Http\Controllers\Client\InvitationRenewalController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
@@ -145,6 +146,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/', [AccountController::class, 'index'])->name('dashboard');
     Route::get('/thiep', [AccountController::class, 'invitations'])->name('invitations');
     Route::post('/thiep/{id}/xuat-ban', [AccountController::class, 'togglePublish'])->name('invitations.toggle_publish');
+    Route::get('/thiep/{id}/vong-doi', [InvitationRenewalController::class, 'lifecycle'])->name('invitations.lifecycle');
+    Route::post('/thiep/{id}/gia-han', [InvitationRenewalController::class, 'initiateRenewal'])->name('invitations.renew');
     Route::get('/don-hang', [AccountController::class, 'orders'])->name('orders');
     Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
     Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');

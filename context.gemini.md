@@ -8808,3 +8808,59 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   4. **Tổng kết chất lượng mã nguồn**:
      - Suite 6 test files liên quan gần đây: **41/41 tests PASSED 100% (168 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 86. ĐỀ ÁN 86: HỆ THỐNG QUẢN TRỊ VÒNG ĐỜI HẠN DÙNG THIỆP CƯỚI, CẢNH BÁO HẾT HẠN, GIA HẠN TỰ PHỤC VỤ & NÂNG CẤP GÓI (INVITATION LIFECYCLE, EXPIRATION GUARDIAN, SELF-SERVICE RENEWAL & PLAN UPGRADE — MỤC 13.4 DOCX & DÒNG 410 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 13.4 trong tài liệu gốc DOCX ("13.4. Thời hạn lưu trữ: Free: 7 ngày kể từ ngày cưới. Plus / Premium: 6 tháng hoặc 1 năm. Wedding Pro: 2 năm. Không hứa 'lưu vĩnh viễn' để tránh rủi ro chi phí hạ tầng. Có quy trình xử lý sau hết hạn: Thông báo trước khi hết hạn. Cho phép gia hạn. Cho phép tải toàn bộ dữ liệu.") và quy chuẩn bảo đảm an toàn dữ liệu khách hàng:
+  1. *Triết Lý Bất Biến Vòng Đời & Thời Gian Ân Hạn (Grace Period 7 Ngày)*:
+     - Tuyệt đối không xóa đột ngột hay khóa thiệp ngay thời điểm `expires_at`, tránh làm gián đoạn ngày cưới hay tiệc mừng của cô dâu chú rể.
+     - Phân định rõ 5 trạng thái vòng đời:
+       * `permanent`: Thiệp không thời hạn hoặc tài khoản đặc quyền.
+       * `healthy`: Thiệp còn dồi dào thời gian (> 14 ngày), badge xanh thành công (`mayhen_badge--success`).
+       * `expiring_soon`: Sắp hết hạn (từ 4 đến 14 ngày), nhắc nhở gia hạn trang nhã, badge vàng (`mayhen_badge--warning`).
+       * `critical`: Khẩn cấp (<= 3 ngày), cảnh báo nổi bật trên Bảng điều khiển tài khoản, badge đỏ (`mayhen_badge--danger`).
+       * `grace_period`: Thời gian ân hạn 7 ngày sau khi hết hạn. Khách mời bên ngoài vẫn xem được thiệp bình thường để không ảnh hưởng đám cưới, nhưng Bảng điều khiển của cặp đôi hiển thị banner khẩn cấp yêu cầu gia hạn ngay.
+       * `expired`: Đã quá 7 ngày ân hạn. Khóa truy cập công khai, tự động điều hướng sang trang `invitation-expired.blade.php` trang nhã với tùy chọn gia hạn nếu là chủ nhân đăng nhập.
+  2. *Dịch Vụ Quản Trị Vòng Đời Chuyên Nghiệp (`InvitationLifecycleService`)*:
+     - `getLifecycleStatus(Invitation $invitation)`: Tính toán chuẩn xác trạng thái, số ngày còn lại (làm tròn nguyên ngày thân thiện), nhãn trạng thái và các phương án gia hạn / nâng cấp gói tương ứng.
+     - `getRenewalPlans(Invitation $invitation)`: Đề xuất các gói gia hạn linh hoạt theo đúng quy định mục 13.4 DOCX (Gói 3 tháng 149k, Gói 6 tháng 249k, Gói 1 năm 399k, Gói 2 năm 599k).
+     - `extendDuration(Invitation $invitation, int $days, string $reason)`: Gia hạn thời gian sử dụng thiệp cưới. Nếu thiệp còn hạn thì cộng dồn ngày mới vào `expires_at` hiện tại; nếu đã hết hạn thì cộng dồn tính từ thời điểm hiện tại (`now()`), tự động kích hoạt lại thiệp (`is_published = true`) và ghi vết kiểm toán toàn diện bằng `AuditLogger::log()`.
+     - `scanAndAuditLifecycle()`: Quét và thống kê số lượng thiệp trong từng giai đoạn vòng đời phục vụ tự động hóa và báo cáo KPI.
+  3. *Artisan Command Tự Động Quét & Kiểm Toán Hạn Dùng (`CheckInvitationExpiryCommand`)*:
+     - Lệnh `php artisan invitation:check-expiry {--dry-run}`: Quét tự động định kỳ (Scheduler cron hàng ngày), kết xuất bảng thống kê trực quan số lượng thiệp sắp hết hạn, khẩn cấp, ân hạn và hết hạn; tự động ghi vết nhật ký kiểm toán hệ thống `INVITATION_EXPIRY_SCAN` qua `AuditLogger`.
+  4. *API & Controller Gia Hạn Tự Phục Vụ (`InvitationRenewalController`)*:
+     - `GET /account/invitations/{invitation}/lifecycle` (`account.invitations.lifecycle`): Trả về JSON trạng thái vòng đời chi tiết, số ngày còn lại và danh mục các gói gia hạn.
+     - `POST /account/invitations/{invitation}/renew` (`account.invitations.renew`): Khởi tạo đơn hàng gia hạn hoặc nâng cấp gói (`Order::TYPE_UPGRADE`), tính toán số tiền và tạo mã giao dịch tự động kết nối VietQR SePay.
+  5. *Giao Diện Bảng Điều Khiển & Trang Hết Hạn (Client UI)*:
+     - `resources/views/client/pages/account/invitations.blade.php`: Tích hợp huy hiệu vòng đời thông minh (`mayhen_badge`), nút "⚡ Gia Hạn & Nâng Cấp", modal gia hạn tự phục vụ `#mayhen_renewal_modal` với tương tác chọn gói thời gian thực, hiển thị số ngày cộng thêm và tạo lệnh thanh toán VietQR ngay tức thì mà không cần reload trang.
+     - `resources/views/client/pages/invitation-expired.blade.php`: Thiết kế Quiet Luxury, hiển thị thông điệp nhẹ nhàng, nút "⚡ Gia Hạn Thiệp Ngay" nếu phát hiện chủ sở hữu đang đăng nhập, cùng các liên kết hỗ trợ và khám phá mẫu mới.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services & Commands**:
+     - `app/Services/InvitationLifecycleService.php`
+     - `app/Console/Commands/CheckInvitationExpiryCommand.php`
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Client/InvitationRenewalController.php`
+     - Routes ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /account/invitations/{invitation}/lifecycle` (`account.invitations.lifecycle`)
+       * `POST /account/invitations/{invitation}/renew` (`account.invitations.renew`)
+  3. **Giao diện & Blade**:
+     - `resources/views/client/pages/account/invitations.blade.php`
+     - `resources/views/client/pages/invitation-expired.blade.php`
+  4. **Kiểm thử tự động ([tests/Feature/InvitationLifecycleAndRenewalTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/InvitationLifecycleAndRenewalTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Tính toán trạng thái khỏe mạnh (`healthy`) khi còn trên 14 ngày.
+       2. Tính toán trạng thái sắp hết hạn (`expiring_soon`) khi còn từ 4 đến 14 ngày.
+       3. Tính toán trạng thái khẩn cấp (`critical`) khi chỉ còn <= 3 ngày.
+       4. Tính toán thời gian ân hạn 7 ngày (`grace_period`) sau khi hết hạn và vẫn mở quyền truy cập cho khách xem thiệp.
+       5. Tính toán trạng thái hết hạn hoàn toàn (`expired`) sau khi quá 7 ngày ân hạn và khóa truy cập.
+       6. Chạy thành công Artisan command `invitation:check-expiry` cả chế độ dry-run lẫn live, ghi log `INVITATION_EXPIRY_SCAN`.
+       7. Chủ sở hữu truy vấn API lifecycle lấy danh sách gói gia hạn và trạng thái chuẩn xác.
+       8. Chặn người lạ hoặc khách không sở hữu truy cập API lifecycle (HTTP 403).
+       9. Chủ sở hữu tạo lệnh gia hạn gói cước thành công sinh đơn hàng `Order::TYPE_UPGRADE`.
+       10. Gia hạn thời gian thiệp cộng dồn chính xác và ghi vết kiểm toán `INVITATION_RENEWED` qua `AuditLogger`.
+     - Kết quả: **10/10 tests PASSED 100% (35 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 7 test files liên quan gần đây: **51/51 tests PASSED 100% (203 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
