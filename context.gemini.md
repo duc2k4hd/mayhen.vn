@@ -10721,6 +10721,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Mã nguồn tuân thủ 100% tiêu chuẩn Laravel Pint agent format.
 
 
+### 126. Đề Án 126: Động Cơ Thiệp Cưới Đa Ngôn Ngữ & Bộ Chuyển Đổi Ngôn Ngữ Thời Gian Thực (Multilingual Wedding Invitation Engine & Global Guest Localizer — Mục 2.10 DOCX & Section 24, 29 PRD V3)
+- **Mục tiêu**:
+  - Giải quyết bài toán đám cưới hiện đại với bạn bè, đối tác, gia đình hoặc cô dâu/chú rể là người nước ngoài theo đúng quy chuẩn Mục 2.10 DOCX & Section 24, 29 PRD V3.
+  - Hỗ trợ toàn diện 4 ngôn ngữ cốt lõi:
+    1. `vi`: Tiếng Việt (Ngôn ngữ nền tảng mặc định) 🇻🇳
+    2. `en`: English (Tiếng Anh quốc tế chuẩn Quiet Luxury) 🇬🇧
+    3. `ko`: 한국어 (Tiếng Hàn trang trọng chuẩn lễ nghi) 🇰🇷
+    4. `zh`: 中文 (Tiếng Trung nhã nhặn, chúc phúc cát tường) 🇨🇳
+  - Bộ từ điển chuyên ngành cưới (Wedding Lexicon) được tinh chỉnh sâu sắc cho 10 section tiêu chuẩn: Lời chào mở đầu, Hôn lễ, Chuyện tình yêu, Tứ thân phụ mẫu, Đếm ngược ngày cưới, Bản đồ sảnh tiệc, Lịch trình ngày cưới (Timeline), Quy chuẩn trang phục (Dresscode), Album ảnh cưới, Hộp mừng cưới & Form xác nhận tham dự (RSVP).
+  - Bảo toàn tuyệt đối danh tính cặp đôi: Tên người và địa điểm sảnh tiệc luôn được giữ nguyên vẹn trừ khi chủ thiệp chủ động nhập bản dịch ghi đè.
+  - Trình chuyển đổi ngôn ngữ nổi (Floating Language Switcher) bằng Pure CSS/JS tự động xuất hiện ở góc thiệp khi chủ thiệp bật từ 2 ngôn ngữ trở lên.
+  - Cơ chế nhận diện ngôn ngữ đa tầng thông minh: Tham số URL `?lang={locale}` -> Cookie lưu trữ 30 ngày `mayhen_locale` -> Cấu hình ngôn ngữ mặc định của thiệp (`default_locale`) -> Fallback an toàn về Tiếng Việt (`vi`).
+  - Trang Quản trị Cấu hình Đa Ngôn Ngữ tại `/tai-khoan/thiep/{id}/da-ngon-ngu`: Bật/tắt các ngôn ngữ muốn hỗ trợ, chọn ngôn ngữ mặc định, sao chép liên kết riêng biệt theo từng thứ tiếng cho từng khách quốc tế, và tùy biến thông điệp song ngữ nếu muốn.
+  - API công khai trả về gói từ điển ngôn ngữ (`/api/thiep/{slug}/translations/{locale}`) phục vụ nạp từ điển động cho client JavaScript.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/MultilingualInvitationService.php`:
+    - `SUPPORTED_LOCALES`: Khai báo 4 ngôn ngữ, tên bản địa và cờ quốc gia.
+    - `$lexicons`: Bộ từ điển chuyên ngành cưới đối sánh song song 4 ngôn ngữ.
+    - `resolveLocale`: Phân giải locale hiện tại theo thứ tự ưu tiên an toàn.
+    - `getActiveLocalesForInvitation`: Lấy danh sách ngôn ngữ kích hoạt cho từng thiệp cưới.
+    - `trans`: Hàm dịch chuỗi có hỗ trợ ghi đè (`overrides`) và thay thế placeholder (`:key` / `{key}`).
+    - `getDictionary`: Xuất gói từ điển JSON cho frontend.
+  - `app/Http/Controllers/Client/MultilingualInvitationController.php`:
+    - `index`: Màn hình cấu hình ngôn ngữ (`account.multilingual.index`).
+    - `update`: Lưu danh sách ngôn ngữ kích hoạt, ngôn ngữ mặc định và bản dịch ghi đè (`account.multilingual.update`).
+    - `apiTranslations`: Endpoint công khai trả về gói từ điển theo slug và locale (`api.invitation.translations`).
+  - `resources/views/client/components/language-switcher.blade.php`:
+    - Component giao diện nổi Quiet Luxury, chuyển đổi ngôn ngữ mượt mà không tải lại trang khi không cần thiết hoặc reload cập nhật URL query param.
+  - `resources/views/client/layouts/invitation.blade.php`:
+    - Nhúng động Language Switcher và gán thuộc tính thẻ `<html lang="{{ $currentLocale }}">`.
+  - `resources/views/client/pages/account/multilingual/index.blade.php`:
+    - Giao diện quản lý đa ngôn ngữ: chọn ngôn ngữ hỗ trợ, lấy link riêng từng ngôn ngữ và form tùy biến lời mời.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Đa Ngôn Ngữ" trên thẻ thiệp cưới.
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.multilingual.*` và route API công khai `api.invitation.translations`.
+  - `tests/Feature/MultilingualInvitationTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: phân quyền khách vãng lai, chặn truy cập trái phép 403, giao diện cấu hình, lưu cài đặt & bản dịch tùy biến kèm AuditLogger, cơ chế phân giải resolveLocale, API public translations, và độ phủ 4 ngôn ngữ (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,047 / 1,047 tests PASSED 100%** (5,590 assertions, duration ~30s).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
+
 
 
 

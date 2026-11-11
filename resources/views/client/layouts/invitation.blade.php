@@ -408,6 +408,9 @@
         @include('client.components.bottom-nav')
     @endif
 
+    {{-- Bộ Chuyển Đổi Ngôn Ngữ Thời Gian Thực (Multilingual Language Switcher - Mục 2.10 DOCX & Đề Án 126) --}}
+    @include('client.components.language-switcher')
+
     {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template --}}
     @include('client.invitations.partials.editor-bridge')
 

@@ -427,6 +427,16 @@
                                 </svg>
                                 <span>Nhân Bản Vu Quy / Tân Hôn</span>
                             </button>
+
+                            {{-- Nút Cấu Hình Đa Ngôn Ngữ Thiệp Cưới (Mục 2.10 DOCX & Đề Án 126) --}}
+                            <a href="{{ route('account.multilingual.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Cấu hình đa ngôn ngữ thiệp cưới: Tiếng Việt, Anh, Hàn, Trung">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                                <span>Đa Ngôn Ngữ</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

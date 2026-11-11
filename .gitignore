@@ -151,6 +151,7 @@ Thumbs.db
 !/tests/Feature/AdminReviewManagementTest.php
 !/tests/Feature/AdminMediaManagementTest.php
 !/tests/Feature/CeremonyForkingTest.php
+!/tests/Feature/MultilingualInvitationTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

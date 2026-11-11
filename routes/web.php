@@ -25,6 +25,7 @@ use App\Http\Controllers\Client\InvitationRenewalController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
+use App\Http\Controllers\Client\MultilingualInvitationController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PaperInvitationScanController;
@@ -189,6 +190,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/nhan-ban', [AccountController::class, 'duplicate'])->name('invitations.duplicate');
     Route::get('/thiep/{id}/nhan-ban-le-tiec/options', [CeremonyForkController::class, 'options'])->name('ceremony.fork_options');
     Route::post('/thiep/{id}/nhan-ban-le-tiec', [CeremonyForkController::class, 'fork'])->name('ceremony.fork');
+    Route::get('/thiep/{id}/da-ngon-ngu', [MultilingualInvitationController::class, 'index'])->name('multilingual.index');
+    Route::post('/thiep/{id}/da-ngon-ngu', [MultilingualInvitationController::class, 'update'])->name('multilingual.update');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
@@ -457,6 +460,9 @@ Route::get('/trang/{slug}', [PageController::class, 'showPage'])->name('page.sho
 
 // Studio Co-branded Showcase & Public Portfolio (Đề Án 85 — Mục 8.3 DOCX & Section 38 PRD V3)
 Route::get('/studio/{slug}', [StudioShowcaseController::class, 'show'])->name('studio.showcase');
+
+// API Gói Từ Điển Đa Ngôn Ngữ Thiệp Cưới (Mục 2.10 DOCX & Đề Án 126)
+Route::get('/api/thiep/{slug}/translations/{locale}', [MultilingualInvitationController::class, 'apiTranslations'])->name('api.invitation.translations');
 
 // Đăng Ký Đối Tác Studio & Wedding Planner (Public)
 Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');
