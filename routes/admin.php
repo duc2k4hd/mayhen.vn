@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminKeepsakeController;
 use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminOrderRefundController;
+use App\Http\Controllers\Admin\AdminPaperScanController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AdminRescheduleController;
 use App\Http\Controllers\Admin\AdminSeatingPlanController;
@@ -137,6 +138,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/localize', [AdminAssetDiagnosticsController::class, 'localizeAsset'])->middleware('admin.manager')->name('localize');
         Route::post('/{id}/batch-repair', [AdminAssetDiagnosticsController::class, 'batchRepair'])->middleware('admin.manager')->name('batch_repair');
         Route::get('/export-csv', [AdminAssetDiagnosticsController::class, 'export'])->name('export');
+    });
+
+    // Đài Giám Sát Quét Thiệp Giấy AI OCR (Mục 18, 23 PRD V3 & ADM-OCR-01)
+    Route::prefix('paper-scans')->name('paper_scans.')->group(function () {
+        Route::get('/', [AdminPaperScanController::class, 'index'])->name('index');
+        Route::get('/export-csv', [AdminPaperScanController::class, 'export'])->name('export');
+        Route::get('/{id}', [AdminPaperScanController::class, 'show'])->name('show');
+        Route::put('/{id}/verify', [AdminPaperScanController::class, 'updateVerified'])->middleware('admin.manager')->name('update_verified');
+        Route::post('/{id}/apply', [AdminPaperScanController::class, 'apply'])->middleware('admin.manager')->name('apply');
+        Route::delete('/{id}', [AdminPaperScanController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
     // Phân Hệ Quản Trị Sổ Hoàn Tiền, Khiếu Nại & Tranh Chấp Thanh Toán (Mục 140 PRD V3 & Mục 9.3 DOCX)

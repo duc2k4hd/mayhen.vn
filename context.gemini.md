@@ -10471,3 +10471,25 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `routes/admin.php`: Đăng ký nhóm routes `admin.assets.diagnostics.*`.
   - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Chẩn Đoán Lỗi Ảnh" ngay sau "Thư Viện Media" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
   - `tests/Feature/AdminAssetDiagnosticsTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng quét chẩn đoán, phát hiện missing file, phát hiện link ngoài, gán fallback, localize asset và xuất CSV (100% PASSED).
+
+
+### 118. Đề Án 118: Phân Hệ Quản Trị Quét Thiệp Giấy AI OCR, Giám Sát Trích Xuất Dữ Liệu & Hiệu Đính Sự Kiện (Paper Invitation OCR & AI Vision Parsing Observatory — Mục 18, 23 PRD V3 & ADM-OCR-01)
+- **Mục tiêu**:
+  - Xây dựng đài giám sát tập trung chất lượng trích xuất tự động từ ảnh chụp thiệp giấy truyền thống sang dữ liệu đám cưới số hóa (Vision AI OCR Observatory) theo Mục 18 và 23 PRD V3.
+  - Quản trị toàn bộ các lượt quét thiệp cưới của khách hàng: theo dõi độ tin cậy trích xuất (`confidence_score`), trạng thái xử lý (`parsed`, `applied`, `failed`), mô hình AI xử lý (`heuristic_vision_parser`, `gemini-1.5-flash`).
+  - Hỗ trợ nhân viên kiểm duyệt & hiệu đính dữ liệu (`verified_data`): Tên chú rể, cô dâu, ngày cưới dương lịch, sảnh tiệc, địa chỉ tổ chức.
+  - Trạm điều phối áp dụng 1-chạm dữ liệu quét vào tiệc cưới thật (`applyScanToWedding`), tự động tạo mới tiệc cưới nếu người dùng chưa khởi tạo.
+  - Xuất báo cáo danh sách lượt quét định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminPaperScanService.php`:
+    - Thống kê 4 KPI: Tổng lượt quét thiệp giấy, số lượt trích xuất tin cậy cao (&ge; 80%), số lượt đã áp dụng vào thiệp cưới thật, điểm tin cậy trung bình toàn hệ thống (%).
+    - Bộ lọc đa chiều: Từ khóa tìm kiếm (tên cặp đôi, người dùng, nội dung thô), trạng thái (`parsed`, `applied`, `failed`), mức tin cậy (`high`, `medium`, `low`).
+    - Các phương thức nghiệp vụ: `updateVerifiedData` (lưu dữ liệu đã hiệu đính), `applyScanToWedding` (đồng bộ vào Wedding model), `deleteScan` (xóa bản ghi và tệp ảnh trên đĩa), `exportScansCsv`.
+  - `app/Http/Controllers/Admin/AdminPaperScanController.php`:
+    - Xử lý các endpoint: `index`, `show` (hỗ trợ JSON API cho modal), `updateVerified`, `apply`, `destroy`, `export`.
+  - `resources/views/admin/pages/paper_scans/index.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh lọc, bảng danh sách lượt quét với thumbnail ảnh thiệp giấy và thanh tiến độ điểm tin cậy trực quan.
+    - Modal Xem Chi Tiết & Hiệu Đính: hiển thị ảnh gốc bên trái và form hiệu đính các trường dữ liệu bên phải, lưu trực tiếp bằng AJAX không tải lại trang.
+  - `routes/admin.php`: Đăng ký nhóm routes `admin.paper_scans.*`.
+  - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Quét Thiệp Giấy OCR" ngay sau "Chẩn Đoán Lỗi Ảnh" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
+  - `tests/Feature/AdminPaperScanTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng lọc, xem chi tiết qua JSON, hiệu đính dữ liệu, áp dụng vào Wedding hiện có, tự động tạo mới Wedding, xóa bản ghi và xuất CSV (100% PASSED).
