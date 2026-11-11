@@ -10921,6 +10921,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 131. Đề Án 131: Phân Hệ Thiết Kế Tem Niêm Phong Sáp Hoàng Gia & Hiệu Ứng Mở Bì Thư Điện Ảnh (Royal Wax Seal Studio, Custom Monogram & Cinema Envelope Unroll Suite — IDEA-A03, Mục 4.1 DOCX & Section 5 PRD V3)
+- **Mục tiêu**:
+  - Hiện thực hóa trải nghiệm mở đầu thiệp cưới đậm chất điện ảnh (Cinema Opening) theo IDEA-A03, Mục 4.1 DOCX & Section 5 PRD V3:
+  - Cho phép cô dâu chú rể cá nhân hóa con dấu sáp 3D dập nổi (Royal Wax Seal) độc bản trên bì thư lụa của thiệp cưới.
+  - Cung cấp 6 bảng màu sáp hoàng gia Quiet Luxury:
+    - `burgundy`: Đỏ Rượu Bordeaux truyền thống hoàng gia châu Âu (`#8C1D24`).
+    - `royal_gold`: Vàng Kim Hoàng Gia ánh 24K sang trọng (`#D4AF37`).
+    - `sage_green`: Xanh Rêu Nguyệt Quế thảo mộc tự nhiên (`#586E5F`).
+    - `dusty_rose`: Hồng Tro Lãng Mạn thơ mộng (`#B76E79`).
+    - `midnight_navy`: Xanh Navy Cung Đình thâm trầm quý phái (`#1B2A4A`).
+    - `pearl_white`: Trắng Ngọc Trai thuần khiết ngà voi (`#F4EFE6`).
+  - Cung cấp 6 biểu tượng dập nổi trung tâm: Monogram 2 chữ cái đầu (Initials `T & N`), Chữ Song Hỷ Hoàng Gia (囍), Vòng Lá Nguyệt Quế Hy Lạp (Olive Wreath), Cặp Nhẫn Cưới Đính Ước, Đôi Chim Uyên Ương Liền Cánh, Đóa Hoa Cẩm Tú Cầu.
+  - Cung cấp 3 phong cách viền sáp: Viền sáp chảy tự nhiên (Vintage Deckled), Viền hạt cườm ngọc trai (Royal Beaded), Viền tròn tối giản (Modern Minimalist).
+  - Khắc dải chữ khẩu hiệu dập chìm cong cong quanh viền sáp (`motto_text`, ví dụ: `MAYHEN ATELIER`, `FOREVER LOVE`).
+  - Tích hợp **Web Audio API Synthesizer tạo âm thanh nứt sáp chân thực (Wax Crack Sound)**: khi khách bấm mở thiệp, tiếng sáp nứt lách tách êm dịu ngân vang mà không cần tải file âm thanh mp3 nặng.
+  - Giao diện Studio tương tác trực quan 3D kèm Live Preview bì thư thời gian thực và nút nghe thử âm thanh nứt sáp.
+  - Ghi nhận AuditLogger đa tầng khi cập nhật cấu hình con dấu sáp.
+  - 100% Pure Vanilla CSS/JS không dùng thư viện ngoài.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingWaxSealService.php`:
+    - `getColorPalettes`: Cung cấp 6 bảng màu hoàng gia.
+    - `getSealEmblems`: Cung cấp 6 biểu tượng dập nổi trung tâm.
+    - `getRimStyles`: Cung cấp 3 kiểu dáng viền sáp.
+    - `resolveWaxSealConfig`: Phân giải cấu hình với tự động sinh Monogram từ tên uyên ương.
+    - `updateWaxSeal`: Lưu cấu hình vào `custom_config['wax_seal']` và ghi AuditLogger.
+  - `app/Http/Controllers/Client/WeddingWaxSealController.php`:
+    - `index`: Màn hình Studio thiết kế con dấu sáp (`account.wax_seal.index`).
+    - `update`: Lưu cấu hình con dấu sáp (`account.wax_seal.update`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp an toàn.
+  - `resources/views/client/components/wax-seal-badge.blade.php`:
+    - Component con dấu sáp 3D hoàng gia, hỗ trợ 3 kích thước, dập nổi SVG và Web Audio API nứt sáp.
+  - `resources/views/client/pages/account/wax_seal/index.blade.php`:
+    - Giao diện Studio thiết kế con dấu sáp với Live Preview bì thư hoàng gia và nút test âm thanh.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Dấu Sáp Hoàng Gia".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.wax_seal.*`.
+  - `tests/Feature/WeddingWaxSealSuiteTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: truy cập Studio, chặn truy cập trái phép 403, cập nhật cấu hình con dấu sáp, render component con dấu sáp chuẩn BEM, chặn dữ liệu không hợp lệ, fallback tự sinh Monogram chuẩn xác (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,079 / 1,079 tests PASSED 100%** (5,744 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

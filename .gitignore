@@ -156,6 +156,7 @@ Thumbs.db
 !/tests/Feature/SmartGroupInvitationTest.php
 !/tests/Feature/WeddingMusicSuiteTest.php
 !/tests/Feature/WeddingBroadcastSuiteTest.php
+!/tests/Feature/WeddingWaxSealSuiteTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

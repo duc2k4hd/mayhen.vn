@@ -51,6 +51,7 @@ use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingMusicController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
+use App\Http\Controllers\Client\WeddingWaxSealController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Client\ZaloShareController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
@@ -207,6 +208,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/thong-bao-khan-cap', [WeddingBroadcastController::class, 'index'])->name('broadcast.index');
     Route::post('/thiep/{id}/thong-bao-khan-cap', [WeddingBroadcastController::class, 'update'])->name('broadcast.update');
     Route::post('/thiep/{id}/thong-bao-khan-cap/tat', [WeddingBroadcastController::class, 'deactivate'])->name('broadcast.deactivate');
+    Route::get('/thiep/{id}/tem-sap-hoang-gia', [WeddingWaxSealController::class, 'index'])->name('wax_seal.index');
+    Route::post('/thiep/{id}/tem-sap-hoang-gia', [WeddingWaxSealController::class, 'update'])->name('wax_seal.update');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

@@ -479,6 +479,17 @@
                                 </svg>
                                 <span>Băng Tin Khẩn Cấp</span>
                             </a>
+
+                            {{-- Nút Con Dấu Sáp Hoàng Gia (Mục 4.1 DOCX & Đề Án 131) --}}
+                            <a href="{{ route('account.wax_seal.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Tùy biến con dấu sáp 3D, khắc monogram 2 chữ cái đầu và hiệu ứng mở phong bì hoàng gia">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <path d="M12 2v2"></path>
+                                    <path d="M12 20v2"></path>
+                                </svg>
+                                <span>Dấu Sáp Hoàng Gia</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
