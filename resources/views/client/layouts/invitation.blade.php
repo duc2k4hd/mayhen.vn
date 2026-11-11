@@ -350,6 +350,9 @@
         </div>
     @endif
 
+    {{-- Banner Hỗ Trợ Kỹ Thuật An Toàn (Safe Support Impersonation - Mục 17.2 PRD V3) --}}
+    @include('client.components.impersonation-banner')
+
     {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
     @include('client.components.rehearsal-bar')
 

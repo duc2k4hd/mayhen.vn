@@ -42,6 +42,13 @@
         </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            {{-- Nút Chế độ xem dưới góc nhìn khách hàng (Mục 17.2 PRD V3) --}}
+            @if(Auth::id() !== $user->id)
+                <button type="button" class="mayhen_admin_btn" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFFFFF;" onclick="document.getElementById('mayhen_admin_impersonate_modal').style.display='flex';" title="Xem dưới góc nhìn khách hàng kèm kiểm toán chặt chẽ">
+                    🛡️ Xem Dưới Góc Nhìn Khách
+                </button>
+            @endif
+
             @if (Auth::user()?->isSuperAdmin())
                 <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="document.getElementById('mayhen_admin_dsar_modal').style.display='flex';" title="Trích xuất toàn bộ dữ liệu cá nhân JSON theo Luật 91/2025/QH15">
                     📥 Xuất Dữ Liệu PII (DSAR)
@@ -539,6 +546,54 @@
                         </button>
                         <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary">
                             Xác Nhận & Xuất File JSON
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    {{-- Modal Kích Hoạt Chế Độ Xem Dưới Góc Nhìn Khách Hàng (Mục 17.2 PRD V3) --}}
+    @if(Auth::id() !== $user->id)
+        <div id="mayhen_admin_impersonate_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 99999; align-items: center; justify-content: center;">
+            <div style="background: #FFFFFF; border-radius: 12px; width: 90%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); overflow: hidden;">
+                <div style="background: #FEF3C7; padding: 16px 20px; border-bottom: 1px solid #FDE68A; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: 700; font-size: 1rem; color: #78350F; display: flex; align-items: center; gap: 8px;">
+                        <span>🛡️</span>
+                        <span>Xem Dưới Góc Nhìn Khách Hàng</span>
+                    </div>
+                    <button type="button" onclick="document.getElementById('mayhen_admin_impersonate_modal').style.display='none';" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #78350F;">&times;</button>
+                </div>
+
+                <form action="{{ route('admin.users.impersonate', $user->id) }}" method="POST" style="padding: 20px;">
+                    @csrf
+                    <div style="font-size: 0.8125rem; color: #92400E; line-height: 1.5; margin-bottom: 16px; background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px; border-radius: 6px;">
+                        <strong>Quy Chuẩn Bảo Mật (Mục 17.2 PRD V3):</strong><br>
+                        • Phiên hỗ trợ kéo dài tối đa <strong>30 phút</strong> và tự động kết thúc.<br>
+                        • Vô hiệu hóa tính năng đổi mật khẩu / thông tin thanh toán nhạy cảm.<br>
+                        • Mọi thao tác bắt đầu & kết thúc đều được ghi vết kiểm toán vĩnh viễn (Audit Log).
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                            Lý Do Kích Hoạt Phiên Hỗ Trợ <span style="color: #DC2626;">*</span>
+                        </label>
+                        <textarea name="reason" required minlength="5" maxlength="255" rows="3" class="mayhen_admin_form_input" style="width: 100%; font-size: 0.8125rem;" placeholder="VD: Khách hàng yêu cầu kiểm tra lỗi hiển thị thiệp trên điện thoại..."></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                            Mã Ticket Hỗ Trợ (Tùy chọn)
+                        </label>
+                        <input type="text" name="ticket_code" class="mayhen_admin_form_input" style="width: 100%; font-size: 0.8125rem;" placeholder="VD: TK-20261111-002">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="document.getElementById('mayhen_admin_impersonate_modal').style.display='none';">
+                            Hủy Bỏ
+                        </button>
+                        <button type="submit" class="mayhen_admin_btn" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFFFFF;">
+                            Bắt Đầu Phiên Hỗ Trợ (30 Phút)
                         </button>
                     </div>
                 </form>

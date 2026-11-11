@@ -8908,3 +8908,56 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 8 test files liên quan gần đây: **56/56 tests PASSED 100% (239 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 88. ĐỀ ÁN 88: CƠ CHẾ HỖ TRỢ TRỰC QUAN AN TOÀN — CHẾ ĐỘ XEM DƯỚI GÓC NHÌN KHÁCH HÀNG KÈM KIỂM TOÁN CHẶT CHẼ (SAFE SUPPORT IMPERSONATION & AUDITED VIEW-AS-CUSTOMER DESK — MỤC 17.2 PRD V3 & SECTION 47) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 17.2 trong tài liệu gốc PRD V3 ("17.2. Quyền hỗ trợ an toàn: Chế độ 'Xem dưới góc nhìn khách' (nếu cần) phải có explicit approval, phiên giới hạn, banner rõ, log mọi thao tác và hạn chế dữ liệu tài chính/riêng tư; không giả danh âm thầm. Tránh một lần thao tác gây lộ lọt thông tin hoặc sửa đổi ngoài ý muốn."):
+  1. *Triết Lý & Quy Chuẩn An Toàn Vận Hành (Zero Hidden Impersonation)*:
+     - Phê duyệt minh bạch (*Explicit Approval*): Bắt buộc Quản trị viên nhập lý do hỗ trợ (tối thiểu 5 ký tự) và mã Ticket liên quan trước khi bắt đầu phiên hỗ trợ.
+     - Thời gian hiệu lực giới hạn (*TTL 30 Phút*): Tự động hết hiệu lực sau 30 phút, middleware tự động giải phóng phiên hỗ trợ và điều hướng Quản trị viên về Dashboard Admin kèm thông báo cảnh báo.
+     - Banner an toàn cố định (*Sticky Safety Banner*): Luôn hiển thị thanh banner màu hổ phách Quiet Luxury trên đỉnh trang (`impersonation-banner.blade.php`), nêu rõ danh tính Admin đang hỗ trợ khách hàng nào, đồng hồ đếm ngược thời gian thực (Vanilla JS) và nút "Thoát Chế Độ Hỗ Trợ" 1-click.
+     - Vành đai bảo vệ dữ liệu nhạy cảm (*Security Guardrails*): Middleware tự động chặn đứng các hành động thay đổi mật khẩu (`account.password.update`), thay đổi email cá nhân hoặc xóa tài khoản trong suốt phiên hỗ trợ (trả về HTTP 403 Forbidden).
+     - Kiểm toán bất biến (*Audited Log*): Ghi vết toàn diện mọi sự kiện `SUPPORT_IMPERSONATION_STARTED` và `SUPPORT_IMPERSONATION_ENDED` vào `AuditLogger`.
+  2. *Dịch Vụ Nghiệp Vụ (`SupportImpersonationService`)*:
+     - `startImpersonation(User $admin, User $targetCustomer, string $reason, ?string $ticketCode, int $ttlMinutes)`: Xác thực quyền hạn admin, lưu thông tin phiên vào Session, chuyển đổi Auth sang khách hàng và ghi nhật ký kiểm toán.
+     - `stopImpersonation()`: Khôi phục danh tính Quản trị viên ban đầu, xóa sạch dữ liệu session hỗ trợ và ghi nhật ký kiểm toán kết thúc phiên.
+     - `isImpersonating()` & `getCurrentSession()`: Kiểm tra trạng thái và cung cấp thời gian còn lại (tính bằng giây).
+  3. *Middleware Giám Sát & Bảo Vệ Toàn Cục (`SupportImpersonationMiddleware`)*:
+     - Đăng ký trong nhóm middleware `web` tại `bootstrap/app.php`.
+     - Tự động kiểm tra thời hạn session; tự động chấm dứt khi quá 30 phút; chặn đứng các route nhạy cảm; tự động chia sẻ biến `$impersonationSession` cho mọi Blade View.
+  4. *Controller & Tuyến Đường (`SupportImpersonationController`)*:
+     - `POST /admin/users/{id}/impersonate` (`admin.users.impersonate`): Kích hoạt phiên hỗ trợ từ Admin.
+     - `POST /admin/impersonate/leave` (`admin.impersonation.leave`) & `POST /ho-tro/thoat-phien` (`client.impersonation.leave`): Thoát phiên hỗ trợ an toàn từ cả Admin lẫn Client.
+     - `GET /admin/impersonate/status` (`admin.impersonation.status`): API kiểm tra thời gian phiên.
+  5. *Giao Diện Người Dùng (Admin & Client UI)*:
+     - `resources/views/admin/pages/users/show.blade.php`: Nút "🛡️ Xem Dưới Góc Nhìn Khách" cùng Modal nhập lý do hỗ trợ, thời gian 30 phút và mã Ticket.
+     - `resources/views/client/components/impersonation-banner.blade.php`: Banner cảnh báo an toàn Quiet Luxury.
+     - Nhúng tự động vào `resources/views/client/layouts/master.blade.php` và `resources/views/client/layouts/invitation.blade.php`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services & Middleware**:
+     - `app/Services/SupportImpersonationService.php`
+     - `app/Http/Middleware/SupportImpersonationMiddleware.php`
+     - `bootstrap/app.php`
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Admin/SupportImpersonationController.php`
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php) & [routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php))
+  3. **Giao diện & Blade**:
+     - `resources/views/client/components/impersonation-banner.blade.php`
+     - Cập nhật `resources/views/admin/pages/users/show.blade.php`
+     - Cập nhật `resources/views/client/layouts/master.blade.php`
+     - Cập nhật `resources/views/client/layouts/invitation.blade.php`
+  4. **Kiểm thử tự động ([tests/Feature/SupportImpersonationSecurityTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/SupportImpersonationSecurityTest.php))**:
+     - 7 kịch bản kiểm thử:
+       1. Admin bắt đầu phiên xem dưới góc nhìn khách hàng thành công kèm lý do, ticket và ghi vết kiểm toán.
+       2. Hiển thị banner cảnh báo an toàn trên các trang client kèm thông tin Admin, Customer và nút thoát.
+       3. Chặn đứng các hành động nhạy cảm như đổi mật khẩu trong phiên hỗ trợ (HTTP 403 Forbidden).
+       4. Thoát phiên hỗ trợ an toàn và khôi phục tài khoản Admin ban đầu kèm ghi log kiểm toán kết thúc.
+       5. Tự động kết thúc phiên hỗ trợ khi quá thời gian 30 phút và điều hướng về Dashboard Admin.
+       6. Chặn người dùng thường không có quyền admin kích hoạt phiên hỗ trợ (chuyển hướng login).
+       7. Chặn admin tự kích hoạt phiên hỗ trợ trên chính tài khoản của mình.
+     - Kết quả: **7/7 tests PASSED 100% (29 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 9 test files liên quan gần đây: **63/63 tests PASSED 100% (268 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

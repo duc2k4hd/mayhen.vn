@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\SeoController as AdminSeoController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\Admin\SupportImpersonationController;
 use App\Http\Controllers\Admin\SystemResilienceController as AdminSystemResilienceController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -120,7 +121,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->middleware('admin.manager')->name('reset_password');
         Route::post('/{id}/lock', [AdminUserController::class, 'lock'])->middleware('admin.manager')->name('lock');
         Route::post('/{id}/unlock', [AdminUserController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
+        Route::post('/{id}/impersonate', [SupportImpersonationController::class, 'impersonate'])->middleware('admin.manager')->name('impersonate');
     });
+
+    // Quyền hỗ trợ an toàn — Thoát chế độ xem dưới góc nhìn khách (Mục 17.2 PRD V3)
+    Route::post('/impersonate/leave', [SupportImpersonationController::class, 'leave'])->name('impersonation.leave');
+    Route::get('/impersonate/status', [SupportImpersonationController::class, 'status'])->name('impersonation.status');
 
     // Quản lý Khách mời & Điểm danh ngày cưới (Wave 05 & Innovation #8, #15)
     Route::prefix('guests')->name('guests.')->group(function () {

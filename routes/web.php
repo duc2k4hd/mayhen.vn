@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SupportImpersonationController;
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AuthController;
@@ -125,6 +126,8 @@ Route::post('/dang-nhap', [AuthController::class, 'login'])->middleware('throttl
 Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:auth_attempts')->name('register.submit');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
+Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
+Route::post('/ho-tro/thoat-phien', [\App\Http\Controllers\Admin\SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
