@@ -9288,3 +9288,69 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 8 test files liên quan gần nhất: **72/72 tests PASSED 100% (285 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 94. ĐỀ ÁN 94: TRUNG TÂM THIẾT LẬP NỀN TẢNG AN TOÀN, KIỂM TRA KẾT NỐI & PHÒNG VỆ THAY ĐỔI CẤU HÌNH (SAFE PLATFORM CONFIGURATION & CONNECTION DIAGNOSTICS COCKPIT — MỤC 20 & MỤC 50 PRD V3 / Screen contract 08)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai màn hình thiết lập nền tảng an toàn (Safe Cockpit) dành riêng cho Quản trị viên cấp cao (`Super Admin`) theo chuẩn **Mục 20 & Mục 50 Master PRD V3 (Screen contract 08)**.
+  - **4 Nguyên Tắc Phòng Vệ Bất Biến**:
+    1. *Bảo vệ khóa bí mật (Masked Secret Protection)*: Secret/token/mật khẩu chỉ hiển thị dưới dạng masked (`••••••••`), tuyệt đối không gửi plain-text secret xuống giao diện HTML/JavaScript (Dòng 978 PRD V3).
+    2. *Phòng vệ xóa nhầm (Zero Accidental Secret Erasure)*: Khi submit form, nếu ô secret bị để trống hoặc gửi chuỗi `••••••••`, backend tự động giữ nguyên giá trị khóa bí mật ban đầu trong cơ sở dữ liệu.
+    3. *Chẩn đoán kết nối tức thì (Live Connection Diagnostics)*: Nút "Kiểm Tra Kết Nối" gửi AJAX kiểm tra sức khỏe hạ tầng thực tế (Database, Storage Disk, Cache, Mail SMTP, VietQR/SePay) đo độ trễ `latency_ms` thời gian thực mà không làm gián đoạn hệ thống.
+    4. *Lưu vết lịch sử & Khôi phục 1-click (Safe History & 1-Click Rollback)*: Mọi thay đổi cấu hình đều tự động ghi vào `platform_setting_histories` kèm phiên bản `version` và người thực hiện `changed_by`. Cho phép Super Admin 1-click Rollback khôi phục giá trị trước đó ngay lập tức.
+- **6 Nhóm Cấu Hình Chuẩn Hóa**:
+  1. `brand_seo`: Tên thương hiệu, khẩu hiệu (tagline), email hỗ trợ, hotline, meta description mặc định.
+  2. `payment`: Chế độ live/sandbox, mã ngân hàng NAPAS, tên ngân hàng, số tài khoản nhận tiền, tên chủ tài khoản, mã khóa SePay API Token (masked secret), chữ ký webhook secret (masked secret).
+  3. `mail`: Mailer (smtp/sendmail/log), host SMTP, cổng port (587/465), mã hóa TLS/SSL, tài khoản SMTP, mật khẩu ứng dụng SMTP (masked secret), địa chỉ email người gửi, tên đại diện người gửi.
+  4. `storage`: Ổ đĩa lưu trữ (public/s3), dung lượng ảnh tải lên tối đa (MB), chất lượng nén ảnh WebP (85%), URL CDN tăng tốc ngoại vi.
+  5. `security`: Thời hạn phiên ủy quyền CSKH Impersonation (phút), giới hạn thử đăng nhập (lần/phút), thời gian ân hạn thiệp hết hạn (ngày), ngưỡng tự động tạm ẩn nội dung bị báo cáo vi phạm.
+  6. `features`: Cờ tính năng bật/tắt toàn hệ thống: Nhạc nền thiệp cưới, Sơ đồ bàn tiệc & RSVP, Tải trọn bộ kỷ niệm (.ZIP), Banner thông báo công khai.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_124500_create_platform_settings_tables.php`:
+       * Bảng `platform_settings`: `group`, `key`, `value` (longText), `is_secret`, `label`, `description`, `version`, `updated_by`, timestamps, unique index `['group', 'key']`.
+       * Bảng `platform_setting_histories`: `group`, `key`, `old_value`, `new_value`, `diff_summary`, `version`, `changed_by`, `created_at`, index `['group', 'key', 'created_at']`.
+  2. **Models**:
+     - `app/Models/PlatformSetting.php`: Quản lý 6 nhóm constants, scopes `forGroup()`, hằng số `MASKED_SECRET = '••••••••'`.
+     - `app/Models/PlatformSettingHistory.php`: Quan hệ `belongsTo(User::class, 'changed_by')`, accessors `masked_old_value` và `masked_new_value` tự động che giấu khóa bí mật khi hiển thị bảng lịch sử.
+  3. **Services**:
+     - `app/Services/PlatformConfigurationService.php`:
+       * Định nghĩa đầy đủ metadata 6 nhóm qua `getDefaultDefinitions()`.
+       * `seedDefaultsIfEmpty()`: Tự động khởi tạo giá trị ban đầu vào database.
+       * `getGroupSettings()`: Đọc cấu hình theo nhóm kèm mask secret `••••••••`.
+       * `updateGroupSettings()`: Cập nhật cấu hình, phòng vệ không xóa secret khi form để trống/masked, tạo bản ghi lịch sử `PlatformSettingHistory` và ghi audit qua `AuditLogger::log('PLATFORM_SETTINGS_UPDATED')`.
+       * `testConnection()`: Đo độ trễ phản hồi thời gian thực của Database (SELECT 1), Storage Disk (đọc/ghi file txt), Cache (put/get key), Mail SMTP và Cổng thanh toán VietQR/SePay.
+       * `rollbackHistory()`: Khôi phục setting về phiên bản cũ và ghi nhận `AuditLogger::log('PLATFORM_SETTINGS_ROLLBACK')`.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminPlatformSettingController.php`:
+       * `index()`: Trình bày layout 2 cột danh mục & panel cài đặt.
+       * `update()`: Lưu thay đổi cấu hình nhóm an toàn.
+       * `testConnection()`: Trả JSON chẩn đoán kết nối kèm độ trễ ms.
+       * `rollback()`: Hoàn tác cấu hình 1-click.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings` có middleware `admin.super`:
+       * `GET /admin/settings/platform` (`admin.settings.platform`)
+       * `PUT /admin/settings/platform/{group}` (`admin.settings.platform.update`)
+       * `POST /admin/settings/platform/test/{service}` (`admin.settings.platform.test`)
+       * `POST /admin/settings/platform/rollback/{historyId}` (`admin.settings.platform.rollback`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/platform.blade.php`:
+       * Layout 2 cột: Cột trái danh mục 6 nhóm cấu hình kèm badge số lượng trường và icon trực quan; Cột phải panel cấu hình nhóm hiện tại.
+       * Hỗ trợ các trường type: `toggle` (switch chuyển mạch Quiet Luxury), `select`, `textarea`, `password` (kèm nút toggle xem mật khẩu 👁️), `text`.
+       * Hộp chẩn đoán kết nối (AJAX Live Box) với hiệu ứng đổi màu trạng thái và hiển thị độ trễ latency `ms`.
+       * Bảng lịch sử thay đổi (Rollback Table) hiển thị thời gian, người đổi, giá trị cũ -> mới (đã mask secret an toàn), và nút Hoàn Tác (Rollback) 1-click.
+       * Cập nhật Sidebar: Menu "Thiết Lập Nền Tảng (Safe Config)" trong Section 5 (Hệ Thống & Cài Đặt) và tích hợp vào Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminPlatformConfigurationTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminPlatformConfigurationTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai bị redirect về `admin.login`.
+       2. Người dùng `customer` bị redirect về `admin.login`.
+       3. Quản lý `manager` thông thường bị chặn bởi middleware `admin.super` (redirect về dashboard hoặc 403 JSON).
+       4. Super Admin (`admin`) truy cập thành công màn hình thiết lập nền tảng an toàn.
+       5. Masked secret bảo vệ an toàn: Không trả plain-text secret ra view, chỉ hiển thị `••••••••`.
+       6. Cập nhật cấu hình thành công tạo bản ghi lịch sử `PlatformSettingHistory` và lưu DB.
+       7. Phòng vệ an toàn: Không xóa hoặc ghi đè khóa bí mật khi submit rỗng hoặc gửi chuỗi `••••••••`.
+       8. Chẩn đoán kết nối cơ sở dữ liệu trả JSON đúng cấu trúc kèm `latency_ms`.
+       9. Chẩn đoán kết nối bộ nhớ lưu trữ (Storage Disk) hoạt động hoàn hảo.
+       10. Hoàn tác (Rollback) khôi phục giá trị cấu hình về phiên bản trước thành công.
+     - Kết quả: **10/10 tests PASSED 100% (34 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 10 test files admin gần nhất: **84/84 tests PASSED 100% (396 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

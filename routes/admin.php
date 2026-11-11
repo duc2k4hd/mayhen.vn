@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
+use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -175,6 +176,12 @@ Route::middleware('admin.auth')->group(function () {
 
     // Cấu hình Hệ thống, Bảng giá, Ngân hàng VietQR & Thanh tra Bộ nhớ (Yêu cầu Quản trị viên cấp cao)
     Route::prefix('settings')->middleware('admin.super')->name('settings.')->group(function () {
+        // Trung Tâm Thiết Lập Nền Tảng An Toàn, Kiểm Tra Kết Nối & Phòng Vệ Cấu Hình (Mục 20 & Mục 50 PRD V3 / Screen contract 08)
+        Route::get('/platform', [AdminPlatformSettingController::class, 'index'])->name('platform');
+        Route::put('/platform/{group}', [AdminPlatformSettingController::class, 'update'])->name('platform.update');
+        Route::post('/platform/test/{service}', [AdminPlatformSettingController::class, 'testConnection'])->name('platform.test');
+        Route::post('/platform/rollback/{historyId}', [AdminPlatformSettingController::class, 'rollback'])->name('platform.rollback');
+
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');
         Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');
         Route::put('/plans/{id}', [AdminSettingController::class, 'updatePlan'])->name('plans.update');

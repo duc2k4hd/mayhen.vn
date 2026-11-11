@@ -372,6 +372,16 @@
                 <!-- Section 5: Hệ Thống & Cài Đặt (Chỉ Quản trị viên cấp cao) -->
                 @if (Auth::user()?->isSuperAdmin())
                     <div class="mayhen_admin_menu_section">Hệ Thống & Cài Đặt</div>
+                    <a href="{{ route('admin.settings.platform') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.platform*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </span>
+                        <span>Thiết Lập Nền Tảng (Safe Config)</span>
+                    </a>
+
                     <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.plans*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -709,6 +719,10 @@
                     <span class="mayhen_admin_cmd_item_meta">/admin/partners/commissions</span>
                 </a>
                 @if (Auth::user()?->isSuperAdmin())
+                    <a href="{{ route('admin.settings.platform') }}" class="mayhen_admin_cmd_item" data-search="thiết lập cấu hình nền tảng an toàn chẩn đoán kết nối safe platform settings mail storage payment security">
+                        <span>⚙️ Thiết Lập Nền Tảng (Safe Config & Test)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/platform</span>
+                    </a>
                     <a href="{{ route('admin.settings.plans') }}" class="mayhen_admin_cmd_item" data-search="gói cước dịch vụ bảng giá plans pricing">
                         <span>⭐ Gói Dịch Vụ & Bảng Giá</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/plans</span>
