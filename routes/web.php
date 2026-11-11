@@ -54,6 +54,7 @@ use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingMusicController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
+use App\Http\Controllers\Client\WeddingTimelineController;
 use App\Http\Controllers\Client\WeddingWaxSealController;
 use App\Http\Controllers\Client\WishManagementController;
 use App\Http\Controllers\Client\ZaloShareController;
@@ -138,6 +139,7 @@ Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'rep
 Route::post('/api/thiep/wishes/{wishId}/report', [ContentReportController::class, 'reportWish'])->middleware('throttle:30,1')->name('invitation.wish.report');
 Route::post('/api/thiep/photos/{photoId}/report', [ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
 Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitation.download_archive');
+Route::get('/thiep/{slug}/lich-ngay-cuoi.ics', [WeddingTimelineController::class, 'downloadIcs'])->name('invitation.timeline.download_ics');
 
 // Tương tác Thông Báo Công Khai & Banner (Mục 147 PRD V3)
 Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
@@ -223,6 +225,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/bang-mau-dresscode', [WeddingDresscodeController::class, 'index'])->name('dresscode.index');
     Route::post('/thiep/{id}/bang-mau-dresscode', [WeddingDresscodeController::class, 'update'])->name('dresscode.update');
     Route::post('/thiep/{id}/bang-mau-dresscode/upload-moodboard', [WeddingDresscodeController::class, 'uploadMoodboard'])->name('dresscode.upload_moodboard');
+    Route::get('/thiep/{id}/lich-trinh-ngay-cuoi', [WeddingTimelineController::class, 'index'])->name('timeline.index');
+    Route::post('/thiep/{id}/lich-trinh-ngay-cuoi', [WeddingTimelineController::class, 'update'])->name('timeline.update');
+    Route::get('/thiep/{id}/lich-trinh-ngay-cuoi/tai-ics', [WeddingTimelineController::class, 'downloadIcs'])->name('timeline.download_ics');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

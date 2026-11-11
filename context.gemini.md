@@ -11052,6 +11052,51 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 135. Đề Án 135: Phân Hệ Quản Lý Lịch Trình Chi Tiết Hôn Lễ Tương Tác & Thêm Vào Lịch Một Chạm (Interactive Wedding Day Timeline & 1-Click Calendar Add Suite — IDEA-A06, Section 7 Invitation Standards & Section 25 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ quản lý thời gian biểu chi tiết các nghi thức và hoạt động ngày cưới tương tác chuyên sâu theo IDEA-A06, Section 7 Invitation Standards và Section 25 PRD V3:
+  - Cung cấp 4 kịch bản đám cưới chuẩn mực tại Việt Nam (Preset Scenarios):
+    1. *Tiệc Cưới Tối Khách Sạn / Trung Tâm Hội Nghị (Evening Banquet & Ceremony)*: Đón tiếp quan khách & Cocktail (17:30), Nghi thức Lễ Thành Hôn & Rót rượu (18:30), Khai tiệc chiêu đãi & Ban nhạc Acoustic (19:00), Trò chơi tương tác & Bốc thăm may mắn (20:00), Cảm ơn quan khách & Lời chào tạm biệt (21:00).
+    2. *Lễ Thành Hôn Bãi Biển / Resort Hoàng Hôn (Sunset Beach Wedding)*: Đón khách bãi cỏ ven biển (16:00), Trao lời hẹn ước hoàng hôn Sunset Vows (17:00), Chụp ảnh kỷ niệm Golden Hour (18:00), Dạ tiệc hải sản ngoài trời (18:45), After-Party, khiêu vũ & pháo hoa (20:30).
+    3. *Lễ Gia Tiên & Rước Dâu Truyền Thống (Traditional Ancestral Ceremony)*: Đoàn nhà trai xuất phát (07:30), Trao tráp sính lễ nhà gái (08:30), Nghi thức gia tiên & Dâng trà đấng sinh thành (09:00), Rước nàng dâu về nhà chồng (10:15), Tiệc mừng thân mật gia đình (11:30).
+    4. *Tiệc Cưới Sân Vườn Ngoài Trời Thân Mật (Intimate Garden Wedding)*: Đón khách check-in khu vườn & Ký tên lưu bút (15:30), Lễ thành hôn dưới vòm hoa cổ tích (16:30), Tiệc trà chiều & Ban nhạc Acoustic (17:30), Tiệc nướng BBQ & Bữa tối thân mật (18:30), Đốt lửa trại & Khiêu vũ First Dance (20:00).
+  - Cung cấp 10 biểu tượng thời khắc hôn lễ độc bản (Cocktail, Nhẫn cưới, Rót rượu Champagne, Khai tiệc, Chụp ảnh, Ban nhạc, Tia sáng trò chơi, Pháo hoa khiêu vũ, Dâng trà gia tiên, Xe hoa rước dâu).
+  - Tích hợp tính năng **"Thêm Vào Lịch Một Chạm" (1-Click Add to Calendar)**:
+    - Google Calendar: Sinh liên kết chuẩn với múi giờ UTC, tên sự kiện, nội dung, địa điểm và link xem thiệp.
+    - Apple Calendar / iOS / Mac / Android: Tự động xuất tệp iCalendar chuẩn RFC 5545 (`.ics`) có cơ chế `VALARM` nhắc nhở trước 1 ngày và trước 2 giờ.
+    - Outlook Web & Office 365: Liên kết mở trang tạo sự kiện trực tiếp.
+    - Yahoo Calendar: Liên kết tạo lịch tương thích.
+  - Thiết kế component Section 7 chuẩn hóa `resources/views/client/components/wedding-timeline.blade.php`: Trục dọc vàng kim (Golden Spine), điểm nút phát sáng, thẻ card bo góc so le hai bên trên desktop và một bên trên mobile, nút dropdown "Thêm Vào Lịch" thanh lịch chuẩn Quiet Luxury.
+  - Tự động đồng bộ hai chiều vào `custom_config['timeline']` và `wedding->extra_data['timeline']`.
+  - Ghi nhận AuditLogger `TIMELINE_UPDATED`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingTimelineService.php`:
+    - `getPresetScenarios`: 4 kịch bản đám cưới chuẩn mực.
+    - `getAvailableIcons`: 10 biểu tượng thời khắc trọng đại ngày cưới.
+    - `getDefaultConfig` & `resolveTimelineConfig`: Phân giải cấu hình với fallback dữ liệu cũ an toàn.
+    - `updateTimeline`: Lưu cấu hình và đồng bộ ngược vào `wedding->extra_data`.
+    - `generateCalendarLinks`: Sinh các đường dẫn thêm vào Google, Outlook, Office 365, Yahoo Calendar.
+    - `generateIcsContent`: Xuất tệp iCalendar chuẩn RFC 5545 (`.ics`) với VALARM nhắc nhở trước sự kiện.
+  - `app/Http/Controllers/Client/WeddingTimelineController.php`:
+    - `index`: Màn hình Studio quản trị Timeline ngày cưới (`account.timeline.index`).
+    - `update`: Lưu cấu hình các mốc sự kiện ngày cưới (`account.timeline.update`).
+    - `downloadIcs`: Tải tệp `.ics` cho Apple Calendar từ trang quản trị (`account.timeline.download_ics`) và route công khai (`invitation.timeline.download_ics`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp cưới an toàn.
+  - `resources/views/client/components/wedding-timeline.blade.php`:
+    - Component hiển thị Section 7 chuẩn BEM `mayhen_invitation_timeline` với trục dọc thời gian, mốc thời gian, địa điểm, mô tả và nút dropdown "Thêm Vào Lịch".
+  - `resources/views/client/pages/account/timeline/index.blade.php`:
+    - Giao diện Studio quản trị Timeline Quiet Luxury, chọn kịch bản mẫu 1-click, thêm/xóa/sửa mốc sự kiện động, tải thử file .ics và live preview canvas.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Lịch Trình Hôn Lễ".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.timeline.*` và route public `invitation.timeline.download_ics`.
+  - `tests/Feature/WeddingTimelineSuiteTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: chặn truy cập trái phép 403, mở màn hình Studio, cập nhật mốc thời gian thành công, chặn dữ liệu thiếu bắt buộc, tải tệp .ics chuẩn RFC 5545 cho cả chủ tiệc và khách mời công khai, render component Section 7 đầy đủ mốc thời gian và liên kết Calendar (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,106 / 1,106 tests PASSED 100%** (5,907 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

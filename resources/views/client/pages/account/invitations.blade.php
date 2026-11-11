@@ -515,6 +515,15 @@
                                 </svg>
                                 <span>Bảng Màu Dresscode</span>
                             </a>
+
+                            {{-- Nút Lịch Trình Hôn Lễ (Section 25 PRD V3 & Đề Án 135) --}}
+                            <a href="{{ route('account.timeline.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý lịch trình nghi thức hôn lễ chi tiết và xuất lịch một chạm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 14 14"></polyline>
+                                </svg>
+                                <span>Lịch Trình Hôn Lễ</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
