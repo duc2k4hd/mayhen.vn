@@ -209,6 +209,15 @@
                     <span>Sơ Đồ Bàn & Chỗ Ngồi</span>
                 </a>
 
+                <a href="{{ route('admin.keepsakes.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.keepsakes*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </span>
+                    <span>Lưu Trữ Kỷ Niệm</span>
+                </a>
+
                 <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.rescue') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -882,6 +891,10 @@
                 <a href="{{ route('admin.guests.seating.index') }}" class="mayhen_admin_cmd_item" data-search="sơ đồ bàn tiệc chỗ ngồi seating plan capacity guardian quá tải xếp bàn sảnh">
                     <span>🪑 Sơ Đồ Bàn Tiệc & Điều Phối Chỗ Ngồi</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/guests/seating</span>
+                </a>
+                <a href="{{ route('admin.keepsakes.index') }}" class="mayhen_admin_cmd_item" data-search="kỷ niệm hậu sự kiện lưu trữ hộp thư thời gian time capsule keepsake archive hậu hôn lễ wrap-up">
+                    <span>⏳ Lưu Trữ Kỷ Niệm & Hậu Sự Kiện</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/keepsakes</span>
                 </a>
                 <a href="{{ route('admin.guests.import.index') }}" class="mayhen_admin_cmd_item" data-search="nhập khách hàng loạt batch import csv excel sđt 4 bước">
                     <span>📥 Nhập Khách Mời Hàng Loạt (Batch 4 Bước)</span>

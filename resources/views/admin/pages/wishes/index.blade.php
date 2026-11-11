@@ -65,13 +65,20 @@
         </div>
     </div>
 
-    <!-- Navigation Tabs: Wishes vs RSVPs -->
-    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--mh-admin-border); padding-bottom: 8px;">
+    <!-- Navigation Tabs: Wishes vs RSVPs vs Guestbook Album -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--mh-admin-border); padding-bottom: 8px; flex-wrap: wrap;">
+        <a href="{{ route('admin.wishes.guestbook.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline" style="border-color: var(--mh-admin-gold); color: var(--mh-admin-gold);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Sổ Lưu Bút Kỷ Niệm (Album)</span>
+        </a>
         <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_btn" style="background-color: var(--mh-admin-charcoal); color: #FFF; border-color: var(--mh-admin-charcoal);">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <span>Sổ Lưu Bút & Lời Chúc ({{ number_format($totalWishes) }})</span>
+            <span>Bảng Kiểm Duyệt ({{ number_format($totalWishes) }})</span>
         </a>
         <a href="{{ route('admin.wishes.rsvps') }}" class="mayhen_admin_btn mayhen_admin_btn_outline">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

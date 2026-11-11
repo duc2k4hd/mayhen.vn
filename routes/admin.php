@@ -12,10 +12,12 @@ use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFeatureFlagController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminGiftController;
+use App\Http\Controllers\Admin\AdminGuestbookController;
 use App\Http\Controllers\Admin\AdminGuestImportController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvitationRevisionController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
+use App\Http\Controllers\Admin\AdminKeepsakeController;
 use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminOrderRefundController;
@@ -253,6 +255,19 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/batch-delete', [AdminWishController::class, 'batchDelete'])->middleware('admin.manager')->name('batch_delete');
         Route::post('/{id}/toggle-approval', [AdminWishController::class, 'toggleApproval'])->name('toggle_approval');
         Route::delete('/{id}', [AdminWishController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+
+        // Phân Hệ Quản Trị Sổ Lưu Bút Kỷ Niệm & Xuất Bản Lưu Niệm (Mục 34 PRD V3 & ADM-GBK-01)
+        Route::prefix('guestbook')->name('guestbook.')->group(function () {
+            Route::get('/', [AdminGuestbookController::class, 'index'])->name('index');
+            Route::post('/{id}/toggle-pin', [AdminGuestbookController::class, 'togglePin'])->name('toggle_pin');
+            Route::post('/{id}/toggle-approval', [AdminGuestbookController::class, 'toggleApproval'])->name('toggle_approval');
+            Route::post('/{id}/toggle-privacy', [AdminGuestbookController::class, 'togglePrivacy'])->name('toggle_privacy');
+            Route::post('/{id}/reply', [AdminGuestbookController::class, 'reply'])->name('reply');
+            Route::delete('/{id}/reply', [AdminGuestbookController::class, 'deleteReply'])->name('delete_reply');
+            Route::delete('/{id}', [AdminGuestbookController::class, 'destroy'])->name('destroy');
+            Route::get('/weddings/{weddingId}/keepsake-print', [AdminGuestbookController::class, 'exportHtml'])->name('keepsake_print');
+            Route::get('/weddings/{weddingId}/export-csv', [AdminGuestbookController::class, 'export'])->name('export');
+        });
     });
 
     // Phân Hệ Quản Trị Sổ Mừng Cưới & Quản Lý Quà Mừng (Mục 35 PRD V3 & ADM-GFT-01)
@@ -265,6 +280,17 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/{id}', [AdminGiftController::class, 'destroy'])->name('destroy');
         Route::post('/batch-delete', [AdminGiftController::class, 'batchDelete'])->name('batch_delete');
         Route::get('/export-csv', [AdminGiftController::class, 'export'])->name('export');
+    });
+
+    // Phân Hệ Quản Trị Kế Hoạch Cưới Hậu Sự Kiện & Lưu Trữ Kỷ Niệm (Mục 36 PRD V3 & ADM-ARC-01)
+    Route::prefix('keepsakes')->name('keepsakes.')->group(function () {
+        Route::get('/', [AdminKeepsakeController::class, 'index'])->name('index');
+        Route::get('/{weddingId}', [AdminKeepsakeController::class, 'show'])->name('show');
+        Route::post('/{weddingId}/settings', [AdminKeepsakeController::class, 'updateSettings'])->middleware('admin.manager')->name('update_settings');
+        Route::post('/{weddingId}/toggle', [AdminKeepsakeController::class, 'toggle'])->name('toggle');
+        Route::post('/capsules/{capsuleId}/unlock', [AdminKeepsakeController::class, 'unlockCapsule'])->name('unlock_capsule');
+        Route::delete('/capsules/{capsuleId}', [AdminKeepsakeController::class, 'destroyCapsule'])->middleware('admin.manager')->name('destroy_capsule');
+        Route::get('/{weddingId}/export-archive', [AdminKeepsakeController::class, 'exportArchive'])->name('export_archive');
     });
 
     // Quản lý Gói Cước & Đăng Ký (Wave 06 - ADM-A10)

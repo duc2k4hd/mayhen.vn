@@ -10396,3 +10396,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Kết quả test: **10/10 tests PASSED 100%**.
      - Tổng suite 19 feature test files admin gần nhất: **192/192 tests PASSED 100% (802 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 114. Đề Án 114: Phân Hệ Quản Trị Sổ Lưu Bút Kỷ Niệm, Album Ký Tên Điện Tử & Xuất Bản Lưu Niệm (Commemorative Wedding Guestbook, Digital Signature & Keepsake Export — Mục 34 PRD V3 & ADM-GBK-01)
+- **Mục tiêu**:
+  - Xây dựng trạm quản trị Sổ Lưu Bút Kỷ Niệm và Album Ký Tên Điện Tử chuyên biệt cho từng tiệc cưới trên nền tảng Mây Hẹn.
+  - Tích hợp chữ ký tay số (Canvas Digital Signature), kiểm duyệt 1-chạm (Duyệt/Ẩn, Ghim nổi bật, Chế độ riêng tư), phản hồi đáp lễ tri ân của cặp đôi.
+  - Xuất bản lưu niệm trang nhã đa định dạng: Sổ in A4/Letter lưu PDF trọn đời (`Printable HTML Keepsake Album`) và tệp dữ liệu CSV UTF-8 BOM.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminGuestbookService.php`:
+    - Tính toán 5 chỉ số KPI Sổ lưu bút: Tổng lời chúc, đã duyệt, đã ghim, có chữ ký số, riêng tư, tỷ lệ đáp lễ tri ân.
+    - Bộ lọc đa chiều theo tiệc cưới, từ khóa tìm kiếm (tên người gửi, nội dung), nhóm khách, bàn tiệc, tab trạng thái (Tất cả, Đã ghim, Có chữ ký, Chờ duyệt, Riêng tư, Đã đáp lễ).
+    - Thao tác 1-chạm: `togglePin`, `toggleApproval`, `togglePrivacy`, `replyWish`, `deleteReply`, `deleteWish`.
+    - Xuất CSV UTF-8 BOM chuẩn tiếng Việt có dấu: Tên khách, nhóm, bàn, nội dung, phản hồi, chữ ký, ngày gửi.
+  - `app/Http/Controllers/Admin/AdminGuestbookController.php`:
+    - Quản lý các endpoint: `index`, `togglePin`, `toggleApproval`, `togglePrivacy`, `reply`, `deleteReply`, `destroy`, `exportHtml` (`keepsake_print`), `export` (`exportCsv`).
+    - Hỗ trợ phản hồi linh hoạt JSON API (cho tương tác modal không tải lại trang) hoặc Redirect với Flash message.
+  - `resources/views/admin/pages/wishes/guestbook.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 5 thẻ KPI thống kê, thanh chọn tiệc cưới & tìm kiếm nhanh, hệ thống tab trạng thái.
+    - Lưới thẻ lưu niệm phong cách bưu thiếp/sách kỷ niệm (`guestbook-card`), hiển thị chữ ký tay Canvas nét thanh mảnh, khung đáp lễ của cặp đôi.
+    - 2 Modal tương tác: Modal phóng to chữ ký điện tử (`signature-modal`) & Modal viết lời đáp lễ tri ân (`reply-modal`).
+    - Menu chuyển đổi tab giữa "Danh Sách Lời Chúc (Bảng)" và "Sổ Lưu Bút Kỷ Niệm (Album)".
+  - `resources/views/admin/pages/wishes/keepsake_print.blade.php`:
+    - Trang in ấn sách lưu niệm trang nhã tối ưu hoàn hảo `@media print` khổ A4/Letter.
+    - Bố cục trang bìa hoàng gia (tiêu đề, tên cô dâu chú rể, ngày cưới, sảnh tiệc, thống kê lời chúc), lưới lời chúc trang trọng ngắt trang thông minh `break-inside: avoid`.
+  - `routes/admin.php`: Nhóm routes `admin.wishes.guestbook.*`.
+  - `tests/Feature/AdminGuestbookTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng, phân quyền và xuất bản (100% PASSED).
