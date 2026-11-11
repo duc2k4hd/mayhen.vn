@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
+use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
@@ -215,6 +216,19 @@ Route::middleware('admin.auth')->group(function () {
             Route::get('/{id}/download', [AdminBackupController::class, 'download'])->name('download');
             Route::delete('/{id}', [AdminBackupController::class, 'destroy'])->name('destroy');
             Route::post('/clean-old', [AdminBackupController::class, 'cleanOld'])->name('clean_old');
+        });
+
+        // Phân Hệ Quản Trị Khóa API & Webhooks Ngoại Vi (Mục 179 PRD V3)
+        Route::prefix('developer-integrations')->name('developer.')->group(function () {
+            Route::get('/', [AdminDeveloperIntegrationController::class, 'index'])->name('index');
+            Route::post('/api-keys', [AdminDeveloperIntegrationController::class, 'storeApiKey'])->name('api_keys.store');
+            Route::post('/api-keys/{id}/revoke', [AdminDeveloperIntegrationController::class, 'revokeApiKey'])->name('api_keys.revoke');
+            Route::delete('/api-keys/{id}', [AdminDeveloperIntegrationController::class, 'destroyApiKey'])->name('api_keys.destroy');
+            Route::post('/webhooks', [AdminDeveloperIntegrationController::class, 'storeWebhook'])->name('webhooks.store');
+            Route::post('/webhooks/{id}/toggle', [AdminDeveloperIntegrationController::class, 'toggleWebhook'])->name('webhooks.toggle');
+            Route::post('/webhooks/{id}/ping', [AdminDeveloperIntegrationController::class, 'pingWebhook'])->name('webhooks.ping');
+            Route::delete('/webhooks/{id}', [AdminDeveloperIntegrationController::class, 'destroyWebhook'])->name('webhooks.destroy');
+            Route::post('/deliveries/{id}/retry', [AdminDeveloperIntegrationController::class, 'retryDelivery'])->name('deliveries.retry');
         });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');

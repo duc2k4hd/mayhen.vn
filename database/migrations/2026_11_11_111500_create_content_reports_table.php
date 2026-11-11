@@ -42,4 +42,3 @@ return new class extends Migration
         Schema::dropIfExists('content_reports');
     }
 };
-

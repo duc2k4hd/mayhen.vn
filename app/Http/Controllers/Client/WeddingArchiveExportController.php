@@ -50,4 +50,3 @@ class WeddingArchiveExportController extends Controller
         ])->deleteFileAfterSend(true);
     }
 }
-

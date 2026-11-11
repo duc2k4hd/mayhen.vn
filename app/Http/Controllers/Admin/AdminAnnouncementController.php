@@ -133,4 +133,3 @@ class AdminAnnouncementController extends Controller
             ->with('success', 'Đã xóa thông báo thành công.');
     }
 }
-

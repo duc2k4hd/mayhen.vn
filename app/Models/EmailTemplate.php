@@ -112,4 +112,3 @@ class EmailTemplate extends Model
         };
     }
 }
-

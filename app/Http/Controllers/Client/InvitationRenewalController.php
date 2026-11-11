@@ -65,4 +65,3 @@ class InvitationRenewalController extends Controller
         ]);
     }
 }
-

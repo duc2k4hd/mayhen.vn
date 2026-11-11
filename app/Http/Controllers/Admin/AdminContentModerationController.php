@@ -68,4 +68,3 @@ class AdminContentModerationController extends Controller
         return back()->with('success', "Đã {$actionText} nội dung của hồ sơ vi phạm #{$report->id} thành công.");
     }
 }
-

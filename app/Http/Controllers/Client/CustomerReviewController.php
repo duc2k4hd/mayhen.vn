@@ -70,4 +70,3 @@ class CustomerReviewController extends Controller
         return back()->with('success', 'Trân trọng cảm ơn cảm nhận quý báu của hai bạn! Đội ngũ Atelier Mây Hẹn sẽ kiểm duyệt và xuất bản đánh giá sớm nhất.');
     }
 }
-

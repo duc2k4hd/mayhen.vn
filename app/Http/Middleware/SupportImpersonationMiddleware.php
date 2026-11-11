@@ -63,4 +63,3 @@ class SupportImpersonationMiddleware
         return $next($request);
     }
 }
-

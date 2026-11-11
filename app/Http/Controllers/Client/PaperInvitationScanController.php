@@ -117,4 +117,3 @@ class PaperInvitationScanController extends Controller
             ->with('success', 'Đã đồng bộ thông tin từ thiệp giấy vào thiệp cưới online thành công! Bạn có thể tiếp tục tùy chỉnh trong Studio.');
     }
 }
-

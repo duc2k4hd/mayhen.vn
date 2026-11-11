@@ -31,6 +31,25 @@ class OutboundWebhookService
     }
 
     /**
+     * Bắn webhook cấp nền tảng (Platform Level) ra các hệ thống ERP, trung tâm dữ liệu.
+     */
+    public function dispatchPlatform(string $eventType, array $eventData): array
+    {
+        $webhooks = OutboundWebhook::whereNull('wedding_id')
+            ->where('is_active', true)
+            ->get()
+            ->filter(fn (OutboundWebhook $w) => $w->shouldDeliver($eventType));
+
+        $results = [];
+
+        foreach ($webhooks as $webhook) {
+            $results[] = $this->sendPayload($webhook, $eventType, $eventData, null);
+        }
+
+        return $results;
+    }
+
+    /**
      * Gửi gói tin thử nghiệm (Ping Test) để kiểm tra tính sẵn sàng của endpoint.
      */
     public function pingTest(OutboundWebhook $webhook): array
@@ -147,5 +166,26 @@ class OutboundWebhookService
             'duration_ms' => $durationMs,
             'error' => $errorMessage,
         ];
+    }
+
+    /**
+     * Thử gửi lại (Retry / Resend) một lượt giao vận webhook đã thất bại trước đó.
+     */
+    public function resendDelivery(OutboundWebhookDelivery $delivery): array
+    {
+        $webhook = $delivery->webhook;
+        if (! $webhook) {
+            return [
+                'delivery_id' => $delivery->id,
+                'status' => 0,
+                'is_success' => false,
+                'error' => 'Webhook không còn tồn tại trong hệ thống.',
+                'duration_ms' => 0,
+            ];
+        }
+
+        $wedding = $webhook->wedding;
+
+        return $this->sendPayload($webhook, $delivery->event_type, $delivery->payload ?? [], $wedding);
     }
 }

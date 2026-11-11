@@ -22,6 +22,7 @@ class OutboundWebhook extends Model
         'failure_count',
         'last_dispatched_at',
         'last_status_code',
+        'created_by',
     ];
 
     protected function casts(): array
@@ -38,6 +39,43 @@ class OutboundWebhook extends Model
     public function wedding(): BelongsTo
     {
         return $this->belongsTo(Wedding::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function isPlatformLevel(): bool
+    {
+        return $this->wedding_id === null;
+    }
+
+    public function getTargetLabelAttribute(): string
+    {
+        if ($this->wedding_id === null) {
+            return 'Toàn nền tảng (Platform)';
+        }
+
+        return $this->wedding ? "Tiệc cưới: {$this->wedding->groom_name} & {$this->wedding->bride_name}" : "Wedding #{$this->wedding_id}";
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        if ($this->isCircuitBroken()) {
+            return 'Ngắt mạch (Circuit Broken)';
+        }
+
+        return $this->is_active ? 'Đang hoạt động' : 'Tạm dừng';
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        if ($this->isCircuitBroken()) {
+            return 'danger';
+        }
+
+        return $this->is_active ? 'success' : 'muted';
     }
 
     public function deliveries(): HasMany

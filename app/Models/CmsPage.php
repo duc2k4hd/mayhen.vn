@@ -62,4 +62,3 @@ class CmsPage extends Model
         return Carbon::parse($this->updated_at)->locale('vi')->isoFormat('D MMMM, YYYY');
     }
 }
-

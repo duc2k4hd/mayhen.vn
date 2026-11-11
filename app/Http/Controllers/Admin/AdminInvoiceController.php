@@ -139,4 +139,3 @@ class AdminInvoiceController extends Controller
         return $this->invoiceService->exportCsv($request);
     }
 }
-

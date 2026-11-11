@@ -444,6 +444,16 @@
                         <span>Sao Lưu & Khôi Phục (Backup)</span>
                     </a>
 
+                    <a href="{{ route('admin.settings.developer.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.developer*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </span>
+                        <span>Khóa API & Webhooks</span>
+                    </a>
+
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.seo*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -778,6 +788,10 @@
                     <a href="{{ route('admin.settings.backups.index') }}" class="mayhen_admin_cmd_item" data-search="sao lưu khôi phục thảm họa backup restore database snapshot ops-01">
                         <span>📦 Sao Lưu & Khôi Phục (Backup Vault)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/backups</span>
+                    </a>
+                    <a href="{{ route('admin.settings.developer.index') }}" class="mayhen_admin_cmd_item" data-search="khóa api webhooks developer webhook token tích hợp đối tác api keys scopes secret">
+                        <span>🔑 Khóa API & Webhooks Ngoại Vi</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/developer-integrations</span>
                     </a>
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_cmd_item" data-search="thanh tra seo sitemap xml google robots meta search index">
                         <span>🌐 Thanh Tra SEO & Sitemap XML</span>

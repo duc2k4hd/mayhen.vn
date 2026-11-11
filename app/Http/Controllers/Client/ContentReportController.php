@@ -69,4 +69,3 @@ class ContentReportController extends Controller
         ]);
     }
 }
-

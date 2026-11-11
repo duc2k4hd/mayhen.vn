@@ -65,4 +65,3 @@ class PlatformSetting extends Model
         return $query->where('group', $group);
     }
 }
-

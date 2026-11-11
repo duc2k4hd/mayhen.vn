@@ -86,4 +86,3 @@ class CmsPageSeeder extends Seeder
         }
     }
 }
-

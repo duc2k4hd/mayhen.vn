@@ -90,4 +90,3 @@ class PaperInvitationScan extends Model
         return 'Thấp (Cần Bổ Sung Thủ Công)';
     }
 }
-

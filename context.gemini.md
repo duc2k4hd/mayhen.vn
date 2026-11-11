@@ -9544,3 +9544,71 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 13 test files admin gần nhất: **114/114 tests PASSED 100% (503 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 98. ĐỀ ÁN 98: PHÂN HỆ QUẢN TRỊ KHÓA API, WEBHOOK OUTBOUND & TÍCH HỢP ĐỐI TÁC NGOẠI VI (DEVELOPER API KEYS & OUTBOUND WEBHOOK DISPATCH SYSTEM — MỤC 179 PRD V3)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai cổng quản trị tích hợp mở dành cho đối tác Studio, nhà phát triển ngoại vi và các hệ thống kết nối trung tâm (ERP, CRM, n8n, Zapier) theo chuẩn **Mục 179 Master PRD V3 (CÀI ĐẶT -> API keys / Webhooks) & Dòng 298 / 1256**.
+  - **Nghiệp Vụ Khóa API & Webhooks Ngoại Vi**:
+    1. *Bảo Mật Khóa API Chuẩn Công Nghiệp*: Khóa bí mật (`plain_text_token` dạng `mh_live_...` hoặc `mh_test_...`) chỉ được hiển thị **DUY NHẤT 1 LẦN** khi Super Admin vừa tạo mới. Sau đó hệ thống chỉ lưu trữ chuỗi băm một chiều SHA-256 (`key_hash`) và tiền tố an toàn (`key_prefix`), hiển thị masked `••••••••` để chống rò rỉ.
+    2. *Phân Quyền Chi Tiết (Scopes)*: Kiểm soát phạm vi truy cập theo từng phân hệ (`templates:read`, `invitations:read`, `orders:read`, `guests:read`, `rsvps:read`, `webhooks:manage`).
+    3. *Kiểm Soát Tốc Độ & Thu Hồi*: Hỗ trợ cấu hình Rate Limit (requests/phút), ngày hết hạn, thu hồi khóa (`revoked`) tức thời và xóa vĩnh viễn.
+    4. *Quản Trị Webhooks Ngoại Vi Đa Cấp*: Hỗ trợ cả Webhook Cấp Nền Tảng (Platform Webhook: `wedding_id = null`) phục vụ đồng bộ dữ liệu toàn hệ thống lẫn Webhook theo từng tiệc cưới cụ thể của đối tác / studio.
+    5. *Chữ Ký Toàn Vẹn HMAC-SHA256 & Circuit Breaker*: Ký mọi payload bằng HMAC-SHA256 với header `X-MayHen-Signature`, tự động ngắt mạch (Circuit Breaker) khi endpoint đối tác bị lỗi liên tiếp ≥ 10 lần.
+    6. *Công Cụ Ping Test & Gửi Lại (Retry/Resend)*: Hỗ trợ Super Admin kiểm tra kết nối (Ping Test) tức thời đo độ trễ ms và gửi lại các gói tin giao vận thất bại trước đó.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_132220_create_developer_api_keys_and_update_outbound_webhooks.php`:
+       * Bảng `developer_api_keys`: `id`, `name`, `environment` (`live`, `test`), `key_prefix`, `key_hash` (unique), `scopes` (json), `rate_limit_per_minute`, `status` (`active`, `revoked`), `last_used_at`, `last_used_ip`, `expires_at`, `created_by` (foreignId to `users`), timestamps, index `['status', 'environment']`.
+       * Bảng `outbound_webhooks`: Cho phép `wedding_id` nullable (phục vụ Platform Webhooks) và bổ sung cột `created_by`.
+  2. **Models**:
+     - `app/Models/DeveloperApiKey.php`: Scopes `active()`, `revoked()`, `live()`, `test()`, methods `isExpired()`, `isActive()`, `hasScope()`, `revoke()`, `recordUsage()`, accessors `status_label`, `status_color`, `masked_key`.
+     - `app/Models/OutboundWebhook.php`: Bổ sung quan hệ `creator()`, method `isPlatformLevel()`, accessors `target_label`, `status_label`, `status_color`.
+  3. **Services**:
+     - `app/Services/OutboundWebhookService.php`: Bổ sung `dispatchPlatform()` để phát webhook cấp nền tảng và `resendDelivery()` để gửi lại lượt giao vận cũ.
+     - `app/Services/DeveloperIntegrationService.php`:
+       * `createApiKey()`: Sinh token ngẫu nhiên, lưu hash SHA-256, ghi `AuditLogger::log('DEVELOPER_API_KEY_CREATED')`.
+       * `revokeApiKey()`, `deleteApiKey()`: Thu hồi và xóa khóa API kèm audit log.
+       * `createPlatformWebhook()`: Đăng ký webhook cấp nền tảng với secret tự sinh `whsec_...`.
+       * `toggleWebhook()`: Bật / Tắt webhook và tự động reset `failure_count` khi kích hoạt lại.
+       * `deleteWebhook()`: Xóa webhook kèm audit log.
+       * `pingWebhook()`: Gửi gói tin Ping Test kiểm tra endpoint.
+       * `retryDelivery()`: Thử phát lại gói tin thất bại.
+       * `getIntegrationKpis()`: Thống kê 4 thẻ KPI: Khóa API phát hành, Tổng webhooks, Tỷ lệ giao vận 24h (%), Sự cố ngắt mạch (Circuit broken).
+       * `getFilteredApiKeys()`, `getFilteredWebhooks()`, `getFilteredDeliveries()`: Phân trang và tìm kiếm theo tab.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminDeveloperIntegrationController.php`: Xử lý 3 tabs giao diện và các endpoint API Key / Webhook / Delivery retry.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings`:
+       * `GET /admin/settings/developer-integrations` (`admin.settings.developer.index`)
+       * `POST /admin/settings/developer-integrations/api-keys` (`admin.settings.developer.api_keys.store`)
+       * `POST /admin/settings/developer-integrations/api-keys/{id}/revoke` (`admin.settings.developer.api_keys.revoke`)
+       * `DELETE /admin/settings/developer-integrations/api-keys/{id}` (`admin.settings.developer.api_keys.destroy`)
+       * `POST /admin/settings/developer-integrations/webhooks` (`admin.settings.developer.webhooks.store`)
+       * `POST /admin/settings/developer-integrations/webhooks/{id}/toggle` (`admin.settings.developer.webhooks.toggle`)
+       * `POST /admin/settings/developer-integrations/webhooks/{id}/ping` (`admin.settings.developer.webhooks.ping`)
+       * `DELETE /admin/settings/developer-integrations/webhooks/{id}` (`admin.settings.developer.webhooks.destroy`)
+       * `POST /admin/settings/developer-integrations/deliveries/{id}/retry` (`admin.settings.developer.deliveries.retry`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/developer/index.blade.php`:
+       * 4 Thẻ KPI: Khóa API Phát Hành, Tổng Webhooks Đăng Ký, Tỷ Lệ Giao Vận (24h), Sự Cố Ngắt Mạch.
+       * Banner One-Time Token Reveal: Khung thông báo hổ phách sang trọng Quiet Luxury hiển thị token duy nhất 1 lần kèm nút sao chép nhanh khi vừa tạo mới khóa.
+       * Tab 1: Khóa API Nhà Phát Triển (Tìm kiếm, lọc môi trường live/test, danh sách khóa masked, scopes, rate limit, nút thu hồi & xóa).
+       * Tab 2: Quản Trị Webhooks (Tìm kiếm, lọc phạm vi platform/wedding, endpoint monospaced, sự kiện đăng ký, trạng thái Circuit Breaker, nút Ping Test & Bật/Tắt).
+       * Tab 3: Nhật Ký Giao Vận Deliveries Log (Lịch sử giao vận, mã phản hồi HTTP, độ trễ phản hồi ms, nút gửi lại).
+       * Modal Tạo Khóa API & Modal Đăng Ký Webhook Nền Tảng (Pure CSS/JS).
+     - Cập nhật Sidebar: Menu "Khóa API & Webhooks" trong nhóm Cài Đặt Hệ Thống và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminDeveloperIntegrationTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminDeveloperIntegrationTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Người dùng `customer` thông thường không có quyền truy cập cổng tích hợp.
+       3. Super Admin truy cập thành công màn hình quản trị tích hợp và thấy các thẻ KPI.
+       4. Super Admin tạo mới khóa API bảo mật thành công và lưu hash SHA-256.
+       5. Thu hồi khóa API cập nhật trạng thái `revoked` và vô hiệu hóa quyền truy cập.
+       6. Xóa vĩnh viễn khóa API khỏi cơ sở dữ liệu.
+       7. Lọc danh sách khóa API theo môi trường và từ khóa chính xác.
+       8. Đăng ký webhook nền tảng cấp hệ thống thành công với secret tự sinh.
+       9. Bật tắt webhook và reset Circuit Breaker khi kích hoạt lại.
+       10. Gửi gói tin Ping Test đến webhook và ghi nhận lịch sử giao vận.
+     - Kết quả: **10/10 tests PASSED 100% (51 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 14 test files admin gần nhất: **124/124 tests PASSED 100% (554 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

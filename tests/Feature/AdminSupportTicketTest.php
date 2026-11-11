@@ -77,4 +77,3 @@ test('admin can assign ticket to staff', function () {
     $this->ticket->refresh();
     expect($this->ticket->assigned_to)->toBe($this->admin->id);
 });
-

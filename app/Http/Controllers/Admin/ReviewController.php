@@ -151,4 +151,3 @@ class ReviewController extends Controller
         return back()->with('success', "Đã xóa đánh giá của {$couple} thành công.");
     }
 }
-

@@ -89,4 +89,3 @@ class AdminPlatformSettingController extends Controller
         return back()->with('success', 'Đã khôi phục thiết lập về phiên bản trước thành công.');
     }
 }
-
