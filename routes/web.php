@@ -26,6 +26,7 @@ use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
+use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
@@ -232,6 +233,10 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/quet-thiep-giay', [PaperInvitationScanController::class, 'store'])->middleware('throttle:20,1')->name('paper_scan.store');
     Route::get('/thiep/{id}/quet-thiep-giay/{scanId}/ra-soat', [PaperInvitationScanController::class, 'review'])->name('paper_scan.review');
     Route::post('/thiep/{id}/quet-thiep-giay/{scanId}/ap-dung', [PaperInvitationScanController::class, 'apply'])->name('paper_scan.apply');
+
+    // Bộ Ấn Phẩm Đồng Bộ Đa Định Dạng (Mục 2.7 Master Prompt & Section 38 PRD V3)
+    Route::get('/thiep/{id}/bo-thiep-dong-bo', [StationeryKitController::class, 'index'])->name('stationery.index');
+    Route::post('/thiep/{id}/bo-thiep-dong-bo/log-download', [StationeryKitController::class, 'logDownload'])->middleware('throttle:30,1')->name('stationery.log_download');
 });
 
 // Guest Management & RSVP

@@ -8449,3 +8449,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - `tests/Feature/AdminSupportTicketTest.php`: **5/5 tests PASSED 100% (14 assertions)** bảo vệ trang `/admin/support` và bộ lọc `vip_48h`.
      - `tests/Feature/WeddingKeepsakeAndMemorialTest.php`: **8/8 tests PASSED 100% (26 assertions)** tương thích cột thực tế `whereNotNull('checked_in_at')`.
 
+---
+
+## 78. ĐỀ ÁN 78: BỘ ẤN PHẨM & THIỆP ĐỒNG BỘ ĐA ĐỊNH DẠNG (SYNCHRONIZED STATIONERY KIT & MULTI-FORMAT VISUAL SUITE — MỤC 2.7 DOCX & SECTION 38 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 2.7 trong tài liệu gốc DOCX: "Chức năng tạo khác biệt: Bộ thiệp đồng bộ. Từ một bộ dữ liệu, tạo: Thiệp website, Thiệp ảnh dọc, Ảnh chia sẻ Story, Ảnh thông báo Save the Date, Thiệp báo hỷ, Thiệp cảm ơn, QR đặt tại bàn tiệc, Ảnh lịch trình ngày cưới. Không bắt đầu bằng hệ thống render video phức tạp. Phải đánh giá khả năng xuất ảnh trước. Các định dạng xuất phải bảo đảm chữ rõ, không bị cắt và giữ bố cục hợp lý".
+  1. *Động cơ Sinh Ấn Phẩm Đồ Họa Vector & HiDPI Canvas*: Từ duy nhất một bộ thông tin ngày cưới thật của cô dâu chú rể (`weddings`, `invitations`, `wedding_events`), hệ thống tự động sinh 7 định dạng ấn phẩm đồ họa chuẩn Quiet Luxury:
+     - `story`: Ảnh chia sẻ Story 9:16 (1080 x 1920 px) tối ưu cho Instagram, Facebook, Zalo Story kèm mã QR thiệp.
+     - `save_the_date`: Ảnh thông báo ngày cưới sớm Save the Date (1080 x 1920 px) đếm ngược ngày chung đôi.
+     - `vertical_card`: Thiệp ảnh dọc trang trọng đầy đủ thông tin cha mẹ hai họ, ngày cưới dương/âm lịch và thánh đường tổ chức để quan khách lưu điện thoại hoặc in ảnh.
+     - `table_qr`: Standee QR đặt bàn tiệc cưới (Place Card / Table Standee chuẩn A5 đứng 1200 x 1700 px) có mã QR siêu nét ở trung tâm để quan khách ngồi bàn quét xem menu, gửi lời chúc phúc và mừng cưới.
+     - `timeline`: Ảnh lịch trình hôn lễ trực quan (1080 x 1920 px) với trục dọc nối liền các mốc: đón khách, nghi thức lễ, khai tiệc mừng và chụp ảnh kỷ niệm.
+     - `bao_hy`: Thiệp báo hỷ trang nhã (1080 x 1920 px) gửi họ hàng, bạn bè ở xa không tiện dự tiệc trực tiếp.
+     - `thank_you`: Thiệp cảm ơn hậu sự kiện (1080 x 1920 px) tri ân sâu sắc tình cảm của quan khách.
+  2. *5 Bảng Màu Nhận Diện Hôn Lễ Quiet Luxury*: Cho phép người dùng chuyển đổi tức thì giữa 5 tông màu đặc trưng của Mây Hẹn:
+     - Đỏ Nhung Hoàng Gia & Gold (`velvet_crimson`)
+     - Hồng Tro & Phấn Lụa Champagne (`dusty_rose`)
+     - Xanh Xô Thơm & Rừng Thu (`sage_green`)
+     - Xanh Hoàng Gia & Ánh Bạc (`royal_navy`)
+     - Hổ Phách & Nâu Kem Cổ Điển (`warm_amber`)
+  3. *Tùy chỉnh thông điệp theo thời gian thực (Live Canvas Debounced Rendering)*:
+     - Cho phép thay đổi tiêu đề / lời tựa, câu trích dẫn và bật/tắt hiển thị mã QR.
+     - Tự động dựng Monogram chữ lồng nghệ thuật từ chữ cái đầu Chú Rể & Cô Dâu lồng vào nhau giữa hoa văn hoàng gia.
+     - Tự động ngắt dòng thông minh (`wrapText`), đảm bảo chữ rõ nét, không bị tràn viền và giữ tỷ lệ cân đối hoàn hảo trên mọi kích thước.
+  4. *Xuất ảnh PNG 2K, Sao chép Clipboard và In ấn Chuẩn Khổ*:
+     - **Tải Ảnh PNG (2K Retina)**: Xuất blob từ HTML5 Canvas tải về thiết bị ngay lập tức mà không phải chờ đợi render video nặng nề hoặc gọi server quá tải.
+     - **Sao chép vào Clipboard (1-Click Copy)**: Tận dụng `navigator.clipboard.write([new ClipboardItem({'image/png': blob})])` cho phép dán ngay lập tức vào khung chat Zalo / Messenger.
+     - **In ấn chuẩn khổ giấy (Print Mode)**: Căn chỉnh `@media print` chuẩn nét để in ấn Standee đặt bàn tiệc hoặc thiệp cưới trên giấy in thực tế.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Service**:
+     - `app/Services/StationeryKitService.php`: `getColorPalettes()`, `getPresets()`, `getStationeryData()` (trích xuất ngày cưới, thứ tiếng Việt, timeline từ `wedding_events`, mã QR SVG vector từ `QrCodeService`).
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Client/StationeryKitController.php`: `index()`, `logDownload()`.
+     - Routes ([routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /tai-khoan/thiep/{id}/bo-thiep-dong-bo` (`account.stationery.index`)
+       * `POST /tai-khoan/thiep/{id}/bo-thiep-dong-bo/log-download` (`account.stationery.log_download`)
+  3. **Giao diện & Asset**:
+     - View: `resources/views/client/pages/account/stationery/index.blade.php`.
+     - CSS: `public/assets/client/css/pages/stationery.css` (100% Pure Vanilla CSS, class prefix `mayhen_stationery_*`, responsive, in ấn `@media print`).
+     - JS: `public/assets/client/js/pages/stationery.js` (100% Native ES Modules, Native HTML5 Canvas 2D, Monogram renderer, QR Code frame, clipboard copy).
+     - Nút điều hướng: Bổ sung nút *"Bộ Thiệp Đồng Bộ"* trực quan tại `resources/views/client/pages/account/invitations.blade.php`.
+  4. **Kiểm thử ([tests/Feature/SynchronizedStationeryKitTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/SynchronizedStationeryKitTest.php))**:
+     - 6 kịch bản kiểm thử: Phân quyền truy cập, chặn người ngoài xem thiệp, nạp đầy đủ dữ liệu ngày cưới và các presets, kiểm tra độ chính xác của cấu trúc dữ liệu và mã QR data URI, ghi nhận nhật ký tải ấn phẩm, kiểm tra tính hợp lệ dữ liệu request.
+     - Kết quả: **6/6 tests PASSED 100% (28 assertions in 0.77s)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 5 feature tests gần nhất: **31/31 tests PASSED 100% (125 assertions in 1.72s)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
