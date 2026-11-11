@@ -85,6 +85,14 @@
        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
    ```
+7. **QUY TẮC BẮT BUỘC VỀ TIÊU ĐỀ TRANG ADMIN (`@section('title')`)**:
+   - Layout chính của phân hệ Quản trị (`resources/views/admin/layouts/master.blade.php:8`) đã được thiết lập sẵn cấu trúc tiêu đề:
+     ```html
+     <title>@yield('title', 'Admin Panel') | Mây Hẹn (mayhen.vn)</title>
+     ```
+   - Do layout đã có sẵn hậu tố ` | Mây Hẹn (mayhen.vn)`, nên tại tất cả các file view con của Admin (`resources/views/admin/**/*.blade.php`), khi khai báo `@section('title', '...')`:
+     * **CHỈ GHI TÊN TRANG / TÊN CHỨC NĂNG RÕ RÀNG, NGẮN GỌN** (Ví dụ: `@section('title', 'Quản Trị Mạng Lưới Đối Tác & Studio')`, `@section('title', 'Sổ Quyết Toán Hoa Hồng Đối Tác')`, `@section('title', 'Quản Lý Mã Giảm Giá & Ưu Đãi')`, `@section('title', 'Chi Tiết Đơn Hàng #' . $order->order_code)`).
+     * **TUYỆT ĐỐI KHÔNG THÊM** `" — Mây Hẹn"`, `" — Mây Hẹn Admin"`, `" - Mây Hẹn"`, hay `" — Atelier Command Center"` vào `@section('title')` để tránh bị nhân đôi hoặc lặp từ thương hiệu trên tab trình duyệt.
 
 ### 🏷️ TIỀN TỐ CSS CLASS BẮT BUỘC (MANDATORY CLASS PREFIX)
 Mỗi module/trang bắt buộc phải dùng prefix riêng để chống xung đột style 100%:

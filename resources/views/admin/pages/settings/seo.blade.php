@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Thanh Tra SEO & Sitemap — Atelier Command Center')
+@section('title', 'Thanh Tra SEO & Sitemap')
 @section('page_title', 'Thanh Tra SEO & Sitemap XML')
 
 @section('content')

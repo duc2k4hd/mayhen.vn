@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Sổ Quyết Toán Hoa Hồng Đối Tác — Mây Hẹn Admin')
+@section('title', 'Sổ Quyết Toán Hoa Hồng Đối Tác')
 
 @section('content')
 <div class="mayhen_admin_page">

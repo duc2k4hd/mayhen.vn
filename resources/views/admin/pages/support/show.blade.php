@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Ticket #' . $ticket->ticket_code . ' — Hỗ Trợ')
+@section('title', 'Ticket #' . $ticket->ticket_code)
 @section('page_title', 'Ticket: ' . $ticket->ticket_code)
 
 @section('content')

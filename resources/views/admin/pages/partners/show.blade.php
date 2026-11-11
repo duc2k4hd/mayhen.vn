@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chi Tiết Đối Tác: ' . $partner->business_name . ' — Mây Hẹn Admin')
+@section('title', 'Chi Tiết Đối Tác: ' . $partner->business_name)
 
 @section('content')
 <div class="mayhen_admin_page">

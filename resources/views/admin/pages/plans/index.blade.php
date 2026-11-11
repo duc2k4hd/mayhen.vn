@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Gói Cước & Đăng Ký — Atelier Command Center')
+@section('title', 'Quản Lý Gói Cước & Đăng Ký')
 @section('page_title', 'Gói Cước & Bảng Giá Dịch Vụ')
 
 @section('content')

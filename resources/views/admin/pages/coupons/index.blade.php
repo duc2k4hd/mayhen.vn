@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Quản Lý Mã Giảm Giá & Ưu Đãi — Atelier Command Center')
+@section('title', 'Quản Lý Mã Giảm Giá & Ưu Đãi')
 @section('page_title', 'Mã Giảm Giá & Chiến Dịch Ưu Đãi')
 
 @section('content')

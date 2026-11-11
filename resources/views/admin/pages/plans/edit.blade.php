@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Chỉnh Sửa Gói Cước: ' . $plan->name . ' — Atelier Command Center')
+@section('title', 'Chỉnh Sửa Gói Cước: ' . $plan->name)
 @section('page_title', 'Chỉnh Sửa Gói Cước')
 
 @section('content')
