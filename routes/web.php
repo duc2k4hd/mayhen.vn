@@ -128,6 +128,10 @@ Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportControll
 Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
 Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController::class, 'trackImpression'])->name('announcement.impression');
 
+// Tương tác Thông Báo Công Khai & Banner (Mục 147 PRD V3)
+Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
+Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController::class, 'trackImpression'])->name('announcement.impression');
+
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->middleware('throttle:auth_attempts')->name('login.submit');
