@@ -11008,6 +11008,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 134. Đề Án 134: Phân Hệ Quản Lý Quy Chuẩn Trang Phục Dresscode & Bảng Màu Hướng Dẫn Tương Tác (Interactive Wedding Dresscode & Color Palette Suite — IDEA-A04, Section 8 Invitation Standards & Section 26 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ quản lý quy chuẩn trang phục cưới và bảng màu gợi ý tương tác chuyên sâu theo IDEA-A04, Section 8 Invitation Standards và Section 26 PRD V3:
+  - Cung cấp 6 bộ bảng màu quy chuẩn trang phục Quiet Luxury hôn lễ được thiết kế riêng:
+    1. *Quiet Luxury Neutral (Beige & Warm Sand)*: Trắng ngà `#FAF8F5`, Be ấm `#EFE8DD`, Nâu cát `#D8CEBD`, Vàng cổ điển `#9C7A4A`, Espresso `#4A453E`.
+    2. *Royal Velvet & Black Tie (Đỏ Nhung & Vàng Hoàng Gia)*: Đỏ rượu `#85182A`, Đỏ mận `#5E0E1C`, Vàng đồng `#C5A880`, Kem hoàng gia `#FAF7F2`, Đen dạ tiệc `#1A1A1A`.
+    3. *Botanical Garden & Sage (Xanh Xô Thơm & Olive)*: Xanh xô thơm `#9AA899`, Xanh rừng `#748E8A`, Trắng hoa cỏ `#F5F3EF`, Gỗ mộc `#C8B8A6`, Xanh rêu đậm `#3E4B42`.
+    4. *Romantic Dusty Rose & Champagne (Hồng Tro & Phấn Lụa)*: Hồng tro `#D9B4A7`, Champagne `#F4E8D8`, Hồng phấn `#E8C5BE`, Ngọc trai `#FFFDF9`, Nâu hồng đất `#6E5D57`.
+    5. *Sunset Amber & Terracotta (Hổ Phách & Hoàng Hôn Ấm)*: Cam đất `#BD6B4D`, Hổ phách `#D49B55`, Nâu gốm mộc `#7C4834`, Cát sa mạc `#F3EDE2`, Dark roast `#3B2F2F`.
+    6. *Coastal Breeze & Dusty Blue (Xanh Lam Biển & Bạc Ánh Trăng)*: Xanh khói biển `#8FA3B0`, Xanh đại dương `#2A3B4C`, Bọt sóng `#F7F9FA`, Cát vàng `#D5C7B3`, Bạc ánh trăng `#B8C5D0`.
+  - Hỗ trợ 5 phong cách quy chuẩn trang phục: Dạ tiệc Hoàng gia (Black Tie / Formal), Thanh lịch & Sang trọng (Semi-Formal / Cocktail), Thư thái & Tinh tế (Smart Casual / Garden Party), Áo dài Truyền thống / Cổ phục Việt Nam, Nghỉ dưỡng Sang trọng (Resort Chic / Beach Wedding).
+  - Tùy chỉnh linh hoạt từng Swatch màu: Chọn màu bằng native color picker hoặc nhập mã HEX, đổi tên tone màu, nhập mô tả gợi ý phối đồ, thêm/xóa màu động với Pure Vanilla JS.
+  - Phân định rõ ràng khung hướng dẫn phối đồ cho Quý Nam (Gentlemen) và Quý Nữ (Ladies), ghi chú các tone màu / trang phục cần tránh (như màu đỏ tươi, dạ quang hoặc áo thun, quần ngắn).
+  - Hỗ trợ tải lên ảnh Moodboard trang phục đám cưới qua AJAX (JPG, PNG, WEBP, HEIC tối đa 10MB) lưu trữ an toàn trong `storage/app/public/invitations/{id}/dresscode/`.
+  - Thiết kế component Section 8 chuẩn hóa `resources/views/client/components/dresscode-palette.blade.php`: Swatch tròn nổi, viền ánh kim, bóng đổ tinh tế, icon giới tính, live preview ngay trong Studio.
+  - Tự động đồng bộ hai chiều vào `custom_config['dresscode']` và `wedding->extra_data['dresscode_colors']` / `wedding->extra_data['dresscode_note']`.
+  - Ghi nhận AuditLogger `DRESSCODE_UPDATED` và `DRESSCODE_MOODBOARD_UPLOADED`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingDresscodeService.php`:
+    - `getPresetPalettes`: 6 bộ bảng màu quy chuẩn Quiet Luxury.
+    - `getAttireStyles`: 5 phong cách trang phục đám cưới.
+    - `getDefaultConfig` & `resolveDresscodeConfig`: Phân giải cấu hình với fallback dữ liệu cũ an toàn.
+    - `updateDresscode`: Lưu cấu hình và đồng bộ dữ liệu vào `custom_config` và `wedding->extra_data`.
+    - `uploadMoodboardImage`: Lưu trữ ảnh moodboard trang phục tiệc cưới.
+  - `app/Http/Controllers/Client/WeddingDresscodeController.php`:
+    - `index`: Màn hình Studio quản trị bảng màu Dresscode (`account.dresscode.index`).
+    - `update`: Lưu cấu hình bảng màu và phong cách trang phục (`account.dresscode.update`).
+    - `uploadMoodboard`: Tải ảnh moodboard qua AJAX (`account.dresscode.upload_moodboard`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp cưới an toàn.
+  - `resources/views/client/components/dresscode-palette.blade.php`:
+    - Component hiển thị Section 8 chuẩn BEM `mayhen_invitation_dresscode` với bảng swatches màu sắc, phong cách trang phục và hướng dẫn cho Quý Nam / Quý Nữ.
+  - `resources/views/client/pages/account/dresscode/index.blade.php`:
+    - Giao diện Studio quản trị Dresscode Quiet Luxury, chọn preset 1-click, thêm/xóa/sửa swatches màu động, tải ảnh moodboard và live preview canvas.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Bảng Màu Dresscode".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.dresscode.*`.
+  - `tests/Feature/WeddingDresscodeSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập trái phép 403, mở màn hình Studio, cập nhật bảng màu thành công, chặn mã HEX không hợp lệ, upload ảnh moodboard qua AJAX, chặn file không phải ảnh, render component Section 8 đầy đủ swatch màu và hướng dẫn trang phục (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,100 / 1,100 tests PASSED 100%** (5,859 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

@@ -47,6 +47,7 @@ use App\Http\Controllers\Client\VietQrController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingArchiveExportController;
 use App\Http\Controllers\Client\WeddingBroadcastController;
+use App\Http\Controllers\Client\WeddingDresscodeController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingMediaController;
@@ -219,6 +220,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/han-chot-khao-sat-rsvp', [RsvpEnforcementController::class, 'update'])->name('rsvp_enforcement.update');
     Route::get('/thiep/{id}/han-chot-khao-sat-rsvp/xuat-danh-sach-xe', [RsvpEnforcementController::class, 'exportShuttleManifest'])->name('rsvp_enforcement.export_shuttle');
     Route::get('/thiep/{id}/han-chot-khao-sat-rsvp/xuat-bep-thuc-don', [RsvpEnforcementController::class, 'exportDietaryManifest'])->name('rsvp_enforcement.export_dietary');
+    Route::get('/thiep/{id}/bang-mau-dresscode', [WeddingDresscodeController::class, 'index'])->name('dresscode.index');
+    Route::post('/thiep/{id}/bang-mau-dresscode', [WeddingDresscodeController::class, 'update'])->name('dresscode.update');
+    Route::post('/thiep/{id}/bang-mau-dresscode/upload-moodboard', [WeddingDresscodeController::class, 'uploadMoodboard'])->name('dresscode.upload_moodboard');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

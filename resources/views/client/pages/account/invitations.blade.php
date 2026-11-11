@@ -507,6 +507,14 @@
                                 </svg>
                                 <span>Hạn Chót &amp; Đưa Đón</span>
                             </a>
+
+                            {{-- Nút Bảng Màu Dresscode (Section 26 PRD V3 & Đề Án 134) --}}
+                            <a href="{{ route('account.dresscode.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý quy chuẩn trang phục, bảng màu swatches gợi ý và hướng dẫn phối đồ cho khách">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
+                                </svg>
+                                <span>Bảng Màu Dresscode</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
