@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureAdminOrManager;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\EnsureUserIsPartner;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SeoRedirectMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SeoRedirectMiddleware::class);
+
         $middleware->web(append: [
             SecurityHeaders::class,
             DetectCustomDomain::class,

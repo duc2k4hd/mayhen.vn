@@ -8687,3 +8687,49 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 5 test files liên quan gần đây: **33/33 tests PASSED 100% (108 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 83. ĐỀ ÁN 83: TRUNG TÂM ĐIỀU HÀNH SEO, CHUYỂN HƯỚNG 301/302 & PHÁT HIỆN VÒNG LẶP (SEO COMMAND DESK, 301/302 REDIRECTS & HEALTH AUDITOR — MỤC 7.13 DOCX & DÒNG 402 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 7.13 trong tài liệu gốc DOCX ("7.13. Admin SEO: Meta title. Meta description. Canonical. Index/noindex. Open Graph. Sitemap. Redirect. Breadcrumb. Slug. Kiểm tra lỗi cơ bản.") và quy chuẩn bảng `seo_redirects`, cơ chế Loop Detection tại Dòng 402 & 765 PRD V3:
+  1. *Cơ Sở Dữ Liệu Chuyển Hướng (`seo_redirects` Table)*:
+     - Bảng `seo_redirects`: `id`, `source_path` (đường dẫn nguồn, unique index), `target_url` (đích đến URL nội bộ hoặc đầy đủ), `status_code` (301 Permanent, 302 Temporary), `hits` (unsignedBigInteger đếm số lượt kích hoạt), `last_hit_at` (nullable timestamp), `is_active` (boolean index), `note` (ghi chú nguyên nhân đổi slug), `timestamps`.
+  2. *Dịch Vụ Phát Hiện Vòng Lặp Vô Tận (Infinite Redirect Loop Detection)*:
+     - `SeoService::detectLoop(string $sourcePath, string $targetPath, ?int $ignoreId)`: Ứng dụng thuật toán duyệt đồ thị chu trình (Graph Cycle Traversal) tối đa 15 bước nhảy (hops).
+     - Ngăn chặn triệt để mọi trường hợp tạo vòng lặp chuyển hướng 2 điểm (A -> B -> A) hoặc đa điểm (A -> B -> C -> A), bảo vệ website khỏi lỗi sập tab trình duyệt hoặc bị Google phạt giảm hạng.
+     - `SeoService::runHealthAudit()`: Tự động thanh tra sức khỏe SEO toàn diện cho các trang cốt lõi (Trang chủ, Mẫu thiệp, Bảng giá, Dịch vụ, Cẩm nang, Điều khoản, Bảo mật), tính toán điểm sức khỏe SEO Health Score (0 - 100 điểm) và cảnh báo độ dài Meta Title, Meta Description, Thẻ Canonical, Open Graph Image.
+  3. *Middleware Chuyển Hướng Tự Động Toàn Cầu (SeoRedirectMiddleware)*:
+     - Đăng ký cấp độ Global trong `bootstrap/app.php` (`$middleware->append(SeoRedirectMiddleware::class)`).
+     - Bắt mọi truy cập đến các URL cũ đã bị thay đổi hoặc gộp trang, tự động điều hướng 301/302 tức thời kèm ghi nhận lượt `hits` và thời điểm `last_hit_at`. Bỏ qua an toàn cho các route quản trị (`admin*`), asset tĩnh và API.
+  4. *Giao Diện Trung Tâm Chỉ Huy SEO Quản Trị (Admin SEO Command Desk)*:
+     - Thống kê KPI: Điểm sức khỏe SEO Health Score, Tổng số tuyến Redirect, Tổng số lượt hits điều hướng, Trạng thái lưu đệm Sitemap XML.
+     - Form thêm mới tuyến chuyển hướng 301/302 có kiểm tra vòng lặp tự động và báo lỗi visual tức thì.
+     - Bảng danh sách chuyển hướng trực quan, xem số lượt hits, mã trạng thái và thao tác xóa nhanh.
+     - Bảng thanh tra sức khỏe SEO từng trang đích với chi tiết số ký tự, kiểm tra thẻ Canonical, ảnh mạng xã hội và đánh giá chất lượng.
+     - Khối quản trị và nút tái tạo tức thời Sitemap XML (`sitemap.xml`) và tệp chỉ mục `robots.txt`.
+     - **Tuân thủ quy chuẩn Tiêu Đề Admin**: `@section('title', 'Trung Tâm Điều Hành SEO & Sức Khỏe Tìm Kiếm')` (không có hậu tố thừa).
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_100017_create_seo_redirects_table.php`
+     - `app/Models/SeoRedirect.php`
+  2. **Service & Middleware**:
+     - `app/Services/SeoService.php`: `detectLoop()`, `matchRedirect()`, `recordHit()`, `runHealthAudit()`.
+     - `app/Http/Middleware/SeoRedirectMiddleware.php`
+  3. **Controller & Routes**:
+     - `app/Http/Controllers/Admin/SeoController.php`: `index()`, `storeRedirect()`, `updateRedirect()`, `destroyRedirect()`, `toggleRedirect()`, `clearSitemap()`.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)):
+       * `GET /admin/seo` (`admin.seo.index`) & `admin.settings.seo`
+       * `POST /admin/seo/redirects` (`admin.seo.redirects.store`)
+       * `PUT /admin/seo/redirects/{id}` (`admin.seo.redirects.update`)
+       * `DELETE /admin/seo/redirects/{id}` (`admin.seo.redirects.destroy`)
+       * `POST /admin/seo/redirects/{id}/toggle` (`admin.seo.redirects.toggle`)
+       * `POST /admin/seo/clear-sitemap` (`admin.seo.clear_sitemap`)
+  4. **Giao diện**:
+     - `resources/views/admin/pages/seo/index.blade.php`
+  5. **Kiểm thử tự động ([tests/Feature/AdminSeoManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminSeoManagementTest.php))**:
+     - 8 kịch bản kiểm thử: Admin xem trung tâm điều hành SEO và bảng kiểm tra sức khỏe, tạo tuyến chuyển hướng 301 mới, phát hiện và chặn đứng vòng lặp 2 điểm A -> B -> A, phát hiện và chặn đứng vòng lặp đa điểm A -> B -> C -> A, middleware tự động chuyển hướng 301 và tăng lượt hits khi khách truy cập URL cũ, xóa tuyến chuyển hướng, xóa cache sitemap xml, chặn người dùng thường truy cập admin seo.
+     - Kết quả: **8/8 tests PASSED 100% (20 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 6 test files liên quan gần đây: **41/41 tests PASSED 100% (128 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

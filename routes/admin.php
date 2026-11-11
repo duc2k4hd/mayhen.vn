@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
 use App\Http\Controllers\Admin\ReleaseControlController as AdminReleaseControlController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\SeoController as AdminSeoController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\SystemResilienceController as AdminSystemResilienceController;
@@ -168,8 +169,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');
         Route::put('/plans/{id}', [AdminSettingController::class, 'updatePlan'])->name('plans.update');
         Route::post('/plans/{id}/toggle-active', [AdminSettingController::class, 'togglePlanActive'])->name('plans.toggle_active');
-        Route::get('/seo', [AdminSettingController::class, 'seoInspector'])->name('seo');
-        Route::post('/seo/clear-sitemap', [AdminSettingController::class, 'clearSitemapCache'])->name('seo.clear_sitemap');
+        Route::get('/seo', [AdminSeoController::class, 'index'])->name('seo');
+        Route::post('/seo/clear-sitemap', [AdminSeoController::class, 'clearSitemap'])->name('seo.clear_sitemap');
         Route::get('/banking', [AdminSettingController::class, 'banking'])->name('banking');
         Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
@@ -307,5 +308,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/{id}', [AdminCmsPageController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{id}', [AdminCmsPageController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
         Route::post('/{id}/toggle-publish', [AdminCmsPageController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
+    });
+
+    // Trung Tâm Chỉ Huy SEO, Redirects 301/302 & Sức Khỏe Tìm Kiếm (Mục 7.13 DOCX & Dòng 402 PRD V3)
+    Route::prefix('seo')->name('seo.')->group(function () {
+        Route::get('/', [AdminSeoController::class, 'index'])->name('index');
+        Route::post('/redirects', [AdminSeoController::class, 'storeRedirect'])->middleware('admin.manager')->name('redirects.store');
+        Route::put('/redirects/{id}', [AdminSeoController::class, 'updateRedirect'])->middleware('admin.manager')->name('redirects.update');
+        Route::delete('/redirects/{id}', [AdminSeoController::class, 'destroyRedirect'])->middleware('admin.manager')->name('redirects.destroy');
+        Route::post('/redirects/{id}/toggle', [AdminSeoController::class, 'toggleRedirect'])->middleware('admin.manager')->name('redirects.toggle');
+        Route::post('/clear-sitemap', [AdminSeoController::class, 'clearSitemap'])->name('clear_sitemap');
     });
 });
