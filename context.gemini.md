@@ -9099,3 +9099,76 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 11 test files liên quan gần đây: **82/82 tests PASSED 100% (326 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 91. Đề Án 91: Phân Hệ Quản Trị Mẫu Email & Tin Nhắn Thông Báo Tự Động (Email & Notification Message Templates Engine — Mục 148 PRD V3 & Mục 18.2)
+- **Mục tiêu & Nghiệp vụ cốt lõi**:
+  - Xây dựng trung tâm chỉ huy biên tập và cá nhân hóa toàn bộ các kịch bản thư điện tử (email) và tin nhắn thông báo tự động (SMS / Zalo ZNS) được hệ thống Mây Hẹn Atelier gửi tới các cặp đôi và khách mời trong suốt vòng đời ngày cưới.
+  - Cho phép Quản trị viên tùy biến tiêu đề, nội dung HTML sang trọng Quiet Luxury, nội dung văn bản thuần (plain text fallback), xem trước trực quan tức thời (Live Preview Iframe), và gửi thư thử nghiệm (Test Dispatch) tới hòm thư quản trị viên trước khi đưa vào vận hành thực tế.
+- **Kiến trúc & Các tính năng hoàn chỉnh**:
+  1. *Bộ 6 Mẫu Mặc Định Chuẩn Mực Quiet Luxury*:
+     * `order_confirmed`: Xác nhận thanh toán đơn hàng & kích hoạt lưu trữ hồ sơ cưới (Mục 148 PRD V3).
+     * `invitation_expiring_soon`: Nhắc nhở thiệp cưới sắp hết hạn lưu trữ (mốc 14 ngày & 3 ngày - Mục 13.4 DOCX).
+     * `invitation_expired_grace`: Cảnh báo thiệp cưới đã hết hạn và đang trong thời gian ân hạn 7 ngày.
+     * `ticket_replied`: Thông báo chuyên viên CSKH phản hồi phiếu yêu cầu hỗ trợ.
+     * `welcome_couple`: Chào mừng cặp đôi mới tạo tài khoản gia nhập Mây Hẹn Atelier.
+     * `guest_invitation_email`: Thư mời cưới điện tử trọng thể gửi đích danh từng vị khách quý kèm liên kết RSVP.
+  2. *Động Cơ Render Biến Số Động (Token Replacement Engine)*:
+     * Hỗ trợ các biến số cá nhân hóa với cú pháp `{{ variable_name }}` và `{{variable_name}}` trong cả `subject`, `body_html`, và `body_text`.
+     * Tự động thay thế linh hoạt không làm vỡ cấu trúc HTML.
+  3. *Trải Nghiệm Biên Tập & Live Preview Thông Minh*:
+     * Hộp danh sách biến số động: Cho phép admin bấm vào bất kỳ biến số nào để chèn tức thì vào vị trí con trỏ trong ô soạn thảo `body_html`.
+     * Live Preview Iframe: Tải bản render HTML thời gian thực với dữ liệu mẫu giả lập của từng kịch bản.
+     * Công cụ gửi thử nghiệm (Test Dispatch): Cho phép nhập email kiểm thử và gửi thư test thật qua SMTP/Mailer với phản hồi AJAX trực quan.
+     * Nút khôi phục mẫu gốc ("Khôi Phục Mẫu Gốc Atelier"): Khôi phục 1-click về bản thiết kế chuẩn mực ban đầu khi cần thiết.
+  4. *Cơ Sở Dữ Liệu & Model (`EmailTemplate`)*:
+     * Bảng `email_templates`: `code`, `name`, `channel`, `subject`, `body_html`, `body_text`, `variables`, `is_active`, `last_tested_at`, `last_tested_email`, `created_by`.
+     * Casts JSON `variables` => `array`, `is_active` => `boolean`, `last_tested_at` => `datetime`.
+     * Quan hệ `creator()` liên kết với `User`.
+  5. *Dịch Vụ Nghiệp Vụ Chuyên Sâu (`EmailTemplateService`)*:
+     * `seedDefaultTemplates()`: Tự động khởi tạo 6 mẫu thiết yếu khi triển khai.
+     * `getDefaultTemplatesData()`: Chứa toàn bộ nội dung mẫu HTML/Text chuẩn Quiet Luxury.
+     * `render(EmailTemplate|string $template, array $data)`: Biên dịch token sang dữ liệu thật.
+     * `sendTestEmail(EmailTemplate $template, string $recipientEmail, array $sampleData)`: Gửi email test và ghi log kiểm toán.
+     * `updateTemplate()` & `resetToDefault()`: Cập nhật và khôi phục nội dung kèm ghi vết `AuditLogger::log()`.
+  6. *Giao Diện Quản Trị Admin*:
+     * `resources/views/admin/pages/email-templates/index.blade.php`: Danh sách mẫu phân loại theo kênh, 4 thẻ KPI, bộ lọc tìm kiếm, nút bật/tắt nhanh AJAX `is_active`.
+     * `resources/views/admin/pages/email-templates/edit.blade.php`: Màn hình soạn thảo 2 cột chuyên nghiệp (Soạn thảo + Hộp biến số + Test Dispatch + Live Preview Iframe).
+     * Sidebar Menu: Tích hợp mục "Mẫu Email & Tin Nhắn" vào layout quản trị `resources/views/admin/layouts/master.blade.php`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_112500_create_email_templates_table.php`
+     - `app/Models/EmailTemplate.php`
+  2. **Services**:
+     - `app/Services/EmailTemplateService.php`
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminEmailTemplateController.php`
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)):
+       * `GET /admin/email-templates` (`admin.email-templates.index`)
+       * `GET /admin/email-templates/{template}/edit` (`admin.email-templates.edit`)
+       * `PUT /admin/email-templates/{template}` (`admin.email-templates.update`)
+       * `GET /admin/email-templates/{template}/preview` (`admin.email-templates.preview`)
+       * `POST /admin/email-templates/{template}/test` (`admin.email-templates.test`)
+       * `POST /admin/email-templates/{template}/reset` (`admin.email-templates.reset`)
+       * `POST /admin/email-templates/{template}/toggle` (`admin.email-templates.toggle`)
+  4. **Giao diện**:
+     - `resources/views/admin/pages/email-templates/index.blade.php`
+     - `resources/views/admin/pages/email-templates/edit.blade.php`
+     - Cập nhật menu sidebar trong `resources/views/admin/layouts/master.blade.php`
+  5. **Kiểm thử tự động ([tests/Feature/AdminEmailTemplateManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminEmailTemplateManagementTest.php))**:
+     - 11 kịch bản kiểm thử:
+       1. Chặn người dùng không có quyền truy cập quản lý mẫu email.
+       2. Tự động khởi tạo (auto-seed) 6 mẫu mặc định khi Admin vào trang danh sách.
+       3. Lọc mẫu theo kênh và từ khóa tìm kiếm.
+       4. Cho phép Admin truy cập màn hình chỉnh sửa mẫu.
+       5. Cho phép Admin cập nhật nội dung mẫu email.
+       6. Kiểm tra validation các trường bắt buộc (name, subject, body_html).
+       7. Render live preview mẫu email thành công với dữ liệu mẫu giả lập.
+       8. Gửi email thử nghiệm và lưu vết metadata `last_tested_at`, `last_tested_email`.
+       9. Cho phép Admin khôi phục mẫu về nội dung mặc định gốc.
+       10. Bật/tắt nhanh trạng thái kích hoạt mẫu thông báo.
+       11. Biên dịch và thay thế token chính xác trong EmailTemplateService.
+     - Kết quả: **11/11 tests PASSED 100% (47 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 6 test files liên quan gần nhất: **52/52 tests PASSED 100% (205 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

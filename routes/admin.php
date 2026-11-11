@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
+use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -343,5 +344,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/{id}', [AdminAnnouncementController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{id}', [AdminAnnouncementController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
         Route::post('/{id}/toggle', [AdminAnnouncementController::class, 'toggle'])->middleware('admin.manager')->name('toggle');
+    });
+
+    // Phân Hệ Quản Trị Mẫu Email & Tin Nhắn Thông Báo Tự Động (Mục 148 PRD V3 & Mục 18.2)
+    Route::prefix('email-templates')->name('email-templates.')->group(function () {
+        Route::get('/', [AdminEmailTemplateController::class, 'index'])->name('index');
+        Route::get('/{template}/edit', [AdminEmailTemplateController::class, 'edit'])->name('edit');
+        Route::put('/{template}', [AdminEmailTemplateController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::get('/{template}/preview', [AdminEmailTemplateController::class, 'preview'])->name('preview');
+        Route::post('/{template}/test', [AdminEmailTemplateController::class, 'sendTest'])->name('test');
+        Route::post('/{template}/reset', [AdminEmailTemplateController::class, 'reset'])->middleware('admin.manager')->name('reset');
+        Route::post('/{template}/toggle', [AdminEmailTemplateController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle');
     });
 });
