@@ -10965,6 +10965,46 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 132. Đề Án 132: Phân Hệ Quản Lý Hành Trình Yêu & Dòng Thời Gian Kỷ Niệm Tương Tác (Interactive Love Story Milestones & Romantic Journey Timeline Suite — IDEA-A08, Mục 6.5 DOCX & Section 24 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ kể chuyện tình yêu đa cột mốc chuyên sâu theo IDEA-A08, Mục 6.5 DOCX & Section 24 PRD V3:
+  - Cho phép cô dâu chú rể thiết lập dòng thời gian các mốc kỷ niệm đáng nhớ (Ngày đầu chạm mắt, Buổi hẹn hò đầu & lời tỏ tình, Ngày cầu hôn, Ngày về chung một nhà) kèm ngày tháng, tiêu đề, đoạn văn chia sẻ cảm xúc, biểu tượng và ảnh chụp kỷ niệm riêng cho từng mốc.
+  - Tích hợp API tải ảnh kỷ niệm mốc thời gian AJAX hỗ trợ định dạng JPG, PNG, WEBP, HEIC tối đa 10MB lưu vào `storage/app/public/invitations/{id}/love-story/`.
+  - Thiết kế component dòng thời gian `love-story-timeline.blade.php` chuẩn Quiet Luxury:
+    - Trục dọc kết nối (Golden Spine) với các điểm nút phát sáng (Glowing Milestone Nodes).
+    - Bố cục zic-zac so le hai bên trên Desktop/Tablet và dòng thời gian dọc cực kỳ thanh lịch trên Di động.
+    - Card kỷ niệm bo góc vòm mỹ thuật, nhãn ngày tháng dập nổi, ảnh kỷ niệm tương tác zoom nhẹ nhàng.
+  - Cung cấp 4 cột mốc lãng mạn mặc định mang tên thật của cặp đôi khi thiệp chưa có cấu hình.
+  - Giao diện Studio tương tác động cho phép thêm, xóa, sắp xếp lại các cột mốc dễ dàng bằng Pure Vanilla JS.
+  - Ghi nhận AuditLogger đa tầng khi cập nhật hành trình yêu.
+  - 100% Pure Vanilla CSS/JS không dùng thư viện ngoài.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/LoveStoryTimelineService.php`:
+    - `getAvailableIcons`: Danh mục 6 biểu tượng cột mốc (Trái tim, Nhẫn cầu hôn, Tia sáng, Máy bay, Bông hồng, Tổ ấm).
+    - `getDefaultMilestones`: Khởi tạo 4 cột mốc lãng mạn mặc định mang tên uyên ương.
+    - `resolveLoveStoryConfig`: Phân giải cấu hình với fallback an toàn.
+    - `updateLoveStory`: Lưu danh sách cột mốc vào `custom_config['love_story']` và ghi AuditLogger.
+    - `uploadMilestonePhoto`: Lưu trữ ảnh kỷ niệm riêng an toàn.
+  - `app/Http/Controllers/Client/LoveStoryController.php`:
+    - `index`: Màn hình Studio quản trị Hành Trình Yêu (`account.love_story.index`).
+    - `update`: Lưu danh sách các cột mốc (`account.love_story.update`).
+    - `uploadPhoto`: Tải lên ảnh kỷ niệm cho từng cột mốc (`account.love_story.upload_photo`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp an toàn.
+  - `resources/views/client/components/love-story-timeline.blade.php`:
+    - Component dòng thời gian so le Quiet Luxury, trục dọc vàng kim và animation phát sáng.
+  - `resources/views/client/pages/account/love_story/index.blade.php`:
+    - Giao diện Studio quản trị hành trình yêu, hỗ trợ thêm/xóa cột mốc động và tải ảnh trực tiếp.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Hành Trình Yêu".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.love_story.*`.
+  - `tests/Feature/LoveStoryTimelineSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: truy cập Studio, chặn truy cập trái phép 403, cập nhật cột mốc, tải ảnh qua API, chặn file không phải ảnh, render component dòng thời gian, fallback 4 mốc mặc định chuẩn xác (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,086 / 1,086 tests PASSED 100%** (5,772 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

@@ -25,6 +25,7 @@ use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\InvitationRenewalController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
+use App\Http\Controllers\Client\LoveStoryController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
 use App\Http\Controllers\Client\OnboardingController;
@@ -210,6 +211,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/thong-bao-khan-cap/tat', [WeddingBroadcastController::class, 'deactivate'])->name('broadcast.deactivate');
     Route::get('/thiep/{id}/tem-sap-hoang-gia', [WeddingWaxSealController::class, 'index'])->name('wax_seal.index');
     Route::post('/thiep/{id}/tem-sap-hoang-gia', [WeddingWaxSealController::class, 'update'])->name('wax_seal.update');
+    Route::get('/thiep/{id}/hanh-trinh-yeu', [LoveStoryController::class, 'index'])->name('love_story.index');
+    Route::post('/thiep/{id}/hanh-trinh-yeu', [LoveStoryController::class, 'update'])->name('love_story.update');
+    Route::post('/thiep/{id}/hanh-trinh-yeu/upload-photo', [LoveStoryController::class, 'uploadPhoto'])->name('love_story.upload_photo');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
