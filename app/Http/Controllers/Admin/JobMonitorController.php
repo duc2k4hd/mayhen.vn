@@ -3,163 +3,188 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\AuditLogger;
+use App\Services\JobCenterService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class JobMonitorController extends Controller
 {
+    public function __construct(
+        protected JobCenterService $jobCenterService
+    ) {}
+
     /**
-     * Danh sách failed jobs với KPI.
+     * Bảng điều khiển Trung Tâm Chỉ Huy Tác Vụ Nền & Hàng Đợi (Mục 18 & Mục 48 PRD V3).
      */
     public function index(Request $request): View
     {
-        $query = DB::table('failed_jobs')
-            ->orderByDesc('failed_at');
+        $currentTab = $request->query('tab', 'batches');
+        $kpis = $this->jobCenterService->getQueueStatistics();
 
-        // Tìm kiếm theo payload
-        if ($request->filled('search')) {
-            $term = $request->search;
-            $query->where(function ($q) use ($term) {
-                $q->where('queue', 'like', "%{$term}%")
-                    ->orWhere('payload', 'like', "%{$term}%")
-                    ->orWhere('exception', 'like', "%{$term}%");
-            });
+        // Lấy dữ liệu theo tab để tối ưu hiệu năng truy vấn
+        $batches = null;
+        $failedJobs = null;
+        $pendingJobs = null;
+
+        if ($currentTab === 'batches') {
+            $batches = $this->jobCenterService->getBatches($request->all(), 15);
+        } elseif ($currentTab === 'failed') {
+            $failedJobs = $this->jobCenterService->getFailedJobs($request->all(), 15);
+        } elseif ($currentTab === 'pending') {
+            $pendingJobs = $this->jobCenterService->getPendingJobs($request->all(), 15);
+        } else {
+            $batches = $this->jobCenterService->getBatches($request->all(), 15);
         }
 
-        // Lọc theo queue
-        if ($request->filled('queue')) {
-            $query->where('queue', $request->queue);
-        }
-
-        $jobs = $query->paginate(20)->withQueryString();
-
-        // Decode payload để lấy display name
-        $jobs->through(function ($job) {
-            $payload = json_decode($job->payload, true);
-            $job->display_name = $payload['displayName'] ?? $payload['job'] ?? 'Unknown Job';
-            $job->attempts = $payload['attempts'] ?? 0;
-            $job->queue_name = $job->queue;
-
-            return $job;
-        });
-
-        $kpis = [
-            'total_failed' => DB::table('failed_jobs')->count(),
-            'queues' => DB::table('failed_jobs')->distinct()->pluck('queue'),
-        ];
-
-        // Jobs by queue breakdown
-        $byQueue = DB::table('failed_jobs')
-            ->selectRaw('queue, count(*) as cnt')
-            ->groupBy('queue')
-            ->get()
-            ->pluck('cnt', 'queue');
-
-        return view('admin.pages.system.jobs', compact('jobs', 'kpis', 'byQueue'));
+        return view('admin.pages.system.jobs', compact(
+            'currentTab',
+            'kpis',
+            'batches',
+            'failedJobs',
+            'pendingJobs'
+        ));
     }
 
     /**
-     * Retry một failed job theo UUID.
+     * Xem chi tiết một failed job với Sanitized Stack Trace (bảo vệ thông tin bí mật).
+     */
+    public function details(Request $request, string $uuid): JsonResponse|View
+    {
+        $job = $this->jobCenterService->getFailedJobDetails($uuid);
+
+        if (! $job) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Không tìm thấy tác vụ này.'], 404);
+            }
+            abort(404, 'Không tìm thấy tác vụ này.');
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'job' => $job,
+            ]);
+        }
+
+        return view('admin.pages.system.job-details', compact('job'));
+    }
+
+    /**
+     * Retry một failed job theo UUID kèm Idempotency Warning.
      */
     public function retry(Request $request, string $uuid): RedirectResponse
     {
-        $job = DB::table('failed_jobs')->where('uuid', $uuid)->first();
+        $success = $this->jobCenterService->retryJob($uuid, $request->user());
 
-        if (! $job) {
-            return back()->with('error', 'Không tìm thấy job này.');
+        if (! $success) {
+            return back()->with('error', 'Không tìm thấy tác vụ này trong danh sách lỗi.');
         }
 
-        try {
-            Artisan::call('queue:retry', ['id' => [$uuid]]);
-            $output = Artisan::output();
-
-            $displayName = json_decode($job->payload, true)['displayName'] ?? $uuid;
-
-            AuditLogger::log(
-                'job_retry',
-                'FailedJob',
-                $uuid,
-                "Retry job: {$displayName}",
-                ['queue' => $job->queue]
-            );
-
-            return back()->with('success', "Đã đẩy lại job vào queue. {$output}");
-        } catch (\Throwable $e) {
-            return back()->with('error', 'Retry thất bại: '.$e->getMessage());
-        }
+        return back()->with('success', "Đã đẩy lại tác vụ #{$uuid} vào hàng đợi xử lý.");
     }
 
     /**
-     * Xóa một failed job.
+     * Retry toàn bộ failed jobs (hoặc theo queue).
      */
-    public function destroy(string $uuid): RedirectResponse
+    public function retryAll(Request $request): RedirectResponse
     {
-        $job = DB::table('failed_jobs')->where('uuid', $uuid)->first();
-
-        if (! $job) {
-            return back()->with('error', 'Không tìm thấy job này.');
-        }
-
-        DB::table('failed_jobs')->where('uuid', $uuid)->delete();
-
-        $displayName = json_decode($job->payload, true)['displayName'] ?? $uuid;
-
-        AuditLogger::log(
-            'job_deleted',
-            'FailedJob',
-            $uuid,
-            "Xóa failed job: {$displayName}"
-        );
-
-        return back()->with('success', 'Đã xóa job thành công.');
-    }
-
-    /**
-     * Retry tất cả failed jobs.
-     */
-    public function retryAll(): RedirectResponse
-    {
-        $count = DB::table('failed_jobs')->count();
+        $queue = $request->input('queue');
+        $count = $this->jobCenterService->retryAllFailed($request->user(), $queue);
 
         if ($count === 0) {
-            return back()->with('info', 'Không có failed job nào để retry.');
+            return back()->with('info', 'Không có tác vụ lỗi nào để thử lại.');
         }
 
-        try {
-            Artisan::call('queue:retry', ['id' => ['all']]);
+        $msg = "Đã đẩy lại {$count} tác vụ lỗi vào hàng đợi".($queue ? " ({$queue})" : '').'.';
 
-            AuditLogger::log(
-                'job_retry_all',
-                'FailedJob',
-                'all',
-                "Retry tất cả {$count} failed jobs"
-            );
-
-            return back()->with('success', "Đã đẩy lại {$count} failed jobs vào queue.");
-        } catch (\Throwable $e) {
-            return back()->with('error', 'Retry all thất bại: '.$e->getMessage());
-        }
+        return back()->with('success', $msg);
     }
 
     /**
-     * Xóa tất cả failed jobs (cẩn thận — chỉ super admin).
+     * Xóa một failed job theo UUID.
      */
-    public function purge(): RedirectResponse
+    public function destroy(Request $request, string $uuid): RedirectResponse
     {
-        $count = DB::table('failed_jobs')->count();
-        DB::table('failed_jobs')->truncate();
+        $success = $this->jobCenterService->deleteFailedJob($uuid, $request->user());
 
-        AuditLogger::log(
-            'job_purge_all',
-            'FailedJob',
-            'all',
-            "Xóa toàn bộ {$count} failed jobs"
-        );
+        if (! $success) {
+            return back()->with('error', 'Không tìm thấy tác vụ cần xóa.');
+        }
 
-        return back()->with('success', "Đã xóa toàn bộ {$count} failed jobs.");
+        return back()->with('success', "Đã xóa bỏ tác vụ lỗi #{$uuid} khỏi hệ thống.");
+    }
+
+    /**
+     * Xóa sạch toàn bộ tác vụ lỗi (Purge).
+     */
+    public function purge(Request $request): RedirectResponse
+    {
+        $count = $this->jobCenterService->purgeFailedJobs($request->user());
+
+        if ($count === 0) {
+            return back()->with('info', 'Danh sách tác vụ lỗi hiện đang trống.');
+        }
+
+        return back()->with('success', "Đã dọn dẹp sạch toàn bộ {$count} tác vụ lỗi khỏi hệ thống.");
+    }
+
+    /**
+     * Hủy một Lô công việc (Job Batch) đang hoạt động.
+     */
+    public function cancelBatch(Request $request, string $id): RedirectResponse
+    {
+        $success = $this->jobCenterService->cancelBatch($id, $request->user());
+
+        if (! $success) {
+            return back()->with('error', "Không thể hủy bỏ lô công việc #{$id} (có thể lô đã hoàn tất hoặc không tồn tại).");
+        }
+
+        return back()->with('success', "Đã ra lệnh hủy bỏ lô công việc #{$id} thành công.");
+    }
+
+    /**
+     * Thử lại các job thất bại trong một batch.
+     */
+    public function retryBatch(Request $request, string $id): RedirectResponse
+    {
+        $success = $this->jobCenterService->retryBatch($id, $request->user());
+
+        if (! $success) {
+            return back()->with('error', "Không tìm thấy job thất bại nào trong lô #{$id} để thử lại.");
+        }
+
+        return back()->with('success', "Đã đẩy các tác vụ lỗi trong lô #{$id} vào hàng đợi thử lại.");
+    }
+
+    /**
+     * Xuất danh sách tác vụ lỗi ra file CSV UTF-8.
+     */
+    public function exportErrors(Request $request): StreamedResponse
+    {
+        $reportData = $this->jobCenterService->getErrorReportData($request->all());
+        $filename = 'mayhen-failed-jobs-'.date('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($reportData) {
+            $handle = fopen('php://output', 'w');
+            // Thêm UTF-8 BOM cho Excel hiển thị chuẩn tiếng Việt
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            if (! empty($reportData)) {
+                fputcsv($handle, array_keys($reportData[0]));
+                foreach ($reportData as $row) {
+                    fputcsv($handle, array_values($row));
+                }
+            } else {
+                fputcsv($handle, ['Thông báo', 'Không có dữ liệu tác vụ lỗi']);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 }

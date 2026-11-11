@@ -421,7 +421,7 @@
                                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                             </svg>
                         </span>
-                        <span>Giám Sát Hàng Đợi (Queue)</span>
+                        <span>Job Center (Tác Vụ Nền)</span>
                         @if (($failedJobsBadge ?? 0) > 0)
                             <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" style="background: #C0392B; color: #fff;" title="{{ $failedJobsBadge }} tác vụ lỗi cần xử lý">{{ $failedJobsBadge }}</span>
                         @endif

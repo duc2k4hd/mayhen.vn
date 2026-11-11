@@ -9172,3 +9172,60 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Suite 6 test files liên quan gần nhất: **52/52 tests PASSED 100% (205 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 92. Đề Án 92: Trung Tâm Chỉ Huy Tác Vụ Nền, Lô Công Việc & Hàng Đợi Hệ Thống (Job Center & Background Queue Operations Cockpit — Mục 18 & Mục 48 PRD V3)
+- **Mục tiêu & Nghiệp vụ cốt lõi**:
+  - Xây dựng trung tâm điều hành và giám sát toàn diện mọi tiến trình tác vụ nền chạy bất đồng bộ của hệ thống Mây Hẹn Atelier: từ resize ảnh cưới & nén WebP, nhập danh sách khách mời tiệc cưới Excel/CSV, phát tin nhắn thiệp mời hàng loạt, tạo mã QR & đóng gói kỷ niệm cưới .ZIP, đến tự động quét hạn lưu trữ thiệp cưới.
+  - Cung cấp giao diện trực quan 3 phân vùng (Tabs): Quản lý Lô công việc (`job_batches`), Giám sát Tác vụ thất bại (`failed_jobs`), và Hàng đợi đang chờ xử lý (`jobs`), kèm cơ chế cảnh báo an toàn Idempotency Warning chống gửi trùng thư/SMS/Zalo hoặc xử lý thanh toán lặp.
+- **Kiến trúc & Các tính năng hoàn chỉnh**:
+  1. *Giám Sát Lô Tác Vụ Nền (Job Batches Management)*:
+     * Theo dõi tiến độ thời gian thực dạng thanh phần trăm (`progress bar %`), số phần tử đã hoàn tất / đang chờ / thất bại (`processed / total`).
+     * Nhận diện trạng thái tự động: Đang xử lý (`running`), Thành công 100% (`completed`), Hoàn tất kèm lỗi (`failed`), hoặc Đã hủy (`cancelled`).
+     * Thao tác an toàn: Nút 1-click **Hủy Lô (Cancel Batch)** dừng ngay các tác vụ chưa chạy khi phát hiện sự cố, và nút **Thử Lại Lỗi (Retry Batch)** đẩy lại các job thất bại trong lô.
+  2. *Bảo Vệ Dữ Liệu Nhạy Cảm (Sanitized Stack Trace)*:
+     * Tự động lọc sạch toàn bộ mật khẩu cơ sở dữ liệu (`password=********`), bí mật API (`secret=********`), mã xác thực người dùng (`Bearer ********`, `token=********`), token thanh toán (`sepay_token=********`), và webhook keys khỏi exception trace trước khi hiển thị cho quản trị viên.
+  3. *Cơ Chế Cảnh Báo Trùng Lặp (Idempotency Warning Defense)*:
+     * Tự động phân loại tác vụ nhạy cảm (`is_high_risk`): Gửi Email/SMS/Zalo thiệp cưới hoặc Webhook thanh toán.
+     * Cảnh báo popup bắt buộc xác nhận nguy cơ gửi lặp thư mời hoặc thanh toán kép trước khi Super Admin nhấn nút Retry.
+  4. *Khả Năng Phục Hồi Hàng Đợi (Selective & Bulk Resilience)*:
+     * Retry đơn lẻ (`retryJob`), Retry toàn bộ hoặc lọc theo queue (`retryAllFailed`).
+     * Xóa bỏ tác vụ lỗi đơn lẻ (`deleteFailedJob`) hoặc dọn sạch toàn bộ (`purgeFailedJobs`).
+  5. *Xuất Báo Cáo Sự Cố (Error Incident Report CSV)*:
+     * Cho phép tải về toàn bộ danh sách lỗi hệ thống dạng CSV chuẩn UTF-8 BOM, hỗ trợ mở ngay trên Microsoft Excel không bị lỗi font tiếng Việt.
+  6. *Kiểm Toán An Ninh Toàn Diện*:
+     * Ghi nhận đầy đủ vết thao tác vào `AuditLogger`: `JOB_RETRY`, `JOB_RETRY_ALL`, `JOB_FORGOTTEN`, `JOB_PURGE_ALL`, `JOB_BATCH_CANCELLED`, `JOB_BATCH_RETRIED`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services**:
+     - `app/Services/JobCenterService.php`: Xử lý thống kê KPI, tính toán tiến độ batches, phân loại tác vụ, khử thông tin mật, xử lý batch cancel/retry, và xuất CSV.
+  2. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/JobMonitorController.php`: Điều hướng 3 tabs, modal sanitized exception, actions retry/cancel/purge, và stream CSV download.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)):
+       * `GET /admin/system/jobs` (`admin.jobs.index`)
+       * `GET /admin/system/jobs/export-errors` (`admin.jobs.export_errors`)
+       * `POST /admin/system/jobs/retry-all` (`admin.jobs.retry_all`)
+       * `POST /admin/system/jobs/purge` (`admin.jobs.purge`)
+       * `POST /admin/system/jobs/batches/{id}/cancel` (`admin.jobs.batches.cancel`)
+       * `POST /admin/system/jobs/batches/{id}/retry` (`admin.jobs.batches.retry`)
+       * `GET /admin/system/jobs/{uuid}/details` (`admin.jobs.details`)
+       * `POST /admin/system/jobs/{uuid}/retry` (`admin.jobs.retry`)
+       * `DELETE /admin/system/jobs/{uuid}` (`admin.jobs.destroy`)
+  3. **Giao diện**:
+     - `resources/views/admin/pages/system/jobs.blade.php`: Giao diện Quiet Luxury 4 KPI cards, 3 tabs (Batches, Failed, Pending), Modal Sanitized Exception, Idempotency Warning dialog.
+     - Cập nhật Sidebar: Nhãn "Job Center (Tác Vụ Nền)" trong layout `resources/views/admin/layouts/master.blade.php`.
+  4. **Kiểm thử tự động ([tests/Feature/AdminJobCenterManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminJobCenterManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Chặn người dùng không có quyền Super Admin truy cập Job Center.
+       2. Hiển thị trang Job Center với các thẻ KPI chính xác.
+       3. Hiển thị danh sách Lô công việc (Job Batches) kèm tính toán thanh tiến độ %.
+       4. Hiển thị danh sách tác vụ thất bại (Failed Jobs) và phân loại tag nghiệp vụ.
+       5. Khử sạch mật khẩu và token bí mật khỏi stack trace lỗi (Sanitized Exception).
+       6. Cho phép Admin thử lại (retry) một tác vụ thất bại.
+       7. Cho phép Admin xóa bỏ (delete) một tác vụ thất bại.
+       8. Cho phép Admin hủy bỏ (cancel) một lô công việc đang chạy.
+       9. Cho phép Admin dọn sạch toàn bộ (purge) hàng đợi lỗi.
+       10. Xuất báo cáo dữ liệu lỗi ra file CSV chuẩn UTF-8.
+     - Kết quả: **10/10 tests PASSED 100% (42 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 6 test files liên quan gần nhất: **52/52 tests PASSED 100% (212 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

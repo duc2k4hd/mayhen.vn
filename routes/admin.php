@@ -222,11 +222,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/{review}', [AdminReviewController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
-    // Giám sát Queue & Failed Jobs (Wave 07 - ADM-A19)
+    // Trung Tâm Chỉ Huy Tác Vụ Nền, Lô Công Việc & Hàng Đợi (Mục 18 & Mục 48 PRD V3: Job Center Cockpit)
     Route::prefix('system/jobs')->middleware('admin.super')->name('jobs.')->group(function () {
         Route::get('/', [AdminJobMonitorController::class, 'index'])->name('index');
+        Route::get('/export-errors', [AdminJobMonitorController::class, 'exportErrors'])->name('export_errors');
         Route::post('/retry-all', [AdminJobMonitorController::class, 'retryAll'])->name('retry_all');
         Route::post('/purge', [AdminJobMonitorController::class, 'purge'])->name('purge');
+        Route::post('/batches/{id}/cancel', [AdminJobMonitorController::class, 'cancelBatch'])->name('batches.cancel');
+        Route::post('/batches/{id}/retry', [AdminJobMonitorController::class, 'retryBatch'])->name('batches.retry');
+        Route::get('/{uuid}/details', [AdminJobMonitorController::class, 'details'])->name('details');
         Route::post('/{uuid}/retry', [AdminJobMonitorController::class, 'retry'])->name('retry');
         Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
     });
