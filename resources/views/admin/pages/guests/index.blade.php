@@ -114,7 +114,14 @@
                 <span>Danh Sách Quan Khách ({{ $guests->total() }} khách)</span>
             </div>
 
-            <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <a href="{{ route('admin.guests.checkin.index', ['wedding_id' => $currentWeddingId]) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" style="border-color: #059669; color: #059669;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    <span>Trạm Điểm Danh Live</span>
+                </a>
                 <a href="{{ route('admin.guests.import.index', ['wedding_id' => $currentWeddingId]) }}" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>

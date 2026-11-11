@@ -177,6 +177,16 @@
                     <span>Khách Mời & Check-in</span>
                 </a>
 
+                <a href="{{ route('admin.guests.checkin.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.checkin*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </span>
+                    <span>Trạm Điểm Danh Live</span>
+                </a>
+
                 <a href="{{ route('admin.guests.seating.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.seating*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -849,6 +859,10 @@
                 <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_cmd_item" data-search="khách mời điểm danh check-in ngày cưới seating bàn tiệc guests">
                     <span>🎟️ Khách Mời & Điểm Danh Ngày Cưới</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/guests</span>
+                </a>
+                <a href="{{ route('admin.guests.checkin.index') }}" class="mayhen_admin_cmd_item" data-search="trạm điểm danh live check-in scanner qr code đón khách timeline ngày cưới walk-in">
+                    <span>⚡ Trạm Điểm Danh Live & Giám Sát Luồng Khách</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guests/checkin</span>
                 </a>
                 <a href="{{ route('admin.guests.seating.index') }}" class="mayhen_admin_cmd_item" data-search="sơ đồ bàn tiệc chỗ ngồi seating plan capacity guardian quá tải xếp bàn sảnh">
                     <span>🪑 Sơ Đồ Bàn Tiệc & Điều Phối Chỗ Ngồi</span>

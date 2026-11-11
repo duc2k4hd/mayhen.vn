@@ -10262,7 +10262,51 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tổng suite 16 feature test files admin gần nhất: **162/162 tests PASSED 100% (652 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
-### [2026-11-11 15:38] - HOÀN THÀNH ĐỀ ÁN 111: PHÂN HỆ QUẢN TRỊ TRUNG TÂM SƠ ĐỒ BÀN TIỆC & ĐIỀU PHỐI CHỖ NGỒI QUAN KHÁCH (SEATING PLANNER COCKPIT & CAPACITY GUARDIAN — MỤC 32, 212 PRD V3)
+### [2026-11-11 15:53] - HOÀN THÀNH ĐỀ ÁN 112: PHÂN HỆ QUẢN TRỊ TRẠM ĐIỂM DANH ĐÓN KHÁCH NGÀY CƯỚI & GIÁM SÁT LUỒNG KHÁCH THỜI GIAN THỰC (ON-SITE CHECK-IN COMMAND COCKPIT & REAL-TIME ATTENDANCE MONITOR — MỤC 33 PRD V3 & ADM-CHK-01)
+- **Mục tiêu**: Xây dựng tổng hành dinh điều hành đón tiếp quan khách ngày cưới thời gian thực cho Quản trị viên và Ban tổ chức, giám sát tiến độ đón tiếp, phân tích biểu đồ luồng khách theo từng khung giờ (Hourly Arrival Flow) phục vụ bếp lên món đúng nhịp, trạm quét mã QR/nhập token tìm kiếm tức thì với cơ chế chống quét trùng, điểm danh 1 chạm có điều chỉnh sĩ số thực tế (Partial Check-in), đón tiếp khách vãng lai phát sinh (Walk-in), đổi bàn tiệc trực tiếp và xuất báo cáo điểm danh CSV định dạng UTF-8 BOM.
+- **Thực hiện chi tiết**:
+  1. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/AdminCheckInCockpitService.php`)**:
+     - `getCockpitData(...)`: Trích xuất 5 KPI đón tiếp cốt lõi:
+       * Tổng Sĩ Số Dự Kiến (`total_expected_attendees`)
+       * Đã Đón Tiếp (`checked_in_attendees` & `checked_in_guests`) kèm tỷ lệ có mặt (`turnout_rate` %)
+       * Chưa Đến (`not_checked_in_attendees` & `not_checked_in_guests`)
+       * Đến Một Phần (`partially_checked_in_guests`: nhóm khách đi ít hơn số lượng xác nhận)
+       * Khách Phát Sinh (`walk_in_guests`: khách vãng lai bổ sung tại cửa)
+     - `calculateArrivalTimeline(...)`: Phân tích luồng khách check-in theo các khung giờ (Trước 17:00, 17:00-17:30, 17:30-18:00, 18:00-18:30, 18:30-19:00, 19:00-19:30, Sau 19:30) kèm số lượt, tổng sĩ số và thanh tiến độ % tương đối.
+     - `searchGuests(...)`: Hỗ trợ tìm kiếm nhanh theo Token 32 ký tự, link QR bóc tách, Tên, Số điện thoại hoặc Bàn tiệc.
+     - `checkInGuest(...)`: Thực hiện giao dịch nguyên tử (`lockForUpdate`), cập nhật thời gian đến, số lượng người thực tế, bàn tiệc, ghi chú và ghi nhật ký kiểm toán (`AuditLogger::log`).
+     - `cancelCheckIn(...)`: Hủy điểm danh an toàn đưa khách về trạng thái chưa đến.
+     - `createWalkInGuest(...)`: Tạo khách phát sinh trực tiếp tại cửa tiệc, sinh token 32 ký tự ngẫu nhiên, tự động check-in ngay và xếp bàn nếu có.
+     - `updateGuestTable(...)`: Đổi bàn tiệc nhanh tại trạm đón tiếp có ghi log.
+     - `exportAttendanceCsv(...)`: Xuất tệp báo cáo điểm danh đón tiếp chi tiết định dạng CSV UTF-8 BOM chuẩn tiếng Việt.
+  2. **Controller & Định Tuyến An Toàn (`AdminCheckInController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminCheckInController.php` gồm các action `index`, `liveStats`, `search`, `checkIn`, `cancel`, `updateTable`, `walkIn`, `export`.
+     - Tuyến đường: `admin.guests.checkin.*` (`index`, `live_stats`, `search`, `checkin_guest`, `cancel_guest`, `update_table`, `walk_in`, `export`) tích hợp vào prefix `admin/guests/checkin`.
+  3. **Giao Diện Blade Chuẩn Quiet Luxury (`guests/checkin/index.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Trung Tâm Giám Sát Đón Tiếp & Điểm Danh Ngày Cưới')`.
+     - Bộ chọn tiệc cưới (ưu tiên tiệc hôm nay hoặc tiệc gần nhất), 5 thẻ KPI trực quan, thanh tiến độ đón tiếp dải màu ngọc lục bảo (Emerald gradient).
+     - Bố cục 2 cột hàng trên: Cột trái là biểu đồ luồng khách theo khung giờ (CSS bar chart), Cột phải là Trạm quét QR & Tìm kiếm nhanh với thẻ kết quả kèm nút Đón ngay / Hủy / Sửa.
+     - Khối dưới: Sổ điểm danh & đón tiếp toàn diện có Tabs lọc trạng thái (Tất cả, Đã đến, Chưa đến, Một phần, Phát sinh), bộ lọc theo Bàn tiệc & Nhóm khách, ô tìm kiếm từ khóa và phân trang.
+     - 2 Modal tiện ích: Modal Điều chỉnh sĩ số & đổi bàn, Modal Đón khách phát sinh (Walk-in).
+     - Vanilla JS thông minh: Debounce search 250ms, Auto Live Polling mỗi 15 giây cập nhật số liệu không reload trang.
+     - Cập nhật Sidebar Navigation ("Trạm Điểm Danh Live"), Command Palette (`Ctrl + K`) và nút truy cập nhanh trong `guests/index.blade.php`.
+  4. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminCheckInCockpitTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_admin_can_view_checkin_cockpit`: Xem trung tâm đón tiếp và thông tin lễ cưới.
+       * `test_unauthorized_user_cannot_access_checkin_cockpit`: Chặn khách vãng lai và user không có quyền quản trị.
+       * `test_cockpit_displays_accurate_kpis_and_turnout_rate`: Tính toán chính xác 5 chỉ số KPI và tỷ lệ Turnout Rate.
+       * `test_cockpit_live_stats_api_returns_json_metrics_and_timeline`: API polling trả về JSON đầy đủ cấu trúc và timeline.
+       * `test_instant_search_finds_guest_by_name_phone_and_token`: Tìm kiếm siêu tốc theo tên, SĐT và token QR.
+       * `test_one_click_checkin_updates_guest_and_logs_audit`: Điểm danh 1 chạm có điều chỉnh sĩ số và ghi nhận audit log.
+       * `test_cancel_checkin_resets_guest_to_not_checked_in`: Hủy điểm danh đưa khách về trạng thái chưa đến.
+       * `test_update_guest_table_at_checkin_station`: Đổi bàn tiệc tại trạm tiếp tân thành công.
+       * `test_create_walk_in_guest_creates_and_immediately_checks_in`: Tạo khách phát sinh walk-in và tự động check-in ngay.
+       * `test_export_attendance_csv_returns_utf8_bom_stream`: Xuất tệp báo cáo điểm danh CSV UTF-8 BOM chuẩn tiếng Việt.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 18 feature test files admin gần nhất: **182/182 tests PASSED 100% (752 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
 - **Mục tiêu**: Xây dựng trung tâm điều phối sơ đồ bàn tiệc chuyên nghiệp cho sự kiện cưới, kiểm soát sức chứa theo thời gian thực (Capacity Guardian), phát hiện cảnh báo bàn quá tải (`isOverCapacity`), bàn quá thưa, cảnh báo ghép bàn lệch thế hệ (người lớn tuổi với bạn trẻ), tính toán chuẩn headcount khách đi cùng, hỗ trợ gán/gỡ khách linh hoạt và xuất sơ đồ phân bàn theo sảnh định dạng CSV.
 - **Thực hiện chi tiết**:
   1. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/AdminSeatingPlanService.php`)**:

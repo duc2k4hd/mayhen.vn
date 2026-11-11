@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminCannedResponseController;
+use App\Http\Controllers\Admin\AdminCheckInController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminDomainManagerController;
@@ -226,6 +227,18 @@ Route::middleware('admin.auth')->group(function () {
             Route::post('/weddings/{weddingId}/tables/{tableId}/assign', [AdminSeatingPlanController::class, 'assign'])->name('assign');
             Route::post('/weddings/{weddingId}/guests/{guestId}/unassign', [AdminSeatingPlanController::class, 'unassign'])->name('unassign');
             Route::get('/weddings/{weddingId}/export-csv', [AdminSeatingPlanController::class, 'export'])->name('export');
+        });
+
+        // Phân hệ Quản trị Trạm Điểm Danh Đón Khách Ngày Cưới (Mục 33 PRD V3 & ADM-CHK-01)
+        Route::prefix('checkin')->name('checkin.')->group(function () {
+            Route::get('/', [AdminCheckInController::class, 'index'])->name('index');
+            Route::get('/weddings/{weddingId}/live-stats', [AdminCheckInController::class, 'liveStats'])->name('live_stats');
+            Route::get('/weddings/{weddingId}/search', [AdminCheckInController::class, 'search'])->name('search');
+            Route::post('/guests/{guestId}/checkin', [AdminCheckInController::class, 'checkIn'])->name('checkin_guest');
+            Route::post('/guests/{guestId}/cancel', [AdminCheckInController::class, 'cancel'])->name('cancel_guest');
+            Route::post('/guests/{guestId}/update-table', [AdminCheckInController::class, 'updateTable'])->name('update_table');
+            Route::post('/weddings/{weddingId}/walk-in', [AdminCheckInController::class, 'walkIn'])->name('walk_in');
+            Route::get('/weddings/{weddingId}/export-csv', [AdminCheckInController::class, 'export'])->name('export');
         });
     });
 
