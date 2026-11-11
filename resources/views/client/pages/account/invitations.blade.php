@@ -469,6 +469,16 @@
                                 </svg>
                                 <span>Âm Nhạc Hôn Lễ</span>
                             </a>
+
+                            {{-- Nút Thông Báo Khẩn Cấp (Mục 4.3 DOCX & Đề Án 130) --}}
+                            <a href="{{ route('account.broadcast.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Ghim thông báo khẩn cấp đổi sảnh, lùi giờ đón khách hoặc hướng dẫn bãi xe lên thiệp">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                <span>Băng Tin Khẩn Cấp</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

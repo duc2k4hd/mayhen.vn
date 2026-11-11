@@ -44,6 +44,7 @@ use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\VietQrController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingArchiveExportController;
+use App\Http\Controllers\Client\WeddingBroadcastController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingMediaController;
@@ -203,6 +204,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/am-nhac', [WeddingMusicController::class, 'index'])->name('music.index');
     Route::post('/thiep/{id}/am-nhac', [WeddingMusicController::class, 'update'])->name('music.update');
     Route::post('/thiep/{id}/am-nhac/upload', [WeddingMusicController::class, 'upload'])->name('music.upload');
+    Route::get('/thiep/{id}/thong-bao-khan-cap', [WeddingBroadcastController::class, 'index'])->name('broadcast.index');
+    Route::post('/thiep/{id}/thong-bao-khan-cap', [WeddingBroadcastController::class, 'update'])->name('broadcast.update');
+    Route::post('/thiep/{id}/thong-bao-khan-cap/tat', [WeddingBroadcastController::class, 'deactivate'])->name('broadcast.deactivate');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

@@ -155,6 +155,7 @@ Thumbs.db
 !/tests/Feature/HouseholdRsvpIntelligenceTest.php
 !/tests/Feature/SmartGroupInvitationTest.php
 !/tests/Feature/WeddingMusicSuiteTest.php
+!/tests/Feature/WeddingBroadcastSuiteTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

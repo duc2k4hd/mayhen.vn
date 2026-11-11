@@ -414,6 +414,9 @@
     {{-- Hệ Thống Âm Thanh Hôn Lễ Quiet Luxury & Nút Nhạc Đĩa Than Nổi (Đề Án 129 - Mục 4.4 DOCX & Section 23 PRD V3) --}}
     @include('client.components.music-dock')
 
+    {{-- Hệ Thống Băng Tin Thông Báo Khẩn Cấp Ngày Cưới (Đề Án 130 - IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3) --}}
+    @include('client.components.broadcast-banner')
+
     {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template --}}
     @include('client.invitations.partials.editor-bridge')
 

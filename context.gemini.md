@@ -10876,6 +10876,51 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 130. Đề Án 130: Hệ Thống Băng Tin Thông Báo Khẩn Cấp Ngày Cưới & Trợ Lý Phát Tin Tức Thời (Wedding Live Broadcast Ticker & Emergency Announcement Suite — IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3)
+- **Mục tiêu**:
+  - Giải quyết bài toán thực tế phát sinh trong ngày hôn lễ theo IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3:
+  - Khi có biến cố thời tiết (mưa lớn ngập đường phải dời tiệc ngoài trời vào sảnh trong nhà), sự cố giao thông (đoàn xe rước dâu lùi giờ 30 phút), thay đổi bãi đỗ xe ô tô sang tòa nhà đối diện, hoặc công bố số hotline điều phối viên khẩn cấp — cặp đôi không thể nhắn tin/gọi điện cho từng người trong hàng trăm khách mời.
+  - Cho phép cô dâu chú rể kích hoạt phát sóng một **Băng Tin Khẩn Cấp** trang trọng nổi bật trên đầu thiệp cưới của mình trong 1 thao tác an toàn.
+  - Cung cấp 5 kịch bản mẫu khẩn cấp sẵn (Thay đổi sảnh tiệc, Lùi giờ đón khách, Hướng dẫn bãi đỗ xe mới, Lưu ý thời tiết tiệc ngoài trời, Hotline đón tiếp) để điền thông tin tự động trong 5 giây.
+  - Phân loại 3 mức độ khẩn cấp với màu sắc Quiet Luxury đặc thù:
+    - `critical`: Đỏ Bordeaux hoàng gia (`#8C2E24`) viền vàng kim (`#D4AF37`) cho sự cố đổi sảnh, đổi ngày.
+    - `warning`: Hổ phách cổ điển (`#9C7A4A`) cho lùi giờ tiệc, bãi đỗ xe.
+    - `info`: Trắng ngà / Sage nhạt cho thông báo trang phục, hotline.
+  - Tùy chọn 3 hình thức hiển thị linh hoạt:
+    - `sticky_banner`: Thanh banner ghim nổi trên cùng màn hình, có nút thu gọn/mở rộng.
+    - `modal_popup`: Hộp thoại popup trang trọng xuất hiện khi khách mở thiệp, có nút "Tôi Đã Hiểu & Vào Xem Thiệp" (lưu `sessionStorage` để không phiền khách lặp lại).
+    - `both`: Kết hợp cả Popup và Sticky Banner.
+  - Ghi nhận AuditLogger đa tầng khi phát tin hoặc tắt thông báo.
+  - Bảo vệ 100% không render trong Studio Editor iframe (`$isEmbed = true`) để không che chắn giao diện thiết kế thiệp.
+  - 100% Pure Vanilla CSS/JS không dùng thư viện ngoài.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingBroadcastService.php`:
+    - `getPresetTemplates`: Danh mục 5 mẫu tình huống khẩn cấp điển hình.
+    - `resolveBroadcastConfig`: Phân giải cấu hình với fallback an toàn.
+    - `updateBroadcast`: Cập nhật cấu hình vào `$invitation->custom_config['broadcast']`, ghi nhận mốc thời gian `updated_at` và ghi AuditLogger.
+    - `deactivateBroadcast`: Tắt phát sóng thông báo khẩn cấp và ghi AuditLogger.
+  - `app/Http/Controllers/Client/WeddingBroadcastController.php`:
+    - `index`: Màn hình cấu hình phát sóng (`account.broadcast.index`).
+    - `update`: Lưu và phát sóng thông báo (`account.broadcast.update`).
+    - `deactivate`: Tắt thông báo (`account.broadcast.deactivate`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp an toàn.
+  - `resources/views/client/components/broadcast-banner.blade.php`:
+    - Component Sticky Banner & Modal Popup Quiet Luxury, xử lý thu gọn/mở rộng và sessionStorage.
+  - `resources/views/client/layouts/invitation.blade.php`:
+    - Tích hợp `@include('client.components.broadcast-banner')`.
+  - `resources/views/client/pages/account/broadcast/index.blade.php`:
+    - Màn hình quản trị phát sóng dành cho cặp đôi, hỗ trợ chọn mẫu nhanh, Live Preview mô phỏng trên điện thoại và nút tắt tức thời.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Băng Tin Khẩn Cấp".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.broadcast.*`.
+  - `tests/Feature/WeddingBroadcastSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: truy cập màn hình cấu hình, chặn truy cập trái phép 403, lưu và phát sóng thông báo, tắt thông báo, render sticky banner và modal popup, phòng vệ không render khi tắt hoặc nhúng iframe, fallback an toàn khi rỗng (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,073 / 1,073 tests PASSED 100%** (5,714 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 
