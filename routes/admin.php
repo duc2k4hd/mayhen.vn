@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
+use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
@@ -181,6 +182,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/platform/{group}', [AdminPlatformSettingController::class, 'update'])->name('platform.update');
         Route::post('/platform/test/{service}', [AdminPlatformSettingController::class, 'testConnection'])->name('platform.test');
         Route::post('/platform/rollback/{historyId}', [AdminPlatformSettingController::class, 'rollback'])->name('platform.rollback');
+
+        // Trung Tâm Sao Lưu, Phục Hồi Dữ Liệu & Quản Trị Thảm Họa (Mục 180 PRD V3 & OPS-01)
+        Route::prefix('backups')->name('backups.')->group(function () {
+            Route::get('/', [AdminBackupController::class, 'index'])->name('index');
+            Route::post('/create', [AdminBackupController::class, 'create'])->name('create');
+            Route::post('/{id}/verify', [AdminBackupController::class, 'verify'])->name('verify');
+            Route::get('/{id}/download', [AdminBackupController::class, 'download'])->name('download');
+            Route::delete('/{id}', [AdminBackupController::class, 'destroy'])->name('destroy');
+            Route::post('/clean-old', [AdminBackupController::class, 'cleanOld'])->name('clean_old');
+        });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');
         Route::get('/plans/{id}/edit', [AdminSettingController::class, 'editPlan'])->name('plans.edit');

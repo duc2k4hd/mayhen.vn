@@ -412,6 +412,17 @@
                         <span>Thanh Tra Bộ Nhớ Lưu Trữ</span>
                     </a>
 
+                    <a href="{{ route('admin.settings.backups.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.backups*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </span>
+                        <span>Sao Lưu & Khôi Phục (Backup)</span>
+                    </a>
+
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.seo*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -734,6 +745,10 @@
                     <a href="{{ route('admin.settings.storage') }}" class="mayhen_admin_cmd_item" data-search="thanh tra bộ nhớ lưu trữ storage media inspector">
                         <span>💾 Thanh Tra Bộ Nhớ Lưu Trữ</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/storage</span>
+                    </a>
+                    <a href="{{ route('admin.settings.backups.index') }}" class="mayhen_admin_cmd_item" data-search="sao lưu khôi phục thảm họa backup restore database snapshot ops-01">
+                        <span>📦 Sao Lưu & Khôi Phục (Backup Vault)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/backups</span>
                     </a>
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_cmd_item" data-search="thanh tra seo sitemap xml google robots meta search index">
                         <span>🌐 Thanh Tra SEO & Sitemap XML</span>

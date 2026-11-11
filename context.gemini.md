@@ -9354,3 +9354,63 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 10 test files admin gần nhất: **84/84 tests PASSED 100% (396 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 95. ĐỀ ÁN 95: TRUNG TÂM SAO LƯU, PHỤC HỒI DỮ LIỆU & QUẢN TRỊ THẢM HỌA HẠ TẦNG (DATABASE BACKUP, SNAPSHOT VAULT & DISASTER RECOVERY COCKPIT — MỤC 180 PRD V3 & DÒNG 902 / OPS-01)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm chỉ huy sao lưu và quản trị thảm họa (Disaster Recovery Vault) dành riêng cho Quản trị viên cấp cao (`Super Admin`) theo chuẩn **Mục 180 Master PRD V3, Dòng 902, Dòng 903 & Tiêu chuẩn nghiệm thu OPS-01 (Dòng 1123 PRD V3)**.
+  - **4 Trụ Cột An Toàn & Phục Hồi Dữ Liệu**:
+    1. *Snapshot Tức Thời (Instant Database Snapshot)*: Tạo bản sao lưu an toàn toàn bộ cơ sở dữ liệu SQLite / MySQL kèm mã băm SHA-256 xác minh tính toàn vẹn, đếm số bảng và ước tính tổng số dòng dữ liệu.
+    2. *Kiểm Thử Phục Hồi Độc Lập (OPS-01 Test Restore Verification)*: Chạy thử nghiệm nạp bản sao lưu trong môi trường sandbox độc lập, xác minh `PRAGMA integrity_check` của SQLite, kiểm tra sự tồn tại của các bảng cốt lõi (`users`, `invitations`, `orders`, `platform_settings`) mà không ảnh hưởng tới DB chính đang vận hành, xuất biên bản xác nhận khôi phục thành công 100%.
+    3. *Tải Xuống & Lưu Trữ An Toàn (Secure Download Stream)*: Tải file snapshot (.sqlite / .sql) về máy tính cá nhân an toàn dưới sự kiểm soát chặt chẽ của middleware `admin.super` và ghi nhận nhật ký kiểm toán.
+    4. *Chính Sách Lưu Giữ & Dọn Dẹp (Retention Policy)*: Hỗ trợ dọn dẹp các bản sao lưu cũ (giữ lại 7 bản gần nhất) nhằm giải phóng tài nguyên đĩa máy chủ định kỳ.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_130023_create_system_backups_table.php`:
+       * Bảng `system_backups`: `filename`, `disk`, `file_path`, `file_size_bytes`, `type` (`database`, `media`, `full`), `status` (`completed`, `failed`), `sha256_checksum`, `tables_count`, `records_count`, `verified_at`, `verification_log`, `note`, `created_by`, timestamps, index `['type', 'status', 'created_at']`.
+  2. **Models**:
+     - `app/Models/SystemBackup.php`: Quan hệ `belongsTo(User::class, 'created_by')`, accessor `formatted_size` (B, KB, MB), helper `isVerified()`.
+  3. **Services**:
+     - `app/Services/SystemBackupService.php`:
+       * `createDatabaseBackup()`: Tự động phát hiện driver (SQLite copy hoặc memory dump, MySQL dump), tính SHA-256, đếm bảng/dòng, lưu record và ghi audit `BACKUP_CREATED`.
+       * `testRestoreVerification()`: Kiểm tra checksum, kết nối PDO sandbox tạm, chạy `PRAGMA integrity_check`, xác minh các bảng cốt lõi, ghi log chi tiết `verification_log` và cập nhật `verified_at`.
+       * `downloadBackup()`: Trả về binary stream tải xuống an toàn kèm audit `BACKUP_DOWNLOADED`.
+       * `deleteBackup()`: Xóa file vật lý và bản ghi DB kèm audit `BACKUP_DELETED`.
+       * `cleanOldBackups()`: Xóa các bản sao lưu vượt quá quota lưu trữ kèm audit `BACKUPS_CLEANED`.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminBackupController.php`:
+       * `index()`: Tính 4 thẻ KPI (Tổng số bản, Dung lượng kho, Snapshot gần nhất, Tỷ lệ xác minh OPS-01 %) và danh sách phân trang.
+       * `create()`: Kích hoạt tạo snapshot tức thời.
+       * `verify()`: Chạy kiểm thử khôi phục OPS-01 (hỗ trợ cả JSON và Web request).
+       * `download()`: Tải file backup.
+       * `destroy()`: Xóa bản sao lưu.
+       * `cleanOld()`: Dọn dẹp bản snapshot cũ (>7 bản).
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings` có middleware `admin.super`:
+       * `GET /admin/settings/backups` (`admin.settings.backups.index`)
+       * `POST /admin/settings/backups/create` (`admin.settings.backups.create`)
+       * `POST /admin/settings/backups/{id}/verify` (`admin.settings.backups.verify`)
+       * `GET /admin/settings/backups/{id}/download` (`admin.settings.backups.download`)
+       * `DELETE /admin/settings/backups/{id}` (`admin.settings.backups.destroy`)
+       * `POST /admin/settings/backups/clean-old` (`admin.settings.backups.clean_old`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/backups/index.blade.php`:
+       * 4 Thẻ KPI Sức Khỏe Kho Sao Lưu: Tổng số bản, Dung lượng, Snapshot mới nhất, Tỷ lệ xác minh khôi phục OPS-01.
+       * Form tạo bản sao lưu nhanh kèm ghi chú; Nút dọn dẹp bản cũ.
+       * Bảng Snapshot Vault: Tên file, Checksum SHA-256 rút gọn, Số bảng/dòng, Dung lượng, Thời gian tạo, Badge Xác Minh OPS-01 (Xanh lá nếu PASS kèm link xem log, Vàng nếu chưa kiểm thử).
+       * Modal xem chi tiết nhật ký kiểm thử phục hồi độc lập (Verification Log Modal).
+       * Cập nhật Sidebar: Menu "Sao Lưu & Khôi Phục (Backup)" trong Section 5 (Hệ Thống & Cài Đặt) và tích hợp vào Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminBackupManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminBackupManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai bị redirect về `admin.login`.
+       2. Người dùng `customer` bị redirect về `admin.login`.
+       3. Quản lý `manager` thông thường bị chặn bởi middleware `admin.super` (redirect về dashboard hoặc 403 JSON).
+       4. Super Admin (`admin`) truy cập thành công màn hình Disaster Recovery Vault và thấy các thẻ KPI.
+       5. Tạo bản snapshot tức thời tạo file thật trong `storage/app/backups/`, tính SHA-256 và lưu DB.
+       6. Kiểm thử phục hồi (OPS-01) thành công, cập nhật `verified_at` và biên bản nhật ký `verification_log`.
+       7. Phát hiện và chặn lỗi khi file bị hỏng hoặc sai lệch mã băm SHA-256 Checksum.
+       8. Tải về file bản sao lưu trả về binary stream hợp lệ.
+       9. Xóa bản sao lưu xóa sạch file vật lý trên ổ đĩa và bản ghi cơ sở dữ liệu.
+       10. Dọn dẹp bản cũ giữ lại đúng số lượng quy định theo chính sách lưu trữ.
+     - Kết quả: **10/10 tests PASSED 100% (39 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 11 test files admin gần nhất: **94/94 tests PASSED 100% (435 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
