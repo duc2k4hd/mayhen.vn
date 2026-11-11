@@ -59,4 +59,3 @@ class AdminInvitationRevisionController extends Controller
             ->with('success', "Đã phục hồi thành công thiệp cưới [{$invitation->title}] về phiên bản v{$newRevision->version_number}. Toàn bộ nội dung đã được cập nhật an toàn.");
     }
 }
-

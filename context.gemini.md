@@ -10223,5 +10223,45 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tổng suite 15 feature test files admin gần nhất: **152/152 tests PASSED 100% (600 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
+### [2026-11-11 15:32] - HOÀN THÀNH ĐỀ ÁN 110: HỆ THỐNG XỬ LÝ NHẬP KHÁCH HÀNG LOẠT THEO BATCH 4 BƯỚC, CHỐNG MẤT SỐ 0 ĐẦU VÀ IDEMPOTENT RETRY (GUEST BATCH IMPORT PIPELINE — MỤC 28.3, 38.1 PRD V3 & GUE-01, GUE-02)
+- **Mục tiêu**: Xây dựng phân hệ nhập danh bạ khách mời hàng loạt chuyên nghiệp theo quy trình 4 bước chuẩn hóa (Upload $\rightarrow$ Column Mapping $\rightarrow$ Dry Run Validation $\rightarrow$ Execution), tự động chuẩn hóa số điện thoại Việt Nam chống mất số 0 đầu từ Excel (GUE-01), cơ chế Idempotent Retry chống tạo trùng lặp khi chạy lại batch (GUE-02) và sinh mã `guest_token` 32 ký tự an toàn ngẫu nhiên cho từng khách.
+- **Thực hiện chi tiết**:
+  1. **Lược đồ cơ sở dữ liệu & Migration (`create_import_batches_table`)**:
+     - Bảng `import_batches`: `id`, `batch_id` (UUID unique), `wedding_id` (foreignId cascade), `created_by` (foreignId nullOnDelete), `file_name`, `file_path`, `status` (`uploaded`, `mapped`, `processing`, `completed`, `partial_failed`, `failed`), `total_rows`, `imported_count`, `updated_count`, `skipped_count`, `failed_count`, `column_mapping` (JSON), `duplicate_mode` (`skip`, `update`, `create_always`), `error_summary` (JSON), `raw_preview_data` (longText JSON lưu tạm 500 dòng phục vụ preview và retry), `created_at`, `updated_at`.
+  2. **Model & Eloquent Relationships (`ImportBatch.php`)**:
+     - Model `App\Models\ImportBatch`: quan hệ `wedding()`, `creator()`, accessors `getStatusLabelAttribute()`, `getStatusBadgeClassAttribute()`, `getSuccessRateAttribute()`.
+  3. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/GuestBatchImportService.php`)**:
+     - `parseUploadedFile(...)`: Đọc tệp CSV với mã hóa UTF-8 BOM, phân tách thông minh bằng phẩy (`,`), chấm phẩy (`;`) hoặc tab (`\t`), tách header và dòng dữ liệu, khởi tạo batch và tự động phân tích gợi ý ánh xạ cột (`autoSuggestMapping`).
+     - `autoSuggestMapping(...)`: Tự động nhận diện cột Tên, SĐT, Danh xưng, Nhóm, Số suất mời, Bàn tiệc qua Regex từ khóa tiếng Việt / tiếng Anh.
+     - `formatVietnamesePhoneNumber(...)` **(GUE-01)**: Loại bỏ ký tự thừa, chuẩn hóa `+84`/`84` $\rightarrow$ `0`, tự động phát hiện số 9 chữ số bị Excel nuốt số 0 đầu để khôi phục về dạng chuẩn `09xxxxxxxx`.
+     - `previewAndValidate(...)` (Dry Run): Thẩm tra toàn bộ dữ liệu trước khi nhập thật, phân loại 3 nhóm: Hợp lệ (Valid), Trùng lặp (Duplicate), Lỗi dữ liệu (Invalid) kèm lý do chi tiết.
+     - `executeImport(...)` **(GUE-02)**: Thực thi giao dịch Database Transaction, tự động sinh token ngẫu nhiên bảo mật cao 32 ký tự (`guest_token = Str::random(32)`), kiểm tra trùng lặp theo chính sách (`skip`, `update`, `create_always`) và chống tạo trùng khi người dùng bấm Retry.
+     - `exportFailedRowsCsv(...)`: Xuất tệp CSV định dạng UTF-8 BOM chứa danh sách các dòng bị lỗi kèm cột lý do để khách hàng tải về sửa trực tiếp trong Excel.
+  4. **Controller & Định Tuyến An Toàn (`AdminGuestImportController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminGuestImportController.php` gồm các action `index`, `upload`, `mapping`, `preview`, `execute`, `exportFailed`.
+     - Tuyến đường: `admin.guests.import.*` (`index`, `upload`, `mapping`, `preview`, `execute`, `export_failed`) trong nhóm `prefix('guests')`.
+  5. **Giao Diện Blade Chuẩn Quiet Luxury (`guests/import.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Nhập Khách Mời Hàng Loạt Theo Batch')`.
+     - Thanh chỉ báo Stepper trực quan 4 bước (1. Tải Tệp $\rightarrow$ 2. Ánh Xạ $\rightarrow$ 3. Thẩm Tra $\rightarrow$ 4. Kết Quả).
+     - Khu vực kéo thả tệp CSV, bảng phân tích ánh xạ cột có Select box và dữ liệu mẫu, bảng thẩm tra Dry Run kèm 4 thẻ KPI số lượng, bảng kết quả với thống kê nhập mới/cập nhật/bỏ qua/lỗi và nút tải file CSV lỗi nếu có.
+     - Bổ sung nút truy cập "Nhập Hàng Loạt (Batch)" vào trang quản lý khách mời `resources/views/admin/pages/guests/index.blade.php`.
+  6. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminGuestBatchImportTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_admin_can_view_import_wizard_step_one`: Xem màn hình bước 1 chọn đám cưới và tải tệp.
+       * `test_unauthorized_user_cannot_access_import_wizard`: Chặn khách vãng lai và user không có quyền.
+       * `test_upload_csv_creates_import_batch_and_auto_suggests_mapping`: Upload CSV tạo batch và tự động gợi ý cột chính xác.
+       * `test_gue_01_format_vietnamese_phone_preserves_and_restores_leading_zero`: Kiểm tra chuẩn hóa số điện thoại chống mất số 0 đầu (GUE-01).
+       * `test_dry_run_validation_identifies_valid_duplicate_and_invalid_rows`: Thẩm tra Dry Run phân loại đúng 3 trạng thái dòng.
+       * `test_execute_import_creates_guests_with_secure_random_tokens`: Thực thi nhập tạo khách kèm `guest_token` ngẫu nhiên 32 ký tự.
+       * `test_gue_02_idempotent_retry_does_not_create_duplicates`: Chạy lại retry không tạo trùng lặp (GUE-02).
+       * `test_duplicate_mode_update_modifies_existing_guest`: Chế độ update cập nhật thông tin khách đã có.
+       * `test_admin_can_export_failed_rows_csv_with_utf8_bom`: Xuất tệp CSV dòng lỗi định dạng chuẩn UTF-8 BOM.
+       * `test_cannot_upload_invalid_file_extension`: Chặn tải lên tệp tin không hợp lệ.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 16 feature test files admin gần nhất: **162/162 tests PASSED 100% (652 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 
 

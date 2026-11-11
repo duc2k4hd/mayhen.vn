@@ -72,4 +72,3 @@ class InvitationRevision extends Model
         return is_array($this->diff_summary) ? count($this->diff_summary) : 0;
     }
 }
-

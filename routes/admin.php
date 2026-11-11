@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminDomainManagerController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFeatureFlagController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
+use App\Http\Controllers\Admin\AdminGuestImportController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvitationRevisionController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
@@ -204,6 +205,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/toggle-checkin', [AdminGuestController::class, 'toggleCheckIn'])->name('toggle_checkin');
         Route::post('/{id}/assign-table', [AdminGuestController::class, 'quickAssignTable'])->name('assign_table');
         Route::post('/weddings/{weddingId}/emergency-table', [AdminGuestController::class, 'createEmergencyTable'])->name('emergency_table');
+
+        // Phân hệ Nhập Khách Hàng Loạt 4 Bước (Mục 28.3 PRD V3 & GUE-01, GUE-02)
+        Route::prefix('import')->name('import.')->group(function () {
+            Route::get('/', [AdminGuestImportController::class, 'index'])->name('index');
+            Route::post('/upload', [AdminGuestImportController::class, 'upload'])->name('upload');
+            Route::get('/{batchId}/mapping', [AdminGuestImportController::class, 'mapping'])->name('mapping');
+            Route::post('/{batchId}/preview', [AdminGuestImportController::class, 'preview'])->name('preview');
+            Route::post('/{batchId}/execute', [AdminGuestImportController::class, 'execute'])->name('execute');
+            Route::get('/{batchId}/export-failed', [AdminGuestImportController::class, 'exportFailed'])->name('export_failed');
+        });
     });
 
     // Quản lý Lời chúc & Giám sát RSVP
