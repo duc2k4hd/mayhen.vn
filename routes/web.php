@@ -37,6 +37,7 @@ use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
+use App\Http\Controllers\Client\VietQrController;
 use App\Http\Controllers\Client\WebhookController;
 use App\Http\Controllers\Client\WeddingArchiveExportController;
 use App\Http\Controllers\Client\WeddingEventController;
@@ -114,6 +115,8 @@ Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 're
 Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
 Route::get('/api/editor/family-approval/{id}', [FamilyApprovalController::class, 'status'])->middleware(['auth', 'throttle:30,1'])->name('family_approval.status');
 Route::get('/api/thiep/{id}/events', [WeddingEventController::class, 'apiEvents'])->name('invitation.events.api');
+Route::get('/api/vietqr/banks', [VietQrController::class, 'banks'])->name('api.vietqr.banks');
+Route::get('/api/vietqr/{bank}/{account}', [VietQrController::class, 'generate'])->name('api.vietqr.generate');
 Route::get('/thiep/{slug}/share-card.svg', [ZaloShareController::class, 'shareCardSvg'])->name('invitation.share_card');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');

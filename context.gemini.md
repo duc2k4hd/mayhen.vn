@@ -10620,5 +10620,43 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Kiểm thử 7/7 test cases chuyên sâu: sinh ảnh SVG chuẩn kích thước & nội dung, chặn thiệp chưa xuất bản, kiểm soát phân quyền chủ tiệc, chặn người lạ, xem kịch bản & danh bạ, API compose cá nhân hóa và ghi nhận audit log (100% PASSED).
 
 
+### 123. Đề Án 123: Động Cơ Sinh Mã VietQR Chuẩn Napas 247 Thuần PHP & Bộ Danh Mục Ngân Hàng Nội Bộ (Native Pure PHP VietQR EMVCo Engine & Napas 247 Banking Registry — Section 35 PRD V3 & ADM-BNK-01)
+- **Mục tiêu**:
+  - Xây dựng động cơ sinh mã VietQR thuần PHP chuẩn quốc tế EMVCo QR Code Specification và Napas 247 Specification (QRIBFTTA liên ngân hàng), loại bỏ hoàn toàn việc phụ thuộc vào API bên thứ ba (`img.vietqr.io`) theo đúng Nguyên tắc Kỹ thuật Bắt buộc của Mây Hẹn (100% Localized Assets & Zero External CDN).
+  - Tích hợp danh mục 50+ Ngân Hàng Việt Nam chuẩn NAPAS (Mã BIN 6 số, tên viết tắt, tên đầy đủ).
+  - Cơ chế nhận diện ngân hàng thông minh (Fuzzy Bank Matcher): Tự động chuẩn hóa từ tên người dùng nhập (VCB, Vietcombank, TCB, Techcombank, MB, Agribank, ACB, TPBank, BIDV...) sang đúng mã BIN 6 số chuẩn.
+  - Thuật toán sinh cấu trúc TLV (Tag-Length-Value) hoàn chỉnh:
+    * Tag 00: Version Format (`01`).
+    * Tag 01: Initiation Method (`11` Static hoặc `12` Dynamic khi có số tiền).
+    * Tag 38: Merchant Account Information (Napas AID `A000000727`, Subtag 01 chứa BIN 6 số + Số tài khoản thụ hưởng, Subtag 02 Service Code `QRIBFTTA`).
+    * Tag 53: Transaction Currency (`704` = VND).
+    * Tag 54: Transaction Amount (khi có số tiền mừng cưới cụ thể).
+    * Tag 58: Country Code (`VN`).
+    * Tag 62: Additional Data Field (Nội dung chuyển khoản / Lời chúc mừng cưới, tự động khử dấu tiếng Việt sang ASCII an toàn).
+    * Tag 63: Mã kiểm tra CRC-16/CCITT-FALSE (Đa thức `0x1021`, Init `0xFFFF`) 4 ký tự Hex chuẩn xác 100%.
+  - Kết xuất vector SVG siêu nét tức thời hoặc Data URI Base64 nhúng trực tiếp vào thẻ `<img>` trong thiệp cưới, không bao giờ bị lỗi ảnh vỡ hay chờ đợi server bên ngoài.
+  - Endpoint công khai siêu tốc: `GET /api/vietqr/{bank}/{account}` (Cache immutable 7 ngày, Content-Type: `image/svg+xml`) và `GET /api/vietqr/banks` (Danh sách 50+ ngân hàng).
+  - Thay thế toàn bộ fallback `img.vietqr.io` trong các mẫu thiệp (`giua-muon-ngan-vi-sao`) sang `VietQrService::generateDataUri(...)`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/VietQrService.php`:
+    - `getBankList`: Danh sách 50+ ngân hàng Việt Nam kèm mã BIN chuẩn Napas.
+    - `resolveBankBin`: Bộ giải mã tên ngân hàng thông minh sang mã BIN 6 số.
+    - `sanitizeMemo`: Chuẩn hóa nội dung chuyển khoản không dấu an toàn ngân hàng.
+    - `calculateCrc16`: Thuật toán tính checksum CRC16-CCITT chuẩn EMVCo.
+    - `generatePayload`: Tạo chuỗi payload VietQR Napas 247 hoàn chỉnh.
+    - `generateSvg`: Kết xuất mã QR vector SVG qua `QrCodeService::svg`.
+    - `generateDataUri`: Tạo chuỗi Data URI SVG base64 dùng ngay trong HTML/Blade.
+  - `app/Http/Controllers/Client/VietQrController.php`:
+    - `generate`: Phục vụ ảnh SVG vector trực tiếp qua route `/api/vietqr/{bank}/{account}`.
+    - `banks`: API trả về danh mục ngân hàng cho Studio tạo thiệp và Admin.
+  - `resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`:
+    - Cập nhật $qrGroomFallback và $qrBrideFallback sử dụng `VietQrService::generateDataUri(...)`.
+  - `routes/web.php`:
+    - Đăng ký `api.vietqr.banks` và `api.vietqr.generate`.
+  - `tests/Feature/NativeVietQrServiceTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: phân giải mã BIN ngân hàng, làm sạch chuỗi memo, cấu trúc EMVCo Napas 247 kèm checksum CRC16, xuất SVG/Data URI, endpoint công khai và danh sách ngân hàng (100% PASSED).
+
+
+
 
 

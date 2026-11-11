@@ -156,18 +156,20 @@
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123 456 789';
     $groomAccountName = $extraData['groom_account_name'] ?? 'NGUYEN MINH TUAN';
     $cleanGroomAcc = preg_replace('/\s+/', '', $groomBankAccount);
+    $qrGroomFallback = \App\Services\VietQrService::generateDataUri($groomBankName, $cleanGroomAcc, 0, 'Mung cuoi ' . $groomName);
     $qrGroomUrl = $resolveAsset(
         $extraData['qr_groom_image'] ?? null,
-        'https://img.vietqr.io/image/' . strtolower($groomBankName) . '-' . $cleanGroomAcc . '-compact2.png?amount=0&addInfo=' . urlencode('Mung cuoi ' . $groomName)
+        $qrGroomFallback
     );
 
     $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '1903 5555 8888';
     $brideAccountName = $extraData['bride_account_name'] ?? 'TRAN THU HA';
     $cleanBrideAcc = preg_replace('/\s+/', '', $brideBankAccount);
+    $qrBrideFallback = \App\Services\VietQrService::generateDataUri($brideBankName, $cleanBrideAcc, 0, 'Mung cuoi ' . $brideName);
     $qrBrideUrl = $resolveAsset(
         $extraData['qr_bride_image'] ?? null,
-        'https://img.vietqr.io/image/' . strtolower($brideBankName) . '-' . $cleanBrideAcc . '-compact2.png?amount=0&addInfo=' . urlencode('Mung cuoi ' . $brideName)
+        $qrBrideFallback
     );
 
     // 5. Lịch trình timeline
