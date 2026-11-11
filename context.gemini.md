@@ -10544,3 +10544,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `tests/Feature/AdminRbacTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện: phân quyền truy cập, lọc nhân sự, tạo tài khoản mới, chuyển giao vai trò, chặn hạ quyền super admin duy nhất, khóa/mở khóa nhân sự, lưu ma trận vào DB, đánh giá `hasPermission` theo ma trận và xuất CSV (100% PASSED).
 
 
+### 121. Đề Án 121: Phân Hệ Trung Tâm Xuất Bản Ấn Phẩm Số & Bộ Thiệp Đồng Bộ Ngày Cưới (Wedding Stationery Kit, Social Share Cards & Table Standee QR Suite — Mục 2.7 DOCX & Mục 27, 38 PRD V3)
+- **Mục tiêu**:
+  - Xây dựng Studio xuất bản bộ ấn phẩm đồng bộ từ dữ liệu ngày cưới của cặp đôi theo đúng quy chuẩn Mục 2.7 DOCX & Mục 27, 38 PRD V3.
+  - Tự động đồng bộ toàn bộ dữ liệu hôn lễ: tên chú rể, tên cô dâu, tứ thân phụ mẫu, thời gian dương lịch / âm lịch, giờ khai tiệc, sảnh tiệc, địa chỉ và thông điệp tình yêu.
+  - Cung cấp 6 định dạng ấn phẩm chuẩn mực:
+    1. `story`: Ảnh chia sẻ Story 9:16 cho Instagram, Facebook, Zalo kèm mã QR dẫn về thiệp cưới online.
+    2. `save_the_date`: Ảnh báo ngày cưới Save The Date gửi sớm 1-2 tháng.
+    3. `vertical_card`: Thiệp ảnh dọc trang trọng lưu điện thoại hoặc in ấn.
+    4. `table_qr`: Standee QR đặt tại bàn tiệc cưới (Table Place Card khổ A5/A6) để quan khách quét mã xem album ảnh, gửi lời chúc mừng và mừng cưới VietQR.
+    5. `timeline`: Ảnh lịch trình chi tiết các mốc đón khách, nghi thức lễ, khai tiệc và tiễn khách.
+    6. `bao_hy`: Thiệp báo hỷ gửi bạn bè, người thân ở xa.
+    7. `thank_you`: Thiệp tri ân quan khách gửi sau ngày chung đôi.
+  - 5 Bảng màu nhận diện Quiet Luxury: Đỏ Nhung Hoàng Gia & Gold (`velvet_crimson`), Hồng Tro & Champagne (`dusty_rose`), Xanh Xô Thơm & Rừng Thu (`sage_green`), Xanh Hoàng Gia & Ánh Bạc (`royal_navy`), Hổ Phách Cổ Điển (`warm_amber`).
+  - Động cơ kết xuất đồ họa: Native HTML5 Canvas 2D Rendering kết hợp với bộ sinh vector QR chuẩn ISO/IEC 18004 thuần PHP (`QrCodeService`), xuất ảnh Ultra HD 2x Retina (2K) sắc nét không vỡ hạt, hỗ trợ sao chép nhanh vào Clipboard và in ấn chuẩn khổ.
+  - Theo dõi nhật ký: Tích hợp `AuditLogger` tự động ghi nhận hành vi xuất/tải ấn phẩm của cặp đôi.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/StationeryKitService.php`:
+    - Định nghĩa 5 bảng màu Quiet Luxury (`getColorPalettes`).
+    - Định nghĩa 7 presets kích thước và tỷ lệ ấn phẩm chuẩn mực (`getPresets`).
+    - Trích xuất và chuẩn hóa dữ liệu ngày cưới, tứ thân phụ mẫu, timeline và mã QR vector SVG (`getStationeryData`).
+  - `app/Http/Controllers/Client/StationeryKitController.php`:
+    - `index`: Màn hình Studio tùy biến ấn phẩm đồng bộ dành riêng cho chủ tiệc cưới.
+    - `logDownload`: Endpoint ghi nhận lượt xuất ảnh và định dạng vào AuditLogger với rate limiting 30 req/min.
+  - `resources/views/client/pages/account/stationery/index.blade.php`:
+    - Giao diện Quiet Luxury hai cột: Cột trái là Control Panel (chọn định dạng, chọn bảng màu, tùy chỉnh tiêu đề/trích dẫn, công tắc QR, nút tải ảnh 2K/sao chép/in ấn), Cột phải là Khung xem trước trực quan (Live Canvas Preview).
+  - `public/assets/client/css/pages/stationery.css`:
+    - Tuân thủ nghiêm ngặt Pure Vanilla CSS, tiền tố `mayhen_stationery_*`, hệ thống token màu, viền ornamental và responsive mượt mà trên mobile & tablet.
+  - `public/assets/client/js/pages/stationery.js`:
+    - Động cơ Native Canvas 2D: render layout tùy chỉnh theo từng preset, xử lý viền kép hoàng gia, hoa văn góc ornamental, typography Cormorant Garamond & Inter, vẽ mã QR vector nét căng, hỗ trợ xuất PNG 2K (`toDataURL`), sao chép trực tiếp vào clipboard (`navigator.clipboard.write`) và in ấn trực quan.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Tích hợp nút tác vụ "Bộ Ấn Phẩm & QR Để Bàn" với icon sang trọng trong danh sách thiệp cưới của người dùng.
+  - `routes/web.php`:
+    - Nhóm routes `account.stationery.index` và `account.stationery.log_download`.
+  - `tests/Feature/SynchronizedStationeryKitTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: phân quyền đăng nhập, chặn truy cập chéo thiệp cưới của người khác, xem Studio bộ ấn phẩm, cấu trúc dữ liệu và URI mã QR chuẩn, ghi nhận audit log khi tải ảnh, validation dữ liệu đầu vào (100% PASSED).
+
+
+
