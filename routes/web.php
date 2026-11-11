@@ -6,6 +6,7 @@ use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AnnouncementInteractionController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\BlogController as ClientBlogController;
+use App\Http\Controllers\Client\CeremonyForkController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ClientSupportController;
@@ -186,6 +187,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/cai-dat', [AccountController::class, 'settings'])->name('invitations.settings');
     Route::post('/thiep/{id}/cai-dat', [AccountController::class, 'updateSettings'])->name('invitations.settings.update');
     Route::post('/thiep/{id}/nhan-ban', [AccountController::class, 'duplicate'])->name('invitations.duplicate');
+    Route::get('/thiep/{id}/nhan-ban-le-tiec/options', [CeremonyForkController::class, 'options'])->name('ceremony.fork_options');
+    Route::post('/thiep/{id}/nhan-ban-le-tiec', [CeremonyForkController::class, 'fork'])->name('ceremony.fork');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

@@ -10657,35 +10657,38 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Kiểm thử 6/6 test cases chuyên sâu: phân giải mã BIN ngân hàng, làm sạch chuỗi memo, cấu trúc EMVCo Napas 247 kèm checksum CRC16, xuất SVG/Data URI, endpoint công khai và danh sách ngân hàng (100% PASSED).
 
 
-### 124. Đề Án 124: Trạm Chỉ Huy Kiểm Định Chất Lượng Toàn Diện & Giám Sát Ma Trận Nghiệm Thu (Atelier Quality Assurance & Acceptance Cockpit — Section 62 & 63 PRD V3 & ADM-QA-01)
+### 125. Đề Án 125: Bộ Công Cụ Chuyên Biệt Nhân Bản Thiệp Cưới Nhà Trai / Nhà Gái & Phân Tách Lễ Vu Quy - Tân Hôn (Dual Ceremony Forking Studio & Groom/Bride Side Customizer — Mục 2.2 DOCX & Mục 25 PRD V3)
 - **Mục tiêu**:
-  - Xây dựng trung tâm điều hành giám sát kiểm định chất lượng tự động toàn hệ thống (Automated Acceptance Audit Cockpit) dựa trên Ma Trận Kiểm Thử Tối Thiểu Section 62 & Định Nghĩa Hoàn Thành (Definition of Done) Section 63 PRD V3.
-  - Tự động hóa kiểm tra 20+ chỉ tiêu kỹ thuật then chốt trên 6 nhóm nghiệp vụ:
-    1. `AUTH & SECURITY`: Cơ chế băm mật khẩu Bcrypt an toàn, phân quyền vai trò RBAC, che giấu trường nhạy cảm trong Audit Logger (PII masking: password, secret, token, api_key...).
-    2. `TEMPLATE & ASSETS`: Tỷ lệ tuân thủ khung 10 section tiêu chuẩn, class BEM `mayhen_invitation_*`, 100% tài nguyên cục bộ (zero external CDN), phòng vệ nhúng Studio (`$isEmbed=true`).
-    3. `GUEST CRM & CHECK-IN`: Bảo toàn số 0 đầu danh bạ điện thoại, chống trùng lặp nhập file batch, trạm điểm danh chống quét QR trùng lặp.
-    4. `PAYMENT & VIETQR`: Động cơ sinh mã VietQR Napas 247 thuần PHP, chuẩn TLV quốc tế, CRC16 Checksum, đối soát webhook thanh toán đơn hàng chống cấp quyền lặp lại.
-    5. `SHARE & OPENGRAPH`: Thẻ xem trước OpenGraph động 1200x630 vector SVG cho Zalo/Facebook, sitemap XML và robots.txt crawler health.
-    6. `OPS & RESILIENCE`: Giám sát hàng đợi nền (Queue & Failed Jobs), bộ nhớ lưu trữ và thư viện media reference-count an toàn.
-  - Hệ thống chấm điểm tuân thủ (% Compliance Score) và xếp hạng chất lượng (`A+`, `A`, `B`, `C`) theo thời gian thực.
-  - Nút 1-chạm "Chạy Kiểm Định Tức Thời" kích hoạt đánh giá toàn diện và ghi nhận `AuditLogger` (`SYSTEM_ACCEPTANCE_AUDIT_RUN`).
-  - Xuất Báo Cáo Kiểm Định Nghiệm Thu Hệ Thống định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+  - Giải quyết triệt để bài toán văn hóa phong tục cưới hỏi truyền thống Việt Nam: đám cưới thường tổ chức tại 2 thời điểm và địa điểm khác nhau (Lễ Vu Quy do Nhà Gái chủ trì, Lễ Thành Hôn / Tân Hôn do Nhà Trai chủ trì, hoặc Tiệc Báo Hỷ cho bạn bè đồng nghiệp phương xa).
+  - Cung cấp công cụ nhân bản 1-chạm thông minh với 4 chế độ chuyên biệt:
+    1. `bride_side` (Nhà Gái — Lễ Vu Quy): Tự động đổi tiêu đề thành Lễ Vu Quy, ưu tiên hiển thị cô dâu & tứ thân phụ mẫu nhà gái lên trước (`display_order_couple = 'bride_first'`, `display_order_family = 'bride_first'`), nạp địa điểm tiệc nhà gái.
+    2. `groom_side` (Nhà Trai — Lễ Thành Hôn): Tự động đổi tiêu đề thành Lễ Thành Hôn, ưu tiên chú rể & nhà trai lên trước (`display_order_couple = 'groom_first'`, `display_order_family = 'groom_first'`), nạp địa điểm tiệc nhà trai.
+    3. `party_side` (Tiệc Báo Hỷ — Bạn Hữu): Đổi tiêu đề thành Tiệc Báo Hỷ dành cho tiệc chiêu đãi bạn bè, đối tác xa quê.
+    4. `backup_copy` (Bản Sao Lưu Dự Phòng): Tạo bản sao lưu nguyên trạng toàn bộ thiệp để thử nghiệm giao diện hoặc chỉnh sửa an toàn.
+  - Hỗ trợ tùy chọn phân nhánh dự án (`separate_project = true`):
+    - Tự động nhân bản mô hình `Wedding` độc lập khi người dùng muốn quản lý danh sách khách mời, phản hồi RSVP, sơ đồ xếp bàn và sổ mừng cưới riêng biệt cho hai bên gia đình mà không bị lẫn lộn dữ liệu.
+    - Hoặc dùng chung dự án nếu chỉ muốn khác thiệp mời nhưng quản lý khách tập trung.
+  - Hỗ trợ tùy chỉnh linh hoạt: địa điểm tổ chức tiệc mới (`venue_name`), địa chỉ (`venue_address`), ngày cưới mới (`wedding_date`), và hậu tố đường dẫn slug duy nhất (`slug_suffix`).
+  - Giao diện Modal Quiet Luxury thuần Vanilla HTML/CSS/JS được tích hợp trực tiếp trên thẻ thiệp tại trang Quản Lý Thiệp Cưới (`/tai-khoan/thiep`), hỗ trợ tải động options qua API và xử lý bất đồng bộ mượt mà.
+  - Ghi nhận nhật ký kiểm toán hành chính chi tiết (`AuditLogger::log('CEREMONY_FORKED', 'Invitation', ...)`).
 - **Kiến trúc & Tệp Tin**:
-  - `app/Services/AdminAcceptanceAuditService.php`:
-    - `runFullAudit`: Chạy toàn bộ các bước kiểm tra tự động và tổng hợp KPI.
-    - `exportAuditCsv`: Kết xuất báo cáo nghiệm thu CSV UTF-8 BOM.
-  - `app/Http/Controllers/Admin/AdminAcceptanceAuditController.php`:
-    - `index`: Màn hình giao diện Trạm Chỉ Huy Kiểm Định Chất Lượng (`admin.system.acceptance.index`).
-    - `triggerAudit`: Kích hoạt chạy lại kiểm định tức thời (`admin.system.acceptance.run`).
-    - `exportCsv`: Xuất tệp báo cáo CSV (`admin.system.acceptance.export`).
-  - `resources/views/admin/pages/system/acceptance.blade.php`:
-    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh tiến độ, bảng ma trận chi tiết các tiêu chí (mã, nhóm, tiêu chí, trạng thái PASSED/WARNING/CRITICAL, chỉ số thực tế, chi tiết đánh giá).
-  - `resources/views/admin/layouts/master.blade.php`:
-    - Tích hợp liên kết Sidebar "Kiểm Định Chất Lượng" và Command Palette (Ctrl+K) tìm kiếm nhanh `kiem dinh chat luong acceptance qa matrix prd v3`.
-  - `routes/admin.php`:
-    - Khai báo nhóm routes `admin.system.acceptance.*` được bảo vệ bởi middleware `admin.super`.
-  - `tests/Feature/AdminAcceptanceAuditCockpitTest.php`:
-    - Kiểm thử 5/5 test cases chuyên sâu: phân quyền khách, phân quyền nhân sự thường, super admin xem dashboard & ma trận, kích hoạt chạy kiểm tra tức thời kèm audit log, xuất CSV UTF-8 BOM (100% PASSED).
+  - `app/Services/CeremonyForkService.php`:
+    - `getForkModes()`: Định nghĩa 4 chế độ nhân bản chuẩn phong tục Việt Nam.
+    - `fork(Wedding $sourceWedding, Invitation $sourceInvitation, array $options)`: Động cơ cốt lõi thực hiện nhân bản, phân nhánh dự án, hoán đổi thứ tự hiển thị, sinh slug duy nhất và cấu hình `custom_config['ceremony_fork']`.
+  - `app/Http/Controllers/Client/CeremonyForkController.php`:
+    - `options(Request $request, int $invitationId)`: Trả về JSON 4 chế độ và dữ liệu tiệc cưới gốc để nạp vào modal.
+    - `fork(Request $request, int $invitationId)`: Tiếp nhận dữ liệu, xác thực quyền sở hữu, gọi Service và trả về JSON / Redirect mượt mà.
+  - `routes/web.php`:
+    - Khai báo 2 routes `account.ceremony.fork_options` (`GET /tai-khoan/thiep/{id}/nhan-ban-le-tiec/options`) và `account.ceremony.fork` (`POST /tai-khoan/thiep/{id}/nhan-ban-le-tiec`).
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút bấm `Nhân Bản Vu Quy / Tân Hôn` trên grid công cụ từng thẻ thiệp cưới.
+    - Bổ sung Modal thuần Vanilla HTML/CSS/JS `mayhen_ceremony_fork_modal` và kịch bản AJAX fetch nạp dữ liệu / submit tạo thiệp.
+  - `tests/Feature/CeremonyForkingTest.php`:
+    - Kiểm thử 6/6 kịch bản chuyên sâu: chặn khách chưa đăng nhập, chặn truy cập trái phép của người dùng khác (403), nạp options kèm dữ liệu tiệc, nhân bản Nhà Gái (Lễ Vu Quy) với cờ ưu tiên cô dâu và tách dự án độc lập, nhân bản Nhà Trai (Lễ Thành Hôn), nhân bản Tiệc Báo Hỷ & Bản sao lưu (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,040 / 1,040 tests PASSED 100%** (5,549 assertions, duration ~28s).
+  - Mã nguồn tuân thủ 100% tiêu chuẩn Laravel Pint agent format.
+
 
 
 

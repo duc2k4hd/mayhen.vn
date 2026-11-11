@@ -410,6 +410,23 @@
                                 </svg>
                                 <span>Gói Ngoại Tuyến</span>
                             </a>
+
+                            {{-- Nút Nhân Bản Nhà Trai / Nhà Gái & Phân Tách Lễ Vu Quy - Tân Hôn (Mục 2.2 DOCX & Đề Án 125) --}}
+                            <button type="button" 
+                                class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm btn-open-ceremony-fork-modal"
+                                data-invitation-id="{{ $inv->id }}"
+                                data-title="{{ $inv->title ?? 'Thiệp Cưới' }}"
+                                data-groom="{{ $groomName }}"
+                                data-bride="{{ $brideName }}"
+                                data-options-url="{{ route('account.ceremony.fork_options', $inv->id) }}"
+                                data-fork-url="{{ route('account.ceremony.fork', $inv->id) }}"
+                                title="Nhân bản thiệp cưới riêng cho Nhà Trai (Lễ Thành Hôn) hoặc Nhà Gái (Lễ Vu Quy)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span>Nhân Bản Vu Quy / Tân Hôn</span>
+                            </button>
                         </div>
 
                         <div style="margin-top: 8px;">
@@ -504,6 +521,118 @@
                     Tiến Hành Gia Hạn
                 </button>
             </div>
+        </div>
+    </div>
+
+    {{-- Modal Nhân Bản Thiệp Cưới & Phân Tách Lễ Vu Quy - Tân Hôn (Mục 2.2 DOCX & Đề Án 125) --}}
+    <div id="mayhen_ceremony_fork_modal" style="display: none; position: fixed; inset: 0; background: rgba(31, 29, 26, 0.7); backdrop-filter: blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25); display: flex; flex-direction: column;">
+            <div style="padding: 18px 24px; border-bottom: 1px solid #EAE3D9; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">🌸👑</span>
+                    <div>
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #1F1D1A; margin: 0;">Nhân Bản Lễ Cưới & Phân Nhánh</h3>
+                        <span style="font-size: 12px; color: #7A726A;">Nhà Trai (Thành Hôn) • Nhà Gái (Vu Quy) • Tiệc Báo Hỷ</span>
+                    </div>
+                </div>
+                <button type="button" id="btn-close-fork-modal" style="background: none; border: none; font-size: 20px; color: #7A726A; cursor: pointer; padding: 4px;">✕</button>
+            </div>
+
+            <form id="mayhen_fork_form" style="display: flex; flex-direction: column; margin: 0;">
+                <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+                    {{-- Thiệp gốc tóm tắt --}}
+                    <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 12px 16px;">
+                        <span style="font-size: 11px; letter-spacing: 1px; color: #9C7A4A; font-weight: 700; text-transform: uppercase;">Thiệp Gốc Được Chọn</span>
+                        <div id="fork-modal-source-title" style="font-size: 14px; font-weight: 600; color: #1F1D1A; margin-top: 2px;">...</div>
+                        <div id="fork-modal-source-meta" style="font-size: 12px; color: #7A726A; margin-top: 2px;">...</div>
+                    </div>
+
+                    {{-- Danh sách 4 chế độ --}}
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #1F1D1A; margin-bottom: 8px;">
+                            Chọn Chế Độ Nhân Bản Phù Hợp Phong Tục:
+                        </label>
+                        <div id="fork-modes-container" style="display: flex; flex-direction: column; gap: 8px;">
+                            {{-- Sẽ được nạp động hoặc fallback sẵn --}}
+                            <label class="mayhen_fork_mode_card" style="display: flex; align-items: flex-start; gap: 12px; border: 1.5px solid #C5A880; border-radius: 10px; padding: 12px 14px; background: #FAF7F2; cursor: pointer;">
+                                <input type="radio" name="fork_mode" value="bride_side" checked style="margin-top: 3px; accent-color: #9C7A4A; width: 17px; height: 17px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <strong style="font-size: 14px; color: #1F1D1A;">🌸 Nhà Gái — Lễ Vu Quy</strong>
+                                        <span style="font-size: 11px; background: #FCE7F3; color: #9D174D; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Khuyên Dùng</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #665E55; margin: 4px 0 0 0; line-height: 1.4;">
+                                        Ưu tiên hiển thị nhà gái & cô dâu trước, đổi tiêu đề thành Lễ Vu Quy, cấu hình giờ tiệc và tài khoản mừng cưới bên nhà gái.
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label class="mayhen_fork_mode_card" style="display: flex; align-items: flex-start; gap: 12px; border: 1px solid #EAE3D9; border-radius: 10px; padding: 12px 14px; background: #FFF; cursor: pointer;">
+                                <input type="radio" name="fork_mode" value="groom_side" style="margin-top: 3px; accent-color: #9C7A4A; width: 17px; height: 17px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <strong style="font-size: 14px; color: #1F1D1A;">👑 Nhà Trai — Lễ Thành Hôn</strong>
+                                        <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Phổ Biến</span>
+                                    </div>
+                                    <p style="font-size: 12px; color: #665E55; margin: 4px 0 0 0; line-height: 1.4;">
+                                        Ưu tiên hiển thị nhà trai & chú rể trước, đổi tiêu đề thành Lễ Thành Hôn, cấu hình giờ tiệc và tài khoản mừng cưới bên nhà trai.
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label class="mayhen_fork_mode_card" style="display: flex; align-items: flex-start; gap: 12px; border: 1px solid #EAE3D9; border-radius: 10px; padding: 12px 14px; background: #FFF; cursor: pointer;">
+                                <input type="radio" name="fork_mode" value="party_side" style="margin-top: 3px; accent-color: #9C7A4A; width: 17px; height: 17px;">
+                                <div style="flex: 1;">
+                                    <strong style="font-size: 14px; color: #1F1D1A;">🕊️ Tiệc Báo Hỷ — Bạn Hữu</strong>
+                                    <p style="font-size: 12px; color: #665E55; margin: 4px 0 0 0; line-height: 1.4;">
+                                        Dành cho tiệc thân mật cùng bạn bè, đồng nghiệp tại nơi làm việc/sinh sống xa quê hương.
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label class="mayhen_fork_mode_card" style="display: flex; align-items: flex-start; gap: 12px; border: 1px solid #EAE3D9; border-radius: 10px; padding: 12px 14px; background: #FFF; cursor: pointer;">
+                                <input type="radio" name="fork_mode" value="backup_copy" style="margin-top: 3px; accent-color: #9C7A4A; width: 17px; height: 17px;">
+                                <div style="flex: 1;">
+                                    <strong style="font-size: 14px; color: #1F1D1A;">📋 Bản Sao Lưu Dự Phòng</strong>
+                                    <p style="font-size: 12px; color: #665E55; margin: 4px 0 0 0; line-height: 1.4;">
+                                        Tạo bản sao lưu nguyên trạng toàn bộ thông tin để thử nghiệm giao diện hoặc chỉnh sửa an toàn.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Tùy chọn nâng cao --}}
+                    <div style="border-top: 1px dashed #EAE3D9; padding-top: 14px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: #1F1D1A;">
+                            <input type="checkbox" id="fork-separate-project" name="separate_project" value="1" checked style="accent-color: #9C7A4A; width: 17px; height: 17px;">
+                            <span>Tách thành dự án riêng để quản lý khách mời, RSVP & xếp bàn độc lập</span>
+                        </label>
+                        <p style="font-size: 11px; color: #8C827A; margin: 4px 0 0 27px; line-height: 1.4;">
+                            Giúp gia đình hai bên quản lý danh sách khách và thống kê tiền mừng hoàn toàn riêng tư mà không bị lẫn lộn dữ liệu.
+                        </p>
+                    </div>
+
+                    {{-- Form tùy biến địa chỉ & ngày giờ riêng --}}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A433C; margin-bottom: 4px;">Địa điểm tiệc (Tùy chọn):</label>
+                            <input type="text" id="fork-venue-name" name="venue_name" placeholder="VD: Trung tâm Tiệc Cưới White Palace" style="width: 100%; padding: 8px 12px; border: 1px solid #D9D2C7; border-radius: 8px; font-size: 12px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A433C; margin-bottom: 4px;">Ngày tổ chức (Tùy chọn):</label>
+                            <input type="date" id="fork-wedding-date" name="wedding_date" style="width: 100%; padding: 8px 12px; border: 1px solid #D9D2C7; border-radius: 8px; font-size: 12px; box-sizing: border-box;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 16px 24px; background: #FAF8F5; border-top: 1px solid #EAE3D9; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btn-cancel-fork" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm">Hủy Bỏ</button>
+                    <button type="submit" id="btn-submit-fork" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%); color: #FFF; border: none;">
+                        Xác Nhận Nhân Bản
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -629,6 +758,131 @@
                             alert('Có lỗi xảy ra. Vui lòng thử lại.');
                             btnProceed.disabled = false;
                             btnProceed.innerText = 'Tiến Hành Gia Hạn';
+                        }
+                    });
+                }
+
+                // Xử lý Modal Nhân Bản Lễ Cưới & Phân Nhánh (Đề Án 125)
+                const forkModal = document.getElementById('mayhen_ceremony_fork_modal');
+                const btnCloseFork = document.getElementById('btn-close-fork-modal');
+                const btnCancelFork = document.getElementById('btn-cancel-fork');
+                const forkForm = document.getElementById('mayhen_fork_form');
+                const btnSubmitFork = document.getElementById('btn-submit-fork');
+                const forkSourceTitle = document.getElementById('fork-modal-source-title');
+                const forkSourceMeta = document.getElementById('fork-modal-source-meta');
+                const forkVenueName = document.getElementById('fork-venue-name');
+                const forkWeddingDate = document.getElementById('fork-wedding-date');
+
+                let currentForkUrl = null;
+
+                const closeForkModal = () => {
+                    if (forkModal) forkModal.style.display = 'none';
+                    if (btnSubmitFork) {
+                        btnSubmitFork.disabled = false;
+                        btnSubmitFork.innerText = 'Xác Nhận Nhân Bản';
+                    }
+                };
+
+                if (btnCloseFork) btnCloseFork.addEventListener('click', closeForkModal);
+                if (btnCancelFork) btnCancelFork.addEventListener('click', closeForkModal);
+                if (forkModal) {
+                    forkModal.addEventListener('click', (e) => {
+                        if (e.target === forkModal) closeForkModal();
+                    });
+                }
+
+                document.querySelectorAll('.btn-open-ceremony-fork-modal').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const invId = btn.getAttribute('data-invitation-id');
+                        const title = btn.getAttribute('data-title');
+                        const groom = btn.getAttribute('data-groom');
+                        const bride = btn.getAttribute('data-bride');
+                        const optionsUrl = btn.getAttribute('data-options-url');
+                        currentForkUrl = btn.getAttribute('data-fork-url');
+
+                        if (!invId || !forkModal) return;
+
+                        if (forkSourceTitle) forkSourceTitle.innerText = title;
+                        if (forkSourceMeta) forkSourceMeta.innerText = `Cặp đôi: ${groom} & ${bride}`;
+
+                        forkModal.style.display = 'flex';
+
+                        // Highlight radio cards khi click
+                        const modeCards = forkModal.querySelectorAll('.mayhen_fork_mode_card');
+                        modeCards.forEach(card => {
+                            card.addEventListener('click', () => {
+                                modeCards.forEach(c => {
+                                    c.style.borderColor = '#EAE3D9';
+                                    c.style.background = '#FFF';
+                                });
+                                card.style.borderColor = '#C5A880';
+                                card.style.background = '#FAF7F2';
+                            });
+                        });
+
+                        // Nạp options từ backend nếu cần
+                        try {
+                            const res = await fetch(optionsUrl, {
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            const data = await res.json();
+                            if (data && data.success && data.wedding) {
+                                if (forkWeddingDate && data.wedding.wedding_date) {
+                                    forkWeddingDate.value = data.wedding.wedding_date;
+                                }
+                                if (forkVenueName && data.wedding.venue_name) {
+                                    forkVenueName.placeholder = `Gốc: ${data.wedding.venue_name}`;
+                                }
+                            }
+                        } catch (e) {
+                            // Im lặng dùng fallback
+                        }
+                    });
+                });
+
+                if (forkForm) {
+                    forkForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        if (!currentForkUrl || !btnSubmitFork) return;
+
+                        btnSubmitFork.disabled = true;
+                        btnSubmitFork.innerText = 'Đang nhân bản...';
+
+                        const formData = new FormData(forkForm);
+                        const selectedMode = formData.get('fork_mode') || 'bride_side';
+                        const separateProject = formData.get('separate_project') ? 1 : 0;
+                        const venueName = formData.get('venue_name') || '';
+                        const weddingDate = formData.get('wedding_date') || '';
+
+                        try {
+                            const res = await fetch(currentForkUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    mode: selectedMode,
+                                    separate_project: separateProject,
+                                    venue_name: venueName,
+                                    wedding_date: weddingDate
+                                })
+                            });
+
+                            const data = await res.json();
+                            if (data && data.success) {
+                                alert(data.message || 'Đã nhân bản thiệp cưới thành công!');
+                                window.location.href = data.redirect_url || window.location.href;
+                            } else {
+                                alert(data?.message || 'Có lỗi xảy ra trong quá trình nhân bản.');
+                                btnSubmitFork.disabled = false;
+                                btnSubmitFork.innerText = 'Xác Nhận Nhân Bản';
+                            }
+                        } catch (err) {
+                            alert('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+                            btnSubmitFork.disabled = false;
+                            btnSubmitFork.innerText = 'Xác Nhận Nhân Bản';
                         }
                     });
                 }

@@ -150,6 +150,7 @@ Thumbs.db
 !/tests/Feature/AdminAcceptanceAuditCockpitTest.php
 !/tests/Feature/AdminReviewManagementTest.php
 !/tests/Feature/AdminMediaManagementTest.php
+!/tests/Feature/CeremonyForkingTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
