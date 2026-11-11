@@ -145,6 +145,7 @@ Thumbs.db
 !/tests/Feature/AdminSupportTicketTest.php
 !/tests/Feature/PaperInvitationAiParserTest.php
 !/tests/Feature/SynchronizedStationeryKitTest.php
+!/tests/Feature/DynamicOpenGraphAndZaloShareTest.php
 !/tests/Feature/AdminReviewManagementTest.php
 !/tests/Feature/AdminMediaManagementTest.php
 !/tests/Unit/

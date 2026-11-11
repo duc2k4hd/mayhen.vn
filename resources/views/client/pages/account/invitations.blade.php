@@ -311,6 +311,17 @@
                                 <span>Bộ Thiệp Đồng Bộ</span>
                             </a>
 
+                            <a href="{{ route('account.share.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ công cụ chia sẻ Zalo & thẻ xem trước OpenGraph">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                <span>Chia Sẻ Zalo</span>
+                            </a>
+
                             <a href="{{ route('account.time_capsule.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Hộp thời gian kỷ niệm tương lai (niêm phong sáp)">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>

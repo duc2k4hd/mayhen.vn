@@ -45,6 +45,7 @@ use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
 use App\Http\Controllers\Client\WishManagementController;
+use App\Http\Controllers\Client\ZaloShareController;
 use App\Http\Controllers\Partner\PartnerCommissionController;
 use App\Http\Controllers\Partner\PartnerDashboardController;
 use App\Http\Controllers\Partner\PartnerProfileController;
@@ -113,6 +114,7 @@ Route::get('/api/editor/readiness/{id}', [InvitationEditorController::class, 're
 Route::post('/api/editor/publish-impact/{id}', [InvitationEditorController::class, 'publishImpact'])->middleware(['auth', 'throttle:30,1'])->name('invitation.publish_impact');
 Route::get('/api/editor/family-approval/{id}', [FamilyApprovalController::class, 'status'])->middleware(['auth', 'throttle:30,1'])->name('family_approval.status');
 Route::get('/api/thiep/{id}/events', [WeddingEventController::class, 'apiEvents'])->name('invitation.events.api');
+Route::get('/thiep/{slug}/share-card.svg', [ZaloShareController::class, 'shareCardSvg'])->name('invitation.share_card');
 Route::get('/thiep/{slug}', [InvitationEditorController::class, 'show'])->name('invitation.show');
 Route::post('/thiep/{slug}/mo-khoa', [InvitationEditorController::class, 'unlockPassword'])->middleware('throttle:20,1')->name('invitation.unlock');
 Route::post('/thiep/{slug}/rsvp', [GuestController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('rsvp.submit');
@@ -277,6 +279,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Bộ Ấn Phẩm Đồng Bộ Đa Định Dạng (Mục 2.7 Master Prompt & Section 38 PRD V3)
     Route::get('/thiep/{id}/bo-thiep-dong-bo', [StationeryKitController::class, 'index'])->name('stationery.index');
     Route::post('/thiep/{id}/bo-thiep-dong-bo/log-download', [StationeryKitController::class, 'logDownload'])->middleware('throttle:30,1')->name('stationery.log_download');
+
+    // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
+    Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
+    Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
+    Route::post('/thiep/{id}/chia-se/log', [ZaloShareController::class, 'logShare'])->middleware('throttle:30,1')->name('share.log');
 
     // Gửi Đánh Giá & Cảm Nhận Khách Hàng (Mục 7.14 DOCX)
     Route::post('/thiep/{id}/danh-gia', [CustomerReviewController::class, 'store'])->middleware('throttle:10,1')->name('reviews.store');

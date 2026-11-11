@@ -23,12 +23,18 @@
     @endif
 
     {{-- Dynamic Open Graph & Rich Social Link Preview (Section 27 Master PRD V3) --}}
+    @php
+        $resolvedOgImage = $ogImage ?? (isset($invitation) && $invitation->slug ? route('invitation.share_card', $invitation->slug) : null);
+    @endphp
     <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
     <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
-    @if(!empty($ogImage))
-        <meta property="og:image" content="{{ $ogImage }}">
+    @if(!empty($resolvedOgImage))
+        <meta property="og:image" content="{{ $resolvedOgImage }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:type" content="image/svg+xml">
     @endif
     <meta property="og:url" content="{{ $ogUrl ?? url()->current() }}">
 
@@ -36,8 +42,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
     <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
-    @if(!empty($ogImage))
-        <meta name="twitter:image" content="{{ $ogImage }}">
+    @if(!empty($resolvedOgImage))
+        <meta name="twitter:image" content="{{ $resolvedOgImage }}">
     @endif
 
     {{-- Favicon chuẩn Mây Hẹn --}}

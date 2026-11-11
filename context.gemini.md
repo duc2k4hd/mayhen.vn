@@ -10581,4 +10581,44 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Kiểm thử 6/6 test cases chuyên sâu: phân quyền đăng nhập, chặn truy cập chéo thiệp cưới của người khác, xem Studio bộ ấn phẩm, cấu trúc dữ liệu và URI mã QR chuẩn, ghi nhận audit log khi tải ảnh, validation dữ liệu đầu vào (100% PASSED).
 
 
+### 122. Đề Án 122: Phân Hệ Trung Tâm Phân Phối Thiệp Mời Cưới Đa Kênh, Bộ Công Cụ Chia Sẻ Zalo 1-Chạm & Trình Tạo Thẻ Card OpenGraph Động (Dynamic OpenGraph & Multi-Channel Wedding Invitation Delivery Suite — Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
+- **Mục tiêu**:
+  - Xây dựng động cơ sinh thẻ card xem trước OpenGraph (OG Card Image) chuẩn tỷ lệ vàng 1200x630px (1.91:1) bằng Pure SVG vector siêu nhẹ, tối ưu hóa hiển thị khi chia sẻ liên kết thiệp lên Zalo, Facebook, Messenger, Telegram và iMessage mà không bị vỡ hạt hay méo hình.
+  - Tự động tích hợp thẻ card động vào layout thiệp cưới (`client/layouts/invitation.blade.php`), tự động fallback sang endpoint `/thiep/{slug}/share-card.svg` kèm thẻ OpenGraph & Twitter Cards hoàn chỉnh.
+  - Xây dựng Studio Bộ Công Cụ Chia Sẻ Zalo (`/tai-khoan/thiep/{id}/chia-se`):
+    * 4 kịch bản lời mời mẫu chuẩn mực văn hóa cưới Việt Nam:
+      1. `formal`: Trang Trọng & Tôn Kính (Gửi Bề Trên, Họ Hàng, Người Lớn Tuổi).
+      2. `colleague`: Lịch Thiệp & Ấm Áp (Gửi Đồng Nghiệp, Đối Tác, Cấp Trên).
+      3. `intimate`: Thân Mật & Trẻ Trung (Gửi Bạn Thân, Bạn Bè).
+      4. `faraway`: Báo Hỷ & Tri Ân (Gửi Bạn Hữu Phương Xa Không Tiện Dự Trực Tiếp).
+    * Bộ chọn danh xưng linh hoạt (Anh/Chị/Bạn/Em/Gia đình/Chú/Bác...) và chọn nhanh khách mời từ sổ danh bạ.
+    * Xem trước trực quan tin nhắn gửi đi trong khung chat mô phỏng giao diện Zalo thực tế.
+    * 3 nút hành động 1-chạm: "Mở Zalo Gửi Ngay" (`zalo.me/share`), "Sao Chép Lời Mời Kèm Link", "Chia Sẻ Qua App Khác" (Web Share API native trên iOS & Android) và "Tải Thẻ Card SVG (1200x630)".
+  - Ghi nhận nhật ký kiểm toán hành vi chia sẻ (`INVITATION_SHARED`) vào `AuditLogger`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/OpenGraphService.php`:
+    - `generateSvg`: Sinh mã vector SVG 1200x630px gồm khung viền kép Quiet Luxury, hoa văn Art Deco 4 góc, tên cô dâu chú rể cỡ lớn, ngày cưới dương/âm lịch, sảnh tiệc và mã QR vector nhúng góc phải. Cache tự động 24h theo hash timestamp cập nhật.
+    - `getZaloTemplates`: Định nghĩa 4 kịch bản mẫu lời mời cưới tiếng Việt chuẩn hóa.
+  - `app/Http/Controllers/Client/ZaloShareController.php`:
+    - `shareCardSvg`: Public endpoint xuất ảnh vector SVG cho crawler và tải về (`invitation.share_card`).
+    - `index`: Màn hình Studio Chia Sẻ Zalo dành cho chủ tiệc cưới (`account.share.index`).
+    - `compose`: API cá nhân hóa thông điệp theo danh xưng, tên khách và kịch bản (`account.share.compose`).
+    - `logShare`: API ghi nhận nhật ký phân phối thiệp (`account.share.log`).
+  - `resources/views/client/pages/account/share/index.blade.php`:
+    - Giao diện 2 cột chuẩn mực: Cột trái là Trình soạn tin nhắn (chọn mẫu, chọn danh xưng, nhập tên, sửa lời nhắn, 4 nút thao tác), Cột phải là Preview thẻ card OpenGraph và khung chat Zalo mô phỏng thời gian thực.
+  - `public/assets/client/css/pages/share.css`:
+    - Pure Vanilla CSS, tiền tố `mayhen_share_*`, giao diện quiet luxury, tokens sang trọng, responsive mobile mượt mà.
+  - `public/assets/client/js/pages/share.js`:
+    - Pure Vanilla Native ES Modules: xử lý live compose qua Ajax, sao chép clipboard, Web Share API, cập nhật mockup.
+  - `resources/views/client/layouts/invitation.blade.php`:
+    - Tự động gán `$resolvedOgImage` trỏ về `route('invitation.share_card', $invitation->slug)` cho cả `og:image` và `twitter:image`.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Tích hợp nút tác vụ "Chia Sẻ Zalo" vào danh sách thiệp cưới của khách hàng.
+  - `routes/web.php`:
+    - Khai báo routes `invitation.share_card`, `account.share.index`, `account.share.compose`, `account.share.log`.
+  - `tests/Feature/DynamicOpenGraphAndZaloShareTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: sinh ảnh SVG chuẩn kích thước & nội dung, chặn thiệp chưa xuất bản, kiểm soát phân quyền chủ tiệc, chặn người lạ, xem kịch bản & danh bạ, API compose cá nhân hóa và ghi nhận audit log (100% PASSED).
+
+
+
 
