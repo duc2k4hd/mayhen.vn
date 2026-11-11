@@ -64,6 +64,11 @@ class Guest extends Model
         return $this->checked_in_at !== null;
     }
 
+    public function getIsCheckedInAttribute(): bool
+    {
+        return $this->checked_in_at !== null;
+    }
+
     public function isOpened(): bool
     {
         return $this->open_count > 0 || $this->opened_at !== null;

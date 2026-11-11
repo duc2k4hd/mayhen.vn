@@ -31,9 +31,9 @@ class WeddingKeepsakeController extends Controller
         // Khách mời đã xác nhận tham dự hoặc đã check-in tại sảnh
         $guests = $wedding->guests()
             ->where(function ($q) {
-                $q->where('is_checked_in', true)
+                $q->whereNotNull('checked_in_at')
                     ->orWhereHas('response', function ($rq) {
-                        $rq->where('attending', true);
+                        $rq->where('attending_status', 'attending');
                     });
             })
             ->orderBy('name')
@@ -42,7 +42,7 @@ class WeddingKeepsakeController extends Controller
         $stats = [
             'days_since' => $keepsake->daysSinceWedding(),
             'milestone_label' => $keepsake->milestone_label,
-            'attended_guests_count' => $wedding->guests()->where('is_checked_in', true)->count(),
+            'attended_guests_count' => $wedding->guests()->whereNotNull('checked_in_at')->count(),
             'wishes_count' => $wedding->wishes()->count(),
             'photos_count' => $wedding->guestPhotos()->count(),
         ];

@@ -8411,6 +8411,7 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Pest test suite Đề án 75 & 76: **16/16 tests PASSED 100% (55 assertions in 1.15s)**.
   - Test suite Admin hệ thống: **204/204 tests PASSED 100% (1,165 assertions in 43.48s)**.
   - Laravel Pint: **100% PASSED** (0 dirty files).
+  - *Sửa lỗi tương thích MySQL Schema*: Cập nhật `WeddingKeepsakeController` và `WeddingKeepsakeService` sang sử dụng cột thực tế `whereNotNull('checked_in_at')` thay cho `is_checked_in`, và `attending_status = 'attending'` thay cho `attending = 1` trong bảng `guest_responses`. Bổ sung accessor `getIsCheckedInAttribute()` vào model `Guest`. Đảm bảo hoạt động 100% ổn định trên môi trường MySQL thật.
 
 
 

@@ -249,7 +249,7 @@
                                     </span>
                                     <span class="mayhen_keepsake_guest_sub">
                                         {{ $guest->phone ? $guest->phone : 'Khách mời' }}
-                                        @if($guest->is_checked_in)
+                                        @if($guest->isCheckedIn())
                                             • <strong style="color: #2E7D32;">✓ Đã Điểm Danh</strong>
                                         @endif
                                     </span>

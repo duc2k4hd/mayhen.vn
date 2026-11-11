@@ -122,9 +122,9 @@ class WeddingKeepsakeService
             ->get();
 
         $wishesCount = $wishes->count();
-        $attendedGuestsCount = $wedding->guests()->where('is_checked_in', true)->count();
+        $attendedGuestsCount = $wedding->guests()->whereNotNull('checked_in_at')->count();
         if ($attendedGuestsCount === 0) {
-            $attendedGuestsCount = $wedding->guestResponses()->where('attending', true)->count();
+            $attendedGuestsCount = $wedding->guestResponses()->where('attending_status', 'attending')->count();
         }
 
         $keepsake->update(['last_exported_at' => now()]);
