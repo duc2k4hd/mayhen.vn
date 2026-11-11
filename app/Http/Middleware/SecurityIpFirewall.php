@@ -52,4 +52,3 @@ class SecurityIpFirewall
         return $next($request);
     }
 }
-

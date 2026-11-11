@@ -212,6 +212,17 @@
                         <span class="mayhen_admin_nav_badge mayhen_admin_nav_badge_gold" title="{{ $pendingOrdersBadge }} đơn hàng chờ đối soát">{{ $pendingOrdersBadge }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.reconciliations.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.reconciliations.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                            <path d="M7 15h2"></path>
+                            <path d="M15 15h2"></path>
+                        </svg>
+                    </span>
+                    <span>Đối Soát Giao Dịch & Webhook</span>
+                </a>
                 <a href="{{ route('admin.intelligence.reconciliation') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.reconciliation') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -688,6 +699,10 @@
                 <a href="{{ route('admin.intelligence.radar') }}" class="mayhen_admin_cmd_item" data-search="radar sẵn sàng ngày cưới readiness kiểm tra thiếu sót đám cưới rủi ro">
                     <span>📡 Radar Sẵn Sàng Ngày Cưới (Readiness Radar)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/intelligence/radar</span>
+                </a>
+                <a href="{{ route('admin.reconciliations.index') }}" class="mayhen_admin_cmd_item" data-search="đối soát giao dịch webhook sepay vietqr ngân hàng tài chính pay-01 pay-02 pay-03 refund hoàn tiền">
+                    <span>💳 Sổ Đối Soát Giao Dịch & Webhook</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/reconciliations</span>
                 </a>
                 <a href="{{ route('admin.intelligence.reconciliation') }}" class="mayhen_admin_cmd_item" data-search="đối soát thám tử tài chính ngân hàng sepay vietqr khớp lệnh sai lệch thừa thiếu">
                     <span>⚖️ Thám Tử Đối Soát Tài Chính (Reconciliation)</span>

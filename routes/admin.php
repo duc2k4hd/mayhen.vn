@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
+use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
@@ -118,6 +119,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/reconciliations/{reconciliationId}/approve', [AdminOrderController::class, 'confirmApproval'])->middleware('admin.super')->name('reconciliations.approve');
         Route::post('/reconciliations/{reconciliationId}/reject', [AdminOrderController::class, 'rejectApproval'])->middleware('admin.super')->name('reconciliations.reject');
         Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->middleware('admin.manager')->name('cancel');
+    });
+
+    // Phân Hệ Quản Trị Sổ Đối Soát Giao Dịch, Webhook & Xử Lý Sai Lệch (Mục 137 PRD V3 & PAY-01, PAY-02, PAY-03)
+    Route::prefix('reconciliations')->name('reconciliations.')->group(function () {
+        Route::get('/', [AdminFinancialReconciliationController::class, 'index'])->name('index');
+        Route::post('/', [AdminFinancialReconciliationController::class, 'store'])->middleware('admin.manager')->name('store');
+        Route::get('/export-csv', [AdminFinancialReconciliationController::class, 'export'])->name('export');
+        Route::post('/{id}/approve', [AdminFinancialReconciliationController::class, 'approve'])->middleware('admin.super')->name('approve');
+        Route::post('/{id}/reject', [AdminFinancialReconciliationController::class, 'reject'])->middleware('admin.super')->name('reject');
+        Route::post('/{id}/confirm-refund', [AdminFinancialReconciliationController::class, 'confirmRefund'])->middleware('admin.super')->name('confirm_refund');
     });
 
     // Quản Lý Gia Hạn, Hết Hạn Thiệp Cưới & Thời Gian Ân Hạn (Mục 139 PRD V3 & Mục 13.4 DOCX)

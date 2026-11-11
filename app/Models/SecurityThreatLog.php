@@ -61,4 +61,3 @@ class SecurityThreatLog extends Model
         };
     }
 }
-

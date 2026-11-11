@@ -9678,3 +9678,65 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   8. **Tổng kết chất lượng mã nguồn**:
      - Suite 15 test files admin gần nhất: **134/134 tests PASSED 100% (590 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 100. ĐỀ ÁN 100: PHÂN HỆ QUẢN TRỊ SỔ ĐỐI SOÁT GIAO DỊCH, WEBHOOK THANH TOÁN & XỬ LÝ SAI LỆCH TÀI CHÍNH (FINANCIAL RECONCILIATION & PAYMENT AUDIT COCKPIT — MỤC 137 PRD V3 & PAY-01, PAY-02, PAY-03)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai phân hệ quản trị đối soát giao dịch ngân hàng, xử lý webhook thanh toán và kiểm soát sai lệch tài chính theo chuẩn **Mục 137 Master PRD V3 (KINH DOANH & DOANH THU -> Giao dịch / Webhook / Đối soát) & Dòng 818, Dòng 946, PAY-01, PAY-02, PAY-03**.
+  - **Nghiệp Vụ Đối Soát & Tài Chính Chuyên Nghiệp**:
+    1. *Khớp Lệnh Thủ Công 2 Bước Maker-Checker (PAY-01)*: Xử lý trường hợp khách hàng đã chuyển khoản thành công nhưng webhook ngân hàng bị chậm hoặc sai nội dung chuyển khoản. Kế toán viên lập phiếu đối soát (`manual_approval`) và Kế toán trưởng / Super Admin phê duyệt để tự động cập nhật đơn hàng sang `paid`, kích hoạt gói cước thiệp cưới tức thời.
+    2. *Giải Quyết Sai Lệch Số Tiền (PAY-03: Callback Amount Mismatch)*: Xử lý các trường hợp khách hàng chuyển thiếu hoặc chuyển thừa tiền so với giá trị đơn hàng. Hệ thống không tự động cấp plan, lưu case đối soát với cờ `amount_mismatch_resolution` để kế toán liên hệ xử lý hoặc duyệt ngoại lệ.
+    3. *Bảo Vệ Tính Bất Biến & Chống Trùng (PAY-02: Idempotency Protection)*: Ghi nhận và theo dõi nhật ký webhook gửi trùng lặp, bảo đảm quyền lợi gói cước chỉ cấp duy nhất 1 lần.
+    4. *Nhật Ký Webhook Thanh Toán Inbound (Payment Webhook Logs)*: Bảng lưu trữ chi tiết các lượt gọi webhook từ SePay Bank Hub, VietQR Direct, ghi nhận mã giao dịch, số tiền, trạng thái khớp lệnh và raw payload JSON phục vụ thanh tra tài chính.
+    5. *Quản Lý & Phê Duyệt Hoàn Tiền (Refund Payout)*: Quy trình xử lý yêu cầu hoàn tiền cho khách hàng, lưu thông tin tài khoản thụ hưởng, lý do hoàn tiền và nút xác nhận chi trả hoàn tất (`completed`), cập nhật `orders.refunded_at` và `orders.refund_amount`.
+    6. *Xuất Sổ Đối Soát Kế Toán CSV (UTF-8 BOM)*: Hỗ trợ kết xuất dữ liệu đối soát ra tệp CSV chuẩn UTF-8 BOM hiển thị tiếng Việt hoàn hảo trên Excel.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_134217_create_payment_webhook_logs_table.php`:
+       * Bảng `payment_webhook_logs`: `id`, `gateway` (`sepay`, `vietqr`, `bank_transfer`), `transaction_id`, `order_code`, `amount`, `status` (`success`, `mismatch`, `unverified`, `duplicate`, `pending_review`), `error_reason`, `raw_payload` (json), `ip_address`, `created_at` (useCurrent), indexes `['gateway', 'status']`, `transaction_id`, `order_code`.
+     - Sử dụng bảng `order_reconciliations` đã tích hợp sẵn và nâng cấp mở rộng logic.
+  2. **Models**:
+     - `app/Models/PaymentWebhookLog.php`: Scopes `recent()`, `success()`, `pendingReview()`, `mismatch()`, accessors `formatted_amount`, `status_label`, `status_badge_color`.
+     - `app/Models/OrderReconciliation.php`: Scopes `pending()`, `approved()`, `rejected()`, `refunds()`, accessors `formatted_amount`, `action_label`, `status_label`, `status_badge_color`.
+  3. **Services**:
+     - `app/Services/FinancialReconciliationService.php`:
+       * `getReconciliationKpis()`: Thống kê 4 thẻ KPI: Hồ sơ chờ đối soát, Sai lệch số tiền (PAY-03), Tiền hoàn chờ duyệt, Đã khớp tháng này.
+       * `createManualReconciliation()`: Lập phiếu đối soát khớp lệnh hoặc lệch tiền cho đơn hàng pending.
+       * `approveReconciliation()`: Maker-Checker duyệt đối soát, chuyển đơn hàng sang `paid`, kích hoạt quyền và ghi `AuditLogger`.
+       * `rejectReconciliation()`: Từ chối phiếu đối soát kèm lý do kế toán.
+       * `confirmRefundPayout()`: Xác nhận đã chi trả hoàn tiền, cập nhật đơn hàng sang `refunded`.
+       * `recordInboundWebhook()`: Lưu vết webhook từ cổng thanh toán.
+       * `getFilteredReconciliations()`, `getFilteredWebhookLogs()`: Phân trang và tìm kiếm theo tab.
+       * `exportCsv()`: Xuất tệp CSV UTF-8 BOM cho Kế toán.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminFinancialReconciliationController.php`: Điều phối 3 tabs giao diện và các endpoint tạo phiếu, duyệt, từ chối, hoàn tiền, xuất CSV.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm quản trị:
+       * `GET /admin/reconciliations` (`admin.reconciliations.index`)
+       * `POST /admin/reconciliations` (`admin.reconciliations.store`)
+       * `GET /admin/reconciliations/export-csv` (`admin.reconciliations.export`)
+       * `POST /admin/reconciliations/{id}/approve` (`admin.reconciliations.approve`)
+       * `POST /admin/reconciliations/{id}/reject` (`admin.reconciliations.reject`)
+       * `POST /admin/reconciliations/{id}/confirm-refund` (`admin.reconciliations.confirm_refund`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/reconciliations/index.blade.php`:
+       * 4 Thẻ KPI: Hồ Sơ Chờ Đối Soát, Sai Lệch Số Tiền (PAY-03), Tiền Hoàn Chờ Duyệt, Đã Khớp Tháng Này.
+       * Tab 1: Sổ Đối Soát & Khớp Lệnh (Danh sách phiếu đối soát, mã đơn hàng, số tiền thực, mã tham chiếu ngân hàng, tài khoản chuyển, người lập/duyệt, nút Duyệt & Từ chối).
+       * Tab 2: Nhật Ký Webhook Inbound (Thời gian, cổng thanh toán SePay/VietQR, mã giao dịch, số tiền, trạng thái khớp lệnh và chi tiết sai lệch).
+       * Tab 3: Sổ Quản Lý Hoàn Tiền (Danh sách yêu cầu hoàn, số tiền, tài khoản nhận tiền, trạng thái chi trả, nút Xác nhận đã chi).
+       * Modal Lập Phiếu Đối Soát Mới & Modal Từ Chối Đối Soát (Pure CSS/JS).
+     - Cập nhật Sidebar: Menu "Đối Soát Giao Dịch & Webhook" trong Section 3 (Kinh Doanh & Doanh Thu) và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminFinancialReconciliationTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminFinancialReconciliationTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập sổ đối soát.
+       3. Super Admin truy cập thành công màn hình sổ đối soát và thấy các thẻ KPI.
+       4. Tạo phiếu đối soát khớp lệnh thủ công PAY-01 thành công và ghi audit log.
+       5. Tạo phiếu đối soát xử lý lệch số tiền PAY-03 thành công.
+       6. Maker-Checker phê duyệt đối soát cập nhật đơn hàng sang `paid` và cấp quyền.
+       7. Từ chối phiếu đối soát cập nhật trạng thái `rejected` và ghi nhận lý do.
+       8. Ghi nhận nhật ký webhook thanh toán inbound thành công.
+       9. Xác nhận chi trả hoàn tiền cập nhật đơn hàng sang `refunded`.
+       10. Xuất tệp báo cáo đối soát CSV UTF-8 BOM trả về stream download đầy đủ dữ liệu.
+     - Kết quả: **10/10 tests PASSED 100% (50 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 16 test files admin gần nhất: **144/144 tests PASSED 100% (640 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

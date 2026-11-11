@@ -93,4 +93,3 @@ class SecurityIpRule extends Model
         return 'danger';
     }
 }
-
