@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
+use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -229,6 +230,15 @@ Route::middleware('admin.auth')->group(function () {
             Route::post('/webhooks/{id}/ping', [AdminDeveloperIntegrationController::class, 'pingWebhook'])->name('webhooks.ping');
             Route::delete('/webhooks/{id}', [AdminDeveloperIntegrationController::class, 'destroyWebhook'])->name('webhooks.destroy');
             Route::post('/deliveries/{id}/retry', [AdminDeveloperIntegrationController::class, 'retryDelivery'])->name('deliveries.retry');
+        });
+
+        // Phân Hệ Quản Trị An Ninh Mạng, Rate Limits & IP Firewall (Mục 177 PRD V3)
+        Route::prefix('security')->name('security.')->group(function () {
+            Route::get('/', [AdminSecurityController::class, 'index'])->name('index');
+            Route::post('/ip-rules', [AdminSecurityController::class, 'storeIpRule'])->name('ip_rules.store');
+            Route::delete('/ip-rules/{id}', [AdminSecurityController::class, 'destroyIpRule'])->name('ip_rules.destroy');
+            Route::put('/rate-limits', [AdminSecurityController::class, 'updateRateLimits'])->name('rate_limits.update');
+            Route::post('/flush-cache', [AdminSecurityController::class, 'flushCache'])->name('flush_cache');
         });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');

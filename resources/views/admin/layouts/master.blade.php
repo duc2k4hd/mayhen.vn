@@ -454,6 +454,15 @@
                         <span>Khóa API & Webhooks</span>
                     </a>
 
+                    <a href="{{ route('admin.settings.security.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.security*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </span>
+                        <span>An Ninh & Rate Limits</span>
+                    </a>
+
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.seo*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -792,6 +801,10 @@
                     <a href="{{ route('admin.settings.developer.index') }}" class="mayhen_admin_cmd_item" data-search="khóa api webhooks developer webhook token tích hợp đối tác api keys scopes secret">
                         <span>🔑 Khóa API & Webhooks Ngoại Vi</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/developer-integrations</span>
+                    </a>
+                    <a href="{{ route('admin.settings.security.index') }}" class="mayhen_admin_cmd_item" data-search="an ninh bảo mật firewall rate limits sổ đen ip blacklist whitelist brute force tấn công">
+                        <span>🛡️ An Ninh Mạng & Rate Limits (Firewall)</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/security</span>
                     </a>
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_cmd_item" data-search="thanh tra seo sitemap xml google robots meta search index">
                         <span>🌐 Thanh Tra SEO & Sitemap XML</span>

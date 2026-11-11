@@ -126,4 +126,3 @@ class DeveloperApiKey extends Model
         return $this->key_prefix.'••••••••••••••••••••••••••••••••';
     }
 }
-

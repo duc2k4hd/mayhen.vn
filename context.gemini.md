@@ -9612,3 +9612,69 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 14 test files admin gần nhất: **124/124 tests PASSED 100% (554 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 99. ĐỀ ÁN 99: TRUNG TÂM QUẢN TRỊ AN NINH NỀN TẢNG, PHÒNG VỆ RATE LIMITS & CHẶN ĐỊA CHỈ IP ĐỘC HẠI (SECURITY, RATE LIMITING & IP ACCESS CONTROL COCKPIT — MỤC 177 PRD V3 & AUTH-02)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm điều khiển an ninh mạng, kiểm soát ngưỡng giới hạn tần suất (Rate Limiting) và tường lửa địa chỉ IP (IP Access Control) theo chuẩn **Mục 177 Master PRD V3 (CÀI ĐẶT -> Security / Rate limits), Mục 41.2 An ninh ứng dụng & AUTH-02 (Brute Force Defense)**.
+  - **Nghiệp Vụ An Ninh & Tường Lửa Tự Động**:
+    1. *Quản Trị Sổ Đen & Sổ Trắng IP (Blacklist & Whitelist)*: Cho phép Super Admin đưa các địa chỉ IP độc hại (nghi vấn spam RSVP, quét lỗ hổng bot scan, dò mật khẩu Brute Force) vào Sổ đen với thời hạn (1h, 24h, 7 ngày, 30 ngày) hoặc vĩnh viễn; hỗ trợ Whitelist cho các IP máy chủ đối tác/studio để vượt qua kiểm tra tường lửa.
+    2. *Tường Lửa Tự Động Phản Ứng Nhanh (SecurityIpFirewall Middleware)*: Tự động chặn request từ IP trong blacklist với mã HTTP 403 Forbidden, ghi nhận biến đếm số lần vi phạm (`hit_count`).
+    3. *Kiểm Soát Ngưỡng Rate Limiting Toàn Nền Tảng*: Quản lý tập trung các ngưỡng tần suất cho từng luồng nghiệp vụ nhạy cảm:
+       - Luồng xác thực đăng nhập (`auth_rate_limit_per_minute`, mặc định: 5 req/phút).
+       - Luồng gửi xác nhận tham dự thiệp (`rsvp_rate_limit_per_minute`, mặc định: 20 req/phút).
+       - Luồng gửi lời chúc & sổ ký tên (`wishes_rate_limit_per_minute`, mặc định: 15 req/phút).
+       - Luồng gọi Public API (`api_rate_limit_per_minute`, mặc định: 60 req/phút).
+    4. *Chế Độ Phòng Vệ Cao (Under Attack Mode / Strict Rate Limiting)*: Cho phép Super Admin kích hoạt khi phát hiện dấu hiệu tấn công lũ (Flood/DDoS), tự động siết chặt 50% toàn bộ ngưỡng giới hạn và kích hoạt phòng vệ khẩn cấp.
+    5. *Công Cụ Làm Sạch Rate Limit Cache*: Cho phép Super Admin giải phóng bộ nhớ đệm Rate Limiter chỉ bằng 1 cú click để mở khóa cho khách hàng bị throttle nhầm.
+    6. *Nhật Ký Đe Dọa & Giám Sát Tấn Công (Threat Logs)*: Lưu vết các sự kiện vi phạm an ninh (`rate_limit_exceeded`, `failed_login_burst`, `bot_spam`, `sql_injection_attempt`) kèm IP, endpoint, user agent và hành động đã xử lý.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_133305_create_security_firewall_and_threat_logs_tables.php`:
+       * Bảng `security_ip_rules`: `id`, `ip_address` (string 45), `type` (`blacklist`, `whitelist`), `reason`, `blocked_until` (nullable), `hit_count` (unsignedInteger), `created_by` (foreignId to `users`), timestamps, index `['ip_address', 'type']`.
+       * Bảng `security_threat_logs`: `id`, `event_type`, `ip_address`, `user_agent`, `endpoint`, `payload_summary`, `action_taken`, `created_at` (useCurrent), index `['event_type', 'created_at']`.
+  2. **Models**:
+     - `app/Models/SecurityIpRule.php`: Scopes `blacklist()`, `whitelist()`, `active()`, methods `isExpired()`, `isActive()`, `recordHit()`, accessors `status_label`, `status_color`.
+     - `app/Models/SecurityThreatLog.php`: Scopes `recent()`, `byType()`, accessors `event_label`, `event_badge_color`.
+     - `app/Models/PlatformSetting.php`: Bổ sung 2 helper tĩnh `getValue(group, key, default)` và `setValue(group, key, value, userId)` để truy xuất setting an toàn và tiện lợi.
+  3. **Middleware**:
+     - `app/Http/Middleware/SecurityIpFirewall.php`: Tự động chặn các IP thuộc `blacklist` đang còn hiệu lực và bỏ qua kiểm tra đối với IP `whitelist`, trả về 403 Forbidden.
+  4. **Services**:
+     - `app/Services/PlatformSecurityService.php`:
+       * `getSecurityKpis()`: Thống kê 4 thẻ KPI: Địa chỉ IP đang chặn, IP tin cậy (Whitelist), Đe dọa phát hiện (24h), Trạng thái Chế độ Phòng vệ Cao.
+       * `getRateLimitConfigs()` & `updateRateLimitConfigs()`: Đọc và cập nhật các ngưỡng giới hạn tần suất toàn nền tảng.
+       * `addIpRule()` & `removeIpRule()`: Thêm và gỡ bỏ quy tắc IP kèm audit log `AuditLogger::log('SECURITY_IP_RULE_ADDED')`.
+       * `flushRateLimitCache()`: Làm sạch bộ đệm Rate Limiter Cache kèm audit log.
+       * `logThreat()`: Ghi nhật ký sự cố an ninh.
+       * `getFilteredIpRules()`, `getFilteredThreatLogs()`: Phân trang và tìm kiếm theo tab.
+  5. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminSecurityController.php`: Điều phối 3 tabs giao diện và các thao tác thêm IP, xóa IP, cấu hình rate limits, xóa cache.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings`:
+       * `GET /admin/settings/security` (`admin.settings.security.index`)
+       * `POST /admin/settings/security/ip-rules` (`admin.settings.security.ip_rules.store`)
+       * `DELETE /admin/settings/security/ip-rules/{id}` (`admin.settings.security.ip_rules.destroy`)
+       * `PUT /admin/settings/security/rate-limits` (`admin.settings.security.rate_limits.update`)
+       * `POST /admin/settings/security/flush-cache` (`admin.settings.security.flush_cache`)
+  6. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/security/index.blade.php`:
+       * 4 Thẻ KPI Quiet Luxury: Địa Chỉ IP Đang Chặn, Địa Chỉ IP Tin Cậy, Đe Dọa Phát Hiện (24h), Chế Độ Phòng Vệ Cao.
+       * Tab 1: Sổ Đen & Sổ Trắng IP (Tìm kiếm, phân loại blacklist/whitelist, thời hạn chặn, lượt chặn hit count, nút gỡ bỏ, modal thêm quy tắc IP).
+       * Tab 2: Thiết Lập Ngưỡng Rate Limiting (Form điều chỉnh số lượng req/phút cho Auth, RSVP, Sổ ký tên, Public API; checkbox kích hoạt Chế độ Phòng vệ Cao Under Attack Mode; nút Xóa Cache Rate Limiter).
+       * Tab 3: Nhật Ký Đe Dọa & Giám Sát Tấn Công (Bảng log: Thời gian, Loại đe dọa, IP nguồn, Endpoint mục tiêu, User Agent, Hành động).
+       * Modal Thêm Quy Tắc IP Tường Lửa (Pure CSS/JS).
+     - Cập nhật Sidebar: Menu "An Ninh & Rate Limits" trong nhóm Cài Đặt Hệ Thống và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  7. **Kiểm thử tự động ([tests/Feature/AdminSecurityManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminSecurityManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập màn hình an ninh.
+       3. Super Admin truy cập thành công màn hình an ninh và thấy các thẻ KPI.
+       4. Thêm địa chỉ IP vào Sổ đen (Blacklist) thành công có ghi audit log.
+       5. Thêm địa chỉ IP vào Sổ trắng (Whitelist) thành công.
+       6. Tường lửa `SecurityIpFirewall` chặn IP trong Sổ đen và tăng biến đếm hit count.
+       7. Tường lửa `SecurityIpFirewall` cho qua IP trong Sổ trắng (Whitelist).
+       8. Gỡ bỏ quy tắc IP khỏi tường lửa thành công.
+       9. Cập nhật các thông số Rate Limiting toàn nền tảng thành công.
+       10. Xóa sạch bộ nhớ đệm Rate Limit Cache thành công.
+     - Kết quả: **10/10 tests PASSED 100% (36 assertions)**.
+  8. **Tổng kết chất lượng mã nguồn**:
+     - Suite 15 test files admin gần nhất: **134/134 tests PASSED 100% (590 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

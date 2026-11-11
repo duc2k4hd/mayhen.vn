@@ -64,4 +64,21 @@ class PlatformSetting extends Model
     {
         return $query->where('group', $group);
     }
+
+    public static function getValue(string $group, string $key, mixed $default = null): mixed
+    {
+        $setting = static::where('group', $group)->where('key', $key)->first();
+
+        return $setting ? $setting->value : $default;
+    }
+
+    public static function setValue(string $group, string $key, mixed $value, ?int $userId = null): static
+    {
+        $setting = static::firstOrNew(['group' => $group, 'key' => $key]);
+        $setting->value = (string) $value;
+        $setting->updated_by = $userId;
+        $setting->save();
+
+        return $setting;
+    }
 }
