@@ -10965,43 +10965,46 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
-### 132. Đề Án 132: Phân Hệ Quản Lý Hành Trình Yêu & Dòng Thời Gian Kỷ Niệm Tương Tác (Interactive Love Story Milestones & Romantic Journey Timeline Suite — IDEA-A08, Mục 6.5 DOCX & Section 24 PRD V3)
+### 133. Đề Án 133: Phân Hệ Quản Lý Hạn Chót Xác Nhận Tham Dự & Khảo Sát Nhu Cầu Xe Đưa Đón / Thực Đơn Tiệc Cưới (RSVP Deadline Enforcement, Dietary Requirements & Shuttle Bus Survey Suite — IDEA-B03, IDEA-B04, Mục 6.7 DOCX & Section 31 PRD V3)
 - **Mục tiêu**:
-  - Triển khai phân hệ kể chuyện tình yêu đa cột mốc chuyên sâu theo IDEA-A08, Mục 6.5 DOCX & Section 24 PRD V3:
-  - Cho phép cô dâu chú rể thiết lập dòng thời gian các mốc kỷ niệm đáng nhớ (Ngày đầu chạm mắt, Buổi hẹn hò đầu & lời tỏ tình, Ngày cầu hôn, Ngày về chung một nhà) kèm ngày tháng, tiêu đề, đoạn văn chia sẻ cảm xúc, biểu tượng và ảnh chụp kỷ niệm riêng cho từng mốc.
-  - Tích hợp API tải ảnh kỷ niệm mốc thời gian AJAX hỗ trợ định dạng JPG, PNG, WEBP, HEIC tối đa 10MB lưu vào `storage/app/public/invitations/{id}/love-story/`.
-  - Thiết kế component dòng thời gian `love-story-timeline.blade.php` chuẩn Quiet Luxury:
-    - Trục dọc kết nối (Golden Spine) với các điểm nút phát sáng (Glowing Milestone Nodes).
-    - Bố cục zic-zac so le hai bên trên Desktop/Tablet và dòng thời gian dọc cực kỳ thanh lịch trên Di động.
-    - Card kỷ niệm bo góc vòm mỹ thuật, nhãn ngày tháng dập nổi, ảnh kỷ niệm tương tác zoom nhẹ nhàng.
-  - Cung cấp 4 cột mốc lãng mạn mặc định mang tên thật của cặp đôi khi thiệp chưa có cấu hình.
-  - Giao diện Studio tương tác động cho phép thêm, xóa, sắp xếp lại các cột mốc dễ dàng bằng Pure Vanilla JS.
-  - Ghi nhận AuditLogger đa tầng khi cập nhật hành trình yêu.
-  - 100% Pure Vanilla CSS/JS không dùng thư viện ngoài.
+  - Triển khai phân hệ kiểm soát hạn chót RSVP và khảo sát dịch vụ đưa đón / thực đơn tiệc cưới cao cấp theo IDEA-B03, IDEA-B04, Mục 6.7 DOCX & Section 31 PRD V3:
+  - Cho phép cô dâu chú rể thiết lập ngày giờ hạn chót xác nhận tham dự (`deadline`), bật/tắt tính năng tự động khóa cổng RSVP khi quá hạn (`lock_after_deadline`) hoặc chủ động khóa form thủ công ngay lập tức (`is_manually_closed`).
+  - Khi cổng RSVP đóng (quá hạn hoặc khóa thủ công), form tương tác trên thiệp cưới chuyển sang thông báo trang trọng Quiet Luxury, giải thích lý do gia đình đã chốt số lượng mâm cỗ với trung tâm tiệc cưới để chuẩn bị chu đáo nhất, kèm theo hotline liên hệ trực tiếp cô dâu chú rể.
+  - Phân hệ khảo sát xe buýt đưa đón (`shuttle_bus_enabled`): Dành cho tiệc cưới tổ chức ở resort, bãi biển hay ngoại ô; cho phép quản lý danh sách nhiều điểm đón xe trung tâm kèm địa chỉ, giờ khởi hành, họ tên và số điện thoại của trưởng đoàn / phụ trách xe; tự động ghi nhận số lượng chỗ khách đăng ký (người lớn + trẻ em).
+  - Phân hệ khảo sát thực đơn & dị ứng tiệc cưới (`dietary_survey_enabled`): Hỗ trợ khảo sát thực đơn tiêu chuẩn, thực đơn chay (Vegetarian), thuần chay (Vegan), thực đơn Halal không thịt heo, thực đơn trẻ em và ghi nhận chi tiết các cảnh báo dị ứng thực phẩm đặc biệt (hải sản, đậu phộng, gluten, sữa).
+  - Xuất báo cáo điều phối chuyên nghiệp:
+    - Bảng kê điều phối xe buýt đưa đón (Shuttle Bus Manifest) định dạng CSV UTF-8 BOM chuẩn (`\xEF\xBB\xBF`) cho đội xe trung chuyển.
+    - Bảng kê thực đơn và yêu cầu ăn kiêng / dị ứng (Kitchen Brief) định dạng CSV UTF-8 BOM chuẩn (`\xEF\xBB\xBF`) cho Quản lý nhà hàng & Bếp trưởng.
+  - Giao diện Dashboard quản lý trực quan chuẩn Pure Vanilla CSS/JS (`mayhen_rsvpenf_*`), có đồng hồ trạng thái, badge phân loại thời gian còn lại, giao diện thêm/xóa điểm đón xe buýt động, bảng thống kê số liệu real-time.
+  - Tích hợp bảo vệ đa tầng và ghi nhận AuditLogger `RSVP_ENFORCEMENT_UPDATED`.
 - **Kiến trúc & Tệp Tin**:
-  - `app/Services/LoveStoryTimelineService.php`:
-    - `getAvailableIcons`: Danh mục 6 biểu tượng cột mốc (Trái tim, Nhẫn cầu hôn, Tia sáng, Máy bay, Bông hồng, Tổ ấm).
-    - `getDefaultMilestones`: Khởi tạo 4 cột mốc lãng mạn mặc định mang tên uyên ương.
-    - `resolveLoveStoryConfig`: Phân giải cấu hình với fallback an toàn.
-    - `updateLoveStory`: Lưu danh sách cột mốc vào `custom_config['love_story']` và ghi AuditLogger.
-    - `uploadMilestonePhoto`: Lưu trữ ảnh kỷ niệm riêng an toàn.
-  - `app/Http/Controllers/Client/LoveStoryController.php`:
-    - `index`: Màn hình Studio quản trị Hành Trình Yêu (`account.love_story.index`).
-    - `update`: Lưu danh sách các cột mốc (`account.love_story.update`).
-    - `uploadPhoto`: Tải lên ảnh kỷ niệm cho từng cột mốc (`account.love_story.upload_photo`).
+  - `database/migrations/2026_11_11_210000_add_shuttle_and_menu_to_guest_responses_table.php`:
+    - Migration bổ sung 4 trường: `shuttle_bus_needed`, `shuttle_pickup_point`, `shuttle_passengers`, `menu_preference` vào bảng `guest_responses`.
+  - `app/Models/GuestResponse.php`:
+    - Bổ sung 4 trường vào `$fillable` và khai báo kiểu dữ liệu trong `$casts`.
+  - `app/Services/RsvpEnforcementService.php`:
+    - `getDefaultConfig`, `resolveConfig`, `saveConfig`, `isRsvpOpen`, `getDeadlineStatus`, `getShuttleBusReport`, `getDietaryReport`, `exportShuttleBusCsv`, `exportDietaryCsv`.
+    - Đồng bộ tương thích 2 chiều với các trường `rsvp_deadline`, `rsvp_lock_after_deadline`, `rsvp_closed_notice` trong `custom_config`.
+  - `app/Http/Requests/SubmitRsvpRequest.php`:
+    - Validate các trường `shuttle_bus_needed`, `shuttle_pickup_point`, `shuttle_passengers`, `menu_preference` kèm quy tắc phòng vệ chống ngôn từ phản cảm `NoProfanity`.
+  - `app/Http/Controllers/Client/GuestController.php`:
+    - Tích hợp kiểm tra cổng nhận phản hồi qua `RsvpEnforcementService::isRsvpOpen($invitation)` và lưu trữ dữ liệu xe đưa đón / khẩu vị vào `GuestResponse`.
+  - `app/Http/Controllers/Client/RsvpEnforcementController.php`:
+    - `index`: Màn hình Quản lý Hạn chót & Khảo sát đưa đón / thực đơn (`account.rsvp_enforcement.index`).
+    - `update`: Lưu cấu hình hạn chót và khảo sát (`account.rsvp_enforcement.update`).
+    - `exportShuttleManifest`: Xuất CSV xe đưa đón (`account.rsvp_enforcement.export_shuttle`).
+    - `exportDietaryManifest`: Xuất CSV bếp trưởng thực đơn (`account.rsvp_enforcement.export_dietary`).
     - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp an toàn.
-  - `resources/views/client/components/love-story-timeline.blade.php`:
-    - Component dòng thời gian so le Quiet Luxury, trục dọc vàng kim và animation phát sáng.
-  - `resources/views/client/pages/account/love_story/index.blade.php`:
-    - Giao diện Studio quản trị hành trình yêu, hỗ trợ thêm/xóa cột mốc động và tải ảnh trực tiếp.
+  - `resources/views/client/pages/account/rsvp_enforcement/index.blade.php`:
+    - Giao diện Quản lý Hạn chót & Khảo sát đưa đón / thực đơn Quiet Luxury, thuần Vanilla CSS/JS.
   - `resources/views/client/pages/account/invitations.blade.php`:
-    - Bổ sung nút công cụ "Hành Trình Yêu".
+    - Bổ sung nút công cụ "Hạn Chót & Đưa Đón".
   - `routes/web.php`:
-    - Đăng ký nhóm routes `account.love_story.*`.
-  - `tests/Feature/LoveStoryTimelineSuiteTest.php`:
-    - Kiểm thử 7/7 test cases chuyên sâu: truy cập Studio, chặn truy cập trái phép 403, cập nhật cột mốc, tải ảnh qua API, chặn file không phải ảnh, render component dòng thời gian, fallback 4 mốc mặc định chuẩn xác (100% PASSED).
+    - Đăng ký nhóm routes `account.rsvp_enforcement.*`.
+  - `tests/Feature/RsvpEnforcementSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn truy cập trái phép 403, mở màn hình quản lý, lưu cấu hình thành công, kiểm tra logic `isRsvpOpen` ở các trạng thái, chặn gửi RSVP khi form đóng kèm thông báo lịch sự, lưu thông tin xe và thực đơn vào DB, xuất 2 tệp CSV UTF-8 BOM chuẩn xác (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,086 / 1,086 tests PASSED 100%** (5,772 assertions).
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,093 / 1,093 tests PASSED 100%** (5,819 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 

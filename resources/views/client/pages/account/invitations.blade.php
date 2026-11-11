@@ -498,6 +498,15 @@
                                 </svg>
                                 <span>Hành Trình Yêu</span>
                             </a>
+
+                            {{-- Nút Hạn Chót RSVP & Xe Đưa Đón (Mục 6.7 DOCX & Đề Án 133) --}}
+                            <a href="{{ route('account.rsvp_enforcement.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý hạn chót xác nhận tham dự, điều phối xe buýt đưa đón và khảo sát thực đơn tiệc cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>Hạn Chót &amp; Đưa Đón</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

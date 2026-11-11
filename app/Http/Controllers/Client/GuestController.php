@@ -21,6 +21,7 @@ use App\Services\InvitationDeliveryService;
 use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
+use App\Services\RsvpEnforcementService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -1169,29 +1170,31 @@ class GuestController extends Controller
             return back()->with('rsvp_error', $msg);
         }
 
-        $rsvpDeadlineStr = $config['rsvp_deadline'] ?? null;
-        $lockAfterDeadline = ! empty($config['rsvp_lock_after_deadline']);
-        $isLateRsvp = false;
+        // 0.3. Kiểm tra Hạn chót & Khóa nhận phản hồi (RsvpEnforcementService - Section 31 PRD V3)
+        if (! RsvpEnforcementService::isRsvpOpen($invitation)) {
+            $status = RsvpEnforcementService::getDeadlineStatus($invitation);
+            $closedNotice = $status['closed_notice'];
+            if (! empty($status['contact_phone'])) {
+                $closedNotice .= " Hotline liên hệ: {$status['contact_phone']}";
+            }
 
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'is_closed' => true,
+                    'message' => $closedNotice,
+                    'contact_phone' => $status['contact_phone'],
+                ], 422);
+            }
+
+            return back()->with('rsvp_error', $closedNotice);
+        }
+
+        $rsvpDeadlineStr = $config['rsvp_deadline'] ?? null;
+        $isLateRsvp = false;
         if ($rsvpDeadlineStr) {
             $deadline = Carbon::parse($rsvpDeadlineStr)->endOfDay();
             if (Carbon::now()->isAfter($deadline)) {
-                if ($lockAfterDeadline) {
-                    $closedNotice = ! empty($config['rsvp_closed_notice'])
-                        ? $config['rsvp_closed_notice']
-                        : "Hạn chót xác nhận tham dự đã khép lại vào ngày {$deadline->format('d/m/Y')} để gia đình chốt số lượng bàn tiệc. Xin vui lòng liên hệ trực tiếp cô dâu chú rể nếu bạn muốn điều chỉnh thông tin!";
-
-                    if ($request->wantsJson()) {
-                        return response()->json([
-                            'success' => false,
-                            'is_closed' => true,
-                            'message' => $closedNotice,
-                        ], 422);
-                    }
-
-                    return back()->with('rsvp_error', $closedNotice);
-                }
-
                 $isLateRsvp = true;
             }
         }
@@ -1295,6 +1298,10 @@ class GuestController extends Controller
                             'attending_status' => $request->validated('attending_status'),
                             'adults_count' => $request->validated('adults_count') ?? 1,
                             'children_count' => $request->validated('children_count') ?? 0,
+                            'shuttle_bus_needed' => (bool) $request->validated('shuttle_bus_needed', false),
+                            'shuttle_pickup_point' => $request->validated('shuttle_pickup_point'),
+                            'shuttle_passengers' => (int) ($request->validated('shuttle_passengers') ?? 0),
+                            'menu_preference' => $request->validated('menu_preference'),
                             'dietary_requirements' => $request->validated('dietary_requirements'),
                             'wishes' => $request->validated('wishes'),
                             'needs_reconfirmation' => false,
@@ -1326,6 +1333,10 @@ class GuestController extends Controller
                     'attending_status' => $request->validated('attending_status'),
                     'adults_count' => $request->validated('adults_count') ?? 1,
                     'children_count' => $request->validated('children_count') ?? 0,
+                    'shuttle_bus_needed' => (bool) $request->validated('shuttle_bus_needed', false),
+                    'shuttle_pickup_point' => $request->validated('shuttle_pickup_point'),
+                    'shuttle_passengers' => (int) ($request->validated('shuttle_passengers') ?? 0),
+                    'menu_preference' => $request->validated('menu_preference'),
                     'dietary_requirements' => $request->validated('dietary_requirements'),
                     'wishes' => $request->validated('wishes'),
                     'is_late' => $isLateRsvp,

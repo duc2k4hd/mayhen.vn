@@ -35,6 +35,7 @@ use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
+use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\SmartGroupInvitationController;
@@ -214,6 +215,10 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/hanh-trinh-yeu', [LoveStoryController::class, 'index'])->name('love_story.index');
     Route::post('/thiep/{id}/hanh-trinh-yeu', [LoveStoryController::class, 'update'])->name('love_story.update');
     Route::post('/thiep/{id}/hanh-trinh-yeu/upload-photo', [LoveStoryController::class, 'uploadPhoto'])->name('love_story.upload_photo');
+    Route::get('/thiep/{id}/han-chot-khao-sat-rsvp', [RsvpEnforcementController::class, 'index'])->name('rsvp_enforcement.index');
+    Route::post('/thiep/{id}/han-chot-khao-sat-rsvp', [RsvpEnforcementController::class, 'update'])->name('rsvp_enforcement.update');
+    Route::get('/thiep/{id}/han-chot-khao-sat-rsvp/xuat-danh-sach-xe', [RsvpEnforcementController::class, 'exportShuttleManifest'])->name('rsvp_enforcement.export_shuttle');
+    Route::get('/thiep/{id}/han-chot-khao-sat-rsvp/xuat-bep-thuc-don', [RsvpEnforcementController::class, 'exportDietaryManifest'])->name('rsvp_enforcement.export_dietary');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

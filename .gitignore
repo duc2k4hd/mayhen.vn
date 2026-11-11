@@ -158,6 +158,7 @@ Thumbs.db
 !/tests/Feature/WeddingBroadcastSuiteTest.php
 !/tests/Feature/WeddingWaxSealSuiteTest.php
 !/tests/Feature/LoveStoryTimelineSuiteTest.php
+!/tests/Feature/RsvpEnforcementSuiteTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
