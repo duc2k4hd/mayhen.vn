@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminOrderRefundController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
+use App\Http\Controllers\Admin\AdminSeatingPlanController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
@@ -214,6 +215,17 @@ Route::middleware('admin.auth')->group(function () {
             Route::post('/{batchId}/preview', [AdminGuestImportController::class, 'preview'])->name('preview');
             Route::post('/{batchId}/execute', [AdminGuestImportController::class, 'execute'])->name('execute');
             Route::get('/{batchId}/export-failed', [AdminGuestImportController::class, 'exportFailed'])->name('export_failed');
+        });
+
+        // Phân hệ Quản trị Sơ đồ Bàn tiệc & Chỗ ngồi Quan khách (Mục 32, 212 PRD V3)
+        Route::prefix('seating')->name('seating.')->group(function () {
+            Route::get('/', [AdminSeatingPlanController::class, 'index'])->name('index');
+            Route::post('/weddings/{weddingId}/tables', [AdminSeatingPlanController::class, 'storeTable'])->name('tables.store');
+            Route::put('/weddings/{weddingId}/tables/{tableId}', [AdminSeatingPlanController::class, 'updateTable'])->name('tables.update');
+            Route::delete('/weddings/{weddingId}/tables/{tableId}', [AdminSeatingPlanController::class, 'destroyTable'])->name('tables.destroy');
+            Route::post('/weddings/{weddingId}/tables/{tableId}/assign', [AdminSeatingPlanController::class, 'assign'])->name('assign');
+            Route::post('/weddings/{weddingId}/guests/{guestId}/unassign', [AdminSeatingPlanController::class, 'unassign'])->name('unassign');
+            Route::get('/weddings/{weddingId}/export-csv', [AdminSeatingPlanController::class, 'export'])->name('export');
         });
     });
 

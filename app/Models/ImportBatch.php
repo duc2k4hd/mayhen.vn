@@ -84,4 +84,3 @@ class ImportBatch extends Model
         return (int) round(($successful / $this->total_rows) * 100);
     }
 }
-

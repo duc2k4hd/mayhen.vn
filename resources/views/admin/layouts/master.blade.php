@@ -177,6 +177,17 @@
                     <span>Khách Mời & Check-in</span>
                 </a>
 
+                <a href="{{ route('admin.guests.seating.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.seating*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </span>
+                    <span>Sơ Đồ Bàn & Chỗ Ngồi</span>
+                </a>
+
                 <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.rescue') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -838,6 +849,14 @@
                 <a href="{{ route('admin.guests.index') }}" class="mayhen_admin_cmd_item" data-search="khách mời điểm danh check-in ngày cưới seating bàn tiệc guests">
                     <span>🎟️ Khách Mời & Điểm Danh Ngày Cưới</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/guests</span>
+                </a>
+                <a href="{{ route('admin.guests.seating.index') }}" class="mayhen_admin_cmd_item" data-search="sơ đồ bàn tiệc chỗ ngồi seating plan capacity guardian quá tải xếp bàn sảnh">
+                    <span>🪑 Sơ Đồ Bàn Tiệc & Điều Phối Chỗ Ngồi</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guests/seating</span>
+                </a>
+                <a href="{{ route('admin.guests.import.index') }}" class="mayhen_admin_cmd_item" data-search="nhập khách hàng loạt batch import csv excel sđt 4 bước">
+                    <span>📥 Nhập Khách Mời Hàng Loạt (Batch 4 Bước)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guests/import</span>
                 </a>
                 <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_cmd_item" data-search="rescue cockpit ngày cưới sự cố xếp bàn khẩn cấp overcapacity bàn dự phòng walk-in">
                     <span>🚨 Rescue Cockpit Ngày Cưới (Sự Cố & Bàn Dự Phòng)</span>

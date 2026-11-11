@@ -10262,6 +10262,47 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tổng suite 16 feature test files admin gần nhất: **162/162 tests PASSED 100% (652 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
+### [2026-11-11 15:38] - HOÀN THÀNH ĐỀ ÁN 111: PHÂN HỆ QUẢN TRỊ TRUNG TÂM SƠ ĐỒ BÀN TIỆC & ĐIỀU PHỐI CHỖ NGỒI QUAN KHÁCH (SEATING PLANNER COCKPIT & CAPACITY GUARDIAN — MỤC 32, 212 PRD V3)
+- **Mục tiêu**: Xây dựng trung tâm điều phối sơ đồ bàn tiệc chuyên nghiệp cho sự kiện cưới, kiểm soát sức chứa theo thời gian thực (Capacity Guardian), phát hiện cảnh báo bàn quá tải (`isOverCapacity`), bàn quá thưa, cảnh báo ghép bàn lệch thế hệ (người lớn tuổi với bạn trẻ), tính toán chuẩn headcount khách đi cùng, hỗ trợ gán/gỡ khách linh hoạt và xuất sơ đồ phân bàn theo sảnh định dạng CSV.
+- **Thực hiện chi tiết**:
+  1. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/AdminSeatingPlanService.php`)**:
+     - Tích hợp `SeatingCapacityGuardianService` tính toán điểm số sức khỏe sơ đồ bàn (Health Score 0-100), tỷ lệ lấp đầy %, số bàn quá tải, số bàn quá thưa và danh sách vấn đề cảnh báo chi tiết (`issues`).
+     - `getSeatingPlanData(...)`: Trích xuất toàn bộ dữ liệu bàn tiệc gom nhóm theo Khu vực / Sảnh (Zone), danh sách khách chưa xếp bàn (`unassigned_guests`) và phân tích sức chứa.
+     - `createTable(...)` / `updateTable(...)`: Tạo và cập nhật bàn tiệc (tên bàn, sức chứa ghế 1-50, hình dáng tròn/dài/vuông, khu vực sảnh, ghi chú).
+     - `deleteTable(...)`: Xóa bàn tiệc an toàn, tự động chuyển toàn bộ khách trong bàn về trạng thái chưa xếp chỗ (`table_id = null`, `table_name = null`).
+     - `assignGuestsToTable(...)`: Xếp danh sách khách mời vào bàn được chỉ định.
+     - `unassignGuest(...)`: Gỡ nhanh quan khách khỏi bàn tiệc.
+     - `exportSeatingPlanCsv(...)`: Xuất sơ đồ bàn tiệc và danh sách quan khách định dạng chuẩn UTF-8 BOM CSV.
+  2. **Controller & Định Tuyến An Toàn (`AdminSeatingPlanController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminSeatingPlanController.php` gồm các action `index`, `storeTable`, `updateTable`, `destroyTable`, `assign`, `unassign`, `export`.
+     - Tuyến đường: `admin.guests.seating.*` (`index`, `tables.store`, `tables.update`, `tables.destroy`, `assign`, `unassign`, `export`) tích hợp vào prefix `admin/guests/seating`.
+  3. **Giao Diện Blade Chuẩn Quiet Luxury (`guests/seating/index.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Trung Tâm Điều Phối Sơ Đồ Bàn Tiệc & Chỗ Ngồi')`.
+     - Thẻ KPI sức khỏe toàn diện: Điểm sức khỏe Health Score, Tổng số bàn & sức chứa, Số khách đã xếp & tỷ lệ lấp đầy %, Số khách chưa xếp chỗ, Số bàn quá tải.
+     - Khối cảnh báo thông minh nếu phát hiện bàn quá tải hoặc ghép lệch thế hệ.
+     - Bố cục 2 cột chuyên nghiệp:
+       * Cột trái: Khách chưa xếp chỗ (ô tìm kiếm nhanh, lọc nhóm, form chọn bàn để gán hàng loạt).
+       * Cột phải: Lưới thẻ bàn tiệc gom theo Khu vực / Sảnh (thanh tiến trình lấp đầy trực quan, danh sách khách từng bàn kèm nút gỡ khách, nút sửa và xóa bàn).
+     - 2 Modal tiện ích: Modal Thêm Bàn Mới và Modal Chỉnh Sửa Bàn.
+     - Cập nhật Sidebar Navigation ("Sơ Đồ Bàn & Chỗ Ngồi") và Command Palette (`Ctrl + K`).
+  4. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminSeatingPlanTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_admin_can_view_seating_plan_cockpit`: Xem bảng điều khiển sơ đồ bàn tiệc và chỉ số sức khỏe.
+       * `test_unauthorized_user_cannot_access_seating_plan`: Chặn khách vãng lai và user không có quyền.
+       * `test_admin_can_create_new_wedding_table`: Tạo bàn tiệc mới thành công với sức chứa, zone và shape.
+       * `test_admin_can_update_wedding_table`: Sửa thông tin bàn tiệc.
+       * `test_admin_can_delete_wedding_table_and_unassigns_guests`: Xóa bàn tiệc và tự động chuyển khách về chưa xếp chỗ.
+       * `test_admin_can_assign_guests_to_table`: Xếp danh sách khách mời vào bàn thành công.
+       * `test_admin_can_unassign_guest_from_table`: Gỡ khách khỏi bàn tiệc về trạng thái chưa xếp chỗ.
+       * `test_service_analyzes_overfilled_tables_correctly`: Phát hiện chính xác bàn bị quá tải ghế (overfilled).
+       * `test_service_detects_mixed_generations_issue`: Nhận diện cảnh báo xếp chung người lớn tuổi/họ hàng với nhóm bạn trẻ.
+       * `test_admin_can_export_seating_plan_csv_with_utf8_bom`: Xuất file CSV sơ đồ bàn tiệc định dạng UTF-8 BOM chuẩn tiếng Việt.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 17 feature test files admin gần nhất: **172/172 tests PASSED 100% (695 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 
 
 
