@@ -9414,3 +9414,66 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 11 test files admin gần nhất: **94/94 tests PASSED 100% (435 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 96. ĐỀ ÁN 96: PHÂN HỆ QUẢN TRỊ GIA HẠN, HẾT HẠN THIỆP CƯỚI & THỜI GIAN ÂN HẠN (INVITATION EXPIRATION, RENEWAL MONITOR & GRACE PERIOD DEFENSE — MỤC 139 PRD V3 & MỤC 13.4 DOCX)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai phân hệ quản trị gia hạn, hết hạn thiệp cưới và giám sát thời gian ân hạn (Grace Period Monitor) theo chuẩn **Mục 139 PRD V3 (DOANH THU -> Gia hạn / Hết hạn) & Mục 13.4 Master Prompt DOCX**.
+  - **Chính Sách Vòng Đời Hạn Dùng Thiệp Cưới**:
+    1. *Đang Hoạt Động (`active`)*: Thiệp đã xuất bản, thời hạn lưu trữ còn trên 14 ngày.
+    2. *Sắp Hết Hạn (`expiring_soon`)*: Thiệp sắp đến ngày hết hạn trong vòng 14 ngày, cần gửi thông báo nhắc nhở cặp đôi gia hạn.
+    3. *Đang Trong Thời Gian Ân Hạn (`in_grace_period`)*: Thiệp đã quá ngày `expires_at`, nhưng vẫn nằm trong ngưỡng ân hạn `grace_period_days` (mặc định 7 ngày theo cấu hình nền tảng bảo mật). Dữ liệu album ảnh, lời chúc, RSVP được bảo toàn nguyên vẹn 100%, khách vẫn truy cập xem được.
+    4. *Đã Lưu Trữ Kỷ Niệm (`archived`)*: Thiệp quá thời hạn ân hạn hoặc chủ động chuyển vào kho lưu trữ riêng tư, tạm dừng tương tác công khai.
+    5. *Lưu Trữ Trọn Đời (`lifetime`)*: Gói dịch vụ VIP Vĩnh Cửu không giới hạn thời gian (`expires_at = null`).
+  - **Quy Trình Quản Trị & Nghiệp Vụ An Toàn**:
+    * **Gia hạn thủ công (Manual Extend)**: Quản trị viên chủ động gia hạn thêm (+1 tháng, +3 tháng, +6 tháng, +1 năm hoặc Trọn đời VIP) kèm lý do kiểm toán (CSKH VIP, dời lịch cưới...), tự động gỡ cờ lưu trữ `is_archived` và bật lại `is_published = true`. Ghi audit log `INVITATION_EXTENDED`.
+    * **Gửi thông báo nhắc hạn (Send Reminder Email)**: Gửi email nhắc gia hạn tự động qua template `renewal_reminder` tới email chủ sở hữu thiệp cưới. Ghi audit log `RENEWAL_REMINDER_DISPATCHED`.
+    * **Lưu trữ & Khôi phục thiệp cưới (Archive / Unarchive)**: Chuyển đổi trạng thái lưu trữ kỷ niệm riêng tư và khôi phục hoạt động bình thường, gia hạn thêm 30 ngày nếu thiệp đã quá hạn. Ghi audit `INVITATION_ARCHIVED` và `INVITATION_UNARCHIVED`.
+    * **Xuất báo cáo CSV UTF-8 BOM**: Xuất toàn bộ dữ liệu theo dõi gia hạn ra tệp CSV hỗ trợ mở bằng Microsoft Excel không lỗi font tiếng Việt. Ghi audit `RENEWALS_EXPORTED`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services**:
+     - `app/Services/InvitationRenewalService.php`:
+       * `getGraceDays()`: Lấy số ngày ân hạn từ `PlatformSetting::GROUP_SECURITY` hoặc fallback 7 ngày.
+       * `getLifecycleStatus()`: Phân loại chính xác 5 trạng thái vòng đời hạn dùng kèm nhãn tiếng Việt, mã màu Quiet Luxury và số ngày chênh lệch `days_diff`.
+       * `getRenewalKpis()`: Thống kê 5 chỉ số KPI tổng thiệp, sắp hết hạn, đang ân hạn, đã lưu trữ, trọn đời.
+       * `getFilteredInvitations()`: Tìm kiếm từ khóa và lọc trạng thái phân trang 15 thiệp/trang.
+       * `extendDuration()`: Gia hạn thiệp cưới linh hoạt theo các mốc thời gian, cập nhật `custom_config` và ghi nhận `AuditLogger`.
+       * `sendRenewalReminder()`: Trích xuất thông tin cặp đôi và gửi email nhắc nhở gia hạn.
+       * `archiveInvitation()` & `unarchiveInvitation()`: Quản lý cờ lưu trữ kỷ niệm riêng tư.
+       * `exportCsv()`: Xuất tệp CSV kèm UTF-8 BOM.
+  2. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminInvitationRenewalController.php`:
+       * `index()`: Trình diễn 4 thẻ KPI và bảng quản trị thiệp cưới.
+       * `extend()`: Tiếp nhận form modal gia hạn.
+       * `sendReminder()`: Kích hoạt gửi thư nhắc hạn.
+       * `archive()` & `unarchive()`: Chuyển đổi trạng thái lưu trữ.
+       * `export()`: Tải xuống file CSV.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm quản trị:
+       * `GET /admin/renewals` (`admin.renewals.index`)
+       * `POST /admin/renewals/{id}/extend` (`admin.renewals.extend`)
+       * `POST /admin/renewals/{id}/remind` (`admin.renewals.remind`)
+       * `POST /admin/renewals/{id}/archive` (`admin.renewals.archive`)
+       * `POST /admin/renewals/{id}/unarchive` (`admin.renewals.unarchive`)
+       * `GET /admin/renewals/export-csv` (`admin.renewals.export`)
+  3. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/renewals/index.blade.php`:
+       * 4 Thẻ KPI: Tổng số thiệp, Sắp hết hạn (14 ngày), Đang trong thời gian ân hạn (Grace Period), Đã lưu trữ / Hết hạn.
+       * Thanh tìm kiếm từ khóa và bộ lọc trạng thái dropdown.
+       * Bảng danh sách thiệp: Tên cặp đôi, slug, email chủ tiệc, mẫu thiệp, hạn lưu trữ, badge trạng thái hạn dùng sắc nét Quiet Luxury, nút Gia hạn, nút Nhắc hạn, nút Lưu trữ / Khôi phục.
+       * Modal Gia Hạn Thiệp Cưới: Lựa chọn các mốc thời gian (+30 ngày, +90 ngày, +180 ngày, +1 năm, Trọn đời VIP) và ô nhập lý do gia hạn.
+       * Cập nhật Sidebar: Menu "Gia Hạn & Hết Hạn Thiệp" trong Section 3 (Kinh Doanh & Doanh Thu) và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  4. **Kiểm thử tự động ([tests/Feature/AdminInvitationRenewalTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminInvitationRenewalTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai bị redirect về `admin.login`.
+       2. Người dùng `customer` bị redirect về `admin.login`.
+       3. Admin truy cập thành công màn hình Grace Period Monitor và thấy các thẻ KPI.
+       4. Tìm kiếm thiệp theo tên cô dâu, chú rể hoặc slug trả kết quả chính xác.
+       5. Lọc theo trạng thái hạn dùng (active, expiring_soon, in_grace_period, archived, lifetime) phân loại chính xác.
+       6. Gia hạn thiệp cưới (+3 tháng) cập nhật đúng ngày hết hạn và ghi audit log.
+       7. Gia hạn gói Trọn đời (Lifetime VIP) đặt `expires_at = null`.
+       8. Chuyển thiệp sang trạng thái lưu trữ kỷ niệm cập nhật cờ `is_archived` và `is_published = false`.
+       9. Khôi phục thiệp lưu trữ gỡ cờ `is_archived` và gia hạn thêm 30 ngày nếu đã quá hạn.
+       10. Xuất tệp CSV UTF-8 BOM trả về stream download đầy đủ dữ liệu.
+     - Kết quả: **10/10 tests PASSED 100% (31 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 12 test files admin gần nhất: **104/104 tests PASSED 100% (466 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

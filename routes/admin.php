@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
+use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
@@ -114,6 +115,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/reconciliations/{reconciliationId}/approve', [AdminOrderController::class, 'confirmApproval'])->middleware('admin.super')->name('reconciliations.approve');
         Route::post('/reconciliations/{reconciliationId}/reject', [AdminOrderController::class, 'rejectApproval'])->middleware('admin.super')->name('reconciliations.reject');
         Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->middleware('admin.manager')->name('cancel');
+    });
+
+    // Quản Lý Gia Hạn, Hết Hạn Thiệp Cưới & Thời Gian Ân Hạn (Mục 139 PRD V3 & Mục 13.4 DOCX)
+    Route::prefix('renewals')->name('renewals.')->group(function () {
+        Route::get('/', [AdminInvitationRenewalController::class, 'index'])->name('index');
+        Route::post('/{id}/extend', [AdminInvitationRenewalController::class, 'extend'])->middleware('admin.manager')->name('extend');
+        Route::post('/{id}/remind', [AdminInvitationRenewalController::class, 'sendReminder'])->middleware('admin.manager')->name('remind');
+        Route::post('/{id}/archive', [AdminInvitationRenewalController::class, 'archive'])->middleware('admin.manager')->name('archive');
+        Route::post('/{id}/unarchive', [AdminInvitationRenewalController::class, 'unarchive'])->middleware('admin.manager')->name('unarchive');
+        Route::get('/export-csv', [AdminInvitationRenewalController::class, 'export'])->name('export');
     });
 
     // Quản lý Người dùng & Phân quyền

@@ -220,6 +220,15 @@
                     </span>
                     <span>Thám Tử Đối Soát</span>
                 </a>
+                <a href="{{ route('admin.renewals.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.renewals.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span>Gia Hạn & Hết Hạn Thiệp</span>
+                </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.plans.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -676,6 +685,10 @@
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_cmd_item" data-search="đơn hàng doanh thu thanh toán sepay vietqr orders">
                     <span>💰 Đơn Hàng & Doanh Thu</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/orders</span>
+                </a>
+                <a href="{{ route('admin.renewals.index') }}" class="mayhen_admin_cmd_item" data-search="gia hạn hết hạn thiệp cưới renewals grace period expiration lưu trữ ân hạn">
+                    <span>⏳ Gia Hạn & Hết Hạn Thiệp Cưới (Grace Period)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/renewals</span>
                 </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_cmd_item" data-search="gói cước bảng giá plans subscription pricing đăng ký gói">
                     <span>📦 Gói Cước & Đăng Ký</span>
