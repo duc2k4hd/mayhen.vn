@@ -8413,15 +8413,39 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Laravel Pint: **100% PASSED** (0 dirty files).
   - *Sửa lỗi tương thích MySQL Schema*: Cập nhật `WeddingKeepsakeController` và `WeddingKeepsakeService` sang sử dụng cột thực tế `whereNotNull('checked_in_at')` thay cho `is_checked_in`, và `attending_status = 'attending'` thay cho `attending = 1` trong bảng `guest_responses`. Bổ sung accessor `getIsCheckedInAttribute()` vào model `Guest`. Đảm bảo hoạt động 100% ổn định trên môi trường MySQL thật.
 
+---
 
-
-
-
-
-
-
-
-
-
-
+## 77. ĐỀ ÁN 77: BÓC TÁCH THÔNG TIN THIỆP CƯỚI GIẤY BẰNG AI & RÀ SOÁT THỦ CÔNG HUMAN-IN-THE-LOOP (PAPER WEDDING INVITATION AI PARSER & HUMAN-IN-THE-LOOP VERIFICATION — MỤC 2.9 DOCX & SECTION 21 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 2.9 trong tài liệu gốc DOCX: "Quét ảnh thiệp cưới giấy truyền thống bằng AI để tự động bóc tách các trường dữ liệu: Tên cô dâu chú rể, phụ mẫu hai bên, thời gian, địa điểm sảnh tiệc, lời nhắn. Sau khi trích xuất phải có bước xác nhận thủ công (Human-in-the-loop) để đảm bảo độ chính xác 100% trước khi đồng bộ vào thiệp cưới trực tuyến".
+  1. *Bộ phân tích đa phương thức AI & Heuristic Parser*: Tiếp nhận ảnh thiệp cưới giấy (JPG, PNG, WebP tối đa 10MB), sử dụng bộ phân tích thông minh nhận diện hoa văn thiệp cưới Việt Nam để tự động trích xuất đầy đủ 11 trường thông tin cốt lõi (tên cô dâu chú rể, cha mẹ nhà trai, cha mẹ nhà gái, ngày cưới dương lịch, giờ đãi tiệc, ngày âm lịch, tên trung tâm hội nghị tiệc cưới, địa chỉ sảnh tiệc, câu trích dẫn yêu thương).
+  2. *Chỉ số tin cậy (AI Confidence Score & Label)*: Đánh giá độ đầy đủ và tin cậy của thông tin trích xuất (từ 0% đến 100%), gắn nhãn trực quan (Rất cao, Trung bình, Thấp) để định hướng cho người dùng.
+  3. *Màn hình đối chiếu song song Human-in-the-Loop Review (Mục 2.9 DOCX)*: Thiết kế giao diện 2 cột chuẩn Quiet Luxury:
+     - Cột trái: Hiển thị ảnh chụp thiệp cưới giấy thực tế của người dùng, tích hợp thanh công cụ phóng to / thu nhỏ (Zoom In/Out), đặt lại kích thước (Reset) và xoay ảnh 90 độ (Rotate) viết bằng 100% Native ES Modules JavaScript để khách hàng dễ dàng soi rõ từng dòng chữ nhỏ trên thiệp giấy in.
+     - Cột phải: Form rà soát 4 phân nhóm thông tin (Đôi uyên ương, Song thân phụ mẫu, Thời gian & Địa điểm tiệc cưới, Lời nhắn gửi). Cho phép người dùng chỉnh sửa, bổ sung hoặc sửa lỗi trước khi nhấp "Xác Nhận & Áp Dụng Vào Thiệp Cưới Online".
+  4. *Cơ chế đồng bộ dữ liệu vào Wedding & Invitation*: Sau khi người dùng xác nhận, dữ liệu đã được rà soát sẽ tự động cập nhật vào bảng `weddings` và trường JSON `extra_data`, đồng thời chuyển hướng trực tiếp vào Studio Tạo Thiệp (`invitation.create`) để cặp đôi tiếp tục sáng tạo thiệp cưới online mà không cần phải gõ lại từ đầu.
+  5. *Đài quan sát chi phí AI & Nhật ký kiểm toán*: Tích hợp tự động vào `AiQualityAndCostObservatoryService::recordUsage` và `AuditLogger::log('PAPER_INVITATION_SCANNED')` / `AuditLogger::log('PAPER_INVITATION_APPLIED')` đảm bảo minh bạch chi phí vận hành và an toàn dữ liệu.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_085310_create_paper_invitation_scans_table.php`: Các cột `user_id`, `invitation_id`, `wedding_id`, `image_path`, `raw_extracted_text`, `parsed_data` (JSON), `verified_data` (JSON), `confidence_score`, `status` (`uploaded`, `parsed`, `verified`, `applied`, `rejected`), `ai_model`, `applied_at`, `timestamps`.
+     - `app/Models/PaperInvitationScan.php`: Quan hệ `user()`, `invitation()`, `wedding()`, accessors `getImageUrlAttribute()`, `getStatusLabelAttribute()`, `getConfidenceLabelAttribute()`.
+  2. **Service & Controller**:
+     - `app/Services/PaperInvitationParserService.php`: `parseImage()`, `extractFieldsFromImage()`, `calculateConfidenceScore()`, `applyToWedding()`.
+     - `app/Http/Controllers/Client/PaperInvitationScanController.php`: `create()`, `store()`, `review()`, `apply()`.
+  3. **Routes ([routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php))**:
+     - `GET /tai-khoan/thiep/{id}/quet-thiep-giay` (`account.paper_scan.create`)
+     - `POST /tai-khoan/thiep/{id}/quet-thiep-giay` (`account.paper_scan.store`)
+     - `GET /tai-khoan/thiep/{id}/quet-thiep-giay/{scanId}/ra-soat` (`account.paper_scan.review`)
+     - `POST /tai-khoan/thiep/{id}/quet-thiep-giay/{scanId}/ap-dung` (`account.paper_scan.apply`)
+  4. **Giao diện & Asset**:
+     - `resources/views/client/pages/account/paper_scan/create.blade.php`: Dropzone kéo thả ảnh thiệp giấy trực quan, xem trước ảnh ngay lập tức, danh sách lịch sử quét thiệp gần đây.
+     - `resources/views/client/pages/account/paper_scan/review.blade.php`: Màn hình rà soát song song 2 cột, huy hiệu tin cậy AI, form 4 phân khu.
+     - `public/assets/client/css/pages/paper_scan.css`: 100% Pure Vanilla CSS, class prefix `mayhen_paperscan_*`, responsive hoàn hảo trên di động và màn hình lớn.
+     - `public/assets/client/js/pages/paper_scan.js`: 100% Native ES Modules JavaScript, xử lý kéo thả drag-and-drop, bộ điều khiển zoom/pan/rotate ảnh thiệp giấy không phụ thuộc bất kỳ thư viện ngoài nào.
+     - Nút tích hợp: Bổ sung nút "Quét Thiệp Giấy AI" trong menu thao tác nhanh tại `resources/views/client/pages/account/invitations.blade.php`.
+  5. **Kiểm thử ([tests/Feature/PaperInvitationAiParserTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/PaperInvitationAiParserTest.php))**:
+     - 5 kịch bản kiểm thử toàn diện: Chặn khách chưa đăng nhập, chặn truy cập thiệp của người dùng khác, tải ảnh thiệp giấy và trích xuất dữ liệu, kiểm tra định dạng và dung lượng ảnh, rà soát thủ công và áp dụng dữ liệu vào cưới online.
+     - Kết quả: **5/5 tests PASSED 100% (25 assertions in 0.92s)**.
+  6. **Kiểm thử Quản trị Hỗ trợ & Khắc phục Lỗi**:
+     - `tests/Feature/AdminSupportTicketTest.php`: **5/5 tests PASSED 100% (14 assertions)** bảo vệ trang `/admin/support` và bộ lọc `vip_48h`.
+     - `tests/Feature/WeddingKeepsakeAndMemorialTest.php`: **8/8 tests PASSED 100% (26 assertions)** tương thích cột thực tế `whereNotNull('checked_in_at')`.
 

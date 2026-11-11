@@ -19,6 +19,7 @@ use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
+use App\Http\Controllers\Client\PaperInvitationScanController;
 use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
@@ -225,6 +226,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/luu-giu-ky-niem/toggle', [WeddingKeepsakeController::class, 'toggle'])->name('keepsake.toggle');
     Route::get('/thiep/{id}/luu-giu-ky-niem/xuat-so-luu-niem', [WeddingKeepsakeController::class, 'exportBook'])->name('keepsake.export');
     Route::get('/api/thiep/{id}/luu-giu-ky-niem/tin-nhan-cam-on/{guestId}', [WeddingKeepsakeController::class, 'getThankYouMessage'])->name('keepsake.thank_you_message');
+
+    // Bóc Tách Thông Tin Thiệp Cưới Giấy Bằng AI & Rà Soát Thủ Công (Mục 2.9 Master Prompt & Section 21 PRD V3)
+    Route::get('/thiep/{id}/quet-thiep-giay', [PaperInvitationScanController::class, 'create'])->name('paper_scan.create');
+    Route::post('/thiep/{id}/quet-thiep-giay', [PaperInvitationScanController::class, 'store'])->middleware('throttle:20,1')->name('paper_scan.store');
+    Route::get('/thiep/{id}/quet-thiep-giay/{scanId}/ra-soat', [PaperInvitationScanController::class, 'review'])->name('paper_scan.review');
+    Route::post('/thiep/{id}/quet-thiep-giay/{scanId}/ap-dung', [PaperInvitationScanController::class, 'apply'])->name('paper_scan.apply');
 });
 
 // Guest Management & RSVP

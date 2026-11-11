@@ -141,6 +141,9 @@ Thumbs.db
 !/tests/Feature/InvitationAnalyticsAndFunnelTest.php
 !/tests/Feature/GuestSmartCsvImportAndSegmentationTest.php
 !/tests/Feature/ClientOnboardingWizardTest.php
+!/tests/Feature/WeddingKeepsakeAndMemorialTest.php
+!/tests/Feature/AdminSupportTicketTest.php
+!/tests/Feature/PaperInvitationAiParserTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

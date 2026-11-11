@@ -1,0 +1,263 @@
+/**
+ * Mây Hẹn (mayhen.vn) — Paper Invitation AI Parser & Human-in-the-Loop Review CSS
+ * Quy chuẩn: 100% Pure Vanilla CSS, tiền tố bắt buộc: mayhen_paperscan_*
+ * Phong cách: Quiet Luxury, Minimalist, Romantic, Mobile-First.
+ */
+
+:root {
+    --mh-ps-cream: #FAF8F5;
+    --mh-ps-sand: #EFE8DD;
+    --mh-ps-gold: #C5A880;
+    --mh-ps-gold-deep: #9C7A4A;
+    --mh-ps-charcoal: #1F1D1A;
+    --mh-ps-muted: #7A726A;
+    --mh-ps-border: #E8E2D8;
+    --mh-ps-white: #FFFFFF;
+}
+
+/* Header Banner */
+.mayhen_paperscan_header {
+    background: linear-gradient(135deg, #FAF8F5 0%, #F5EFE6 100%);
+    border: 1px solid var(--mh-ps-border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_paperscan_eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mh-ps-gold-deep);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.mayhen_paperscan_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.85rem;
+    font-weight: 600;
+    color: var(--mh-ps-charcoal);
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+}
+
+.mayhen_paperscan_desc {
+    font-size: 0.9rem;
+    color: var(--mh-ps-muted);
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.6;
+}
+
+/* Upload Dropzone Box */
+.mayhen_paperscan_dropzone {
+    background: var(--mh-ps-white);
+    border: 2px dashed #D6D0C7;
+    border-radius: 16px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.mayhen_paperscan_dropzone:hover,
+.mayhen_paperscan_dropzone.is-dragover {
+    border-color: var(--mh-ps-gold);
+    background: #FFFDF9;
+}
+
+.mayhen_paperscan_icon {
+    font-size: 3rem;
+    color: var(--mh-ps-gold);
+    margin-bottom: 12px;
+}
+
+.mayhen_paperscan_drop_title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--mh-ps-charcoal);
+    margin: 0 0 6px;
+}
+
+.mayhen_paperscan_drop_hint {
+    font-size: 0.85rem;
+    color: var(--mh-ps-muted);
+    margin: 0 0 16px;
+}
+
+.mayhen_paperscan_preview_box {
+    margin-top: 16px;
+    display: none;
+}
+
+.mayhen_paperscan_preview_img {
+    max-height: 240px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--mh-ps-sand);
+}
+
+/* Human-in-the-Loop Review Layout (2 Cột) */
+.mayhen_paperscan_review_grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .mayhen_paperscan_review_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cột Trái: Ảnh Thiệp Đối Chiếu */
+.mayhen_paperscan_img_panel {
+    background: var(--mh-ps-white);
+    border: 1px solid var(--mh-ps-border);
+    border-radius: 14px;
+    padding: 20px;
+    position: sticky;
+    top: 24px;
+}
+
+.mayhen_paperscan_img_container {
+    width: 100%;
+    max-height: 520px;
+    overflow: auto;
+    border: 1px solid var(--mh-ps-sand);
+    border-radius: 8px;
+    background: #2C2824;
+    text-align: center;
+    position: relative;
+}
+
+.mayhen_paperscan_target_img {
+    max-width: 100%;
+    height: auto;
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+}
+
+.mayhen_paperscan_img_toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.mayhen_paperscan_btn_tool {
+    background: #FAF8F5;
+    border: 1px solid #D6D0C7;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--mh-ps-charcoal);
+    font-weight: 500;
+}
+
+/* Cột Phải: Form Dữ Liệu Rà Soát */
+.mayhen_paperscan_form_panel {
+    background: var(--mh-ps-white);
+    border: 1px solid var(--mh-ps-border);
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.mayhen_paperscan_confidence_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.mayhen_paperscan_confidence_badge--high {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.mayhen_paperscan_confidence_badge--medium {
+    background: #FFF3E0;
+    color: #E65100;
+    border: 1px solid #FFE0B2;
+}
+
+.mayhen_paperscan_field_group {
+    margin-bottom: 18px;
+}
+
+.mayhen_paperscan_section_title {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mh-ps-gold-deep);
+    font-weight: 700;
+    margin: 20px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--mh-ps-sand);
+}
+
+.mayhen_paperscan_row_2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 600px) {
+    .mayhen_paperscan_row_2col {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mayhen_paperscan_label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--mh-ps-charcoal);
+    margin-bottom: 6px;
+}
+
+.mayhen_paperscan_input,
+.mayhen_paperscan_textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--mh-ps-border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: var(--mh-ps-charcoal);
+    background: #FFFDF9;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color .2s;
+}
+
+.mayhen_paperscan_input:focus,
+.mayhen_paperscan_textarea:focus {
+    outline: none;
+    border-color: var(--mh-ps-gold);
+    box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.15);
+}
+
+.mayhen_paperscan_help {
+    font-size: 0.72rem;
+    color: var(--mh-ps-muted);
+    margin-top: 4px;
+    display: block;
+}
+
