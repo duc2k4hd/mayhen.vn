@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ClientSupportController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
+use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
@@ -237,6 +238,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Bộ Ấn Phẩm Đồng Bộ Đa Định Dạng (Mục 2.7 Master Prompt & Section 38 PRD V3)
     Route::get('/thiep/{id}/bo-thiep-dong-bo', [StationeryKitController::class, 'index'])->name('stationery.index');
     Route::post('/thiep/{id}/bo-thiep-dong-bo/log-download', [StationeryKitController::class, 'logDownload'])->middleware('throttle:30,1')->name('stationery.log_download');
+
+    // Gửi Đánh Giá & Cảm Nhận Khách Hàng (Mục 7.14 DOCX)
+    Route::post('/thiep/{id}/danh-gia', [CustomerReviewController::class, 'store'])->middleware('throttle:10,1')->name('reviews.store');
 });
 
 // Guest Management & RSVP

@@ -113,6 +113,11 @@ class Wedding extends Model
         return $this->hasOne(WeddingKeepsake::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->latest();
+    }
+
     public function events(): HasMany
     {
         return $this->hasMany(WeddingEvent::class)->orderBy('display_order')->orderBy('event_date')->orderBy('event_time');

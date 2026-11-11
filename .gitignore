@@ -145,6 +145,7 @@ Thumbs.db
 !/tests/Feature/AdminSupportTicketTest.php
 !/tests/Feature/PaperInvitationAiParserTest.php
 !/tests/Feature/SynchronizedStationeryKitTest.php
+!/tests/Feature/AdminReviewManagementTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

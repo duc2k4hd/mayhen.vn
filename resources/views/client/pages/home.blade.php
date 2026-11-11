@@ -1385,6 +1385,68 @@
         </div>
     </section>
 
+    <!-- 4.5. Real Couple Reviews & Testimonials Section (Mục 7.14 DOCX) -->
+    @if(isset($featuredReviews) && $featuredReviews->isNotEmpty())
+    <section class="mayhen_home_reviews_section" id="cam-nhan" aria-labelledby="mayhen-reviews-heading" style="padding: 70px 0; background: #FAF8F5; border-top: 1px solid #EFE8DD; border-bottom: 1px solid #EFE8DD;">
+        <div class="mayhen_client_layout_container">
+            <div style="text-align: center; max-width: 680px; margin: 0 auto 40px;">
+                <span style="display: inline-block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #9C7A4A; font-weight: 700; margin-bottom: 8px;">
+                    ✦ Cảm Nhận Chân Thật ✦
+                </span>
+                <h2 id="mayhen-reviews-heading" style="font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 500; color: #1F1D1A; margin: 0 0 10px;">
+                    Câu Chuyện Hạnh Phúc Từ Các Cặp Đôi
+                </h2>
+                <p style="font-size: 0.95rem; color: #7A726A; line-height: 1.6; margin: 0;">
+                    Những lời nhắn nhủ ấm áp và cảm nhận thực tế từ các cặp đôi đã đồng hành cùng Mây Hẹn trên hành trình gửi trao lời hẹn ước trọn đời.
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                @foreach($featuredReviews as $rev)
+                    <article style="background: #FFFFFF; border: 1px solid #EFE8DD; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="color: #D4AF37; font-size: 1.1rem; letter-spacing: 2px;">
+                                    @for($i = 1; $i <= $rev->rating; $i++) ★ @endfor
+                                </div>
+                                <span style="font-size: 0.72rem; color: #2E7D32; background: #E8F5E9; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                                    ✓ Cặp Đôi Đã Xác Thực
+                                </span>
+                            </div>
+
+                            @if($rev->title)
+                                <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; color: #1F1D1A; margin: 0 0 8px;">
+                                    {{ $rev->title }}
+                                </h3>
+                            @endif
+
+                            <p style="font-size: 0.88rem; color: #4A453E; line-height: 1.6; margin: 0 0 16px; font-style: italic;">
+                                “{{ $rev->content }}”
+                            </p>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px dashed #EFE8DD;">
+                            <div>
+                                <strong style="display: block; font-size: 0.92rem; color: #1F1D1A;">
+                                    {{ $rev->couple_name }}
+                                </strong>
+                                <span style="font-size: 0.78rem; color: #7A726A;">
+                                    Mẫu: {{ $rev->template_name }}
+                                </span>
+                            </div>
+                            @if($rev->wedding_date)
+                                <span style="font-size: 0.75rem; color: #9E9E9E;">
+                                    {{ $rev->wedding_date->format('m/Y') }}
+                                </span>
+                            @endif
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- 5. Real Workflow Section (Quy Trình Tạo & Sử Dụng Thiệp Cưới Online Thực Tế) -->
     <section class="mayhen_home_steps_section" id="quy-trinh" aria-labelledby="mayhen-steps-heading">
         <div class="mayhen_client_layout_container">

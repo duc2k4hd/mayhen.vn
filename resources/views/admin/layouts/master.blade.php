@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin Panel') — Mây Hẹn (mayhen.vn)</title>
+    <title>@yield('title', 'Admin Panel') | Mây Hẹn (mayhen.vn)</title>
     @include('client.components.favicon')
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -273,6 +273,15 @@
                         </svg>
                     </span>
                     <span>Liên Hệ & Báo Giá</span>
+                </a>
+
+                <a href="{{ route('admin.reviews.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.reviews.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </span>
+                    <span>Đánh Giá Khách Hàng</span>
                 </a>
 
                 <a href="{{ route('admin.privacy.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.privacy.*') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -606,6 +615,10 @@
                 <a href="{{ route('admin.contacts.index') }}" class="mayhen_admin_cmd_item" data-search="liên hệ báo giá đặt hẹn showroom in thiệp contacts leads tư vấn">
                     <span>📬 Yêu Cầu Liên Hệ & Báo Giá (Leads)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/contacts</span>
+                </a>
+                <a href="{{ route('admin.reviews.index') }}" class="mayhen_admin_cmd_item" data-search="đánh giá cảm nhận khách hàng reviews feedback sao csat kiểm duyệt">
+                    <span>⭐ Đánh Giá & Cảm Nhận Khách Hàng (Reviews)</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/reviews</span>
                 </a>
                 <a href="{{ route('admin.partners.index') }}" class="mayhen_admin_cmd_item" data-search="đối tác studio wedding planner b2b agency mạng lưới hoa hồng commissions chiết khấu">
                     <span>🤝 Mạng Lưới Đối Tác & Studio (B2B)</span>

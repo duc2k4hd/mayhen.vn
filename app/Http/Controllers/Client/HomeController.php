@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\InvitationTemplate;
+use App\Models\Review;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 
@@ -41,9 +42,15 @@ class HomeController extends Controller
         });
         $galleryTemplates = InvitationTemplate::hydrate($rawGallery);
 
+        $featuredReviews = Review::with('template')
+            ->featured()
+            ->take(6)
+            ->get();
+
         return view('client.pages.home', [
             'featuredTemplates' => $featuredTemplates,
             'galleryTemplates' => $galleryTemplates,
+            'featuredReviews' => $featuredReviews,
         ]);
     }
 }

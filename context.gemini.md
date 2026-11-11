@@ -8495,4 +8495,46 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Suite 5 feature tests gần nhất: **31/31 tests PASSED 100% (125 assertions in 1.72s)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
+---
+
+## 79. ĐỀ ÁN 79: HỆ THỐNG ĐÁNH GIÁ KHÁCH HÀNG THỰC TẾ & PHÂN HỆ QUẢN TRỊ DUYỆT CẢM NHẬN (REAL CUSTOMER REVIEWS & ADMIN REVIEW DESK — MỤC 7.14 DOCX) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 7.14 trong tài liệu gốc DOCX: "7.14. Admin Reviews: Chỉ hiển thị đánh giá khách hàng thực tế được phép sử dụng. Không sinh đánh giá giả".
+  1. *Nguyên tắc minh bạch & Chống đánh giá giả mạo*: Toàn bộ đánh giá trên Mây Hẹn bắt buộc phải gắn liền với tài khoản người dùng (`user_id`), đám cưới (`wedding_id`) và thiệp cưới (`invitation_id`) có thật trong hệ thống (`verified_purchase = true`). Mọi đánh giá mới gửi lên đều phải qua bước kiểm duyệt trạng thái `pending` của ban quản trị trước khi được hiển thị công khai.
+  2. *Cấu trúc dữ liệu đánh giá toàn diện*: Lưu trữ tên cặp đôi (`couple_name`), ngày cưới thực tế (`wedding_date`), số sao đánh giá (1 đến 5 sao `rating`), tiêu đề cảm nhận (`title`), nội dung chia sẻ trải nghiệm (`content`), mẫu thiệp đã sử dụng (`template_id`), người duyệt (`reviewed_by`), thời điểm duyệt (`reviewed_at`) và ghi chú nội bộ (`admin_notes`).
+  3. *Phân hệ Quản trị Admin Review Desk ([resources/views/admin/pages/reviews/index.blade.php](file:///d:/Project/Laravel/mayhen.vn/resources/views/admin/pages/reviews/index.blade.php))*:
+     - **4 Thẻ KPI vận hành**: Tổng số đánh giá, Chờ kiểm duyệt (`pending`), Đã xuất bản (`approved`), Điểm đánh giá trung bình toàn hệ thống (`avg_rating` / 5.0).
+     - **Bộ lọc chuyên sâu**: Lọc theo trạng thái kiểm duyệt (`pending`, `approved`, `rejected`), Lọc theo số sao (5, 4, 3, 2, 1), Lọc đánh giá ghim trang chủ, Tìm kiếm theo tên cặp đôi / từ khóa.
+     - **Thao tác quản trị 1-Click**:
+       * *Duyệt hiển thị (Approve)*: Chuyển trạng thái sang `approved`, ghi nhận `reviewed_by` và `reviewed_at`.
+       * *Từ chối / Ẩn (Reject)*: Chuyển sang `rejected`, tự động gỡ ghim trang chủ để bảo vệ thương hiệu.
+       * *Ghim nổi bật (Toggle Featured)*: Đánh dấu sao vàng để đưa đánh giá lên Section Cảm Nhận Trang Chủ.
+       * *Xóa vĩnh viễn (Destroy)*: Loại bỏ các đánh giá spam hoặc vi phạm quy chuẩn.
+     - **Tích hợp Master Layout**: Bổ sung menu *"Đánh Giá Khách Hàng"* trên Sidebar và Command Palette (`Ctrl+K`).
+  4. *Trải nghiệm Khách hàng & Xuất bản Trang Chủ*:
+     - Khách hàng đã sở hữu thiệp có thể gửi đánh giá chân thực qua `POST /tai-khoan/thiep/{id}/danh-gia` (`account.reviews.store`).
+     - Tích hợp Section **"Câu Chuyện Hạnh Phúc Từ Các Cặp Đôi (Real Couple Stories & Reviews)"** trên Trang Chủ `home.blade.php`: Thiết kế Quiet Luxury, hiển thị sao mạ vàng Antique Gold, con dấu chứng nhận *"✓ Cặp Đôi Đã Xác Thực"*, tên mẫu thiệp đã sử dụng và câu trích dẫn cảm xúc chân thật.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_091524_create_reviews_table.php`
+     - `app/Models/Review.php`: Quan hệ `user`, `wedding`, `invitation`, `template`, `moderator`; scopes `approved()`, `featured()`, `pending()`; accessors `status_label`, `status_badge_style`, `template_name`.
+     - Cập nhật `app/Models/Wedding.php`: Bổ sung quan hệ `reviews(): HasMany`.
+  2. **Controllers & Routes**:
+     - `app/Http/Controllers/Client/CustomerReviewController.php`: `store()`.
+     - `app/Http/Controllers/Admin/ReviewController.php`: `index()`, `approve()`, `reject()`, `toggleFeatured()`, `destroy()`.
+     - Cập nhật `app/Http/Controllers/Client/HomeController.php`: Truyền `$featuredReviews` ra view `home.blade.php`.
+     - Routes ([routes/admin.php](file:///d:/Project/Laravel/mayhen.vn/routes/admin.php) & [routes/web.php](file:///d:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /admin/reviews` (`admin.reviews.index`)
+       * `POST /admin/reviews/{review}/approve` (`admin.reviews.approve`)
+       * `POST /admin/reviews/{review}/reject` (`admin.reviews.reject`)
+       * `POST /admin/reviews/{review}/toggle-featured` (`admin.reviews.toggle_featured`)
+       * `DELETE /admin/reviews/{review}` (`admin.reviews.destroy`)
+       * `POST /tai-khoan/thiep/{id}/danh-gia` (`account.reviews.store`)
+  3. **Kiểm thử ([tests/Feature/AdminReviewManagementTest.php](file:///d:/Project/Laravel/mayhen.vn/tests/Feature/AdminReviewManagementTest.php))**:
+     - 6 kịch bản kiểm thử: Khách hàng gửi review thành công (trạng thái ban đầu `pending`), kiểm tra validate sao và độ dài nội dung, chặn khách vãng lai và chặn đánh giá thiệp người khác, admin xem danh sách & KPI, admin duyệt và ghim nổi bật hiển thị chân thực trên trang chủ, admin ẩn và xóa review vi phạm.
+     - Kết quả: **6/6 tests PASSED 100% (23 assertions in 0.79s)**.
+  4. **Tổng kết chất lượng mã nguồn**:
+     - Suite 6 feature tests: **37/37 tests PASSED 100% (148 assertions in 2.34s)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 

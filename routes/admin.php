@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\PrivacyOperationsController as AdminPrivacyOperationsController;
 use App\Http\Controllers\Admin\ReleaseControlController as AdminReleaseControlController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\Admin\SystemResilienceController as AdminSystemResilienceController;
@@ -182,6 +183,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminContactController::class, 'index'])->name('index');
         Route::put('/{contact}', [AdminContactController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+    });
+
+    // Quản Lý Đánh Giá & Cảm Nhận Khách Hàng (Mục 7.14 DOCX: Admin Reviews)
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', [AdminReviewController::class, 'index'])->name('index');
+        Route::post('/{review}/approve', [AdminReviewController::class, 'approve'])->middleware('admin.manager')->name('approve');
+        Route::post('/{review}/reject', [AdminReviewController::class, 'reject'])->middleware('admin.manager')->name('reject');
+        Route::post('/{review}/toggle-featured', [AdminReviewController::class, 'toggleFeatured'])->middleware('admin.manager')->name('toggle_featured');
+        Route::delete('/{review}', [AdminReviewController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
     });
 
     // Giám sát Queue & Failed Jobs (Wave 07 - ADM-A19)
