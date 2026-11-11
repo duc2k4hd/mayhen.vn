@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
@@ -246,6 +247,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/feedback/{id}/resolve', [AdminIntelligenceController::class, 'resolveFeedbackAction'])->name('resolve_feedback');
         Route::get('/replay', [OperationsReplayController::class, 'index'])->name('replay.index');
         Route::get('/replay/{type}/{id}', [OperationsReplayController::class, 'show'])->name('replay.show');
+    });
+
+    // Trung Tâm Phân Tích & Báo Cáo Toàn Diện (Mục 19 & Mục 49 PRD V3: Analytics & Reporting Hub)
+    Route::prefix('analytics')->name('analytics.')->group(function () {
+        Route::get('/', [AdminAnalyticsController::class, 'index'])->name('index');
+        Route::get('/export', [AdminAnalyticsController::class, 'export'])->name('export');
     });
 
     // Quản Trị Quyền Riêng Tư & Lưu Trữ Dữ Liệu (NXT-10: Privacy Operations & Retention Jobs)

@@ -9229,3 +9229,62 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 6 test files liên quan gần nhất: **52/52 tests PASSED 100% (212 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 93. Đề Án 93: Trung Tâm Phân Tích, Báo Cáo Toàn Diện & Xuất Dữ Liệu Thông Minh (Admin Analytics & Insights Reporting Hub — Mục 19 & Mục 49 PRD V3)
+- **Mục tiêu & Nghiệp vụ cốt lõi**:
+  - Xây dựng trung tâm tình báo phân tích kinh doanh, tăng trưởng doanh thu và hành vi khách hàng toàn diện cho Ban Điều Hành Mây Hẹn Atelier theo đúng hợp đồng màn hình *Screen contract 07 — Analytics* (Mục 19 & Mục 49 PRD V3).
+  - Cung cấp bộ lọc thời gian đa dạng (`7_days`, `30_days`, `this_month`, `last_month`, `90_days`, `custom`), cơ chế so sánh tự động (% tăng trưởng so với kỳ trước), 5 phân hệ báo cáo chuyên sâu (Subtabs), biểu đồ Pure CSS thanh lịch, và công cụ xuất dữ liệu (Export CSV) chuẩn UTF-8 BOM kèm kiểm toán.
+- **Kiến trúc & Các tính năng hoàn chỉnh**:
+  1. *Subtab 1: Doanh Thu & Tăng Trưởng (Revenue & Growth Analytics)*:
+     * Đo lường 4 chỉ số cốt lõi: Doanh thu thực thu (`Net Revenue`), Tổng tiền gốc (`Gross Revenue`), Tiền hoàn trả (`Refund`), Số đơn hàng thành công (`Paid Orders`), và Giá trị đơn hàng trung bình (`AOV`).
+     * Tính toán % tăng/giảm tự động so với cùng kỳ trước đó (`▲ +X%` hoặc `▼ -X%`).
+     * Biểu đồ cột Pure CSS Bar Chart hiển thị biến động doanh thu từng ngày trong kỳ.
+     * Đảm bảo tính nhất quán dữ liệu 100% giữa Dashboard và Analytics Report theo cùng timezone và điều kiện trạng thái đơn hàng (`paid`).
+  2. *Subtab 2: Hành Trình Chuyển Đổi (Acquisition to Paid Funnel)*:
+     * Đo lường tỷ lệ giữ chân và drop-off qua 4 chặng:
+       1. Xem mẫu & thiệp cưới (`invitation_views`).
+       2. Bắt đầu tạo dự án cưới (`weddings`).
+       3. Xuất bản thiệp cưới công khai (`invitations.is_published`).
+       4. Đơn hàng nâng cấp gói trả phí (`orders.status = paid`).
+     * Hiển thị thanh tiến trình phễu trực quan kèm tỷ lệ % chuyển đổi từng chặng.
+  3. *Subtab 3: Hiệu Suất Mẫu Thiệp (Template Performance & Content Retention)*:
+     * Xếp hạng top mẫu thiệp theo lượt tạo và lượt xem thực tế.
+     * Đo lường tỷ lệ dùng (`Usage Rate = Created / Viewed`), phân khúc (`Tier`), số đơn hàng trả phí và doanh thu mang lại của từng mẫu thiệp.
+  4. *Subtab 4: Báo Cáo Khách Mời & Phản Hồi RSVP (Guest Engagement & Headcount)*:
+     * Thống kê Tổng số khách mời, Số thiệp cá nhân hóa đã được mở (`open_tracking`), Tỷ lệ mở thiệp (`open_rate_pct`).
+     * Phân loại phản hồi RSVP: Xác nhận tham dự (`attending`), Báo bận (`declined`), Đang chờ (`pending`).
+     * Tính toán tổng số người dự tiệc thực tế (**Headcount**) dựa trên số lượng khách đi cùng (`adults_count` + `children_count`).
+     * Phân bổ theo nhà trai (`groom`) và nhà gái (`bride`).
+  5. *Subtab 5: Vận Hành & Chất Lượng Dịch Vụ (Operations & SLA Health)*:
+     * Tỷ lệ giải quyết phiếu hỗ trợ khách hàng CSKH (`ticket_resolution_rate`), Số lượng sự cố tác vụ nền (`failed_jobs`), Số lô hoàn tất thành công (`completed_batches`).
+  6. *Xuất Dữ Liệu Báo Cáo (Smart CSV Export With UTF-8 BOM)*:
+     * Hỗ trợ xuất dữ liệu chi tiết từng tab ra file CSV kèm header UTF-8 BOM, giúp quản trị viên mở trực tiếp trên Microsoft Excel không bị lỗi font tiếng Việt.
+     * Ghi nhận log kiểm toán toàn diện `AuditLogger::log('ANALYTICS_REPORT_EXPORTED')`.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services**:
+     - `app/Services/AnalyticsReportService.php`: Xử lý bóc tách date range, tính toán doanh thu & % tăng trưởng, dựng phễu chuyển đổi, tính hiệu suất mẫu thiệp, thống kê RSVP headcount, và trích xuất dữ liệu xuất CSV.
+  2. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminAnalyticsController.php`: Điều phối 5 subtabs, date range filter, và stream CSV download.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)):
+       * `GET /admin/analytics` (`admin.analytics.index`)
+       * `GET /admin/analytics/export` (`admin.analytics.export`)
+  3. **Giao diện**:
+     - `resources/views/admin/pages/analytics/index.blade.php`: Giao diện Quiet Luxury 5 subtabs, Date Range Filter trực quan, Bar Chart thuần CSS, phễu chuyển đổi 4 chặng, bảng biểu thống kê chi tiết.
+     - Cập nhật Sidebar: Menu "Báo Cáo & Phân Tích" trong nhóm *Tổng Quan & Trí Tuệ* tại `resources/views/admin/layouts/master.blade.php`.
+  4. **Kiểm thử tự động ([tests/Feature/AdminAnalyticsReportingTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminAnalyticsReportingTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Chặn khách vãng lai và user thường truy cập Analytics.
+       2. Admin truy cập trang Analytics mặc định (tab Doanh thu) hiển thị đúng số liệu.
+       3. Bóc tách date ranges (7 days, 30 days, this_month) chính xác.
+       4. Hiển thị phễu chuyển đổi 4 chặng (Views -> Created -> Published -> Paid).
+       5. Hiển thị bảng hiệu suất mẫu thiệp kèm tỷ lệ chuyển đổi.
+       6. Hiển thị báo cáo RSVP và tính toán Headcount dự tiệc thực tế chính xác.
+       7. Hiển thị báo cáo vận hành & tỷ lệ xử lý ticket CSKH.
+       8. Xuất báo cáo doanh thu ra CSV chuẩn UTF-8 BOM.
+       9. Xuất báo cáo RSVP khách mời ra CSV.
+       10. Đảm bảo tính nhất quán dữ liệu doanh thu giữa Dashboard và Analytics Report.
+     - Kết quả: **10/10 tests PASSED 100% (38 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 8 test files liên quan gần nhất: **72/72 tests PASSED 100% (285 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
