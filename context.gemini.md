@@ -10764,6 +10764,49 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 127. Đề Án 127: Phân Hệ Quản Trị Khách Mời Hộ Gia Đình & Báo Cáo Suất Ăn Bếp Tiệc (Household RSVP Intelligence & Banquet Kitchen Dietary Brief — Mục 2.4 DOCX & Section 31, 32 PRD V3)
+- **Mục tiêu**:
+  - Giải quyết triệt để bài toán thống kê và tác nghiệp tiệc cưới thực tế theo Mục 2.4 DOCX & Section 31, 32 PRD V3: phân tách khoa học giữa số lượng lời mời phát ra (Invitations Count), số khách dự kiến mời (Total Headcount Invited) và sĩ số thực tế có mặt (Actual Attendees), ngăn chặn hoàn toàn việc nhầm lẫn hoặc thiếu/thừa mâm cỗ.
+  - Phân loại quy mô lời mời chính xác:
+    1. `individual`: Khách đi đơn lẻ (1 người / thiệp).
+    2. `couple`: Khách cặp đôi (+1 đi cùng, 2 người / thiệp).
+    3. `family`: Hộ gia đình / Gia quyến (từ 3 người trở lên).
+  - Thống kê ẩm thực & tác nghiệp Bếp Tiệc chuyên sâu:
+    - Suất tiệc người lớn (Adult Meals).
+    - Suất tiệc trẻ em (Kids Meals / Ghế em bé chuyên dụng).
+    - Suất tiệc ăn chay (Vegetarian Meals) phục vụ khách tu tập / cao niên.
+    - Danh sách chi tiết các yêu cầu dị ứng thực phẩm (hải sản, đậu phộng, kiêng đường...) gắn liền với từng bàn tiệc cụ thể (`table_name`).
+  - Dự toán số lượng bàn tiệc tiêu chuẩn (10 người/bàn) thời gian thực theo xác nhận RSVP.
+  - Xuất bản Bảng Kê Suất Ăn & Bàn Tiệc (Banquet Kitchen Brief):
+    - Bản in A4 Quiet Luxury chuẩn mực cho ekip quản lý sảnh và bếp trưởng (`/tai-khoan/thiep/{id}/ho-gia-dinh-bep-tiec/in`).
+    - Xuất file CSV UTF-8 BOM chuẩn tiếng Việt có dấu (`/tai-khoan/thiep/{id}/ho-gia-dinh-bep-tiec/xuat-csv`).
+  - Ghi nhận nhật ký kiểm toán hành chính: `AuditLogger::log('KITCHEN_BRIEF_PRINTED', ...)` và `AuditLogger::log('KITCHEN_BRIEF_EXPORTED', ...)`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/HouseholdRsvpService.php`:
+    - `computeMetrics`: Tính toán ma trận số liệu khách mời, phân loại hộ gia đình, phân loại hai bên gia đình (Nhà trai / Nhà gái), thống kê suất ăn chay/trẻ em và số bàn tiệc cần chuẩn bị.
+    - `exportKitchenBriefCsv`: Xuất file CSV UTF-8 BOM bảng kê suất ăn theo từng bàn tiệc cụ thể.
+  - `app/Http/Controllers/Client/HouseholdRsvpController.php`:
+    - `index`: Màn hình giao diện phân tích hộ gia đình và ẩm thực (`account.household.index`).
+    - `printKitchenBrief`: Màn hình in A4 dành riêng cho Bếp Trưởng và Quản lý nhà hàng (`account.household.print`).
+    - `exportKitchenCsv`: Tải tệp CSV UTF-8 BOM bảng kê suất ăn (`account.household.export`).
+  - `resources/views/client/pages/account/household/index.blade.php`:
+    - Giao diện 4 thẻ KPI cốt lõi, biểu đồ phân loại hộ gia đình, phân bổ hai bên gia đình, suất ăn chay và bảng chi tiết khách có yêu cầu ẩm thực đặc biệt.
+  - `resources/views/client/pages/account/household/print.blade.php`:
+    - Bản in A4 Quiet Luxury trang trọng với bảng kê bàn tiệc, số lượng suất ăn người lớn/trẻ em/chay và chữ ký xác nhận của Quản lý sảnh tiệc.
+  - `resources/views/client/pages/guests.blade.php`:
+    - Tích hợp nút bấm "Hộ Gia Đình & Bếp Tiệc" trên thanh công cụ header sổ khách mời.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Tích hợp nút công cụ "Bếp Tiệc & Hộ Gia Đình" trên từng thẻ thiệp cưới.
+  - `routes/web.php`:
+    - Khai báo nhóm routes `account.household.*`.
+  - `tests/Feature/HouseholdRsvpIntelligenceTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: phân quyền khách vãng lai, chặn truy cập trái phép 403, tính toán số liệu chính xác (người lớn, trẻ em, suất chay, bàn tiệc), giao diện báo cáo, in A4 và xuất CSV UTF-8 BOM (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,053 / 1,053 tests PASSED 100%** (5,629 assertions, duration ~30s).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
+
 
 
 

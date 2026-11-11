@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\HouseholdRsvpController;
 use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
@@ -192,6 +193,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/nhan-ban-le-tiec', [CeremonyForkController::class, 'fork'])->name('ceremony.fork');
     Route::get('/thiep/{id}/da-ngon-ngu', [MultilingualInvitationController::class, 'index'])->name('multilingual.index');
     Route::post('/thiep/{id}/da-ngon-ngu', [MultilingualInvitationController::class, 'update'])->name('multilingual.update');
+    Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec', [HouseholdRsvpController::class, 'index'])->name('household.index');
+    Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec/in', [HouseholdRsvpController::class, 'printKitchenBrief'])->name('household.print');
+    Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec/xuat-csv', [HouseholdRsvpController::class, 'exportKitchenCsv'])->name('household.export');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

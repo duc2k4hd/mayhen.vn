@@ -152,6 +152,7 @@ Thumbs.db
 !/tests/Feature/AdminMediaManagementTest.php
 !/tests/Feature/CeremonyForkingTest.php
 !/tests/Feature/MultilingualInvitationTest.php
+!/tests/Feature/HouseholdRsvpIntelligenceTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
