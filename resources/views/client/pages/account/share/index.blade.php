@@ -228,3 +228,4 @@
 @push('scripts')
     <script type="module" src="{{ asset('assets/client/js/pages/share.js') }}?v={{ time() }}"></script>
 @endpush
+

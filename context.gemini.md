@@ -10657,6 +10657,37 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Kiểm thử 6/6 test cases chuyên sâu: phân giải mã BIN ngân hàng, làm sạch chuỗi memo, cấu trúc EMVCo Napas 247 kèm checksum CRC16, xuất SVG/Data URI, endpoint công khai và danh sách ngân hàng (100% PASSED).
 
 
+### 124. Đề Án 124: Trạm Chỉ Huy Kiểm Định Chất Lượng Toàn Diện & Giám Sát Ma Trận Nghiệm Thu (Atelier Quality Assurance & Acceptance Cockpit — Section 62 & 63 PRD V3 & ADM-QA-01)
+- **Mục tiêu**:
+  - Xây dựng trung tâm điều hành giám sát kiểm định chất lượng tự động toàn hệ thống (Automated Acceptance Audit Cockpit) dựa trên Ma Trận Kiểm Thử Tối Thiểu Section 62 & Định Nghĩa Hoàn Thành (Definition of Done) Section 63 PRD V3.
+  - Tự động hóa kiểm tra 20+ chỉ tiêu kỹ thuật then chốt trên 6 nhóm nghiệp vụ:
+    1. `AUTH & SECURITY`: Cơ chế băm mật khẩu Bcrypt an toàn, phân quyền vai trò RBAC, che giấu trường nhạy cảm trong Audit Logger (PII masking: password, secret, token, api_key...).
+    2. `TEMPLATE & ASSETS`: Tỷ lệ tuân thủ khung 10 section tiêu chuẩn, class BEM `mayhen_invitation_*`, 100% tài nguyên cục bộ (zero external CDN), phòng vệ nhúng Studio (`$isEmbed=true`).
+    3. `GUEST CRM & CHECK-IN`: Bảo toàn số 0 đầu danh bạ điện thoại, chống trùng lặp nhập file batch, trạm điểm danh chống quét QR trùng lặp.
+    4. `PAYMENT & VIETQR`: Động cơ sinh mã VietQR Napas 247 thuần PHP, chuẩn TLV quốc tế, CRC16 Checksum, đối soát webhook thanh toán đơn hàng chống cấp quyền lặp lại.
+    5. `SHARE & OPENGRAPH`: Thẻ xem trước OpenGraph động 1200x630 vector SVG cho Zalo/Facebook, sitemap XML và robots.txt crawler health.
+    6. `OPS & RESILIENCE`: Giám sát hàng đợi nền (Queue & Failed Jobs), bộ nhớ lưu trữ và thư viện media reference-count an toàn.
+  - Hệ thống chấm điểm tuân thủ (% Compliance Score) và xếp hạng chất lượng (`A+`, `A`, `B`, `C`) theo thời gian thực.
+  - Nút 1-chạm "Chạy Kiểm Định Tức Thời" kích hoạt đánh giá toàn diện và ghi nhận `AuditLogger` (`SYSTEM_ACCEPTANCE_AUDIT_RUN`).
+  - Xuất Báo Cáo Kiểm Định Nghiệm Thu Hệ Thống định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminAcceptanceAuditService.php`:
+    - `runFullAudit`: Chạy toàn bộ các bước kiểm tra tự động và tổng hợp KPI.
+    - `exportAuditCsv`: Kết xuất báo cáo nghiệm thu CSV UTF-8 BOM.
+  - `app/Http/Controllers/Admin/AdminAcceptanceAuditController.php`:
+    - `index`: Màn hình giao diện Trạm Chỉ Huy Kiểm Định Chất Lượng (`admin.system.acceptance.index`).
+    - `triggerAudit`: Kích hoạt chạy lại kiểm định tức thời (`admin.system.acceptance.run`).
+    - `exportCsv`: Xuất tệp báo cáo CSV (`admin.system.acceptance.export`).
+  - `resources/views/admin/pages/system/acceptance.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh tiến độ, bảng ma trận chi tiết các tiêu chí (mã, nhóm, tiêu chí, trạng thái PASSED/WARNING/CRITICAL, chỉ số thực tế, chi tiết đánh giá).
+  - `resources/views/admin/layouts/master.blade.php`:
+    - Tích hợp liên kết Sidebar "Kiểm Định Chất Lượng" và Command Palette (Ctrl+K) tìm kiếm nhanh `kiem dinh chat luong acceptance qa matrix prd v3`.
+  - `routes/admin.php`:
+    - Khai báo nhóm routes `admin.system.acceptance.*` được bảo vệ bởi middleware `admin.super`.
+  - `tests/Feature/AdminAcceptanceAuditCockpitTest.php`:
+    - Kiểm thử 5/5 test cases chuyên sâu: phân quyền khách, phân quyền nhân sự thường, super admin xem dashboard & ma trận, kích hoạt chạy kiểm tra tức thời kèm audit log, xuất CSV UTF-8 BOM (100% PASSED).
+
+
 ### 125. Đề Án 125: Bộ Công Cụ Chuyên Biệt Nhân Bản Thiệp Cưới Nhà Trai / Nhà Gái & Phân Tách Lễ Vu Quy - Tân Hôn (Dual Ceremony Forking Studio & Groom/Bride Side Customizer — Mục 2.2 DOCX & Mục 25 PRD V3)
 - **Mục tiêu**:
   - Giải quyết triệt để bài toán văn hóa phong tục cưới hỏi truyền thống Việt Nam: đám cưới thường tổ chức tại 2 thời điểm và địa điểm khác nhau (Lễ Vu Quy do Nhà Gái chủ trì, Lễ Thành Hôn / Tân Hôn do Nhà Trai chủ trì, hoặc Tiệc Báo Hỷ cho bạn bè đồng nghiệp phương xa).

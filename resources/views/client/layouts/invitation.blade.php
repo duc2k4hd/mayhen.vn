@@ -7,9 +7,13 @@
         ? $invitation->custom_config 
         : (isset($invitation) ? json_decode((string) ($invitation->custom_config ?? '{}'), true) : []);
     $colorTheme = $invConfig['color_theme'] ?? ($invConfig['curated_layout']['palette'] ?? request()->query('palette', ''));
+    $currentLocale = \App\Services\MultilingualInvitationService::resolveLocale(
+        request()->query('lang', request()->cookie('mayhen_locale')), 
+        $invitation ?? null
+    );
 @endphp
 <!DOCTYPE html>
-<html lang="vi" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting mayhen_crafting_preparing' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}">
+<html lang="{{ $currentLocale }}" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting mayhen_crafting_preparing' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
