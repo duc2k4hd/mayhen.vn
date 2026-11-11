@@ -47,6 +47,7 @@ use App\Http\Controllers\Client\WeddingArchiveExportController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingMediaController;
+use App\Http\Controllers\Client\WeddingMusicController;
 use App\Http\Controllers\Client\WeddingPlannerController;
 use App\Http\Controllers\Client\WeddingRescheduleController;
 use App\Http\Controllers\Client\WishManagementController;
@@ -199,6 +200,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec/xuat-csv', [HouseholdRsvpController::class, 'exportKitchenCsv'])->name('household.export');
     Route::get('/thiep/{id}/thiep-theo-nhom', [SmartGroupInvitationController::class, 'index'])->name('smart_groups.index');
     Route::post('/thiep/{id}/thiep-theo-nhom', [SmartGroupInvitationController::class, 'update'])->name('smart_groups.update');
+    Route::get('/thiep/{id}/am-nhac', [WeddingMusicController::class, 'index'])->name('music.index');
+    Route::post('/thiep/{id}/am-nhac', [WeddingMusicController::class, 'update'])->name('music.update');
+    Route::post('/thiep/{id}/am-nhac/upload', [WeddingMusicController::class, 'upload'])->name('music.upload');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

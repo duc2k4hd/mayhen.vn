@@ -458,6 +458,17 @@
                                 </svg>
                                 <span>Thiệp Theo Nhóm</span>
                             </a>
+
+                            {{-- Nút Âm Nhạc Hôn Lễ (Mục 4.4 DOCX & Đề Án 129) --}}
+                            <a href="{{ route('account.music.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Thư viện nhạc Quiet Luxury, tải nhạc riêng & nút đĩa than nổi">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path>
+                                    <path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path>
+                                </svg>
+                                <span>Âm Nhạc Hôn Lễ</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

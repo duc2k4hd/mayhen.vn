@@ -10840,6 +10840,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 129. Đề Án 129: Hệ Thống Âm Thanh Hôn Lễ Quiet Luxury, Thư Viện Bản Quyền & Nút Nhạc Đĩa Than Nổi (Wedding Background Music Suite, Acoustic Royalty-Free Library & Vinyl Floating Dock — Mục 4.4 DOCX & Section 23 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ âm nhạc hôn lễ hoàn chỉnh chuẩn Quiet Luxury theo Mục 4.4 DOCX & Section 23 PRD V3:
+  - Cung cấp thư viện 8 bản nhạc hòa tấu Quiet Luxury tuyển chọn (Canon in D, River Flows in You, Marry Me, A Thousand Years, Until I Found You, Can't Help Falling in Love, Golden Hour, Beautiful in White) với các phong cách Acoustic, Solo Piano, Cello & Harp, Vintage 1950s Vinyl, String Quartet — 100% không lời, chuẩn bản quyền sử dụng an toàn không bị chặn âm thanh trên Facebook/Zalo/TikTok.
+  - Cho phép cặp đôi tải lên file âm thanh kỷ niệm riêng (MP3, M4A, WAV, AAC, OGG tối đa 15MB) với tiêu đề bài hát và tên ca sĩ tự chọn.
+  - Cấu hình âm lượng (volume 10% - 100%), tính năng lặp lại (Loop), tự động ngắt nhạc nền khi xem video pre-wedding trong thiệp (Pause on Video).
+  - Khắc phục triệt để chính sách Autoplay Policy của trình duyệt hiện đại (iOS Safari, Android Chrome) bằng cơ chế User Gesture: kích hoạt mượt mà khi khách chạm mở bì thư/màn hình mở đầu thiệp cưới kết hợp hiệu ứng Fade-in êm dịu (2.5 giây) tăng dần âm lượng từ 0 lên target volume, tránh gây giật mình cho quan khách.
+  - Thiết kế nút đĩa than tròn xoay nổi (Floating Vinyl Dock) góc trên bên trái màn hình: chuẩn BEM `mayhen_invitation_music_dock`, hoạt họa xoay 33 RPM khi phát nhạc, 3 vạch sóng âm thanh nhảy nhịp nhàng, tooltip tên bài hát lướt nhẹ, 100% Pure Vanilla CSS/JS không dùng thư viện ngoài.
+  - Ghi nhận AuditLogger đa tầng khi cập nhật cấu hình hoặc tải lên tệp âm thanh riêng.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingMusicService.php`:
+    - Mở rộng thêm `getCuratedTracks`: Cung cấp danh mục 8 bản nhạc hòa tấu Quiet Luxury.
+    - `resolveMusicConfig`: Phân giải cấu hình âm nhạc thiệp cưới với đầy đủ fallback an toàn.
+    - `uploadCustomAudio`: Tải lên, xác thực mime type & kích thước file, lưu trữ vào `storage/app/public/invitations/{id}/audio/` và cập nhật config.
+    - `updateMusicSettings`: Lưu cấu hình âm lượng, bài hát, loop, autoplay, floating dock vào `custom_config['music']`.
+  - `app/Http/Controllers/Client/WeddingMusicController.php`:
+    - `index`: Màn hình duyệt thư viện nhạc, nghe thử và thiết lập phát nhạc (`account.music.index`).
+    - `update`: Lưu cấu hình âm nhạc (`account.music.update`).
+    - `upload`: Tải lên tệp âm thanh riêng (`account.music.upload`).
+  - `resources/views/client/components/music-dock.blade.php`:
+    - Component nút đĩa than nổi Quiet Luxury, sóng âm thanh động, bộ bắt sự kiện User Gesture và Fade-in Volume tự động.
+  - `resources/views/client/layouts/invitation.blade.php`:
+    - Tích hợp `@include('client.components.music-dock')`.
+  - `resources/views/client/pages/account/music/index.blade.php`:
+    - Giao diện quản trị âm nhạc hôn lễ dành cho cặp đôi, hỗ trợ nghe thử bài hát, thanh trượt volume trực quan và form tải tệp riêng.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Âm Nhạc Hôn Lễ".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.music.*`.
+  - `tests/Feature/WeddingMusicSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: truy cập màn hình quản trị, chặn truy cập trái phép 403, cập nhật cấu hình âm nhạc, tải lên tệp âm thanh riêng, chặn tệp tin độc hại, render floating dock component, fallback an toàn khi rỗng (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,066 / 1,066 tests PASSED 100%** (5,685 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 
