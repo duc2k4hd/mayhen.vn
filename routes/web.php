@@ -408,6 +408,7 @@ Route::post('/lien-he', [PageController::class, 'submitContact'])->middleware('t
 Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/trang/{slug}', [PageController::class, 'showPage'])->name('page.show');
 
 // Đăng Ký Đối Tác Studio & Wedding Planner (Public)
 Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');

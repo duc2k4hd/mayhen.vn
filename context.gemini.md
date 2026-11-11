@@ -8642,3 +8642,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   6. **Tổng kết chất lượng mã nguồn**:
      - Toàn bộ suite 5 test files đề án gần nhất: **31/31 tests PASSED 100% (110 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 82. ĐỀ ÁN 82: PHÂN HỆ QUẢN TRỊ TRANG NỘI DUNG TĨNH & PHÁP LÝ (ADMIN STATIC PAGES & LEGAL CMS — MỤC 7.12 DOCX & PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 7.12 trong tài liệu gốc DOCX ("7.12. Admin Pages: Quản lý các trang nội dung tĩnh phù hợp. Không cố biến mọi layout của website thành một page builder phức tạp.") và quy chuẩn bảng `cms_pages` trong PRD V3:
+  1. *Cơ Sở Dữ Liệu (`cms_pages` Table)*:
+     - Bảng `cms_pages`: `id`, `slug` (unique), `title`, `lead_summary` (nullable), `content` (longText), `is_system` (boolean, trang cốt lõi không cho phép xóa), `is_published` (boolean, default true), `published_at` (nullable datetime), `meta_title`, `meta_description`, `meta_keywords`, `updated_by` (foreign to users, nullable), `timestamps`.
+  2. *Bộ Khởi Tạo Mẫu Trang Cốt Lõi (CmsPageSeeder)*:
+     - `dieu-khoan-dich-vu` (Điều Khoản Dịch Vụ — `is_system = true`).
+     - `chinh-sach-bao-mat` (Chính Sách Bảo Mật Dữ Liệu Cá Nhân theo Luật 91/2025/QH15 — `is_system = true`).
+     - `ve-chung-toi` (Về Mây Hẹn — Câu Chuyện Thương Hiệu & Triết Lý Quiet Luxury — `is_system = true`).
+  3. *Phân hệ Quản trị Trang Nội dung (Admin Pages Desk)*:
+     - Quản lý danh sách các trang nội dung tĩnh hệ thống và tùy chỉnh với thống kê KPI (Tổng trang, Trang hệ thống, Trang tùy chỉnh, Đang Live).
+     - Phân biệt rõ ràng trang cốt lõi hệ thống (`is_system`) với badge màu vàng và cơ chế bảo vệ bất biến (không cho phép xóa trang hệ thống để tránh lỗi điều hướng toàn trang).
+     - Soạn thảo và chỉnh sửa trang với giao diện tinh giản, trường tiêu đề, slug cố định cho trang hệ thống, lead summary, nội dung HTML (hỗ trợ các thẻ ngữ nghĩa h2, p, ul, blockquote) và cấu hình SEO độc lập.
+     - Tạo thêm trang chính sách tùy chỉnh mới (ví dụ: Quy chế giải quyết khiếu nại, Chính sách hoàn tiền...).
+     - Tích hợp kiểm toán bất biến qua `AuditLogger::log()` với các sự kiện `PAGE_CREATED`, `PAGE_UPDATED`, `PAGE_DELETED`.
+     - **Tuân thủ quy chuẩn Tiêu Đề Admin**: `@section('title', 'Quản Lý Trang Nội Dung Tĩnh')`, `@section('title', 'Chỉnh Sửa Trang: ' . $page->title)`, `@section('title', 'Tạo Trang Nội Dung Mới')` (không có hậu tố thừa).
+  4. *Tích Hợp Phía Khách Hàng (Client Pages Integration)*:
+     - Cập nhật [`app/Http/Controllers/Client/PageController.php`](file:///e:/Project/Laravel/mayhen.vn/app/Http/Controllers/Client/PageController.php): Các trang `terms` (`/dieu-khoan-dich-vu`) và `privacy` (`/chinh-sach-bao-mat`) tự động nạp nội dung từ `CmsPage` khi có bản ghi xuất bản, đồng thời có cơ chế fallback mượt mà nếu chưa cấu hình.
+     - Hỗ trợ định tuyến động `/trang/{slug}` (`page.show`) phục vụ hiển thị các trang chính sách/thông tin bổ sung mới tạo từ Admin.
+     - View hiển thị [`resources/views/client/pages/custom-page.blade.php`](file:///e:/Project/Laravel/mayhen.vn/resources/views/client/pages/custom-page.blade.php) chuẩn Quiet Luxury tối giản, typography dễ đọc trên di động.
+  5. *Tích Hợp Điều Hướng Hệ Thống*:
+     - Bổ sung menu `Trang Nội Dung Tĩnh` vào Sidebar Quản trị Admin [`resources/views/admin/layouts/master.blade.php`](file:///e:/Project/Laravel/mayhen.vn/resources/views/admin/layouts/master.blade.php).
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Seed**:
+     - `database/migrations/2026_11_11_095322_create_cms_pages_table.php`
+     - `database/seeders/CmsPageSeeder.php`
+  2. **Model**:
+     - `app/Models/CmsPage.php`
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/CmsPageController.php`
+     - `app/Http/Controllers/Client/PageController.php` (terms, privacy, showPage)
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)): `admin.pages.index`, `admin.pages.create`, `admin.pages.store`, `admin.pages.edit`, `admin.pages.update`, `admin.pages.destroy`, `admin.pages.toggle_publish`.
+     - Routes ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)): `terms`, `privacy`, `page.show`.
+  4. **Giao diện**:
+     - Admin: `resources/views/admin/pages/cms_pages/index.blade.php`, `create.blade.php`, `edit.blade.php`.
+     - Client: `resources/views/client/pages/terms.blade.php`, `privacy.blade.php`, `custom-page.blade.php`.
+  5. **Kiểm thử tự động ([tests/Feature/AdminStaticPagesManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminStaticPagesManagementTest.php))**:
+     - 8 kịch bản kiểm thử: Admin xem danh sách trang tĩnh hệ thống, cập nhật trang hệ thống thành công giữ nguyên slug an toàn, tạo trang tùy chỉnh mới, chặn xóa trang cốt lõi hệ thống, cho phép xóa trang tùy chỉnh, khách truy cập `/dieu-khoan-dich-vu` và `/chinh-sach-bao-mat` thấy nội dung cập nhật, khách xem trang tùy chỉnh qua `/trang/{slug}`, chặn người dùng thường truy cập admin pages.
+     - Kết quả: **8/8 tests PASSED 100% (26 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 5 test files liên quan gần đây: **33/33 tests PASSED 100% (108 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

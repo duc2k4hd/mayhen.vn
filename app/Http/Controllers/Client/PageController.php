@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\CmsPage;
 use App\Models\Contact;
 use App\Models\Plan;
 use App\Services\AuditLogger;
@@ -133,11 +134,22 @@ class PageController extends Controller
 
     public function terms(): View
     {
-        return view('client.pages.terms');
+        $page = CmsPage::where('slug', 'dieu-khoan-dich-vu')->published()->first();
+
+        return view('client.pages.terms', compact('page'));
     }
 
     public function privacy(): View
     {
-        return view('client.pages.privacy');
+        $page = CmsPage::where('slug', 'chinh-sach-bao-mat')->published()->first();
+
+        return view('client.pages.privacy', compact('page'));
+    }
+
+    public function showPage(string $slug): View
+    {
+        $page = CmsPage::where('slug', $slug)->published()->firstOrFail();
+
+        return view('client.pages.custom-page', compact('page'));
     }
 }

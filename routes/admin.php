@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
+use App\Http\Controllers\Admin\CmsPageController as AdminCmsPageController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -295,5 +296,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/{id}', [AdminBlogController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{id}', [AdminBlogController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
         Route::post('/{id}/toggle-publish', [AdminBlogController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
+    });
+
+    // Quản Lý Các Trang Nội Dung Tĩnh & Pháp Lý (Mục 7.12 DOCX & PRD V3: Admin Pages & Legal CMS)
+    Route::prefix('pages')->name('pages.')->group(function () {
+        Route::get('/', [AdminCmsPageController::class, 'index'])->name('index');
+        Route::get('/create', [AdminCmsPageController::class, 'create'])->name('create');
+        Route::post('/', [AdminCmsPageController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [AdminCmsPageController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminCmsPageController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::delete('/{id}', [AdminCmsPageController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::post('/{id}/toggle-publish', [AdminCmsPageController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
     });
 });
