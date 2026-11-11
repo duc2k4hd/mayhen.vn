@@ -356,4 +356,3 @@ class AdminGuestbookService
             ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
     }
 }
-

@@ -181,4 +181,3 @@ class AdminGiftController extends Controller
         return $this->ledgerService->exportLedgerCsv($wedding, $request->all());
     }
 }
-

@@ -139,4 +139,3 @@ class AdminKeepsakeController extends Controller
         return $this->keepsakeService->exportWrapUpArchive($wedding);
     }
 }
-

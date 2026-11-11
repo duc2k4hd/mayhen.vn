@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminGiftController;
 use App\Http\Controllers\Admin\AdminGuestbookController;
 use App\Http\Controllers\Admin\AdminGuestImportController;
+use App\Http\Controllers\Admin\AdminGuestPhotoController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
 use App\Http\Controllers\Admin\AdminInvitationRevisionController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
@@ -291,6 +292,17 @@ Route::middleware('admin.auth')->group(function () {
             Route::get('/weddings/{weddingId}/keepsake-print', [AdminGuestbookController::class, 'exportHtml'])->name('keepsake_print');
             Route::get('/weddings/{weddingId}/export-csv', [AdminGuestbookController::class, 'export'])->name('export');
         });
+    });
+
+    // Phân Hệ Quản Trị Khoảnh Khắc Khách Gửi & Kiểm Duyệt Tường Ảnh (Mục 217, 218 PRD V3 & ADM-GPH-01)
+    Route::prefix('guest-photos')->name('guest_photos.')->group(function () {
+        Route::get('/', [AdminGuestPhotoController::class, 'index'])->name('index');
+        Route::get('/slideshow', [AdminGuestPhotoController::class, 'slideshow'])->name('slideshow');
+        Route::post('/{id}/toggle-approval', [AdminGuestPhotoController::class, 'toggleApproval'])->name('toggle_approval');
+        Route::post('/batch-approve', [AdminGuestPhotoController::class, 'batchApprove'])->name('batch_approve');
+        Route::delete('/{id}', [AdminGuestPhotoController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::post('/batch-delete', [AdminGuestPhotoController::class, 'batchDelete'])->middleware('admin.manager')->name('batch_delete');
+        Route::get('/export-csv', [AdminGuestPhotoController::class, 'export'])->name('export');
     });
 
     // Phân Hệ Quản Trị Sổ Mừng Cưới & Quản Lý Quà Mừng (Mục 35 PRD V3 & ADM-GFT-01)

@@ -96,4 +96,3 @@ class AdminRescheduleController extends Controller
         return $this->rescheduleService->exportRescheduleLogsCsv($request->all());
     }
 }
-

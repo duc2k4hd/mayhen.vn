@@ -10493,3 +10493,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `routes/admin.php`: Đăng ký nhóm routes `admin.paper_scans.*`.
   - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Quét Thiệp Giấy OCR" ngay sau "Chẩn Đoán Lỗi Ảnh" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
   - `tests/Feature/AdminPaperScanTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng lọc, xem chi tiết qua JSON, hiệu đính dữ liệu, áp dụng vào Wedding hiện có, tự động tạo mới Wedding, xóa bản ghi và xuất CSV (100% PASSED).
+
+
+### 119. Đề Án 119: Phân Hệ Quản Trị Thư Viện Khoảnh Khắc Khách Gửi, Tường Ảnh Trực Tiếp & Kiểm Duyệt Tương Tác Ngày Cưới (Live Wedding Guest Photo Stream, Crowd-sourced Gallery & Photo Moderation Cockpit — Mục 217, 218 PRD V3 & ADM-GPH-01)
+- **Mục tiêu**:
+  - Xây dựng trạm kiểm duyệt tập trung các khoảnh khắc, hình ảnh do quan khách dự tiệc cưới tải lên qua thiệp cưới số hoặc mã QR sảnh tiệc theo Mục 217 và 218 PRD V3.
+  - Kiểm duyệt hiển thị an toàn: Quản trị viên duyệt từng ảnh hoặc duyệt hàng loạt trước khi cho phép ảnh xuất hiện trên Tường Ảnh Live hoặc màn hình trình chiếu LED sảnh tiệc.
+  - Trình chiếu Live Slideshow Fullscreen: Màn hình trình chiếu chuyên dụng độc lập Cinema Dark Mode cho máy chiếu/màn LED tiệc cưới với hiệu ứng chuyển ảnh mượt mà, hiển thị tên khách gửi & lời chúc, tự động chuyển ảnh mỗi 5 giây, hỗ trợ bàn phím điều hướng và tự động làm mới để đón nhận ảnh vừa duyệt.
+  - Quản lý tệp & dung lượng lưu trữ: Theo dõi dung lượng ảnh (MB), xóa ảnh vĩnh viễn và tự động xóa tệp vật lý tương ứng trên đĩa `storage`.
+  - Xuất báo cáo danh sách ảnh khách gửi định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminGuestPhotoService.php`:
+    - Thống kê 4 KPI: Tổng khoảnh khắc tải lên, số ảnh đang chờ kiểm duyệt, số ảnh đã duyệt công khai, tổng dung lượng ảnh lưu trữ (MB).
+    - Bộ lọc đa chiều: Từ khóa tìm kiếm (tên người gửi, chú thích, IP, tên tiệc cưới), lọc theo tiệc cưới cụ thể, lọc theo trạng thái duyệt (`pending`, `approved`, `all`).
+    - Nghiệp vụ: `toggleApproval` (đổi trạng thái duyệt 1-chạm), `batchApprove` (duyệt hàng loạt), `deletePhoto` (xóa bản ghi và xóa file vật lý trên disk public), `batchDelete` (xóa hàng loạt), `getSlideshowPhotos` (lấy danh sách ảnh đã duyệt cho slideshow), `exportPhotosCsv` (xuất CSV UTF-8 BOM).
+  - `app/Http/Controllers/Admin/AdminGuestPhotoController.php`:
+    - Xử lý các endpoint: `index`, `toggleApproval`, `batchApprove`, `destroy`, `batchDelete`, `slideshow`, `export`.
+  - `resources/views/admin/pages/guest_photos/index.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh lọc, thanh Batch Action Bar chọn nhiều ảnh, lưới thẻ ảnh trực quan với thumbnail, thông tin người gửi, IP, dung lượng, chú thích và nút thao tác duyệt/hủy duyệt/xóa/phóng to.
+    - Modal Lightbox thuần CSS/JS phóng to ảnh sắc nét.
+  - `resources/views/admin/pages/guest_photos/slideshow.blade.php`:
+    - Giao diện Cinema Dark Mode toàn màn hình phục vụ máy chiếu/màn hình LED sảnh tiệc đám cưới. Hiệu ứng làm mờ nền (blur background), fade mượt mà, thanh điều khiển nổi tự động ẩn sau 3.5 giây, tự động chuyển ảnh mỗi 5s và tự động tải lại mỗi 60s để nạp ảnh mới duyệt.
+  - `routes/admin.php`: Đăng ký nhóm routes `admin.guest_photos.*`.
+  - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Ảnh Khách Gửi & Live LED" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
+  - `tests/Feature/AdminGuestPhotoTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện quyền hạn truy cập, lọc trạng thái, toggle duyệt, batch approve, xóa tệp vật lý, batch delete, hiển thị slideshow và xuất CSV UTF-8 BOM (100% PASSED).
+

@@ -190,6 +190,17 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.guest_photos.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guest_photos.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </span>
+                    <span>Ảnh Khách Gửi & Live LED</span>
+                </a>
+
                 <a href="{{ route('admin.gifts.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.gifts.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -915,6 +926,10 @@
                 <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_cmd_item" data-search="lời chúc sổ lưu bút guestbook kiểm duyệt">
                     <span>✍️ Kiểm Duyệt Lời Chúc Mừng</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/wishes</span>
+                </a>
+                <a href="{{ route('admin.guest_photos.index') }}" class="mayhen_admin_cmd_item" data-search="ảnh khách gửi khoảnh khắc live slideshow tường ảnh photo gallery led tiệc cưới guest photos">
+                    <span>📸 Ảnh Khách Gửi & Trình Chiếu Live LED</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/guest-photos</span>
                 </a>
                 <a href="{{ route('admin.wishes.rsvps') }}" class="mayhen_admin_cmd_item" data-search="rsvp khách mời xác nhận tham dự attendance">
                     <span>📋 Giám Sát Phản Hồi RSVP</span>
