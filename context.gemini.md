@@ -11097,6 +11097,51 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 136. Đề Án 136: Phân Hệ Dự Báo Thời Tiết Ngày Cưới, Hướng Dẫn Bãi Đỗ Xe & Điều Hướng Bản Đồ Đa Ứng Dụng (Wedding Location Advisory, Multi-App Navigation, Parking & Weather Forecast Suite — IDEA-A02, Section 6 Invitation Standards & Section 30 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ chỉ dẫn địa điểm, điều hướng bản đồ đa nền tảng, sơ đồ đỗ xe và dự báo thời tiết ngày cưới chuyên sâu theo IDEA-A02, Section 6 Invitation Standards và Section 30 PRD V3:
+  - Cung cấp **6 Trạng Thái Thời Tiết Điển Hình Hôn Lễ Tại Việt Nam (Weather Conditions)**:
+    1. *Nắng Ấm & Trời Quang Đãng* (28°C - `sunny_clear`): Tiết trời nắng rực rỡ, lý tưởng cho tiệc cưới ngoài trời và chụp ảnh hoàng hôn.
+    2. *Gió Mát Thu & Dịu Nhẹ* (24°C - `breezy_cool`): Gió thu thanh mát dễ chịu, khách mời diện dạ tiệc thanh lịch và di chuyển thong thả.
+    3. *Se Lạnh Lãng Mạn (Mùa Đông / Cao Nguyên)* (18°C - `romantic_chill`): Nhiệt độ se lạnh về tối, gợi ý áo khoác nhẹ hoặc khăn choàng ấm.
+    4. *Hoàng Hôn Nắng Vàng (Golden Hour)* (27°C - `sunset_golden`): Thời khắc hoàng hôn rực rỡ, gió chiều mát rượi và ngập tràn cảm xúc.
+    5. *Gió Biển Nghỉ Dưỡng Mát Lành* (26°C - `coastal_breeze`): Gió biển trong lành, gợi ý chất liệu lụa/linen nhẹ mát và giày đế thấp.
+    6. *Mưa Bay Lãng Mạn / Có Mái Che Lụa* (23°C - `light_drizzle`): Mưa lất phất may mắn, ban tổ chức chuẩn bị ô che trong suốt và lối đi mái vòm lụa.
+  - Tích hợp **Điều Hướng Bản Đồ Đa Nền Tảng (Multi-App Navigation)**:
+    - *Google Maps*: Mở chỉ đường bằng URL tùy chỉnh hoặc truy vấn tọa độ GPS `latitude,longitude` chính xác từng mét.
+    - *Apple Maps*: Mở điều hướng tự nhiên trên iOS/macOS bằng Apple Maps protocol kèm tọa độ `ll=lat,lng&q=venue_name`.
+    - *Grab Deeplink*: Tích hợp liên kết mở ứng dụng Grab đặt xe công nghệ đưa thẳng tới cổng sảnh cưới với điểm đến định sẵn `drop_off_latitude,drop_off_longitude`.
+    - *Hotline Taxi Mai Linh & Vinasun*: Nút một chạm gọi taxi truyền thống (`tel:1055` và `tel:02838272727`) tiện lợi cho khách lớn tuổi.
+  - Sơ đồ hướng dẫn bãi đỗ xe chi tiết 3 tầng phân loại: Bãi đỗ xe ô tô (hầm sảnh tiệc, vé miễn phí), Bãi đỗ xe máy (có bảo vệ 24/7) và Lối tiếp cận ưu tiên cho người lớn tuổi, xe lăn, trẻ em.
+  - Hotline điều phối lễ tân tiếp đón tại sảnh và tên người phụ trách hướng dẫn.
+  - Component Section 6 chuẩn hóa `resources/views/client/components/wedding-location-advisory.blade.php`: Header Quiet Luxury, thẻ sảnh tiệc tráng lệ, 4 nút điều hướng đa nền tảng, widget thời tiết nhiệt độ thực tế và lưới 3 cột thông tin bãi đỗ xe.
+  - Tự động đồng bộ hai chiều vào `custom_config['location_advisory']` và bảng `weddings` (`venue_name`, `venue_address`).
+  - Ghi nhận AuditLogger `LOCATION_ADVISORY_UPDATED`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingLocationAdvisoryService.php`:
+    - `getPresetWeatherConditions`: 6 trạng thái thời tiết hôn lễ điển hình.
+    - `getDefaultConfig` & `resolveAdvisoryConfig`: Phân giải cấu hình chỉ dẫn địa điểm, bãi xe và thời tiết với fallback an toàn.
+    - `updateAdvisoryConfig`: Cập nhật cấu hình, đồng bộ vào bảng weddings và ghi nhận audit log.
+    - `generateNavigationLinks`: Sinh các đường dẫn điều hướng cho Google Maps, Apple Maps, Grab deeplink và hotline taxi.
+  - `app/Http/Controllers/Client/WeddingLocationAdvisoryController.php`:
+    - `index`: Màn hình Studio quản trị Bản đồ & Thời tiết (`account.location_advisory.index`).
+    - `update`: Cập nhật cấu hình toạ độ GPS, bãi đỗ xe và thời tiết (`account.location_advisory.update`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp cưới an toàn.
+  - `resources/views/client/components/wedding-location-advisory.blade.php`:
+    - Component hiển thị Section 6 chuẩn BEM `mayhen_invitation_location_advisory` với 4 nút điều hướng, widget thời tiết và thẻ bãi đỗ xe.
+  - `resources/views/client/pages/account/location_advisory/index.blade.php`:
+    - Giao diện Studio quản trị Bản đồ & Thời tiết Quiet Luxury, chọn preset thời tiết 1-click, thiết lập toạ độ GPS, hotline lễ tân và xem trước trực quan.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Bản Đồ & Thời Tiết".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.location_advisory.*`.
+  - `tests/Feature/WeddingLocationAdvisorySuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập trái phép 403, mở màn hình Studio, cập nhật toạ độ GPS và bãi xe thành công, validate dữ liệu bắt buộc và phạm vi toạ độ, sinh chính xác link Google/Apple/Grab/Taxi, render component đầy đủ các nút và ẩn khi disabled (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,113 / 1,113 tests PASSED 100%** (5,953 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

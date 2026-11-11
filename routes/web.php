@@ -50,6 +50,7 @@ use App\Http\Controllers\Client\WeddingBroadcastController;
 use App\Http\Controllers\Client\WeddingDresscodeController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
+use App\Http\Controllers\Client\WeddingLocationAdvisoryController;
 use App\Http\Controllers\Client\WeddingMediaController;
 use App\Http\Controllers\Client\WeddingMusicController;
 use App\Http\Controllers\Client\WeddingPlannerController;
@@ -228,6 +229,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/lich-trinh-ngay-cuoi', [WeddingTimelineController::class, 'index'])->name('timeline.index');
     Route::post('/thiep/{id}/lich-trinh-ngay-cuoi', [WeddingTimelineController::class, 'update'])->name('timeline.update');
     Route::get('/thiep/{id}/lich-trinh-ngay-cuoi/tai-ics', [WeddingTimelineController::class, 'downloadIcs'])->name('timeline.download_ics');
+    Route::get('/thiep/{id}/ban-do-thoi-tiet', [WeddingLocationAdvisoryController::class, 'index'])->name('location_advisory.index');
+    Route::post('/thiep/{id}/ban-do-thoi-tiet', [WeddingLocationAdvisoryController::class, 'update'])->name('location_advisory.update');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

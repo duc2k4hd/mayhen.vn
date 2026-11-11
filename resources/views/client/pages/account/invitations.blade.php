@@ -524,6 +524,15 @@
                                 </svg>
                                 <span>Lịch Trình Hôn Lễ</span>
                             </a>
+
+                            {{-- Nút Bản Đồ & Thời Tiết (Section 30 PRD V3 & Đề Án 136) --}}
+                            <a href="{{ route('account.location_advisory.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý định vị GPS, hướng dẫn bãi đỗ xe và dự báo thời tiết ngày cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Bản Đồ &amp; Thời Tiết</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
