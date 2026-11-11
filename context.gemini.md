@@ -10446,3 +10446,28 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `routes/admin.php`: Đăng ký nhóm routes `admin.reschedule.*`.
   - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Dời Lịch & Tái Xác Nhận" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
   - `tests/Feature/AdminRescheduleTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện nghiệp vụ đổi ngày, chính sách RSVP, tính toán khách ảnh hưởng, phát thông báo đính chính và xuất CSV (100% PASSED).
+
+
+### 117. Đề Án 117: Phân Hệ Chẩn Đoán Lỗi Ảnh Thiệp, Giám Sát Tài Nguyên Mất Kết Nối & Trạm Phục Hồi Asset Thiệp Cưới (Wedding Invitation Asset Diagnostics, Missing Media Scanner & Recovery Cockpit — Mục 60 PRD V3, Luồng F & ADM-AST-01)
+- **Mục tiêu**:
+  - Xây dựng trạm chẩn đoán và khắc phục sự cố tài nguyên hình ảnh thiệp cưới trực tuyến theo chuẩn mực Luồng F (Mục 60 PRD V3).
+  - Tự động quét phát hiện các lỗi phổ biến gây vỡ hình trong ngày trọng đại: File vật lý trên ổ lưu trữ biến mất (`missing_local_file`), URL máy chủ ngoại vi bị cấm theo chuẩn 100% Local Assets (`external_untrusted` như ladicdn, unsplash, 27biggroup, iili.io), thiếu ảnh đại diện bắt buộc (`missing_required`).
+  - Trạm phục hồi tài nguyên 1-chạm (Asset Recovery Cockpit):
+    * Gán ảnh fallback chuẩn mẫu từ template đã kiểm định (`applyFallbackAsset`).
+    * Tự động tải về và nội địa hóa tài nguyên ngoại vi (`localizeExternalAsset`) lưu vào storage cục bộ `storage/app/public/invitations/{id}/...`.
+    * Phục hồi tự động hàng loạt toàn bộ lỗi asset của thiệp cưới (`batchRepairInvitation`).
+  - Xuất báo cáo chẩn đoán lỗi tài nguyên định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminAssetDiagnosticsService.php`:
+    - Thống kê 4 KPI: Tổng số thiệp toàn hệ thống, số vấn đề phát hiện trên trang, số lỗi nghiêm trọng (mất ảnh bìa/cặp đôi), số link ngoại vi cần nội địa hóa.
+    - Bộ lọc theo từ khóa (tên thiệp, slug, cặp đôi) và mẫu template.
+    - Phương thức `inspectInvitationAssets`: Trích xuất toàn bộ URL media (ảnh bìa, ảnh chú rể, ảnh cô dâu, nhạc nền, mã VietQR, album 10 ảnh), phân loại mức độ nghiêm trọng (`critical` vs `warning`), tính điểm sức khỏe tài nguyên (`health_score` %).
+    - Các phương thức phục hồi: `applyFallbackAsset`, `localizeExternalAsset`, `batchRepairInvitation`, `exportDiagnosticsCsv`.
+  - `app/Http/Controllers/Admin/AdminAssetDiagnosticsController.php`:
+    - Xử lý các endpoint: `index`, `scanSingle`, `applyFallback`, `localizeAsset`, `batchRepair`, `export`.
+  - `resources/views/admin/pages/assets/diagnostics.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI, thanh lọc, bảng danh sách thiệp kèm thanh tiến độ điểm sức khỏe tài nguyên trực quan.
+    - Modal chẩn đoán chi tiết với preview đường dẫn lỗi, nút 1-chạm "Gán Ảnh Fallback Mẫu" và "Tải Về Lưu Cục Bộ (Localize)" không cần tải lại trang.
+  - `routes/admin.php`: Đăng ký nhóm routes `admin.assets.diagnostics.*`.
+  - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Chẩn Đoán Lỗi Ảnh" ngay sau "Thư Viện Media" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
+  - `tests/Feature/AdminAssetDiagnosticsTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng quét chẩn đoán, phát hiện missing file, phát hiện link ngoài, gán fallback, localize asset và xuất CSV (100% PASSED).

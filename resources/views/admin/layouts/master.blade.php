@@ -154,6 +154,17 @@
                     <span>Thư Viện Media</span>
                 </a>
 
+                <a href="{{ route('admin.assets.diagnostics.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.assets.diagnostics*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </span>
+                    <span>Chẩn Đoán Lỗi Ảnh</span>
+                </a>
+
                 <a href="{{ route('admin.wishes.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.wishes.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -851,6 +862,10 @@
                 <a href="{{ route('admin.media.index') }}" class="mayhen_admin_cmd_item" data-search="thư viện phương tiện media ảnh nhạc mp3 dọn dẹp file mồ côi storage">
                     <span>🖼️ Thư Viện Media & Dọn Dẹp File Mồ Côi</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/media</span>
+                </a>
+                <a href="{{ route('admin.assets.diagnostics.index') }}" class="mayhen_admin_cmd_item" data-search="chẩn đoán lỗi ảnh mất ảnh vỡ hình phục hồi fallback localize missing media asset diagnostics 404 luồng f">
+                    <span>🔍 Chẩn Đoán Lỗi Ảnh & Phục Hồi Asset</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/assets/diagnostics</span>
                 </a>
                 <a href="{{ route('admin.orders.index') }}" class="mayhen_admin_cmd_item" data-search="đơn hàng doanh thu thanh toán sepay vietqr orders">
                     <span>💰 Đơn Hàng & Doanh Thu</span>

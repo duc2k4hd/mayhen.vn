@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
+use App\Http\Controllers\Admin\AdminAssetDiagnosticsController;
 use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminCannedResponseController;
 use App\Http\Controllers\Admin\AdminCheckInController;
@@ -126,6 +127,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/destroy', [AdminMediaController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
         Route::get('/orphans', [AdminMediaController::class, 'orphans'])->name('orphans');
         Route::post('/purge-orphans', [AdminMediaController::class, 'purgeOrphans'])->middleware('admin.manager')->name('purge_orphans');
+    });
+
+    // Phân Hệ Chẩn Đoán Lỗi Ảnh Thiệp & Phục Hồi Tài Nguyên (Mục 60 PRD V3, Luồng F & ADM-AST-01)
+    Route::prefix('assets/diagnostics')->name('assets.diagnostics.')->group(function () {
+        Route::get('/', [AdminAssetDiagnosticsController::class, 'index'])->name('index');
+        Route::get('/scan/{id}', [AdminAssetDiagnosticsController::class, 'scanSingle'])->name('scan');
+        Route::post('/{id}/apply-fallback', [AdminAssetDiagnosticsController::class, 'applyFallback'])->middleware('admin.manager')->name('apply_fallback');
+        Route::post('/{id}/localize', [AdminAssetDiagnosticsController::class, 'localizeAsset'])->middleware('admin.manager')->name('localize');
+        Route::post('/{id}/batch-repair', [AdminAssetDiagnosticsController::class, 'batchRepair'])->middleware('admin.manager')->name('batch_repair');
+        Route::get('/export-csv', [AdminAssetDiagnosticsController::class, 'export'])->name('export');
     });
 
     // Phân Hệ Quản Trị Sổ Hoàn Tiền, Khiếu Nại & Tranh Chấp Thanh Toán (Mục 140 PRD V3 & Mục 9.3 DOCX)
