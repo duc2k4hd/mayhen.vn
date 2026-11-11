@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
+use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
@@ -125,6 +126,18 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/archive', [AdminInvitationRenewalController::class, 'archive'])->middleware('admin.manager')->name('archive');
         Route::post('/{id}/unarchive', [AdminInvitationRenewalController::class, 'unarchive'])->middleware('admin.manager')->name('unarchive');
         Route::get('/export-csv', [AdminInvitationRenewalController::class, 'export'])->name('export');
+    });
+
+    // Phân Hệ Quản Trị Hóa Đơn Điện Tử, Phiếu Thu VAT & Yêu Cầu Chứng Từ (Mục 141 PRD V3 & Mục 9.4 DOCX)
+    Route::prefix('invoices')->name('invoices.')->group(function () {
+        Route::get('/', [AdminInvoiceController::class, 'index'])->name('index');
+        Route::get('/create', [AdminInvoiceController::class, 'create'])->name('create');
+        Route::post('/', [AdminInvoiceController::class, 'store'])->middleware('admin.manager')->name('store');
+        Route::get('/export-csv', [AdminInvoiceController::class, 'export'])->name('export');
+        Route::get('/{id}', [AdminInvoiceController::class, 'show'])->name('show');
+        Route::get('/{id}/print', [AdminInvoiceController::class, 'print'])->name('print');
+        Route::post('/{id}/issue', [AdminInvoiceController::class, 'issue'])->middleware('admin.manager')->name('issue');
+        Route::post('/{id}/cancel', [AdminInvoiceController::class, 'cancel'])->middleware('admin.manager')->name('cancel');
     });
 
     // Quản lý Người dùng & Phân quyền

@@ -9477,3 +9477,70 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 12 test files admin gần nhất: **104/104 tests PASSED 100% (466 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+### 97. ĐỀ ÁN 97: PHÂN HỆ QUẢN TRỊ HÓA ĐƠN ĐIỆN TỬ, PHIẾU THU VAT & YÊU CẦU CHỨNG TỪ TÀI CHÍNH (INVOICING, VAT E-RECEIPT & FINANCIAL BILLING COCKPIT — MỤC 141 PRD V3 & MỤC 9.4 DOCX)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai phân hệ quản trị hóa đơn điện tử và phiếu thu VAT (Billing Cockpit) cho Ban Tài Chính / Quản Trị Viên theo chuẩn **Mục 141 Master PRD V3 (DOANH THU -> Hóa đơn) & Mục 9.4 Master Prompt DOCX**.
+  - **Nghiệp Vụ Hóa Đơn & Chứng Từ Tài Chính**:
+    1. *Quản Lý Thông Tin Xuất Hóa Đơn Doanh Nghiệp*: Lưu trữ đầy đủ Tên đơn vị / công ty, Mã số thuế (MST), Địa chỉ xuất hóa đơn, Email nhận hóa đơn điện tử khi thanh toán gói dịch vụ thiệp cưới.
+    2. *Sinh Số Hóa Đơn Chuẩn Quy Tắc (`MH-{Y}-{00001}`)*: Tự động cấp số hóa đơn điện tử tăng dần theo năm khi kế toán duyệt phát hành (Issue Invoice).
+    3. *Bóc Tách Thuế Suất VAT Chuẩn Xác*: Tự động tính toán số tiền trước thuế (`subtotal_amount`), tiền thuế VAT (`vat_amount` theo thuế suất 8%, 10% hoặc 0%) và tổng thanh toán (`total_amount`).
+    4. *Xuất & In Phiếu Thu Chuẩn A4 (Printable E-Invoice)*: Giao diện phiếu thu / hóa đơn điện tử Quiet Luxury chuẩn khổ in A4 kèm dấu mộc xác thực điện tử Mây Hẹn Atelier, mã đơn hàng, ngày giờ phát hành.
+    5. *Quy Trình Kiểm Soát Trạng Thái Hóa Đơn*: Hỗ trợ duyệt phát hành (`issued`), giữ trạng thái chờ (`pending`) hoặc hủy hóa đơn (`cancelled`) kèm lý do hủy có ghi vết kiểm toán `AuditLogger`.
+    6. *Xuất Báo Cáo Kế Toán CSV (UTF-8 BOM)*: Hỗ trợ xuất dữ liệu hóa đơn đầy đủ các cột phục vụ đối chiếu thuế và sổ sách tài chính.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Database & Migrations**:
+     - `database/migrations/2026_11_11_131335_create_invoices_table.php`:
+       * Bảng `invoices`: `order_id` (foreignId to `orders`), `invoice_number` (unique, nullable), `customer_name`, `customer_email`, `customer_phone`, `company_name`, `tax_id`, `company_address`, `subtotal_amount`, `vat_rate`, `vat_amount`, `total_amount`, `status` (`pending`, `issued`, `cancelled`), `payment_method`, `issued_at`, `notes`, `issued_by`, timestamps, indexes `['status', 'issued_at']`.
+  2. **Models**:
+     - `app/Models/Invoice.php`: Quan hệ `belongsTo(Order::class)`, `belongsTo(User::class, 'issued_by')`, scopes `issued()`, `pending()`, `cancelled()`, accessors định dạng tiền tệ `formatted_total`, `formatted_subtotal`, `formatted_vat`, nhãn trạng thái `status_label` và mã màu Quiet Luxury `status_color`.
+     - `app/Models/Order.php`: Bổ sung quan hệ `invoice(): HasOne`.
+  3. **Services**:
+     - `app/Services/InvoiceManagementService.php`:
+       * `generateInvoiceNumber()`: Tự động sinh số hóa đơn chuẩn `MH-{Y}-{00001}` tăng dần theo năm.
+       * `createInvoiceForOrder()`: Bóc tách tiền trước thuế và thuế VAT, tạo record hóa đơn gắn liền đơn hàng.
+       * `issueInvoice()`: Cấp số hóa đơn chính thức, cập nhật `issued_at`, gửi email thông báo qua `EmailTemplateService` và ghi `AuditLogger::log('INVOICE_ISSUED')`.
+       * `cancelInvoice()`: Hủy hóa đơn kèm lý do và ghi `AuditLogger::log('INVOICE_CANCELLED')`.
+       * `getInvoiceKpis()`: Thống kê 4 thẻ KPI: Tổng số HĐ, Đã phát hành, Chờ xuất HĐ, Doanh thu đã xuất VAT.
+       * `getFilteredInvoices()`: Tìm kiếm theo số HĐ, tên công ty, MST, mã đơn hàng và lọc trạng thái.
+       * `exportCsv()`: Xuất tệp CSV UTF-8 BOM chuẩn kế toán.
+  4. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminInvoiceController.php`:
+       * `index()`: Trình bày 4 thẻ KPI và bảng sổ hóa đơn.
+       * `show()`: Xem chi tiết hóa đơn và đơn vị mua hàng.
+       * `create()` & `store()`: Lập hóa đơn mới cho đơn hàng đã thanh toán.
+       * `issue()`: Phát hành hóa đơn chính thức.
+       * `cancel()`: Hủy hóa đơn.
+       * `print()`: Trang in phiếu thu / HĐĐT Quiet Luxury A4.
+       * `export()`: Tải file CSV.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `invoices`:
+       * `GET /admin/invoices` (`admin.invoices.index`)
+       * `GET /admin/invoices/create` (`admin.invoices.create`)
+       * `POST /admin/invoices` (`admin.invoices.store`)
+       * `GET /admin/invoices/export-csv` (`admin.invoices.export`)
+       * `GET /admin/invoices/{id}` (`admin.invoices.show`)
+       * `GET /admin/invoices/{id}/print` (`admin.invoices.print`)
+       * `POST /admin/invoices/{id}/issue` (`admin.invoices.issue`)
+       * `POST /admin/invoices/{id}/cancel` (`admin.invoices.cancel`)
+  5. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/invoices/index.blade.php`: 4 Thẻ KPI Doanh thu HĐ, thanh tìm kiếm & lọc trạng thái, bảng sổ quản lý hóa đơn.
+     - `resources/views/admin/pages/invoices/show.blade.php`: Chi tiết hóa đơn, thông tin đơn vị mua hàng, bảng kê dịch vụ, các nút thao tác.
+     - `resources/views/admin/pages/invoices/create.blade.php`: Form lập hóa đơn chọn đơn hàng, nhập thông tin xuất HĐ công ty / MST và thuế suất VAT.
+     - `resources/views/admin/pages/invoices/print.blade.php`: Mẫu in phiếu thu / HĐĐT Quiet Luxury khổ A4 chuẩn printable.
+     - Cập nhật Sidebar: Menu "Hóa Đơn & Phiếu Thu VAT" trong Section 3 (Kinh Doanh & Doanh Thu) và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  6. **Kiểm thử tự động ([tests/Feature/AdminInvoiceManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminInvoiceManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai bị redirect về `admin.login`.
+       2. Người dùng `customer` bị redirect về `admin.login`.
+       3. Admin truy cập thành công màn hình Billing Cockpit và thấy 4 thẻ KPI.
+       4. Lập hóa đơn cho đơn hàng bóc tách chính xác tiền trước thuế và thuế VAT 8%.
+       5. Ngăn chặn tạo hóa đơn trùng lặp cho cùng một đơn hàng.
+       6. Phát hành hóa đơn cấp số chuẩn `MH-{Y}-{00001}` tăng dần và ghi audit log.
+       7. Hủy hóa đơn cập nhật `status = cancelled` và ghi nhận lý do kiểm toán.
+       8. Lọc hóa đơn theo từ khóa MST, tên công ty và trạng thái trả kết quả đúng.
+       9. Trang in phiếu thu / HĐĐT render mã 200 thành công kèm thông tin doanh nghiệp.
+       10. Xuất tệp CSV UTF-8 BOM trả về stream download đầy đủ dữ liệu.
+     - Kết quả: **10/10 tests PASSED 100% (37 assertions)**.
+  7. **Tổng kết chất lượng mã nguồn**:
+     - Suite 13 test files admin gần nhất: **114/114 tests PASSED 100% (503 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

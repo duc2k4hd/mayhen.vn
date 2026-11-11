@@ -277,6 +277,11 @@ class EmailTemplateService
         return $seededCount;
     }
 
+    public function getTemplateByCode(string $code): ?EmailTemplate
+    {
+        return EmailTemplate::where('code', $code)->first();
+    }
+
     /**
      * Dữ liệu mẫu (sample mock data) để xem trước và gửi thử nghiệm.
      *

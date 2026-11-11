@@ -229,6 +229,18 @@
                     </span>
                     <span>Gia Hạn & Hết Hạn Thiệp</span>
                 </a>
+                <a href="{{ route('admin.invoices.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.invoices.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </span>
+                    <span>Hóa Đơn & Phiếu Thu VAT</span>
+                </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.plans.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -689,6 +701,10 @@
                 <a href="{{ route('admin.renewals.index') }}" class="mayhen_admin_cmd_item" data-search="gia hạn hết hạn thiệp cưới renewals grace period expiration lưu trữ ân hạn">
                     <span>⏳ Gia Hạn & Hết Hạn Thiệp Cưới (Grace Period)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/renewals</span>
+                </a>
+                <a href="{{ route('admin.invoices.index') }}" class="mayhen_admin_cmd_item" data-search="hóa đơn điện tử phiếu thu vat invoices chứng từ tài chính billing e-receipt">
+                    <span>🧾 Hóa Đơn Điện Tử & Phiếu Thu VAT</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/invoices</span>
                 </a>
                 <a href="{{ route('admin.plans.index') }}" class="mayhen_admin_cmd_item" data-search="gói cước bảng giá plans subscription pricing đăng ký gói">
                     <span>📦 Gói Cước & Đăng Ký</span>
