@@ -8961,3 +8961,66 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 9 test files liên quan gần đây: **63/63 tests PASSED 100% (268 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 89. ĐỀ ÁN 89: TRUNG TÂM KIỂM DUYỆT NỘI DUNG, XỬ LÝ BÁO CÁO VI PHẠM & BẢO VỆ THIỆP CƯỚI (CONTENT MODERATION DESK & ABUSE REPORT RESOLUTION CENTER — MỤC 17.3 PRD V3 & DÒNG 154) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 17.3 trong tài liệu gốc PRD V3 ("17.3. Kiểm duyệt: Quản lý các lời chúc/ảnh/chữ ký bị báo cáo theo case, cờ lý do, xử lý ẩn/hiển thị/xóa theo chính sách, xem trước an toàn, khiếu nại. Không tự công khai lời chúc riêng tư trên website marketing. Quyền chủ thiệp duyệt lời chúc của họ trước khi public được ưu tiên.") và dòng 154 Sitemap Super Admin ("Kiểm duyệt lời chúc/báo cáo lạm dụng"):
+  1. *Cơ Chế Báo Cáo Vi Phạm Đa Kênh (Client Abuse Reporting)*:
+     - Cho phép khách mời và cô dâu chú rể báo cáo các nội dung xấu độc, spam quảng cáo hoặc ảnh nhạy cảm trên trang thiệp cưới.
+     - 5 cờ lý do chuẩn hóa: `spam` (Quảng cáo rác / Lừa đảo), `harassment` (Quấy rối / Xúc phạm), `inappropriate` (Nội dung thô tục / Khiêu dâm), `privacy_violation` (Vi phạm quyền riêng tư), `other` (Lý do khác).
+     - **Ưu tiên quyền chủ thiệp**: Nếu người báo cáo là Chủ sở hữu thiệp cưới (`auth()->id() === $wedding->user_id`), nội dung bị báo cáo lập tức được tự động tạm ẩn (`is_approved = false`) để bảo vệ hôn lễ ngay tức khắc.
+     - **Ngưỡng tự động kích hoạt bảo vệ (Auto-hide Threshold)**: Khi một nội dung nhận đủ 3 lượt báo cáo chờ duyệt từ cộng đồng, hệ thống tự động tạm ẩn nội dung đó để chờ Quản trị viên thẩm định.
+  2. *Cơ Sở Dữ Liệu & Model Đa Hình (`ContentReport`)*:
+     - Tạo bảng `content_reports` lưu trữ hồ sơ vi phạm theo case, liên kết đa hình `reportable_type` và `reportable_id` (hỗ trợ cả `WeddingWish`, `GuestPhoto` và các model nội dung khác).
+     - Lưu đầy đủ thông tin: Người báo cáo, SĐT, IP, Lý do, Chi tiết, Trạng thái (`pending`, `hidden`, `deleted`, `dismissed`), Quản trị viên xử lý, Thời gian và Ghi chú giải quyết.
+  3. *Dịch Vụ Nghiệp Vụ Chuyên Sâu (`AbuseReportService`)*:
+     - `createReport(Model $model, array $data, ?User $user)`: Tiếp nhận báo cáo, tự động đánh giá chủ quyền và áp dụng ngưỡng auto-hide.
+     - `resolveReport(ContentReport $report, string $action, ?User $admin, ?string $notes)`: Xử lý dứt điểm hồ sơ vi phạm theo 3 nhánh:
+       * `hide`: Ẩn nội dung khỏi thiệp (`is_approved = false`).
+       * `delete`: Xóa vĩnh viễn nội dung vi phạm khỏi cơ sở dữ liệu.
+       * `dismiss`: Bác bỏ báo cáo và khôi phục hiển thị (`is_approved = true`).
+       * Tự động ghi nhật ký kiểm toán bất biến `AuditLogger::log('MODERATION_CASE_RESOLVED', ...)`.
+     - `getStatistics()`: Thống kê số lượng theo từng trạng thái.
+  4. *Trung Tâm Chỉ Huy Kiểm Duyệt Admin (`/admin/moderation`)*:
+     - Thống kê 4 thẻ KPI thời gian thực: Chờ xem xét, Đã ẩn khỏi thiệp, Đã xóa vĩnh viễn, Đã bác bỏ an toàn.
+     - Bộ lọc Tab linh hoạt: `pending`, `hidden`, `deleted`, `dismissed`, `all`.
+     - **Chế độ Xem An Toàn (Safe Preview Blur)**: Mặc định làm mờ (CSS Blur) các nội dung nhạy cảm hoặc ảnh bị khiếu nại để bảo vệ thị giác của Quản trị viên, có nút "Nhấp để xem" chuyển đổi linh hoạt.
+     - Bộ nút thao tác 1-click: "Ẩn Đi", "Xóa", "An Toàn".
+     - Menu điều hướng Sidebar: Tích hợp mục "Kiểm Duyệt & Báo Cáo" trong nhóm *Người Dùng & Hỗ Trợ*.
+  5. *API & Tuyến Đường Client*:
+     - `POST /api/thiep/wishes/{wishId}/report` (`invitation.wish.report`)
+     - `POST /api/thiep/photos/{photoId}/report` (`invitation.photo.report`)
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Model**:
+     - `database/migrations/2026_11_11_111500_create_content_reports_table.php`
+     - `app/Models/ContentReport.php`
+  2. **Services**:
+     - `app/Services/AbuseReportService.php`
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Client/ContentReportController.php`
+     - `app/Http/Controllers/Admin/AdminContentModerationController.php`
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php) & [routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /admin/moderation` (`admin.moderation.index`)
+       * `POST /admin/moderation/{id}/resolve` (`admin.moderation.resolve`)
+       * `POST /api/thiep/wishes/{wishId}/report` (`invitation.wish.report`)
+       * `POST /api/thiep/photos/{photoId}/report` (`invitation.photo.report`)
+  4. **Giao diện**:
+     - `resources/views/admin/pages/moderation/index.blade.php`
+     - Cập nhật sidebar trong `resources/views/admin/layouts/master.blade.php`
+  5. **Kiểm thử tự động ([tests/Feature/ContentModerationAndAbuseReportTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/ContentModerationAndAbuseReportTest.php))**:
+     - 9 kịch bản kiểm thử:
+       1. Khách gửi báo cáo lời chúc vi phạm thành công qua API.
+       2. Tự động ẩn lời chúc ngay lập tức khi người báo cáo là chủ thiệp cưới.
+       3. Tự động ẩn nội dung khi nhận đủ 3 báo cáo chờ xử lý từ cộng đồng.
+       4. Khách gửi báo cáo ảnh khách tải lên có dấu hiệu vi phạm quyền riêng tư.
+       5. Admin xem trung tâm kiểm duyệt với đầy đủ thống kê và danh sách case.
+       6. Admin xử lý hồ sơ bằng hành động ẩn nội dung kèm ghi log kiểm toán.
+       7. Admin xử lý hồ sơ bằng hành động xóa vĩnh viễn nội dung vi phạm.
+       8. Admin bác bỏ báo cáo và khôi phục hiển thị nội dung an toàn.
+       9. Chặn người dùng thường truy cập trung tâm kiểm duyệt admin.
+     - Kết quả: **9/9 tests PASSED 100% (28 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 10 test files liên quan gần đây: **72/72 tests PASSED 100% (296 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

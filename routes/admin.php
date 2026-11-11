@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -195,6 +196,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{ticket}/escalate', [AdminSupportController::class, 'escalate'])->middleware('admin.manager')->name('escalate');
         Route::post('/{ticket}/declare-incident', [AdminSupportController::class, 'declareIncident'])->middleware('admin.manager')->name('declare_incident');
         Route::post('/{ticket}/resolve-incident', [AdminSupportController::class, 'resolveIncident'])->middleware('admin.manager')->name('resolve_incident');
+    });
+
+    // Trung Tâm Kiểm Duyệt Nội Dung & Báo Cáo Vi Phạm (Mục 17.3 PRD V3 & Dòng 154)
+    Route::prefix('moderation')->name('moderation.')->group(function () {
+        Route::get('/', [AdminContentModerationController::class, 'index'])->name('index');
+        Route::post('/{id}/resolve', [AdminContentModerationController::class, 'resolve'])->middleware('admin.manager')->name('resolve');
     });
 
     // Quản Lý Yêu Cầu Liên Hệ & Báo Giá (Mục 7.15 DOCX: Admin Contacts)

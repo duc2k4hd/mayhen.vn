@@ -8,6 +8,7 @@ use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ClientSupportController;
+use App\Http\Controllers\Client\ContentReportController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\CustomerReviewController;
@@ -118,6 +119,10 @@ Route::get('/thiep/{slug}/rsvp/responses', [GuestController::class, 'getRsvpResp
 Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
 Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.store');
 Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.reply');
+Route::post('/api/thiep/wishes/{wishId}/report', [ContentReportController::class, 'reportWish'])->middleware('throttle:30,1')->name('invitation.wish.report');
+Route::post('/api/thiep/photos/{photoId}/report', [ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
+Route::post('/api/thiep/wishes/{wishId}/report', [\App\Http\Controllers\Client\ContentReportController::class, 'reportWish'])->middleware('throttle:30,1')->name('invitation.wish.report');
+Route::post('/api/thiep/photos/{photoId}/report', [\App\Http\Controllers\Client\ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
 Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitation.download_archive');
 
 // Authentication
@@ -127,7 +132,7 @@ Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('regis
 Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:auth_attempts')->name('register.submit');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
 Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
-Route::post('/ho-tro/thoat-phien', [\App\Http\Controllers\Admin\SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
+Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
