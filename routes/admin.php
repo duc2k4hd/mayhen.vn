@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -281,5 +282,18 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/approve', [AdminPartnerController::class, 'approve'])->middleware('admin.manager')->name('approve');
         Route::post('/{id}/suspend', [AdminPartnerController::class, 'suspend'])->middleware('admin.manager')->name('suspend');
         Route::put('/{id}/commission-rate', [AdminPartnerController::class, 'updateRate'])->middleware('admin.manager')->name('update_rate');
+    });
+
+    // Quản Trị Blog & Cẩm Nang Cưới (Mục 7.11 DOCX & Dòng 400 PRD V3: Editorial Blog & SEO Content)
+    Route::prefix('blog')->name('blog.')->group(function () {
+        Route::get('/', [AdminBlogController::class, 'index'])->name('index');
+        Route::get('/create', [AdminBlogController::class, 'create'])->name('create');
+        Route::post('/', [AdminBlogController::class, 'store'])->name('store');
+        Route::get('/categories', [AdminBlogController::class, 'categories'])->name('categories');
+        Route::post('/categories', [AdminBlogController::class, 'storeCategory'])->middleware('admin.manager')->name('categories.store');
+        Route::get('/{id}/edit', [AdminBlogController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminBlogController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::delete('/{id}', [AdminBlogController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::post('/{id}/toggle-publish', [AdminBlogController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
     });
 });

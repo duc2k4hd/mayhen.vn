@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ClientSupportController;
@@ -57,6 +58,12 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 // Client Marketing Website
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Cẩm Nang Cưới & Chuyên Đề Tạp Chí (Editorial Blog & SEO Content)
+Route::prefix('cam-nang-cuoi')->name('blog.')->group(function () {
+    Route::get('/', [ClientBlogController::class, 'index'])->name('index');
+    Route::get('/{slug}', [ClientBlogController::class, 'show'])->name('show');
+});
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {
     Route::get('/', [TemplateController::class, 'index'])->name('index');

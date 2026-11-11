@@ -8591,3 +8591,54 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 
 
 
+
+
+---
+
+## 81. ĐỀ ÁN 81: HỆ THỐNG CẨM NANG & BÀI VIẾT CHUYÊN ĐỀ CƯỚI (EDITORIAL BLOG & SEO CMS CONTENT — MỤC 7.11 DOCX & DÒNG 400 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 7.11 trong tài liệu gốc DOCX ("7.11. Admin Blog: Bài viết. Danh mục. Tag. Tác giả. Nội dung. Ảnh. SEO. Trạng thái xuất bản. Bài liên quan. Lịch đăng nếu cần.") và quy chuẩn Section 24, Dòng 400 PRD V3:
+  1. *Hệ thống Dữ liệu Chuyên sâu (Database Schema)*:
+     - Bảng `blog_categories`: `id`, `name`, `slug` (unique), `description`, `icon`, `sort_order`, `is_active`, `timestamps`.
+     - Bảng `blog_posts`: `id`, `user_id` (foreign to users, nullable), `category_id` (foreign to blog_categories, nullable), `title`, `slug` (unique), `summary`, `content` (longText), `cover_image_url`, `author_name`, `tags` (json), `status` (`draft`, `scheduled`, `published`, `archived`), `published_at` (timestamp index), `reading_time_minutes`, `view_count`, `is_featured`, `meta_title`, `meta_description`, `meta_keywords`, `timestamps`.
+  2. *Dịch vụ Xử lý Nội dung & Mục Lục Tự Động (BlogService)*:
+     - `calculateReadingTime($content)`: Tự động tính thời gian đọc dựa trên số lượng từ trong nội dung bài viết.
+     - `extractTableOfContentsAndInjectIds($content)`: Tự động quét và bóc tách các tiêu đề `<h2>`, `<h3>` để tạo Mục lục bài viết (Table of Contents), tự động chèn `id="muc-{index}-{slug}"` vào thẻ heading để phục vụ neo cuộn mượt mà (smooth anchor jump).
+     - `getPublishedPosts()`, `getFeaturedPosts()`, `getRelatedPosts()`, `recordView()` (tăng view count theo session an toàn).
+  3. *Phân hệ Quản trị Bài Viết & Chuyên Mục (Admin Blog Desk)*:
+     - Giao diện danh sách bài viết trực quan với KPI thống kê (Tổng bài viết, đã xuất bản, bản nháp, tổng lượt đọc), lọc theo chuyên mục, trạng thái và tìm kiếm từ khóa.
+     - Soạn thảo và chỉnh sửa bài viết với trường tiêu đề, slug, tóm tắt, nội dung HTML, tác giả, tags, upload ảnh bìa (tối đa 5MB), cấu hình xuất bản, hẹn giờ và tối ưu SEO (Meta Title, Meta Description, Meta Keywords).
+     - Quản lý danh mục chuyên đề cẩm nang cưới độc lập.
+     - **Tuân thủ quy chuẩn Tiêu Đề Admin**: `@section('title', 'Quản Lý Bài Viết Cẩm Nang')`, `@section('title', 'Soạn Thảo Bài Viết Mới')`, `@section('title', 'Chỉnh Sửa Bài Viết: ' . $post->title)`, `@section('title', 'Chuyên Mục Cẩm Nang Cưới')` (không có hậu tố thừa).
+  4. *Trải nghiệm Tạp chí Hôn lễ Phía Khách Hàng (Client Editorial Magazine)*:
+     - Giao diện độc bản phong cách Quiet Luxury, typography serif thanh tao (`Cormorant Garamond`), khoảng trắng thoáng đãng.
+     - Trang danh sách cẩm nang (`/cam-nang-cuoi`): Hero Featured Article nổi bật, thanh lọc chuyên mục bo tròn mềm mại, lưới thẻ bài viết 3 cột responsive, phân trang tinh tế.
+     - Trang chi tiết bài viết (`/cam-nang-cuoi/{slug}`): Breadcrumbs điều hướng, thanh đo tiến độ đọc cố định trên đỉnh trình duyệt (Scroll Reading Progress Bar), mục lục bài viết dính cố định bên sườn (Sticky Table of Contents), hộp chia sẻ bài viết & nút copy link 1 chạm, hộp kêu gọi hành động (CTA) tạo thiệp cưới độc bản, danh sách chuyên đề cùng chủ đề liên quan.
+     - Chống rò rỉ dữ liệu: Bài viết nháp (`draft`) trả về 404 đối với khách vãng lai nhưng cho phép Quản trị viên xem trước khi đã đăng nhập.
+  5. *Tích hợp Điều Hướng Hệ Thống*:
+     - Thêm liên kết `Bài Viết & Cẩm Nang` vào Menu Sidebar Quản trị Admin.
+     - Thêm liên kết `Cẩm Nang` vào Header Desktop & Mobile Drawer Client.
+     - Thêm liên kết `Cẩm Nang & Ý Tưởng Cưới` vào Footer thông tin thương hiệu Client.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Migration & Seed**:
+     - `database/migrations/2026_11_11_093956_create_blog_categories_and_posts_tables.php`
+     - `database/seeders/BlogSeeder.php`: Khởi tạo 4 chuyên mục Quiet Luxury & 3 bài viết chuyên đề mẫu chất lượng cao.
+  2. **Models & Service**:
+     - `app/Models/BlogCategory.php`
+     - `app/Models/BlogPost.php`
+     - `app/Services/BlogService.php`
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/BlogController.php`
+     - `app/Http/Controllers/Client/BlogController.php`
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)): `admin.blog.index`, `admin.blog.create`, `admin.blog.store`, `admin.blog.edit`, `admin.blog.update`, `admin.blog.destroy`, `admin.blog.toggle_publish`, `admin.blog.categories`, `admin.blog.categories.store`.
+     - Routes ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)): `blog.index`, `blog.show`.
+  4. **Giao diện & Assets**:
+     - Admin: `resources/views/admin/pages/blog/index.blade.php`, `create.blade.php`, `edit.blade.php`, `categories.blade.php`.
+     - Client: `resources/views/client/pages/blog/index.blade.php`, `show.blade.php`.
+     - CSS thuần: `public/assets/client/css/pages/blog.css` (Class prefix: `mayhen_blog_*`).
+     - JS thuần: `public/assets/client/js/pages/blog.js` (Thanh đo tiến độ đọc, neo cuộn mục lục mượt mà, copy link chia sẻ).
+  5. **Kiểm thử tự động ([tests/Feature/AdminBlogManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminBlogManagementTest.php), [tests/Feature/ClientBlogEditorialTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/ClientBlogEditorialTest.php))**:
+     - 11 kịch bản kiểm thử: Admin xem danh sách bài viết, Admin tạo bài viết mới, Admin cập nhật bài viết, Admin chuyển trạng thái xuất bản AJAX, Admin tạo chuyên mục mới, chặn người dùng thường truy cập admin blog, khách xem danh sách cẩm nang, khách lọc bài viết theo chuyên mục, khách xem chi tiết bài viết kèm mục lục tự động, bài viết nháp trả về 404 với khách nhưng cho phép admin xem trước, xem bài viết làm tăng lượt đọc an toàn trong session.
+     - Kết quả: **11/11 tests PASSED 100% (33 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Toàn bộ suite 5 test files đề án gần nhất: **31/31 tests PASSED 100% (110 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

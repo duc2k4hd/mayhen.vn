@@ -15,6 +15,7 @@
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp</a>
             <a href="{{ route('services') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('services') ? 'mayhen_client_header_nav_link_active' : '' }}">Dịch Vụ</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
+            <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
             <a href="{{ route('how-it-works') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('how-it-works') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
             <a href="{{ route('contact') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('contact') ? 'mayhen_client_header_nav_link_active' : '' }}">Liên Hệ</a>
         </nav>
@@ -139,6 +140,10 @@
         </a>
         <a href="{{ route('pricing') }}" class="mayhen_client_header_drawer_link">
             <span>Bảng Giá Gói Dịch Vụ</span>
+            <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
+        </a>
+        <a href="{{ route('blog.index') }}" class="mayhen_client_header_drawer_link">
+            <span>Cẩm Nang &amp; Ý Tưởng Cưới</span>
             <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
         </a>
         <a href="{{ route('how-it-works') }}" class="mayhen_client_header_drawer_link">
