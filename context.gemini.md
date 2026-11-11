@@ -8864,3 +8864,47 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   5. **Tổng kết chất lượng mã nguồn**:
      - Suite 7 test files liên quan gần đây: **51/51 tests PASSED 100% (203 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+---
+
+## 87. ĐỀ ÁN 87: BỘ CÔNG CỤ XUẤT & TẢI TRỌN BỘ DỮ LIỆU KỶ NIỆM CƯỚI (WEDDING MEMORY VAULT & FULL ARCHIVE ZIP EXPORTER — MỤC 6.5 & 13.4 DOCX & DÒNG 410 PRD V3) (11/11/2026)
+- **Mục tiêu**: Hiện thực hóa mục 6.5 và mục 13.4 trong tài liệu gốc DOCX ("6.5. Tải dữ liệu: Danh sách khách. Lời chúc. Ảnh do khách tải lên. Bản in PDF nếu có. File nén toàn bộ dữ liệu kỷ niệm. 13.4. Có quy trình xử lý sau hết hạn: Cho phép tải toàn bộ dữ liệu."):
+  1. *Dịch Vụ Đóng Gói Tệp Nén Kỷ Niệm Chuyên Nghiệp (`WeddingArchiveExportService`)*:
+     - Tự động đóng gói toàn bộ dữ liệu đám cưới thành tệp nén `.zip` với tên chuẩn: `Ky-Niem-Cuoi-[Groom]-va-[Bride]-[Date].zip`.
+     - `README.txt`: Lời chúc mừng hạnh phúc và hướng dẫn mở các tệp kỷ niệm từ Mây Hẹn Atelier.
+     - `so-luu-but-loi-chuc.csv`: Tệp CSV định dạng UTF-8 BOM chuẩn Microsoft Excel tiếng Việt không lỗi font, gồm: STT, Họ và tên khách mời, Thời gian gửi, Trạng thái duyệt, Lời chúc phúc chân thành, Phản hồi từ Cô Dâu & Chú Rể.
+     - `danh-sach-khach-moi-rsvp.csv`: Tệp CSV UTF-8 BOM gồm: STT, Họ tên, Số điện thoại, Nhóm khách, Trạng thái xác nhận tham dự (Tham dự / Không tham dự / Chưa phản hồi), Số người đi cùng, Bàn tiệc, Mừng cưới (VND).
+     - `thong-tin-ngay-cuoi.json`: Cấu trúc JSON dữ liệu hôn lễ, sự kiện, câu chuyện tình yêu, mốc thời gian và thống kê KPI.
+     - `so-luu-niem-offline.html`: Trang kỷ niệm độc lập tĩnh (Standalone Offline Memorial Page) mang phong cách Quiet Luxury, nhúng sẵn CSS nội bộ, mở được trên mọi thiết bị máy tính hoặc điện thoại mà không cần mạng Internet hay máy chủ.
+     - Thư mục `anh-album/`: Tự động nhận diện và đóng gói toàn bộ ảnh cưới có thật trên hệ thống.
+  2. *Bảo Mật Quyền Sở Hữu & Kiểm Toán Truy Xuất (`WeddingArchiveExportController`)*:
+     - Tuyệt đối kiểm soát quyền sở hữu: Chỉ cho phép tài khoản chủ thiệp (`auth()->id() === $wedding->user_id`) hoặc khách vãng lai đang nắm giữ Session token sở hữu thiệp (`owned_invitation_slugs`).
+     - Chặn đứng mọi hành vi truy cập trái phép của người lạ hoặc tài khoản khác bằng HTTP 403 Forbidden.
+     - Ghi vết kiểm toán bảo mật `AuditLogger::log('WEDDING_ARCHIVE_EXPORTED', ...)` để lưu lại lịch sử xuất dữ liệu nhạy cảm theo quy định bảo vệ dữ liệu cá nhân (Law 91/2025/QH15).
+     - Hỗ trợ tải xuống streaming `response()->download()->deleteFileAfterSend(true)` tự động dọn dẹp file zip tạm trên máy chủ.
+  3. *Tích Hợp Giao Diện Trực Quan (Client UI)*:
+     - `resources/views/client/pages/account/invitations.blade.php`: Tích hợp nút "📦 Tải Kỷ Niệm (.ZIP)" trang nhã cho từng thiệp cưới trên Bảng điều khiển tài khoản cặp đôi.
+     - `resources/views/client/pages/invitation-expired.blade.php`: Tích hợp nút "📦 Tải Dữ Liệu (.ZIP)" dành riêng cho chủ nhân khi thiệp hết hạn để cặp đôi yên tâm lưu giữ kỷ niệm trọn đời.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Services**:
+     - `app/Services/WeddingArchiveExportService.php`
+  2. **Controller & Routes**:
+     - `app/Http/Controllers/Client/WeddingArchiveExportController.php`
+     - Routes ([routes/web.php](file:///e:/Project/Laravel/mayhen.vn/routes/web.php)):
+       * `GET /tai-khoan/thiep/{invitation}/tai-du-lieu` (`account.invitations.download_archive`)
+       * `GET /thiep/{invitation:slug}/tai-du-lieu` (`invitation.download_archive`)
+  3. **Giao diện & Blade**:
+     - `resources/views/client/pages/account/invitations.blade.php`
+     - `resources/views/client/pages/invitation-expired.blade.php`
+  4. **Kiểm thử tự động ([tests/Feature/WeddingArchiveExportTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/WeddingArchiveExportTest.php))**:
+     - 5 kịch bản kiểm thử:
+       1. Khởi tạo tệp nén ZIP hợp lệ chứa đầy đủ 5 thành phần (README, CSV Sổ lưu bút có BOM, CSV Khách mời RSVP có BOM, JSON thông tin cưới, HTML sổ lưu niệm offline).
+       2. Chủ nhân đăng nhập tải file ZIP thành công qua route account với Content-Type `application/zip` và Content-Disposition chuẩn.
+       3. Chủ nhân vãng lai có Session token tải thành công qua route công khai của thiệp.
+       4. Chặn người lạ hoặc tài khoản không sở hữu tải dữ liệu nhạy cảm (HTTP 403 Forbidden).
+       5. Ghi vết kiểm toán an ninh `WEDDING_ARCHIVE_EXPORTED` vào `AuditLogger`.
+     - Kết quả: **5/5 tests PASSED 100% (36 assertions)**.
+  5. **Tổng kết chất lượng mã nguồn**:
+     - Suite 8 test files liên quan gần đây: **56/56 tests PASSED 100% (239 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).

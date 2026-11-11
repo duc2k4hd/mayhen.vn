@@ -103,6 +103,9 @@
                 <a href="{{ route('account.invitations') }}" class="mayhen_status_btn" style="background: linear-gradient(135deg, #C5A880 0%, #9C7A4A 100%);">
                     ⚡ Gia Hạn Thiệp Ngay
                 </a>
+                <a href="{{ route('invitation.download_archive', $invitation->slug) }}" class="mayhen_status_btn" style="background: #F4EFEB; color: #5C554D; border: 1px solid #D8CEBD;">
+                    📦 Tải Dữ Liệu (.ZIP)
+                </a>
             @else
                 <a href="{{ route('login') }}" class="mayhen_status_btn" style="background: #1F1D1A;">
                     Đăng Nhập Gia Hạn

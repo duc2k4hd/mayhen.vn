@@ -35,6 +35,7 @@ use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\WebhookController;
+use App\Http\Controllers\Client\WeddingArchiveExportController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingMediaController;
@@ -116,6 +117,7 @@ Route::get('/thiep/{slug}/rsvp/responses', [GuestController::class, 'getRsvpResp
 Route::get('/thiep/{slug}/wishes', [GuestController::class, 'getWishes'])->name('invitation.wish.index');
 Route::post('/thiep/{slug}/wishes', [GuestController::class, 'submitWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.store');
 Route::post('/thiep/{slug}/wishes/{wishId}/reply', [GuestController::class, 'replyWish'])->middleware('throttle:guest_interactions')->name('invitation.wish.reply');
+Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitation.download_archive');
 
 // Authentication
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
@@ -148,6 +150,7 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/xuat-ban', [AccountController::class, 'togglePublish'])->name('invitations.toggle_publish');
     Route::get('/thiep/{id}/vong-doi', [InvitationRenewalController::class, 'lifecycle'])->name('invitations.lifecycle');
     Route::post('/thiep/{id}/gia-han', [InvitationRenewalController::class, 'initiateRenewal'])->name('invitations.renew');
+    Route::get('/thiep/{invitation}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitations.download_archive');
     Route::get('/don-hang', [AccountController::class, 'orders'])->name('orders');
     Route::get('/ho-so', [AccountController::class, 'profile'])->name('profile');
     Route::post('/ho-so', [AccountController::class, 'updateProfile'])->name('profile.update');
