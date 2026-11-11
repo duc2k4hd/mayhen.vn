@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAcceptanceAuditController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminAssetDiagnosticsController;
@@ -492,6 +493,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/{uuid}/details', [AdminJobMonitorController::class, 'details'])->name('details');
         Route::post('/{uuid}/retry', [AdminJobMonitorController::class, 'retry'])->name('retry');
         Route::delete('/{uuid}', [AdminJobMonitorController::class, 'destroy'])->name('destroy');
+    });
+
+    // Trạm Chỉ Huy Kiểm Định Chất Lượng Toàn Diện & Giám Sát Ma Trận Nghiệm Thu (Section 62 & 63 PRD V3)
+    Route::prefix('system/acceptance')->middleware('admin.super')->name('system.acceptance.')->group(function () {
+        Route::get('/', [AdminAcceptanceAuditController::class, 'index'])->name('index');
+        Route::post('/run', [AdminAcceptanceAuditController::class, 'triggerAudit'])->name('run');
+        Route::get('/export', [AdminAcceptanceAuditController::class, 'exportCsv'])->name('export');
     });
 
     // Trạng Thái Dịch Vụ, Sức Khỏe Hạ Tầng & Nhật Ký Lỗi (Mục 158 PRD V3)

@@ -147,6 +147,7 @@ Thumbs.db
 !/tests/Feature/SynchronizedStationeryKitTest.php
 !/tests/Feature/DynamicOpenGraphAndZaloShareTest.php
 !/tests/Feature/NativeVietQrServiceTest.php
+!/tests/Feature/AdminAcceptanceAuditCockpitTest.php
 !/tests/Feature/AdminReviewManagementTest.php
 !/tests/Feature/AdminMediaManagementTest.php
 !/tests/Unit/

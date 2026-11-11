@@ -670,6 +670,16 @@
                         @endif
                     </a>
 
+                    <a href="{{ route('admin.system.acceptance.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.system.acceptance.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                        </span>
+                        <span>Kiểm Định Chất Lượng</span>
+                    </a>
+
                     <a href="{{ route('admin.system.health.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.system.health.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1065,6 +1075,10 @@
                     <a href="{{ route('admin.jobs.index') }}" class="mayhen_admin_cmd_item" data-search="hàng đợi failed jobs queue worker tác vụ nền lỗi retry">
                         <span>⚙️ Giám Sát Hàng Đợi (Queue & Jobs)</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/system/jobs</span>
+                    </a>
+                    <a href="{{ route('admin.system.acceptance.index') }}" class="mayhen_admin_cmd_item" data-search="kiểm định chất lượng ma trận nghiệm thu acceptance qa matrix audit prd v3 tiêu chí chuẩn hóa">
+                        <span>🎯 Kiểm Định Chất Lượng & Ma Trận Nghiệm Thu</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/system/acceptance</span>
                     </a>
                     <a href="{{ route('admin.system.health.index') }}" class="mayhen_admin_cmd_item" data-search="trạng thái dịch vụ sức khỏe hạ tầng error logs laravel nhật ký lỗi system health metrics">
                         <span>🩺 Trạng Thái Dịch Vụ & Nhật Ký Lỗi</span>
