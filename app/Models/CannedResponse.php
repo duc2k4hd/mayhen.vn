@@ -134,4 +134,3 @@ class CannedResponse extends Model
         return str_replace(array_keys($replacements), array_values($replacements), $this->body);
     }
 }
-

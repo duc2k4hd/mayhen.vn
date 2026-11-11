@@ -496,6 +496,17 @@
                         <span>Cổng SMS & Zalo ZNS</span>
                     </a>
 
+                    <a href="{{ route('admin.settings.domains.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.domains*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                        </span>
+                        <span>Tên Miền & Định Tuyến</span>
+                    </a>
+
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.settings.seo*') ? 'mayhen_admin_nav_link_active' : '' }}">
                         <span class="mayhen_admin_nav_icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -859,6 +870,10 @@
                     <a href="{{ route('admin.settings.notifications.index') }}" class="mayhen_admin_cmd_item" data-search="cổng tin nhắn zalo zns sms brandname viễn thông esms speedsms gateway kiểm thử">
                         <span>💬 Cổng Tin Nhắn SMS & Zalo ZNS</span>
                         <span class="mayhen_admin_cmd_item_meta">/admin/settings/notifications</span>
+                    </a>
+                    <a href="{{ route('admin.settings.domains.index') }}" class="mayhen_admin_cmd_item" data-search="tên miền riêng subdomain custom domains định tuyến dns cname ssl https liên kết thiệp cưới">
+                        <span>🌐 Tên Miền Riêng & Định Tuyến DNS</span>
+                        <span class="mayhen_admin_cmd_item_meta">/admin/settings/domains</span>
                     </a>
                     <a href="{{ route('admin.settings.seo') }}" class="mayhen_admin_cmd_item" data-search="thanh tra seo sitemap xml google robots meta search index">
                         <span>🌐 Thanh Tra SEO & Sitemap XML</span>

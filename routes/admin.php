@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminCannedResponseController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
+use App\Http\Controllers\Admin\AdminDomainManagerController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
@@ -261,6 +262,17 @@ Route::middleware('admin.auth')->group(function () {
             Route::put('/{gateway}', [AdminNotificationGatewayController::class, 'update'])->name('update');
             Route::post('/ping/{gateway}', [AdminNotificationGatewayController::class, 'ping'])->name('ping');
             Route::post('/test-dispatch', [AdminNotificationGatewayController::class, 'sendTest'])->name('send_test');
+        });
+
+        // Phân Hệ Quản Trị Tên Miền Riêng & Định Tuyến Liên Kết (Mục 172 PRD V3)
+        Route::prefix('domains')->name('domains.')->group(function () {
+            Route::get('/', [AdminDomainManagerController::class, 'index'])->name('index');
+            Route::post('/{domain}/verify', [AdminDomainManagerController::class, 'verify'])->name('verify');
+            Route::post('/{domain}/activate', [AdminDomainManagerController::class, 'activate'])->name('activate');
+            Route::post('/{domain}/deactivate', [AdminDomainManagerController::class, 'deactivate'])->name('deactivate');
+            Route::delete('/{domain}', [AdminDomainManagerController::class, 'destroy'])->name('destroy');
+            Route::post('/dns-lookup', [AdminDomainManagerController::class, 'lookup'])->name('lookup');
+            Route::put('/routing-settings', [AdminDomainManagerController::class, 'updateSettings'])->name('settings');
         });
 
         Route::get('/plans', [AdminSettingController::class, 'plans'])->name('plans');

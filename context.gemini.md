@@ -9934,3 +9934,72 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   7. **Tổng kết chất lượng mã nguồn**:
      - Suite 19 test files admin gần nhất: **174/174 tests PASSED 100% (747 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
+### 104. ĐỀ ÁN 104: PHÂN HỆ QUẢN TRỊ TÊN MIỀN RIÊNG, SUBDOMAIN & ĐỊNH TUYẾN LIÊN KẾT THIỆP CƯỚI (CUSTOM DOMAINS & SHORTLINK ROUTING MANAGER — MỤC 172 PRD V3 & DOM-01, DOM-02)
+- **Mục tiêu & Yêu cầu nghiệp vụ**:
+  - Triển khai trung tâm quản trị định tuyến tên miền độc bản của cặp đôi và vanity subdomain theo chuẩn **Mục 172 Master PRD V3 (CÀI ĐẶT -> Domain & liên kết) & DOM-01, DOM-02**.
+  - **Nghiệp Vụ Định Tuyến Tên Miền & Chẩn Đoán DNS Chuyên Nghiệp**:
+    1. *Quản Trị Vòng Đời Tên Miền Cặp Đôi (Custom Domains & Subdomains)*:
+       - Theo dõi toàn bộ tên miền riêng (`minhduc-lanchi.wedding`, `.vn`, `.com`) và vanity subdomain (`minhduclanchi.mayhen.vn`).
+       - Liên kết trực tiếp với dự án thiệp cưới (`wedding`, `invitation`) và chủ sở hữu.
+       - Trạng thái xác thực DNS (`active`, `pending`, `failed`) và chứng chỉ bảo mật HTTPS/SSL (`active`, `pending`, `failed`).
+    2. *Công Cụ Xác Minh & Điều Phối DNS Tức Thời (Re-verify & Override)*:
+       - Nút "Xác Minh DNS": Tự động truy vấn bản ghi CNAME thực tế đối chiếu với mục tiêu định tuyến hệ thống (`cname.mayhen.vn`).
+       - Nút "Cưỡng Chế Kích Hoạt (Duyệt)": Cho phép Super Admin kích hoạt ngay trạng thái ACTIVE cho cặp đôi sử dụng Cloudflare Proxy hoặc DNS nội bộ.
+       - Nút "Ngắt Kết Nối (Tắt)": Khóa định tuyến tên miền tức thời khi phát hiện vi phạm bản quyền hoặc spam lạm dụng.
+       - Nút "Xóa Bản Ghi": Thu hồi tên miền để cấp phát lại cho khách hàng khác.
+    3. *Thiết Lập Định Tuyến Máy Chủ Nền Tảng (Platform Routing Settings)*:
+       - Cấu hình CNAME Target mặc định (`cname.mayhen.vn`).
+       - Địa chỉ IPv4 máy chủ gốc (A-Record Origin IP).
+       - Tên miền gốc nền tảng (`mayhen.vn`).
+       - Quản lý danh sách các Subdomain cấm đăng ký (Blacklisted Subdomains: `admin`, `api`, `app`, `cdn`, `auth`, `support`, `cname`...).
+    4. *Phòng Chẩn Đoán DNS Sandbox (DNS Diagnostic Sandbox)*:
+       - Cho phép kỹ thuật viên nhập bất kỳ hostname nào để tra cứu DNS trực tiếp.
+       - Phân tích chi tiết các bản ghi CNAME, A-Record (IPv4), NameServers (NS) kèm đo độ trễ ms.
+       - Tự động đưa ra khuyến nghị kỹ thuật: Khớp hoàn hảo, lệch bản ghi CNAME, hoặc DNS chưa lan truyền.
+- **Chi tiết triển khai kỹ thuật**:
+  1. **Tái Sử Dụng CSDL & Models**:
+     - `wedding_domains`: Khai thác toàn bộ cấu trúc bảng đã tích hợp sẵn (`subdomain`, `custom_domain`, `cname_target`, `status`, `ssl_status`, `dns_verified_at`, `dns_records`).
+     - `app/Models/WeddingDomain.php`: Quan hệ `wedding()`, `invitation()`, hằng số `BLACKLISTED_SUBDOMAINS`.
+  2. **Services**:
+     - `app/Services/AdminDomainManagerService.php`:
+       * `getDomainKpis()`: Thống kê 4 thẻ KPI: Tên miền riêng, Subdomain Mây Hẹn, Đang hoạt động, Chờ xác minh DNS.
+       * `getFilteredDomains()`: Phân trang, tìm kiếm theo tên miền hoặc tên cô dâu chú rể, lọc theo trạng thái.
+       * `verifyDomain()`: Đối soát bản ghi CNAME thực tế qua `DomainDnsService`, cập nhật DB và ghi `AuditLogger`.
+       * `forceActivate()`, `forceDeactivate()`, `deleteDomain()`: Thao tác điều phối cưỡng chế kèm vết kiểm toán.
+       * `performDnsLookup()`: Tra cứu DNS thời gian thực, đo độ trễ latency ms và sinh khuyến nghị.
+       * `getPlatformRoutingConfig()`, `updatePlatformRoutingConfig()`: Quản lý thiết lập định tuyến nền tảng qua `PlatformSetting`.
+  3. **Controllers & Routes**:
+     - `app/Http/Controllers/Admin/AdminDomainManagerController.php`: Điều phối 3 tabs giao diện, xác minh DNS, kích hoạt, ngắt kết nối, xóa domain, tra cứu DNS và lưu cấu hình.
+     - Routes ([routes/admin.php](file:///e:/Project/Laravel/mayhen.vn/routes/admin.php)) trong nhóm `settings`:
+       * `GET /admin/settings/domains` (`admin.settings.domains.index`)
+       * `POST /admin/settings/domains/{domain}/verify` (`admin.settings.domains.verify`)
+       * `POST /admin/settings/domains/{domain}/activate` (`admin.settings.domains.activate`)
+       * `POST /admin/settings/domains/{domain}/deactivate` (`admin.settings.domains.deactivate`)
+       * `DELETE /admin/settings/domains/{domain}` (`admin.settings.domains.destroy`)
+       * `POST /admin/settings/domains/dns-lookup` (`admin.settings.domains.lookup`)
+       * `PUT /admin/settings/domains/routing-settings` (`admin.settings.domains.settings`)
+  4. **Giao diện & UI/UX**:
+     - `resources/views/admin/pages/settings/domains/index.blade.php`:
+       * 4 Thẻ KPI Quiet Luxury: Tên Miền Riêng (Custom), Subdomain Mây Hẹn, Đang Hoạt Động (SSL Active), Chờ Xác Minh DNS.
+       * Tab 1: Danh Sách Tên Miền & Subdomain (Bảng chi tiết hostname, cặp đôi, mục tiêu CNAME, trạng thái DNS, SSL, ngày xác minh, thao tác nhanh).
+       * Tab 2: Thiết Lập Định Tuyến Máy Chủ (Form cấu hình CNAME, IPv4, Root Domain, danh sách Blacklisted Subdomains dạng tags).
+       * Tab 3: Phòng Chẩn Đoán DNS Sandbox (Form tra cứu hostname, bảng kết quả CNAME/A/NS, đo độ trễ ms và hộp khuyến nghị).
+     - Cập nhật Sidebar: Menu "Tên Miền & Định Tuyến" và Command Palette tại `resources/views/admin/layouts/master.blade.php`.
+  5. **Kiểm thử tự động ([tests/Feature/AdminDomainManagementTest.php](file:///e:/Project/Laravel/mayhen.vn/tests/Feature/AdminDomainManagementTest.php))**:
+     - 10 kịch bản kiểm thử:
+       1. Khách vãng lai chưa đăng nhập bị redirect về `admin.login`.
+       2. Tài khoản `customer` thông thường không có quyền truy cập quản trị tên miền.
+       3. Super Admin truy cập thành công màn hình quản trị tên miền và thấy các thẻ KPI.
+       4. Super Admin có thể lọc tên miền theo trạng thái active.
+       5. Super Admin có thể tìm kiếm tên miền theo từ khóa hostname.
+       6. Super Admin xác minh DNS cho tên miền hợp lệ chuyển trạng thái sang active.
+       7. Super Admin cưỡng chế kích hoạt tên miền thành công.
+       8. Super Admin cưỡng chế ngắt kết nối tên miền thành công.
+       9. Super Admin xóa tên miền thành công khỏi hệ thống.
+       10. Công cụ chẩn đoán DNS lookup phân tích đúng bản ghi CNAME và trả về kết quả.
+     - Kết quả: **10/10 tests PASSED 100% (32 assertions)**.
+  6. **Tổng kết chất lượng mã nguồn**:
+     - Suite 20 test files admin gần nhất: **184/184 tests PASSED 100% (779 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
