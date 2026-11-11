@@ -10422,3 +10422,27 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Bố cục trang bìa hoàng gia (tiêu đề, tên cô dâu chú rể, ngày cưới, sảnh tiệc, thống kê lời chúc), lưới lời chúc trang trọng ngắt trang thông minh `break-inside: avoid`.
   - `routes/admin.php`: Nhóm routes `admin.wishes.guestbook.*`.
   - `tests/Feature/AdminGuestbookTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện tính năng, phân quyền và xuất bản (100% PASSED).
+
+
+### 116. Đề Án 116: Phân Hệ Quản Trị Đổi Ngày Cưới, Nhật Ký Dời Lịch & Thông Báo Tái Xác Nhận RSVP (Wedding Reschedule Audit & Guest Re-confirmation Dispatcher — Mục 61 PRD V3 & ADM-RSC-01)
+- **Mục tiêu**:
+  - Xây dựng phân hệ quản trị giám sát toàn bộ lịch sử dời ngày cưới và thay đổi địa điểm tổ chức tiệc theo chuẩn mực Luồng G (Mục 61 PRD V3).
+  - Tự động đo lường tác động tới khách mời (`affected_guests_count`), điều phối chính sách phản hồi RSVP (Giữ nguyên phản hồi cũ `keep_existing` hoặc Yêu cầu quan khách xác nhận lại `request_reconfirm` bằng cờ `needs_reconfirmation` trong bảng `guest_responses`).
+  - Trạm điều phối phát thông báo đính chính ngày cưới (Broadcast Reschedule Notice) đa kênh, theo dõi tỷ lệ gửi thành công (`notified_guests_count` / `notification_rate` %).
+  - Xuất dữ liệu nhật ký dời lịch cưới định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminRescheduleService.php`:
+    - Tính toán 4 chỉ số KPI: Tổng số lượt dời lịch cưới, tổng số khách mời bị ảnh hưởng, số khách đã nhận thông báo đính chính (kèm tỷ lệ %), số đợt yêu cầu tái xác nhận RSVP.
+    - Bộ lọc đa chiều: Từ khóa tìm kiếm (lý do, địa điểm cũ/mới, tên tiệc, cặp đôi), lọc theo tiệc cưới cụ thể, lọc theo chính sách RSVP.
+    - Nghiệp vụ `rescheduleWedding`: Thực hiện trong DB Transaction, cập nhật ngày cưới/địa điểm của `Wedding`, tính toán số lượng khách bị ảnh hưởng, kích hoạt cờ `needs_reconfirmation` trên các phản hồi RSVP của khách khi chọn `request_reconfirm`, lưu bản ghi nhật ký `WeddingRescheduleLog`.
+    - Nghiệp vụ `broadcastNotification`: Ghi nhận và cập nhật số lượng quan khách đã được gửi tin đính chính.
+    - Nghiệp vụ `exportRescheduleLogsCsv`: Xuất tệp CSV UTF-8 BOM đầy đủ thông tin phục vụ kiểm toán và hỗ trợ khách hàng.
+  - `app/Http/Controllers/Admin/AdminRescheduleController.php`:
+    - Xử lý các endpoint: `index`, `store`, `notifyGuests`, `export`.
+  - `resources/views/admin/pages/reschedule/index.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh lọc & tìm kiếm linh hoạt.
+    - Bảng nhật ký chi tiết với nhãn ngày cũ -> ngày mới gạch ngang trực quan, địa điểm thay đổi, tiến độ phát thông báo bằng thanh tiến độ progress bar.
+    - 2 Modal tiện ích: Modal Ghi nhận dời lịch cưới mới (hỗ trợ dropdown chọn nhanh tiệc cưới kèm tự động điền địa điểm hiện tại) & Modal Phát thông báo đính chính cho quan khách.
+  - `routes/admin.php`: Đăng ký nhóm routes `admin.reschedule.*`.
+  - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Dời Lịch & Tái Xác Nhận" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
+  - `tests/Feature/AdminRescheduleTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện nghiệp vụ đổi ngày, chính sách RSVP, tính toán khách ảnh hưởng, phát thông báo đính chính và xuất CSV (100% PASSED).

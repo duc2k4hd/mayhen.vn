@@ -218,6 +218,18 @@
                     <span>Lưu Trữ Kỷ Niệm</span>
                 </a>
 
+                <a href="{{ route('admin.reschedule.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.reschedule*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </span>
+                    <span>Dời Lịch & Tái Xác Nhận</span>
+                </a>
+
                 <a href="{{ route('admin.guests.rescue') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.guests.rescue') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -895,6 +907,10 @@
                 <a href="{{ route('admin.keepsakes.index') }}" class="mayhen_admin_cmd_item" data-search="kỷ niệm hậu sự kiện lưu trữ hộp thư thời gian time capsule keepsake archive hậu hôn lễ wrap-up">
                     <span>⏳ Lưu Trữ Kỷ Niệm & Hậu Sự Kiện</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/keepsakes</span>
+                </a>
+                <a href="{{ route('admin.reschedule.index') }}" class="mayhen_admin_cmd_item" data-search="dời lịch cưới đổi ngày cưới tái xác nhận rsvp đính chính reschedule postpone wedding date">
+                    <span>📅 Dời Lịch Cưới & Tái Xác Nhận RSVP</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/reschedule</span>
                 </a>
                 <a href="{{ route('admin.guests.import.index') }}" class="mayhen_admin_cmd_item" data-search="nhập khách hàng loạt batch import csv excel sđt 4 bước">
                     <span>📥 Nhập Khách Mời Hàng Loạt (Batch 4 Bước)</span>

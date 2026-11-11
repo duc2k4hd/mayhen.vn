@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminOrderRefundController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
+use App\Http\Controllers\Admin\AdminRescheduleController;
 use App\Http\Controllers\Admin\AdminSeatingPlanController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
@@ -291,6 +292,14 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/capsules/{capsuleId}/unlock', [AdminKeepsakeController::class, 'unlockCapsule'])->name('unlock_capsule');
         Route::delete('/capsules/{capsuleId}', [AdminKeepsakeController::class, 'destroyCapsule'])->middleware('admin.manager')->name('destroy_capsule');
         Route::get('/{weddingId}/export-archive', [AdminKeepsakeController::class, 'exportArchive'])->name('export_archive');
+    });
+
+    // Phân Hệ Quản Trị Đổi Ngày Cưới & Tái Xác Nhận RSVP (Mục 61 PRD V3 & ADM-RSC-01)
+    Route::prefix('reschedule')->name('reschedule.')->group(function () {
+        Route::get('/', [AdminRescheduleController::class, 'index'])->name('index');
+        Route::post('/', [AdminRescheduleController::class, 'store'])->middleware('admin.manager')->name('store');
+        Route::post('/{id}/notify', [AdminRescheduleController::class, 'notifyGuests'])->middleware('admin.manager')->name('notify');
+        Route::get('/export-csv', [AdminRescheduleController::class, 'export'])->name('export');
     });
 
     // Quản lý Gói Cước & Đăng Ký (Wave 06 - ADM-A10)
