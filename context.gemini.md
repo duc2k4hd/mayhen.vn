@@ -10518,3 +10518,29 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Ảnh Khách Gửi & Live LED" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
   - `tests/Feature/AdminGuestPhotoTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện quyền hạn truy cập, lọc trạng thái, toggle duyệt, batch approve, xóa tệp vật lý, batch delete, hiển thị slideshow và xuất CSV UTF-8 BOM (100% PASSED).
 
+
+### 120. Đề Án 120: Phân Hệ Quản Trị Ma Trận Phân Quyền & Bàn Giao Vai Trò Vận Hành (Role-Based Access Control Matrix & Staff Operations Governance — Mục 2.1, 2.2, Mục 67 PRD V3 & ADM-RBC-01)
+- **Mục tiêu**:
+  - Xây dựng trung tâm quản trị phân quyền hạt nhân theo hành động (Action-Level RBAC) và điều phối bàn giao trách nhiệm nhân sự vận hành nền tảng Mây Hẹn theo Mục 2.1, 2.2 & 67 PRD V3.
+  - Phân định 6 vai trò nội bộ chính xác: `admin` (Super Admin), `manager` (Platform Operator), `designer` (Template Designer), `finance` (Finance & Billing), `support` (Customer Support), `staff` (Event & Check-in Staff).
+  - Cây 9 nhóm quyền hành động: `templates` (kho mẫu thiệp), `weddings` (dự án tiệc cưới), `guests` (danh bạ khách mời), `rsvp` (xác nhận tham dự & lời chúc), `finance` (đơn hàng & hoàn tiền), `settings` (cấu hình nền tảng), `support` (hỗ trợ & impersonate), `audit` (nhật ký kiểm toán), `security` (an ninh & sao lưu).
+  - Ma trận phân quyền tương tác: Cho phép Super Admin bật/tắt quyền hành động linh hoạt cho từng vai trò và lưu trữ an toàn vào `PlatformSetting` (`rbac_role_permissions_matrix`).
+  - Cơ chế phòng vệ vận hành: Bảo vệ Super Admin duy nhất không thể bị tự hạ quyền hoặc tự khóa tài khoản; khóa quyền tức thì (`toggleStaffLock`) khi nhân sự đổi vị trí hoặc nghỉ việc; chuyển giao vai trò (`updateStaffRole`).
+  - Hạt nhân kiểm tra quyền hạn `hasPermission`: Hỗ trợ kiểm tra quyền tại route, controller, middleware và API theo chuẩn PRD 2.2 mà không cần phụ thuộc thư viện bên ngoài.
+  - Xuất báo cáo danh sách nhân sự định dạng CSV UTF-8 BOM chuẩn tiếng Việt có dấu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/AdminRbacService.php`:
+    - Thống kê 4 KPI: Tổng nhân sự nội bộ, Quản trị viên cấp cao, Nhân sự đang hoạt động, Nhân sự đang bị tạm khóa.
+    - Bộ lọc đa chiều: Từ khóa tìm kiếm (tên, email, SĐT), lọc vai trò vận hành, lọc trạng thái (`active`, `locked`, `all`).
+    - Nghiệp vụ: `getRoleMatrix`, `saveRoleMatrix`, `hasPermission`, `updateStaffRole`, `toggleStaffLock`, `createStaff`, `exportStaffCsv`.
+  - `app/Http/Controllers/Admin/AdminRbacController.php`:
+    - Xử lý các endpoint: `index`, `storeStaff`, `updateRole`, `toggleLock`, `updateMatrix`, `export`.
+  - `resources/views/admin/pages/rbac/index.blade.php`:
+    - Giao diện Quiet Luxury chuẩn mực: 4 thẻ KPI nổi bật, thanh lọc, hệ thống Tab chuyển đổi mượt mà giữa "Danh Sách Nhân Sự & Bàn Giao" và "Ma Trận Phân Quyền RBAC".
+    - Bảng ma trận tương tác phân quyền 9 nhóm x 6 vai trò trực quan, hỗ trợ lưu cấu hình tùy biến.
+    - 2 Modal tiện ích: Thêm nhân sự mới & Chuyển giao vai trò vận hành.
+  - `routes/admin.php`: Đăng ký nhóm routes `admin.rbac.*`.
+  - `resources/views/admin/layouts/master.blade.php`: Tích hợp liên kết Sidebar "Phân Quyền & Nhân Sự" ngay sau "Quản Lý Người Dùng" và mục tìm kiếm nhanh trong Command Palette (`Ctrl+K`).
+  - `tests/Feature/AdminRbacTest.php`: Kiểm thử 10/10 test cases chuyên sâu bao phủ toàn diện: phân quyền truy cập, lọc nhân sự, tạo tài khoản mới, chuyển giao vai trò, chặn hạ quyền super admin duy nhất, khóa/mở khóa nhân sự, lưu ma trận vào DB, đánh giá `hasPermission` theo ma trận và xuất CSV (100% PASSED).
+
+

@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\AdminNotificationGatewayController;
 use App\Http\Controllers\Admin\AdminOrderRefundController;
 use App\Http\Controllers\Admin\AdminPaperScanController;
 use App\Http\Controllers\Admin\AdminPlatformSettingController;
+use App\Http\Controllers\Admin\AdminRbacController;
 use App\Http\Controllers\Admin\AdminRescheduleController;
 use App\Http\Controllers\Admin\AdminSeatingPlanController;
 use App\Http\Controllers\Admin\AdminSecurityController;
@@ -638,5 +639,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/rules/{rule}', [AdminLifecycleAutomationController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::post('/rules/{rule}/toggle', [AdminLifecycleAutomationController::class, 'toggle'])->middleware('admin.manager')->name('toggle');
         Route::post('/scan', [AdminLifecycleAutomationController::class, 'scan'])->middleware('admin.manager')->name('scan');
+    });
+
+    // Phân Hệ Quản Trị Ma Trận Phân Quyền & Bàn Giao Vai Trò Vận Hành (Mục 67 PRD V3 & ADM-RBC-01)
+    Route::prefix('rbac')->name('rbac.')->group(function () {
+        Route::get('/', [AdminRbacController::class, 'index'])->name('index');
+        Route::get('/export', [AdminRbacController::class, 'export'])->name('export');
+        Route::post('/staff', [AdminRbacController::class, 'storeStaff'])->middleware('admin.super')->name('store_staff');
+        Route::post('/staff/{id}/role', [AdminRbacController::class, 'updateRole'])->middleware('admin.super')->name('update_role');
+        Route::post('/staff/{id}/toggle-lock', [AdminRbacController::class, 'toggleLock'])->middleware('admin.super')->name('toggle_lock');
+        Route::post('/matrix', [AdminRbacController::class, 'updateMatrix'])->middleware('admin.super')->name('update_matrix');
     });
 });

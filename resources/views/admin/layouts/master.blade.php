@@ -404,6 +404,16 @@
                     <span>Quản Lý Người Dùng</span>
                 </a>
 
+                <a href="{{ route('admin.rbac.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.rbac.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </span>
+                    <span>Phân Quyền & Nhân Sự</span>
+                </a>
+
                 <a href="{{ route('admin.support.index') }}" class="mayhen_admin_nav_link {{ (request()->routeIs('admin.support.*') && !request()->routeIs('admin.support.canned.*')) ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -967,9 +977,13 @@
                     <span>🚨 Rescue Cockpit Ngày Cưới (Sự Cố & Bàn Dự Phòng)</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/guests/rescue</span>
                 </a>
-                <a href="{{ route('admin.users.index') }}" class="mayhen_admin_cmd_item" data-search="người dùng tài khoản phân quyền rbac users staff manager">
-                    <span>👥 Quản Lý Người Dùng & Phân Quyền</span>
+                <a href="{{ route('admin.users.index') }}" class="mayhen_admin_cmd_item" data-search="người dùng tài khoản khách hàng users">
+                    <span>👥 Quản Lý Người Dùng & Khách Hàng</span>
                     <span class="mayhen_admin_cmd_item_meta">/admin/users</span>
+                </a>
+                <a href="{{ route('admin.rbac.index') }}" class="mayhen_admin_cmd_item" data-search="phân quyền ma trận rbac nhân sự vai trò bàn giao role permission staff matrix">
+                    <span>🛡️ Ma Trận Phân Quyền & Bàn Giao Vai Trò Vận Hành</span>
+                    <span class="mayhen_admin_cmd_item_meta">/admin/rbac</span>
                 </a>
                 <a href="{{ route('admin.support.index') }}" class="mayhen_admin_cmd_item" data-search="trung tâm hỗ trợ support tickets khiếu nại báo lỗi trợ giúp khách hàng">
                     <span>🎧 Trung Tâm Hỗ Trợ Khách Hàng (Tickets)</span>

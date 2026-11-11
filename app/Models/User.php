@@ -113,15 +113,18 @@ class User extends Authenticatable
 
     public function canAccessAdminPanel(): bool
     {
-        return in_array($this->role, ['admin', 'manager', 'staff'], true);
+        return in_array($this->role, ['admin', 'manager', 'staff', 'designer', 'finance', 'support'], true);
     }
 
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
             'admin' => 'Quản Trị Viên',
-            'manager' => 'Quản Lý',
-            'staff' => 'Nhân Viên',
+            'manager' => 'Quản Lý Vận Hành',
+            'designer' => 'Chuyên Viên Mẫu Thiệp',
+            'finance' => 'Kế Toán & Tài Chính',
+            'support' => 'Chăm Sóc Khách Hàng',
+            'staff' => 'Nhân Viên Sự Kiện',
             'partner' => 'Cộng Tác Viên',
             default => 'Người Dùng',
         };
