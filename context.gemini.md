@@ -11142,6 +11142,52 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 137. Đề Án 137: Phân Hệ Quản Trị Album Cưới Nghệ Thuật 10 Ảnh, Bố Cục Tạp Chí Đa Phong Cách & Lightbox Toàn Màn Hình Tương Tác (Curated 10-Photo Editorial Wedding Gallery, Multi-Style Layout & Fullscreen Touch Lightbox Suite — IDEA-A05, Section 8/9 Invitation Standards & Section 27 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ quản lý và trình diễn Album 10 ảnh cưới nghệ thuật hoàn chỉnh chuẩn Quiet Luxury theo IDEA-A05, Section 8/9 Invitation Standards và Section 27 PRD V3:
+  - Cung cấp **3 Phong Cách Bố Cục Trình Diễn Album Ảnh Cưới (Gallery Layout Styles)**:
+    1. *Tạp Chí Nghệ Thuật (Editorial Masonry)*: Bố cục 12 cột so le cao thấp bất đối xứng lấy cảm hứng từ tạp chí Vogue/Elle, tạo chiều sâu thị giác phong phú và nghệ thuật.
+    2. *Lướt Ngang 3D (Coverflow Carousel)*: Trình diễn cuộn ngang thẻ ảnh 3D có nút mũi tên Trước/Sau, dải chấm tròn phân trang và tối ưu trải nghiệm vuốt chạm (touch swipe) trên di động.
+    3. *Lưới Cổ Điển Sang Trọng (Classic Luxury Grid)*: Lưới 2 cột truyền thống với tỉ lệ ảnh 4:5 sang trọng, đường bo góc mềm mại và bóng đổ lụa cao cấp.
+  - Quản lý **10 Slot Ảnh Cưới Độc Bản (Slot 01 -> Slot 10)**:
+    - Xem trước hình ảnh sắc nét, tải ảnh cưới mới lên máy chủ qua AJAX một chạm (`/thiep/{id}/album-anh-cuoi/upload-anh`).
+    - Nhập chú thích ảnh nghệ thuật (Photo Captions) ghi dấu những lời tự tình hoặc địa danh kỷ niệm cho từng bức ảnh.
+    - Di chuyển vị trí Lên/Xuống (Move Up/Down Reordering) mượt mà đổi thứ tự xuất hiện ảnh ngay tức thì bằng Pure JavaScript.
+  - Chế độ **Lightbox Toàn Màn Hình Đen Tuyền Sang Trọng (Touch Lightbox Modal)**:
+    - Chạm vào bất kỳ ảnh nào trong album để mở màn hình phóng to toàn màn hình đen mờ `backdrop-filter: blur(8px)`.
+    - Hỗ trợ xem ảnh trước/kế tiếp, bộ đếm tiến trình (`1 / 10`), hiển thị chú thích ảnh phông chữ Playfair Display thanh lịch.
+    - Tương tác đầy đủ bằng bàn phím (`Escape`, `ArrowLeft`, `ArrowRight`) trên máy tính và vuốt chạm trên điện thoại di động.
+  - Component Section 8/9 chuẩn hóa `resources/views/client/components/wedding-gallery-suite.blade.php`:
+    - Chuẩn BEM class `mayhen_invitation_gallery`, `mayhen_invitation_gallery_wrap`, `mayhen_invitation_gallery_item`, `mayhen_invitation_lightbox`.
+    - Hợp đồng Live Sync `data-sync-target="gallery.{0..9}"` cho toàn bộ 10 ảnh cưới.
+  - Tự động đồng bộ hai chiều vào `custom_config['gallery']` và bảng `weddings->extra_data['gallery']`.
+  - Ghi nhận AuditLogger `GALLERY_UPDATED`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingGalleryService.php`:
+    - `getPresetLayouts`: 3 phong cách bố cục Album ảnh cưới nghệ thuật.
+    - `getDefaultPhotos` & `resolveGalleryConfig`: Phân giải cấu hình 10 ảnh cưới với fallback an toàn.
+    - `updateGallery`: Lưu cấu hình, đồng bộ vào `wedding->extra_data['gallery']` và ghi nhận audit log.
+    - `uploadGalleryPhoto`: Tải ảnh cưới lên thư mục lưu trữ nội bộ `/storage/invitations/{id}/gallery/`.
+  - `app/Http/Controllers/Client/WeddingGalleryController.php`:
+    - `index`: Màn hình Studio quản trị Album ảnh cưới (`account.gallery.index`).
+    - `update`: Cập nhật cấu hình 10 ảnh, thứ tự và bố cục (`account.gallery.update`).
+    - `uploadPhoto`: Tải lên ảnh lẻ AJAX (`account.gallery.upload_photo`).
+    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp cưới an toàn.
+  - `resources/views/client/components/wedding-gallery-suite.blade.php`:
+    - Component hiển thị Section 8/9 chuẩn BEM `mayhen_invitation_gallery` hỗ trợ cả 3 layouts và tích hợp Lightbox Pure Vanilla JS.
+  - `resources/views/client/pages/account/gallery/index.blade.php`:
+    - Giao diện Studio quản trị Album ảnh cưới Quiet Luxury, chọn layout card 1-click, quản lý 10 slot ảnh, đổi thứ tự ảnh và live upload.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Album 10 Ảnh Cưới".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.gallery.*`.
+  - `tests/Feature/WeddingGallerySuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập trái phép 403, mở màn hình Studio, upload ảnh AJAX thành công, lưu 10 ảnh và đồng bộ extra_data, validate dữ liệu, render component kèm Lightbox và ẩn khi disabled (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,120 / 1,120 tests PASSED 100%** (5,989 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

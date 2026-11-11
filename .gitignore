@@ -162,6 +162,7 @@ Thumbs.db
 !/tests/Feature/WeddingDresscodeSuiteTest.php
 !/tests/Feature/WeddingTimelineSuiteTest.php
 !/tests/Feature/WeddingLocationAdvisorySuiteTest.php
+!/tests/Feature/WeddingGallerySuiteTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
