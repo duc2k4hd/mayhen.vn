@@ -10180,4 +10180,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Tổng suite 14 feature test files admin gần nhất: **142/142 tests PASSED 100% (568 assertions)**.
      - Laravel Pint: **100% PASSED** (0 dirty files).
 
+### [2026-11-11 15:24] - HOÀN THÀNH ĐỀ ÁN 109: HỆ THỐNG QUẢN TRỊ LỊCH SỬ PHIÊN BẢN, XỬ LÝ XUNG ĐỘT & PHỤC HỒI DỮ LIỆU THIỆP CƯỚI (INVITATION REVISION ENGINE, CONFLICT RESOLUTION & SAFE RESTORE — MỤC 23.2, 55, 68 PRD V3 & STU-03)
+- **Mục tiêu**: Xây dựng phân hệ snapshot lịch sử phiên bản cho thiệp cưới, hỗ trợ tách biệt luồng nháp / xuất bản, chống lưu snapshot thừa (SHA-256 Checksum Deduplication), tự động tính toán sai khác (Change Diff), cắt tỉa bản nháp (Prune Old Autosaves), phát hiện xung đột phiên bản khi nhiều người cùng sửa (STU-03: 409 Conflict Prevention) và phục hồi dữ liệu 1-click an toàn (Immutable Audit Trail - phục hồi tạo phiên bản mới, không bao giờ xóa lịch sử cũ).
+- **Thực hiện chi tiết**:
+  1. **Lược đồ cơ sở dữ liệu & Migration (`create_invitation_revisions_table`)**:
+     - Bảng `invitation_revisions`: `id`, `invitation_id` (foreignId cascade), `version_number` (unsignedInteger lũy tiến), `revision_type` (`autosave`, `manual_save`, `published`, `restored`, `template_switched`), `title`, `config_data` (longText JSON snapshot 10 section thiệp), `diff_summary` (JSON danh sách key thay đổi), `checksum` (SHA-256 hash), `created_by` (foreignId nullOnDelete), `ip_address`, `user_agent`, `created_at`.
+     - Index tối ưu tốc độ: Unique (`invitation_id`, `version_number`), Index (`invitation_id`, `revision_type`, `created_at`).
+  2. **Model & Eloquent Relationships (`InvitationRevision.php` & `Invitation.php`)**:
+     - Model `App\Models\InvitationRevision`: quan hệ `invitation()`, `creator()`, accessors `getRevisionTypeLabelAttribute()`, `getRevisionTypeBadgeClassAttribute()`, `getChangedFieldsCountAttribute()`.
+     - Model `App\Models\Invitation`: bổ sung quan hệ `revisions(): HasMany` và `latestRevision(): HasOne`.
+  3. **Tầng Nghiệp Vụ Chuyên Sâu (`app/Services/InvitationRevisionService.php`)**:
+     - `createRevision(...)`: Chuẩn hóa JSON snapshot, tính toán SHA-256 checksum chống lưu snapshot trùng lặp, tính lũy tiến `version_number`, sinh tóm tắt sai khác `diff_summary`, cập nhật con trỏ `revision_id` trên `invitations`.
+     - `pruneOldAutosaves(...)`: Tự động cắt tỉa các bản nháp autosave quá cũ (giữ tối đa 30 bản nháp gần nhất), bảo tồn vĩnh viễn các mốc quan trọng (`published`, `restored`, `manual_save`).
+     - `getRevisionDiff(...)`: Phân tích ma trận sai khác chi tiết giữa hai bản snapshot bất kỳ (thêm mới `added`, đã xóa `deleted`, chỉnh sửa `modified` kèm giá trị cũ / mới).
+     - `restoreRevision(...)`: Phục hồi cấu hình mục tiêu an toàn bằng cách tạo một bản revision MỚI mang nhãn `restored`, cập nhật `custom_config` và `draft_config`, xóa cache public và ghi audit log.
+     - `detectConflict(...)`: Kiểm tra xem phiên bản cơ sở của client có cũ hơn phiên bản server hay không để ngăn chặn ghi đè im lặng khi có 2 editor cùng sửa thiệp (STU-03: 409 Conflict Prevention).
+  4. **Controller & Định Tuyến An Toàn (`AdminInvitationRevisionController.php` & `routes/admin.php`)**:
+     - Controller: `app/Http/Controllers/Admin/AdminInvitationRevisionController.php` gồm các action `index`, `diff`, `restore`.
+     - Tuyến đường: `admin.invitations.revisions.*` (`index`, `diff`, `restore`) tích hợp vào prefix `admin/invitations/{id}/revisions`.
+  5. **Giao Diện Blade Chuẩn Quiet Luxury (`invitations/revisions.blade.php`)**:
+     - Tuân thủ 100% tiêu chuẩn Quiet Luxury, Pure Vanilla HTML/CSS/JS, DUY NHẤT một Google Font Open Sans `var(--mh-admin-font)`.
+     - Tiêu đề trang chuẩn: `@section('title', 'Lịch Sử Phiên Bản & Phục Hồi Thiệp Cưới')`.
+     - Thẻ tóm tắt thông tin thiệp cưới (Cặp đôi, mẫu thiệp, phiên bản hiện tại, trạng thái xuất bản).
+     - Bộ lọc theo loại phiên bản (`published`, `manual_save`, `autosave`, `restored`, `template_switched`).
+     - Bảng danh sách các mốc phiên bản kèm Badge phân nhóm, tóm tắt key thay đổi, mã SHA-256 rút gọn, người sửa và thời gian.
+     - Modal Xem So Sánh Sai Khác (Change Diff Modal): Hiển thị trực quan từng trường dữ liệu cũ và mới bằng layout 2 cột rõ ràng.
+     - Modal Xác Nhận Phục Hồi (Restore Modal): Cảnh báo rõ việc tạo phiên bản mới và giữ nguyên lịch sử.
+     - Bổ sung nút truy cập "Lịch Sử Phiên Bản & Diff" vào trang chi tiết thiệp cưới `invitations/show.blade.php`.
+  6. **Kiểm Thử & Đảm Bảo Chất Lượng (`tests/Feature/AdminInvitationRevisionTest.php`)**:
+     - Viết mới 10 test case bao phủ toàn diện:
+       * `test_admin_can_view_invitation_revisions_dashboard`: Xem dashboard lịch sử phiên bản thiệp cưới.
+       * `test_unauthorized_user_cannot_access_invitation_revisions`: Chặn khách vãng lai và user không có quyền.
+       * `test_service_creates_revision_increments_version_number`: Tạo revision với số version tăng dần lũy tiến.
+       * `test_service_deduplicates_identical_snapshots_checksum`: Chống lưu snapshot trùng lặp bằng checksum SHA-256.
+       * `test_service_computes_diff_summary_accurately`: Tự động nhận diện chính xác các trường thay đổi.
+       * `test_admin_can_fetch_revision_diff_json`: API trả về JSON phân tích sai khác giữa hai bản snapshot.
+       * `test_admin_can_restore_invitation_to_previous_version`: Khôi phục an toàn tạo phiên bản `restored` mới và cập nhật `custom_config`.
+       * `test_service_detects_concurrent_editing_conflict`: Phát hiện xung đột phiên bản khi nhiều người cùng sửa (STU-03).
+       * `test_filter_revisions_by_type`: Bộ lọc danh sách phiên bản theo loại snapshot.
+       * `test_pruning_limits_autosaves_to_thirty_maximum`: Tự động cắt tỉa giới hạn tối đa 30 bản nháp autosave.
+     - Kết quả test: **10/10 tests PASSED 100%**.
+     - Tổng suite 15 feature test files admin gần nhất: **152/152 tests PASSED 100% (600 assertions)**.
+     - Laravel Pint: **100% PASSED** (0 dirty files).
+
+
 

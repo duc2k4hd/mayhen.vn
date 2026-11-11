@@ -100,6 +100,12 @@
                     </button>
                 </form>
 
+                <!-- Revisions History Button -->
+                <a href="{{ route('admin.invitations.revisions.index', $invitation->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline" style="width: 100%; margin-top: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                    <span>Lịch Sử Phiên Bản & Diff</span>
+                </a>
+
                 <!-- Extend Expiry -->
                 <div class="mayhen_admin_card" style="margin-top: 8px; margin-bottom: 0; padding: 14px;">
                     <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 8px;">

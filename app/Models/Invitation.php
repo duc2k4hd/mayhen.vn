@@ -74,6 +74,16 @@ class Invitation extends Model
         return $this->hasMany(WeddingTimeCapsule::class)->orderBy('unlock_date');
     }
 
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(InvitationRevision::class)->orderByDesc('version_number');
+    }
+
+    public function latestRevision(): HasOne
+    {
+        return $this->hasOne(InvitationRevision::class)->latestOfMany('version_number');
+    }
+
     /**
      * Check if the current visitor or authenticated user is the owner/creator of this invitation.
      */

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFeatureFlagController;
 use App\Http\Controllers\Admin\AdminFinancialReconciliationController;
 use App\Http\Controllers\Admin\AdminInvitationRenewalController;
+use App\Http\Controllers\Admin\AdminInvitationRevisionController;
 use App\Http\Controllers\Admin\AdminInvoiceController;
 use App\Http\Controllers\Admin\AdminLifecycleAutomationController;
 use App\Http\Controllers\Admin\AdminNotificationGatewayController;
@@ -84,6 +85,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/lock', [AdminInvitationController::class, 'lock'])->middleware('admin.manager')->name('lock');
         Route::post('/{id}/unlock', [AdminInvitationController::class, 'unlock'])->middleware('admin.manager')->name('unlock');
         Route::post('/{id}/override-entitlement', [AdminInvitationController::class, 'overrideEntitlement'])->middleware('admin.manager')->name('override_entitlement');
+
+        // Phân hệ Quản trị Lịch sử Phiên bản & Phục hồi Thiệp cưới (Mục 23.2 PRD V3 & STU-03)
+        Route::prefix('{id}/revisions')->name('revisions.')->group(function () {
+            Route::get('/', [AdminInvitationRevisionController::class, 'index'])->name('index');
+            Route::get('/{revisionId}/diff', [AdminInvitationRevisionController::class, 'diff'])->name('diff');
+            Route::post('/{revisionId}/restore', [AdminInvitationRevisionController::class, 'restore'])->middleware('admin.manager')->name('restore');
+        });
     });
 
     // Quản lý Mẫu thiệp cưới (Templates Engine)
