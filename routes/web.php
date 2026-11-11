@@ -36,6 +36,7 @@ use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
+use App\Http\Controllers\Client\SmartGroupInvitationController;
 use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TemplateController;
@@ -196,6 +197,8 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec', [HouseholdRsvpController::class, 'index'])->name('household.index');
     Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec/in', [HouseholdRsvpController::class, 'printKitchenBrief'])->name('household.print');
     Route::get('/thiep/{id}/ho-gia-dinh-bep-tiec/xuat-csv', [HouseholdRsvpController::class, 'exportKitchenCsv'])->name('household.export');
+    Route::get('/thiep/{id}/thiep-theo-nhom', [SmartGroupInvitationController::class, 'index'])->name('smart_groups.index');
+    Route::post('/thiep/{id}/thiep-theo-nhom', [SmartGroupInvitationController::class, 'update'])->name('smart_groups.update');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

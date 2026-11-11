@@ -10806,6 +10806,41 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 128. Đề Án 128: Động Cơ Thiệp Thông Minh Theo Nhóm Khách & Phân Tuyến Lịch Trình Sự Kiện (Smart Guest Group Customizer & Event Scope Timeline Router — Mục 2.3 DOCX & Section 28, 29 PRD V3)
+- **Mục tiêu**:
+  - Giải quyết bài toán phân tuyến thiệp cưới thực tế theo Mục 2.3 DOCX & Section 28, 29 PRD V3: một đám cưới có nhiều đối tượng khách khác nhau (Họ hàng dự Lễ Gia Tiên buổi sáng, Đồng nghiệp/Đối tác chỉ dự Tiệc tối, Bạn thân quẩy After Party, Khách Nhà Trai, Khách Nhà Gái).
+  - Tự động phân tuyến sự kiện (`WeddingEvent`) và lịch trình (`Timeline`) theo nhóm khách: Khách họ hàng thấy cả Lễ gia tiên và Tiệc cưới; đồng nghiệp và đối tác chỉ thấy giờ đón khách và tiệc chiêu đãi tối, ngăn chặn hoàn toàn việc khách ngoài dòng họ bị nhầm giờ đến bái đường sáng sớm.
+  - 5 nhóm khách chuẩn phong tục cưới Việt Nam (`gia_tien`, `dong_nghiep`, `ban_than`, `nha_trai`, `nha_gai`) kèm khả năng tùy biến nhóm linh hoạt.
+  - Lời mời và thông điệp tùy biến cho từng nhóm có hỗ trợ merge fields (`{guest_name}`, `{salutation}`, `{couple_name}`).
+  - Tính năng Rehearsal Live Preview: Xem thử giao diện thiệp ở góc nhìn của từng nhóm khách cụ thể.
+  - Tích hợp sâu vào `InvitationEditorController@show`: Tự động truyền `$smartEvents` và `$personaMessage` vào view thiệp cưới.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/SmartGroupInvitationService.php`:
+    - `getPresetGroups`: Định nghĩa 5 nhóm khách chuẩn phong tục Việt Nam.
+    - `normalizeGroupKey`: Chuẩn hóa `group_name` thành key nhận diện thông minh.
+    - `filterEventsForGuest`: Lọc danh sách sự kiện hiển thị theo `event_ids` hoặc cấu hình nhóm.
+    - `resolveGroupGreeting`: Sinh thông điệp cá nhân hóa theo nhóm có thay thế placeholder.
+  - `app/Http/Controllers/Client/SmartGroupInvitationController.php`:
+    - `index`: Màn hình cấu hình phân tuyến theo nhóm (`account.smart_groups.index`).
+    - `update`: Lưu cấu hình phân tuyến nhóm vào `custom_config['smart_groups']`.
+  - `resources/views/client/pages/account/smart_groups/index.blade.php`:
+    - Giao diện Quiet Luxury cấu hình sự kiện cho phép và lời mời riêng cho từng nhóm, có nút xem thử Rehearsal.
+  - `app/Http/Controllers/Client/InvitationEditorController.php`:
+    - Tích hợp gọi `filterEventsForGuest` và `resolveGroupGreeting`.
+  - `resources/views/client/pages/guests.blade.php`:
+    - Thêm nút liên kết "Thiệp Theo Nhóm Khách".
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Thêm nút công cụ "Thiệp Theo Nhóm".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.smart_groups.*`.
+  - `tests/Feature/SmartGroupInvitationTest.php`:
+    - Kiểm thử 6/6 test cases chuyên sâu: phân quyền khách vãng lai, chặn 403, giao diện cấu hình nhóm, lưu cấu hình, lọc sự kiện chính xác theo nhóm, sinh lời mời merge fields (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,059 / 1,059 tests PASSED 100%** (5,652 assertions, duration ~30s).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
+
 
 
 

@@ -12,6 +12,7 @@ use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
+use App\Services\SmartGroupInvitationService;
 use App\Services\WeddingAnalyticsService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
@@ -547,12 +548,19 @@ class InvitationEditorController extends Controller
         }
         $ogUrl = request()->fullUrl();
 
+        // Động cơ Thiệp thông minh theo nhóm khách & Phân tuyến sự kiện (Mục 2.3 DOCX & Đề Án 128)
+        $smartEvents = $wedding ? SmartGroupInvitationService::filterEventsForGuest($wedding, $guest, $invitation) : collect([]);
+        if (! $personaMessage && $guest) {
+            $personaMessage = SmartGroupInvitationService::resolveGroupGreeting($invitation, $guest);
+        }
+
         $viewData = [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'template' => $template,
             'isCuratedSeven' => ! empty($config['is_curated_seven']) || ! empty($config['is_curated']),
             'guest' => $guest,
+            'smartEvents' => $smartEvents,
             'wishes' => $wishes,
             'wishSubmitUrl' => $wishSubmitUrl,
             'rsvpSubmitUrl' => $rsvpSubmitUrl,

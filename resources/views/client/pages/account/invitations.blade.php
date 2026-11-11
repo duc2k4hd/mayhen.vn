@@ -448,6 +448,16 @@
                                 </svg>
                                 <span>Bếp Tiệc &amp; Hộ Gia Đình</span>
                             </a>
+
+                            {{-- Nút Thiệp Theo Nhóm Khách (Mục 2.3 DOCX & Đề Án 128) --}}
+                            <a href="{{ route('account.smart_groups.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Phân tuyến sự kiện, lịch trình & lời mời riêng cho từng nhóm khách">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                                <span>Thiệp Theo Nhóm</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
