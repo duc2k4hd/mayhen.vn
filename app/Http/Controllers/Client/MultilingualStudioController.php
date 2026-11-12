@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Services\AuditLogger;
 use App\Services\MultilingualInvitationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -114,7 +115,7 @@ class MultilingualStudioController extends Controller
     /**
      * Cập nhật cấu hình ngôn ngữ và bản dịch tùy biến.
      */
-    public function update(Request $request, int|string $invitationId): JsonResponse
+    public function update(Request $request, int|string $invitationId): JsonResponse|RedirectResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($request, $invitationId);
 
@@ -165,6 +166,11 @@ class MultilingualStudioController extends Controller
             $invitation->id,
             'Cập nhật ngôn ngữ: '.implode(', ', $enabled)." (Mặc định: {$validated['default_locale']})"
         );
+
+        if (! $request->expectsJson()) {
+            return redirect()->route('account.multilingual.index', $invitation->id)
+                ->with('success', 'Đã lưu cấu hình đa ngôn ngữ và bản dịch thành công!');
+        }
 
         return response()->json([
             'success' => true,

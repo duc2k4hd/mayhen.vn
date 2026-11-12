@@ -12122,7 +12122,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ suite tính năng gần nhất: **77 / 77 tests PASSED 100%** (328 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
 
+### 🕊️ ĐỀ ÁN 162: PHÒNG KIỂM ĐỊNH & SOI THIỆP ĐA THIẾT BỊ CHUẨN XÁC 100% (TRUE MULTI-DEVICE VIEWPORT SIMULATOR & DEVICE INSPECTOR — IDEA-E10)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai Phòng Kiểm Định & Soi Thiệp Đa Thiết Bị (`IDEA-E10`) dành riêng cho cô dâu chú rể và studio cưới:
+  - Cho phép xem trước trực quan 100% điểm chạm của thiệp cưới trên các màn hình smartphone, tablet và desktop thực tế phổ biến nhất tại Việt Nam và quốc tế trước khi gửi đến tay quan khách.
+  - Các trụ cột chức năng chính:
+    1. *Bộ Hồ Sơ Thiết Bị Chuẩn Xác (`MultiDeviceSimulatorService::getDeviceProfiles`)*:
+       - Hỗ trợ 5 profile thiết bị với thông số kích thước pixel logic, tỷ lệ màn hình và khung vỏ máy thực tế:
+         - **iPhone 16 Pro / 15 Pro** (393 × 852 px, tỷ lệ 19.5:9, Dynamic Island bo góc sâu, Home Bar indicator).
+         - **Samsung Galaxy S24 Ultra** (412 × 915 px, tỷ lệ 19.5:9, camera nốt ruồi giọt nước, viền góc vuông sắc nét).
+         - **iPhone SE / Small Screen** (375 × 667 px, tỷ lệ 16:9, viền bezel cổ điển, phím Home tròn).
+         - **iPad Air / Pro (Tablet)** (820 × 1180 px, tỷ lệ 4:3, khung tablet kim loại mỏng nhẹ).
+         - **MacBook / Desktop Screen** (1280 × 800 px, tỷ lệ 16:10, màn hình rộng).
+    2. *Công Cụ Soi Thiệp Tương Tác Trực Quan (Interactive Simulator Controls)*:
+       - **Chuyển đổi thiết bị tức thì**: Nút bấm pills lựa chọn giữa các dòng máy.
+       - **Xoay ngang / dọc (Orientation Switcher)**: Kiểm tra khả năng thích ứng của thiệp khi người dùng xoay ngang điện thoại hoặc tablet.
+       - **Thu phóng tỷ lệ (Scale Zoom)**: Tùy chỉnh zoom 65%, 80%, 100% để quan sát trọn vẹn khung máy trên màn hình máy tính nhỏ.
+       - **Diễn tập theo nhóm khách (Persona / Group Filter)**: Chọn xem thiệp dưới góc nhìn của Bạn Bè, Quan Khách Nhà Trai, Quan Khách Nhà Gái, Đồng Nghiệp... để kiểm tra các phần hiển thị có chính xác hay không.
+       - **Kiểm định đa ngôn ngữ (Multilingual Inspector)**: Chuyển đổi ngôn ngữ Tiếng Việt, Tiếng Anh, Tiếng Trung, Tiếng Hàn...
+       - **Cuộn tự động thông minh (Auto Walkthrough)**: Nút "Cuộn Xem Tự Động" mô phỏng khách lướt từ đầu thiệp đến cuối thiệp.
+    3. *Bảo Mật Quyền Sở Hữu & Phòng Vệ IDOR*:
+       - `MultiDeviceSimulatorController` xác thực quyền sở hữu thiệp cưới chặt chẽ, ngăn chặn tuyệt đối truy cập trái phép từ tài khoản khác (HTTP 403 Forbidden).
+       - Tự động ghi log kiểm toán `DEVICE_SIMULATOR_ACCESSED` qua `AuditLogService`.
+    4. *Thiết Kế Giao Diện Sang Trọng BEM `mayhen_device_*`*:
+       - Khung mô phỏng 3D bóng bẩy, viền kim loại xước sang trọng, Dynamic Island chân thực, phím Home Bar tinh tế.
+       - Trạng thái tải iframe mượt mà, không bị giật lag hay trắng trang.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/MultiDeviceSimulatorService.php`:
+    - Quản lý profile thiết bị, phân giải thông số xoay, zoom, nhóm khách, ngôn ngữ và sinh URL nhúng an toàn.
+  - `app/Http/Controllers/Client/MultiDeviceSimulatorController.php`:
+    - Controller điều phối hiển thị, xác thực chủ sở hữu và ghi nhận audit log.
+  - `resources/views/client/pages/account/device_simulator/index.blade.php`:
+    - Giao diện Studio Soi Thiết Bị chuẩn BEM `mayhen_device_*`, tích hợp mô phỏng vỏ máy 3D và thanh điều khiển đa tính năng.
+  - `routes/web.php`:
+    - Route `account.device_simulator.index` tại `/tai-khoan/thiep/{id}/soi-thiet-bi`.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút *"Soi Đa Thiết Bị"* vào bảng điều khiển danh sách thiệp cưới của cặp đôi.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `MultiDeviceSimulatorSuiteTest`: **6 / 6 tests PASSED 100%** (43 assertions).
+  - `MultilingualInvitationTest`: **7 / 7 tests PASSED 100%** (41 assertions).
+  - `AccountInvitationsNavigationTest`: **5 / 5 tests PASSED 100%** (27 assertions).
+  - Toàn bộ suite tính năng gần nhất: **90 / 90 tests PASSED 100%** (412 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
-
-
+---

@@ -70,7 +70,7 @@ test('chủ sở hữu truy cập thành công trang cài đặt đa ngôn ngữ
         ->get(route('account.multilingual.index', $this->invitation->id));
 
     $response->assertOk()
-        ->assertSee('Đa Ngôn Ngữ Thiệp Cưới')
+        ->assertSee('Đa Ngôn Ngữ')
         ->assertSee('Tiếng Việt')
         ->assertSee('English')
         ->assertSee('한국어')

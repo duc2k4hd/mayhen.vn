@@ -35,6 +35,7 @@ use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\LoveStoryController;
 use App\Http\Controllers\Client\MemoryVaultController;
+use App\Http\Controllers\Client\MultiDeviceSimulatorController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
 use App\Http\Controllers\Client\MultilingualStudioController;
 use App\Http\Controllers\Client\OnboardingController;
@@ -451,6 +452,9 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/loi-ngo-nhom', [InvitationPersonaStudioController::class, 'index'])->name('persona.index');
     Route::post('/thiep/{id}/loi-ngo-nhom', [InvitationPersonaStudioController::class, 'update'])->middleware('throttle:30,1')->name('persona.update');
     Route::post('/thiep/{id}/loi-ngo-nhom/dat-lai', [InvitationPersonaStudioController::class, 'resetGroup'])->middleware('throttle:30,1')->name('persona.reset_group');
+
+    // Studio Soi Đa Thiết Bị Chuẩn Xác 100% (True Multi-Device Simulator - IDEA-E10)
+    Route::get('/thiep/{id}/soi-thiet-bi', [MultiDeviceSimulatorController::class, 'index'])->name('device_simulator.index');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');

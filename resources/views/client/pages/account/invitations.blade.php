@@ -716,6 +716,15 @@
                                 </svg>
                                 <span>Lời Ngỏ Nhóm</span>
                             </a>
+
+                            {{-- Nút Soi Đa Thiết Bị (IDEA-E10 & Đề Án 162) --}}
+                            <a href="{{ route('account.device_simulator.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Soi trực quan thiệp cưới trên iPhone 16 Pro, Galaxy S24, iPad và máy tính">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                </svg>
+                                <span>Soi Đa Thiết Bị</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
