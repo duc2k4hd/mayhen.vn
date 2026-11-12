@@ -311,6 +311,14 @@
                                 <span>Bộ Thiệp Đồng Bộ</span>
                             </a>
 
+                            <a href="{{ route('account.companion_card.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Thẻ kẹp kèm thiệp giấy & QR để bàn (IDEA-A06)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                                </svg>
+                                <span>Thẻ Kẹp Thiệp Giấy</span>
+                            </a>
+
                             <a href="{{ route('account.share.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ công cụ chia sẻ Zalo & thẻ xem trước OpenGraph">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <circle cx="18" cy="5" r="3"></circle>

@@ -11363,8 +11363,53 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Thêm card KPI "Kèm Ảnh Kỷ Niệm" và link xem ảnh trong bảng danh sách.
   - `tests/Feature/PhotoWishesSuiteTest.php`:
     - 7/7 test cases chuyên sâu: gửi ảnh qua multipart, gửi ảnh base64, chặn file quá 5MB, bảo mật lời chúc riêng tư, Live Wall nạp ảnh, xuất CSV có link ảnh, Studio hiển thị đúng KPI (100% PASSED).
+### 145. Đề Án 145: Phân Hệ Studio Thiết Kế Thẻ Kẹp Kèm Thiệp Giấy Truyền Thống & Thẻ QR Để Bàn Đa Kích Thước Vector (Printable Companion & QR Insert Card Studio — IDEA-A06 & Section 27 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ Studio Thiết Kế Thẻ Kẹp Kèm Thiệp Giấy Truyền Thống & Thẻ QR Để Bàn Đa Kích Thước Vector (Printable Companion & QR Insert Card Studio) theo IDEA-A06 trong Catalog 60 tính năng cao cấp và Section 27 PRD V3:
+  - Đáp ứng nhu cầu thực tế của các cặp đôi Việt Nam: Kết hợp hoàn hảo giữa thiệp giấy gửi phụ huynh/họ hàng và thiệp cưới online cho bạn bè bằng một chiếc thẻ nhỏ xinh kẹp trong phong bì thiệp giấy hoặc đặt trên bàn tiệc.
+    1. *3 Kích Thước In Chuẩn Xưởng In Thiệp Cưới*:
+       - Khổ Namecard / Mini Card: `90mm × 54mm` (chuẩn kẹp vừa vặn mọi phong bì thiệp giấy truyền thống, 10 thẻ / tờ A4).
+       - Khổ Bưu thiếp / Postcard: `100mm × 150mm` (trang trọng, kẹp thiệp cao cấp hoặc làm standee bàn tiệc, 4 thẻ / tờ A4).
+       - Khổ Thẻ Vuông: `100mm × 100mm` (phong cách Editorial hiện đại, 6 thẻ / tờ A4).
+    2. *5 Bảng Màu Hoàng Gia Quiet Luxury*:
+       - Vàng Cung Điện & Giấy Ngà (Royal Ivory & Gold).
+       - Than Chì Sâu & Vàng Hoàng Gia (Charcoal Noir & Gold).
+       - Xanh Xô Thơm & Bạc Hà Lụa (Sage Silk & Moss).
+       - Đỏ Rượu Vang & Vàng Antique (Velvet Ruby & Amber).
+       - Hồng Tro Lụa & Nâu Trầm (Dusty Rose & Terracotta).
+    3. *3 Phong Cách Hoa Văn Khung Viền*:
+       - Khung Viền Góc Hoàng Gia (Royal Crest & Corner Flourish).
+       - Tối Giản Hiện Đại Viền Đôi (Minimalist Double Frame).
+       - Họa Tiết Nhành Lá Tình Yêu (Botanical Laurel Branches).
+    4. *Khung Xem Trước Trực Quan Thời Gian Thực (Live Interactive Card Studio)*:
+       - Cập nhật tức thời văn bản (Kicker, Tên cặp đôi, Lời hướng dẫn, Nhãn QR).
+       - Hiển thị mã QR vector sắc nét sinh tự động bằng `QrCodeService::svg(...)`.
+    5. *Trang Dàn In Khổ A4 Chuẩn Nhà In (Print Sheet with Crop Marks)*:
+       - Tự động sắp xếp lưới thẻ trên trang giấy A4 (Grid 2×5 cho Namecard, Grid 2×2 cho Postcard).
+       - Có vạch xén (Crop marks) 4 góc chuẩn xác để thợ xén dao bấm chính xác từng milimet.
+       - Hỗ trợ 2 chế độ in: Thẻ chung lặp lại (`single_repeat`) hoặc in hàng loạt có tên khách mời và mã QR cá nhân hóa riêng (`guest_batch`).
+    6. *Xuất Tệp Vector SVG Độc Lập*:
+       - Tải xuống file vector SVG độ nét tuyệt đối cho các nhà in chuyên nghiệp.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/CompanionCardService.php`:
+    - Định nghĩa các hằng số kích thước `SIZES`, bảng màu `PALETTES`, hoa văn `MOTIFS`, hàm giải mã cấu hình `resolveCardConfig`, sinh mã SVG độc lập `generateCardSvg` và nạp danh sách khách `getGuestsForPrinting`.
+  - `app/Http/Controllers/Client/CompanionCardController.php`:
+    - `index`: Màn hình Studio Thiết Kế Thẻ Kẹp (`account.companion_card.index`).
+    - `update`: Lưu cấu hình thẻ kẹp vào `custom_config['companion_card']` (`account.companion_card.update`).
+    - `print`: Dàn trang in A4 có vạch xén cho nhà in (`account.companion_card.print`).
+    - `downloadSvg`: Tải file vector SVG (`account.companion_card.download_svg`).
+  - `resources/views/client/pages/account/companion_card/index.blade.php`:
+    - Giao diện Studio Quiet Luxury 2 cột, bộ điều khiển trực quan và khung xem trước thẻ thật.
+  - `resources/views/client/pages/account/companion_card/print.blade.php`:
+    - Trang in A4 chuẩn nhà in, lưới thẻ chính xác từng mm, vạch cắt 4 góc và topbar linh hoạt.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Thẻ Kẹp Thiệp Giấy" cho mỗi thiệp cưới.
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.companion_card.*`.
+  - `tests/Feature/CompanionCardStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, lưu cấu hình, tải SVG, dàn in A4 thẻ chung, dàn in A4 theo danh sách khách mời cá nhân hóa, và validation dữ liệu (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (132 assertions).
+  - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (129 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 

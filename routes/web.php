@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\CeremonyForkController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ClientSupportController;
+use App\Http\Controllers\Client\CompanionCardController;
 use App\Http\Controllers\Client\ContentReportController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
@@ -364,6 +365,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Bộ Ấn Phẩm Đồng Bộ Đa Định Dạng (Mục 2.7 Master Prompt & Section 38 PRD V3)
     Route::get('/thiep/{id}/bo-thiep-dong-bo', [StationeryKitController::class, 'index'])->name('stationery.index');
     Route::post('/thiep/{id}/bo-thiep-dong-bo/log-download', [StationeryKitController::class, 'logDownload'])->middleware('throttle:30,1')->name('stationery.log_download');
+
+    // Thẻ Kẹp Thiệp Giấy & QR Để Bàn Tiệc Cưới (Printable Companion & QR Card - IDEA-A06)
+    Route::get('/thiep/{id}/the-kep-thiep-giay', [CompanionCardController::class, 'index'])->name('companion_card.index');
+    Route::post('/thiep/{id}/the-kep-thiep-giay', [CompanionCardController::class, 'update'])->middleware('throttle:30,1')->name('companion_card.update');
+    Route::get('/thiep/{id}/the-kep-thiep-giay/in', [CompanionCardController::class, 'print'])->name('companion_card.print');
+    Route::get('/thiep/{id}/the-kep-thiep-giay/tai-svg', [CompanionCardController::class, 'downloadSvg'])->name('companion_card.download_svg');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');

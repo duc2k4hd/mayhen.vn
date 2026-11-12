@@ -412,6 +412,11 @@
                     <div class="mayhen_print_wish_message">
                         “{{ $wish->message }}”
                     </div>
+                    @if($wish->photo_url)
+                        <div style="margin-top: 10px; border-radius: 6px; overflow: hidden; max-height: 140px; display: inline-block; border: 1px solid #EAE3D9;">
+                            <img src="{{ $wish->photo_url }}" alt="Ảnh kỷ niệm {{ $wish->sender_name }}" style="max-height: 140px; max-width: 200px; object-fit: cover; display: block;">
+                        </div>
+                    @endif
                     @if($wish->signature_url)
                         <div style="margin-top: 8px; text-align: right;">
                             <img src="{{ $wish->signature_url }}" alt="Chữ ký {{ $wish->sender_name }}" style="height: 28px; max-width: 120px; object-fit: contain;">
