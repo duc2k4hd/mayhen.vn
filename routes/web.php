@@ -29,6 +29,7 @@ use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\InvitationRenewalController;
+use App\Http\Controllers\Client\LastMinuteLogController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\LoveStoryController;
@@ -50,6 +51,7 @@ use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\SmartGroupInvitationController;
 use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
+use App\Http\Controllers\Client\TableCapacityWaveController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\VenueWelcomeKioskController;
@@ -411,6 +413,20 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/nhac-hen-ky-niem', [WeddingAnniversaryController::class, 'update'])->middleware('throttle:30,1')->name('anniversary.update');
     Route::post('/thiep/{id}/nhac-hen-ky-niem/gui-thu', [WeddingAnniversaryController::class, 'testSend'])->middleware('throttle:15,1')->name('anniversary.test_send');
 
+    // Báo Cáo Sĩ Số Bàn Tiệc & Điều Phối Chỗ Ngồi Thời Gian Thực (Table Capacity Wave - IDEA-C09)
+    Route::get('/thiep/{id}/si-so-ban-tiec', [TableCapacityWaveController::class, 'index'])->name('table_capacity.index');
+    Route::post('/thiep/{id}/si-so-ban-tiec/ke-ghe/{tableId}', [TableCapacityWaveController::class, 'addExtraSeat'])->middleware('throttle:30,1')->name('table_capacity.add_seat');
+    Route::post('/thiep/{id}/si-so-ban-tiec/dieu-chuyen', [TableCapacityWaveController::class, 'dispatchGuest'])->middleware('throttle:30,1')->name('table_capacity.dispatch_guest');
+
+    // Nhật Ký Thay Đổi Giờ Chót & Điều Phối Sự Cố Phát Sinh Ngày Cưới (Last-Minute Wedding Log - IDEA-C10)
+    Route::get('/thiep/{id}/phat-sinh-gio-chot', [LastMinuteLogController::class, 'index'])->name('last_minute_logs.index');
+    Route::post('/thiep/{id}/phat-sinh-gio-chot', [LastMinuteLogController::class, 'store'])->middleware('throttle:30,1')->name('last_minute_logs.store');
+    Route::put('/thiep/{id}/phat-sinh-gio-chot/{logId}', [LastMinuteLogController::class, 'update'])->middleware('throttle:30,1')->name('last_minute_logs.update');
+    Route::post('/thiep/{id}/phat-sinh-gio-chot/{logId}/trang-thai', [LastMinuteLogController::class, 'updateStatus'])->middleware('throttle:60,1')->name('last_minute_logs.update_status');
+    Route::delete('/thiep/{id}/phat-sinh-gio-chot/{logId}', [LastMinuteLogController::class, 'destroy'])->name('last_minute_logs.destroy');
+    Route::get('/thiep/{id}/phat-sinh-gio-chot/xuat-csv', [LastMinuteLogController::class, 'export'])->name('last_minute_logs.export');
+    Route::get('/api/thiep/{id}/phat-sinh-gio-chot', [LastMinuteLogController::class, 'apiList'])->middleware('throttle:60,1')->name('last_minute_logs.api_list');
+
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
     Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
@@ -562,6 +578,10 @@ Route::get('/api/man-hinh-sanh-cuoi/{slug}/feed', [VenueWelcomeKioskController::
 
 // Trang Kỷ Niệm Ngày Cưới 1 Năm & Hàng Năm (Anniversary Keepsake Lounge - IDEA-D07)
 Route::get('/ky-niem-ngay-cuoi/{slug}', [WeddingAnniversaryController::class, 'lounge'])->name('anniversary.lounge');
+
+// Màn Hình Tablet Điều Phối Chỗ Ngồi Sảnh Tiệc Cơ Động (Live Usher Tablet - IDEA-C09)
+Route::get('/dieu-phoi-ban-tiec/{slug}', [TableCapacityWaveController::class, 'usherView'])->name('table_capacity.usher');
+Route::get('/api/dieu-phoi-ban-tiec/{slug}/feed', [TableCapacityWaveController::class, 'feed'])->middleware('throttle:120,1')->name('table_capacity.feed');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

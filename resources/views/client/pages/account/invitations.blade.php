@@ -233,11 +233,28 @@
                                 <span>Xếp Bàn</span>
                             </a>
 
+                            <a href="{{ route('account.table_capacity.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Báo cáo sĩ số bàn tiệc & sóng lấp đầy thời gian thực (IDEA-C09)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                                <span>Sĩ Số Bàn</span>
+                            </a>
+
                             <a href="{{ route('coordination.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bảng điều khiển & điều phối ngày cưới realtime">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                                 </svg>
                                 <span>Điều Phối</span>
+                            </a>
+
+                            <a href="{{ route('account.last_minute_logs.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Nhật ký thay đổi giờ chót & xử lý phát sinh cấp bách ngày cưới (IDEA-C10)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 8v4l3 3"></path>
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                </svg>
+                                <span>Phát Sinh Giờ Chót</span>
                             </a>
 
                             <a href="{{ route('live_wall.settings', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Màn chiếu LED sân khấu thời gian thực">

@@ -11727,6 +11727,81 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ các Feature Tests của 3 Đề án (149, 150, 151): **21 / 21 tests PASSED 100%** (91 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 152: PHÂN HỆ BÁO CÁO SĨ SỐ BÀN TIỆC THỜI GIAN THỰC & ĐIỀU PHỐI CHỖ NGỒI LINH HOẠT (TABLE CAPACITY WAVE & DYNAMIC SEAT DISPATCHER — IDEA-C09 & SECTION 23/24 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai phân hệ theo dõi sóng lấp đầy bàn tiệc theo thời gian thực (Capacity Wave Dynamics) và công cụ điều phối chỗ ngồi cơ động cho đội ngũ lễ tân sảnh cưới theo `IDEA-C09` và Section 23/24 PRD V3:
+  - Giải quyết bài toán thực tế ngày cưới khi khách đổ về dồn dập trong khung giờ cao điểm (17h30 - 18h30), tránh tình trạng bàn thì quá tải, bàn thì trơ trọi 2-3 người:
+    1. *Bảng Theo Dõi Sóng Khách & Tỷ Lệ Lấp Đầy Realtime (Capacity Wave Heatmap)*:
+       - 4 Thẻ KPI: Tổng sĩ số hiện diện (Check-in thực tế) / Tổng số ghế thiết kế, Tỷ lệ lấp đầy toàn sảnh (%), Số bàn đã đủ 100% mâm (Ready to serve - Báo bếp lên món nóng), Số bàn đang có khách / Quá tải.
+       - Thống kê biểu đồ sóng đón khách theo từng khung 15 phút gần nhất.
+    2. *Lưới Heatmap Bàn Tiệc & Trạng Thái Sĩ Số*:
+       - Phân loại trực quan 4 trạng thái:
+         - `ready_to_serve` (Xanh ngọc): Đủ mâm 100%, sẵn sàng phục vụ tiệc.
+         - `available` (Vàng cam): Còn X ghế trống, ưu tiên hướng dẫn khách mới đến.
+         - `overflow` (Đỏ rực): Quá tải (+X người), cần kê ghế phụ hoặc điều chuyển khách.
+         - `empty` (Xám sang): Bàn chưa có khách nào check-in.
+    3. *Màn Hình Tablet Điều Phối Cơ Động (Live Usher Tablet View)*:
+       - Route công khai `/dieu-phoi-ban-tiec/{slug}`: Giao diện tablet/iPad toàn màn hình, chữ to rõ (Senior & Staff friendly), thanh lọc khu vực 1-chạm (VIP, Nhà Trai, Nhà Gái, Bạn Bè).
+       - API Polling siêu nhẹ (2.5s/lần) cập nhật sĩ số thời gian thực không cần reload trang.
+    4. *Thao Tác Điều Phối Nhanh 1-Chạm*:
+       - Nút `+1 Ghế Phụ`: Kê thêm ghế phụ vào bàn tiệc tức thời (Cập nhật sức chứa bàn).
+       - Điều chuyển khách mời sang bàn khác nếu bàn ban đầu đã quá tải (`dispatchGuest`).
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/TableCapacityWaveService.php`:
+    - Tính toán tổng quan `getWaveOverview`, danh sách chi tiết bàn `getTablesDetail`, thuật toán tìm bàn trống phù hợp cho nhóm khách `findAvailableTablesForGroup`, kê thêm ghế phụ `quickAddExtraSeats`, điều chuyển khách `dispatchGuestToTable`.
+  - `app/Http/Controllers/Client/TableCapacityWaveController.php`:
+    - Quản trị Studio `index`, kê thêm ghế `addExtraSeat`, điều chuyển khách `dispatchGuest`, màn hình Tablet `usherView` và API realtime `feed`.
+  - `resources/views/client/pages/account/table_capacity/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, bộ lọc khu vực & trạng thái, lưới Heatmap từng bàn.
+  - `resources/views/client/pages/table_capacity/usher.blade.php`:
+    - Giao diện Tablet Lễ Tân & Điều Phối Viên Cơ Động (Mobile/Tablet Friendly, realtime polling 2.5s, lọc zone).
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Sĩ Số Bàn" ngay cạnh "Xếp Bàn".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.table_capacity.*` và routes công khai `table_capacity.usher`, `table_capacity.feed`.
+  - `tests/Feature/TableCapacityWaveSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: mở Studio, chặn 403, kê thêm ghế phụ, điều chuyển khách sang bàn mới, mở Tablet Usher, API feed realtime, tính toán chính xác sĩ số bàn (100% PASSED).
+
+---
+
+### 🕊️ ĐỀ ÁN 153: PHÂN HỆ NHẬT KÝ THAY ĐỔI GIỜ CHÓT & ĐIỀU PHỐI SỰ CỐ PHÁT SINH NGÀY CƯỚI (LAST-MINUTE WEDDING LOG & INCIDENT DISPATCHER — IDEA-C10 & SECTION 24 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai sổ ghi chép và điều phối xử lý tức thì mọi phát sinh cấp bách trong ngày cưới (kê thêm ghế, đổi món chay, mượn đạo cụ, phân công nhân sự, nhắc MC) theo `IDEA-C10` và Section 24 PRD V3:
+  - Thay thế việc ghi chép sổ tay lộn xộn hoặc nhắn Zalo dễ bị trôi tin nhắn ngày cưới:
+    1. *Phân Loại Phát Sinh Khoa Học 6 Nhóm & 3 Cấp Độ Ưu Tiên*:
+       - Danh mục: Chỗ ngồi & Bàn tiệc (`seating`), Ẩm thực & Món ăn (`dietary`), Lễ tân & Đón tiếp (`concierge`), Sân khấu & MC (`stage`), Hậu cần & Đạo cụ (`logistics`), Khác (`other`).
+       - Mức độ ưu tiên: Khẩn cấp (`urgent` - nhấp nháy đỏ), Ưu tiên cao (`high`), Bình thường (`normal`).
+    2. *Mẫu Câu Nhập Nhanh 1-Chạm (Quick Presets)*:
+       - Cung cấp các nút bấm nhanh: "+ Kê thêm 1 ghế phụ", "+ Đổi món chay", "+ Thêm ghế trẻ em", "+ Mượn ô che mưa", "+ Nhắc MC sân khấu" tự động điền form trong 1 giây.
+    3. *4 Card KPI & Quản Trị Chi Phí Phát Sinh*:
+       - Theo dõi: Tổng phát sinh, Đang chờ xử lý, Đang tiến hành, Đã hoàn thành.
+       - Tự động cộng dồn **Tổng chi phí phát sinh ước tính (VNĐ)** để cặp đôi dễ dàng đối soát với nhà hàng tiệc cưới sau hôn lễ.
+    4. *Cơ Chế Điều Phối 1-Chạm*:
+       - Dropdown chuyển trạng thái: Chờ xử lý (`pending`) -> Đang thực hiện (`in_progress`) -> Đã hoàn thành (`resolved` - tự động ghi nhận `resolved_at`).
+    5. *Xuất File CSV Đối Soát An Toàn*:
+       - Xuất toàn bộ nhật ký sự cố sang file CSV chuẩn UTF-8 BOM, kháng triệt để lỗ hổng CSV Formula Injection (CWE-1236 Defense) qua `CsvSanitizerService`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/LastMinuteLogService.php`:
+    - Quản lý nhật ký trong `custom_config['last_minute_logs']` (hiệu năng native cực nhanh, zero database schema change), lọc đa năng, tính toán thống kê `getStats`, thêm mới `createLog`, sửa `updateLog`, chuyển trạng thái `toggleStatus`, xóa `deleteLog` và xuất CSV `exportCsv`.
+  - `app/Http/Controllers/Client/LastMinuteLogController.php`:
+    - Quản trị Studio `index`, thêm mới `store`, cập nhật `update`, chuyển trạng thái `updateStatus`, xóa `destroy`, xuất CSV `export` và API realtime `apiList`.
+  - `resources/views/client/pages/account/last_minute_logs/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, thanh mẫu câu 1-chạm, bộ lọc đa năng, bảng danh sách trực quan và modal thêm nhanh.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Phát Sinh Giờ Chót" ngay cạnh "Điều Phối".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.last_minute_logs.*`.
+  - `tests/Feature/LastMinuteLogSuiteTest.php`:
+    - Kiểm thử 8/8 test cases: mở Studio, chặn 403, tạo phát sinh mới, sửa chi tiết, chuyển trạng thái 1-chạm, xóa bản ghi, xuất CSV đối soát UTF-8 BOM, API JSON realtime (100% PASSED).
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - Toàn bộ các Feature Tests của 2 Đề án mới (152, 153): **15 / 15 tests PASSED 100%** (58 assertions).
+  - Tổng các Feature Tests gần nhất: **36 / 36 tests PASSED 100%** (149 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
 
 
 
