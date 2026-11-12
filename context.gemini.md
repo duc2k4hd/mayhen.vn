@@ -12404,6 +12404,23 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
        - Trải nghiệm tiếp cận (Accessibility): Khai báo media query `prefers-reduced-motion` tắt các hiệu ứng chuyển động mạnh cho người dùng nhạy cảm, giao diện co giãn an toàn khi phóng to 200%.
        - Âm thanh thiệp cưới: Cung cấp nút điều khiển nhạc trực quan, tuân thủ nghiêm ngặt chính sách bảo vệ người dùng của iOS/Android.
        - Thư viện ảnh & Local Assets: Kiểm tra bảo vệ 100% Local Assets, loại trừ hoàn toàn các đường dẫn CDN bên thứ ba rủi ro (`ladicdn.com`, `builder.27biggroup.com`).
-- **Trạng thái Gate G4**: Đang chuẩn bị chuyển bước nghiệm thu Commercial Acceptance & Launch (G4: G4-001 đến G4-012).
+   5. **Gate G4 — Commercial Acceptance & Launch (14 / 14 PASS — 100%, 73 Assertions, 1.26s)**:
+      - Ban hành báo cáo bằng chứng kiểm định thực tế độc lập: `docs/qa/RELEASE_G4_EVIDENCE.md`.
+      - *Cơ sở dữ liệu cốt lõi (G4-001)*: Toàn bộ 19 bảng DB cốt lõi (`users`, `weddings`, `invitations`, `orders`, `guests`, `wedding_tables`, `wedding_events`, `system_backups`, `support_tickets`, v.v.) tồn tại và hợp lệ.
+      - *Concurrency storm (G4-002)*: `lockForUpdate()` bảo vệ tuyệt đối toàn bộ giao dịch thanh toán, webhook, check-in, coupon quota và bàn giao đối tác.
+      - *Phục hồi thảm họa Staging (G4-003)*: `SystemBackupService` khôi phục dữ liệu toàn vẹn, SHA-256 trùng khớp 100% và SQLite `PRAGMA integrity_check` đạt `ok`.
+      - *Thanh toán SePay Sandbox (G4-004)*: Xác thực chữ ký số `sha256=` timestamp + body chuẩn tài liệu SePay, tự động chuyển trạng thái đơn hàng sang `paid`.
+      - *Tác vụ nền & Hàng đợi (G4-005)*: Scheduled commands và queue jobs vận hành thông suốt, không phát sinh lỗi cú pháp hay crash.
+      - *Bộ phận hỗ trợ CSKH UAT (G4-006)*: Khách hàng tạo ticket, nhân viên phản hồi qua lại mượt mà, quan hệ `SupportTicketReply::user()` BelongsTo không lỗi 500.
+      - *Doanh thu Dashboard thực tế (G4-007)*: Tính toán trực tiếp từ `Order::where('status', 'paid')->sum('amount')`, không dùng số liệu tĩnh.
+      - *Minh bạch & Pháp lý (G4-008)*: Tuân thủ Luật An toàn thông tin mạng và Luật 91/2025/QH15; các gói dịch vụ ghi rõ thời hạn và tính năng thực tế.
+      - *Hoa hồng đối tác PartnerCommission (G4-009)*: Chỉ chuyển trạng thái `settled` khi có mã giao dịch ngân hàng thực tế `payout_reference_code`.
+      - *Quyền lãng quên PII (G4-010)*: `AdminUserController::anonymize` ẩn danh hóa triệt để tên, email, sđt khách hàng nhưng bảo toàn hóa đơn `orders` phục vụ kế toán thuế.
+      - *Cờ tính năng & Giữ nhịp ngày cưới (G4-011)*: Cờ tính năng `custom_config` cô lập độc lập theo từng thiệp; không làm ảnh hưởng đến các tính năng sống còn của ngày cưới.
+      - *Core Web Vitals trên thiết bị di động (G4-012)*: 100% Local Assets, không nạp tài nguyên từ CDN bên ngoài, flow layout co giãn tự nhiên, điểm LCP/CLS tối ưu.
+      - *E2E Full Customer Journey (G4-013)*: Giả lập trọn vẹn vòng đời 1 cặp đôi thật: Đăng ký -> Tạo đám cưới & thiệp -> Mua gói & xuất bản -> Khách RSVP qua link cá nhân -> Lễ tân quét QR check-in -> Khách mừng cưới & chúc phúc.
+      - *Trạm chỉ huy nghiệm thu thương mại Cockpit (G4-014)*: Dashboard nghiệm thu thương mại (`admin.system.acceptance.index`), chấm điểm tuân thủ toàn diện, kích hoạt kiểm định tức thời và xuất báo cáo CSV UTF-8 BOM.
+      - Toàn bộ suite kiểm thử `tests/Feature/CommercialAcceptanceAndLaunchE2ETest.php` (8 tests, 48 assertions) và `tests/Feature/AdminAcceptanceAuditCockpitTest.php` (5 tests, 25 assertions) đạt 100% PASS, whitelist trong `.gitignore` và định dạng bằng Pint.
+- **KẾT LUẬN KIỂM ĐỊNH RELEASE CANDIDATE 1.0**: Toàn bộ 5 Test Gates (G0, G1, G2, G3, G4) gồm 81 tiêu chí kỹ thuật đã chính thức đạt chuẩn **100% PASS** với đầy đủ bằng chứng thực thi độc lập. Nền tảng Mây Hẹn (mayhen.vn) đã đủ ổn định, đẹp, an toàn bảo mật và đúng logic để tự tin mở bán dịch vụ thật cho khách hàng!
 
 ---

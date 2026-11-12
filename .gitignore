@@ -179,6 +179,7 @@ Thumbs.db
 !/tests/Feature/FinancialAndPaymentIntegrityTest.php
 !/tests/Feature/PrivacyAndDomainIntegrityTest.php
 !/tests/Feature/WeddingDayAndLifecycleIntegrityTest.php
+!/tests/Feature/CommercialAcceptanceAndLaunchE2ETest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
