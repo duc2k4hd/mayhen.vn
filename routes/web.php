@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\DuplicateGuestController;
+use App\Http\Controllers\Client\EmergencyOfflinePackController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
@@ -372,6 +373,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/the-kep-thiep-giay/in', [CompanionCardController::class, 'print'])->name('companion_card.print');
     Route::get('/thiep/{id}/the-kep-thiep-giay/tai-svg', [CompanionCardController::class, 'downloadSvg'])->name('companion_card.download_svg');
 
+    // Gói Dự Phòng Mất Mạng Ngày Cưới (Emergency Offline Pack - IDEA-C07)
+    Route::get('/thiep/{id}/goi-ngoai-tuyen', [EmergencyOfflinePackController::class, 'index'])->name('offline_pack.index');
+    Route::get('/thiep/{id}/goi-ngoai-tuyen/tai-html', [EmergencyOfflinePackController::class, 'downloadHtml'])->name('offline_pack.download_html');
+    Route::get('/thiep/{id}/goi-ngoai-tuyen/tai-json', [EmergencyOfflinePackController::class, 'downloadJson'])->name('offline_pack.download_json');
+    Route::post('/thiep/{id}/goi-ngoai-tuyen/dong-bo', [EmergencyOfflinePackController::class, 'sync'])->middleware('throttle:30,1')->name('offline_pack.sync');
+
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
     Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
@@ -498,6 +505,7 @@ Route::post('/api/diem-danh-tiec/{slug}/ngoai-le/chuyen-tham-du/{guestId}', [Che
 // Bàn Giao Ca Trực Lễ Tân (Staff Shift Handover - TASK-VAL-23)
 Route::get('/api/diem-danh-tiec/{slug}/bien-ban-ban-giao', [CheckInController::class, 'getHandoverSummary'])->middleware('throttle:60,1')->name('checkin.shift.summary');
 Route::post('/api/diem-danh-tiec/{slug}/ban-giao-ca', [CheckInController::class, 'submitShiftHandover'])->middleware('throttle:30,1')->name('checkin.shift.handover');
+Route::post('/api/diem-danh-tiec/{slug}/dong-bo-ngoai-tuyen', [CheckInController::class, 'syncOffline'])->middleware('throttle:30,1')->name('checkin.sync_offline');
 
 // Thẻ VIP & Tra Cứu Bàn Tiệc Khi Quét QR Cá Nhân
 Route::get('/diem-danh/{token}', [CheckInController::class, 'directScan'])->name('checkin.direct');

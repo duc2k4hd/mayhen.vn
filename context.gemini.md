@@ -11408,8 +11408,44 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Đăng ký nhóm routes `account.companion_card.*`.
   - `tests/Feature/CompanionCardStudioSuiteTest.php`:
     - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, lưu cấu hình, tải SVG, dàn in A4 thẻ chung, dàn in A4 theo danh sách khách mời cá nhân hóa, và validation dữ liệu (100% PASSED).
+### 146. Đề Án 146: Phân Hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến 1-File HTML (Emergency Offline Rescue Pack & Offline Concierge PWA — IDEA-C07 & TASK-VAL-11)
+- **Mục tiêu**:
+  - Triển khai phân hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến (Emergency Offline Rescue Pack & Offline Concierge PWA) theo IDEA-C07 trong Catalog 60 tính năng cao cấp và TASK-VAL-11 PRD V3:
+  - Giải quyết bài toán thực tế nhức nhối khi trung tâm tiệc cưới nằm ở tầng hầm B1/B2 hoặc sảnh tiệc đông người làm nghẽn sóng 4G/WiFi khiến lễ tân không tra cứu được bàn cho khách:
+    1. *Gói Đóng Gói 1-File HTML Độc Lập Chạy Ngoại Tuyến (Single-File Offline Bundle)*:
+       - Tích hợp toàn bộ CSS, HTML và JavaScript thuần cùng cơ sở dữ liệu khách mời nén gọn trong một tệp `.html` duy nhất (< 150KB, tải trong 0.2s).
+       - Chạy 100% không cần kết nối mạng trên mọi thiết bị di động (Chrome, Safari, iPad, Android).
+    2. *Công Cụ Tra Cứu & Đón Khách Siêu Tốc*:
+       - Tìm kiếm tức thì trong 0.1 mili-giây (Client-side Search) theo Tên hoặc Số điện thoại.
+       - Hiển thị rõ ràng: Tên khách, Xưng hô, Phân nhóm, Số bàn tiệc và Số suất mời.
+       - Nút Điểm Danh 1-Chạm: Tự động ghi nhận thời gian đón khách và lưu trữ bền vững vào `localStorage` của trình duyệt.
+    3. *Xuất Báo Cáo CSV Ngoại Tuyến*:
+       - Nút xuất file CSV chuẩn UTF-8 BOM trực tiếp từ bộ nhớ máy để ban tổ chức và gia đình đối soát sĩ số ngay sau tiệc.
+    4. *Cơ Chế Tự Động Tái Kết Nối & Đồng Bộ Lên Server (Auto Reconnect & Sync Queue)*:
+       - Khi thiết bị bắt lại sóng mạng hoặc dâu rể thao tác từ Studio, hệ thống tự động gửi hàng đợi check-in ngoại tuyến lên máy chủ qua endpoint:
+         `POST /api/diem-danh-tiec/{slug}/dong-bo-ngoai-tuyen` và `POST /thiep/{id}/goi-ngoai-tuyen/dong-bo`.
+       - Cập nhật chính xác `checked_in_at` và `checked_in_attendees`, ghi nhận AuditLogger `OFFLINE_CHECKINS_SYNCED`.
+    5. *Studio Quản Lý Gói Ngoại Tuyến (`account.offline_pack.*`)*:
+       - 4 Card KPI: Khách mời đã đóng gói, Bàn tiệc đã xếp, Dung lượng gói cực nhẹ, Thời điểm tạo snapshot.
+       - Hướng dẫn quy trình 3 bước xử lý sự cố cho đội lễ tân.
+       - Tải xuống tệp `.html` hoặc tệp `.json` snapshot dữ liệu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/EmergencyOfflinePackService.php`:
+    - Tạo bản snapshot dữ liệu `getOfflineSnapshot`, sinh file HTML độc lập `generateStandaloneHtml` và đồng bộ check-in ngoại tuyến `syncOfflineCheckins`.
+  - `app/Http/Controllers/Client/EmergencyOfflinePackController.php`:
+    - Quản trị màn hình Studio, tải HTML/JSON và API đồng bộ từ Studio.
+  - `app/Http/Controllers/Client/CheckInController.php`:
+    - Bổ sung API `syncOffline` cho lễ tân tại sảnh tiệc cưới (có kiểm tra phân quyền PIN).
+  - `resources/views/client/pages/account/offline_pack/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, quy trình 3 bước, bảng xem trước khách mời.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Gói Mất Mạng" cho mỗi thiệp cưới.
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.offline_pack.*` và route API `checkin.sync_offline`.
+  - `tests/Feature/EmergencyOfflinePackSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, tải file HTML độc lập, tải file JSON snapshot, đồng bộ check-in từ Studio, đồng bộ check-in từ cổng lễ tân có PIN, và validation (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (129 assertions).
+  - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (136 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 

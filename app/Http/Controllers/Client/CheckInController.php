@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\Wedding;
+use App\Services\EmergencyOfflinePackService;
 use App\Services\ReceptionDryRunService;
 use App\Services\StaffShiftHandoverService;
 use Illuminate\Contracts\View\View;
@@ -1135,5 +1136,29 @@ class CheckInController extends Controller
             'success' => $deleted,
             'message' => $deleted ? 'Đã xóa ca trực lễ tân.' : 'Không tìm thấy ca trực cần xóa.',
         ]);
+    }
+
+    /**
+     * API Đồng bộ dữ liệu check-in ngoại tuyến từ lễ tân lên máy chủ (IDEA-C07 & TASK-VAL-11).
+     */
+    public function syncOffline(Request $request, string $slug, EmergencyOfflinePackService $service): JsonResponse
+    {
+        $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
+        $wedding = $invitation->wedding;
+
+        if (! $this->isAuthorizedReceptionist($request, $invitation, $wedding)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Phiên trực lễ tân đã hết hạn hoặc chưa xác thực mã PIN.',
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'checkins' => ['required', 'array'],
+        ]);
+
+        $result = $service->syncOfflineCheckins($invitation, $validated['checkins']);
+
+        return response()->json($result);
     }
 }

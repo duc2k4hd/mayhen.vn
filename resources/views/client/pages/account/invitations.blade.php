@@ -319,6 +319,14 @@
                                 <span>Thẻ Kẹp Thiệp Giấy</span>
                             </a>
 
+                            <a href="{{ route('account.offline_pack.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Gói cứu cánh ngoại tuyến khi sảnh cưới mất sóng 4G/WiFi (IDEA-C07)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 2v20"></path>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                <span>Gói Mất Mạng</span>
+                            </a>
+
                             <a href="{{ route('account.share.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ công cụ chia sẻ Zalo & thẻ xem trước OpenGraph">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <circle cx="18" cy="5" r="3"></circle>
