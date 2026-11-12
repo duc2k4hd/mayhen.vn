@@ -284,9 +284,35 @@
                 <a href="{{ route('premium.preview', 'memory-vault') }}" class="mayhen_pricing_sandbox_card">
                     <div>
                         <div class="mayhen_pricing_sandbox_icon">📸</div>
-                        <h3 class="mayhen_pricing_sandbox_name">Két Kỷ Niệm & Photo Drop</h3>
+                        <h3 class="mayhen_pricing_sandbox_name">Két Kỷ Niệm &amp; Photo Drop</h3>
                         <p class="mayhen_pricing_sandbox_card_text">
                             Khách quét mã tại bàn tải ảnh tự nhiên lên album chung, khóa tâm thư Hộp thời gian và tải Sách kỷ yếu PDF.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+
+                <a href="{{ route('premium.preview', 'welcome-kiosk') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">🏛️</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Kiosk Sảnh Cưới</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Màn hình tablet/TV cửa sảnh tiệc: Slideshow Ken Burns, chuông pha lê Web Audio và popup chào đón khách theo số bàn khi check-in.
+                        </p>
+                    </div>
+                    <div class="mayhen_pricing_sandbox_btn">
+                        <span>Trải nghiệm thử</span> &rarr;
+                    </div>
+                </a>
+
+                <a href="{{ route('premium.preview', 'signature-mosaic') }}" class="mayhen_pricing_sandbox_card">
+                    <div>
+                        <div class="mayhen_pricing_sandbox_icon">✍️</div>
+                        <h3 class="mayhen_pricing_sandbox_name">Tranh Ký Tên Vàng</h3>
+                        <p class="mayhen_pricing_sandbox_card_text">
+                            Bảo tồn trọn đời nét ký tay độc bản của quan khách thành ảnh vector trong suốt và ghép thành bức tranh hoàng kim trình chiếu toàn màn hình.
                         </p>
                     </div>
                     <div class="mayhen_pricing_sandbox_btn">

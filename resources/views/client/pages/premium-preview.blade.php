@@ -113,6 +113,64 @@
                         </div>
                     @endforeach
                 </div>
+            @elseif($feature === 'welcome-kiosk')
+                <div class="sandbox_demo_head">
+                    <h3 class="sandbox_demo_title">Màn Hình Chào Mừng Sảnh Cưới &amp; Kiosk Lễ Tân (Venue Kiosk)</h3>
+                    <span style="font-size: 0.82rem; color: #2E7D32; font-weight: 700;">Âm thanh: {{ $sandboxData['stats']['audio_effects'] }} &bull; {{ $sandboxData['stats']['mode'] }}</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                    @foreach($sandboxData['recent_welcomes'] as $rw)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; background: #FFFDF9; border: 1px solid #E8DECB; border-radius: 12px; box-shadow: 0 4px 14px rgba(184, 147, 93, 0.08);">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="font-size: 1.8rem;">🥂</span>
+                                <div>
+                                    <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: #9C7A4A; font-weight: 600;">{{ $rw['salutation'] }}</div>
+                                    <strong style="font-size: 1.05rem; color: #1F1D1A; display: block;">{{ $rw['name'] }}</strong>
+                                    <span style="font-size: 0.82rem; color: #6E685F;">Được sắp xếp tại: <strong style="color: #9C7A4A;">{{ $rw['table'] }}</strong></span>
+                                </div>
+                            </div>
+                            <span style="font-size: 0.82rem; font-weight: 700; color: #9C7A4A; background: #FAF8F5; padding: 0.35rem 0.85rem; border-radius: 999px; border: 1px solid #E5DCCD;">
+                                {{ $rw['time'] }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            @elseif($feature === 'signature-mosaic')
+                <div class="sandbox_demo_head">
+                    <h3 class="sandbox_demo_title">Bức Tranh Ký Tên Vàng Quan Khách (Signature Mosaic Wall)</h3>
+                    <span style="font-size: 0.82rem; color: #9C7A4A; font-weight: 700;">Chủ đề: {{ $sandboxData['stats']['theme'] }} &bull; Tổng: {{ $sandboxData['stats']['total_signatures'] }} chữ ký</span>
+                </div>
+
+                <div style="background: #FAF8F5; border: 1px solid #E8DECB; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; text-align: center;">
+                    <div style="font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: #9C7A4A; font-weight: 600; margin-bottom: 0.35rem;">Bút Tích Mở Đầu Hạnh Phúc</div>
+                    <div style="font-size: 1.3rem; font-weight: 700; color: #1F1D1A; font-family: var(--font-heading, serif);">
+                        {{ $sandboxData['couple']['groom'] }} &amp; {{ $sandboxData['couple']['bride'] }}
+                    </div>
+                    <p style="font-size: 0.88rem; font-style: italic; color: #6E685F; margin: 0.5rem auto 0; max-width: 600px;">
+                        "{{ $sandboxData['couple']['quote'] }}"
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                    @foreach($sandboxData['guest_signatures'] as $gs)
+                        <div style="background: #FFFFFF; border: 1px solid {{ $gs['is_pinned'] ? '#C5A880' : '#EFEAE3' }}; border-radius: 12px; padding: 1rem; position: relative;">
+                            @if($gs['is_pinned'])
+                                <span style="position: absolute; top: 8px; right: 8px; color: #C5A880; font-size: 0.9rem;">★ Ghim</span>
+                            @endif
+                            <div style="font-size: 0.72rem; background: #FAF8F5; display: inline-block; padding: 2px 6px; border-radius: 4px; color: #8C8479; margin-bottom: 0.5rem;">
+                                {{ $gs['group'] }}
+                            </div>
+                            <div style="height: 60px; display: flex; align-items: center; justify-content: center; background: #FCFBF9; border-radius: 6px; margin-bottom: 0.5rem;">
+                                <span style="font-family: 'Brush Script MT', cursive, serif; font-size: 1.8rem; color: #1F1D1A; opacity: 0.85;">{{ $gs['name'] }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #6E685F;">
+                                <strong>{{ $gs['name'] }}</strong>
+                                <span>{{ $gs['time'] }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @endif
         </div>
 

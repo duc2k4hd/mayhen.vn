@@ -30,6 +30,16 @@ class PremiumValuePreviewService
             'subtitle' => 'Bảo quản toàn bộ ảnh cưới, chữ ký, lời chúc và xuất tệp ZIP ngoại tuyến mở xem trọn đời.',
             'plan_required' => 'Gói Trọn Vẹn (Wedding Pro)',
         ],
+        'welcome-kiosk' => [
+            'title' => 'Màn Hình Chào Mừng Sảnh Cưới & Kiosk Đón Tiếp (Venue Welcome Kiosk)',
+            'subtitle' => 'Màn hình iPad hoặc TV đặt tại cửa đón tiếp: Slideshow ảnh cưới Ken Burns, chuông pha lê Web Audio và popup chào đón khách tức thời khi quét mã.',
+            'plan_required' => 'Gói Trọn Vẹn (Wedding Pro)',
+        ],
+        'signature-mosaic' => [
+            'title' => 'Bức Tranh Ký Tên Vàng Quan Khách Lưu Niệm (Signature Mosaic Wall)',
+            'subtitle' => 'Bảo tồn nét ký tay độc bản của từng quan khách thành ảnh PNG trong suốt và ghép thành tác phẩm nghệ thuật hoàng gia trình chiếu toàn màn hình.',
+            'plan_required' => 'Gói Trọn Vẹn (Wedding Pro)',
+        ],
     ];
 
     /**
@@ -95,6 +105,28 @@ class PremiumValuePreviewService
                     ['name' => 'wedding_manifest.json', 'desc' => 'Mã băm SHA-256 bảo đảm tính toàn vẹn kỹ thuật số', 'size' => '8 KB'],
                 ],
                 'stats' => ['total_wishes' => 142, 'total_photos' => 38, 'retention' => '2 Năm (Gói Pro)'],
+            ],
+            'welcome-kiosk' => [
+                'recent_welcomes' => [
+                    ['name' => 'Bác Trần Văn Phú & Gia Đình', 'table' => 'Bàn VIP 01 - Họ Nhà Trai', 'time' => '11:28', 'salutation' => 'Kính chào'],
+                    ['name' => 'Anh Nguyễn Hoàng Nam', 'table' => 'Bàn 03 - Bạn Cấp 3 Chú Rể', 'time' => '11:32', 'salutation' => 'Chào mừng'],
+                    ['name' => 'Chị Bích Thảo & Bạn', 'table' => 'Bàn 04 - Đồng Nghiệp', 'time' => '11:35', 'salutation' => 'Nhiệt liệt chào đón'],
+                ],
+                'stats' => ['active_screens' => 2, 'audio_effects' => 'Crystal Chimes (Web Audio API)', 'mode' => 'Ken Burns Slideshow 60fps'],
+            ],
+            'signature-mosaic' => [
+                'couple' => [
+                    'groom' => 'Nguyễn Tuấn',
+                    'bride' => 'Trần Lan',
+                    'quote' => 'Mỗi nét chữ ký là một mảnh ghép thiêng liêng đong đầy yêu thương cho hạnh phúc của chúng tôi.',
+                ],
+                'guest_signatures' => [
+                    ['name' => 'Lê Hoàng Minh', 'group' => 'Bạn Thân', 'time' => '11:25', 'is_pinned' => true],
+                    ['name' => 'Bác Nguyễn Văn An', 'group' => 'Họ Hàng Nhà Trai', 'time' => '11:30', 'is_pinned' => true],
+                    ['name' => 'Chị Phạm Thu Hương', 'group' => 'Đồng Nghiệp', 'time' => '11:34', 'is_pinned' => false],
+                    ['name' => 'Vũ Đình Tuấn', 'group' => 'Bạn Đại Học', 'time' => '11:38', 'is_pinned' => false],
+                ],
+                'stats' => ['total_signatures' => 168, 'pinned_count' => 12, 'theme' => 'Vàng Kim Hoàng Gia (Royal Cream & Gold)'],
             ],
             default => [],
         };

@@ -11933,6 +11933,34 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ suite tính năng gần nhất: **54 / 54 tests PASSED 100%** (213 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 157: MỞ RỘNG HỆ SINH THÁI TRẢI NGHIỆM THỬ TÍNH NĂNG CAO CẤP TRÊN BẢNG GIÁ (INTERACTIVE SANDBOX VALUE PREVIEW BOOSTER — TICKET-GATE-E1 & TASK-VAL-27)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Nâng cấp và mở rộng bộ công cụ trải nghiệm thử nghiệm tính năng cao cấp (Sandbox Mock Preview) trên trang Bảng Giá (`pricing.blade.php`) từ 4 tính năng lên **6 tính năng sảnh tiệc tinh hoa bậc nhất**, giải quyết triệt để rào cản tâm lý của khách hàng trước khi nâng cấp gói Pro theo `TICKET-GATE-E1` và `TASK-VAL-27`:
+  - 6 Tính năng trải nghiệm thực tế với dữ liệu mô phỏng sinh động:
+    1. *Sơ Đồ Xếp Bàn Tiệc Studio Trực Quan (`seating`)*: Kéo thả phân bàn, cảnh báo quá tải, tính toán sức chứa sảnh cưới.
+    2. *Cổng Tiếp Tân Điểm Danh & Quét Mã QR (`checkin`)*: Quét QR tra cứu số bàn trong 2 giây, bàn giao ca trực có mã PIN bảo vệ.
+    3. *Bức Tường Trình Chiếu Lễ Cưới Trực Tiếp (`live-wall`)*: Màn hình LED chiếu trực tiếp ảnh khách chụp tại bàn tiệc và lời chúc mừng theo thời gian thực.
+    4. *Két Kỷ Niệm Số & Xuất Gói Ngoại Tuyến ZIP (`memory-vault`)*: Bảo quản trọn đời ảnh cưới, lời chúc và xuất tệp ZIP ngoại tuyến.
+    5. *Màn Hình Chào Mừng Sảnh Cưới & Kiosk Tiếp Tân (`welcome-kiosk` - MỚI)*: Màn hình iPad/TV cửa sảnh tiệc: Slideshow Ken Burns, chuông pha lê Web Audio API và popup chào đón khách theo số bàn khi check-in (`IDEA-C08`).
+    6. *Bức Tranh Ký Tên Vàng Quan Khách Lưu Niệm (`signature-mosaic` - MỚI)*: Bảo tồn trọn đời nét ký tay độc bản của quan khách thành ảnh vector trong suốt và ghép thành bức tranh hoàng kim trình chiếu toàn màn hình (`IDEA-D09`).
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/PremiumValuePreviewService.php`:
+    - Mở rộng mảng `$supportedFeatures` và bổ sung mock data sinh động cho `welcome-kiosk` và `signature-mosaic`.
+  - `resources/views/client/pages/premium-preview.blade.php`:
+    - Bổ sung khối render giao diện trực quan cho 2 tính năng mới (thẻ chào mừng khách sảnh tiệc và tranh chữ ký hoàng gia có chữ ký dâu rể).
+  - `resources/views/client/pages/pricing.blade.php`:
+    - Mở rộng lưới `mayhen_pricing_sandbox_grid` từ 4 card thành 6 card tinh hoa, tạo đòn bẩy tỷ lệ chuyển đổi (Conversion Booster).
+  - `tests/Feature/PremiumValuePreviewTest.php`:
+    - Cập nhật và bao phủ 100% cả 6 tính năng Sandbox Preview (3/3 tests PASSED, 20 assertions).
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `PremiumValuePreviewTest`: **3 / 3 tests PASSED 100%** (20 assertions).
+  - Toàn bộ suite tính năng gần nhất: **57 / 57 tests PASSED 100%** (233 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

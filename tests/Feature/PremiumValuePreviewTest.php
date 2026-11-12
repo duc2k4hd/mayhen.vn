@@ -39,6 +39,16 @@ it('renders sandbox preview for live-wall and memory-vault', function () {
     $responseVault->assertOk()
         ->assertSee('Gói Kỷ Niệm Ngoại Tuyến Độc Lập')
         ->assertSee('wedding_manifest.json');
+
+    $responseKiosk = $this->get(route('premium.preview', 'welcome-kiosk'));
+    $responseKiosk->assertOk()
+        ->assertSee('Màn Hình Chào Mừng Sảnh Cưới &amp; Kiosk Lễ Tân', false)
+        ->assertSee('Bác Trần Văn Phú &amp; Gia Đình', false);
+
+    $responseMosaic = $this->get(route('premium.preview', 'signature-mosaic'));
+    $responseMosaic->assertOk()
+        ->assertSee('Bức Tranh Ký Tên Vàng Quan Khách')
+        ->assertSee('Lê Hoàng Minh');
 });
 
 it('returns 404 for unsupported preview features', function () {
