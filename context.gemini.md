@@ -11189,51 +11189,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
-### 139. Đề Án 139: Phân Hệ Quản Trị Sổ Ký Tên Nghệ Thuật, Sổ Lưu Bút Chúc Phúc & Lời Cảm Ơn Kết Thiệp Trang Trọng (Digital Signature Canvas, Guestbook Moderation & Thank You Ending Suite — Section 10 Invitation Standards, PRD V3 Section 27 & IDEA-F08)
+### 140. Đề Án 140: Phân Hệ Studio Trợ Lý Nhắc Hẹn RSVP Tế Nhị & Điều Phối Phân Hạng Quan Khách Chưa Phản Hồi (Smart Gentle RSVP Reminder & Guest Follow-Up Studio — IDEA-B08, Section 30/31 PRD V3 & TASK-VAL-16)
 - **Mục tiêu**:
-  - Triển khai phân hệ quản lý Sổ Ký Tên Nghệ Thuật, Sổ Lưu Bút Chúc Phúc và Lời Cảm Ơn Kết Thiệp hoàn chỉnh chuẩn Quiet Luxury theo Section 10 Invitation Standards, PRD V3 Section 27 và IDEA-F08:
-  - Cung cấp **Bảng Ký Tên Nghệ Thuật Cảm Ứng (Digital Signature Canvas — Section 10.1)**:
-    - Bảng vẽ Canvas cảm ứng (Touch / Mouse) cho phép khách mời ký tên hoặc viết chữ trực tiếp trên thiệp cưới.
-    - 4 màu mực sang trọng: Vàng Hoàng Gia (`#C5A880`), Than Chì Charcoal (`#2C2C2C`), Xanh Đêm Sâu (`#1B2A38`), Đỏ Rượu Vang (`#85182A`).
-    - Nút xóa nét vẽ, lưu chữ ký một chạm gửi AJAX (`POST /api/thiep/{id}/so-ky-ten/luu-chu-ky`).
-    - 3 phong cách nền Canvas nghệ thuật: `stardust` (Bụi sao lấp lánh), `wax_seal` (Tem sáp hoàng gia), `gold_mesh` (Lưới vàng cung đình).
-    - **TUÂN THỦ TUYỆT ĐỐI NGUYÊN TẮC SỐ 8**: Tuyệt đối CẤM chèn ảnh cặp đôi hay ảnh stock người vào vùng ký tên, chỉ dùng hiệu ứng thuần CSS canvas và hoa văn hoàng gia.
-  - Cung cấp **Sổ Lưu Bút & Kiểm Duyệt Lời Chúc (Digital Guestbook & Moderation Suite — Section 10.3)**:
-    - Khách mời gửi lời chúc kèm tùy chọn gửi riêng tư kín đáo (`is_private`) cho cặp đôi.
-    - Hiển thị chữ ký điện tử đính kèm lời chúc của từng quan khách trên tường lưu bút.
-    - Màn hình Studio quản trị lời chúc thông minh: Ghim lời chúc ý nghĩa lên đầu (`pin`), Phê duyệt hiển thị (`approve`), Ẩn lời chúc (`hide`), Phản hồi cảm ơn từ cặp đôi (`reply`), và Xóa lời chúc vi phạm (`delete`).
-    - Xuất danh sách lời chúc kỷ niệm ra file CSV chuẩn UTF-8 BOM (`/thiep/{id}/so-ky-ten/xuat-csv`) mở chuẩn trên Excel.
-  - Cung cấp **Lời Cảm Ơn Kết Thiệp Trang Trọng (Ending & Thank You Section — Section 10.4)**:
-    - 3 phong cách kết thiệp: `intimate_editorial` (Tri Ân Tạp Chí Cảm Xúc), `royal_seal` (Con Dấu Hoàng Gia & Chữ Lồng Monogram), `minimalist_modern` (Tối Giản Hiện Đại & Tinh Tế).
-    - 4 mẫu lời tri ân mẫu lễ nghi văn hóa cưới Việt chọn nhanh 1-click.
-    - Bố cục gồm ảnh cưới kỷ niệm khép lại (`data-sync-target="hero_photo_url"`), tiêu đề cảm ơn, lời tri ân (`data-sync-target="thank_you_message"`), và tên cặp đôi uyên ương (`<span data-sync-target="groom_name"></span> & <span data-sync-target="bride_name"></span>`).
-  - Component Section 10 chuẩn hóa `resources/views/client/components/wedding-interactive-ending.blade.php`:
-    - Chuẩn BEM class `mayhen_invitation_interactive_ending`, `mayhen_invitation_signature`, `mayhen_invitation_wishes`, `mayhen_invitation_ending`.
-    - Hợp đồng Live Sync `data-sync-target` đầy đủ cho `thank_you_message`, `hero_photo_url`, `groom_name`, `bride_name`.
-  - Tự động đồng bộ hai chiều vào `custom_config['interactive_ending']` và bảng `weddings->extra_data['interactive_ending']`.
-  - Ghi nhận AuditLogger `INTERACTIVE_ENDING_UPDATED`.
+  - Triển khai phân hệ Studio Trợ Lý Nhắc Hẹn RSVP thông minh, tế nhị theo chuẩn văn hóa cưới Việt Nam theo IDEA-B08, Section 30/31 PRD V3 và TASK-VAL-16:
+  - Cung cấp **Bảng Điều Khiển Rà Soát Phân Hạng Quan Khách Thông Minh (Smart Guest Follow-Up Dashboard)**:
+    - 4 khối chỉ số trực quan: Khách chưa phản hồi RSVP (`unresponsive`), Khách chưa từng gửi thiệp (`unsent`), Khách đã báo đi nhưng chưa gán bàn (`attending_unseated`), Tỷ lệ khách đã được nhắc hẹn (`reminded_total`).
+    - Lọc linh hoạt theo Nhóm khách mời (Bạn bè, Đồng nghiệp, Họ hàng nhà trai, Họ hàng nhà gái...) và theo Tab Trạng thái.
+    - Cảnh báo **Khung giờ vàng gửi tin nhắn tế nhị**: Trưa 11:30 - 13:00 và Tối 19:30 - 21:00, tránh làm phiền giờ làm việc hoặc giấc ngủ của người lớn tuổi.
+  - Cung cấp **Bộ Mẫu Tin Nhắn Nhắc Hẹn Lễ Nghi 4 Nhóm Đối Tượng (4 Preset Etiquette Messages)**:
+    1. *Trân Trọng & Kính Cẩn (`respectful`)*: Dành cho Người lớn, Họ hàng, Trưởng bối. Dạ thưa lịch thiệp, hỏi thăm sức khỏe và xin ý kiến tham dự để chuẩn bị chu đáo.
+    2. *Thân Mật & Ấm Áp (`intimate`)*: Dành cho Bạn thân, Bạn học, Đồng trang lứa. Vui vẻ, nhắc chốt số lượng mâm cỗ để xếp chỗ ngồi cạnh nhau cho rôm rả.
+    3. *Lịch Thiệp & Trang Nhã (`polite`)*: Dành cho Đồng nghiệp, Khách cơ quan, Đối tác. Gọn gàng, trang trọng, tôn trọng thời gian.
+    4. *Nhẹ Nhàng Nhắc Ngày Chốt Cỗ (`urgent_deadline`)*: Dành cho khách chưa trả lời khi sát hạn chốt mâm cỗ với nhà hàng (24-48 giờ tới).
+    - Tự động thay thế `{ten_khach}`, `{xung_ho}`, `{chu_re}`, `{co_dau}`, `{ngay_cuoi}`, và `{link_thiep}` cá nhân hóa.
+  - **Công Cụ Gửi Nhắc Hẹn 1-Chạm & Đánh Dấu Lịch Sử**:
+    - Nút Sao Chép Lời Nhắn kèm link riêng (`btn-copy-msg`) có thông báo Toast và popup gợi ý ghi nhận.
+    - Nút Mở Zalo (`https://zalo.me/{phone}`) dẫn thẳng vào khung chat Zalo của khách mời.
+    - Ghi nhận số lần đã nhắc (`reminder_count`) và thời gian nhắc gần nhất (`reminded_at`) trên bảng `guests` và lưu vết giao dịch vào bảng `guest_deliveries`.
+    - Hỗ trợ đánh dấu đã nhắc hàng loạt (`batchRecord`) cho danh sách checkbox nhiều khách mời.
+    - Xuất danh sách khách cần nhắc ra file CSV chuẩn UTF-8 BOM (`export_csv`) để gia đình cầm tay gọi điện hỏi thăm.
 - **Kiến trúc & Tệp Tin**:
-  - `app/Services/WeddingInteractiveEndingService.php`:
-    - Quản lý 3 phong cách kết thiệp, 4 mẫu lời cảm ơn, 3 nền canvas, chuyển DataURL thành file ảnh PNG trên storage public, kiểm duyệt lời chúc và xuất file CSV.
-  - `app/Http/Controllers/Client/WeddingInteractiveEndingController.php`:
-    - `index`: Màn hình Studio quản trị Section 10 (`account.interactive_ending.index`).
-    - `update`: Lưu cấu hình kết thiệp, ký tên và lưu bút (`account.interactive_ending.update`).
-    - `moderateWish`: AJAX kiểm duyệt ghim, duyệt, ẩn, trả lời, xóa (`account.interactive_ending.moderate_wish`).
-    - `exportWishes`: Xuất danh sách lời chúc ra file CSV (`account.interactive_ending.export_wishes`).
-    - `saveSignature`: Public API khách mời lưu chữ ký canvas (`invitation.signature.save`).
-  - `resources/views/client/components/wedding-interactive-ending.blade.php`:
-    - Component Section 10 chuẩn BEM tích hợp Canvas vẽ tay cảm ứng Retina, đổi màu mực, gửi lời chúc AJAX và lời cảm ơn kết thiệp.
-  - `resources/views/client/pages/account/interactive_ending/index.blade.php`:
-    - Giao diện Studio quản trị Sổ Ký Tên, Lưu Bút & Lời Cảm Ơn Quiet Luxury, bảng kiểm duyệt trực quan và modal phản hồi lời cảm ơn.
+  - `database/migrations/2026_11_12_090246_add_reminder_tracking_to_guests_table.php`:
+    - Bổ sung cột `reminded_at` (timestamp, nullable) và `reminder_count` (unsignedSmallInteger, default 0) vào bảng `guests`.
+  - `app/Models/Guest.php`:
+    - Thêm `reminded_at` và `reminder_count` vào `$fillable` và `$casts`.
+  - `app/Services/GentleReminderPlannerService.php`:
+    - Quản lý 4 mẫu preset, phân tích danh sách theo nhóm và trạng thái, ghi nhận nhắc hẹn lẻ và hàng loạt, sinh tin nhắn cá nhân hóa và xuất file CSV UTF-8 BOM.
+  - `app/Http/Controllers/Client/GentleReminderController.php`:
+    - `index`: Màn hình Studio Trợ Lý Nhắc Hẹn RSVP (`account.reminder.index`).
+    - `previewMessage`: AJAX xem trước tin nhắn mẫu cho 1 khách (`account.reminder.preview`).
+    - `record`: AJAX ghi nhận nhắc hẹn cho 1 khách (`account.reminder.record`).
+    - `batchRecord`: AJAX ghi nhận nhắc hẹn hàng loạt (`account.reminder.batch_record`).
+    - `exportCsv`: Tải về file CSV danh sách khách cần nhắc (`account.reminder.export_csv`).
+  - `resources/views/client/pages/account/reminder/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, chuyển đổi preset mẫu, bộ lọc nhóm và tab, bảng danh sách khách mời, modal xem trước và sao chép 1-chạm.
   - `resources/views/client/pages/account/invitations.blade.php`:
-    - Bổ sung nút công cụ "Sổ Ký Tên & Lời Cảm Ơn".
+    - Bổ sung nút công cụ "Trợ Lý Nhắc Hẹn RSVP".
   - `routes/web.php`:
-    - Đăng ký nhóm routes `account.interactive_ending.*` và API public `invitation.signature.save`.
-  - `tests/Feature/WeddingInteractiveEndingSuiteTest.php`:
-    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, lưu cấu hình và đồng bộ extra_data, kiểm duyệt lời chúc (pin, approve, hide, reply, delete), xuất file CSV, khách mời lưu chữ ký canvas, render component chuẩn BEM data-sync-target và ẩn khi disabled (100% PASSED).
+    - Đăng ký nhóm routes `account.reminder.*`.
+  - `tests/Feature/GentleReminderStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, lọc theo nhóm và trạng thái, preview tin nhắn cá nhân hóa AJAX, ghi nhận nhắc hẹn lẻ (lưu guest_deliveries), ghi nhận hàng loạt, và xuất file CSV UTF-8 BOM (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,134 / 1,134 tests PASSED 100%** (6,073 assertions).
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,141 / 1,141 tests PASSED 100%** (6,110 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
 
 
 

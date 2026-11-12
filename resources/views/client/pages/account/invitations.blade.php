@@ -564,6 +564,15 @@
                                 </svg>
                                 <span>Sổ Ký Tên &amp; Lời Cảm Ơn</span>
                             </a>
+
+                            {{-- Nút Trợ Lý Nhắc Hẹn RSVP (IDEA-B08, Section 30/31 PRD V3 & Đề Án 140) --}}
+                            <a href="{{ route('account.reminder.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Rà soát khách chưa phản hồi và gửi tin nhắn nhắc hẹn RSVP tế nhị 1-chạm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>Trợ Lý Nhắc Hẹn RSVP</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">
