@@ -581,6 +581,15 @@
                                 </svg>
                                 <span>Bác Sĩ Chất Lượng Thiệp</span>
                             </a>
+
+                            {{-- Nút Tra Cứu Bàn Tiệc & Chỗ Ngồi (IDEA-C04 & Đề Án 142) --}}
+                            <a href="{{ route('account.table_finder.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Cấu hình thẻ vị trí bàn tiệc cá nhân hóa và thanh tra cứu số bàn cho khách">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="12 8 8 12 12 16 16 12 12 8"></polygon>
+                                </svg>
+                                <span>Tra Cứu Bàn Tiệc</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

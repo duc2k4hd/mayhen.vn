@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
+use App\Http\Controllers\Client\GuestTableFinderController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\HouseholdRsvpController;
 use App\Http\Controllers\Client\InvitationAnalyticsController;
@@ -256,6 +257,10 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/bac-si-chat-luong', [QualityDoctorController::class, 'index'])->name('quality_doctor.index');
     Route::get('/thiep/{id}/bac-si-chat-luong/quet-lai', [QualityDoctorController::class, 'rescan'])->name('quality_doctor.rescan');
     Route::post('/thiep/{id}/bac-si-chat-luong/dien-tap', [QualityDoctorController::class, 'simulate'])->name('quality_doctor.simulate');
+
+    // Tra Cứu Vị Trí Bàn Tiệc & Hướng Dẫn Chỗ Ngồi (IDEA-C04 & Đề Án 142)
+    Route::get('/thiep/{id}/tra-cuu-ban-tiec', [GuestTableFinderController::class, 'index'])->name('table_finder.index');
+    Route::post('/thiep/{id}/tra-cuu-ban-tiec', [GuestTableFinderController::class, 'update'])->name('table_finder.update');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
@@ -533,6 +538,9 @@ Route::post('/api/thiep/{id}/hop-mung-cuoi/nhan-qua', [WeddingGiftRegistryContro
 
 // API Khách Mời Lưu Chữ Ký Điện Tử Từ Canvas (Section 10 & Đề Án 139)
 Route::post('/api/thiep/{id}/so-ky-ten/luu-chu-ky', [WeddingInteractiveEndingController::class, 'saveSignature'])->middleware('throttle:30,1')->name('invitation.signature.save');
+
+// API Khách Mời Tra Cứu Vị Trí Bàn Tiệc & Khu Vực Ngồi (IDEA-C04 & Đề Án 142)
+Route::post('/thiep/{slug}/tra-cuu-ban-tiec', [GuestTableFinderController::class, 'search'])->middleware('throttle:30,1')->name('invitation.table_finder.search');
 
 // Đăng Ký Đối Tác Studio & Wedding Planner (Public)
 Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');

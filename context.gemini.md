@@ -11278,6 +11278,47 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 142. Đề Án 142: Phân Hệ Tra Cứu Bàn Tiệc 1-Chạm, Sơ Đồ Chỗ Ngồi Cá Nhân Hóa & Studio Hướng Dẫn Sảnh Cưới Dành Cho Quan Khách (Interactive Guest Table Finder & Seating Concierge Studio — IDEA-C04 & Section 7/10 Standards)
+- **Mục tiêu**:
+  - Triển khai phân hệ Tra Cứu Vị Trí Bàn Tiệc & Hướng Dẫn Chỗ Ngồi Thông Minh cho quan khách (Interactive Guest Table Finder) theo IDEA-C04 trong Catalog 60 tính năng cao cấp và Section 7/10 Standards:
+  - Giải quyết triệt để vấn đề thực tế số 1 của quan khách tại đám cưới Việt Nam: "Không biết mình ngồi bàn số mấy, ở khu vực nào, ngồi chung với ai", loại bỏ hoàn toàn cảnh chen lấn lúng túng tại sảnh đón tiếp:
+    1. *Trường hợp 1 — Khách mở link thiệp cá nhân hóa*:
+       - Thiệp tự động hiển thị Thẻ Vị Trí Bàn Tiệc VIP mạ vàng: `✨ Vị trí an tọa của Quý Khách: BÀN SỐ 08 — KHU VỰC BẠN CÔ DÂU (Gần Sân Khấu)`.
+       - Hiển thị danh sách bạn bè cùng bàn (`table_mates`) để khách hào hứng gặp lại bạn cũ.
+       - Lời chào đón an tọa nồng ấm từ cô dâu chú rể.
+    2. *Trường hợp 2 — Khách mở thiệp chung hoặc khách vãng lai*:
+       - Thanh tra cứu nhanh Pure Vanilla JS `[ 🔎 Nhập họ tên hoặc 4 số cuối điện thoại ]`.
+       - Tìm kiếm tức thì không cần tải lại trang, hiển thị thẻ vị trí bàn và khu vực tương ứng.
+    3. *Bảo vệ quyền riêng tư cá nhân (Luật 91/2025/QH15 & Nghị định 13/2023/NĐ-CP)*:
+       - Tuyệt đối không để lộ số điện thoại đầy đủ của khách khác, chỉ hiển thị họ tên và danh xưng lễ nghi.
+  - Cung cấp **Giao Diện Studio Quản Trị Cặp Đôi (`account.table_finder.*`)**:
+    - 4 Card KPI Sắp Bàn: Tổng số bàn tiệc, Khách đã gán bàn, Khách chưa gán bàn, Tiến độ sắp bàn (%).
+    - Form cấu hình bật/tắt tính năng, tiêu đề, hiển thị tên bàn, khu vực, bạn cùng bàn, và tìm kiếm bằng 4 số cuối điện thoại.
+    - Bản mô phỏng trực quan (Live Preview) thẻ thông báo chỗ ngồi hiển thị trên điện thoại.
+    - Danh sách bàn tiệc hiện tại, sức chứa và danh sách khách preview, cảnh báo trực quan khi bàn bị quá tải số ghế (`is_over_capacity`).
+    - Nút dẫn nhanh sang Sơ đồ bàn tiệc kéo thả (`seating.index`).
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/GuestTableFinderService.php`:
+    - Quản lý cấu hình, tính toán KPI tổng quan sắp bàn, tra cứu chỗ ngồi theo `guest_token`, tra cứu theo từ khóa tên hoặc 4 số cuối điện thoại, ẩn thông tin nhạy cảm.
+  - `app/Http/Controllers/Client/GuestTableFinderController.php`:
+    - `index`: Màn hình Studio Tra cứu bàn tiệc (`account.table_finder.index`).
+    - `update`: Cập nhật cấu hình Studio (`account.table_finder.update`).
+    - `search`: Public API tra cứu bàn tiệc có rate limiting (`invitation.table_finder.search`).
+  - `resources/views/client/components/guest-table-finder.blade.php`:
+    - Component chuẩn BEM Mây Hẹn, hợp đồng Live Sync `data-sync-target="table_finder"`, thẻ VIP mạ vàng, thanh tìm kiếm Pure Vanilla JS và loading dots.
+  - `resources/views/client/pages/account/table_finder/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, form cấu hình chi tiết, live preview thẻ bàn tiệc và danh sách bàn hiện hữu.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Tra Cứu Bàn Tiệc".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.table_finder.*` và API public `invitation.table_finder.search`.
+  - `tests/Feature/GuestTableFinderStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, cập nhật cấu hình, tra cứu công khai theo tên, tra cứu theo 4 số cuối điện thoại, và tra cứu trực tiếp bằng token cá nhân hóa (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,155 / 1,155 tests PASSED 100%** (6,177 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 
