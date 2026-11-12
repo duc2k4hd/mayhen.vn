@@ -41,6 +41,7 @@ use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
+use App\Http\Controllers\Client\PublishDiffController;
 use App\Http\Controllers\Client\QualityDoctorController;
 use App\Http\Controllers\Client\RsvpChangeHistoryController;
 use App\Http\Controllers\Client\RsvpEnforcementController;
@@ -51,8 +52,10 @@ use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
+use App\Http\Controllers\Client\VenueWelcomeKioskController;
 use App\Http\Controllers\Client\VietQrController;
 use App\Http\Controllers\Client\WebhookController;
+use App\Http\Controllers\Client\WeddingAnniversaryController;
 use App\Http\Controllers\Client\WeddingArchiveExportController;
 use App\Http\Controllers\Client\WeddingBroadcastController;
 use App\Http\Controllers\Client\WeddingDresscodeController;
@@ -391,6 +394,23 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/cong-gia-dinh', [FamilyPortalController::class, 'update'])->middleware('throttle:30,1')->name('family_portal.update');
     Route::post('/thiep/{id}/cong-gia-dinh/lam-moi-token/{side}', [FamilyPortalController::class, 'regenerateToken'])->middleware('throttle:30,1')->name('family_portal.regenerate_token');
 
+    // Màn Hình Chào Mừng Lễ Tân & Kiosk Sảnh Cưới (Venue Welcome Kiosk - IDEA-C08)
+    Route::get('/thiep/{id}/man-hinh-sanh-cuoi', [VenueWelcomeKioskController::class, 'index'])->name('welcome_kiosk.index');
+    Route::post('/thiep/{id}/man-hinh-sanh-cuoi', [VenueWelcomeKioskController::class, 'update'])->middleware('throttle:30,1')->name('welcome_kiosk.update');
+    Route::post('/thiep/{id}/man-hinh-sanh-cuoi/mo-phong', [VenueWelcomeKioskController::class, 'simulate'])->middleware('throttle:30,1')->name('welcome_kiosk.simulate');
+
+    // Thanh Tra & So Sánh Bản Nháp vs Bản Xuất Bản (Publish Diff Inspector - IDEA-E05)
+    Route::get('/thiep/{id}/so-sanh-ban-nhap', [PublishDiffController::class, 'index'])->name('publish_diff.index');
+    Route::post('/thiep/{id}/so-sanh-ban-nhap/xuat-ban', [PublishDiffController::class, 'publish'])->middleware('throttle:20,1')->name('publish_diff.publish');
+    Route::post('/thiep/{id}/so-sanh-ban-nhap/huy-nhap', [PublishDiffController::class, 'discard'])->middleware('throttle:30,1')->name('publish_diff.discard');
+    Route::post('/thiep/{id}/so-sanh-ban-nhap/khoi-phuc/{revisionId}', [PublishDiffController::class, 'rollback'])->middleware('throttle:20,1')->name('publish_diff.rollback');
+    Route::get('/api/thiep/{id}/so-sanh-ban-nhap/diff', [PublishDiffController::class, 'apiDiff'])->middleware('throttle:60,1')->name('publish_diff.api_diff');
+
+    // Nhắc Hẹn Kỷ Niệm Ngày Cưới 1 Năm & Hàng Năm (1st Anniversary Keepsake Reminder - IDEA-D07)
+    Route::get('/thiep/{id}/nhac-hen-ky-niem', [WeddingAnniversaryController::class, 'index'])->name('anniversary.index');
+    Route::post('/thiep/{id}/nhac-hen-ky-niem', [WeddingAnniversaryController::class, 'update'])->middleware('throttle:30,1')->name('anniversary.update');
+    Route::post('/thiep/{id}/nhac-hen-ky-niem/gui-thu', [WeddingAnniversaryController::class, 'testSend'])->middleware('throttle:15,1')->name('anniversary.test_send');
+
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
     Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
@@ -535,6 +555,13 @@ Route::get('/cong-gia-dinh/{slug}/{side}/dang-xuat', [FamilyPortalController::cl
 Route::post('/cong-gia-dinh/{slug}/{side}/them-khach', [FamilyPortalController::class, 'storeGuest'])->middleware('throttle:30,1')->name('family_portal.store_guest');
 Route::post('/cong-gia-dinh/{slug}/{side}/cap-nhat-rsvp/{guestId}', [FamilyPortalController::class, 'updateRsvp'])->middleware('throttle:60,1')->name('family_portal.update_rsvp');
 Route::get('/cong-gia-dinh/{slug}/{side}/in', [FamilyPortalController::class, 'print'])->name('family_portal.print');
+
+// Màn Hình Chào Mừng Kiosk Sảnh Cưới Toàn Màn Hình (Public Kiosk Display - IDEA-C08)
+Route::get('/man-hinh-sanh-cuoi/{slug}', [VenueWelcomeKioskController::class, 'show'])->name('welcome_kiosk.show');
+Route::get('/api/man-hinh-sanh-cuoi/{slug}/feed', [VenueWelcomeKioskController::class, 'feed'])->middleware('throttle:120,1')->name('welcome_kiosk.feed');
+
+// Trang Kỷ Niệm Ngày Cưới 1 Năm & Hàng Năm (Anniversary Keepsake Lounge - IDEA-D07)
+Route::get('/ky-niem-ngay-cuoi/{slug}', [WeddingAnniversaryController::class, 'lounge'])->name('anniversary.lounge');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

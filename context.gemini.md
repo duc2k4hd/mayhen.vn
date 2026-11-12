@@ -11606,6 +11606,127 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (136 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 149: PHÂN HỆ MÀN HÌNH CHÀO MỪNG SẢNH CƯỚI & TABLET ĐÓN TIẾP THÔNG MINH (VENUE WELCOME DISPLAY & RECEPTION KIOSK — IDEA-C08)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai màn hình chào mừng sảnh cưới tự động dành cho Tablet/iPad đặt tại bàn đón tiếp lễ tân sảnh cưới (hoặc màn hình TV sảnh đón khách) theo `IDEA-C08` và Section 23/24 PRD V3:
+  - Khi khách mời check-in tại bàn lễ tân hoặc qua mã QR của bàn đón tiếp:
+    1. *Hiệu ứng Chào Mừng VIP Tức Thì (Realtime Popup & Crystal Chimes)*:
+       - Tự động hiển thị popup toàn màn hình trang trọng: "Nhiệt Liệt Chào Mừng: [Danh Xưng] [Tên Khách] • Vị trí bàn tiệc: [Số Bàn] • [Khu vực]".
+       - Tự động phát chuỗi âm thanh chuông pha lê Web Audio API ngân vang thuần khiết (không phụ thuộc file MP3 bên ngoài).
+       - Tự động ẩn sau số giây đã cấu hình (4s - 30s) kèm thanh tiến trình đếm ngược mượt mà.
+    2. *Slideshow Ảnh Cưới Nghệ Thuật (Ken Burns Motion)*:
+       - Trình chiếu slideshow ảnh cưới độ phân giải cao của cặp đôi với hiệu ứng chuyển động mờ ảo (Ken Burns effect).
+       - Khối Monogram hoàng gia mạ vàng, thông tin ngày cưới, địa điểm sảnh tiệc và đồng hồ đếm ngược giờ khai tiệc.
+    3. *API Polling Siêu Nhẹ Realtime (1s/lần)*:
+       - Endpoint `GET /api/man-hinh-sanh-cuoi/{slug}/feed?since={timestamp_ms}` trả về lượt check-in gần nhất, tối ưu zero-lag và tự động nhận diện thiết bị.
+    4. *Studio Cặp Đôi Cấu Hình Toàn Diện*:
+       - Bật/Tắt màn hình Kiosk, tùy biến tiêu đề chào đón, thời gian popup (4s - 30s), bật/tắt chuông pha lê, hiển thị số bàn, đồng hồ đếm ngược, lời tri ân, mã PIN bảo vệ và nút "Kích Hoạt Diễn Tập Thử Nghiệm (Simulate Check-in)".
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/VenueWelcomeKioskService.php`:
+    - Quản lý cấu hình `getConfig`/`updateConfig`, lấy feed realtime `getLatestCheckInFeed`, trích xuất dữ liệu khởi tạo `getKioskInitData` và kích hoạt diễn tập thử nghiệm `simulateCheckInForTesting`.
+  - `app/Http/Controllers/Client/VenueWelcomeKioskController.php`:
+    - Quản trị màn hình Studio `index`, lưu cấu hình `update`, kích hoạt thử nghiệm `simulate`, màn hình toàn màn hình công khai `show` và API realtime `feed`.
+  - `resources/views/client/pages/account/welcome_kiosk/index.blade.php`:
+    - Giao diện Studio cấu hình Quiet Luxury 2 cột, Live Preview Kiosk, nút kích hoạt giả lập kiểm tra chuông pha lê và popup chào mừng, nút mở Fullscreen.
+  - `resources/views/client/pages/welcome_kiosk/show.blade.php`:
+    - Giao diện Kiosk toàn màn hình sang trọng (Monogram, Garamond Typography, Web Audio API Crystal Chimes, thanh đếm ngược, polling feed 1.5s/lần).
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Kiosk Sảnh Cưới".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.welcome_kiosk.*` và routes công khai `welcome_kiosk.show`, `welcome_kiosk.feed`.
+  - `tests/Feature/VenueWelcomeKioskSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn truy cập trái phép 403, mở Studio, lưu cấu hình, kích hoạt thử nghiệm, mở Kiosk khi bật, chặn khi tắt 404, API feed realtime (100% PASSED).
+
+---
+
+### 🕊️ ĐỀ ÁN 150: PHÂN HỆ THANH TRA & SO SÁNH BẢN NHÁP VS BẢN ĐANG XUẤT BẢN (PUBLISH DIFF INSPECTOR & VERSION COMPARISON — IDEA-E05 & TASK-VAL-09)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai công cụ thanh tra so sánh Diff thông minh giữa "Bản Đang Phát Hành Thực Tế (Live Version)" và "Bản Chỉnh Sửa Trong Nháp (Draft Version)" theo `IDEA-E05` và `TASK-VAL-09`:
+  - Giải quyết rủi ro khi cặp đôi chỉnh sửa thông tin trong Studio (như đổi giờ tiệc, ngày cưới, đổi STK ngân hàng, đổi ảnh) mà không nhớ đã sửa gì hoặc sửa nhầm trước khi bấm xuất bản:
+    1. *Bộ Phân Tích Diff Thông Minh 5 Nhóm Dữ Liệu*:
+       - `schedule_venue`: Ngày cưới, giờ khai tiệc, sảnh tiệc, địa chỉ, liên kết Google Maps.
+       - `couple_family`: Họ tên chú rể, cô dâu, bố mẹ hai bên.
+       - `banking_qr`: Số tài khoản, tên ngân hàng, chủ tài khoản hai họ.
+       - `media_album`: Ảnh bìa, ảnh chính hero, nhạc nền, số lượng ảnh album.
+       - `aesthetic_theme`: Bảng màu chủ đạo, tem niêm phong sáp, lời ngỏ / câu chuyện tình yêu.
+    2. *Nhận Diện 3 Cấp Độ Rủi Ro (Risk Severity)*:
+       - `CRITICAL` (Đỏ rực): Đổi ngày cưới, giờ tiệc, địa chỉ sảnh tiệc. Tự động kích hoạt Cảnh báo Breaking Change và đề xuất mở công cụ Dời Lịch Cưới (`account.reschedule`).
+       - `WARNING` (Vàng hổ phách): Đổi tài khoản ngân hàng mừng cưới (tránh chuyển nhầm tiền), đổi họ tên dâu rể.
+       - `INFO` (Xám sang / Xanh ngọc): Đổi ảnh, nhạc nền, bảng màu hoặc lời ngỏ.
+    3. *Bảng So Sánh Trực Quan Side-by-side & Unified Diff*:
+       - Cột trái: Giá trị đang Live (nền đỏ nhạt, gạch bỏ).
+       - Cột phải: Giá trị bản nháp mới (nền xanh ngọc, chữ đậm).
+    4. *Cơ Chế Commit Xuất Bản & Lưu Trữ Lịch Sử Phiên Bản (Version History Ledger)*:
+       - Mỗi lần xuất bản: Tăng `revision_id` (+1), đóng băng Snapshot mới, lưu bản ghi vào `publish_history` (tối đa 15 bản gần nhất) kèm `change_note`, `diff_summary`, `published_at`, `published_by`.
+    5. *Tính Năng Discard Draft & Rollback Phiên Bản*:
+       - Nút Hủy Thay Đổi Nháp (Discard): Hoàn tác 100% dữ liệu về đúng bản Live đang phát hành.
+       - Nút Khôi Phục Bản Này Vào Nháp (Rollback): Tải lại snapshot của một revision cũ vào nháp để kiểm duyệt lại.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/PublishDiffInspectorService.php`:
+    - Trích xuất live snapshot `getLiveSnapshot`, draft snapshot `getDraftSnapshot`, tính toán diff `computeDiff`, commit xuất bản `commitPublish`, hủy nháp `discardDraftChanges`, khôi phục bản cũ `rollbackToRevision` và lưu tạm `saveDraftSnapshot`.
+  - `app/Http/Controllers/Client/PublishDiffController.php`:
+    - Màn hình Studio `index`, xác nhận xuất bản `publish`, hủy nháp `discard`, khôi phục phiên bản `rollback` và API JSON `apiDiff`.
+  - `resources/views/client/pages/account/publish_diff/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, thanh trạng thái phiên bản, cảnh báo Breaking Change, bảng so sánh 2 cột, modal ghi chú phiên bản và danh sách Version History.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "So Sánh Nháp".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.publish_diff.*`.
+  - `tests/Feature/PublishDiffInspectorSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: mở Studio, chặn 403, phát hiện chính xác thay đổi lịch trình và cảnh báo rủi ro, commit xuất bản thành công tăng revision, hủy nháp an toàn, rollback về revision cũ, API diff realtime (100% PASSED).
+
+---
+
+### 🕊️ ĐỀ ÁN 151: PHÂN HỆ NHẮC HẸN KỶ NIỆM NGÀY CƯỚI 1 NĂM & THƯ CHÚC MỪNG HẠNH PHÚC VÀNG (1ST ANNIVERSARY KEEPSAKE REMINDER SUITE — IDEA-D07 & SECTION 36 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai phân hệ tự động nhắc hẹn và gửi thư chúc mừng kỷ niệm ngày cưới hàng năm (1 năm - Đám Cưới Giấy, 2 năm - Bông, 5 năm - Gỗ, 10 năm - Thiếc, 25 năm - Bạc, 50 năm - Vàng) theo `IDEA-D07` và Section 36 PRD V3:
+  - Biến khoản đầu tư thiệp cưới của cặp đôi thành tài sản kỷ niệm gia đình thiêng liêng và kết nối bền vững với nền tảng Mây Hẹn:
+    1. *Hệ Thống Lộ Trình Kỷ Niệm Ngày Cưới (Anniversary Milestones)*:
+       - Tự động tính toán số ngày đã kết hôn, số năm hôn nhân, mốc kỷ niệm hiện tại và đếm ngược số ngày tới mốc kỷ niệm tròn năm tiếp theo.
+    2. *Email Chúc Mừng Kỷ Niệm Quiet Luxury Tự Động*:
+       - Mailable `WeddingAnniversaryCongratulationMail` với giao diện HTML email trang trọng mang phong cách Quiet Luxury, lời chúc chân thành, hoa văn Monogram mạ vàng và nút mở lại trang Kỷ Niệm.
+    3. *Artisan Console Command Scheduled Job*:
+       - Lệnh `php artisan mayhen:dispatch-anniversary-reminders`: Tự động quét các đám cưới có ngày cưới trùng hôm nay để gửi email chúc mừng, tránh gửi lặp lại trong cùng 1 năm.
+    4. *Trang Kỷ Niệm Ngày Cưới Công Khai (Anniversary Keepsake Lounge)*:
+       - Route công khai `/ky-niem-ngay-cuoi/{slug}`:
+         - Hiển thị Monogram hoàng gia và bộ đếm "Số ngày chung một mái nhà".
+         - So sánh bức ảnh cưới ngày xưa và bức ảnh kỷ niệm sau 1 năm chung đôi.
+         - Trích dẫn lời ngỏ / cảm nhận tình yêu sau 1 năm hôn nhân của cặp đôi.
+         - Tái hiện Sổ Lưu Bút Kỷ Niệm với toàn bộ lời chúc tốt đẹp từ người thân, bạn bè ngày cưới.
+         - Nút mở lại chiếc thiệp cưới gốc năm nào.
+    5. *Studio Quản Trị Cặp Đôi*:
+       - 4 Thẻ KPI: Thời gian chung đôi (số ngày), Thâm niên hôn nhân, Đếm ngược ngày kỷ niệm tới, Mốc tiếp theo.
+       - Cấu hình 2 email nhận thư thông báo (chú rể & cô dâu), tải ảnh kỷ niệm 1 năm, nhật ký cảm nhận sau 1 năm, nút "Gửi Thử Email Chúc Mừng" để kiểm tra hiển thị.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingAnniversaryService.php`:
+    - Tính toán mốc kỷ niệm `calculateTimelineStats`, quản lý cấu hình `getConfig`/`updateConfig`, quét và gửi email tự động `dispatchAnniversaryReminders`, chuẩn bị dữ liệu trang kỷ niệm `getAnniversaryLoungeData`.
+  - `app/Mail/WeddingAnniversaryCongratulationMail.php`:
+    - Mailable gửi email chúc mừng kỷ niệm trang trọng.
+  - `resources/views/emails/anniversary-congratulation.blade.php`:
+    - Giao diện HTML email Warm Cream, Monogram hoàng gia, chữ ký thương hiệu.
+  - `app/Console/Commands/DispatchAnniversaryRemindersCommand.php`:
+    - Command Artisan quét và gửi email tự động.
+  - `app/Http/Controllers/Client/WeddingAnniversaryController.php`:
+    - Quản trị Studio `index`, lưu cấu hình `update`, gửi email thử `testSend`, hiển thị trang Lounge `lounge`.
+  - `resources/views/client/pages/account/anniversary/index.blade.php`:
+    - Giao diện Studio 4 KPI, form cấu hình email và ảnh kỷ niệm, nút gửi thử, bảng lộ trình kỷ niệm hôn nhân.
+  - `resources/views/client/pages/anniversary/lounge.blade.php`:
+    - Giao diện công khai trang Kỷ Niệm Ngày Cưới sang trọng, so sánh ảnh xưa - nay, sổ lưu bút kỷ niệm.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Kỷ Niệm Ngày Cưới".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.anniversary.*` và route công khai `anniversary.lounge`.
+  - `tests/Feature/WeddingAnniversarySuiteTest.php`:
+    - Kiểm thử 7/7 test cases: mở Studio, chặn 403, lưu cấu hình, gửi email thử nghiệm, mở trang Lounge công khai, tính toán chính xác mốc kỷ niệm, chạy lệnh Artisan gửi email (100% PASSED).
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - Toàn bộ các Feature Tests của 3 Đề án (149, 150, 151): **21 / 21 tests PASSED 100%** (91 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
 
 
 

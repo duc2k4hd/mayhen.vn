@@ -348,6 +348,32 @@
                                 <span>Cổng Gia Đình</span>
                             </a>
 
+                            <a href="{{ route('account.welcome_kiosk.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Màn hình chào mừng lễ tân & Kiosk đón tiếp sảnh cưới (IDEA-C08)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>Kiosk Sảnh Cưới</span>
+                            </a>
+
+                            <a href="{{ route('account.publish_diff.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Thanh tra & so sánh bản nháp vs bản xuất bản (IDEA-E05)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                                </svg>
+                                <span>So Sánh Nháp</span>
+                            </a>
+
+                            <a href="{{ route('account.anniversary.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Nhắc hẹn kỷ niệm ngày cưới 1 năm & hàng năm (IDEA-D07)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <span>Kỷ Niệm Ngày Cưới</span>
+                            </a>
+
                             <a href="{{ route('account.share.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ công cụ chia sẻ Zalo & thẻ xem trước OpenGraph">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <circle cx="18" cy="5" r="3"></circle>
