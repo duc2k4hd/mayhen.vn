@@ -38,6 +38,7 @@ class WeddingInteractiveEndingController extends Controller
             'total' => WeddingWish::where('wedding_id', $invitation->wedding_id)->count(),
             'approved' => WeddingWish::where('wedding_id', $invitation->wedding_id)->where('is_approved', true)->count(),
             'with_signature' => WeddingWish::where('wedding_id', $invitation->wedding_id)->whereNotNull('signature_url')->count(),
+            'with_photo' => WeddingWish::where('wedding_id', $invitation->wedding_id)->whereNotNull('photo_url')->count(),
             'private' => WeddingWish::where('wedding_id', $invitation->wedding_id)->where('is_private', true)->count(),
         ];
 

@@ -1484,6 +1484,39 @@ class GuestController extends Controller
             }
         }
 
+        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04)
+        $photoUrl = null;
+        if ($request->hasFile('photo')) {
+            try {
+                $photoFile = $request->file('photo');
+                if ($photoFile && $photoFile->isValid()) {
+                    $path = $photoFile->store("wishes_photos/{$slug}", 'public');
+                    $photoUrl = Storage::url($path);
+                }
+            } catch (\Throwable $e) {
+                $photoUrl = null;
+            }
+        } elseif ($photoData = $request->input('photo_data')) {
+            if (is_string($photoData) && str_starts_with($photoData, 'data:image/')) {
+                try {
+                    if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $matches)) {
+                        $ext = strtolower($matches[1]);
+                        if (in_array($ext, ['png', 'jpeg', 'jpg', 'webp'], true)) {
+                            $base64 = substr($photoData, strpos($photoData, ',') + 1);
+                            $decoded = base64_decode($base64);
+                            if ($decoded !== false && strlen($decoded) <= 5 * 1024 * 1024) { // Tối đa 5MB
+                                $filename = 'wishes_photos/'.$slug.'/'.Str::uuid().'.'.($ext === 'jpeg' ? 'jpg' : $ext);
+                                Storage::disk('public')->put($filename, $decoded);
+                                $photoUrl = Storage::url($filename);
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $photoUrl = null;
+                }
+            }
+        }
+
         // 3. Quyết định chế độ duyệt & quyền riêng tư
         $isPrivate = (bool) $request->boolean('is_private');
         $moderationMode = $wedding->getWishModerationMode();
@@ -1508,6 +1541,7 @@ class GuestController extends Controller
             'is_pinned' => false,
             'is_private' => $isPrivate,
             'signature_url' => $signatureUrl,
+            'photo_url' => $photoUrl,
             'ip_address' => $ip,
         ]);
 
@@ -1536,6 +1570,7 @@ class GuestController extends Controller
                 'is_private' => $isPrivate,
                 'is_approved' => $isApproved,
                 'signature_url' => $wish->signature_url,
+                'photo_url' => $wish->photo_url,
                 'created_at_human' => $wish->created_at->diffForHumans(),
                 'created_at_date' => $wish->created_at->format('d/m/Y H:i'),
             ],
@@ -1673,6 +1708,8 @@ class GuestController extends Controller
                 'name' => $request->validated('name'),
                 'message' => $request->validated('message'),
                 'reply' => null,
+                'photo_url' => null,
+                'signature_url' => null,
                 'created_at_human' => 'Vừa xong',
                 'created_at_date' => now()->format('d/m/Y H:i'),
             ],

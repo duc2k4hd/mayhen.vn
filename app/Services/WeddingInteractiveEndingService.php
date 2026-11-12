@@ -295,6 +295,7 @@ class WeddingInteractiveEndingService
             'Kín Đáo',
             'Phản Hồi Từ Cặp Đôi',
             'Có Chữ Ký',
+            'Ảnh Kỷ Niệm (URL)',
             'Thời Gian Gửi',
         ]);
 
@@ -308,6 +309,7 @@ class WeddingInteractiveEndingService
                 $wish->is_private ? 'Riêng tư' : 'Công khai',
                 $wish->reply ?? '',
                 ! empty($wish->signature_url) ? 'Có' : 'Không',
+                $wish->photo_url ?? '',
                 $wish->created_at ? $wish->created_at->format('d/m/Y H:i:s') : '',
             ]);
         }

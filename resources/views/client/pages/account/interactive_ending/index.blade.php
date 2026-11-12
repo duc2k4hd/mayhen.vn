@@ -60,6 +60,10 @@
             <div class="mayhen_ending_stat_label">Có Chữ Ký Điện Tử</div>
         </div>
         <div class="mayhen_ending_stat_card">
+            <div class="mayhen_ending_stat_num">{{ $stats['with_photo'] ?? 0 }}</div>
+            <div class="mayhen_ending_stat_label">Kèm Ảnh Kỷ Niệm</div>
+        </div>
+        <div class="mayhen_ending_stat_card">
             <div class="mayhen_ending_stat_num">{{ $stats['private'] }}</div>
             <div class="mayhen_ending_stat_label">Lời Chúc Kín Đáo</div>
         </div>
@@ -267,7 +271,7 @@
                         <tr>
                             <th>Khách Mời</th>
                             <th>Nội Dung Lời Chúc</th>
-                            <th>Chữ Ký</th>
+                            <th>Đính Kèm</th>
                             <th>Trạng Thái</th>
                             <th>Thời Gian</th>
                             <th style="text-align: right;">Thao Tác</th>
@@ -294,13 +298,21 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if(!empty($wish->signature_url))
-                                        <a href="{{ $wish->signature_url }}" target="_blank" class="mayhen_ending_sig_thumb">
-                                            <img src="{{ $wish->signature_url }}" alt="Chữ ký" width="60" height="30">
-                                        </a>
-                                    @else
-                                        <span class="text-muted">—</span>
-                                    @endif
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        @if(!empty($wish->signature_url))
+                                            <a href="{{ $wish->signature_url }}" target="_blank" class="mayhen_ending_sig_thumb" title="Xem chữ ký">
+                                                <img src="{{ $wish->signature_url }}" alt="Chữ ký" width="60" height="30">
+                                            </a>
+                                        @endif
+                                        @if(!empty($wish->photo_url))
+                                            <a href="{{ $wish->photo_url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #b78a3c; text-decoration: none;" title="Xem ảnh kỷ niệm">
+                                                <span>📸 Xem ảnh</span>
+                                            </a>
+                                        @endif
+                                        @if(empty($wish->signature_url) && empty($wish->photo_url))
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
                                     @if($wish->is_approved)

@@ -72,6 +72,8 @@ class LiveWallController extends Controller
                 'id' => $w->id,
                 'name' => $w->sender_name,
                 'message' => $w->message,
+                'photo_url' => $w->photo_url,
+                'signature_url' => $w->signature_url,
                 'time_ago' => $w->created_at ? Carbon::parse($w->created_at)->diffForHumans() : 'Vừa xong',
             ];
         });
@@ -157,6 +159,8 @@ class LiveWallController extends Controller
                     'id' => $wish->id,
                     'name' => $wish->sender_name,
                     'message' => $wish->message,
+                    'photo_url' => $wish->photo_url,
+                    'signature_url' => $wish->signature_url,
                     'time_ago' => $wish->created_at ? Carbon::parse($wish->created_at)->diffForHumans() : 'Vừa xong',
                 ];
             });
@@ -294,6 +298,23 @@ class LiveWallController extends Controller
                 'author' => $gp->uploader_name ?: 'Khách mời tiệc cưới',
                 'type' => 'guest_photo',
                 'caption' => $gp->caption ?: 'Ảnh chụp tự nhiên tại bàn tiệc',
+            ];
+        }
+
+        // 4. Ảnh kỷ niệm đính kèm cùng lời chúc phúc (Wish Photos - IDEA-D04)
+        $wishPhotos = $wedding->wishes()
+            ->where('is_approved', true)
+            ->whereNotNull('photo_url')
+            ->latest()
+            ->limit(30)
+            ->get();
+
+        foreach ($wishPhotos as $wp) {
+            $photos[] = [
+                'url' => $wp->photo_url,
+                'author' => $wp->sender_name ?: $wp->name,
+                'type' => 'wish_photo',
+                'caption' => $wp->message ?: 'Ảnh kỷ niệm gửi kèm lời chúc',
             ];
         }
 

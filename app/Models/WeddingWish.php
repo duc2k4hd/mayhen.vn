@@ -22,6 +22,7 @@ class WeddingWish extends Model
         'is_pinned',
         'is_private',
         'signature_url',
+        'photo_url',
         'ip_address',
     ];
 

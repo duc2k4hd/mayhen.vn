@@ -101,7 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 photoAuthorEl.textContent = photo.author || 'Mây Hẹn';
             }
             if (photoBadgeEl) {
-                photoBadgeEl.textContent = photo.type === 'guest_photo' ? 'Ảnh Khách Chụp' : 'Ảnh Cưới Cặp Đôi';
+                if (photo.type === 'guest_photo') {
+                    photoBadgeEl.textContent = 'Ảnh Khách Chụp';
+                } else if (photo.type === 'wish_photo') {
+                    photoBadgeEl.textContent = 'Ảnh Kỷ Niệm Lời Chúc';
+                } else {
+                    photoBadgeEl.textContent = 'Ảnh Cưới Cặp Đôi';
+                }
             }
 
             // Loại bỏ slide cũ sau khi crossfade xong
@@ -166,6 +172,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.appendChild(header);
         card.appendChild(textDiv);
+
+        if (wish.photo_url) {
+            const photoWrap = document.createElement('div');
+            photoWrap.className = 'mayhen_wall_wish_photo_wrap';
+            const img = document.createElement('img');
+            img.src = wish.photo_url;
+            img.alt = 'Ảnh kỷ niệm cùng lời chúc';
+            img.loading = 'lazy';
+            photoWrap.appendChild(img);
+            card.appendChild(photoWrap);
+        }
+
         return card;
     }
 

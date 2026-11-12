@@ -28,6 +28,8 @@ class SubmitWishRequest extends FormRequest
             'message' => ['required', 'string', 'max:1000', new NoProfanity],
             'is_private' => ['nullable', 'boolean'],
             'signature_data' => ['nullable', 'string', 'max:500000'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'photo_data' => ['nullable', 'string', 'max:5000000'],
             'guest_token' => ['nullable', 'string', 'max:64'],
         ];
     }

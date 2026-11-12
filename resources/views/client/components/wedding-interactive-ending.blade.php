@@ -83,6 +83,21 @@
                     <textarea name="message" class="mayhen_invitation_wish_textarea" rows="3" placeholder="Chúc hai bạn trăm năm hạnh phúc, răng long đầu bạc..." required maxlength="500"></textarea>
                 </div>
 
+                <div class="mayhen_invitation_wish_field">
+                    <label class="mayhen_invitation_wish_label">Ảnh kỷ niệm cùng cặp đôi (Tùy chọn)</label>
+                    <div class="mayhen_invitation_wish_photo_upload">
+                        <label for="wishPhotoInput" class="mayhen_invitation_photo_btn" id="wishPhotoBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                            <span id="wishPhotoBtnText">Chọn ảnh kỷ niệm (Tối đa 5MB)</span>
+                        </label>
+                        <input type="file" id="wishPhotoInput" name="photo" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                        <div class="mayhen_invitation_photo_preview" id="wishPhotoPreview" style="display: none;">
+                            <img id="wishPhotoThumb" src="" alt="Ảnh kỷ niệm">
+                            <button type="button" class="mayhen_invitation_photo_remove" id="wishPhotoRemove" title="Bỏ chọn ảnh">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
                 @if(!empty($config['allow_private_wishes']))
                 <div class="mayhen_invitation_wish_privacy">
                     <label class="mayhen_invitation_checkbox_label">
@@ -119,6 +134,16 @@
                         @if(!empty($wish->signature_url))
                             <div class="mayhen_invitation_wish_signature_preview">
                                 <img src="{{ $wish->signature_url }}" alt="Chữ ký của {{ $wish->name }}" loading="lazy">
+                            </div>
+                        @endif
+
+                        {{-- Hiển thị ảnh kỷ niệm đính kèm nếu có --}}
+                        @if(!empty($wish->photo_url))
+                            <div class="mayhen_invitation_wish_photo_preview">
+                                <a href="{{ $wish->photo_url }}" target="_blank" class="mayhen_invitation_wish_photo_link" title="Xem ảnh kỷ niệm">
+                                    <img src="{{ $wish->photo_url }}" alt="Ảnh kỷ niệm của {{ $wish->name }}" loading="lazy">
+                                    <span class="mayhen_invitation_wish_photo_badge">📸 Ảnh kỷ niệm</span>
+                                </a>
                             </div>
                         @endif
 
@@ -350,6 +375,41 @@
 
     // 2. Logic Gửi Lời Chúc (Wish Submission)
     const wishForm = document.getElementById('invitationWishForm');
+    const photoInput = document.getElementById('wishPhotoInput');
+    const photoPreview = document.getElementById('wishPhotoPreview');
+    const photoThumb = document.getElementById('wishPhotoThumb');
+    const photoRemove = document.getElementById('wishPhotoRemove');
+    const photoBtnText = document.getElementById('wishPhotoBtnText');
+
+    if (photoInput && photoPreview && photoThumb) {
+        photoInput.addEventListener('change', function() {
+            const file = this.files && this.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Dung lượng ảnh tối đa là 5MB. Vui lòng chọn ảnh nhỏ hơn.');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoThumb.src = e.target.result;
+                    photoPreview.style.display = 'inline-flex';
+                    if (photoBtnText) photoBtnText.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        if (photoRemove) {
+            photoRemove.addEventListener('click', function() {
+                photoInput.value = '';
+                photoThumb.src = '';
+                photoPreview.style.display = 'none';
+                if (photoBtnText) photoBtnText.textContent = 'Chọn ảnh kỷ niệm (Tối đa 5MB)';
+            });
+        }
+    }
+
     if (wishForm) {
         wishForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -379,6 +439,10 @@
                 if (data.success) {
                     alert('Cảm ơn bạn! Lời chúc phúc ấm áp đã được gửi thành công.');
                     wishForm.reset();
+                    if (photoInput) photoInput.value = '';
+                    if (photoThumb) photoThumb.src = '';
+                    if (photoPreview) photoPreview.style.display = 'none';
+                    if (photoBtnText) photoBtnText.textContent = 'Chọn ảnh kỷ niệm (Tối đa 5MB)';
 
                     // Chèn lời chúc mới vào đầu danh sách nếu công khai
                     const list = document.getElementById('wishListContainer');
@@ -386,6 +450,15 @@
                     if (emptyState) emptyState.remove();
 
                     if (list && data.wish) {
+                        const photoPreviewHtml = data.wish.photo_url ? `
+                            <div class="mayhen_invitation_wish_photo_preview">
+                                <a href="${data.wish.photo_url}" target="_blank" class="mayhen_invitation_wish_photo_link" title="Xem ảnh kỷ niệm">
+                                    <img src="${data.wish.photo_url}" alt="Ảnh kỷ niệm" loading="lazy">
+                                    <span class="mayhen_invitation_wish_photo_badge">📸 Ảnh kỷ niệm</span>
+                                </a>
+                            </div>
+                        ` : '';
+
                         const itemHtml = `
                             <div class="mayhen_invitation_wish_item">
                                 <div class="mayhen_invitation_wish_item_head">
@@ -393,6 +466,7 @@
                                     <span class="mayhen_invitation_wish_time">Vừa xong</span>
                                 </div>
                                 <div class="mayhen_invitation_wish_item_body">${data.wish.message}</div>
+                                ${photoPreviewHtml}
                             </div>
                         `;
                         list.insertAdjacentHTML('afterbegin', itemHtml);
@@ -425,6 +499,109 @@
 .mayhen_invitation_interactive_wrap {
     max-width: 680px;
     margin: 0 auto;
+}
+
+/* Đính kèm ảnh kỷ niệm trong form lời chúc */
+.mayhen_invitation_wish_photo_upload {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.mayhen_invitation_photo_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #FFFFFF;
+    border: 1px dashed rgba(197, 168, 128, 0.7);
+    border-radius: 8px;
+    color: #8c6d3f;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_invitation_photo_btn:hover {
+    background: #FAF7F2;
+    border-color: #C5A880;
+}
+
+.mayhen_invitation_photo_preview {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.mayhen_invitation_photo_preview img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.mayhen_invitation_photo_remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: #2C2C2C;
+    color: #FFF;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0;
+}
+
+/* Hiển thị ảnh kỷ niệm trong danh sách lời chúc */
+.mayhen_invitation_wish_photo_preview {
+    margin-top: 10px;
+}
+
+.mayhen_invitation_wish_photo_link {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 200px;
+    max-height: 140px;
+    border: 1px solid rgba(197, 168, 128, 0.3);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease;
+}
+
+.mayhen_invitation_wish_photo_link:hover {
+    transform: scale(1.02);
+}
+
+.mayhen_invitation_wish_photo_link img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 140px;
+    object-fit: cover;
+}
+
+.mayhen_invitation_wish_photo_badge {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #FFF;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
 }
 
 /* 10.1 Bảng ký tên */

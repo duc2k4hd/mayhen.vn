@@ -11319,46 +11319,52 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
-### 143. Đề Án 143: Phân Hệ Studio Nhận Diện Thông Minh, Rà Soát & Xử Lý Gộp Khách Mời Trùng Lặp 1-Chạm (Smart Duplicate Guest Detector & One-Click Merge Studio — IDEA-B09, Section 23/24 PRD V3 & TASK-VAL-10)
+### 144. Đề Án 144: Phân Hệ Lời Chúc Kèm Ảnh Kỷ Niệm Đa Phương Tiện & Trình Chiếu Sổ Lưu Bút Sống Động (Multimedia Photo Wishes & Live Wall Projection Suite — IDEA-D04, Section 10 Standards & Section 23 PRD V3)
 - **Mục tiêu**:
-  - Triển khai phân hệ Studio Nhận Diện Thông Minh & Xử Lý Gộp Khách Mời Trùng Lặp (Smart Duplicate Guest Detector & One-Click Merge Studio) theo IDEA-B09 trong Catalog 60 tính năng cao cấp, Section 23/24 PRD V3 và TASK-VAL-10:
-  - Giải quyết triệt để nỗi lo thực tế của dâu rể khi nhập danh sách khách từ nhiều nguồn (Excel bố mẹ, danh bạ, Zalo):
-    1. *Thuật toán rà soát & đối chiếu đa tầng*:
-       - 🔴 **Trùng chính xác Số Điện Thoại (`phone_match`)**: Mức độ Nghiêm Trọng, độ tin cậy 100%, cùng một người nhưng ghi hai tên khác nhau (VD: "Anh Nam" vs "Nguyễn Hoàng Nam").
-       - 🟡 **Trùng Họ Tên chuẩn hóa (`exact_name`)**: Tự động bóc tách danh xưng tiếng Việt ("Anh", "Chị", "Em", "Bác", "Chú", "Cô"...) và bỏ dấu thanh, phát hiện trùng trong cùng phân nhóm hoặc khác nhóm (độ tin cậy 90-95%).
-       - 🟡 **Tên tương đồng cao (`fuzzy_name`)**: So khớp Levenshtein / similar_text (độ tương đồng >= 82%).
-    2. *Công cụ Gộp 1-Chạm Thông Minh (One-Click Merge Tool)*:
-       - Cho phép chọn họ tên chuẩn nhất (tên đầy đủ), chọn số điện thoại, phân nhóm và bàn tiệc.
-       - Tùy chọn cộng dồn số suất mời dự kiến (`expected_attendees`) để tránh thiếu cỗ.
-       - Tự động chuyển giao toàn bộ lịch sử phân phối thiệp (`guest_deliveries`) và phản hồi RSVP (`guest_responses`) từ khách phụ sang khách chính.
-       - Xóa an toàn bản ghi phụ khỏi database, ghi nhận AuditLogger `GUEST_DUPLICATE_MERGED`.
-    3. *Nút Bỏ Qua (Dismiss False Alarm)*:
-       - Cho phép ẩn cặp khách không phải trùng với hiệu ứng mượt mà.
-    4. *Xuất Báo Cáo CSV Chuẩn UTF-8 BOM (`export_csv`)*:
-       - Tải xuống toàn bộ bảng đối chiếu các cặp nghi vấn trùng lặp để dâu rể cùng phụ huynh rà soát.
-  - Cung cấp **Giao Diện Studio Quản Trị Cặp Đôi (`account.duplicate_guests.*`)**:
-    - 4 Card KPI: Tổng số khách, Cặp nghi vấn trùng lặp, Suất mời ước tính tiết kiệm được, Tỷ lệ dữ liệu sạch (%).
-    - Bảng so sánh đối chiếu song song hai cột: Bản ghi A vs Bản ghi B (Tên, Xưng hô, SĐT, Nhóm, Bàn tiệc, Suất mời, Trạng thái gửi thiệp).
-    - Modal gộp thông minh Pure Vanilla JS, Radio chọn các trường giữ lại và Toast phản hồi tức thì.
-    - Trạng thái dữ liệu sạch (Clean State) với thông điệp chúc mừng khi không còn bản ghi trùng lặp nào.
+  - Triển khai phân hệ Lời Chúc Kèm Ảnh Kỷ Niệm Đa Phương Tiện & Trình Chiếu Sổ Lưu Bút Sống Động (Multimedia Photo Wishes & Live Wall Projection Suite) theo IDEA-D04 trong Catalog 60 tính năng cao cấp, Section 10 trong Quy Chuẩn Thiệp Mây Hẹn (`mayhen-invitation-standards`) và Section 23 PRD V3:
+  - Cho phép bạn bè và người thân khi gửi lời chúc có thể tải lên bức ảnh kỷ niệm gắn liền với đôi uyên ương (ảnh chụp chung thời đi học, ảnh selfie nhóm, ảnh kỷ niệm tiệc cưới):
+    1. *Form Gửi Lời Chúc Đa Phương Tiện (Multimedia Wish Form)*:
+       - Hỗ trợ tải file ảnh trực tiếp (`multipart/form-data`) hoặc chuỗi base64 (`photo_data`).
+       - Tự động kiểm duyệt kích thước tối đa 5MB, định dạng cho phép: JPEG, PNG, WEBP.
+       - Giao diện nút bấm đính kèm ảnh Quiet Luxury thanh lịch, xem trước thumbnail tức thì và nút gỡ ảnh thuận tiện.
+    2. *Bảo Vệ Quyền Riêng Tư & Chống Lộ Ảnh*:
+       - Lời chúc kín đáo (`is_private = true`) tự động ẩn khỏi luồng hiển thị công khai trên thiệp cưới và màn chiếu LED.
+       - Lưu trữ ảnh an toàn trong thư mục riêng biệt của từng thiệp: `storage/app/public/wishes_photos/{slug}/`.
+    3. *Hiển Thị Tinh Tế Trên Thiệp Mời Số (Wish Wall Presentation)*:
+       - Hiển thị ảnh kỷ niệm đính kèm với bo góc mềm mại, huy hiệu "📸 Ảnh kỷ niệm", click phóng to xem ảnh gốc.
+       - Cập nhật thời gian thực vào danh sách lời chúc ngay sau khi gửi thành công bằng Pure Vanilla JS.
+    4. *Tích Hợp Màn Chiếu Sảnh Cưới Trực Tiếp (Live Wall Projection)*:
+       - Tự động nạp các ảnh kỷ niệm từ lời chúc đã duyệt (`wish_photo`) vào luồng slideshow màn hình LED lớn tại sảnh tiệc.
+       - Hiển thị ảnh kèm theo thẻ lời chúc động với hiệu ứng chuyển cảnh mượt mà.
+    5. *Studio Quản Trị Sổ Ký Tên & Lưu Bút (`account.interactive_ending.*`)*:
+       - Bổ sung Card KPI "Kèm Ảnh Kỷ Niệm" (`stats.with_photo`).
+       - Cột "Đính Kèm" hiển thị linh hoạt cả chữ ký nét vẽ canvas và link xem ảnh kỷ niệm.
+       - Bổ sung cột "Ảnh Kỷ Niệm (URL)" vào file CSV xuất ra với chuẩn UTF-8 BOM.
 - **Kiến trúc & Tệp Tin**:
-  - `app/Services/DuplicateGuestDetectorService.php`:
-    - Thuật toán bóc tách danh xưng tiếng Việt, đối soát số điện thoại và tên tương đồng, xử lý gộp bản ghi và xuất CSV UTF-8 BOM.
-  - `app/Http/Controllers/Client/DuplicateGuestController.php`:
-    - `index`: Màn hình Studio Lọc Trùng Khách Mời (`account.duplicate_guests.index`).
-    - `scan`: Quét lại AJAX (`account.duplicate_guests.scan`).
-    - `merge`: Gộp 2 khách 1-chạm qua AJAX (`account.duplicate_guests.merge`).
-    - `exportCsv`: Tải về file CSV báo cáo trùng lặp (`account.duplicate_guests.export_csv`).
-  - `resources/views/client/pages/account/duplicate_guests/index.blade.php`:
-    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, bảng so sánh song song, modal gộp trực quan và clean state.
-  - `resources/views/client/pages/account/invitations.blade.php`:
-    - Bổ sung nút công cụ "Lọc Trùng Khách".
-  - `routes/web.php`:
-    - Đăng ký nhóm routes `account.duplicate_guests.*`.
-  - `tests/Feature/DuplicateGuestStudioSuiteTest.php`:
-    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, phát hiện trùng theo SĐT, phát hiện trùng theo tên tương đồng, gộp bản ghi sạch sẽ chuyển giao deliveries, và xuất file CSV UTF-8 BOM (100% PASSED).
+  - `database/migrations/2026_11_12_094600_add_photo_url_to_wedding_wishes_table.php`:
+    - Thêm cột `photo_url` vào bảng `wedding_wishes`.
+  - `app/Models/WeddingWish.php`:
+    - Bổ sung `photo_url` vào `$fillable`.
+  - `app/Http/Requests/SubmitWishRequest.php`:
+    - Bổ sung validation rule cho `photo` (file ảnh tối đa 5MB) và `photo_data` (base64 string).
+  - `app/Http/Controllers/Client/GuestController.php`:
+    - Xử lý lưu ảnh kỷ niệm từ request và trả về `photo_url` trong JSON response của `submitWish`.
+  - `app/Services/WeddingInteractiveEndingService.php`:
+    - Cập nhật `exportWishesToCsv` bổ sung cột "Ảnh Kỷ Niệm (URL)".
+  - `app/Http/Controllers/Client/WeddingInteractiveEndingController.php`:
+    - Thêm `$stats['with_photo']` vào dashboard quản trị.
+  - `app/Http/Controllers/Client/LiveWallController.php`:
+    - Tích hợp `wish_photo` vào `collectProjectionPhotos` và `formattedWishes`.
+  - `public/assets/client/js/pages/live-wall.js` & `live-wall.css`:
+    - Xử lý hiển thị ảnh kỷ niệm trong thẻ lời chúc trên màn chiếu lớn.
+  - `resources/views/client/components/wedding-interactive-ending.blade.php`:
+    - Bổ sung upload ảnh, preview thumbnail, hiển thị ảnh trong wish item, pure CSS Quiet Luxury.
+  - `resources/views/client/pages/account/interactive_ending/index.blade.php`:
+    - Thêm card KPI "Kèm Ảnh Kỷ Niệm" và link xem ảnh trong bảng danh sách.
+  - `tests/Feature/PhotoWishesSuiteTest.php`:
+    - 7/7 test cases chuyên sâu: gửi ảnh qua multipart, gửi ảnh base64, chặn file quá 5MB, bảo mật lời chúc riêng tư, Live Wall nạp ảnh, xuất CSV có link ảnh, Studio hiển thị đúng KPI (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,162 / 1,162 tests PASSED 100%** (6,210 assertions).
+  - Toàn bộ 4 Feature Tests của các Đề án gần nhất: **28 / 28 tests PASSED 100%** (132 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
