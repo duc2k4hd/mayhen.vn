@@ -11848,6 +11848,49 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - `SignatureArchiveSuiteTest`: **7 / 7 tests PASSED 100%** (30 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 155: PHÂN HỆ TRỢ LÝ TỐI ƯU TIÊU ĐIỂM BỐ CỤC ẢNH CƯỚI ĐA MÀN HÌNH (SMART FOCAL POINT PHOTO OPTIMIZER STUDIO — IDEA-F06, IDEA-E04 & SECTION 21 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai công cụ căn chỉnh điểm lấy nét vàng (Focal Point: x%, y%) cho ảnh cưới theo `IDEA-F06`, `IDEA-E04` và Section 21 PRD V3:
+  - Khắc phục triệt để vấn đề nan giải khi đăng ảnh cưới: Ảnh chụp góc rộng hoặc ảnh đứng khi hiển thị trên các màn hình khác nhau (Điện thoại 9:16, Avatar vuông 1:1, Tablet 4:3, Máy tính 16:9) thường dùng `object-fit: cover` dẫn đến bị cắt cụt đầu chú rể, mất mặt cô dâu hoặc mất đuôi váy cưới.
+  - Các trụ cột chức năng chính:
+    1. *Khung Canvas Chấm Tiêu Cự Trực Quan (Interactive Focal Reticle)*:
+       - Hỗ trợ nhấp chuột hoặc kéo thả tâm ngắm vàng (Reticle) trực tiếp lên ảnh để khóa tọa độ tiêu điểm mong muốn.
+       - Tự động hiển thị huy hiệu tọa độ `(X%, Y%)` và lưu vết trạng thái theo từng ảnh.
+    2. *9 Nút Neo Tiêu Cự Vàng Nhanh (Photography Preset Anchors)*:
+       - Cung cấp các nút bấm định hướng bố cục ảnh cưới chuẩn: Gương mặt trên cao (50%, 20% - Khuyên dùng), Góc trái trên (25%, 20%), Góc phải trên (75%, 20%), Trung tâm mặc định (50%, 50%), Váy cưới dưới thấp (50%, 80%)...
+    3. *Mô Phỏng 4 Khung Hình Vàng Thực Tế (Multi-Ratio Realtime Live Preview)*:
+       - Hiển thị song song 4 màn hình mô phỏng chuyển động tức thời khi đổi tiêu cự:
+         * Di động dọc (9:16 - Bìa thiệp & Reels/Story).
+         * Khung vuông (1:1 - Chân dung đại diện dâu rể).
+         * Khung cổ điển (4:3 - Máy tính bảng & iPad sảnh tiệc).
+         * Màn hình rộng (16:9 - Banner máy tính & màn LED).
+    4. *Cơ Chế Zero DB Migration & CSS Auto-Overrides*:
+       - Lưu trữ cấu trúc JSON nhẹ nhàng trong `invitations.custom_config['focal_points']`.
+       - Hàm `generateCssOverrides` tự động xuất mã CSS `object-position: {x}% {y}% !important;` áp dụng trực tiếp cho các class ảnh trong template.
+    5. *Tích Hợp Sâu Trong Studio*:
+       - Bổ sung nút công cụ "Tiêu Cự Ảnh" trong danh sách quản lý thiệp cưới `invitations.blade.php`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/SmartFocalPointService.php`:
+    - Trích xuất ảnh thiệp `getFocalSummary`, cập nhật tiêu cự `updateFocalPoint`, đặt lại mặc định `resetFocalPoint`, sinh CSS overrides `generateCssOverrides`.
+  - `app/Http/Controllers/Client/SmartFocalPointController.php`:
+    - Quản trị Studio `index`, cập nhật tọa độ `update`, đặt lại `reset`.
+  - `resources/views/client/pages/account/focal_point/index.blade.php`:
+    - Giao diện Studio Quiet Luxury, BEM `mayhen_focal_*`, danh sách thumbnail, khung chấm tâm ngắm tương tác, 9 nút neo bố cục và 4 khung xem trước tỉ lệ vàng.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Tiêu Cự Ảnh".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.focal_point.*`.
+  - `tests/Feature/SmartFocalPointSuiteTest.php`:
+    - Kiểm thử 6/6 test cases: chặn vãng lai, chặn 403, mở Studio, cập nhật tiêu cự và clamp [0, 100], đặt lại mặc định, sinh CSS overrides (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `SmartFocalPointSuiteTest`: **6 / 6 tests PASSED 100%** (15 assertions).
+  - Toàn bộ suite tính năng gần nhất: **49 / 49 tests PASSED 100%** (194 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

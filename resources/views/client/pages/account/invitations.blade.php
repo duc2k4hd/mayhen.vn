@@ -692,6 +692,19 @@
                                 </svg>
                                 <span>Bút Tích Ký Tên</span>
                             </a>
+
+                            {{-- Nút Căn Chỉnh Tiêu Cự & Bố Cục Ảnh Cưới (IDEA-F06 & Đề Án 155) --}}
+                            <a href="{{ route('account.focal_point.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Căn chỉnh điểm lấy nét và bố cục ảnh cưới đa tỷ lệ màn hình (9:16, 1:1, 4:3, 16:9)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <line x1="12" y1="2" x2="12" y2="6"></line>
+                                    <line x1="12" y1="18" x2="12" y2="22"></line>
+                                    <line x1="2" y1="12" x2="6" y2="12"></line>
+                                    <line x1="18" y1="12" x2="22" y2="12"></line>
+                                </svg>
+                                <span>Tiêu Cự Ảnh</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

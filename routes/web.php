@@ -49,6 +49,7 @@ use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SignatureArchiveController;
 use App\Http\Controllers\Client\SitemapController;
+use App\Http\Controllers\Client\SmartFocalPointController;
 use App\Http\Controllers\Client\SmartGroupInvitationController;
 use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
@@ -433,6 +434,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/but-tich-chu-ky/cap-doi', [SignatureArchiveController::class, 'updateCouple'])->middleware('throttle:30,1')->name('signature_archive.update_couple');
     Route::post('/thiep/{id}/but-tich-chu-ky/{wishId}/ghim', [SignatureArchiveController::class, 'togglePin'])->middleware('throttle:60,1')->name('signature_archive.toggle_pin');
     Route::post('/thiep/{id}/but-tich-chu-ky/{wishId}/xoa', [SignatureArchiveController::class, 'destroySignature'])->middleware('throttle:30,1')->name('signature_archive.destroy');
+
+    // Trợ Lý Tối Ưu Bố Cục Ảnh Cưới & Điểm Tiêu Cự Vàng (Smart Focal Point Photo Optimizer - IDEA-F06 & IDEA-E04)
+    Route::get('/thiep/{id}/tieu-cu-anh', [SmartFocalPointController::class, 'index'])->name('focal_point.index');
+    Route::post('/thiep/{id}/tieu-cu-anh', [SmartFocalPointController::class, 'update'])->middleware('throttle:60,1')->name('focal_point.update');
+    Route::post('/thiep/{id}/tieu-cu-anh/dat-lai', [SmartFocalPointController::class, 'reset'])->middleware('throttle:60,1')->name('focal_point.reset');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
