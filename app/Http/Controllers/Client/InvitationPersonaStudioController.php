@@ -104,4 +104,3 @@ class InvitationPersonaStudioController extends Controller
         return $invitation;
     }
 }
-

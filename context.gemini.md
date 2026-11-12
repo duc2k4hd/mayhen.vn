@@ -12007,6 +12007,42 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ suite tính năng gần nhất: **64 / 64 tests PASSED 100%** (259 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 159: NÂNG TẦM SỔ LƯU BÚT TƯƠNG TÁC ĐA PHƯƠNG TIỆN & HÌNH ẢNH KỶ NIỆM (PHOTO & SIGNATURE WISHES ECOSYSTEM — IDEA-D04, IDEA-D09 & FLOW-15, FLOW-16)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Hoàn thiện luồng tương tác và kiểm duyệt Sổ Lưu Bút cưới đa phương tiện (Văn bản lời chúc + Nét chữ ký tay + Ảnh chụp kỷ niệm) theo `IDEA-D04`, `IDEA-D09` và Section 25/27 PRD V3:
+  - Khắc phục lỗ hổng đứt gãy trải nghiệm: Khi khách gửi lời chúc đính kèm ảnh chụp kỷ niệm hoặc chữ ký tay, cặp đôi vào trang Sổ Lưu Bút `wishes.blade.php` và Admin vào trang kiểm duyệt `admin/pages/wishes/index.blade.php` không thấy ảnh đính kèm; danh sách lời chúc công khai trên mẫu thiệp cũng thiếu hiển thị ảnh.
+  - Các trụ cột chức năng chính:
+    1. *Hiển Thị Ảnh Kỷ Niệm & Chữ Ký Trong Sổ Lưu Bút Của Cặp Đôi (`wishes.blade.php`)*:
+       - Bổ sung khối media hiển thị trực quan: Chữ ký tay nét cao trong suốt và Thumbnail ảnh chụp kỷ niệm của quan khách.
+       - Tích hợp liên kết mở xem ảnh gốc cỡ lớn trong tab mới để dâu rể tải về lưu niệm.
+    2. *Bảng Kiểm Duyệt Trực Quan Của Quản Trị Viên (`admin/pages/wishes/index.blade.php`)*:
+       - Cung cấp thumbnail preview Chữ ký tay và Ảnh kỷ niệm đính kèm ngay trong cột Lời chúc.
+       - Giúp Admin phát hiện và ngăn chặn kịp thời các hình ảnh nhạy cảm, spam hoặc không đúng thuần phong mỹ tục trước khi duyệt hiển thị công khai.
+    3. *Đồng Bộ Hiển Thị Trên Mẫu Thiệp Cưới Công Khai (`giua-muon-ngan-vi-sao/template.blade.php`)*:
+       - Render đầy đủ nét chữ ký số và ảnh kỷ niệm đính kèm trong danh sách lời chúc của quan khách.
+       - Nút *"Xem ảnh kỷ niệm →"* liên kết mượt mà đến ảnh gốc nét cao.
+    4. *Tinh Gọn & Khử Trùng Lặp Giao Diện*:
+       - Loại bỏ nút *"Đa Ngôn Ngữ"* bị trùng lặp ở dòng 512 trong trang Quản lý Thiệp cưới `invitations.blade.php`.
+- **Kiến trúc & Tệp Tin**:
+  - `resources/views/client/pages/account/wishes.blade.php`:
+    - Bổ sung khối render chữ ký số & ảnh kỷ niệm đính kèm của quan khách.
+  - `resources/views/admin/pages/wishes/index.blade.php`:
+    - Cập nhật cột Wish Message Bubble với thumbnail chữ ký và ảnh đính kèm.
+  - `resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`:
+    - Cập nhật Section 10 render chữ ký và ảnh kỷ niệm trong danh sách lời chúc công khai.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Khử trùng lặp nút công cụ Đa Ngôn Ngữ.
+  - `tests/Feature/PhotoWishModerationE2ETest.php`:
+    - Kiểm thử 3/3 test cases: Sổ lưu bút dâu rể hiển thị đủ media, Admin kiểm duyệt thấy thumbnail, thiệp công khai render đúng chữ ký & ảnh kỷ niệm (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `PhotoWishModerationE2ETest`: **3 / 3 tests PASSED 100%** (17 assertions).
+  - Toàn bộ suite tính năng gần nhất: **67 / 67 tests PASSED 100%** (276 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

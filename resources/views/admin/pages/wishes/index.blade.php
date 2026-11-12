@@ -209,7 +209,30 @@
                                             <span>Nghi vấn từ khóa nhạy cảm: {{ implode(', ', $detectedFlags) }}</span>
                                         </div>
                                     @endif
-                                    <div>{{ $wish->message }}</div>
+                                    <div style="margin-bottom: 6px;">{{ $wish->message }}</div>
+
+                                    @if($wish->signature_url || $wish->photo_url)
+                                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--mh-admin-border); flex-wrap: wrap;">
+                                            @if($wish->signature_url)
+                                                <div style="display: inline-flex; align-items: center; gap: 4px; background: #FFF; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--mh-admin-border);">
+                                                    <span style="font-size: 0.6875rem; color: var(--mh-admin-muted);">✍️ Chữ ký:</span>
+                                                    <a href="{{ $wish->signature_url }}" target="_blank" title="Xem chữ ký tay gốc">
+                                                        <img src="{{ $wish->signature_url }}" alt="Chữ ký" style="height: 20px; max-width: 80px; object-fit: contain;">
+                                                    </a>
+                                                </div>
+                                            @endif
+
+                                            @if($wish->photo_url)
+                                                <div style="display: inline-flex; align-items: center; gap: 4px; background: #FFF; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--mh-admin-border);">
+                                                    <span style="font-size: 0.6875rem; color: #9C7A4A; font-weight: 600;">📷 Ảnh:</span>
+                                                    <a href="{{ $wish->photo_url }}" target="_blank" title="Xem ảnh kỷ niệm gốc">
+                                                        <img src="{{ $wish->photo_url }}" alt="Ảnh đính kèm" style="height: 24px; width: 24px; object-fit: cover; border-radius: 3px;">
+                                                    </a>
+                                                    <a href="{{ $wish->photo_url }}" target="_blank" style="font-size: 0.6875rem; color: var(--mh-admin-gold); text-decoration: none;">Xem &rarr;</a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </td>
 

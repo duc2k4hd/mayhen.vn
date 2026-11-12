@@ -308,11 +308,25 @@
                             </div>
                         </div>
 
-                        <!-- Chữ ký số điện tử (nếu có) -->
-                        @if($wish->signature_url)
-                            <div style="margin-bottom: 12px; padding: 6px 12px; background: #FFFFFF; border: 1px dashed #D8CEBD; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 11px; color: #7A726A;">✍️ Chữ ký tay:</span>
-                                <img src="{{ $wish->signature_url }}" alt="Chữ ký {{ $wish->name }}" style="height: 32px; max-width: 140px; object-fit: contain;">
+                        <!-- Chữ ký số & Ảnh kỷ niệm quan khách (IDEA-D04 & IDEA-D09) -->
+                        @if($wish->signature_url || $wish->photo_url)
+                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+                                @if($wish->signature_url)
+                                    <div style="padding: 6px 12px; background: #FFFFFF; border: 1px dashed #D8CEBD; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; color: #7A726A;">✍️ Chữ ký tay:</span>
+                                        <img src="{{ $wish->signature_url }}" alt="Chữ ký {{ $wish->name }}" style="height: 32px; max-width: 140px; object-fit: contain;">
+                                    </div>
+                                @endif
+
+                                @if($wish->photo_url)
+                                    <div style="padding: 6px 12px; background: #FFFDF9; border: 1px solid #EFE8DD; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 11px; color: #9C7A4A; font-weight: 600;">📷 Ảnh kỷ niệm:</span>
+                                        <a href="{{ $wish->photo_url }}" target="_blank" title="Xem ảnh gốc cỡ lớn" style="display: inline-block;">
+                                            <img src="{{ $wish->photo_url }}" alt="Ảnh từ {{ $wish->name }}" style="height: 44px; width: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #D8CEBD;" loading="lazy">
+                                        </a>
+                                        <a href="{{ $wish->photo_url }}" target="_blank" style="font-size: 11px; color: #C5A880; text-decoration: none; font-weight: 500;">Phóng to &rarr;</a>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 

@@ -1205,6 +1205,19 @@
                             <div class="mayhen_invitation_MessageBox_item mayhen_invitation_wb_msg_first mayhen_invitation_wish_item" data-wish-id="{{ $wish->id }}">
                                 <h2 class="mayhen_invitation_MessageBox_item_name">{{ $wish->name }}</h2>
                                 <p class="mayhen_invitation_MessageBox_item_message">{{ $wish->message }}</p>
+                                @if(!empty($wish->signature_url))
+                                    <div class="mayhen_invitation_wish_signature_preview" style="margin: 6px 0; text-align: left;">
+                                        <img src="{{ $wish->signature_url }}" alt="Chữ ký của {{ $wish->name }}" style="max-height: 30px; max-width: 120px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));" loading="lazy">
+                                    </div>
+                                @endif
+                                @if(!empty($wish->photo_url))
+                                    <div class="mayhen_invitation_wish_photo_preview" style="margin: 8px 0; text-align: left;">
+                                        <a href="{{ $wish->photo_url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; background: rgba(197, 168, 128, 0.1); border: 1px solid rgba(197, 168, 128, 0.3); border-radius: 6px; text-decoration: none; color: #C5A880; font-size: 0.8rem;" title="Xem ảnh kỷ niệm">
+                                            <img src="{{ $wish->photo_url }}" alt="Ảnh từ {{ $wish->name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 4px;" loading="lazy">
+                                            <span>📷 Xem ảnh kỷ niệm &rarr;</span>
+                                        </a>
+                                    </div>
+                                @endif
                                 @if (!empty($wish->reply))
                                     <div class="mayhen_invitation_wish_reply" style="margin-top: 8px; padding: 8px 12px; background: rgba(197, 168, 128, 0.12); border-left: 2px solid #C5A880; border-radius: 4px; font-size: 0.85em; text-align: left;">
                                         <div style="font-weight: 600; color: #C5A880; margin-bottom: 2px;">

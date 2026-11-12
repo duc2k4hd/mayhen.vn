@@ -297,4 +297,3 @@ class InvitationPersonaService
         return null;
     }
 }
-
