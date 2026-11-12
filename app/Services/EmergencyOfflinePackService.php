@@ -514,9 +514,13 @@ HTML;
                 $checkinTime = $checkins[$guest->id] ?? null;
                 $timestamp = $checkinTime ? Carbon::parse($checkinTime) : now();
 
-                $guest->checked_in_at = $timestamp;
-                $guest->checked_in_attendees = $guest->checked_in_attendees ?: $guest->actualAttendeesCount();
-                $guest->save();
+                // Chống ghi đè scan mới (G2-006 Deterministic Replay):
+                // Nếu khách chưa check-in, hoặc thời điểm offline diễn ra sớm hơn, cập nhật mốc sớm nhất
+                if ($guest->checked_in_at === null || $timestamp->lessThan($guest->checked_in_at)) {
+                    $guest->checked_in_at = $timestamp;
+                    $guest->checked_in_attendees = $guest->checked_in_attendees ?: $guest->actualAttendeesCount();
+                    $guest->save();
+                }
 
                 $syncedCount++;
             } catch (\Throwable $e) {

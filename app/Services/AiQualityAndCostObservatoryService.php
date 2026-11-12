@@ -96,6 +96,36 @@ class AiQualityAndCostObservatoryService
     }
 
     /**
+     * Làm sạch thông tin nhạy cảm PII (số điện thoại, STK, email, secret) trước khi lưu vào preview log.
+     */
+    public static function sanitizePiiForPreview(?string $text): string
+    {
+        if (! $text) {
+            return '';
+        }
+
+        // 1. Che giấu email
+        $text = preg_replace_callback('/([a-zA-Z0-9_\-\.]{1,3})[a-zA-Z0-9_\-\.]*(@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+)/', function ($m) {
+            return $m[1].'***'.$m[2];
+        }, $text);
+
+        // 2. Che giấu số điện thoại Việt Nam (0901234567 hoặc +84901234567)
+        $text = preg_replace_callback('/(?:\+84|0)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])([0-9]{3})([0-9]{3})/', function ($m) {
+            return (str_starts_with($m[0], '+84') ? '+84' : '0').$m[1].'****'.$m[3];
+        }, $text);
+
+        // 3. Che giấu số tài khoản ngân hàng (chuỗi 8 - 16 số liên tiếp)
+        $text = preg_replace_callback('/(?<!\d)(\d{4})\d{4,12}(\d{4})(?!\d)/', function ($m) {
+            return $m[1].'****'.$m[2];
+        }, $text);
+
+        // 4. Che giấu Bearer tokens hoặc API secrets
+        $text = preg_replace('/Bearer\s+[A-Za-z0-9_\-\.]{15,}/i', 'Bearer [REDACTED]', $text);
+
+        return $text;
+    }
+
+    /**
      * Ghi vết nhật ký sử dụng AI (AI Usage Logging).
      */
     public static function recordUsage(array $params): AiUsageLog
@@ -107,6 +137,9 @@ class AiQualityAndCostObservatoryService
         $costVnd = isset($params['cost_vnd'])
             ? (float) $params['cost_vnd']
             : self::calculateTokenCost($provider, $promptTokens, $completionTokens);
+
+        $promptPreview = self::sanitizePiiForPreview((string) ($params['prompt_preview'] ?? ''));
+        $outputPreview = self::sanitizePiiForPreview((string) ($params['output_preview'] ?? ''));
 
         return AiUsageLog::create([
             'user_id' => $params['user_id'] ?? null,
@@ -121,8 +154,8 @@ class AiQualityAndCostObservatoryService
             'status' => $params['status'] ?? 'success',
             'safety_rating' => $params['safety_rating'] ?? 'passed',
             'user_action' => $params['user_action'] ?? 'pending',
-            'prompt_preview' => mb_substr((string) ($params['prompt_preview'] ?? ''), 0, 500),
-            'output_preview' => mb_substr((string) ($params['output_preview'] ?? ''), 0, 1000),
+            'prompt_preview' => mb_substr($promptPreview, 0, 500),
+            'output_preview' => mb_substr($outputPreview, 0, 1000),
             'error_message' => $params['error_message'] ?? null,
         ]);
     }

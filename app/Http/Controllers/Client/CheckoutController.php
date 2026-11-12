@@ -79,27 +79,30 @@ class CheckoutController extends Controller
         );
 
         $orderCode = 'MH'.strtoupper(Str::random(10));
-
-        $orderAmount = $plan->price;
         $couponCode = strtoupper(trim((string) $request->input('coupon_code', '')));
-        if (! empty($couponCode)) {
-            $coupon = Coupon::where('code', $couponCode)->first();
-            if ($coupon && $coupon->isValid($plan->price)) {
-                $discount = $coupon->calculateDiscount($plan->price);
-                $orderAmount = max(0, $plan->price - $discount);
-                $coupon->incrementUsage();
-            }
-        }
 
-        $order = Order::create([
-            'order_code' => $orderCode,
-            'user_id' => $user->id,
-            'plan_id' => $plan->id,
-            'invitation_id' => $invitationId,
-            'amount' => $orderAmount,
-            'status' => 'pending',
-            'payment_method' => $request->validated('payment_method'),
-        ]);
+        $order = DB::transaction(function () use ($user, $plan, $couponCode, $orderCode, $invitationId, $request) {
+            $orderAmount = $plan->price;
+
+            if (! empty($couponCode)) {
+                $coupon = Coupon::where('code', $couponCode)->lockForUpdate()->first();
+                if ($coupon && $coupon->isValid($plan->price)) {
+                    $discount = $coupon->calculateDiscount($plan->price);
+                    $orderAmount = max(0, $plan->price - $discount);
+                    $coupon->incrementUsage();
+                }
+            }
+
+            return Order::create([
+                'order_code' => $orderCode,
+                'user_id' => $user->id,
+                'plan_id' => $plan->id,
+                'invitation_id' => $invitationId,
+                'amount' => $orderAmount,
+                'status' => 'pending',
+                'payment_method' => $request->validated('payment_method'),
+            ]);
+        });
 
         // VietQR payload
         $vietQrUrl = 'https://img.vietqr.io/image/'.rawurlencode($bankCode).'-'.rawurlencode($bankAccount).'-compact2.png?'.http_build_query([

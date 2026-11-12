@@ -255,6 +255,20 @@ class Guest extends Model
         return $this->hasOne(GuestResponse::class);
     }
 
+    public function responses(): HasMany
+    {
+        return $this->hasMany(GuestResponse::class);
+    }
+
+    public function responseForEvent(?int $eventId = null): ?GuestResponse
+    {
+        if ($eventId === null) {
+            return $this->responses()->whereNull('event_id')->first() ?? $this->responses()->first();
+        }
+
+        return $this->responses()->where('event_id', $eventId)->first();
+    }
+
     public function responseLogs(): HasMany
     {
         return $this->hasMany(GuestResponseLog::class)->latest();

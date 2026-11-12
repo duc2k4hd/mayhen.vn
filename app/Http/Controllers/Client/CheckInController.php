@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\Wedding;
+use App\Services\AuditLogger;
 use App\Services\EmergencyOfflinePackService;
 use App\Services\ReceptionDryRunService;
 use App\Services\StaffShiftHandoverService;
@@ -15,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CheckInController extends Controller
@@ -231,27 +233,39 @@ class CheckInController extends Controller
             ], 404);
         }
 
-        $alreadyCheckedIn = $guest->checked_in_at !== null;
-        $previousCheckInTime = $guest->checked_in_at ? $guest->checked_in_at->format('H:i') : null;
+        $alreadyCheckedIn = false;
+        $previousCheckInTime = null;
 
-        if (! $alreadyCheckedIn) {
+        DB::transaction(function () use ($guest, $validated, $request, $invitation, &$alreadyCheckedIn, &$previousCheckInTime) {
+            /** @var Guest $lockedGuest */
+            $lockedGuest = Guest::where('id', $guest->id)->lockForUpdate()->first();
+
+            if ($lockedGuest->checked_in_at !== null) {
+                $alreadyCheckedIn = true;
+                $previousCheckInTime = $lockedGuest->checked_in_at->format('H:i');
+
+                return;
+            }
+
             $attendeesCount = ! empty($validated['attendees'])
                 ? (int) $validated['attendees']
-                : $guest->actualAttendeesCount();
+                : $lockedGuest->actualAttendeesCount();
 
             $currentShift = $request->session()->get("reception_shift_{$invitation->id}");
             $staffPrefix = $currentShift ? "[{$currentShift['staff_name']}] " : '';
-            $checkInNote = $validated['note'] ?? $guest->check_in_note;
+            $checkInNote = $validated['note'] ?? $lockedGuest->check_in_note;
             if ($staffPrefix !== '' && (! $checkInNote || ! str_contains((string) $checkInNote, $staffPrefix))) {
                 $checkInNote = $staffPrefix.($checkInNote ?: 'Điểm danh đón tiếp');
             }
 
-            $guest->update([
+            $lockedGuest->update([
                 'checked_in_at' => now(),
                 'checked_in_attendees' => $attendeesCount,
                 'check_in_note' => $checkInNote,
             ]);
-        }
+        });
+
+        $guest->refresh();
 
         // Cập nhật lại thống kê
         $allGuests = $wedding->guests()->with('response')->get();
@@ -612,6 +626,14 @@ class CheckInController extends Controller
             'checked_in_attendees' => $attendees,
             'check_in_note' => trim(($guest->check_in_note ? $guest->check_in_note.' | ' : '').$note),
         ]);
+
+        AuditLogger::log(
+            'RECEPTION_ATTENDEES_ADJUSTED',
+            Guest::class,
+            $guest->id,
+            "Lễ tân điều chỉnh số khách của {$guest->name} từ {$oldCheckInAttendees} thành {$attendees} suất.",
+            ['previous' => $oldCheckInAttendees, 'new' => $attendees, 'note' => $note]
+        );
 
         return response()->json([
             'success' => true,

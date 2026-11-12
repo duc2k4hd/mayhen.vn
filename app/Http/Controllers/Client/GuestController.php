@@ -1248,15 +1248,22 @@ class GuestController extends Controller
                     }
                 }
 
+                $targetEventId = $request->filled('event_id') ? (int) $request->validated('event_id') : null;
+
                 // Kiểm tra phạm vi sự kiện được phân quyền (Event Scope - Section 29 Master PRD V3)
-                if ($guest && $request->filled('event_id')) {
-                    $eventId = (int) $request->input('event_id');
-                    if (! $guest->isEventAllowed($eventId)) {
+                if ($guest && $targetEventId !== null) {
+                    if (! $guest->isEventAllowed($targetEventId)) {
                         throw new \InvalidArgumentException('Rất tiếc, thiệp mời của quý khách không thuộc phạm vi sự kiện này. Vui lòng liên hệ cô dâu chú rể.');
                     }
                 }
 
                 $existingResponse = GuestResponse::where('wedding_id', $lockedWedding->id);
+                if ($targetEventId !== null) {
+                    $existingResponse->where('event_id', $targetEventId);
+                } else {
+                    $existingResponse->whereNull('event_id');
+                }
+
                 if ($guest) {
                     $existingResponse->where('guest_id', $guest->id);
                 } else {
@@ -1295,7 +1302,7 @@ class GuestController extends Controller
                         ]);
 
                         $existing->update([
-                            'event_id' => $request->validated('event_id') ?: $existing->event_id,
+                            'event_id' => $targetEventId ?? $existing->event_id,
                             'attending_status' => $request->validated('attending_status'),
                             'adults_count' => $request->validated('adults_count') ?? 1,
                             'children_count' => $request->validated('children_count') ?? 0,
@@ -1329,7 +1336,7 @@ class GuestController extends Controller
                 GuestResponse::create([
                     'wedding_id' => $lockedWedding->id,
                     'guest_id' => $guest?->id,
-                    'event_id' => $request->validated('event_id'),
+                    'event_id' => $targetEventId,
                     'guest_name' => $request->validated('guest_name'),
                     'phone' => $request->validated('phone'),
                     'attending_status' => $request->validated('attending_status'),

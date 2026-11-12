@@ -101,7 +101,15 @@ class ReliableMessagingDispatchService
                 $isDuplicate = false;
                 $skipReason = null;
 
-                if (empty($cleanPhone)) {
+                $isOptOut = ! empty($guest->is_opt_out)
+                    || (is_array($guest->extra_data) && ! empty($guest->extra_data['opt_out']))
+                    || str_contains(mb_strtolower((string) $guest->check_in_note), 'opt-out')
+                    || str_contains(mb_strtolower((string) $guest->check_in_note), 'từ chối');
+
+                if ($isOptOut) {
+                    $isDuplicate = true;
+                    $skipReason = 'Khách mời đã đăng ký từ chối nhận thông báo (Opt-out)';
+                } elseif (empty($cleanPhone)) {
                     $isDuplicate = true;
                     $skipReason = 'Khách mời chưa có số điện thoại nhận tin';
                 } elseif (isset($seenPhones[$cleanPhone])) {
@@ -237,5 +245,29 @@ class ReliableMessagingDispatchService
 
             return true;
         });
+    }
+
+    /**
+     * Nhận chứng cứ trạng thái thực tế từ Provider Callback / Webhook DLR (G2-009, G2-011).
+     * Chỉ đánh dấu delivered/failed khi có provider_ref và status hợp lệ.
+     */
+    public static function handleDeliveryReport(string $providerRef, string $status, ?string $errorMessage = null): bool
+    {
+        $log = MessagingDispatchLog::where('provider_ref', $providerRef)->first();
+        if (! $log) {
+            return false;
+        }
+
+        $validStatuses = ['sent', 'delivered', 'read', 'failed'];
+        if (! in_array($status, $validStatuses, true)) {
+            return false;
+        }
+
+        $log->update([
+            'status' => $status,
+            'error_message' => $errorMessage ?: $log->error_message,
+        ]);
+
+        return true;
     }
 }

@@ -13,6 +13,7 @@ class WeddingTable extends Model
 
     protected $fillable = [
         'wedding_id',
+        'event_id',
         'name',
         'shape',
         'capacity',
@@ -26,6 +27,7 @@ class WeddingTable extends Model
     protected function casts(): array
     {
         return [
+            'event_id' => 'integer',
             'capacity' => 'integer',
             'pos_x' => 'integer',
             'pos_y' => 'integer',
@@ -52,6 +54,11 @@ class WeddingTable extends Model
     public function wedding(): BelongsTo
     {
         return $this->belongsTo(Wedding::class);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(WeddingEvent::class, 'event_id');
     }
 
     public function guests(): HasMany

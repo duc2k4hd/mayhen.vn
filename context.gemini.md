@@ -12346,3 +12346,43 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 ---
+
+### 🛡️ CHIẾN DỊCH KIỂM THỬ ĐỘC LẬP & GIA CỐ NỀN TẢNG THƯƠNG MẠI (RELEASE CANDIDATE 1.0 HARDENING)
+- **Thời gian thực hiện**: 12/11/2026.
+- **Mục tiêu**: Đưa nền tảng Mây Hẹn (mayhen.vn) đạt chuẩn thương mại thực tế: an toàn, bảo mật cao, không rò rỉ PII, không sai lệch số liệu tài chính hay headcount ngày cưới, sẵn sàng bán dịch vụ thật cho khách hàng.
+- **Tiến độ & Kết quả kiểm thử các Test Gates**:
+  1. **Gate G0 — Thiết Lập Sự Thật Có Thể Truy Vết (10 / 10 PASS — 100%)**:
+     - Đo lường và lưu vết môi trường runtime tại Git HEAD: PHP 8.4.4, Laravel 13.35.0, Composer 2.8.6.
+     - Kiểm kê 757 routes thực tế và chạy toàn bộ test suite cơ sở: 1,545 tests PASSED (100%).
+     - Tái tạo và khóa vĩnh viễn 10 regression test suites (Đề án 154 đến 166, 43 tests).
+     - Ban hành tài liệu thẩm định `docs/qa/RELEASE_G0_EVIDENCE.md`.
+  2. **Gate G1 — Core Domain, Privacy, Financial Integrity (21 / 21 PASS — 100%)**:
+     - *F02 Fix (RSVP Đa sự kiện)*: Bổ sung quan hệ `responses(): HasMany` và helper `responseForEvent` trên `Guest`; `GuestController::submitRsvp` scoped theo `event_id` độc lập, headcount không bị ghi đè khi khách dự cả Lễ và Tiệc. Test: `MultiEventRsvpIntegrityTest.php` (4/4 passed).
+     - *Vòng đời thiệp & Concurrency*: Chặn truy cập thiệp locked (403), unpublished (404), expired (410); bảo vệ draft chưa publish; rollback snapshot bảo toàn dữ liệu; chặn conflict autosave song song qua `saveDraftWithLock`. Test: `InvitationLifecycleAndConcurrencySecurityTest.php` (4/4 passed).
+     - *Toàn vẹn Tài chính & Thanh toán*:
+       - Idempotent SePay webhook chống replay attack hoặc tái sử dụng mã giao dịch cho đơn hàng khác (HTTP 409).
+       - Chặn kích hoạt đơn khi số tiền thanh toán không khớp (HTTP 400) hoặc giao dịch ngược hướng (`transferType: out`).
+       - Nút phê duyệt hoàn tiền bắt buộc có mã chứng từ ngân hàng thực tế (`payout_reference`), tuân thủ kiểm soát kép (Two-man rule).
+       - Tách biệt doanh thu đơn hàng nền tảng với tiền mừng cưới của cặp đôi trên DB.
+       - Coupon concurrency: bọc trong `DB::transaction` với `Coupon::lockForUpdate()` chống race-condition vượt quota. Test: `FinancialAndPaymentIntegrityTest.php` (5/5 passed).
+     - *Bảo mật Dữ liệu Riêng Tư (PII) & RBAC*:
+       - Role Staff bị chặn 403 khi xuất dữ liệu cá nhân DSAR (Luật 91/2025/QH15); chỉ Super Admin mới được xuất kèm theo lý do bắt buộc và audit log.
+       - Phòng vệ IDOR Guest Management: `authorizeGuestManagement` chặn 404 mọi thao tác trái quyền giữa các Tenant.
+       - Bàn giao mã đối tác (Handover code): `lockForUpdate` bảo đảm 1 code chỉ claim 1 lần duy nhất, owner cũ mất quyền tức thì.
+       - Sao lưu & Phục hồi: `SystemBackupService` dump SQLite/MySQL toàn vẹn mọi bảng, kiểm tra SHA-256 và PRAGMA integrity_check đạt 100%.
+       - Support Ticket Reply: Quan hệ `SupportTicketReply::user()` hoạt động thông suốt, không 500.
+       - AI Usage Logging: Tự động che giấu PII (số điện thoại, STK ngân hàng, email, secret token) qua `sanitizePiiForPreview`.
+       - Cấu hình nền tảng/ngân hàng: Yêu cầu `admin.super` và ghi nhận `PlatformSettingHistory` với masked secret `••••••••`.
+       - Xuất CSV lịch sử biến động RSVP: Kèm UTF-8 BOM `\xEF\xBB\xBF` và chống Formula Injection qua `CsvSanitizerService`. Test: `PrivacyAndDomainIntegrityTest.php` (8/8 passed).
+  3. **Gate G2 — Wedding-Day E2E & Customer Lifecycle (22 / 22 PASS — 100%)**:
+     - *Check-in Lễ tân ngày cưới*: Bọc trong `DB::transaction` với `lockForUpdate()`, 2 thiết bị scan cùng mã QR đồng thời chỉ xác nhận 1 lần, trả `already_checked_in: true`, bảo toàn mốc thời gian sớm nhất, không bao giờ bị toggle thành unchecked.
+     - *Điều chỉnh sĩ số thực tế*: `CheckInController@adjustAttendees` cập nhật số suất đi kèm (+1/+2), ghi AuditLog và chặn số âm.
+     - *Bảo vệ sức chứa bàn tiệc (Capacity Guardian)*: `WeddingTable::isOverCapacity()` cảnh báo tức thì khi tổng khách đã gán vượt quá sức chứa tối đa.
+     - *Bàn tiệc theo sự kiện riêng biệt (G2-004)*: Tạo migration `2026_11_12_170800_add_event_id_to_wedding_tables_table.php`, bổ sung quan hệ `WeddingTable::event()` và `WeddingEvent::tables()` tách biệt hoàn toàn bàn tiệc giữa Lễ Vu Quy và Tiệc Cưới.
+     - *Đồng bộ ngoại tuyến (Emergency Offline Sync)*: `EmergencyOfflinePackService::syncOfflineCheckins` áp dụng deterministic replay, bảo tồn mốc check-in sớm nhất giữa các ca trực, chống ghi đè dữ liệu mới.
+     - *Quản trị gửi tin (Messaging Dispatch)*: `ReliableMessagingDispatchService` tự động lọc trùng SĐT trong cùng đợt gửi, loại trừ khách Opt-out, và cập nhật trạng thái `delivered`/`failed` chính xác khi có DLR callback từ gateway.
+     - *Kiểm duyệt LiveWall & Màn chiếu*: Chỉ hiển thị ảnh PhotoDrop và lời chúc đã duyệt (`is_approved = true`); ảnh bị từ chối hoặc lời chúc bị xóa lập tức biến mất khỏi live feed.
+     - *Hộp thời gian (TimeCapsule)*: Khi chưa đến ngày mở khóa (`canBeUnlocked() === false`), API/HTML trả về `content = null` và từ chối lệnh unseal với mã 422. Test: `WeddingDayAndLifecycleIntegrityTest.php` (7/7 passed).
+- **Trạng thái Gate G3 & G4**: Đang chuẩn bị chuyển bước nghiệm thu Visual UX & Accessibility (G3) và Commercial Acceptance (G4).
+
+---
