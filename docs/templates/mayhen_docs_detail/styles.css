@@ -1,0 +1,370 @@
+/* MÂY HẸN DOCS — Wedding editorial reading system
+   All class names: mayhen_docs_detail_*
+   All custom properties: --mayhen-docs-detail-*
+   No CSS framework. Font: Google Open Sans with local fallbacks. */
+:root{color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:144px}
+body{margin:0}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+svg{display:block;max-width:100%}
+a{color:inherit}
+[hidden]{display:none!important}
+.mayhen_docs_detail_app{
+  --mayhen-docs-detail-rose:#805052;
+  --mayhen-docs-detail-rose-dark:#683f43;
+  --mayhen-docs-detail-rose-soft:#f3e8e4;
+  --mayhen-docs-detail-gold:#b58e6f;
+  --mayhen-docs-detail-gold-soft:#e8d5c2;
+  --mayhen-docs-detail-bg:#fffcfa;
+  --mayhen-docs-detail-surface:#fffefd;
+  --mayhen-docs-detail-sidebar:#fdfaf7;
+  --mayhen-docs-detail-subtle:#fbf5f1;
+  --mayhen-docs-detail-text:#3b3132;
+  --mayhen-docs-detail-muted:#766d6d;
+  --mayhen-docs-detail-light-muted:#98898b;
+  --mayhen-docs-detail-border:#ebdfd8;
+  --mayhen-docs-detail-border-strong:#dec9bd;
+  --mayhen-docs-detail-shadow:0 20px 70px rgba(81,49,47,.12),0 4px 18px rgba(81,49,47,.05);
+  --mayhen-docs-detail-header-h:70px;
+  --mayhen-docs-detail-crumb-h:47px;
+  --mayhen-docs-detail-sidebar-w:272px;
+  --mayhen-docs-detail-toc-w:258px;
+  --mayhen-docs-detail-article-max:764px;
+  --mayhen-docs-detail-font-size:16px;
+  color:var(--mayhen-docs-detail-text);
+  background:var(--mayhen-docs-detail-bg);
+  font-family:'Open Sans',Arial,sans-serif;
+  font-size:14px;line-height:1.65;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s,color .25s;
+}
+.mayhen_docs_detail_app[data-width="wide"]{--mayhen-docs-detail-article-max:930px}
+.mayhen_docs_detail_app[data-theme="dark"]{
+  --mayhen-docs-detail-rose:#e9b5ba;
+  --mayhen-docs-detail-rose-dark:#fad6d8;
+  --mayhen-docs-detail-rose-soft:#3a292f;
+  --mayhen-docs-detail-gold:#d8b596;
+  --mayhen-docs-detail-gold-soft:#6c5448;
+  --mayhen-docs-detail-bg:#1e1b1d;
+  --mayhen-docs-detail-surface:#252123;
+  --mayhen-docs-detail-sidebar:#211d20;
+  --mayhen-docs-detail-subtle:#30272a;
+  --mayhen-docs-detail-text:#f4ebe8;
+  --mayhen-docs-detail-muted:#c5b7b5;
+  --mayhen-docs-detail-light-muted:#aa9696;
+  --mayhen-docs-detail-border:#44373b;
+  --mayhen-docs-detail-border-strong:#634c4e;
+  --mayhen-docs-detail-shadow:0 22px 66px rgba(0,0,0,.46);
+  color-scheme:dark;
+}
+.mayhen_docs_detail_app a{text-decoration:none}
+.mayhen_docs_detail_app button{appearance:none;-webkit-tap-highlight-color:transparent}
+.mayhen_docs_detail_app :is(button,a,input,textarea,select,summary):focus-visible{outline:2px solid var(--mayhen-docs-detail-gold);outline-offset:3px}
+.mayhen_docs_detail_app ::selection{background:#d7aaa980;color:#2a2022}
+.mayhen_docs_detail_reading_progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--mayhen-docs-detail-gold),var(--mayhen-docs-detail-rose));z-index:120;transition:width .1s linear}
+.mayhen_docs_detail_skip_link{position:fixed;z-index:200;top:-100px;left:18px;padding:12px 18px;background:var(--mayhen-docs-detail-rose);color:#fff!important;border-radius:10px}
+.mayhen_docs_detail_skip_link:focus{top:8px}
+.mayhen_docs_detail_header{position:sticky;top:0;z-index:60;height:var(--mayhen-docs-detail-header-h);display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 31px;background:var(--mayhen-docs-detail-surface);border-bottom:1px solid var(--mayhen-docs-detail-border);box-shadow:0 3px 14px rgba(84,62,57,.023)}
+.mayhen_docs_detail_header_left,.mayhen_docs_detail_header_right{display:flex;align-items:center;gap:14px;min-width:0}
+.mayhen_docs_detail_header_right{gap:8px}
+.mayhen_docs_detail_brand{display:flex;align-items:center;gap:10px;flex:none}
+.mayhen_docs_detail_brand_mark{display:grid;place-items:center;color:var(--mayhen-docs-detail-rose);width:43px;height:43px}
+.mayhen_docs_detail_brand_mark svg{width:100%;stroke:currentColor;stroke-width:1.2;fill:none}
+.mayhen_docs_detail_brand_mark svg path:first-of-type{stroke-width:1.7}
+.mayhen_docs_detail_brand_text{display:flex;flex-direction:column;gap:0;line-height:1.08}
+.mayhen_docs_detail_brand_text strong{font-size:22px;font-family:Georgia,'Times New Roman',serif;font-weight:500;letter-spacing:.01em;color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_brand_text small{font-size:8px;letter-spacing:2.6px;color:var(--mayhen-docs-detail-gold);font-weight:800;margin-top:5px}
+.mayhen_docs_detail_header_divider{height:23px;border-left:1px solid var(--mayhen-docs-detail-border-strong);margin:0 3px 0 9px}
+.mayhen_docs_detail_header_label{font-size:12px;white-space:nowrap;color:var(--mayhen-docs-detail-muted);font-weight:600}
+.mayhen_docs_detail_icon_button{width:38px;height:38px;display:grid;place-items:center;border:1px solid transparent;border-radius:10px;color:var(--mayhen-docs-detail-muted);background:transparent;transition:background .2s,color .2s,border-color .2s}
+.mayhen_docs_detail_icon_button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.mayhen_docs_detail_icon_button:hover,.mayhen_docs_detail_font_button:hover{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_mobile_menu{display:none}
+.mayhen_docs_detail_search_trigger{display:flex;align-items:center;gap:10px;width:290px;height:38px;text-align:left;border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;color:var(--mayhen-docs-detail-muted);background:var(--mayhen-docs-detail-subtle);padding:0 9px 0 12px;transition:border-color .2s,box-shadow .2s}
+.mayhen_docs_detail_search_trigger:hover{border-color:var(--mayhen-docs-detail-gold)}
+.mayhen_docs_detail_search_trigger svg,.mayhen_docs_detail_btn svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mayhen_docs_detail_search_trigger span{flex:1;font-size:12px}
+.mayhen_docs_detail_search_trigger kbd,.mayhen_docs_detail_search_box kbd,.mayhen_docs_detail_shortcut_list kbd{font-family:inherit;font-size:10px;border:1px solid var(--mayhen-docs-detail-border-strong);background:var(--mayhen-docs-detail-surface);border-radius:5px;line-height:1.6;padding:1px 6px;color:var(--mayhen-docs-detail-muted);white-space:nowrap}
+.mayhen_docs_detail_help_button{height:36px;padding:0 13px;display:flex;gap:8px;align-items:center;background:transparent;border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;color:var(--mayhen-docs-detail-rose);font-size:12px;font-weight:700}
+.mayhen_docs_detail_help_button>span:first-child{display:grid;place-items:center;width:18px;height:18px;border:1.5px solid currentColor;border-radius:50%;font-size:11px}
+.mayhen_docs_detail_help_button:hover{background:var(--mayhen-docs-detail-rose-soft)}
+.mayhen_docs_detail_breadcrumb_bar{position:sticky;top:var(--mayhen-docs-detail-header-h);z-index:50;height:var(--mayhen-docs-detail-crumb-h);background:var(--mayhen-docs-detail-surface);border-bottom:1px solid var(--mayhen-docs-detail-border);display:flex;align-items:center;padding:0 31px;gap:18px}
+.mayhen_docs_detail_desktop_sidebar_toggle{height:29px;width:29px;flex:none}
+.mayhen_docs_detail_desktop_sidebar_toggle svg{width:17px}
+.mayhen_docs_detail_breadcrumb{display:flex;align-items:center;gap:12px;white-space:nowrap;min-width:0;overflow-x:auto;scrollbar-width:none;font-size:11.5px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_breadcrumb::-webkit-scrollbar{display:none}
+.mayhen_docs_detail_breadcrumb a:hover{color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_breadcrumb>span:last-child{font-weight:700;color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_breadcrumb>span:not(:last-child){color:var(--mayhen-docs-detail-gold)}
+.mayhen_docs_detail_breadcrumb_end{margin-left:auto;flex:none;font-family:Georgia,serif;font-style:italic;color:var(--mayhen-docs-detail-light-muted);font-size:12px}
+.mayhen_docs_detail_breadcrumb_end>span{font-style:normal;color:var(--mayhen-docs-detail-gold);margin-right:6px}
+.mayhen_docs_detail_layout{display:grid;grid-template-columns:var(--mayhen-docs-detail-sidebar-w) minmax(0,1fr) var(--mayhen-docs-detail-toc-w);min-height:900px;max-width:1900px;margin:auto;transition:grid-template-columns .25s ease}
+.mayhen_docs_detail_sidebar{background:var(--mayhen-docs-detail-sidebar);border-right:1px solid var(--mayhen-docs-detail-border);min-width:0}
+.mayhen_docs_detail_sidebar_inner{position:sticky;top:calc(var(--mayhen-docs-detail-header-h) + var(--mayhen-docs-detail-crumb-h));padding:30px 17px 24px 22px;max-height:calc(100dvh - var(--mayhen-docs-detail-header-h) - var(--mayhen-docs-detail-crumb-h));overflow:auto;scrollbar-width:thin;scrollbar-color:var(--mayhen-docs-detail-border-strong) transparent}
+.mayhen_docs_detail_sidebar_mobile_top{display:none}
+.mayhen_docs_detail_sidebar_overline,.mayhen_docs_detail_toc_eyebrow,.mayhen_docs_detail_modal_eyebrow{font-size:10px;font-weight:800;letter-spacing:1.65px;color:var(--mayhen-docs-detail-gold)}
+.mayhen_docs_detail_sidebar_heading{font-size:16px;font-weight:800;margin:5px 0 2px;letter-spacing:-.3px}
+.mayhen_docs_detail_sidebar_desc{font-size:11px;color:var(--mayhen-docs-detail-muted);margin:0 0 26px;line-height:1.65}
+.mayhen_docs_detail_nav_group{border-top:1px solid var(--mayhen-docs-detail-border);padding:12px 0 11px}
+.mayhen_docs_detail_nav_group_toggle{display:flex;align-items:center;gap:10px;width:100%;padding:8px 6px;text-align:left;background:transparent;border:0;color:var(--mayhen-docs-detail-text);font-size:12px;font-weight:800;letter-spacing:-.08px;border-radius:8px}
+.mayhen_docs_detail_nav_group_toggle:hover{color:var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-rose-soft)}
+.mayhen_docs_detail_nav_group_icon{display:grid;place-items:center;width:18px;font-size:15px;color:var(--mayhen-docs-detail-gold);font-weight:400}
+.mayhen_docs_detail_chevron{margin-left:auto;font-size:16px;color:var(--mayhen-docs-detail-muted);transition:transform .18s ease}
+.mayhen_docs_detail_nav_group_toggle[aria-expanded="true"] .mayhen_docs_detail_chevron{transform:rotate(180deg)}
+.mayhen_docs_detail_nav_links{padding:3px 0 0 18px;display:flex;flex-direction:column;gap:1px;animation:mayhen_docs_detail_expand .18s ease}
+@keyframes mayhen_docs_detail_expand{from{opacity:.4;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.mayhen_docs_detail_nav_link{display:block;position:relative;color:var(--mayhen-docs-detail-muted);padding:9px 11px;font-size:11.5px;line-height:1.45;border-radius:7px;transition:background .15s,color .15s}
+.mayhen_docs_detail_nav_link:hover{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_nav_active{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose);font-weight:800}
+.mayhen_docs_detail_nav_active:before{content:"";position:absolute;left:-18px;width:3px;top:9px;bottom:9px;background:var(--mayhen-docs-detail-rose);border-radius:4px}
+.mayhen_docs_detail_nav_link_button{width:100%;border:0;text-align:left;background:transparent;font-family:inherit}
+.mayhen_docs_detail_sidebar_help{background:linear-gradient(152deg,var(--mayhen-docs-detail-rose-soft),var(--mayhen-docs-detail-surface));border:1px solid var(--mayhen-docs-detail-border);border-radius:14px;margin-top:27px;padding:20px 17px 17px}
+.mayhen_docs_detail_sidebar_help_flower{font-size:26px;color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_sidebar_help strong{font-size:11.5px;display:block;margin:8px 0 6px}
+.mayhen_docs_detail_sidebar_help p{font-size:11px;line-height:1.75;margin:0 0 15px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_sidebar_help button{display:flex;justify-content:space-between;align-items:center;width:100%;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:7px;background:var(--mayhen-docs-detail-surface);padding:7px 10px;color:var(--mayhen-docs-detail-rose);font-size:11px;font-weight:800}
+.mayhen_docs_detail_sidebar_help button:hover{border-color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_main{min-width:0;background:var(--mayhen-docs-detail-bg)}
+.mayhen_docs_detail_article{max-width:calc(var(--mayhen-docs-detail-article-max) + 100px);margin:0 auto;padding:47px clamp(22px,4vw,52px) 90px}
+.mayhen_docs_detail_article_kicker{display:flex;align-items:center;gap:11px;color:var(--mayhen-docs-detail-gold);font-size:10px;font-weight:800;letter-spacing:1.6px}
+.mayhen_docs_detail_kicker_line{height:1px;width:30px;background:var(--mayhen-docs-detail-gold)}
+.mayhen_docs_detail_kicker_dot{font-size:18px;line-height:1}
+.mayhen_docs_detail_article_header{position:relative;padding-top:12px}
+.mayhen_docs_detail_article_header_art{position:absolute;top:-32px;right:-7px;width:117px;height:120px;opacity:.45;transform:rotate(8deg);pointer-events:none}
+.mayhen_docs_detail_article_header_art svg{height:100%;width:100%;stroke:var(--mayhen-docs-detail-gold);stroke-width:1;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.mayhen_docs_detail_article h1{font-family:Georgia,'Times New Roman',serif;font-weight:500;line-height:1.22;letter-spacing:-1.7px;font-size:clamp(35px,3.35vw,46px);max-width:690px;margin:12px 0 18px;color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_article h1 em{font-weight:400;color:var(--mayhen-docs-detail-rose);font-style:italic}
+.mayhen_docs_detail_lead{color:var(--mayhen-docs-detail-muted);font-size:14px;line-height:1.95;max-width:720px;margin:0}
+.mayhen_docs_detail_article_meta{display:flex;align-items:center;gap:12px;margin:26px 0 28px;font-size:11px}
+.mayhen_docs_detail_author_avatar{height:34px;width:34px;display:grid;place-items:center;background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose);border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:50%;font-family:Georgia,serif;font-size:19px}
+.mayhen_docs_detail_article_meta>span:nth-child(2){display:flex;flex-direction:column;line-height:1.5}
+.mayhen_docs_detail_article_meta strong{font-size:11px;font-weight:800}
+.mayhen_docs_detail_article_meta small{font-size:10px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_meta_sep{border-left:1px solid var(--mayhen-docs-detail-border-strong);height:23px;margin:0 4px}
+.mayhen_docs_detail_update{color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_article_actions{border-top:1px solid var(--mayhen-docs-detail-border);border-bottom:1px solid var(--mayhen-docs-detail-border);padding:13px 0;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:31px;flex-wrap:wrap}
+.mayhen_docs_detail_action_primary,.mayhen_docs_detail_action_secondary{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.mayhen_docs_detail_btn{min-height:33px;display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:800;line-height:1.4;transition:transform .16s ease,background .16s,border-color .16s,color .16s;white-space:nowrap}
+.mayhen_docs_detail_btn:hover{transform:translateY(-1px)}
+.mayhen_docs_detail_btn_outline{background:var(--mayhen-docs-detail-surface);border:1px solid var(--mayhen-docs-detail-border-strong);color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_btn_outline:hover{border-color:var(--mayhen-docs-detail-rose);color:var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-rose-soft)}
+.mayhen_docs_detail_btn_ghost{background:transparent;border:1px solid transparent;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_btn_ghost:hover{color:var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-rose-soft)}
+.mayhen_docs_detail_btn_primary{border:1px solid var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-rose);color:var(--mayhen-docs-detail-surface)}
+.mayhen_docs_detail_btn_primary:hover{background:var(--mayhen-docs-detail-rose-dark);border-color:var(--mayhen-docs-detail-rose-dark)}
+.mayhen_docs_detail_font_button{height:31px;padding:0 7px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--mayhen-docs-detail-muted);font-size:12px;font-weight:800}
+.mayhen_docs_detail_focus_button{display:grid;place-items:center;min-width:30px}
+.mayhen_docs_detail_focus_button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}
+.mayhen_docs_detail_focus_button[aria-pressed="true"]{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_toc_mobile_button{display:none}
+.mayhen_docs_detail_article_body{font-size:var(--mayhen-docs-detail-font-size);line-height:1.92;overflow-wrap:break-word}
+.mayhen_docs_detail_doc_section{padding:0 0 27px;margin:0 0 27px;border-bottom:1px solid var(--mayhen-docs-detail-border);scroll-margin-top:141px}
+.mayhen_docs_detail_section_head{display:flex;align-items:center;gap:6px;margin:0 0 15px}
+.mayhen_docs_detail_article_body h2{font-size:clamp(21px,1.8vw,25px);letter-spacing:-.62px;line-height:1.4;color:var(--mayhen-docs-detail-text);font-weight:800;margin:0}
+.mayhen_docs_detail_anchor{font-size:15px;color:var(--mayhen-docs-detail-gold);opacity:0;border:0;background:transparent;padding:6px 7px;font-weight:800;transition:opacity .2s}
+.mayhen_docs_detail_section_head:hover .mayhen_docs_detail_anchor,.mayhen_docs_detail_anchor:focus-visible{opacity:1}
+.mayhen_docs_detail_article_body :is(p,ul,ol){margin:0 0 17px}
+.mayhen_docs_detail_article_body p{color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_article_body ul{padding-left:25px}
+.mayhen_docs_detail_article_body ul li{padding-left:4px;margin:6px 0}
+.mayhen_docs_detail_article_body li::marker{color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_article_body strong{font-weight:800}
+.mayhen_docs_detail_callout{display:grid;grid-template-columns:25px minmax(0,1fr);gap:11px;border-radius:0 10px 10px 0;border-left:3px solid var(--mayhen-docs-detail-rose);padding:14px 18px;margin:22px 0 4px;background:var(--mayhen-docs-detail-rose-soft);font-size:.89em;line-height:1.75}
+.mayhen_docs_detail_callout_symbol{font-size:22px;line-height:1.1;color:var(--mayhen-docs-detail-rose);font-family:Georgia,serif}
+.mayhen_docs_detail_callout strong{display:block;color:var(--mayhen-docs-detail-rose);margin-bottom:3px}
+.mayhen_docs_detail_callout p{margin:0!important;color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_callout_note{border-color:#788f85;background:color-mix(in srgb,#b3cbbf 22%,var(--mayhen-docs-detail-surface))}
+.mayhen_docs_detail_callout_note :is(.mayhen_docs_detail_callout_symbol,strong){color:#527465}
+.mayhen_docs_detail_callout_warning{border-color:#bc8657;background:color-mix(in srgb,#e9c5a4 22%,var(--mayhen-docs-detail-surface))}
+.mayhen_docs_detail_callout_warning :is(.mayhen_docs_detail_callout_symbol,strong){color:#ad7043}
+.mayhen_docs_detail_template_grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:23px 0 13px}
+.mayhen_docs_detail_template_card{border:1px solid var(--mayhen-docs-detail-border);background:var(--mayhen-docs-detail-surface);border-radius:10px;padding:9px;min-width:0;box-shadow:0 8px 23px rgba(80,55,50,.03);transition:transform .25s,box-shadow .25s}
+.mayhen_docs_detail_template_card:hover{transform:translateY(-3px);box-shadow:0 13px 25px rgba(80,55,50,.08)}
+.mayhen_docs_detail_template_visual{height:191px;border-radius:5px;position:relative;display:grid;place-items:center;overflow:hidden}
+.mayhen_docs_detail_template_visual_one{background:radial-gradient(circle at 0% 0%,#f8fbf6 3%,transparent 53%),linear-gradient(145deg,#f7f3eb,#efeadd)}
+.mayhen_docs_detail_template_visual_two{background:radial-gradient(circle at 95% 5%,#e9c7c7 0%,transparent 58%),linear-gradient(145deg,#e7d0cd,#d9b9b3)}
+.mayhen_docs_detail_template_visual_inner{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(128,80,82,.33);height:calc(100% - 24px);width:calc(100% - 24px);position:relative;color:#805052;gap:7px;text-align:center}
+.mayhen_docs_detail_template_visual_inner:before,.mayhen_docs_detail_template_visual_inner:after{content:"✧";position:absolute;font-family:Georgia,serif;font-size:17px;top:-10px;background:inherit;padding:0 8px}
+.mayhen_docs_detail_template_visual_inner:after{top:auto;bottom:-12px}
+.mayhen_docs_detail_template_visual_inner small{font-size:8px;letter-spacing:1.9px;font-weight:700}
+.mayhen_docs_detail_template_visual_inner strong{font-size:29px;line-height:1.1;font-family:Georgia,serif;font-weight:400}
+.mayhen_docs_detail_template_visual_inner strong i{font-size:16px;font-style:italic}
+.mayhen_docs_detail_template_visual_inner>span{font-size:7px;font-weight:700;letter-spacing:1.5px}
+.mayhen_docs_detail_template_diamond{font-family:Georgia,serif;color:#a37f76;font-size:17px;line-height:1}
+.mayhen_docs_detail_template_leaf{position:absolute;color:#89a08b;font-size:75px;font-family:Georgia,serif;transform:rotate(-34deg);opacity:.55;bottom:-24px;left:0}
+.mayhen_docs_detail_template_leaf_right{left:auto;right:0;bottom:auto;top:-25px;transform:rotate(145deg)}
+.mayhen_docs_detail_template_visual_two .mayhen_docs_detail_template_visual_inner{border-color:#fff9; color:#6b4147}
+.mayhen_docs_detail_template_caption{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 4px 3px;line-height:1.5}
+.mayhen_docs_detail_template_caption>span:first-child{display:flex;flex-direction:column}
+.mayhen_docs_detail_template_caption strong{font-size:11px}
+.mayhen_docs_detail_template_caption small{font-size:10px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_template_tag{border:1px solid var(--mayhen-docs-detail-border);font-size:8px;font-weight:800;letter-spacing:.4px;border-radius:4px;padding:3px 6px;color:var(--mayhen-docs-detail-rose);white-space:nowrap}
+.mayhen_docs_detail_small_note{font-size:.78em;color:var(--mayhen-docs-detail-muted)!important;font-style:italic;line-height:1.7}
+.mayhen_docs_detail_table_wrap{width:100%;overflow-x:auto;border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;margin:19px 0}
+.mayhen_docs_detail_info_table{border-collapse:collapse;width:100%;font-size:.83em;line-height:1.65;min-width:460px}
+.mayhen_docs_detail_info_table th{background:var(--mayhen-docs-detail-rose-soft);text-align:left;color:var(--mayhen-docs-detail-rose);font-size:.92em}
+.mayhen_docs_detail_info_table :is(td,th){padding:11px 14px;border-bottom:1px solid var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_info_table tr:last-child td{border-bottom:0}
+.mayhen_docs_detail_info_table td:first-child{font-weight:700;width:38%}
+.mayhen_docs_detail_quote{margin:24px 0;border-radius:10px;border:1px solid var(--mayhen-docs-detail-border);background:linear-gradient(145deg,var(--mayhen-docs-detail-subtle),var(--mayhen-docs-detail-surface));padding:24px 30px 22px;text-align:center;position:relative}
+.mayhen_docs_detail_quote>span{color:var(--mayhen-docs-detail-gold);font-family:Georgia,serif;font-size:55px;line-height:.7;display:block;margin-top:10px}
+.mayhen_docs_detail_quote p{font-family:Georgia,serif;font-style:italic;font-size:1.15em;line-height:1.78;margin:6px 0 13px}
+.mayhen_docs_detail_quote cite{font-size:.7em;letter-spacing:1px;color:var(--mayhen-docs-detail-rose);font-style:normal;font-weight:700;text-transform:uppercase}
+.mayhen_docs_detail_example_accordion{border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;margin-top:18px;overflow:hidden}
+.mayhen_docs_detail_example_accordion summary{padding:13px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;background:var(--mayhen-docs-detail-subtle);font-size:.85em}
+.mayhen_docs_detail_example_accordion summary::-webkit-details-marker{display:none}
+.mayhen_docs_detail_example_accordion summary>span:first-child{color:var(--mayhen-docs-detail-rose);font-size:18px}
+.mayhen_docs_detail_example_accordion[open] summary>.mayhen_docs_detail_chevron{transform:rotate(180deg)}
+.mayhen_docs_detail_example_content{padding:16px;border-top:1px solid var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_example_content p{margin:0 0 12px}
+.mayhen_docs_detail_palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:21px 0}
+.mayhen_docs_detail_swatch{height:85px;border-radius:9px;display:flex;align-items:flex-end;justify-content:center;padding:8px 3px;font-size:9px;font-weight:800;letter-spacing:.2px;border:1px solid rgba(0,0,0,.07)}
+.mayhen_docs_detail_swatch span{background:#fffdebd9;color:#463536;padding:2px 5px;border-radius:3px;line-height:1.4}
+.mayhen_docs_detail_swatch_one{background:#faf7f3}.mayhen_docs_detail_swatch_two{background:#eedfd8}.mayhen_docs_detail_swatch_three{background:#b58e6f}.mayhen_docs_detail_swatch_four{background:#805052}.mayhen_docs_detail_swatch_five{background:#3b3132}
+.mayhen_docs_detail_steps{list-style:none;padding:0!important;margin:22px 0!important}
+.mayhen_docs_detail_steps li{display:flex;gap:15px;align-items:flex-start;padding:0!important;margin:0!important;position:relative}
+.mayhen_docs_detail_steps li:not(:last-child):before{content:"";position:absolute;left:17px;top:31px;height:calc(100% - 28px);border-left:1px dashed var(--mayhen-docs-detail-border-strong)}
+.mayhen_docs_detail_steps li>span{flex:none;width:35px;height:35px;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:50%;display:grid;place-items:center;background:var(--mayhen-docs-detail-subtle);color:var(--mayhen-docs-detail-rose);font-size:11px;font-weight:800;position:relative;z-index:1}
+.mayhen_docs_detail_steps li>div{padding:0 0 24px}
+.mayhen_docs_detail_steps li strong{font-size:.93em}
+.mayhen_docs_detail_steps li p{font-size:.87em;color:var(--mayhen-docs-detail-muted);margin:2px 0 0}
+.mayhen_docs_detail_code_block{border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:9px;overflow:hidden;background:var(--mayhen-docs-detail-subtle);margin:20px 0 9px}
+.mayhen_docs_detail_code_header{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-bottom:1px solid var(--mayhen-docs-detail-border);font-size:10px;color:var(--mayhen-docs-detail-muted);font-weight:700}
+.mayhen_docs_detail_code_header>span{display:flex;align-items:center;gap:7px}
+.mayhen_docs_detail_code_dot{width:6px;height:6px;background:#77a487;border-radius:50%}
+.mayhen_docs_detail_code_header button{border:0;background:transparent;font-size:10px;color:var(--mayhen-docs-detail-rose);font-weight:800}
+.mayhen_docs_detail_code_block code{display:block;overflow-x:auto;white-space:nowrap;padding:16px;font-size:.82em;line-height:1.5;color:var(--mayhen-docs-detail-text);font-family:ui-monospace,Consolas,monospace}
+.mayhen_docs_detail_faq_list{border-top:1px solid var(--mayhen-docs-detail-border);margin:18px 0 0}
+.mayhen_docs_detail_faq_list details{border-bottom:1px solid var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_faq_list summary{display:flex;align-items:center;justify-content:space-between;gap:13px;cursor:pointer;list-style:none;padding:16px 5px;font-weight:700;font-size:.91em;line-height:1.5}
+.mayhen_docs_detail_faq_list summary::-webkit-details-marker{display:none}
+.mayhen_docs_detail_faq_list summary span{font-size:23px;font-weight:400;color:var(--mayhen-docs-detail-rose);transition:transform .2s}
+.mayhen_docs_detail_faq_list details[open] summary span{transform:rotate(45deg)}
+.mayhen_docs_detail_faq_list details>p{padding:0 30px 16px 5px;margin:0;font-size:.86em;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_next_section{border:0;padding:0}
+.mayhen_docs_detail_next_grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:22px}
+.mayhen_docs_detail_next_card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:18px;border:1px solid var(--mayhen-docs-detail-border);background:var(--mayhen-docs-detail-surface);border-radius:11px;min-height:158px;position:relative;transition:border .2s,transform .2s,box-shadow .2s}
+.mayhen_docs_detail_next_card:hover{border-color:var(--mayhen-docs-detail-gold);transform:translateY(-2px);box-shadow:0 10px 25px rgba(90,50,50,.06)}
+.mayhen_docs_detail_next_card>span{font-size:9px;letter-spacing:1px;color:var(--mayhen-docs-detail-gold);font-weight:800}
+.mayhen_docs_detail_next_card strong{font-size:.93em;line-height:1.5;margin-top:3px}
+.mayhen_docs_detail_next_card small{font-size:.77em;color:var(--mayhen-docs-detail-muted);line-height:1.6}
+.mayhen_docs_detail_next_card b{position:absolute;bottom:13px;right:16px;color:var(--mayhen-docs-detail-rose);font-size:18px}
+.mayhen_docs_detail_toc{border-left:1px solid var(--mayhen-docs-detail-border);background:var(--mayhen-docs-detail-bg);min-width:0}
+.mayhen_docs_detail_toc_inner{position:sticky;top:calc(var(--mayhen-docs-detail-header-h) + var(--mayhen-docs-detail-crumb-h));padding:34px 25px 20px 24px;max-height:calc(100dvh - var(--mayhen-docs-detail-header-h) - var(--mayhen-docs-detail-crumb-h));overflow:auto}
+.mayhen_docs_detail_toc_eyebrow{font-size:9px;color:var(--mayhen-docs-detail-muted);letter-spacing:1.4px}
+.mayhen_docs_detail_toc_rule{width:28px;height:1px;background:var(--mayhen-docs-detail-gold);margin:11px 0 17px}
+.mayhen_docs_detail_toc nav{display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--mayhen-docs-detail-border);padding-left:0}
+.mayhen_docs_detail_toc nav a{font-size:11px;line-height:1.5;color:var(--mayhen-docs-detail-muted);padding:8px 0 8px 14px;border-left:2px solid transparent;margin-left:-1.5px;transition:color .15s,border-color .15s,background .15s}
+.mayhen_docs_detail_toc nav a:hover{color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_toc nav a[aria-current="location"]{border-left-color:var(--mayhen-docs-detail-rose);color:var(--mayhen-docs-detail-rose);font-weight:800;background:linear-gradient(90deg,var(--mayhen-docs-detail-rose-soft),transparent 75%)}
+.mayhen_docs_detail_toc_bottom{padding-top:22px;margin-top:24px;border-top:1px solid var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_toc_progress{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_toc_progress b{color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_toc_track{height:5px;background:var(--mayhen-docs-detail-rose-soft);margin:9px 0 13px;border-radius:6px;overflow:hidden}
+.mayhen_docs_detail_toc_track span{display:block;width:0;height:100%;border-radius:inherit;background:var(--mayhen-docs-detail-gold);transition:width .1s}
+.mayhen_docs_detail_toc_settings{font-size:10px;color:var(--mayhen-docs-detail-rose);background:transparent;border:0;padding:5px 0;text-align:left;font-weight:700}
+.mayhen_docs_detail_footer{background:var(--mayhen-docs-detail-sidebar);border-top:1px solid var(--mayhen-docs-detail-border);position:relative}
+.mayhen_docs_detail_footer_flower{height:92px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid var(--mayhen-docs-detail-gold-soft)}
+.mayhen_docs_detail_footer_flower svg{height:100%;width:100%;max-width:1200px;stroke:var(--mayhen-docs-detail-gold);stroke-width:1.3;fill:none;opacity:.55}
+.mayhen_docs_detail_footer_top{max-width:1300px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:28px 33px;gap:10px}
+.mayhen_docs_detail_footer_logo{display:flex;align-items:center;gap:10px}
+.mayhen_docs_detail_footer_logo>span{font-size:28px;color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_footer_logo strong{font-family:Georgia,serif;font-size:23px;color:var(--mayhen-docs-detail-rose);font-weight:400}
+.mayhen_docs_detail_footer_logo small{margin-left:10px;font-size:11px;color:var(--mayhen-docs-detail-muted);font-style:italic}
+.mayhen_docs_detail_footer_columns{max-width:1300px;margin:auto;border-top:1px solid var(--mayhen-docs-detail-border);border-bottom:1px solid var(--mayhen-docs-detail-border);display:grid;grid-template-columns:1fr 1fr .65fr}
+.mayhen_docs_detail_footer_columns>div{padding:28px 33px}
+.mayhen_docs_detail_footer_columns>div:not(:first-child){border-left:1px solid var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_footer_columns h3{font-size:13px;line-height:1.5;margin:0 0 7px;font-weight:800}
+.mayhen_docs_detail_footer_columns p{font-size:11px;line-height:1.7;color:var(--mayhen-docs-detail-muted);margin:0 0 14px}
+.mayhen_docs_detail_feedback_buttons{display:flex;gap:9px;flex-wrap:wrap}
+.mayhen_docs_detail_feedback_buttons button{border:1px solid var(--mayhen-docs-detail-border-strong);background:var(--mayhen-docs-detail-surface);color:var(--mayhen-docs-detail-text);font-size:11px;font-weight:700;padding:8px 12px;border-radius:7px}
+.mayhen_docs_detail_feedback_buttons button:hover,.mayhen_docs_detail_feedback_buttons button[aria-pressed="true"]{border-color:var(--mayhen-docs-detail-rose);color:var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-rose-soft)}
+.mayhen_docs_detail_footer_links h3{font-size:10px;letter-spacing:1.1px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_footer_links button{display:block;border:0;background:none;padding:4px 0;text-align:left;color:var(--mayhen-docs-detail-rose);font-size:11px}
+.mayhen_docs_detail_footer_links button:hover{text-decoration:underline}
+.mayhen_docs_detail_footer_bottom{display:flex;justify-content:space-between;gap:18px;max-width:1300px;margin:auto;padding:22px 33px;font-size:10px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_back_top{position:fixed;right:25px;bottom:25px;width:43px;height:43px;border-radius:50%;border:1px solid var(--mayhen-docs-detail-border-strong);background:var(--mayhen-docs-detail-surface);color:var(--mayhen-docs-detail-rose);box-shadow:0 6px 18px rgba(65,35,36,.14);display:grid;place-items:center;z-index:20;opacity:0;visibility:hidden;transform:translateY(10px);transition:.2s}
+.mayhen_docs_detail_back_top.mayhen_docs_detail_visible{opacity:1;visibility:visible;transform:translateY(0)}
+.mayhen_docs_detail_back_top:hover{border-color:var(--mayhen-docs-detail-rose);transform:translateY(-3px)}
+.mayhen_docs_detail_back_top svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mayhen_docs_detail_toast{position:fixed;z-index:160;bottom:23px;left:50%;max-width:min(450px,calc(100vw - 32px));width:max-content;text-align:center;padding:11px 18px;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:11px;background:var(--mayhen-docs-detail-surface);color:var(--mayhen-docs-detail-text);box-shadow:var(--mayhen-docs-detail-shadow);font-size:12px;font-weight:700;opacity:0;transform:translate(-50%,15px);pointer-events:none;transition:opacity .2s,transform .2s}
+.mayhen_docs_detail_toast.mayhen_docs_detail_visible{opacity:1;transform:translate(-50%,0)}
+.mayhen_docs_detail_dialog{width:min(520px,calc(100vw - 30px));max-height:min(85dvh,820px);margin:auto;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:19px;padding:0;background:var(--mayhen-docs-detail-surface);color:var(--mayhen-docs-detail-text);box-shadow:var(--mayhen-docs-detail-shadow);overflow:auto}
+.mayhen_docs_detail_dialog::backdrop{background:rgba(34,22,27,.54);backdrop-filter:blur(6px)}
+.mayhen_docs_detail_dialog[open]{animation:mayhen_docs_detail_dialog_enter .22s cubic-bezier(.2,.7,.2,1)}
+@keyframes mayhen_docs_detail_dialog_enter{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.mayhen_docs_detail_dialog_shell{padding:26px 30px 29px}
+.mayhen_docs_detail_dialog_header{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+.mayhen_docs_detail_dialog_close{width:30px;height:30px;border-radius:50%;border:1px solid var(--mayhen-docs-detail-border);display:grid;place-items:center;background:var(--mayhen-docs-detail-subtle);font-size:22px;line-height:1;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_dialog_close:hover{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_dialog h2{font-family:Georgia,serif;font-size:28px;line-height:1.3;font-weight:400;letter-spacing:-.6px;margin:0 0 10px;color:var(--mayhen-docs-detail-text)}
+.mayhen_docs_detail_dialog_desc{font-size:12px;line-height:1.85;color:var(--mayhen-docs-detail-muted);margin:0 0 22px}
+.mayhen_docs_detail_search_dialog{width:min(670px,calc(100vw - 30px))}
+.mayhen_docs_detail_search_dialog h2{margin-bottom:20px}
+.mayhen_docs_detail_search_box{border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:11px;height:50px;display:flex;align-items:center;padding:0 12px;gap:10px;background:var(--mayhen-docs-detail-bg);margin-bottom:18px}
+.mayhen_docs_detail_search_box:focus-within{outline:2px solid var(--mayhen-docs-detail-gold-soft)}
+.mayhen_docs_detail_search_box svg{width:19px;height:19px;stroke:var(--mayhen-docs-detail-rose);fill:none;stroke-width:1.8}
+.mayhen_docs_detail_search_box input{min-width:0;flex:1;border:0;outline:none!important;background:transparent;color:var(--mayhen-docs-detail-text);font-size:13px}
+.mayhen_docs_detail_search_box input::placeholder{color:var(--mayhen-docs-detail-light-muted)}
+.mayhen_docs_detail_search_count{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--mayhen-docs-detail-muted);font-weight:800;margin-bottom:7px}
+.mayhen_docs_detail_search_results{max-height:min(47dvh,410px);overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.mayhen_docs_detail_search_result{display:flex;align-items:center;gap:11px;text-align:left;width:100%;min-height:59px;background:transparent;color:var(--mayhen-docs-detail-text);border:1px solid transparent;border-radius:9px;padding:9px 12px}
+.mayhen_docs_detail_search_result:hover,.mayhen_docs_detail_search_result[aria-selected="true"]{background:var(--mayhen-docs-detail-rose-soft);border-color:var(--mayhen-docs-detail-border)}
+.mayhen_docs_detail_search_result_icon{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:9px;color:var(--mayhen-docs-detail-rose);background:var(--mayhen-docs-detail-surface);font-size:16px;flex:none}
+.mayhen_docs_detail_search_result_text{display:flex;flex-direction:column;min-width:0;line-height:1.4;gap:4px;flex:1}
+.mayhen_docs_detail_search_result_text strong{font-size:12px;font-weight:800}
+.mayhen_docs_detail_search_result_text small{font-size:10.5px;color:var(--mayhen-docs-detail-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mayhen_docs_detail_search_result_arrow{color:var(--mayhen-docs-detail-gold);font-size:17px}
+.mayhen_docs_detail_search_empty{padding:27px 10px;text-align:center;color:var(--mayhen-docs-detail-muted);font-size:12px}
+.mayhen_docs_detail_search_hint{font-size:10px;color:var(--mayhen-docs-detail-light-muted);border-top:1px solid var(--mayhen-docs-detail-border);margin:15px 0 0;padding-top:13px;text-align:center}
+.mayhen_docs_detail_setting_group{margin:0 0 23px}
+.mayhen_docs_detail_setting_group h3{font-size:12px;font-weight:800;margin:0 0 10px}
+.mayhen_docs_detail_segment{display:flex;padding:4px;background:var(--mayhen-docs-detail-subtle);border:1px solid var(--mayhen-docs-detail-border);border-radius:10px;gap:4px}
+.mayhen_docs_detail_segment button{flex:1;min-height:37px;border:1px solid transparent;background:transparent;border-radius:7px;color:var(--mayhen-docs-detail-muted);font-size:11px;font-weight:800}
+.mayhen_docs_detail_segment button[aria-pressed="true"]{background:var(--mayhen-docs-detail-surface);color:var(--mayhen-docs-detail-rose);border-color:var(--mayhen-docs-detail-border-strong);box-shadow:0 2px 5px rgba(80,55,50,.07)}
+.mayhen_docs_detail_setting_font{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px;border:1px solid var(--mayhen-docs-detail-border);border-radius:10px}
+.mayhen_docs_detail_setting_font button{width:45px;height:35px;border:0;border-radius:7px;background:var(--mayhen-docs-detail-subtle);color:var(--mayhen-docs-detail-rose);font-size:15px;font-weight:800}
+.mayhen_docs_detail_setting_font span{font-weight:800;font-size:12px;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_switch_row{display:flex;align-items:center;justify-content:space-between;gap:13px;font-size:12px;cursor:pointer}
+.mayhen_docs_detail_switch_row>span:first-child{display:flex;flex-direction:column;font-weight:700;line-height:1.7}
+.mayhen_docs_detail_switch_row small{font-size:10px;font-weight:400;color:var(--mayhen-docs-detail-muted)}
+.mayhen_docs_detail_switch_row input{position:absolute;opacity:0;width:1px;height:1px}
+.mayhen_docs_detail_switch_visual{width:42px;height:24px;background:var(--mayhen-docs-detail-border-strong);border-radius:20px;flex:none;position:relative;transition:background .2s}
+.mayhen_docs_detail_switch_visual:before{content:"";width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;box-shadow:0 1px 5px #0002;transition:transform .2s}
+.mayhen_docs_detail_switch_row input:checked+.mayhen_docs_detail_switch_visual{background:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_switch_row input:checked+.mayhen_docs_detail_switch_visual:before{transform:translateX(18px)}
+.mayhen_docs_detail_dialog_done{width:100%;min-height:42px;margin-top:4px;font-size:12px}
+.mayhen_docs_detail_share_art{font-family:Georgia,serif;position:relative;font-size:44px;line-height:1;color:var(--mayhen-docs-detail-gold);margin:7px 0 17px}
+.mayhen_docs_detail_share_art span{font-size:23px;position:absolute;left:30px;top:11px;color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_share_field{display:flex;border:1px solid var(--mayhen-docs-detail-border-strong);border-radius:9px;overflow:hidden;margin-bottom:13px}
+.mayhen_docs_detail_share_field input{min-width:0;width:100%;padding:12px;border:0;outline:none!important;background:var(--mayhen-docs-detail-subtle);color:var(--mayhen-docs-detail-text);font-size:11px}
+.mayhen_docs_detail_share_field button{padding:0 15px;border:0;background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose);font-size:11px;font-weight:800}
+.mayhen_docs_detail_share_row{display:flex;gap:9px;flex-wrap:wrap}
+.mayhen_docs_detail_share_row .mayhen_docs_detail_btn{min-height:38px}
+.mayhen_docs_detail_field_label{display:block;font-size:11px;font-weight:800;margin:15px 0 7px}
+.mayhen_docs_detail_dialog :is(select,textarea){width:100%;background:var(--mayhen-docs-detail-bg);border:1px solid var(--mayhen-docs-detail-border-strong);color:var(--mayhen-docs-detail-text);padding:11px 12px;border-radius:8px;outline:none}
+.mayhen_docs_detail_dialog textarea{resize:vertical;min-height:110px;font-size:12px;line-height:1.7}
+.mayhen_docs_detail_dialog select{font-size:12px}
+.mayhen_docs_detail_field_help{display:block;color:var(--mayhen-docs-detail-muted);font-size:10px;line-height:1.7;margin-top:8px}
+.mayhen_docs_detail_dialog_actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.mayhen_docs_detail_shortcut_list{border-top:1px solid var(--mayhen-docs-detail-border);margin:18px 0}
+.mayhen_docs_detail_shortcut_list>div{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--mayhen-docs-detail-border);padding:12px 1px;font-size:12px}
+.mayhen_docs_detail_shortcut_list kbd{font-size:10px;padding:4px 9px}
+.mayhen_docs_detail_toc_modal_links{display:flex;flex-direction:column;gap:5px;margin-top:15px}
+.mayhen_docs_detail_toc_modal_links a{display:flex;align-items:center;gap:11px;border:1px solid var(--mayhen-docs-detail-border);border-radius:8px;padding:11px 12px;font-weight:700;font-size:12px}
+.mayhen_docs_detail_toc_modal_links a:before{content:"◇";color:var(--mayhen-docs-detail-gold)}
+.mayhen_docs_detail_toc_modal_links a:hover{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_layout{grid-template-columns:0 minmax(0,1fr) 0}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_sidebar,.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_toc{visibility:hidden;overflow:hidden;border:0}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_article{max-width:calc(var(--mayhen-docs-detail-article-max) + 100px)}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed .mayhen_docs_detail_layout{grid-template-columns:0 minmax(0,1fr) var(--mayhen-docs-detail-toc-w)}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed .mayhen_docs_detail_sidebar{visibility:hidden;overflow:hidden;border:0}
+.mayhen_docs_detail_mobile_scrim{display:none}
+@media(max-width:1260px){.mayhen_docs_detail_layout{grid-template-columns:var(--mayhen-docs-detail-sidebar-w) minmax(0,1fr)}.mayhen_docs_detail_toc{display:none}.mayhen_docs_detail_toc_mobile_button{display:inline-flex}.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed .mayhen_docs_detail_layout{grid-template-columns:0 minmax(0,1fr)}.mayhen_docs_detail_article{max-width:calc(var(--mayhen-docs-detail-article-max) + 105px)}}
+@media(max-width:1020px){.mayhen_docs_detail_header{padding:0 20px}.mayhen_docs_detail_breadcrumb_bar{padding:0 18px}.mayhen_docs_detail_mobile_menu{display:grid}.mayhen_docs_detail_desktop_sidebar_toggle{display:none}.mayhen_docs_detail_layout,.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed .mayhen_docs_detail_layout,.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_layout{grid-template-columns:minmax(0,1fr)}.mayhen_docs_detail_sidebar,.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed .mayhen_docs_detail_sidebar,.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_sidebar{visibility:visible;position:fixed;left:0;top:0;bottom:0;z-index:85;width:min(340px,calc(100vw - 42px));max-width:340px;box-shadow:var(--mayhen-docs-detail-shadow);transform:translateX(-110%);transition:transform .25s ease;border-right:1px solid var(--mayhen-docs-detail-border)}.mayhen_docs_detail_app.mayhen_docs_detail_mobile_open .mayhen_docs_detail_sidebar{transform:translateX(0)}.mayhen_docs_detail_mobile_scrim{display:block;position:fixed;inset:0;z-index:84;background:rgba(29,21,23,.52);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}.mayhen_docs_detail_app.mayhen_docs_detail_mobile_open .mayhen_docs_detail_mobile_scrim{opacity:1;visibility:visible}.mayhen_docs_detail_sidebar_inner{position:static;max-height:100dvh;overflow-y:auto;padding:18px 22px 40px}.mayhen_docs_detail_sidebar_mobile_top{display:flex;align-items:center;justify-content:space-between;margin:0 0 19px;padding-bottom:10px;border-bottom:1px solid var(--mayhen-docs-detail-border)}.mayhen_docs_detail_sidebar_mobile_top strong{font-family:Georgia,serif;font-weight:400;color:var(--mayhen-docs-detail-rose);font-size:20px}.mayhen_docs_detail_article{padding:40px clamp(20px,5vw,50px) 85px}.mayhen_docs_detail_header_label{display:none}}
+@media(max-width:690px){.mayhen_docs_detail_header{height:63px;padding:0 13px;gap:7px;--mayhen-docs-detail-header-h:63px}.mayhen_docs_detail_app{--mayhen-docs-detail-header-h:63px;--mayhen-docs-detail-crumb-h:44px}.mayhen_docs_detail_header_left{gap:5px}.mayhen_docs_detail_header_right{gap:1px}.mayhen_docs_detail_brand_mark{width:33px;height:33px}.mayhen_docs_detail_brand{gap:5px}.mayhen_docs_detail_brand_text strong{font-size:18px}.mayhen_docs_detail_brand_text small{font-size:6px;letter-spacing:2px;margin-top:4px}.mayhen_docs_detail_header_divider,.mayhen_docs_detail_help_button,.mayhen_docs_detail_header_icon{display:none}.mayhen_docs_detail_search_trigger{width:38px;height:38px;min-width:38px;display:grid;place-items:center;border-radius:9px;padding:0;background:transparent;border-color:transparent}.mayhen_docs_detail_search_trigger span,.mayhen_docs_detail_search_trigger kbd{display:none}.mayhen_docs_detail_search_trigger svg{width:20px;height:20px}.mayhen_docs_detail_breadcrumb_bar{padding:0 15px}.mayhen_docs_detail_breadcrumb{font-size:10px;gap:9px}.mayhen_docs_detail_breadcrumb_end{display:none}.mayhen_docs_detail_article{padding:30px 19px 65px}.mayhen_docs_detail_article_kicker{font-size:9px;letter-spacing:1.2px}.mayhen_docs_detail_article_header_art{width:80px;height:85px;right:0;top:-12px;opacity:.28}.mayhen_docs_detail_article h1{font-size:35px;letter-spacing:-1.3px;max-width:90%;margin:16px 0 15px}.mayhen_docs_detail_lead{font-size:13px;line-height:1.85}.mayhen_docs_detail_article_meta{flex-wrap:wrap;gap:9px;margin:20px 0}.mayhen_docs_detail_meta_sep{display:none}.mayhen_docs_detail_update{width:100%;padding-left:44px}.mayhen_docs_detail_article_actions{margin-bottom:26px;padding:11px 0;gap:8px}.mayhen_docs_detail_action_primary{width:100%}.mayhen_docs_detail_action_primary .mayhen_docs_detail_btn{font-size:10px;padding:7px 9px;min-height:33px;gap:5px}.mayhen_docs_detail_action_primary .mayhen_docs_detail_btn svg{width:15px;height:15px}.mayhen_docs_detail_action_secondary{width:100%;justify-content:flex-end;gap:2px}.mayhen_docs_detail_action_secondary .mayhen_docs_detail_toc_mobile_button{margin-left:auto}.mayhen_docs_detail_article_body{line-height:1.86}.mayhen_docs_detail_article_body h2{font-size:21px;letter-spacing:-.45px}.mayhen_docs_detail_section_head{margin-bottom:10px}.mayhen_docs_detail_anchor{opacity:1;font-size:14px}.mayhen_docs_detail_doc_section{margin-bottom:24px;padding-bottom:20px}.mayhen_docs_detail_callout{padding:12px 13px;grid-template-columns:20px 1fr;gap:7px}.mayhen_docs_detail_template_grid{gap:10px}.mayhen_docs_detail_template_card{padding:5px}.mayhen_docs_detail_template_visual{height:145px}.mayhen_docs_detail_template_visual_inner{width:calc(100% - 13px);height:calc(100% - 13px)}.mayhen_docs_detail_template_visual_inner strong{font-size:20px}.mayhen_docs_detail_template_visual_inner small{font-size:6px}.mayhen_docs_detail_template_visual_inner>span{font-size:5px}.mayhen_docs_detail_template_leaf{font-size:40px}.mayhen_docs_detail_template_caption{padding:9px 2px 4px;align-items:flex-start;flex-direction:column;gap:6px}.mayhen_docs_detail_template_caption strong{font-size:10px}.mayhen_docs_detail_template_tag{font-size:7px}.mayhen_docs_detail_palette{gap:4px}.mayhen_docs_detail_swatch{height:63px;font-size:8px;padding:5px 2px}.mayhen_docs_detail_swatch span{padding:2px 1px}.mayhen_docs_detail_quote{padding:19px 17px}.mayhen_docs_detail_quote p{font-size:1.06em}.mayhen_docs_detail_next_grid{grid-template-columns:1fr;gap:11px}.mayhen_docs_detail_next_card{min-height:120px}.mayhen_docs_detail_footer_flower{height:56px}.mayhen_docs_detail_footer_top{padding:23px 20px;align-items:flex-start}.mayhen_docs_detail_footer_logo{flex-wrap:wrap;gap:5px}.mayhen_docs_detail_footer_logo small{width:100%;margin-left:0}.mayhen_docs_detail_footer_columns{grid-template-columns:1fr}.mayhen_docs_detail_footer_columns>div{padding:22px 20px}.mayhen_docs_detail_footer_columns>div:not(:first-child){border-left:0;border-top:1px solid var(--mayhen-docs-detail-border)}.mayhen_docs_detail_footer_bottom{padding:19px 20px;flex-direction:column;gap:4px}.mayhen_docs_detail_back_top{right:14px;bottom:14px;width:40px;height:40px}.mayhen_docs_detail_dialog_shell{padding:22px 19px 23px}.mayhen_docs_detail_dialog h2{font-size:26px}.mayhen_docs_detail_dialog{max-height:calc(100dvh - 26px)}.mayhen_docs_detail_share_row{flex-direction:column}.mayhen_docs_detail_share_row .mayhen_docs_detail_btn{width:100%}}
+@media(max-width:360px){.mayhen_docs_detail_brand_text strong{font-size:17px}.mayhen_docs_detail_article{padding-left:15px;padding-right:15px}.mayhen_docs_detail_article h1{font-size:31px}.mayhen_docs_detail_action_primary .mayhen_docs_detail_btn{padding:6px 7px}.mayhen_docs_detail_swatch span{font-size:7px}.mayhen_docs_detail_template_visual{height:133px}.mayhen_docs_detail_dialog_shell{padding:18px 14px 21px}}
+@media(prefers-reduced-motion:reduce){.mayhen_docs_detail_app *, .mayhen_docs_detail_app *:before,.mayhen_docs_detail_app *:after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}html{scroll-behavior:auto}}
+@media print{html{scroll-behavior:auto}.mayhen_docs_detail_app{--mayhen-docs-detail-bg:#fff;--mayhen-docs-detail-text:#1f1f1f;--mayhen-docs-detail-muted:#4f4f4f}.mayhen_docs_detail_header,.mayhen_docs_detail_breadcrumb_bar,.mayhen_docs_detail_sidebar,.mayhen_docs_detail_toc,.mayhen_docs_detail_article_actions,.mayhen_docs_detail_footer,.mayhen_docs_detail_back_top,.mayhen_docs_detail_toast,.mayhen_docs_detail_reading_progress,.mayhen_docs_detail_dialog{display:none!important}.mayhen_docs_detail_layout,.mayhen_docs_detail_app.mayhen_docs_detail_is_focus .mayhen_docs_detail_layout{display:block!important}.mayhen_docs_detail_article{max-width:800px;padding:0 10px}.mayhen_docs_detail_article_body{font-size:12pt}.mayhen_docs_detail_doc_section{break-inside:avoid}.mayhen_docs_detail_article h1{font-size:29pt}.mayhen_docs_detail_article_body h2{font-size:18pt}}

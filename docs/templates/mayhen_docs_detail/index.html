@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fcf9f6">
+  <meta name="description" content="Khám phá hướng dẫn sử dụng Mây Hẹn: tạo thiệp cưới online, quản lý khách mời RSVP và chia sẻ ngày vui.">
+  <title>Tạo thiệp cưới online đầu tiên | Mây Hẹn Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+<div class="mayhen_docs_detail_app" id="mayhen_docs_detail_app" data-theme="light" data-width="comfortable">
+  <div class="mayhen_docs_detail_reading_progress" id="mayhen_docs_detail_reading_progress" aria-hidden="true"></div>
+  <a class="mayhen_docs_detail_skip_link" href="#mayhen_docs_detail_article">Bỏ qua điều hướng, tới nội dung</a>
+  <header class="mayhen_docs_detail_header">
+    <div class="mayhen_docs_detail_header_left">
+      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_mobile_menu" id="mayhen_docs_detail_menu_open" aria-label="Mở danh mục tài liệu" aria-controls="mayhen_docs_detail_sidebar" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <a href="#mayhen_docs_detail_article" class="mayhen_docs_detail_brand" aria-label="Mây Hẹn Docs - về đầu trang">
+        <span class="mayhen_docs_detail_brand_mark" aria-hidden="true">
+          <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="23"/><circle cx="26" cy="26" r="18" stroke-dasharray="1.2 4"/><path d="M12 34V18l8 10 6-10 6 10 8-10v16"/><path d="M17 15c3-3 6-4 9-4s6 1 9 4"/></svg>
+        </span>
+        <span class="mayhen_docs_detail_brand_text"><strong>Mây Hẹn</strong><small>DOCS &amp; GUIDES</small></span>
+      </a>
+      <span class="mayhen_docs_detail_header_divider" aria-hidden="true"></span>
+      <span class="mayhen_docs_detail_header_label">Trung tâm hướng dẫn</span>
+    </div>
+    <div class="mayhen_docs_detail_header_right">
+      <button type="button" class="mayhen_docs_detail_search_trigger" data-modal="mayhen_docs_detail_search_dialog" aria-label="Tìm kiếm tài liệu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
+      </button>
+      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" id="mayhen_docs_detail_theme_quick" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng tối">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>
+      </button>
+      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc" title="Cài đặt đọc">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>
+      </button>
+      <button type="button" class="mayhen_docs_detail_help_button" data-modal="mayhen_docs_detail_shortcuts_dialog"><span aria-hidden="true">?</span><span class="mayhen_docs_detail_help_text">Trợ giúp</span></button>
+    </div>
+  </header>
+
+  <div class="mayhen_docs_detail_breadcrumb_bar">
+    <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_desktop_sidebar_toggle" id="mayhen_docs_detail_sidebar_toggle" aria-label="Thu gọn hoặc mở thanh điều hướng" title="Thu gọn thanh điều hướng">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+    </button>
+    <nav class="mayhen_docs_detail_breadcrumb" aria-label="Đường dẫn tài liệu">
+      <a href="#mayhen_docs_detail_article">Trang chủ</a><span>/</span>
+      <a href="#mayhen_docs_detail_prerequisites">Bắt đầu</a><span>/</span>
+      <span aria-current="page">Tạo thiệp cưới đầu tiên</span>
+    </nav>
+    <span class="mayhen_docs_detail_breadcrumb_end"><span aria-hidden="true">✦</span> Made with love, for your day</span>
+  </div>
+
+  <div class="mayhen_docs_detail_mobile_scrim" id="mayhen_docs_detail_mobile_scrim" hidden></div>
+  <div class="mayhen_docs_detail_layout" id="mayhen_docs_detail_layout">
+    <aside class="mayhen_docs_detail_sidebar" id="mayhen_docs_detail_sidebar" aria-label="Danh mục tài liệu">
+      <div class="mayhen_docs_detail_sidebar_inner">
+        <div class="mayhen_docs_detail_sidebar_mobile_top">
+          <strong>Mục lục tài liệu</strong>
+          <button type="button" class="mayhen_docs_detail_icon_button" id="mayhen_docs_detail_menu_close" aria-label="Đóng danh mục"><svg viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></svg></button>
+        </div>
+        <div class="mayhen_docs_detail_sidebar_overline">THƯ VIỆN MÂY HẸN</div>
+        <h2 class="mayhen_docs_detail_sidebar_heading">Hướng dẫn sử dụng</h2>
+        <p class="mayhen_docs_detail_sidebar_desc">Từng bước nhỏ, cho ngày vui trọn vẹn.</p>
+        <div class="mayhen_docs_detail_sidebar_nav">
+          <section class="mayhen_docs_detail_nav_group">
+            <button type="button" class="mayhen_docs_detail_nav_group_toggle" aria-expanded="true" aria-controls="mayhen_docs_detail_group_start"><span class="mayhen_docs_detail_nav_group_icon">✦</span> Bắt đầu <span class="mayhen_docs_detail_chevron">⌄</span></button>
+            <div class="mayhen_docs_detail_nav_links" id="mayhen_docs_detail_group_start">
+              <a class="mayhen_docs_detail_nav_link mayhen_docs_detail_nav_active" href="#mayhen_docs_detail_article">Tạo thiệp cưới đầu tiên</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_prerequisites">Trước khi bắt đầu</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_templates">Chọn mẫu thiệp phù hợp</a>
+            </div>
+          </section>
+          <section class="mayhen_docs_detail_nav_group">
+            <button type="button" class="mayhen_docs_detail_nav_group_toggle" aria-expanded="true" aria-controls="mayhen_docs_detail_group_design"><span class="mayhen_docs_detail_nav_group_icon">❀</span> Thiết kế thiệp <span class="mayhen_docs_detail_chevron">⌄</span></button>
+            <div class="mayhen_docs_detail_nav_links" id="mayhen_docs_detail_group_design">
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_customize">Điền thông tin ngày cưới</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_story">Kể câu chuyện tình yêu</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_personalize">Chỉnh màu &amp; bố cục</a>
+            </div>
+          </section>
+          <section class="mayhen_docs_detail_nav_group">
+            <button type="button" class="mayhen_docs_detail_nav_group_toggle" aria-expanded="false" aria-controls="mayhen_docs_detail_group_guests"><span class="mayhen_docs_detail_nav_group_icon">♡</span> Khách mời &amp; RSVP <span class="mayhen_docs_detail_chevron">⌄</span></button>
+            <div class="mayhen_docs_detail_nav_links" id="mayhen_docs_detail_group_guests" hidden>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_rsvp">Quản lý khách mời</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_rsvp">Theo dõi lời xác nhận</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_privacy">Quyền riêng tư</a>
+            </div>
+          </section>
+          <section class="mayhen_docs_detail_nav_group">
+            <button type="button" class="mayhen_docs_detail_nav_group_toggle" aria-expanded="false" aria-controls="mayhen_docs_detail_group_share"><span class="mayhen_docs_detail_nav_group_icon">↗</span> Xuất bản &amp; chia sẻ <span class="mayhen_docs_detail_chevron">⌄</span></button>
+            <div class="mayhen_docs_detail_nav_links" id="mayhen_docs_detail_group_share" hidden>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_publish">Xuất bản thiệp cưới</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_publish">Chia sẻ link và QR</a>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_faq">Câu hỏi thường gặp</a>
+            </div>
+          </section>
+          <section class="mayhen_docs_detail_nav_group">
+            <button type="button" class="mayhen_docs_detail_nav_group_toggle" aria-expanded="false" aria-controls="mayhen_docs_detail_group_account"><span class="mayhen_docs_detail_nav_group_icon">◇</span> Hỗ trợ &amp; tài khoản <span class="mayhen_docs_detail_chevron">⌄</span></button>
+            <div class="mayhen_docs_detail_nav_links" id="mayhen_docs_detail_group_account" hidden>
+              <a class="mayhen_docs_detail_nav_link" href="#mayhen_docs_detail_faq">Câu hỏi thường gặp</a>
+              <button type="button" class="mayhen_docs_detail_nav_link mayhen_docs_detail_nav_link_button" data-modal="mayhen_docs_detail_feedback_dialog">Gửi góp ý tài liệu</button>
+              <button type="button" class="mayhen_docs_detail_nav_link mayhen_docs_detail_nav_link_button" data-modal="mayhen_docs_detail_shortcuts_dialog">Phím tắt &amp; trợ giúp</button>
+            </div>
+          </section>
+        </div>
+        <div class="mayhen_docs_detail_sidebar_help">
+          <span class="mayhen_docs_detail_sidebar_help_flower">✿</span>
+          <strong>Bạn cần thêm một chút trợ giúp?</strong>
+          <p>Chúng mình luôn muốn hành trình chuẩn bị cưới trở nên thật nhẹ nhàng.</p>
+          <button type="button" data-modal="mayhen_docs_detail_feedback_dialog">Gửi lời nhắn <span>↗</span></button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="mayhen_docs_detail_main" id="mayhen_docs_detail_main">
+      <article class="mayhen_docs_detail_article" id="mayhen_docs_detail_article">
+        <div class="mayhen_docs_detail_article_kicker"><span class="mayhen_docs_detail_kicker_line"></span> HƯỚNG DẪN BẮT ĐẦU <span class="mayhen_docs_detail_kicker_dot">·</span> 8 PHÚT ĐỌC</div>
+        <div class="mayhen_docs_detail_article_header">
+          <div class="mayhen_docs_detail_article_header_art" aria-hidden="true">
+            <svg viewBox="0 0 140 138"><path d="M68 132c-5-36-1-68 17-96"/><path d="M81 43C56 29 42 10 47 3c27 3 40 16 34 40ZM70 62C45 60 22 47 23 35c27-5 48 3 47 27ZM65 85C41 94 18 91 11 79c22-16 45-13 54 6ZM83 48c26-16 36-33 34-45C92 13 78 27 83 48ZM77 77c25-8 42-24 44-39-27 2-43 16-44 39ZM74 109c24 2 46-8 54-22-24-9-46-1-54 22"/><path d="M87 27c15-10 28-11 40-3M48 111c-10-5-19-5-27-2"/></svg>
+          </div>
+          <h1>Tạo thiệp cưới online <em>đầu tiên</em></h1>
+          <p class="mayhen_docs_detail_lead">Từ ý tưởng đầu tiên đến lời mời được gửi đi — cùng Mây Hẹn tạo nên một chiếc thiệp thật riêng, để mỗi vị khách đều cảm nhận được niềm vui của hai bạn.</p>
+          <div class="mayhen_docs_detail_article_meta">
+            <span class="mayhen_docs_detail_author_avatar" aria-hidden="true">M</span>
+            <span><strong>Đội ngũ Mây Hẹn</strong><small>Hướng dẫn dành cho người mới</small></span>
+            <span class="mayhen_docs_detail_meta_sep"></span>
+            <span class="mayhen_docs_detail_update">Cập nhật: 12/11/2026</span>
+          </div>
+        </div>
+        <div class="mayhen_docs_detail_article_actions">
+          <div class="mayhen_docs_detail_action_primary">
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_copy_markdown" title="Sao chép nội dung dưới dạng Markdown">
+              <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Sao chép Markdown
+            </button>
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_ghost" id="mayhen_docs_detail_bookmark" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4V4Z"/></svg><span>Lưu bài</span></button>
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_ghost" data-modal="mayhen_docs_detail_share_dialog"><svg viewBox="0 0 24 24"><path d="M13 6h7v7M20 6l-10 10"/><path d="M18 15v5H4V6h5"/></svg> Chia sẻ</button>
+          </div>
+          <div class="mayhen_docs_detail_action_secondary">
+            <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_decrease" aria-label="Giảm cỡ chữ">A−</button>
+            <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_increase" aria-label="Tăng cỡ chữ">A+</button>
+            <button type="button" class="mayhen_docs_detail_font_button mayhen_docs_detail_focus_button" id="mayhen_docs_detail_focus_toggle" aria-pressed="false" title="Chế độ tập trung"><svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"/></svg></button>
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline mayhen_docs_detail_toc_mobile_button" data-modal="mayhen_docs_detail_toc_dialog">Mục lục <span>⌄</span></button>
+          </div>
+        </div>
+
+        <div class="mayhen_docs_detail_article_body" id="mayhen_docs_detail_article_body">
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_prerequisites">
+            <div class="mayhen_docs_detail_section_head"><h2>Trước khi bắt đầu</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_prerequisites" aria-label="Sao chép đường dẫn mục Trước khi bắt đầu">#</button></div>
+            <p>Một lời mời đẹp không cần phải bắt đầu từ những điều phức tạp. Chỉ cần chuẩn bị vài thông tin cơ bản, bạn đã có thể tạo một không gian nhỏ xinh dành riêng cho ngày trọng đại.</p>
+            <ul>
+              <li><strong>Tài khoản Mây Hẹn:</strong> đăng nhập hoặc đăng ký trước khi chỉnh sửa.</li>
+              <li><strong>Thông tin buổi lễ:</strong> tên hai bạn, ngày giờ và địa điểm tổ chức.</li>
+              <li><strong>Ảnh và câu chuyện:</strong> không bắt buộc, nhưng giúp thiệp mang đậm dấu ấn cá nhân.</li>
+            </ul>
+            <aside class="mayhen_docs_detail_callout mayhen_docs_detail_callout_tip"><div class="mayhen_docs_detail_callout_symbol">✧</div><div><strong>Một gợi ý nhỏ</strong><p>Bạn có thể bắt đầu bằng bản nháp và hoàn thiện dần. Hãy xem trước trên điện thoại trước khi gửi tới khách mời.</p></div></aside>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_templates">
+            <div class="mayhen_docs_detail_section_head"><h2>1. Chọn một mẫu thiệp yêu thích</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_templates" aria-label="Sao chép đường dẫn mục Chọn mẫu thiệp">#</button></div>
+            <p>Mở thư viện mẫu và chọn phong cách phù hợp với buổi lễ của hai bạn. Tông màu, kiểu chữ và các chi tiết trang trí có thể được điều chỉnh sau khi chọn mẫu.</p>
+            <div class="mayhen_docs_detail_template_grid">
+              <div class="mayhen_docs_detail_template_card"><div class="mayhen_docs_detail_template_visual mayhen_docs_detail_template_visual_one"><div class="mayhen_docs_detail_template_leaf mayhen_docs_detail_template_leaf_left">❧</div><div class="mayhen_docs_detail_template_visual_inner"><small>THE WEDDING OF</small><strong>Minh <i>&amp;</i> An</strong><span>FOREVER BEGINS HERE</span><div class="mayhen_docs_detail_template_diamond">◇</div></div><div class="mayhen_docs_detail_template_leaf mayhen_docs_detail_template_leaf_right">❧</div></div><div class="mayhen_docs_detail_template_caption"><span><strong>Ivory Garden</strong><small>Tinh khôi · Cổ điển</small></span><span class="mayhen_docs_detail_template_tag">MẪU GỢI Ý</span></div></div>
+              <div class="mayhen_docs_detail_template_card"><div class="mayhen_docs_detail_template_visual mayhen_docs_detail_template_visual_two"><div class="mayhen_docs_detail_template_visual_inner"><small>TOGETHER WITH LOVE</small><strong>Our Story</strong><span>12 · 12 · 2026</span><div class="mayhen_docs_detail_template_diamond">✳</div></div></div><div class="mayhen_docs_detail_template_caption"><span><strong>Rose Champagne</strong><small>Lãng mạn · Hiện đại</small></span><span class="mayhen_docs_detail_template_tag">PHỔ BIẾN</span></div></div>
+            </div>
+            <p class="mayhen_docs_detail_small_note">Các mẫu trên là hình minh họa giao diện tài liệu, không phải kho mẫu đã kết nối dữ liệu.</p>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_customize">
+            <div class="mayhen_docs_detail_section_head"><h2>2. Điền thông tin ngày cưới</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_customize" aria-label="Sao chép đường dẫn mục Điền thông tin">#</button></div>
+            <p>Trong trình chỉnh sửa, điền những thông tin mà khách mời cần biết. Hãy viết rõ ràng và kiểm tra từng chi tiết trước khi công khai.</p>
+            <div class="mayhen_docs_detail_table_wrap"><table class="mayhen_docs_detail_info_table"><thead><tr><th>Thông tin</th><th>Nội dung nên có</th></tr></thead><tbody><tr><td>Tên cô dâu &amp; chú rể</td><td>Tên muốn hiển thị trên thiệp</td></tr><tr><td>Ngày &amp; giờ</td><td>Thời điểm bắt đầu đón khách, khai tiệc</td></tr><tr><td>Địa điểm</td><td>Tên sảnh, địa chỉ, đường đi</td></tr><tr><td>Lời mời</td><td>Một lời nhắn chân thành gửi tới khách mời</td></tr></tbody></table></div>
+            <aside class="mayhen_docs_detail_callout mayhen_docs_detail_callout_note"><div class="mayhen_docs_detail_callout_symbol">ⓘ</div><div><strong>Kiểm tra trước khi xuất bản</strong><p>Đặc biệt lưu ý múi giờ, địa chỉ và thông tin liên hệ. Những chi tiết này giúp khách mời có một trải nghiệm thuận tiện hơn.</p></div></aside>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_story">
+            <div class="mayhen_docs_detail_section_head"><h2>3. Kể câu chuyện của hai bạn</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_story" aria-label="Sao chép đường dẫn mục Kể câu chuyện">#</button></div>
+            <p>Thiệp cưới không chỉ là nơi thông báo thời gian và địa điểm. Một đoạn giới thiệu ngắn, vài kỷ niệm đáng nhớ hay một bộ ảnh nhỏ cũng đủ để khách mời cảm nhận được hành trình của hai bạn.</p>
+            <blockquote class="mayhen_docs_detail_quote"><span>“</span><p>Giữa muôn vàn cuộc gặp gỡ, chúng mình đã chọn ở lại bên nhau. Và ngày hôm nay, thật hạnh phúc khi có bạn cùng chứng kiến một khởi đầu mới.</p><cite>— Lời mời mẫu Mây Hẹn</cite></blockquote>
+            <details class="mayhen_docs_detail_example_accordion"><summary><span>✦</span><strong>Xem lời mời mẫu có thể sao chép</strong><span class="mayhen_docs_detail_chevron">⌄</span></summary><div class="mayhen_docs_detail_example_content"><p id="mayhen_docs_detail_invitation_text">Bằng tất cả sự trân trọng, chúng mình thân mời bạn đến chung vui trong ngày cưới. Sự hiện diện của bạn chính là món quà ý nghĩa nhất đối với chúng mình.</p><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_copy_invitation">Sao chép lời mời</button></div></details>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_personalize">
+            <div class="mayhen_docs_detail_section_head"><h2>4. Chỉnh màu sắc và bố cục</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_personalize" aria-label="Sao chép đường dẫn mục Chỉnh màu sắc">#</button></div>
+            <p>Hãy chọn bảng màu nhất quán cho thiệp. Với thiết kế lãng mạn, tông kem, hồng đất, nâu ấm và champagne thường tạo cảm giác nhẹ nhàng mà vẫn trang trọng.</p>
+            <div class="mayhen_docs_detail_palette"><div class="mayhen_docs_detail_swatch mayhen_docs_detail_swatch_one"><span>#FAF7F3</span></div><div class="mayhen_docs_detail_swatch mayhen_docs_detail_swatch_two"><span>#EEDFD8</span></div><div class="mayhen_docs_detail_swatch mayhen_docs_detail_swatch_three"><span>#B58E6F</span></div><div class="mayhen_docs_detail_swatch mayhen_docs_detail_swatch_four"><span>#805052</span></div><div class="mayhen_docs_detail_swatch mayhen_docs_detail_swatch_five"><span>#3B3132</span></div></div>
+            <p>Cần ưu tiên độ tương phản giữa chữ và nền. Hạn chế dùng chữ quá nhỏ hoặc hiệu ứng chuyển động dày đặc, đặc biệt trên điện thoại.</p>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_rsvp">
+            <div class="mayhen_docs_detail_section_head"><h2>5. Chuẩn bị xác nhận tham dự (RSVP)</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_rsvp" aria-label="Sao chép đường dẫn mục RSVP">#</button></div>
+            <p>RSVP giúp hai bạn biết được ai sẽ tới dự, số lượng khách dự kiến và những lời nhắn đáng yêu. Khi cấu hình tính năng này trong hệ thống, nên chuẩn bị một quy trình đơn giản:</p>
+            <ol class="mayhen_docs_detail_steps"><li><span>01</span><div><strong>Bật xác nhận tham dự</strong><p>Chọn sự kiện hoặc buổi tiệc mà bạn muốn nhận lời xác nhận.</p></div></li><li><span>02</span><div><strong>Điều chỉnh câu hỏi</strong><p>Hỏi tên khách mời, tham dự hoặc không và số lượng người đi cùng nếu phù hợp.</p></div></li><li><span>03</span><div><strong>Kiểm tra trước khi gửi</strong><p>Thử điền biểu mẫu trên điện thoại và xác minh dữ liệu hiển thị chính xác.</p></div></li></ol>
+            <aside class="mayhen_docs_detail_callout mayhen_docs_detail_callout_tip"><div class="mayhen_docs_detail_callout_symbol">♡</div><div><strong>Để khách mời cảm thấy được chào đón</strong><p>Giữ biểu mẫu ngắn gọn. Chỉ yêu cầu các thông tin thật sự cần thiết cho khâu tổ chức.</p></div></aside>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_publish">
+            <div class="mayhen_docs_detail_section_head"><h2>6. Xuất bản và gửi lời mời</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_publish" aria-label="Sao chép đường dẫn mục Xuất bản">#</button></div>
+            <p>Sau khi kiểm tra nội dung, hãy xem trước bản máy tính và di động. Nếu mọi thứ đã sẵn sàng, bạn có thể xuất bản thiệp và chia sẻ đường dẫn qua tin nhắn, email hoặc mã QR do hệ thống của bạn tạo.</p>
+            <div class="mayhen_docs_detail_code_block"><div class="mayhen_docs_detail_code_header"><span><span class="mayhen_docs_detail_code_dot"></span> Ví dụ đường dẫn thiệp</span><button type="button" id="mayhen_docs_detail_copy_example_url">Sao chép <span aria-hidden="true">↗</span></button></div><code id="mayhen_docs_detail_example_url">https://mayhen.vn/i/ten-co-dau-chu-re</code></div>
+            <p class="mayhen_docs_detail_small_note">Đường dẫn trên chỉ là ví dụ định dạng, không đại diện cho một thiệp đã được xuất bản.</p>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_privacy">
+            <div class="mayhen_docs_detail_section_head"><h2>Quyền riêng tư &amp; những lưu ý</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_privacy" aria-label="Sao chép đường dẫn mục Quyền riêng tư">#</button></div>
+            <p>Một tấm thiệp thật đẹp cũng cần bảo vệ thông tin cá nhân của cô dâu, chú rể và khách mời. Trước khi chia sẻ công khai, bạn nên rà soát:</p>
+            <ul><li>Thông tin liên hệ nào thực sự cần hiển thị?</li><li>Album ảnh, tên khách mời và lời nhắn có đang được công khai đúng mong muốn?</li><li>Những đường dẫn riêng tư có thể vô tình bị chia sẻ lại hay không?</li></ul>
+            <aside class="mayhen_docs_detail_callout mayhen_docs_detail_callout_warning"><div class="mayhen_docs_detail_callout_symbol">!</div><div><strong>Lưu ý</strong><p>Giao diện trang tài liệu này là bản demo frontend. Các quyền riêng tư, xác thực tài khoản và bảo vệ dữ liệu phải được triển khai và kiểm tra ở backend thực tế.</p></div></aside>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section" id="mayhen_docs_detail_faq">
+            <div class="mayhen_docs_detail_section_head"><h2>Câu hỏi thường gặp</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_faq" aria-label="Sao chép đường dẫn mục Câu hỏi thường gặp">#</button></div>
+            <div class="mayhen_docs_detail_faq_list">
+              <details><summary>Chưa có đầy đủ ảnh cưới thì có tạo thiệp được không?<span>+</span></summary><p>Được. Bạn có thể bắt đầu với tên, thời gian, địa điểm và lời mời. Ảnh có thể bổ sung sau nếu trình chỉnh sửa hỗ trợ cập nhật bản nháp.</p></details>
+              <details><summary>Có nên kiểm tra thiệp trên điện thoại không?<span>+</span></summary><p>Nên. Khách mời thường mở thiệp bằng điện thoại, vì vậy cần kiểm tra cỡ chữ, khoảng cách và độ rõ ràng của các nút bấm.</p></details>
+              <details><summary>Tôi có thể thay đổi nội dung sau khi xuất bản không?<span>+</span></summary><p>Điều này phụ thuộc vào chính sách xuất bản và phiên bản hệ thống Mây Hẹn bạn triển khai. Hãy xác nhận cơ chế cập nhật trước khi gửi đường dẫn rộng rãi.</p></details>
+              <details><summary>Làm thế nào để tìm nhanh một mục hướng dẫn?<span>+</span></summary><p>Nhấn Ctrl + K (hoặc ⌘ + K trên Mac) để mở tìm kiếm, hoặc sử dụng mục lục ở bên phải. Trên điện thoại, nhấn biểu tượng tìm kiếm và nút “Mục lục”.</p></details>
+            </div>
+          </section>
+
+          <section class="mayhen_docs_detail_doc_section mayhen_docs_detail_next_section" id="mayhen_docs_detail_next">
+            <div class="mayhen_docs_detail_section_head"><h2>Tiếp tục hành trình</h2><button class="mayhen_docs_detail_anchor" type="button" data-copy-section="mayhen_docs_detail_next" aria-label="Sao chép đường dẫn mục Tiếp tục hành trình">#</button></div>
+            <p>Mọi chuyện sẽ dễ dàng hơn khi được chuẩn bị từng chút một. Khám phá thêm những phần hướng dẫn hữu ích ngay trong trang này.</p>
+            <div class="mayhen_docs_detail_next_grid"><a href="#mayhen_docs_detail_rsvp" class="mayhen_docs_detail_next_card"><span>HƯỚNG DẪN TIẾP THEO</span><strong>Quản lý khách mời &amp; RSVP</strong><small>Nhẹ nhàng đón nhận mọi lời hồi đáp.</small><b>↗</b></a><a href="#mayhen_docs_detail_publish" class="mayhen_docs_detail_next_card"><span>GỢI Ý CHO BẠN</span><strong>Xuất bản và chia sẻ thiệp</strong><small>Gửi một lời mời thật đáng nhớ.</small><b>↗</b></a></div>
+          </section>
+        </div>
+      </article>
+    </main>
+
+    <aside class="mayhen_docs_detail_toc" id="mayhen_docs_detail_toc" aria-label="Mục lục bài viết">
+      <div class="mayhen_docs_detail_toc_inner"><div class="mayhen_docs_detail_toc_eyebrow">TRONG BÀI VIẾT NÀY</div><div class="mayhen_docs_detail_toc_rule"></div><nav id="mayhen_docs_detail_toc_links"><a href="#mayhen_docs_detail_prerequisites">Trước khi bắt đầu</a><a href="#mayhen_docs_detail_templates">Chọn mẫu thiệp</a><a href="#mayhen_docs_detail_customize">Điền thông tin</a><a href="#mayhen_docs_detail_story">Câu chuyện của bạn</a><a href="#mayhen_docs_detail_personalize">Màu sắc &amp; bố cục</a><a href="#mayhen_docs_detail_rsvp">Khách mời &amp; RSVP</a><a href="#mayhen_docs_detail_publish">Xuất bản thiệp</a><a href="#mayhen_docs_detail_privacy">Quyền riêng tư</a><a href="#mayhen_docs_detail_faq">Câu hỏi thường gặp</a><a href="#mayhen_docs_detail_next">Tiếp tục hành trình</a></nav><div class="mayhen_docs_detail_toc_bottom"><div class="mayhen_docs_detail_toc_progress"><span>Tiến độ đọc</span><b id="mayhen_docs_detail_read_percent">0%</b></div><div class="mayhen_docs_detail_toc_track"><span id="mayhen_docs_detail_toc_progress_bar"></span></div><button type="button" data-modal="mayhen_docs_detail_settings_dialog" class="mayhen_docs_detail_toc_settings">⚙ &nbsp; Tùy chỉnh trải nghiệm đọc</button></div></div>
+    </aside>
+  </div>
+
+  <footer class="mayhen_docs_detail_footer">
+    <div class="mayhen_docs_detail_footer_flower" aria-hidden="true"><svg viewBox="0 0 1200 140" preserveAspectRatio="xMidYMax slice"><path d="M0 140h1200"/><path d="M60 140C140 60 160 90 190 15M95 99C50 70 32 40 24 20c55 5 77 28 71 79ZM132 62C158 20 194 10 225 15c-21 40-48 54-93 47ZM110 110c-10-42-1-65 20-90M1040 140c-24-36-21-68-36-117m20 55c18-30 44-48 70-47-4 38-29 58-70 47Zm-11 24c-42-11-61-34-70-66 40 4 60 24 70 66ZM1125 140c-24-42-24-78-16-103M1108 78c-20-17-34-37-36-64 34 10 43 32 36 64Zm5 38c25-33 48-45 74-41-7 32-27 46-74 41Z"/></svg></div>
+    <div class="mayhen_docs_detail_footer_top"><div class="mayhen_docs_detail_footer_logo"><span>✿</span><strong>Mây Hẹn</strong><small>Một chút yêu thương, một đời kỷ niệm.</small></div><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_footer_top">Về đầu trang ↑</button></div>
+    <div class="mayhen_docs_detail_footer_columns"><div class="mayhen_docs_detail_footer_feedback"><h3>Bài viết này có hữu ích với bạn không?</h3><p>Chúng mình luôn lắng nghe để từng trang hướng dẫn trở nên tốt hơn.</p><div class="mayhen_docs_detail_feedback_buttons"><button type="button" data-feedback-vote="yes">♡ Có, rất hữu ích</button><button type="button" data-feedback-vote="no">Chưa thật sự</button></div></div><div class="mayhen_docs_detail_footer_contribute"><h3>Giúp tài liệu Mây Hẹn ngày một tốt hơn</h3><p>Bạn thấy chỗ nào chưa rõ? Có ý tưởng cải thiện? Hãy gửi một lời nhắn.</p><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" data-modal="mayhen_docs_detail_feedback_dialog">Góp ý tài liệu ↗</button></div><div class="mayhen_docs_detail_footer_links"><h3>CẦN THÊM TRỢ GIÚP?</h3><button type="button" data-modal="mayhen_docs_detail_search_dialog">Tìm kiếm hướng dẫn</button><button type="button" data-modal="mayhen_docs_detail_shortcuts_dialog">Phím tắt hữu ích</button><button type="button" data-modal="mayhen_docs_detail_settings_dialog">Cài đặt hiển thị</button></div></div>
+    <div class="mayhen_docs_detail_footer_bottom"><span>© 2026 Mây Hẹn · Thiết kế bằng sự trân trọng.</span><span>Bản mẫu giao diện tài liệu • HTML, CSS &amp; JavaScript thuần</span></div>
+  </footer>
+
+  <button type="button" class="mayhen_docs_detail_back_top" id="mayhen_docs_detail_back_top" aria-label="Về đầu trang" title="Về đầu trang"><svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6M12 8v12"/></svg></button>
+  <div class="mayhen_docs_detail_toast" id="mayhen_docs_detail_toast" role="status" aria-live="polite"></div>
+
+  <!-- Tất cả modal dùng native <dialog>, có Esc, focus và backdrop từ trình duyệt. -->
+  <dialog class="mayhen_docs_detail_dialog mayhen_docs_detail_search_dialog" id="mayhen_docs_detail_search_dialog" aria-labelledby="mayhen_docs_detail_search_title"><div class="mayhen_docs_detail_dialog_shell"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">TÌM KIẾM TÀI LIỆU</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng"><span>×</span></button></div><h2 id="mayhen_docs_detail_search_title">Bạn đang tìm điều gì?</h2><div class="mayhen_docs_detail_search_box"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="mayhen_docs_detail_search_input" type="search" placeholder="Thử ‘RSVP’, ‘màu sắc’, ‘xuất bản’..." autocomplete="off" aria-label="Tìm trong bài viết"><kbd>ESC</kbd></div><div class="mayhen_docs_detail_search_count" id="mayhen_docs_detail_search_count">Các mục hướng dẫn gợi ý</div><div class="mayhen_docs_detail_search_results" id="mayhen_docs_detail_search_results"></div><p class="mayhen_docs_detail_search_hint">↑ ↓ Chọn kết quả · Enter mở mục · Esc đóng</p></div></dialog>
+
+  <dialog class="mayhen_docs_detail_dialog" id="mayhen_docs_detail_settings_dialog" aria-labelledby="mayhen_docs_detail_settings_title"><div class="mayhen_docs_detail_dialog_shell"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">CÁ NHÂN HÓA</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button></div><h2 id="mayhen_docs_detail_settings_title">Không gian đọc của bạn</h2><p class="mayhen_docs_detail_dialog_desc">Điều chỉnh nhẹ nhàng để việc đọc trở nên thoải mái hơn. Tùy chọn được lưu trên thiết bị này.</p><div class="mayhen_docs_detail_setting_group"><h3>Giao diện</h3><div class="mayhen_docs_detail_segment" id="mayhen_docs_detail_theme_segment"><button type="button" data-theme-option="light" aria-pressed="true">☼ Sáng</button><button type="button" data-theme-option="dark" aria-pressed="false">☾ Tối</button><button type="button" data-theme-option="system" aria-pressed="false">◐ Hệ thống</button></div></div><div class="mayhen_docs_detail_setting_group"><h3>Độ rộng nội dung</h3><div class="mayhen_docs_detail_segment" id="mayhen_docs_detail_width_segment"><button type="button" data-width-option="comfortable" aria-pressed="true">Vừa phải</button><button type="button" data-width-option="wide" aria-pressed="false">Rộng hơn</button></div></div><div class="mayhen_docs_detail_setting_group"><h3>Cỡ chữ bài viết</h3><div class="mayhen_docs_detail_setting_font"><button type="button" id="mayhen_docs_detail_settings_smaller">A−</button><span id="mayhen_docs_detail_settings_font_value">16px</span><button type="button" id="mayhen_docs_detail_settings_bigger">A+</button></div></div><div class="mayhen_docs_detail_setting_group"><h3>Chế độ tập trung</h3><label class="mayhen_docs_detail_switch_row" for="mayhen_docs_detail_focus_checkbox"><span>Ẩn điều hướng hai bên khi đọc <small>Giảm xao nhãng, tăng không gian cho bài viết.</small></span><input type="checkbox" id="mayhen_docs_detail_focus_checkbox"><span class="mayhen_docs_detail_switch_visual" aria-hidden="true"></span></label></div><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_primary mayhen_docs_detail_dialog_done" data-close-dialog>Hoàn tất</button></div></dialog>
+
+  <dialog class="mayhen_docs_detail_dialog" id="mayhen_docs_detail_share_dialog" aria-labelledby="mayhen_docs_detail_share_title"><div class="mayhen_docs_detail_dialog_shell"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">LAN TỎA YÊU THƯƠNG</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button></div><div class="mayhen_docs_detail_share_art" aria-hidden="true">✉ <span>♡</span></div><h2 id="mayhen_docs_detail_share_title">Chia sẻ hướng dẫn này</h2><p class="mayhen_docs_detail_dialog_desc">Một người bạn đang chuẩn bị ngày cưới? Gửi họ trang hướng dẫn hữu ích này nhé.</p><div class="mayhen_docs_detail_share_field"><input id="mayhen_docs_detail_share_input" readonly aria-label="Đường dẫn hiện tại"><button type="button" id="mayhen_docs_detail_copy_share">Sao chép</button></div><div class="mayhen_docs_detail_share_row"><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_primary" id="mayhen_docs_detail_native_share">Chia sẻ qua thiết bị ↗</button><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_print">In / Lưu PDF</button></div></div></dialog>
+
+  <dialog class="mayhen_docs_detail_dialog" id="mayhen_docs_detail_feedback_dialog" aria-labelledby="mayhen_docs_detail_feedback_title"><form method="dialog" class="mayhen_docs_detail_dialog_shell" id="mayhen_docs_detail_feedback_form"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">CHÚNG MÌNH LẮNG NGHE</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button></div><h2 id="mayhen_docs_detail_feedback_title">Bạn muốn nhắn gì với Mây Hẹn?</h2><p class="mayhen_docs_detail_dialog_desc">Bạn có thể góp ý về nội dung, giao diện hoặc phần hướng dẫn cần bổ sung.</p><label class="mayhen_docs_detail_field_label" for="mayhen_docs_detail_feedback_type">Chủ đề góp ý</label><select id="mayhen_docs_detail_feedback_type"><option value="Nội dung khó hiểu">Nội dung khó hiểu</option><option value="Thông tin chưa chính xác">Thông tin chưa chính xác</option><option value="Giao diện khó sử dụng">Giao diện khó sử dụng</option><option value="Đề xuất mới">Đề xuất mới</option></select><label class="mayhen_docs_detail_field_label" for="mayhen_docs_detail_feedback_message">Lời nhắn của bạn</label><textarea id="mayhen_docs_detail_feedback_message" rows="5" maxlength="1200" required placeholder="Mình mong tài liệu bổ sung thêm..." ></textarea><span class="mayhen_docs_detail_field_help">Bản demo này không gửi dữ liệu tới máy chủ. Bạn có thể sao chép góp ý để gửi qua kênh hỗ trợ chính thức.</span><div class="mayhen_docs_detail_dialog_actions"><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" data-close-dialog>Đóng</button><button type="submit" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_primary">Sao chép góp ý</button></div></form></dialog>
+
+  <dialog class="mayhen_docs_detail_dialog" id="mayhen_docs_detail_shortcuts_dialog" aria-labelledby="mayhen_docs_detail_shortcuts_title"><div class="mayhen_docs_detail_dialog_shell"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">MẸO NHỎ KHI ĐỌC</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button></div><h2 id="mayhen_docs_detail_shortcuts_title">Phím tắt &amp; tiện ích</h2><p class="mayhen_docs_detail_dialog_desc">Những thao tác nhỏ giúp bạn khám phá tài liệu nhanh hơn.</p><div class="mayhen_docs_detail_shortcut_list"><div><span>Tìm kiếm mọi mục trong bài</span><kbd>Ctrl / ⌘ + K</kbd></div><div><span>Mở tìm kiếm nhanh</span><kbd>/</kbd></div><div><span>Xem phím tắt</span><kbd>?</kbd></div><div><span>Đóng hộp thoại</span><kbd>Esc</kbd></div><div><span>Di chuyển giữa các nút</span><kbd>Tab</kbd></div></div><button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_primary mayhen_docs_detail_dialog_done" data-close-dialog>Đã hiểu, cảm ơn!</button></div></dialog>
+
+  <dialog class="mayhen_docs_detail_dialog mayhen_docs_detail_toc_dialog" id="mayhen_docs_detail_toc_dialog" aria-labelledby="mayhen_docs_detail_toc_title"><div class="mayhen_docs_detail_dialog_shell"><div class="mayhen_docs_detail_dialog_header"><span class="mayhen_docs_detail_modal_eyebrow">ĐI ĐẾN MỤC</span><button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button></div><h2 id="mayhen_docs_detail_toc_title">Mục lục bài viết</h2><nav class="mayhen_docs_detail_toc_modal_links" id="mayhen_docs_detail_toc_modal_links" aria-label="Mục lục trong hộp thoại"></nav></div></dialog>
+</div>
+</body>
+</html>
