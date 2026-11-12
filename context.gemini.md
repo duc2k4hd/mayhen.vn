@@ -12301,3 +12301,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 ---
+
+### 🕊️ ĐỀ ÁN 166: PHÂN HỆ STUDIO THẺ KẸP THIỆP GIẤY & QR ĐỂ BÀN DÀN TRANG IN A4 XƯỞNG IN (PRINTABLE COMPANION & QR INSERT CARD STUDIO — IDEA-A06 & SECTION 27 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai phân hệ Studio Thiết Kế Thẻ Kẹp Kèm Thiệp Giấy Truyền Thống & Thẻ QR Để Bàn Đa Kích Thước Vector (`IDEA-A06` & Section 27 PRD V3):
+  - Giúp cô dâu chú rể kết hợp hoàn hảo giữa văn hóa gửi thiệp giấy truyền thống cho bậc phụ huynh, họ hàng với trải nghiệm thiệp online đa phương tiện hiện đại cho bạn bè.
+  - Các trụ cột chức năng chính:
+    1. *Tùy Biến Kích Thước & Tỷ Lệ Thẻ Chuẩn Xưởng In*:
+       - **Namecard (90 × 54 mm)**: Kẹp vừa vặn vào bao thư thiệp cưới truyền thống, khổ 10 thẻ / tờ A4.
+       - **Postcard (105 × 148 mm)**: Thẻ ảnh kỷ niệm kèm QR lớn, khổ 2 thẻ / tờ A4.
+       - **Square (100 × 100 mm)**: Thẻ vuông để bàn tiệc cưới hoặc bàn lễ tân đón khách, khổ 4 thẻ / tờ A4.
+    2. *Bảng Màu & Phong Cách Mỹ Thuật Quiet Luxury*:
+       - 5 bảng màu: Gold Antique, Royal Charcoal, Sage Green, Velvet Ruby, Dusty Rose.
+       - 3 motif họa tiết vector độc quyền: Royal Crest (Monogram hoàng gia), Minimal Editorial (Tối giản tạp chí), Floral Botanical (Hoa lá tự nhiên).
+    3. *Trang Dàn Khổ A4 Sẵn Sàng Cho Xưởng In (Print Sheet with Crop Marks & Bleed)*:
+       - Đường vạch xén (Crop marks) 4 góc chuẩn xác từng milimet.
+       - Hỗ trợ 2 chế độ:
+         - **Lặp lại thẻ chung (`single_repeat`)**: In hàng loạt thẻ có mã QR chung dẫn vào thiệp công khai.
+         - **Thẻ cá nhân hóa theo từng khách (`guest_batch`)**: In hàng loạt thẻ có khắc tên riêng và mã QR định danh riêng của từng vị khách để kẹp vào đúng phong bì.
+    4. *Tải Tệp Vector SVG Nét Cao Độc Lập*:
+       - Xuất trực tiếp file vector `.svg` chuẩn màu in, tải về gửi thẳng cho xưởng in ấn offset hoặc in kỹ thuật số.
+    5. *Bảo Mật Quyền Sở Hữu & Phòng Vệ IDOR*:
+       - `CompanionCardController` xác thực quyền sở hữu thiệp cưới, từ chối mã 403 nếu tài khoản không sở hữu thiệp.
+       - Ghi nhận nhật ký kiểm toán hệ thống `COMPANION_CARD_CONFIG_UPDATED` qua `AuditLogger`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/CompanionCardService.php`:
+    - Dịch vụ phân giải cấu hình, tính toán kích thước, sinh thẻ SVG vector và nạp danh sách khách mời.
+  - `app/Http/Controllers/Client/CompanionCardController.php`:
+    - Controller điều phối Studio thiết kế, cập nhật cấu hình AJAX, trang in A4 và tải file SVG.
+  - `resources/views/client/pages/account/companion_card/index.blade.php`:
+    - Giao diện Studio thiết kế thẻ kẹp tương tác trực quan với Live Preview thẻ 2 mặt.
+  - `resources/views/client/pages/account/companion_card/print.blade.php`:
+    - Khung dàn trang in A4 xưởng in với boong xén góc, nút in trực tiếp hoặc lưu PDF A4.
+  - `routes/web.php`:
+    - Nhóm routes `account.companion_card.*`.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Nút công cụ *"Thẻ Kẹp & QR"* trong bảng điều khiển thiệp cưới của cặp đôi.
+  - `tests/Feature/CompanionCardSuiteTest.php`:
+    - Kiểm thử 6/6 test cases: chặn vãng lai, chặn 403 IDOR, mở studio thiết kế, lưu cấu hình AJAX, render trang in A4 xưởng in và tải file SVG vector nét cao (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `CompanionCardSuiteTest`: **6 / 6 tests PASSED 100%** (21 assertions).
+  - Toàn bộ suite tính năng gần nhất: **116 / 116 tests PASSED 100%** (510 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+---
