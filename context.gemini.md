@@ -11802,6 +11802,52 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Tổng các Feature Tests gần nhất: **36 / 36 tests PASSED 100%** (149 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 154: PHÂN HỆ LƯU GIỮ BÚT TÍCH CHỮ KÝ TAY QUAN KHÁCH & BỨC TRANH KÝ TÊN VÀNG LƯU NIỆM (HANDWRITTEN SIGNATURE CANVAS ARCHIVE & KEEPSAKE MOSAIC WALL — IDEA-D09 & SECTION 25/36 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai kho lưu trữ và bảo tồn trọn đời từng nét chữ ký tay độc bản của người thân, bạn bè khi mở thiệp cưới hoặc dự tiệc cưới theo `IDEA-D09` và Section 25/36 PRD V3:
+  - Tôn vinh giá trị cảm xúc Quiet Luxury: Thay vì một cuốn sổ ký tên giấy dễ ố vàng hay thất lạc sau ngày cưới, mọi nét bút được số hóa thành ảnh PNG trong suốt nét cao, bảo tồn vĩnh cửu.
+  - Các trụ cột chức năng chính:
+    1. *Khung Ký Tên Cặp Đôi (Cô Dâu & Chú Rể)*:
+       - Tích hợp bộ vẽ HTML5 Canvas mượt mà, hỗ trợ hoàn hảo cả ngón tay cảm ứng trên điện thoại/iPad lẫn chuột máy tính.
+       - Tự động mã hóa Base64 DataURL thành file ảnh PNG trong suốt và lưu trữ an toàn trong `storage/app/public/signatures/`.
+       - Hiển thị trang trọng tại vị trí mở đầu bức tranh kỷ niệm.
+    2. *Bộ Sưu Tập Gallery Bút Tích Quan Khách (4 KPI & Filter)*:
+       - 4 Thẻ KPI: Tổng chữ ký đã thu thập, Bút tích trang trọng (đã ghim), Tỷ lệ quan khách đã ký (%), Người vừa ký gần nhất.
+       - Lọc nhanh: Tất cả, Đã ghim (Pinned), Có kèm lời chúc (With Message).
+       - Hành động 1-chạm: Ghim/Bỏ ghim chữ ký trang trọng lên đầu danh sách, Gỡ bỏ chữ ký độc hại khỏi kho lưu trữ mà vẫn bảo toàn nguyên vẹn lời chúc của khách nếu có.
+    3. *Bức Tranh Ký Tên Vàng Toàn Màn Hình (Signature Mosaic Wall)*:
+       - Màn hình trình chiếu độc lập (`/thiep/{id}/tranh-ky-ten`), phù hợp đặt trên màn hình LED lớn tại sảnh tiệc cưới hoặc phòng tân hôn.
+       - 4 Chủ đề ánh sắc thượng lưu: Kem Ấm & Vàng Kim Hoàng Gia (`cream_gold`), Giấy Mỹ Thuật Ngà & Mực Than (`ivory_charcoal`), Đêm Huyền Bí Ánh Bạc (`obsidian_night`), Hồng Tro & Rượu Vang Lãng Mạn (`dusty_rose`).
+       - Tích hợp cơ chế Polling API thời gian thực (`/api/thiep/{id}/tranh-ky-ten/feed`) mỗi 3.5 giây: Bất kỳ khi nào có khách vừa ký tên tại đám cưới, chữ ký sẽ tự động bay vào lưới tranh kèm hiệu ứng lấp lánh (Golden Stardust) mà không cần tải lại trang.
+       - Phím tắt toàn màn hình Fullscreen (`F` hoặc 1-click icon).
+    4. *Tích Hợp Sâu Trong Hệ Thống*:
+       - Bổ sung nút công cụ "Bút Tích Ký Tên" trong danh sách quản lý thiệp cưới `invitations.blade.php`.
+       - Đồng thời tích hợp nút "Lọc Trùng & Gộp Khách" vào thanh công cụ của trang Quản lý Khách mời `guests.blade.php`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/SignatureArchiveService.php`:
+    - Quản lý kho chữ ký `getSignaturesSummary`, cập nhật chữ ký dâu rể và theme `updateCoupleSignatures`, ghim `togglePin`, gỡ bỏ `removeSignature`, tạo dữ liệu trình chiếu `getMosaicData`, chuyển đổi Base64 DataURL `storeSignatureBase64`.
+  - `app/Http/Controllers/Client/SignatureArchiveController.php`:
+    - Quản trị Studio `index`, cập nhật cặp đôi `updateCouple`, ghim chữ ký `togglePin`, xóa chữ ký `destroySignature`, trình chiếu toàn màn hình `mosaic`, API feed realtime `feed`.
+  - `resources/views/client/pages/account/signature_archive/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, BEM `mayhen_sig_*`, 4 KPI cards, 2 canvas vẽ tay dâu rể mượt mà, cấu hình tranh ký tên, bộ lọc Gallery và danh sách thẻ chữ ký.
+  - `resources/views/client/pages/signature_archive/mosaic.blade.php`:
+    - Giao diện toàn màn hình Tranh Ký Tên Vàng, chuyển động ánh sao CSS Stardust, polling realtime 3.5s, hỗ trợ phím F toàn màn hình.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Bút Tích Ký Tên".
+  - `resources/views/client/pages/guests.blade.php`:
+    - Bổ sung nút công cụ "Lọc Trùng & Gộp Khách".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.signature_archive.*` và routes công khai `signature_archive.mosaic`, `signature_archive.feed`.
+  - `tests/Feature/SignatureArchiveSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn vãng lai, chặn 403, mở Studio, cập nhật chữ ký dâu rể, ghim/bỏ ghim, gỡ bỏ chữ ký, render Mosaic Wall và API feed (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `DuplicateGuestStudioSuiteTest`: **7 / 7 tests PASSED 100%** (33 assertions).
+  - `SignatureArchiveSuiteTest`: **7 / 7 tests PASSED 100%** (30 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
 
 
 

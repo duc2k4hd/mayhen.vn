@@ -49,4 +49,3 @@ class WeddingAnniversaryCongratulationMail extends Mailable
         return [];
     }
 }
-

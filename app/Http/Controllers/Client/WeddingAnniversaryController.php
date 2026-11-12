@@ -135,4 +135,3 @@ class WeddingAnniversaryController extends Controller
         return $invitation;
     }
 }
-

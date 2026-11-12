@@ -174,4 +174,3 @@ class VenueWelcomeKioskController extends Controller
         return $invitation;
     }
 }
-

@@ -134,6 +134,14 @@
                     </svg>
                     <span>Sơ Đồ Bàn Tiệc</span>
                 </a>
+                <a href="{{ route('account.duplicate_guests.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
+                    </svg>
+                    <span>Lọc Trùng &amp; Gộp Khách</span>
+                </a>
                 <a href="{{ route('coordination.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <line x1="18" y1="20" x2="18" y2="10"></line>

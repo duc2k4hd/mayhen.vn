@@ -158,4 +158,3 @@ class PublishDiffController extends Controller
         return $invitation;
     }
 }
-

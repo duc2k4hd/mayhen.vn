@@ -47,6 +47,7 @@ use App\Http\Controllers\Client\QualityDoctorController;
 use App\Http\Controllers\Client\RsvpChangeHistoryController;
 use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
+use App\Http\Controllers\Client\SignatureArchiveController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Client\SmartGroupInvitationController;
 use App\Http\Controllers\Client\StationeryKitController;
@@ -427,6 +428,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/phat-sinh-gio-chot/xuat-csv', [LastMinuteLogController::class, 'export'])->name('last_minute_logs.export');
     Route::get('/api/thiep/{id}/phat-sinh-gio-chot', [LastMinuteLogController::class, 'apiList'])->middleware('throttle:60,1')->name('last_minute_logs.api_list');
 
+    // Lưu Giữ Bút Tích Chữ Ký Tay Quan Khách & Bức Tranh Ký Tên Vàng (Signature Canvas Archive - IDEA-D09)
+    Route::get('/thiep/{id}/but-tich-chu-ky', [SignatureArchiveController::class, 'index'])->name('signature_archive.index');
+    Route::post('/thiep/{id}/but-tich-chu-ky/cap-doi', [SignatureArchiveController::class, 'updateCouple'])->middleware('throttle:30,1')->name('signature_archive.update_couple');
+    Route::post('/thiep/{id}/but-tich-chu-ky/{wishId}/ghim', [SignatureArchiveController::class, 'togglePin'])->middleware('throttle:60,1')->name('signature_archive.toggle_pin');
+    Route::post('/thiep/{id}/but-tich-chu-ky/{wishId}/xoa', [SignatureArchiveController::class, 'destroySignature'])->middleware('throttle:30,1')->name('signature_archive.destroy');
+
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
     Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
@@ -582,6 +589,10 @@ Route::get('/ky-niem-ngay-cuoi/{slug}', [WeddingAnniversaryController::class, 'l
 // Màn Hình Tablet Điều Phối Chỗ Ngồi Sảnh Tiệc Cơ Động (Live Usher Tablet - IDEA-C09)
 Route::get('/dieu-phoi-ban-tiec/{slug}', [TableCapacityWaveController::class, 'usherView'])->name('table_capacity.usher');
 Route::get('/api/dieu-phoi-ban-tiec/{slug}/feed', [TableCapacityWaveController::class, 'feed'])->middleware('throttle:120,1')->name('table_capacity.feed');
+
+// Màn Hình Trình Chiếu Bức Tranh Ký Tên Vàng Toàn Màn Hình (Signature Mosaic Wall - IDEA-D09)
+Route::get('/thiep/{id}/tranh-ky-ten', [SignatureArchiveController::class, 'mosaic'])->name('signature_archive.mosaic');
+Route::get('/api/thiep/{id}/tranh-ky-ten/feed', [SignatureArchiveController::class, 'feed'])->middleware('throttle:120,1')->name('signature_archive.feed');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');
