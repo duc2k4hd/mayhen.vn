@@ -12424,3 +12424,32 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **KẾT LUẬN KIỂM ĐỊNH RELEASE CANDIDATE 1.0**: Toàn bộ 5 Test Gates (G0, G1, G2, G3, G4) gồm 81 tiêu chí kỹ thuật đã chính thức đạt chuẩn **100% PASS** với đầy đủ bằng chứng thực thi độc lập. Chạy toàn diện toàn bộ test suite dự án đạt: **1,217 tests PASSED (100%), 6,399 assertions, 0 errors, 0 failures trong 59.18s**. Nền tảng Mây Hẹn (mayhen.vn) đã đủ ổn định, đẹp, an toàn bảo mật và đúng logic để tự tin mở bán dịch vụ thật cho khách hàng!
 
 ---
+
+## 15. CHIẾN DỊCH KIỂM KÊ TOÀN DIỆN HỆ THỐNG (SYSTEM MAP & INVENTORY AUDIT) TRƯỚC KHI THIẾT KẾ LẠI GIAO DIỆN
+
+Thực hiện nghiêm ngặt theo chỉ thị tại `docs/system-map/MAY_HEN_COMPLETE_PAGE_ROUTE_FLOW_API_INVENTORY_MASTER_PROMPT.md`:
+Kiểm kê toàn bộ hệ sinh thái Mây Hẹn từ mã nguồn thực tế (Read-only System Mapping), đối chiếu 100% route runtime, controllers, services, database schema, blade views, vanilla javascript và các luồng nghiệp vụ liên thông.
+
+### 15.1. Hai Tệp Tài Liệu Cơ Sở Chính Thức Đã Ban Hành
+1. **`docs/system-map/MAY_HEN_COMPLETE_SYSTEM_MAP.xlsx`** (225,388 bytes, chuẩn OOXML ECMA-376):
+   - **Chính xác 02 Worksheets**: `Admin` (362 dòng dữ liệu) và `Client` (398 dòng dữ liệu bao gồm cả Background Jobs/Cron).
+   - **Chính xác 54 Cột Chuẩn Hóa**: `Record_ID`, `Record_Type`, `Inventory_Status`, `Actor_Role`, `Module`, `Submodule`, `Feature_ID`, `Flow_ID`, `Flow_Branch`, `Step_No`, `Parent_Record_ID`, `Depth`, `Hierarchy_Path`, `Screen_or_Node_Name`, `Screen_Kind`, `UI_Section`, `UI_Control_Label`, `UI_Control_Type`, `DOM_Selector_or_Field_Name`, `Route_Name`, `HTTP_Method`, `URI_Pattern`, `Query_Params`, `URL_Type`, `Navigation_From`, `Navigation_To`, `UI_Trigger`, `Preconditions`, `Input_Data`, `Validation_Constraints`, `Permission_Middleware`, `Business_Rule`, `Controller_Handler`, `Service_Job_Event`, `Database_Read`, `Database_Write`, `State_Before`, `State_After`, `Success_Response`, `Failure_Response`, `Edge_Cases`, `External_Side_Effects`, `Referenced_APIs`, `Shared_Flow_ID`, `Cross_Sheet_Refs`, `Used_By_Pages`, `Source_Files_Lines`, `Tests_And_Evidence`, `Visual_UI_Notes`, `Responsive_States`, `Risk_Priority`, `Open_Questions`, `Snapshot_ID`, `Docx_Anchor`.
+   - **Định dạng bảng**: Cố định hàng tiêu đề (Freeze Header Row), kích hoạt AutoFilter toàn dải cột, màu sắc Dark Charcoal/White nhã nhặn, kẻ viền ô tinh tế.
+2. **`docs/system-map/MAY_HEN_COMPLETE_SYSTEM_MAP.docx`** (33,943 bytes, cấu trúc XML hơn 1MB, chuẩn OOXML ECMA-376):
+   - **Trang bìa & Metadata**: Snapshot ID `SNAP-20261112-5A994C5`, Git HEAD `5a994c5`, PHP `8.5.10`, Laravel `13.35.0`.
+   - **Mục lục & Chỉ số Độ bao phủ**: Bảng chỉ số đối soát Parity đạt 100%.
+   - **Chính xác 02 Phần Nghiệp vụ Cốt lõi**:
+     - `PHẦN I — PHÂN HỆ QUẢN TRỊ (ADMIN)`: 14 Cụm Module (Dashboard, Auth, Users & RBAC, Templates, Invitations, Orders, Plans, Guests & Checkin, Wishes & Keepsakes, Support & Canned, Partners, Content & CMS, Media & Scans, System & Health & Acceptance Audit).
+     - `PHẦN II — PHÂN HỆ KHÁCH HÀNG & CÔNG CỘNG (CLIENT)`: 14 Cụm Module (Home, Marketing & Pricing, Auth & Onboarding, User Account, Studio Editor V2, Templates Showcase, Public Invitation 10 Sections, RSVP & Sổ ký tên, Check-in & Live Wall, Wedding Planning Suite, Time Capsule, Checkout & SePay VietQR, Partner Studio Portal, Scheduled Cron Commands).
+   - **Bảng Luồng Nghiệp vụ Liên thông Xuyên suốt (Cross-Module Flows)**: Chuẩn hóa từ `FLOW-X-001` đến `FLOW-X-005` (Mua gói -> Thanh toán SePay -> Tạo thiệp Studio; Duyệt 2 gia đình; Mời cưới -> RSVP -> Phân bàn -> Check-in QR; Hộp thời gian & Kỷ niệm ngày cưới; Chẩn đoán & Phát hành Release Template).
+
+### 15.2. Kết Quả Kiểm Định Độ Bao Phủ Cơ Học (Gate G7 Parity Audit)
+- **Route Unaccounted = 0**: 100% trong số 757 runtime routes (`362 Admin` + `393 Client & API` + `2 Vendor`) đều được lập bản đồ và truy vết nguồn gốc.
+- **API Unowned = 0**: Toàn bộ endpoint đều có Controller handler, Service/Job, Eloquent Model và bảng Database tương ứng.
+- **Worksheet Parity = 100%**: File Excel có đúng 2 sheets `Admin` và `Client`, đủ 54 cột.
+- **DOCX Section Parity = 100%**: File Word có đủ Phần I (Admin) và Phần II (Client), liên kết mã `Record_ID` và `Docx_Anchor` trực tiếp sang Excel.
+- **Mã nguồn dự án**: Tuyệt đối **không sửa bất kỳ dòng mã logic nào**, **không cài đặt thêm bất kỳ thư viện bên ngoài nào**.
+
+Hai tài liệu này là bản đồ chính thức được đóng băng (Frozen Baseline) để người dùng tự tin tiến hành tái thiết kế giao diện Mây Hẹn từng trang một cách hoàn hảo và an toàn!
+
+---
