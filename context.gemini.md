@@ -11408,7 +11408,48 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Đăng ký nhóm routes `account.companion_card.*`.
   - `tests/Feature/CompanionCardStudioSuiteTest.php`:
     - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, lưu cấu hình, tải SVG, dàn in A4 thẻ chung, dàn in A4 theo danh sách khách mời cá nhân hóa, và validation dữ liệu (100% PASSED).
-### 146. Đề Án 146: Phân Hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến 1-File HTML (Emergency Offline Rescue Pack & Offline Concierge PWA — IDEA-C07 & TASK-VAL-11)
+### 147. Đề Án 147: Phân Hệ Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời (RSVP Change History, Versioning Timeline & Volatility Audit Ledger — IDEA-B05 & Section 24 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời (RSVP Change History & Audit Ledger) theo `IDEA-B05` trong Catalog 60 tính năng cao cấp và Section 24 PRD V3:
+  - Khắc phục triệt để tình trạng bất an của cô dâu chú rể khi chốt số mâm cỗ với nhà hàng: không biết khách mời nào đã đổi ý từ Đi thành Không đi (hoặc ngược lại), không nắm được ai đã sửa lúc nào, dẫn tới nguy cơ phạt tiền mâm dôi dư hoặc thiếu chỗ ngồi:
+    1. *Tự Động Ghi Nhận Lịch Sử Thay Đổi (Event-Driven RSVP Logging)*:
+       - Tự động lưu vết vĩnh viễn vào `guest_response_logs` khi quan khách tự đổi phản hồi trên thiệp hoặc khi cô dâu chú rể sửa tay trong Dashboard.
+       - Lưu đầy đủ: Trạng thái cũ/mới, số người lớn/trẻ em cũ/mới, thực đơn ăn kiêng, lời nhắn, nguồn thay đổi (`guest_online` hoặc `manual_host`), địa chỉ IP và dấu thời gian.
+    2. *4 Card KPI Biến Động Sĩ Số & Cân Đối Mâm Cỗ*:
+       - Tổng Lượt Thay Đổi phản hồi.
+       - Đổi Thành "Không Tham Dự" (Cảnh báo giảm khách • Dôi dư mâm cỗ).
+       - Đổi Thành "Có Tham Dự" (Khách bổ sung tham dự • Cần thêm ghế).
+       - Biến Động Sĩ Số Ròng (Net Headcount Impact: ví dụ `+4 suất` hoặc `-3 suất`).
+    3. *Bộ Lọc Đa Tiêu Chí & Timeline Chi Tiết*:
+       - Tìm kiếm theo tên khách, số điện thoại, phân nhóm.
+       - Lọc theo loại biến động (Đổi sang không đi, Đổi sang có đi, Đổi số người, Đổi món ăn).
+       - Lọc theo nguồn cập nhật (Khách tự đổi / Dâu rể cập nhật).
+       - Lọc theo khoảng thời gian (24 giờ qua, 7 ngày qua, 30 ngày qua).
+    4. *Dòng Thời Gian Tương Tác Khách Mời Cá Nhân Hóa (Customer Journey Modal)*:
+       - API JSON `/tai-khoan/thiep/{id}/lich-su-rsvp/khach/{guestId}` trích xuất toàn bộ hành trình tương tác của khách từ lúc tạo thông tin -> gửi thiệp -> mở xem lần đầu -> phản hồi RSVP -> các lần điều chỉnh -> điểm danh đón tiếp tại sảnh.
+    5. *Xuất Tệp CSV Sổ Kiểm Toán Chuẩn Xưởng Cưới*:
+       - Xuất CSV chuẩn UTF-8 BOM hiển thị tiếng Việt có dấu hoàn hảo trên Excel.
+       - Vệ sinh công thức an toàn tuyệt đối chống CSV Formula Injection (CWE-1236 Defense) qua `CsvSanitizerService`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/RsvpChangeHistoryService.php`:
+    - Tính toán tổng hợp KPI biến động `getVolatilitySummary`, lọc truy vấn `getFilteredLogs`, trích xuất hành trình khách `getGuestTimeline`, xuất file CSV an toàn `exportLogsToCsv`.
+  - `app/Http/Controllers/Client/RsvpChangeHistoryController.php`:
+    - `index`: Màn hình Studio Sổ Kiểm Toán Biến Động RSVP (`account.rsvp_history.index`).
+    - `guestTimeline`: API JSON dòng thời gian khách mời (`account.rsvp_history.guest_timeline`).
+    - `export`: Xuất file CSV nhật ký biến động (`account.rsvp_history.export`).
+  - `resources/views/client/pages/account/rsvp_history/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, bộ lọc đa năng, bảng diff trực quan và modal hành trình khách pure Vanilla JS.
+  - `app/Models/Wedding.php` & `app/Models/Guest.php`:
+    - Bổ sung quan hệ `guestResponseLogs()` và `responseLogs()`.
+  - `resources/views/client/pages/account/invitations.blade.php` & `resources/views/client/pages/guests.blade.php`:
+    - Bổ sung nút công cụ "Biến Động RSVP" và "Sổ Biến Động RSVP".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.rsvp_history.*`.
+  - `tests/Feature/RsvpChangeHistorySuiteTest.php`:
+    - 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio với KPI, chủ tiệc sửa tay ghi nhận log, lọc log theo loại/từ khóa, API timeline khách mời, xuất CSV an toàn UTF-8 BOM, khách tự đổi online qua route public (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ 5 Feature Tests các đề án gần nhất: **35 / 35 tests PASSED 100%** (167 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 - **Mục tiêu**:
   - Triển khai phân hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến (Emergency Offline Rescue Pack & Offline Concierge PWA) theo IDEA-C07 trong Catalog 60 tính năng cao cấp và TASK-VAL-11 PRD V3:
   - Giải quyết bài toán thực tế nhức nhối khi trung tâm tiệc cưới nằm ở tầng hầm B1/B2 hoặc sảnh tiệc đông người làm nghẽn sóng 4G/WiFi khiến lễ tân không tra cứu được bàn cho khách:

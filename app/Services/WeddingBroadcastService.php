@@ -212,4 +212,3 @@ class WeddingBroadcastService
         return self::resolveBroadcastConfig($invitation);
     }
 }
-

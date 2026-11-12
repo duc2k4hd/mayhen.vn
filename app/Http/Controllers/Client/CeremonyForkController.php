@@ -97,4 +97,3 @@ class CeremonyForkController extends Controller
             ->with('success', $result['message']);
     }
 }
-

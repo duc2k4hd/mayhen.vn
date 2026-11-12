@@ -260,4 +260,3 @@ class WeddingWaxSealService
         return self::resolveWaxSealConfig($invitation);
     }
 }
-

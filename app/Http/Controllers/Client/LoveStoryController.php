@@ -103,4 +103,3 @@ class LoveStoryController extends Controller
         }
     }
 }
-

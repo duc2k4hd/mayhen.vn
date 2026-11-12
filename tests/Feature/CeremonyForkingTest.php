@@ -149,4 +149,3 @@ test('nhân bản thiệp thành công cho Tiệc Báo Hỷ và Bản Sao Lưu D
     expect($resBackup['invitation']->title)->toContain('(Bản Sao)')
         ->and($resBackup['invitation']->custom_config['ceremony_fork']['mode'])->toBe('backup_copy');
 });
-

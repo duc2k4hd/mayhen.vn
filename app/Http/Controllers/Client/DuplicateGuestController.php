@@ -142,4 +142,3 @@ class DuplicateGuestController extends Controller
         return $invitation;
     }
 }
-

@@ -129,4 +129,3 @@ class GuestTableFinderController extends Controller
         return $invitation;
     }
 }
-

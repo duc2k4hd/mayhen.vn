@@ -96,4 +96,3 @@ class SmartGroupInvitationController extends Controller
             ->with('success', 'Đã lưu cấu hình thiệp thông minh theo nhóm khách thành công!');
     }
 }
-

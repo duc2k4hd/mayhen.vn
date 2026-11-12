@@ -41,6 +41,7 @@ use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\QualityDoctorController;
+use App\Http\Controllers\Client\RsvpChangeHistoryController;
 use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
@@ -378,6 +379,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/goi-ngoai-tuyen/tai-html', [EmergencyOfflinePackController::class, 'downloadHtml'])->name('offline_pack.download_html');
     Route::get('/thiep/{id}/goi-ngoai-tuyen/tai-json', [EmergencyOfflinePackController::class, 'downloadJson'])->name('offline_pack.download_json');
     Route::post('/thiep/{id}/goi-ngoai-tuyen/dong-bo', [EmergencyOfflinePackController::class, 'sync'])->middleware('throttle:30,1')->name('offline_pack.sync');
+
+    // Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời (RSVP Change History & Audit Ledger - IDEA-B05)
+    Route::get('/thiep/{id}/lich-su-rsvp', [RsvpChangeHistoryController::class, 'index'])->name('rsvp_history.index');
+    Route::get('/thiep/{id}/lich-su-rsvp/khach/{guestId}', [RsvpChangeHistoryController::class, 'guestTimeline'])->name('rsvp_history.guest_timeline');
+    Route::get('/thiep/{id}/lich-su-rsvp/xuat-csv', [RsvpChangeHistoryController::class, 'export'])->name('rsvp_history.export');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');

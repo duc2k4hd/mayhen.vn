@@ -87,4 +87,3 @@ class WeddingLocationAdvisoryController extends Controller
             ->with('success', 'Đã cập nhật chỉ dẫn địa điểm, bãi đỗ xe và lưu ý thời tiết thành công!');
     }
 }
-

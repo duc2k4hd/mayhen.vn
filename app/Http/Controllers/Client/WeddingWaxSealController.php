@@ -75,4 +75,3 @@ class WeddingWaxSealController extends Controller
             ->with('success', 'Đã lưu và áp dụng con dấu sáp hoàng gia lên thiệp cưới thành công!');
     }
 }
-

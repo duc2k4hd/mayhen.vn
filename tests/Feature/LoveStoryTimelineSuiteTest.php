@@ -171,4 +171,3 @@ test('service phân giải an toàn 4 mốc mặc định mang tên cặp đôi 
     expect($config['milestones'][0]['description'])->toContain('Hải Đăng');
     expect($config['milestones'][0]['description'])->toContain('Nhật Hạ');
 });
-

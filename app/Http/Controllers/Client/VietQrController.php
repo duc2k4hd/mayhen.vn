@@ -41,4 +41,3 @@ class VietQrController extends Controller
         ]);
     }
 }
-

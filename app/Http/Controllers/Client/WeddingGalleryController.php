@@ -101,4 +101,3 @@ class WeddingGalleryController extends Controller
         ]);
     }
 }
-

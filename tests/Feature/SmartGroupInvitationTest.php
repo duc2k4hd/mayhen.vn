@@ -183,4 +183,3 @@ test('SmartGroupInvitationService sinh đúng lời mời tùy biến và thay t
         ->and($greeting['title'])->toBe('Gửi Bạn Yêu')
         ->and($greeting['message'])->toBe('Chào Bạn Trần Minh Đức, quẩy hết mình cùng Đặng Tuấn Kiệt & Ngô Bảo Ngọc nhé!');
 });
-

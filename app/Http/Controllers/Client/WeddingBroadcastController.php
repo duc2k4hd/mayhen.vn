@@ -95,4 +95,3 @@ class WeddingBroadcastController extends Controller
             ->with('success', 'Đã tắt thông báo khẩn cấp trên thiệp cưới thành công.');
     }
 }
-

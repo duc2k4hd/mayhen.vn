@@ -160,4 +160,3 @@ test('từ điển dịch thuật hỗ trợ đầy đủ 4 ngôn ngữ cốt l�
         ->and($lexKo['rsvp.attending'])->toBe('참석합니다')
         ->and($lexZh['rsvp.attending'])->toBe('确认出席');
 });
-

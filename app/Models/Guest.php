@@ -255,6 +255,11 @@ class Guest extends Model
         return $this->hasOne(GuestResponse::class);
     }
 
+    public function responseLogs(): HasMany
+    {
+        return $this->hasMany(GuestResponseLog::class)->latest();
+    }
+
     public function gifts(): HasMany
     {
         return $this->hasMany(WeddingGift::class);
