@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CeremonyForkController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ClientDocsController;
 use App\Http\Controllers\Client\ClientSupportController;
 use App\Http\Controllers\Client\CompanionCardController;
 use App\Http\Controllers\Client\ContentReportController;
@@ -687,6 +688,13 @@ Route::prefix('doi-tac')->name('partner.')->middleware('partner')->group(functio
     // Cài đặt hồ sơ Studio & Co-branding
     Route::get('/ho-so', [PartnerProfileController::class, 'edit'])->name('profile');
     Route::post('/ho-so', [PartnerProfileController::class, 'update'])->middleware('throttle:30,1')->name('profile.update');
+});
+
+// Documentation Center - Client Space
+Route::prefix('docs')->name('docs.')->group(function () {
+    Route::get('/', [ClientDocsController::class, 'index'])->name('index');
+    Route::get('/search', [ClientDocsController::class, 'search'])->name('search');
+    Route::get('/{category}/{slug}', [ClientDocsController::class, 'show'])->name('show');
 });
 
 // Admin Management Panel

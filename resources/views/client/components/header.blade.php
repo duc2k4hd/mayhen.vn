@@ -16,7 +16,7 @@
             <a href="{{ route('services') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('services') ? 'mayhen_client_header_nav_link_active' : '' }}">Dịch Vụ</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
             <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
-            <a href="{{ route('how-it-works') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('how-it-works') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
+            <a href="{{ route('docs.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('docs.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
             <a href="{{ route('contact') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('contact') ? 'mayhen_client_header_nav_link_active' : '' }}">Liên Hệ</a>
         </nav>
 
@@ -88,6 +88,13 @@
                                 <circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.3"/>
                             </svg>
                             <span>Hồ Sơ & Mật Khẩu</span>
+                        </a>
+                        <a href="{{ route('docs.index') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 13.5A1.5 1.5 0 0 1 4 12h10" stroke="currentColor" stroke-width="1.3"/>
+                                <path d="M4 2.5h10v11H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 2.5z" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Trung Tâm Hướng Dẫn</span>
                         </a>
                         <div class="mayhen_client_header_user_divider"></div>
                         <a href="{{ route('invitation.create') }}" class="mayhen_client_header_user_item" role="menuitem">

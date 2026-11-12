@@ -12453,3 +12453,74 @@ Kiểm kê toàn bộ hệ sinh thái Mây Hẹn từ mã nguồn thực tế (R
 Hai tài liệu này là bản đồ chính thức được đóng băng (Frozen Baseline) để người dùng tự tin tiến hành tái thiết kế giao diện Mây Hẹn từng trang một cách hoàn hảo và an toàn!
 
 ---
+
+## 16. TRIỂN KHAI TRUNG TÂM HƯỚNG DẪN MÂY HẸN (DOCUMENTATION CENTER: /docs & /admin/docs)
+
+Thực hiện toàn diện theo chỉ thị tại `docs/MAY_HEN_DOCS_CENTER_EDITORIAL_UX_IMPLEMENTATION_PLAN_MASTER_PROMPT.md` và nguồn giao diện chuẩn tại `docs/templates/`:
+Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách biệt không gian nhưng dùng chung 1 Master Layout hợp nhất hoàn hảo:
+- `/docs/`: Dành cho khách hàng, cô dâu chú rể, khách mời và đối tác xưởng in.
+- `/admin/docs/`: Dành cho Quản trị viên, Quản lý, Nhân viên vận hành và người mới tiếp nhận hệ thống.
+
+### 16.1. Kiến Trúc Kỹ Thuật & Layout Hợp Nhất (Unified Master Layout)
+- **Nguồn Giao Diện**: Đúc kết từ 2 mẫu gốc trong `docs/templates/mayhen_docs/` và `docs/templates/mayhen_docs_detail/`.
+- **Master Layout Duy Nhất**: `resources/views/docs/layout.blade.php` dùng chung cho cả 2 không gian thông qua biến `$space` ('client' hoặc 'admin').
+- **Header & Footer Tích Hợp**:
+  - Header sticky 2 tầng: Tầng 1 gồm Logo Mây Hẹn, nhãn phân hệ (Trợ Giúp Khách Hàng / Sổ Tay Vận Hành SOP), nút kích hoạt tìm kiếm nhanh (`Ctrl+K`), nút chuyển giao diện Sáng/Tối (Theme Switcher), và liên kết quay lại ứng dụng chính; Tầng 2 hiển thị thanh điều hướng phân cấp (Breadcrumbs) cùng thanh tiến trình đọc bài (Reading Progress Bar).
+  - Footer 4 cột chuẩn phong cách Quiet Luxury: Hotline CSKH/Zalo hỗ trợ, chính sách bảo mật, liên kết tài liệu quan trọng, phím tắt nhanh và bản quyền Mây Hẹn.
+- **Tài Nguyên Cục Bộ 100% (Zero External Framework)**:
+  - CSS Hợp Nhất: `public/assets/client/docs/css/docs-main.css` (102KB) kế thừa toàn bộ biến màu CSS tokens, typography Cormorant Garamond / Inter, thiết kế thẻ danh mục, bài viết 3 cột, khung mã lệnh, callouts và responsive đa kích thước.
+  - JS Hợp Nhất: `public/assets/client/docs/js/docs-main.js` (7.1KB) thuần Native ES Modules phụ trách Live Search modal `<dialog>`, Reading Progress Bar, LocalStorage Theme Switcher, TOC Scrollspy tự động đánh dấu mục đang đọc, Sidebar Accordion đóng/mở danh mục và nút Back-to-Top.
+
+### 16.2. Backend Controller & Service Xử Lý Nội Dung
+- **Service Lõi**: `app/Services/DocumentationService.php`:
+  - Quản lý cấu trúc thư mục Markdown phẳng, phân vùng cách ly tuyệt đối giữa Client (`resources/docs/client/`) và Admin (`resources/docs/admin/`).
+  - Native Frontmatter YAML Parser & Safe Markdown Renderer (chuyển đổi Markdown sang HTML an toàn, tự động sinh thẻ anchor neo tiêu đề, highlight blockquote, callout cảnh báo rủi ro).
+  - Tự động sinh Mục Lục Đầu Bài (TOC Generator): Quét các thẻ H2, H3 để tạo cây điều hướng nhanh bên cột phải.
+  - Tìm Kiếm Full-Text In-Memory Hỗ Trợ Tiếng Việt Không Dấu (Vietnamese Unaccent Search): Cho phép độc giả gõ từ khóa có dấu hoặc không dấu (ví dụ: `to chuc ban tiec` vẫn tìm thấy `Tổ chức bàn tiệc`).
+  - **Bảo Vệ Ngăn Rò Rỉ Tuyệt Đối**: API tìm kiếm tại phân hệ Client chỉ được phép quét tài liệu trong không gian Client; tuyệt đối không để lộ bất kỳ tiêu đề hay nội dung SOP nội bộ nào của Admin.
+- **Controllers & Routing**:
+  - `ClientDocsController`: Phục vụ các route công khai `docs.index`, `docs.show`, `docs.search`.
+  - `AdminDocsController`: Phục vụ các route nội bộ `admin.docs.index`, `admin.docs.show`, `admin.docs.search`, bảo vệ nghiêm ngặt qua middleware `admin.auth`.
+  - Tích hợp liên kết điều hướng thông minh: Sidebar Admin (`master.blade.php`) bổ sung mục "Sổ Tay Quy Trình (SOP Docs)"; Header Client (`header.blade.php`) chuyển link "Hướng Dẫn" trỏ thẳng vào `route('docs.index')`.
+
+### 16.3. Nội Dung Bài Viết & Ma Trận Phủ 100% Chức Năng (108 Bài Viết)
+- **10 Chuyên Mục Khách Hàng (58 bài viết)** trong `resources/docs/client/`:
+  1. `01-getting-started`: Đăng ký, tạo thiệp đầu tiên, bảng giá, bàn giao.
+  2. `02-studio-editor`: Tùy biến thiệp, ảnh cưới, Smart Focal Point, âm nhạc, typography.
+  3. `03-guest-management`: Danh sách khách, import Excel/CSV, phân nhóm thiệp, QR code.
+  4. `04-seating-chart`: Sơ đồ bàn tiệc, kéo thả khách vào bàn, tải sơ đồ nhà hàng.
+  5. `05-invitation-pages`: 10 Section tiêu chuẩn thiệp cưới, bản đồ tiệc, album ảnh cưới.
+  6. `06-rsvp-guestbook`: Xác nhận tham dự, lời chúc online, chữ ký điện tử, kiểm duyệt.
+  7. `07-checkin-reception`: Quét QR tại sảnh tiệc, bàn lễ tân, màn chiếu tương tác Live Wall.
+  8. `08-wedding-planning`: Đếm ngược, phân công việc, dự trù ngân sách, hộp thời gian.
+  9. `09-orders-billing`: Nâng cấp gói, thanh toán VietQR SePay tự động, hóa đơn.
+  10. `10-faq-troubleshooting`: Xử lý sự cố font chữ, ảnh vỡ, mất link thiệp, liên hệ hỗ trợ.
+- **10 Chuyên Mục Vận Hành Admin (50 bài viết)** trong `resources/docs/admin/`:
+  1. `01-system-overview`: Kiến trúc tổng quan, hạ tầng, luồng dữ liệu, phân quyền RBAC.
+  2. `02-template-management`: Quản lý mẫu thiệp, kiểm duyệt mẫu mới, công cụ Release Lab.
+  3. `03-invitation-moderation`: Kiểm duyệt nội dung thiệp, đình chỉ thiệp vi phạm, khôi phục.
+  4. `04-orders-refunds`: Tra cứu đơn hàng, kích hoạt thủ công, đối soát ngân hàng, hoàn tiền.
+  5. `05-user-management`: Quản trị tài khoản, phân quyền nhân viên, ẩn danh hóa dữ liệu PII.
+  6. `06-partner-management`: Duyệt đại lý studio, quyết toán hoa hồng, tạo link tiếp thị.
+  7. `07-security-audit`: Nhật ký kiểm toán, phát hiện xâm nhập, khóa IP bất thường.
+  8. `08-backup-disaster-recovery`: Sao lưu dữ liệu tự động, quy trình khôi phục sự cố thảm họa.
+  9. `09-incident-escalation`: Phân cấp sự cố, quy trình xử lý lỗi hệ thống, thông báo khách.
+  10. `10-handover-sop`: Hướng dẫn bàn giao nhân sự mới, danh sách liên hệ khẩn cấp, tài khoản gốc.
+- **02 Bài Viết Thí Điểm Hoàn Chỉnh Mẫu**:
+  - `CLI-EDIT-002`: Hướng Dẫn Căn Chỉnh Điểm Nhìn Trọng Tâm Ảnh Cưới (Smart Focal Point).
+  - `ADM-ORDR-002`: Quy Trình Chuẩn (SOP) Đối Soát Thanh Toán Chuyển Khoản & Kích Hoạt Đơn Hàng Thủ Công.
+
+### 16.4. Đảm Bảo Chất Lượng & Kiểm Thử Toàn Diện
+- Đã tạo bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` với 8 kịch bản kiểm thử:
+  1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
+  2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
+  3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
+  4. Khách vãng lai truy cập `/admin/docs` bị chặn an toàn (Redirect sang trang Login).
+  5. Tài khoản có quyền Quản trị viên truy cập `/admin/docs` thành công và thấy đủ các mục SOP vận hành.
+  6. Trang chi tiết SOP Admin `/admin/docs/{category}/{slug}` hiển thị đúng nội dung và bảng chỉ dẫn rủi ro.
+  7. Tìm kiếm độc lập: Khách hàng tìm kiếm từ khóa Admin không thể xem thấy tài liệu nội bộ (Bảo vệ thông tin tuyệt đối).
+  8. Hệ thống sinh Mục Lục (TOC) hoạt động chuẩn xác từ các thẻ tiêu đề Markdown.
+- **Kết quả kiểm thử**: **8/8 tests PASSED (100%), 28 assertions, thời gian chạy 0.97s**.
+- **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào. Whitelist test file trong `.gitignore`.
+
+---

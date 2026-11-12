@@ -37,6 +37,16 @@
             <nav class="mayhen_admin_nav_menu" aria-label="Menu quản trị chính">
                 <!-- Section 1: Tổng Quan & Trí Tuệ Vận Hành -->
                 <div class="mayhen_admin_menu_section">Tổng Quan & Trí Tuệ</div>
+                <a href="{{ route('admin.docs.index') }}" target="_blank" rel="noopener" class="mayhen_admin_nav_link {{ request()->routeIs('admin.docs.*') ? 'mayhen_admin_nav_link_active' : '' }}" style="background: rgba(181, 142, 111, 0.1); border-left: 3px solid #b58e6f;">
+                    <span class="mayhen_admin_nav_icon" style="color: #b58e6f;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </span>
+                    <span style="font-weight: 700; color: #b58e6f;">Sổ Tay Quy Trình (SOP)</span>
+                </a>
+
                 <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.dashboard') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
