@@ -346,6 +346,18 @@
         </style>
     @endif
 
+    {{-- Smart Focal Point CSS Overrides (IDEA-F06: Căn Chỉnh Điểm Tiêu Cự Ảnh Cưới Trực Quan) --}}
+    @if(isset($invitation))
+        @php
+            $focalCss = app(\App\Services\SmartFocalPointService::class)->generateCssOverrides($invitation);
+        @endphp
+        @if(!empty($focalCss))
+            <style id="mayhenFocalPointOverrides">
+                {!! $focalCss !!}
+            </style>
+        @endif
+    @endif
+
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>

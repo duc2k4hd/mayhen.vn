@@ -12169,3 +12169,135 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 ---
+
+### 🕊️ ĐỀ ÁN 163: TRỢ LÝ AI TỐI ƯU BỐ CỤC ẢNH CƯỚI & TIÊU CỰ VÀNG ĐA MÀN HÌNH (SMART FOCAL POINT PHOTO OPTIMIZER — IDEA-F06 & IDEA-E04)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai toàn diện Trợ lý Căn Chỉnh Tiêu Cự Vàng & Tối Ưu Bố Cục Ảnh Cưới (`IDEA-F06` & `IDEA-E04`):
+  - Giải quyết triệt để nỗi lo ảnh cưới khi hiển thị trên các màn hình điện thoại tỷ lệ dọc (9:16) hoặc avatar tròn (1:1) bị cắt mất gương mặt cô dâu chú rể hoặc chi tiết váy cưới quan trọng.
+  - Các trụ cột chức năng chính:
+    1. *Bộ 9 Điểm Neo Tiêu Cự Vàng Nhiếp Ảnh Cưới (`SmartFocalPointService::getPresetAnchors`)*:
+       - Cung cấp sẵn 9 vị trí neo chuẩn mực: Gương mặt trên cao (khuyên dùng cho ảnh đứng), Trung tâm mặc định, Váy cưới & dưới thấp, Góc trái/phải trên, Góc trái/phải dưới.
+       - Cho phép chạm/click trực tiếp vào bất kỳ điểm nào trên ảnh để thiết lập tọa độ tiêu cự tùy biến (X% từ 0–100%, Y% từ 0–100%).
+    2. *Xem Trước Đa Khung Hình Trực Quan (Multi-Aspect Ratio Live Preview)*:
+       - Khung mô phỏng 4 tỷ lệ cắt cúp phổ biến nhất:
+         - **Dọc 9:16**: Màn hình smartphone & Stories.
+         - **Vuông 1:1**: Khung avatar đại diện cô dâu, chú rể.
+         - **Ngang 4:3**: Máy tính bảng (iPad) & khung ảnh album.
+         - **Rộng 16:9**: Máy tính để bàn & màn hình chiếu sảnh tiệc.
+       - Tọa độ tiêu cự thay đổi đến đâu, 4 khung preview lập tức cập nhật mượt mà đến đó.
+    3. *Tích Hợp CSS Overrides Tự Động Vào Mẫu Thiệp Cưới*:
+       - `SmartFocalPointService::generateCssOverrides($invitation)`: Tự động sinh mã CSS ưu tiên cao (`!important`) áp dụng đồng thời cả `background-position` và `object-position` cho toàn bộ các phần tử:
+         - Bìa Hero / Cổng cưới chính (`.mayhen_invitation_hero_media`, `.mayhen_invitation_img_dau`, `.mayhen_invitation_hero_img`).
+         - Chân dung Chú Rể (`.mayhen_invitation_groom_photo`, `.mayhen_invitation_img_chure`).
+         - Chân dung Cô Dâu (`.mayhen_invitation_bride_photo`, `.mayhen_invitation_img_codau`).
+         - Ảnh kết thiệp (`.mayhen_invitation_ending_photo`, `.mayhen_invitation_img_ket`).
+         - Từng bức ảnh trong Album 10 khoảnh khắc vàng (`.mayhen_invitation_album_img_{idx}`).
+       - Layout chung `resources/views/client/layouts/invitation.blade.php`: Tự động nạp khối `<style id="mayhenFocalPointOverrides">` trước thẻ `</head>`, đảm bảo 100% mẫu thiệp kế thừa layout đều thụ hưởng tính năng này.
+    4. *Bảo Mật Quyền Sở Hữu & Phòng Chống IDOR*:
+       - `SmartFocalPointController` xác thực quyền sở hữu thiệp cưới, từ chối mã 403 đối với người lạ.
+       - Ghi nhận nhật ký kiểm toán hệ thống `FOCAL_POINT_STUDIO_ACCESSED`, `FOCAL_POINT_UPDATED`, `FOCAL_POINT_RESET` qua `AuditLogger`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/SmartFocalPointService.php`:
+    - Quản lý danh sách ảnh, 9 preset, cập nhật/reset tọa độ tiêu cự, sinh CSS overrides đa tầng.
+  - `app/Http/Controllers/Client/SmartFocalPointController.php`:
+    - Controller điều phối Studio, cập nhật AJAX, xác thực và ghi nhật ký kiểm toán.
+  - `resources/views/client/pages/account/focal_point/index.blade.php`:
+    - Giao diện Studio căn chỉnh tiêu cự tương tác trực quan, thanh trượt tọa độ và khay xem trước 4 tỷ lệ.
+  - `resources/views/client/layouts/invitation.blade.php`:
+    - Tự động nạp CSS `#mayhenFocalPointOverrides` cho mọi mẫu thiệp cưới.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Nút công cụ *"Căn Tiêu Cự"* trong bảng điều khiển thiệp cưới của cặp đôi.
+  - `tests/Feature/SmartFocalPointSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn vãng lai, chặn 403, mở Studio, lưu tọa độ, reset mặc định, sinh CSS overrides đúng chuẩn và inject thẻ style vào thiệp công khai (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `SmartFocalPointSuiteTest`: **7 / 7 tests PASSED 100%** (24 assertions).
+  - Toàn bộ suite tính năng gần nhất: **97 / 97 tests PASSED 100%** (436 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+---
+
+### 🕊️ ĐỀ ÁN 164: THANH TRA SO SÁNH BẢN NHÁP & BÁO CÁO TÁC ĐỘNG KHI SỬA NGÀY GIỜ THIỆP (PUBLISH DIFF INSPECTOR & DRAFT SAFEGUARD — IDEA-E05 & TASK-VAL-09)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai toàn diện bộ công cụ Thanh Tra & So Sánh Bản Nháp vs Bản Xuất Bản (`IDEA-E05` & `TASK-VAL-09`):
+  - Giải quyết bài toán bảo an thông tin cưới: Khi cặp đôi chỉnh sửa thiệp trong Studio, hệ thống tách biệt rạch ròi giữa **Bản Đang Phát Hành (Live Snapshot)** mà khách mời đang xem và **Bản Nháp (Draft Config)** đang biên tập dở dang.
+  - Các trụ cột chức năng chính:
+    1. *Động Cơ So Sánh Khác Biệt & Phân Cấp Mức Độ Tác Động (`PublishDiffInspectorService::computeDiff`)*:
+       - Phân tích 5 nhóm dữ liệu trọng yếu: Thời Gian & Địa Điểm Sự Kiện, Đôi Uyên Ương & Gia Đình, Mừng Cưới & Ngân Hàng, Album Ảnh & Media, Thẩm Mỹ & Lời Ngỏ.
+       - Cảnh báo rủi ro 3 mức:
+         - **Critical / High Impact**: Thay đổi Ngày cưới (`wedding_date`), Giờ tiệc (`party_time`), Địa chỉ sảnh (`event_party_address`, `venue_name`). Cảnh báo dâu rể phải chủ động phát thông báo khẩn cho khách mời đã nhận thiệp.
+         - **Warning Impact**: Thay đổi tên cô dâu chú rể, số tài khoản ngân hàng mừng cưới, liên kết Google Maps.
+         - **Info**: Thay đổi lời ngỏ, ảnh cưới, nhạc nền, biểu tượng con dấu sáp.
+    2. *Xuất Bản Bản Mới An Toàn Có Lưu Lịch Sử (Commit Publish & Revision Versioning)*:
+       - Khi dâu rể bấm "Xuất Bản Bản Mới", hệ thống tăng số phiên bản `revision_id` (v1, v2, v3...), lưu bản sao chụp nguyên trạng (Snapshot), ghi nhận thời điểm xuất bản và ghi chú thay đổi (`change_note`).
+    3. *Phòng Vệ Khôi Phục & Hủy Thay Đổi Nháp (Discard & Rollback Safeguard)*:
+       - **Hủy bỏ thay đổi nháp (`discard`)**: Một chạm xóa sạch các chỉnh sửa thử nghiệm trong `draft_config`, hoàn tác dữ liệu nháp về đúng bản Live đang phát hành.
+       - **Khôi phục phiên bản lịch sử (`rollback`)**: Cho phép cặp đôi quay ngược thời gian về bất kỳ phiên bản nào từng xuất bản trước đó để xem lại hoặc áp dụng lại.
+    4. *Cung Cấp API Diff Tức Thời Cho Studio Editor*:
+       - Endpoint JSON `/api/thiep/{id}/so-sanh-ban-nhap/diff` trả về danh sách các trường thay đổi theo thời gian thực để Studio hiển thị huy hiệu "Có X thay đổi chưa lưu".
+    5. *Bảo Mật Quyền Sở Hữu & Phòng Vệ IDOR*:
+       - `PublishDiffController` kiểm soát quyền sở hữu thiệp nghiêm ngặt, chặn mọi hành vi can thiệp trái phép (HTTP 403 Forbidden).
+       - Ghi nhận nhật ký kiểm toán hệ thống `PUBLISH_DIFF_INSPECTOR_ACCESSED`, `INVITATION_PUBLISHED_FROM_DIFF`, `INVITATION_DRAFT_DISCARDED`, `INVITATION_ROLLBACK_TO_REVISION` qua `AuditLogger`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/PublishDiffInspectorService.php`:
+    - Quản lý định nghĩa 25 trường dữ liệu, trích xuất snapshot Live/Draft, tính toán Diff phân cấp rủi ro, commit publish, discard và rollback.
+  - `app/Http/Controllers/Client/PublishDiffController.php`:
+    - Controller điều phối giao diện thanh tra, xác nhận xuất bản, hủy nháp, khôi phục lịch sử và API Diff.
+  - `resources/views/client/pages/account/publish_diff/index.blade.php`:
+    - Giao diện Studio so sánh trực quan, hiển thị cột "Bản Live Hiện Tại" song song với cột "Bản Nháp Mới", thẻ cảnh báo rủi ro màu đỏ/vàng/xanh, modal xuất bản kèm ghi chú.
+  - `routes/web.php`:
+    - Nhóm routes `account.publish_diff.*`.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Nút công cụ *"So Sánh Bản Nháp"* trong bảng điều khiển thiệp cưới của cặp đôi.
+  - `tests/Feature/PublishDiffSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn vãng lai, chặn 403 IDOR, mở giao diện thanh tra, tính diff & phát hiện critical impact, commit publish tăng revision, hủy nháp an toàn và API JSON diff (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `PublishDiffSuiteTest`: **7 / 7 tests PASSED 100%** (27 assertions).
+  - Toàn bộ suite tính năng gần nhất: **104 / 104 tests PASSED 100%** (463 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+---
+
+### 🕊️ ĐỀ ÁN 165: SỔ NHẬT KÝ & KIỂM TOÁN BIẾN ĐỘNG XÁC NHẬN THAM DỰ (RSVP CHANGE HISTORY & VOLATILITY AUDIT — IDEA-B05 & MỤC 31 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai toàn diện tính năng Sổ Nhật Ký & Kiểm Toán Biến Động RSVP (`IDEA-B05` & Mục 31 PRD V3):
+  - Theo dõi mọi lần đổi ý của khách mời (Từ "Chưa phản hồi" sang "Có", từ "Có" sang "Không", tăng giảm số người đi kèm, đổi khẩu vị ăn kiêng chay/mặn).
+  - Cung cấp cơ sở dữ liệu đối soát minh bạch với trung tâm tiệc cưới để chốt số lượng mâm cỗ chuẩn xác 100%, không lãng phí cỗ và không bị động khi khách dẫn thêm người.
+  - Các trụ cột chức năng chính:
+    1. *Bộ Đo Lường Biến Động Sĩ Số Toàn Diện (`RsvpChangeHistoryService::getVolatilitySummary`)*:
+       - Thống kê tự động:
+         - Tổng số lượt biến động lịch sử (`total_logs`).
+         - Số lượt chuyển sang Có tham dự (`switched_to_attending`) vs Báo bận (`switched_to_declined`).
+         - Số lượt tăng sĩ số (`headcount_increased`) vs giảm sĩ số (`headcount_decreased`).
+         - Mức độ tác động ròng đến sĩ số mâm cỗ (`net_headcount_impact`).
+         - Biến động nóng trong 24 giờ qua (`recent_24h`) và 7 ngày qua (`recent_7d`).
+         - Nguồn xác nhận: Khách tự gửi online (`by_guest_online`) vs Cặp đôi cập nhật hộ trong Dashboard (`by_manual_host`).
+         - Số lượt thay đổi khẩu vị ăn chay / dị ứng (`dietary_changed`).
+    2. *Dòng Thời Gian Cá Nhân Hóa Của Từng Khách Mời (Guest Timeline API)*:
+       - Endpoint JSON `/thiep/{id}/lich-su-rsvp/khach/{guestId}` trích xuất toàn bộ hành trình điểm chạm của vị khách (thời điểm nhận thiệp, xem thiệp, xác nhận lần đầu, thay đổi số người, ghi chú lời chúc).
+    3. *Xuất Tệp CSV Đối Soát Mâm Cỗ An Toàn*:
+       - Hỗ trợ xuất dữ liệu ra file Excel/CSV chuẩn UTF-8 BOM (`\xEF\xBB\xBF`), hiển thị đầy đủ dấu tiếng Việt, an toàn tuyệt đối chống tấn công CSV Formula Injection (CWE-1236).
+    4. *Bảo Mật Quyền Sở Hữu & Phòng Vệ IDOR*:
+       - `RsvpChangeHistoryController` xác thực quyền sở hữu thiệp cưới, từ chối mã 403 nếu tài khoản không sở hữu thiệp.
+       - Ghi nhận nhật ký kiểm toán hệ thống `RSVP_CHANGE_HISTORY_ACCESSED`, `RSVP_CHANGE_HISTORY_EXPORTED` qua `AuditLogger`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/RsvpChangeHistoryService.php`:
+    - Dịch vụ phân tích biến động sĩ số, bộ lọc theo nguồn/thời gian, sinh dòng thời gian khách mời và xuất CSV.
+  - `app/Http/Controllers/Client/RsvpChangeHistoryController.php`:
+    - Controller điều phối hiển thị sổ kiểm toán, API Timeline và xuất CSV.
+  - `resources/views/client/pages/account/rsvp_history/index.blade.php`:
+    - Giao diện Sổ Kiểm Toán Biến Động RSVP phong cách Quiet Luxury, bảng biểu trực quan, thẻ KPI tác động mâm cỗ.
+  - `routes/web.php`:
+    - Nhóm routes `account.rsvp_history.*`.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Nút công cụ *"Lịch Sử RSVP"* trong bảng điều khiển thiệp cưới của cặp đôi.
+  - `tests/Feature/RsvpChangeHistorySuiteTest.php`:
+    - Kiểm thử 6/6 test cases: chặn vãng lai, chặn 403 IDOR, mở sổ kiểm toán, tính toán biến động sĩ số, API Timeline và xuất CSV có BOM UTF-8 (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `RsvpChangeHistorySuiteTest`: **6 / 6 tests PASSED 100%** (26 assertions).
+  - Toàn bộ suite tính năng gần nhất: **110 / 110 tests PASSED 100%** (489 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+---

@@ -56,4 +56,3 @@ class MultiDeviceSimulatorController extends Controller
         return $invitation;
     }
 }
-

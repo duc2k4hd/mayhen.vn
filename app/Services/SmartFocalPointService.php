@@ -147,21 +147,34 @@ class SmartFocalPointService
             return '';
         }
 
-        $css = "/* Smart Focal Point Auto-Injected Rules */\n";
+        $css = "/* Smart Focal Point Auto-Injected Rules (IDEA-F06) */\n";
 
         if (isset($focalPoints['cover_photo'])) {
             $fp = $focalPoints['cover_photo'];
-            $css .= ".mayhen_invitation_hero_img, .mayhen_invitation_cover_img, .hero_image { object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+            $css .= ".mayhen_invitation_hero_media .mayhen_invitation_ladi_image_background, .mayhen_invitation_img_dau .mayhen_invitation_ladi_image_background, .mayhen_invitation_hero_img, .mayhen_invitation_cover_img, .hero_image { background-position: {$fp['x']}% {$fp['y']}% !important; object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
         }
 
         if (isset($focalPoints['groom_photo'])) {
             $fp = $focalPoints['groom_photo'];
-            $css .= ".mayhen_invitation_groom_avatar, .groom_avatar_img { object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+            $css .= ".mayhen_invitation_groom_photo .mayhen_invitation_ladi_image_background, .mayhen_invitation_img_chure .mayhen_invitation_ladi_image_background, .mayhen_invitation_groom_avatar, .groom_avatar_img { background-position: {$fp['x']}% {$fp['y']}% !important; object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
         }
 
         if (isset($focalPoints['bride_photo'])) {
             $fp = $focalPoints['bride_photo'];
-            $css .= ".mayhen_invitation_bride_avatar, .bride_avatar_img { object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+            $css .= ".mayhen_invitation_bride_photo .mayhen_invitation_ladi_image_background, .mayhen_invitation_img_codau .mayhen_invitation_ladi_image_background, .mayhen_invitation_bride_avatar, .bride_avatar_img { background-position: {$fp['x']}% {$fp['y']}% !important; object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+        }
+
+        if (isset($focalPoints['ending_photo'])) {
+            $fp = $focalPoints['ending_photo'];
+            $css .= ".mayhen_invitation_ending_photo .mayhen_invitation_ladi_image_background, .mayhen_invitation_img_ket .mayhen_invitation_ladi_image_background { background-position: {$fp['x']}% {$fp['y']}% !important; object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+        }
+
+        // Hỗ trợ căn chỉnh tiêu cự cho từng ảnh trong Album Kỷ Niệm
+        foreach ($focalPoints as $key => $fp) {
+            if (str_starts_with($key, 'gallery_photo_')) {
+                $idx = (int) str_replace('gallery_photo_', '', $key);
+                $css .= ".mayhen_invitation_album_img_{$idx} .mayhen_invitation_ladi_image_background, .mayhen_invitation_gallery_item[data-index=\"{$idx}\"] .mayhen_invitation_ladi_image_background, .mayhen_invitation_gallery_item[data-photo-index=\"{$idx}\"] img, [data-gallery-index=\"{$idx}\"] img { background-position: {$fp['x']}% {$fp['y']}% !important; object-position: {$fp['x']}% {$fp['y']}% !important; }\n";
+            }
         }
 
         return $css;
