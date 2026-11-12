@@ -418,9 +418,9 @@ class InvitationEditorController extends Controller
             $availableGroups = array_values(array_unique(array_filter(array_merge($availableGroups, $dbGroups))));
         }
 
-        if ($isOwner && (request()->boolean('rehearsal') || request()->has('rehearsal_group'))) {
+        if ($isOwner && (request()->boolean('rehearsal') || request()->has('rehearsal_group') || request()->has('group'))) {
             $isRehearsal = true;
-            $reqGroup = request()->query('rehearsal_group');
+            $reqGroup = request()->query('rehearsal_group') ?: request()->query('group');
             if (is_string($reqGroup) && in_array(trim($reqGroup), $availableGroups, true)) {
                 $rehearsalGroup = trim($reqGroup);
             }
@@ -447,14 +447,18 @@ class InvitationEditorController extends Controller
                         $rawContent = $groupMsg['content'] ?? ($groupMsg['message'] ?? null);
 
                         $coupleName = ($wedding->groom_name ?? 'Chú Rể').' & '.($wedding->bride_name ?? 'Cô Dâu');
-                        $replacePlaceholders = function (?string $text) use ($guest, $coupleName) {
+                        $groom = $wedding->groom_name ?? 'Chú Rể';
+                        $bride = $wedding->bride_name ?? 'Cô Dâu';
+                        $dateStr = $wedding && $wedding->wedding_date ? $wedding->wedding_date->format('d/m/Y') : '';
+
+                        $replacePlaceholders = function (?string $text) use ($guest, $coupleName, $groom, $bride, $dateStr) {
                             if (empty($text)) {
                                 return null;
                             }
 
                             return str_replace(
-                                ['{guest_name}', '{salutation}', '{couple_name}'],
-                                [$guest->name ?? 'Quý khách', $guest->salutation ?? 'Quý khách', $coupleName],
+                                ['{guest_name}', '{salutation}', '{couple_name}', '{groom_name}', '{bride_name}', '{wedding_date}'],
+                                [$guest->name ?? 'Quý khách', $guest->salutation ?? 'Quý khách', $coupleName, $groom, $bride, $dateStr],
                                 $text
                             );
                         };
@@ -484,15 +488,18 @@ class InvitationEditorController extends Controller
 
                 $salutation = ! empty($guest->salutation) ? trim($guest->salutation) : 'Quý khách';
                 $coupleName = ($wedding->groom_name ?? 'Chú Rể').' & '.($wedding->bride_name ?? 'Cô Dâu');
+                $groom = $wedding->groom_name ?? 'Chú Rể';
+                $bride = $wedding->bride_name ?? 'Cô Dâu';
+                $dateStr = $wedding && $wedding->wedding_date ? $wedding->wedding_date->format('d/m/Y') : '';
 
-                $replacePlaceholders = function (?string $text) use ($guest, $salutation, $coupleName) {
+                $replacePlaceholders = function (?string $text) use ($guest, $salutation, $coupleName, $groom, $bride, $dateStr) {
                     if (empty($text)) {
                         return null;
                     }
 
                     return str_replace(
-                        ['{guest_name}', '{salutation}', '{couple_name}'],
-                        [$guest->name, $salutation, $coupleName],
+                        ['{guest_name}', '{salutation}', '{couple_name}', '{groom_name}', '{bride_name}', '{wedding_date}'],
+                        [$guest->name, $salutation, $coupleName, $groom, $bride, $dateStr],
                         $text
                     );
                 };

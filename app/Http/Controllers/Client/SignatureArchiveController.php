@@ -181,4 +181,3 @@ class SignatureArchiveController extends Controller
         return $invitation;
     }
 }
-

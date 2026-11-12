@@ -11960,6 +11960,54 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ suite tính năng gần nhất: **57 / 57 tests PASSED 100%** (233 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 158: PHÂN HỆ STUDIO CÁ NHÂN HÓA LỜI NGỎ THEO NHÓM KHÁCH (INVITATION PERSONA STUDIO & LIVE GREETING SIMULATOR — IDEA-A01 & MỤC 2.3 DOCX)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Xây dựng phân hệ Studio độc lập chuyên sâu cho phép cô dâu chú rể cá nhân hóa lời chào và thông điệp tâm sự riêng biệt theo từng nhóm khách mời (Invitation Persona) theo `IDEA-A01` và Mục 2.3 DOCX:
+  - Tôn vinh giá trị Quiet Luxury: Không làm mất lòng các bậc cao niên và không gượng gạo với bạn bè cạ cứng. Bạn thân nhận được lời mời hóm hỉnh, gần gũi; đồng nghiệp nhận được lời mời lịch thiệp, tinh tế; gia đình và họ hàng nhận được lời mời cung kính, trang nghiêm.
+  - Các trụ cột chức năng chính:
+    1. *Khám Phá Nhóm Khách Tự Động (Auto-Detected Guest Groups)*:
+       - Tự động quét và liệt kê toàn bộ các nhóm khách thực tế đang có trong danh bạ (`Guest::distinct('group_name')`) kèm sĩ số từng nhóm.
+       - Gợi ý sẵn các nhóm phong tục Việt Nam nếu danh sách khách chưa có: Bạn Bè & Bạn Thân, Đồng Nghiệp & Đối Tác, Gia Đình & Họ Hàng, Quan Khách Nhà Trai, Quan Khách Nhà Gái.
+    2. *Bảng KPI Thống Kê Mức Độ Phủ Sóng (Personalization Coverage KPI)*:
+       - 4 Thẻ KPI: Tỷ lệ phủ sóng cá nhân hóa (%), Số nhóm đã có lời ngỏ riêng (X / Y nhóm), Khách mời thụ hưởng thông điệp riêng, Trạng thái bật/tắt toàn cục.
+    3. *Bộ Soạn Thảo & Khay Chèn Nhanh Placeholder Thông Minh*:
+       - Nhập Tiêu đề lời ngỏ (`title`), Phụ đề (`subtitle`) và Nội dung tâm sự (`content`).
+       - Khay 4 nút chèn nhanh Placeholder 1-chạm: `{guest_name}`, `{groom_name}`, `{bride_name}`, `{wedding_date}`.
+    4. *Thư Viện 5 Bộ Văn Mẫu Quiet Luxury Độc Quyền*:
+       - 1-click áp dụng văn mẫu phù hợp vào ô soạn thảo: Bạn bè & Cạ cứng (sôi nổi, ấm áp), Đồng nghiệp & Đối tác (lịch thiệp, trân trọng), Gia đình & Họ hàng (cung kính, nghĩa tình), Quan khách Nhà Trai, Quan khách Nhà Gái.
+    5. *Trình Xem Trước Trực Quan Trên Điện Thoại (Live Phone Mockup Simulator)*:
+       - Khung mô phỏng iPhone viền kim loại sang trọng, hiệu ứng giấy mỹ thuật kem ấm `#FAF8F5`, tem niêm phong sáp monogram M&H.
+       - Cập nhật thời gian thực (Live Typing): Khi gõ phím hoặc chuyển tab nhóm, điện thoại mô phỏng bên phải cập nhật lời ngỏ tức thì kèm thay thế tên khách mẫu sinh động.
+    6. *Chế Độ Diễn Tập Rehearsal Mode & Liên Kết Ngoài Trình Duyệt*:
+       - Nút mở tab mới xem thiệp với góc nhìn thực tế của nhóm đang chọn (`/thiep/{slug}?rehearsal=1&group={group_name}`).
+       - Đồng bộ mượt mà vào `invitations.custom_config['persona_messages']`.
+    7. *Tích Hợp Sâu Trong Hệ Thống*:
+       - Bổ sung nút công cụ "Lời Ngỏ Nhóm" trong danh sách quản lý thiệp cưới `invitations.blade.php`.
+       - Mở rộng hỗ trợ Placeholder `{groom_name}`, `{bride_name}`, `{wedding_date}` trong `InvitationEditorController`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/InvitationPersonaService.php`:
+    - Quản lý kho văn mẫu `getCuratedPresets`, trích xuất tổng hợp dữ liệu `getPersonaSummary`, cập nhật cấu hình `updatePersonaConfig`, đặt lại nhóm về mặc định `resetGroup`, khớp preset tự động `matchPresetByGroupName`.
+  - `app/Http/Controllers/Client/InvitationPersonaStudioController.php`:
+    - Quản trị Studio `index`, cập nhật `update`, đặt lại `resetGroup`, phân giải quyền sở hữu an toàn `resolveAuthorizedInvitation`.
+  - `resources/views/client/pages/account/persona/index.blade.php`:
+    - Giao diện Studio Quiet Luxury, BEM `mayhen_persona_*`, 4 KPI, Switch iOS, Tabs chuyển nhóm, khay placeholder, 5 presets văn mẫu, Live Phone Simulator thời gian thực.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Lời Ngỏ Nhóm".
+  - `app/Http/Controllers/Client/InvitationEditorController.php`:
+    - Mở rộng xử lý Rehearsal param `group` và bổ sung các placeholder `{groom_name}`, `{bride_name}`, `{wedding_date}` khi render thiệp công khai.
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.persona.*`.
+  - `tests/Feature/InvitationPersonaStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: chặn vãng lai, chặn 403, mở Studio, cập nhật lời ngỏ, reset nhóm, hiển thị thiệp thật theo token, và diễn tập Rehearsal (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `InvitationPersonaStudioSuiteTest`: **7 / 7 tests PASSED 100%** (26 assertions).
+  - Toàn bộ suite tính năng gần nhất: **64 / 64 tests PASSED 100%** (259 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

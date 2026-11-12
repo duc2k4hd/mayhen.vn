@@ -28,6 +28,7 @@ use App\Http\Controllers\Client\HouseholdRsvpController;
 use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
+use App\Http\Controllers\Client\InvitationPersonaStudioController;
 use App\Http\Controllers\Client\InvitationRenewalController;
 use App\Http\Controllers\Client\LastMinuteLogController;
 use App\Http\Controllers\Client\LiveCoordinationController;
@@ -445,6 +446,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/da-ngon-ngu', [MultilingualStudioController::class, 'index'])->name('multilingual.index');
     Route::post('/thiep/{id}/da-ngon-ngu', [MultilingualStudioController::class, 'update'])->middleware('throttle:30,1')->name('multilingual.update');
     Route::post('/thiep/{id}/da-ngon-ngu/dat-lai', [MultilingualStudioController::class, 'reset'])->middleware('throttle:30,1')->name('multilingual.reset');
+
+    // Studio Cá Nhân Hóa Lời Ngỏ Theo Nhóm Khách (Invitation Persona Studio - IDEA-A01 & Mục 2.3 DOCX)
+    Route::get('/thiep/{id}/loi-ngo-nhom', [InvitationPersonaStudioController::class, 'index'])->name('persona.index');
+    Route::post('/thiep/{id}/loi-ngo-nhom', [InvitationPersonaStudioController::class, 'update'])->middleware('throttle:30,1')->name('persona.update');
+    Route::post('/thiep/{id}/loi-ngo-nhom/dat-lai', [InvitationPersonaStudioController::class, 'resetGroup'])->middleware('throttle:30,1')->name('persona.reset_group');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');

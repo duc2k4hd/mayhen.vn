@@ -120,4 +120,3 @@ class SmartFocalPointController extends Controller
         return $invitation;
     }
 }
-

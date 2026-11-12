@@ -218,4 +218,3 @@ class MultilingualStudioController extends Controller
         return $invitation;
     }
 }
-
