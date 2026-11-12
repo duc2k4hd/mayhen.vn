@@ -573,6 +573,14 @@
                                 </svg>
                                 <span>Trợ Lý Nhắc Hẹn RSVP</span>
                             </a>
+
+                            {{-- Nút Bác Sĩ Chất Lượng & Diễn Tập (IDEA-E01, TASK-VAL-08/10, Section 23/24 PRD V3 & Đề Án 141) --}}
+                            <a href="{{ route('account.quality_doctor.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Rà soát sức khỏe 10 Section tiêu chuẩn và giả lập diễn tập mở thiệp trước khi phát hành">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                                <span>Bác Sĩ Chất Lượng Thiệp</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

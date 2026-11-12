@@ -36,6 +36,7 @@ use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
+use App\Http\Controllers\Client\QualityDoctorController;
 use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
 use App\Http\Controllers\Client\SitemapController;
@@ -250,6 +251,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::post('/thiep/{id}/nhac-hen/ghi-nhan/{guestId}', [GentleReminderController::class, 'record'])->name('reminder.record');
     Route::post('/thiep/{id}/nhac-hen/ghi-nhan-hang-loat', [GentleReminderController::class, 'batchRecord'])->name('reminder.batch_record');
     Route::get('/thiep/{id}/nhac-hen/xuat-csv', [GentleReminderController::class, 'exportCsv'])->name('reminder.export_csv');
+
+    // Bác Sĩ Chất Lượng Thiệp & Diễn Tập Nghiệm Thu (IDEA-E01, TASK-VAL-08/10, Section 23/24 PRD V3 & Đề Án 141)
+    Route::get('/thiep/{id}/bac-si-chat-luong', [QualityDoctorController::class, 'index'])->name('quality_doctor.index');
+    Route::get('/thiep/{id}/bac-si-chat-luong/quet-lai', [QualityDoctorController::class, 'rescan'])->name('quality_doctor.rescan');
+    Route::post('/thiep/{id}/bac-si-chat-luong/dien-tap', [QualityDoctorController::class, 'simulate'])->name('quality_doctor.simulate');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');

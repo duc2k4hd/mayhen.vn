@@ -11234,6 +11234,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 141. Đề Án 141: Phân Hệ Studio Trợ Lý Cảnh Báo Chất Lượng Thiệp & Bác Sĩ Nhất Quán Dữ Liệu Tự Động (Visual Quality Doctor & Pre-Publish Validation Rehearsal Cockpit — IDEA-E01, TASK-VAL-08, TASK-VAL-10 & Section 23/24 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ Studio Trợ Lý Cảnh Báo Chất Lượng Thiệp & Diễn Tập Nghiệm Thu (Quality Doctor Studio) theo IDEA-E01, TASK-VAL-08, TASK-VAL-10 và Section 23/24 PRD V3:
+  - Cung cấp **Bác Sĩ Chất Lượng 10 Section Tiêu Chuẩn (Quality Doctor Cockpit)**:
+    - Đồng hồ đo Điểm Sức Khỏe Thiệp (Health Score Circle / Gauge: 0 - 100 điểm) phân hạng tự động: Xuất Sắc (90-100), Tốt (75-89), Cần Cải Thiện (50-74), Rủi Ro Cao (<50).
+    - 4 Card thống kê trạng thái trực quan: 🔴 Lỗi Nghiêm Trọng, 🟡 Cảnh Báo Cần Lưu Ý, 💡 Gợi Ý Lễ Nghi Cưới Việt, 🟢 Đã Đạt Chuẩn Hoàn Hảo.
+    - Rà soát toàn diện 10 Section tiêu chuẩn của thiệp cưới và dữ liệu hôn lễ:
+      1. *Section 1 Mở Đầu & Âm Nhạc*: Kiểm tra link nhạc nền du dương, lời ngỏ và con dấu sáp.
+      2. *Section 2 Ảnh Bìa & Danh Tính*: Kiểm tra họ tên Chú Rể, Cô Dâu, độ phân giải ảnh bìa Hero Cover.
+      3. *Section 3 Câu Chuyện Tình Yêu & Trích Dẫn*: Kiểm tra lời chia sẻ hành trình, độ dài phù hợp và từ khóa nhạy cảm.
+      4. *Section 4 Tứ Thân Phụ Mẫu & Gia Tộc*: Kiểm tra danh tính Cha Mẹ hai bên và danh xưng thứ bậc con cái (Trưởng nam/Út nam/Trưởng nữ/Út nữ).
+      5. *Section 5 Ngày Cưới & Lịch Hẹn Đếm Ngược*: Kiểm tra ngày cưới chính thức và phát hiện rủi ro xung đột lịch (hạn chót RSVP sau ngày cưới).
+      6. *Section 6 Sảnh Tiệc & Bản Đồ Chỉ Đường*: Kiểm tra tên sảnh tiệc, địa chỉ chi tiết và liên kết Google Maps / GPS dẫn đường 1-chạm.
+      7. *Section 7 Lịch Trình & Quy Ước Trang Phục*: Kiểm tra timeline sự kiện và gợi ý bảng màu trang phục (Dresscode) tinh tế.
+      8. *Section 8 Album Ảnh Kỷ Niệm Cưới*: Kiểm tra 10 vị trí ảnh kỷ niệm, cảnh báo album rỗng hoặc quá ít ảnh.
+      9. *Section 9 Hộp Mừng Cưới 3D & VietQR*: Kiểm tra số tài khoản, tên ngân hàng và mã VietQR NAPAS tự động.
+      10. *Section 10 Sổ Ký Tên & Lời Cảm Ơn*: Kiểm tra sổ ký tên cảm ứng và lời tri ân khép lại thiệp trang trọng.
+      11. *Hệ Thống Khách Mời & Sắp Bàn*: Kiểm tra số lượng khách, tỷ lệ danh xưng kính cẩn và cảnh báo quá tải bàn tiệc.
+    - Cung cấp nút hành động 1-chạm ("Sửa Ngay") dẫn thẳng tới từng module/studio tương ứng.
+  - Cung cấp **Chế Độ Diễn Tập Nghiệm Thu Trải Nghiệm (VIP Rehearsal Simulation Box)**:
+    - Sinh liên kết diễn tập mô phỏng quan khách VIP (`?mode=rehearsal&preview_vip=true`).
+    - Cho phép tạo khách mời diễn tập mẫu `[Diễn Tập] (VIP Test)` có mã token riêng để cặp đôi tự mở phong bì, nghe nhạc nền, quét thử VietQR mừng cưới và gửi thử phản hồi RSVP.
+    - Nút Sao chép liên kết diễn tập và mở tab trải nghiệm thử 1-chạm.
+    - Nút Quét lại tức thì (Rescan AJAX) cập nhật lại điểm số ngay khi vừa sửa thông tin.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/QualityDoctorService.php`:
+    - Chẩn đoán 10 Section tiêu chuẩn, tính toán điểm sức khỏe 0-100, trừ điểm theo mức độ nghiêm trọng, phân loại 4 nhóm KPI, tạo khách mời mẫu diễn tập VIP.
+  - `app/Http/Controllers/Client/QualityDoctorController.php`:
+    - `index`: Màn hình Studio Bác Sĩ Chất Lượng Thiệp (`account.quality_doctor.index`).
+    - `rescan`: Quét lại chất lượng qua AJAX (`account.quality_doctor.rescan`).
+    - `simulate`: Khởi tạo khách mời mẫu và sinh link diễn tập cá nhân hóa (`account.quality_doctor.simulate`).
+  - `resources/views/client/pages/account/quality_doctor/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, bảng đồng hồ điểm số, 4 card KPI lọc linh hoạt, khối diễn tập mô phỏng, danh sách checklist chi tiết kèm nút hành động trực tiếp.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Bác Sĩ Chất Lượng Thiệp".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.quality_doctor.*`.
+  - `tests/Feature/QualityDoctorStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio với điểm số chi tiết, phát hiện thiếu dữ liệu nghiêm trọng, phát hiện xung đột ngày RSVP, quét lại qua AJAX, tạo khách mời VIP diễn tập và sinh URL nghiệm thu (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,148 / 1,148 tests PASSED 100%** (6,146 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 
