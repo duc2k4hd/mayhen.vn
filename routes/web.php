@@ -18,6 +18,7 @@ use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\EmergencyOfflinePackController;
 use App\Http\Controllers\Client\FamilyApprovalController;
+use App\Http\Controllers\Client\FamilyPortalController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
@@ -385,6 +386,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/lich-su-rsvp/khach/{guestId}', [RsvpChangeHistoryController::class, 'guestTimeline'])->name('rsvp_history.guest_timeline');
     Route::get('/thiep/{id}/lich-su-rsvp/xuat-csv', [RsvpChangeHistoryController::class, 'export'])->name('rsvp_history.export');
 
+    // Phân Quyền Gia Đình Hai Bên & Cổng Đồng Chủ Trì Quản Lý Khách Mời (Shared Family Guest List - IDEA-B06)
+    Route::get('/thiep/{id}/cong-gia-dinh', [FamilyPortalController::class, 'index'])->name('family_portal.index');
+    Route::post('/thiep/{id}/cong-gia-dinh', [FamilyPortalController::class, 'update'])->middleware('throttle:30,1')->name('family_portal.update');
+    Route::post('/thiep/{id}/cong-gia-dinh/lam-moi-token/{side}', [FamilyPortalController::class, 'regenerateToken'])->middleware('throttle:30,1')->name('family_portal.regenerate_token');
+
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');
     Route::post('/thiep/{id}/chia-se/compose', [ZaloShareController::class, 'compose'])->middleware('throttle:60,1')->name('share.compose');
@@ -521,6 +527,14 @@ Route::get('/khach-moi/{guestToken}/lich-ics', [CheckInController::class, 'downl
 // Rà Soát Lễ Nghi & Duyệt Thiệp Gia Đình Hai Nhà (Two-Family Review - TASK-VAL-19)
 Route::get('/gia-dinh-duyet/{token}', [FamilyApprovalController::class, 'review'])->name('family_approval.review');
 Route::post('/gia-dinh-duyet/{token}/quyet-dinh', [FamilyApprovalController::class, 'submitDecision'])->middleware('throttle:20,1')->name('family_approval.submit');
+
+// Cổng Phụ Huynh & Đồng Chủ Trì Quản Lý Khách Mời (Shared Family Co-Host Portal - IDEA-B06)
+Route::get('/cong-gia-dinh/{slug}/{side}', [FamilyPortalController::class, 'show'])->name('family_portal.show');
+Route::post('/cong-gia-dinh/{slug}/{side}/xac-thuc-pin', [FamilyPortalController::class, 'verifyPin'])->middleware('throttle:15,1')->name('family_portal.verify_pin');
+Route::get('/cong-gia-dinh/{slug}/{side}/dang-xuat', [FamilyPortalController::class, 'logout'])->name('family_portal.logout');
+Route::post('/cong-gia-dinh/{slug}/{side}/them-khach', [FamilyPortalController::class, 'storeGuest'])->middleware('throttle:30,1')->name('family_portal.store_guest');
+Route::post('/cong-gia-dinh/{slug}/{side}/cap-nhat-rsvp/{guestId}', [FamilyPortalController::class, 'updateRsvp'])->middleware('throttle:60,1')->name('family_portal.update_rsvp');
+Route::get('/cong-gia-dinh/{slug}/{side}/in', [FamilyPortalController::class, 'print'])->name('family_portal.print');
 
 // Marketing Informational Pages
 Route::get('/dich-vu', [PageController::class, 'services'])->name('services');

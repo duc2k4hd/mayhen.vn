@@ -11408,7 +11408,124 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
     - Đăng ký nhóm routes `account.companion_card.*`.
   - `tests/Feature/CompanionCardStudioSuiteTest.php`:
     - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, lưu cấu hình, tải SVG, dàn in A4 thẻ chung, dàn in A4 theo danh sách khách mời cá nhân hóa, và validation dữ liệu (100% PASSED).
+### 146. Đề Án 146: Phân Hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến 1-File HTML (Emergency Offline Rescue Pack & Offline Concierge PWA — IDEA-C07 & TASK-VAL-11)
+- **Mục tiêu**:
+  - Triển khai phân hệ Gói Dự Phòng Mất Mạng Ngày Cưới & Cổng Điểm Danh Ngoại Tuyến (Emergency Offline Rescue Pack & Offline Concierge PWA) theo IDEA-C07 trong Catalog 60 tính năng cao cấp và TASK-VAL-11 PRD V3:
+  - Giải quyết bài toán thực tế nhức nhối khi trung tâm tiệc cưới nằm ở tầng hầm B1/B2 hoặc sảnh tiệc đông người làm nghẽn sóng 4G/WiFi khiến lễ tân không tra cứu được bàn cho khách:
+    1. *Gói Đóng Gói 1-File HTML Độc Lập Chạy Ngoại Tuyến (Single-File Offline Bundle)*:
+       - Tích hợp toàn bộ CSS, HTML và JavaScript thuần cùng cơ sở dữ liệu khách mời nén gọn trong một tệp `.html` duy nhất (< 150KB, tải trong 0.2s).
+       - Chạy 100% không cần kết nối mạng trên mọi thiết bị di động (Chrome, Safari, iPad, Android).
+    2. *Công Cụ Tra Cứu & Đón Khách Siêu Tốc*:
+       - Tìm kiếm tức thì trong 0.1 mili-giây (Client-side Search) theo Tên hoặc Số điện thoại.
+       - Hiển thị rõ ràng: Tên khách, Xưng hô, Phân nhóm, Số bàn tiệc và Số suất mời.
+       - Nút Điểm Danh 1-Chạm: Tự động ghi nhận thời gian đón khách và lưu trữ bền vững vào `localStorage` của trình duyệt.
+    3. *Xuất Báo Cáo CSV Ngoại Tuyến*:
+       - Nút xuất file CSV chuẩn UTF-8 BOM trực tiếp từ bộ nhớ máy để ban tổ chức và gia đình đối soát sĩ số ngay sau tiệc.
+    4. *Cơ Chế Tự Động Tái Kết Nối & Đồng Bộ Lên Server (Auto Reconnect & Sync Queue)*:
+       - Khi thiết bị bắt lại sóng mạng hoặc dâu rể thao tác từ Studio, hệ thống tự động gửi hàng đợi check-in ngoại tuyến lên máy chủ qua endpoint:
+         `POST /api/diem-danh-tiec/{slug}/dong-bo-ngoai-tuyen` và `POST /thiep/{id}/goi-ngoai-tuyen/dong-bo`.
+       - Cập nhật chính xác `checked_in_at` và `checked_in_attendees`, ghi nhận AuditLogger `OFFLINE_CHECKINS_SYNCED`.
+    5. *Studio Quản Lý Gói Ngoại Tuyến (`account.offline_pack.*`)*:
+       - 4 Card KPI: Khách mời đã đóng gói, Bàn tiệc đã xếp, Dung lượng gói cực nhẹ, Thời điểm tạo snapshot.
+       - Hướng dẫn quy trình 3 bước xử lý sự cố cho đội lễ tân.
+       - Tải xuống tệp `.html` hoặc tệp `.json` snapshot dữ liệu.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/EmergencyOfflinePackService.php`:
+    - Tạo bản snapshot dữ liệu `getOfflineSnapshot`, sinh file HTML độc lập `generateStandaloneHtml` và đồng bộ check-in ngoại tuyến `syncOfflineCheckins`.
+  - `app/Http/Controllers/Client/EmergencyOfflinePackController.php`:
+    - Quản trị màn hình Studio, tải HTML/JSON và API đồng bộ từ Studio.
+  - `app/Http/Controllers/Client/CheckInController.php`:
+    - Bổ sung API `syncOffline` cho lễ tân tại sảnh tiệc cưới (có kiểm tra phân quyền PIN).
+  - `resources/views/client/pages/account/offline_pack/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, quy trình 3 bước, bảng xem trước khách mời.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Gói Mất Mạng" cho mỗi thiệp cưới.
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.offline_pack.*` và route API `checkin.sync_offline`.
+  - `tests/Feature/EmergencyOfflinePackSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở Studio, tải file HTML độc lập, tải file JSON snapshot, đồng bộ check-in từ Studio, đồng bộ check-in từ cổng lễ tân có PIN, và validation (100% PASSED).
+
 ### 147. Đề Án 147: Phân Hệ Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời (RSVP Change History, Versioning Timeline & Volatility Audit Ledger — IDEA-B05 & Section 24 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời theo `IDEA-B05` trong Catalog 60 tính năng cao cấp và Section 24 PRD V3:
+  - Khắc phục triệt để tình trạng bất an của cô dâu chú rể khi chốt số mâm cỗ với nhà hàng: không biết khách mời nào đã đổi ý từ Đi thành Không đi (hoặc ngược lại), không nắm được ai đã sửa lúc nào:
+    1. *Tự Động Ghi Nhận Lịch Sử Thay Đổi (Event-Driven RSVP Logging)*:
+       - Tự động lưu vết vĩnh viễn vào `guest_response_logs` khi quan khách tự đổi phản hồi trên thiệp hoặc khi cô dâu chú rể sửa tay trong Dashboard.
+       - Lưu đầy đủ: Trạng thái cũ/mới, số người lớn/trẻ em cũ/mới, thực đơn ăn kiêng, lời nhắn, nguồn thay đổi (`guest_online` hoặc `manual_host`), địa chỉ IP và dấu thời gian.
+    2. *4 Card KPI Biến Động Sĩ Số & Cân Đối Mâm Cỗ*:
+       - Tổng Lượt Thay Đổi phản hồi, Đổi Thành "Không Tham Dự" (cảnh báo dôi dư cỗ), Đổi Thành "Có Tham Dự" (cần thêm ghế), Biến Động Sĩ Số Ròng (Net Headcount Impact: ví dụ `+4 suất` hoặc `-3 suất`).
+    3. *Bộ Lọc Đa Tiêu Chí & Timeline Chi Tiết*:
+       - Tìm kiếm theo tên khách, số điện thoại, phân nhóm; lọc theo loại biến động; lọc theo nguồn cập nhật; lọc theo khoảng thời gian (24h, 7 ngày, 30 ngày).
+    4. *Dòng Thời Gian Tương Tác Khách Mời Cá Nhân Hóa (Customer Journey Modal)*:
+       - API JSON `/tai-khoan/thiep/{id}/lich-su-rsvp/khach/{guestId}` trích xuất toàn bộ hành trình tương tác của khách từ lúc tạo thông tin -> gửi thiệp -> mở xem lần đầu -> phản hồi RSVP -> các lần điều chỉnh -> điểm danh đón tiếp tại sảnh.
+    5. *Xuất Tệp CSV Sổ Kiểm Toán Chuẩn Xưởng Cưới*:
+       - Xuất CSV chuẩn UTF-8 BOM hiển thị tiếng Việt có dấu hoàn hảo trên Excel, tự động kháng công thức CSV Formula Injection (CWE-1236 Defense) qua `CsvSanitizerService`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/RsvpChangeHistoryService.php`:
+    - Tính toán tổng hợp KPI biến động `getVolatilitySummary`, lọc truy vấn `getFilteredLogs`, trích xuất hành trình khách `getGuestTimeline`, xuất file CSV an toàn `exportLogsToCsv`.
+  - `app/Http/Controllers/Client/RsvpChangeHistoryController.php`:
+    - `index`: Màn hình Studio Sổ Kiểm Toán Biến Động RSVP (`account.rsvp_history.index`).
+    - `guestTimeline`: API JSON dòng thời gian khách mời (`account.rsvp_history.guest_timeline`).
+    - `export`: Xuất file CSV nhật ký biến động (`account.rsvp_history.export`).
+  - `resources/views/client/pages/account/rsvp_history/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, bộ lọc đa năng, bảng diff trực quan và modal hành trình khách pure Vanilla JS.
+  - `app/Models/Wedding.php` & `app/Models/Guest.php`:
+    - Bổ sung quan hệ `guestResponseLogs()` và `responseLogs()`.
+  - `resources/views/client/pages/account/invitations.blade.php` & `resources/views/client/pages/guests.blade.php`:
+    - Bổ sung nút công cụ "Biến Động RSVP" và "Sổ Biến Động RSVP".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.rsvp_history.*`.
+  - `tests/Feature/RsvpChangeHistorySuiteTest.php`:
+    - 7/7 test cases chuyên sâu (100% PASSED).
+
+### 148. Đề Án 148: Phân Hệ Phân Quyền Gia Đình Hai Bên & Cổng Đồng Chủ Trì Quản Lý Khách Mời (Shared Family Guest List & Co-Host Delegated Access Portal — IDEA-B06 & Section 23/24 PRD V3)
+- **Mục tiêu**:
+  - Triển khai phân hệ Phân Quyền Gia Đình Hai Bên & Cổng Đồng Chủ Trì Quản Lý Khách Mời (Shared Family Co-Host Portal) theo `IDEA-B06` trong Catalog 60 tính năng cao cấp và Section 23/24 PRD V3:
+  - Giải quyết bài toán thực tế đặc thù của 90% đám cưới Việt Nam: Bố mẹ hai bên (Nhà Trai & Nhà Gái) có danh sách khách mời riêng của phụ huynh (bạn bè của bố, đồng nghiệp của mẹ, họ hàng), cần tự quản lý và thêm khách mà không thể/không biết đăng nhập tài khoản chính của con cái, đồng thời đảm bảo không can thiệp vào thiệp cưới hay xem trộm khách của bên thông gia:
+    1. *Cổng Phụ Huynh Riêng Biệt (Senior-Friendly Co-Host Portal)*:
+       - Cung cấp 2 cổng ủy quyền độc lập: Cổng Họ Nhà Trai (`/cong-gia-dinh/{slug}/nha-trai`) và Cổng Họ Nhà Gái (`/cong-gia-dinh/{slug}/nha-gai`).
+       - Thiết kế Senior-Friendly: Chữ to rõ ràng (16-18px), độ tương phản cao, nút bấm lớn > 48px, tối ưu hoàn hảo cho điện thoại và máy tính bảng.
+    2. *Xác Thực Bảo Mật Đa Tầng (Mã PIN & Link 1-Chạm)*:
+       - Hỗ trợ mã PIN 4-6 số dễ nhớ do cô dâu chú rể thiết lập, có bàn phím số bấm tay to rõ cho người lớn tuổi.
+       - Hỗ trợ đường link truy cập trực tiếp 1-chạm (`?token=...`) để phụ huynh bấm vào từ Zalo là mở thẳng sổ khách mà không cần gõ mã PIN.
+       - Nút tái tạo mã Token (thu hồi quyền truy cập khi cần).
+    3. *Cách Ly Dữ Liệu Hai Họ Tuyệt Đối (Strict Data Isolation & Privacy Defense)*:
+       - Phụ huynh Nhà Trai chỉ nhìn thấy và quản lý khách thuộc nhóm Nhà Trai (hoàn toàn không thấy khách Nhà Gái).
+       - Phụ huynh Nhà Gái chỉ nhìn thấy và quản lý khách thuộc nhóm Nhà Gái.
+       - Tuyệt đối CẤM phụ huynh truy cập vào Studio chỉnh sửa thiệp, đổi nhạc, đổi ảnh hay xem thông tin riêng tư của cặp đôi.
+    4. *Tính Năng Thực Tế Dành Cho Bố Mẹ*:
+       - Thêm khách mới 1-chạm: Tên, Xưng hô, SĐT, Số suất mời (tự động gán đúng nhóm và sinh token thiệp riêng).
+       - Cập nhật trạng thái RSVP nhanh khi người quen gọi điện thoại ("Báo Có Đi" / "Báo Bận").
+       - Nút 1-chạm sao chép mẫu tin nhắn Zalo kèm link thiệp riêng để phụ huynh gửi cho bạn bè mình.
+       - Trang in danh sách khổ A4 chữ to để phụ huynh mang theo đón khách ngày cưới.
+       - Lưu vết nhật ký `CO_HOST_GUEST_CREATED`, `CO_HOST_RSVP_UPDATED`.
+    5. *Studio Quản Lý Của Cặp Đôi (`account.family_portal.*`)*:
+       - Màn hình quản trị 2 cột trực quan: Cột Nhà Trai & Cột Nhà Gái.
+       - Thống kê 3 chỉ số nhanh của từng bên (Tổng khách, Đã nhận lời, Chưa phản hồi).
+       - Bật/tắt cổng, đổi mã PIN, đổi người quản lý đại diện, sao chép link gửi bố mẹ.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/FamilyCoHostPortalService.php`:
+    - Quản lý cấu hình `getConfig` / `updateConfig`, tái tạo token `regenerateToken`, xác thực `authenticate`, thống kê chỉ số `getSideStats`, lọc khách cách ly `getSideGuests`, thêm khách `createSideGuest`, cập nhật RSVP `updateSideGuestRsvp`.
+  - `app/Http/Controllers/Client/FamilyPortalController.php`:
+    - Phân hệ Studio: `index`, `update`, `regenerateToken`.
+    - Phân hệ Phụ huynh: `show`, `verifyPin`, `logout`, `storeGuest`, `updateRsvp`, `print`.
+  - `resources/views/client/pages/account/family_portal/index.blade.php`:
+    - Giao diện Studio Quản Trị Cặp Đôi 2 cột Quiet Luxury.
+  - `resources/views/client/pages/family_portal/pin.blade.php`:
+    - Màn hình nhập mã PIN bảo mật kèm bàn phím số bấm tay cho người lớn tuổi.
+  - `resources/views/client/pages/family_portal/show.blade.php`:
+    - Giao diện Cổng Phụ Huynh chính, chữ to rõ, thêm khách 1-chạm, danh sách khách, gửi Zalo và cập nhật RSVP.
+  - `resources/views/client/pages/family_portal/print.blade.php`:
+    - Trang in A4 chữ to cho phụ huynh mang theo tiếp khách ngày cưới.
+  - `resources/views/client/pages/account/invitations.blade.php` & `resources/views/client/pages/guests.blade.php`:
+    - Bổ sung nút công cụ "Cổng Gia Đình".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.family_portal.*` và nhóm routes công khai `family_portal.*`.
+  - `tests/Feature/FamilyPortalSuiteTest.php`:
+    - 8/8 test cases chuyên sâu: chặn truy cập 403, cập nhật cấu hình Studio, yêu cầu PIN khi chưa xác thực, truy cập 1-chạm bằng token, xác thực PIN thành công, cách ly dữ liệu hai họ 100%, phụ huynh thêm khách và đổi RSVP, tái tạo mã token (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ các Feature Tests các đề án gần nhất: **100% PASSED**.
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 - **Mục tiêu**:
   - Triển khai phân hệ Sổ Kiểm Toán Lịch Sử Biến Động RSVP & Dòng Thời Gian Khách Mời (RSVP Change History & Audit Ledger) theo `IDEA-B05` trong Catalog 60 tính năng cao cấp và Section 24 PRD V3:
   - Khắc phục triệt để tình trạng bất an của cô dâu chú rể khi chốt số mâm cỗ với nhà hàng: không biết khách mời nào đã đổi ý từ Đi thành Không đi (hoặc ngược lại), không nắm được ai đã sửa lúc nào, dẫn tới nguy cơ phạt tiền mâm dôi dư hoặc thiếu chỗ ngồi:

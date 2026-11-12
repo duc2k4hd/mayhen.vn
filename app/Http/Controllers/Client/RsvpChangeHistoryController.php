@@ -112,4 +112,3 @@ class RsvpChangeHistoryController extends Controller
         return $invitation;
     }
 }
-

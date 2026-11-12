@@ -101,6 +101,15 @@
                     </svg>
                     <span>Sổ Biến Động RSVP</span>
                 </a>
+                <a href="{{ route('account.family_portal.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Cổng Gia Đình</span>
+                </a>
                 <a href="{{ route('account.smart_groups.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
