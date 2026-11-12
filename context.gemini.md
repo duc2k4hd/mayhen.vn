@@ -12357,24 +12357,26 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - Khắc phục triệt để lỗ hổng F01: Tái tạo và khóa vĩnh viễn 10 regression test suites (Đề án 154 đến 166, 44 tests, 149 assertions) gồm Signature Archive, Multilingual Studio, Invitation Persona, Photo Wish Moderation, Live Wall Media, Smart Group Scope, Smart Focal Point, Publish Diff, RSVP Change History, Companion Card.
      - Toàn bộ 10 file test đã được đưa vào Git tracking và whitelist trong `.gitignore`, tuyệt đối không bao giờ bị xóa.
      - Ban hành tài liệu thẩm định `docs/qa/RELEASE_G0_EVIDENCE.md` và đồng bộ trạng thái `docs/MAY_HEN_RELEASE_CANDIDATE_TEST_GATES.csv`.
-  2. **Gate G1 — Core Domain, Privacy, Financial Integrity (21 / 21 PASS — 100%)**:
-     - *F02 Fix (RSVP Đa sự kiện)*: Bổ sung quan hệ `responses(): HasMany` và helper `responseForEvent` trên `Guest`; `GuestController::submitRsvp` scoped theo `event_id` độc lập, headcount không bị ghi đè khi khách dự cả Lễ và Tiệc. Test: `MultiEventRsvpIntegrityTest.php` (4/4 passed).
-     - *Vòng đời thiệp & Concurrency*: Chặn truy cập thiệp locked (403), unpublished (404), expired (410); bảo vệ draft chưa publish; rollback snapshot bảo toàn dữ liệu; chặn conflict autosave song song qua `saveDraftWithLock`. Test: `InvitationLifecycleAndConcurrencySecurityTest.php` (4/4 passed).
-     - *Toàn vẹn Tài chính & Thanh toán*:
+  2. **Gate G1 — Core Domain, Privacy, Financial Integrity (21 / 21 PASS — 100%, 94 Assertions, 13.08s)**:
+      - Ban hành báo cáo bằng chứng kiểm định thực tế độc lập: `docs/qa/RELEASE_G1_EVIDENCE.md`.
+     - *F02 Fix (RSVP Đa sự kiện - G1-001 đến G1-004)*: Bổ sung quan hệ `responses(): HasMany` và helper `responseForEvent` trên `Guest`; `GuestController::submitRsvp` scoped theo `event_id` độc lập, headcount không bị ghi đè khi khách dự cả Lễ và Tiệc. Test: `tests/Feature/MultiEventRsvpIntegrityTest.php` (4/4 passed, 19 assertions).
+     - *Vòng đời thiệp & Concurrency (G1-005 đến G1-008)*: Chặn truy cập thiệp locked (403), unpublished (404), expired (410); bảo vệ draft chưa publish; rollback snapshot bảo toàn dữ liệu; chặn conflict autosave song song qua `saveDraftWithLock`. Test: `tests/Feature/InvitationLifecycleAndConcurrencySecurityTest.php` (4/4 passed, 14 assertions).
+     - *Toàn vẹn Tài chính & Thanh toán (G1-009 đến G1-013)*:
        - Idempotent SePay webhook chống replay attack hoặc tái sử dụng mã giao dịch cho đơn hàng khác (HTTP 409).
        - Chặn kích hoạt đơn khi số tiền thanh toán không khớp (HTTP 400) hoặc giao dịch ngược hướng (`transferType: out`).
        - Nút phê duyệt hoàn tiền bắt buộc có mã chứng từ ngân hàng thực tế (`payout_reference`), tuân thủ kiểm soát kép (Two-man rule).
        - Tách biệt doanh thu đơn hàng nền tảng với tiền mừng cưới của cặp đôi trên DB.
-       - Coupon concurrency: bọc trong `DB::transaction` với `Coupon::lockForUpdate()` chống race-condition vượt quota. Test: `FinancialAndPaymentIntegrityTest.php` (5/5 passed).
-     - *Bảo mật Dữ liệu Riêng Tư (PII) & RBAC*:
+       - Coupon concurrency: bọc trong `DB::transaction` với `Coupon::lockForUpdate()` chống race-condition vượt quota. Test: `tests/Feature/FinancialAndPaymentIntegrityTest.php` (5/5 passed, 31 assertions).
+     - *Bảo mật Dữ liệu Riêng Tư (PII) & RBAC (G1-014 đến G1-021)*:
        - Role Staff bị chặn 403 khi xuất dữ liệu cá nhân DSAR (Luật 91/2025/QH15); chỉ Super Admin mới được xuất kèm theo lý do bắt buộc và audit log.
        - Phòng vệ IDOR Guest Management: `authorizeGuestManagement` chặn 404 mọi thao tác trái quyền giữa các Tenant.
-       - Bàn giao mã đối tác (Handover code): `lockForUpdate` bảo đảm 1 code chỉ claim 1 lần duy nhất, owner cũ mất quyền tức thì.
+       - Bàn giao mã đối tác (Handover code): `lockForUpdate` bảo đảm 1 code chỉ claim 1 lần duy nhất, mã bị xóa tức thì; request thứ 2 cùng mã bị từ chối.
        - Sao lưu & Phục hồi: `SystemBackupService` dump SQLite/MySQL toàn vẹn mọi bảng, kiểm tra SHA-256 và PRAGMA integrity_check đạt 100%.
-       - Support Ticket Reply: Quan hệ `SupportTicketReply::user()` hoạt động thông suốt, không 500.
-       - AI Usage Logging: Tự động che giấu PII (số điện thoại, STK ngân hàng, email, secret token) qua `sanitizePiiForPreview`.
+       - Support Ticket Reply: Quan hệ `SupportTicketReply::user()` BelongsTo hoạt động thông suốt, không 500.
+       - AI Usage Logging: Tự động che giấu PII (số điện thoại `090****4567`, STK ngân hàng, email `kha***@gmail.com`, secret token) qua `sanitizePiiForPreview`.
        - Cấu hình nền tảng/ngân hàng: Yêu cầu `admin.super` và ghi nhận `PlatformSettingHistory` với masked secret `••••••••`.
-       - Xuất CSV lịch sử biến động RSVP: Kèm UTF-8 BOM `\xEF\xBB\xBF` và chống Formula Injection qua `CsvSanitizerService`. Test: `PrivacyAndDomainIntegrityTest.php` (8/8 passed).
+       - Xuất CSV lịch sử biến động RSVP: Kèm UTF-8 BOM `\xEF\xBB\xBF` và chống Formula Injection qua `CsvSanitizerService`. Test: `tests/Feature/PrivacyAndDomainIntegrityTest.php` (8/8 passed, 30 assertions).
+     - Toàn bộ 4 file test đã được đưa vào Git tracking, whitelist trong `.gitignore` và định dạng chuẩn hóa bằng Laravel Pint.
   3. **Gate G2 — Wedding-Day E2E & Customer Lifecycle (22 / 22 PASS — 100%)**:
      - *Check-in Lễ tân ngày cưới*: Bọc trong `DB::transaction` với `lockForUpdate()`, 2 thiết bị scan cùng mã QR đồng thời chỉ xác nhận 1 lần, trả `already_checked_in: true`, bảo toàn mốc thời gian sớm nhất, không bao giờ bị toggle thành unchecked.
      - *Điều chỉnh sĩ số thực tế*: `CheckInController@adjustAttendees` cập nhật số suất đi kèm (+1/+2), ghi AuditLog và chặn số âm.
