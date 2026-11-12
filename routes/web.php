@@ -35,6 +35,7 @@ use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\LoveStoryController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
+use App\Http\Controllers\Client\MultilingualStudioController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PaperInvitationScanController;
@@ -439,6 +440,11 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/tieu-cu-anh', [SmartFocalPointController::class, 'index'])->name('focal_point.index');
     Route::post('/thiep/{id}/tieu-cu-anh', [SmartFocalPointController::class, 'update'])->middleware('throttle:60,1')->name('focal_point.update');
     Route::post('/thiep/{id}/tieu-cu-anh/dat-lai', [SmartFocalPointController::class, 'reset'])->middleware('throttle:60,1')->name('focal_point.reset');
+
+    // Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch Quốc Tế (Multilingual Studio - IDEA-A04 & Mục 2.10 DOCX)
+    Route::get('/thiep/{id}/da-ngon-ngu', [MultilingualStudioController::class, 'index'])->name('multilingual.index');
+    Route::post('/thiep/{id}/da-ngon-ngu', [MultilingualStudioController::class, 'update'])->middleware('throttle:30,1')->name('multilingual.update');
+    Route::post('/thiep/{id}/da-ngon-ngu/dat-lai', [MultilingualStudioController::class, 'reset'])->middleware('throttle:30,1')->name('multilingual.reset');
 
     // Bộ Công Cụ Chia Sẻ Zalo & Mạng Xã Hội Đa Kênh (Mục 2.5 Master Prompt, Mục 27 & 30 PRD V3)
     Route::get('/thiep/{id}/chia-se', [ZaloShareController::class, 'index'])->name('share.index');

@@ -11890,6 +11890,50 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Toàn bộ suite tính năng gần nhất: **49 / 49 tests PASSED 100%** (194 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
+---
+
+### 🕊️ ĐỀ ÁN 156: PHÂN HỆ STUDIO QUẢN TRỊ THIỆP CƯỚI ĐA NGÔN NGỮ & BẢN DỊCH TÙY BIẾN (MULTILINGUAL INVITATION STUDIO & CUSTOM TRANSLATION MANAGER — IDEA-A04 & MỤC 2.10 DOCX)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai phân hệ Studio cho phép cô dâu chú rể quản trị và cá nhân hóa trải nghiệm song ngữ / đa ngôn ngữ cho thiệp cưới theo `IDEA-A04` và Mục 2.10 DOCX:
+  - Đáp ứng nhu cầu ngày càng cao của các đám cưới quốc tế (dâu/rể nước ngoài hoặc có đối tác, bạn bè, đồng nghiệp quốc tế đến từ Anh, Mỹ, Hàn Quốc, Trung Quốc...):
+  - Các trụ cột chức năng chính:
+    1. *Quản Lý Bật/Tắt 4 Ngôn Ngữ Chuẩn Hóa*:
+       - Hỗ trợ 4 ngôn ngữ cốt lõi: Tiếng Việt 🇻🇳 (`vi` - mặc định bắt buộc), Tiếng Anh 🇬🇧 (`en`), Tiếng Hàn 🇰🇷 (`ko`), Tiếng Trung 🇨🇳 (`zh`).
+       - Switch bật/tắt từng ngôn ngữ và radio chọn ngôn ngữ mặc định (`default_locale`) khi khách mở thiệp.
+    2. *Biên Tập Bản Dịch Tùy Biến 6 Section Trọng Tâm*:
+       - Lọc theo từng ngôn ngữ (Tabs: Tiếng Anh, Tiếng Hàn, Tiếng Trung).
+       - Biên tập từng phần:
+         * Phần 2: Bìa Thiệp & Lời Chào (Hero Cover)
+         * Phần 3: Chuyện Tình & Lời Ngỏ (Love Story & Quote)
+         * Phần 4: Đôi Uyên Ương & Gia Đình (Family & Couple)
+         * Phần 6: Sự Kiện & Địa Điểm (Events & Maps)
+         * Phần 8: Quy Chuẩn Trang Phục (Dress Code)
+         * Phần 10: Mừng Cưới & Chúc Phúc (Gift & RSVP)
+       - Hiển thị văn bản gốc tiếng Việt, từ điển mẫu Quiet Luxury của Mây Hẹn (Placeholder mờ) và ô nhập đè bản dịch riêng.
+    3. *Hợp Đồng Tích Hợp Zero Migration*:
+       - Lưu cấu hình vào `invitations.custom_config['i18n']` (gồm `enabled_locales`, `default_locale`, `overrides[locale][key]`).
+       - Tương thích 100% với `MultilingualInvitationService::trans()` và widget đổi ngôn ngữ thời gian thực trên thiệp cưới.
+    4. *Tích Hợp Sâu Trong Hệ Thống*:
+       - Bổ sung nút công cụ "Đa Ngôn Ngữ" trong danh sách quản lý thiệp cưới `invitations.blade.php`.
+       - Nút xem trước thiệp thực tế theo từng ngôn ngữ đã chọn (`?lang=en`).
+- **Kiến trúc & Tệp Tin**:
+  - `app/Http/Controllers/Client/MultilingualStudioController.php`:
+    - Quản trị Studio `index`, cập nhật cấu hình và bản dịch `update`, đưa về mặc định `reset`.
+  - `resources/views/client/pages/account/multilingual/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, BEM `mayhen_lang_*`, 4 Card ngôn ngữ, Switch iOS toggle, Tabs chọn ngôn ngữ biên tập, Bảng đối chiếu bản dịch gốc vs bản dịch tùy biến.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Đa Ngôn Ngữ".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes Studio `account.multilingual.*`.
+  - `tests/Feature/MultilingualStudioSuiteTest.php`:
+    - Kiểm thử 5/5 test cases: chặn vãng lai, chặn 403, mở Studio, cập nhật ngôn ngữ & overrides thành công (xác nhận `MultilingualInvitationService::trans` ưu tiên đúng override), reset về từ điển mặc định (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `MultilingualStudioSuiteTest`: **5 / 5 tests PASSED 100%** (19 assertions).
+  - Toàn bộ suite tính năng gần nhất: **54 / 54 tests PASSED 100%** (213 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

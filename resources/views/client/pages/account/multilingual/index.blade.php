@@ -1,199 +1,655 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Cài Đặt Đa Ngôn Ngữ Thiệp Cưới';
+    $pageTitle = 'Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch — Mây Hẹn';
+    $coupleName = ($wedding->groom_name ?? 'Chú Rể') . ' & ' . ($wedding->bride_name ?? 'Cô Dâu');
 @endphp
 
-@section('account_breadcrumb', 'Đa Ngôn Ngữ Thiệp Cưới')
-
 @section('account_content')
-    <div style="margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9C7A4A; font-weight: 700; margin-bottom: 6px;">
-            <span>✦</span>
-            <span>Mục 2.10 DOCX & Section 24, 29 PRD V3</span>
+<div class="mayhen_lang_studio">
+    {{-- Thanh điều hướng --}}
+    <div class="mayhen_lang_topbar">
+        <a href="{{ route('account.invitations') }}" class="mayhen_lang_back_link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Về Danh Sách Thiệp Cưới</span>
+        </a>
+
+        <div class="mayhen_lang_top_actions">
+            <a href="{{ route('invitation.show', ['slug' => $invitation->slug, 'lang' => $defaultLocale]) }}" target="_blank" class="mayhen_lang_btn mayhen_lang_btn_gold">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <span>Xem Thiệp Bản Ngữ ({{ strtoupper($defaultLocale) }})</span>
+            </a>
         </div>
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: #1F1D1A; margin: 0 0 6px 0;">
-            Đa Ngôn Ngữ Thiệp Cưới (Multilingual Invitation Suite)
-        </h2>
-        <p style="font-size: 13px; color: #7A726A; margin: 0; line-height: 1.5; max-width: 800px;">
-            Chào đón bạn bè và đối tác quốc tế với thiệp cưới được dịch thuật chuẩn xác văn phong cưới Quiet Luxury (Tiếng Việt, Tiếng Anh, Tiếng Hàn, Tiếng Trung). Khách mời có thể chủ động chuyển đổi ngôn ngữ hoặc mở liên kết riêng biệt theo ngôn ngữ bản địa.
-        </p>
     </div>
 
-    @if(session('success'))
-        <div style="background: #E8F5E9; border: 1px solid #A5D6A7; color: #2E7D32; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 20px;">
-            ✓ {{ session('success') }}
+    {{-- Header giới thiệu --}}
+    <header class="mayhen_lang_header">
+        <div class="mayhen_lang_badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>Bilingual Multi-Language Switcher & Translator (IDEA-A04 & Mục 2.10 DOCX)</span>
         </div>
-    @endif
+        <h1 class="mayhen_lang_title">Thiệp Cưới Đa Ngôn Ngữ &amp; Bản Dịch Quốc Tế</h1>
+        <p class="mayhen_lang_subtitle">
+            Tự động hiển thị ngôn ngữ phù hợp với thiết bị của bạn bè quốc tế (Tiếng Anh, Tiếng Hàn, Tiếng Trung) hoặc cho phép khách chạm nhẹ để đổi ngôn ngữ tức thời. Cặp đôi có thể tùy biến văn phong bản dịch cho từng phần của thiệp.
+        </p>
+    </header>
 
-    <form action="{{ route('account.multilingual.update', $invitation->id) }}" method="POST">
+    <form id="formMultilingual" class="mayhen_lang_form">
         @csrf
+        {{-- Section 1: Kích Hoạt Ngôn Ngữ & Ngôn Ngữ Mặc Định --}}
+        <section class="mayhen_lang_locales_section">
+            <h2 class="mayhen_lang_section_title">1. Chọn Ngôn Ngữ Kích Hoạt Cho Thiệp Cưới</h2>
+            <p class="mayhen_lang_section_hint">Bật các ngôn ngữ bạn muốn khách mời có thể chuyển đổi khi xem thiệp:</p>
 
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            {{-- Khối 1: Chọn ngôn ngữ kích hoạt & Ngôn ngữ mặc định --}}
-            <div style="background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 14px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #1F1D1A; margin: 0 0 4px 0;">
-                    1. Ngôn Ngữ Được Hỗ Trợ Trên Thiệp Cưới
-                </h3>
-                <p style="font-size: 12px; color: #7A726A; margin: 0 0 16px 0;">
-                    Khi kích hoạt từ 2 ngôn ngữ trở lên, nút chuyển đổi ngôn ngữ (Floating Switcher) sẽ tự động hiển thị tinh tế trên thiệp cưới.
-                </p>
+            <div class="mayhen_lang_locales_grid">
+                @foreach($allLocales as $code => $loc)
+                    @php
+                        $isEnabled = in_array($code, $enabledLocales, true);
+                        $isDefault = ($code === $defaultLocale);
+                        $isVi = ($code === 'vi');
+                    @endphp
+                    <div class="mayhen_lang_locale_card {{ $isEnabled ? 'is_active' : '' }}" id="card-{{ $code }}">
+                        <div class="mayhen_lang_locale_top">
+                            <span class="mayhen_lang_flag">{{ $loc['flag'] }}</span>
+                            <div class="mayhen_lang_switch_wrap">
+                                <label class="mayhen_lang_switch" title="{{ $isVi ? 'Tiếng Việt là ngôn ngữ gốc bắt buộc' : 'Bật/Tắt ngôn ngữ này' }}">
+                                    <input type="checkbox" name="enabled_locales[]" value="{{ $code }}" {{ $isEnabled ? 'checked' : '' }} {{ $isVi ? 'disabled' : '' }} class="locale-toggle" data-code="{{ $code }}">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
-                    @foreach($supportedLocales as $code => $data)
-                        @php
-                            $isEnabled = in_array($code, $i18nConfig['enabled_locales'] ?? ['vi', 'en'], true);
-                            $isDefault = ($code === ($i18nConfig['default_locale'] ?? 'vi'));
-                            $isMandatoryVi = ($code === 'vi');
-                        @endphp
-                        <div style="border: 1.5px solid {{ $isEnabled ? '#C5A880' : '#EAE3D9' }}; border-radius: 12px; padding: 14px; background: {{ $isEnabled ? '#FAF7F2' : '#FFFFFF' }}; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;">
-                            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-size: 26px;">{{ $data['flag'] }}</span>
-                                    <div>
-                                        <strong style="font-size: 14px; color: #1F1D1A; display: block;">{{ $data['native_name'] }}</strong>
-                                        <span style="font-size: 12px; color: #7A726A;">{{ $data['name'] }} ({{ strtoupper($code) }})</span>
+                        <div class="mayhen_lang_locale_names">
+                            <div class="mayhen_lang_native_name">{{ $loc['native_name'] }}</div>
+                            <div class="mayhen_lang_sub_name">{{ $loc['name'] }} ({{ strtoupper($code) }})</div>
+                        </div>
+
+                        <div class="mayhen_lang_locale_default_row">
+                            <label class="mayhen_lang_radio_label">
+                                <input type="radio" name="default_locale" value="{{ $code }}" {{ $isDefault ? 'checked' : '' }} class="locale-default-radio">
+                                <span>Đặt làm mặc định</span>
+                            </label>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        {{-- Section 2: Tùy Biến Bản Dịch Từng Section --}}
+        <section class="mayhen_lang_editor_section">
+            <div class="mayhen_lang_editor_header">
+                <div>
+                    <h2 class="mayhen_lang_section_title">2. Tùy Biến Lời Văn Bản Dịch Cho Từng Khung Thiệp</h2>
+                    <p class="mayhen_lang_section_hint">Hệ thống đã có sẵn từ điển văn phong cưới Quiet Luxury chuẩn mực. Bạn có thể gõ đè bản dịch riêng nếu muốn câu từ cá nhân hóa hơn.</p>
+                </div>
+
+                {{-- Tabs chọn ngôn ngữ biên tập --}}
+                <div class="mayhen_lang_edit_tabs">
+                    <button type="button" class="mayhen_lang_edit_tab active" data-tab="en">🇬🇧 Tiếng Anh</button>
+                    <button type="button" class="mayhen_lang_edit_tab" data-tab="ko">🇰🇷 Tiếng Hàn</button>
+                    <button type="button" class="mayhen_lang_edit_tab" data-tab="zh">🇨🇳 Tiếng Trung</button>
+                </div>
+            </div>
+
+            {{-- Các Pane biên tập theo từng Locale --}}
+            @foreach(['en' => 'Tiếng Anh', 'ko' => 'Tiếng Hàn', 'zh' => 'Tiếng Trung'] as $locCode => $locTitle)
+                <div class="mayhen_lang_pane {{ $locCode === 'en' ? 'active' : '' }}" id="pane-{{ $locCode }}">
+                    <div class="mayhen_lang_pane_banner">
+                        <span>Đang tùy biến bản dịch: <strong>{{ $locTitle }} ({{ strtoupper($locCode) }})</strong></span>
+                        <a href="{{ route('invitation.show', ['slug' => $invitation->slug, 'lang' => $locCode]) }}" target="_blank" class="mayhen_lang_btn_text">
+                            Xem thử trên thiệp &rarr;
+                        </a>
+                    </div>
+
+                    @foreach($sectionGroups as $secKey => $sec)
+                        <div class="mayhen_lang_group_card">
+                            <div class="mayhen_lang_group_head">
+                                <span class="mayhen_lang_group_icon">✦</span>
+                                <h3>{{ $sec['title'] }}</h3>
+                            </div>
+
+                            <div class="mayhen_lang_fields_grid">
+                                @foreach($sec['keys'] as $key => $label)
+                                    @php
+                                        $defaultText = $dictionaries[$locCode][$key] ?? '';
+                                        $viText = $dictionaries['vi'][$key] ?? '';
+                                        $savedVal = $overrides[$locCode][$key] ?? '';
+                                    @endphp
+                                    <div class="mayhen_lang_field_row">
+                                        <div class="mayhen_lang_field_meta">
+                                            <div class="mayhen_lang_field_label">{{ $label }}</div>
+                                            <div class="mayhen_lang_field_vi">Gốc (VI): <em>"{{ $viText }}"</em></div>
+                                        </div>
+
+                                        <div class="mayhen_lang_field_input_wrap">
+                                            <input type="text" 
+                                                   name="overrides[{{ $locCode }}][{{ $key }}]" 
+                                                   value="{{ $savedVal }}" 
+                                                   placeholder="{{ $defaultText }}" 
+                                                   class="mayhen_lang_input">
+                                            <div class="mayhen_lang_field_hint">Mặc định: {{ $defaultText }}</div>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <label style="display: inline-flex; align-items: center; gap: 4px; cursor: {{ $isMandatoryVi ? 'not-allowed' : 'pointer' }}; font-size: 12px;">
-                                    <input 
-                                        type="checkbox" 
-                                        name="enabled_locales[]" 
-                                        value="{{ $code }}" 
-                                        {{ $isEnabled ? 'checked' : '' }}
-                                        {{ $isMandatoryVi ? 'disabled' : '' }}
-                                        style="accent-color: #9C7A4A; width: 16px; height: 16px;"
-                                    >
-                                    @if($isMandatoryVi)
-                                        <input type="hidden" name="enabled_locales[]" value="vi">
-                                        <span style="font-size: 10px; background: #EFE8DD; color: #6B5E4B; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Gốc</span>
-                                    @endif
-                                </label>
-                            </div>
-
-                            <div style="border-top: 1px dashed #EAE3D9; padding-top: 10px; display: flex; align-items: center; justify-content: space-between;">
-                                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: #4A433C;">
-                                    <input 
-                                        type="radio" 
-                                        name="default_locale" 
-                                        value="{{ $code }}" 
-                                        {{ $isDefault ? 'checked' : '' }}
-                                        style="accent-color: #9C7A4A;"
-                                    >
-                                    <span>Đặt làm mặc định</span>
-                                </label>
-
-                                @if($isDefault)
-                                    <span style="font-size: 11px; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Mặc Định</span>
-                                @endif
+                                @endforeach
                             </div>
                         </div>
                     @endforeach
                 </div>
-            </div>
+            @endforeach
 
-            {{-- Khối 2: Liên kết chia sẻ riêng biệt cho từng ngôn ngữ --}}
-            <div style="background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 14px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #1F1D1A; margin: 0 0 4px 0;">
-                    2. Liên Kết Thiệp Theo Ngôn Ngữ Dành Cho Khách Quốc Tế
-                </h3>
-                <p style="font-size: 12px; color: #7A726A; margin: 0 0 16px 0;">
-                    Gửi trực tiếp liên kết tương ứng cho sếp, đối tác hoặc bạn bè nước ngoài để họ mở thiệp bằng ngôn ngữ quen thuộc ngay từ giây đầu tiên.
-                </p>
+            {{-- Thanh nút hành động Lưu --}}
+            <div class="mayhen_lang_submit_bar">
+                <button type="button" id="btnResetAll" class="mayhen_lang_btn mayhen_lang_btn_text">
+                    Xóa bản dịch tùy biến &amp; về mặc định
+                </button>
 
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    @foreach($localizedLinks as $code => $link)
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 10px; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center; gap: 10px; min-width: 160px;">
-                                <span style="font-size: 20px;">{{ $link['flag'] }}</span>
-                                <div>
-                                    <strong style="font-size: 13px; color: #1F1D1A;">{{ $link['native_name'] }}</strong>
-                                    <span style="font-size: 11px; color: #7A726A;">({{ $link['name'] }})</span>
-                                </div>
-                            </div>
-
-                            <div style="flex: 1; min-width: 260px; font-family: monospace; font-size: 12px; color: #9C7A4A; background: #FFF; padding: 6px 10px; border-radius: 6px; border: 1px solid #EFE8DD; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                {{ $link['url'] }}
-                            </div>
-
-                            <button 
-                                type="button" 
-                                class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm"
-                                style="padding: 5px 12px;"
-                                onclick="navigator.clipboard.writeText('{{ $link['url'] }}'); this.innerText='Đã chép!'; setTimeout(() => this.innerText='Chép Link', 2000);"
-                            >
-                                Chép Link
-                            </button>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Khối 3: Tùy biến thông điệp song ngữ nếu muốn ghi đè --}}
-            <div style="background: #FFFFFF; border: 1px solid #EAE3D9; border-radius: 14px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-                    <div>
-                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #1F1D1A; margin: 0 0 4px 0;">
-                            3. Tùy Biến Thông Điệp Đa Ngôn Ngữ Riêng Biệt (Tùy chọn)
-                        </h3>
-                        <p style="font-size: 12px; color: #7A726A; margin: 0;">
-                            Hệ thống đã tự động dịch toàn bộ 10 section tiêu chuẩn. Bạn chỉ cần điền nếu muốn ghi đè thông điệp đặc biệt bằng Tiếng Anh.
-                        </p>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 14px;">
-                    <div>
-                        <label style="display: block; font-size: 13px; font-weight: 600; color: #4A433C; margin-bottom: 4px;">
-                            Lời Mời Trân Trọng (Tiếng Anh - Cordially Invites):
-                        </label>
-                        <input 
-                            type="text" 
-                            name="overrides[en][hero.cordially_invite]" 
-                            value="{{ $i18nConfig['overrides']['en']['hero.cordially_invite'] ?? '' }}"
-                            placeholder="Mặc định: Together with their families, cordially invite you to celebrate their wedding"
-                            style="width: 100%; padding: 10px 14px; border: 1px solid #D9D2C7; border-radius: 8px; font-size: 13px; box-sizing: border-box;"
-                        >
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-size: 13px; font-weight: 600; color: #4A433C; margin-bottom: 4px;">
-                            Châm Ngôn Tình Yêu / Quote (Tiếng Anh - Love Story Quote):
-                        </label>
-                        <textarea 
-                            name="overrides[en][story.quote_default]" 
-                            rows="2"
-                            placeholder="Mặc định: True love is looking in the same direction and walking hand in hand through the years."
-                            style="width: 100%; padding: 10px 14px; border: 1px solid #D9D2C7; border-radius: 8px; font-size: 13px; box-sizing: border-box; font-family: inherit;"
-                        >{{ $i18nConfig['overrides']['en']['story.quote_default'] ?? '' }}</textarea>
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-size: 13px; font-weight: 600; color: #4A433C; margin-bottom: 4px;">
-                            Lưu Ý Trang Phục (Tiếng Anh - Dresscode Note):
-                        </label>
-                        <input 
-                            type="text" 
-                            name="overrides[en][dresscode.note]" 
-                            value="{{ $i18nConfig['overrides']['en']['dresscode.note'] ?? '' }}"
-                            placeholder="Mặc định: Your elegant presence is our greatest honor"
-                            style="width: 100%; padding: 10px 14px; border: 1px solid #D9D2C7; border-radius: 8px; font-size: 13px; box-sizing: border-box;"
-                        >
-                    </div>
-                </div>
-            </div>
-
-            {{-- Thanh nút hành động --}}
-            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 10px;">
-                <a href="{{ route('account.invitations') }}" class="mayhen_account_btn mayhen_account_btn_outline">
-                    <span>Quay Lại</span>
-                </a>
-                <button type="submit" class="mayhen_account_btn mayhen_account_btn_gold" style="padding: 10px 24px;">
-                    <span>Lưu Cấu Hình Đa Ngôn Ngữ</span>
+                <button type="submit" id="btnSaveConfig" class="mayhen_lang_btn mayhen_lang_btn_primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Lưu Cài Đặt Đa Ngôn Ngữ</span>
                 </button>
             </div>
-        </div>
+        </section>
     </form>
-@endsection
+</div>
 
+<style>
+/* CSS Định dạng BEM mayhen_lang_* Chuẩn Mây Hẹn Quiet Luxury */
+.mayhen_lang_studio {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #2c2824;
+}
+
+.mayhen_lang_topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.mayhen_lang_back_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #8c7355;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mayhen_lang_back_link:hover { color: #5c4b37; }
+
+.mayhen_lang_header {
+    background: #ffffff;
+    border: 1px solid #efe8dd;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.mayhen_lang_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fbf9f5;
+    border: 1px solid #e2d7c5;
+    color: #9c7a4a;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.mayhen_lang_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f1d1a;
+    margin: 0 0 10px;
+}
+
+.mayhen_lang_subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #6a645a;
+    margin: 0;
+    max-width: 850px;
+}
+
+/* Section 1: Locales Grid */
+.mayhen_lang_locales_section {
+    background: #ffffff;
+    border: 1px solid #efe8dd;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+}
+
+.mayhen_lang_section_title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f1d1a;
+    margin: 0 0 6px;
+}
+
+.mayhen_lang_section_hint {
+    font-size: 14px;
+    color: #6a645a;
+    margin: 0 0 20px;
+}
+
+.mayhen_lang_locales_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.mayhen_lang_locale_card {
+    background: #faf8f5;
+    border: 1px solid #efe8dd;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.mayhen_lang_locale_card.is_active {
+    border-color: #b8935d;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(184, 147, 93, 0.12);
+}
+
+.mayhen_lang_locale_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mayhen_lang_flag { font-size: 28px; line-height: 1; }
+
+/* Switch iOS Style */
+.mayhen_lang_switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.mayhen_lang_switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #d8cebd;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: #b8935d; }
+input:checked + .slider:before { transform: translateX(20px); }
+input:disabled + .slider { opacity: 0.6; cursor: not-allowed; }
+
+.mayhen_lang_locale_names { margin-top: auto; }
+.mayhen_lang_native_name { font-size: 16px; font-weight: 700; color: #1f1d1a; }
+.mayhen_lang_sub_name { font-size: 12px; color: #8c8376; margin-top: 2px; }
+
+.mayhen_lang_locale_default_row {
+    border-top: 1px solid #efe8dd;
+    padding-top: 10px;
+}
+
+.mayhen_lang_radio_label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: #4a453e;
+    cursor: pointer;
+}
+
+/* Section 2: Editor */
+.mayhen_lang_editor_section {
+    background: #ffffff;
+    border: 1px solid #efe8dd;
+    border-radius: 16px;
+    padding: 28px;
+}
+
+.mayhen_lang_editor_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.mayhen_lang_edit_tabs {
+    display: flex;
+    gap: 6px;
+    background: #fbf9f5;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #efe8dd;
+}
+
+.mayhen_lang_edit_tab {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #6a645a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_lang_edit_tab.active {
+    background: #ffffff;
+    color: #1f1d1a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mayhen_lang_pane { display: none; }
+.mayhen_lang_pane.active { display: block; }
+
+.mayhen_lang_pane_banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #faf8f5;
+    border: 1px solid #e8decb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #4a453e;
+    margin-bottom: 20px;
+}
+
+.mayhen_lang_group_card {
+    background: #faf8f5;
+    border: 1px solid #efe8dd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.mayhen_lang_group_head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mayhen_lang_group_icon { color: #b8935d; font-size: 14px; }
+.mayhen_lang_group_head h3 { font-size: 15px; font-weight: 700; color: #1f1d1a; margin: 0; }
+
+.mayhen_lang_fields_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mayhen_lang_field_row {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 16px;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #efe8dd;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.mayhen_lang_field_label { font-size: 13.5px; font-weight: 600; color: #1f1d1a; margin-bottom: 3px; }
+.mayhen_lang_field_vi { font-size: 12px; color: #8c8376; }
+
+.mayhen_lang_field_input_wrap { position: relative; }
+
+.mayhen_lang_input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d8cebd;
+    border-radius: 6px;
+    font-size: 13.5px;
+    background: #ffffff;
+    color: #2c2824;
+    box-sizing: border-box;
+}
+
+.mayhen_lang_input:focus {
+    outline: none;
+    border-color: #b8935d;
+    box-shadow: 0 0 0 3px rgba(184, 147, 93, 0.15);
+}
+
+.mayhen_lang_field_hint { font-size: 11px; color: #9c9488; margin-top: 4px; }
+
+/* Submit Bar */
+.mayhen_lang_submit_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #efe8dd;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.mayhen_lang_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.mayhen_lang_btn_gold { background: #b8935d; color: #ffffff; box-shadow: 0 4px 12px rgba(184, 147, 93, 0.25); }
+.mayhen_lang_btn_gold:hover { background: #a37f4a; color: #ffffff; }
+
+.mayhen_lang_btn_primary { background: #1f1d1a; color: #ffffff; }
+.mayhen_lang_btn_primary:hover { background: #332f2b; }
+
+.mayhen_lang_btn_text { background: none; border: none; color: #8c7355; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
+.mayhen_lang_btn_text:hover { color: #5c4b37; text-decoration: underline; }
+
+@media (max-width: 900px) {
+    .mayhen_lang_locales_grid { grid-template-columns: repeat(2, 1fr); }
+    .mayhen_lang_field_row { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media (max-width: 600px) {
+    .mayhen_lang_locales_grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Chuyển đổi Tab biên tập
+    const tabs = document.querySelectorAll('.mayhen_lang_edit_tab');
+    const panes = document.querySelectorAll('.mayhen_lang_pane');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            tabs.forEach(t => t.classList.remove('active'));
+            panes.forEach(p => p.classList.remove('active'));
+
+            this.classList.add('active');
+            const targetPane = document.getElementById('pane-' + this.getAttribute('data-tab'));
+            if (targetPane) targetPane.classList.add('active');
+        });
+    });
+
+    // 2. Cập nhật thẻ khi Toggle ngôn ngữ
+    const toggles = document.querySelectorAll('.locale-toggle');
+    toggles.forEach(chk => {
+        chk.addEventListener('change', function () {
+            const code = this.getAttribute('data-code');
+            const card = document.getElementById('card-' + code);
+            if (card) {
+                if (this.checked) {
+                    card.classList.add('is_active');
+                } else {
+                    card.classList.remove('is_active');
+                    // Nếu đang chọn ngôn ngữ này làm default mà bỏ bật, chuyển default về vi
+                    const defRadio = card.querySelector('.locale-default-radio');
+                    if (defRadio && defRadio.checked) {
+                        const viRadio = document.querySelector('.locale-default-radio[value="vi"]');
+                        if (viRadio) viRadio.checked = true;
+                    }
+                }
+            }
+        });
+    });
+
+    // 3. Xử lý lưu form cấu hình & bản dịch qua AJAX
+    const form = document.getElementById('formMultilingual');
+    if (form) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btnSave = document.getElementById('btnSaveConfig');
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<span>Đang lưu bản dịch...</span>';
+
+            const formData = new FormData(form);
+            const payload = {
+                enabled_locales: [],
+                default_locale: 'vi',
+                overrides: {}
+            };
+
+            // Gom enabled_locales
+            document.querySelectorAll('.locale-toggle:checked').forEach(c => {
+                payload.enabled_locales.push(c.value);
+            });
+            // Luôn có vi
+            if (!payload.enabled_locales.includes('vi')) {
+                payload.enabled_locales.push('vi');
+            }
+
+            // Gom default_locale
+            const checkedDefault = document.querySelector('.locale-default-radio:checked');
+            if (checkedDefault) {
+                payload.default_locale = checkedDefault.value;
+            }
+
+            // Gom overrides
+            document.querySelectorAll('.mayhen_lang_input').forEach(inp => {
+                const name = inp.getAttribute('name'); // overrides[en][hero.wedding_of]
+                const val = inp.value.trim();
+                if (val !== '') {
+                    const match = name.match(/overrides\[([a-z]+)\]\[([^\]]+)\]/);
+                    if (match) {
+                        const loc = match[1];
+                        const key = match[2];
+                        if (!payload.overrides[loc]) payload.overrides[loc] = {};
+                        payload.overrides[loc][key] = val;
+                    }
+                }
+            });
+
+            try {
+                const res = await fetch("{{ route('account.multilingual.update', $invitation->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btnSave.innerHTML = '<span>✓ Đã lưu thành công</span>';
+                    btnSave.style.background = '#2e7d32';
+                    setTimeout(() => {
+                        btnSave.disabled = false;
+                        btnSave.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg><span>Lưu Cài Đặt Đa Ngôn Ngữ</span>`;
+                        btnSave.style.background = '#1f1d1a';
+                    }, 2500);
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể lưu'));
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = '<span>Lưu Cài Đặt Đa Ngôn Ngữ</span>';
+                }
+            } catch (err) {
+                alert('Lỗi kết nối máy chủ');
+                btnSave.disabled = false;
+                btnSave.innerHTML = '<span>Lưu Cài Đặt Đa Ngôn Ngữ</span>';
+            }
+        });
+    }
+
+    // 4. Xóa bản dịch tùy biến & về mặc định
+    const btnResetAll = document.getElementById('btnResetAll');
+    if (btnResetAll) {
+        btnResetAll.addEventListener('click', async function () {
+            if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ bản dịch tùy biến và sử dụng từ điển chuẩn của Mây Hẹn?')) {
+                return;
+            }
+            try {
+                const res = await fetch("{{ route('account.multilingual.reset', $invitation->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.querySelectorAll('.mayhen_lang_input').forEach(i => i.value = '');
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('Lỗi kết nối máy chủ');
+            }
+        });
+    }
+});
+</script>
+@endsection
