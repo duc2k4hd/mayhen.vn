@@ -1,0 +1,2722 @@
+
+MASTER PROMPT – DỰ ÁN MÂY HẸN (MAYHEN.VN)
+Mục tiêu: Xây dựng Mây Hẹn thành nền tảng tạo thiệp cưới online cao cấp tại Việt Nam, với giao diện tinh tế, mẫu thiệp đẹp, animation mượt, trải nghiệm dễ sử dụng và hệ thống quản lý đầy đủ cho khách hàng, quản trị viên và đối tác studio.
+Mình đã đối chiếu lại các đối thủ quan trọng. Dưới đây là những nền tảng AI cần tiếp tục nghiên cứu khi lập kế hoạch.
+1. Tổng hợp website đối thủ
+Website
+Chức năng đáng học hỏi
+Điểm Mây Hẹn cần cạnh tranh
+thieponline.app
+Dùng thử không cần đăng ký, đổi mẫu, cá nhân hóa khách, QR, xuất ảnh/video, thanh toán một lần
+Chất lượng thiết kế, animation, trải nghiệm editor
+miwedi.vn
+Trình chỉnh sửa trực tiếp, kéo thả, AI xóa nền, RSVP, Excel, nhiều hiệu ứng
+Editor dễ dùng hơn trên mobile, bố cục thiệp tinh tế hơn
+vesey.vn
+Nhiều mẫu, giá gói rõ ràng, nhân bản thiệp nhà trai/nhà gái
+Thư viện mẫu chất lượng, cấu hình thiệp linh hoạt
+thiep360.com
+Kho mẫu, trang danh mục, bài SEO, chia sẻ thiệp, RSVP
+Trang giới thiệu mẫu, tìm kiếm và trải nghiệm xem thử
+thieponline.org
+Nhiều gói, giới hạn tài nguyên, RSVP nâng cao, captcha, nhạc và hình ảnh
+Quản lý gói dịch vụ, thanh toán, kiểm soát tài nguyên
+chungdoi.com
+Thiệp đa ngôn ngữ, đổi mẫu, tạo thử trước khi mua
+Định vị thương hiệu và mở rộng khách quốc tế
+ngaychungdoi.com
+AI đọc thiệp giấy, RSVP, album khách mời tải ảnh, sổ lời chúc
+Tự động hóa tạo thiệp và quản lý kỷ niệm
+cinelove.me
+Thiệp trọn gói, nền tảng đối tác studio, quản lý khách, báo cáo và branding
+Hệ thống đại lý, chiết khấu, quản lý nhiều khách hàng
+canva.com
+Trình thiết kế trực quan, mẫu đa dạng
+Trải nghiệm chỉnh sửa đơn giản mà vẫn có thẩm mỹ cao
+Các chức năng trên được xác nhận từ thông tin công khai của từng nền tảng, chưa phải kết quả kiểm thử đầy đủ bên trong tài khoản người dùng. 
+Điểm quan trọng nhất: Mây Hẹn không thể nổi bật chỉ nhờ có nhiều chức năng. Thiệp phải thực sự đẹp, chuyển động có chủ đích, hiển thị tốt trên điện thoại và tạo được cảm xúc ngay khi khách mở link.
+Về kỹ thuật, có thể định hướng theo Laravel 13 nếu máy chủ đáp ứng PHP 8.3 trở lên; Laravel 13 được phát hành ngày 17/03/2026. Nếu dự án đã có phiên bản khác, coding agent phải kiểm tra trước và tuyệt đối không tự nâng cấp gây ảnh hưởng hệ thống. 
+Dưới đây là prompt tổng thể để đưa trực tiếp cho AI coding agent. Mình thiết kế nó theo nguyên tắc phân tích toàn bộ trước, khóa kiến trúc và database, triển khai từng phần nhỏ, kiểm thử rồi mới làm tiếp.
+2. Master prompt hoàn chỉnh cho AI Coding Agent
+MASTER PROMPT — MAYHEN.VN
+KẾ HOẠCH TỔNG THỂ XÂY DỰNG NỀN TẢNG THIỆP CƯỚI ONLINE MÂY HẸN
+Phiên bản đặc tả: 1.0 — Laravel, Blade, CSS thuần, JavaScript thuần
+
+PHẦN 0. VAI TRÒ, MỤC TIÊU VÀ NGUYÊN TẮC LÀM VIỆC
+Bạn là AI Software Architect, Senior Laravel Engineer, UI/UX Designer, Motion Designer, Database Architect, SEO Specialist, Security Engineer và Technical Project Manager.
+Bạn chịu trách nhiệm phân tích, thiết kế kiến trúc và lập kế hoạch triển khai dự án MÂY HẸN — MAYHEN.VN, nền tảng tạo thiệp cưới online dành cho thị trường Việt Nam.
+Đây là dự án kinh doanh thực tế, định hướng phát triển lâu dài, không phải website demo, bài tập hay giao diện dựng để trình diễn.
+0.1. Thông tin thương hiệu
+Tên thương hiệu: Mây Hẹn
+Domain chính thức: https://mayhen.vn
+Ngành nghề chính: Thiệp cưới online, thiệp cưới điện tử, dịch vụ thiệp cưới cá nhân hóa.
+Sản phẩm chính: Website giúp khách hàng tự tạo, chỉnh sửa, xuất bản và quản lý thiệp cưới online.
+Khách hàng chính: Cô dâu, chú rể, các cặp đôi chuẩn bị kết hôn.
+Khách hàng B2B: Studio ảnh cưới, cơ sở in thiệp, wedding planner, đơn vị cung cấp dịch vụ cưới.
+Thị trường ban đầu: Việt Nam.
+Khả năng mở rộng: Thiệp báo hỷ, thiệp đính hôn, thiệp kỷ niệm, thiệp sinh nhật, thiệp sự kiện.
+Mây Hẹn phải có thương hiệu, kiến trúc, nội dung và tài sản hoàn toàn độc lập.
+Không đưa Nobi Fashion hoặc bất kỳ thương hiệu không liên quan nào vào sản phẩm.
+0.2. Tầm nhìn sản phẩm
+Xây dựng một nền tảng mà người dùng có thể:
+Truy cập website và lập tức cảm nhận được sự tinh tế, chuyên nghiệp.
+Xem các mẫu thiệp cưới thực tế trên điện thoại.
+Chọn một mẫu đẹp mà không cần biết thiết kế.
+Điền thông tin cưới, tải ảnh và chỉnh sửa trực quan.
+Xem bản thiệp chuyển động với chất lượng như sản phẩm cao cấp.
+Gửi thiệp tới bạn bè, người thân, đồng nghiệp qua đường link.
+Cá nhân hóa từng lời mời.
+Theo dõi khách đã nhận lời mời và xác nhận tham dự.
+Quản lý các sự kiện, địa điểm, thời gian và khách mời.
+Thanh toán và tiếp tục sử dụng thiệp theo gói dịch vụ đã mua.
+Lưu giữ ảnh, lời chúc và kỷ niệm sau đám cưới.
+Sản phẩm cần giải quyết đồng thời hai nhu cầu:
+Nhu cầu cảm xúc: Thiệp phải đẹp, lãng mạn, có thẩm mỹ.
+Nhu cầu thực tế: Tạo nhanh, gửi dễ, quản lý thuận tiện và hoạt động ổn định.
+0.3. Tiêu chuẩn chất lượng
+Không xây dựng một website có thật nhiều tính năng nhưng giao diện xấu.
+Không xây dựng một website có giao diện đẹp nhưng không thể kinh doanh.
+Không xây dựng một trình tạo thiệp quá phức tạp khiến khách hàng bỏ cuộc.
+Không xây dựng hàng trăm mẫu thiệp chỉ thay màu, đổi tên rồi coi đó là các thiết kế khác nhau.
+Mục tiêu là chất lượng thực tế phải đủ tốt để cạnh tranh với những nền tảng đã hoạt động lâu năm.
+Yêu cầu thiết kế tốt hơn đối thủ phải được chuyển thành những tiêu chí có thể đánh giá: mức độ yêu thích của khách, tốc độ hoàn thành, trải nghiệm trên mobile, accessibility, hiệu suất và tỷ lệ chuyển đổi.
+Không được tự tuyên bố sản phẩm vượt trội nếu chưa kiểm chứng.
+0.4. Quy tắc triển khai bắt buộc
+Luôn phân tích trước khi viết code.
+Không viết hàng loạt chức năng khi kiến trúc chưa được thống nhất.
+Không tự ý thay đổi công nghệ.
+Không tự ý cài thư viện.
+Không tự ý xóa file.
+Không tự ý xóa bảng hoặc cột database.
+Không tạo bảng hoặc cột mới chỉ để sửa một vấn đề nhỏ mà chưa đánh giá cấu trúc hiện có.
+Không đưa code demo, dữ liệu giả hoặc hình ảnh không có quyền sử dụng vào production.
+Không tạo file thừa.
+Không trộn HTML, CSS và JavaScript thành một file lớn.
+Không đưa toàn bộ logic vào Controller.
+Không tạo những class, service, helper hoặc abstraction khi không có nhu cầu thực tế.
+Không sao chép nguyên bản giao diện, hình ảnh, mã nguồn hoặc animation độc quyền của đối thủ.
+Không thay đổi những file nằm ngoài phạm vi công việc được giao.
+Mọi thay đổi phải có mục đích, kết quả và phương pháp kiểm thử rõ ràng.
+Bắt buộc thực hiện từng giai đoạn nhỏ. Sau khi hoàn thành một giai đoạn, báo cáo kết quả và danh sách file thay đổi trước khi bắt đầu giai đoạn tiếp theo.
+Ở lần thực thi đầu tiên của prompt này, nhiệm vụ là nghiên cứu, phân tích, xây dựng kiến trúc, lập kế hoạch và tạo bộ kỹ năng dự án. Không tự triển khai toàn bộ hệ thống ngay lập tức.
+
+PHẦN 1. NGHIÊN CỨU THỊ TRƯỜNG VÀ ĐỐI THỦ
+1.1. Danh sách website bắt buộc nghiên cứu
+Nghiên cứu tối thiểu các website sau:
+https://thieponline.app/
+https://miwedi.vn/
+https://vesey.vn/
+https://thiep360.com/
+https://thieponline.org/
+https://chungdoi.com/
+https://ngaychungdoi.com/
+https://cinelove.me/
+https://www.canva.com/
+https://www.adobe.com/express/
+Nếu phát hiện nền tảng cạnh tranh trực tiếp khác tại Việt Nam, có thể bổ sung vào báo cáo sau khi xác minh.
+Không mặc định thông tin giá và tính năng trong prompt là thông tin mới nhất. Phải kiểm tra lại các trang công khai ở thời điểm nghiên cứu.
+Nếu không truy cập được website, phải ghi rõ "chưa xác minh", không được tưởng tượng giao diện hoặc tính năng.
+1.2. Nghiên cứu chi tiết từng đối thủ
+Với mỗi website, cần phân tích:
+A. Thương hiệu
+Tên thương hiệu.
+Domain.
+Định vị.
+Khách hàng mục tiêu.
+Phong cách hình ảnh.
+Màu sắc.
+Typography.
+Thông điệp chính.
+Điểm tạo cảm xúc.
+Điểm khác biệt dễ nhận biết.
+B. Cấu trúc website
+Thống kê các trang công khai có thể truy cập:
+Trang chủ.
+Trang danh sách mẫu.
+Trang chi tiết mẫu.
+Trang xem thử thiệp.
+Trang dịch vụ.
+Trang bảng giá.
+Trang hướng dẫn.
+Trang Blog.
+Trang giới thiệu.
+Trang liên hệ.
+Trang tài khoản.
+Trang thanh toán.
+Trang quản lý thiệp.
+Trang khách mời.
+Trang đối tác.
+Các trang khác được phát hiện.
+Với mỗi trang, mô tả các section, vị trí CTA, bố cục mobile và chức năng có thể quan sát.
+C. Thiết kế giao diện
+Phân tích:
+Header.
+Footer.
+Hero.
+Hình ảnh chính.
+Menu desktop.
+Menu mobile.
+Cách trình bày mẫu thiệp.
+Cách lọc mẫu.
+Cách hiển thị giá.
+Card sản phẩm.
+Modal.
+Form.
+Trang thanh toán.
+Trình tạo thiệp.
+Dashboard.
+Loading.
+Empty state.
+Error state.
+Animation.
+Responsive.
+Đánh giá tính dễ đọc, khoảng trắng, cách điều hướng, khả năng sử dụng trên điện thoại và tính nhất quán của thiết kế.
+D. Chức năng
+Kiểm tra các chức năng:
+Tạo thiệp miễn phí.
+Chỉnh sửa thông tin.
+Chỉnh sửa trực tiếp.
+Đổi mẫu.
+Lưu nháp.
+Tự động lưu.
+Upload ảnh.
+Album ảnh.
+Nhạc nền.
+Hiệu ứng phong thư.
+Hiệu ứng trang giấy.
+Hiệu ứng hoa rơi.
+Video.
+Bản đồ.
+Đồng hồ đếm ngược.
+QR mừng cưới.
+Lời chúc.
+RSVP.
+Cá nhân hóa khách mời.
+Import Excel.
+Export Excel.
+Theo dõi tình trạng khách.
+Thiệp nhà trai/nhà gái.
+Song ngữ.
+Xuất ảnh/video.
+AI.
+Quản lý studio.
+Thời hạn lưu thiệp.
+Quyền riêng tư.
+Mỗi chức năng phải ghi một trong bốn trạng thái:
+Đã xác minh có.
+Đã xác minh không có.
+Chưa xác minh.
+Có nhưng chỉ giới hạn trong gói dịch vụ cụ thể.
+Không đánh dấu "không có" chỉ vì không tìm thấy trong phần giới thiệu.
+E. Trải nghiệm mua hàng
+Phân tích hành trình:
+Khách truy cập → chọn mẫu → tạo thử → chỉnh sửa → xem trước → đăng ký → thanh toán → xuất bản → gửi khách mời.
+Tìm những bước không cần thiết, khả năng gây nhầm lẫn hoặc cần nhập dữ liệu quá nhiều.
+F. Điểm mạnh và hạn chế
+Phải phân biệt:
+Vấn đề quan sát được.
+Vấn đề suy luận cần kiểm chứng.
+Cơ hội cải tiến của Mây Hẹn.
+Không bịa ra điểm yếu của đối thủ.
+1.3. Báo cáo benchmark bắt buộc
+Tạo tài liệu:
+docs/research/competitor-analysis.md
+Báo cáo cần có:
+Danh sách đối thủ.
+Thông tin được xác minh và ngày kiểm tra.
+Ma trận so sánh chức năng.
+So sánh giá.
+So sánh trang và bố cục.
+So sánh khả năng tự thiết kế.
+So sánh animation.
+So sánh trải nghiệm mobile.
+So sánh quy trình thanh toán.
+So sánh tính năng quản lý khách mời.
+Những chức năng đã phổ biến.
+Những cơ hội có thể tạo khác biệt.
+Các giả thuyết cần thử nghiệm với người dùng.
+Danh sách nguồn tham khảo.
+Khi có khả năng kiểm thử trình duyệt, nên lưu ảnh chụp phục vụ nghiên cứu nội bộ, không sao chép làm giao diện thành phẩm.
+
+PHẦN 2. CHIẾN LƯỢC SẢN PHẨM MÂY HẸN
+2.1. Những tính năng tiêu chuẩn bắt buộc
+Mây Hẹn phải có nền tảng đủ hoàn chỉnh trước khi đầu tư vào AI nâng cao.
+Nhóm tạo thiệp:
+Thư viện mẫu.
+Xem mẫu thực tế.
+Chọn mẫu.
+Tạo thiệp.
+Chỉnh sửa thông tin.
+Upload ảnh.
+Thay ảnh.
+Chỉnh bố cục theo tùy chọn.
+Đổi màu trong palette được thiết kế sẵn.
+Chọn font theo bộ phối font.
+Chọn nhạc nền.
+Chọn hiệu ứng.
+Thêm bản đồ.
+Thêm thông tin gia đình.
+Thêm các sự kiện cưới.
+Lưu bản nháp.
+Xem trước.
+Xuất bản.
+Chỉnh sửa thiệp đã xuất bản.
+Nhóm khách mời:
+Danh sách khách.
+Thêm khách riêng lẻ.
+Import.
+Export.
+Phân loại khách.
+Link cá nhân hóa.
+RSVP.
+Lời chúc.
+Theo dõi phản hồi.
+Tổng hợp số khách tham dự.
+Nhóm kinh doanh:
+Đăng ký.
+Đăng nhập.
+Tài khoản.
+Gói dịch vụ.
+Thanh toán.
+Lịch sử đơn.
+Kích hoạt quyền sử dụng.
+Hỗ trợ khách hàng.
+2.2. Chức năng tạo khác biệt: Trình tạo thiệp siêu dễ dùng
+Thiết kế hai chế độ chỉnh sửa.
+Chế độ nhanh
+Dành cho đa số người dùng.
+Các bước:
+Chọn mẫu.
+Nhập tên hai người.
+Chọn ngày cưới.
+Nhập địa điểm.
+Upload 1–5 ảnh.
+Chọn nhạc và phong cách.
+Xem trước thiệp.
+Lưu hoặc xuất bản.
+Mục tiêu trải nghiệm: Có bản thiệp xem thử nhanh mà không bắt khách phải hiểu phần mềm thiết kế.
+Không bắt người dùng đăng ký trước khi xem được kết quả ban đầu.
+Cần thiết kế lưu bản nháp tạm có thời hạn và thông báo rõ về dữ liệu chưa đăng ký.
+Chế độ nâng cao
+Dành cho khách muốn tùy chỉnh thêm.
+Đổi layout đã được thiết kế.
+Sắp xếp section.
+Bật/tắt section.
+Chọn màu.
+Chọn font.
+Chỉnh cỡ chữ trong giới hạn hợp lý.
+Chỉnh vị trí ảnh trong khung.
+Chọn hiệu ứng chuyển cảnh.
+Chỉnh lời mời.
+Chỉnh thông tin gia đình.
+Chỉnh địa điểm.
+Chỉnh lịch trình.
+Thêm nội dung cá nhân.
+Không triển khai một công cụ thiết kế tự do kiểu Photoshop ngay ở MVP.
+Ưu tiên editor dựa trên component và configuration, để bảo vệ thẩm mỹ, responsive và sự ổn định.
+2.3. Chức năng tạo khác biệt: Thiệp thông minh theo nhóm khách
+Cho phép một đám cưới có nhiều phiên bản thiệp:
+Nhà trai.
+Nhà gái.
+Bạn bè.
+Đồng nghiệp.
+Người thân.
+Khách quốc tế.
+Khách tham dự lễ gia tiên.
+Khách chỉ tham dự tiệc cưới.
+Các phiên bản dùng chung thông tin cơ sở nhưng có thể thay:
+Lời mời.
+Địa điểm.
+Ngày giờ.
+Lịch trình.
+Người mời.
+Lựa chọn RSVP.
+Khi sửa tên cô dâu chú rể hoặc hình ảnh chung, hệ thống có cơ chế cập nhật nhất quán nhưng không ghi đè các nội dung riêng ngoài ý muốn.
+2.4. Chức năng tạo khác biệt: RSVP theo hộ gia đình
+Không chỉ lưu một trạng thái Có/Không.
+Thiết kế khả năng:
+Một lời mời cho một người.
+Một lời mời cho cặp đôi.
+Một lời mời cho hộ gia đình.
+Người đại diện xác nhận.
+Số người lớn.
+Số trẻ em.
+Số người đi cùng.
+Sự kiện tham dự.
+Yêu cầu ăn chay hoặc ăn kiêng.
+Lời nhắn.
+Thay đổi phản hồi.
+Hạn cuối xác nhận.
+Dashboard hiển thị:
+Tổng số khách mời.
+Khách đã phản hồi.
+Chưa phản hồi.
+Đồng ý.
+Từ chối.
+Tổng số người dự kiến tham dự.
+Tổng số người theo từng buổi.
+Số khách mỗi bên gia đình.
+Phải phân biệt số lời mời, số người được mời và số người xác nhận tham dự, tránh thống kê sai.
+2.5. Chức năng tạo khác biệt: Bộ công cụ chia sẻ Zalo
+Xây dựng:
+Link thiệp chung.
+Link thiệp riêng.
+Ảnh preview chuẩn.
+Tiêu đề hiển thị khi chia sẻ.
+Mô tả ngắn.
+Lời nhắn riêng theo cách xưng hô.
+Nút sao chép lời mời.
+Nút chia sẻ bằng Web Share API nếu thiết bị hỗ trợ.
+Nút mở ứng dụng chia sẻ phù hợp.
+Trạng thái đánh dấu đã gửi.
+Theo dõi RSVP.
+Mẫu lời nhắn:
+Trang trọng cho người lớn.
+Thân mật cho bạn bè.
+Lịch sự cho đồng nghiệp.
+Ngắn gọn cho người quen.
+Song ngữ.
+Không sử dụng automation không được phép để gửi tin hàng loạt từ tài khoản cá nhân.
+Không khẳng định đã gửi hoặc đã đọc tin nhắn nếu nền tảng bên ngoài không cung cấp thông tin đó.
+2.6. Chức năng tạo khác biệt: Quản lý bàn tiệc
+Giai đoạn nâng cao:
+Tạo sơ đồ bàn.
+Chọn số lượng bàn.
+Đặt tên bàn.
+Số ghế mỗi bàn.
+Kéo thả nhóm khách.
+Cảnh báo vượt số ghế.
+Giữ các thành viên hộ gia đình gần nhau.
+Phân loại nhà trai/nhà gái.
+Danh sách khách chưa được xếp.
+In sơ đồ.
+Xuất Excel.
+Quyền truy cập cho nhân viên phụ trách.
+Không tự động xếp bàn bằng AI nếu chưa có bộ quy tắc rõ ràng.
+2.7. Chức năng tạo khác biệt: Bộ thiệp đồng bộ
+Từ một bộ dữ liệu, tạo:
+Thiệp website.
+Thiệp ảnh dọc.
+Ảnh chia sẻ Story.
+Ảnh thông báo Save the Date.
+Thiệp báo hỷ.
+Thiệp cảm ơn.
+QR đặt tại bàn tiệc.
+Ảnh lịch trình ngày cưới.
+Ảnh hoặc video ngắn nếu kỹ thuật cho phép.
+Không bắt đầu bằng hệ thống render video phức tạp. Phải đánh giá khả năng xuất ảnh trước.
+Các định dạng xuất phải bảo đảm chữ rõ, không bị cắt và giữ bố cục hợp lý.
+2.8. Chức năng tạo khác biệt: Lưu giữ kỷ niệm
+Sau đám cưới, thiệp có thể chuyển sang chế độ kỷ niệm:
+Lời cảm ơn.
+Album sau cưới.
+Ảnh khách mời gửi.
+Lời chúc.
+Video highlight.
+Ngày kỷ niệm.
+Tùy chọn tải dữ liệu.
+Tùy chọn ẩn hoặc đóng thiệp.
+Khách phải được biết ảnh và lời chúc của họ được hiển thị công khai hay riêng tư.
+2.9. Chức năng AI nâng cao
+Nghiên cứu, chưa bắt buộc ở MVP:
+AI đọc thiệp giấy
+Cho phép upload ảnh thiệp giấy và trích xuất:
+Tên cô dâu.
+Tên chú rể.
+Cha mẹ hai bên.
+Ngày giờ.
+Địa điểm.
+Lời mời.
+Thông tin khác.
+Sau khi trích xuất phải có bước xác nhận thủ công.
+Không tự xuất bản dữ liệu do AI đọc khi chưa được kiểm tra.
+AI gợi ý mẫu
+Dựa trên:
+Phong cách ảnh cưới.
+Màu chủ đạo.
+Phong cách mong muốn.
+Loại lễ cưới.
+Đưa ra lựa chọn từ các mẫu được thiết kế sẵn thay vì tạo bố cục ngẫu nhiên khó kiểm soát.
+AI hỗ trợ nội dung
+Gợi ý lời mời.
+Gợi ý lời cảm ơn.
+Gợi ý lời giới thiệu.
+Tối ưu câu chữ.
+Dịch ngôn ngữ.
+Kiểm tra lỗi chính tả.
+Không để AI tự bịa tên, giờ, địa chỉ hoặc thông tin gia đình.
+2.10. Chức năng đa ngôn ngữ
+Ưu tiên:
+Tiếng Việt.
+Tiếng Anh.
+Tiếng Trung.
+Tiếng Hàn.
+Dữ liệu tên người và địa điểm phải giữ nguyên trừ khi người dùng cung cấp bản dịch phù hợp.
+Thiết kế từ đầu khả năng lưu nội dung nhiều ngôn ngữ, nhưng không nhất thiết triển khai tất cả ngôn ngữ ở MVP.
+
+PHẦN 3. ĐỊNH HƯỚNG UI/UX VÀ NHẬN DIỆN THƯƠNG HIỆU
+3.1. Phong cách tổng thể
+Mây Hẹn không được có cảm giác như website bán hàng đại trà.
+Phong cách:
+Editorial.
+Quiet luxury.
+Minimal.
+Romantic.
+Modern.
+Elegant.
+Premium.
+Mobile-first.
+Không sử dụng màu sắc sặc sỡ.
+Không lạm dụng gradient, bóng đổ, icon và sticker.
+Không làm giao diện giống dashboard quản trị trên toàn bộ website khách hàng.
+Không dùng quá nhiều border, card lồng card hoặc hiệu ứng xuất hiện liên tục.
+3.2. Bảng màu
+Đề xuất nghiên cứu hệ màu:
+Ivory White.
+Warm Cream.
+Soft Beige.
+Charcoal.
+Dusty Rose.
+Sage Green.
+Muted Gold.
+Chỉ chọn một màu accent chính cho từng hệ giao diện.
+Màu accent chỉ nên xuất hiện có chủ đích tại CTA, trạng thái quan trọng hoặc điểm nhấn.
+Phải có design tokens cho:
+Background.
+Surface.
+Text.
+Muted text.
+Primary.
+Primary hover.
+Border.
+Focus.
+Success.
+Warning.
+Danger.
+Shadow.
+Không tự ý tạo thêm màu riêng cho từng component khi đã có design token phù hợp.
+3.3. Typography
+Chọn:
+Một serif thanh lịch cho heading thương hiệu.
+Một sans-serif dễ đọc cho body và form.
+Font script chỉ dùng hạn chế trong mẫu thiệp phù hợp.
+Ưu tiên font có hỗ trợ tiếng Việt đầy đủ và dấu chính xác.
+Font phải có bản quyền sử dụng phù hợp; nếu dùng font tự lưu trữ, đặt trong thư mục font của dự án.
+Không tự ý lấy font thương mại trên Internet.
+Thiết kế hệ thống:
+Display.
+Heading 1–6.
+Body large.
+Body.
+Body small.
+Caption.
+Label.
+Button.
+Dùng CSS clamp hợp lý cho responsive typography.
+3.4. Bố cục website chính
+Header gọn, khoảng trắng rộng, logo rõ.
+Hero phải có một hình ảnh hoặc bản demo thiệp cưới thật sự đẹp.
+Một bên thể hiện nội dung:
+Headline.
+Subheadline.
+CTA tạo thiệp.
+CTA xem mẫu.
+Thông điệp tin cậy được xác minh.
+Một bên thể hiện:
+Demo thiệp đẹp.
+Hình mô phỏng điện thoại tinh tế.
+Animation rất nhẹ.
+Có tương tác thử nếu phù hợp.
+Trang chủ không nhồi nhét quá nhiều section vào phần đầu.
+Các section phải có nhịp độ về màu nền, khoảng trắng và bố cục.
+3.5. Mobile-first
+Phải thiết kế thực sự cho điện thoại, không chỉ thu nhỏ desktop.
+Ưu tiên chiều rộng phổ biến như 320, 360, 375, 390, 414, 430 pixels và kiểm thử màn hình lớn hơn.
+Yêu cầu:
+Chữ không quá nhỏ.
+CTA dễ chạm.
+Form không bị che bởi bàn phím.
+Popup không tràn.
+Menu dễ dùng.
+Ảnh không bị méo.
+Font không bị mất dấu.
+Thiệp không bị cắt.
+Các section chuyển động không gây giật.
+Sticky action không che nội dung.
+Responsive phải có chủ đích.
+3.6. Accessibility
+Bắt buộc quan tâm:
+Semantic HTML.
+Heading hierarchy.
+Contrast.
+Keyboard navigation.
+Focus visible.
+Alt text.
+Label cho form.
+Error feedback.
+Screen reader.
+Touch target.
+Prefers-reduced-motion.
+Không phụ thuộc màu sắc để biểu thị trạng thái.
+Không hy sinh accessibility chỉ để làm đẹp.
+
+PHẦN 4. HỆ THỐNG ANIMATION THIỆP CƯỚI
+Đây là một trong các hạng mục quan trọng nhất của Mây Hẹn.
+Khách hàng trả tiền trước hết vì họ muốn có một tấm thiệp đẹp.
+Animation phải phục vụ thiết kế, không làm phiền khách.
+4.1. Nguyên tắc motion design
+Chuyển động mềm mại.
+Nhịp chuyển cảnh tự nhiên.
+Không giật.
+Không quá nhiều phần tử bay.
+Không dùng hiệu ứng chỉ để gây chú ý.
+Tôn trọng cấu hình giảm chuyển động.
+Không ép người dùng chờ animation quá lâu mới xem được nội dung.
+Không có loading giả.
+Không làm mất khả năng đọc chữ.
+Không đặt animation làm ảnh hưởng các chức năng RSVP, bản đồ hoặc nút chia sẻ.
+Ưu tiên CSS transform, opacity và Web Animations API khi thực sự cần JavaScript.
+Không dùng animation gây layout thrashing liên tục.
+4.2. Các hệ animation mẫu
+Thiết kế thư viện chuyển động có thể tái sử dụng.
+Mẫu 1 — Envelope Reveal
+Phong thư xuất hiện.
+Nắp phong thư mở.
+Thiệp nâng nhẹ khỏi phong thư.
+Tên khách mời xuất hiện.
+Người dùng chạm để xem tiếp.
+Bảo đảm hoạt động tốt trên mobile.
+Mẫu 2 — Paper Unfold
+Tấm giấy mở nhẹ.
+Nội dung xuất hiện theo lớp.
+Typography được ưu tiên.
+Chuyển cảnh sang thông tin ngày cưới.
+Mẫu 3 — Silk Curtain
+Hai lớp rèm hoặc dải lụa mở nhẹ.
+Thiệp xuất hiện phía sau.
+Không sử dụng hình ảnh quá nặng.
+Hiệu ứng giữ sự trang trọng.
+Mẫu 4 — Soft Floral
+Hoa hoặc cánh hoa xuất hiện tiết chế.
+Chuyển động chậm.
+Không che nội dung.
+Không gây giảm FPS.
+Mẫu 5 — Editorial Scroll
+Thiệp giống một tạp chí cưới cao cấp.
+Hình ảnh chuyển cảnh nhẹ khi cuộn.
+Nội dung xuất hiện theo từng nhịp.
+Kết hợp tốt giữa typography và photography.
+Mẫu 6 — Memory Story
+Hành trình tình yêu bằng ảnh.
+Mỗi phần là một mốc thời gian.
+Transition thống nhất.
+Không biến thành slideshow nặng nề.
+Mẫu 7 — Minimal Luxury
+Hầu như không có hiệu ứng trang trí.
+Chỉ sử dụng fade, reveal và typography motion.
+Tập trung ảnh cưới, chữ và khoảng trắng.
+Mẫu 8 — Vietnamese Traditional
+Họa tiết cưới Việt được sử dụng tiết chế.
+Lấy cảm hứng từ giấy, hoa văn, dấu son, trầu cau.
+Không trộn quá nhiều họa tiết.
+Trình bày trang trọng, hiện đại.
+4.3. Kiến trúc animation
+Mỗi animation cần có:
+Tên.
+ID.
+Mô tả.
+Trigger.
+Duration.
+Easing.
+Các phần tử liên quan.
+Reduced-motion fallback.
+Quy tắc tương tác.
+Quy tắc responsive.
+Tác động hiệu suất.
+Trạng thái hoàn thành.
+Khả năng bỏ qua.
+Thiết kế animation theo hệ thống thay vì viết riêng một đoạn JavaScript lớn cho từng thiệp.
+4.4. Nhạc nền
+Trình duyệt có giới hạn autoplay.
+Không được giả định nhạc luôn tự phát khi trang tải.
+Thiết kế nút bật nhạc rõ ràng, tinh tế.
+Sau hành động hợp lệ của người dùng, có thể phát nhạc theo quy định của trình duyệt.
+Có điều khiển bật/tắt.
+Không dùng nhạc có bản quyền thương mại nếu chưa có quyền sử dụng.
+4.5. Tiêu chuẩn chất lượng template
+Một template không chỉ gồm ảnh nền và thông tin.
+Phải thiết kế đầy đủ:
+Opening.
+Couple introduction.
+Family information.
+Date and time.
+Venue.
+Schedule.
+Countdown.
+Gallery.
+Story.
+RSVP.
+Guestbook.
+Gift information.
+Thank you.
+Footer.
+Không bắt buộc template nào cũng có tất cả section.
+Mỗi mẫu phải có bố cục và nhịp kể chuyện phù hợp, không phải một bộ section giống hệt rồi thay màu.
+Thiết kế ít nhất ba template mẫu chất lượng cao trước khi nhân rộng kho mẫu.
+
+PHẦN 5. TỔNG HỢP CẤU TRÚC TRANG CLIENT
+Mỗi trang phải được đặc tả riêng về:
+Mục tiêu.
+URL.
+Đối tượng.
+Bố cục.
+Section.
+Chức năng.
+Data.
+API hoặc controller.
+Blade file.
+CSS file.
+JS file.
+SEO.
+Responsive.
+Loading state.
+Empty state.
+Error state.
+Quyền truy cập.
+Acceptance criteria.
+Không được chỉ liệt kê tên trang rồi bỏ qua thiết kế chi tiết.
+5.1. Website công khai
+Trang 1 — Home
+URL: /
+Section đề xuất:
+Header.
+Hero.
+Demo mẫu thiệp nổi bật.
+Các phong cách thiết kế.
+Lợi ích chính.
+Tạo thiệp trong vài bước.
+Bộ sưu tập mẫu.
+Trình diễn tính năng.
+RSVP và quản lý khách.
+Bảng giá ngắn.
+Câu hỏi thường gặp.
+Bài viết hữu ích.
+CTA cuối.
+Footer.
+Không nhất thiết triển khai toàn bộ section ngay từ đầu.
+Phải tối ưu thứ tự để người dùng nhanh chóng bấm xem mẫu hoặc tạo thiệp.
+Trang 2 — Templates
+URL: /mau-thiep
+Chức năng:
+Danh sách mẫu.
+Tìm kiếm.
+Bộ lọc.
+Sắp xếp.
+Phong cách.
+Màu sắc.
+Loại thiệp.
+Mẫu mới.
+Mẫu nổi bật.
+Phân trang hoặc tải thêm phù hợp.
+Xem nhanh.
+Xem bản demo.
+Tạo với mẫu này.
+Danh mục gợi ý:
+Tối giản.
+Hiện đại.
+Truyền thống.
+Hàn Quốc.
+Châu Âu.
+Hoa lá.
+Vintage.
+Luxury.
+Editorial.
+Phong cách ảnh cưới.
+Song ngữ.
+Trang 3 — Template Detail
+URL: /mau-thiep/{slug}
+Có:
+Tên mẫu.
+Bộ ảnh giới thiệu.
+Demo điện thoại.
+Demo desktop.
+Chức năng.
+Animation.
+Màu.
+Font.
+Phong cách.
+Mẫu tương tự.
+CTA tạo thiệp.
+Trang 4 — Template Preview
+URL: /xem-thu/{slug}
+Mở ra một thiệp demo thực tế.
+Dữ liệu demo phải được nhận diện rõ.
+Có nút tạo thiệp với mẫu đang xem.
+Không để demo của đối thủ hoặc thông tin khách thật vào hệ thống.
+Trang 5 — Services
+URL: /dich-vu
+Giải thích dịch vụ thiệp cưới tự tạo, thiết kế hộ và những dịch vụ mở rộng.
+Trang 6 — Pricing
+URL: /bang-gia
+Hiển thị:
+Gói miễn phí.
+Gói Premium.
+Gói cao cấp.
+Tính năng mỗi gói.
+Thời hạn.
+Dung lượng.
+Số lượng thiệp.
+Quy định nâng cấp.
+Phí phát sinh.
+Chính sách thanh toán.
+FAQ.
+Mọi giới hạn phải liên kết với logic backend, không chỉ hiển thị trong HTML.
+Trang 7 — How It Works
+URL: /huong-dan
+Hướng dẫn tạo thiệp từ đầu đến cuối.
+Trang 8 — Examples
+URL: /thiep-mau
+Trình diễn các mẫu công khai có quyền sử dụng.
+Nếu có thiệp khách hàng thật, phải có sự đồng ý của chủ sở hữu.
+Trang 9 — About
+URL: /ve-may-hen
+Giới thiệu thương hiệu, định hướng và cam kết dịch vụ.
+Không tạo câu chuyện công ty giả.
+Trang 10 — Contact
+URL: /lien-he
+Form liên hệ, thông tin hỗ trợ và các kênh chính thức.
+Trang 11 — FAQ
+URL: /cau-hoi-thuong-gap
+Câu hỏi theo nhóm.
+Trang 12 — Blog Listing
+URL: /blog
+Có:
+Bài nổi bật.
+Danh mục.
+Tìm kiếm.
+Danh sách bài.
+Phân trang.
+Breadcrumb.
+Nội dung SEO hữu ích.
+Trang 13 — Blog Detail
+URL: /blog/{slug}
+Có:
+H1.
+Thông tin tác giả.
+Ngày cập nhật.
+Mục lục.
+Nội dung.
+Ảnh.
+Nội dung liên quan.
+CTA phù hợp.
+Structured data đúng thực tế.
+Trang 14 — Blog Category
+URL: /blog/danh-muc/{slug}
+Trang 15 — Partner Landing
+URL: /doi-tac
+Dành cho studio ảnh cưới, đơn vị tổ chức cưới và đối tác.
+Trang 16 — Partnership Registration
+URL: /doi-tac/dang-ky
+Trang 17 — Promotions
+URL: /uu-dai
+Chỉ tạo khi thực sự có chiến lược ưu đãi.
+Trang 18 — Policy Pages
+Điều khoản.
+Chính sách bảo mật.
+Chính sách thanh toán.
+Chính sách hoàn tiền.
+Chính sách lưu trữ và xóa dữ liệu.
+Chính sách sử dụng hình ảnh.
+Chính sách cookie nếu áp dụng.
+Trang 19 — System Pages
+
+
+
+
+
+
+
+
+
+
+
+
+Maintenance.
+Invitation unavailable.
+Invitation expired.
+Invitation password required, nếu có.
+Các trang lỗi phải có thiết kế nhất quán, không hiển thị thông tin kỹ thuật nhạy cảm.
+
+PHẦN 6. TÀI KHOẢN KHÁCH HÀNG VÀ TRÌNH TẠO THIỆP
+6.1. Authentication
+Đăng ký.
+Đăng nhập.
+Đăng xuất.
+Quên mật khẩu.
+Đặt lại mật khẩu.
+Xác minh email nếu cần.
+Quản lý phiên đăng nhập.
+Đổi mật khẩu.
+Xóa tài khoản hoặc gửi yêu cầu xóa.
+Chính sách bảo mật.
+Không ép đăng nhập quá sớm trong trải nghiệm dùng thử.
+6.2. Customer Dashboard
+URL: /tai-khoan
+Hiển thị:
+Tổng số thiệp.
+Thiệp đang soạn.
+Thiệp đã xuất bản.
+Trạng thái gói.
+Số khách mời.
+Phản hồi RSVP.
+Hoạt động gần đây.
+Các thao tác chính.
+Thiết kế dashboard sạch, không giống giao diện admin phức tạp.
+6.3. My Invitations
+URL: /tai-khoan/thiep
+Các chức năng:
+Danh sách thiệp.
+Tìm kiếm.
+Lọc trạng thái.
+Tạo mới.
+Nhân bản.
+Chỉnh sửa.
+Xem trước.
+Xuất bản.
+Tạm ẩn.
+Lưu trữ.
+Thống kê.
+Xóa theo quy trình an toàn.
+6.4. Invitation Editor
+URL: /tai-khoan/thiep/{id}/chinh-sua
+Các khu vực:
+Thanh điều hướng.
+Nhóm thao tác.
+Danh sách section.
+Panel chỉnh sửa.
+Vùng preview.
+Chuyển desktop/mobile.
+Lưu.
+Xem trước.
+Xuất bản.
+Trên desktop có thể sử dụng panel điều khiển và preview song song.
+Trên mobile cần thiết kế chế độ chuyển đổi giữa chỉnh sửa và xem trước, không thu nhỏ nguyên giao diện desktop.
+Có khả năng:
+Undo/redo trong những thao tác được hỗ trợ.
+Tự động lưu có debounce.
+Hiển thị trạng thái lưu.
+Cảnh báo thay đổi chưa lưu.
+Kiểm tra lỗi dữ liệu.
+Hoàn tác thay đổi chưa xuất bản.
+Xem trước bản đang soạn.
+Quản lý phiên bản theo phạm vi hợp lý.
+Không để thao tác chỉnh sửa làm thay đổi ngay bản thiệp công khai khi người dùng chưa xác nhận xuất bản.
+6.5. Wedding Information
+Các nhóm thông tin:
+Cặp đôi.
+Gia đình.
+Lễ cưới.
+Tiệc cưới.
+Địa điểm.
+Lịch trình.
+Lời mời.
+Ảnh.
+Nhạc.
+Cài đặt hiển thị.
+Ngôn ngữ.
+Phải hỗ trợ lễ cưới nhiều ngày hoặc nhiều sự kiện khi cần.
+6.6. Guest Management
+URL: /tai-khoan/thiep/{id}/khach-moi
+Các chức năng:
+Thêm khách.
+Thêm nhóm.
+Import.
+Export.
+Tìm kiếm.
+Lọc.
+Sắp xếp.
+Tạo link.
+Copy lời mời.
+Đánh dấu đã gửi.
+Xem phản hồi.
+Ghi chú.
+Cập nhật trạng thái.
+6.7. RSVP Dashboard
+URL: /tai-khoan/thiep/{id}/xac-nhan
+Có thống kê tổng hợp, chi tiết và xuất dữ liệu.
+6.8. Wedding Events
+URL: /tai-khoan/thiep/{id}/su-kien
+Quản lý lịch trình lễ cưới, địa điểm và ghi chú.
+6.9. Table Planning
+URL: /tai-khoan/thiep/{id}/ban-tiec
+Triển khai sau MVP.
+6.10. Photo Gallery
+URL: /tai-khoan/thiep/{id}/album
+Quản lý ảnh gốc, ảnh sử dụng và quyền riêng tư.
+6.11. Wishes
+URL: /tai-khoan/thiep/{id}/loi-chuc
+Xem, ẩn, kiểm duyệt và xuất dữ liệu theo quyền phù hợp.
+6.12. Payment History
+URL: /tai-khoan/thanh-toan
+6.13. Account Settings
+URL: /tai-khoan/cai-dat
+6.14. Public Invitation
+URL dự kiến: /thiep/{slug}
+Đây là sản phẩm cuối mà khách mời nhìn thấy.
+Phải hoạt động độc lập, dễ mở trên điện thoại, không bắt khách mời đăng nhập.
+Không lộ dữ liệu khách khác.
+Thiệp phải có:
+Opening.
+Nội dung cưới.
+Ảnh.
+Nhạc.
+Lịch trình.
+Bản đồ.
+RSVP.
+Lời chúc.
+QR.
+Thông tin liên hệ phù hợp.
+Chia sẻ.
+Các section được chủ thiệp bật.
+Các đường dẫn cá nhân hóa khách mời phải sử dụng token không thể đoán dễ dàng và được kiểm soát quyền truy cập.
+Không để thông tin riêng tư xuất hiện trong URL hoặc analytics không cần thiết.
+
+PHẦN 7. HỆ THỐNG ADMIN
+Admin phải độc lập với Client về layout, CSS, JavaScript và cấu trúc Blade.
+Không được sử dụng template admin có sẵn phụ thuộc Bootstrap, jQuery, Tailwind hoặc thư viện frontend khác.
+7.1. Admin Dashboard
+Doanh thu.
+Số đơn hàng.
+Khách hàng mới.
+Thiệp được tạo.
+Thiệp đã xuất bản.
+Gói đang hoạt động.
+Mẫu được dùng nhiều.
+Tỷ lệ chuyển đổi.
+Đơn thanh toán lỗi.
+Hoạt động hệ thống.
+Cảnh báo.
+Không dùng số liệu giả như số liệu thật.
+7.2. Admin Users
+Danh sách.
+Chi tiết.
+Tìm kiếm.
+Lọc.
+Khóa/mở khóa.
+Vai trò.
+Trạng thái.
+Nhật ký hoạt động liên quan.
+Hỗ trợ khách khi được cấp quyền.
+7.3. Admin Invitations
+Danh sách thiệp.
+Tìm kiếm.
+Lọc theo khách hàng.
+Lọc theo trạng thái.
+Ngày tạo.
+Ngày cưới.
+Gói.
+Thời hạn.
+Trạng thái xuất bản.
+Kiểm tra vi phạm.
+Hỗ trợ kỹ thuật.
+7.4. Admin Templates
+Đây là module quan trọng.
+Quản lý:
+Template.
+Phiên bản.
+Danh mục.
+Phong cách.
+Màu.
+Font.
+Ảnh đại diện.
+Ảnh demo.
+Section.
+Component.
+Hiệu ứng.
+Trạng thái.
+Sắp xếp.
+Gói được sử dụng.
+Phải phân biệt template gốc, cấu hình template và nội dung thiệp của khách.
+Không để chỉnh sửa template gốc làm hỏng hàng loạt thiệp đang hoạt động.
+7.5. Admin Media
+Upload.
+Phân loại.
+Dung lượng.
+Loại file.
+Quyền sử dụng.
+File không còn được tham chiếu.
+Lưu trữ.
+Kiểm tra file nguy hiểm.
+Không xóa media đang được sử dụng chỉ vì không thấy nó hiển thị ở một trang.
+7.6. Admin Plans
+Gói dịch vụ.
+Giá.
+Quyền lợi.
+Giới hạn.
+Thời hạn.
+Trạng thái.
+Lịch sử thay đổi giá.
+Cần có cơ chế giữ điều kiện áp dụng cho những đơn hàng cũ.
+7.7. Admin Orders
+Đơn hàng.
+Khách hàng.
+Giá.
+Khuyến mãi.
+Trạng thái.
+Phương thức.
+Thời gian.
+Lịch sử thanh toán.
+Hoàn tiền theo chính sách.
+Ghi chú xử lý.
+7.8. Admin Payments
+Giao dịch.
+Webhook.
+Trạng thái đối soát.
+Lỗi.
+Trùng callback.
+Hoàn tiền.
+Nhật ký an toàn.
+7.9. Admin Coupons
+Mã.
+Loại giảm giá.
+Điều kiện.
+Thời hạn.
+Số lần sử dụng.
+Giới hạn theo tài khoản.
+Trạng thái.
+7.10. Admin Partners
+Đối tác.
+Trạng thái.
+Gói.
+Khách hàng.
+Thiệp.
+Hoa hồng.
+Số dư công nợ hoặc thanh toán nếu có.
+Báo cáo.
+7.11. Admin Blog
+Bài viết.
+Danh mục.
+Tag.
+Tác giả.
+Nội dung.
+Ảnh.
+SEO.
+Trạng thái xuất bản.
+Bài liên quan.
+Lịch đăng nếu cần.
+7.12. Admin Pages
+Quản lý các trang nội dung tĩnh phù hợp.
+Không cố biến mọi layout của website thành một page builder phức tạp.
+7.13. Admin SEO
+Meta title.
+Meta description.
+Canonical.
+Index/noindex.
+Open Graph.
+Sitemap.
+Redirect.
+Breadcrumb.
+Slug.
+Kiểm tra lỗi cơ bản.
+7.14. Admin Reviews
+Chỉ hiển thị đánh giá khách hàng thực tế được phép sử dụng.
+Không sinh đánh giá giả.
+7.15. Admin Contacts
+Liên hệ.
+Yêu cầu hỗ trợ.
+Phân loại.
+Trạng thái.
+Người phụ trách.
+Ghi chú.
+7.16. Admin Settings
+Thương hiệu.
+Logo.
+Favicon.
+Email.
+SEO mặc định.
+Thông tin liên hệ.
+Giới hạn upload.
+Cấu hình thanh toán.
+Chính sách.
+Feature flags.
+Cấu hình hệ thống.
+Thông tin bí mật không được hiển thị dưới dạng plain text không cần thiết.
+7.17. Admin Audit Logs
+Ghi những hành động có ảnh hưởng quan trọng:
+Đổi quyền.
+Khóa tài khoản.
+Thay đổi giá.
+Đổi trạng thái đơn.
+Hoàn tiền.
+Xử lý dữ liệu nhạy cảm.
+Chỉnh cấu hình quan trọng.
+Phải có cơ chế lưu log hợp lý, tránh ghi dư dữ liệu cá nhân.
+7.18. Admin Security
+Phân quyền.
+Rate limiting.
+Kiểm tra quyền tại server.
+Bảo vệ CSRF.
+Quản lý phiên.
+Quản lý mật khẩu.
+Xác thực bổ sung khi cần.
+Cảnh báo thao tác nguy hiểm.
+
+PHẦN 8. HỆ THỐNG ĐỐI TÁC STUDIO
+Không bắt buộc hoàn thành trong MVP nhưng phải có định hướng kiến trúc.
+8.1. Studio Dashboard
+Khách hàng.
+Thiệp đang quản lý.
+Thiệp đã bàn giao.
+Gói.
+Doanh thu.
+Hoa hồng.
+Thống kê.
+Tài nguyên.
+8.2. Các quyền của đối tác
+Đối tác có thể được phép:
+Tạo thiệp cho khách.
+Chỉnh sửa khi khách cho phép.
+Quản lý nhiều dự án.
+Xem trạng thái.
+Bàn giao thiệp.
+Theo dõi doanh thu.
+Không mặc định đối tác có quyền xem dữ liệu cá nhân của tất cả khách mời.
+8.3. White-label
+Nghiên cứu:
+Logo studio.
+Thông tin studio.
+Mẫu riêng.
+Trang giới thiệu riêng.
+Branding theo gói.
+Chính sách chia sẻ doanh thu.
+Không triển khai hệ thống đa domain phức tạp khi chưa có nhu cầu kinh doanh thực tế.
+
+PHẦN 9. KIẾN TRÚC CÔNG NGHỆ BẮT BUỘC
+9.1. Backend
+Sử dụng:
+PHP.
+Laravel.
+Blade.
+Eloquent ORM.
+Form Request Validation.
+Policies/Gates.
+Service Layer có chọn lọc.
+Jobs/Queues khi cần.
+Events/Listeners khi có lợi ích rõ.
+Laravel Cache.
+Laravel Storage.
+Laravel Scheduler nếu có tác vụ định kỳ.
+Ưu tiên Laravel 13 cho dự án mới nếu tương thích môi trường và phiên bản ổn định đã được xác minh.
+Không nâng cấp phiên bản của repository đang tồn tại nếu chưa đánh giá và chưa được cho phép.
+9.2. Frontend
+BẮT BUỘC HTML THUẦN + CSS THUẦN + JAVASCRIPT THUẦN.
+Cấm sử dụng:
+Bootstrap.
+Tailwind CSS.
+Bulma.
+Foundation.
+jQuery.
+Vue.
+React.
+Angular.
+Alpine.js.
+GSAP.
+Anime.js.
+AOS.
+Swiper.js.
+Slick Slider.
+Chart.js.
+Các CSS frameworks.
+Các UI component libraries frontend.
+Các thư viện animation hoặc slider bên ngoài.
+Không sử dụng CDN để nạp thư viện CSS/JavaScript.
+Không dùng một frontend build tool làm điều kiện bắt buộc để chạy các file CSS/JS nếu có thể dùng native browser modules và asset tĩnh.
+Được sử dụng:
+CSS Grid.
+Flexbox.
+CSS Custom Properties.
+CSS Transitions.
+CSS Keyframes.
+CSS Animations.
+CSS Scroll Snap.
+JavaScript ES Modules.
+Fetch API.
+IntersectionObserver.
+ResizeObserver.
+MutationObserver khi thực sự cần.
+Web Animations API.
+Web Share API.
+Native Drag and Drop khi phù hợp.
+SVG tự xây dựng hoặc file có bản quyền phù hợp.
+Canvas API nếu được chứng minh cần thiết.
+Việc tích hợp payment gateway, email hoặc dịch vụ AI phía backend phải được đánh giá riêng. Không hiểu quy tắc không dùng thư viện frontend thành cấm sử dụng chính Laravel và toàn bộ công cụ backend cần thiết.
+Không tự ý cài thêm package PHP/Composer ngoài những dependency đang được dự án chấp thuận.
+9.3. Database
+Ưu tiên database tương thích Laravel, chẳng hạn MySQL 8 hoặc PostgreSQL.
+Phải xác nhận database thực tế của repository và môi trường triển khai trước khi quyết định.
+Không thay đổi database engine giữa chừng khi chưa có lý do thuyết phục.
+9.4. Cấu trúc tầng ứng dụng
+Đề xuất tổ chức:
+Controllers/Client.
+Controllers/Admin.
+Controllers/Partner.
+Controllers/Api nếu thực sự cần.
+Requests.
+Models.
+Policies.
+Services.
+Actions khi phù hợp.
+Jobs.
+Events.
+Listeners.
+Notifications.
+Support.
+Enums hoặc constants có kiểm soát.
+ViewModels khi dữ liệu trình bày phức tạp.
+Controller chỉ chịu trách nhiệm điều phối request/response.
+Business logic quan trọng phải được tách khỏi Blade và Controller.
+Không tạo GenericRepository hoặc BaseService phức tạp chỉ vì muốn có nhiều layer.
+
+PHẦN 10. QUY TẮC TỔ CHỨC FILE LARAVEL
+10.1. Cấu trúc thư mục yêu cầu
+Tổ chức dự án theo hướng:
+app/
+Http/
+Controllers/
+Client/
+Admin/
+Partner/
+Api/
+Requests/
+Client/
+Admin/
+Partner/
+Models/
+Policies/
+Services/
+Invitations/
+Templates/
+Guests/
+Payments/
+Media/
+Partners/
+Jobs/
+Events/
+Listeners/
+Support/
+resources/
+views/
+client/
+layouts/
+components/
+pages/
+auth/
+account/
+invitations/
+guests/
+checkout/
+blog/
+admin/
+layouts/
+components/
+pages/
+users/
+templates/
+invitations/
+orders/
+payments/
+blog/
+settings/
+partner/
+layouts/
+components/
+pages/
+invitation-themes/
+layouts/
+components/
+themes/
+errors/
+public/
+assets/
+client/
+css/
+common/
+components/
+pages/
+invitations/
+js/
+common/
+components/
+pages/
+invitations/
+images/
+fonts/
+icons/
+admin/
+css/
+common/
+components/
+pages/
+js/
+common/
+components/
+pages/
+images/
+fonts/
+icons/
+partner/
+css/
+js/
+images/
+routes/
+web.php
+admin.php
+partner.php
+api.php nếu cần
+database/
+migrations/
+seeders/
+factories/ nếu cần cho kiểm thử
+docs/
+research/
+product/
+architecture/
+database/
+design/
+security/
+implementation/
+quality/
+operations/
+.agents/
+skills/
+AGENTS.md
+Cấu trúc này mang tính định hướng. Phải điều chỉnh theo thực trạng repository mà không phá vỡ convention chính thức của Laravel.
+Không tạo toàn bộ thư mục rỗng khi chưa có file thực tế.
+10.2. Quy tắc một trang một Blade
+Mỗi trang độc lập phải có một file Blade chính riêng.
+Ví dụ:
+client/pages/home.blade.php
+client/pages/services.blade.php
+client/pages/pricing.blade.php
+client/pages/contact.blade.php
+client/pages/templates.blade.php
+client/blog/index.blade.php
+client/blog/show.blade.php
+Không nhồi toàn bộ trang Client vào một file Blade.
+Có thể dùng layout và component chung để tái sử dụng header, footer, form, button, modal.
+Mỗi thành phần dùng chung chỉ có một nơi định nghĩa chính.
+Không copy/paste header hoặc footer vào từng trang.
+Không tách một đoạn HTML cực nhỏ thành component nếu việc tách đó không giúp tái sử dụng hoặc bảo trì.
+10.3. Quy tắc CSS
+Mọi file CSS của Client phải nằm trong:
+/public/assets/client/css/
+Mọi file CSS của Admin phải nằm trong:
+/public/assets/admin/css/
+CSS Partner nằm trong:
+/public/assets/partner/css/
+Mỗi trang có file CSS riêng khi cần.
+Ví dụ:
+client/css/pages/home.css
+client/css/pages/services.css
+client/css/pages/pricing.css
+client/css/pages/blog.css
+client/css/pages/templates.css
+client/css/pages/template-detail.css
+CSS dùng chung:
+client/css/common/tokens.css
+client/css/common/base.css
+client/css/common/layout.css
+client/css/components/header.css
+client/css/components/footer.css
+client/css/components/buttons.css
+client/css/components/forms.css
+Không viết một file CSS khổng lồ cho toàn website.
+Không phân mảnh thành hàng trăm file quá nhỏ không cần thiết.
+Không sử dụng !important để che lỗi kiến trúc CSS trừ khi có lý do đặc biệt.
+Không dùng inline CSS hoặc khối style trong Blade để thay thế file CSS.
+10.4. Quy tắc JavaScript
+Mọi file JavaScript Client phải nằm trong:
+/public/assets/client/js/
+Admin:
+/public/assets/admin/js/
+Partner:
+/public/assets/partner/js/
+Ví dụ:
+client/js/pages/home.js
+client/js/pages/templates.js
+client/js/pages/template-detail.js
+client/js/pages/invitation-editor.js
+client/js/pages/guest-management.js
+client/js/invitations/envelope.js
+JavaScript dùng chung:
+client/js/common/dom.js
+client/js/common/http.js
+client/js/common/events.js
+client/js/components/header.js
+client/js/components/modal.js
+Không viết JavaScript nội tuyến trong Blade.
+Không tạo global variables tùy tiện.
+Không dùng eval.
+Không chèn dữ liệu người dùng vào innerHTML không an toàn.
+Ưu tiên module import/export và các hàm nhỏ, có trách nhiệm rõ ràng.
+Các file không được phụ thuộc vòng tròn.
+10.5. Quy tắc CSS class bắt buộc
+TẤT CẢ CSS CLASS PHẢI CÓ TIỀN TỐ RÕ RÀNG.
+Không được sử dụng class chung chung:
+.container
+.row
+.col
+.card
+.button
+.title
+.box
+.active
+.modal
+.header
+Các tên trên chỉ được dùng nếu có tiền tố hợp lệ.
+Tiền tố theo trang Client:
+Trang
+Prefix bắt buộc
+Home
+mayhen_home_
+Services
+mayhen_service_
+Pricing
+mayhen_pricing_
+Templates
+mayhen_templates_
+Template Detail
+mayhen_template_detail_
+Blog Listing
+mayhen_blog_
+Blog Detail
+mayhen_blog_detail_
+About
+mayhen_about_
+Contact
+mayhen_contact_
+FAQ
+mayhen_faq_
+Authentication
+mayhen_auth_
+Customer Dashboard
+mayhen_dashboard_
+Invitation Editor
+mayhen_editor_
+Guest Management
+mayhen_guest_
+Checkout
+mayhen_checkout_
+Public Invitation
+mayhen_invitation_
+Partner Landing
+mayhen_partner_
+Prefix Admin:
+mayhen_admin_
+mayhen_admin_dashboard_
+mayhen_admin_user_
+mayhen_admin_template_
+mayhen_admin_order_
+mayhen_admin_payment_
+mayhen_admin_blog_
+mayhen_admin_setting_
+Prefix component dùng chung:
+mayhen_client_
+mayhen_client_header_
+mayhen_client_footer_
+mayhen_client_button_
+mayhen_client_modal_
+Quy ước tên:
+mayhen_[scope]_[component]_[element]
+Ví dụ:
+mayhen_home_hero
+mayhen_home_hero_title
+mayhen_home_hero_description
+mayhen_home_hero_action
+mayhen_home_feature_list
+mayhen_home_feature_item
+mayhen_blog_article_list
+mayhen_blog_article_item
+mayhen_admin_dashboard_stat_card
+Mỗi phần tử HTML cần thiết kế có class cụ thể và dễ xác định.
+Không yêu cầu class trên những phần tử HTML thuần như html, head, meta, nhưng mọi phần tử thuộc giao diện và có liên quan đến style hoặc JavaScript phải có class rõ ràng.
+Không được dựa vào class ngẫu nhiên do thư viện sinh ra.
+Không lồng selector CSS quá sâu.
+Selector chỉ áp dụng trong phạm vi trang/component của nó, tránh gây lỗi sang trang khác.
+10.6. Quy tắc class JavaScript
+Không trộn class styling và selector JavaScript khi dễ gây lỗi bảo trì.
+Ưu tiên sử dụng các thuộc tính data-* có ý nghĩa để tìm phần tử trong JavaScript.
+Ví dụ:
+data-mayhen-action
+data-mayhen-component
+data-mayhen-state
+Các class CSS vẫn phải theo prefix quy định.
+Không tự ý đổi class HTML mà chưa sửa CSS và JS liên quan.
+10.7. Kiểm soát shared components
+Trước khi tạo component, phải kiểm tra:
+Đã tồn tại chưa?
+Có thể tái sử dụng không?
+Có nên mở rộng component hiện tại không?
+Có làm ảnh hưởng các trang khác không?
+Không viết cùng một button, modal, toast, tabs, dropdown hoặc pagination nhiều lần ở nhiều file.
+Tất cả component dùng chung cần có tài liệu cách sử dụng.
+
+PHẦN 11. DATABASE VÀ MIGRATION — THIẾT KẾ SẠCH NGAY TỪ ĐẦU
+Đây là yêu cầu cực kỳ quan trọng.
+KHÔNG ĐƯỢC TÙY TIỆN THÊM BẢNG, THÊM CỘT, ĐỔI TÊN HOẶC XÓA DATABASE CHỈ VÌ CODING AGENT CHƯA THIẾT KẾ CẨN THẬN.
+11.1. Phân tích nghiệp vụ trước khi migration
+Phải xác định:
+Các thực thể.
+Quan hệ.
+Người sở hữu dữ liệu.
+Vòng đời dữ liệu.
+Trạng thái.
+Phân quyền.
+Điều kiện thanh toán.
+Phiên bản template.
+Nội dung thiệp.
+Khách mời.
+RSVP.
+Media.
+Lưu trữ.
+Quy trình xóa dữ liệu.
+Trước khi viết migration, tạo:
+docs/database/database-design.md
+docs/database/erd.md
+docs/database/table-specifications.md
+11.2. Nhóm bảng cần nghiên cứu
+Danh sách là mô hình nghiệp vụ cần đánh giá, không có nghĩa phải tạo mỗi mục thành một bảng riêng.
+A. Identity
+users
+roles hoặc cấu hình quyền phù hợp
+sessions
+password reset data
+audit records cần thiết
+B. Wedding
+weddings
+wedding_members
+wedding_events
+wedding_venues
+C. Templates
+invitation_templates
+template_categories
+template_versions
+template_assets
+D. Invitations
+invitations
+invitation_content hoặc cấu trúc tương đương
+invitation_versions
+invitation_publications hoặc version references
+invitation_settings
+E. Guests
+guest_groups
+guests
+guest_invitations
+guest_responses
+guest_messages
+F. Media
+media_assets
+albums
+album_items
+guest_uploads nếu có
+G. Commerce
+plans
+plan_entitlements hoặc cấu trúc tương đương
+orders
+order_items nếu cần
+payments
+payment_webhook_events
+coupons
+coupon_redemptions
+H. Partners
+partners
+partner_members
+partner_clients
+partner_transactions nếu có nghiệp vụ thực
+I. CMS
+posts
+post_categories
+tags nếu cần
+post_tag
+pages
+redirects
+J. System
+settings
+audit_logs
+jobs và các bảng hệ thống Laravel thực sự cần dùng
+Không lập tức tạo toàn bộ các bảng nêu trên.
+Phải hợp nhất các thực thể trùng trách nhiệm và loại bỏ bảng không cần thiết cho giai đoạn đang triển khai.
+11.3. Mỗi bảng phải có tài liệu
+Bảng đặc tả phải nêu:
+Tên.
+Mục đích.
+Cột.
+Kiểu dữ liệu.
+Nullability.
+Default.
+Primary key.
+Foreign key.
+Unique constraint.
+Index.
+Quan hệ.
+Ví dụ nghiệp vụ.
+Trạng thái.
+Quy tắc xóa.
+Quy tắc bảo mật.
+Dự kiến tăng trưởng dữ liệu.
+Không dùng JSON cho toàn bộ dữ liệu chỉ để tránh thiết kế bảng.
+Có thể dùng JSON có schema version cho những cấu hình giao diện hoặc nội dung template linh hoạt, nhưng thông tin thường xuyên lọc, thống kê và liên kết phải được mô hình hóa phù hợp.
+11.4. Migration
+Migration phải dễ đọc.
+Tên thể hiện thay đổi thực tế.
+Tạo dependency theo đúng thứ tự.
+Không sửa migration production đã chạy chỉ để thay đổi schema.
+Đánh giá tương thích khi triển khai thay đổi.
+Xem xét rollback.
+Không xóa dữ liệu hiện có.
+Không dùng migrate hoặc db trên môi trường có dữ liệu thật.
+Không dùng seed phá hủy dữ liệu.
+Không tạo migration mới trước khi xem đầy đủ schema hiện tại.
+Không tạo cột dự phòng tùy tiện.
+Không tạo bảng trùng chức năng.
+Không tạo index thừa.
+Không lưu thông tin thanh toán nhạy cảm không cần thiết.
+11.5. Khả năng mở rộng
+Phải tính đến:
+Một user có thể quản lý nhiều đám cưới.
+Một đám cưới có nhiều thiệp.
+Một đám cưới có nhiều sự kiện.
+Một đám cưới có nhiều nhóm khách.
+Một lời mời có thể bao gồm nhiều người.
+Một template có nhiều phiên bản.
+Một thiệp đã xuất bản có thể cần ổn định dù template gốc thay đổi.
+Một đối tác có nhiều khách.
+Một khách có thể được mời nhiều sự kiện.
+Các quan hệ phải được xác định chính xác trước khi code.
+
+PHẦN 12. ENGINE TEMPLATE THIỆP CƯỚI
+Không được xây dựng một hệ thống mà mỗi mẫu thiệp là một website viết lại hoàn toàn từ đầu.
+Cần có kiến trúc cân bằng giữa tái sử dụng và khả năng tạo thiết kế khác biệt.
+12.1. Phân tách dữ liệu
+Tách:
+Wedding Data.
+Invitation Content.
+Template Definition.
+Theme Configuration.
+Animation Configuration.
+Publication Snapshot.
+Guest Personalization.
+Không lưu tất cả dưới dạng HTML tùy ý do người dùng nhập.
+12.2. Cấu trúc template
+Mỗi template cần định nghĩa:
+ID.
+Slug.
+Name.
+Description.
+Category.
+Preview.
+Version.
+Supported sections.
+Design tokens.
+Color palettes.
+Font pairings.
+Animation preset.
+Responsive rules.
+Supported languages.
+Supported features.
+Publication status.
+12.3. Component library cho thiệp
+Nghiên cứu:
+Invitation Cover.
+Envelope.
+Couple Names.
+Couple Photo.
+Wedding Date.
+Wedding Calendar.
+Family Information.
+Ceremony Timeline.
+Venue.
+Google Maps Link.
+Story.
+Gallery.
+Countdown.
+RSVP.
+Guestbook.
+Gift QR.
+Music Toggle.
+Closing Message.
+Component có thể có nhiều layout variants.
+Không được biến tất cả mẫu thành một bố cục duy nhất.
+12.4. Tương thích khi cập nhật
+Khi sửa CSS/JS của template, phải đánh giá ảnh hưởng tới các thiệp đã xuất bản.
+Nghiên cứu phương án versioning hoặc publication snapshot đủ phù hợp.
+Không để sửa một mẫu mới khiến thiệp của hàng trăm khách hàng cũ bị vỡ giao diện.
+12.5. Template QA
+Mỗi template phải kiểm thử:
+Desktop.
+Tablet.
+Mobile.
+Tên dài.
+Tên ngắn.
+Ngày giờ dài.
+Địa chỉ dài.
+Nội dung thiếu ảnh.
+Ảnh ngang.
+Ảnh dọc.
+Font tiếng Việt.
+Slow network.
+Reduced motion.
+Browser back/forward.
+Animation skip.
+
+PHẦN 13. THANH TOÁN VÀ QUẢN LÝ GÓI
+13.1. Các gói đề xuất để nghiên cứu
+Free.
+Premium.
+Wedding Pro.
+Studio/Partner.
+Giá đề xuất ban đầu để kiểm thử thị trường:
+Free: 0đ.
+Premium: khoảng 149.000đ.
+Wedding Pro: khoảng 299.000đ.
+Không xem đây là giá cố định đã được thị trường xác nhận.
+AI phải phân tích giá đối thủ, chi phí vận hành, lưu trữ, thanh toán, hỗ trợ và ngân sách marketing trước khi chốt.
+13.2. Thanh toán
+Có thể nghiên cứu:
+Chuyển khoản ngân hàng.
+VietQR.
+SePay.
+VNPay.
+MoMo.
+Các phương thức hợp lệ khác.
+Chỉ tích hợp phương thức được chủ dự án lựa chọn và có thông tin kỹ thuật chính thức.
+Không tự ý tạo thanh toán giả.
+Không kích hoạt gói chỉ vì người dùng truy cập trang thành công.
+Cần xác minh trạng thái thanh toán tại backend.
+13.3. Quy tắc xử lý giao dịch
+Mỗi đơn hàng có mã duy nhất.
+Idempotency.
+Callback verification.
+Chống xử lý trùng.
+Lưu raw webhook tối thiểu cần thiết và bảo vệ dữ liệu.
+Trạng thái pending, paid, failed, expired, refunded theo nghiệp vụ.
+Tách order status với payment status.
+Đối soát khi có lỗi.
+Retry hợp lý.
+Không log bí mật API.
+Không lưu dữ liệu nhạy cảm quá mức.
+Đặc biệt: QR chuyển khoản ngân hàng thông thường không tự vô hiệu hóa tại mọi ứng dụng ngân hàng sau 15 phút. Phải tách thời hạn đơn hàng với khả năng quét/chuyển khoản và xử lý giao dịch đến muộn đúng quy trình.
+13.4. Hạn sử dụng
+Không hứa "lưu vĩnh viễn" nếu không có kế hoạch hạ tầng, lưu trữ và nghĩa vụ hỗ trợ lâu dài.
+Mỗi gói cần quy định:
+Thời hạn sử dụng.
+Thời hạn công khai.
+Thời hạn lưu media.
+Giới hạn dung lượng.
+Quyền xuất dữ liệu.
+Khả năng gia hạn.
+Khả năng nâng cấp.
+Quy trình hết hạn.
+
+PHẦN 14. SEO VÀ CONTENT MARKETING
+Mây Hẹn cần xây dựng SEO ngay từ kiến trúc.
+14.1. Technical SEO
+Semantic HTML.
+URL thân thiện.
+Server-rendered content.
+Unique title.
+Meta description.
+Canonical.
+Open Graph.
+Twitter/X card khi phù hợp.
+Sitemap.
+Robots.
+Breadcrumb.
+Structured data được Google hỗ trợ.
+Hreflang khi triển khai đa ngôn ngữ.
+Redirect 301.
+
+
+Pagination hợp lý.
+Internal linking.
+Image SEO.
+Core Web Vitals.
+Không tạo structured data giả hoặc đánh dấu loại schema không phù hợp.
+14.2. Nhóm từ khóa
+Nghiên cứu:
+Thiệp cưới online.
+Tạo thiệp cưới online.
+Thiệp cưới điện tử.
+Thiệp cưới miễn phí.
+Thiệp cưới đẹp.
+Thiệp cưới hiện đại.
+Thiệp cưới truyền thống.
+Thiệp cưới Hàn Quốc.
+Thiệp cưới tối giản.
+Thiệp báo hỷ.
+Thiệp cưới nhà trai.
+Thiệp cưới nhà gái.
+Thiệp cưới song ngữ.
+Thiệp cưới có QR.
+Mẫu lời mời đám cưới.
+Cách gửi thiệp cưới qua Zalo.
+RSVP là gì.
+Cách ghi thiệp cưới.
+Cách tính ngày cưới.
+Không tạo hàng trăm trang SEO có nội dung trùng lặp.
+14.3. Content Strategy
+Đề xuất nhóm:
+Hướng dẫn tạo thiệp.
+Mẫu thiệp.
+Phong cách thiết kế.
+Văn hóa cưới Việt Nam.
+Lời mời cưới.
+Kinh nghiệm tổ chức cưới.
+Quản lý khách mời.
+Lễ ăn hỏi.
+Lễ cưới.
+Thiệp song ngữ.
+Bài viết phải có thông tin hữu ích, không viết lan man để nhồi từ khóa.
+14.4. Thiệp cá nhân hóa và SEO
+Không để các đường dẫn có dữ liệu khách riêng bị index.
+Cần chính sách rõ cho:
+Thiệp public.
+Thiệp private.
+Thiệp cá nhân hóa.
+Thiệp dùng thử.
+Thiệp hết hạn.
+Thiệp đã đóng.
+Thiết kế metadata phù hợp cho việc chia sẻ mà không rò rỉ dữ liệu cá nhân.
+
+PHẦN 15. BẢO MẬT VÀ QUYỀN RIÊNG TƯ
+Mây Hẹn xử lý dữ liệu cá nhân nên bảo mật là yêu cầu bắt buộc.
+Tuân thủ pháp luật Việt Nam hiện hành về bảo vệ dữ liệu cá nhân, bao gồm việc đánh giá áp dụng Luật số 91/2025/QH15 có hiệu lực từ 01/01/2026.
+Cần nghiên cứu và triển khai phù hợp:
+Thông báo mục đích thu thập.
+Quyền truy cập.
+Quyền sửa.
+Quyền xóa theo quy định.
+Thời hạn lưu.
+Bảo vệ danh sách khách.
+Bảo vệ ảnh.
+Bảo vệ lời chúc.
+Bảo vệ thông tin tài khoản ngân hàng.
+Kiểm soát quyền nhân viên.
+Sao lưu.
+Phục hồi.
+Nhật ký thay đổi.
+Xử lý yêu cầu dữ liệu.
+15.1. Security Controls
+CSRF.
+XSS prevention.
+SQL injection prevention.
+Authorization.
+Mass assignment protection.
+Upload validation.
+File type inspection.
+Size limits.
+Rate limiting.
+Email validation.
+Password hashing.
+Secure cookies.
+Session protection.
+Webhook security.
+Sensitive data masking.
+Input/output encoding.
+Safe HTML rendering.
+Server-side validation.
+15.2. Nội dung do khách mời tạo
+Lời chúc, tên hiển thị, ảnh và thông tin RSVP phải được kiểm soát.
+Không render HTML nguy hiểm từ nội dung người dùng.
+Có biện pháp chống spam phù hợp, chẳng hạn rate limiting, honeypot hoặc xác minh khi có dấu hiệu lạm dụng.
+15.3. Dữ liệu thanh toán và QR mừng cưới
+Không nhầm QR nhận tiền mừng của cô dâu chú rể với thanh toán mua dịch vụ của Mây Hẹn.
+Phải có mô hình dữ liệu và UI tách biệt hoàn toàn.
+Không hiển thị giao dịch "đã nhận tiền mừng" nếu không có nguồn xác thực.
+
+PHẦN 16. HIỆU NĂNG VÀ CHẤT LƯỢNG KỸ THUẬT
+16.1. Mục tiêu hiệu suất
+Thiết kế hướng tới Core Web Vitals tốt:
+LCP ở mức tốt.
+INP ở mức tốt.
+CLS ở mức tốt.
+Theo dõi cả dữ liệu phòng thí nghiệm và dữ liệu người dùng thực khi có đủ lưu lượng.
+Đặt ngân sách tài nguyên riêng cho website marketing và trang thiệp vì trang thiệp có nhiều hình ảnh, chuyển động và nhạc hơn.
+Không hy sinh chất lượng hình ảnh quá mức, nhưng phải tối ưu đúng cách.
+16.2. Image Optimization
+Ảnh responsive.
+Lazy loading.
+WebP/AVIF khi phù hợp.
+Kích thước hiển thị đúng.
+Nén hợp lý.
+Không kéo ảnh gốc cực lớn xuống điện thoại.
+Giữ tỷ lệ.
+Tối ưu album.
+Kiểm tra orientation.
+Xử lý EXIF và thông tin nhạy cảm phù hợp.
+16.3. Animation Performance
+Ưu tiên opacity/transform.
+Hạn chế repaint lớn.
+Không cập nhật layout liên tục trong scroll handler.
+Kiểm soát số lượng phần tử động.
+Dừng animation không cần thiết.
+Tối ưu khi tab ở background.
+Reduced-motion fallback.
+16.4. Backend Performance
+Query optimization.
+Eager loading phù hợp.
+Pagination.
+Cache.
+Queue cho tác vụ nặng.
+Index database hợp lý.
+Tránh N+1.
+Giám sát lỗi.
+Kiểm soát upload.
+Không tải toàn bộ dữ liệu khách mời trong một request khi danh sách lớn.
+
+PHẦN 17. DESIGN SYSTEM VÀ COMPONENT INVENTORY
+Phải lập thiết kế hệ thống trước khi làm hàng loạt trang.
+17.1. Design Tokens
+Tài liệu cần có:
+Colors.
+Typography.
+Spacing.
+Radius.
+Shadows.
+Breakpoints.
+Grid.
+Containers.
+Motion.
+Z-index.
+Icon sizing.
+Form controls.
+17.2. Client Components
+Tối thiểu nghiên cứu:
+Header.
+Navigation.
+Mobile navigation.
+Footer.
+Buttons.
+Link.
+Form control.
+Checkbox.
+Radio.
+Select.
+Textarea.
+Search.
+Tabs.
+Accordion.
+Modal.
+Drawer.
+Toast.
+Tooltip.
+Breadcrumb.
+Pagination.
+Template card.
+Price card.
+Feature block.
+Skeleton.
+Empty state.
+Error state.
+Confirmation dialog.
+17.3. Admin Components
+Sidebar.
+Topbar.
+Data table.
+Filters.
+Pagination.
+Search.
+Form.
+Modal.
+Drawer.
+Status indicator.
+Action menu.
+Tabs.
+Date input.
+File uploader.
+Charts với HTML/SVG hoặc công nghệ native thích hợp.
+Audit view.
+Alert.
+Confirmation dialog.
+Không tạo một component quá đa năng với hàng chục tham số khó hiểu.
+17.4. Tài liệu từng trang
+Phải làm rõ:
+Section order.
+Component reuse.
+Visual hierarchy.
+Primary CTA.
+Secondary CTA.
+Desktop layout.
+Mobile layout.
+Accessibility.
+Animation.
+SEO.
+Dữ liệu.
+
+PHẦN 18. BẮT BUỘC TẠO BỘ AI SKILLS CHO DỰ ÁN
+Đây là yêu cầu bắt buộc trước khi coding sâu.
+Coding agent phải chủ động tạo bộ tài liệu skills để các AI agent khác hoặc chính agent này có thể hiểu dự án trong những phiên làm việc sau.
+Không chỉ tạo một file hướng dẫn chung.
+18.1. Thư mục chuẩn
+/.agents/skills/
+Mỗi skill có:
+/.agents/skills/[skill-name]/SKILL.md
+Có thể thêm tài liệu hỗ trợ trong cùng thư mục khi thực sự cần.
+Tạo:
+/AGENTS.md
+làm file điều phối quy tắc chung cho các coding agents.
+Không coi các file skill là tài liệu viết một lần rồi bỏ. Phải duy trì chúng phù hợp với code thực tế.
+18.2. Danh sách skill bắt buộc
+Skill 1 — mayhen-project-architecture
+Quy tắc kiến trúc Laravel, module, dependency, file structure, boundaries.
+Skill 2 — mayhen-brand-design
+Nhận diện thương hiệu, màu sắc, typography, spacing, visual direction.
+Skill 3 — mayhen-ui-ux
+Quy trình thiết kế page, responsive, user flows, accessibility.
+Skill 4 — mayhen-blade
+Quy tắc viết Blade, layout, component, tách file, escape và tái sử dụng.
+Skill 5 — mayhen-css
+Quy tắc CSS thuần, bắt buộc prefix, token, responsive, tránh conflict.
+Skill 6 — mayhen-javascript
+Quy tắc JavaScript thuần, module, DOM, events, fetch, cleanup, validation.
+Skill 7 — mayhen-animation
+Animation system, motion design, performance, reduced motion, animation QA.
+Skill 8 — mayhen-invitation-templates
+Template engine, section schema, components, versioning, preview, publication.
+Skill 9 — mayhen-database
+Database design, relationships, constraints, migrations, indexes, schema review.
+Skill 10 — mayhen-laravel-backend
+Controller, Request, Model, Service, Policy, Jobs, Events, transactions.
+Skill 11 — mayhen-auth-security
+Authentication, authorization, sensitive data, sessions, upload security.
+Skill 12 — mayhen-payments
+Orders, payments, webhook verification, idempotency, reconciliation, refunds.
+Skill 13 — mayhen-guest-rsvp
+Guest groups, invitations, links, RSVP, privacy, exports.
+Skill 14 — mayhen-admin
+Admin modules, UI, CRUD, permissions, validation, audit.
+Skill 15 — mayhen-partners
+Studio and reseller modules, commission and tenant-like data ownership.
+Skill 16 — mayhen-seo
+Technical SEO, content, metadata, sitemap, canonical, structured data.
+Skill 17 — mayhen-performance
+Image optimization, animation budgets, caching, Core Web Vitals.
+Skill 18 — mayhen-testing-quality
+Test strategy, acceptance criteria, browser review, temporary test cleanup.
+Skill 19 — mayhen-deployment
+Environment, deployment, backups, rollback, monitoring.
+Skill 20 — mayhen-code-review
+Checklist kiểm tra file thay đổi, duplicate logic, security, naming, regression.
+18.3. Cấu trúc nội dung mỗi SKILL.md
+Mỗi skill phải có:
+Skill name.
+Purpose.
+Scope.
+Applicable paths.
+Mandatory rules.
+Forbidden patterns.
+Workflow.
+Naming conventions.
+Architecture conventions.
+Example file structure.
+Quality checklist.
+Testing checklist.
+Common mistakes.
+Definition of Done.
+Dependencies on other skills.
+Rules for updating the skill itself.
+Không viết skill chung chung chỉ có vài câu.
+Không copy toàn bộ AGENTS.md vào mọi skill.
+Các skill phải có trách nhiệm rõ ràng, hạn chế trùng lặp.
+18.4. Quy tắc kích hoạt skill
+Trong AGENTS.md, xây dựng cơ chế hướng dẫn:
+Sửa CSS → đọc mayhen-css, mayhen-brand-design, mayhen-ui-ux.
+Sửa animation → đọc mayhen-animation, mayhen-performance.
+Sửa Blade → đọc mayhen-blade, mayhen-css.
+Sửa migrations → đọc mayhen-database.
+Sửa payment → đọc mayhen-payments, mayhen-auth-security.
+Sửa template → đọc mayhen-invitation-templates, mayhen-animation.
+Sửa SEO → đọc mayhen-seo.
+Sửa Admin → đọc mayhen-admin.
+Deploy → đọc mayhen-deployment.
+Review code → đọc mayhen-code-review.
+Nếu hệ thống coding agent không tự động nhận diện thư mục skills, phải có hướng dẫn rõ trong AGENTS.md để agent đọc thủ công đúng file trước khi làm việc.
+18.5. Quy tắc duy trì
+Khi quyết định kiến trúc thay đổi:
+Xác định skill liên quan.
+Kiểm tra quy tắc hiện tại.
+Đề xuất thay đổi.
+Cập nhật tài liệu khi được chấp thuận.
+Kiểm tra ảnh hưởng tới các skill khác.
+Không được tự sửa skill chỉ để hợp thức hóa code sai vừa viết.
+
+PHẦN 19. QUY TẮC TEST, FILE TẠM VÀ XÓA FILE
+Đây là yêu cầu nghiêm ngặt.
+19.1. Không được tự ý xóa file
+Trước khi xóa file phải biết:
+File do ai tạo.
+File thuộc nhiệm vụ nào.
+File có đang được tham chiếu không.
+File có tồn tại trước phiên làm việc không.
+File có chứa dữ liệu thật không.
+Việc xóa có ảnh hưởng nơi khác không.
+Không xóa file chỉ vì cho rằng nó không còn cần thiết.
+Không chạy lệnh xóa hàng loạt, reset hoặc clean trên repository khi chưa kiểm tra phạm vi.
+Không sử dụng các lệnh nguy hiểm để sửa nhanh tình trạng Git.
+19.2. Quy tắc file test tạm
+Trong quá trình kiểm thử, coding agent có thể tạo file tạm thuộc phạm vi nhiệm vụ.
+Bắt buộc:
+Ghi nhận danh sách file test tạm được tạo.
+Thực hiện kiểm thử.
+Kiểm tra kết quả.
+Ghi kết quả và những lỗi phát hiện.
+Xóa các file test tạm do chính agent tạo sau khi hoàn thành.
+Kiểm tra lại Git diff và trạng thái repository.
+Không để sót ảnh screenshot debug, HTML demo, test output hoặc file log tạm không cần thiết.
+Không được tự ý xóa file test hoặc file khác vốn đã tồn tại trước nhiệm vụ.
+Nếu có bộ kiểm thử regression được dự án chủ động lưu giữ lâu dài, phải phân biệt rõ với file test tạm. Khi yêu cầu không lưu file test mới được áp dụng, chỉ xóa những file mới do agent tạo sau khi đã kiểm thử và ghi nhận kết quả; không phá hủy bộ kiểm thử gốc.
+19.3. Kiểm thử bắt buộc
+Sau mỗi hạng mục:
+Kiểm tra syntax.
+Kiểm tra route.
+Kiểm tra validation.
+Kiểm tra database.
+Kiểm tra quyền truy cập.
+Kiểm tra UI.
+Kiểm tra responsive.
+Kiểm tra lỗi console.
+Kiểm tra CSS conflict.
+Kiểm tra JS runtime.
+Kiểm tra tương tác.
+Kiểm tra dữ liệu thật/giả.
+Kiểm tra security nếu liên quan.
+Kiểm tra regression các module dùng chung.
+Không tuyên bố PASS khi chưa chạy kiểm thử.
+Nếu môi trường không có khả năng mở browser hoặc chạy một bài test cụ thể, ghi rõ "chưa kiểm thử".
+19.4. Quy tắc sau mỗi nhiệm vụ
+Chỉ báo cáo:
+Chức năng hoàn thành.
+Kết quả thực tế.
+File đã tạo.
+File đã sửa.
+File test tạm đã xóa.
+Migration đã thêm hoặc thay đổi.
+Các kiểm thử đã chạy.
+Lỗi còn tồn tại.
+Rủi ro.
+Công việc tiếp theo.
+Ưu tiên cung cấp bản tóm tắt thay đổi và không gửi lại toàn bộ file không thay đổi.
+
+PHẦN 20. QUY TRÌNH PHÁT TRIỂN THEO GIAI ĐOẠN
+Phải có roadmap chi tiết nhưng triển khai tuần tự.
+Không chạy song song những tác vụ có thể gây xung đột schema, file hoặc business logic.
+Giai đoạn 0 — Khảo sát repository
+Việc cần làm:
+Kiểm tra cấu trúc.
+Kiểm tra Laravel version.
+Kiểm tra PHP.
+Kiểm tra Composer.
+Kiểm tra database.
+Kiểm tra routes.
+Kiểm tra migrations.
+Kiểm tra models.
+Kiểm tra frontend hiện có.
+Kiểm tra Git status.
+Kiểm tra các file quan trọng.
+Kết quả:
+Repository inventory.
+Technical constraints.
+Risks.
+Existing code that must be preserved.
+Không sửa code ở bước này.
+Giai đoạn 1 — Phân tích đối thủ
+Hoàn thành competitor analysis.
+Tổng hợp:
+Chức năng đã phổ biến.
+Chức năng đáng học.
+Cơ hội khác biệt.
+Rủi ro kinh doanh.
+Gói giá đề xuất.
+Giai đoạn 2 — Product Requirements
+Viết tài liệu:
+PRD.
+User personas.
+Use cases.
+User journeys.
+User stories.
+Feature priority.
+MVP scope.
+Post-MVP scope.
+Acceptance criteria.
+Ưu tiên MoSCoW hoặc RICE nếu phù hợp.
+Không triển khai mọi chức năng cùng lúc.
+Giai đoạn 3 — UX/UI
+Thiết kế:
+Sitemap.
+Navigation.
+Information architecture.
+Wireframes.
+Design tokens.
+Component inventory.
+Home page.
+Template listing.
+Template detail.
+Invitation preview.
+Editor.
+Customer dashboard.
+Admin dashboard.
+Có thể bắt đầu từ thiết kế trong tài liệu trước khi viết giao diện thực.
+Giai đoạn 4 — Database Design
+ERD.
+Table specifications.
+Relationship review.
+Index plan.
+Security/data ownership review.
+Migration plan.
+Chỉ viết migrations khi thiết kế được duyệt.
+Giai đoạn 5 — Project Foundation
+Laravel setup.
+Environment config.
+Base routes.
+Base layout.
+Asset structure.
+Common CSS.
+Common JS.
+Error pages.
+Base authentication nếu cần.
+Core authorization.
+Giai đoạn 6 — Client Marketing Website
+Triển khai từng trang:
+Header/Footer.
+Home.
+Templates.
+Template Detail.
+Services.
+Pricing.
+About.
+Contact.
+FAQ.
+Policy pages.
+Không làm toàn bộ trong một lần.
+Sau mỗi trang phải kiểm thử riêng.
+Giai đoạn 7 — Invitation Design System
+Template schemas.
+Core sections.
+CSS tokens.
+Animation presets.
+Preview engine.
+Template versioning approach.
+Hoàn thành một template chất lượng cao trước.
+Sau đó mới triển khai mẫu thứ hai, thứ ba.
+Giai đoạn 8 — Invitation Editor
+Quick creation.
+Data forms.
+Preview.
+Autosave.
+Upload.
+Template selection.
+Draft.
+Publish.
+Error handling.
+Mobile editing.
+Giai đoạn 9 — Invitation Publishing
+Public URLs.
+Preview vs published state.
+Sharing metadata.
+Visibility.
+Expiration.
+Public access.
+Responsive.
+Performance.
+Giai đoạn 10 — Guest & RSVP
+Guest list.
+Grouping.
+Import/export.
+Personalized links.
+RSVP.
+Wishes.
+Reporting.
+Giai đoạn 11 — Commerce
+Plans.
+Checkout.
+Orders.
+Payment verification.
+Entitlements.
+Payment history.
+Error handling.
+Giai đoạn 12 — Admin
+Dashboard.
+Users.
+Templates.
+Invitations.
+Plans.
+Orders.
+Payments.
+CMS.
+Settings.
+Audit.
+Giai đoạn 13 — SEO & Blog
+Blog.
+Categories.
+SEO metadata.
+Sitemap.
+Internal links.
+Structured data.
+Search Console preparation.
+Giai đoạn 14 — Advanced Wedding Management
+Wedding events.
+Advanced RSVP.
+Table planning.
+Post-wedding album.
+Thanks cards.
+Guest uploads.
+Giai đoạn 15 — Partner Platform
+Studio dashboard.
+Customer management.
+Partner pricing.
+Commission.
+Branding.
+Reporting.
+Giai đoạn 16 — AI & Advanced Tools
+OCR from physical invitation.
+Copywriting assistance.
+Image assistance.
+Multilingual expansion.
+Export tools.
+Chỉ triển khai các chức năng có nhu cầu đã được xác nhận.
+Giai đoạn 17 — Final QA & Release
+Functional QA.
+Cross-browser QA.
+Mobile QA.
+Security review.
+Payment verification.
+Performance testing.
+Backup.
+Restore test.
+Deployment checklist.
+Rollback plan.
+Monitoring.
+SEO verification.
+
+PHẦN 21. KẾ HOẠCH KINH DOANH VÀ ĐO LƯỜNG
+Ngoài kỹ thuật, AI phải lập kế hoạch kinh doanh.
+21.1. Khách hàng mục tiêu
+Cặp đôi cần thiệp nhanh.
+Cặp đôi muốn thiệp đẹp, cao cấp.
+Cặp đôi có nhiều khách mời.
+Cặp đôi có khách ở xa.
+Cặp đôi có khách quốc tế.
+Studio.
+Wedding planner.
+Tiệm in thiệp.
+21.2. Nguồn doanh thu
+Nghiên cứu:
+Bán thiệp đơn lẻ.
+Gói Premium.
+Gói Wedding Pro.
+Thiết kế hộ.
+Thiệp nhà trai/nhà gái.
+Bộ ảnh/video.
+Gói studio.
+White-label.
+Dịch vụ bổ sung.
+21.3. Chi phí
+Ước tính với giả định rõ:
+Domain.
+Hosting.
+Database.
+Storage.
+Backup.
+Bandwidth.
+Dịch vụ email.
+Payment fees.
+AI.
+Nhân sự thiết kế.
+Chăm sóc khách hàng.
+Marketing.
+Bảo trì.
+Không bịa doanh thu hoặc giả định chắc chắn có khách.
+21.4. KPI
+Theo dõi:
+Visitors.
+Template views.
+Preview starts.
+Drafts created.
+Completed previews.
+Signups.
+Checkouts.
+Paid orders.
+Conversion rate.
+Revenue.
+CAC.
+Refund rate.
+Support requests.
+Template popularity.
+Editor abandonment.
+RSVP completion.
+Site uptime.
+Error rate.
+Phân tích funnel và đề xuất thử nghiệm cải tiến định kỳ.
+
+PHẦN 22. TÀI LIỆU BẮT BUỘC CỦA DỰ ÁN
+Tạo bộ tài liệu có thể sử dụng lâu dài.
+Các file đề xuất:
+docs/PROJECT.md
+docs/research/competitor-analysis.md
+docs/product/prd.md
+docs/product/personas.md
+docs/product/user-journeys.md
+docs/product/feature-matrix.md
+docs/product/mvp-scope.md
+docs/product/roadmap.md
+docs/architecture/system-architecture.md
+docs/architecture/folder-structure.md
+docs/database/database-design.md
+docs/database/erd.md
+docs/database/table-specifications.md
+docs/design/brand-guidelines.md
+docs/design/design-system.md
+docs/design/page-inventory.md
+docs/design/component-inventory.md
+docs/design/animation-system.md
+docs/security/security-checklist.md
+docs/quality/test-strategy.md
+docs/operations/deployment-plan.md
+docs/implementation/task-breakdown.md
+docs/implementation/progress.md
+AGENTS.md
+Không tạo tài liệu trùng nội dung chỉ để tăng số lượng file.
+Mỗi tài liệu phải có giá trị thực tế.
+
+PHẦN 23. CÁCH CHIA TASK CHO CODING AGENT
+Mỗi task phải đủ nhỏ để kiểm tra độc lập.
+Ví dụ không hợp lệ:
+"Làm toàn bộ hệ thống Client."
+Ví dụ phù hợp:
+"Thiết kế Header responsive cho Client theo design system đã duyệt, tạo component Blade, CSS và JavaScript thuần, kiểm thử desktop/mobile."
+Mỗi task phải có:
+Task ID.
+Title.
+Goal.
+Business reason.
+Scope.
+Dependencies.
+Files expected.
+Database impact.
+UI requirements.
+Technical requirements.
+Acceptance criteria.
+Testing steps.
+Risks.
+Definition of Done.
+Skills to read.
+Rollback considerations.
+Nếu một task quá lớn, phải chia nhỏ.
+Không được tự ý làm các task không phụ thuộc nhau chỉ vì còn thời gian.
+
+PHẦN 24. QUY TẮC CODE REVIEW
+Mỗi lần hoàn thành một phần phải tự review:
+A. Kiến trúc
+Có đúng cấu trúc Laravel không?
+Có trùng logic không?
+Có tách trách nhiệm hợp lý không?
+Có tạo abstraction thừa không?
+B. Blade
+Có dùng layout/component phù hợp không?
+Có chứa CSS/JS inline không?
+Có escape output đúng không?
+Có semantic HTML không?
+C. CSS
+Tất cả class có prefix chưa?
+Có selector gây ảnh hưởng trang khác không?
+Có CSS trùng không?
+Có responsive đầy đủ không?
+Có !important không cần thiết không?
+D. JavaScript
+Có sử dụng thư viện bị cấm không?
+Có xử lý lỗi không?
+Có event listeners trùng không?
+Có memory leak không?
+Có lỗi DOM khi phần tử không tồn tại không?
+Có ảnh hưởng hiệu suất không?
+E. Database
+Có thêm migration không cần thiết không?
+Có thể tái sử dụng bảng/cột hiện tại không?
+Foreign key và index đã đúng chưa?
+Migration an toàn chưa?
+F. Security
+Có kiểm tra authorization không?
+Có validate input không?
+Có lọt dữ liệu nhạy cảm không?
+Có vấn đề upload/XSS/CSRF không?
+G. Business
+Chức năng có thực sự giải quyết nhu cầu người dùng không?
+Có thêm phức tạp không cần thiết không?
+Có đúng giai đoạn roadmap không?
+
+PHẦN 25. ĐỊNH DẠNG BÁO CÁO CỦA AI
+Sau mỗi giai đoạn, chỉ báo cáo những thông tin có giá trị:
+1. Giai đoạn
+Tên và phạm vi.
+2. Công việc hoàn thành
+Mô tả cụ thể.
+3. Quyết định kỹ thuật
+Nêu những quyết định ảnh hưởng kiến trúc.
+4. Danh sách file thay đổi
+Phân biệt:
+Created.
+Modified.
+Deleted temporary files.
+Không tự ý xóa file ngoài phạm vi được phép.
+5. Database
+Liệt kê mọi migration hoặc thay đổi schema; nếu không thay đổi, ghi rõ không thay đổi.
+6. Kết quả kiểm thử
+Nêu tên kiểm thử, kết quả, giới hạn của môi trường.
+7. Vấn đề còn tồn tại
+Không giấu lỗi.
+8. Công việc tiếp theo
+Chỉ đề xuất bước phù hợp với roadmap.
+9. Điểm chờ phê duyệt
+Những thay đổi quan trọng cần được chủ dự án chấp thuận.
+Không gửi lại hàng nghìn dòng source code trong báo cáo nếu không được yêu cầu.
+Ưu tiên danh sách file mới hoặc đã thay đổi.
+
+PHẦN 26. TIÊU CHUẨN HOÀN THÀNH SẢN PHẨM
+Mây Hẹn chỉ được coi là hoàn thành giai đoạn thương mại ban đầu khi:
+Khách truy cập được website ổn định.
+Giao diện đẹp và nhất quán trên desktop/mobile.
+Có những template thực sự chất lượng.
+Người dùng tự tạo được thiệp.
+Thiệp xem trước hoạt động tốt.
+Người dùng lưu và chỉnh sửa được thiệp.
+Thiệp công khai hoạt động đúng.
+Người dùng chia sẻ được link.
+Khách mời xem thiệp không cần tài khoản.
+RSVP hoạt động đúng.
+Lời chúc hoạt động đúng.
+Bản đồ chính xác.
+QR mừng cưới hiển thị an toàn.
+Thanh toán được xác minh.
+Admin quản lý được hệ thống.
+Dữ liệu người dùng được bảo vệ.
+Không có lỗi nghiêm trọng về giao diện.
+Không có lỗi thanh toán hoặc phân quyền nghiêm trọng.
+Không sử dụng CSS/JS framework bị cấm.
+Tất cả class giao diện tuân thủ naming convention.
+File Blade, CSS, JS được phân tách sạch.
+Database được thiết kế có căn cứ.
+Bộ skills đủ rõ để coding agent tiếp tục bảo trì.
+Không còn file test tạm không cần thiết.
+Có tài liệu vận hành và triển khai.
+
+PHẦN 27. YÊU CẦU THỰC HIỆN NGAY SAU KHI NHẬN PROMPT
+Đây là chỉ dẫn quan trọng nhất.
+KHÔNG BẮT ĐẦU VIẾT HÀNG LOẠT CODE NGAY.
+Trước tiên, hãy thực hiện theo thứ tự:
+Bước 1. Kiểm tra repository
+Đọc toàn bộ cấu trúc liên quan, công nghệ, tình trạng Git, các file quy tắc, migrations và mã nguồn hiện có.
+Không tự thay đổi hoặc xóa file trong bước khảo sát.
+Nếu repository chưa tồn tại, ghi nhận đây là dự án mới.
+Bước 2. Nghiên cứu đối thủ
+Đối chiếu từng website đã liệt kê.
+Không đoán tính năng không truy cập được.
+Tổng hợp điểm mạnh, vấn đề quan sát được và cơ hội Mây Hẹn có thể làm tốt hơn.
+Bước 3. Xây dựng product requirements
+Viết đầy đủ:
+Product vision.
+Target customers.
+User journeys.
+Full sitemap.
+Full feature inventory.
+MVP.
+V2.
+V3.
+Revenue model.
+Risks.
+Bước 4. Thiết kế UI/UX
+Xây dựng:
+Brand identity.
+Design system.
+Responsive rules.
+Motion principles.
+Page-by-page wireframe specification.
+Invitation editor UX.
+Invitation animation design.
+Phải đặt chất lượng thiết kế thiệp và trải nghiệm người dùng lên hàng đầu.
+Bước 5. Thiết kế kiến trúc
+Đề xuất:
+Laravel structure.
+Blade structure.
+CSS structure.
+JS structure.
+Template engine.
+Database ERD.
+Module boundaries.
+Security architecture.
+Deployment architecture.
+Bước 6. Tạo bộ skills
+Tạo AGENTS.md và bộ SKILL.md theo danh sách quy định.
+Đảm bảo các skill thống nhất với kiến trúc đã lựa chọn.
+Bước 7. Tạo task breakdown
+Chia toàn bộ hệ thống thành các task nhỏ, có dependency, độ ưu tiên, acceptance criteria, các file dự kiến và thứ tự triển khai.
+Bước 8. Tổng hợp phương án
+Báo cáo đầy đủ:
+Kiến trúc đề xuất.
+Ưu và nhược điểm.
+Những hạng mục ưu tiên.
+Những hạng mục không nên làm sớm.
+Database design.
+UI direction.
+Animation strategy.
+Development roadmap.
+Risk register.
+Danh sách file tài liệu/skill đã tạo.
+Bước lập trình đầu tiên được đề xuất.
+Bước 9. Dừng tại checkpoint
+Sau khi lập kế hoạch và hoàn thành bộ tài liệu được phép tạo, dừng trước bước triển khai sản phẩm.
+Không tự ý:
+Chạy migrate.
+Xóa dữ liệu.
+Cài package.
+Sửa cấu hình production.
+Deploy.
+Thực hiện thanh toán thật.
+Xóa file gốc.
+Viết toàn bộ sản phẩm khi chưa duyệt kế hoạch.
+Đợi chủ dự án duyệt phương án trước khi bắt đầu giai đoạn coding đầu tiên.
+
+NGUYÊN TẮC CUỐI CÙNG
+Mây Hẹn không được là bản sao của các website thiệp cưới hiện tại.
+Mục tiêu không phải có nhiều tính năng nhất mà là sản phẩm đẹp, dễ sử dụng, ổn định, đáng tin cậy và có khả năng kinh doanh thực tế.
+Mọi quyết định kỹ thuật cần phục vụ trải nghiệm khách hàng và khả năng bảo trì dài hạn.
+Đặc biệt phải ghi nhớ:
+Thiệp cưới là sản phẩm mang giá trị cảm xúc.
+Animation phải đẹp, không màu mè.
+Typography, bố cục, ảnh và chuyển động quan trọng hơn hiệu ứng phô trương.
+Giao diện mobile phải được ưu tiên.
+CSS và JavaScript phải viết thuần.
+File Blade, CSS, JS phải tách rõ ràng.
+Mọi class phải có prefix mayhen_ theo trang hoặc component.
+Cấu trúc Admin và Client độc lập, sạch sẽ.
+Database và migrations phải được thiết kế cẩn thận.
+Không tạo bảng, cột, file và abstraction tùy tiện.
+Không xóa file không được phép.
+File test tạm do agent tạo phải được dọn sau kiểm thử.
+Bộ skills phải được tạo và duy trì.
+Mỗi task đều phải có kiểm thử và báo cáo.
+Sau mỗi bước chỉ gửi các file thay đổi và thông tin liên quan.
+Tuyệt đối không tự ý mở rộng phạm vi khi chưa được chấp thuận.
+BẮT ĐẦU BẰNG GIAI ĐOẠN KHẢO SÁT, PHÂN TÍCH ĐỐI THỦ VÀ LẬP KẾ HOẠCH KIẾN TRÚC TỔNG THỂ. KHÔNG TRIỂN KHAI TOÀN BỘ CODE NGAY.
+3. Thứ tự mình khuyên bạn thực sự triển khai
+Mặc dù prompt đã liệt kê đầy đủ chức năng, mình nghĩ cần ưu tiên bốn trụ cột sau để Mây Hẹn không bị biến thành một dự án rất lớn nhưng mãi chưa bán được sản phẩm.
+Ưu tiên 1 — Giao diện và 3 mẫu thiệp xuất sắc
+Trang chủ đẹp, thư viện mẫu có bố cục tốt và 3 thiệp mẫu với animation hoàn chỉnh. Đây là thứ khách hàng nhìn thấy đầu tiên và cũng là lý do quan trọng để họ sẵn sàng trả tiền.
+Ưu tiên 2 — Khách tự tạo thiệp thật dễ
+Editor nhanh, xem trước trực tiếp, chỉnh sửa trên điện thoại, lưu nháp và xuất bản. Không cần làm công cụ thiết kế tự do phức tạp ngay lập tức.
+Ưu tiên 3 — Gửi thiệp và quản lý khách mời
+Link cá nhân hóa, Zalo, QR, RSVP, lời chúc. Đây là các tính năng thực tế khiến khách dùng thiệp online thay cho một ảnh thiệp tĩnh.
+Ưu tiên 4 — Thanh toán và vận hành
+Có gói trả phí, xác minh giao dịch, quản lý thiệp và Admin đủ dùng để bắt đầu bán hàng. Sau khi có khách thật mới đầu tư sâu vào studio, AI và quản lý bàn tiệc.
+Một lưu ý kỹ thuật mình muốn nhấn mạnh: hệ thống template và cấu trúc dữ liệu thiệp nên được thiết kế đúng ngay từ đầu, vì chúng quyết định khả năng mở rộng hàng trăm mẫu sau này. Ngược lại, các tính năng như AI, xếp bàn tự động hay white-label có thể để sau mà không ảnh hưởng nhiều nếu kiến trúc lõi đã được chuẩn bị.
+Prompt trên cũng đã quy định rõ việc không xóa file gốc và dọn file test tạm do agent tạo. Điều này giúp tránh tình trạng một coding agent chạy lệnh dọn dẹp rồi vô tình xóa mất code hoặc bộ kiểm thử sẵn có.
+Hướng mình đánh giá phù hợp nhất cho mayhen.vn: Đầu tư rất mạnh vào chất lượng thiết kế thiệp, animation và trải nghiệm mobile trước, sau đó mới mở rộng chức năng quản lý đám cưới. Դա mới là cách tạo ra sự khác biệt mà khách hàng có thể cảm nhận ngay khi mở một tấm thiệp.

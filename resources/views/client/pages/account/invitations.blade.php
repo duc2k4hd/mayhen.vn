@@ -543,6 +543,27 @@
                                 </svg>
                                 <span>Album 10 Ảnh Cưới</span>
                             </a>
+
+                            {{-- Nút Hộp Mừng Cưới & VietQR (Section 9 Standards, IDEA-F07 & Đề Án 138) --}}
+                            <a href="{{ route('account.gift_registry.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Cấu hình Hộp Mừng Cưới 3D, sinh VietQR chuẩn NAPAS và Quà tân hôn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                                    <rect x="2" y="7" width="20" height="5"></rect>
+                                    <line x1="12" y1="22" x2="12" y2="7"></line>
+                                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                                </svg>
+                                <span>Hộp Mừng Cưới &amp; VietQR</span>
+                            </a>
+
+                            {{-- Nút Sổ Ký Tên, Lưu Bút & Lời Cảm Ơn (Section 10 Standards, IDEA-F08 & Đề Án 139) --}}
+                            <a href="{{ route('account.interactive_ending.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý Sổ Ký Tên cảm ứng, kiểm duyệt Lưu Bút và Lời Cảm Ơn khép lại thiệp">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                                <span>Sổ Ký Tên &amp; Lời Cảm Ơn</span>
+                            </a>
                         </div>
 
                         <div style="margin-top: 8px;">

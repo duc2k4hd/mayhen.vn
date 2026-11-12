@@ -11142,50 +11142,99 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
-### 137. Đề Án 137: Phân Hệ Quản Trị Album Cưới Nghệ Thuật 10 Ảnh, Bố Cục Tạp Chí Đa Phong Cách & Lightbox Toàn Màn Hình Tương Tác (Curated 10-Photo Editorial Wedding Gallery, Multi-Style Layout & Fullscreen Touch Lightbox Suite — IDEA-A05, Section 8/9 Invitation Standards & Section 27 PRD V3)
+### 138. Đề Án 138: Phân Hệ Quản Trị Hộp Mừng Cưới 3D Tương Tác, VietQR Động Chuẩn NAPAS & Danh Sách Quà Cưới Mong Ước (Interactive 3D Gift Box, Dynamic VietQR Generator & Digital Wedding Registry Suite — IDEA-F07, Section 9 Invitation Standards & Section 27 PRD V3)
 - **Mục tiêu**:
-  - Triển khai phân hệ quản lý và trình diễn Album 10 ảnh cưới nghệ thuật hoàn chỉnh chuẩn Quiet Luxury theo IDEA-A05, Section 8/9 Invitation Standards và Section 27 PRD V3:
-  - Cung cấp **3 Phong Cách Bố Cục Trình Diễn Album Ảnh Cưới (Gallery Layout Styles)**:
-    1. *Tạp Chí Nghệ Thuật (Editorial Masonry)*: Bố cục 12 cột so le cao thấp bất đối xứng lấy cảm hứng từ tạp chí Vogue/Elle, tạo chiều sâu thị giác phong phú và nghệ thuật.
-    2. *Lướt Ngang 3D (Coverflow Carousel)*: Trình diễn cuộn ngang thẻ ảnh 3D có nút mũi tên Trước/Sau, dải chấm tròn phân trang và tối ưu trải nghiệm vuốt chạm (touch swipe) trên di động.
-    3. *Lưới Cổ Điển Sang Trọng (Classic Luxury Grid)*: Lưới 2 cột truyền thống với tỉ lệ ảnh 4:5 sang trọng, đường bo góc mềm mại và bóng đổ lụa cao cấp.
-  - Quản lý **10 Slot Ảnh Cưới Độc Bản (Slot 01 -> Slot 10)**:
-    - Xem trước hình ảnh sắc nét, tải ảnh cưới mới lên máy chủ qua AJAX một chạm (`/thiep/{id}/album-anh-cuoi/upload-anh`).
-    - Nhập chú thích ảnh nghệ thuật (Photo Captions) ghi dấu những lời tự tình hoặc địa danh kỷ niệm cho từng bức ảnh.
-    - Di chuyển vị trí Lên/Xuống (Move Up/Down Reordering) mượt mà đổi thứ tự xuất hiện ảnh ngay tức thì bằng Pure JavaScript.
-  - Chế độ **Lightbox Toàn Màn Hình Đen Tuyền Sang Trọng (Touch Lightbox Modal)**:
-    - Chạm vào bất kỳ ảnh nào trong album để mở màn hình phóng to toàn màn hình đen mờ `backdrop-filter: blur(8px)`.
-    - Hỗ trợ xem ảnh trước/kế tiếp, bộ đếm tiến trình (`1 / 10`), hiển thị chú thích ảnh phông chữ Playfair Display thanh lịch.
-    - Tương tác đầy đủ bằng bàn phím (`Escape`, `ArrowLeft`, `ArrowRight`) trên máy tính và vuốt chạm trên điện thoại di động.
-  - Component Section 8/9 chuẩn hóa `resources/views/client/components/wedding-gallery-suite.blade.php`:
-    - Chuẩn BEM class `mayhen_invitation_gallery`, `mayhen_invitation_gallery_wrap`, `mayhen_invitation_gallery_item`, `mayhen_invitation_lightbox`.
-    - Hợp đồng Live Sync `data-sync-target="gallery.{0..9}"` cho toàn bộ 10 ảnh cưới.
-  - Tự động đồng bộ hai chiều vào `custom_config['gallery']` và bảng `weddings->extra_data['gallery']`.
-  - Ghi nhận AuditLogger `GALLERY_UPDATED`.
+  - Triển khai phân hệ quản lý Hộp Mừng Cưới điện tử tương tác và VietQR động chuẩn NAPAS 247 hoàn chỉnh chuẩn Quiet Luxury theo IDEA-F07, Section 9 Invitation Standards và Section 27 PRD V3:
+  - Cung cấp **3 Phong Cách Hộp Mừng Cưới Tương Tác (Interactive Gift Box Styles)**:
+    1. *Hộp Quà Ruy Băng Lụa 3D (ribbon_box)*: Hiệu ứng chạm mở nắp hộp quà 3D tinh tế, ruy băng vàng đồng bung nở nhẹ nhàng, làm lộ thẻ tài khoản bên trong.
+    2. *Bì Thư Hoàng Gia Khắc Tem Sáp (wax_envelope)*: Hiệu ứng lật nắp phong bì hoàng gia được niêm phong bởi con dấu sáp chữ lồng Monogram sang trọng.
+    3. *Thẻ Ngân Hàng Tối Giản Tạp Chí (editorial_card)*: Trình diễn phẳng dạng thẻ tín dụng cao cấp luôn mở sẵn, tinh tế và hiện đại.
+  - Tích hợp **20 Ngân Hàng Hàng Đầu Việt Nam & Sinh Mã VietQR Chuẩn NAPAS 247**:
+    - Tự động sinh mã VietQR chuẩn xác qua cổng `https://img.vietqr.io/image/{BIN}-{STK}-compact2.png` kèm nội dung chuyển khoản và tên chủ tài khoản.
+    - Hỗ trợ tải ảnh mã QR riêng qua AJAX (`/thiep/{id}/hop-mung-cuoi/upload-qr`) cho cặp đôi muốn dùng QR ngân hàng cá nhân hóa.
+    - Hỗ trợ thiết lập độc lập cho cả Nhà Trai / Chú Rể và Nhà Gái / Cô Dâu kèm tab chuyển đổi linh hoạt.
+    - Nút sao chép STK và nội dung chuyển khoản một chạm (`data-copy`) kèm Toast thông báo lịch thiệp.
+    - Tùy chọn làm mờ số tài khoản với khách vãng lai để bảo mật thông tin tài chính cá nhân.
+  - **Bộ Lời Ngỏ Lễ Nghi Văn Hóa Cưới Việt (Wedding Etiquette Quotes)**:
+    - Cung cấp 4 mẫu lời ngỏ tế nhị được soạn thảo chỉn chu: Trân trọng & Lịch thiệp, Thân mật & Ấm cúng, Lãng mạn & Tinh tế, Tối giản Hiện đại giúp giải tỏa hoàn toàn cảm giác ngượng ngùng khi nhận mừng cưới.
+  - **Danh Sách Món Quà Tân Hôn Mong Ước (Digital Wedding Registry / Wishlist — IDEA-F07)**:
+    - Cặp đôi thêm danh sách các món quà hiện vật tân hôn cho tổ ấm nhỏ (máy pha cà phê, bộ gốm sứ, đồ gia dụng...).
+    - Khách mời có thể trực tiếp đăng ký nhận gửi tặng món quà (`POST /api/thiep/{id}/hop-mung-cuoi/nhan-qua`) qua AJAX.
+    - Hệ thống tự động đánh dấu món quà đã có người chọn để tránh việc quan khách mua trùng lặp quà mừng.
+  - Component Section 9 chuẩn hóa `resources/views/client/components/wedding-gift-registry.blade.php`:
+    - Chuẩn BEM class `mayhen_invitation_gift`, `mayhen_invitation_gift_card_groom`, `mayhen_invitation_gift_card_bride`, `mayhen_invitation_gift_wishlist`.
+    - Hợp đồng Live Sync `data-sync-target` đầy đủ cho `gift_box_style`, `groom_bank_name`, `groom_bank_account`, `groom_account_name`, `qr_groom_image`, `bride_bank_name`, `bride_bank_account`, `bride_account_name`, `qr_bride_image`.
+  - Tự động đồng bộ hai chiều vào `custom_config['gift_registry']` và bảng `weddings` (`bank_name`, `bank_account_number`, `bank_account_name`, `extra_data['gift_registry']`).
+  - Ghi nhận AuditLogger `GIFT_REGISTRY_UPDATED`.
 - **Kiến trúc & Tệp Tin**:
-  - `app/Services/WeddingGalleryService.php`:
-    - `getPresetLayouts`: 3 phong cách bố cục Album ảnh cưới nghệ thuật.
-    - `getDefaultPhotos` & `resolveGalleryConfig`: Phân giải cấu hình 10 ảnh cưới với fallback an toàn.
-    - `updateGallery`: Lưu cấu hình, đồng bộ vào `wedding->extra_data['gallery']` và ghi nhận audit log.
-    - `uploadGalleryPhoto`: Tải ảnh cưới lên thư mục lưu trữ nội bộ `/storage/invitations/{id}/gallery/`.
-  - `app/Http/Controllers/Client/WeddingGalleryController.php`:
-    - `index`: Màn hình Studio quản trị Album ảnh cưới (`account.gallery.index`).
-    - `update`: Cập nhật cấu hình 10 ảnh, thứ tự và bố cục (`account.gallery.update`).
-    - `uploadPhoto`: Tải lên ảnh lẻ AJAX (`account.gallery.upload_photo`).
-    - `authorizeInvitationOwner`: Phân quyền sở hữu thiệp cưới an toàn.
-  - `resources/views/client/components/wedding-gallery-suite.blade.php`:
-    - Component hiển thị Section 8/9 chuẩn BEM `mayhen_invitation_gallery` hỗ trợ cả 3 layouts và tích hợp Lightbox Pure Vanilla JS.
-  - `resources/views/client/pages/account/gallery/index.blade.php`:
-    - Giao diện Studio quản trị Album ảnh cưới Quiet Luxury, chọn layout card 1-click, quản lý 10 slot ảnh, đổi thứ tự ảnh và live upload.
+  - `app/Services/WeddingGiftRegistryService.php`:
+    - Quản lý 20 ngân hàng, 3 phong cách hộp quà, 4 lời ngỏ lễ nghi, sinh VietQR động chuẩn NAPAS, đồng bộ database, upload ảnh QR và khách mời đăng ký món quà wishlist.
+  - `app/Http/Controllers/Client/WeddingGiftRegistryController.php`:
+    - `index`: Màn hình Studio quản trị Hộp Mừng Cưới (`account.gift_registry.index`).
+    - `update`: Cập nhật tài khoản hai nhà, sinh VietQR và cấu hình wishlist (`account.gift_registry.update`).
+    - `uploadCustomQr`: Tải ảnh mã QR riêng qua AJAX (`account.gift_registry.upload_qr`).
+    - `reserveItem`: Public API khách mời đăng ký món quà wishlist (`invitation.gift.reserve`).
+  - `resources/views/client/components/wedding-gift-registry.blade.php`:
+    - Component Section 9 chuẩn BEM, hiệu ứng mở hộp 3D, mở bì thư hoàng gia, sao chép 1 chạm và modal nhận quà tân hôn Pure Vanilla JS.
+  - `resources/views/client/pages/account/gift_registry/index.blade.php`:
+    - Giao diện Studio quản trị Hộp Mừng Cưới Quiet Luxury, xem trước VietQR trực quan, chọn lời ngỏ 1-click, quản lý wishlist items.
   - `resources/views/client/pages/account/invitations.blade.php`:
-    - Bổ sung nút công cụ "Album 10 Ảnh Cưới".
+    - Bổ sung nút công cụ "Hộp Mừng Cưới & VietQR".
   - `routes/web.php`:
-    - Đăng ký nhóm routes `account.gallery.*`.
-  - `tests/Feature/WeddingGallerySuiteTest.php`:
-    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập trái phép 403, mở màn hình Studio, upload ảnh AJAX thành công, lưu 10 ảnh và đồng bộ extra_data, validate dữ liệu, render component kèm Lightbox và ẩn khi disabled (100% PASSED).
+    - Đăng ký nhóm routes `account.gift_registry.*` và API public `invitation.gift.reserve`.
+  - `tests/Feature/WeddingGiftRegistrySuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, cập nhật sinh VietQR và đồng bộ extra_data, upload ảnh QR AJAX, khách mời đăng ký quà wishlist, render component chuẩn BEM data-sync-target và ẩn khi disabled (100% PASSED).
 - **Kết quả Kiểm Thử**:
-  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,120 / 1,120 tests PASSED 100%** (5,989 assertions).
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,127 / 1,127 tests PASSED 100%** (6,029 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
+### 139. Đề Án 139: Phân Hệ Quản Trị Sổ Ký Tên Nghệ Thuật, Sổ Lưu Bút Chúc Phúc & Lời Cảm Ơn Kết Thiệp Trang Trọng (Digital Signature Canvas, Guestbook Moderation & Thank You Ending Suite — Section 10 Invitation Standards, PRD V3 Section 27 & IDEA-F08)
+- **Mục tiêu**:
+  - Triển khai phân hệ quản lý Sổ Ký Tên Nghệ Thuật, Sổ Lưu Bút Chúc Phúc và Lời Cảm Ơn Kết Thiệp hoàn chỉnh chuẩn Quiet Luxury theo Section 10 Invitation Standards, PRD V3 Section 27 và IDEA-F08:
+  - Cung cấp **Bảng Ký Tên Nghệ Thuật Cảm Ứng (Digital Signature Canvas — Section 10.1)**:
+    - Bảng vẽ Canvas cảm ứng (Touch / Mouse) cho phép khách mời ký tên hoặc viết chữ trực tiếp trên thiệp cưới.
+    - 4 màu mực sang trọng: Vàng Hoàng Gia (`#C5A880`), Than Chì Charcoal (`#2C2C2C`), Xanh Đêm Sâu (`#1B2A38`), Đỏ Rượu Vang (`#85182A`).
+    - Nút xóa nét vẽ, lưu chữ ký một chạm gửi AJAX (`POST /api/thiep/{id}/so-ky-ten/luu-chu-ky`).
+    - 3 phong cách nền Canvas nghệ thuật: `stardust` (Bụi sao lấp lánh), `wax_seal` (Tem sáp hoàng gia), `gold_mesh` (Lưới vàng cung đình).
+    - **TUÂN THỦ TUYỆT ĐỐI NGUYÊN TẮC SỐ 8**: Tuyệt đối CẤM chèn ảnh cặp đôi hay ảnh stock người vào vùng ký tên, chỉ dùng hiệu ứng thuần CSS canvas và hoa văn hoàng gia.
+  - Cung cấp **Sổ Lưu Bút & Kiểm Duyệt Lời Chúc (Digital Guestbook & Moderation Suite — Section 10.3)**:
+    - Khách mời gửi lời chúc kèm tùy chọn gửi riêng tư kín đáo (`is_private`) cho cặp đôi.
+    - Hiển thị chữ ký điện tử đính kèm lời chúc của từng quan khách trên tường lưu bút.
+    - Màn hình Studio quản trị lời chúc thông minh: Ghim lời chúc ý nghĩa lên đầu (`pin`), Phê duyệt hiển thị (`approve`), Ẩn lời chúc (`hide`), Phản hồi cảm ơn từ cặp đôi (`reply`), và Xóa lời chúc vi phạm (`delete`).
+    - Xuất danh sách lời chúc kỷ niệm ra file CSV chuẩn UTF-8 BOM (`/thiep/{id}/so-ky-ten/xuat-csv`) mở chuẩn trên Excel.
+  - Cung cấp **Lời Cảm Ơn Kết Thiệp Trang Trọng (Ending & Thank You Section — Section 10.4)**:
+    - 3 phong cách kết thiệp: `intimate_editorial` (Tri Ân Tạp Chí Cảm Xúc), `royal_seal` (Con Dấu Hoàng Gia & Chữ Lồng Monogram), `minimalist_modern` (Tối Giản Hiện Đại & Tinh Tế).
+    - 4 mẫu lời tri ân mẫu lễ nghi văn hóa cưới Việt chọn nhanh 1-click.
+    - Bố cục gồm ảnh cưới kỷ niệm khép lại (`data-sync-target="hero_photo_url"`), tiêu đề cảm ơn, lời tri ân (`data-sync-target="thank_you_message"`), và tên cặp đôi uyên ương (`<span data-sync-target="groom_name"></span> & <span data-sync-target="bride_name"></span>`).
+  - Component Section 10 chuẩn hóa `resources/views/client/components/wedding-interactive-ending.blade.php`:
+    - Chuẩn BEM class `mayhen_invitation_interactive_ending`, `mayhen_invitation_signature`, `mayhen_invitation_wishes`, `mayhen_invitation_ending`.
+    - Hợp đồng Live Sync `data-sync-target` đầy đủ cho `thank_you_message`, `hero_photo_url`, `groom_name`, `bride_name`.
+  - Tự động đồng bộ hai chiều vào `custom_config['interactive_ending']` và bảng `weddings->extra_data['interactive_ending']`.
+  - Ghi nhận AuditLogger `INTERACTIVE_ENDING_UPDATED`.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/WeddingInteractiveEndingService.php`:
+    - Quản lý 3 phong cách kết thiệp, 4 mẫu lời cảm ơn, 3 nền canvas, chuyển DataURL thành file ảnh PNG trên storage public, kiểm duyệt lời chúc và xuất file CSV.
+  - `app/Http/Controllers/Client/WeddingInteractiveEndingController.php`:
+    - `index`: Màn hình Studio quản trị Section 10 (`account.interactive_ending.index`).
+    - `update`: Lưu cấu hình kết thiệp, ký tên và lưu bút (`account.interactive_ending.update`).
+    - `moderateWish`: AJAX kiểm duyệt ghim, duyệt, ẩn, trả lời, xóa (`account.interactive_ending.moderate_wish`).
+    - `exportWishes`: Xuất danh sách lời chúc ra file CSV (`account.interactive_ending.export_wishes`).
+    - `saveSignature`: Public API khách mời lưu chữ ký canvas (`invitation.signature.save`).
+  - `resources/views/client/components/wedding-interactive-ending.blade.php`:
+    - Component Section 10 chuẩn BEM tích hợp Canvas vẽ tay cảm ứng Retina, đổi màu mực, gửi lời chúc AJAX và lời cảm ơn kết thiệp.
+  - `resources/views/client/pages/account/interactive_ending/index.blade.php`:
+    - Giao diện Studio quản trị Sổ Ký Tên, Lưu Bút & Lời Cảm Ơn Quiet Luxury, bảng kiểm duyệt trực quan và modal phản hồi lời cảm ơn.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Sổ Ký Tên & Lời Cảm Ơn".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.interactive_ending.*` và API public `invitation.signature.save`.
+  - `tests/Feature/WeddingInteractiveEndingSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, lưu cấu hình và đồng bộ extra_data, kiểm duyệt lời chúc (pin, approve, hide, reply, delete), xuất file CSV, khách mời lưu chữ ký canvas, render component chuẩn BEM data-sync-target và ẩn khi disabled (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,134 / 1,134 tests PASSED 100%** (6,073 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
 
 
 

@@ -50,6 +50,8 @@ use App\Http\Controllers\Client\WeddingBroadcastController;
 use App\Http\Controllers\Client\WeddingDresscodeController;
 use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingGalleryController;
+use App\Http\Controllers\Client\WeddingGiftRegistryController;
+use App\Http\Controllers\Client\WeddingInteractiveEndingController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingLocationAdvisoryController;
 use App\Http\Controllers\Client\WeddingMediaController;
@@ -235,6 +237,13 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     Route::get('/thiep/{id}/album-anh-cuoi', [WeddingGalleryController::class, 'index'])->name('gallery.index');
     Route::post('/thiep/{id}/album-anh-cuoi', [WeddingGalleryController::class, 'update'])->name('gallery.update');
     Route::post('/thiep/{id}/album-anh-cuoi/upload-anh', [WeddingGalleryController::class, 'uploadPhoto'])->name('gallery.upload_photo');
+    Route::get('/thiep/{id}/hop-mung-cuoi', [WeddingGiftRegistryController::class, 'index'])->name('gift_registry.index');
+    Route::post('/thiep/{id}/hop-mung-cuoi', [WeddingGiftRegistryController::class, 'update'])->name('gift_registry.update');
+    Route::post('/thiep/{id}/hop-mung-cuoi/upload-qr', [WeddingGiftRegistryController::class, 'uploadCustomQr'])->name('gift_registry.upload_qr');
+    Route::get('/thiep/{id}/so-ky-ten', [WeddingInteractiveEndingController::class, 'index'])->name('interactive_ending.index');
+    Route::post('/thiep/{id}/so-ky-ten', [WeddingInteractiveEndingController::class, 'update'])->name('interactive_ending.update');
+    Route::post('/thiep/{id}/so-ky-ten/kiem-duyet/{wishId}', [WeddingInteractiveEndingController::class, 'moderateWish'])->name('interactive_ending.moderate_wish');
+    Route::get('/thiep/{id}/so-ky-ten/xuat-csv', [WeddingInteractiveEndingController::class, 'exportWishes'])->name('interactive_ending.export_wishes');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
@@ -506,6 +515,12 @@ Route::get('/studio/{slug}', [StudioShowcaseController::class, 'show'])->name('s
 
 // API Gói Từ Điển Đa Ngôn Ngữ Thiệp Cưới (Mục 2.10 DOCX & Đề Án 126)
 Route::get('/api/thiep/{slug}/translations/{locale}', [MultilingualInvitationController::class, 'apiTranslations'])->name('api.invitation.translations');
+
+// API Khách Mời Đăng Ký Món Quà Tân Hôn (Gift Registry Wishlist - IDEA-F07 & Đề Án 138)
+Route::post('/api/thiep/{id}/hop-mung-cuoi/nhan-qua', [WeddingGiftRegistryController::class, 'reserveItem'])->middleware('throttle:30,1')->name('invitation.gift.reserve');
+
+// API Khách Mời Lưu Chữ Ký Điện Tử Từ Canvas (Section 10 & Đề Án 139)
+Route::post('/api/thiep/{id}/so-ky-ten/luu-chu-ky', [WeddingInteractiveEndingController::class, 'saveSignature'])->middleware('throttle:30,1')->name('invitation.signature.save');
 
 // Đăng Ký Đối Tác Studio & Wedding Planner (Public)
 Route::get('/doi-tac/dang-ky', [PartnerRegistrationController::class, 'create'])->name('partner.register');
