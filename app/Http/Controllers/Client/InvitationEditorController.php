@@ -421,8 +421,8 @@ class InvitationEditorController extends Controller
         if ($isOwner && (request()->boolean('rehearsal') || request()->has('rehearsal_group') || request()->has('group'))) {
             $isRehearsal = true;
             $reqGroup = request()->query('rehearsal_group') ?: request()->query('group');
-            if (is_string($reqGroup) && in_array(trim($reqGroup), $availableGroups, true)) {
-                $rehearsalGroup = trim($reqGroup);
+            if (is_string($reqGroup) && trim($reqGroup) !== '') {
+                $rehearsalGroup = Str::limit(strip_tags(trim($reqGroup)), 50, '');
             }
 
             if ($rehearsalGroup) {
@@ -555,8 +555,17 @@ class InvitationEditorController extends Controller
         }
         $ogUrl = request()->fullUrl();
 
-        // Động cơ Thiệp thông minh theo nhóm khách & Phân tuyến sự kiện (Mục 2.3 DOCX & Đề Án 128)
-        $smartEvents = $wedding ? SmartGroupInvitationService::filterEventsForGuest($wedding, $guest, $invitation) : collect([]);
+        // Động cơ Thiệp thông minh theo nhóm khách & Phân tuyến sự kiện (Mục 2.3 DOCX & Đề Án 128, IDEA-A09)
+        $ceremonyScope = $wedding
+            ? SmartGroupInvitationService::resolveCeremonyVisibility($wedding, $guest, $rehearsalGroup, $invitation)
+            : [
+                'show_bride_ceremony' => true,
+                'show_groom_ceremony' => true,
+                'show_main_party' => true,
+                'tailored_group_notice' => null,
+                'events' => collect([]),
+            ];
+        $smartEvents = $ceremonyScope['events'];
         if (! $personaMessage && $guest) {
             $personaMessage = SmartGroupInvitationService::resolveGroupGreeting($invitation, $guest);
         }
@@ -568,6 +577,11 @@ class InvitationEditorController extends Controller
             'isCuratedSeven' => ! empty($config['is_curated_seven']) || ! empty($config['is_curated']),
             'guest' => $guest,
             'smartEvents' => $smartEvents,
+            'ceremonyScope' => $ceremonyScope,
+            'showBrideCeremony' => $ceremonyScope['show_bride_ceremony'],
+            'showGroomCeremony' => $ceremonyScope['show_groom_ceremony'],
+            'showMainParty' => $ceremonyScope['show_main_party'],
+            'tailoredGroupNotice' => $ceremonyScope['tailored_group_notice'],
             'wishes' => $wishes,
             'wishSubmitUrl' => $wishSubmitUrl,
             'rsvpSubmitUrl' => $rsvpSubmitUrl,

@@ -54,6 +54,14 @@
     $ceremonyGroomTime = $extraData['ceremony_groom_time'] ?? '10:00';
     $ceremonyGroomAddress = $extraData['ceremony_groom_address'] ?? 'Tại tư gia nhà trai - Đống Đa, Hà Nội';
 
+    // Xác định tên nghi lễ bìa chính theo phân tuyến sự kiện (IDEA-A09)
+    $ceremonyType = $extraData['ceremony_type'] ?? 'Lễ Thành Hôn';
+    if (($showBrideCeremony ?? true) && !($showGroomCeremony ?? true)) {
+        $ceremonyType = 'Lễ Vu Quy';
+    } elseif (($showGroomCeremony ?? true) && !($showBrideCeremony ?? true)) {
+        $ceremonyType = 'Lễ Thành Hôn';
+    }
+
     // Khách mời
     $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
@@ -284,7 +292,7 @@
             <div class="mayhen_invitation_ladi_section_background"></div>
             <div class="mayhen_invitation_sr_kicker mayhen_invitation_hero_kicker mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_sr_orn"></i>
-                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_name mayhen_invitation_ladi_headline_ceremony_type" data-sync-target="ceremony_type">Lễ Thành Hôn</p></div>
+                <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_nhan"><p class="mayhen_invitation_ladi_headline mayhen_invitation_ladi_headline_name mayhen_invitation_ladi_headline_ceremony_type" data-sync-target="ceremony_type">{{ $ceremonyType }}</p></div>
                 <i class="mayhen_invitation_sr_orn"></i>
             </div>
             <div class="mayhen_invitation_sr_quy_dao mayhen_invitation_sr_hien" data-hieu-ung="phong">
@@ -576,6 +584,16 @@
                 <p class="mayhen_invitation_ladi_paragraph">Hân hạnh được đón tiếp Quý khách trong ngày trọng đại của chúng tôi</p>
             </div>
 
+            {{-- Thông Báo Lịch Trình Phân Tuyến Theo Nhóm Khách (IDEA-A09) --}}
+            @if(!empty($tailoredGroupNotice))
+                <div class="mayhen_invitation_tailored_events_notice mayhen_invitation_sr_hien" data-hieu-ung="len" style="text-align: center; margin: 12px 0 20px;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(197, 168, 128, 0.12); border: 1px solid rgba(197, 168, 128, 0.35); border-radius: 999px; font-size: 12px; color: #9C7A4A; font-weight: 600; letter-spacing: 0.3px;">
+                        {{ $tailoredGroupNotice }}
+                    </span>
+                </div>
+            @endif
+
+            @if($showMainParty ?? true)
             <!-- Khối 1: Thẻ Thư Mời Tiệc Cưới Chính -->
             <div class="mayhen_invitation_sr_thu mayhen_invitation_sr_the mayhen_invitation_kieu_ve mayhen_invitation_event_card_party mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <i class="mayhen_invitation_ve_lo mayhen_invitation_trai" aria-hidden="true"></i>
@@ -617,9 +635,12 @@
                     <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_party_address" data-sync-target="event_party_address">{{ $partyAddress }}</p>
                 </div>
             </div>
+            @endif
 
+            @if(($showBrideCeremony ?? true) || ($showGroomCeremony ?? true))
             <!-- Khối 2: Nghi Lễ Gia Tiên (Vu Quy & Thành Hôn) -->
             <div class="mayhen_invitation_sr_ds_le" style="margin-top: 36px;">
+                @if($showBrideCeremony ?? true)
                 <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_ceremony_bride_card mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -645,6 +666,9 @@
                         <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ceremony_bride_address" data-sync-target="ceremony_address">{{ $ceremonyAddress }}</p>
                     </div>
                 </div>
+                @endif
+
+                @if($showGroomCeremony ?? true)
                 <div class="mayhen_invitation_sr_le mayhen_invitation_sr_the mayhen_invitation_kieu_vom mayhen_invitation_ceremony_groom_card mayhen_invitation_sr_hien" data-hieu-ung="len">
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tl" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
                     <svg class="mayhen_invitation_sr_goc mayhen_invitation_tr" aria-hidden="true"><use href="#mayhen_invitation_sr_goc"></use></svg>
@@ -669,7 +693,9 @@
                         <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ceremony_groom_address" data-sync-target="ceremony_groom_address">{{ $ceremonyGroomAddress }}</p>
                     </div>
                 </div>
+                @endif
             </div>
+            @endif
 
             <!-- Khối 3: Bản Đồ Chỉ Đường 3D -->
             <div class="mayhen_invitation_sr_khung_bd mayhen_invitation_sr_the mayhen_invitation_kieu_cong mayhen_invitation_map_box mayhen_invitation_sr_hien" data-hieu-ung="len" style="margin-top: 36px;">
@@ -1127,6 +1153,25 @@
                                 <label class="mayhen_invitation_wb_form_label">Tên khách mời</label>
                                 <input type="text" class="mayhen_invitation_wb_form_input mayhen_invitation_rsvp_name_input" name="name" placeholder="Nhập tên của bạn" value="{{ $guestName !== 'Quý Khách' ? $guestName : '' }}">
                             </div>
+                            {{-- Lựa chọn sự kiện phân quyền (IDEA-A09) --}}
+                            @if(isset($smartEvents) && $smartEvents->count() > 1)
+                            <div class="mayhen_invitation_wb_form_field mayhen_invitation_rsvp_event_scope">
+                                <label class="mayhen_invitation_wb_form_label">Sự kiện bạn sẽ tham dự</label>
+                                <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_events_group" data-name="event_id">
+                                    @foreach($smartEvents as $idx => $ev)
+                                        <label class="mayhen_invitation_wb_opt_label {{ $loop->first ? 'mayhen_invitation_active' : '' }}" data-val="{{ $ev->id }}">
+                                            {{ $ev->name }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                                <input type="hidden" name="event_id" value="{{ $smartEvents->first()->id }}" class="mayhen_invitation_rsvp_event_input">
+                            </div>
+                            @elseif(isset($smartEvents) && $smartEvents->count() === 1)
+                            <input type="hidden" name="event_id" value="{{ $smartEvents->first()->id }}" class="mayhen_invitation_rsvp_event_input">
+                            <div style="font-size: 11px; color: #9C7A4A; margin-top: -4px; margin-bottom: 8px; text-align: center; font-weight: 500;">
+                                ✦ Sự kiện tham dự: <strong>{{ $smartEvents->first()->name }}</strong>
+                            </div>
+                            @endif
                             <div class="mayhen_invitation_wb_form_field">
                                 <label class="mayhen_invitation_wb_form_label">Xác nhận tham dự</label>
                                 <div class="mayhen_invitation_wb_opt_group mayhen_invitation_rsvp_attendance" data-name="attendance">

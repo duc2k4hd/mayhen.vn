@@ -14,6 +14,7 @@ class GuestResponse extends Model
     protected $fillable = [
         'wedding_id',
         'guest_id',
+        'event_id',
         'guest_name',
         'phone',
         'attending_status',
@@ -35,6 +36,7 @@ class GuestResponse extends Model
     protected function casts(): array
     {
         return [
+            'event_id' => 'integer',
             'adults_count' => 'integer',
             'children_count' => 'integer',
             'shuttle_bus_needed' => 'boolean',
@@ -54,6 +56,11 @@ class GuestResponse extends Model
     public function guest(): BelongsTo
     {
         return $this->belongsTo(Guest::class);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(WeddingEvent::class, 'event_id');
     }
 
     public function logs(): HasMany

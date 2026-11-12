@@ -173,6 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
         card.appendChild(header);
         card.appendChild(textDiv);
 
+        if (wish.signature_url) {
+            const sigWrap = document.createElement('div');
+            sigWrap.className = 'mayhen_wall_wish_signature_wrap';
+            const sigImg = document.createElement('img');
+            sigImg.src = wish.signature_url;
+            sigImg.alt = 'Chữ ký tay quan khách';
+            sigImg.loading = 'lazy';
+            sigWrap.appendChild(sigImg);
+            card.appendChild(sigWrap);
+        }
+
         if (wish.photo_url) {
             const photoWrap = document.createElement('div');
             photoWrap.className = 'mayhen_wall_wish_photo_wrap';

@@ -183,4 +183,80 @@ class SmartGroupInvitationService
             'group_name' => $guest->group_name ?: 'Khách Quý',
         ];
     }
+
+    /**
+     * Xác định phạm vi hiển thị các nghi lễ (Vu Quy, Thành Hôn, Tiệc) theo nhóm khách mời.
+     *
+     * @return array{
+     *     show_bride_ceremony: bool,
+     *     show_groom_ceremony: bool,
+     *     show_main_party: bool,
+     *     tailored_group_notice: ?string,
+     *     events: Collection<int, WeddingEvent>
+     * }
+     */
+    public static function resolveCeremonyVisibility(
+        Wedding $wedding,
+        ?Guest $guest,
+        ?string $rehearsalGroup = null,
+        ?Invitation $invitation = null
+    ): array {
+        $events = self::filterEventsForGuest($wedding, $guest, $invitation);
+
+        $showBrideCeremony = true;
+        $showGroomCeremony = true;
+        $showMainParty = true;
+        $tailoredGroupNotice = null;
+
+        $effectiveGroup = $guest?->group_name ?: $rehearsalGroup;
+        $groupKey = self::normalizeGroupKey($effectiveGroup);
+
+        // 1. Phân tích dựa trên danh sách sự kiện cụ thể nếu có trong DB
+        if ($events->isNotEmpty()) {
+            $hasBrideEvent = $events->contains(fn ($e) => in_array($e->event_type, ['ceremony_bride', 'engagement'], true) || str_contains(mb_strtolower($e->name), 'vu quy'));
+            $hasGroomEvent = $events->contains(fn ($e) => in_array($e->event_type, ['ceremony_groom'], true) || str_contains(mb_strtolower($e->name), 'thành hôn'));
+            $hasBanquet = $events->contains(fn ($e) => in_array($e->event_type, ['banquet', 'after_party'], true) || str_contains(mb_strtolower($e->name), 'tiệc'));
+
+            // Nếu chỉ có một bên thì bên kia ẩn đi
+            if ($hasBrideEvent && ! $hasGroomEvent) {
+                $showGroomCeremony = false;
+            } elseif ($hasGroomEvent && ! $hasBrideEvent) {
+                $showBrideCeremony = false;
+            }
+
+            if (! $hasBanquet && ($hasBrideEvent || $hasGroomEvent)) {
+                $showMainParty = false;
+            }
+        }
+
+        // 2. Phân tích theo nhóm khách chuẩn phong tục cưới Việt Nam
+        if ($groupKey === 'nha_trai') {
+            $showBrideCeremony = false;
+            $showGroomCeremony = true;
+            $tailoredGroupNotice = '✦ Lịch trình cử hành hôn lễ dành riêng cho Quý Quan Khách Họ Nhà Trai';
+        } elseif ($groupKey === 'nha_gai') {
+            $showBrideCeremony = true;
+            $showGroomCeremony = false;
+            $tailoredGroupNotice = '✦ Lịch trình cử hành hôn lễ dành riêng cho Quý Quan Khách Họ Nhà Gái';
+        } elseif ($groupKey === 'dong_nghiep' || $groupKey === 'ban_than') {
+            // Nếu có cấu hình tùy biến smart_groups tắt bớt lễ gia tiên
+            $config = $invitation && is_array($invitation->custom_config)
+                ? $invitation->custom_config
+                : ($invitation ? json_decode((string) $invitation->custom_config, true) : []);
+            $groupConfig = $config['smart_groups'][$groupKey] ?? null;
+            if ($groupConfig && ! empty($groupConfig['hide_family_ceremonies'])) {
+                $showBrideCeremony = false;
+                $showGroomCeremony = false;
+                $tailoredGroupNotice = '✦ Trân trọng kính mời Quý khách dự tiệc mừng hạnh phúc';
+            }
+        }
+
+        return [
+            'show_bride_ceremony' => $showBrideCeremony,
+            'show_groom_ceremony' => $showGroomCeremony,
+            'show_main_party' => $showMainParty,
+            'tailored_group_notice' => $tailoredGroupNotice,
+            'events' => $events,
+        ];
+    }
 }

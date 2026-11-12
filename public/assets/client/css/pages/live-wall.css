@@ -289,6 +289,23 @@ body.mayhen_wall_body {
     word-break: break-word;
 }
 
+.mayhen_wall_wish_signature_wrap {
+    margin-top: 10px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px dashed var(--mayhen-wall-card-border);
+}
+
+.mayhen_wall_wish_signature_wrap img {
+    height: 32px;
+    max-width: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
 .mayhen_wall_wish_photo_wrap {
     margin-top: 12px;
     border-radius: 10px;

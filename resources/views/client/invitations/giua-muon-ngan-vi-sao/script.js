@@ -1379,6 +1379,12 @@
                         cntField.style.display = lbl.getAttribute('data-val') === 'yes' ? 'block' : 'none';
                     }
                 }
+                if (grp.getAttribute('data-name') === 'event_id') {
+                    var eventHiddenInput = document.querySelector('.' + P + 'rsvp_event_input');
+                    if (eventHiddenInput) {
+                        eventHiddenInput.value = lbl.getAttribute('data-val') || '';
+                    }
+                }
             });
         });
 
@@ -1423,6 +1429,10 @@
                     if (rsvpFb) rsvpFb.textContent = 'Vui lòng nhập số trẻ em từ 0 đến 10.';
                     return;
                 }
+                var eventHiddenInput = rsvpForm.querySelector('.' + P + 'rsvp_event_input') || rsvpForm.querySelector('input[name="event_id"]');
+                var eventIdVal = eventHiddenInput && eventHiddenInput.value ? parseInt(eventHiddenInput.value, 10) : null;
+                var eventId = (eventIdVal && !isNaN(eventIdVal)) ? eventIdVal : null;
+
                 var endpoint = invitationRoot ? invitationRoot.dataset.rsvpEndpoint : '';
                 if (!endpoint) {
                     if (rsvpFb) rsvpFb.textContent = 'Chưa thể gửi xác nhận. Vui lòng thử lại sau.';
@@ -1438,7 +1448,8 @@
                         guest_name: name,
                         attending_status: isAttending ? 'attending' : 'declined',
                         adults_count: isAttending ? guestCount : 0,
-                        children_count: isAttending ? childrenCount : 0
+                        children_count: isAttending ? childrenCount : 0,
+                        event_id: eventId
                     })
                 }).then(function (res) {
                     return res.json().then(function (data) {

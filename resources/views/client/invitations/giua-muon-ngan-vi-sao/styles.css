@@ -2500,6 +2500,15 @@ body.mayhen_invitation_sr_khoa .mayhen_invitation_ladi_wraper.mayhen_invitation_
     box-shadow: 0 0 16px rgba(252, 227, 158, 0.6);
 }
 
+.mayhen_invitation_rsvp_events_group {
+    flex-wrap: wrap !important;
+}
+
+.mayhen_invitation_rsvp_events_group .mayhen_invitation_wb_opt_label {
+    flex: 1 1 120px !important;
+    font-size: 13px !important;
+}
+
 .mayhen_invitation_wb_counter {
     display: flex;
     align-items: center;

@@ -1295,6 +1295,7 @@ class GuestController extends Controller
                         ]);
 
                         $existing->update([
+                            'event_id' => $request->validated('event_id') ?: $existing->event_id,
                             'attending_status' => $request->validated('attending_status'),
                             'adults_count' => $request->validated('adults_count') ?? 1,
                             'children_count' => $request->validated('children_count') ?? 0,
@@ -1328,6 +1329,7 @@ class GuestController extends Controller
                 GuestResponse::create([
                     'wedding_id' => $lockedWedding->id,
                     'guest_id' => $guest?->id,
+                    'event_id' => $request->validated('event_id'),
                     'guest_name' => $request->validated('guest_name'),
                     'phone' => $request->validated('phone'),
                     'attending_status' => $request->validated('attending_status'),

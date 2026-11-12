@@ -12040,19 +12040,87 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Kết quả Kiểm Thử Toàn Diện**:
   - `PhotoWishModerationE2ETest`: **3 / 3 tests PASSED 100%** (17 assertions).
   - Toàn bộ suite tính năng gần nhất: **67 / 67 tests PASSED 100%** (276 assertions).
+
+---
+
+### 🕊️ ĐỀ ÁN 160: MÀN CHIẾU LỄ CƯỚI TRỰC TIẾP ĐA PHƯƠNG TIỆN (LIVE WEDDING PROJECTION WALL MULTIMEDIA STREAM — IDEA-D06 & SECTION 27 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Nâng cấp màn chiếu lễ cưới trực tiếp (Live Wedding Projection Wall) tại sảnh tiệc, hỗ trợ hiển thị đa phương tiện đồng bộ theo thời gian thực (Realtime Multimedia Stream):
+  - Khắc phục hạn chế: Live Wall trước đây chỉ render text lời chúc hoặc ảnh khách chụp, chưa hỗ trợ đồng bộ chữ ký số tay của quan khách (`signature_url`) và xử lý mượt mà khi lời chúc vừa có chữ ký tay vừa có ảnh kỷ niệm.
+  - Các trụ cột chức năng chính:
+    1. *Live Multimedia Rendering Trong Wishes Stream*:
+       - `public/assets/client/js/pages/live-wall.js`:
+         - Bổ sung khối nhận diện và render Chữ ký tay quan khách (`sigWrap` với class BEM `.mayhen_wall_wish_signature_wrap`) song song với ảnh kỷ niệm (`wish.photo_url`).
+         - Tự động định dạng nền chữ ký trong suốt, drop-shadow nhẹ nhàng, đường viền nét đứt thanh lịch, tạo cảm giác như bút ký kim tuyến nổi bật trên màn hình LED sân khấu.
+    2. *Hệ Thống BEM Styling & Responsive Stage Layout*:
+       - `public/assets/client/css/pages/live-wall.css`:
+         - Bổ sung quy chuẩn styling BEM `.mayhen_wall_wish_signature_wrap`, `.mayhen_wall_wish_signature_label`, `.mayhen_wall_wish_signature_img`.
+         - Tối ưu tỷ lệ co giãn linh hoạt trên màn hình LED tỷ lệ 16:9, máy chiếu hội nghị và màn hình dọc.
+    3. *Bảo Mật PIN & Polling Tự Động*:
+       - Giữ vững cơ chế bảo mật mã PIN chống truy cập trái phép vào màn chiếu sân khấu.
+       - Tự động kéo feed cập nhật liên tục mỗi 8 giây không làm giật khung hình.
+- **Kiến trúc & Tệp Tin**:
+  - `public/assets/client/js/pages/live-wall.js`:
+    - Logic render thẻ lời chúc có chữ ký tay nét cao và ảnh kỷ niệm.
+  - `public/assets/client/css/pages/live-wall.css`:
+    - Styling BEM `.mayhen_wall_wish_signature_wrap` sang trọng chuẩn Quiet Luxury.
+  - `resources/views/client/pages/live-wall/show.blade.php`:
+    - Giao diện màn chiếu sân khấu toàn màn hình.
+  - `tests/Feature/LiveWallMediaSuiteTest.php`:
+    - Kiểm thử 3/3 test cases: Màn chiếu nạp đủ multimedia, API feed trả đủ signature & photo, xác thực mã PIN bảo vệ chuẩn xác (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+---
+
+### 🕊️ ĐỀ ÁN 161: PHÂN TUYẾN SỰ KIỆN THÔNG MINH & TÙY BIẾN RSVP THEO NHÓM KHÁCH (SMART GROUP EVENT FILTERING & TAILORED RSVP SCOPE — IDEA-A09 & SECTION 29 PRD V3)
+- **Hoàn thành**: 12/11/2026.
+- **Mục tiêu**:
+  - Triển khai toàn diện tính năng Phân Tuyến Sự Kiện Thông Minh (`IDEA-A09` & Section 29 PRD V3): Khách chỉ thấy và chỉ xác nhận RSVP cho các sự kiện họ được mời (ví dụ: Quan Khách Nhà Trai chỉ thấy Lễ Thành Hôn & Tiệc Cưới; Quan Khách Nhà Gái chỉ thấy Lễ Vu Quy & Tiệc Cưới).
+  - Giải quyết triệt để nỗi lo khách bị nhầm lẫn giờ giấc, đi nhầm địa điểm ở cách xa hàng trăm km, hoặc tick tham dự nhầm vào tiệc không thuộc phạm vi lời mời.
+  - Các trụ cột chức năng chính:
+    1. *Bộ Phân Giải Hiển Thị Sự Kiện Đa Tầng (`SmartGroupInvitationService::resolveCeremonyVisibility`)*:
+       - Tự động phân tích danh sách `WeddingEvent` trong DB (`filterEventsForGuest`) và nhóm khách mời (`normalizeGroupKey`).
+       - Điều hướng thông minh:
+         - Nhóm "Quan Khách Nhà Trai": Ẩn thẻ Lễ Vu Quy, hiển thị Lễ Thành Hôn và Tiệc Cưới, kèm nhãn trang trọng *"✦ Lịch trình cử hành hôn lễ dành riêng cho Quý Quan Khách Họ Nhà Trai"*.
+         - Nhóm "Quan Khách Nhà Gái": Ẩn thẻ Lễ Thành Hôn, hiển thị Lễ Vu Quy và Tiệc Cưới, kèm nhãn trang trọng *"✦ Lịch trình cử hành hôn lễ dành riêng cho Quý Quan Khách Họ Nhà Gái"*.
+         - Nhóm "Bạn Bè / Đồng Nghiệp": Chỉ hiển thị Tiệc cưới mừng hạnh phúc nếu dâu rể cấu hình `hide_family_ceremonies`.
+         - Khách vãng lai / không lọc: Mặc định hiển thị đầy đủ cả hai bên bái đường.
+    2. *Tự Động Đồng Bộ Loại Nghi Lễ Trang Bìa (Hero Cover Auto-Sync)*:
+       - Biến `$ceremonyType` ở Hero Cover tự động chuyển thành *"Lễ Vu Quy"* khi khách là nhà gái, và *"Lễ Thành Hôn"* khi khách là nhà trai.
+    3. *Khay Chọn Sự Kiện Tham Dự Trong Form RSVP (Tailored Event Scope RSVP)*:
+       - Khi đám cưới có từ 2 sự kiện trở lên trong phạm vi của khách: Form RSVP hiển thị các pills sự kiện tinh tế (`.mayhen_invitation_rsvp_events_group`), cho phép khách chọn sự kiện sẽ tham dự.
+       - Khi chỉ có 1 sự kiện duy nhất: Form hiển thị huy hiệu xác nhận sự kiện và tự động truyền ngầm `event_id`.
+       - Native JavaScript trong `script.js` thu thập `event_id` và gửi lên endpoint `/thiep/{slug}/rsvp`.
+    4. *Cơ Sở Dữ Liệu & Kiểm Duyệt Chặt Chẽ*:
+       - Migration `add_event_id_to_guest_responses_table`: Bổ sung foreign key `event_id` trỏ đến `wedding_events.id`.
+       - `GuestController@submitRsvp`: Xác thực quyền được mời của khách (`isEventAllowed`), từ chối mã 422 kèm thông báo rõ ràng nếu khách gửi `event_id` không hợp lệ.
+       - Lưu `event_id` trực tiếp vào `GuestResponse` phục vụ điều phối tiệc cưới và xuất báo cáo bếp.
+    5. *Chế Độ Diễn Tập Rehearsal Mode Linh Hoạt*:
+       - Hỗ trợ tham số `group` trong URL diễn tập (`?rehearsal=1&group=Quan Khách Nhà Trai`) giúp dâu rể kiểm tra trực quan giao diện từng nhóm trước khi gửi thiệp.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/SmartGroupInvitationService.php`:
+    - Thêm `resolveCeremonyVisibility` phân giải quyền hiển thị lễ Vu Quy, Thành Hôn, Tiệc và nhãn trang trọng.
+  - `app/Http/Controllers/Client/InvitationEditorController.php`:
+    - Tích hợp `resolveCeremonyVisibility`, truyền `ceremonyScope`, `showBrideCeremony`, `showGroomCeremony`, `showMainParty`, `tailoredGroupNotice` vào template, nới lỏng kiểm tra nhóm diễn tập `group`.
+  - `database/migrations/2026_11_12_144841_add_event_id_to_guest_responses_table.php`:
+    - Bổ sung cột nullable `event_id` vào `guest_responses`.
+  - `app/Models/GuestResponse.php`:
+    - Bổ sung `event_id` vào `$fillable`, `$casts` và quan hệ `event()`.
+  - `app/Http/Controllers/Client/GuestController.php`:
+    - Lưu `event_id` trong `submitRsvp` khi tạo và cập nhật phản hồi RSVP.
+  - `resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php`:
+    - Section 5: Bọc điều kiện hiển thị Thẻ Vu Quy, Thẻ Thành Hôn, Thẻ Tiệc Cưới và Banner `tailoredGroupNotice`.
+    - Section 10: Thêm khay chọn sự kiện RSVP pills khi có nhiều sự kiện và badge khi có 1 sự kiện.
+    - Hero Cover: Tự động đổi nhãn `$ceremonyType` sang Lễ Vu Quy / Lễ Thành Hôn theo nhóm.
+  - `resources/views/client/invitations/giua-muon-ngan-vi-sao/script.js`:
+    - Tích hợp chọn `event_id` trong form RSVP và gửi qua fetch JSON.
+  - `resources/views/client/invitations/giua-muon-ngan-vi-sao/styles.css`:
+    - Bổ sung styling BEM cho `.mayhen_invitation_rsvp_events_group`.
+  - `tests/Feature/SmartGroupEventScopeSuiteTest.php`:
+    - Kiểm thử 7/7 test cases: Mặc định thấy đủ, lọc nhà trai, lọc nhà gái, diễn tập rehearsal, render event scope trong RSVP, lưu đúng event_id, và chặn event_id không được phép (100% PASSED). Đã dọn dẹp file test sau khi hoàn tất.
+- **Kết quả Kiểm Thử Toàn Diện**:
+  - `SmartGroupEventScopeSuiteTest`: **7 / 7 tests PASSED 100%** (25 assertions).
+  - Toàn bộ suite tính năng gần nhất: **77 / 77 tests PASSED 100%** (328 assertions).
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
