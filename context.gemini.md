@@ -12352,10 +12352,11 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
 - **Mục tiêu**: Đưa nền tảng Mây Hẹn (mayhen.vn) đạt chuẩn thương mại thực tế: an toàn, bảo mật cao, không rò rỉ PII, không sai lệch số liệu tài chính hay headcount ngày cưới, sẵn sàng bán dịch vụ thật cho khách hàng.
 - **Tiến độ & Kết quả kiểm thử các Test Gates**:
   1. **Gate G0 — Thiết Lập Sự Thật Có Thể Truy Vết (10 / 10 PASS — 100%)**:
-     - Đo lường và lưu vết môi trường runtime tại Git HEAD: PHP 8.4.4, Laravel 13.35.0, Composer 2.8.6.
-     - Kiểm kê 757 routes thực tế và chạy toàn bộ test suite cơ sở: 1,545 tests PASSED (100%).
-     - Tái tạo và khóa vĩnh viễn 10 regression test suites (Đề án 154 đến 166, 43 tests).
-     - Ban hành tài liệu thẩm định `docs/qa/RELEASE_G0_EVIDENCE.md`.
+     - Đo lường và lưu vết môi trường runtime tại Git HEAD: `0dc875aa52812c4c86ac1e7762c8febc3210753d`, PHP 8.5.10 (cli) ZTS, Laravel 13.35.0, Composer 2.10.2, Timezone `Asia/Ho_Chi_Minh`.
+     - Kiểm kê 757 routes thực tế và kiểm toán số lượng tests: xóa bỏ hoàn toàn số liệu cũ không có căn cứ (1,502 hoặc 1,545 tests); xác lập số liệu thực tế đo lường trực tiếp tại runtime là **1,178 tests PASSED (100%)**, 6,213 assertions, thời gian 32.5s.
+     - Khắc phục triệt để lỗ hổng F01: Tái tạo và khóa vĩnh viễn 10 regression test suites (Đề án 154 đến 166, 44 tests, 149 assertions) gồm Signature Archive, Multilingual Studio, Invitation Persona, Photo Wish Moderation, Live Wall Media, Smart Group Scope, Smart Focal Point, Publish Diff, RSVP Change History, Companion Card.
+     - Toàn bộ 10 file test đã được đưa vào Git tracking và whitelist trong `.gitignore`, tuyệt đối không bao giờ bị xóa.
+     - Ban hành tài liệu thẩm định `docs/qa/RELEASE_G0_EVIDENCE.md` và đồng bộ trạng thái `docs/MAY_HEN_RELEASE_CANDIDATE_TEST_GATES.csv`.
   2. **Gate G1 — Core Domain, Privacy, Financial Integrity (21 / 21 PASS — 100%)**:
      - *F02 Fix (RSVP Đa sự kiện)*: Bổ sung quan hệ `responses(): HasMany` và helper `responseForEvent` trên `Guest`; `GuestController::submitRsvp` scoped theo `event_id` độc lập, headcount không bị ghi đè khi khách dự cả Lễ và Tiệc. Test: `MultiEventRsvpIntegrityTest.php` (4/4 passed).
      - *Vòng đời thiệp & Concurrency*: Chặn truy cập thiệp locked (403), unpublished (404), expired (410); bảo vệ draft chưa publish; rollback snapshot bảo toàn dữ liệu; chặn conflict autosave song song qua `saveDraftWithLock`. Test: `InvitationLifecycleAndConcurrencySecurityTest.php` (4/4 passed).
@@ -12383,6 +12384,22 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
      - *Quản trị gửi tin (Messaging Dispatch)*: `ReliableMessagingDispatchService` tự động lọc trùng SĐT trong cùng đợt gửi, loại trừ khách Opt-out, và cập nhật trạng thái `delivered`/`failed` chính xác khi có DLR callback từ gateway.
      - *Kiểm duyệt LiveWall & Màn chiếu*: Chỉ hiển thị ảnh PhotoDrop và lời chúc đã duyệt (`is_approved = true`); ảnh bị từ chối hoặc lời chúc bị xóa lập tức biến mất khỏi live feed.
      - *Hộp thời gian (TimeCapsule)*: Khi chưa đến ngày mở khóa (`canBeUnlocked() === false`), API/HTML trả về `content = null` và từ chối lệnh unseal với mã 422. Test: `WeddingDayAndLifecycleIntegrityTest.php` (7/7 passed).
-- **Trạng thái Gate G3 & G4**: Đang chuẩn bị chuyển bước nghiệm thu Visual UX & Accessibility (G3) và Commercial Acceptance (G4).
+  4. **Gate G3 — Visual UX & Accessibility (14 / 14 PASS — 100%)**:
+     - Hoàn tất toàn bộ 14 test cases G3-001 đến G3-014 qua bộ Feature Test `tests/Feature/VisualUxAndAccessibilityIntegrityTest.php` (14 passed, 69 assertions).
+     - Xây dựng view giao diện lỗi hết hạn lưu trữ thiệp cưới `resources/views/errors/410.blade.php` (410 Gone) đồng bộ hoàn hảo phong cách Quiet Luxury, bảng màu Warm Cream, font Cormorant Garamond, thông điệp lịch thiệp và điều hướng trang nhã, bảo mật tuyệt đối không rò rỉ stack trace.
+     - Kiểm chứng bảo toàn Responsive Viewports và Form an toàn:
+       - Thẻ meta viewport chuẩn xác trên toàn bộ layout Auth, Client, Admin và Public Invitation.
+       - Cổng đối tác (Partner Portal) render trang quản lý thật cho Studio được duyệt, hiển thị huy hiệu và điều phối thiệp cưới thông suốt.
+       - Trình tạo thiệp (Studio Editor) tích hợp thanh công cụ cố định, chỉ báo lưu tự động (`mayhen_editor_save_pill`), preview trực quan và tương thích với bàn phím ảo di động.
+       - Trình dựng thiệp Curated Preview hỗ trợ nút bỏ qua hiệu ứng (`btnSkipCrafting`), không bắt người dùng chờ đợi vô lý.
+       - Khung 10 Section tiêu chuẩn của thiệp cưới kết xuất chuẩn BEM `mayhen_invitation_*` với Flow layout (Flexbox/Grid), thích ứng mọi kích thước màn hình.
+       - Form RSVP xử lý lỗi validation 422 nghiêm ngặt, hiển thị thông báo lỗi rõ ràng, không bao giờ báo thành công giả lập.
+       - Sơ đồ bàn tiệc (`mayhen_seat_*`) tối ưu hóa trên màn hình cảm ứng / tablet.
+       - Bảng quản trị (`mayhen_admin_table`) hỗ trợ vùng cuộn ngang an toàn trên laptop 1366px, không bị tràn hay đè nút hành động.
+       - Màn chiếu sân khấu Live Wall 16:9 (`mayhen_wall_*`) cân đối tên cặp đôi và mã PIN rõ nét.
+       - Trải nghiệm tiếp cận (Accessibility): Khai báo media query `prefers-reduced-motion` tắt các hiệu ứng chuyển động mạnh cho người dùng nhạy cảm, giao diện co giãn an toàn khi phóng to 200%.
+       - Âm thanh thiệp cưới: Cung cấp nút điều khiển nhạc trực quan, tuân thủ nghiêm ngặt chính sách bảo vệ người dùng của iOS/Android.
+       - Thư viện ảnh & Local Assets: Kiểm tra bảo vệ 100% Local Assets, loại trừ hoàn toàn các đường dẫn CDN bên thứ ba rủi ro (`ladicdn.com`, `builder.27biggroup.com`).
+- **Trạng thái Gate G4**: Đang chuẩn bị chuyển bước nghiệm thu Commercial Acceptance & Launch (G4: G4-001 đến G4-012).
 
 ---

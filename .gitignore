@@ -163,6 +163,17 @@ Thumbs.db
 !/tests/Feature/WeddingTimelineSuiteTest.php
 !/tests/Feature/WeddingLocationAdvisorySuiteTest.php
 !/tests/Feature/WeddingGallerySuiteTest.php
+!/tests/Feature/VisualUxAndAccessibilityIntegrityTest.php
+!/tests/Feature/SignatureArchiveSuiteTest.php
+!/tests/Feature/MultilingualStudioSuiteTest.php
+!/tests/Feature/InvitationPersonaStudioSuiteTest.php
+!/tests/Feature/PhotoWishModerationE2ETest.php
+!/tests/Feature/LiveWallMediaSuiteTest.php
+!/tests/Feature/SmartGroupEventScopeSuiteTest.php
+!/tests/Feature/SmartFocalPointSuiteTest.php
+!/tests/Feature/PublishDiffSuiteTest.php
+!/tests/Feature/RsvpChangeHistorySuiteTest.php
+!/tests/Feature/CompanionCardSuiteTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

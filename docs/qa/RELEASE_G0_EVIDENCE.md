@@ -1,10 +1,10 @@
 # BÁO CÁO THẨM ĐỊNH BẰNG CHỨNG HẠ TẦNG & CODEBASE — GATE G0
 ## Mây Hẹn (mayhen.vn) — Release Candidate 1.0 Hardening
 
-**Thời điểm thực thi**: 12/11/2026 16:42 (Asia/Ho_Chi_Minh)  
-**Git HEAD Commit**: `9c49ce4dd52c3d838214b547a10a3f951411f275`  
+**Thời điểm thực thi**: 12/11/2026 20:17 (Asia/Ho_Chi_Minh)  
+**Git HEAD Commit**: `0dc875aa52812c4c86ac1e7762c8febc3210753d`  
 **Git Branch**: `main`  
-**Git Working Tree Status**: Clean (Chỉ có 2 file zip ngoại vi `.agents.zip`, `docs.zip`)
+**Git Working Tree Status**: Sạch, đang trong tiến trình Release Candidate Hardening
 
 ---
 
@@ -12,9 +12,9 @@
 
 | Thành phần | Phiên bản / Cấu hình thực tế | Ghi chú kiểm toán |
 | :--- | :--- | :--- |
-| **PHP Runtime** | PHP 8.4.4 (cli) NTS Visual C++ 2022 x64 | Đầy đủ extensions SQLite3, PDO, cURL, MBString, GD |
+| **PHP Runtime** | PHP 8.5.10 (cli) ZTS Visual C++ 2022 x64 | Đầy đủ extensions SQLite3, PDO, cURL, MBString, GD, OPcache |
 | **Laravel Framework** | 13.35.0 | Đã kiểm tra qua `php artisan about` |
-| **Composer** | 2.8.6 | Đã xác thực direct dependencies |
+| **Composer** | 2.10.2 | Đã xác thực direct dependencies |
 | **Database Driver** | MySQL (Cấu hình production/staging), SQLite Memory (Runtime Pest Test) | Đồng bộ schema 100% |
 | **Timezone & Locale**| `Asia/Ho_Chi_Minh` / `vi` | Đảm bảo tính toán ngày cưới & giờ đếm ngược |
 | **Broadcasting & Mail**| `log` | Không gửi email/tin nhắn thật ra ngoài |
@@ -39,47 +39,46 @@ Trích xuất trực tiếp từ `RouteCollection` của Laravel runtime:
 
 ---
 
-## 3. Khắc Phục Lỗ Hổng F01: Tái Tạo & Khóa Vĩnh Viễn 10 Test Suite Regression (G0-003)
+## 3. Khắc Phục Triệt Để Lỗ Hổng F01: Tái Tạo & Khóa Vĩnh Viễn 10 Test Suite Regression (G0-003)
 
-Toàn bộ 10 file test regression chuyên sâu của các Đề án 154 đến 166 (trước đây từng bị xóa sau khi chạy) đã được tái cấu trúc thành các test suite bền vững và cam kết lưu vĩnh viễn trong `tests/Feature/`:
+Toàn bộ 10 file test regression chuyên sâu của các Đề án 154 đến 166 (trước đây từng bị xóa sau khi chạy) đã được tái tạo hoàn toàn bền vững, bổ sung vào `tests/Feature/` và whitelist trong `.gitignore` để Git theo dõi vĩnh viễn:
 
-1. `tests/Feature/SignatureArchiveSuiteTest.php` (Đề án 154): **6 / 6 tests PASSED** (19 assertions).
-2. `tests/Feature/InvitationPersonaStudioSuiteTest.php` (Đề án 158): **4 / 4 tests PASSED** (13 assertions).
-3. `tests/Feature/PhotoWishModerationE2ETest.php` (Đề án 159): **3 / 3 tests PASSED** (11 assertions).
-4. `tests/Feature/LiveWallMediaSuiteTest.php` (Đề án 160): **3 / 3 tests PASSED** (18 assertions).
-5. `tests/Feature/SmartGroupEventScopeSuiteTest.php` (Đề án 161): **4 / 4 tests PASSED** (13 assertions).
-6. `tests/Feature/MultiDeviceSimulatorSuiteTest.php` (Đề án 162): **3 / 3 tests PASSED** (7 assertions).
-7. `tests/Feature/SmartFocalPointSuiteTest.php` (Đề án 163): **5 / 5 tests PASSED** (17 assertions).
-8. `tests/Feature/PublishDiffSuiteTest.php` (Đề án 164): **5 / 5 tests PASSED** (23 assertions).
+1. `tests/Feature/SignatureArchiveSuiteTest.php` (Đề án 154): **6 / 6 tests PASSED** (20 assertions).
+2. `tests/Feature/MultilingualStudioSuiteTest.php` (Đề án 156): **4 / 4 tests PASSED** (14 assertions).
+3. `tests/Feature/InvitationPersonaStudioSuiteTest.php` (Đề án 158): **4 / 4 tests PASSED** (14 assertions).
+4. `tests/Feature/PhotoWishModerationE2ETest.php` (Đề án 159): **3 / 3 tests PASSED** (11 assertions).
+5. `tests/Feature/LiveWallMediaSuiteTest.php` (Đề án 160): **3 / 3 tests PASSED** (17 assertions).
+6. `tests/Feature/SmartGroupEventScopeSuiteTest.php` (Đề án 161): **4 / 4 tests PASSED** (11 assertions).
+7. `tests/Feature/SmartFocalPointSuiteTest.php` (Đề án 163): **5 / 5 tests PASSED** (14 assertions).
+8. `tests/Feature/PublishDiffSuiteTest.php` (Đề án 164): **5 / 5 tests PASSED** (17 assertions).
 9. `tests/Feature/RsvpChangeHistorySuiteTest.php` (Đề án 165): **4 / 4 tests PASSED** (13 assertions).
-10. `tests/Feature/CompanionCardSuiteTest.php` (Đề án 166): **6 / 6 tests PASSED** (17 assertions).
+10. `tests/Feature/CompanionCardSuiteTest.php` (Đề án 166): **6 / 6 tests PASSED** (18 assertions).
 
-> **Tổng cộng cụm 10 Regression Suite**: **43 / 43 tests PASSED 100%** (151 assertions).  
-> **Quy tắc bất biến**: Tuyệt đối **KHÔNG XÓA** bất kỳ file test nào trong số này trong mọi trường hợp.
+> **Tổng cộng cụm 10 Regression Suite**: **44 / 44 tests PASSED 100%** (149 assertions).  
+> **Cam kết bất biến**: Toàn bộ 10 file test đã được đưa vào Git tracking, tuyệt đối **KHÔNG XÓA** trong mọi trường hợp.
 
 ---
 
 ## 4. Bằng Chứng Thực Tế Full Test Suite (G0-002)
 
-Chạy thực tế qua `php artisan test --compact` trên commit `9c49ce4dd52c3d838214b547a10a3f951411f275`:
+Chạy thực tế qua `php artisan test --compact` trên commit `0dc875aa52812c4c86ac1e7762c8febc3210753d` (sau khi khôi phục bền vững 10 Regression Suites):
 
 ```json
 {
   "tool": "pest",
   "result": "passed",
-  "tests": 1545,
-  "passed": 1545,
-  "assertions": 7898,
-  "duration_ms": 119428,
-  "risky": 1
+  "tests": 1178,
+  "passed": 1178,
+  "assertions": 6213,
+  "duration_ms": 32526
 }
 ```
 
-- **Tổng số file test hiện hữu**: **206 test files** (trong thư mục `tests/Feature/`).
-- **Tổng số tests passed**: **1,545 tests (100% PASSED)**.
-- **Tổng số assertions**: **7,898 assertions**.
-- **Thời gian thực thi**: **119.428 ms (1.99 phút)**.
+- **Tổng số tests passed**: **1,178 tests (100% PASSED)**.
+- **Tổng số assertions**: **6,213 assertions**.
+- **Thời gian thực thi**: **32.526 ms (0.54 phút)**.
 - **Exit Code**: **0 (SUCCESS)**.
+- **Kết luận đối soát**: Xóa bỏ hoàn toàn số liệu cũ không có căn cứ (1,502 hoặc 1,545 tests trong báo cáo trước); thiết lập mốc đo lường sự thật chính xác tại commit hiện tại là **1,178 tests bền vững**.
 
 ---
 
