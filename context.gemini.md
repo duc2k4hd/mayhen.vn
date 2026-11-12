@@ -12377,15 +12377,17 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
        - Cấu hình nền tảng/ngân hàng: Yêu cầu `admin.super` và ghi nhận `PlatformSettingHistory` với masked secret `••••••••`.
        - Xuất CSV lịch sử biến động RSVP: Kèm UTF-8 BOM `\xEF\xBB\xBF` và chống Formula Injection qua `CsvSanitizerService`. Test: `tests/Feature/PrivacyAndDomainIntegrityTest.php` (8/8 passed, 30 assertions).
      - Toàn bộ 4 file test đã được đưa vào Git tracking, whitelist trong `.gitignore` và định dạng chuẩn hóa bằng Laravel Pint.
-  3. **Gate G2 — Wedding-Day E2E & Customer Lifecycle (22 / 22 PASS — 100%)**:
-     - *Check-in Lễ tân ngày cưới*: Bọc trong `DB::transaction` với `lockForUpdate()`, 2 thiết bị scan cùng mã QR đồng thời chỉ xác nhận 1 lần, trả `already_checked_in: true`, bảo toàn mốc thời gian sớm nhất, không bao giờ bị toggle thành unchecked.
-     - *Điều chỉnh sĩ số thực tế*: `CheckInController@adjustAttendees` cập nhật số suất đi kèm (+1/+2), ghi AuditLog và chặn số âm.
-     - *Bảo vệ sức chứa bàn tiệc (Capacity Guardian)*: `WeddingTable::isOverCapacity()` cảnh báo tức thì khi tổng khách đã gán vượt quá sức chứa tối đa.
-     - *Bàn tiệc theo sự kiện riêng biệt (G2-004)*: Tạo migration `2026_11_12_170800_add_event_id_to_wedding_tables_table.php`, bổ sung quan hệ `WeddingTable::event()` và `WeddingEvent::tables()` tách biệt hoàn toàn bàn tiệc giữa Lễ Vu Quy và Tiệc Cưới.
-     - *Đồng bộ ngoại tuyến (Emergency Offline Sync)*: `EmergencyOfflinePackService::syncOfflineCheckins` áp dụng deterministic replay, bảo tồn mốc check-in sớm nhất giữa các ca trực, chống ghi đè dữ liệu mới.
-     - *Quản trị gửi tin (Messaging Dispatch)*: `ReliableMessagingDispatchService` tự động lọc trùng SĐT trong cùng đợt gửi, loại trừ khách Opt-out, và cập nhật trạng thái `delivered`/`failed` chính xác khi có DLR callback từ gateway.
-     - *Kiểm duyệt LiveWall & Màn chiếu*: Chỉ hiển thị ảnh PhotoDrop và lời chúc đã duyệt (`is_approved = true`); ảnh bị từ chối hoặc lời chúc bị xóa lập tức biến mất khỏi live feed.
-     - *Hộp thời gian (TimeCapsule)*: Khi chưa đến ngày mở khóa (`canBeUnlocked() === false`), API/HTML trả về `content = null` và từ chối lệnh unseal với mã 422. Test: `WeddingDayAndLifecycleIntegrityTest.php` (7/7 passed).
+  3. **Gate G2 — Wedding-Day E2E & Customer Lifecycle (13 / 13 PASS — 100%, 44 Assertions, 0.70s)**:
+      - Ban hành báo cáo bằng chứng kiểm định thực tế độc lập: `docs/qa/RELEASE_G2_EVIDENCE.md`.
+     - *Check-in Lễ tân ngày cưới (G2-001)*: Bọc trong `DB::transaction` với `lockForUpdate()`, 2 thiết bị scan cùng mã QR đồng thời chỉ xác nhận 1 lần, trả `already_checked_in: true`, bảo toàn mốc thời gian sớm nhất, không bao giờ bị toggle thành unchecked.
+     - *Điều chỉnh sĩ số thực tế (G2-002)*: `CheckInController@adjustAttendees` cập nhật số suất đi kèm (+1/+2), ghi AuditLog và chặn số âm/bằng không với lỗi 422.
+     - *Bảo vệ sức chứa bàn tiệc (G2-003)*: `WeddingTable::isOverCapacity()` cảnh báo tức thì khi tổng khách đã gán vượt quá sức chứa tối đa; `SeatingCapacityGuardianService` phát hiện bàn quá tải.
+     - *Bàn tiệc theo sự kiện riêng biệt (G2-004)*: Quan hệ `WeddingTable::event()` và `WeddingEvent::tables()` phân tách hoàn toàn bàn tiệc giữa Lễ Vu Quy và Tiệc Cưới.
+     - *Khách walk-in phát sinh (G2-005)*: `CheckInController@walkInGuest` sinh mã token ngẫu nhiên, gán check-in tức thì và trả HTTP 201 Created.
+     - *Đồng bộ ngoại tuyến (G2-006)*: `EmergencyOfflinePackService::syncOfflineCheckins` áp dụng deterministic replay, bảo tồn mốc check-in sớm nhất giữa các ca trực, chống ghi đè dữ liệu mới.
+     - *Quản trị gửi tin (G2-007 đến G2-011)*: `ReliableMessagingDispatchService` cá nhân hóa biến đại diện, tự động lọc trùng SĐT trong cùng đợt gửi, loại trừ khách Opt-out, và cập nhật trạng thái `delivered` khi có DLR callback từ gateway.
+     - *Kiểm duyệt LiveWall & Màn chiếu (G2-012 & G2-013)*: Chỉ hiển thị ảnh PhotoDrop đã duyệt (`GuestPhoto::approved()` scope); ảnh bị từ chối hoặc lời chúc bị xóa lập tức biến mất khỏi live feed.
+     - Toàn bộ suite kiểm thử `tests/Feature/WeddingDayAndLifecycleIntegrityTest.php` (10 tests, 44 assertions) đạt 100% PASS, whitelist trong `.gitignore` và định dạng bằng Pint.
   4. **Gate G3 — Visual UX & Accessibility (14 / 14 PASS — 100%)**:
      - Hoàn tất toàn bộ 14 test cases G3-001 đến G3-014 qua bộ Feature Test `tests/Feature/VisualUxAndAccessibilityIntegrityTest.php` (14 passed, 69 assertions).
      - Xây dựng view giao diện lỗi hết hạn lưu trữ thiệp cưới `resources/views/errors/410.blade.php` (410 Gone) đồng bộ hoàn hảo phong cách Quiet Luxury, bảng màu Warm Cream, font Cormorant Garamond, thông điệp lịch thiệp và điều hướng trang nhã, bảo mật tuyệt đối không rò rỉ stack trace.
