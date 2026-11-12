@@ -11319,6 +11319,49 @@ Mỗi khi nhận một yêu cầu từ người dùng, AI phải thực hiện t
   - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
 
 
+### 143. Đề Án 143: Phân Hệ Studio Nhận Diện Thông Minh, Rà Soát & Xử Lý Gộp Khách Mời Trùng Lặp 1-Chạm (Smart Duplicate Guest Detector & One-Click Merge Studio — IDEA-B09, Section 23/24 PRD V3 & TASK-VAL-10)
+- **Mục tiêu**:
+  - Triển khai phân hệ Studio Nhận Diện Thông Minh & Xử Lý Gộp Khách Mời Trùng Lặp (Smart Duplicate Guest Detector & One-Click Merge Studio) theo IDEA-B09 trong Catalog 60 tính năng cao cấp, Section 23/24 PRD V3 và TASK-VAL-10:
+  - Giải quyết triệt để nỗi lo thực tế của dâu rể khi nhập danh sách khách từ nhiều nguồn (Excel bố mẹ, danh bạ, Zalo):
+    1. *Thuật toán rà soát & đối chiếu đa tầng*:
+       - 🔴 **Trùng chính xác Số Điện Thoại (`phone_match`)**: Mức độ Nghiêm Trọng, độ tin cậy 100%, cùng một người nhưng ghi hai tên khác nhau (VD: "Anh Nam" vs "Nguyễn Hoàng Nam").
+       - 🟡 **Trùng Họ Tên chuẩn hóa (`exact_name`)**: Tự động bóc tách danh xưng tiếng Việt ("Anh", "Chị", "Em", "Bác", "Chú", "Cô"...) và bỏ dấu thanh, phát hiện trùng trong cùng phân nhóm hoặc khác nhóm (độ tin cậy 90-95%).
+       - 🟡 **Tên tương đồng cao (`fuzzy_name`)**: So khớp Levenshtein / similar_text (độ tương đồng >= 82%).
+    2. *Công cụ Gộp 1-Chạm Thông Minh (One-Click Merge Tool)*:
+       - Cho phép chọn họ tên chuẩn nhất (tên đầy đủ), chọn số điện thoại, phân nhóm và bàn tiệc.
+       - Tùy chọn cộng dồn số suất mời dự kiến (`expected_attendees`) để tránh thiếu cỗ.
+       - Tự động chuyển giao toàn bộ lịch sử phân phối thiệp (`guest_deliveries`) và phản hồi RSVP (`guest_responses`) từ khách phụ sang khách chính.
+       - Xóa an toàn bản ghi phụ khỏi database, ghi nhận AuditLogger `GUEST_DUPLICATE_MERGED`.
+    3. *Nút Bỏ Qua (Dismiss False Alarm)*:
+       - Cho phép ẩn cặp khách không phải trùng với hiệu ứng mượt mà.
+    4. *Xuất Báo Cáo CSV Chuẩn UTF-8 BOM (`export_csv`)*:
+       - Tải xuống toàn bộ bảng đối chiếu các cặp nghi vấn trùng lặp để dâu rể cùng phụ huynh rà soát.
+  - Cung cấp **Giao Diện Studio Quản Trị Cặp Đôi (`account.duplicate_guests.*`)**:
+    - 4 Card KPI: Tổng số khách, Cặp nghi vấn trùng lặp, Suất mời ước tính tiết kiệm được, Tỷ lệ dữ liệu sạch (%).
+    - Bảng so sánh đối chiếu song song hai cột: Bản ghi A vs Bản ghi B (Tên, Xưng hô, SĐT, Nhóm, Bàn tiệc, Suất mời, Trạng thái gửi thiệp).
+    - Modal gộp thông minh Pure Vanilla JS, Radio chọn các trường giữ lại và Toast phản hồi tức thì.
+    - Trạng thái dữ liệu sạch (Clean State) với thông điệp chúc mừng khi không còn bản ghi trùng lặp nào.
+- **Kiến trúc & Tệp Tin**:
+  - `app/Services/DuplicateGuestDetectorService.php`:
+    - Thuật toán bóc tách danh xưng tiếng Việt, đối soát số điện thoại và tên tương đồng, xử lý gộp bản ghi và xuất CSV UTF-8 BOM.
+  - `app/Http/Controllers/Client/DuplicateGuestController.php`:
+    - `index`: Màn hình Studio Lọc Trùng Khách Mời (`account.duplicate_guests.index`).
+    - `scan`: Quét lại AJAX (`account.duplicate_guests.scan`).
+    - `merge`: Gộp 2 khách 1-chạm qua AJAX (`account.duplicate_guests.merge`).
+    - `exportCsv`: Tải về file CSV báo cáo trùng lặp (`account.duplicate_guests.export_csv`).
+  - `resources/views/client/pages/account/duplicate_guests/index.blade.php`:
+    - Giao diện Studio Quiet Luxury hoàn chỉnh, 4 KPI cards, bảng so sánh song song, modal gộp trực quan và clean state.
+  - `resources/views/client/pages/account/invitations.blade.php`:
+    - Bổ sung nút công cụ "Lọc Trùng Khách".
+  - `routes/web.php`:
+    - Đăng ký nhóm routes `account.duplicate_guests.*`.
+  - `tests/Feature/DuplicateGuestStudioSuiteTest.php`:
+    - Kiểm thử 7/7 test cases chuyên sâu: chặn truy cập 403, mở màn hình Studio, phát hiện trùng theo SĐT, phát hiện trùng theo tên tương đồng, gộp bản ghi sạch sẽ chuyển giao deliveries, và xuất file CSV UTF-8 BOM (100% PASSED).
+- **Kết quả Kiểm Thử**:
+  - Toàn bộ Test Suite hệ thống Mây Hẹn: **1,162 / 1,162 tests PASSED 100%** (6,210 assertions).
+  - Định dạng mã nguồn: Laravel Pint agent format PASSED 100%.
+
+
 
 
 

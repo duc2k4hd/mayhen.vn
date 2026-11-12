@@ -14,6 +14,7 @@ use App\Http\Controllers\Client\ContentReportController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\CustomerReviewController;
+use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
@@ -261,6 +262,12 @@ Route::prefix('tai-khoan')->middleware('auth')->name('account.')->group(function
     // Tra Cứu Vị Trí Bàn Tiệc & Hướng Dẫn Chỗ Ngồi (IDEA-C04 & Đề Án 142)
     Route::get('/thiep/{id}/tra-cuu-ban-tiec', [GuestTableFinderController::class, 'index'])->name('table_finder.index');
     Route::post('/thiep/{id}/tra-cuu-ban-tiec', [GuestTableFinderController::class, 'update'])->name('table_finder.update');
+
+    // Lọc Trùng Khách Mời & Gộp Bản Ghi Thông Minh (IDEA-B09 & Đề Án 143)
+    Route::get('/thiep/{id}/loc-trung-khach', [DuplicateGuestController::class, 'index'])->name('duplicate_guests.index');
+    Route::get('/thiep/{id}/loc-trung-khach/quet-lai', [DuplicateGuestController::class, 'scan'])->name('duplicate_guests.scan');
+    Route::post('/thiep/{id}/loc-trung-khach/gop', [DuplicateGuestController::class, 'merge'])->name('duplicate_guests.merge');
+    Route::get('/thiep/{id}/loc-trung-khach/xuat-csv', [DuplicateGuestController::class, 'exportCsv'])->name('duplicate_guests.export_csv');
     Route::post('/thiep/{id}/khoi-phuc-khan-cap', [AccountController::class, 'rollback'])->name('invitations.rollback');
     Route::delete('/thiep/{id}', [AccountController::class, 'destroy'])->name('invitations.destroy');
     Route::get('/thiep/{id}/bo-du-phong-ngay-cuoi', [AccountController::class, 'resilienceKit'])->name('invitations.resilience_kit');
