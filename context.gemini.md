@@ -12534,7 +12534,7 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
     - Đóng mở Sidebar Menu Drawer di động và danh mục accordion mượt mà.
     - Sao chép mã nguồn Markdown, sao chép liên kết chia sẻ, chia sẻ qua hệ thống và in PDF.
     - Tự động gắn nút "Sao chép" (Copy Button) cho toàn bộ khối mã lệnh `<pre><code>` trong nội dung bài viết.
-- **Bộ kiểm thử tích hợp chuyên sâu**: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **15/15 tests PASSED (100%), 79 assertions**:
+- **Bộ kiểm thử tích hợp chuyên sâu**: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **16/16 tests PASSED (100%), 94 assertions**:
   1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
   2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
   3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
@@ -12550,6 +12550,7 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   13. Kiểm thử liên kết trợ giúp ngữ cảnh Wave 04 trên Header Admin Master trỏ đúng route `/admin/docs`.
   14. Kiểm tra nạp và cấu trúc tệp Javascript `docs-main.js` cùng dữ liệu tìm kiếm nhúng JSON hợp lệ trên cả Index và Detail.
   15. Kiểm thử 5 bài cẩm nang ngữ cảnh trọng yếu (`CLI-EDIT-001`, `CLI-GUEST-002`, `CLI-SEAT-001`, `CLI-CKIN-001`, `ADM-SOP-001`) hiển thị đầy đủ nội dung nghiệp vụ thực tế, không bị đứt gãy liên kết hay vỡ định dạng.
+  16. Kiểm thử 5 bài cẩm nang nâng cao Studio Tạo Thiệp V2 (`CLI-EDIT-009`, `CLI-EDIT-007`, `CLI-EDIT-006`, `CLI-EDIT-005`, `CLI-EDIT-010`) hiển thị đầy đủ tính năng Trợ lý AI, Bác sĩ thiệp cưới, Autoplay Policy, 10 Section và Báo cáo Publish Impact.
 - **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` và 9 tasks trong Lộ trình `06_DOCS_IMPLEMENTATION_ROADMAP.md` (W01 -> W05) đều đạt **DONE / PASS**.
 - **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào.
 
@@ -12578,5 +12579,32 @@ Nâng cấp từ dạng nội dung khung (boilerplate) thành cẩm nang nghiệ
    - Bản đồ kiến trúc kỹ thuật chuẩn: PHP 8.5.10 / Laravel 13.35.0, 100% Local Assets, không framework ngoài, giao dịch tiền tệ nguyên tử `lockForUpdate()`.
    - Ma trận phân quyền 3 cấp độc lập: `staff` (CSKH L1), `manager` (Vận hành L2, duyệt hoàn tiền, Release Lab), `super_admin` (L3 tối cao).
    - Bảo mật thông tin cá nhân (PII) theo Luật 91/2025/QH15: Phone masking, quyền được lãng quên Anonymize User, ghi vết kiểm toán bắt buộc vào `audit_logs`.
+
+### 16.7. Nâng Cấp Chiều Sâu Cụm Tính Năng Nâng Cao Studio Tạo Thiệp Cưới V2
+Hoàn thiện toàn bộ các tính năng cốt lõi tạo nên trải nghiệm tạo thiệp đẳng cấp của Studio V2:
+1. **`CLI-EDIT-009` (Bác Sĩ Kiểm Tra Chất Lượng - Quality Doctor)**:
+   - Thang điểm 100 thời gian thực (90-100đ Xanh lá sẵn sàng xuất bản, 70-89đ Vàng cam, <70đ Đỏ cần bổ sung).
+   - Thuật toán Cap Score Defense (BUG-AUDIT-07): Khống chế tối đa 65đ nếu thiếu các trường thông tin sống còn (Tên, Ngày cưới, Sảnh tiệc).
+   - Danh mục thẩm định 3 nhóm: Pháp lý & tôn nghiêm, Trải nghiệm chỉ dẫn khách, Thẩm mỹ thị giác & hình ảnh.
+   - Cơ chế sửa lỗi 1-chạm: Tự động đóng modal, chuyển đúng tab và cuộn mượt (smooth scroll) focus vào ô nhập liệu cần điền.
+2. **`CLI-EDIT-007` (Trợ Lý AI Story Writer)**:
+   - 3 trường phái ngôn từ Quiet Luxury: Lãng mạn (Romantic), Tối giản (Minimal), Trẻ trung tươi vui (Cheerful).
+   - Chắt lọc từ kỷ niệm thực tế của cặp đôi (nơi gặp gỡ, số năm yêu nhau, dấu ấn đáng nhớ), tạo 3 phương án chỉ trong 2 giây.
+   - Áp dụng 1-chạm (One-Click Apply) điền thẳng vào khung Lời ngỏ và Live Sync tức thời lên Live Canvas.
+   - Bộ lọc kiểm duyệt văn hóa ngày cưới NoProfanity ngăn chặn từ ngữ thô tục, nhạy cảm.
+3. **`CLI-EDIT-006` (Âm Nhạc Lãng Mạn & Chính Sách Autoplay Trình Duyệt)**:
+   - Tuyển tập 100% Local MP3 nhạc hòa tấu violin, piano, cello (Canon in D, Until I Found You, Beautiful in White, A Thousand Years) hoặc tải lên file MP3 riêng tối đa 10MB.
+   - Giải pháp Autoplay Policy trên iOS Safari & Android Chrome: Thiết kế nghi thức chạm mở phong ấn sáp (Wax Seal Handshake) đóng vai trò User Gesture hợp lệ kích hoạt Web Audio API phát nhạc tự động với hiệu ứng Fade-in êm ái.
+   - Nút điều khiển âm thanh nổi (Floating Audio Control) xoay nhẹ theo điệu nhạc, bật/tắt 1-chạm tiện lợi.
+   - Cơ chế Lazy Audio Streaming nạp nhạc sau khi hoàn tất hiển thị nội dung, không làm nghẽn Core Web Vitals.
+4. **`CLI-EDIT-005` (Hệ Khung 10 Section Tiêu Chuẩn & Tùy Biến Bố Cục)**:
+   - Kiến trúc 10 Section chuẩn hóa theo dòng chảy cảm xúc: 1. Opening -> 2. Love Story -> 3. Family -> 4. Calendar -> 5. Events & Maps -> 6. Timeline -> 7. Dresscode -> 8. Album 10 ảnh -> 9. VietQR Gift -> 10. Interactive Ending & RSVP.
+   - Công tắc Bật/Tắt linh hoạt cho tiệc không nhận mừng cưới hoặc tiệc đơn giản.
+   - Kéo thả thay đổi thứ tự (Drag & Drop Reorder) với quy tắc bất biến: Section 1 luôn ở đầu và Section 10 luôn ở cuối.
+   - 100% Flow Layout Flexbox & Grid co giãn tự nhiên, không vỡ layout khi xem trên mọi kích cỡ màn hình di động.
+5. **`CLI-EDIT-010` (So Sánh Các Thay Đổi Publish Diff & Xuất Bản Thiệp)**:
+   - Quy trình xuất bản lần đầu kích hoạt link chính thức `mayhen.vn/thiep/{slug}` và tải mã QR chất lượng cao.
+   - Báo cáo phân tích tác động thay đổi (Publish Impact Report - TASK-VAL-09) khi sửa thiệp đã gửi: Đếm số khách đã nhận link, phân loại rủi ro Critical/Warning/Info.
+   - Bảo hiểm phiên bản khẩn cấp (Emergency Rollback Snapshot - TASK-VAL-11): Lưu full snapshot, cho phép tráo đổi (swap) lấy lại 100% bản cũ trong 1 giây nếu publish nhầm sát giờ đón khách.
 
 ---

@@ -260,3 +260,50 @@ test('các bài hướng dẫn ngữ cảnh trọng yếu hiển thị đầy đ
     $sopResp->assertSee('Ma trận phân quyền quản trị 3 cấp');
     $sopResp->assertSee('PHP 8.5.10 / Laravel 13.35.0');
 });
+
+test('các bài hướng dẫn nâng cao Studio V2 hiển thị đầy đủ tính năng AI, Quality Doctor và âm nhạc', function () {
+    // 1. Quality Doctor (CLI-EDIT-009)
+    $doctorResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-009',
+    ]));
+    $doctorResp->assertOk();
+    $doctorResp->assertSee('Visual Quality Doctor');
+    $doctorResp->assertSee('Cap Score Defense');
+
+    // 2. AI Story Writer (CLI-EDIT-007)
+    $aiResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-007',
+    ]));
+    $aiResp->assertOk();
+    $aiResp->assertSee('AI Story Writer');
+    $aiResp->assertSee('NoProfanity');
+
+    // 3. Audio & Autoplay Policy (CLI-EDIT-006)
+    $musicResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-006',
+    ]));
+    $musicResp->assertOk();
+    $musicResp->assertSee('Autoplay Policy');
+    $musicResp->assertSee('Wax Seal Handshake');
+
+    // 4. 10 Sections Standard (CLI-EDIT-005)
+    $sectionsResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-005',
+    ]));
+    $sectionsResp->assertOk();
+    $sectionsResp->assertSee('10 Section Tiêu Chuẩn');
+    $sectionsResp->assertSee('Flow Layout');
+
+    // 5. Publish Diff & Rollback (CLI-EDIT-010)
+    $publishResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-010',
+    ]));
+    $publishResp->assertOk();
+    $publishResp->assertSee('Publish Impact Report');
+    $publishResp->assertSee('Emergency Rollback Snapshot');
+});
