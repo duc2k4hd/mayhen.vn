@@ -47,6 +47,9 @@
                         📊 Bảng Điều Khiển Realtime
                     </a>
                 @endif
+                <a href="{{ route('docs.show', ['category' => 'checkin-livewall', 'slug' => 'CLI-CKIN-001']) }}" target="_blank" rel="noopener noreferrer" class="mayhen_checkin_btn mayhen_checkin_btn--outline" title="Xem hướng dẫn sử dụng cổng điểm danh lễ tân và quét mã QR">
+                    📖 Hướng Dẫn Điểm Danh
+                </a>
                 <a href="{{ route('guests.index', $invitation->id) }}" class="mayhen_checkin_btn mayhen_checkin_btn--text">
                     ← Danh sách khách
                 </a>

@@ -138,3 +138,50 @@ test('thẻ SEO và OpenGraph hiện diện đầy đủ trên Client Docs và b
     $adminResp->assertOk();
     $adminResp->assertSee('<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">', false);
 });
+
+test('truy cập các bài viết thí điểm hoàn chỉnh (CLI-START-002, CLI-GUEST-004, ADM-USER-001, ADM-COCK-002) thành công', function () {
+    // 1. Client Onboarding
+    $startResp = $this->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-002',
+    ]));
+    $startResp->assertOk();
+    $startResp->assertSee('Onboarding 4 bước');
+    $startResp->assertSee('Quiet Luxury');
+
+    // 2. Client RSVP
+    $rsvpResp = $this->get(route('docs.show', [
+        'category' => 'guest-rsvp',
+        'slug' => 'CLI-GUEST-004',
+    ]));
+    $rsvpResp->assertOk();
+    $rsvpResp->assertSee('RSVP Đa Sự Kiện');
+    $rsvpResp->assertSee('Đăng ký khẩu phần ẩm thực');
+
+    // 3. Admin User Customer 360
+    $manager = User::factory()->create(['role' => 'manager']);
+    $userResp = $this->actingAs($manager)->get(route('admin.docs.show', [
+        'category' => 'users-rbac',
+        'slug' => 'ADM-USER-001',
+    ]));
+    $userResp->assertOk();
+    $userResp->assertSee('Customer 360 View');
+    $userResp->assertSee('PII Protection');
+
+    // 4. Admin Emergency Offline Cockpit
+    $cockResp = $this->actingAs($manager)->get(route('admin.docs.show', [
+        'category' => 'checkin-cockpit',
+        'slug' => 'ADM-COCK-002',
+    ]));
+    $cockResp->assertOk();
+    $cockResp->assertSee('Emergency Offline Pack');
+    $cockResp->assertSee('offline_checkin_queue');
+});
+
+test('liên kết trợ giúp ngữ cảnh Wave 04 trên trang Admin Master Topbar trỏ đúng endpoint hợp lệ', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+    $response->assertOk();
+    $response->assertSee(route('admin.docs.index'));
+    $response->assertSee('Sổ Tay SOP');
+});

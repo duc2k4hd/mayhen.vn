@@ -110,6 +110,15 @@
                     <span style="font-size: 11px; font-weight: 700; color: #1F1D1A;" id="mayhen_doctor_score_label">100đ</span>
                 </button>
 
+                <!-- Trợ Giúp / Hướng Dẫn Sử Dụng Studio (TSK-W04-01) -->
+                <a href="{{ route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-001']) }}" target="_blank" rel="noopener noreferrer" class="mayhen_editor_btn_history" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--mayhen-color-border, #E5DCCD);" title="Xem hướng dẫn sử dụng Studio Tạo Thiệp">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </a>
+
                 <!-- Submit / Publish Button -->
                 <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit">
                     <span>Xuất Bản Thiệp</span>

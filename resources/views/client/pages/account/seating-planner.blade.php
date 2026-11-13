@@ -49,6 +49,9 @@
                 <button type="button" class="mayhen_seat_btn mayhen_seat_btn--gold" id="btn_open_add_table">
                     + Thêm Bàn Tiệc Mới
                 </button>
+                <a href="{{ route('docs.show', ['category' => 'seating-planner', 'slug' => 'CLI-SEAT-001']) }}" target="_blank" rel="noopener noreferrer" class="mayhen_seat_btn mayhen_seat_btn--outline" title="Xem cẩm nang hướng dẫn tạo bàn và kéo thả vị trí">
+                    📖 Hướng Dẫn Xếp Bàn
+                </a>
                 <a href="{{ route('seating.print', $invitation->id) }}" target="_blank" class="mayhen_seat_btn mayhen_seat_btn--outline">
                     🖨️ In Sơ Đồ Sảnh Tiệc (PDF)
                 </a>

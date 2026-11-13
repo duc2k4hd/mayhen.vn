@@ -12506,12 +12506,23 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   8. `08-backup-disaster-recovery`: Sao lưu dữ liệu tự động, quy trình khôi phục sự cố thảm họa.
   9. `09-incident-escalation`: Phân cấp sự cố, quy trình xử lý lỗi hệ thống, thông báo khách.
   10. `10-handover-sop`: Hướng dẫn bàn giao nhân sự mới, danh sách liên hệ khẩn cấp, tài khoản gốc.
-- **02 Bài Viết Thí Điểm Hoàn Chỉnh Mẫu**:
+- **06 Bài Viết Thí Điểm Hoàn Chỉnh Chuyên Sâu**:
   - `CLI-EDIT-002`: Hướng Dẫn Căn Chỉnh Điểm Nhìn Trọng Tâm Ảnh Cưới (Smart Focal Point).
+  - `CLI-START-002`: Hướng Dẫn Đăng Ký Tài Khoản & Hoàn Tất Khảo Sát Phong Cách Cưới (Onboarding 4 Bước).
+  - `CLI-GUEST-004`: Hướng Dẫn Khách Mời Xác Nhận Tham Dự (RSVP) Đa Sự Kiện & Đăng Ký Khẩu Phần Ăn.
   - `ADM-ORDR-002`: Quy Trình Chuẩn (SOP) Đối Soát Thanh Toán Chuyển Khoản & Kích Hoạt Đơn Hàng Thủ Công.
+  - `ADM-USER-001`: Quy Trình Tra Cứu Hồ Sơ Khách Hàng Toàn Diện (Customer 360 View) & Hỗ Trợ Kỹ Thuật An Toàn.
+  - `ADM-COCK-002`: Sổ Tay Xử Lý Sự Cố Nghẽn Mạng Sảnh Tiệc & Cứu Hộ Điểm Danh Lễ Tân Ngoại Tuyến (Emergency Offline Pack).
 
-### 16.4. Đảm Bảo Chất Lượng & Kiểm Thử Toàn Diện
-- Đã tạo và củng cố bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` với 11 kịch bản kiểm thử:
+### 16.4. Tích Hợp Liên Kết Ngữ Cảnh Trên Màn Hình Thật (Wave 04)
+- **Studio Tạo Thiệp (`editor.blade.php`)**: Bổ sung nút "?" trợ giúp trực quan trên thanh công cụ Topbar Studio, mở tab mới trỏ thẳng vào cẩm nang sử dụng Studio `/docs/studio-editor/CLI-EDIT-001`.
+- **Quản Lý Khách Mời (`guests.blade.php`)**: Tích hợp liên kết "📖 Hướng Dẫn Nhập CSV" tại tab Smart Import CSV trỏ tới bài `/docs/guest-rsvp/CLI-GUEST-002`.
+- **Sơ Đồ Xếp Bàn Tiệc (`account/seating-planner.blade.php`)**: Bổ sung nút "📖 Hướng Dẫn Xếp Bàn" trên Header Actions trỏ tới bài `/docs/seating-planner/CLI-SEAT-001`.
+- **Cổng Điểm Danh Lễ Tân (`checkin.blade.php`)**: Bổ sung nút "📖 Hướng Dẫn Điểm Danh" trên Topbar Actions trỏ tới bài `/docs/checkin-livewall/CLI-CKIN-001`.
+- **Admin Master Topbar Header (`admin/layouts/master.blade.php`)**: Tích hợp nút shortcut "Sổ Tay SOP" ngay cạnh thanh Quick Command Search trên Header, mở trung tâm `/admin/docs`.
+
+### 16.5. Đảm Bảo Chất Lượng & Kiểm Thử Toàn Diện (Wave 05)
+- Bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **13/13 tests PASSED (100%), 52 assertions**:
   1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
   2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
   3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
@@ -12523,8 +12534,9 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   9. Phân quyền vai trò RBAC: Nhân viên thông thường (`staff`) bị từ chối 403 Forbidden khi cố truy cập SOP yêu cầu quyền Quản lý (`manager`).
   10. Phòng vệ XSS: Trình phân giải Markdown tự động mã hóa an toàn các thẻ nguy hiểm (`<script>`, `<img onerror>`).
   11. Bảo vệ SEO & Quyền riêng tư: Client Docs có đầy đủ Canonical và OpenGraph, Admin Docs được bảo vệ bằng `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">`.
-- **Kết quả kiểm thử**: **11/11 tests PASSED (100%), 37 assertions, thời gian chạy ~1.2s**.
-- **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` được chuyển trạng thái **PASS**.
+  12. Kiểm thử 4 bài viết thí điểm mở rộng (`CLI-START-002`, `CLI-GUEST-004`, `ADM-USER-001`, `ADM-COCK-002`) hiển thị đúng dữ liệu chuyên sâu và phân quyền.
+  13. Kiểm thử liên kết trợ giúp ngữ cảnh Wave 04 trên Header Admin Master trỏ đúng route `/admin/docs`.
+- **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` và 9 tasks trong Lộ trình `06_DOCS_IMPLEMENTATION_ROADMAP.md` (W01 -> W05) đều đạt **DONE / PASS**.
 - **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào.
 
 ---

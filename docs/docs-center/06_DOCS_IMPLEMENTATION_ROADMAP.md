@@ -89,10 +89,10 @@ Chạy 7 ma trận QA: Chức năng, Bảo mật, Truy cập (A11y), Responsive,
 
 | Task_ID | Tên Công Việc | Tệp Tin Mục Tiêu | Phụ Thuộc | Tiêu Chí Nghiệm Thu | Trạng Thái |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TSK-W04-01** | Nút Trợ giúp trên Studio Editor | `resources/views/client/editor/workspace.blade.php` | W02 | Nút "?" trên thanh công cụ Studio mở tab mới trỏ thẳng vào `/docs/studio-tao-thiep/CLI-EDIT-001`. | `NOT_STARTED` |
-| **TSK-W04-02** | Nút Hướng dẫn Nhập Khách & Sơ đồ Bàn | `resources/views/client/guests/index.blade.php`<br>`resources/views/client/seating/index.blade.php` | W02 | Liên kết hướng dẫn nhập file mẫu CSV và hướng dẫn xếp bàn mở đúng bài tương ứng. | `NOT_STARTED` |
-| **TSK-W04-03** | Nút Hướng dẫn trên Cổng Lễ tân Check-in | `resources/views/client/checkin/portal.blade.php` | W02 | Lễ tân nhấp "Hướng dẫn sử dụng" mở ngay quy trình quét QR và xử lý khi mất mạng. | `NOT_STARTED` |
-| **TSK-W04-04** | Nút Hướng dẫn SOP trên Admin Header | `resources/views/admin/layouts/app.blade.php` | W03 | Admin Header có nút sách "Sổ tay Nghiệp vụ" trỏ thẳng vào `/admin/docs`. | `NOT_STARTED` |
+| **TSK-W04-01** | Nút Trợ giúp trên Studio Editor | `resources/views/client/pages/editor.blade.php` | W02 | Nút "?" trên thanh công cụ Studio mở tab mới trỏ thẳng vào `/docs/studio-editor/CLI-EDIT-001`. | `DONE` |
+| **TSK-W04-02** | Nút Hướng dẫn Nhập Khách & Sơ đồ Bàn | `resources/views/client/pages/guests.blade.php`<br>`resources/views/client/pages/account/seating-planner.blade.php` | W02 | Liên kết hướng dẫn nhập file mẫu CSV và hướng dẫn xếp bàn mở đúng bài tương ứng. | `DONE` |
+| **TSK-W04-03** | Nút Hướng dẫn trên Cổng Lễ tân Check-in | `resources/views/client/pages/checkin.blade.php` | W02 | Lễ tân nhấp "Hướng dẫn sử dụng" mở ngay quy trình quét QR và xử lý khi mất mạng. | `DONE` |
+| **TSK-W04-04** | Nút Hướng dẫn SOP trên Admin Header | `resources/views/admin/layouts/master.blade.php` | W03 | Admin Header có nút sách "Sổ Tay SOP" trỏ thẳng vào `/admin/docs`. | `DONE` |
 
 ---
 
@@ -101,9 +101,9 @@ Chạy 7 ma trận QA: Chức năng, Bảo mật, Truy cập (A11y), Responsive,
 
 | Task_ID | Tên Công Việc | Ma Trận Kiểm Thử | Phụ Thuộc | Tiêu Chí Nghiệm Thu | Trạng Thái |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TSK-W05-01** | Kiểm thử Chức năng & Liên kết (Functional) | Feature Test: `tests/Feature/DocsFunctionalTest.php` | W01-W04 | 100% bài viết mở được, không có link 404, tìm kiếm tiếng Việt có/không dấu hoạt động tức thì. | `NOT_STARTED` |
-| **TSK-W05-02** | Kiểm thử Bảo mật & Chống rò rỉ (Security) | Feature Test: `tests/Feature/DocsSecurityTest.php` | W01-W04 | Khách vãng lai truy cập `/admin/docs/*` bị chuyển hướng 302, tìm kiếm công cộng không lọt tài liệu Admin. | `NOT_STARTED` |
-| **TSK-W05-03** | Kiểm tra Responsive & Khả năng tiếp cận | Manual Test trên 5 Viewports (iPhone, iPad, PC) | W01-W04 | Không vỡ giao diện, phím tắt `Ctrl+K` và `Esc` mượt mà, hỗ trợ phóng to màn hình 200%. | `NOT_STARTED` |
-| **TSK-W05-04** | Rà soát Độ chính xác Biên tập (Content Audit) | Editorial Review Checklist | W02-W03 | Tên nút bấm, tên menu và quy trình thao tác đúng 100% với mã nguồn Blade/Controller thật. | `NOT_STARTED` |
-| **TSK-W05-05** | Bàn giao & Đóng băng Tài liệu Phát hành | Bản tổng kết nghiệm thu | W05-04 | Cập nhật `context.gemini.md`, tạo báo cáo bàn giao chính thức cho Chủ dự án. | `NOT_STARTED` |
+| **TSK-W05-01** | Kiểm thử Chức năng & Liên kết (Functional) | Feature Test: `tests/Feature/DocumentationCenterIntegrityTest.php` | W01-W04 | 100% bài viết mở được, không có link 404, tìm kiếm tiếng Việt có/không dấu hoạt động tức thì. | `DONE` |
+| **TSK-W05-02** | Kiểm thử Bảo mật & Chống rò rỉ (Security) | Feature Test: `tests/Feature/DocumentationCenterIntegrityTest.php` | W01-W04 | Khách vãng lai truy cập `/admin/docs/*` bị chuyển hướng 302, tìm kiếm công cộng không lọt tài liệu Admin. | `DONE` |
+| **TSK-W05-03** | Kiểm tra Responsive & Khả năng tiếp cận | Manual Test trên 5 Viewports (iPhone, iPad, PC) | W01-W04 | Không vỡ giao diện, phím tắt `Ctrl+K` và `Esc` mượt mà, hỗ trợ phóng to màn hình 200%. | `DONE` |
+| **TSK-W05-04** | Rà soát Độ chính xác Biên tập (Content Audit) | Editorial Review Checklist & Pilot Articles | W02-W03 | Tên nút bấm, tên menu và quy trình thao tác đúng 100% với mã nguồn Blade/Controller thật. | `DONE` |
+| **TSK-W05-05** | Bàn giao & Đóng băng Tài liệu Phát hành | Bản tổng kết nghiệm thu | W05-04 | Cập nhật `context.gemini.md`, tạo báo cáo bàn giao chính thức cho Chủ dự án. | `DONE` |
 

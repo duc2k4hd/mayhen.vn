@@ -358,14 +358,19 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                             Tệp mẫu đã cấu hình sẵn UTF-8 BOM chống lỗi font tiếng Việt trên Microsoft Excel, tự nhận diện cột Họ tên, Xưng hô, Nhóm, Số người, SĐT, Bàn tiệc và Ghi chú.
                         </p>
                     </div>
-                    <a href="{{ route('guests.csv_template', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" style="white-space: nowrap; font-size: 13px;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        <span>Tải Tệp CSV Mẫu</span>
-                    </a>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <a href="{{ route('guests.csv_template', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" style="white-space: nowrap; font-size: 13px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Tải Tệp CSV Mẫu</span>
+                        </a>
+                        <a href="{{ route('docs.show', ['category' => 'guest-rsvp', 'slug' => 'CLI-GUEST-002']) }}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_outline" style="white-space: nowrap; font-size: 13px; background: #FAF7F2;" title="Xem hướng dẫn chi tiết cách lập danh sách khách và nhập hàng loạt bằng CSV">
+                            📖 Hướng Dẫn Nhập CSV
+                        </a>
+                    </div>
                 </div>
 
                 <form action="{{ route('guests.import_csv', $invitation->id) }}" method="POST" enctype="multipart/form-data">

@@ -776,6 +776,15 @@
                         <kbd class="mayhen_admin_kbd">Ctrl K</kbd>
                     </button>
 
+                    <!-- SOP Docs Quick Trigger (TSK-W04-04) -->
+                    <a href="{{ route('admin.docs.index') }}" target="_blank" rel="noopener noreferrer" class="mayhen_admin_quick_search_btn" style="text-decoration: none; padding: 6px 12px; gap: 6px;" title="Mở Sổ Tay Quy Trình Vận Hành Tiêu Chuẩn (SOP Docs)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold, #B58E6F);">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span class="mayhen_admin_quick_search_text" style="color: var(--mh-admin-gold, #B58E6F); font-weight: 600;">Sổ Tay SOP</span>
+                    </a>
+
                     <div class="mayhen_admin_user_dropdown_wrap">
                         <button type="button" class="mayhen_admin_user_pill" aria-label="Tài khoản Quản trị">
                             <div class="mayhen_admin_user_avatar">
