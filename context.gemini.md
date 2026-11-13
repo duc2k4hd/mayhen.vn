@@ -12534,7 +12534,7 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
     - Đóng mở Sidebar Menu Drawer di động và danh mục accordion mượt mà.
     - Sao chép mã nguồn Markdown, sao chép liên kết chia sẻ, chia sẻ qua hệ thống và in PDF.
     - Tự động gắn nút "Sao chép" (Copy Button) cho toàn bộ khối mã lệnh `<pre><code>` trong nội dung bài viết.
-- **Bộ kiểm thử tích hợp chuyên sâu**: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **14/14 tests PASSED (100%), 64 assertions**:
+- **Bộ kiểm thử tích hợp chuyên sâu**: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **15/15 tests PASSED (100%), 79 assertions**:
   1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
   2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
   3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
@@ -12549,7 +12549,34 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   12. Kiểm thử 4 bài viết thí điểm mở rộng (`CLI-START-002`, `CLI-GUEST-004`, `ADM-USER-001`, `ADM-COCK-002`) hiển thị đúng dữ liệu chuyên sâu và phân quyền.
   13. Kiểm thử liên kết trợ giúp ngữ cảnh Wave 04 trên Header Admin Master trỏ đúng route `/admin/docs`.
   14. Kiểm tra nạp và cấu trúc tệp Javascript `docs-main.js` cùng dữ liệu tìm kiếm nhúng JSON hợp lệ trên cả Index và Detail.
+  15. Kiểm thử 5 bài cẩm nang ngữ cảnh trọng yếu (`CLI-EDIT-001`, `CLI-GUEST-002`, `CLI-SEAT-001`, `CLI-CKIN-001`, `ADM-SOP-001`) hiển thị đầy đủ nội dung nghiệp vụ thực tế, không bị đứt gãy liên kết hay vỡ định dạng.
 - **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` và 9 tasks trong Lộ trình `06_DOCS_IMPLEMENTATION_ROADMAP.md` (W01 -> W05) đều đạt **DONE / PASS**.
 - **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào.
+
+### 16.6. Nâng Cấp Chiều Sâu 5 Bài Cẩm Nang Trọng Điểm Gắn Ngữ Cảnh Trên Màn Hình Thật
+Nâng cấp từ dạng nội dung khung (boilerplate) thành cẩm nang nghiệp vụ chuyên sâu chuẩn Quiet Luxury Editorial, bám sát 100% mã nguồn thực tế:
+1. **`CLI-EDIT-001` (Studio Tạo Thiệp V2)**:
+   - Mô hình 3 phân vùng làm việc: Studio Topbar V2, Left Tool Rail dọc 7 tabs chuyên sâu, Live Preview Canvas di động/desktop.
+   - Cơ chế bắt tay đồng bộ hai chiều Live Sync (Handshake Bridge) độ trễ 16ms, tự động đổi mẫu thiệp không làm mất dữ liệu.
+   - Bác Sĩ Thiệp Cưới (Visual Quality Doctor 100đ), lịch sử hoàn tác `Ctrl+Z` / `Ctrl+Y`, lưu nháp tự động và nén ảnh WebP bảo toàn EXIF.
+2. **`CLI-GUEST-002` (Nhập Khách Hàng Loạt Bằng CSV/Excel)**:
+   - Cấu trúc 8 cột chuẩn hóa: `name`, `salutation`, `group_name`, `expected_attendees`, `max_attendees`, `phone`, `table_name`, `notes`.
+   - Mã hóa chuẩn UTF-8 with BOM chống vỡ font tiếng Việt trên Microsoft Excel, tự động phát hiện dấu phân cách (`,`, `;`, `\t`).
+   - Phòng vệ mã độc bảng tính CSV Formula Injection Defense (CWE-1236) tự động thêm tiền tố nháy đơn `'`.
+   - Cơ chế xử lý trùng lặp thông minh: `skip` (bảo toàn link đã gửi) hoặc `update` (cập nhật thông tin mới).
+3. **`CLI-SEAT-001` (Sơ Đồ Xếp Bàn Tiệc & Capacity Guardian)**:
+   - 4 Metric cards thời gian thực: Tổng số bàn, Sức chứa sảnh, Đã có chỗ ngồi (xanh lá), Chưa có bàn (cam cảnh báo).
+   - Bác Sĩ Sức Chứa (TASK-VAL-22): Chấm điểm sức khỏe bàn tiệc 100đ, dự báo bàn tiệc chuẩn (10 người/bàn), bàn dự phòng an toàn (+10%), phát hiện bàn quá tải/thưa.
+   - Kéo thả (Drag and drop) khách và bàn tiệc trên bản đồ sảnh, tự động đồng bộ `table_name` và `table_id` (BUG-AUDIT-03), xuất file in ấn A4/A3 cho nhà hàng.
+4. **`CLI-CKIN-001` (Cổng Lễ Tân Tiếp Đón & Quét Mã QR)**:
+   - Quy trình quét QR 1 giây bằng camera điện thoại/tablet, hiển thị số bàn tiệc to rõ và khẩu phần ăn đặc biệt.
+   - Chế độ tra cứu nhanh bằng Tên / 3 số cuối SĐT hỗ trợ tiếng Việt không dấu cho khách quên mang điện thoại/thiệp.
+   - Bật chế độ diễn tập lễ tân (Reception Dry Run - TASK-VAL-20) với 5 kịch bản thử nghiệm không ô nhiễm database thật.
+   - Bàn xử lý ngoại lệ (RSVP Exception Desk - TASK-VAL-21): Tiếp nhận khách walk-in, điều chỉnh số suất (+1), đổi bàn tại chỗ.
+   - Bàn giao ca trực (Staff Shift Handover - TASK-VAL-23) xuất biên bản tự động và Bộ cứu hộ ngoại tuyến (Wedding Day Resilience Kit - TASK-VAL-03).
+5. **`ADM-SOP-001` (SOP Bàn Giao Hệ Thống & Phân Quyền RBAC)**:
+   - Bản đồ kiến trúc kỹ thuật chuẩn: PHP 8.5.10 / Laravel 13.35.0, 100% Local Assets, không framework ngoài, giao dịch tiền tệ nguyên tử `lockForUpdate()`.
+   - Ma trận phân quyền 3 cấp độc lập: `staff` (CSKH L1), `manager` (Vận hành L2, duyệt hoàn tiền, Release Lab), `super_admin` (L3 tối cao).
+   - Bảo mật thông tin cá nhân (PII) theo Luật 91/2025/QH15: Phone masking, quyền được lãng quên Anonymize User, ghi vết kiểm toán bắt buộc vào `audit_logs`.
 
 ---

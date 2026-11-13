@@ -212,3 +212,51 @@ test('tệp Javascript docs-main.js được nạp đầy đủ và chứa dữ 
     expect($jsContent)->toContain('initDocsDetail');
     expect($jsContent)->not->toContain('TypeError');
 });
+
+test('các bài hướng dẫn ngữ cảnh trọng yếu hiển thị đầy đủ nội dung chuyên sâu và không vỡ liên kết', function () {
+    // 1. Studio Editor V2 (CLI-EDIT-001)
+    $editResp = $this->get(route('docs.show', [
+        'category' => 'studio-editor',
+        'slug' => 'CLI-EDIT-001',
+    ]));
+    $editResp->assertOk();
+    $editResp->assertSee('Studio Topbar');
+    $editResp->assertSee('Live Sync');
+
+    // 2. CSV Import (CLI-GUEST-002)
+    $csvResp = $this->get(route('docs.show', [
+        'category' => 'guest-rsvp',
+        'slug' => 'CLI-GUEST-002',
+    ]));
+    $csvResp->assertOk();
+    $csvResp->assertSee('UTF-8 with BOM');
+    $csvResp->assertSee('CSV Formula Injection Defense');
+
+    // 3. Seating Planner Studio (CLI-SEAT-001)
+    $seatResp = $this->get(route('docs.show', [
+        'category' => 'seating-planner',
+        'slug' => 'CLI-SEAT-001',
+    ]));
+    $seatResp->assertOk();
+    $seatResp->assertSee('Seating Capacity Guardian');
+    $seatResp->assertSee('Dự báo bàn chính thức');
+
+    // 4. Reception Checkin Portal (CLI-CKIN-001)
+    $ckinResp = $this->get(route('docs.show', [
+        'category' => 'checkin-livewall',
+        'slug' => 'CLI-CKIN-001',
+    ]));
+    $ckinResp->assertOk();
+    $ckinResp->assertSee('Reception Dry Run');
+    $ckinResp->assertSee('RSVP Exception Desk');
+
+    // 5. Admin Onboarding SOP (ADM-SOP-001)
+    $manager = User::factory()->create(['role' => 'manager']);
+    $sopResp = $this->actingAs($manager)->get(route('admin.docs.show', [
+        'category' => 'sop-onboarding',
+        'slug' => 'ADM-SOP-001',
+    ]));
+    $sopResp->assertOk();
+    $sopResp->assertSee('Ma trận phân quyền quản trị 3 cấp');
+    $sopResp->assertSee('PHP 8.5.10 / Laravel 13.35.0');
+});
