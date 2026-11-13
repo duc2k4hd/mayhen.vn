@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Services\DocumentationService;
 
 test('khách vãng lai truy cập trang chủ Client Docs /docs thành công', function () {
     $response = $this->get(route('docs.index'));
@@ -96,4 +97,44 @@ test('tìm kiếm Admin Docs trả về kết quả quy trình SOP nội bộ', 
     $data = $response->json('data');
     expect($data)->not->toBeEmpty();
     expect($data[0]['url'])->toContain('/admin/docs/');
+});
+
+test('nhân viên vai trò staff không có quyền truy cập quy trình SOP manager bị chặn 403', function () {
+    $staff = User::factory()->create([
+        'role' => 'staff',
+    ]);
+
+    $response = $this->actingAs($staff)->get(route('admin.docs.show', [
+        'category' => 'orders-refunds',
+        'slug' => 'ADM-ORDR-003',
+    ]));
+
+    $response->assertForbidden();
+});
+
+test('nội dung markdown trong tài liệu được lọc sạch thẻ nguy hiểm chống XSS', function () {
+    $service = app(DocumentationService::class);
+    $reflection = new ReflectionClass($service);
+    $method = $reflection->getMethod('renderMarkdown');
+    $method->setAccessible(true);
+
+    $toc = [];
+    $rawMd = "Đây là văn bản thử nghiệm <script>alert('XSS')</script> và <img src=x onerror=alert(1)>";
+    $html = $method->invokeArgs($service, [$rawMd, &$toc]);
+
+    expect($html)->not->toContain('<script>');
+    expect($html)->not->toContain('<img src=x onerror=alert(1)>');
+    expect($html)->toContain('&lt;script&gt;');
+});
+
+test('thẻ SEO và OpenGraph hiện diện đầy đủ trên Client Docs và bị chặn trên Admin Docs', function () {
+    $clientResp = $this->get(route('docs.index'));
+    $clientResp->assertOk();
+    $clientResp->assertSee('rel="canonical"', false);
+    $clientResp->assertSee('property="og:title"', false);
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $adminResp = $this->actingAs($admin)->get(route('admin.docs.index'));
+    $adminResp->assertOk();
+    $adminResp->assertSee('<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">', false);
 });

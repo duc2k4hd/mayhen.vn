@@ -43,6 +43,23 @@ class AdminDocsController extends Controller
             abort(404, 'Không tìm thấy quy trình vận hành này.');
         }
 
+        $user = auth()->user();
+        $requiredRole = $article['required_role'] ?? 'all';
+
+        if ($requiredRole !== 'all' && $user && ! $user->isSuperAdmin()) {
+            $allowed = match ($requiredRole) {
+                'admin', 'super' => $user->isSuperAdmin(),
+                'manager' => in_array($user->role, ['admin', 'manager'], true),
+                'finance' => in_array($user->role, ['admin', 'manager', 'finance'], true),
+                'support' => in_array($user->role, ['admin', 'manager', 'support', 'staff'], true),
+                default => true,
+            };
+
+            if (! $allowed) {
+                abort(403, 'Bạn không có quyền truy cập quy trình SOP này.');
+            }
+        }
+
         return view('docs.admin.detail', [
             'space' => 'admin',
             'pageTitle' => ($article['title'] ?? 'Quy trình SOP').' — Admin Knowledge Base',

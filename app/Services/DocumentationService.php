@@ -48,6 +48,7 @@ class DocumentationService
                     $parsed = $this->parseFile($file);
                     if ($parsed !== null) {
                         $parsed['url'] = $this->buildArticleUrl($space, $catSlug, $parsed['id']);
+                        $parsed['slug'] = $parsed['id'];
                         $articles[] = $parsed;
                     }
                 }
@@ -206,6 +207,7 @@ class DocumentationService
 
         return [
             'id' => $id,
+            'slug' => $id,
             'title' => $title,
             'category' => $meta['category'] ?? '',
             'summary' => $meta['summary'] ?? '',

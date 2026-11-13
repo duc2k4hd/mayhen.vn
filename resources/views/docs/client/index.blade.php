@@ -101,7 +101,7 @@
           <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_book"/></svg> Tài liệu hướng dẫn
         </a>
         @foreach(array_slice((array)$categories, 0, 3, true) as $slug => $cat)
-          <a href="{{ ($isAdmin ? route('admin.docs.show', [$slug, $cat['articles'][0]['slug'] ?? '']) : route('docs.show', [$slug, $cat['articles'][0]['slug'] ?? ''])) }}">
+          <a href="{{ $cat['articles'][0]['url'] ?? ($isAdmin ? route('admin.docs.index') : route('docs.index')) }}">
             <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_edit"/></svg> {{ $cat['name'] }}
           </a>
         @endforeach
@@ -227,7 +227,7 @@
           <div class="mayhen_docs_split_heading">
             <div>
               <span class="mayhen_docs_eyebrow">TẤT CẢ CHUYÊN MỤC</span>
-              <h2 id="mayhen_docs_popular_title">Toàn bộ hướng dẫn Mây Hẹn</h2>
+              <h2 id="mayhen_docs_popular_title">{{ $isAdmin ? 'QUY TRÌNH VẬN HÀNH TIÊU CHUẨN (SOP)' : 'Toàn bộ hướng dẫn Mây Hẹn' }}</h2>
             </div>
           </div>
           <div class="mayhen_docs_popular_list">

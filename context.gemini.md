@@ -12511,16 +12511,20 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   - `ADM-ORDR-002`: Quy Trình Chuẩn (SOP) Đối Soát Thanh Toán Chuyển Khoản & Kích Hoạt Đơn Hàng Thủ Công.
 
 ### 16.4. Đảm Bảo Chất Lượng & Kiểm Thử Toàn Diện
-- Đã tạo bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` với 8 kịch bản kiểm thử:
+- Đã tạo và củng cố bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` với 11 kịch bản kiểm thử:
   1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
   2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
   3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
-  4. Khách vãng lai truy cập `/admin/docs` bị chặn an toàn (Redirect sang trang Login).
-  5. Tài khoản có quyền Quản trị viên truy cập `/admin/docs` thành công và thấy đủ các mục SOP vận hành.
-  6. Trang chi tiết SOP Admin `/admin/docs/{category}/{slug}` hiển thị đúng nội dung và bảng chỉ dẫn rủi ro.
-  7. Tìm kiếm độc lập: Khách hàng tìm kiếm từ khóa Admin không thể xem thấy tài liệu nội bộ (Bảo vệ thông tin tuyệt đối).
-  8. Hệ thống sinh Mục Lục (TOC) hoạt động chuẩn xác từ các thẻ tiêu đề Markdown.
-- **Kết quả kiểm thử**: **8/8 tests PASSED (100%), 28 assertions, thời gian chạy 0.97s**.
-- **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào. Whitelist test file trong `.gitignore`.
+  4. Truy cập bài viết không tồn tại trả về mã lỗi 404 trang nhã.
+  5. Khách vãng lai truy cập `/admin/docs` bị chặn an toàn (Redirect sang trang Login).
+  6. Tài khoản có quyền Quản trị viên truy cập `/admin/docs` thành công và thấy đủ các mục SOP vận hành.
+  7. Trang chi tiết SOP Admin `/admin/docs/{category}/{slug}` hiển thị đúng nội dung và khung cam kết kiểm toán `audit_logs`.
+  8. Tìm kiếm độc lập: Khách hàng tìm kiếm từ khóa Admin không thể xem thấy tài liệu nội bộ (Bảo vệ thông tin tuyệt đối).
+  9. Phân quyền vai trò RBAC: Nhân viên thông thường (`staff`) bị từ chối 403 Forbidden khi cố truy cập SOP yêu cầu quyền Quản lý (`manager`).
+  10. Phòng vệ XSS: Trình phân giải Markdown tự động mã hóa an toàn các thẻ nguy hiểm (`<script>`, `<img onerror>`).
+  11. Bảo vệ SEO & Quyền riêng tư: Client Docs có đầy đủ Canonical và OpenGraph, Admin Docs được bảo vệ bằng `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">`.
+- **Kết quả kiểm thử**: **11/11 tests PASSED (100%), 37 assertions, thời gian chạy ~1.2s**.
+- **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` được chuyển trạng thái **PASS**.
+- **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào.
 
 ---

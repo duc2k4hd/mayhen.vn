@@ -105,7 +105,7 @@
                 @if($catSlug !== $currentCategory) hidden @endif>
                 @foreach($cat['articles'] as $art)
                   <a href="{{ $art['url'] }}"
-                    class="mayhen_docs_detail_nav_link {{ $art['slug'] === ($article['slug'] ?? '') ? 'mayhen_docs_detail_nav_active' : '' }}">
+                    class="mayhen_docs_detail_nav_link {{ ($art['slug'] ?? $art['id'] ?? '') === ($article['slug'] ?? $article['id'] ?? '') ? 'mayhen_docs_detail_nav_active' : '' }}">
                     {{ $art['title'] }}
                   </a>
                 @endforeach
@@ -183,6 +183,14 @@
           {!! $article['html_body'] !!}
         </div>
 
+        @if($isAdmin)
+          {{-- Audit Sign-off Box for Admin SOP --}}
+          <div class="mayhen_docs_audit_signoff_box" style="margin-top: 32px; padding: 20px; border-left: 4px solid #C5A880; background: rgba(197, 168, 128, 0.08); border-radius: 4px;">
+            <h4 style="margin: 0 0 8px 0; font-family: 'Playfair Display', serif; font-size: 16px; color: #1F1D1A;">Cam kết Tuân thủ Quy trình Vận hành</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #4A453E;">Mọi thao tác can thiệp theo quy trình này đều được lưu trữ vĩnh viễn vào bảng <code>audit_logs</code>. Nhân viên chịu trách nhiệm trực tiếp trước Kế toán trưởng và Ban Giám đốc về tính xác thực của chứng từ đối soát.</p>
+          </div>
+        @endif
+
         {{-- Next/Previous Navigation --}}
         @if(!empty($article['prev']) || !empty($article['next']))
           <section class="mayhen_docs_detail_doc_section mayhen_docs_detail_next_section">
@@ -212,7 +220,7 @@
     {{-- ---- RIGHT TOC ---- --}}
     <aside class="mayhen_docs_detail_toc" id="mayhen_docs_detail_toc" aria-label="Mục lục bài viết">
       <div class="mayhen_docs_detail_toc_inner">
-        <div class="mayhen_docs_detail_toc_eyebrow">TRONG BÀI VIẾT NÀY</div>
+        <div class="mayhen_docs_detail_toc_eyebrow">MỤC LỤC BÀI VIẾT</div>
         <div class="mayhen_docs_detail_toc_rule"></div>
         <nav id="mayhen_docs_detail_toc_links" aria-label="Mục lục">
           @foreach($article['toc'] ?? [] as $item)
