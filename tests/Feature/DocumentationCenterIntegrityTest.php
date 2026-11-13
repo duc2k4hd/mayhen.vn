@@ -185,3 +185,30 @@ test('liên kết trợ giúp ngữ cảnh Wave 04 trên trang Admin Master Topb
     $response->assertSee(route('admin.docs.index'));
     $response->assertSee('Sổ Tay SOP');
 });
+
+test('tệp Javascript docs-main.js được nạp đầy đủ và chứa dữ liệu tìm kiếm hợp lệ trên cả Index và Detail', function () {
+    // 1. Kiểm tra trên Index
+    $indexResp = $this->get(route('docs.index'));
+    $indexResp->assertOk();
+    $indexResp->assertSee('assets/client/docs/js/docs-main.js');
+    $indexResp->assertSee('id="mayhen_docs_search_data"', false);
+
+    // 2. Kiểm tra trên Detail
+    $detailResp = $this->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-001',
+    ]));
+    $detailResp->assertOk();
+    $detailResp->assertSee('assets/client/docs/js/docs-main.js');
+    $detailResp->assertSee('id="mayhen_docs_detail_search_data"', false);
+    $detailResp->assertSee('id="mayhen_docs_detail_reading_progress"', false);
+    $detailResp->assertSee('id="mayhen_docs_detail_search_dialog"', false);
+
+    // 3. Kiểm tra tính toàn vẹn của tệp JS
+    $jsPath = public_path('assets/client/docs/js/docs-main.js');
+    expect(file_exists($jsPath))->toBeTrue();
+    $jsContent = file_get_contents($jsPath);
+    expect($jsContent)->toContain('initDocsIndex');
+    expect($jsContent)->toContain('initDocsDetail');
+    expect($jsContent)->not->toContain('TypeError');
+});

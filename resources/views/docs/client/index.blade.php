@@ -91,6 +91,9 @@
           <a class="mayhen_docs_header_signup" href="{{ route('invitation.create') }}">Tạo thiệp ngay <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_arrow"/></svg></a>
         @endif
       </nav>
+      <button type="button" class="mayhen_docs_icon_button" id="theme-toggle-btn" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng/tối" style="margin-left: 8px;">
+        <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_moon"/></svg>
+      </button>
       <button type="button" class="mayhen_docs_icon_button mayhen_docs_mobile_search_button" id="mayhen_docs_mobile_search" aria-label="Tìm kiếm">
         <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_search"/></svg>
       </button>

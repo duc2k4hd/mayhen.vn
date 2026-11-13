@@ -12521,8 +12521,20 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
 - **Cổng Điểm Danh Lễ Tân (`checkin.blade.php`)**: Bổ sung nút "📖 Hướng Dẫn Điểm Danh" trên Topbar Actions trỏ tới bài `/docs/checkin-livewall/CLI-CKIN-001`.
 - **Admin Master Topbar Header (`admin/layouts/master.blade.php`)**: Tích hợp nút shortcut "Sổ Tay SOP" ngay cạnh thanh Quick Command Search trên Header, mở trung tâm `/admin/docs`.
 
-### 16.5. Đảm Bảo Chất Lượng & Kiểm Thử Toàn Diện (Wave 05)
-- Bộ kiểm thử tích hợp chuyên sâu: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **13/13 tests PASSED (100%), 52 assertions**:
+### 16.5. Đảm Bảo Chất Lượng & Khắc Phục Lỗi Toàn Bộ Javascript Docs (Wave 05)
+- **Sửa Lỗi Toàn Diện JavaScript Docs (`public/assets/client/docs/js/docs-main.js`)**:
+  - *Nguyên nhân sự cố:* Script cũ kế thừa từ 2 file template tĩnh bị lỗi mã hóa ký tự (mojibake) và truy vấn trực tiếp hàng loạt phần tử DOM không tồn tại trên view Blade (`#mayhen_docs_date_input`, `#mayhen_docs_workflow_track`, `#focus_checkbox`...) dẫn đến ném ngoại lệ `Uncaught TypeError` ngay ở top-level khi trang vừa tải, khiến toàn bộ script bị chết và không một chức năng JS nào hoạt động được.
+  - *Giải pháp triệt để:* Viết lại hoàn toàn `docs-main.js` theo kiến trúc phòng vệ tuyệt đối (100% Defensive Null-checks), phân tách rõ ràng 2 module: `initDocsIndex` cho trang danh mục (`#mayhen_docs_app`) và `initDocsDetail` cho trang bài viết chi tiết (`#mayhen_docs_detail_app`).
+  - *Tính năng hoạt động mượt mà 100%:*
+    - Tìm kiếm động hỗ trợ tiếng Việt không dấu (Vietnamese Unaccent Search) nạp trực tiếp danh mục bài viết thật từ `#mayhen_docs_search_data` và `#mayhen_docs_detail_search_data`, hỗ trợ phím mũi tên Lên/Xuống, Enter để chuyển trang, phím tắt `Ctrl+K` và `/`.
+    - Bảo vệ chống tấn công DoS/Flood thông qua Rate Limiter `docs_search` (60 req/phút theo IP/User) tại `AppServiceProvider.php` trên cả `/docs/search` và `/admin/docs/search`.
+    - Thanh tiến trình đọc bài (Reading Progress Bar) và nút cuộn mượt về đầu trang (Back to top) hiển thị chính xác theo tọa độ scroll.
+    - Scrollspy bám dính mục lục H2/H3 (Table of Contents) tự động kích hoạt thẻ đang đọc, đồng bộ thanh phần trăm đọc `%`.
+    - Bộ chuyển giao diện Sáng / Tối (Theme Switcher) hỗ trợ cả trên Header Index (`#theme-toggle-btn`) và Detail (`#mayhen_docs_detail_theme_quick`), điều chỉnh cỡ chữ (A- / A+), độ rộng hiển thị (Vừa phải / Rộng) và Chế độ tập trung (Focus mode) lưu vào `localStorage`.
+    - Đóng mở Sidebar Menu Drawer di động và danh mục accordion mượt mà.
+    - Sao chép mã nguồn Markdown, sao chép liên kết chia sẻ, chia sẻ qua hệ thống và in PDF.
+    - Tự động gắn nút "Sao chép" (Copy Button) cho toàn bộ khối mã lệnh `<pre><code>` trong nội dung bài viết.
+- **Bộ kiểm thử tích hợp chuyên sâu**: `tests/Feature/DocumentationCenterIntegrityTest.php` được mở rộng đạt **14/14 tests PASSED (100%), 64 assertions**:
   1. Trang chủ `/docs` tải thành công (HTTP 200) và hiển thị đầy đủ danh mục Client.
   2. Trang chi tiết bài viết Client `/docs/{category}/{slug}` hiển thị đầy đủ nội dung, mục lục H2/H3 và breadcrumbs.
   3. API tìm kiếm Client `/docs/search` trả về kết quả JSON chính xác và lọc dữ liệu an toàn.
@@ -12536,6 +12548,7 @@ Xây dựng 2 trung tâm hướng dẫn sử dụng chuyên nghiệp, tách bi�
   11. Bảo vệ SEO & Quyền riêng tư: Client Docs có đầy đủ Canonical và OpenGraph, Admin Docs được bảo vệ bằng `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">`.
   12. Kiểm thử 4 bài viết thí điểm mở rộng (`CLI-START-002`, `CLI-GUEST-004`, `ADM-USER-001`, `ADM-COCK-002`) hiển thị đúng dữ liệu chuyên sâu và phân quyền.
   13. Kiểm thử liên kết trợ giúp ngữ cảnh Wave 04 trên Header Admin Master trỏ đúng route `/admin/docs`.
+  14. Kiểm tra nạp và cấu trúc tệp Javascript `docs-main.js` cùng dữ liệu tìm kiếm nhúng JSON hợp lệ trên cả Index và Detail.
 - **Ma trận nghiệm thu Docs Center**: Toàn bộ 21/21 verification gates trong `docs/docs-center/08_DOCS_VERIFICATION_GATES.csv` và 9 tasks trong Lộ trình `06_DOCS_IMPLEMENTATION_ROADMAP.md` (W01 -> W05) đều đạt **DONE / PASS**.
 - **Định dạng mã nguồn**: Tuân thủ tiêu chuẩn Laravel Pint không phát sinh bất kỳ lỗi cú pháp nào.
 

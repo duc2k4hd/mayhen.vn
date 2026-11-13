@@ -663,7 +663,7 @@ Route::middleware('admin.auth')->group(function () {
     // Trung Tâm Quy Trình Vận Hành Tiêu Chuẩn & Sổ Tay Bàn Giao Hệ Thống (Admin Knowledge Center)
     Route::prefix('docs')->name('docs.')->group(function () {
         Route::get('/', [AdminDocsController::class, 'index'])->name('index');
-        Route::get('/search', [AdminDocsController::class, 'search'])->name('search');
+        Route::get('/search', [AdminDocsController::class, 'search'])->middleware('throttle:docs_search')->name('search');
         Route::get('/{category}/{slug}', [AdminDocsController::class, 'show'])->name('show');
     });
 });

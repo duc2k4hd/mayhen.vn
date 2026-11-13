@@ -37,7 +37,7 @@
       <span class="mayhen_docs_detail_header_label">Trung tâm hướng dẫn</span>
     </div>
     <div class="mayhen_docs_detail_header_right">
-      <button type="button" class="mayhen_docs_detail_search_trigger" id="mayhen_docs_detail_search_trigger" aria-label="Tìm kiếm tài liệu">
+      <button type="button" class="mayhen_docs_detail_search_trigger" id="mayhen_docs_detail_search_trigger" data-modal="mayhen_docs_detail_search_dialog" aria-label="Tìm kiếm tài liệu">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
         <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
       </button>

@@ -62,6 +62,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(30)->by($key);
         });
 
+        // Rate limiter cho tìm kiếm tài liệu hướng dẫn (Chống spam API search)
+        RateLimiter::for('docs_search', function (Request $request) {
+            $key = (string) ($request->user()?->id ?: $request->session()->getId() ?: $request->ip());
+
+            return Limit::perMinute(60)->by($key);
+        });
+
         // Blade Directives cho Cờ Tính Năng (Feature Flags)
         Blade::if('feature', function (string $key) {
             return app(FeatureFlagService::class)->isEnabled($key);

@@ -693,7 +693,7 @@ Route::prefix('doi-tac')->name('partner.')->middleware('partner')->group(functio
 // Documentation Center - Client Space
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [ClientDocsController::class, 'index'])->name('index');
-    Route::get('/search', [ClientDocsController::class, 'search'])->name('search');
+    Route::get('/search', [ClientDocsController::class, 'search'])->middleware('throttle:docs_search')->name('search');
     Route::get('/{category}/{slug}', [ClientDocsController::class, 'show'])->name('show');
 });
 
