@@ -26,7 +26,7 @@
 2. **SỬA FILE MINH BẠCH (TRANSPARENT FILE EDITING)**:
    - Luôn dùng công cụ `edit_file` hoặc `write_file` để người dùng có thể xem visual diff trực tiếp. Cấm dùng script ngầm để sửa mã nguồn mà không có sự đồng ý.
 3. **KHÔNG TỰ Ý COMMIT / PUSH**:
-   - Tuyệt đối không tự commit hoặc push lên Git. Luôn cung cấp gợi ý thông điệp commit rõ ràng để người dùng tự quyết định.
+   - Tuyệt đối không tự commit hoặc push lên Git. Luôn cung cấp gợi ý thông điệp commit bằng Tiếng Việt có dấu rõ ràng để người dùng tự quyết định.
 4. **QUY CHUẨN CHẤT LƯỢNG CODE**:
    - Sau khi sửa đổi tệp PHP, bắt buộc chạy: `vendor/bin/pint --dirty --format agent`.
    - File test phải đặt trong `tests/Feature/` hoặc `tests/Unit/`. Chạy `vendor/bin/pest` để xác nhận.
