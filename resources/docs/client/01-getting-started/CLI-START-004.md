@@ -1,42 +1,35 @@
 ---
 id: CLI-START-004
-title: "So sánh chi tiết các gói dịch vụ (Free, Silver, Gold, Diamond) và cách chọn gói phù hợp"
+title: "Cách so sánh và chọn gói dịch vụ"
 category: "Bắt đầu với Mây Hẹn"
-summary: "Hướng dẫn chi tiết về So sánh chi tiết các gói dịch vụ (Free, Silver, Gold, Diamond) và cách chọn gói phù hợp trên hệ thống Mây Hẹn."
+summary: "Xem giá, đối chiếu tính năng và lựa chọn gói đang được cung cấp."
 reader: "PER-CLI-01 (Cô dâu chú rể mới)"
 order: 4
 updated_at: "2026-11-12"
 tags: [mayhen, bắt-đầu-với-mây-hẹn]
 mapped_page: "CLI-START-PAGE"
-mapped_route: "onboarding.index"
+mapped_route: "pricing"
 risk_level: "HIGH"
 required_role: "customer"
 ---
 
-# So sánh chi tiết các gói dịch vụ (Free, Silver, Gold, Diamond) và cách chọn gói phù hợp
+# Cách so sánh và chọn gói dịch vụ
 
-> [!NOTE]
-> **Dành cho:** PER-CLI-01 (Cô dâu chú rể mới)  
-> **Vị trí trong ứng dụng:** Chức năng liên quan: `/onboarding` (Route: `onboarding.index`).  
-> **Thời gian thực hiện:** Khoảng 2 - 5 phút.
+Mở [Bảng giá](/bang-gia) để xem những gói đang được hiển thị. Tên, giá và danh sách tính năng có thể thay đổi; hãy dựa vào thông tin trên từng thẻ gói tại thời điểm chọn.
 
-## 1. Mục đích và Ý nghĩa cho Ngày cưới
-Chức năng này giúp cặp đôi hoặc khách mời dễ dàng thao tác chuẩn xác, bảo đảm tính tôn nghiêm và trải nghiệm lãng mạn cao nhất của ngày vui.
+## So sánh trước khi chọn
 
-## 2. Các bước thực hiện chi tiết
-1. **Bước 1:** Truy cập vào phân hệ tương ứng trên thanh điều hướng Mây Hẹn.
-2. **Bước 2:** Tìm nút bấm hoặc khu vực thao tác có nhãn tương ứng trên màn hình.
-3. **Bước 3:** Nhập đầy đủ thông tin hoặc tải tài nguyên cần thiết theo hướng dẫn giao diện.
-4. **Bước 4:** Kiểm tra bản xem trước trực quan (Live Preview) để bảo đảm không có sai sót chính tả hay hình ảnh.
-5. **Bước 5:** Nhấp nút **[Lưu thay đổi]** hoặc **[Xác nhận]** để hệ thống ghi nhận vào cơ sở dữ liệu.
+1. Xem tên gói, giá và các tính năng được liệt kê trên từng thẻ.
+2. Ghi lại nhu cầu của bạn, chẳng hạn cần một mẫu phù hợp và muốn kiểm tra các tính năng liên quan đến khách mời. Đối chiếu từng nhu cầu với thông tin hiển thị.
+3. Nếu cần xem thiết kế trước, mở [Mẫu thiệp](/mau-thiep) và chọn **Xem Mẫu**.
+4. Chọn nút trên thẻ gói phù hợp. Gói miễn phí dẫn đến danh sách mẫu; nút của gói trả phí mở trang thanh toán.
+5. Trước khi xác nhận thanh toán, kiểm tra lại tên gói và **Tổng thanh toán** trên màn hình.
 
-## 3. Dấu hiệu nhận biết thao tác thành công
-- Màn hình xuất hiện thông báo xác nhận thành công màu xanh trang nhã.
-- Dữ liệu cập nhật ngay lập tức trên giao diện và được bảo toàn an toàn.
+Ví dụ: Minh và An muốn xem mẫu trước; hai bạn mở danh sách mẫu, sau đó trở lại bảng giá để so sánh các tính năng cần dùng. Đây chỉ là ví dụ, không phải một đơn hàng.
 
-## 4. Xử lý sự cố thường gặp
-- **Mất kết nối mạng tạm thời:** Mây Hẹn có cơ chế lưu trữ nháp cục bộ tự động. Bạn chỉ cần giữ nguyên tab, kiểm tra lại kết nối và nhấp thử lại.
-- **Lỗi dữ liệu không hợp lệ:** Kiểm tra kỹ các trường bắt buộc, định dạng số điện thoại hoặc dung lượng ảnh theo yêu cầu.
+## Khi cần hỗ trợ
 
-## 5. Câu hỏi thường gặp (FAQ)
-- *Tôi có thể chỉnh sửa lại sau khi đã lưu không?* -> Hoàn toàn có thể. Mọi thay đổi sẽ được cập nhật tức thời.
+- **Không thấy gói mong muốn:** danh sách phụ thuộc các gói đang hoạt động. Kiểm tra lại sau hoặc dùng trang [Liên hệ](/lien-he).
+- **Chưa rõ tính năng hoặc điều kiện của gói:** hỏi hỗ trợ trước khi thanh toán; không dựa vào tên gói trong hướng dẫn cũ.
+
+Xem tiếp [hướng dẫn thanh toán VietQR](/docs/getting-started/CLI-START-005).

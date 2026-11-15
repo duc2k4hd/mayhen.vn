@@ -15,29 +15,15 @@ required_role: "manager"
 
 # Checklist bàn giao ca trực hàng ngày và sổ tay xử lý sự cố khẩn cấp (P0/P1 Runbook)
 
-> [!WARNING]
-> **Phân quyền thực hiện:** Nhân viên có vai trò `Manager` hoặc `Super Admin`.  
-> **Mức độ rủi ro:** `CRITICAL` | **Endpoint:** `GET /admin/dashboard`.  
-> **Bằng chứng kiểm toán:** Bắt buộc lưu vết trong bảng `audit_logs`.
+## Khi nhận ca
 
-## 1. Mục đích Nghiệp vụ Vận hành
-Quy trình này chuẩn hóa thao tác vận hành của nhân viên quản trị đối với module `Quy chuẩn Tiếp nhận & Vận hành (SOP)`, đảm bảo tính toàn vẹn dữ liệu, không làm rò rỉ thông tin cá nhân và xử lý nhanh chóng cho khách hàng.
+1. Đăng nhập bằng tài khoản của bạn và mở `/admin/dashboard`.
+2. Tiếp nhận các yêu cầu còn mở, người phụ trách và thời điểm cần phản hồi từ người bàn giao. Chỉ ghi thông tin cá nhân tối thiểu cần thiết trong kênh nội bộ được phép.
+3. Với sự cố kỹ thuật, người có quyền phù hợp có thể kiểm tra `/admin/system/health`; khu vực này được bảo vệ bởi `admin.super`.
+4. Ghi thời gian, phạm vi ảnh hưởng, bước đã kiểm tra và người đang xử lý. Ví dụ kiểm thử: ghi mã thiệp giả `demo-001`, không dùng dữ liệu khách thật.
 
-## 2. Điều kiện tiên quyết
-- Nhân viên đã đăng nhập tài khoản quản trị Admin hợp lệ.
-- Đã xác minh danh tính khách hàng hoặc tính xác thực của sự cố.
+## Khi gặp sự cố và bàn giao
 
-## 3. Các bước thao tác an toàn (Standard Operating Procedure)
-1. **Bước 1:** Truy cập màn hình quản trị tại URL `/admin/dashboard`.
-2. **Bước 2:** Sử dụng bộ lọc hoặc ô tìm kiếm để định vị chính xác thực thể cần xử lý.
-3. **Bước 3:** Kiểm tra lịch sử giao dịch hoặc nhật ký kiểm toán liên quan trước khi can thiệp.
-4. **Bước 4:** Thực hiện thao tác nghiệp vụ, điền rõ lý do can thiệp vào form xác nhận.
-5. **Bước 5:** Nhấp **[Xác nhận thực thi]** và kiểm tra thông báo phản hồi của hệ thống.
-
-## 4. Kết quả mong đợi & Kiểm chứng
-- Trạng thái bản ghi chuyển sang giá trị mới đúng nghiệp vụ.
-- Bản ghi `audit_logs` được tạo tự động với đầy đủ User ID, IP và payload can thiệp.
-
-## 5. Những điều Tuyệt đối Bị cấm
-- Nghiêm cấm thao tác khi chưa có căn cứ chứng từ hoặc yêu cầu bằng văn bản.
-- Nghiêm cấm chia sẻ tài khoản quản trị hoặc can thiệp vượt thẩm quyền phân công.
+- Chuyển sự cố cho người phụ trách theo quy trình của đơn vị. Nếu ảnh hưởng thanh toán hoặc dữ liệu cá nhân, tránh tự thao tác khôi phục, hoàn tiền hay xóa dữ liệu khi chưa được phân quyền và xác minh.
+- Bàn giao tình trạng mới nhất, các bước đang chờ và đầu mối liên hệ; không chia sẻ mật khẩu, OTP hoặc ảnh chứa dữ liệu nhạy cảm.
+- Đăng xuất khi kết thúc ca. Việc kiểm tra giao diện, mức độ ưu tiên và kênh ứng cứu thực tế cần được xác nhận theo quy trình vận hành hiện hành; bài này không chứng minh hệ thống tự ghi audit cho mọi bước bàn giao.

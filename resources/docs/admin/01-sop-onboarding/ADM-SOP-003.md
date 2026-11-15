@@ -1,8 +1,8 @@
 ---
 id: ADM-SOP-003
-title: "Danh mục vai trò và ma trận phân quyền RBAC (Super Admin, Manager, Moderator, Support, Finance)"
+title: "Vai trò quản trị và cách kiểm tra quyền"
 category: "Quy chuẩn Tiếp nhận & Vận hành (SOP)"
-summary: "Hướng dẫn chi tiết về Danh mục vai trò và ma trận phân quyền RBAC (Super Admin, Manager, Moderator, Support, Finance) trên hệ thống Mây Hẹn."
+summary: "Các vai trò quản trị được nhận diện và cách xác minh quyền theo từng thao tác."
 reader: "PER-ADM-01 / PER-ADM-03"
 order: 1
 updated_at: "2026-11-12"
@@ -13,31 +13,21 @@ risk_level: "CRITICAL"
 required_role: "manager"
 ---
 
-# Danh mục vai trò và ma trận phân quyền RBAC (Super Admin, Manager, Moderator, Support, Finance)
+# Vai trò quản trị và cách kiểm tra quyền
 
-> [!WARNING]
-> **Phân quyền thực hiện:** Nhân viên có vai trò `Manager` hoặc `Super Admin`.  
-> **Mức độ rủi ro:** `CRITICAL` | **Endpoint:** `GET /admin/dashboard`.  
-> **Bằng chứng kiểm toán:** Bắt buộc lưu vết trong bảng `audit_logs`.
+## Các vai trò được nhận diện
 
-## 1. Mục đích Nghiệp vụ Vận hành
-Quy trình này chuẩn hóa thao tác vận hành của nhân viên quản trị đối với module `Quy chuẩn Tiếp nhận & Vận hành (SOP)`, đảm bảo tính toàn vẹn dữ liệu, không làm rò rỉ thông tin cá nhân và xử lý nhanh chóng cho khách hàng.
+Mã tài khoản hiện cho phép các vai trò `admin`, `manager`, `staff`, `designer`, `finance` và `support` vào không gian quản trị. Quyền vào bảng điều khiển không đồng nghĩa được phép thực hiện mọi thao tác.
 
-## 2. Điều kiện tiên quyết
-- Nhân viên đã đăng nhập tài khoản quản trị Admin hợp lệ.
-- Đã xác minh danh tính khách hàng hoặc tính xác thực của sự cố.
+Ví dụ, route thay đổi vai trò người dùng và các thao tác cập nhật ma trận RBAC yêu cầu lớp kiểm tra `admin.super`; nhiều thao tác khác yêu cầu `admin.manager`. Tên hiển thị trong giao diện có thể khác mã vai trò lưu trong hệ thống.
 
-## 3. Các bước thao tác an toàn (Standard Operating Procedure)
-1. **Bước 1:** Truy cập màn hình quản trị tại URL `/admin/dashboard`.
-2. **Bước 2:** Sử dụng bộ lọc hoặc ô tìm kiếm để định vị chính xác thực thể cần xử lý.
-3. **Bước 3:** Kiểm tra lịch sử giao dịch hoặc nhật ký kiểm toán liên quan trước khi can thiệp.
-4. **Bước 4:** Thực hiện thao tác nghiệp vụ, điền rõ lý do can thiệp vào form xác nhận.
-5. **Bước 5:** Nhấp **[Xác nhận thực thi]** và kiểm tra thông báo phản hồi của hệ thống.
+## Kiểm tra trước khi thao tác
 
-## 4. Kết quả mong đợi & Kiểm chứng
-- Trạng thái bản ghi chuyển sang giá trị mới đúng nghiệp vụ.
-- Bản ghi `audit_logs` được tạo tự động với đầy đủ User ID, IP và payload can thiệp.
+1. Đăng nhập tại `/admin/login` bằng tài khoản của chính bạn, sau đó mở mục được phân công.
+2. Kiểm tra vai trò và quyền cụ thể với quản trị viên phụ trách. Khi kiểm thử, dùng tài khoản và dữ liệu giả trên môi trường cô lập.
+3. Nếu bị từ chối truy cập, ghi lại màn hình và thao tác đang thực hiện, sau đó chuyển yêu cầu cho người có thẩm quyền. Không dùng tài khoản của người khác để vượt quyền.
+4. Việc cấp, đổi hoặc thu hồi quyền phải theo quy trình phê duyệt của đơn vị; không mặc định một nhãn vai trò cho phép toàn bộ thao tác tài chính hoặc dữ liệu cá nhân.
 
-## 5. Những điều Tuyệt đối Bị cấm
-- Nghiêm cấm thao tác khi chưa có căn cứ chứng từ hoặc yêu cầu bằng văn bản.
-- Nghiêm cấm chia sẻ tài khoản quản trị hoặc can thiệp vượt thẩm quyền phân công.
+## Giới hạn xác minh
+
+Thông tin trên dựa trên mã vai trò và middleware của các route được kiểm tra, chưa phải ma trận đầy đủ cho mọi màn hình. Kiểm thử allow/deny và xác nhận audit từng hành động trước khi sử dụng như căn cứ nghiệm thu quyền. Không sử dụng dữ liệu khách hàng thật để thử.

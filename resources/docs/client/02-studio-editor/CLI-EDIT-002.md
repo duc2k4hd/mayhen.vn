@@ -1,46 +1,34 @@
 ---
 id: CLI-EDIT-002
-title: "Cách thay đổi ảnh cưới và chọn tiêu điểm Smart Focal Point trong Studio"
+title: "Căn chỉnh tiêu điểm ảnh cưới"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Hướng dẫn tải ảnh lên Studio, di chuyển điểm ngắm để ảnh hiển thị hoàn hảo trên cả iPhone lẫn máy tính mà không bị mất đầu/mất chữ."
+summary: "Chọn ảnh có sẵn trên thiệp, điều chỉnh tiêu điểm và xem thử ở nhiều tỷ lệ."
 reader: "Cô dâu, chú rể"
 order: 2
-updated_at: "2026-11-12"
-tags: [anh-cuoi, smart-focal-point, studio, thay-anh]
+updated_at: "2026-11-15"
+tags: [anh-cuoi, smart-focal-point, studio]
 mapped_page: "CLI-STUDIO-PAGE"
-mapped_route: "studio.workspace"
+mapped_route: "account.focal_point.index"
 risk_level: "LOW"
 required_role: "customer"
 ---
 
-# Cách thay đổi ảnh cưới và chọn tiêu điểm khuôn mặt trong Studio
+# Căn chỉnh tiêu điểm ảnh cưới
 
-> **Dành cho:** Cô dâu, chú rể đang thiết kế thiệp cưới  
-> **Thời gian thực hiện:** Khoảng 2 - 3 phút  
-> **Vị trí trong ứng dụng:** Trang quản lý thiệp -> Nhấp nút **[Chỉnh sửa thiệp]** -> Tab **Hình ảnh & Album**  
+Công cụ **Smart Focal Point** giúp bạn chọn vị trí ưu tiên trong ảnh và xem mô phỏng ở nhiều tỷ lệ màn hình. Ảnh vẫn có thể bị cắt khác nhau tùy khung và mẫu thiệp: hãy tự kiểm tra bản xem trước và thiệp thực tế.
 
-Bức ảnh cưới đẹp nhất chính là linh hồn của tấm thiệp. Tuy nhiên, màn hình điện thoại của mỗi khách mời lại có tỷ lệ dài ngắn khác nhau (iPhone, Samsung, iPad). Tính năng **Tiêu điểm Thông minh (Smart Focal Point)** của Mây Hẹn sẽ giúp khuôn mặt của hai bạn luôn nằm ở vị trí trang trọng nhất, không bao giờ bị cắt mất hay che khuất bởi chữ.
+## Chuẩn bị
 
-## 1. Chuẩn bị trước khi tải ảnh
-- Chọn bức ảnh cưới sắc nét, ánh sáng tự nhiên, tôn vinh nụ cười hạnh phúc của hai bạn.
-- Định dạng ảnh được hỗ trợ: **JPG, PNG hoặc WebP**.
-- Dung lượng mỗi ảnh: Tối đa **10MB** (hệ thống sẽ tự động tối ưu hóa giúp thiệp mở cực nhanh trên mạng 4G/5G).
+Đăng nhập và chuẩn bị một thiệp đã có ảnh. Nếu công cụ báo **Chưa Có Ảnh Nào Trong Hồ Sơ Thiệp**, hãy thêm ảnh cưới hoặc ảnh cổng vào phần thông tin thiệp trước. Màn hình căn tiêu điểm không phải là form tải ảnh mới; chưa xác minh được các bước thay ảnh và giới hạn tệp nên không hướng dẫn thao tác đó tại đây.
 
-## 2. Các bước thực hiện chi tiết
-1. **Bước 1: Mở trình tạo thiệp (Studio):** Từ trang quản lý tài khoản (`/tai-khoan`), bạn tìm tấm thiệp cưới đang thực hiện và nhấp vào nút **[Vào Studio chỉnh sửa]**.
-2. **Bước 2: Chọn vị trí ảnh muốn thay đổi:** Trên thanh công cụ bên trái màn hình, nhấp vào mục **Ảnh cưới & Bìa chính** (Ảnh bìa đại diện, Ảnh cổng chào Hero, hoặc Album 10 khoảnh khắc tình yêu). Nhấp trực tiếp vào khung ảnh bạn muốn đổi, hoặc nhấn nút **[Tải ảnh mới]**.
-3. **Bước 3: Tải ảnh từ thiết bị:** Chọn bức ảnh cưới từ điện thoại hoặc máy tính. Trong vòng 1-2 giây, thanh tiến trình tải ảnh sẽ hoàn tất và ảnh sẽ xuất hiện ngay trong khung chỉnh sửa.
-4. **Bước 4: Di chuyển điểm ngắm tiêu điểm (Smart Focal Point):** Khi ảnh hiện lên, bạn sẽ thấy một **vòng tròn tiêu điểm màu vàng Champagne** nằm trên bức ảnh. Dùng chuột hoặc ngón tay kéo vòng tròn đặt vào chính giữa khuôn mặt của cô dâu và chú rể. Nhìn sang màn hình mô phỏng điện thoại bên phải: Bạn sẽ thấy khuôn mặt hai bạn luôn được canh giữa hoàn hảo.
-5. **Bước 5: Lưu thay đổi:** Nhấp vào nút **[Lưu thay đổi]** ở góc trên bên phải thanh công cụ.
+## Chọn tiêu điểm
 
-## 3. Dấu hiệu nhận biết đã thành công
-- Màn hình góc trên xuất hiện thông báo nhỏ trang nhã màu xanh: *"Đã lưu ảnh cưới và tiêu điểm thành công"*.
-- Màn hình xem thử trực tiếp bên cạnh lập tức cập nhật bức ảnh mới.
-- Mở link thiệp trên điện thoại của bạn, ảnh tải mượt mà và hiển thị đúng khuôn mặt ở vị trí trung tâm.
+1. Mở danh sách thiệp trong tài khoản, tìm thiệp cần chỉnh và chọn công cụ căn chỉnh điểm lấy nét ảnh.
+2. Trong **Chọn Ảnh Cần Căn Chỉnh**, chọn một ảnh đã có.
+3. Nhấp hoặc kéo tâm ngắm đến phần muốn ưu tiên, hoặc chọn một vị trí gợi ý. Các khung mô phỏng hiển thị tỷ lệ 9:16, 1:1, 4:3 và 16:9 để bạn so sánh.
+4. Nhấn **Lưu Tiêu Điểm**. Để đưa về giữa ảnh, chọn **Đặt lại (50%, 50%)**.
+5. Mở **Xem Thiệp Thực Tế** và kiểm tra ảnh trên thiết bị bạn dự định sử dụng. Nếu bố cục chưa phù hợp, quay lại điều chỉnh và lưu lại.
 
-## 4. Cách xử lý các sự cố thường gặp
-- **Ảnh báo lỗi dung lượng vượt quá giới hạn:** Nén ảnh xuống dưới 5MB bằng công cụ nén ảnh uy tín trước khi tải lên.
-- **Mất kết nối mạng khi đang tải ảnh:** Mây Hẹn có cơ chế bảo toàn dữ liệu nháp (Draft Recovery). Giữ nguyên tab trình duyệt, kiểm tra Wi-Fi và nhấp thử lại. Dữ liệu chữ viết không bị mất.
+## Lưu ý
 
-## 5. Câu hỏi thường gặp (FAQ)
-- *Tôi đã gửi thiệp cho khách mời rồi, bây giờ đổi ảnh khác có được không?* -> Hoàn toàn được! Mọi thay đổi trong Studio đều được đồng bộ tức thời. Khách mời mở lại link thiệp sẽ thấy bức ảnh mới nhất ngay lập tức mà bạn không cần phải gửi lại link.
+Không có bảo đảm mọi khuôn mặt luôn nằm trọn trong mọi khung hình. Khi lưu gặp lỗi, kiểm tra kết nối rồi xem lại trạng thái trước khi thử lại. Luồng tải ảnh, phân quyền sở hữu và kết quả hiển thị trên thiết bị thật vẫn cần được kiểm thử trước khi nghiệm thu hướng dẫn này.

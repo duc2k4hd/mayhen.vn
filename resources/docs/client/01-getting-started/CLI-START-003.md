@@ -2,41 +2,33 @@
 id: CLI-START-003
 title: "Cách xem thử mẫu thiệp và trải nghiệm các tính năng tương tác miễn phí"
 category: "Bắt đầu với Mây Hẹn"
-summary: "Hướng dẫn chi tiết về Cách xem thử mẫu thiệp và trải nghiệm các tính năng tương tác miễn phí trên hệ thống Mây Hẹn."
+summary: "Tìm mẫu thiệp và mở bản xem thử trước khi tạo thiệp."
 reader: "PER-CLI-01 (Cô dâu chú rể mới)"
 order: 3
 updated_at: "2026-11-12"
 tags: [mayhen, bắt-đầu-với-mây-hẹn]
 mapped_page: "CLI-START-PAGE"
-mapped_route: "onboarding.index"
+mapped_route: "templates.index"
 risk_level: "HIGH"
 required_role: "customer"
 ---
 
 # Cách xem thử mẫu thiệp và trải nghiệm các tính năng tương tác miễn phí
 
-> [!NOTE]
-> **Dành cho:** PER-CLI-01 (Cô dâu chú rể mới)  
-> **Vị trí trong ứng dụng:** Chức năng liên quan: `/onboarding` (Route: `onboarding.index`).  
-> **Thời gian thực hiện:** Khoảng 2 - 5 phút.
+Bạn có thể xem thiết kế và trải nghiệm bản mẫu trước khi quyết định tạo thiệp của mình.
 
-## 1. Mục đích và Ý nghĩa cho Ngày cưới
-Chức năng này giúp cặp đôi hoặc khách mời dễ dàng thao tác chuẩn xác, bảo đảm tính tôn nghiêm và trải nghiệm lãng mạn cao nhất của ngày vui.
+## Xem mẫu
 
-## 2. Các bước thực hiện chi tiết
-1. **Bước 1:** Truy cập vào phân hệ tương ứng trên thanh điều hướng Mây Hẹn.
-2. **Bước 2:** Tìm nút bấm hoặc khu vực thao tác có nhãn tương ứng trên màn hình.
-3. **Bước 3:** Nhập đầy đủ thông tin hoặc tải tài nguyên cần thiết theo hướng dẫn giao diện.
-4. **Bước 4:** Kiểm tra bản xem trước trực quan (Live Preview) để bảo đảm không có sai sót chính tả hay hình ảnh.
-5. **Bước 5:** Nhấp nút **[Lưu thay đổi]** hoặc **[Xác nhận]** để hệ thống ghi nhận vào cơ sở dữ liệu.
+1. Mở [Mẫu thiệp](/mau-thiep) và tìm thiết kế bạn thích.
+2. Chọn **Xem Mẫu** trên thẻ mẫu để mở phần xem thử. Bạn có thể cuộn để xem các phần của thiệp.
+3. Chọn **Dùng Mẫu** nếu muốn mở trang chi tiết mẫu; tại đây có phần xem trước và liên kết mở bản xem thử trong tab mới.
+4. Nếu bản mẫu có phần tương tác, bạn có thể trải nghiệm theo hướng dẫn trên màn hình. Chỉ dùng tên giả như Minh và An khi thử; không nhập thông tin khách mời thật vào bản demo.
 
-## 3. Dấu hiệu nhận biết thao tác thành công
-- Màn hình xuất hiện thông báo xác nhận thành công màu xanh trang nhã.
-- Dữ liệu cập nhật ngay lập tức trên giao diện và được bảo toàn an toàn.
+Mỗi mẫu có nội dung và hiệu ứng riêng. Bản demo không thay thế việc kiểm tra thiệp của chính bạn trước khi gửi khách.
 
-## 4. Xử lý sự cố thường gặp
-- **Mất kết nối mạng tạm thời:** Mây Hẹn có cơ chế lưu trữ nháp cục bộ tự động. Bạn chỉ cần giữ nguyên tab, kiểm tra lại kết nối và nhấp thử lại.
-- **Lỗi dữ liệu không hợp lệ:** Kiểm tra kỹ các trường bắt buộc, định dạng số điện thoại hoặc dung lượng ảnh theo yêu cầu.
+## Khi không xem được
 
-## 5. Câu hỏi thường gặp (FAQ)
-- *Tôi có thể chỉnh sửa lại sau khi đã lưu không?* -> Hoàn toàn có thể. Mọi thay đổi sẽ được cập nhật tức thời.
+- Kiểm tra kết nối và thử tải lại trang. Nếu bản xem thử mở trong tab mới, kiểm tra trình duyệt có chặn tab đó không.
+- Nếu một mẫu không hiển thị hoặc phần tương tác không phản hồi, thử mẫu khác và gửi tên mẫu qua [Liên hệ](/lien-he).
+
+Xem tiếp [đăng ký và khởi tạo thiệp](/docs/getting-started/CLI-START-002) hoặc [bảng giá](/bang-gia).

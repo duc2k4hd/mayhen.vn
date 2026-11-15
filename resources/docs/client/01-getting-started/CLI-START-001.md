@@ -2,7 +2,7 @@
 id: CLI-START-001
 title: "Mây Hẹn là gì? Hành trình từ tạo thiệp đến ngày cưới trọn vẹn"
 category: "Bắt đầu với Mây Hẹn"
-summary: "Hướng dẫn chi tiết về Mây Hẹn là gì? Hành trình từ tạo thiệp đến ngày cưới trọn vẹn trên hệ thống Mây Hẹn."
+summary: "Các bước xem mẫu, đăng ký, khởi tạo và chỉnh sửa thiệp cưới."
 reader: "PER-CLI-01 (Cô dâu chú rể mới)"
 order: 1
 updated_at: "2026-11-12"
@@ -15,28 +15,20 @@ required_role: "customer"
 
 # Mây Hẹn là gì? Hành trình từ tạo thiệp đến ngày cưới trọn vẹn
 
-> [!NOTE]
-> **Dành cho:** PER-CLI-01 (Cô dâu chú rể mới)  
-> **Vị trí trong ứng dụng:** Chức năng liên quan: `/onboarding` (Route: `onboarding.index`).  
-> **Thời gian thực hiện:** Khoảng 2 - 5 phút.
+Mây Hẹn giúp bạn chọn mẫu thiệp cưới, nhập thông tin của hai bạn và chuẩn bị thiệp để chia sẻ với khách mời. Bạn có thể xem mẫu trước khi tạo tài khoản.
 
-## 1. Mục đích và Ý nghĩa cho Ngày cưới
-Chức năng này giúp cặp đôi hoặc khách mời dễ dàng thao tác chuẩn xác, bảo đảm tính tôn nghiêm và trải nghiệm lãng mạn cao nhất của ngày vui.
+## Bắt đầu từ đâu?
 
-## 2. Các bước thực hiện chi tiết
-1. **Bước 1:** Truy cập vào phân hệ tương ứng trên thanh điều hướng Mây Hẹn.
-2. **Bước 2:** Tìm nút bấm hoặc khu vực thao tác có nhãn tương ứng trên màn hình.
-3. **Bước 3:** Nhập đầy đủ thông tin hoặc tải tài nguyên cần thiết theo hướng dẫn giao diện.
-4. **Bước 4:** Kiểm tra bản xem trước trực quan (Live Preview) để bảo đảm không có sai sót chính tả hay hình ảnh.
-5. **Bước 5:** Nhấp nút **[Lưu thay đổi]** hoặc **[Xác nhận]** để hệ thống ghi nhận vào cơ sở dữ liệu.
+1. Mở [Mẫu thiệp](/mau-thiep), chọn **Xem Mẫu** để xem thử một thiết kế.
+2. Khi muốn tạo thiệp, [đăng ký](/dang-ky) hoặc [đăng nhập](/dang-nhap). Trang [khởi tạo thiệp](/onboarding) yêu cầu bạn đăng nhập.
+3. Chọn mục đích, mẫu thiệp rồi nhập thông tin cưới. Ví dụ, bạn có thể dùng tên giả Minh và An khi làm quen với các ô nhập.
+4. Xem lại thông tin và chọn **Tạo Thiệp & Mở Studio Chỉnh Sửa**. Trong Studio, kiểm tra nội dung và ảnh trước khi chia sẻ.
+5. Khi cần so sánh dịch vụ, mở [Bảng giá](/bang-gia); hãy kiểm tra gói và số tiền hiển thị tại thời điểm lựa chọn.
 
-## 3. Dấu hiệu nhận biết thao tác thành công
-- Màn hình xuất hiện thông báo xác nhận thành công màu xanh trang nhã.
-- Dữ liệu cập nhật ngay lập tức trên giao diện và được bảo toàn an toàn.
+## Khi gặp khó khăn
 
-## 4. Xử lý sự cố thường gặp
-- **Mất kết nối mạng tạm thời:** Mây Hẹn có cơ chế lưu trữ nháp cục bộ tự động. Bạn chỉ cần giữ nguyên tab, kiểm tra lại kết nối và nhấp thử lại.
-- **Lỗi dữ liệu không hợp lệ:** Kiểm tra kỹ các trường bắt buộc, định dạng số điện thoại hoặc dung lượng ảnh theo yêu cầu.
+- **Không vào được trang khởi tạo:** hãy đăng nhập trước, rồi mở lại trang khởi tạo.
+- **Danh sách mẫu trống hoặc xem thử không tải:** kiểm tra kết nối, tải lại trang; nếu vẫn gặp lỗi, mở [Liên hệ](/lien-he) để được hỗ trợ.
+- **Chưa muốn thanh toán:** bạn có thể xem mẫu trước và kiểm tra thông tin gói trên bảng giá trước khi quyết định.
 
-## 5. Câu hỏi thường gặp (FAQ)
-- *Tôi có thể chỉnh sửa lại sau khi đã lưu không?* -> Hoàn toàn có thể. Mọi thay đổi sẽ được cập nhật tức thời.
+Xem tiếp: [Đăng ký và khởi tạo thiệp](/docs/getting-started/CLI-START-002) và [cách xem thử mẫu](/docs/getting-started/CLI-START-003).

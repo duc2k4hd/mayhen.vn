@@ -8,7 +8,7 @@
 ## 1. TỔNG QUAN HỆ THỐNG & NỀN TẢNG CÔNG NGHỆ
 
 - **Tên dự án**: Mây Hẹn (`mayhen.vn`) — Nền tảng tạo thiệp cưới online cao cấp, mang phong cách *Quiet Luxury*, tinh tế, lãng mạn.
-- **Backend**: Laravel 12 (PHP 8.5).
+- **Backend**: Laravel 13.35.0 theo `php artisan --version` ngày 2026-11-15 (PHP 8.5 theo thông tin dự án; cần xác minh riêng phiên bản runtime PHP khi dùng).
 - **Frontend Core Protocol**:
   - **100% Thuần (Vanilla)**: HTML5 ngữ nghĩa + CSS thuần (CSS Custom Properties) + JavaScript Native ES Modules.
   - **CẤM TUYỆT ĐỐI**: Bootstrap, Tailwind CSS, Bulma, jQuery, Vue, React, Alpine.js, GSAP, Anime.js, AOS, Swiper.js, Slick Slider.
@@ -122,6 +122,9 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Documentation Center Suite**: 16/16 tests PASSED 100% (94 assertions).
-- **Toàn bộ hệ thống**: Mã nguồn tuân thủ nghiêm ngặt PSR-12 qua Laravel Pint, không có lỗi tiềm ẩn.
+- **Documentation Center Suite**: ngày 2026-11-15, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 16/16 test, 98 assertions; không thay thế kiểm thử giao diện hoặc nghiệp vụ.
+- **Toàn bộ hệ thống**: chưa chạy lại toàn bộ test suite hoặc Pint trong đợt chỉnh sửa Docs này; không suy ra hệ thống không có lỗi.
 - **Lưu trữ tài liệu**: Đầy đủ 108 bài viết Markdown tại `resources/docs/client/` và `resources/docs/admin/`.
+- **Hàng đợi Docs**: `docs/docs-center/11_DOCS_WORK_QUEUE.csv` theo dõi 108 ID; sáu bài IMPLEMENTED là bản sửa một phần, chưa nghiệm thu. `docs/docs-center/docs-queue.mjs` nhập dữ liệu vào SQLite cục bộ `storage/app/mayhen-docs-queue.sqlite`, giữ tiến độ cũ, khóa một job RUNNING, kiểm tra token và hạn, lưu checkpoint/heartbeat gắn với một phiên ACP và ghi nhật ký trong database. Lease hết hạn giữ khóa để kiểm tra, không chứng minh worker đã dừng. Chạy `node docs/docs-center/docs-queue.mjs status` để xem; kiểm thử `node --test tests/Unit/docs-queue.test.mjs`. Đây mới là nền tảng hàng đợi, chưa tích hợp Supervisor, retry/backoff hoặc cơ chế xác nhận worker quá hạn đã dừng và không tự chạy chiến dịch.
+- **OpenClaw / ACP**: ngày 2026-11-15 đã xác minh OpenClaw giao tác vụ chỉ đọc tới Antigravity và nhận kết quả. Có hai lịch cùng tên Supervisor (`4e0d7ca5-7cbc-47ff-a6d7-2469f5162bbb` và `6094f9a6-82db-49ae-9466-dc07b3b330f7`), đều disabled theo `cron list --all` tại lần kiểm tra gần nhất; báo cáo trước chỉ kiểm tra ID thứ hai là thiếu sót. Phiên ACP do lịch thứ nhất tạo lúc 18:50 thất bại do không có hộp cấp quyền trong chế độ không tương tác. `node docs/docs-center/docs-autopilot-preflight.mjs` kiểm tra trạng thái không gọi AI và luôn giữ cổng chạy đóng khi các điều kiện chưa được triển khai, không tự bật lịch. Chưa chứng minh hai tác vụ liên tiếp, quyền ghi giới hạn theo thư mục, phục hồi tự động hoặc hai chu kỳ bảo trì thành công.
+- **Các lô Docs 2026-11-15**: `CLI-START-001`, `003`, `004`, `005` và `ADM-SOP-001`–`005` đã biên tập theo mã giao diện và route được đối chiếu; SQLite ghi `PENDING_SCREENSHOT` vì chưa kiểm tra trình duyệt, ảnh, toàn bộ quyền theo vai trò hoặc thanh toán. Kiểm thử Docs 18/18, 126 assertions, bao gồm khách vãng lai, staff và admin trên năm bài SOP; kiểm thử queue 3/3; Pint dirty đạt. Queue hỗ trợ `claim <Article_ID>` để xử lý một bài TODO cụ thể; dữ liệu CSV gốc không tự đồng bộ trạng thái SQLite.

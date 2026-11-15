@@ -186,6 +186,7 @@ Thumbs.db
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
 !/tests/Unit/editor-browser.test.mjs
+!/tests/Unit/docs-queue.test.mjs
 /storage/
 /node_modules/
 /Mẫu thiệp/

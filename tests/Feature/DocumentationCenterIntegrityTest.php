@@ -22,9 +22,30 @@ test('truy cập bài viết chi tiết Client Docs /docs/{category}/{slug} thà
     ]));
 
     $response->assertOk();
-    $response->assertSee('Cách thay đổi ảnh cưới và chọn tiêu điểm Smart Focal Point trong Studio');
+    $response->assertSee('Căn chỉnh tiêu điểm ảnh cưới');
     $response->assertSee('Smart Focal Point');
     $response->assertSee('MỤC LỤC BÀI VIẾT');
+});
+
+test('các bài nhập môn mới xuất hiện trên trang hướng dẫn công khai', function () {
+    foreach (['CLI-START-001', 'CLI-START-003', 'CLI-START-004', 'CLI-START-005'] as $articleId) {
+        $this->get(route('docs.show', ['category' => 'getting-started', 'slug' => $articleId]))
+            ->assertOk()
+            ->assertSee('Khi');
+    }
+});
+
+test('các bài vận hành mới yêu cầu quyền quản trị phù hợp', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $staff = User::factory()->create(['role' => 'staff']);
+
+    foreach (['ADM-SOP-001', 'ADM-SOP-002', 'ADM-SOP-003', 'ADM-SOP-004', 'ADM-SOP-005'] as $articleId) {
+        $url = route('admin.docs.show', ['category' => 'sop-onboarding', 'slug' => $articleId]);
+        $this->get($url)->assertRedirect(route('admin.login'));
+        $this->actingAs($staff)->get($url)->assertForbidden();
+        $this->actingAs($admin)->get($url)->assertOk();
+        auth()->logout();
+    }
 });
 
 test('tìm kiếm Client Docs trả về kết quả JSON chính xác và không rò rỉ bài Admin', function () {
@@ -80,9 +101,9 @@ test('quản trị viên xem chi tiết quy trình SOP /admin/docs/{category}/{s
     ]));
 
     $response->assertOk();
-    $response->assertSee('ADM-SOP-ORDR-002: Quy trình Đối soát SePay & Kích hoạt Đơn hàng Chuyển khoản Thủ công');
-    $response->assertSee('Cam kết Tuân thủ Quy trình Vận hành');
-    $response->assertSee('audit_logs');
+    $response->assertSee('Đối soát đơn hàng chuyển khoản thủ công');
+    $response->assertSee('Mã GD Ngân Hàng / Tham Chiếu Thật');
+    $response->assertSee('chưa được kiểm thử');
 });
 
 test('tìm kiếm Admin Docs trả về kết quả quy trình SOP nội bộ', function () {
@@ -146,8 +167,9 @@ test('truy cập các bài viết thí điểm hoàn chỉnh (CLI-START-002, CLI
         'slug' => 'CLI-START-002',
     ]));
     $startResp->assertOk();
-    $startResp->assertSee('Onboarding 4 bước');
-    $startResp->assertSee('Quiet Luxury');
+    $startResp->assertSee('Đăng ký tài khoản và khởi tạo thiệp cưới');
+    $startResp->assertSee('Tiếp Tục Chọn Mẫu Thiệp');
+    $startResp->assertDontSee('Aesthetic Moodboard');
 
     // 2. Client RSVP
     $rsvpResp = $this->get(route('docs.show', [
@@ -155,8 +177,9 @@ test('truy cập các bài viết thí điểm hoàn chỉnh (CLI-START-002, CLI
         'slug' => 'CLI-GUEST-004',
     ]));
     $rsvpResp->assertOk();
-    $rsvpResp->assertSee('RSVP Đa Sự Kiện');
-    $rsvpResp->assertSee('Đăng ký khẩu phần ẩm thực');
+    $rsvpResp->assertSee('Xác nhận tham dự trên thiệp cưới');
+    $rsvpResp->assertSee('không chứng minh');
+    $rsvpResp->assertDontSee('Đăng ký khẩu phần ẩm thực');
 
     // 3. Admin User Customer 360
     $manager = User::factory()->create(['role' => 'manager']);
@@ -165,8 +188,9 @@ test('truy cập các bài viết thí điểm hoàn chỉnh (CLI-START-002, CLI
         'slug' => 'ADM-USER-001',
     ]));
     $userResp->assertOk();
-    $userResp->assertSee('Customer 360 View');
-    $userResp->assertSee('PII Protection');
+    $userResp->assertSee('Tra cứu hồ sơ khách hàng và lịch sử liên quan');
+    $userResp->assertSee('mọi lượt xem hồ sơ');
+    $userResp->assertDontSee('chỉ hiển thị đầy đủ khi nhân viên nhấp xem chi tiết có ghi log');
 
     // 4. Admin Emergency Offline Cockpit
     $cockResp = $this->actingAs($manager)->get(route('admin.docs.show', [
@@ -174,8 +198,9 @@ test('truy cập các bài viết thí điểm hoàn chỉnh (CLI-START-002, CLI
         'slug' => 'ADM-COCK-002',
     ]));
     $cockResp->assertOk();
-    $cockResp->assertSee('Emergency Offline Pack');
-    $cockResp->assertSee('offline_checkin_queue');
+    $cockResp->assertSee('Xử lý gián đoạn mạng khi điểm danh tại sảnh tiệc');
+    $cockResp->assertSee('Chưa xác minh được chức năng điểm danh ngoại tuyến');
+    $cockResp->assertDontSee('offline_checkin_queue');
 });
 
 test('liên kết trợ giúp ngữ cảnh Wave 04 trên trang Admin Master Topbar trỏ đúng endpoint hợp lệ', function () {
@@ -257,8 +282,8 @@ test('các bài hướng dẫn ngữ cảnh trọng yếu hiển thị đầy đ
         'slug' => 'ADM-SOP-001',
     ]));
     $sopResp->assertOk();
-    $sopResp->assertSee('Ma trận phân quyền quản trị 3 cấp');
-    $sopResp->assertSee('PHP 8.5.10 / Laravel 13.35.0');
+    $sopResp->assertSee('Xác định môi trường và tài khoản');
+    $sopResp->assertSee('quyền cụ thể còn phụ thuộc từng chức năng');
 });
 
 test('các bài hướng dẫn nâng cao Studio V2 hiển thị đầy đủ tính năng AI, Quality Doctor và âm nhạc', function () {

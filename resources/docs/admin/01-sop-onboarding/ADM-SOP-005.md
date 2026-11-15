@@ -8,36 +8,23 @@ order: 3
 updated_at: "2026-11-12"
 tags: [mayhen, quy-chuẩn-tiếp-nhận-&-vận-hành-(sop)]
 mapped_page: "ADM-SOP-PAGE"
-mapped_route: "admin.dashboard"
+mapped_route: "admin.privacy.index"
 risk_level: "CRITICAL"
 required_role: "manager"
 ---
 
 # Quy trình tiếp nhận và xử lý yêu cầu quyền riêng tư dữ liệu cá nhân (Luật 91/2025/QH15)
 
-> [!WARNING]
-> **Phân quyền thực hiện:** Nhân viên có vai trò `Manager` hoặc `Super Admin`.  
-> **Mức độ rủi ro:** `CRITICAL` | **Endpoint:** `GET /admin/dashboard`.  
-> **Bằng chứng kiểm toán:** Bắt buộc lưu vết trong bảng `audit_logs`.
+## Trước khi xử lý
 
-## 1. Mục đích Nghiệp vụ Vận hành
-Quy trình này chuẩn hóa thao tác vận hành của nhân viên quản trị đối với module `Quy chuẩn Tiếp nhận & Vận hành (SOP)`, đảm bảo tính toàn vẹn dữ liệu, không làm rò rỉ thông tin cá nhân và xử lý nhanh chóng cho khách hàng.
+Yêu cầu xóa hoặc ẩn danh có thể ảnh hưởng dữ liệu khách hàng. Xác minh danh tính và thẩm quyền theo quy trình của đơn vị, kiểm tra phạm vi yêu cầu và nghĩa vụ lưu giữ liên quan trước khi thao tác. Chỉ kiểm thử bằng tài khoản và dữ liệu giả trên môi trường cô lập.
 
-## 2. Điều kiện tiên quyết
-- Nhân viên đã đăng nhập tài khoản quản trị Admin hợp lệ.
-- Đã xác minh danh tính khách hàng hoặc tính xác thực của sự cố.
+## Theo dõi yêu cầu
 
-## 3. Các bước thao tác an toàn (Standard Operating Procedure)
-1. **Bước 1:** Truy cập màn hình quản trị tại URL `/admin/dashboard`.
-2. **Bước 2:** Sử dụng bộ lọc hoặc ô tìm kiếm để định vị chính xác thực thể cần xử lý.
-3. **Bước 3:** Kiểm tra lịch sử giao dịch hoặc nhật ký kiểm toán liên quan trước khi can thiệp.
-4. **Bước 4:** Thực hiện thao tác nghiệp vụ, điền rõ lý do can thiệp vào form xác nhận.
-5. **Bước 5:** Nhấp **[Xác nhận thực thi]** và kiểm tra thông báo phản hồi của hệ thống.
+1. Người được phân quyền mở `/admin/privacy` và xem danh sách yêu cầu. Bộ lọc có các trạng thái như **Chờ duyệt**, đã duyệt và đã thực thi.
+2. Đối chiếu mã yêu cầu và đối tượng với thông tin đã được xác minh. Ví dụ trong môi trường thử, dùng một yêu cầu giả thay vì hồ sơ khách thật.
+3. Nếu có thẩm quyền và đủ căn cứ, xem xét phê duyệt hoặc từ chối. Route của hai thao tác này yêu cầu `admin.manager`; khi từ chối, mã yêu cầu nhập lý do.
+4. Phê duyệt chưa phải là thực thi. Thao tác thực thi là bước riêng, có cảnh báo ẩn danh hóa; chỉ thực hiện sau khi xác nhận lại phạm vi và được phép. Không chạy dọn dẹp hàng loạt để thử.
+5. Kiểm tra trạng thái và lưu bằng chứng xử lý qua kênh nội bộ được phép. Mã hiện gọi ghi audit cho một số hành động, nhưng cần kiểm thử quyền và nhật ký từng trường hợp trước khi nghiệm thu.
 
-## 4. Kết quả mong đợi & Kiểm chứng
-- Trạng thái bản ghi chuyển sang giá trị mới đúng nghiệp vụ.
-- Bản ghi `audit_logs` được tạo tự động với đầy đủ User ID, IP và payload can thiệp.
-
-## 5. Những điều Tuyệt đối Bị cấm
-- Nghiêm cấm thao tác khi chưa có căn cứ chứng từ hoặc yêu cầu bằng văn bản.
-- Nghiêm cấm chia sẻ tài khoản quản trị hoặc can thiệp vượt thẩm quyền phân công.
+Nếu thiếu thông tin hoặc bị từ chối quyền, dừng thao tác và chuyển cho người phụ trách. Không cam kết rằng mọi dữ liệu đều có thể xóa hoặc rằng hành động đã hoàn tất chỉ vì yêu cầu được duyệt.
