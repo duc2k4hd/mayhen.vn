@@ -25,7 +25,7 @@ class ClientDocsController extends Controller
 
         return view('docs.client.index', [
             'space' => 'client',
-            'pageTitle' => 'Trung tâm Hướng dẫn Sử dụng Mây Hẹn — Dành cho Cô dâu, Chú rể & Khách mời',
+            'pageTitle' => 'Trung tâm Hướng dẫn Sử dụng thiệp cưới Mây Hẹn | Dành cho Cô dâu, Chú rể & Khách mời',
             'metaDescription' => 'Hướng dẫn chi tiết từng bước tạo thiệp cưới online, chọn mẫu, chỉnh sửa ảnh, quản lý khách mời RSVP và thanh toán VietQR trên Mây Hẹn.',
             'categories' => $categories,
         ]);
