@@ -59,24 +59,39 @@
         }
       }
 
-      var sunSvg = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;display:block;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-      var moonSvg = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;display:block;" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      var sunSvg = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;display:block;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+      var moonSvg = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;display:block;" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
       function updateAllIcons(theme) {
-        var buttons = document.querySelectorAll('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick');
-        buttons.forEach(function(btn) {
-          var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon');
+        // 1. Dual segmented theme buttons
+        var lightBtns = document.querySelectorAll('.mayhen_docs_theme_btn_light');
+        lightBtns.forEach(function(btn) {
+          btn.setAttribute('aria-checked', String(theme === 'light'));
+          btn.classList.toggle('mayhen_docs_theme_btn_active', theme === 'light');
+        });
+
+        var darkBtns = document.querySelectorAll('.mayhen_docs_theme_btn_dark');
+        darkBtns.forEach(function(btn) {
+          btn.setAttribute('aria-checked', String(theme === 'dark'));
+          btn.classList.toggle('mayhen_docs_theme_btn_active', theme === 'dark');
+        });
+
+        // 2. Legacy single toggle buttons (fallback)
+        var singleButtons = document.querySelectorAll('.mayhen_docs_theme_toggle');
+        singleButtons.forEach(function(btn) {
+          var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon') || btn.querySelector('svg');
           var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label');
-          if (!iconEl || !labelEl) {
-            btn.innerHTML = '<span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">' + ((theme === 'dark') ? moonSvg : sunSvg) + '</span><span class="mayhen_docs_theme_switcher_label">' + ((theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng') + '</span>';
-          } else {
+          if (iconEl && !iconEl.matches('svg')) {
             iconEl.innerHTML = (theme === 'dark') ? moonSvg : sunSvg;
+          }
+          if (labelEl) {
             labelEl.textContent = (theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng';
           }
           btn.setAttribute('title', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
           btn.setAttribute('aria-label', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
         });
 
+        // 3. Settings modal options
         document.querySelectorAll('[data-theme-option]').forEach(function(opt) {
           opt.setAttribute('aria-pressed', String(opt.dataset.themeOption === theme));
         });
@@ -124,77 +139,108 @@
         window.setDocsTheme(next);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        window.setDocsTheme(getActiveTheme());
+      // Direct, failsafe global event delegation (registered immediately on document)
+      document.addEventListener('click', function(e) {
+        // 1. Dual segmented theme button click
+        var themeSetBtn = e.target.closest('[data-theme-set]');
+        if (themeSetBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          var targetTheme = themeSetBtn.getAttribute('data-theme-set');
+          window.setDocsTheme(targetTheme);
+          return;
+        }
 
-        document.addEventListener('click', function(e) {
-          // 1. Theme toggle button click
-          var themeBtn = e.target.closest('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick, [data-action="toggle-theme"], .mayhen_docs_theme_toggle');
-          if (themeBtn) {
-            e.preventDefault();
-            e.stopPropagation();
-            window.toggleDocsTheme();
-            return;
+        // 2. Legacy single theme button toggle click
+        var themeBtn = e.target.closest('.mayhen_docs_theme_toggle, [data-action="toggle-theme"]');
+        if (themeBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.toggleDocsTheme();
+          return;
+        }
+
+        // 3. Theme option in settings dialog
+        var themeOpt = e.target.closest('[data-theme-option]');
+        if (themeOpt) {
+          e.preventDefault();
+          var optTheme = themeOpt.dataset.themeOption;
+          if (optTheme === 'system') {
+            var isSysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            optTheme = isSysDark ? 'dark' : 'light';
           }
+          window.setDocsTheme(optTheme);
+          return;
+        }
 
-          // 2. Theme option in settings dialog
-          var themeOpt = e.target.closest('[data-theme-option]');
-          if (themeOpt) {
-            e.preventDefault();
-            var optTheme = themeOpt.dataset.themeOption;
-            if (optTheme === 'system') {
-              var isSysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-              optTheme = isSysDark ? 'dark' : 'light';
+        // 4. Detail sidebar category accordion
+        var detailToggle = e.target.closest('.mayhen_docs_detail_nav_group_toggle');
+        if (detailToggle) {
+          e.preventDefault();
+          e.stopPropagation();
+          var controlledId = detailToggle.getAttribute('aria-controls');
+          var isExpanded = detailToggle.getAttribute('aria-expanded') === 'true';
+          var nextState = !isExpanded;
+          detailToggle.setAttribute('aria-expanded', String(nextState));
+
+          var targetList = controlledId ? document.getElementById(controlledId) : null;
+          if (!targetList) {
+            var group = detailToggle.closest('.mayhen_docs_detail_nav_group');
+            if (group) {
+              targetList = group.querySelector('.mayhen_docs_detail_nav_links');
             }
-            window.setDocsTheme(optTheme);
-            return;
           }
 
-          // 3. Detail sidebar category accordion
-          var detailToggle = e.target.closest('.mayhen_docs_detail_nav_group_toggle');
-          if (detailToggle) {
-            e.preventDefault();
-            var controlledId = detailToggle.getAttribute('aria-controls');
-            var isExpanded = detailToggle.getAttribute('aria-expanded') === 'true';
-            var nextState = !isExpanded;
-            detailToggle.setAttribute('aria-expanded', String(nextState));
-            if (controlledId) {
-              var targetList = document.getElementById(controlledId);
-              if (targetList) {
-                if (nextState) {
-                  targetList.removeAttribute('hidden');
-                  targetList.style.display = 'flex';
-                } else {
-                  targetList.setAttribute('hidden', '');
-                  targetList.style.display = 'none';
-                }
-              }
+          if (targetList) {
+            if (nextState) {
+              targetList.removeAttribute('hidden');
+              targetList.style.removeProperty('display');
+              targetList.style.display = 'flex';
+            } else {
+              targetList.setAttribute('hidden', '');
+              targetList.style.display = 'none';
             }
-            return;
           }
+          return;
+        }
 
-          // 4. Index sidebar category accordion
-          var indexToggle = e.target.closest('.mayhen_docs_side_group');
-          if (indexToggle) {
-            e.preventDefault();
-            var groupKey = indexToggle.dataset.group;
-            var targetList = document.getElementById('mayhen_docs_group_' + groupKey);
-            var isExpanded = indexToggle.getAttribute('aria-expanded') === 'true';
-            var nextState = !isExpanded;
-            indexToggle.setAttribute('aria-expanded', String(nextState));
-            if (targetList) {
-              if (nextState) {
-                targetList.classList.remove('mayhen_docs_group_closed');
-                targetList.style.display = 'block';
-              } else {
-                targetList.classList.add('mayhen_docs_group_closed');
-                targetList.style.display = 'none';
-              }
+        // 5. Index sidebar category accordion
+        var indexToggle = e.target.closest('.mayhen_docs_side_group');
+        if (indexToggle) {
+          e.preventDefault();
+          e.stopPropagation();
+          var groupKey = indexToggle.dataset.group;
+          var targetList = groupKey ? document.getElementById('mayhen_docs_group_' + groupKey) : null;
+          if (!targetList) {
+            var parentGroup = indexToggle.closest('.mayhen_docs_side_category') || indexToggle.parentElement;
+            if (parentGroup) {
+              targetList = parentGroup.querySelector('.mayhen_docs_side_children');
             }
-            return;
           }
+          var isExpanded = indexToggle.getAttribute('aria-expanded') === 'true';
+          var nextState = !isExpanded;
+          indexToggle.setAttribute('aria-expanded', String(nextState));
+          if (targetList) {
+            if (nextState) {
+              targetList.classList.remove('mayhen_docs_group_closed');
+              targetList.style.removeProperty('display');
+              targetList.style.display = 'block';
+            } else {
+              targetList.classList.add('mayhen_docs_group_closed');
+              targetList.style.display = 'none';
+            }
+          }
+          return;
+        }
+      }, true);
+
+      // Run theme initialization immediately and on DOM ready
+      window.setDocsTheme(getActiveTheme());
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          window.setDocsTheme(getActiveTheme());
         });
-      });
+      }
     })();
   </script>
 

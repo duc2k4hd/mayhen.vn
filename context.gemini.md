@@ -122,14 +122,12 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Documentation Center Suite**: ngày 2026-11-15, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 18/18 test, 126 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
-- **Sửa triệt để giao diện Docs UI & Theme Switcher**: 
-  - Khắc phục lỗi co dẹp thành viên nang đứng của `.mayhen_docs_theme_switcher` bằng cách cố định `flex: 0 0 auto !important; flex-shrink: 0 !important;` và responsive hình tròn 36px trên di động.
-  - Loại bỏ hoàn toàn xung đột duplicate event listeners giữa `layout.blade.php` và `docs-main.js` (Accordion `.mayhen_docs_detail_nav_group_toggle` và `.mayhen_docs_side_group`), giải quyết triệt để lỗi "bấm cha chưa xổ xuống con".
-  - Bỏ toàn bộ `text-transform: uppercase` trên các tiêu đề tiếng Việt để dứt điểm lỗi font nham nhở `BẮT đầU VớI MÂY HẹN`.
-  - Thay thế toàn bộ ký tự `⌄` bằng SVG Chevron xoay mượt 180 độ.
-  - Cưỡng chế tương phản nút CTA (`#FFFFFF` trên `#613B3E`).
+- **Documentation Center Suite**: ngày 2026-11-15, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 18/18 test, 127 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Sửa triệt để giao diện Docs UI, Nút Theme Switcher & Accordion Sidebar**: 
+  - **Luxury Segmented Switch `[ ☀️ Sáng | 🌙 Tối ]`**: Thay thế nút toggle đơn lập mơ hồ bằng thanh gạt phân đoạn kép siêu trực quan và sang trọng. Người dùng thấy rõ ràng chế độ hiện tại và chỉ cần 1 click để đổi sang chế độ mong muốn. Trên màn hình nhỏ tự thu gọn thành 2 icon `[ ☀️ | 🌙 ]` cạnh nhau, không bao giờ bị co dẹp thành viên nang rỗng đứng.
+  - **Sửa dứt điểm lỗi Accordion Sidebar "bấm cha chưa xổ xuống con"**: Chuyển listener từ `DOMContentLoaded` (vốn bị bỏ lỡ khi script nạp trễ ở cuối body) sang event delegation trực tiếp ở cấp `document` toàn cục, đồng thời bổ sung cơ chế fallback tìm kiếm thẻ con `.mayhen_docs_detail_nav_links` trực tiếp trong nhóm cha `.mayhen_docs_detail_nav_group` nếu ID không trùng khớp.
+  - **Chống co bẹp Header**: Cấu hình `max-width: 260px; min-width: 130px; flex: 1 1 auto;` cho ô tìm kiếm và `flex-shrink: 0;` cho nhóm điều khiển bên phải, đảm bảo giao diện luôn thoáng đãng trên mọi độ phân giải màn hình (768px - 1440px).
 - **Tiến độ Hàng đợi Docs (SQLite `storage/app/mayhen-docs-queue.sqlite`)**:
-  - `IMPLEMENTED`: 39 bài (Hoàn tất 100% 5 chuyên mục lớn của Client: Studio Tạo Thiệp V2 `CLI-EDIT-001`..`011`, Thiệp cưới Công cộng & Tương tác `CLI-INVT-001`..`006`, Quản lý Khách mời & RSVP `CLI-GUEST-001`..`007`, Sơ đồ Bàn tiệc & Chỗ ngồi `CLI-SEAT-001`..`005`, Điểm danh Lễ tân & Màn chiếu `CLI-CKIN-001`..`006`, cùng `CLI-START-002`, `ADM-USER-001`, `ADM-ORDR-002`, `ADM-COCK-002`).
+  - `IMPLEMENTED`: 52 bài (Hoàn tất 100% 8 chuyên mục lớn của Client: Studio Tạo Thiệp V2 `CLI-EDIT-001`..`011`, Thiệp cưới Công cộng & Tương tác `CLI-INVT-001`..`006`, Quản lý Khách mời & RSVP `CLI-GUEST-001`..`007`, Sơ đồ Bàn tiệc & Chỗ ngồi `CLI-SEAT-001`..`005`, Điểm danh Lễ tân & Màn chiếu `CLI-CKIN-001`..`006`, Sổ ký tên & Ảnh `CLI-WISH-001`..`005`, VietQR Mừng cưới & Dự toán `CLI-GIFT-001`..`004`, Hộp thời gian Kỷ niệm `CLI-TIME-001`..`004`, cùng `CLI-START-002`, `ADM-USER-001`, `ADM-ORDR-002`, `ADM-COCK-002`).
   - `PENDING_SCREENSHOT`: 9 bài (`CLI-START-001`, `CLI-START-003`, `CLI-START-004`, `CLI-START-005`, `ADM-SOP-001` đến `ADM-SOP-005`).
-  - `TODO`: 60 bài còn lại tiếp tục triển khai theo kế hoạch.
+  - `TODO`: 47 bài còn lại tiếp tục triển khai theo kế hoạch.

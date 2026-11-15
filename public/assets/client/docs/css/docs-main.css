@@ -177,8 +177,8 @@ a{color:inherit}
 .mayhen_docs_detail_skip_link{position:fixed;z-index:200;top:-100px;left:18px;padding:12px 18px;background:var(--mayhen-docs-detail-rose);color:#fff!important;border-radius:10px}
 .mayhen_docs_detail_skip_link:focus{top:8px}
 .mayhen_docs_detail_header{position:sticky;top:0;z-index:60;height:var(--mayhen-docs-detail-header-h);display:flex;justify-content:space-between;align-items:center;gap:16px;padding:0 31px;background:var(--mayhen-docs-detail-surface);border-bottom:1px solid var(--mayhen-docs-detail-border);box-shadow:0 3px 14px rgba(84,62,57,.023)}
-.mayhen_docs_detail_header_left,.mayhen_docs_detail_header_right{display:flex;align-items:center;gap:14px;min-width:0}
-.mayhen_docs_detail_header_right{gap:8px}
+.mayhen_docs_detail_header_left{display:flex;align-items:center;gap:14px;min-width:0;flex:1 1 auto}
+.mayhen_docs_detail_header_right{display:flex;align-items:center;gap:8px;min-width:0;flex:0 0 auto;flex-shrink:0}
 .mayhen_docs_detail_brand{display:flex;align-items:center;gap:10px;flex:none}
 .mayhen_docs_detail_brand_mark{display:grid;place-items:center;color:var(--mayhen-docs-detail-rose);width:43px;height:43px}
 .mayhen_docs_detail_brand_mark svg{width:100%;stroke:currentColor;stroke-width:1.2;fill:none}
@@ -188,11 +188,11 @@ a{color:inherit}
 .mayhen_docs_detail_brand_text small{font-size:8px;letter-spacing:2.6px;color:var(--mayhen-docs-detail-gold);font-weight:800;margin-top:5px}
 .mayhen_docs_detail_header_divider{height:23px;border-left:1px solid var(--mayhen-docs-detail-border-strong);margin:0 3px 0 9px}
 .mayhen_docs_detail_header_label{font-size:12px;white-space:nowrap;color:var(--mayhen-docs-detail-muted);font-weight:600}
-.mayhen_docs_detail_icon_button{width:38px;height:38px;display:grid;place-items:center;border:1px solid transparent;border-radius:10px;color:var(--mayhen-docs-detail-muted);background:transparent;transition:background .2s,color .2s,border-color .2s}
+.mayhen_docs_detail_icon_button{width:38px;height:38px;display:grid;place-items:center;border:1px solid transparent;border-radius:10px;color:var(--mayhen-docs-detail-muted);background:transparent;transition:background .2s,color .2s,border-color .2s;flex-shrink:0}
 .mayhen_docs_detail_icon_button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .mayhen_docs_detail_icon_button:hover,.mayhen_docs_detail_font_button:hover{background:var(--mayhen-docs-detail-rose-soft);color:var(--mayhen-docs-detail-rose)}
 .mayhen_docs_detail_mobile_menu{display:none}
-.mayhen_docs_detail_search_trigger{display:flex;align-items:center;gap:10px;width:290px;height:38px;text-align:left;border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;color:var(--mayhen-docs-detail-muted);background:var(--mayhen-docs-detail-subtle);padding:0 9px 0 12px;transition:border-color .2s,box-shadow .2s}
+.mayhen_docs_detail_search_trigger{display:flex;align-items:center;gap:10px;max-width:260px;min-width:130px;width:100%;height:38px;text-align:left;border:1px solid var(--mayhen-docs-detail-border);border-radius:9px;color:var(--mayhen-docs-detail-muted);background:var(--mayhen-docs-detail-subtle);padding:0 9px 0 12px;transition:border-color .2s,box-shadow .2s;flex:1 1 auto}
 .mayhen_docs_detail_search_trigger:hover{border-color:var(--mayhen-docs-detail-gold)}
 .mayhen_docs_detail_search_trigger svg,.mayhen_docs_detail_btn svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .mayhen_docs_detail_search_trigger span{flex:1;font-size:12px}
@@ -1385,122 +1385,124 @@ body[data-theme="dark"],
    MÂY HẸN DOCS — THEME SWITCHER PILL & ACCORDION EXPANSION
    ============================================================= */
 
-/* 1. Chic Pill Theme Switcher Control (Anti-collapse & High Clarity) */
+/* =============================================================
+   MÂY HẸN DOCS — LUXURY SEGMENTED THEME SWITCHER [ ☀️ Sáng | 🌙 Tối ]
+   ============================================================= */
 .mayhen_docs_theme_switcher {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  padding: 3px !important;
+  gap: 3px !important;
   height: 36px !important;
-  min-width: 125px !important;
-  width: auto !important;
-  max-width: none !important;
-  padding: 4px 14px 4px 6px !important;
-  border-radius: 20px !important;
-  background: var(--mayhen-docs-surface, #fffefd) !important;
-  border: 1px solid var(--mayhen-docs-border-strong, #dfccc1) !important;
-  color: var(--mayhen-docs-ink, #2f2a2c) !important;
-  cursor: pointer !important;
-  font-family: inherit !important;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
-  box-shadow: 0 2px 6px rgba(97, 59, 62, 0.05) !important;
-  user-select: none !important;
-  white-space: nowrap !important;
+  border-radius: 999px !important;
+  background: var(--mayhen-docs-surface-2, #F4EBE8) !important;
+  border: 1px solid var(--mayhen-docs-border, #DFCCC1) !important;
+  box-shadow: inset 0 1px 2px rgba(97, 59, 62, 0.05) !important;
   flex: 0 0 auto !important;
   flex-shrink: 0 !important;
   box-sizing: border-box !important;
-}
-
-@media (max-width: 768px) {
-  .mayhen_docs_theme_switcher {
-    min-width: 36px !important;
-    max-width: 36px !important;
-    width: 36px !important;
-    height: 36px !important;
-    padding: 0 !important;
-    justify-content: center !important;
-    border-radius: 50% !important;
-    flex: 0 0 36px !important;
-    flex-shrink: 0 !important;
-  }
-  .mayhen_docs_theme_switcher .mayhen_docs_theme_switcher_label {
-    display: none !important;
-  }
-  .mayhen_docs_theme_switcher .mayhen_docs_theme_switcher_icon {
-    margin: 0 !important;
-  }
-}
-
-.mayhen_docs_theme_switcher:hover {
-  background: var(--mayhen-docs-rose-pale, #fff5f5) !important;
-  border-color: var(--mayhen-docs-rose, #8b4d53) !important;
-  color: var(--mayhen-docs-rose, #8b4d53) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(97, 59, 62, 0.12) !important;
-}
-
-.mayhen_docs_theme_switcher:active {
-  transform: scale(0.97) !important;
-}
-
-.mayhen_docs_theme_switcher_icon {
-  width: 26px !important;
-  height: 26px !important;
-  border-radius: 50% !important;
-  background: var(--mayhen-docs-rose-soft, #f7ebe8) !important;
-  color: var(--mayhen-docs-rose, #8b4d53) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 26px !important;
-  flex-shrink: 0 !important;
-  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease !important;
-}
-
-.mayhen_docs_theme_switcher_icon svg {
-  width: 15px !important;
-  height: 15px !important;
-  display: block !important;
-}
-
-.mayhen_docs_theme_switcher:hover .mayhen_docs_theme_switcher_icon {
-  transform: rotate(20deg) scale(1.05) !important;
-}
-
-.mayhen_docs_theme_switcher_label {
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  letter-spacing: normal !important;
-  color: inherit !important;
-  line-height: 1 !important;
+  user-select: none !important;
   white-space: nowrap !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
-/* Theme Switcher in Dark Mode */
 html[data-theme="dark"] .mayhen_docs_theme_switcher,
 body[data-theme="dark"] .mayhen_docs_theme_switcher,
 .mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher,
 .mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher {
   background: #251E22 !important;
   border-color: #4A3E45 !important;
-  color: #F4EBE8 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-html[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
-body[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
-.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
-.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover {
-  background: #33272D !important;
-  border-color: #E8A8AC !important;
+.mayhen_docs_theme_btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--mayhen-docs-muted, #7A6F6B) !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.mayhen_docs_theme_btn:hover {
+  color: var(--mayhen-docs-rose, #8B4D53) !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_theme_btn:hover {
   color: #E8A8AC !important;
 }
 
-html[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
-body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
-.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
-.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon {
+.mayhen_docs_theme_btn svg,
+.mayhen_docs_theme_svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+  flex: 0 0 14px !important;
+  transition: transform 0.25s ease !important;
+}
+
+/* Active State: Light Button Active in Light Theme */
+.mayhen_docs_theme_btn[aria-checked="true"],
+.mayhen_docs_theme_btn.mayhen_docs_theme_btn_active {
+  background: #FFFFFF !important;
+  color: #613B3E !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 5px rgba(97, 59, 62, 0.12), 0 1px 2px rgba(0,0,0,0.06) !important;
+}
+
+.mayhen_docs_theme_btn_light[aria-checked="true"] svg,
+.mayhen_docs_theme_btn_light.mayhen_docs_theme_btn_active svg {
+  color: #C5A880 !important;
+  transform: rotate(20deg) scale(1.1) !important;
+}
+
+/* Active State: Dark Button Active in Dark Theme */
+html[data-theme="dark"] .mayhen_docs_theme_btn[aria-checked="true"],
+body[data-theme="dark"] .mayhen_docs_theme_btn[aria-checked="true"],
+.mayhen_docs_theme_btn_dark[aria-checked="true"],
+.mayhen_docs_theme_btn_dark.mayhen_docs_theme_btn_active {
   background: #3D2D34 !important;
+  color: #FFF0ED !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+}
+
+.mayhen_docs_theme_btn_dark[aria-checked="true"] svg,
+.mayhen_docs_theme_btn_dark.mayhen_docs_theme_btn_active svg {
   color: #E8A8AC !important;
+  transform: scale(1.1) !important;
+}
+
+/* On mobile / tablet screens: hide text, keep icons side by side */
+@media (max-width: 640px) {
+  .mayhen_docs_theme_switcher {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+  .mayhen_docs_theme_btn {
+    padding: 0 8px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    gap: 0 !important;
+  }
+  .mayhen_docs_theme_text {
+    display: none !important;
+  }
 }
 
 /* 2. Detail Accordion Child Links Visibility */
