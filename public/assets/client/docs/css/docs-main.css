@@ -547,3 +547,8 @@ a{color:inherit}
   color: var(--mayhen-docs-muted);
   flex: none;
 }
+
+/* H1 font override using Playfair Display with full Vietnamese glyphs */
+.mayhen_docs_detail_article h1 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+}

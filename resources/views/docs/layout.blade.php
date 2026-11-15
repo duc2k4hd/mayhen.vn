@@ -19,10 +19,10 @@
     <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
   @endif
 
-  {{-- Google Fonts: Open Sans --}}
+  {{-- Google Fonts: Open Sans & Playfair Display (Full Vietnamese Subsets) --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   {{-- Unified Pure CSS (index + detail combined) --}}
   <link rel="stylesheet" href="{{ asset('assets/client/docs/css/docs-main.css') }}">

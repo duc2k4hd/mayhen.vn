@@ -12607,4 +12607,15 @@ Hoàn thiện toàn bộ các tính năng cốt lõi tạo nên trải nghiệm 
    - Báo cáo phân tích tác động thay đổi (Publish Impact Report - TASK-VAL-09) khi sửa thiệp đã gửi: Đếm số khách đã nhận link, phân loại rủi ro Critical/Warning/Info.
    - Bảo hiểm phiên bản khẩn cấp (Emergency Rollback Snapshot - TASK-VAL-11): Lưu full snapshot, cho phép tráo đổi (swap) lấy lại 100% bản cũ trong 1 giây nếu publish nhầm sát giờ đón khách.
 
+### 16.8. Phục Hồi & Chuẩn Hóa 100% Giao Diện Theo Mẫu Gốc docs/templates/ (Wave 06)
+- **Vấn đề đã khắc phục**:
+  1. *Lệch CSS & vỡ cấu trúc layout*: Trước đó việc gộp chung các class vào một thẻ div wrapper làm xung đột giữa 2 hệ thống CSS độc lập của Index (`mayhen_docs_*`) và Detail (`mayhen_docs_detail_*`).
+  2. *Lỗi vỡ dấu tiếng Việt trên phông Georgia nghiêng*: Ký tự tiếng Việt có dấu (ví dụ chữ "đầu") trong tiêu đề H1 `<em>` bị tách dấu khi render trên Windows. Đã bổ sung phông `Playfair Display` hỗ trợ 100% Vietnamese glyphs.
+  3. *Hợp nhất CSS & JS thuần*: Kết hợp CSS và JS gốc từ `docs/templates/mayhen_docs/` và `docs/templates/mayhen_docs_detail/` vào `docs-main.css` (kèm integration patches cho thẻ `<a>` thay thế `<button>`) và `docs-main.js` (681 dòng native ES6, tự động nhận diện ID container theo trang).
+  4. *Đồng bộ Blade View*: `layout.blade.php` tối giản đóng vai trò khung HTML gốc (`@yield('body')`), các trang con `client/index.blade.php`, `client/detail.blade.php`, `admin/index.blade.php`, `admin/detail.blade.php` tự render root container chuẩn theo template.
+  5. *Đảm bảo quyền hạn & bảo mật SOP*: Bổ sung hộp cam kết tuân thủ quy trình vận hành và ghi nhận `audit_logs` đối với phân hệ Admin.
+- **Kiểm thử tự động**:
+  - `tests/Feature/DocumentationCenterIntegrityTest.php`: **16/16 tests PASSED 100% (94 assertions)**.
+  - Laravel Pint: **PASSED** (0 dirty files).
+
 ---
