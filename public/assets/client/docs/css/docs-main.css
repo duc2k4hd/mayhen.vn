@@ -1381,3 +1381,125 @@ body[data-theme="dark"],
   color: #E8A8AC !important;
 }
 
+/* =============================================================
+   MÂY HẸN DOCS — THEME SWITCHER PILL & ACCORDION EXPANSION
+   ============================================================= */
+
+/* 1. Chic Pill Theme Switcher Control */
+.mayhen_docs_theme_switcher {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: 36px !important;
+  padding: 4px 14px 4px 6px !important;
+  border-radius: 20px !important;
+  background: var(--mayhen-docs-surface, #fffefd) !important;
+  border: 1px solid var(--mayhen-docs-border-strong, #dfccc1) !important;
+  color: var(--mayhen-docs-ink, #2f2a2c) !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 6px rgba(97, 59, 62, 0.05) !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+  flex: none !important;
+}
+
+.mayhen_docs_theme_switcher:hover {
+  background: var(--mayhen-docs-rose-pale, #fff5f5) !important;
+  border-color: var(--mayhen-docs-rose, #8b4d53) !important;
+  color: var(--mayhen-docs-rose, #8b4d53) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(97, 59, 62, 0.12) !important;
+}
+
+.mayhen_docs_theme_switcher_icon {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: var(--mayhen-docs-rose-soft, #f7ebe8) !important;
+  color: var(--mayhen-docs-rose, #8b4d53) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: none !important;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease !important;
+}
+
+.mayhen_docs_theme_switcher:hover .mayhen_docs_theme_switcher_icon {
+  transform: rotate(20deg) scale(1.05) !important;
+}
+
+.mayhen_docs_theme_switcher_label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  color: inherit !important;
+  line-height: 1 !important;
+}
+
+/* Theme Switcher in Dark Mode */
+html[data-theme="dark"] .mayhen_docs_theme_switcher,
+body[data-theme="dark"] .mayhen_docs_theme_switcher,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher {
+  background: #251E22 !important;
+  border-color: #4A3E45 !important;
+  color: #F4EBE8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+body[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover {
+  background: #33272D !important;
+  border-color: #E8A8AC !important;
+  color: #E8A8AC !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon {
+  background: #3D2D34 !important;
+  color: #E8A8AC !important;
+}
+
+/* 2. Detail Accordion Child Links Visibility */
+.mayhen_docs_detail_nav_links[hidden] {
+  display: none !important;
+}
+
+.mayhen_docs_detail_nav_links:not([hidden]) {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.mayhen_docs_detail_chevron {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--mayhen-docs-detail-muted) !important;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  flex: none !important;
+}
+
+.mayhen_docs_detail_nav_group_toggle[aria-expanded="true"] .mayhen_docs_detail_chevron {
+  transform: rotate(180deg) !important;
+  color: var(--mayhen-docs-detail-rose) !important;
+}
+
+/* 3. Index Accordion Child Links Visibility */
+.mayhen_docs_side_children.mayhen_docs_group_closed {
+  display: none !important;
+}
+
+.mayhen_docs_side_children:not(.mayhen_docs_group_closed) {
+  display: block !important;
+}
+
+

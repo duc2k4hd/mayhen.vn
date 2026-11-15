@@ -48,7 +48,7 @@
 <body>
   @yield('body')
 
-  {{-- Global Theme Controller Script (Self-contained, failsafe, direct handler) --}}
+  {{-- Global Theme & Navigation Controller Script (Self-contained, failsafe, direct handler) --}}
   <script>
     (function() {
       function getActiveTheme() {
@@ -60,21 +60,26 @@
       }
 
       function updateAllIcons(theme) {
-        var sunSvg = '<svg class="mayhen_docs_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-        var moonSvg = '<svg class="mayhen_docs_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>';
+        var sunSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+        var moonSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>';
 
-        var indexToggleBtn = document.getElementById('theme-toggle-btn');
-        if (indexToggleBtn) {
-          indexToggleBtn.innerHTML = theme === 'dark' ? sunSvg : moonSvg;
-          indexToggleBtn.setAttribute('title', theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối');
-          indexToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối');
-        }
+        var buttons = document.querySelectorAll('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick');
+        buttons.forEach(function(btn) {
+          var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon');
+          var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label');
+          if (iconEl) {
+            iconEl.innerHTML = theme === 'dark' ? sunSvg : moonSvg;
+          }
+          if (labelEl) {
+            labelEl.textContent = theme === 'dark' ? 'Giao diện Tối' : 'Giao diện Sáng';
+          }
+          btn.setAttribute('title', theme === 'dark' ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+          btn.setAttribute('aria-label', theme === 'dark' ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+        });
 
-        var detailToggleBtn = document.getElementById('mayhen_docs_detail_theme_quick');
-        if (detailToggleBtn) {
-          detailToggleBtn.innerHTML = theme === 'dark' ? sunSvg : moonSvg;
-          detailToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối');
-        }
+        document.querySelectorAll('[data-theme-option]').forEach(function(opt) {
+          opt.setAttribute('aria-pressed', String(opt.dataset.themeOption === theme));
+        });
       }
 
       window.setDocsTheme = function(theme) {
@@ -118,11 +123,70 @@
         window.setDocsTheme(getActiveTheme());
 
         document.addEventListener('click', function(e) {
-          var btn = e.target.closest('#theme-toggle-btn, #mayhen_docs_detail_theme_quick, [data-action="toggle-theme"], .mayhen_docs_theme_toggle');
-          if (btn) {
+          // 1. Theme toggle button click
+          var themeBtn = e.target.closest('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick, [data-action="toggle-theme"], .mayhen_docs_theme_toggle');
+          if (themeBtn) {
             e.preventDefault();
             e.stopPropagation();
             window.toggleDocsTheme();
+            return;
+          }
+
+          // 2. Theme option in settings dialog
+          var themeOpt = e.target.closest('[data-theme-option]');
+          if (themeOpt) {
+            e.preventDefault();
+            var optTheme = themeOpt.dataset.themeOption;
+            if (optTheme === 'system') {
+              var isSysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+              optTheme = isSysDark ? 'dark' : 'light';
+            }
+            window.setDocsTheme(optTheme);
+            return;
+          }
+
+          // 3. Detail sidebar category accordion
+          var detailToggle = e.target.closest('.mayhen_docs_detail_nav_group_toggle');
+          if (detailToggle) {
+            e.preventDefault();
+            var controlledId = detailToggle.getAttribute('aria-controls');
+            var isExpanded = detailToggle.getAttribute('aria-expanded') === 'true';
+            var nextState = !isExpanded;
+            detailToggle.setAttribute('aria-expanded', String(nextState));
+            if (controlledId) {
+              var targetList = document.getElementById(controlledId);
+              if (targetList) {
+                if (nextState) {
+                  targetList.removeAttribute('hidden');
+                  targetList.style.display = 'flex';
+                } else {
+                  targetList.setAttribute('hidden', '');
+                  targetList.style.display = 'none';
+                }
+              }
+            }
+            return;
+          }
+
+          // 4. Index sidebar category accordion
+          var indexToggle = e.target.closest('.mayhen_docs_side_group');
+          if (indexToggle) {
+            e.preventDefault();
+            var groupKey = indexToggle.dataset.group;
+            var targetList = document.getElementById('mayhen_docs_group_' + groupKey);
+            var isExpanded = indexToggle.getAttribute('aria-expanded') === 'true';
+            var nextState = !isExpanded;
+            indexToggle.setAttribute('aria-expanded', String(nextState));
+            if (targetList) {
+              if (nextState) {
+                targetList.classList.remove('mayhen_docs_group_closed');
+                targetList.style.display = 'block';
+              } else {
+                targetList.classList.add('mayhen_docs_group_closed');
+                targetList.style.display = 'none';
+              }
+            }
+            return;
           }
         });
       });

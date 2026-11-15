@@ -41,8 +41,11 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
         <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
       </button>
-      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon mayhen_docs_theme_toggle" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" onclick="window.toggleDocsTheme && window.toggleDocsTheme()" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng/tối">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>
+      <button type="button" class="mayhen_docs_theme_switcher" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" onclick="window.toggleDocsTheme && window.toggleDocsTheme()" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện sáng/tối">
+        <span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </span>
+        <span class="mayhen_docs_theme_switcher_label">Giao diện Sáng</span>
       </button>
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>
@@ -98,7 +101,9 @@
                 aria-controls="mayhen_docs_detail_group_{{ $catSlug }}">
                 <span class="mayhen_docs_detail_nav_group_icon">{{ ['✦','❀','♡','↗','◇'][$loop->index % 5] }}</span>
                 {{ $cat['name'] }}
-                <span class="mayhen_docs_detail_chevron">⌄</span>
+                <span class="mayhen_docs_detail_chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;display:block;"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
               </button>
               <div class="mayhen_docs_detail_nav_links"
                 id="mayhen_docs_detail_group_{{ $catSlug }}"
