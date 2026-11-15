@@ -41,21 +41,14 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
         <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
       </button>
-      <div class="mayhen_docs_theme_switcher" role="radiogroup" aria-label="Giao diện hiển thị" id="mayhen_docs_detail_theme_quick" title="Giao diện hiển thị (Sáng / Tối)">
-        <button type="button" class="mayhen_docs_theme_btn mayhen_docs_theme_btn_light" data-theme-set="light" role="radio" aria-checked="true" title="Chuyển sang Giao diện Sáng">
-          <svg viewBox="0 0 24 24" class="mayhen_docs_theme_svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-          </svg>
-          <span class="mayhen_docs_theme_text">Sáng</span>
-        </button>
-        <button type="button" class="mayhen_docs_theme_btn mayhen_docs_theme_btn_dark" data-theme-set="dark" role="radio" aria-checked="false" title="Chuyển sang Giao diện Tối">
-          <svg viewBox="0 0 24 24" class="mayhen_docs_theme_svg" aria-hidden="true" fill="currentColor" stroke="none">
+      <button type="button" class="mayhen_docs_theme_switcher" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+        <span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
-          <span class="mayhen_docs_theme_text">Tối</span>
-        </button>
-      </div>
+        </span>
+        <span class="mayhen_docs_theme_switcher_label">Giao diện Sáng</span>
+      </button>
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>
       </button>

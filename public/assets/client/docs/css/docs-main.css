@@ -1386,122 +1386,124 @@ body[data-theme="dark"],
    ============================================================= */
 
 /* =============================================================
-   MÂY HẸN DOCS — LUXURY SEGMENTED THEME SWITCHER [ ☀️ Sáng | 🌙 Tối ]
+   MÂY HẸN DOCS — LUXURY PILL THEME SWITCHER [ ☀️ / 🌙 Giao diện Sáng/Tối ]
+   Anti-collapse, Perfect Quiet Luxury Design, Guaranteed Min-width
    ============================================================= */
 .mayhen_docs_theme_switcher {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 3px !important;
-  gap: 3px !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
   height: 36px !important;
+  min-height: 36px !important;
+  padding: 4px 14px 4px 5px !important;
   border-radius: 999px !important;
-  background: var(--mayhen-docs-surface-2, #F4EBE8) !important;
+  background: var(--mayhen-docs-surface, #FAF5F3) !important;
   border: 1px solid var(--mayhen-docs-border, #DFCCC1) !important;
-  box-shadow: inset 0 1px 2px rgba(97, 59, 62, 0.05) !important;
-  flex: 0 0 auto !important;
-  flex-shrink: 0 !important;
-  box-sizing: border-box !important;
+  box-shadow: 0 1px 3px rgba(97, 59, 62, 0.04) !important;
+  color: var(--mayhen-docs-text, #613B3E) !important;
+  cursor: pointer !important;
   user-select: none !important;
   white-space: nowrap !important;
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  min-width: 132px !important;
+  box-sizing: border-box !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative !important;
   z-index: 10 !important;
 }
 
+.mayhen_docs_theme_switcher:hover {
+  border-color: var(--mayhen-docs-rose, #8B4D53) !important;
+  background: var(--mayhen-docs-surface-2, #F4EBE8) !important;
+  box-shadow: 0 3px 8px rgba(97, 59, 62, 0.08) !important;
+}
+
+.mayhen_docs_theme_switcher_icon {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  border-radius: 50% !important;
+  background: var(--mayhen-docs-rose-soft, #F7EBE8) !important;
+  color: var(--mayhen-docs-rose, #8B4D53) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 26px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease !important;
+}
+
+.mayhen_docs_theme_switcher_icon svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+.mayhen_docs_theme_switcher:hover .mayhen_docs_theme_switcher_icon {
+  transform: rotate(20deg) scale(1.08) !important;
+}
+
+.mayhen_docs_theme_switcher_label {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  color: inherit !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
+/* Dark theme styling */
 html[data-theme="dark"] .mayhen_docs_theme_switcher,
 body[data-theme="dark"] .mayhen_docs_theme_switcher,
 .mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher,
 .mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher {
   background: #251E22 !important;
   border-color: #4A3E45 !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  color: #F4EBE8 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
 
-.mayhen_docs_theme_btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  height: 28px !important;
-  padding: 0 12px !important;
-  border-radius: 999px !important;
-  border: none !important;
-  background: transparent !important;
-  color: var(--mayhen-docs-muted, #7A6F6B) !important;
-  font-family: inherit !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  white-space: nowrap !important;
-  line-height: 1 !important;
-  flex: 0 0 auto !important;
-  flex-shrink: 0 !important;
-  box-sizing: border-box !important;
+html[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+body[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher:hover {
+  background: #33272D !important;
+  border-color: #E8A8AC !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
-.mayhen_docs_theme_btn:hover {
-  color: var(--mayhen-docs-rose, #8B4D53) !important;
-}
-
-html[data-theme="dark"] .mayhen_docs_theme_btn:hover {
-  color: #E8A8AC !important;
-}
-
-.mayhen_docs_theme_btn svg,
-.mayhen_docs_theme_svg {
-  width: 14px !important;
-  height: 14px !important;
-  display: block !important;
-  flex: 0 0 14px !important;
-  transition: transform 0.25s ease !important;
-}
-
-/* Active State: Light Button Active in Light Theme */
-.mayhen_docs_theme_btn[aria-checked="true"],
-.mayhen_docs_theme_btn.mayhen_docs_theme_btn_active {
-  background: #FFFFFF !important;
-  color: #613B3E !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 5px rgba(97, 59, 62, 0.12), 0 1px 2px rgba(0,0,0,0.06) !important;
-}
-
-.mayhen_docs_theme_btn_light[aria-checked="true"] svg,
-.mayhen_docs_theme_btn_light.mayhen_docs_theme_btn_active svg {
-  color: #C5A880 !important;
-  transform: rotate(20deg) scale(1.1) !important;
-}
-
-/* Active State: Dark Button Active in Dark Theme */
-html[data-theme="dark"] .mayhen_docs_theme_btn[aria-checked="true"],
-body[data-theme="dark"] .mayhen_docs_theme_btn[aria-checked="true"],
-.mayhen_docs_theme_btn_dark[aria-checked="true"],
-.mayhen_docs_theme_btn_dark.mayhen_docs_theme_btn_active {
+html[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_theme_switcher_icon {
   background: #3D2D34 !important;
-  color: #FFF0ED !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
-}
-
-.mayhen_docs_theme_btn_dark[aria-checked="true"] svg,
-.mayhen_docs_theme_btn_dark.mayhen_docs_theme_btn_active svg {
   color: #E8A8AC !important;
-  transform: scale(1.1) !important;
 }
 
-/* On mobile / tablet screens: hide text, keep icons side by side */
+/* On mobile / small screens (<= 640px) */
 @media (max-width: 640px) {
   .mayhen_docs_theme_switcher {
-    padding: 2px !important;
-    gap: 2px !important;
-  }
-  .mayhen_docs_theme_btn {
-    padding: 0 8px !important;
-    width: 28px !important;
-    min-width: 28px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    padding: 0 !important;
+    justify-content: center !important;
     gap: 0 !important;
   }
-  .mayhen_docs_theme_text {
+  .mayhen_docs_theme_switcher_label {
     display: none !important;
+  }
+  .mayhen_docs_theme_switcher_icon {
+    margin: 0 !important;
   }
 }
 

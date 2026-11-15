@@ -91,21 +91,14 @@
           <a class="mayhen_docs_header_signup" href="{{ route('invitation.create') }}">Tạo thiệp ngay <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_arrow"/></svg></a>
         @endif
       </nav>
-      <div class="mayhen_docs_theme_switcher" role="radiogroup" aria-label="Giao diện hiển thị" id="theme-toggle-btn" title="Giao diện hiển thị (Sáng / Tối)" style="margin-left: 8px;">
-        <button type="button" class="mayhen_docs_theme_btn mayhen_docs_theme_btn_light" data-theme-set="light" role="radio" aria-checked="true" title="Chuyển sang Giao diện Sáng">
-          <svg viewBox="0 0 24 24" class="mayhen_docs_theme_svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-          </svg>
-          <span class="mayhen_docs_theme_text">Sáng</span>
-        </button>
-        <button type="button" class="mayhen_docs_theme_btn mayhen_docs_theme_btn_dark" data-theme-set="dark" role="radio" aria-checked="false" title="Chuyển sang Giao diện Tối">
-          <svg viewBox="0 0 24 24" class="mayhen_docs_theme_svg" aria-hidden="true" fill="currentColor" stroke="none">
+      <button type="button" class="mayhen_docs_theme_switcher" id="theme-toggle-btn" data-action="toggle-theme" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối" style="margin-left: 8px;">
+        <span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
-          <span class="mayhen_docs_theme_text">Tối</span>
-        </button>
-      </div>
+        </span>
+        <span class="mayhen_docs_theme_switcher_label">Giao diện Sáng</span>
+      </button>
       <button type="button" class="mayhen_docs_icon_button mayhen_docs_mobile_search_button" id="mayhen_docs_mobile_search" aria-label="Tìm kiếm">
         <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_search"/></svg>
       </button>

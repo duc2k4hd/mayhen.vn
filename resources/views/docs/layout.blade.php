@@ -63,7 +63,26 @@
       var moonSvg = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;display:block;" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
       function updateAllIcons(theme) {
-        // 1. Dual segmented theme buttons
+        var isDark = (theme === 'dark');
+
+        // 1. Single pill theme switcher buttons (.mayhen_docs_theme_switcher)
+        var switcherButtons = document.querySelectorAll('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick, .mayhen_docs_theme_toggle');
+        switcherButtons.forEach(function(btn) {
+          var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon') || btn.querySelector('svg');
+          var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label, .mayhen_docs_theme_text');
+
+          if (iconEl) {
+            iconEl.innerHTML = isDark ? sunSvg : moonSvg;
+          }
+          if (labelEl) {
+            labelEl.textContent = isDark ? 'Giao diện Tối' : 'Giao diện Sáng';
+          }
+          btn.setAttribute('title', isDark ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+          btn.setAttribute('aria-label', isDark ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+          btn.setAttribute('aria-pressed', String(isDark));
+        });
+
+        // 2. Dual segmented theme buttons (if present)
         var lightBtns = document.querySelectorAll('.mayhen_docs_theme_btn_light');
         lightBtns.forEach(function(btn) {
           btn.setAttribute('aria-checked', String(theme === 'light'));
@@ -74,21 +93,6 @@
         darkBtns.forEach(function(btn) {
           btn.setAttribute('aria-checked', String(theme === 'dark'));
           btn.classList.toggle('mayhen_docs_theme_btn_active', theme === 'dark');
-        });
-
-        // 2. Legacy single toggle buttons (fallback)
-        var singleButtons = document.querySelectorAll('.mayhen_docs_theme_toggle');
-        singleButtons.forEach(function(btn) {
-          var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon') || btn.querySelector('svg');
-          var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label');
-          if (iconEl && !iconEl.matches('svg')) {
-            iconEl.innerHTML = (theme === 'dark') ? moonSvg : sunSvg;
-          }
-          if (labelEl) {
-            labelEl.textContent = (theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng';
-          }
-          btn.setAttribute('title', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
-          btn.setAttribute('aria-label', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
         });
 
         // 3. Settings modal options
@@ -141,22 +145,22 @@
 
       // Direct, failsafe global event delegation (registered immediately on document)
       document.addEventListener('click', function(e) {
-        // 1. Dual segmented theme button click
+        // 1. Theme toggle button click (single pill or legacy toggle)
+        var themeBtn = e.target.closest('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick, .mayhen_docs_theme_toggle, [data-action="toggle-theme"]');
+        if (themeBtn && !themeBtn.matches('[data-theme-set]')) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.toggleDocsTheme();
+          return;
+        }
+
+        // 2. Dual segmented theme button click (if present)
         var themeSetBtn = e.target.closest('[data-theme-set]');
         if (themeSetBtn) {
           e.preventDefault();
           e.stopPropagation();
           var targetTheme = themeSetBtn.getAttribute('data-theme-set');
           window.setDocsTheme(targetTheme);
-          return;
-        }
-
-        // 2. Legacy single theme button toggle click
-        var themeBtn = e.target.closest('.mayhen_docs_theme_toggle, [data-action="toggle-theme"]');
-        if (themeBtn) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.toggleDocsTheme();
           return;
         }
 
