@@ -130,6 +130,6 @@ php artisan serve
   - Thay thế toàn bộ ký tự `⌄` bằng SVG Chevron xoay mượt 180 độ.
   - Cưỡng chế tương phản nút CTA (`#FFFFFF` trên `#613B3E`).
 - **Tiến độ Hàng đợi Docs (SQLite `storage/app/mayhen-docs-queue.sqlite`)**:
-  - `IMPLEMENTED`: 11 bài (`CLI-START-002`, `CLI-EDIT-001`, `CLI-EDIT-002`, `CLI-EDIT-003`, `CLI-EDIT-004`, `CLI-EDIT-005`, `CLI-EDIT-006`, `CLI-GUEST-004`, `ADM-USER-001`, `ADM-ORDR-002`, `ADM-COCK-002`).
+  - `IMPLEMENTED`: 22 bài (Toàn bộ 11 bài Studio Tạo Thiệp V2 `CLI-EDIT-001` đến `CLI-EDIT-011`, Toàn bộ 6 bài Thiệp cưới Công cộng & Tương tác `CLI-INVT-001` đến `CLI-INVT-006`, cùng `CLI-START-002`, `CLI-GUEST-004`, `ADM-USER-001`, `ADM-ORDR-002`, `ADM-COCK-002`).
   - `PENDING_SCREENSHOT`: 9 bài (`CLI-START-001`, `CLI-START-003`, `CLI-START-004`, `CLI-START-005`, `ADM-SOP-001` đến `ADM-SOP-005`).
-  - `TODO`: 88 bài còn lại đang tiếp tục triển khai theo lộ trình.
+  - `TODO`: 77 bài còn lại đang tiếp tục triển khai liên tục theo customer journey.
