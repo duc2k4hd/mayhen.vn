@@ -297,23 +297,8 @@
     if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', () => toggleMobileSidebar(false));
     if (scrim) scrim.addEventListener('click', () => toggleMobileSidebar(false));
 
-    // Sidebar Category Accordions
-    document.querySelectorAll('.mayhen_docs_side_group').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const groupKey = btn.dataset.group;
-        const targetList = document.getElementById('mayhen_docs_group_' + groupKey);
-        if (targetList) {
-          const isClosed = targetList.classList.contains('mayhen_docs_group_closed');
-          if (isClosed) {
-            targetList.classList.remove('mayhen_docs_group_closed');
-            btn.setAttribute('aria-expanded', 'true');
-          } else {
-            targetList.classList.add('mayhen_docs_group_closed');
-            btn.setAttribute('aria-expanded', 'false');
-          }
-        }
-      });
-    });
+    // Note: Sidebar Accordions (.mayhen_docs_side_group) are handled centrally with event delegation in layout.blade.php
+    // to avoid duplicate event listeners and state cancellation.
 
     // Scroll Progress & Back-to-Top
     function updateScrollState() {
@@ -587,18 +572,8 @@
       });
     }
 
-    // Sidebar Category Accordions
-    document.querySelectorAll('.mayhen_docs_detail_nav_group_toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const expanded = btn.getAttribute('aria-expanded') !== 'true';
-        btn.setAttribute('aria-expanded', String(expanded));
-        const controlledId = btn.getAttribute('aria-controls');
-        if (controlledId) {
-          const list = document.getElementById(controlledId);
-          if (list) list.hidden = !expanded;
-        }
-      });
-    });
+    // Note: Detail Category Accordions (.mayhen_docs_detail_nav_group_toggle) are handled centrally with event delegation in layout.blade.php
+    // to avoid duplicate event listeners and state cancellation.
 
     // Detail Search Execution
     let activeResultIdx = -1;

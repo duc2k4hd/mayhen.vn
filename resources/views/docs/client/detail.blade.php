@@ -179,7 +179,7 @@
             <button type="button" class="mayhen_docs_detail_font_button mayhen_docs_detail_focus_button" id="mayhen_docs_detail_focus_toggle" aria-pressed="false" title="Chế độ tập trung">
               <svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"/></svg>
             </button>
-            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline mayhen_docs_detail_toc_mobile_button" data-modal="mayhen_docs_detail_toc_dialog">Mục lục <span>⌄</span></button>
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline mayhen_docs_detail_toc_mobile_button" data-modal="mayhen_docs_detail_toc_dialog">Mục lục <svg viewBox="0 0 24 24" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:4px;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
           </div>
         </div>
 

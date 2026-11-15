@@ -1385,13 +1385,15 @@ body[data-theme="dark"],
    MÂY HẸN DOCS — THEME SWITCHER PILL & ACCORDION EXPANSION
    ============================================================= */
 
-/* 1. Chic Pill Theme Switcher Control */
+/* 1. Chic Pill Theme Switcher Control (Anti-collapse & High Clarity) */
 .mayhen_docs_theme_switcher {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
   height: 36px !important;
   min-width: 125px !important;
+  width: auto !important;
+  max-width: none !important;
   padding: 4px 14px 4px 6px !important;
   border-radius: 20px !important;
   background: var(--mayhen-docs-surface, #fffefd) !important;
@@ -1399,24 +1401,32 @@ body[data-theme="dark"],
   color: var(--mayhen-docs-ink, #2f2a2c) !important;
   cursor: pointer !important;
   font-family: inherit !important;
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
   box-shadow: 0 2px 6px rgba(97, 59, 62, 0.05) !important;
   user-select: none !important;
   white-space: nowrap !important;
-  flex: none !important;
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
-@media (max-width: 690px) {
+@media (max-width: 768px) {
   .mayhen_docs_theme_switcher {
-    min-width: unset !important;
-    padding: 4px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
     width: 36px !important;
     height: 36px !important;
+    padding: 0 !important;
     justify-content: center !important;
     border-radius: 50% !important;
+    flex: 0 0 36px !important;
+    flex-shrink: 0 !important;
   }
   .mayhen_docs_theme_switcher .mayhen_docs_theme_switcher_label {
     display: none !important;
+  }
+  .mayhen_docs_theme_switcher .mayhen_docs_theme_switcher_icon {
+    margin: 0 !important;
   }
 }
 
@@ -1428,6 +1438,10 @@ body[data-theme="dark"],
   box-shadow: 0 4px 12px rgba(97, 59, 62, 0.12) !important;
 }
 
+.mayhen_docs_theme_switcher:active {
+  transform: scale(0.97) !important;
+}
+
 .mayhen_docs_theme_switcher_icon {
   width: 26px !important;
   height: 26px !important;
@@ -1437,8 +1451,15 @@ body[data-theme="dark"],
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  flex: none !important;
+  flex: 0 0 26px !important;
+  flex-shrink: 0 !important;
   transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease !important;
+}
+
+.mayhen_docs_theme_switcher_icon svg {
+  width: 15px !important;
+  height: 15px !important;
+  display: block !important;
 }
 
 .mayhen_docs_theme_switcher:hover .mayhen_docs_theme_switcher_icon {
@@ -1446,11 +1467,12 @@ body[data-theme="dark"],
 }
 
 .mayhen_docs_theme_switcher_label {
-  font-size: 12px !important;
+  font-size: 12.5px !important;
   font-weight: 600 !important;
   letter-spacing: normal !important;
   color: inherit !important;
   line-height: 1 !important;
+  white-space: nowrap !important;
 }
 
 /* Theme Switcher in Dark Mode */
@@ -1503,6 +1525,12 @@ body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
   flex: none !important;
 }
 
+.mayhen_docs_detail_chevron svg {
+  width: 13px !important;
+  height: 13px !important;
+  display: block !important;
+}
+
 .mayhen_docs_detail_nav_group_toggle[aria-expanded="true"] .mayhen_docs_detail_chevron {
   transform: rotate(180deg) !important;
   color: var(--mayhen-docs-detail-rose) !important;
@@ -1515,6 +1543,31 @@ body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
 
 .mayhen_docs_side_children:not(.mayhen_docs_group_closed) {
   display: block !important;
+}
+
+/* 4. Elimination of Broken Uppercase Transforms on Vietnamese Headings */
+.mayhen_docs_sidebar_section > span,
+.mayhen_docs_side_group,
+.mayhen_docs_detail_nav_group_toggle,
+.mayhen_docs_detail_sidebar_heading,
+.mayhen_docs_popular_list strong {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* 5. CTA High-Contrast Guarantee */
+.mayhen_docs_app a.mayhen_docs_header_signup,
+.mayhen_docs_header_signup,
+.mayhen_docs_app a.mayhen_docs_cta_main,
+.mayhen_docs_cta_main {
+  color: #FFFFFF !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_header_signup svg,
+.mayhen_docs_header_signup svg,
+.mayhen_docs_app a.mayhen_docs_cta_main svg,
+.mayhen_docs_cta_main svg {
+  stroke: #FFFFFF !important;
 }
 
 
