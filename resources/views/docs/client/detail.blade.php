@@ -41,7 +41,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
         <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
       </button>
-      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" id="mayhen_docs_detail_theme_quick" aria-label="Đổi giao diện sáng tối">
+      <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon mayhen_docs_theme_toggle" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" onclick="window.toggleDocsTheme && window.toggleDocsTheme()" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng/tối">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>
       </button>
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
