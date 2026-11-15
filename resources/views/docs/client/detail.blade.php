@@ -41,11 +41,11 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
         <span>Tìm trong tài liệu...</span><kbd>Ctrl K</kbd>
       </button>
-      <button type="button" class="mayhen_docs_theme_switcher" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" onclick="window.toggleDocsTheme && window.toggleDocsTheme()" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện sáng/tối">
+      <button type="button" class="mayhen_docs_theme_switcher" id="mayhen_docs_detail_theme_quick" data-action="toggle-theme" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện sáng/tối">
         <span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;display:block;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
         </span>
-        <span class="mayhen_docs_theme_switcher_label">Giao diện Sáng</span>
+        <span class="mayhen_docs_theme_switcher_label">Chế độ Sáng</span>
       </button>
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>

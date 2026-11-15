@@ -59,22 +59,22 @@
         }
       }
 
-      function updateAllIcons(theme) {
-        var sunSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-        var moonSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex:none;"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>';
+      var sunSvg = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;display:block;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+      var moonSvg = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;display:block;" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
+      function updateAllIcons(theme) {
         var buttons = document.querySelectorAll('.mayhen_docs_theme_switcher, #theme-toggle-btn, #mayhen_docs_detail_theme_quick');
         buttons.forEach(function(btn) {
           var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon');
           var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label');
           if (iconEl) {
-            iconEl.innerHTML = theme === 'dark' ? sunSvg : moonSvg;
+            iconEl.innerHTML = (theme === 'dark') ? moonSvg : sunSvg;
           }
           if (labelEl) {
-            labelEl.textContent = theme === 'dark' ? 'Giao diện Tối' : 'Giao diện Sáng';
+            labelEl.textContent = (theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng';
           }
-          btn.setAttribute('title', theme === 'dark' ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
-          btn.setAttribute('aria-label', theme === 'dark' ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+          btn.setAttribute('title', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
+          btn.setAttribute('aria-label', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
         });
 
         document.querySelectorAll('[data-theme-option]').forEach(function(opt) {
@@ -82,6 +82,7 @@
         });
       }
 
+      var themeLock = false;
       window.setDocsTheme = function(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.theme = theme;
@@ -105,7 +106,7 @@
 
         var toast = document.getElementById('mayhen_docs_toast') || document.getElementById('mayhen_docs_detail_toast');
         if (toast) {
-          toast.textContent = theme === 'dark' ? 'Đã chuyển sang giao diện tối.' : 'Đã chuyển sang giao diện sáng.';
+          toast.textContent = (theme === 'dark') ? 'Đã chuyển sang giao diện tối.' : 'Đã chuyển sang giao diện sáng.';
           toast.classList.add('mayhen_docs_toast_show', 'mayhen_docs_detail_visible');
           setTimeout(function() {
             toast.classList.remove('mayhen_docs_toast_show', 'mayhen_docs_detail_visible');
@@ -114,8 +115,12 @@
       };
 
       window.toggleDocsTheme = function() {
+        if (themeLock) return;
+        themeLock = true;
+        setTimeout(function() { themeLock = false; }, 300);
+
         var current = document.documentElement.getAttribute('data-theme') || getActiveTheme();
-        var next = current === 'dark' ? 'light' : 'dark';
+        var next = (current === 'dark') ? 'light' : 'dark';
         window.setDocsTheme(next);
       };
 

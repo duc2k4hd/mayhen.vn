@@ -156,24 +156,16 @@
     }
 
     function applyTheme(theme) {
+      if (window.setDocsTheme) {
+        window.setDocsTheme(theme);
+        return;
+      }
       root.dataset.theme = theme;
       document.documentElement.dataset.theme = theme;
       document.documentElement.style.colorScheme = theme;
       if (document.body) document.body.dataset.theme = theme;
       SafeStorage.set('mayhen_docs_theme', theme);
       updateThemeIcon(theme);
-    }
-
-    const savedTheme = SafeStorage.get('mayhen_docs_theme', 'light');
-    applyTheme(savedTheme);
-
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-    if (themeToggleBtn) {
-      themeToggleBtn.addEventListener('click', () => {
-        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        applyTheme(next);
-        showToast(next === 'dark' ? 'Đã chuyển sang giao diện tối.' : 'Đã chuyển sang giao diện sáng.');
-      });
     }
 
     const closeBtn = searchDialog?.querySelector('[data-close]');
@@ -529,15 +521,7 @@
       });
     });
 
-    // Theme Switchers
-    const themeQuickBtn = byId('theme_quick');
-    if (themeQuickBtn) {
-      themeQuickBtn.addEventListener('click', () => {
-        const next = app.dataset.theme === 'light' ? 'dark' : 'light';
-        applyTheme(next);
-        showToast(next === 'dark' ? 'Đã chuyển sang chế độ tối.' : 'Đã chuyển sang chế độ sáng.');
-      });
-    }
+    // Theme Switchers handled globally by layout.blade.php
 
     document.querySelectorAll('[data-theme-option]').forEach(btn => {
       btn.addEventListener('click', () => {
