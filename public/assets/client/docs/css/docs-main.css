@@ -1391,6 +1391,7 @@ body[data-theme="dark"],
   align-items: center !important;
   gap: 8px !important;
   height: 36px !important;
+  min-width: 125px !important;
   padding: 4px 14px 4px 6px !important;
   border-radius: 20px !important;
   background: var(--mayhen-docs-surface, #fffefd) !important;
@@ -1403,6 +1404,20 @@ body[data-theme="dark"],
   user-select: none !important;
   white-space: nowrap !important;
   flex: none !important;
+}
+
+@media (max-width: 690px) {
+  .mayhen_docs_theme_switcher {
+    min-width: unset !important;
+    padding: 4px !important;
+    width: 36px !important;
+    height: 36px !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+  }
+  .mayhen_docs_theme_switcher .mayhen_docs_theme_switcher_label {
+    display: none !important;
+  }
 }
 
 .mayhen_docs_theme_switcher:hover {

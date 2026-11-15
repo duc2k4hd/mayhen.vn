@@ -77,7 +77,7 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
 - **Giao diện**: Đồng bộ 100% từ `docs/templates/` với 2 không gian biệt lập:
   - Client (`/docs`): Hướng dẫn cô dâu chú rể tạo thiệp, đổi ảnh Smart Focal Point, quản lý RSVP, kiểm soát quyền riêng tư.
   - Admin (`/admin/docs`): Sổ tay Vận hành Tiêu chuẩn (Admin SOP), đối soát SePay thủ công, phân quyền RBAC, cam kết kiểm toán `audit_logs`.
-- **CSS & JS**: `public/assets/client/docs/` (CSS và JS thuần, nút theme switcher pill cao cấp hiển thị rõ nhãn 'Chế độ Sáng / Tối', khử hoàn toàn xung đột duplicate click listeners với debounce lock 300ms, icon SVG Mặt Trời/Mặt Trăng chuẩn nét không bị cắt viền, mũi tên SVG xoay 180 độ, cơ chế accordion event delegation chuẩn xác không phụ thuộc script ngoài, auto cache-busting `?v={filemtime}`, TOC, phím tắt Ctrl+K).
+- **CSS & JS**: `public/assets/client/docs/` (CSS và JS thuần, nút theme switcher pill với min-width 125px và responsive mobile 36px circular, loại bỏ toàn bộ duplicate listeners gây đè innerHTML/co rút pill, icon SVG Mặt Trời/Mặt Trăng chuẩn nét, mũi tên SVG xoay 180 độ, auto cache-busting `?v={filemtime}`, TOC, phím tắt Ctrl+K).
 - **UI/UX Quiet Luxury Refinement**:
   - Tối ưu tương phản nút bấm: Chữ trắng nổi bật trên nền nâu đỏ mận `#613B3E` (Dark Mode: chữ tối `#181517` trên nền hoa hồng `#D4898E`).
   - Font chữ thanh lịch: Tiêu đề H1/H2 sử dụng `Playfair Display` serif chuẩn typography tiếng Việt (triệt tiêu lỗi đè dấu do negative letter-spacing).

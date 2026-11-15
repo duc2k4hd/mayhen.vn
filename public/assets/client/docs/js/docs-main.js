@@ -145,16 +145,6 @@
     const mobileSearchTrigger = document.getElementById('mayhen_docs_mobile_search');
     if (mobileSearchTrigger) mobileSearchTrigger.addEventListener('click', () => openSearchModal());
 
-    function updateThemeIcon(theme) {
-      const themeIcon = document.getElementById('theme-toggle-icon');
-      if (themeIcon) {
-        const useEl = themeIcon.querySelector('use');
-        if (useEl) {
-          useEl.setAttribute('href', theme === 'dark' ? '#mayhen_docs_i_sun' : '#mayhen_docs_i_moon');
-        }
-      }
-    }
-
     function applyTheme(theme) {
       if (window.setDocsTheme) {
         window.setDocsTheme(theme);
@@ -165,7 +155,6 @@
       document.documentElement.style.colorScheme = theme;
       if (document.body) document.body.dataset.theme = theme;
       SafeStorage.set('mayhen_docs_theme', theme);
-      updateThemeIcon(theme);
     }
 
     const closeBtn = searchDialog?.querySelector('[data-close]');
@@ -392,19 +381,11 @@
     let currentFont = Number(SafeStorage.get('mayhen_docs_font', '16')) || 16;
     let isFocus = SafeStorage.get('mayhen_docs_focus') === 'true';
 
-    function updateThemeIcon(theme) {
-      const themeQuickBtn = byId('theme_quick');
-      if (!themeQuickBtn) return;
-      if (theme === 'dark') {
-        themeQuickBtn.setAttribute('aria-label', 'Chuyển sang giao diện sáng');
-        themeQuickBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-      } else {
-        themeQuickBtn.setAttribute('aria-label', 'Chuyển sang giao diện tối');
-        themeQuickBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>';
-      }
-    }
-
     function applyTheme(theme) {
+      if (window.setDocsTheme) {
+        window.setDocsTheme(theme);
+        return;
+      }
       currentTheme = theme;
       let effectiveTheme = theme;
       if (theme === 'system') {
@@ -419,7 +400,6 @@
       document.querySelectorAll('[data-theme-option]').forEach(btn => {
         btn.setAttribute('aria-pressed', String(btn.dataset.themeOption === theme));
       });
-      updateThemeIcon(effectiveTheme);
     }
 
     function applyWidth(width) {

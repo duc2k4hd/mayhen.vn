@@ -67,10 +67,10 @@
         buttons.forEach(function(btn) {
           var iconEl = btn.querySelector('.mayhen_docs_theme_switcher_icon');
           var labelEl = btn.querySelector('.mayhen_docs_theme_switcher_label');
-          if (iconEl) {
+          if (!iconEl || !labelEl) {
+            btn.innerHTML = '<span class="mayhen_docs_theme_switcher_icon" aria-hidden="true">' + ((theme === 'dark') ? moonSvg : sunSvg) + '</span><span class="mayhen_docs_theme_switcher_label">' + ((theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng') + '</span>';
+          } else {
             iconEl.innerHTML = (theme === 'dark') ? moonSvg : sunSvg;
-          }
-          if (labelEl) {
             labelEl.textContent = (theme === 'dark') ? 'Chế độ Tối' : 'Chế độ Sáng';
           }
           btn.setAttribute('title', (theme === 'dark') ? 'Đang bật Giao diện Tối (nhấp để đổi sang Sáng)' : 'Đang bật Giao diện Sáng (nhấp để đổi sang Tối)');
