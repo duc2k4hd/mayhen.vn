@@ -145,13 +145,34 @@
     const mobileSearchTrigger = document.getElementById('mayhen_docs_mobile_search');
     if (mobileSearchTrigger) mobileSearchTrigger.addEventListener('click', () => openSearchModal());
 
+    function updateThemeIcon(theme) {
+      const themeIcon = document.getElementById('theme-toggle-icon');
+      if (themeIcon) {
+        const useEl = themeIcon.querySelector('use');
+        if (useEl) {
+          useEl.setAttribute('href', theme === 'dark' ? '#mayhen_docs_i_sun' : '#mayhen_docs_i_moon');
+        }
+      }
+    }
+
+    function applyTheme(theme) {
+      root.dataset.theme = theme;
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      if (document.body) document.body.dataset.theme = theme;
+      SafeStorage.set('mayhen_docs_theme', theme);
+      updateThemeIcon(theme);
+    }
+
+    const savedTheme = SafeStorage.get('mayhen_docs_theme', 'light');
+    applyTheme(savedTheme);
+
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', () => {
         const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        root.dataset.theme = next;
-        SafeStorage.set('mayhen_docs_theme', next);
-        showToast(next === 'dark' ? 'Đã chuyển sang chế độ tối.' : 'Đã chuyển sang chế độ sáng.');
+        applyTheme(next);
+        showToast(next === 'dark' ? 'Đã chuyển sang giao diện tối.' : 'Đã chuyển sang giao diện sáng.');
       });
     }
 
@@ -379,18 +400,34 @@
     let currentFont = Number(SafeStorage.get('mayhen_docs_font', '16')) || 16;
     let isFocus = SafeStorage.get('mayhen_docs_focus') === 'true';
 
+    function updateThemeIcon(theme) {
+      const themeQuickBtn = byId('theme_quick');
+      if (!themeQuickBtn) return;
+      if (theme === 'dark') {
+        themeQuickBtn.setAttribute('aria-label', 'Chuyển sang giao diện sáng');
+        themeQuickBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+      } else {
+        themeQuickBtn.setAttribute('aria-label', 'Chuyển sang giao diện tối');
+        themeQuickBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 15.7A8.5 8.5 0 0 1 8.3 3.7 8.5 8.5 0 1 0 20.3 15.7Z"/></svg>';
+      }
+    }
+
     function applyTheme(theme) {
       currentTheme = theme;
+      let effectiveTheme = theme;
       if (theme === 'system') {
         const isSysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        app.dataset.theme = isSysDark ? 'dark' : 'light';
-      } else {
-        app.dataset.theme = theme;
+        effectiveTheme = isSysDark ? 'dark' : 'light';
       }
+      app.dataset.theme = effectiveTheme;
+      document.documentElement.dataset.theme = effectiveTheme;
+      document.documentElement.style.colorScheme = effectiveTheme;
+      if (document.body) document.body.dataset.theme = effectiveTheme;
       SafeStorage.set('mayhen_docs_theme', theme);
       document.querySelectorAll('[data-theme-option]').forEach(btn => {
         btn.setAttribute('aria-pressed', String(btn.dataset.themeOption === theme));
       });
+      updateThemeIcon(effectiveTheme);
     }
 
     function applyWidth(width) {

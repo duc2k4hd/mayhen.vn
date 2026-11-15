@@ -92,7 +92,7 @@
         @endif
       </nav>
       <button type="button" class="mayhen_docs_icon_button" id="theme-toggle-btn" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng/tối" style="margin-left: 8px;">
-        <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_moon"/></svg>
+        <svg class="mayhen_docs_icon" id="theme-toggle-icon"><use href="#mayhen_docs_i_moon"/></svg>
       </button>
       <button type="button" class="mayhen_docs_icon_button mayhen_docs_mobile_search_button" id="mayhen_docs_mobile_search" aria-label="Tìm kiếm">
         <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_search"/></svg>
@@ -134,13 +134,12 @@
         </a>
         @foreach((array)$categories as $catSlug => $cat)
           <div class="mayhen_docs_sidebar_section">
-            <span>{{ strtoupper($cat['name']) }}</span>
             @if(!empty($cat['articles']))
-              <button type="button" class="mayhen_docs_side_group" data-group="{{ $catSlug }}" aria-expanded="false">
-                {{ $cat['name'] }} <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_chevron"/></svg>
+              <button type="button" class="mayhen_docs_side_group" data-group="{{ $catSlug }}" aria-expanded="{{ $loop->first ? 'true' : 'false' }}">
+                <span>{{ $cat['name'] }}</span> <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_chevron"/></svg>
               </button>
-              <div class="mayhen_docs_side_children mayhen_docs_group_closed" id="mayhen_docs_group_{{ $catSlug }}">
-                @foreach(array_slice($cat['articles'], 0, 6) as $art)
+              <div class="mayhen_docs_side_children {{ $loop->first ? '' : 'mayhen_docs_group_closed' }}" id="mayhen_docs_group_{{ $catSlug }}">
+                @foreach(array_slice($cat['articles'], 0, 8) as $art)
                   <a href="{{ $art['url'] }}" class="mayhen_docs_side_link">{{ $art['title'] }}</a>
                 @endforeach
               </div>

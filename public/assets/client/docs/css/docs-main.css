@@ -1,4 +1,4 @@
-﻿/* MÃ‚Y Háº¸N DOCS â€” all authored class names use the mayhen_docs_ prefix */
+/* MÃ‚Y Háº¸N DOCS â€” all authored class names use the mayhen_docs_ prefix */
 :root{color-scheme:light;scroll-behavior:smooth}
 body{margin:0}
 .mayhen_docs_app,.mayhen_docs_app *,.mayhen_docs_app *::before,.mayhen_docs_app *::after{box-sizing:border-box}
@@ -552,3 +552,832 @@ a{color:inherit}
 .mayhen_docs_detail_article h1 {
   font-family: 'Playfair Display', Georgia, serif !important;
 }
+
+/* =============================================================
+   MÂY HẸN DOCS — EDITORIAL UX & QUIET LUXURY VISUAL OVERHAUL
+   ============================================================= */
+
+/* 1. Global Reset & Typography */
+body {
+  margin: 0;
+  background: var(--mayhen-docs-bg, #fffdfb);
+  color: var(--mayhen-docs-ink, #2f2a2c);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.mayhen_docs_app {
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  color: var(--mayhen-docs-ink) !important;
+  background: var(--mayhen-docs-bg) !important;
+}
+
+/* Headings in Editorial Serif */
+.mayhen_docs_hero h1 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: clamp(34px, 4.2vw, 48px) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.25 !important;
+  color: var(--mayhen-docs-ink) !important;
+  margin: 0 0 16px 0 !important;
+}
+
+.mayhen_docs_hero_desc {
+  font-size: 15.5px !important;
+  line-height: 1.75 !important;
+  color: var(--mayhen-docs-muted) !important;
+  max-width: 680px !important;
+  margin-bottom: 26px !important;
+}
+
+.mayhen_docs_section_heading h2,
+.mayhen_docs_split_heading h2,
+.mayhen_docs_final_cta h2 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  letter-spacing: -0.3px !important;
+  margin: 8px 0 10px !important;
+}
+
+.mayhen_docs_eyebrow,
+.mayhen_docs_hero_eyebrow {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.6px !important;
+  color: var(--mayhen-docs-rose) !important;
+  text-transform: uppercase !important;
+}
+
+/* 2. Buttons & CTA High-Contrast Fixes */
+.mayhen_docs_app a.mayhen_docs_header_signup,
+.mayhen_docs_header_signup {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #613B3E !important;
+  color: #FFFFFF !important;
+  border: 1px solid #613B3E !important;
+  border-radius: 24px !important;
+  padding: 9px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  box-shadow: 0 4px 12px rgba(97, 59, 62, 0.2) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_header_signup:hover,
+.mayhen_docs_header_signup:hover {
+  background: #4A2C2F !important;
+  border-color: #4A2C2F !important;
+  color: #FFFFFF !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(97, 59, 62, 0.3) !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_cta_main,
+.mayhen_docs_cta_main {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #613B3E !important;
+  color: #FFFFFF !important;
+  border: 1px solid #613B3E !important;
+  border-radius: 25px !important;
+  padding: 12px 24px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 18px rgba(97, 59, 62, 0.22) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_cta_main:hover,
+.mayhen_docs_cta_main:hover {
+  background: #4A2C2F !important;
+  border-color: #4A2C2F !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(97, 59, 62, 0.32) !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_cta_outline,
+.mayhen_docs_cta_outline {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: var(--mayhen-docs-surface) !important;
+  color: var(--mayhen-docs-rose) !important;
+  border: 1.5px solid var(--mayhen-docs-border-strong) !important;
+  border-radius: 25px !important;
+  padding: 12px 24px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.mayhen_docs_app a.mayhen_docs_cta_outline:hover,
+.mayhen_docs_cta_outline:hover {
+  background: var(--mayhen-docs-rose-soft) !important;
+  border-color: var(--mayhen-docs-rose) !important;
+}
+
+/* 3. Header & Navigation Refinement */
+.mayhen_docs_header {
+  border-bottom: 1px solid var(--mayhen-docs-border) !important;
+  background: color-mix(in srgb, var(--mayhen-docs-bg) 95%, transparent) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+.mayhen_docs_header_links > a:not(.mayhen_docs_header_signup),
+.mayhen_docs_header_links > button:not(.mayhen_docs_header_login) {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--mayhen-docs-muted) !important;
+}
+
+.mayhen_docs_header_links > a:not(.mayhen_docs_header_signup):hover {
+  color: var(--mayhen-docs-rose) !important;
+}
+
+.mayhen_docs_header_login {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--mayhen-docs-border-strong) !important;
+}
+
+.mayhen_docs_search_top {
+  height: 38px !important;
+  border-radius: 20px !important;
+  padding: 0 16px !important;
+  font-size: 13px !important;
+  border: 1px solid var(--mayhen-docs-border) !important;
+  background: var(--mayhen-docs-surface) !important;
+  color: var(--mayhen-docs-muted) !important;
+}
+
+.mayhen_docs_subnav > a,
+.mayhen_docs_subnav > button {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* 4. Sidebar Refinement */
+.mayhen_docs_sidebar {
+  width: 280px !important;
+  background: var(--mayhen-docs-surface-alt) !important;
+  border-right: 1px solid var(--mayhen-docs-border) !important;
+}
+
+.mayhen_docs_sidebar_top {
+  padding: 22px 20px 14px !important;
+  font-size: 11.5px !important;
+  letter-spacing: 1.2px !important;
+  font-weight: 700 !important;
+  color: var(--mayhen-docs-rose) !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid var(--mayhen-docs-border) !important;
+}
+
+.mayhen_docs_side_nav {
+  padding: 16px 14px !important;
+}
+
+.mayhen_docs_sidebar_home {
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  border-left: none !important;
+  margin-bottom: 12px !important;
+}
+
+.mayhen_docs_sidebar_home.mayhen_docs_side_active {
+  background: var(--mayhen-docs-rose-soft) !important;
+  color: var(--mayhen-docs-rose) !important;
+  font-weight: 700 !important;
+}
+
+.mayhen_docs_sidebar_section {
+  margin-top: 8px !important;
+  padding: 0 !important;
+}
+
+.mayhen_docs_side_group {
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  transition: background 0.15s, color 0.15s !important;
+}
+
+.mayhen_docs_side_group:hover {
+  background: var(--mayhen-docs-rose-soft) !important;
+  color: var(--mayhen-docs-rose) !important;
+}
+
+.mayhen_docs_side_children {
+  padding-left: 6px !important;
+  margin-top: 4px !important;
+}
+
+.mayhen_docs_side_children a.mayhen_docs_side_link {
+  display: block;
+  padding: 7px 12px 7px 14px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--mayhen-docs-muted) !important;
+  border-left: 1.5px solid var(--mayhen-docs-border-strong) !important;
+  border-radius: 0 6px 6px 0 !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.mayhen_docs_side_children a.mayhen_docs_side_link:hover {
+  background: var(--mayhen-docs-rose-soft) !important;
+  color: var(--mayhen-docs-rose) !important;
+  border-left-color: var(--mayhen-docs-rose) !important;
+  padding-left: 17px !important;
+}
+
+/* 5. Hero Search Box & Quick Chips */
+.mayhen_docs_hero_search {
+  height: 54px !important;
+  border-radius: 27px !important;
+  border: 1.5px solid var(--mayhen-docs-border-strong) !important;
+  background: var(--mayhen-docs-surface) !important;
+  box-shadow: 0 4px 18px rgba(97, 59, 62, 0.05) !important;
+  padding: 6px 8px 6px 20px !important;
+  font-size: 14.5px !important;
+}
+
+.mayhen_docs_hero_search:hover {
+  border-color: var(--mayhen-docs-rose) !important;
+  box-shadow: 0 8px 24px rgba(97, 59, 62, 0.1) !important;
+}
+
+.mayhen_docs_hero_search_arrow {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: var(--mayhen-docs-rose-dark) !important;
+  color: #FFFFFF !important;
+}
+
+.mayhen_docs_hero_chips button {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  padding: 6px 14px !important;
+  border: 1px solid var(--mayhen-docs-border) !important;
+  background: var(--mayhen-docs-surface) !important;
+  color: var(--mayhen-docs-muted) !important;
+  transition: all 0.18s ease !important;
+}
+
+.mayhen_docs_hero_chips button:hover {
+  background: var(--mayhen-docs-rose-soft) !important;
+  border-color: var(--mayhen-docs-rose) !important;
+  color: var(--mayhen-docs-rose) !important;
+}
+
+/* 6. Path Cards & Popular List */
+.mayhen_docs_path_card {
+  border: 1px solid var(--mayhen-docs-border) !important;
+  border-radius: 16px !important;
+  background: var(--mayhen-docs-surface) !important;
+  padding: 26px 24px !important;
+  box-shadow: 0 4px 16px rgba(97, 59, 62, 0.03) !important;
+  transition: all 0.22s ease !important;
+}
+
+.mayhen_docs_path_card:hover {
+  border-color: var(--mayhen-docs-border-strong) !important;
+  box-shadow: 0 10px 28px rgba(97, 59, 62, 0.08) !important;
+  transform: translateY(-3px) !important;
+}
+
+.mayhen_docs_path_card h3 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  margin: 10px 0 !important;
+}
+
+.mayhen_docs_path_card p {
+  font-size: 13.5px !important;
+  line-height: 1.65 !important;
+  color: var(--mayhen-docs-muted) !important;
+  min-height: 55px !important;
+}
+
+.mayhen_docs_path_links a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-rose) !important;
+  text-decoration: none !important;
+  padding: 3px 0 !important;
+  transition: color 0.15s !important;
+}
+
+.mayhen_docs_path_links a:hover {
+  color: var(--mayhen-docs-rose-dark) !important;
+  text-decoration: underline !important;
+}
+
+.mayhen_docs_popular_list {
+  border: 1px solid var(--mayhen-docs-border) !important;
+  border-radius: 16px !important;
+  background: var(--mayhen-docs-surface) !important;
+  overflow: hidden !important;
+}
+
+.mayhen_docs_popular_list > a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 16px 24px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--mayhen-docs-border) !important;
+  background: transparent !important;
+  color: var(--mayhen-docs-ink) !important;
+  text-decoration: none !important;
+  transition: background 0.18s, padding-left 0.18s !important;
+}
+
+.mayhen_docs_popular_list > a:last-child {
+  border-bottom: 0 !important;
+}
+
+.mayhen_docs_popular_list > a:hover {
+  background: var(--mayhen-docs-rose-pale) !important;
+  padding-left: 28px !important;
+}
+
+.mayhen_docs_popular_list > a .mayhen_docs_popular_list_number {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--mayhen-docs-rose) !important;
+  opacity: 0.9 !important;
+  min-width: 28px !important;
+}
+
+.mayhen_docs_popular_list > a .mayhen_docs_popular_list_title {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.mayhen_docs_popular_list > a .mayhen_docs_popular_list_meta {
+  font-size: 12px !important;
+  color: var(--mayhen-docs-faded) !important;
+  flex: none !important;
+}
+
+/* 7. Search Modal Command Palette */
+.mayhen_docs_dialog {
+  border-radius: 20px !important;
+  border: 1px solid var(--mayhen-docs-border) !important;
+  box-shadow: 0 24px 64px rgba(45, 30, 32, 0.24) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: var(--mayhen-docs-surface) !important;
+  color: var(--mayhen-docs-ink) !important;
+}
+
+.mayhen_docs_dialog_header {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid var(--mayhen-docs-border) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.mayhen_docs_dialog_header h2 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-ink) !important;
+  margin: 0 !important;
+}
+
+.mayhen_docs_search_input_wrap {
+  padding: 14px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: var(--mayhen-docs-surface-alt) !important;
+  border-bottom: 1px solid var(--mayhen-docs-border) !important;
+}
+
+.mayhen_docs_search_input_wrap input {
+  font-size: 15px !important;
+  border: none !important;
+  outline: none !important;
+  width: 100% !important;
+  background: transparent !important;
+  color: var(--mayhen-docs-ink) !important;
+}
+
+.mayhen_docs_search_results {
+  max-height: 380px !important;
+  padding: 10px 14px !important;
+}
+
+.mayhen_docs_search_item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  color: var(--mayhen-docs-ink) !important;
+  transition: all 0.15s ease !important;
+}
+
+.mayhen_docs_search_item:hover,
+.mayhen_docs_search_item.is-active {
+  background: var(--mayhen-docs-rose-soft) !important;
+  color: var(--mayhen-docs-rose) !important;
+}
+
+/* 8. Dark Mode Comprehensive Overrides */
+html[data-theme="dark"],
+body[data-theme="dark"],
+.mayhen_docs_app[data-theme="dark"] {
+  --mayhen-docs-bg: #181517 !important;
+  --mayhen-docs-surface: #221D20 !important;
+  --mayhen-docs-surface-alt: #292327 !important;
+  --mayhen-docs-border: #3A3237 !important;
+  --mayhen-docs-border-strong: #4D4249 !important;
+  --mayhen-docs-ink: #F7EFEF !important;
+  --mayhen-docs-muted: #B8ACB0 !important;
+  --mayhen-docs-faded: #8C8085 !important;
+  --mayhen-docs-rose: #E8A8AC !important;
+  --mayhen-docs-rose-dark: #D4898E !important;
+  --mayhen-docs-rose-soft: #38282E !important;
+  --mayhen-docs-rose-pale: #281D22 !important;
+  --mayhen-docs-champagne: #D9B390 !important;
+  --mayhen-docs-champagne-soft: #483930 !important;
+  background: #181517 !important;
+  color: #F7EFEF !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_header {
+  background: rgba(24, 21, 23, 0.94) !important;
+  border-bottom-color: #3A3237 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_sidebar {
+  background: #1C181A !important;
+  border-right-color: #3A3237 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_sidebar_top {
+  border-bottom-color: #2D262A !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_hero h1,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_section_heading h2,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_split_heading h2,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_path_card h3,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_final_cta h2 {
+  color: #F7EFEF !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_hero_desc,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_path_card p,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_final_cta p {
+  color: #B8ACB0 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_path_card,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_popular_list,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_dialog {
+  background: #221D20 !important;
+  border-color: #3A3237 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_hero_search {
+  background: #221D20 !important;
+  border-color: #4D4249 !important;
+  color: #B8ACB0 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_hero_chips button {
+  background: #251F22 !important;
+  border-color: #3D353A !important;
+  color: #B8ACB0 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_hero_chips button:hover {
+  background: #38282E !important;
+  border-color: #E8A8AC !important;
+  color: #E8A8AC !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_side_group {
+  color: #E5D9DC !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_side_children a.mayhen_docs_side_link {
+  color: #AFA4A8 !important;
+  border-left-color: #4D4249 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_side_children a.mayhen_docs_side_link:hover {
+  background: #35252B !important;
+  color: #E8A8AC !important;
+  border-left-color: #E8A8AC !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_popular_list > a {
+  border-bottom-color: #332B30 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_popular_list > a:hover {
+  background: #2B2327 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_popular_list > a .mayhen_docs_popular_list_title {
+  color: #F7EFEF !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_final_cta {
+  background: linear-gradient(135deg, #241D21 0%, #1E181B 100%) !important;
+  border-color: #3D343A !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_header_signup,
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_header_signup,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_cta_main,
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_cta_main {
+  background: #D4898E !important;
+  border-color: #D4898E !important;
+  color: #181517 !important;
+  font-weight: 700 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_header_signup:hover,
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_header_signup:hover,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_cta_main:hover,
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_cta_main:hover {
+  background: #E8A8AC !important;
+  border-color: #E8A8AC !important;
+  color: #181517 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_cta_outline,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_cta_outline {
+  background: #262024 !important;
+  color: #E8A8AC !important;
+  border-color: #4D4249 !important;
+}
+
+.mayhen_docs_app[data-theme="dark"] a.mayhen_docs_cta_outline:hover,
+.mayhen_docs_app[data-theme="dark"] .mayhen_docs_cta_outline:hover {
+  background: #38282E !important;
+  border-color: #E8A8AC !important;
+}
+
+/* =============================================================
+   MÂY HẸN DOCS DETAIL — EDITORIAL & VIETNAMESE TYPOGRAPHY FIXES
+   ============================================================= */
+
+/* 1. Detail App Container & Typography */
+.mayhen_docs_detail_app {
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  background: var(--mayhen-docs-detail-bg) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prevent Vietnamese diacritic collision on H1 (Fix letter-spacing -1.7px bug) */
+.mayhen_docs_detail_article h1 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: clamp(30px, 3.2vw, 42px) !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  line-height: 1.32 !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  margin: 16px 0 20px !important;
+  max-width: 780px !important;
+}
+
+.mayhen_docs_detail_article h1 em {
+  font-style: italic !important;
+  letter-spacing: normal !important;
+  color: var(--mayhen-docs-detail-rose) !important;
+  font-weight: 500 !important;
+}
+
+/* Detail Lead Paragraph */
+.mayhen_docs_detail_lead {
+  font-size: 15.5px !important;
+  line-height: 1.8 !important;
+  color: var(--mayhen-docs-detail-muted) !important;
+  max-width: 760px !important;
+  margin-bottom: 24px !important;
+}
+
+/* Article Body Typography (Replace harsh 800 weight with refined 600) */
+.mayhen_docs_detail_article_body {
+  font-size: 15px !important;
+  line-height: 1.85 !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  font-weight: 400 !important;
+  max-width: 820px !important;
+}
+
+.mayhen_docs_detail_article_body h2 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 23px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.2px !important;
+  line-height: 1.38 !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  margin: 34px 0 16px 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid var(--mayhen-docs-detail-border) !important;
+}
+
+.mayhen_docs_detail_article_body h3 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  line-height: 1.45 !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  margin: 26px 0 12px 0 !important;
+}
+
+.mayhen_docs_detail_article_body p {
+  margin: 0 0 18px 0 !important;
+  line-height: 1.85 !important;
+}
+
+.mayhen_docs_detail_article_body ul,
+.mayhen_docs_detail_article_body ol {
+  margin: 0 0 20px 0 !important;
+  padding-left: 24px !important;
+  line-height: 1.85 !important;
+}
+
+.mayhen_docs_detail_article_body li {
+  margin-bottom: 8px !important;
+}
+
+/* Action Buttons in Article Header */
+.mayhen_docs_detail_btn {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  border-radius: 8px !important;
+  padding: 7px 13px !important;
+  min-height: 34px !important;
+  transition: all 0.2s ease !important;
+}
+
+.mayhen_docs_detail_btn_outline {
+  border: 1px solid var(--mayhen-docs-detail-border-strong) !important;
+  background: var(--mayhen-docs-detail-surface) !important;
+  color: var(--mayhen-docs-detail-text) !important;
+}
+
+.mayhen_docs_detail_btn_outline:hover {
+  background: var(--mayhen-docs-detail-rose-soft) !important;
+  border-color: var(--mayhen-docs-detail-rose) !important;
+  color: var(--mayhen-docs-detail-rose) !important;
+}
+
+/* Callout / Note Boxes */
+.mayhen_docs_detail_callout {
+  border-radius: 12px !important;
+  border-left: 4px solid var(--mayhen-docs-detail-rose) !important;
+  background: var(--mayhen-docs-detail-rose-soft) !important;
+  padding: 16px 20px !important;
+  margin: 22px 0 !important;
+  font-size: 14.5px !important;
+  line-height: 1.75 !important;
+}
+
+.mayhen_docs_detail_callout strong {
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-detail-rose) !important;
+}
+
+/* Detail Sidebar Links */
+.mayhen_docs_detail_nav_group_toggle {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--mayhen-docs-detail-text) !important;
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  transition: background 0.15s ease !important;
+}
+
+.mayhen_docs_detail_nav_group_toggle:hover {
+  background: var(--mayhen-docs-detail-rose-soft) !important;
+}
+
+.mayhen_docs_detail_nav_link {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  padding: 7px 12px 7px 16px !important;
+  border-radius: 6px !important;
+  color: var(--mayhen-docs-detail-muted) !important;
+  border-left: 2px solid transparent !important;
+  transition: all 0.15s ease !important;
+}
+
+.mayhen_docs_detail_nav_link:hover {
+  color: var(--mayhen-docs-detail-rose) !important;
+  background: var(--mayhen-docs-detail-rose-soft) !important;
+}
+
+.mayhen_docs_detail_nav_link.mayhen_docs_detail_nav_active {
+  color: var(--mayhen-docs-detail-rose) !important;
+  font-weight: 600 !important;
+  border-left-color: var(--mayhen-docs-detail-rose) !important;
+  background: var(--mayhen-docs-detail-rose-soft) !important;
+}
+
+/* Table of Contents */
+.mayhen_docs_detail_toc_item a {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: var(--mayhen-docs-detail-muted) !important;
+  transition: color 0.15s ease !important;
+}
+
+.mayhen_docs_detail_toc_item a:hover,
+.mayhen_docs_detail_toc_item.active a {
+  color: var(--mayhen-docs-detail-rose) !important;
+  font-weight: 600 !important;
+}
+
+/* Detail App Dark Theme Refinements */
+.mayhen_docs_detail_app[data-theme="dark"] {
+  --mayhen-docs-detail-bg: #181517 !important;
+  --mayhen-docs-detail-surface: #221D20 !important;
+  --mayhen-docs-detail-sidebar: #1E181B !important;
+  --mayhen-docs-detail-text: #F4EBE8 !important;
+  --mayhen-docs-detail-muted: #BBB0B4 !important;
+  --mayhen-docs-detail-border: #362D32 !important;
+  --mayhen-docs-detail-border-strong: #4F434A !important;
+  --mayhen-docs-detail-rose: #D4898E !important;
+  --mayhen-docs-detail-rose-soft: #2D2125 !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_header,
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_breadcrumb_bar {
+  background: rgba(30, 24, 27, 0.92) !important;
+  border-bottom-color: #362D32 !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_sidebar {
+  background: #1E181B !important;
+  border-right-color: #362D32 !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_toc {
+  border-left-color: #362D32 !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_callout {
+  background: #251B1F !important;
+  border-left-color: #D4898E !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_btn_outline {
+  background: #252023 !important;
+  border-color: #4F434A !important;
+  color: #F4EBE8 !important;
+}
+
+.mayhen_docs_detail_app[data-theme="dark"] .mayhen_docs_detail_btn_outline:hover {
+  background: #35252B !important;
+  border-color: #D4898E !important;
+  color: #E8A8AC !important;
+}
+
