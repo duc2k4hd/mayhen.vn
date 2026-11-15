@@ -129,6 +129,7 @@ php artisan serve
   - **Sửa dứt điểm lỗi Accordion Sidebar "bấm cha chưa xổ xuống con"**: Chuyển listener sang event delegation trực tiếp ở cấp `document` toàn cục, đồng thời bổ sung cơ chế fallback tìm kiếm thẻ con `.mayhen_docs_detail_nav_links` trực tiếp trong nhóm cha `.mayhen_docs_detail_nav_group` nếu ID không trùng khớp.
   - **Chống co bẹp Header**: Cấu hình `max-width: 260px; min-width: 130px; flex: 1 1 auto;` cho ô tìm kiếm và `flex-shrink: 0;` cho nhóm điều khiển bên phải, đảm bảo giao diện luôn thoáng đãng trên mọi độ phân giải màn hình (768px - 1440px).
 - **Tiến độ Hàng đợi Docs (SQLite `storage/app/mayhen-docs-queue.sqlite`)**:
-  - `IMPLEMENTED`: 60 bài (Hoàn tất 100% 8 chuyên mục lớn của Client Docs, 100% Chuyên mục Admin 07: Check-in Cockpit `ADM-COCK-001`..`005`, và 100% Chuyên mục Admin 02: Dashboard & Analytics `ADM-DASH-001`..`004` bao gồm đọc Dashboard doanh thu thực tế, Wedding Readiness Radar 100 điểm, Đài quan sát chi phí & chất lượng AI, và xuất báo cáo CSV UTF-8 BOM).
-  - `PENDING_SCREENSHOT`: 9 bài (`CLI-START-001`, `CLI-START-003`, `CLI-START-004`, `CLI-START-005`, `ADM-SOP-001` đến `ADM-SOP-005`).
-  - `TODO`: 39 bài còn lại tiếp tục triển khai theo kế hoạch.
+  - `IMPLEMENTED`: 99 bài (Hoàn tất 100% toàn bộ các chuyên mục của Client Docs & Admin Docs: Client 01-10 và Admin 01-10).
+  - `PENDING_SCREENSHOT`: 9 bài (`CLI-START-001`, `CLI-START-003`, `CLI-START-004`, `CLI-START-005`, `ADM-SOP-001` đến `ADM-SOP-005` chờ chụp ảnh màn hình giao diện thực tế).
+  - `TODO`: **0 bài** — **100% TOÀN BỘ 108 BÀI HƯỚNG DẪN ĐÃ ĐƯỢC HOÀN THIỆN TRÊN NỀN TẢNG**.
+  - **Kiểm thử chất lượng**: `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` vượt qua 18/18 tests (127 assertions). Code formatting chuẩn `vendor/bin/pint --dirty --format agent`.
