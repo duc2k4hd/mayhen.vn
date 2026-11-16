@@ -74,6 +74,7 @@ class ResetPasswordController extends Controller
                 $user->forceFill([
                     'password' => Hash::make($password),
                     'remember_token' => Str::random(60),
+                    'last_password_reset_at' => now(), // Cập nhật thời điểm đổi mật khẩu thành công để áp dụng cooldown 7 ngày
                 ])->save();
             }
         );

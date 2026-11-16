@@ -186,7 +186,17 @@
         return;
       }
       if (result.status === 429) {
-        showToast('Bạn thao tác quá nhanh. Vui lòng thử lại sau ít phút.');
+        const data = await result.json().catch(() => ({}));
+        const msg = data.message || 'Bạn thao tác quá nhanh. Vui lòng thử lại sau ít phút.';
+        showToast(msg);
+        setError(msg);
+        return;
+      }
+      if (result.status === 422) {
+        const data = await result.json().catch(() => ({}));
+        const msg = data.message || (data.errors && data.errors.email ? data.errors.email[0] : null) || 'Yêu cầu không hợp lệ.';
+        showToast(msg);
+        setError(msg);
         return;
       }
 
@@ -195,7 +205,9 @@
         showConfirmation(address, false);
       } else {
         const data = await result.json().catch(() => ({}));
-        showToast(data.message || 'Không thể xử lý yêu cầu lúc này. Vui lòng thử lại sau.');
+        const msg = data.message || (data.errors && data.errors.email ? data.errors.email[0] : null) || 'Không thể xử lý yêu cầu lúc này. Vui lòng thử lại sau.';
+        showToast(msg);
+        setError(msg);
       }
     } catch (e) {
       showToast(e?.name === 'AbortError' ? 'Kết nối quá thời gian. Vui lòng thử lại.' : 'Không thể kết nối máy chủ. Kiểm tra kết nối Internet và thử lại.');

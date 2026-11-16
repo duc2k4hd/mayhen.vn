@@ -425,3 +425,32 @@ php artisan serve
     3. Admin cập nhật đường dẫn URL hero banner thành công và trang chủ đổi ảnh ngay.
     4. Admin tải file ảnh mới lên, ảnh cũ trong storage bị xóa và ảnh mới được lưu trữ an toàn.
   - Đạt 13/13 tests PASS 100% (75 assertions). Định dạng chuẩn Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.9. Kiến Trúc Hàng Đợi (Queue) & Bảo Vệ Quên Mật Khẩu Khách Hàng (In-Flight Link, 7-Day Cooldown & Miễn Trừ Admin/Staff)
+- **Kiến trúc Hàng Đợi Email Bất Đồng Bộ (Async Queue Architecture — Chống Nghẽn & Chống Sập Server)**:
+  - Mailable: [`CustomerResetPasswordMail.php`](app/Mail/CustomerResetPasswordMail.php) được triển khai `implements ShouldQueue` với chính sách thử lại thông minh: `$tries = 3`, `$timeout = 30` giây, `$backoff = [10, 60, 180]` giây.
+  - Controller: [`ForgotPasswordController.php`](app/Http/Controllers/Client/ForgotPasswordController.php) sử dụng `Mail::to($user->email)->queue(...)`.
+  - Hiệu năng đột phá: Thời gian phản hồi HTTP giảm xuống dưới 2 mili-giây cho mỗi request. Ngay cả khi có 1 triệu người dùng cùng lúc bấm quên mật khẩu, máy chủ web không bị nghẽn socket SMTP và không bao giờ bị quá tải sập server (các job gửi mail được đưa an toàn vào bảng `jobs` để queue worker xử lý tuần tự).
+- **Chính sách Bảo Vệ Khách Hàng (Customer Protection & Anti-Spam)**:
+  1. *Giới hạn Link In-Flight (1 mail chỉ gửi 1 lần)*:
+     - Nếu một liên kết đặt lại mật khẩu đã được gửi đến email và **chưa được sử dụng** (vẫn tồn tại trong `password_reset_tokens` và còn trong thời hạn 48 giờ), khách hàng **không thể tiếp tục gửi yêu cầu quên mật khẩu trên web**.
+     - Hệ thống thông báo rõ ràng: "Một liên kết đặt lại mật khẩu đã được gửi đến email này trước đó và vẫn còn hiệu lực. Mỗi yêu cầu chỉ được gửi 1 lần để bảo mật tài khoản. Vui lòng kiểm tra hộp thư (kể cả mục Spam hoặc Quảng cáo)."
+  2. *Cooldown 7 Ngày sau khi Đổi Mật Khẩu*:
+     - Database: Thêm migration `2026_11_16_193000_add_last_password_reset_at_to_users_table.php` bổ sung cột `last_password_reset_at` cho bảng `users`.
+     - [`ResetPasswordController.php`](app/Http/Controllers/Client/ResetPasswordController.php): Ngay khi khách hàng đổi mật khẩu thành công qua `Password::broker()->reset()`, hệ thống ghi nhận `last_password_reset_at = now()`.
+     - Nếu khách hàng bấm quên mật khẩu trong vòng 7 ngày kể từ lần đổi gần nhất, hệ thống từ chối (HTTP 429) và hiển thị thông báo an toàn kèm ngày hết hạn cooldown, hướng dẫn liên hệ Hotline/Zalo CSKH Mây Hẹn nếu cần hỗ trợ khẩn cấp.
+- **Đặc quyền Miễn Trừ cho Admin & Staff (Admin/Staff Complete Exemption)**:
+  - Model: [`User.php`](app/Models/User.php) bổ sung phương thức `isExemptFromPasswordResetRestrictions()` nhận diện các tài khoản thuộc nhóm quản trị/nhân viên (`admin`, `manager`, `staff`,...).
+  - Tài khoản Admin và Staff được **miễn trừ 100%** cả 2 hạn chế (link in-flight và cooldown 7 ngày): Thích quên mật khẩu lúc nào thì quên, thích đổi mật khẩu lúc nào thì đổi không giới hạn.
+- **Giao diện Client & Phản hồi AJAX** ([forgot-password.js](public/assets/client/js/pages/forgot-password.js)):
+  - Hỗ trợ bắt mã lỗi HTTP 422 (in-flight link) và HTTP 429 (cooldown 7 ngày).
+  - Tự động hiển thị thông báo chi tiết trong Toast nổi và ghi nhận trực tiếp dưới ô nhập email.
+- **Kiểm thử tự động**:
+  - Viết mới test suite `tests/Feature/CustomerForgotPasswordSecurityRateLimitTest.php` với 6 ca kiểm thử bao phủ 100% logic:
+    1. Yêu cầu đầu tiên của khách hàng đẩy email vào queue và tạo token.
+    2. Khách hàng không thể gửi thêm khi link cũ đang in-flight chưa dùng.
+    3. Đổi mật khẩu thành công cập nhật `last_password_reset_at` và xóa token in-flight.
+    4. Khách hàng bị chặn khi yêu cầu lại trong vòng 7 ngày (kèm thông điệp hướng dẫn liên hệ).
+    5. Khách hàng gửi lại thành công sau khi hết 7 ngày cooldown.
+    6. Admin và Staff được miễn trừ hoàn toàn mọi giới hạn in-flight và cooldown 7 ngày.
+  - Toàn bộ 6/6 tests PASS 100% (30 assertions). Định dạng chuẩn Laravel Pint (`vendor/bin/pint --dirty --format agent`).

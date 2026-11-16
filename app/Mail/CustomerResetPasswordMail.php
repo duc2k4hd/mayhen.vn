@@ -4,15 +4,33 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CustomerResetPasswordMail extends Mailable
+class CustomerResetPasswordMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    /**
+     * Số lần thử lại tối đa nếu gặp sự cố kết nối SMTP.
+     */
+    public int $tries = 3;
+
+    /**
+     * Thời gian timeout tối đa cho mỗi job gửi mail (giây).
+     */
+    public int $timeout = 30;
+
+    /**
+     * Độ trễ tăng dần giữa các lần thử lại (giây).
+     *
+     * @var array<int, int>
+     */
+    public array $backoff = [10, 60, 180];
 
     /**
      * Khởi tạo mailable gửi liên kết đặt lại mật khẩu cho khách hàng.

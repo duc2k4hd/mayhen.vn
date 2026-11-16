@@ -29,6 +29,7 @@ class User extends Authenticatable
         'is_locked',
         'lock_reason',
         'locked_at',
+        'last_password_reset_at',
     ];
 
     /**
@@ -53,6 +54,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_locked' => 'boolean',
             'locked_at' => 'datetime',
+            'last_password_reset_at' => 'datetime',
         ];
     }
 
@@ -114,6 +116,14 @@ class User extends Authenticatable
     public function canAccessAdminPanel(): bool
     {
         return in_array($this->role, ['admin', 'manager', 'staff', 'designer', 'finance', 'support'], true);
+    }
+
+    /**
+     * Xác định tài khoản quản trị/nhân viên được miễn trừ các hạn chế quên mật khẩu (cooldown 7 ngày & link in-flight).
+     */
+    public function isExemptFromPasswordResetRestrictions(): bool
+    {
+        return $this->isAdmin() || $this->isStaff() || $this->canAccessAdminPanel();
     }
 
     public function getRoleLabelAttribute(): string
