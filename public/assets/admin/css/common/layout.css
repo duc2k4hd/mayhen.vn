@@ -890,3 +890,204 @@
     }
 }
 
+/* ==========================================================================
+   Universal Searchable Select Component (Vanilla CSS / No External Libraries)
+   ========================================================================== */
+.mayhen_admin_select_wrapper {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Visually hide native select while preserving HTML5 validation & form submit */
+.mayhen_admin_select_wrapper select.mayhen_admin_native_select {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 1px !important;
+    height: 1px !important;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* Custom Select Trigger Button */
+.mayhen_admin_select_trigger {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 36px 9px 14px;
+    background-color: #FFFFFF;
+    border: 1px solid var(--mh-admin-border, #E2E8F0);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--mh-admin-text, #0F172A);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+    position: relative;
+    user-select: none;
+}
+
+.mayhen_admin_select_trigger:hover {
+    border-color: #94A3B8;
+}
+
+.mayhen_admin_select_wrapper.is-open .mayhen_admin_select_trigger,
+.mayhen_admin_select_trigger:focus-visible {
+    border-color: var(--mh-admin-primary, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    outline: none;
+}
+
+.mayhen_admin_select_trigger_label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 8px;
+    font-weight: 500;
+}
+
+.mayhen_admin_select_trigger_arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #64748B;
+    pointer-events: none;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_admin_select_wrapper.is-open .mayhen_admin_select_trigger_arrow {
+    transform: translateY(-50%) rotate(180deg);
+    color: var(--mh-admin-primary, #2563EB);
+}
+
+/* Dropdown Menu */
+.mayhen_admin_select_dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background-color: #FFFFFF;
+    border: 1px solid var(--mh-admin-border, #E2E8F0);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+    z-index: 1050;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: mayhenSelectFadeIn 0.15s ease-out;
+}
+
+.mayhen_admin_select_wrapper.is-open .mayhen_admin_select_dropdown {
+    display: flex;
+}
+
+@keyframes mayhenSelectFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Search input inside dropdown */
+.mayhen_admin_select_search_box {
+    padding: 8px;
+    border-bottom: 1px solid #E2E8F0;
+    background-color: #F8FAFC;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.mayhen_admin_select_search_input {
+    width: 100%;
+    padding: 7px 10px 7px 32px;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    color: #0F172A;
+    background-color: #FFFFFF;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mayhen_admin_select_search_input:focus {
+    border-color: var(--mh-admin-primary, #2563EB);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.mayhen_admin_select_search_icon {
+    position: absolute;
+    left: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: #94A3B8;
+    pointer-events: none;
+}
+
+/* Options list */
+.mayhen_admin_select_options {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px;
+    margin: 0;
+    list-style: none;
+}
+
+.mayhen_admin_select_option {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #1E293B;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.1s ease, color 0.1s ease;
+    user-select: none;
+}
+
+.mayhen_admin_select_option:hover,
+.mayhen_admin_select_option.is-focused {
+    background-color: #F1F5F9;
+    color: #0F172A;
+}
+
+.mayhen_admin_select_option.is-selected {
+    background-color: rgba(37, 99, 235, 0.08);
+    color: var(--mh-admin-primary, #2563EB);
+    font-weight: 600;
+}
+
+.mayhen_admin_select_option.is-selected::after {
+    content: "✓";
+    font-weight: 700;
+    color: var(--mh-admin-primary, #2563EB);
+    margin-left: 8px;
+}
+
+.mayhen_admin_select_empty {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: #94A3B8;
+    font-style: italic;
+}
+

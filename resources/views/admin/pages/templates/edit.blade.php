@@ -235,52 +235,104 @@
                             <span>Nhạc Nền Trưng Bày Mẫu Thiệp (Showcase Audio)</span>
                         </div>
 
-                        <!-- Music selection -->
+                        @php
+                            $currentMusicUrl = old('music_url', $cfg['music_url'] ?? ('/mau-thiep/' . $template->slug . '/assets/wedding-song.mp3'));
+                            $matchedSong = null;
+                            if (isset($musicCatalog)) {
+                                foreach ($musicCatalog as $song) {
+                                    if (($song['url'] ?? '') === $currentMusicUrl) {
+                                        $matchedSong = $song;
+                                        break;
+                                    }
+                                }
+                            }
+                            $currentTitle = $matchedSong['title'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'Tệp Nhạc Tải Lên Riêng' : 'Giai Điệu Mặc Định Của Mẫu');
+                            $currentArtist = $matchedSong['artist'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'Quản Trị Viên Tải Lên' : 'Mây Hẹn Atelier');
+                            $currentGenre = $matchedSong['genre'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'File Tùy Chỉnh' : 'Theo Mẫu Thiệp');
+                        @endphp
+
+                        <!-- Showcase Music Selection Card (Dedicated Popup Modal with Artist & Title Separation) -->
                         <div class="mayhen_admin_form_group">
                             <label class="mayhen_admin_form_label">
-                                Chọn Bài Hát Từ Thư Viện Nhạc Cưới Mây Hẹn
+                                Nhạc Nền Phát Khi Khách Mở Thiệp Cưới
                             </label>
-                            <select id="preset_music_select" class="mayhen_admin_form_select" onchange="applyPresetMusic(this)">
-                                <option value="">-- Chọn bài hát có sẵn trong thư viện --</option>
-                                @if(isset($musicCatalog) && is_array($musicCatalog))
-                                    @foreach($musicCatalog as $song)
-                                        <option value="{{ $song['url'] }}" {{ ($cfg['music_url'] ?? '') === $song['url'] ? 'selected' : '' }}>
-                                            {{ $song['title'] }} - {{ $song['artist'] }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                                <option value="/mau-thiep/{{ $template->slug }}/assets/wedding-song.mp3">
-                                    [Gốc] Nhạc mặc định theo mẫu (wedding-song.mp3)
-                                </option>
-                            </select>
-                            <div class="mayhen_admin_form_help">Chọn nhanh bài hát lãng mạn đã được kiểm duyệt chất lượng âm thanh 320kbps.</div>
-                        </div>
+                            
+                            <div class="mayhen_admin_music_showcase_card">
+                                <!-- Active Song Banner -->
+                                <div class="mayhen_admin_music_active_display">
+                                    <div class="mayhen_admin_music_disc_icon" id="admin_music_disc_icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M9 18V5l12-2v13"></path>
+                                            <circle cx="6" cy="18" r="3"></circle>
+                                            <circle cx="18" cy="16" r="3"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="mayhen_admin_music_active_info">
+                                        <div class="mayhen_admin_music_active_title">
+                                            <span id="active_music_title">{{ $currentTitle }}</span>
+                                            <span id="active_music_genre_badge" class="mayhen_admin_music_badge">{{ $currentGenre }}</span>
+                                        </div>
+                                        <div class="mayhen_admin_music_active_artist">
+                                            <span>🎙️ Tác Giả / Nghệ Sĩ:</span>
+                                            <strong id="active_music_artist">{{ $currentArtist }}</strong>
+                                        </div>
+                                        <div class="mayhen_admin_music_active_url" id="active_music_url_preview">
+                                            {{ $currentMusicUrl }}
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <!-- Custom URL or File Upload -->
-                        <div class="mayhen_admin_form_group">
-                            <label class="mayhen_admin_form_label">Đường Dẫn Hoặc Tải Tệp Nhạc MP3 Mới Lên</label>
-                            <div class="mayhen_admin_audio_box">
-                                <div style="display: flex; gap: 10px; align-items: center;">
+                                <!-- Action Buttons & Hidden/Manual Input -->
+                                <div class="mayhen_admin_music_actions_row">
+                                    <button type="button" class="mayhen_admin_btn mayhen_admin_btn_primary" onclick="openMusicPickerModal()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M9 18V5l12-2v13"></path>
+                                            <circle cx="6" cy="18" r="3"></circle>
+                                            <circle cx="18" cy="16" r="3"></circle>
+                                        </svg>
+                                        <span>🎶 Mở Thư Viện Chọn Nhạc (Popup)</span>
+                                    </button>
+
+                                    <label class="mayhen_admin_file_upload_btn">
+                                        <input type="file" name="music_file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/m4a" style="display: none;" onchange="previewAudioFileInput(this)">
+                                        <span>📁 Tải Lên MP3 Riêng</span>
+                                    </label>
+
+                                    <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="resetToTemplateDefaultMusic('/mau-thiep/{{ $template->slug }}/assets/wedding-song.mp3', 'Giai Điệu Gốc ({{ $template->name }})', 'Mây Hẹn Atelier Studio')">
+                                        <span>↺ Đặt Lại Nhạc Gốc Mẫu</span>
+                                    </button>
+
+                                    <span class="mayhen_admin_storage_pill" style="margin-left: auto;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Tự động dọn file cũ trong Storage
+                                    </span>
+                                </div>
+
+                                <!-- URL Input (Editable if direct URL needed) -->
+                                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                    <span style="font-size: 0.75rem; color: #64748B; white-space: nowrap;">Đường dẫn file:</span>
                                     <input 
                                         type="text" 
                                         id="custom_music_url_input" 
                                         name="music_url" 
-                                        value="{{ old('music_url', $cfg['music_url'] ?? '') }}" 
+                                        value="{{ old('music_url', $currentMusicUrl) }}" 
                                         class="mayhen_admin_form_input mayhen_admin_asset_url_input" 
-                                        placeholder="Ví dụ: /storage/templates/... hoặc đường dẫn URL bài hát"
-                                        oninput="updateAudioPlayerSrc(this.value)"
+                                        placeholder="Đường dẫn bài hát hoặc URL..."
+                                        oninput="onManualMusicUrlChange(this.value)"
                                     >
-                                    <label class="mayhen_admin_file_upload_btn" style="white-space: nowrap;">
-                                        <input type="file" name="music_file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg" style="display: none;" onchange="previewAudioFileInput(this)">
-                                        <span>🎵 Tải Lên MP3 Mới</span>
-                                    </label>
                                 </div>
-                                <div class="mayhen_admin_form_help" style="margin-top: 8px;">
-                                    Nghe thử trực tiếp bài hát mẫu sẽ phát khi khách mở thiệp cưới:
+
+                                <!-- Audio Player -->
+                                <div>
+                                    <div class="mayhen_admin_form_help" style="margin-bottom: 6px;">
+                                        Nghe thử trực tiếp bài hát mẫu sẽ phát khi khách mở thiệp cưới:
+                                    </div>
+                                    <audio controls id="admin_showcase_audio_player" class="mayhen_admin_audio_player" src="{{ $currentMusicUrl }}">
+                                        Trình duyệt không hỗ trợ thẻ audio.
+                                    </audio>
                                 </div>
-                                <audio controls id="admin_showcase_audio_player" class="mayhen_admin_audio_player" src="{{ $cfg['music_url'] ?? '/mau-thiep/' . $template->slug . '/assets/wedding-song.mp3' }}">
-                                    Trình duyệt không hỗ trợ thẻ audio.
-                                </audio>
                             </div>
                         </div>
 
@@ -880,6 +932,130 @@
             </div>
         </div>
     </div>
+
+    <!-- ========================================================================== -->
+    <!-- POPUP MODAL: THƯ VIỆN BÀI HÁT THIỆP CƯỚI (PHÂN TÁCH RÕ TÁC GIẢ & BÀI NHẠC) -->
+    <!-- ========================================================================== -->
+    <div id="mayhen_admin_music_modal" class="mayhen_admin_modal_overlay" role="dialog" aria-modal="true" aria-labelledby="music_modal_title">
+        <div class="mayhen_admin_music_modal_dialog">
+            <!-- Modal Header -->
+            <div class="mayhen_admin_modal_header">
+                <div class="mayhen_admin_modal_title_group">
+                    <h3 id="music_modal_title">
+                        <span>🎶</span>
+                        <span>Thư Viện Bài Hát Thiệp Cưới Mây Hẹn</span>
+                    </h3>
+                    <p>Khám phá bộ sưu tập giai điệu lãng mạn — Phân tách rõ Tác Giả, Bài Nhạc & Nghe thử trực tiếp</p>
+                </div>
+                <button type="button" class="mayhen_admin_modal_close_btn" onclick="closeMusicPickerModal()" aria-label="Đóng popup">&times;</button>
+            </div>
+
+            <!-- Modal Search & Category Filter Toolbar -->
+            <div class="mayhen_admin_music_toolbar">
+                <div class="mayhen_admin_music_search_box">
+                    <svg class="mayhen_admin_music_search_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="music_modal_search_input" placeholder="🔍 Tìm kiếm nhanh theo Tên bài hát, Tác giả / Ca sĩ, Thể loại (ví dụ: Canon, Kai Đinh, Yiruma, Acoustic, Piano)..." autocomplete="off" oninput="filterMusicList()">
+                </div>
+                <div class="mayhen_admin_music_filter_chips">
+                    <span class="mayhen_admin_music_chip is-active" data-filter="all" onclick="setMusicCategoryFilter(this, 'all')">Tất Cả ({{ count($musicCatalog) }})</span>
+                    <span class="mayhen_admin_music_chip" data-filter="Tuyển Chọn" onclick="setMusicCategoryFilter(this, 'Tuyển Chọn')">✨ Tuyển Chọn</span>
+                    <span class="mayhen_admin_music_chip" data-filter="Classical" onclick="setMusicCategoryFilter(this, 'Classical')">🎻 Cổ Điển</span>
+                    <span class="mayhen_admin_music_chip" data-filter="Piano" onclick="setMusicCategoryFilter(this, 'Piano')">🎹 Piano Solo</span>
+                    <span class="mayhen_admin_music_chip" data-filter="Acoustic" onclick="setMusicCategoryFilter(this, 'Acoustic')">🎸 Acoustic</span>
+                    <span class="mayhen_admin_music_chip" data-filter="V-Pop" onclick="setMusicCategoryFilter(this, 'V-Pop')">🇻🇳 Nhạc Việt</span>
+                    <span class="mayhen_admin_music_chip" data-filter="Theo Mẫu" onclick="setMusicCategoryFilter(this, 'Theo Mẫu')">💿 Theo Mẫu</span>
+                </div>
+            </div>
+
+            <!-- Modal Table Container -->
+            <div class="mayhen_admin_music_table_wrap">
+                <table class="mayhen_admin_music_table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">Nghe</th>
+                            <th style="width: 32%;">Tên Bài Nhạc</th>
+                            <th style="width: 28%;">Tác Giả / Nghệ Sĩ</th>
+                            <th style="width: 20%;">Thể Loại / Cảm Xúc</th>
+                            <th style="width: 60px; text-align: center;">Thời Lượng</th>
+                            <th style="width: 120px; text-align: right;">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="music_modal_table_body">
+                        @foreach($musicCatalog as $song)
+                            <tr class="music-row {{ ($currentMusicUrl === $song['url']) ? 'is-current' : '' }}" 
+                                data-title="{{ $song['title'] }}" 
+                                data-artist="{{ $song['artist'] }}" 
+                                data-genre="{{ $song['genre'] ?? '' }}" 
+                                data-tag="{{ $song['tag'] ?? '' }}"
+                                data-url="{{ $song['url'] }}">
+                                <td style="text-align: center;">
+                                    <button type="button" class="mayhen_admin_modal_play_btn" onclick="toggleModalAudioPreview(this, '{{ $song['url'] }}')" title="Nghe thử bài hát này">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class="mayhen_admin_music_row_title">{{ $song['title'] }}</div>
+                                    @if(!empty($song['description']))
+                                        <div style="font-size: 0.75rem; color: #64748B; margin-top: 2px;">{{ $song['description'] }}</div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="mayhen_admin_music_row_artist">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--mh-admin-primary);">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span>{{ $song['artist'] }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="mayhen_admin_music_row_genre">{{ $song['genre'] ?? 'Lãng Mạn' }}</span>
+                                </td>
+                                <td style="text-align: center; font-size: 0.8125rem; color: #64748B;">
+                                    {{ $song['duration'] ?? '--:--' }}
+                                </td>
+                                <td style="text-align: right;">
+                                    <button type="button" class="mayhen_admin_modal_select_btn {{ ($currentMusicUrl === $song['url']) ? 'is-selected' : '' }}" 
+                                        onclick="selectMusicTrack('{{ addslashes($song['url']) }}', '{{ addslashes($song['title']) }}', '{{ addslashes($song['artist']) }}', '{{ addslashes($song['genre'] ?? 'Nhạc Trưng Bày') }}')">
+                                        {{ ($currentMusicUrl === $song['url']) ? '✓ Đang Chọn' : 'Chọn Bài Này' }}
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div id="music_modal_empty" style="display: none; padding: 40px 20px; text-align: center; color: #94A3B8;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 8px;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <p style="font-size: 0.875rem; margin: 0;">Không tìm thấy bài hát nào khớp với từ khóa tìm kiếm.</p>
+                </div>
+            </div>
+
+            <!-- Hidden Audio Element for Modal Auditioning -->
+            <audio id="modal_audition_player" style="display: none;"></audio>
+
+            <!-- Modal Footer -->
+            <div class="mayhen_admin_modal_footer">
+                <div class="mayhen_admin_modal_status">
+                    <span id="music_modal_counter">Hiển thị {{ count($musicCatalog) }} / {{ count($musicCatalog) }} bài hát</span>
+                    <span id="music_modal_now_playing" class="mayhen_admin_modal_now_playing" style="display: none;">
+                        <span>▶ Đang nghe thử:</span>
+                        <strong id="music_modal_now_playing_name"></strong>
+                    </span>
+                </div>
+                <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="closeMusicPickerModal()">
+                    <span>Đóng (ESC)</span>
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -919,14 +1095,232 @@
         }
     }
 
-    // Audio Preset Selector & Live Player
-    function applyPresetMusic(select) {
-        const val = select.value;
-        const input = document.getElementById('custom_music_url_input');
-        if (input && val) {
-            input.value = val;
-            updateAudioPlayerSrc(val);
+    // =========================================================================
+    // MUSIC PICKER POPUP MODAL & SHOWCASE AUDIO CONTROLS
+    // =========================================================================
+    let currentAuditionBtn = null;
+    let activeMusicCategory = 'all';
+    const auditionAudio = document.getElementById('modal_audition_player');
+    const mainShowcaseAudio = document.getElementById('admin_showcase_audio_player');
+    const discIcon = document.getElementById('admin_music_disc_icon');
+
+    // Spin disc when main audio plays
+    if (mainShowcaseAudio && discIcon) {
+        mainShowcaseAudio.addEventListener('play', () => discIcon.classList.add('is-spinning'));
+        mainShowcaseAudio.addEventListener('pause', () => discIcon.classList.remove('is-spinning'));
+        mainShowcaseAudio.addEventListener('ended', () => discIcon.classList.remove('is-spinning'));
+    }
+
+    function openMusicPickerModal() {
+        const modal = document.getElementById('mayhen_admin_music_modal');
+        if (modal) {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            const searchInput = document.getElementById('music_modal_search_input');
+            if (searchInput) {
+                searchInput.value = '';
+                filterMusicList();
+                setTimeout(() => searchInput.focus(), 60);
+            }
         }
+    }
+
+    function closeMusicPickerModal() {
+        const modal = document.getElementById('mayhen_admin_music_modal');
+        if (modal) {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+            stopModalAudition();
+        }
+    }
+
+    // Close on outside click or ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeMusicPickerModal();
+        }
+    });
+
+    const musicModalOverlay = document.getElementById('mayhen_admin_music_modal');
+    if (musicModalOverlay) {
+        musicModalOverlay.addEventListener('click', (e) => {
+            if (e.target === musicModalOverlay) {
+                closeMusicPickerModal();
+            }
+        });
+    }
+
+    // Filter by category chip
+    function setMusicCategoryFilter(chip, category) {
+        activeMusicCategory = category;
+        document.querySelectorAll('.mayhen_admin_music_chip').forEach(c => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        filterMusicList();
+    }
+
+    // Filter tracks by keyword and active category
+    function filterMusicList() {
+        const queryInput = document.getElementById('music_modal_search_input');
+        const query = queryInput ? queryInput.value.trim().toLowerCase() : '';
+        const normalizedQuery = typeof removeVietnameseAccents === 'function' ? removeVietnameseAccents(query) : query;
+
+        const rows = document.querySelectorAll('#music_modal_table_body .music-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const title = (row.getAttribute('data-title') || '').toLowerCase();
+            const artist = (row.getAttribute('data-artist') || '').toLowerCase();
+            const genre = (row.getAttribute('data-genre') || '').toLowerCase();
+            const tag = (row.getAttribute('data-tag') || '').toLowerCase();
+
+            const normalizedFullText = typeof removeVietnameseAccents === 'function' 
+                ? removeVietnameseAccents(`${title} ${artist} ${genre} ${tag}`)
+                : `${title} ${artist} ${genre} ${tag}`;
+
+            // Check category filter
+            let matchCategory = true;
+            if (activeMusicCategory !== 'all') {
+                const normCat = (activeMusicCategory || '').toLowerCase();
+                matchCategory = genre.includes(normCat) || tag.includes(normCat) || title.includes(normCat);
+            }
+
+            // Check keyword
+            const matchKeyword = !normalizedQuery || normalizedFullText.includes(normalizedQuery);
+
+            if (matchCategory && matchKeyword) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Counter & empty state
+        const counter = document.getElementById('music_modal_counter');
+        if (counter) {
+            counter.textContent = `Hiển thị ${visibleCount} / ${rows.length} bài hát`;
+        }
+
+        const emptyBox = document.getElementById('music_modal_empty');
+        if (emptyBox) {
+            emptyBox.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    // Inline audio auditioning in modal
+    function toggleModalAudioPreview(btn, url) {
+        if (!auditionAudio) return;
+
+        if (currentAuditionBtn === btn && !auditionAudio.paused) {
+            stopModalAudition();
+            return;
+        }
+
+        stopModalAudition();
+
+        currentAuditionBtn = btn;
+        btn.classList.add('is-playing');
+        btn.title = 'Tạm dừng nghe thử';
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+
+        const row = btn.closest('.music-row');
+        const title = row ? row.getAttribute('data-title') : '';
+        const nowPlayingWrap = document.getElementById('music_modal_now_playing');
+        const nowPlayingName = document.getElementById('music_modal_now_playing_name');
+        if (nowPlayingWrap && nowPlayingName) {
+            nowPlayingName.textContent = title;
+            nowPlayingWrap.style.display = 'inline-flex';
+        }
+
+        auditionAudio.src = url;
+        auditionAudio.play().catch(e => console.warn('Audio play request interrupted:', e));
+
+        auditionAudio.onended = () => {
+            stopModalAudition();
+        };
+    }
+
+    function stopModalAudition() {
+        if (auditionAudio) {
+            auditionAudio.pause();
+            auditionAudio.currentTime = 0;
+        }
+        if (currentAuditionBtn) {
+            currentAuditionBtn.classList.remove('is-playing');
+            currentAuditionBtn.title = 'Nghe thử bài hát này';
+            currentAuditionBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+            currentAuditionBtn = null;
+        }
+        const nowPlayingWrap = document.getElementById('music_modal_now_playing');
+        if (nowPlayingWrap) {
+            nowPlayingWrap.style.display = 'none';
+        }
+    }
+
+    // Select track from modal
+    function selectMusicTrack(url, title, artist, genre) {
+        // 1. Update text input
+        const input = document.getElementById('custom_music_url_input');
+        if (input) {
+            input.value = url;
+        }
+
+        // 2. Update active song display banner
+        const titleEl = document.getElementById('active_music_title');
+        const artistEl = document.getElementById('active_music_artist');
+        const genreEl = document.getElementById('active_music_genre_badge');
+        const urlEl = document.getElementById('active_music_url_preview');
+
+        if (titleEl) titleEl.textContent = title;
+        if (artistEl) artistEl.textContent = artist;
+        if (genreEl) genreEl.textContent = genre;
+        if (urlEl) urlEl.textContent = url;
+
+        // 3. Update main showcase audio player
+        updateAudioPlayerSrc(url);
+
+        // 4. Update row active states
+        document.querySelectorAll('#music_modal_table_body .music-row').forEach(row => {
+            const rowUrl = row.getAttribute('data-url');
+            const selectBtn = row.querySelector('.mayhen_admin_modal_select_btn');
+            if (rowUrl === url) {
+                row.classList.add('is-current');
+                if (selectBtn) {
+                    selectBtn.classList.add('is-selected');
+                    selectBtn.textContent = '✓ Đang Chọn';
+                }
+            } else {
+                row.classList.remove('is-current');
+                if (selectBtn) {
+                    selectBtn.classList.remove('is-selected');
+                    selectBtn.textContent = 'Chọn Bài Này';
+                }
+            }
+        });
+
+        closeMusicPickerModal();
+        if (window.mayhenAdminToast) {
+            window.mayhenAdminToast(`Đã chọn nhạc: ${title} - ${artist}`);
+        }
+    }
+
+    // Reset to template default music
+    function resetToTemplateDefaultMusic(url, title, artist) {
+        selectMusicTrack(url, title, artist, 'Theo Mẫu Thiệp');
+    }
+
+    // Handle manual URL text input edit
+    function onManualMusicUrlChange(url) {
+        updateAudioPlayerSrc(url);
+        const titleEl = document.getElementById('active_music_title');
+        const artistEl = document.getElementById('active_music_artist');
+        const genreEl = document.getElementById('active_music_genre_badge');
+        const urlEl = document.getElementById('active_music_url_preview');
+
+        if (urlEl) urlEl.textContent = url || 'Chưa thiết lập URL';
+        if (titleEl) titleEl.textContent = url ? 'Giai Điệu Tùy Chỉnh' : 'Chưa Chọn Bài Hát';
+        if (artistEl) artistEl.textContent = 'Tệp / URL Bên Ngoài';
+        if (genreEl) genreEl.textContent = 'Tùy Chỉnh';
     }
 
     function updateAudioPlayerSrc(url) {
@@ -939,11 +1333,27 @@
 
     function previewAudioFileInput(input) {
         if (input.files && input.files[0]) {
+            const fileName = input.files[0].name;
             const fileUrl = URL.createObjectURL(input.files[0]);
             updateAudioPlayerSrc(fileUrl);
+
             const inputTxt = document.getElementById('custom_music_url_input');
             if (inputTxt) {
-                inputTxt.value = '[Tệp mới tải lên: ' + input.files[0].name + ']';
+                inputTxt.value = '[Tệp mới tải lên: ' + fileName + ']';
+            }
+
+            const titleEl = document.getElementById('active_music_title');
+            const artistEl = document.getElementById('active_music_artist');
+            const genreEl = document.getElementById('active_music_genre_badge');
+            const urlEl = document.getElementById('active_music_url_preview');
+
+            if (titleEl) titleEl.textContent = fileName.replace(/\.[^/.]+$/, "");
+            if (artistEl) artistEl.textContent = 'Tệp Tải Lên Mới (Sẽ lưu vào Storage)';
+            if (genreEl) genreEl.textContent = 'Tệp Riêng';
+            if (urlEl) urlEl.textContent = '[Tệp thiết bị] ' + fileName;
+
+            if (window.mayhenAdminToast) {
+                window.mayhenAdminToast(`Đã chọn tệp tải lên: ${fileName}`);
             }
         }
     }

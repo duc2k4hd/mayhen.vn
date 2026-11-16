@@ -116,3 +116,23 @@ test('admin uploading new file deletes previous file from storage disk to preven
     $newRelativePath = substr($newCoverUrl, strlen('/storage/'));
     Storage::disk('public')->assertExists($newRelativePath);
 });
+
+test('admin template edit page renders music picker modal with separated song title and artist and searchable font selects', function () {
+    $response = $this->actingAs($this->admin)->get(route('admin.templates.edit', $this->template->id));
+
+    $response->assertStatus(200);
+    // Modal & separation
+    $response->assertSee('Thư Viện Bài Hát Thiệp Cưới Mây Hẹn');
+    $response->assertSee('mayhen_admin_music_modal');
+    $response->assertSee('Tác Giả / Nghệ Sĩ');
+    $response->assertSee('Tên Bài Nhạc');
+    $response->assertSee('openMusicPickerModal');
+    $response->assertSee('admin_showcase_audio_player');
+
+    // Searchable selects present for fonts and categories
+    $response->assertSee('id="heading_font"', false);
+    $response->assertSee('id="script_font"', false);
+    $response->assertSee('id="body_font"', false);
+    $response->assertSee('id="category"', false);
+    $response->assertSee('id="tier"', false);
+});

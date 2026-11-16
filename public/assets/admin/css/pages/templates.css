@@ -721,5 +721,434 @@
     color: #14532D;
 }
 
+/* ==========================================================================
+   Showcase Music Card & Music Picker Modal (Popup Chọn Nhạc Trưng Bày)
+   ========================================================================== */
+
+/* Current Music Selection Card */
+.mayhen_admin_music_showcase_card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--mh-admin-border);
+    border-radius: var(--mh-admin-radius-md);
+    padding: 18px 20px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.mayhen_admin_music_active_display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+}
+
+.mayhen_admin_music_disc_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1E293B, #0F172A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60A5FA;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    position: relative;
+}
+
+.mayhen_admin_music_disc_icon::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    border: 2px solid #0F172A;
+}
+
+.mayhen_admin_music_disc_icon.is-spinning {
+    animation: mayhenDiscSpin 3s linear infinite;
+}
+
+@keyframes mayhenDiscSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.mayhen_admin_music_active_info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mayhen_admin_music_active_title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--mh-admin-text, #0F172A);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_admin_music_active_artist {
+    font-size: 0.8125rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_admin_music_active_artist strong {
+    color: var(--mh-admin-primary, #2563EB);
+}
+
+.mayhen_admin_music_active_url {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 4px;
+}
+
+.mayhen_admin_music_badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: 12px;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--mh-admin-primary, #2563EB);
+}
+
+.mayhen_admin_music_actions_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Music Picker Popup Modal */
+.mayhen_admin_modal_overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mayhen_admin_modal_overlay.is-open {
+    display: flex;
+    animation: mayhenModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mayhenModalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.mayhen_admin_music_modal_dialog {
+    background-color: #FFFFFF;
+    width: 940px;
+    max-width: 96vw;
+    max-height: 88vh;
+    border-radius: 12px;
+    border: 1px solid #CBD5E1;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mayhen_admin_modal_header {
+    padding: 16px 22px;
+    background-color: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_admin_modal_title_group h3 {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0 0 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_admin_modal_title_group p {
+    font-size: 0.8125rem;
+    color: #64748B;
+    margin: 0;
+}
+
+.mayhen_admin_modal_close_btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.125rem;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_modal_close_btn:hover {
+    background-color: #F1F5F9;
+    color: #0F172A;
+    border-color: #CBD5E1;
+}
+
+/* Modal Search & Filter Toolbar */
+.mayhen_admin_music_toolbar {
+    padding: 14px 22px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_admin_music_search_box {
+    position: relative;
+    width: 100%;
+}
+
+.mayhen_admin_music_search_box input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #0F172A;
+    background-color: #F8FAFC;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_music_search_box input:focus {
+    background-color: #FFFFFF;
+    border-color: var(--mh-admin-primary, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.mayhen_admin_music_search_icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #94A3B8;
+    pointer-events: none;
+}
+
+.mayhen_admin_music_filter_chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mayhen_admin_music_chip {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0;
+    background-color: #F8FAFC;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.mayhen_admin_music_chip:hover {
+    background-color: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #0F172A;
+}
+
+.mayhen_admin_music_chip.is-active {
+    background-color: var(--mh-admin-primary, #2563EB);
+    color: #FFFFFF;
+    border-color: var(--mh-admin-primary, #2563EB);
+    font-weight: 600;
+}
+
+/* Modal Table Container */
+.mayhen_admin_music_table_wrap {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 420px;
+    background-color: #FFFFFF;
+}
+
+.mayhen_admin_music_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.mayhen_admin_music_table th {
+    position: sticky;
+    top: 0;
+    background-color: #F8FAFC;
+    color: #64748B;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 16px;
+    border-bottom: 1px solid #E2E8F0;
+    z-index: 2;
+}
+
+.mayhen_admin_music_table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.875rem;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.mayhen_admin_music_table tr:hover td {
+    background-color: #F8FAFC;
+}
+
+.mayhen_admin_music_table tr.is-current td {
+    background-color: rgba(37, 99, 235, 0.04);
+}
+
+/* Inline Play Button in Modal */
+.mayhen_admin_modal_play_btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #CBD5E1;
+    background-color: #FFFFFF;
+    color: var(--mh-admin-primary, #2563EB);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mayhen_admin_modal_play_btn:hover {
+    background-color: var(--mh-admin-primary, #2563EB);
+    color: #FFFFFF;
+    border-color: var(--mh-admin-primary, #2563EB);
+    transform: scale(1.05);
+}
+
+.mayhen_admin_modal_play_btn.is-playing {
+    background-color: #EF4444;
+    color: #FFFFFF;
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.mayhen_admin_music_row_title {
+    font-weight: 600;
+    color: #0F172A;
+    margin-bottom: 2px;
+}
+
+.mayhen_admin_music_row_artist {
+    font-weight: 600;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_admin_music_row_genre {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    border-radius: 4px;
+    background-color: #F1F5F9;
+    color: #475569;
+}
+
+.mayhen_admin_modal_select_btn {
+    padding: 6px 14px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--mh-admin-primary, #2563EB);
+    background-color: #FFFFFF;
+    color: var(--mh-admin-primary, #2563EB);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.mayhen_admin_modal_select_btn:hover {
+    background-color: var(--mh-admin-primary, #2563EB);
+    color: #FFFFFF;
+}
+
+.mayhen_admin_modal_select_btn.is-selected {
+    background-color: #10B981;
+    color: #FFFFFF;
+    border-color: #10B981;
+    cursor: default;
+}
+
+/* Modal Footer */
+.mayhen_admin_modal_footer {
+    padding: 12px 22px;
+    background-color: #F8FAFC;
+    border-top: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mayhen_admin_modal_status {
+    font-size: 0.8125rem;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_admin_modal_now_playing {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--mh-admin-primary, #2563EB);
+    font-weight: 600;
+}
+
 
 

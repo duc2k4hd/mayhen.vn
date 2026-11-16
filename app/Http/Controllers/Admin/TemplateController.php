@@ -88,8 +88,64 @@ class TemplateController extends Controller
         // Template Visual DNA (Innovation #10)
         $visualDna = InvitationTemplateService::extractVisualDna($template->slug);
 
-        // Danh sách bài hát từ Music Service để admin lựa chọn nhạc trưng bày
-        $musicCatalog = app(WeddingMusicService::class)->getCatalog();
+        // Danh sách bài hát phong phú phân tách rõ Tác Giả, Bài Nhạc cho Popup Chọn Nhạc
+        $musicService = app(WeddingMusicService::class);
+        $diskCatalog = $musicService->getCatalog();
+        $curatedTracks = WeddingMusicService::getCuratedTracks();
+
+        $musicCatalog = [];
+        $seenUrls = [];
+
+        // 1. Quét các bài hát từ đĩa lưu trữ (singer / musics)
+        foreach ($diskCatalog as $song) {
+            $url = $song['url'] ?? '';
+            if (! empty($url) && ! isset($seenUrls[$url])) {
+                $seenUrls[$url] = true;
+                $musicCatalog[] = [
+                    'id' => $song['id'] ?? md5($url),
+                    'title' => $song['title'] ?? 'Bài Hát Tuyển Chọn',
+                    'artist' => $song['artist'] ?? 'Mây Hẹn Collection',
+                    'genre' => 'V-Pop / Trữ Tình',
+                    'duration' => $song['duration'] ?? '04:15',
+                    'url' => $url,
+                    'tag' => 'Lưu Trữ',
+                    'description' => 'Giai điệu tuyển chọn chất lượng cao lưu trữ trong hệ thống Mây Hẹn.',
+                ];
+            }
+        }
+
+        // 2. Thêm các bản nhạc cưới kinh điển tuyển chọn
+        foreach ($curatedTracks as $song) {
+            $url = $song['preview_url'] ?? ($song['url'] ?? '');
+            if (! empty($url) && ! isset($seenUrls[$url])) {
+                $seenUrls[$url] = true;
+                $musicCatalog[] = [
+                    'id' => $song['id'] ?? md5($url),
+                    'title' => $song['title'] ?? 'Giai Điệu Cưới',
+                    'artist' => $song['artist'] ?? 'Chamber Ensemble',
+                    'genre' => $song['genre'] ?? 'Acoustic / Classical',
+                    'duration' => $song['duration'] ?? '03:30',
+                    'url' => $url,
+                    'tag' => $song['tag'] ?? 'Tuyển Chọn',
+                    'description' => $song['description'] ?? 'Tác phẩm hòa tấu lãng mạn cho ngày cưới.',
+                ];
+            }
+        }
+
+        // 3. Thêm bản nhạc mặc định theo thư mục mẫu thiệp nếu có
+        $defaultTemplateAudio = "/mau-thiep/{$template->slug}/assets/wedding-song.mp3";
+        if (! isset($seenUrls[$defaultTemplateAudio])) {
+            $musicCatalog[] = [
+                'id' => 'template_default_audio',
+                'title' => "Giai Điệu Gốc ({$template->name})",
+                'artist' => 'Mây Hẹn Atelier Studio',
+                'genre' => 'Nhạc Nền Độc Quyền Theo Mẫu',
+                'duration' => '03:20',
+                'url' => $defaultTemplateAudio,
+                'tag' => 'Theo Mẫu',
+                'description' => 'Bản phối âm mộc mạc đặc trưng được thiết kế riêng cho mẫu thiệp cưới này.',
+            ];
+        }
 
         // Danh sách Typography Font tuyển chọn có dấu đẹp cho thiệp cưới
         $availableHeadingFonts = [

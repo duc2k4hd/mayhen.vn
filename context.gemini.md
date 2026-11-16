@@ -371,3 +371,27 @@ php artisan serve
 - **Kiểm thử tự động**:
   - Viết mới test suite `tests/Feature/AdminTemplateCustomizationTest.php` kiểm tra toàn bộ luồng lưu cấu hình phong phú và kiểm chứng cơ chế tự động xóa tệp cũ trong storage disk khi upload tệp mới.
   - Toàn bộ 20 tests trong 3 file kiểm thử Admin Template (`AdminTemplateTest.php`, `AdminTemplateReleaseLabTest.php`, `AdminTemplateCustomizationTest.php`) đều PASS 100% với 124 assertions. Code formatting đạt chuẩn Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.7. Tích Hợp Tìm Kiếm Nhanh Cho Thẻ Select & Popup Thư Viện Nhạc Cưới Tách Bạch Tác Giả - Bài Nhạc
+- **Bộ Tìm Kiếm Nhanh Cho Toàn Bộ Thẻ Select (Universal Vanilla Searchable Select)**:
+  - Triển khai trong [`admin-core.js`](public/assets/admin/js/common/admin-core.js) và [`layout.css`](public/assets/admin/css/common/layout.css) theo chuẩn 100% Vanilla JS ES Modules (Zero thư viện ngoài như Select2 hay jQuery).
+  - Tự động nhận diện và bọc toàn bộ thẻ `select.mayhen_admin_form_select` hoặc `select[data-searchable="true"]`:
+    - Giữ nguyên thẻ `<select>` gốc trong DOM với đầy đủ thuộc tính `name`, `required` nhằm bảo toàn 100% việc submit form HTML5 và các bài test HTTP backend.
+    - Tạo giao diện dropdown Slate hiện đại: Trigger box hiển thị tên lựa chọn hiện tại + mũi tên SVG xoay mềm mại.
+    - Hộp tìm kiếm nhanh tích hợp thuật toán chuẩn hóa tiếng Việt không dấu (`removeVietnameseAccents`) cho phép gõ không dấu vẫn lọc chuẩn xác (ví dụ: `cormorant`, `kinh dien`, `free`, `luxury`).
+    - Điều hướng bàn phím mượt mà: Mở menu (Enter / Space / Mũi tên xuống), chọn mục đầu tiên hiển thị (Enter), đóng menu (Escape).
+    - Tự động kích hoạt sự kiện native `change` và `input` khi chọn mục, giúp các hàm phản hồi thời gian thực (như `updateLiveFontPreview()`) kích hoạt tức thì.
+- **Popup Modal Chọn Nhạc Trưng Bày Phân Tách Rõ Tác Giả & Bài Nhạc (`#mayhen_admin_music_modal`)**:
+  - *Vấn đề giải quyết*: Khi thư viện nhạc ngày càng nhiều bài hát, thẻ `<select>` thông thường trở nên chật chội, khó tra cứu, không thể nghe thử và không phân biệt rõ ràng giữa tên bài hát với nghệ sĩ thể hiện.
+  - *Kiến trúc Popup Modal mới*:
+    - **Thẻ hiển thị Showcase trong Tab 2**: Hiển thị bài hát đang chọn kèm icon đĩa than xoay nhịp nhàng khi phát nhạc (`is-spinning`), tên bài hát in đậm, thẻ thể loại, thông tin `🎙️ Tác Giả / Nghệ Sĩ` rõ ràng, đường dẫn file và player audio nghe thử trực tiếp.
+    - **Popup Modal tra cứu chuyên sâu**:
+      - *Tìm kiếm & Lọc thể loại*: Ô input live search đa năng (tìm theo tên bài, tên tác giả, thể loại) kết hợp hàng chip phân loại nhanh (`Tất Cả`, `✨ Tuyển Chọn`, `🎻 Cổ Điển`, `🎹 Piano Solo`, `🎸 Acoustic`, `🇻🇳 Nhạc Việt`, `💿 Theo Mẫu`).
+      - *Bảng danh sách bài hát trực quan*: Tách bạch 6 cột tiêu chuẩn gồm: **Nghe thử (Inline Play/Pause Button)**, **Tên Bài Nhạc (kèm mô tả cảm xúc)**, **Tác Giả / Nghệ Sĩ**, **Thể Loại**, **Thời Lượng**, và **Nút Hành Động (`Chọn Bài Này` / `✓ Đang Chọn`)**.
+      - *Trình phát nghe thử độc lập*: Admin có thể bấm nút ▶ ở bất kỳ bài hát nào để nghe thử trực tiếp trước khi quyết định chọn. Tự động chuyển trạng thái nút sang biểu tượng tạm dừng ⏸ và chỉ phát 1 bài tại một thời điểm.
+      - *Đồng bộ tức thì*: Khi bấm `Chọn Bài Này`, modal tự động đóng, cập nhật giá trị `music_url`, cập nhật thẻ thông tin bài hát và nạp lại trình phát chính trên trang.
+      - Hỗ trợ phím tắt `ESC` hoặc bấm ra ngoài màn hình mờ để đóng modal nhanh.
+- **Kiểm thử tự động**:
+  - Mở rộng `tests/Feature/AdminTemplateCustomizationTest.php` bổ sung kiểm tra hiển thị popup modal chọn nhạc, phân tách cột Tác Giả / Bài Nhạc và các thẻ select tìm kiếm.
+  - Toàn bộ 25 tests trong 4 test suites liên quan đến Template (`AdminTemplateTest`, `AdminTemplateReleaseLabTest`, `AdminTemplateCustomizationTest`, `Gate2TemplateStudioAndSyncInvariantsTest`) đều PASS 100% với 243 assertions.
+  - Định dạng mã nguồn chuẩn Laravel Pint (`vendor/bin/pint --dirty --format agent`).

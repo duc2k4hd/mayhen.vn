@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initUserDropdown();
     initCopyHelpers();
     initCommandPalette();
+    initSearchableSelects();
 });
 
 /**
@@ -284,4 +285,205 @@ export function showToast(message, type = 'info') {
 
 // Make accessible globally
 window.mayhenAdminToast = showToast;
+
+/**
+ * 5. Chuẩn Hóa Chuỗi Tìm Kiếm Tiếng Việt (Bỏ dấu, lower case)
+ */
+export function removeVietnameseAccents(str) {
+    if (!str) return '';
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
+}
+window.removeVietnameseAccents = removeVietnameseAccents;
+
+/**
+ * 6. Khởi Tạo Tích Hợp Tìm Kiếm Nhanh Cho Toàn Bộ Thẻ Select (Searchable Selects)
+ * Native Vanilla ES Modules - Zero External Libs
+ */
+export function initSearchableSelects(root = document) {
+    const selects = root.querySelectorAll('select.mayhen_admin_form_select:not([data-no-search]), select[data-searchable="true"]');
+
+    selects.forEach(select => {
+        // Tránh khởi tạo trùng lặp nếu select đã được bọc
+        if (select.closest('.mayhen_admin_select_wrapper')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mayhen_admin_select_wrapper';
+        if (select.id) wrapper.setAttribute('data-select-id', select.id);
+
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+        select.classList.add('mayhen_admin_native_select');
+
+        // Trigger Button
+        const trigger = document.createElement('div');
+        trigger.className = 'mayhen_admin_select_trigger';
+        trigger.setAttribute('tabindex', '0');
+        trigger.setAttribute('role', 'combobox');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const label = document.createElement('span');
+        label.className = 'mayhen_admin_select_trigger_label';
+
+        const arrow = document.createElement('div');
+        arrow.className = 'mayhen_admin_select_trigger_arrow';
+        arrow.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+        trigger.appendChild(label);
+        trigger.appendChild(arrow);
+        wrapper.appendChild(trigger);
+
+        // Dropdown Menu
+        const dropdown = document.createElement('div');
+        dropdown.className = 'mayhen_admin_select_dropdown';
+
+        // Search Box
+        const searchBox = document.createElement('div');
+        searchBox.className = 'mayhen_admin_select_search_box';
+        searchBox.innerHTML = `
+            <svg class="mayhen_admin_select_search_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" class="mayhen_admin_select_search_input" placeholder="🔍 Tìm kiếm nhanh..." autocomplete="off">
+        `;
+        dropdown.appendChild(searchBox);
+
+        const searchInput = searchBox.querySelector('input');
+
+        // Options List
+        const optionsList = document.createElement('ul');
+        optionsList.className = 'mayhen_admin_select_options';
+        dropdown.appendChild(optionsList);
+
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'mayhen_admin_select_empty';
+        emptyMsg.textContent = 'Không tìm thấy kết quả phù hợp';
+        emptyMsg.style.display = 'none';
+        dropdown.appendChild(emptyMsg);
+
+        wrapper.appendChild(dropdown);
+
+        // Render options from native select
+        function renderOptions() {
+            optionsList.innerHTML = '';
+            const selectedOpt = select.options[select.selectedIndex];
+            label.textContent = selectedOpt ? selectedOpt.text : 'Chọn một mục...';
+
+            Array.from(select.options).forEach((opt, idx) => {
+                const li = document.createElement('li');
+                li.className = 'mayhen_admin_select_option' + (opt.selected ? ' is-selected' : '');
+                li.textContent = opt.text;
+                li.setAttribute('data-value', opt.value);
+                li.setAttribute('data-index', idx);
+
+                li.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    select.selectedIndex = idx;
+                    select.value = opt.value;
+                    label.textContent = opt.text;
+
+                    // Trigger native change and input events
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                    select.dispatchEvent(new Event('input', { bubbles: true }));
+
+                    closeDropdown();
+                    trigger.focus();
+                });
+
+                optionsList.appendChild(li);
+            });
+        }
+
+        function filterOptions(query) {
+            const normalized = removeVietnameseAccents(query.trim().toLowerCase());
+            let visibleCount = 0;
+            const items = optionsList.querySelectorAll('.mayhen_admin_select_option');
+
+            items.forEach(item => {
+                const text = removeVietnameseAccents(item.textContent.toLowerCase());
+                if (!query || text.includes(normalized)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        function openDropdown() {
+            // Close other open selects
+            document.querySelectorAll('.mayhen_admin_select_wrapper.is-open').forEach(w => {
+                if (w !== wrapper) w.classList.remove('is-open');
+            });
+
+            wrapper.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+            searchInput.value = '';
+            filterOptions('');
+            setTimeout(() => searchInput.focus(), 50);
+        }
+
+        function closeDropdown() {
+            wrapper.classList.remove('is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (wrapper.classList.contains('is-open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        });
+
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                openDropdown();
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            filterOptions(e.target.value);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDropdown();
+                trigger.focus();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const firstVisible = optionsList.querySelector('.mayhen_admin_select_option:not([style*="display: none"])');
+                if (firstVisible) {
+                    firstVisible.click();
+                }
+            }
+        });
+
+        // Click outside closes dropdown
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+
+        // Sync if select value changes programmatically
+        select.addEventListener('change', () => {
+            const selectedOpt = select.options[select.selectedIndex];
+            if (selectedOpt) {
+                label.textContent = selectedOpt.text;
+                optionsList.querySelectorAll('.mayhen_admin_select_option').forEach(li => {
+                    li.classList.toggle('is-selected', li.getAttribute('data-value') === select.value);
+                });
+            }
+        });
+
+        renderOptions();
+    });
+}
+window.initSearchableSelects = initSearchableSelects;
 
