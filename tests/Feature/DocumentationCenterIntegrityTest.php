@@ -332,3 +332,25 @@ test('các bài hướng dẫn nâng cao Studio V2 hiển thị đầy đủ tí
     $publishResp->assertSee('Publish Impact Report');
     $publishResp->assertSee('Emergency Rollback Snapshot');
 });
+
+test('trang chi tiết tài liệu không chứa thẻ h1 thừa trong thân bài viết và chỉ có 1 thẻ h1 duy nhất cho tiêu đề', function () {
+    $resp = $this->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-001',
+    ]));
+
+    $resp->assertOk();
+    $content = $resp->getContent();
+
+    // Đảm bảo chỉ có đúng 1 thẻ <h1> trên toàn trang (tiêu đề bài viết)
+    expect(substr_count($content, '<h1'))->toBe(1);
+
+    // Kiểm tra tương tự trên Admin Docs SOP
+    $admin = User::factory()->create(['role' => 'admin']);
+    $adminResp = $this->actingAs($admin)->get(route('admin.docs.show', [
+        'category' => 'orders-refunds',
+        'slug' => 'ADM-ORDR-003',
+    ]));
+    $adminResp->assertOk();
+    expect(substr_count($adminResp->getContent(), '<h1'))->toBe(1);
+});

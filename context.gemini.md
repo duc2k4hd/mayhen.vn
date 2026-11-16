@@ -122,7 +122,11 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Documentation Center Suite**: ngày 2026-11-15, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 18/18 test, 127 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 131 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Loại bỏ thẻ H1 trùng lặp trong thân bài viết Docs (`mayhen_docs_detail_article_body`)**:
+  - *Nguyên nhân*: Trong các tệp Markdown tài liệu, dòng đầu tiên thường chứa `# {Tiêu đề bài viết}`. Khi `DocumentationService::renderMarkdown()` phân giải, nó tạo ra thêm một thẻ `<h1 class="mayhen_docs_h1">` bên trong `.mayhen_docs_detail_article_body`, trong khi ở phần header `.mayhen_docs_detail_article_header` layout Blade đã hiển thị thẻ `<h1>{{ $article['title'] }}</h1>`. Điều này dẫn đến trùng lặp giao diện và vi phạm tiêu chuẩn Semantic HTML / SEO (chỉ được có duy nhất 1 thẻ H1 trên một trang web).
+  - *Khắc phục*: Tại `DocumentationService::renderMarkdown()`, bổ sung lệnh bỏ qua tiêu đề cấp 1 `if ($level === 1) { continue; }`. Tiêu đề cấp 2 và 3 (H2, H3) vẫn được hiển thị và đưa vào Mục lục (TOC) một cách chuẩn xác.
+  - *Kiểm thử*: Bổ sung kiểm thử tự động xác nhận số lượng thẻ `<h1>` trên toàn bộ trang chi tiết chỉ là 1, và `mayhen_docs_detail_article_body` hoàn toàn sạch thẻ H1.
 - **Sửa triệt để giao diện Docs UI, Nút Theme Switcher & Accordion Sidebar**: 
   - **Luxury Pill Theme Switcher `[ ☀️ / 🌙 Giao diện Sáng/Tối ]` (Chống co bẹp 100%)**: Hoàn thiện nút bấm viên nang Quiet Luxury chuẩn chỉnh theo mẫu thiết kế (`[ (icon tròn) Giao diện Sáng/Tối ]`). Khóa cứng `min-width: 132px !important; flex: 0 0 auto !important; flex-shrink: 0 !important;` loại bỏ hoàn toàn hiện tượng flexbox co ép nút thành khe rỗng 18px dạng đứng trên mọi độ phân giải. Trên màn hình di động (<=640px), nút tự động chuyển đổi tinh tế thành hình tròn hoàn hảo `36px × 36px` với icon căn giữa, không bị giấu mất hay méo mó.
   - **Cơ chế Event Delegation toàn diện**: Bắt sự kiện trực tiếp ở cấp `document`, kích hoạt hàm `window.toggleDocsTheme()` tức thì mà không phụ thuộc thứ tự nạp DOM, cập nhật đồng bộ thẻ `html[data-theme]`, `body`, `localStorage` và phát hiện thông báo toast mượt mà.

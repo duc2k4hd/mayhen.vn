@@ -314,6 +314,12 @@ class DocumentationService
                 $headingText = trim($hm[2]);
                 $headingId = Str::slug($headingText);
 
+                // Tiêu đề H1 đã được hiển thị trang trọng tại mayhen_docs_detail_article_header trong Blade layout,
+                // loại bỏ H1 trong body để tránh thừa thẻ h1 và tuân thủ chuẩn ngữ nghĩa SEO (chỉ có duy nhất 1 thẻ H1 trên trang).
+                if ($level === 1) {
+                    continue;
+                }
+
                 // Ghi vào TOC cho H2 và H3
                 if ($level === 2 || $level === 3) {
                     $toc[] = [
