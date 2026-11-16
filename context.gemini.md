@@ -122,7 +122,17 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 131 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 135 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Tái thiết kế toàn diện Typography & Giao diện Đọc bài viết (`mayhen_docs_detail_article`)**:
+  - *Nền trắng tinh & Text đen sắc nét*: Chuyển đổi toàn bộ nền khu vực đọc bài viết sang trắng tinh (`#ffffff`), màu chữ đen sâu (`#111827` / `#0f172a`), loại bỏ tone nâu hồng nhờ nhạt, đạt chuẩn độ tương phản cao WCAG AAA.
+  - *Highlight từ khóa trực quan*: Toàn bộ thẻ in đậm `strong`, `b` được gắn background highlight vàng hổ phách nhẹ nhàng (`rgba(245, 158, 11, 0.12)` kèm border mảnh), giúp người đọc quét nhanh từ khóa, tính năng và các bước thao tác.
+  - *Hộp Callout & Trích dẫn chuyên nghiệp*:
+    - Sửa thuật toán `renderMarkdown` trong `DocumentationService.php` để gom nhóm các dòng `>` liên tiếp thành một khối hoàn chỉnh thay vì chia nhỏ thành nhiều thẻ rời rạc.
+    - Phân tách rõ ràng giữa Blockquote thông thường (`<blockquote>`) và các hộp chỉ dẫn đặc biệt: Note (`[!NOTE]`), Tip (`[!TIP]`), Warning (`[!WARNING]`), Danger (`[!CAUTION]`), Important (`[!IMPORTANT]`) với icon SVG, badge huy hiệu bo góc và màu sắc nhận diện trực quan.
+  - *Mã nguồn & Biểu đồ hộp ASCII*: Thẻ `<pre class="mayhen_docs_code">` nền xanh đen `#0f172a`, font monospace chuẩn, giữ nguyên định dạng `white-space: pre` để sơ đồ hộp ASCII không bị gãy vỡ, hỗ trợ cuộn ngang mượt mà trên di động.
+  - *Inline Code & Links*: Thẻ code nội dòng nền xám `#f1f5f9` bo viền tinh tế; liên kết màu xanh `#0284c7` gạch chân mảnh hover đổi màu mượt mà.
+  - *Đường kẻ phân cách*: Cú pháp `---` hoặc `***` được phân giải chuẩn thành `<hr class="mayhen_docs_hr">` thanh mảnh thay vì in ra văn bản thô.
+  - *Tối ưu hóa Mobile*: Trên màn hình nhỏ (<= 768px), padding được điều chỉnh vừa vặn (16px), cỡ chữ 15.5px, line-height 1.75, hình ảnh và khối code co giãn linh hoạt 100% không tràn viền.
 - **Loại bỏ thẻ H1 trùng lặp trong thân bài viết Docs (`mayhen_docs_detail_article_body`)**:
   - *Nguyên nhân*: Trong các tệp Markdown tài liệu, dòng đầu tiên thường chứa `# {Tiêu đề bài viết}`. Khi `DocumentationService::renderMarkdown()` phân giải, nó tạo ra thêm một thẻ `<h1 class="mayhen_docs_h1">` bên trong `.mayhen_docs_detail_article_body`, trong khi ở phần header `.mayhen_docs_detail_article_header` layout Blade đã hiển thị thẻ `<h1>{{ $article['title'] }}</h1>`. Điều này dẫn đến trùng lặp giao diện và vi phạm tiêu chuẩn Semantic HTML / SEO (chỉ được có duy nhất 1 thẻ H1 trên một trang web).
   - *Khắc phục*: Tại `DocumentationService::renderMarkdown()`, bổ sung lệnh bỏ qua tiêu đề cấp 1 `if ($level === 1) { continue; }`. Tiêu đề cấp 2 và 3 (H2, H3) vẫn được hiển thị và đưa vào Mục lục (TOC) một cách chuẩn xác.

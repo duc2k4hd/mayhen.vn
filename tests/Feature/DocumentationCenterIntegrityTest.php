@@ -345,6 +345,12 @@ test('trang chi tiết tài liệu không chứa thẻ h1 thừa trong thân bà
     // Đảm bảo chỉ có đúng 1 thẻ <h1> trên toàn trang (tiêu đề bài viết)
     expect(substr_count($content, '<h1'))->toBe(1);
 
+    // Kiểm tra cấu trúc mới: có blockquote, hr, callout, figure, img, strong highlight
+    expect($content)->toContain('mayhen_docs_blockquote');
+    expect($content)->toContain('mayhen_docs_hr');
+    expect($content)->toContain('mayhen_docs_callout');
+    expect($content)->toContain('mayhen_docs_figure');
+
     // Kiểm tra tương tự trên Admin Docs SOP
     $admin = User::factory()->create(['role' => 'admin']);
     $adminResp = $this->actingAs($admin)->get(route('admin.docs.show', [

@@ -248,13 +248,15 @@ class DocumentationService
     protected function renderMarkdown(string $md, array &$toc): string
     {
         $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", $md));
+        $count = count($lines);
         $html = '';
         $inList = false;
         $inOrderedList = false;
         $inCodeBlock = false;
         $codeLang = '';
 
-        foreach ($lines as $line) {
+        for ($i = 0; $i < $count; $i++) {
+            $line = $lines[$i];
             $trimmed = trim($line);
 
             // Xử lý Code block ```
@@ -299,6 +301,22 @@ class DocumentationService
                 continue;
             }
 
+            // Xử lý Thước kẻ phân cách ngang (--- hoặc ***)
+            if (preg_match('/^(?:-{3,}|\*{3,})$/', $trimmed)) {
+                if ($inList) {
+                    $html .= "</ul>\n";
+                    $inList = false;
+                }
+                if ($inOrderedList) {
+                    $html .= "</ol>\n";
+                    $inOrderedList = false;
+                }
+
+                $html .= "<hr class=\"mayhen_docs_hr\">\n";
+
+                continue;
+            }
+
             // Xử lý Headings
             if (preg_match('/^(#{1,6})\s+(.*)$/', $trimmed, $hm)) {
                 if ($inList) {
@@ -330,37 +348,95 @@ class DocumentationService
                 }
 
                 $inlineHtml = $this->renderInlineMarkdown($headingText);
-                $html .= "<h{$level} id=\"{$headingId}\" class=\"mayhen_docs_h{$level}\">{$inlineHtml} <a href=\"#{$headingId}\" class=\"mayhen_docs_anchor\" aria-hidden=\"true\">#</a></h{$level}>\n";
+                $html .= "<h{$level} id=\"{$headingId}\" class=\"mayhen_docs_h{$level}\"><span>{$inlineHtml}</span> <a href=\"#{$headingId}\" class=\"mayhen_docs_anchor\" aria-hidden=\"true\">#</a></h{$level}>\n";
 
                 continue;
             }
 
-            // Xử lý Callouts / Blockquotes > [!TIP], > [!NOTE], > [!WARNING], > [!CAUTION]
+            // Xử lý Callouts / Blockquotes liên tiếp: gom tất cả các dòng bắt đầu bằng `>`
             if (str_starts_with($trimmed, '>')) {
-                $quoteContent = trim(substr($trimmed, 1));
-                $calloutClass = 'mayhen_docs_callout_note';
-                $calloutTitle = 'LƯU Ý';
-
-                if (str_starts_with($quoteContent, '[!TIP]')) {
-                    $calloutClass = 'mayhen_docs_callout_tip';
-                    $calloutTitle = 'MẸO NHỎ';
-                    $quoteContent = trim(substr($quoteContent, 6));
-                } elseif (str_starts_with($quoteContent, '[!NOTE]')) {
-                    $calloutClass = 'mayhen_docs_callout_note';
-                    $calloutTitle = 'LƯU Ý';
-                    $quoteContent = trim(substr($quoteContent, 7));
-                } elseif (str_starts_with($quoteContent, '[!WARNING]')) {
-                    $calloutClass = 'mayhen_docs_callout_warning';
-                    $calloutTitle = 'CẢNH BÁO';
-                    $quoteContent = trim(substr($quoteContent, 10));
-                } elseif (str_starts_with($quoteContent, '[!CAUTION]')) {
-                    $calloutClass = 'mayhen_docs_callout_danger';
-                    $calloutTitle = 'NGUY HIỂM / BẢO MẬT';
-                    $quoteContent = trim(substr($quoteContent, 10));
+                if ($inList) {
+                    $html .= "</ul>\n";
+                    $inList = false;
+                }
+                if ($inOrderedList) {
+                    $html .= "</ol>\n";
+                    $inOrderedList = false;
                 }
 
-                $inlineHtml = $this->renderInlineMarkdown($quoteContent);
-                $html .= "<div class=\"mayhen_docs_callout {$calloutClass}\"><div class=\"mayhen_docs_callout_badge\">{$calloutTitle}</div><div class=\"mayhen_docs_callout_text\">{$inlineHtml}</div></div>\n";
+                $quoteLines = [];
+                while ($i < $count && str_starts_with(trim($lines[$i]), '>')) {
+                    $quoteLines[] = trim(substr(trim($lines[$i]), 1));
+                    $i++;
+                }
+                $i--; // Lùi 1 bước vì vòng for sẽ tăng $i
+
+                $firstLine = $quoteLines[0] ?? '';
+                if (preg_match('/^\[!(NOTE|TIP|WARNING|CAUTION|IMPORTANT)\]\s*(.*)$/i', $firstLine, $cm)) {
+                    $tag = strtoupper($cm[1]);
+                    $restOfFirstLine = trim($cm[2]);
+                    if ($restOfFirstLine !== '') {
+                        $quoteLines[0] = $restOfFirstLine;
+                    } else {
+                        array_shift($quoteLines);
+                    }
+
+                    switch ($tag) {
+                        case 'TIP':
+                            $calloutClass = 'mayhen_docs_callout_tip';
+                            $badgeTitle = 'MẸO NHỎ';
+                            $iconSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+                            break;
+                        case 'WARNING':
+                            $calloutClass = 'mayhen_docs_callout_warning';
+                            $badgeTitle = 'CẢNH BÁO';
+                            $iconSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+                            break;
+                        case 'CAUTION':
+                            $calloutClass = 'mayhen_docs_callout_danger';
+                            $badgeTitle = 'NGUY HIỂM / BẢO MẬT';
+                            $iconSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+                            break;
+                        case 'IMPORTANT':
+                            $calloutClass = 'mayhen_docs_callout_important';
+                            $badgeTitle = 'QUAN TRỌNG';
+                            $iconSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+                            break;
+                        case 'NOTE':
+                        default:
+                            $calloutClass = 'mayhen_docs_callout_note';
+                            $badgeTitle = 'LƯU Ý';
+                            $iconSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+                            break;
+                    }
+
+                    $quoteHtml = '';
+                    foreach ($quoteLines as $ql) {
+                        if ($ql === '') {
+                            $quoteHtml .= "<br>\n";
+                        } else {
+                            $quoteHtml .= '<p class="mayhen_docs_callout_p">'.$this->renderInlineMarkdown($ql)."</p>\n";
+                        }
+                    }
+
+                    $html .= "<div class=\"mayhen_docs_callout {$calloutClass}\">\n";
+                    $html .= "  <div class=\"mayhen_docs_callout_header\">\n";
+                    $html .= "    <span class=\"mayhen_docs_callout_icon\" aria-hidden=\"true\">{$iconSvg}</span>\n";
+                    $html .= "    <span class=\"mayhen_docs_callout_badge\">{$badgeTitle}</span>\n";
+                    $html .= "  </div>\n";
+                    $html .= "  <div class=\"mayhen_docs_callout_text\">\n{$quoteHtml}  </div>\n";
+                    $html .= "</div>\n";
+                } else {
+                    $quoteHtml = '';
+                    foreach ($quoteLines as $ql) {
+                        if ($ql === '') {
+                            $quoteHtml .= "<br>\n";
+                        } else {
+                            $quoteHtml .= '<p>'.$this->renderInlineMarkdown($ql)."</p>\n";
+                        }
+                    }
+                    $html .= "<blockquote class=\"mayhen_docs_blockquote\">\n{$quoteHtml}</blockquote>\n";
+                }
 
                 continue;
             }
