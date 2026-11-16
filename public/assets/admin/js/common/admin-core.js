@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * 1. Sidebar Collapse & Mobile Drawer
+ * 1. Sidebar Collapse (Mini Icon-Only Mode) & Mobile Drawer
  */
 function initSidebar() {
     const layout = document.querySelector('.mayhen_admin_layout');
@@ -22,11 +22,25 @@ function initSidebar() {
 
     if (!layout || !toggleBtn) return;
 
+    function updateToggleTitle() {
+        const isCollapsed = layout.classList.contains('sidebar-collapsed');
+        if (isCollapsed) {
+            toggleBtn.setAttribute('title', 'Mở rộng menu đầy đủ');
+            toggleBtn.setAttribute('aria-label', 'Mở rộng menu đầy đủ');
+            toggleBtn.classList.add('is-collapsed');
+        } else {
+            toggleBtn.setAttribute('title', 'Thu gọn menu (chỉ hiển thị icon)');
+            toggleBtn.setAttribute('aria-label', 'Thu gọn menu (chỉ hiển thị icon)');
+            toggleBtn.classList.remove('is-collapsed');
+        }
+    }
+
     // Restore desktop collapsed state
     const isDesktop = window.innerWidth >= 992;
     if (isDesktop && localStorage.getItem('mayhen_admin_sidebar_collapsed') === 'true') {
         layout.classList.add('sidebar-collapsed');
     }
+    updateToggleTitle();
 
     toggleBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -34,6 +48,7 @@ function initSidebar() {
             layout.classList.toggle('sidebar-collapsed');
             const isCollapsed = layout.classList.contains('sidebar-collapsed');
             localStorage.setItem('mayhen_admin_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            updateToggleTitle();
         } else {
             layout.classList.toggle('sidebar-mobile-open');
         }
@@ -50,6 +65,89 @@ function initSidebar() {
         if (window.innerWidth >= 992) {
             layout.classList.remove('sidebar-mobile-open');
         }
+        updateToggleTitle();
+    });
+
+    initSidebarTooltip();
+}
+
+/**
+ * Global Floating Tooltip for Collapsed Sidebar Items (Zero Clipping)
+ */
+function initSidebarTooltip() {
+    let tooltip = document.getElementById('mayhen_admin_sidebar_floating_tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'mayhen_admin_sidebar_floating_tooltip';
+        tooltip.className = 'mayhen_admin_sidebar_tooltip';
+        tooltip.style.cssText = `
+            position: fixed;
+            z-index: 10050;
+            background: #0F172A;
+            color: #FFFFFF;
+            font-family: var(--mh-admin-font, 'Open Sans', sans-serif);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            display: none;
+            line-height: 1.4;
+        `;
+        document.body.appendChild(tooltip);
+    }
+
+    const links = document.querySelectorAll('.mayhen_admin_nav_link, .mayhen_admin_btn_view_site');
+    links.forEach(link => {
+        // Tự động gán data-tooltip nếu chưa có
+        if (!link.getAttribute('data-tooltip')) {
+            const textSpan = link.querySelector('span:not(.mayhen_admin_nav_icon)');
+            if (textSpan) {
+                link.setAttribute('data-tooltip', textSpan.textContent.trim());
+            }
+        }
+
+        link.addEventListener('mouseenter', () => {
+            const layout = document.querySelector('.mayhen_admin_layout');
+            // Chỉ hiển thị tooltip khi sidebar đang thu gọn trên desktop
+            if (!layout || !layout.classList.contains('sidebar-collapsed') || window.innerWidth < 992) {
+                return;
+            }
+
+            const title = link.getAttribute('data-tooltip');
+            if (!title) return;
+
+            tooltip.textContent = title;
+            tooltip.style.display = 'block';
+
+            const rect = link.getBoundingClientRect();
+            const tooltipHeight = tooltip.offsetHeight || 30;
+            const top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+            const left = rect.right + 12;
+
+            tooltip.style.top = `${Math.max(10, top)}px`;
+            tooltip.style.left = `${left}px`;
+
+            requestAnimationFrame(() => {
+                tooltip.style.opacity = '1';
+                tooltip.style.transform = 'translateX(0)';
+            });
+        });
+
+        link.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = '0';
+            tooltip.style.transform = 'translateX(-4px)';
+            setTimeout(() => {
+                if (tooltip.style.opacity === '0') {
+                    tooltip.style.display = 'none';
+                }
+            }, 150);
+        });
     });
 }
 

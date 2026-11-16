@@ -738,11 +738,11 @@
             <!-- Topbar Header -->
             <header class="mayhen_admin_topbar">
                 <div class="mayhen_admin_topbar_left">
-                    <button type="button" class="mayhen_admin_sidebar_toggle" title="Thu gọn / Mở rộng Menu" aria-label="Menu Toggle">
+                    <button type="button" class="mayhen_admin_sidebar_toggle" title="Thu gọn menu (chỉ hiển thị icon)" aria-label="Menu Toggle">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <path d="M15 9l-3 3 3 3"></path>
                         </svg>
                     </button>
 

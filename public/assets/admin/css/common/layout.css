@@ -288,15 +288,20 @@
     height: 36px;
     border-radius: var(--mh-admin-radius-sm);
     border: 1px solid var(--mh-admin-border);
-    background-color: var(--mh-admin-bg);
-    color: var(--mh-admin-charcoal);
+    background-color: #FFFFFF;
+    color: #475569;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mayhen_admin_sidebar_toggle:hover {
-    background-color: #EDE8DE;
-    color: var(--mh-admin-gold-hover);
+    background-color: #F1F5F9;
+    border-color: #CBD5E1;
+    color: var(--mh-admin-primary, #2563EB);
+}
+
+.mayhen_admin_sidebar_toggle svg {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mayhen_admin_breadcrumbs {
@@ -868,13 +873,107 @@
     backdrop-filter: blur(2px);
 }
 
-/* Collapsed Sidebar on Desktop */
+/* ==========================================================================
+   Collapsed Mini Sidebar on Desktop (Icon-Only Mode with Hover Tooltip)
+   ========================================================================== */
 @media (min-width: 992px) {
     .mayhen_admin_layout.sidebar-collapsed .mayhen_admin_sidebar {
-        transform: translateX(calc(-1 * var(--mh-admin-sidebar-width)));
+        width: 70px;
+        transform: none;
     }
+
     .mayhen_admin_layout.sidebar-collapsed .mayhen_admin_main {
-        margin-left: 0;
+        margin-left: 70px;
+    }
+
+    /* Brand Header in Mini Mode */
+    .sidebar-collapsed .mayhen_admin_sidebar_brand {
+        padding: 10px 0;
+        justify-content: center;
+    }
+
+    .sidebar-collapsed .mayhen_admin_sidebar_brand_text {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .mayhen_admin_sidebar_logo_mark {
+        margin: 0 auto;
+    }
+
+    /* Section Headers turn into sleek hairline dividers */
+    .sidebar-collapsed .mayhen_admin_menu_section {
+        font-size: 0 !important;
+        padding: 0 !important;
+        margin: 12px 14px;
+        height: 1px;
+        background-color: #E2E8F0;
+        overflow: hidden;
+        text-indent: -9999px;
+    }
+
+    /* Menu List in Mini Mode */
+    .sidebar-collapsed .mayhen_admin_nav_menu {
+        padding: 12px 6px 32px 6px;
+    }
+
+    /* Nav Links in Mini Mode */
+    .sidebar-collapsed .mayhen_admin_nav_link {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        margin: 4px auto;
+        justify-content: center;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .sidebar-collapsed .mayhen_admin_nav_link > span:not(.mayhen_admin_nav_icon) {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .mayhen_admin_nav_link .mayhen_admin_nav_badge {
+        display: none !important;
+    }
+
+    .sidebar-collapsed .mayhen_admin_nav_icon {
+        width: 20px;
+        height: 20px;
+        margin: 0 auto;
+    }
+
+    .sidebar-collapsed .mayhen_admin_nav_link.mayhen_admin_nav_link_active::before {
+        left: -6px;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+    }
+
+    /* Footer in Mini Mode */
+    .sidebar-collapsed .mayhen_admin_sidebar_footer {
+        padding: 12px 6px;
+    }
+
+    .sidebar-collapsed .mayhen_admin_btn_view_site {
+        width: 44px;
+        height: 40px;
+        padding: 0;
+        margin: 0 auto;
+        justify-content: center;
+    }
+
+    .sidebar-collapsed .mayhen_admin_btn_view_site span:not(.mayhen_admin_nav_icon) {
+        display: none !important;
+    }
+
+    /* Sidebar Toggle Button Visual Feedback */
+    .sidebar-collapsed .mayhen_admin_sidebar_toggle {
+        background-color: #EFF6FF;
+        border-color: #BFDBFE;
+        color: #2563EB;
+    }
+
+    .sidebar-collapsed .mayhen_admin_sidebar_toggle svg {
+        transform: rotate(180deg);
     }
 }
 

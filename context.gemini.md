@@ -530,3 +530,20 @@ php artisan serve
     - Tiêu đề (h1-h6, Card titles, Active states): `font-weight: 600` (Semi-bold, tuyệt đối không dùng 700/800 quá đậm nặng nề).
     - Bộ điều khiển (Menu, Buttons, Labels, Table headers): `font-weight: 500` (Medium, rõ ràng, không bị mỏng).
     - Thân bài, ô nhập liệu, bảng dữ liệu: `font-weight: 400/500`, màu chữ tương phản cao `#1E293B` trên nền `#F8FAFC` và `#FFFFFF`.
+
+### 5.13. Thu Gọn Menu Dạng Mini Icon-Only, Tooltip Nổi Khi Hover & Nút Toggle Thông Minh
+- **Thu Gọn Dạng Mini (Icon-Only Mode - 70px)**:
+  - Khi thu gọn menu trên Desktop, sidebar **không bị ẩn biến mất** mà thu hẹp về độ rộng chuẩn **70px**, giữ nguyên toàn bộ icon của các chức năng.
+  - Vùng làm việc chính (`mayhen_admin_main`) tự động chuyển `margin-left: 70px` với hiệu ứng trượt êm ái `transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)`.
+  - Header thương hiệu ẩn text "MÂY HẸN Atelier Control", căn giữa biểu tượng logo vuông "M".
+  - Phân mục menu (`mayhen_admin_menu_section`) tự động chuyển thành đường phân cách siêu mảnh 1px (`#E2E8F0`).
+  - Toàn bộ text nhãn và badge số lượng tạm ẩn, các icon được căn giữa hoàn hảo trong hộp nút bo tròn 44x44px.
+- **Tooltip Nổi Toàn Cục Khi Hover (Global Floating Tooltip — Zero Clipping)**:
+  - Tích hợp singleton tooltip gắn trực tiếp vào `document.body` (`#mayhen_admin_sidebar_floating_tooltip`), triệt tiêu 100% lỗi bị cắt cụt (clipping) do thanh cuộn `overflow-y: auto` của sidebar.
+  - Khi rê chuột vào bất kỳ icon nào ở trạng thái thu gọn, nhãn tên chức năng hiển thị nổi bật bên phải icon với nền `#0F172A`, chữ trắng `#FFFFFF`, bo góc 6px và bóng đổ 3D mềm mại.
+  - Tự động ẩn ngay khi chuột rời khỏi icon.
+- **Nút Toggle Thông Minh Đổi Đúng Nhiệm Vụ (`mayhen_admin_sidebar_toggle`)**:
+  - Biểu tượng nút chuyển sang icon layout bảng điều khiển kèm mũi tên thu gọn `<`.
+  - Khi thu gọn, biểu tượng tự xoay 180 độ chuyển thành mũi tên mở rộng `>`, đổi nền xanh nhạt `#EFF6FF`, viền `#BFDBFE` và đổi nhãn trợ năng / tooltip thành *"Mở rộng menu đầy đủ"*.
+  - Khi mở rộng, nút hiển thị tooltip *"Thu gọn menu (chỉ hiển thị icon)"*.
+  - Lưu trạng thái thu gọn vào `localStorage.getItem('mayhen_admin_sidebar_collapsed')` để duy trì trải nghiệm khi chuyển trang.
