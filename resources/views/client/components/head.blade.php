@@ -9,7 +9,9 @@
 @hasSection('meta_keywords')
     <meta name="keywords" content="@yield('meta_keywords')">
 @endif
-
+@hasSection('meta_author')
+    <meta name="author" content="@yield('meta_author')">
+@endif
 
 {{-- Favicon --}}
 @include('client.components.favicon')
@@ -41,12 +43,27 @@
 <meta property="og:title" content="@yield('title', 'Thiệp Cưới Online — ' . config('app.name'))">
 <meta property="og:description" content="@yield('meta_description', config('app.name') . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury.')">
 <meta property="og:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
+@hasSection('og_image_alt')
+    <meta property="og:image:alt" content="@yield('og_image_alt')">
+@endif
+@hasSection('og_image_width')
+    <meta property="og:image:width" content="@yield('og_image_width')">
+@endif
+@hasSection('og_image_height')
+    <meta property="og:image:height" content="@yield('og_image_height')">
+@endif
 
 <!-- Twitter Cards -->
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
 <meta name="twitter:title" content="@yield('title', 'Thiệp Cưới Online — ' . config('app.name'))">
 <meta name="twitter:description" content="@yield('meta_description', config('app.name') . ' — Nền tảng tạo thiệp cưới online cao cấp.')">
 <meta name="twitter:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
+@hasSection('og_image_alt')
+    <meta name="twitter:image:alt" content="@yield('og_image_alt')">
+@endif
+
+<!-- Additional Page-Level Meta Tags -->
+@stack('meta')
 
 <!-- Google Fonts: Playfair Display & Inter (Full Vietnamese Subsets) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">

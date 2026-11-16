@@ -547,3 +547,26 @@ php artisan serve
   - Khi thu gọn, biểu tượng tự xoay 180 độ chuyển thành mũi tên mở rộng `>`, đổi nền xanh nhạt `#EFF6FF`, viền `#BFDBFE` và đổi nhãn trợ năng / tooltip thành *"Mở rộng menu đầy đủ"*.
   - Khi mở rộng, nút hiển thị tooltip *"Thu gọn menu (chỉ hiển thị icon)"*.
   - Lưu trạng thái thu gọn vào `localStorage.getItem('mayhen_admin_sidebar_collapsed')` để duy trì trải nghiệm khi chuyển trang.
+
+### 5.14. Tối Ưu Toàn Diện Meta SEO, Open Graph & Cấu Trúc Schema.org Google Rich Results Cho Cẩm Nang Cưới (`/cam-nang-cuoi/{slug}`)
+- **Vấn đề rà soát & khắc phục**:
+  - *Thẻ Meta & Open Graph cũ*: Thiếu khai báo `og:type = article` (bị rơi vào mặc định `website`), thiếu `og:image` của bài viết (bị rơi vào banner mặc định), thiếu kích thước chuẩn `og:image:width=1200` & `og:image:height=630` phục vụ hiển thị tức thì trên Zalo/Facebook; thiếu các trường chuyên sâu `article:published_time`, `article:modified_time`, `article:author`, `article:section`, `article:tag`.
+  - *Lỗi Blade Directive `@context` ngầm*: Trong các phiên bản Laravel mới, directive `@context(...)` được biên dịch sang mã PHP nội bộ, khiến chuỗi JSON-LD `@context: https://schema.org` bị biến dạng thành thẻ PHP nếu viết dạng mảng thuần Blade. Đã chuẩn hóa toàn bộ thành `'@' . 'context'` và `"@@context"` trên toàn hệ thống.
+  - *Schema.org Breadcrumb & Article*: Schema cũ bị thiếu URL tuyệt đối cho ảnh đại diện, `mainEntityOfPage` thiếu WebPage wrapper, `BreadcrumbList` bị trùng lặp URL khi bài viết không có danh mục, thiếu các thuộc tính quan trọng cho Google Rich Results (`wordCount`, `timeRequired`, `speakable`, `publisher.logo`).
+- **Nâng cấp Hệ thống SEO Head ([`head.blade.php`](resources/views/client/components/head.blade.php))**:
+  - Bổ sung `@hasSection('meta_author')` xuất `<meta name="author">`.
+  - Bổ sung cấu hình Open Graph Image Alt & Dimensions (`og:image:alt`, `og:image:width`, `og:image:height`).
+  - Bổ sung `@stack('meta')` cho phép các trang con linh hoạt gắn thêm các thẻ meta đặc thù của bài viết, tác giả và Twitter Cards labels.
+- **Chuẩn Hóa SEO & Open Graph Trang Chi Tiết Bài Viết ([`show.blade.php`](resources/views/client/pages/blog/show.blade.php))**:
+  - Tiêu đề SEO chuẩn mực: `{meta_title ?: title} | Cẩm Nang Cưới Mây Hẹn`.
+  - Mô tả tự động rút gọn 160 ký tự không chứa thẻ HTML và xuống dòng thừa: `seoDescription`.
+  - URL chuẩn hóa (Canonical URL): Luôn hướng về đường dẫn chính thống `route('blog.show', $post->slug)`, loại bỏ hoàn toàn các tham số tracking như `?utm_source=...` hay `?fbclid=...`.
+  - Nút chia sẻ Zalo & Facebook: Tự động dùng `urlencode($canonicalUrl)` để bài viết được chia sẻ đồng bộ, sạch sẽ.
+  - Tối ưu Core Web Vitals (LCP): Bổ sung `loading="eager"` và `fetchpriority="high"` cho ảnh bìa chính bài viết.
+  - Phòng vệ SEO: Với bài viết bản nháp/chưa xuất bản (khi admin vào xem trước), tự động gắn thẻ `noindex, nofollow` để bảo vệ điểm SEO trang web khỏi việc Google thu thập bài chưa hoàn thiện.
+- **Cấu Trúc Schema.org JSON-LD Đạt Chuẩn Google Rich Results**:
+  - `@type: "BreadcrumbList"`: 4 cấp bậc ngữ nghĩa (Trang chủ -> Cẩm nang cưới -> [Chuyên mục] -> Tiêu đề bài viết), tự động co về 3 cấp bậc hợp lệ khi bài viết không thuộc chuyên mục nào.
+  - `@type: "WebPage"`: Khai báo đầy đủ ngữ cảnh trang, ngôn ngữ `vi-VN`, quan hệ website chính và ảnh đại diện trang.
+  - `@type: "BlogPosting"`: Khai báo đầy đủ `headline`, `image` dạng mảng URL tuyệt đối, ngày xuất bản/cập nhật ISO 8601, `author` (Person), `publisher` (Organization kèm Logo ImageObject), `articleSection`, `keywords`, `wordCount`, `timeRequired` định dạng ISO 8601 Duration, và vùng đọc trợ năng `speakable`.
+- **Kiểm Thử Toàn Diện ([`BlogDetailSeoAndSchemaTest.php`](tests/Feature/BlogDetailSeoAndSchemaTest.php))**:
+  - Đã xây dựng bộ kiểm thử Pest gồm 4 test cases chi tiết, 61 assertions kiểm tra tính toàn vẹn 100% của Meta, Canonical, Robots, Open Graph, Twitter Cards và cấu trúc JSON-LD Schema.

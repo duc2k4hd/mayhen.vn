@@ -1,7 +1,78 @@
 @extends('client.layouts.master')
 
-@section('title', ($post->meta_title ?: $post->title) . ' | ' . config('app.name'))
-@section('meta_description', $post->meta_description ?: ($post->summary ?: Str::limit(strip_tags($post->content), 160)))
+@php
+    $seoTitle = ($post->meta_title ?: $post->title) . ' | Cẩm Nang Cưới ' . config('app.name');
+    $rawDescription = $post->meta_description ?: ($post->summary ?: Str::limit(strip_tags($post->content), 160));
+    $seoDescription = trim(preg_replace('/\s+/', ' ', $rawDescription));
+
+    $canonicalUrl = route('blog.show', $post->slug);
+
+    // Chuẩn hóa ảnh đại diện sang đường dẫn tuyệt đối cho SEO / Social Crawlers
+    $resolvedCover = $post->cover_image_url;
+    if (!empty($resolvedCover)) {
+        $seoCoverImage = Str::startsWith($resolvedCover, ['http://', 'https://'])
+            ? $resolvedCover
+            : asset(ltrim($resolvedCover, '/'));
+    } else {
+        $seoCoverImage = asset('storage/images/client/banners/banner-home.webp');
+    }
+
+    $authorName = $post->author_name ?: ($post->user?->name ?: 'Ban Biên Tập Mây Hẹn');
+    $publishedIso = $post->published_at ? $post->published_at->toIso8601String() : $post->created_at->toIso8601String();
+    $modifiedIso = $post->updated_at ? $post->updated_at->toIso8601String() : $publishedIso;
+
+    // Từ khóa SEO
+    if (!empty($post->meta_keywords)) {
+        $seoKeywords = $post->meta_keywords;
+    } elseif (!empty($post->tags) && is_array($post->tags)) {
+        $seoKeywords = implode(', ', $post->tags);
+    } else {
+        $seoKeywords = $post->title . ', cẩm nang cưới, kinh nghiệm cưới, thiệp cưới online, ' . config('app.name');
+    }
+
+    // Ước tính từ & thời gian đọc
+    $wordCount = str_word_count(strip_tags($post->content));
+    $readingTimeMinutes = $post->reading_time_minutes ?: max(1, (int) ceil($wordCount / 200));
+    $timeRequiredIso = 'PT' . $readingTimeMinutes . 'M';
+@endphp
+
+@section('title', $seoTitle)
+@section('meta_description', $seoDescription)
+@section('meta_keywords', $seoKeywords)
+@section('meta_author', $authorName)
+@section('canonical', $canonicalUrl)
+@section('og_type', 'article')
+@section('og_image', $seoCoverImage)
+@section('og_image_alt', $post->title)
+@section('og_image_width', '1200')
+@section('og_image_height', '630')
+
+@if(!$post->isPublished())
+    @section('robots', 'noindex, nofollow')
+@else
+    @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
+@endif
+
+@push('meta')
+    {{-- Article Open Graph Specifics --}}
+    <meta property="article:published_time" content="{{ $publishedIso }}">
+    <meta property="article:modified_time" content="{{ $modifiedIso }}">
+    <meta property="article:author" content="{{ $authorName }}">
+    @if($post->category)
+        <meta property="article:section" content="{{ $post->category->name }}">
+    @endif
+    @if(!empty($post->tags) && is_array($post->tags))
+        @foreach($post->tags as $tag)
+            <meta property="article:tag" content="{{ $tag }}">
+        @endforeach
+    @endif
+
+    {{-- Twitter Rich Snippet Data --}}
+    <meta name="twitter:label1" content="Tác giả">
+    <meta name="twitter:data1" content="{{ $authorName }}">
+    <meta name="twitter:label2" content="Thời gian đọc">
+    <meta name="twitter:data2" content="{{ $readingTimeMinutes }} phút">
+@endpush
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/blog.css') }}">
@@ -14,12 +85,13 @@
 @push('schema')
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    '@' . 'context' => 'https://schema.org',
     '@graph' => [
+        // 1. BreadcrumbList Semantic Hierarchy
         [
             '@type' => 'BreadcrumbList',
-            '@id' => route('blog.show', $post->slug) . '#breadcrumb',
-            'itemListElement' => [
+            '@id' => $canonicalUrl . '#breadcrumb',
+            'itemListElement' => array_values(array_filter([
                 [
                     '@type' => 'ListItem',
                     'position' => 1,
@@ -32,48 +104,92 @@
                     'name' => 'Cẩm nang cưới',
                     'item' => route('blog.index'),
                 ],
-                [
+                $post->category ? [
                     '@type' => 'ListItem',
                     'position' => 3,
-                    'name' => $post->category?->name ?? 'Chuyên đề',
-                    'item' => $post->category ? route('blog.index', ['category' => $post->category->slug]) : route('blog.index'),
-                ],
+                    'name' => $post->category->name,
+                    'item' => route('blog.index', ['category' => $post->category->slug]),
+                ] : null,
                 [
                     '@type' => 'ListItem',
-                    'position' => 4,
+                    'position' => $post->category ? 4 : 3,
                     'name' => $post->title,
-                    'item' => route('blog.show', $post->slug),
+                    'item' => $canonicalUrl,
                 ],
+            ])),
+        ],
+        // 2. WebPage Representation
+        [
+            '@type' => 'WebPage',
+            '@id' => $canonicalUrl . '#webpage',
+            'url' => $canonicalUrl,
+            'name' => $seoTitle,
+            'description' => $seoDescription,
+            'inLanguage' => 'vi-VN',
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                '@id' => route('home') . '#website',
+                'name' => config('app.name', 'Mây Hẹn'),
+                'url' => route('home'),
+            ],
+            'breadcrumb' => [
+                '@id' => $canonicalUrl . '#breadcrumb',
+            ],
+            'primaryImageOfPage' => [
+                '@type' => 'ImageObject',
+                '@id' => $canonicalUrl . '#primaryimage',
+                'url' => $seoCoverImage,
             ],
         ],
+        // 3. BlogPosting / Article (Google Rich Snippets Compliant)
         [
             '@type' => 'BlogPosting',
-            '@id' => route('blog.show', $post->slug) . '#article',
+            '@id' => $canonicalUrl . '#article',
             'isPartOf' => [
                 '@type' => 'Blog',
                 '@id' => route('blog.index') . '#blog',
                 'name' => 'Cẩm Nang Cưới Mây Hẹn',
                 'publisher' => [
                     '@type' => 'Organization',
-                    'name' => config('app.name'),
+                    'name' => config('app.name', 'Mây Hẹn'),
                     'url' => route('home'),
                 ],
             ],
-            'headline' => $post->title,
-            'description' => $post->summary ?: Str::limit(strip_tags($post->content), 160),
-            'image' => $post->cover_image_url ? [$post->cover_image_url] : [asset('assets/client/images/home/hero-wedding-card.webp')],
-            'datePublished' => $post->published_at ? $post->published_at->toIso8601String() : $post->created_at->toIso8601String(),
-            'dateModified' => $post->updated_at ? $post->updated_at->toIso8601String() : ($post->published_at ? $post->published_at->toIso8601String() : $post->created_at->toIso8601String()),
+            'headline' => Str::limit($post->title, 110),
+            'name' => $post->title,
+            'description' => $seoDescription,
+            'image' => [
+                $seoCoverImage,
+            ],
+            'datePublished' => $publishedIso,
+            'dateModified' => $modifiedIso,
+            'inLanguage' => 'vi-VN',
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $canonicalUrl,
+            ],
             'author' => [
                 '@type' => 'Person',
-                'name' => $post->author_name ?: 'Ban Biên Tập Mây Hẹn',
+                'name' => $authorName,
+                'url' => route('home'),
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => config('app.name'),
+                'name' => config('app.name', 'Mây Hẹn'),
                 'url' => route('home'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('storage/images/client/banners/banner-home.webp'),
+                ],
             ],
-            'mainEntityOfPage' => route('blog.show', $post->slug),
+            'articleSection' => $post->category?->name ?? 'Cẩm nang cưới',
+            'keywords' => $seoKeywords,
+            'wordCount' => $wordCount,
+            'timeRequired' => $timeRequiredIso,
+            'speakable' => [
+                '@type' => 'SpeakableSpecification',
+                'cssSelector' => ['.mayhen_blog_article_title', '.mayhen_blog_article_lead'],
+            ],
         ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
@@ -181,7 +297,7 @@
         {{-- 5. ẢNH BÌA CHÍNH (EDITORIAL COVER IMAGE) --}}
         @if($post->cover_image_url)
             <div class="mayhen_blog_cover_wrapper">
-                <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="mayhen_blog_cover_img" loading="eager">
+                <img src="{{ $seoCoverImage }}" alt="{{ $post->title }}" class="mayhen_blog_cover_img" loading="eager" fetchpriority="high">
                 <figcaption class="mayhen_blog_cover_caption">Hình ảnh minh họa chuyên đề cưới &bull; Mây Hẹn Editorial</figcaption>
             </div>
         @endif
@@ -257,12 +373,12 @@
                         <span class="mayhen_blog_share_label">Bạn thấy bài viết hữu ích? Chia sẻ cùng người thương &amp; bạn bè:</span>
                     </div>
                     <div class="mayhen_blog_share_btns">
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener noreferrer" class="mayhen_blog_share_social_btn mayhen_blog_share_fb" title="Chia sẻ lên Facebook">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($canonicalUrl) }}" target="_blank" rel="noopener noreferrer" class="mayhen_blog_share_social_btn mayhen_blog_share_fb" title="Chia sẻ lên Facebook">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                             <span>Facebook</span>
                         </a>
 
-                        <a href="https://zalo.me/share?url={{ urlencode(request()->url()) }}" target="_blank" rel="noopener noreferrer" class="mayhen_blog_share_social_btn mayhen_blog_share_zalo" title="Chia sẻ qua Zalo">
+                        <a href="https://zalo.me/share?url={{ urlencode($canonicalUrl) }}" target="_blank" rel="noopener noreferrer" class="mayhen_blog_share_social_btn mayhen_blog_share_zalo" title="Chia sẻ qua Zalo">
                             <span class="mayhen_blog_zalo_badge">Zalo</span>
                             <span>Chia sẻ</span>
                         </a>
