@@ -306,3 +306,20 @@ php artisan serve
      - Quá trình tính điểm và lọc chạy thuần trên RAM máy chủ (< 0.05ms), tuyệt đối 0 câu truy vấn DB.
      - Hỗ trợ HTTP 304 Not Modified và ETag cho khách vãng lai, tiết kiệm 99% băng thông và tài nguyên CPU.
 - **Kiểm thử tự động**: `tests/Feature/TemplateSearchAndPerformanceTest.php` kiểm chứng thành công tìm kiếm có dấu, không dấu, từ khóa ghép, zero DB bottleneck và phản hồi HTTP 304. Toàn bộ 113 test suites liên quan đến Template đều PASS 100%.
+
+### 5.3. Hệ Thống Quên & Đặt Lại Mật Khẩu Khách Hàng (`/quen-mat-khau` & `/dat-lai-mat-khau/{token}`)
+- **Controllers**: `ForgotPasswordController`, `ResetPasswordController`.
+- **Mailable**: `CustomerResetPasswordMail` (gửi từ `no-reply@mayhen.vn`, template HTML Quiet Luxury `emails.customer-reset-password`).
+- **Giao diện & Tài nguyên**:
+  - Blade: `resources/views/client/pages/forgot-password.blade.php`, `resources/views/client/pages/reset-password.blade.php`.
+  - CSS: `public/assets/client/css/pages/forgot-password.css`.
+  - JS: `public/assets/client/js/pages/forgot-password.js` (Vanilla JS ES Module, hỗ trợ Light/Dark Theme, Font Scaling, Reduced Motion, Cooldown 60s, Modal hướng dẫn, sao chép nội dung hỗ trợ).
+- **Quy chuẩn Bảo mật Chống Hacker (Hardened Security Invariants)**:
+  1. *Chống Account / User Enumeration*: Dù email có tồn tại hay không trong database, hệ thống luôn phản hồi cùng một thông điệp trung tính ("Nếu địa chỉ email này tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi đến hộp thư của bạn."). Kẻ xấu hoàn toàn không thể dò tìm danh sách tài khoản.
+  2. *Chống Timing Attack*: Chèn độ trễ mô phỏng nhỏ nếu email không tồn tại nhằm ngăn chặn kẻ tấn công đo thời gian phản hồi máy chủ.
+  3. *Token Cryptographically Secure & Hạn sử dụng 48 Tiếng (2880 phút)*:
+     - Cấu hình `config/auth.php` (`expire: 2880 phút`).
+     - Token được tạo bằng thuật toán an toàn và lưu dạng băm SHA-256 trong bảng `password_reset_tokens`.
+  4. *Token Sử Dụng Đúng 1 Lần (Single-Use Token)*: Ngay sau khi người dùng đổi mật khẩu thành công, bản ghi token bị xóa sạch khỏi database; liên kết cũ lập tức mất tác dụng vĩnh viễn, ngăn chặn hoàn toàn việc tái sử dụng hoặc chiếm đoạt liên kết cũ.
+  5. *Chống Brute-Force & Rate Limiting*: Middleware `throttle:6,1` cho gửi yêu cầu email và `throttle:10,1` cho đổi mật khẩu mới.
+- **Kiểm thử tự động**: `tests/Feature/CustomerPasswordResetSecurityTest.php` kiểm chứng 100% các tiêu chí bảo mật (User Enumeration, Hạn 48h, Token mất tác dụng sau khi đổi thành công). Toàn bộ 178 Auth test suites đều PASS. Code formatting chuẩn `vendor/bin/pint --dirty --format agent`.

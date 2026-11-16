@@ -105,7 +105,7 @@
                             <input type="checkbox" name="remember" value="1" class="mayhen_auth_remember_checkbox">
                             <span>Ghi nhớ</span>
                         </label>
-                        <a href="{{ route('contact') }}" class="mayhen_auth_forgot_link">
+                        <a href="{{ route('password.request') }}" class="mayhen_auth_forgot_link">
                             Quên mật khẩu?
                         </a>
                     </div>

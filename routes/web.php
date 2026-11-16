@@ -20,6 +20,7 @@ use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\EmergencyOfflinePackController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\FamilyPortalController;
+use App\Http\Controllers\Client\ForgotPasswordController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GuestController;
@@ -48,6 +49,7 @@ use App\Http\Controllers\Client\PremiumPreviewController;
 use App\Http\Controllers\Client\PrivacyConsentController;
 use App\Http\Controllers\Client\PublishDiffController;
 use App\Http\Controllers\Client\QualityDoctorController;
+use App\Http\Controllers\Client\ResetPasswordController;
 use App\Http\Controllers\Client\RsvpChangeHistoryController;
 use App\Http\Controllers\Client\RsvpEnforcementController;
 use App\Http\Controllers\Client\SeatingPlannerController;
@@ -180,7 +182,12 @@ Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('regis
 Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:auth_attempts')->name('register.submit');
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
 Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
-Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
+
+// Quên & Đặt lại mật khẩu khách hàng (An toàn, link hạn 48h, gửi từ no-reply@mayhen.vn)
+Route::get('/quen-mat-khau', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLinkEmail'])->middleware('throttle:6,1')->name('password.email');
+Route::get('/dat-lai-mat-khau/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/dat-lai-mat-khau', [ResetPasswordController::class, 'reset'])->middleware('throttle:10,1')->name('password.update');
 
 // Checkout & VietQR Payment
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
