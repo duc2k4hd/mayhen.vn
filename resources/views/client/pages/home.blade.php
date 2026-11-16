@@ -152,8 +152,11 @@
 @endpush
 
 @section('content')
+    @php
+        $heroBanner = $heroBannerUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp');
+    @endphp
     <!-- 1. Hero Section -->
-    <section class="mayhen_home_hero">
+    <section class="mayhen_home_hero" style="--mayhen-home-hero-bg-image: url('{{ asset($heroBanner) }}');">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_home_hero_grid">
                 <!-- Left Content -->

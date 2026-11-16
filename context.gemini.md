@@ -395,3 +395,33 @@ php artisan serve
   - Mở rộng `tests/Feature/AdminTemplateCustomizationTest.php` bổ sung kiểm tra hiển thị popup modal chọn nhạc, phân tách cột Tác Giả / Bài Nhạc và các thẻ select tìm kiếm.
   - Toàn bộ 25 tests trong 4 test suites liên quan đến Template (`AdminTemplateTest`, `AdminTemplateReleaseLabTest`, `AdminTemplateCustomizationTest`, `Gate2TemplateStudioAndSyncInvariantsTest`) đều PASS 100% với 243 assertions.
   - Định dạng mã nguồn chuẩn Laravel Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.8. Gắn Ảnh Nền Hero Banner Trang Chủ & Quản Trị Linh Hoạt Trong Admin
+- **Gắn ảnh nền vào khu vực `mayhen_home_hero`**:
+  - Tệp ảnh: [`public/storage/images/client/banners/banner-home.webp`](file:///d:/Project/Laravel/mayhen.vn/public/storage/images/client/banners/banner-home.webp).
+  - Tệp CSS: [`public/assets/client/css/pages/home.css`](public/assets/client/css/pages/home.css) được cập nhật để lớp ảnh nền nằm ở tầng dưới cùng của cấu trúc 3 lớp chuyển tiếp cao cấp:
+    1. Lớp chuyển trắng hai đầu (Dual-Edge Feather Fade): 20% đỉnh hòa mượt vào thanh điều hướng trắng, 40%-100% đáy hòa mượt vào khu vực triển lãm 3D thiệp cưới.
+    2. Lớp chuyển sắc ngang: Trái sáng dịu bảo đảm độ tương phản tối đa cho tiêu đề, mô tả và nút bấm; Phải trong trẻo để tôn vinh bộ 3 mockup điện thoại trên nền ảnh cưới.
+    3. Lớp ambient veil: Làm dịu ánh sáng gắt.
+    4. Lớp ảnh nền: Sử dụng biến CSS `--mayhen-home-hero-bg-image` với fallback mặc định là `/storage/images/client/banners/banner-home.webp`.
+  - Tệp Blade: [`client/pages/home.blade.php`](resources/views/client/pages/home.blade.php) nạp biến CSS `--mayhen-home-hero-bg-image: url('{{ asset($heroBanner) }}');` trực tiếp trên thẻ `<section class="mayhen_home_hero">`.
+- **Cực hạn hiệu năng (Zero DB Query & ETag Cache Invalidation)**:
+  - [`HomeController.php`](app/Http/Controllers/Client/HomeController.php):
+    - Khởi tạo static RAM memoization `protected static ?string $memoizedHeroBanner = null;` kết hợp Application Cache 24h.
+    - Đảm bảo 0 câu truy vấn DB khi tải trang chủ cho hàng triệu khách vãng lai (vượt qua bài test `test_home_page_achieves_zero_database_queries_on_cached_requests`).
+    - Gắn chuỗi URL banner vào ETag hash, bảo đảm khách hàng nhận ngay ảnh mới khi Admin thay đổi mà vẫn tận dụng tối đa HTTP 304 Not Modified.
+- **Tùy biến toàn năng trong Quản trị Admin (`/admin/settings/platform?group=brand_seo`)**:
+  - Service: [`PlatformConfigurationService.php`](app/Services/PlatformConfigurationService.php) bổ sung cấu hình `home_hero_banner` (nhóm `GROUP_BRAND_SEO`) với kiểu dữ liệu `image`.
+  - Controller: [`AdminPlatformSettingController.php`](app/Http/Controllers/Admin/AdminPlatformSettingController.php):
+    - Hỗ trợ tải tệp ảnh lên từ máy tính (qua trường `home_hero_banner_file`).
+    - Tự động lưu tệp mới vào `storage/app/public/images/client/banners/`.
+    - Tự động xóa file cũ trong Storage nếu là file từng upload trước đó nhằm tránh rác đĩa.
+    - Tự động xóa sạch Cache và RAM Memoization của `HomeController` để trang chủ cập nhật ngay lập tức.
+  - Giao diện Admin: [`platform.blade.php`](resources/views/admin/pages/settings/platform.blade.php) bổ sung khung preview ảnh trực tiếp (tỉ lệ 16:9), ô nhập đường dẫn URL linh hoạt và nút bấm tải ảnh mới `📁 Tải Ảnh Mới` với live preview qua `FileReader`.
+- **Kiểm thử tự động**:
+  - Viết mới test suite `tests/Feature/HomeHeroBannerCustomizationTest.php` kiểm tra toàn diện 4 ca kiểm thử:
+    1. Trang chủ client hiển thị đúng biến CSS ảnh nền hero banner.
+    2. Admin xem được cấu hình ảnh hero banner trong Thiết Lập Nền Tảng.
+    3. Admin cập nhật đường dẫn URL hero banner thành công và trang chủ đổi ảnh ngay.
+    4. Admin tải file ảnh mới lên, ảnh cũ trong storage bị xóa và ảnh mới được lưu trữ an toàn.
+  - Đạt 13/13 tests PASS 100% (75 assertions). Định dạng chuẩn Pint (`vendor/bin/pint --dirty --format agent`).

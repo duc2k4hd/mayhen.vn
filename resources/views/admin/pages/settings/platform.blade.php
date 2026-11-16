@@ -273,7 +273,7 @@
                 </div>
 
                 <!-- Form Cập Nhật Cấu Hình -->
-                <form action="{{ route('admin.settings.platform.update', ['group' => $activeGroup]) }}" method="POST">
+                <form action="{{ route('admin.settings.platform.update', ['group' => $activeGroup]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -334,6 +334,47 @@
                                                         style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #8A857C;">
                                                     👁️
                                                 </button>
+                                            </div>
+                                        @elseif($field['type'] === 'image')
+                                            <div style="display: flex; flex-direction: column; gap: 10px; max-width: 550px;">
+                                                <!-- Image Preview Card -->
+                                                <div style="display: flex; gap: 14px; align-items: center; padding: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+                                                    <img src="{{ !empty($field['value']) ? asset($field['value']) : asset('/storage/images/client/banners/banner-home.webp') }}" 
+                                                         alt="{{ $field['label'] }}" 
+                                                         id="preview_{{ $field['key'] }}" 
+                                                         style="width: 140px; height: 78px; object-fit: cover; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF;">
+                                                    <div style="flex: 1; min-width: 0;">
+                                                        <div style="font-size: 0.8125rem; font-weight: 600; color: #0F172A; margin-bottom: 2px;">
+                                                            Xem trước ảnh nền hiện tại
+                                                        </div>
+                                                        <div style="font-size: 0.75rem; color: #64748B;">
+                                                            Tỉ lệ khuyến nghị 16:9 (1920x1080), định dạng WebP, JPG, PNG.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Input URL & Upload button -->
+                                                <div style="display: flex; gap: 8px; align-items: center;">
+                                                    <input type="text" 
+                                                           name="{{ $field['key'] }}" 
+                                                           id="field_{{ $field['key'] }}" 
+                                                           class="mayhen_admin_input" 
+                                                           value="{{ $field['value'] }}" 
+                                                           style="flex: 1; font-family: monospace; font-size: 0.8125rem;" 
+                                                           placeholder="/storage/images/client/banners/..."
+                                                           oninput="document.getElementById('preview_{{ $field['key'] }}').src = this.value;">
+                                                    <label style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8125rem; font-weight: 600; color: #334155; cursor: pointer; white-space: nowrap;">
+                                                        <input type="file" 
+                                                               name="{{ $field['key'] }}_file" 
+                                                               accept="image/webp,image/jpeg,image/png,image/jpg" 
+                                                               style="display: none;" 
+                                                               onchange="if(this.files && this.files[0]){ const r = new FileReader(); r.onload = e => document.getElementById('preview_{{ $field['key'] }}').src = e.target.result; r.readAsDataURL(this.files[0]); document.getElementById('field_{{ $field['key'] }}').value = '[Tệp tải lên mới: ' + this.files[0].name + ']'; }">
+                                                        <span>📁 Tải Ảnh Mới</span>
+                                                    </label>
+                                                </div>
+                                                <div style="font-size: 0.75rem; color: #166534; display: flex; align-items: center; gap: 4px;">
+                                                    <span>✓</span> <span>Tự động dọn dẹp ảnh cũ trong Storage khi thay thế</span>
+                                                </div>
                                             </div>
                                         @else
                                             <input type="text" 

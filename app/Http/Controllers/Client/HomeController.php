@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Models\Review;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +24,8 @@ class HomeController extends Controller
 
     protected static ?Collection $memoizedReviews = null;
 
+    protected static ?string $memoizedHeroBanner = null;
+
     /**
      * Xóa sạch RAM memoization khi có cập nhật dữ liệu.
      */
@@ -31,6 +34,7 @@ class HomeController extends Controller
         self::$memoizedFeatured = null;
         self::$memoizedGallery = null;
         self::$memoizedReviews = null;
+        self::$memoizedHeroBanner = null;
     }
 
     /**
@@ -95,20 +99,30 @@ class HomeController extends Controller
         }
         $featuredReviews = self::$memoizedReviews;
 
-        // 4. Nếu người dùng đã đăng nhập, trả về view cá nhân hóa (không cache qua CDN)
+        // 4. Lấy cấu hình ảnh nền Hero Trang Chủ (Banner Home) - Static RAM Memoization trong worker (0 DB Query)
+        if (self::$memoizedHeroBanner === null) {
+            self::$memoizedHeroBanner = Cache::remember('mayhen_home_hero_banner', 86400, function () {
+                return PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp') ?: '/storage/images/client/banners/banner-home.webp';
+            });
+        }
+        $heroBannerUrl = self::$memoizedHeroBanner;
+
+        // 5. Nếu người dùng đã đăng nhập, trả về view cá nhân hóa (không cache qua CDN)
         if (auth()->check()) {
             return view('client.pages.home', [
                 'featuredTemplates' => $featuredTemplates,
                 'galleryTemplates' => $galleryTemplates,
                 'featuredReviews' => $featuredReviews,
+                'heroBannerUrl' => $heroBannerUrl,
             ]);
         }
 
-        // 5. Tối ưu cho khách vãng lai: ETag & HTTP 304 Not Modified
+        // 6. Tối ưu cho khách vãng lai: ETag & HTTP 304 Not Modified
         $etag = '"mayhen_home_'.md5(
             $featuredTemplates->pluck('id')->join(',').'_'.
             $galleryTemplates->count().'_'.
-            $featuredReviews->pluck('id')->join(',')
+            $featuredReviews->pluck('id')->join(',').'_'.
+            $heroBannerUrl
         ).'"';
 
         if ($request->header('If-None-Match') === $etag) {
@@ -122,6 +136,7 @@ class HomeController extends Controller
                 'featuredTemplates' => $featuredTemplates,
                 'galleryTemplates' => $galleryTemplates,
                 'featuredReviews' => $featuredReviews,
+                'heroBannerUrl' => $heroBannerUrl,
             ])
             ->header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400')
             ->header('ETag', $etag);

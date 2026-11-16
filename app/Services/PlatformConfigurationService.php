@@ -27,6 +27,13 @@ class PlatformConfigurationService
                 'settings' => [
                     'brand_name' => ['label' => 'Tên Thương Hiệu', 'default' => 'Mây Hẹn Atelier', 'is_secret' => false, 'type' => 'text', 'help' => 'Tên hiển thị trên tiêu đề trang, email và hóa đơn.'],
                     'tagline' => ['label' => 'Khẩu Hiệu (Tagline)', 'default' => 'Nền tảng thiệp cưới trực tuyến cao cấp', 'is_secret' => false, 'type' => 'text', 'help' => 'Slogan xuất hiện trên banner và trang giới thiệu.'],
+                    'home_hero_banner' => [
+                        'label' => 'Ảnh Nền Hero Trang Chủ (Banner Home)',
+                        'default' => '/storage/images/client/banners/banner-home.webp',
+                        'is_secret' => false,
+                        'type' => 'image',
+                        'help' => 'Đường dẫn hoặc tải lên tệp ảnh nền cho khu vực mayhen_home_hero trên trang chủ (WebP, JPG, PNG). Tự động dọn ảnh cũ trong Storage khi thay thế.',
+                    ],
                     'support_email' => ['label' => 'Hòm Thư Hỗ Trợ Khách Hàng', 'default' => 'contact@mayhen.vn', 'is_secret' => false, 'type' => 'text', 'help' => 'Email tiếp nhận phản hồi từ cặp đôi và quan khách.'],
                     'hotline' => ['label' => 'Đường Dây Nóng (Hotline)', 'default' => '0988.776.xxx', 'is_secret' => false, 'type' => 'text', 'help' => 'Số điện thoại hiển thị tại chân trang và trung tâm hỗ trợ.'],
                     'default_meta_description' => ['label' => 'Meta Description Mặc Định', 'default' => 'Mây Hẹn - Nền tảng thiết kế & gửi thiệp cưới online phong cách Quiet Luxury cao cấp, lưu trữ trọn đời và quản lý khách mời thông minh.', 'is_secret' => false, 'type' => 'textarea', 'help' => 'Đoạn mô tả ngắn gọn tối ưu cho công cụ tìm kiếm Google.'],

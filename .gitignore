@@ -122,6 +122,7 @@ Thumbs.db
 !/tests/Feature/AdminTemplateTest.php
 !/tests/Feature/AdminTemplateReleaseLabTest.php
 !/tests/Feature/AdminTemplateCustomizationTest.php
+!/tests/Feature/HomeHeroBannerCustomizationTest.php
 !/tests/Feature/AdminGuestJourneyE2ERunnerTest.php
 !/tests/Feature/AdminEntitlementStateMachineTest.php
 !/tests/Feature/ClientSupportTicketTest.php

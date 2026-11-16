@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Controller;
 use App\Models\PlatformSetting;
 use App\Models\PlatformSettingHistory;
@@ -9,6 +10,9 @@ use App\Services\PlatformConfigurationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class AdminPlatformSettingController extends Controller
@@ -56,7 +60,33 @@ class AdminPlatformSettingController extends Controller
             return back()->with('error', 'Nhóm thiết lập không hợp lệ.');
         }
 
-        $result = $this->configService->updateGroupSettings($group, $request->all(), $request->user());
+        $inputs = $request->all();
+
+        // Xử lý tải lên tệp ảnh (ví dụ: home_hero_banner_file)
+        foreach ($request->allFiles() as $fileKey => $file) {
+            $settingKey = str_ends_with($fileKey, '_file') ? substr($fileKey, 0, -5) : $fileKey;
+            if ($file && $file->isValid()) {
+                // Xóa ảnh cũ trong Storage nếu có và là ảnh upload
+                $oldValue = PlatformSetting::getValue($group, $settingKey);
+                if ($oldValue && str_starts_with($oldValue, '/storage/') && $oldValue !== '/storage/images/client/banners/banner-home.webp') {
+                    $relPath = substr(parse_url($oldValue, PHP_URL_PATH), strlen('/storage/'));
+                    if (Storage::disk('public')->exists($relPath)) {
+                        Storage::disk('public')->delete($relPath);
+                    }
+                }
+
+                $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+                $filename = 'banner-home-'.Str::random(10).'.'.$ext;
+                $path = $file->storeAs('images/client/banners', $filename, 'public');
+                $inputs[$settingKey] = '/storage/'.$path;
+            }
+        }
+
+        $result = $this->configService->updateGroupSettings($group, $inputs, $request->user());
+
+        // Xóa memoization và cache home để cập nhật ngay lập tức
+        HomeController::clearMemoization();
+        Cache::forget('mayhen_home_hero_banner');
 
         if ($result['updated'] === 0) {
             return back()->with('info', 'Không có giá trị nào thay đổi trong nhóm thiết lập này.');
