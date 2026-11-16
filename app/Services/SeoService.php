@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SeoRedirect;
+use Illuminate\Support\Facades\Cache;
 
 class SeoService
 {
@@ -55,9 +56,11 @@ class SeoService
     {
         $normalized = SeoRedirect::normalizePath($requestUri);
 
-        return SeoRedirect::active()
-            ->where('source_path', $normalized)
-            ->first();
+        $redirectMap = Cache::remember('seo_active_redirects_map', 3600, function () {
+            return SeoRedirect::active()->get()->keyBy('source_path');
+        });
+
+        return $redirectMap->get($normalized);
     }
 
     /**

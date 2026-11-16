@@ -16,8 +16,8 @@ class SeoRedirectMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Bỏ qua các đường dẫn nội bộ, quản trị, asset hoặc api
-        if ($request->is('admin*', 'assets*', 'storage*', 'api*', '_debugbar*')) {
+        // Bỏ qua các đường dẫn nội bộ, quản trị, asset, api, trung tâm docs tĩnh và sitemap
+        if ($request->is('admin*', 'assets*', 'storage*', 'api*', '_debugbar*', 'docs*', 'sitemap*', 'robots.txt', 'favicon.ico', 'up')) {
             return $next($request);
         }
 

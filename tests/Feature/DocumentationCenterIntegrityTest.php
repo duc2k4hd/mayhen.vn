@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\DocumentationService;
+use Illuminate\Support\Facades\DB;
 
 test('khách vãng lai truy cập trang chủ Client Docs /docs thành công', function () {
     $response = $this->get(route('docs.index'));
@@ -390,4 +391,78 @@ test('sitemap-docs.xml hợp lệ chứa đầy đủ /docs và toàn bộ docs 
     expect($content)->toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect($content)->toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     expect($content)->toContain('</urlset>');
+});
+
+test('đảm bảo zero database queries khi truy cập /docs và /docs/{category}/{slug}', function () {
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+
+    // 1. Truy cập trang chủ /docs
+    $indexResp = $this->get(route('docs.index'));
+    $indexResp->assertOk();
+    expect(DB::getQueryLog())->toBeEmpty();
+
+    // 2. Truy cập chi tiết bài viết
+    $detailResp = $this->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-001',
+    ]));
+    $detailResp->assertOk();
+    expect(DB::getQueryLog())->toBeEmpty();
+
+    // 3. Tìm kiếm docs
+    $searchResp = $this->getJson(route('docs.search', ['q' => 'tiêu điểm']));
+    $searchResp->assertOk();
+    expect(DB::getQueryLog())->toBeEmpty();
+
+    // 4. Sitemap docs
+    $sitemapResp = $this->get('/sitemap-docs.xml');
+    $sitemapResp->assertOk();
+    expect(DB::getQueryLog())->toBeEmpty();
+});
+
+test('kiểm tra ETag và phản hồi 304 Not Modified tối ưu CDN cho hàng triệu user', function () {
+    // 1. Request đầu tiên nhận ETag
+    $resp1 = $this->get(route('docs.index'));
+    $resp1->assertOk();
+    $etag = $resp1->headers->get('ETag');
+    expect($etag)->not->toBeNull();
+    expect($resp1->headers->get('Cache-Control'))->toContain('public');
+
+    // 2. Request thứ 2 gửi If-None-Match nhận 304 Not Modified
+    $resp2 = $this->withHeaders(['If-None-Match' => $etag])->get(route('docs.index'));
+    expect($resp2->getStatusCode())->toBe(304);
+
+    // 3. Tương tự cho trang chi tiết bài viết
+    $artResp = $this->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-001',
+    ]));
+    $artResp->assertOk();
+    $artEtag = $artResp->headers->get('ETag');
+    expect($artEtag)->not->toBeNull();
+
+    $artResp304 = $this->withHeaders(['If-None-Match' => $artEtag])->get(route('docs.show', [
+        'category' => 'getting-started',
+        'slug' => 'CLI-START-001',
+    ]));
+    expect($artResp304->getStatusCode())->toBe(304);
+});
+
+test('DocumentationService memoization và tốc độ thực thi siêu tốc', function () {
+    $service = app(DocumentationService::class);
+
+    // Đo thời gian lấy categories
+    $start = microtime(true);
+    $categories = $service->getCategories('client');
+    $time1 = microtime(true) - $start;
+
+    // Lần 2 lấy từ static memoization
+    $start2 = microtime(true);
+    $categories2 = $service->getCategories('client');
+    $time2 = microtime(true) - $start2;
+
+    expect($categories)->toBe($categories2);
+    // Lần 2 gần như 0s (dưới 5ms)
+    expect($time2)->toBeLessThan(0.005);
 });

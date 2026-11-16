@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class SeoRedirect extends Model
 {
@@ -46,6 +47,12 @@ class SeoRedirect extends Model
         $trimmed = trim($path, '/');
 
         return '/'.$trimmed;
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => Cache::forget('seo_active_redirects_map'));
+        static::deleted(fn () => Cache::forget('seo_active_redirects_map'));
     }
 
     public function scopeActive(Builder $query): Builder
