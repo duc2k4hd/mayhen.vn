@@ -304,7 +304,7 @@ window.removeVietnameseAccents = removeVietnameseAccents;
  * Native Vanilla ES Modules - Zero External Libs
  */
 export function initSearchableSelects(root = document) {
-    const selects = root.querySelectorAll('select.mayhen_admin_form_select:not([data-no-search]), select[data-searchable="true"]');
+    const selects = root.querySelectorAll('select.mayhen_admin_form_select:not([data-no-search]), select.mayhen_admin_select:not([data-no-search]), select[data-searchable="true"]');
 
     selects.forEach(select => {
         // Tránh khởi tạo trùng lặp nếu select đã được bọc
@@ -313,6 +313,10 @@ export function initSearchableSelects(root = document) {
         const wrapper = document.createElement('div');
         wrapper.className = 'mayhen_admin_select_wrapper';
         if (select.id) wrapper.setAttribute('data-select-id', select.id);
+
+        // Kế thừa độ rộng tối đa và chiều rộng nếu có từ thẻ select gốc
+        if (select.style.maxWidth) wrapper.style.maxWidth = select.style.maxWidth;
+        if (select.style.width && select.style.width !== '100%') wrapper.style.width = select.style.width;
 
         select.parentNode.insertBefore(wrapper, select);
         wrapper.appendChild(select);
@@ -377,7 +381,15 @@ export function initSearchableSelects(root = document) {
                 li.setAttribute('data-value', opt.value);
                 li.setAttribute('data-index', idx);
 
+                if (opt.disabled) {
+                    li.classList.add('is-disabled');
+                    li.style.opacity = '0.5';
+                    li.style.pointerEvents = 'none';
+                    li.style.cursor = 'not-allowed';
+                }
+
                 li.addEventListener('click', (e) => {
+                    if (opt.disabled) return;
                     e.stopPropagation();
                     select.selectedIndex = idx;
                     select.value = opt.value;

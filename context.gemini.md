@@ -487,3 +487,27 @@ php artisan serve
     4. Mailable `CustomerResetPasswordMail` đọc động cấu hình `no-reply` và tên người gửi từ PlatformSetting.
     5. Trang quên mật khẩu Client hiển thị địa chỉ `no-reply` động theo cấu hình hệ thống.
   - Toàn bộ 5/5 tests PASS 100% (24 assertions). Định dạng chuẩn Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.11. Chuẩn Hóa Toàn Diện Hệ Thống Giao Diện Form & Bộ Điều Khiển Toàn Admin (Universal Form & Control Suite)
+- **Nguyên nhân cốt lõi**:
+  - Trước đây, các class định dạng form (`mayhen_admin_input`, `mayhen_admin_select`, `mayhen_admin_search_box`, `mayhen_admin_search_input`, `mayhen_admin_filter_bar`) chỉ được khai báo cục bộ trong một số tệp CSS theo trang (như `invitations.css`), dẫn tới các trang khác (`/admin/templates`, `/admin/settings/platform`, `/admin/orders`, `/admin/users`...) bị rơi về giao diện HTML mặc định thô sơ của trình duyệt (Windows 98-like unstyled inputs/selects).
+  - Thẻ `select` trong hàm `initSearchableSelects` ở `admin-core.js` trước đó chỉ truy vấn `select.mayhen_admin_form_select`, bỏ sót các thẻ `select.mayhen_admin_select`.
+- **Hệ thống giải pháp chuẩn hóa toàn diện**:
+  1. **Base Styles Toàn Cục ([`base.css`](public/assets/admin/css/common/base.css))**:
+     - Cung cấp kiểu dáng nền tảng cho mọi thẻ form HTML native (`input[type="text"]`, `password`, `email`, `number`, `search`, `select`, `textarea`). Đảm bảo ngay cả khi trang không gắn class cụ thể, các ô nhập liệu vẫn luôn có viền Slate `#CBD5E1` thanh lịch, góc bo 6-8px, padding chuẩn và hiệu ứng focus xanh dương dịu mắt (`0 0 0 3px rgba(37, 99, 235, 0.12)`).
+     - Thẻ `select` native được tích hợp icon chevron SVG tinh gọn thay cho mũi tên thô mặc định của hệ điều hành.
+  2. **Bộ Thư Viện Form Master ([`layout.css`](public/assets/admin/css/common/layout.css))**:
+     - `.mayhen_admin_input`, `.mayhen_admin_form_input`: Chiều cao chuẩn 40px, padding 8px 14px, font Open Sans, bóng đổ tinh tế.
+     - `.mayhen_admin_textarea`, `.mayhen_admin_form_textarea`: Tự co giãn theo chiều dọc, padding 10px 14px, line-height 1.5.
+     - `.mayhen_admin_filter_bar`, `.mayhen_admin_filter_form`: Khung thanh lọc màu trắng bo góc 10px, shadow nhẹ, flexbox căn giữa tự động.
+     - `.mayhen_admin_search_box`, `.mayhen_admin_search_input`: Ô tìm kiếm bo tròn với icon kính lúp, nền `#F8FAFC`, outline none, tự bắt sáng khi focus.
+     - Phân nhóm form: `.mayhen_admin_label`, `.mayhen_admin_form_group`, `.mayhen_admin_field_row`, `.mayhen_admin_field_grid`, `.mayhen_admin_form_grid_2`, `.mayhen_admin_form_grid_3`.
+     - Điều khiển nâng cao: `.mayhen_admin_switch` & `.mayhen_admin_slider`, `.mayhen_admin_checkbox_label`, `.mayhen_admin_secret_badge`.
+     - Phân trang chuẩn hóa: Tự động tạo kiểu giao diện Slate Quiet Luxury cho toàn bộ `nav[role="navigation"]` của `$items->links()`.
+     - Modal chuẩn hóa toàn hệ thống: `.mayhen_admin_modal_overlay`, `.mayhen_admin_modal_dialog`, `.mayhen_admin_modal_header`, `.mayhen_admin_modal_footer`.
+  3. **Tự Động Kích Hoạt Tìm Kiếm Nhanh Mọi Select ([`admin-core.js`](public/assets/admin/js/common/admin-core.js))**:
+     - Mở rộng bộ chọn `root.querySelectorAll` bao hàm cả `select.mayhen_admin_select` và `select.mayhen_admin_form_select`.
+     - Kế thừa thông minh `maxWidth` và `width` từ thẻ select gốc vào wrapper để không làm vỡ bố cục form.
+     - Hỗ trợ đầy đủ trạng thái `opt.disabled`.
+  4. **Chống Cache Trình Duyệt Tự Động ([`master.blade.php`](resources/views/admin/layouts/master.blade.php))**:
+     - Bổ sung tham số tự động `?v={{ filemtime(...) }}` cho `base.css`, `layout.css` và `admin-core.js`, đảm bảo trình duyệt luôn nạp ngay CSS/JS mới nhất mà không bị lưu cache cũ.
