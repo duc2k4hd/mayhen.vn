@@ -24,54 +24,69 @@ class DocumentationService
     public function getCategories(string $space = 'client'): array
     {
         $space = $this->sanitizeSpace($space);
+
+        if (app()->isLocal()) {
+            return $this->loadCategories($space);
+        }
+
         $cacheKey = "docs_categories_{$space}";
 
         return Cache::remember($cacheKey, 3600, function () use ($space) {
-            $spaceDir = $this->basePath.DIRECTORY_SEPARATOR.$space;
-            if (! is_dir($spaceDir)) {
-                return [];
-            }
-
-            $categories = [];
-            $dirs = glob($spaceDir.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR) ?: [];
-
-            foreach ($dirs as $dir) {
-                $dirName = basename($dir);
-                $parts = explode('-', $dirName, 2);
-                $order = isset($parts[0]) && is_numeric($parts[0]) ? (int) $parts[0] : 99;
-                $catSlug = $parts[1] ?? $dirName;
-
-                $articles = [];
-                $files = glob($dir.DIRECTORY_SEPARATOR.'*.md') ?: [];
-
-                foreach ($files as $file) {
-                    $parsed = $this->parseFile($file);
-                    if ($parsed !== null) {
-                        $parsed['url'] = $this->buildArticleUrl($space, $catSlug, $parsed['id']);
-                        $parsed['slug'] = $parsed['id'];
-                        $articles[] = $parsed;
-                    }
-                }
-
-                // Sắp xếp bài viết theo order
-                usort($articles, fn ($a, $b) => ($a['order'] ?? 99) <=> ($b['order'] ?? 99));
-
-                $catName = ! empty($articles) && ! empty($articles[0]['category'])
-                    ? $articles[0]['category']
-                    : Str::headline($catSlug);
-
-                $categories[$catSlug] = [
-                    'name' => $catName,
-                    'slug' => $catSlug,
-                    'order' => $order,
-                    'articles' => $articles,
-                ];
-            }
-
-            uasort($categories, fn ($a, $b) => $a['order'] <=> $b['order']);
-
-            return $categories;
+            return $this->loadCategories($space);
         });
+    }
+
+    /**
+     * Tải và phân giải danh mục và bài viết từ thư mục tài liệu.
+     *
+     * @return array<string, array{name: string, slug: string, order: int, articles: array<int, array<string, mixed>>}>
+     */
+    protected function loadCategories(string $space): array
+    {
+        $spaceDir = $this->basePath.DIRECTORY_SEPARATOR.$space;
+        if (! is_dir($spaceDir)) {
+            return [];
+        }
+
+        $categories = [];
+        $dirs = glob($spaceDir.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR) ?: [];
+
+        foreach ($dirs as $dir) {
+            $dirName = basename($dir);
+            $parts = explode('-', $dirName, 2);
+            $order = isset($parts[0]) && is_numeric($parts[0]) ? (int) $parts[0] : 99;
+            $catSlug = $parts[1] ?? $dirName;
+
+            $articles = [];
+            $files = glob($dir.DIRECTORY_SEPARATOR.'*.md') ?: [];
+
+            foreach ($files as $file) {
+                $parsed = $this->parseFile($file);
+                if ($parsed !== null) {
+                    $parsed['url'] = $this->buildArticleUrl($space, $catSlug, $parsed['id']);
+                    $parsed['slug'] = $parsed['id'];
+                    $articles[] = $parsed;
+                }
+            }
+
+            // Sắp xếp bài viết theo order
+            usort($articles, fn ($a, $b) => ($a['order'] ?? 99) <=> ($b['order'] ?? 99));
+
+            $catName = ! empty($articles) && ! empty($articles[0]['category'])
+                ? $articles[0]['category']
+                : Str::headline($catSlug);
+
+            $categories[$catSlug] = [
+                'name' => $catName,
+                'slug' => $catSlug,
+                'order' => $order,
+                'articles' => $articles,
+            ];
+        }
+
+        uasort($categories, fn ($a, $b) => $a['order'] <=> $b['order']);
+
+        return $categories;
     }
 
     /**
@@ -386,6 +401,20 @@ class DocumentationService
                 $inOrderedList = false;
             }
 
+            // Xử lý Hình ảnh đứng riêng: ![alt](url)
+            if (preg_match('/^!\[([^\]]*)\]\(([^)]+)\)$/', $trimmed, $imgM)) {
+                $alt = htmlspecialchars(trim($imgM[1]), ENT_QUOTES, 'UTF-8');
+                $url = trim($imgM[2]);
+                $isSafeUrl = str_starts_with($url, '/assets/') || str_starts_with($url, 'https://') || str_starts_with($url, 'http://');
+
+                if ($isSafeUrl && ! preg_match('/javascript:|data:|vbscript:/i', $url)) {
+                    $escapedUrl = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+                    $html .= "<figure class=\"mayhen_docs_figure\"><img src=\"{$escapedUrl}\" alt=\"{$alt}\" class=\"mayhen_docs_img\" loading=\"lazy\"></figure>\n";
+                }
+
+                continue;
+            }
+
             // Đoạn văn thông thường
             $inlineHtml = $this->renderInlineMarkdown($trimmed);
             $html .= "<p class=\"mayhen_docs_p\">{$inlineHtml}</p>\n";
@@ -420,6 +449,21 @@ class DocumentationService
 
         // Italic *text*
         $text = preg_replace('/\*([^*]+)\*/', '<em>$1</em>', $text);
+
+        // Images ![alt](url) - Bắt buộc xử lý TRƯỚC Links [text](url) để tránh nuốt cú pháp ảnh
+        $text = preg_replace_callback('/!\[([^\]]*)\]\(([^)]+)\)/', function ($m) {
+            $alt = htmlspecialchars($m[1], ENT_QUOTES, 'UTF-8');
+            $url = $m[2];
+            $isSafeUrl = str_starts_with($url, '/assets/') || str_starts_with($url, 'https://') || str_starts_with($url, 'http://');
+
+            if (! $isSafeUrl || preg_match('/javascript:|data:|vbscript:/i', $url)) {
+                return '';
+            }
+
+            $escapedUrl = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+
+            return "<img src=\"{$escapedUrl}\" alt=\"{$alt}\" class=\"mayhen_docs_img\" loading=\"lazy\">";
+        }, $text);
 
         // Links [text](url)
         $text = preg_replace_callback('/\[([^\]]+)\]\(([^)]+)\)/', function ($m) {

@@ -1247,7 +1247,14 @@ body[data-theme="dark"],
 }
 
 /* Visual Screenshots & Captions inside Docs */
-.mayhen_docs_detail_article_body img {
+.mayhen_docs_figure {
+  margin: 22px auto 6px auto !important;
+  text-align: center !important;
+}
+
+.mayhen_docs_figure img,
+.mayhen_docs_detail_article_body img,
+.mayhen_docs_img {
   max-width: 100% !important;
   height: auto !important;
   display: block !important;
@@ -1259,17 +1266,23 @@ body[data-theme="dark"],
   transition: transform 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-.mayhen_docs_detail_article_body img:hover {
+.mayhen_docs_figure img:hover,
+.mayhen_docs_detail_article_body img:hover,
+.mayhen_docs_img:hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 14px 36px rgba(31, 29, 26, 0.12) !important;
 }
 
-.mayhen_docs_detail_article_body em {
-  display: block !important;
+.mayhen_docs_detail_article_body p:has(> em:only-child) {
+  text-align: center !important;
+  margin-top: -4px !important;
+  margin-bottom: 24px !important;
+}
+
+.mayhen_docs_detail_article_body p > em:only-child {
+  display: inline-block !important;
   font-size: 13px !important;
   color: var(--mayhen-docs-detail-muted, #7A726A) !important;
-  text-align: center !important;
-  margin: 0 0 24px 0 !important;
   font-style: italic !important;
 }
 

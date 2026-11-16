@@ -132,6 +132,14 @@ php artisan serve
   - `IMPLEMENTED_WITH_SCREENSHOTS`: **108 / 108 bài (100%)** — Toàn bộ 58 bài Client và 50 bài Admin đã được tích hợp đầy đủ ảnh chụp màn hình máy tính (Desktop Screenshots 1440x900) thực tế từ ứng dụng trực tiếp, kèm mô tả các bước thao tác, chú thích ảnh, bảng dữ liệu mẫu và các cảnh báo phòng vệ rủi ro.
   - `PENDING_SCREENSHOT`: **0 bài**.
   - `TODO`: **0 bài**.
+  - **Sửa lỗi hiển thị ảnh Markdown (BUG-DOCS-IMG-RENDER)**:
+    - *Nguyên nhân*: `DocumentationService.php` trước đây chưa cài đặt bộ phân giải cú pháp hình ảnh `![alt](url)`, dẫn đến regex liên kết `[text](url)` nuốt mất phần ruột và hiển thị dạng văn bản thô `!Tên ảnh`.
+    - *Khắc phục*: 
+      1. Bổ sung bộ phân giải thẻ hình ảnh khối chuẩn HTML5 `<figure class="mayhen_docs_figure"><img class="mayhen_docs_img" loading="lazy"></figure>` trong `renderMarkdown`.
+      2. Bổ sung bộ phân giải `!\[([^\]]*)\]\(([^)]+)\)` trong `renderInlineMarkdown` đặt trước liên kết `[text](url)`.
+      3. Phòng vệ XSS: Kiểm tra chặt chẽ URL hợp lệ (`/assets/`, `https://`, `http://`), ngăn chặn triệt để `javascript:`, `data:`, `vbscript:`.
+      4. Tự động bỏ qua cache khi ở môi trường phát triển `app()->isLocal()` để nội dung và ảnh mới luôn hiển thị tức thì khi F5 trình duyệt.
+      5. Tinh chỉnh CSS trong `docs-main.css` định dạng khung hình bo góc 10px, đổ bóng Quiet Luxury và căn chỉnh caption `p:has(> em:only-child)`.
   - **Kho lưu trữ hình ảnh chuẩn hóa**:
     - Phân hệ Client: `public/assets/client/docs/images/client/{category}/{id}-step-{n}.png` (58 bài tương ứng với các danh mục: 01-getting-started, 02-studio-editor, 03-public-invitation, 04-guest-rsvp, 05-seating-planner, 06-checkin-livewall, 07-guestbook-photos, 08-gift-budget, 09-time-capsule, 10-partner-privacy).
     - Phân hệ Admin: `public/assets/client/docs/images/admin/{category}/{id}-step-{n}.png` (50 bài tương ứng với các danh mục: 01-sop-onboarding, 02-dashboard-analytics, 03-public-invitation, 03-users-rbac, 05-templates-releases, 06-orders-refunds, 07-checkin-cockpit, 08-support-messaging, 09-partners-commissions, 10-system-health).
