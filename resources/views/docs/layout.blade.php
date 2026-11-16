@@ -19,6 +19,8 @@
     <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
   @endif
 
+  @include('client.components.favicon')
+
   {{-- Google Fonts: Open Sans & Playfair Display (Full Vietnamese Subsets) --}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
