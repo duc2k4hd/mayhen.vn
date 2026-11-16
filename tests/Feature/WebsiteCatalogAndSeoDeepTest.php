@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\InvitationTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class WebsiteCatalogAndSeoDeepTest extends TestCase
@@ -246,5 +247,56 @@ class WebsiteCatalogAndSeoDeepTest extends TestCase
         $response->assertSee('Về Trang Chủ');
         $response->assertSee(route('home'));
         $response->assertSee(route('templates.index'));
+    }
+
+    /**
+     * PERF-001: Đảm bảo trang chủ đạt Zero Database Query sau khi khởi tạo cache và memoization.
+     */
+    public function test_home_page_achieves_zero_database_queries_on_cached_requests(): void
+    {
+        // 1. Tạo dữ liệu mẫu
+        InvitationTemplate::create([
+            'slug' => 'mau-thi-pham-vang',
+            'name' => 'Mẫu Thi Phẩm Vàng',
+            'category' => 'luxury',
+            'thumbnail_url' => '/images/sample-gold.jpg',
+            'demo_url' => '/xem-thu/mau-thi-pham-vang',
+            'default_config' => ['tier' => 'pro'],
+            'current_version' => 'v1',
+            'is_active' => true,
+            'is_featured' => true,
+        ]);
+
+        // Request 1: Nạp cache & memory
+        $firstResp = $this->get(route('home'));
+        $firstResp->assertOk();
+
+        // Request 2: Đo lường query database
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+
+        $secondResp = $this->get(route('home'));
+        $secondResp->assertOk();
+
+        // Đảm bảo tuyệt đối 0 truy vấn DB khi phục vụ khách truy cập
+        $queries = DB::getQueryLog();
+        $this->assertEmpty($queries, 'Trang chủ phải đạt 0 câu truy vấn DB khi đã có cache!');
+    }
+
+    /**
+     * PERF-002: Kiểm tra ETag và phản hồi HTTP 304 Not Modified của trang chủ.
+     */
+    public function test_home_page_supports_etag_and_304_not_modified_for_guests(): void
+    {
+        $resp1 = $this->get(route('home'));
+        $resp1->assertOk();
+
+        $etag = $resp1->headers->get('ETag');
+        $this->assertNotNull($etag);
+        $this->assertStringContainsString('public', $resp1->headers->get('Cache-Control'));
+
+        // Request gửi kèm If-None-Match nhận phản hồi 304 Not Modified
+        $resp2 = $this->withHeaders(['If-None-Match' => $etag])->get(route('home'));
+        $this->assertEquals(304, $resp2->getStatusCode());
     }
 }

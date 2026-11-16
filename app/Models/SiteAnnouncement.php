@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\SiteAnnouncementService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class SiteAnnouncement extends Model
 {
@@ -51,6 +53,19 @@ class SiteAnnouncement extends Model
             'views_count' => 'integer',
             'clicks_count' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (SiteAnnouncement $announcement) {
+            SiteAnnouncementService::clearMemoization();
+            Cache::forget("mayhen_active_announcement_{$announcement->placement}");
+        });
+
+        static::deleted(function (SiteAnnouncement $announcement) {
+            SiteAnnouncementService::clearMemoization();
+            Cache::forget("mayhen_active_announcement_{$announcement->placement}");
+        });
     }
 
     public function creator(): BelongsTo

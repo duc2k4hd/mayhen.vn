@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Client\HomeController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class Review extends Model
 {
@@ -41,6 +43,19 @@ class Review extends Model
             'reviewed_at' => 'datetime',
             'display_order' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            Cache::forget('mayhen_home_featured_reviews');
+            HomeController::clearMemoization();
+        });
+
+        static::deleted(function () {
+            Cache::forget('mayhen_home_featured_reviews');
+            HomeController::clearMemoization();
+        });
     }
 
     public function user(): BelongsTo

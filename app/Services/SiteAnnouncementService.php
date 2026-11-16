@@ -4,18 +4,44 @@ namespace App\Services;
 
 use App\Models\SiteAnnouncement;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 
 class SiteAnnouncementService
 {
     /**
+     * Runtime static memoization cho worker PHP.
+     */
+    protected static array $memoizedAnnouncements = [];
+
+    public static function clearMemoization(): void
+    {
+        self::$memoizedAnnouncements = [];
+    }
+
+    /**
      * Lấy thông báo hiện hành đang kích hoạt cho vị trí cụ thể.
+     * Tận dụng RAM tĩnh và Cache để loại bỏ triệt để 100% truy vấn DB lặp lại trên toàn trang.
      */
     public function getActiveAnnouncement(string $placement = SiteAnnouncement::PLACEMENT_TOP_BAR): ?SiteAnnouncement
     {
-        return SiteAnnouncement::active()
-            ->forPlacement($placement)
-            ->latest('id')
-            ->first();
+        if (array_key_exists($placement, self::$memoizedAnnouncements)) {
+            return self::$memoizedAnnouncements[$placement];
+        }
+
+        $cacheKey = "mayhen_active_announcement_{$placement}";
+
+        $result = Cache::remember($cacheKey, 600, function () use ($placement) {
+            $item = SiteAnnouncement::active()
+                ->forPlacement($placement)
+                ->latest('id')
+                ->first();
+
+            return $item ?? false;
+        });
+
+        $announcement = $result instanceof SiteAnnouncement ? $result : null;
+
+        return self::$memoizedAnnouncements[$placement] = $announcement;
     }
 
     /**
