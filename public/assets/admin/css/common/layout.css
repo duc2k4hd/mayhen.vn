@@ -143,7 +143,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: red;
+    color: #64748B;
     user-select: none;
 }
 
@@ -675,34 +675,38 @@
 }
 
 /* Tables */
-.mayhen_admin_table_responsive {
+.mayhen_admin_table_responsive,
+.mayhen_admin_table_wrapper,
+.mayhen_admin_table_container {
     width: 100%;
     overflow-x: auto;
+    border-radius: var(--mh-admin-radius-md);
 }
 
 .mayhen_admin_table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: 0.84375rem;
+    color: #1E293B;
 }
 
 .mayhen_admin_table th {
-    background-color: #FAF8F5;
-    color: var(--mh-admin-muted);
+    background-color: #F8FAFC;
+    color: #64748B;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--mh-admin-border);
+    border-bottom: 1px solid #E2E8F0;
     text-align: left;
     white-space: nowrap;
 }
 
 .mayhen_admin_table td {
     padding: 14px 16px;
-    border-bottom: 1px solid var(--mh-admin-border-subtle);
-    color: var(--mh-admin-charcoal);
+    border-bottom: 1px solid #F1F5F9;
+    color: #1E293B;
     vertical-align: middle;
 }
 
@@ -711,7 +715,7 @@
 }
 
 .mayhen_admin_table tr:hover td {
-    background-color: #FAF8F5;
+    background-color: #F8FAFC;
 }
 
 /* Badges */
@@ -1653,4 +1657,170 @@ input:checked + .mayhen_admin_slider:before {
     color: #94A3B8;
     font-style: italic;
 }
+
+/* ==========================================================================
+   MAYHEN ADMIN — UNIVERSAL KPI SYSTEM (Cards, Grids, Icons, Values)
+   ========================================================================== */
+.mayhen_admin_kpi_grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_admin_kpi_card {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    padding: 18px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_admin_kpi_card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+    border-color: #CBD5E1 !important;
+}
+
+.mayhen_admin_kpi_card:not(:has(.mayhen_admin_kpi_icon)) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.mayhen_admin_kpi_icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_admin_kpi_icon svg {
+    width: 22px !important;
+    height: 22px !important;
+    display: block !important;
+}
+
+.mayhen_admin_kpi_content {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.mayhen_admin_kpi_label,
+.mayhen_admin_kpi_title,
+.mayhen_admin_kpi_lbl {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #64748B !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    margin-bottom: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.mayhen_admin_kpi_value,
+.mayhen_admin_kpi_val {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #0F172A !important;
+    line-height: 1.25 !important;
+    margin-bottom: 2px !important;
+    letter-spacing: -0.02em !important;
+}
+
+.mayhen_admin_kpi_sub,
+.mayhen_admin_kpi_meta {
+    font-size: 12px !important;
+    color: #64748B !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* ==========================================================================
+   MAYHEN ADMIN — UNIVERSAL TABS SYSTEM
+   ========================================================================== */
+.mayhen_admin_tabs,
+.mayhen_admin_tabs_nav {
+    display: flex !important;
+    gap: 8px !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    margin-bottom: 24px !important;
+    background: transparent !important;
+    padding: 0 !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_admin_tab,
+.mayhen_admin_tab_btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 18px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #64748B !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+    white-space: nowrap !important;
+    margin-bottom: -1px !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_admin_tab:hover,
+.mayhen_admin_tab_btn:hover {
+    color: #0F172A !important;
+    background-color: #F8FAFC !important;
+    border-radius: 6px 6px 0 0 !important;
+}
+
+.mayhen_admin_tab.active,
+.mayhen_admin_tab--active,
+.mayhen_admin_tab_btn.active {
+    color: #2563EB !important;
+    border-bottom: 2px solid #2563EB !important;
+    font-weight: 600 !important;
+    background: transparent !important;
+}
+
+.mayhen_admin_tab_pane {
+    display: none;
+}
+
+.mayhen_admin_tab_pane.active {
+    display: block;
+}
+
+/* Page description subtitle */
+.mayhen_admin_page_desc,
+.mayhen_admin_page_subtitle {
+    font-size: 13px !important;
+    color: #64748B !important;
+    margin-top: 4px !important;
+    line-height: 1.5 !important;
+}
+
 

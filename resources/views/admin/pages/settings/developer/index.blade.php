@@ -33,23 +33,23 @@
 
 {{-- Hộp Cảnh Báo Hiển Thị Token Duy Nhất 1 Lần --}}
 @if(session('new_plain_key'))
-    <div class="mayhen_admin_card" style="margin-bottom: 24px; border: 1px solid #d4a373; background: linear-gradient(135deg, #fffdfa 0%, #fef8ee 100%);">
+    <div class="mayhen_admin_card" style="margin-bottom: 24px; border: 1px solid #BFDBFE; background: #EFF6FF;">
         <div style="display: flex; gap: 16px; align-items: flex-start; padding: 20px;">
-            <div style="width: 40px; height: 40px; border-radius: 8px; background: #faedcd; color: #b07d3b; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #DBEAFE; color: #2563EB; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
                 </svg>
             </div>
             <div style="flex: 1;">
-                <h3 style="margin: 0 0 6px 0; font-size: 16px; color: #6b4d1b; font-weight: 600;">
+                <h3 style="margin: 0 0 6px 0; font-size: 15px; color: #1E3A8A; font-weight: 600;">
                     Khóa Bí Mật Mới: "{{ session('new_key_name') }}"
                 </h3>
-                <p style="margin: 0 0 12px 0; font-size: 13px; color: #8c6a38; line-height: 1.5;">
+                <p style="margin: 0 0 12px 0; font-size: 13px; color: #1E40AF; line-height: 1.5;">
                     ⚠️ <strong>Lưu ý an ninh tối cao:</strong> Chuỗi mã khóa bên dưới chỉ được hiển thị <strong>DUY NHẤT 1 LẦN NÀY</strong>. Hãy sao chép và lưu trữ an toàn vào hệ thống máy chủ của bạn. Hệ thống Mây Hẹn sẽ chỉ lưu trữ bản mã băm SHA-256 và không bao giờ hiển thị lại chuỗi ký tự này.
                 </p>
                 <div style="display: flex; gap: 8px; align-items: center; max-width: 650px;">
                     <input type="text" id="newPlainKeyInput" readonly value="{{ session('new_plain_key') }}" 
-                           style="flex: 1; font-size: 14px; padding: 10px 14px; background: #ffffff; border: 1px solid #d4a373; border-radius: 6px; color: #1F1D1A; font-weight: 600;">
+                           style="flex: 1; font-size: 14px; padding: 10px 14px; background: #ffffff; border: 1px solid #93C5FD; border-radius: 6px; color: #0F172A; font-weight: 600;">
                     <button type="button" class="mayhen_admin_btn mayhen_admin_btn_primary" onclick="copyPlainKey()" id="copyKeyBtn" style="white-space: nowrap;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -123,20 +123,17 @@
 </div>
 
 {{-- Navigation Tabs --}}
-<div class="mayhen_admin_tabs" style="display: flex; gap: 8px; border-bottom: 1px solid #EFE8DD; margin-bottom: 24px;">
+<div class="mayhen_admin_tabs">
     <a href="{{ route('admin.settings.developer.index', ['tab' => 'api-keys']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'api-keys' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'api-keys' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'api-keys' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'api-keys' ? 'active' : '' }}">
         🔑 Khóa API Nhà Phát Triển ({{ number_format($kpis['total_api_keys']) }})
     </a>
     <a href="{{ route('admin.settings.developer.index', ['tab' => 'webhooks']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'webhooks' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'webhooks' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'webhooks' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'webhooks' ? 'active' : '' }}">
         📡 Quản Trị Webhooks ({{ number_format($kpis['total_webhooks']) }})
     </a>
     <a href="{{ route('admin.settings.developer.index', ['tab' => 'deliveries']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'deliveries' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'deliveries' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'deliveries' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'deliveries' ? 'active' : '' }}">
         📜 Nhật Ký Giao Vận (Deliveries Log)
     </a>
 </div>

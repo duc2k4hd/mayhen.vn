@@ -98,20 +98,17 @@
 </div>
 
 {{-- Navigation Tabs --}}
-<div class="mayhen_admin_tabs" style="display: flex; gap: 8px; border-bottom: 1px solid #EFE8DD; margin-bottom: 24px;">
+<div class="mayhen_admin_tabs">
     <a href="{{ route('admin.system.health.index', ['tab' => 'services-health']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'services-health' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'services-health' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'services-health' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'services-health' ? 'active' : '' }}">
         🩺 Trạng Thái Các Dịch Vụ
     </a>
     <a href="{{ route('admin.system.health.index', ['tab' => 'error-logs']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'error-logs' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'error-logs' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'error-logs' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'error-logs' ? 'active' : '' }}">
         📜 Nhật Ký Lỗi Hệ Thống (Log Viewer)
     </a>
     <a href="{{ route('admin.system.health.index', ['tab' => 'server-metrics']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'server-metrics' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'server-metrics' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'server-metrics' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'server-metrics' ? 'active' : '' }}">
         ⚙️ Chỉ Số Tài Nguyên Runtime
     </a>
 </div>

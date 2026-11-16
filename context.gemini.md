@@ -570,3 +570,17 @@ php artisan serve
   - `@type: "BlogPosting"`: Khai báo đầy đủ `headline`, `image` dạng mảng URL tuyệt đối, ngày xuất bản/cập nhật ISO 8601, `author` (Person), `publisher` (Organization kèm Logo ImageObject), `articleSection`, `keywords`, `wordCount`, `timeRequired` định dạng ISO 8601 Duration, và vùng đọc trợ năng `speakable`.
 - **Kiểm Thử Toàn Diện ([`BlogDetailSeoAndSchemaTest.php`](tests/Feature/BlogDetailSeoAndSchemaTest.php))**:
   - Đã xây dựng bộ kiểm thử Pest gồm 4 test cases chi tiết, 61 assertions kiểm tra tính toàn vẹn 100% của Meta, Canonical, Robots, Open Graph, Twitter Cards và cấu trúc JSON-LD Schema.
+
+### 5.15. Chuẩn Hóa Hệ Thống Thẻ KPI Grid & Thanh Tabs Điều Hướng Toàn Trang Admin ([`layout.css`](public/assets/admin/css/common/layout.css))
+- **Khắc phục lỗi giao diện bị vỡ / trải dài toàn màn hình**:
+  - *Nguyên nhân*: Các class cốt lõi `.mayhen_admin_kpi_grid`, `.mayhen_admin_kpi_card`, `.mayhen_admin_kpi_icon`, `.mayhen_admin_kpi_content`, `.mayhen_admin_kpi_label`, `.mayhen_admin_kpi_value`, `.mayhen_admin_kpi_sub` và `.mayhen_admin_tabs` được dùng ở hầu hết trang chức năng (Quản trị API & Webhooks, Trạng thái Dịch vụ & Logs, Giám sát Bảo mật, Tự động hóa chiến dịch, Hóa đơn...) nhưng chưa được định nghĩa tập trung trong CSS dùng chung. Dẫn đến các thẻ KPI bị hiển thị dưới dạng block dọc thông thường, icon kéo dãn thành dải màu dài vô tận ngang màn hình và tab điều hướng bị dính màu nâu thiệp cưới gắt mắt.
+  - *Sửa lỗi màu sidebar*: Xóa bỏ `color: red;` vô tình bị gắn vào `.mayhen_admin_menu_section`, đưa tiêu đề phân mục menu về màu Slate dịu mắt chuẩn `#64748B`.
+- **Triển khai Hệ Thống Universal KPI Cards**:
+  - Bố cục lưới tự co giãn: `.mayhen_admin_kpi_grid` với `display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;`.
+  - Thẻ chỉ số chuẩn Quiet Luxury: `.mayhen_admin_kpi_card` nền trắng `#FFFFFF`, viền `#E2E8F0`, bo góc 12px, bóng đổ nhẹ `0 1px 3px rgba(0,0,0,0.03)`, hiệu ứng hover nổi nhẹ `translateY(-2px)`.
+  - Khung icon chuẩn hóa: `.mayhen_admin_kpi_icon` cố định kích thước 48x48px, bo góc 10px, căn giữa SVG 22x22px hoàn hảo.
+  - Phân cấp nội dung rõ nét: `.mayhen_admin_kpi_label` chữ in hoa 12px Slate `#64748B`, `.mayhen_admin_kpi_value` cỡ 24px Semi-bold màu đen `#0F172A`, `.mayhen_admin_kpi_sub` cỡ 12px ghi chú ngắn gọn.
+- **Triển khai Hệ Thống Universal Tabs Bar**:
+  - Thanh tab `.mayhen_admin_tabs` và `.mayhen_admin_tabs_nav` có đường phân cách đáy thanh mảnh `1px solid #E2E8F0`.
+  - Nút tab `.mayhen_admin_tab` & `.mayhen_admin_tab_btn` chữ xám Slate `#64748B`, trạng thái active gạch chân xanh hiện đại `#2563EB`, loại bỏ hoàn toàn các màu nâu thiệp cưới `#C5A880` và `#EFE8DD`.
+  - Tự động áp dụng và sửa triệt để trên toàn bộ các trang: Khóa API & Webhooks (`developer/index.blade.php`), Trạng thái Dịch vụ (`health/index.blade.php`), Giám sát Bảo mật (`security/index.blade.php`).

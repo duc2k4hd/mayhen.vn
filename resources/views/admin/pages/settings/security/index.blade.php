@@ -96,20 +96,17 @@
 </div>
 
 {{-- Navigation Tabs --}}
-<div class="mayhen_admin_tabs" style="display: flex; gap: 8px; border-bottom: 1px solid #EFE8DD; margin-bottom: 24px;">
+<div class="mayhen_admin_tabs">
     <a href="{{ route('admin.settings.security.index', ['tab' => 'ip-rules']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'ip-rules' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'ip-rules' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'ip-rules' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'ip-rules' ? 'active' : '' }}">
         🛡️ Sổ Đen & Sổ Trắng IP ({{ number_format($kpis['active_blacklist_count'] + $kpis['whitelist_count']) }})
     </a>
     <a href="{{ route('admin.settings.security.index', ['tab' => 'rate-limits']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'rate-limits' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'rate-limits' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'rate-limits' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'rate-limits' ? 'active' : '' }}">
         ⚙️ Thiết Lập Ngưỡng Rate Limiting
     </a>
     <a href="{{ route('admin.settings.security.index', ['tab' => 'threat-logs']) }}" 
-       class="mayhen_admin_tab {{ $currentTab === 'threat-logs' ? 'active' : '' }}"
-       style="padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none; border-bottom: 2px solid {{ $currentTab === 'threat-logs' ? '#C5A880' : 'transparent' }}; color: {{ $currentTab === 'threat-logs' ? '#1F1D1A' : '#6c757d' }};">
+       class="mayhen_admin_tab {{ $currentTab === 'threat-logs' ? 'active' : '' }}">
         🚨 Nhật Ký Đe Dọa & Giám Sát ({{ number_format($kpis['threats_24h_count']) }})
     </a>
 </div>
