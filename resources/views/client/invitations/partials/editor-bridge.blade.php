@@ -5,9 +5,15 @@
 
 {{-- QUY TẮC TOÀN CỤC: TỰ ĐỘNG MỞ SẴN NỘI DUNG THIỆP MỜI TRONG IFRAME (ZERO-FRICTION AUTO-OPENED PROTOCOL) --}}
 <style id="mayhen_global_auto_opened_styles">
-    /* 1. Mở khóa cuộn mượt mà toàn trang cho html và ẨN HOÀN TOÀN thanh scrollbar trong iframe */
+    /* 1. Mở khóa cuộn mượt mà, triệt tiêu 100% margin thừa, FULL VIỀN TUYỆT ĐỐI và ẨN HOÀN TOÀN thanh scrollbar trong iframe */
+    html,
+    body,
     html.mayhen_embed_mode,
     html.mayhen_template_auto_opened {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
         scroll-behavior: smooth !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
@@ -17,8 +23,15 @@
         -ms-overflow-style: none !important;
     }
 
+    body,
     body.mayhen_embed_mode,
-    body.mayhen_template_auto_opened {
+    body.mayhen_template_auto_opened,
+    body.mayhen_invitation_embed_mode {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
         overflow: visible !important;
         overflow-y: visible !important;
         overflow-x: hidden !important;
@@ -26,6 +39,20 @@
         position: static !important;
         scrollbar-width: none !important;
         -ms-overflow-style: none !important;
+    }
+
+    /* Mẫu thiệp khi preview trong Studio: Full viền tràn mép 100%, không margin thụt lề */
+    .mayhen_embed_mode .mayhen_invitation_root,
+    .mayhen_template_auto_opened .mayhen_invitation_root,
+    .mayhen_invitation_embed_mode .mayhen_invitation_root,
+    .mayhen_invitation_root--embed {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
     html.mayhen_embed_mode::-webkit-scrollbar,

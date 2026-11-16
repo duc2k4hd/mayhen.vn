@@ -53,6 +53,40 @@
     {{-- Favicon chuẩn Mây Hẹn --}}
     @include('client.components.favicon')
 
+    {{-- CSS Reset Cốt Lõi: Full viền tuyệt đối, triệt tiêu 100% margin mặc định của trình duyệt --}}
+    <style id="mayhen_invitation_base_reset">
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            -webkit-text-size-adjust: 100%;
+            box-sizing: border-box;
+        }
+        @if($isEmbed)
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+            .mayhen_invitation_root,
+            .mayhen_invitation_root--embed,
+            [class*="mayhen_invitation_root"] {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+        @endif
+    </style>
+
     {{-- Typography Fonts của từng mẫu thiệp --}}
     @stack('fonts')
 

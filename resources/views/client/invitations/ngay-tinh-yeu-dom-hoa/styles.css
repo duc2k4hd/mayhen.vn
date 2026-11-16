@@ -94,6 +94,14 @@
     --mayhen-invitation-condensed-font: "MayhenCondensed", Impact, sans-serif;
 }
 
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
 .mayhen_invitation_root,
 .mayhen_invitation_root *,
 .mayhen_invitation_root *::before,
@@ -118,7 +126,29 @@
     box-shadow: 0 0 28px rgba(0, 0, 0, 0.08);
 }
 
-/* Studio Embed Mode Protection ($isEmbed = true) */
+/* Studio Embed Mode Protection ($isEmbed = true): Full viền tuyệt đối, triệt tiêu toàn bộ margin/padding thụt lề */
+body.mayhen_embed_mode,
+body.mayhen_invitation_embed_mode,
+body.mayhen_template_auto_opened {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+body.mayhen_embed_mode .mayhen_invitation_root,
+body.mayhen_invitation_embed_mode .mayhen_invitation_root,
+body.mayhen_template_auto_opened .mayhen_invitation_root,
+.mayhen_invitation_root--embed {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
 .mayhen_invitation_root--embed .mayhen_invitation_opening,
 .mayhen_invitation_root--embed .mayhen_invitation_open_text_wrap,
 .mayhen_invitation_root--embed .mayhen_invitation_music_hint {
