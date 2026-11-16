@@ -7,12 +7,12 @@
 
 :root {
     --mh-admin-font: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --mh-admin-bg: #F1F5F9;
+    --mh-admin-bg: #F8FAFC;
     --mh-admin-surface: #FFFFFF;
-    --mh-admin-sidebar-bg: #0F172A;
-    --mh-admin-sidebar-text: #94A3B8;
-    --mh-admin-sidebar-active-bg: rgba(37, 99, 235, 0.12);
-    --mh-admin-sidebar-active-text: #60A5FA;
+    --mh-admin-sidebar-bg: #FFFFFF;
+    --mh-admin-sidebar-text: #334155;
+    --mh-admin-sidebar-active-bg: #EFF6FF;
+    --mh-admin-sidebar-active-text: #2563EB;
     --mh-admin-primary: #2563EB;
     --mh-admin-primary-hover: #1D4ED8;
     --mh-admin-gold: #2563EB;
@@ -48,11 +48,11 @@
     overflow-x: hidden;
 }
 
-/* Sidebar Navigation */
+/* Sidebar Navigation (Clean Light Slate Theme - Easy on the eyes) */
 .mayhen_admin_sidebar {
     width: var(--mh-admin-sidebar-width);
-    background-color: var(--mh-admin-sidebar-bg);
-    color: var(--mh-admin-sidebar-text);
+    background-color: #FFFFFF;
+    color: #334155;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -62,15 +62,19 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid #E2E8F0;
+    box-shadow: 1px 0 4px rgba(0, 0, 0, 0.02);
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mayhen_admin_sidebar::-webkit-scrollbar {
     width: 4px;
 }
+.mayhen_admin_sidebar::-webkit-scrollbar-track {
+    background: #F8FAFC;
+}
 .mayhen_admin_sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: #CBD5E1;
     border-radius: 4px;
 }
 
@@ -81,23 +85,23 @@
     align-items: center;
     gap: 12px;
     padding: 10px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    border-bottom: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
 }
 
 .mayhen_admin_sidebar_logo_mark {
     width: 36px;
     height: 36px;
     border-radius: var(--mh-admin-radius-sm);
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    background: #2563EB;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
     font-family: var(--mh-admin-font);
     font-size: 1.25rem;
-    font-weight: 700;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
     flex-shrink: 0;
 }
 
@@ -108,24 +112,25 @@
 }
 
 .mayhen_admin_sidebar_brand_title {
-    color: #FFFFFF;
+    color: #0F172A;
     font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     line-height: 1.2;
 }
 
 .mayhen_admin_sidebar_brand_sub {
-    color: var(--mh-admin-gold);
+    color: #64748B;
     font-size: 0.6875rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-top: 2px;
+    font-weight: 500;
 }
 
 /* Sidebar Navigation Menu */
 .mayhen_admin_nav_menu {
-    padding: 16px 12px 32px 12px;
+    padding: 12px 10px 32px 10px;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -133,12 +138,12 @@
 }
 
 .mayhen_admin_menu_section {
-    padding: 16px 10px 6px 10px;
+    padding: 16px 12px 6px 12px;
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #71695F;
+    letter-spacing: 0.06em;
+    color: #64748B;
     user-select: none;
 }
 
@@ -146,10 +151,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 9px 12px;
-    border-radius: var(--mh-admin-radius-sm);
-    color: var(--mh-admin-sidebar-text);
-    font-size: 0.875rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #334155;
+    font-size: 0.84375rem;
     font-weight: 500;
     transition: all 0.15s ease;
     text-decoration: none;
@@ -157,13 +162,13 @@
 }
 
 .mayhen_admin_nav_link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: #FFFFFF;
+    background-color: #F1F5F9;
+    color: #0F172A;
 }
 
 .mayhen_admin_nav_link.mayhen_admin_nav_link_active {
-    background-color: var(--mh-admin-sidebar-active-bg);
-    color: #FFFFFF;
+    background-color: #EFF6FF;
+    color: #2563EB;
     font-weight: 600;
 }
 
@@ -174,7 +179,7 @@
     top: 6px;
     bottom: 6px;
     width: 3px;
-    background-color: var(--mh-admin-gold);
+    background-color: #2563EB;
     border-radius: 0 4px 4px 0;
 }
 
@@ -182,37 +187,42 @@
     width: 18px;
     height: 18px;
     flex-shrink: 0;
-    color: #8C847A;
+    color: #64748B;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: color 0.15s ease;
 }
 
-.mayhen_admin_nav_link:hover .mayhen_admin_nav_icon,
+.mayhen_admin_nav_link:hover .mayhen_admin_nav_icon {
+    color: #0F172A;
+}
+
 .mayhen_admin_nav_link.mayhen_admin_nav_link_active .mayhen_admin_nav_icon {
-    color: var(--mh-admin-gold);
+    color: #2563EB;
 }
 
 .mayhen_admin_nav_badge {
     margin-left: auto;
     font-size: 0.6875rem;
-    font-weight: 600;
+    font-weight: 500;
     padding: 2px 7px;
     border-radius: 999px;
     line-height: 1.2;
+    background-color: #F1F5F9;
+    color: #475569;
 }
 
 .mayhen_admin_nav_badge_gold {
-    background-color: rgba(197, 168, 128, 0.2);
-    color: var(--mh-admin-gold);
+    background-color: #EFF6FF;
+    color: #2563EB;
 }
 
 /* Sidebar Footer Actions */
 .mayhen_admin_sidebar_footer {
     padding: 14px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(0, 0, 0, 0.15);
+    border-top: 1px solid #E2E8F0;
+    background-color: #FFFFFF;
 }
 
 .mayhen_admin_btn_view_site {
@@ -221,20 +231,21 @@
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 8px 12px;
+    padding: 9px 14px;
     border-radius: var(--mh-admin-radius-sm);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--mh-admin-sidebar-text);
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #334155;
     font-size: 0.8125rem;
     font-weight: 500;
     transition: all 0.15s ease;
+    box-sizing: border-box;
 }
 
 .mayhen_admin_btn_view_site:hover {
-    background: rgba(197, 168, 128, 0.15);
-    color: #FFFFFF;
-    border-color: var(--mh-admin-gold);
+    background-color: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #0F172A;
 }
 
 /* Main Workspace Area */

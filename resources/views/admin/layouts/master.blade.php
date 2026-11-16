@@ -37,14 +37,14 @@
             <nav class="mayhen_admin_nav_menu" aria-label="Menu quản trị chính">
                 <!-- Section 1: Tổng Quan & Trí Tuệ Vận Hành -->
                 <div class="mayhen_admin_menu_section">Tổng Quan & Trí Tuệ</div>
-                <a href="{{ route('admin.docs.index') }}" target="_blank" rel="noopener" class="mayhen_admin_nav_link {{ request()->routeIs('admin.docs.*') ? 'mayhen_admin_nav_link_active' : '' }}" style="background: rgba(181, 142, 111, 0.1); border-left: 3px solid #b58e6f;">
-                    <span class="mayhen_admin_nav_icon" style="color: #b58e6f;">
+                <a href="{{ route('admin.docs.index') }}" target="_blank" rel="noopener" class="mayhen_admin_nav_link {{ request()->routeIs('admin.docs.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
                     </span>
-                    <span style="font-weight: 700; color: #b58e6f;">Sổ Tay Quy Trình (SOP)</span>
+                    <span>Sổ Tay Quy Trình (SOP)</span>
                 </a>
 
                 <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.dashboard') ? 'mayhen_admin_nav_link_active' : '' }}">
@@ -778,11 +778,11 @@
 
                     <!-- SOP Docs Quick Trigger (TSK-W04-04) -->
                     <a href="{{ route('admin.docs.index') }}" target="_blank" rel="noopener noreferrer" class="mayhen_admin_quick_search_btn" style="text-decoration: none; padding: 6px 12px; gap: 6px;" title="Mở Sổ Tay Quy Trình Vận Hành Tiêu Chuẩn (SOP Docs)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-gold, #B58E6F);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--mh-admin-primary, #2563EB);">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
-                        <span class="mayhen_admin_quick_search_text" style="color: var(--mh-admin-gold, #B58E6F); font-weight: 600;">Sổ Tay SOP</span>
+                        <span class="mayhen_admin_quick_search_text" style="color: var(--mh-admin-primary, #2563EB); font-weight: 500;">Sổ Tay SOP</span>
                     </a>
 
                     <div class="mayhen_admin_user_dropdown_wrap">

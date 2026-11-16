@@ -511,3 +511,22 @@ php artisan serve
      - Hỗ trợ đầy đủ trạng thái `opt.disabled`.
   4. **Chống Cache Trình Duyệt Tự Động ([`master.blade.php`](resources/views/admin/layouts/master.blade.php))**:
      - Bổ sung tham số tự động `?v={{ filemtime(...) }}` cho `base.css`, `layout.css` và `admin-core.js`, đảm bảo trình duyệt luôn nạp ngay CSS/JS mới nhất mà không bị lưu cache cũ.
+
+### 5.12. Tối Ưu Menu Quản Trị Sáng Thanh Lịch (Clean Light Sidebar) & Chuẩn Hóa Typography Open Sans Dịu Mắt
+- **Khắc phục triệt để lỗi màu sắc gây đau mắt & text mỏng**:
+  - *Menu Admin cũ*: Nền đen thẫm (`#0F172A`) tương phản quá gắt, chữ màu bùn nâu (`#71695F`, `#b58e6f`) gây tối, nhòe và căng thẳng thị giác khi làm việc lâu.
+  - *Typography cũ*: Độ đậm `font-weight: 300/400` render trên Windows Chrome bị mỏng mảnh, khó đọc.
+- **Thiết kế Menu Sáng Dịu Mắt (Clean Light Theme)**:
+  - Sidebar nền trắng thuần `#FFFFFF` với đường viền phải thanh mảnh `1px solid #E2E8F0` và bóng mờ tinh tế `1px 0 4px rgba(0, 0, 0, 0.02)`.
+  - Tiêu đề từng phân mục: Chữ Slate `#64748B`, cỡ 11px, `font-weight: 600`, in hoa có khoảng cách chữ vừa phải, cực kỳ dễ đọc.
+  - Các mục điều hướng (Nav Links): Chữ Slate đậm `#334155`, cỡ 13.5px, `font-weight: 500`.
+  - Trạng thái Hover: Nền xám xanh nhẹ `#F1F5F9`, chữ `#0F172A`.
+  - Trạng thái Đang Chọn (Active): Nền xanh dương dịu `#EFF6FF`, chữ xanh `#2563EB`, `font-weight: 600`, vạch định vị trái `3px solid #2563EB`.
+  - Triệt tiêu toàn bộ màu nâu cưới và inline styles `#b58e6f` trong `master.blade.php`, đưa mục "Sổ Tay Quy Trình (SOP)" về cùng chuẩn giao diện thống nhất.
+- **Quy Chuẩn Font Toàn Trang: 100% Google Open Sans**:
+  - Cưỡng chế duy nhất một font family toàn hệ thống: `Open Sans` (`--mh-admin-font`).
+  - Tối ưu khử răng cưa và độ rõ nét: `-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;`.
+  - Cân bằng độ đậm (Weight Balance):
+    - Tiêu đề (h1-h6, Card titles, Active states): `font-weight: 600` (Semi-bold, tuyệt đối không dùng 700/800 quá đậm nặng nề).
+    - Bộ điều khiển (Menu, Buttons, Labels, Table headers): `font-weight: 500` (Medium, rõ ràng, không bị mỏng).
+    - Thân bài, ô nhập liệu, bảng dữ liệu: `font-weight: 400/500`, màu chữ tương phản cao `#1E293B` trên nền `#F8FAFC` và `#FFFFFF`.

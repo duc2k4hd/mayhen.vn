@@ -252,14 +252,15 @@ export function showToast(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.style.cssText = `
-        background: #1B1815;
+        background: #0F172A;
         color: #FFFFFF;
         padding: 10px 18px;
         border-radius: 8px;
-        border-left: 3px solid #C5A880;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        border-left: 3px solid #2563EB;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         font-size: 0.8125rem;
-        font-family: 'Inter', sans-serif;
+        font-family: var(--mh-admin-font, 'Open Sans', sans-serif);
+        font-weight: 500;
         display: flex;
         align-items: center;
         gap: 8px;
