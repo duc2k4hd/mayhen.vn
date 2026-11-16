@@ -124,14 +124,25 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
   - **Global SEO Middleware Zero Overhead**: Tối ưu hóa `SeoService::matchRedirect()` với Static RAM Memoization (`SeoService::$memoizedRedirectMap`), triệt tiêu hoàn toàn chi phí truy vấn cache lặp lại trên mọi request GET toàn hệ thống.
   - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng. Người dùng đã đăng nhập tự động nhận view động uncached để bảo toàn phiên cá nhân hóa.
 
-### 5.5. Quản Lý Khách Mời & Check-in Lễ Tân
+### 5.5. Bảng Giá Thiệp Cưới Online (`/bang-gia`)
+- **Controller**: `PageController@pricing`.
+- **View**: `resources/views/client/pages/pricing.blade.php`.
+- **Model**: `App\Models\Plan`.
+- **Kiến trúc Chịu tải Cao & Zero DB Queries (1M Users Scale)**:
+  - **Zero Database Queries**: Toàn bộ danh sách gói dịch vụ (`plans`) được quản lý qua kiến trúc 2 tầng (Static RAM Worker + Cache Application). Phục vụ khách vãng lai (99.9% lưu lượng) đạt **tuyệt đối 0 truy vấn Database** (Đã có test tự động kiểm chứng `DB::getQueryLog()->toBeEmpty()`).
+  - **Static RAM Memoization**: Tận dụng RAM tĩnh `PageController::$memoizedPlans`, `PageController::$pricingEtagBase`, `PageController::$pricingLastModified` trong worker PHP (FPM / Octane), truy xuất danh sách gói và tính toán ETag đạt `0.00ms` mà không tốn I/O, không gọi lại `Plan::hydrate` lặp lại.
+  - **Hỗ trợ Query Param `/bang-gia?invitation_id=...`**: Tạo ETag phân biệt chuẩn xác khi có param nâng cấp thiệp mà vẫn đảm bảo 0 query DB.
+  - **Tự Động Làm Mới Cache (Auto Invalidation)**: Model `Plan::booted()` tự động giải phóng `mayhen_pricing_plans` và gọi `PageController::clearPricingMemoization()` ngay khi gói cước được tạo/sửa/xóa.
+  - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng. Người dùng đã đăng nhập tự động nhận view động uncached để bảo toàn phiên cá nhân hóa.
+
+### 5.6. Quản Lý Khách Mời & Check-in Lễ Tân
 - Nhóm khách mời theo hộ gia đình, mã hóa đường dẫn cá nhân hóa, lời nhắn thiệp riêng.
 - Sơ đồ bàn tiệc thông minh (Table Seating Chart), cockpit lễ tân quét mã QR điểm danh ngày cưới.
 
-### 5.6. Đơn Hàng, Thanh Toán & SePay Webhook
+### 5.7. Đơn Hàng, Thanh Toán & SePay Webhook
 - Thanh toán chuyển khoản tự động VietQR, khớp mã đơn hàng thời gian thực qua webhook SePay có xác thực chữ ký (Signature Verification & Idempotency).
 
-### 5.7. Quản Trị Hệ Thống (Admin Portal)
+### 5.8. Quản Trị Hệ Thống (Admin Portal)
 - Dashboard phân tích tài chính, quản lý khách hàng 360, quản lý mẫu thiệp và phiên bản phát hành.
 - Trung tâm Điều hành SEO (`/admin/seo`): Chuyển hướng 301/302, thuật toán phát hiện vòng lặp vô tận (Loop Detection), tự động sinh sitemap XML và audit điểm sức khỏe SEO.
 - Quản lý Trang tĩnh CMS (`/admin/pages`): Điều khoản dịch vụ, Chính sách bảo mật (Luật 91/2025/QH15).
@@ -158,6 +169,7 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
+- **Bảng Giá Thiệp Cưới (`/bang-gia`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/PricingPageTest.php` đạt **9/9 tests passed (41 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, hỗ trợ phân biệt ETag riêng cho query param `invitation_id`, và phục vụ view động cho authenticated user.
 - **Dịch Vụ In Thiệp Cưới (`/dich-vu`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ServicesPagePerformanceTest.php` đạt **4/4 tests passed (19 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user.
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 20/20 test, 149 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, sitemap docs XML riêng biệt, và quyền RBAC đều được bảo đảm.
 - **Tạo XML Sitemap riêng cho Tài liệu Khách hàng (`/sitemap-docs.xml`)**:

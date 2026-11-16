@@ -1,4 +1,4 @@
-Hãy kiểm tra và tối ưu hóa toàn diện hiệu năng, tốc độ tải trang và khả năng chịu tải hàng triệu user cho trang /dich-vu.
+Hãy kiểm tra và tối ưu hóa toàn diện hiệu năng, tốc độ tải trang và khả năng chịu tải hàng triệu user cho trang /bang-gia.
 
 Yêu cầu kỹ thuật bắt buộc phải tuân thủ:
 

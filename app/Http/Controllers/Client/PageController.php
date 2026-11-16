@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,12 +26,90 @@ class PageController extends Controller
     protected static ?int $servicesLastModified = null;
 
     /**
+     * Cache danh sách các gói dịch vụ (Plans) và metadata ETag trong worker memory (FPM / Octane).
+     *
+     * @var Collection<int, Plan>|null
+     */
+    protected static ?Collection $memoizedPlans = null;
+
+    protected static ?string $pricingEtagBase = null;
+
+    protected static ?int $pricingLastModified = null;
+
+    /**
      * Xóa sạch RAM memoization khi cần thiết.
      */
     public static function clearMemoization(): void
     {
         self::$servicesEtag = null;
         self::$servicesLastModified = null;
+        self::clearPricingMemoization();
+    }
+
+    /**
+     * Xóa sạch RAM memoization của bảng giá.
+     */
+    public static function clearPricingMemoization(): void
+    {
+        self::$memoizedPlans = null;
+        self::$pricingEtagBase = null;
+        self::$pricingLastModified = null;
+    }
+
+    /**
+     * Lấy danh sách các gói dịch vụ active tối ưu 2 tầng: Static RAM + Cache tầng 2.
+     *
+     * @return Collection<int, Plan>
+     */
+    protected static function getCachedPlans(): Collection
+    {
+        if (self::$memoizedPlans !== null) {
+            return self::$memoizedPlans;
+        }
+
+        $rawPlans = Cache::remember('mayhen_pricing_plans', 86400, function () {
+            $plans = Plan::where('is_active', true)
+                ->whereIn('slug', ['free', 'plus', 'pro'])
+                ->orderBy('price')
+                ->get();
+
+            if ($plans->where('slug', 'plus')->isEmpty()) {
+                $plans = Plan::where('is_active', true)
+                    ->whereIn('slug', ['free', 'premium', 'pro'])
+                    ->orderBy('price')
+                    ->get();
+            }
+
+            return $plans->map->getAttributes()->all();
+        });
+
+        self::$memoizedPlans = Plan::hydrate($rawPlans);
+
+        return self::$memoizedPlans;
+    }
+
+    /**
+     * Tính toán metadata cache cho trang Bảng giá /bang-gia.
+     *
+     * @return array{0: string, 1: int}
+     */
+    protected static function resolvePricingCacheMeta(?string $invitationParam = null): array
+    {
+        if (self::$pricingEtagBase === null || self::$pricingLastModified === null) {
+            $viewPath = resource_path('views/client/pages/pricing.blade.php');
+            $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
+            $plans = self::getCachedPlans();
+            $plansSignature = $plans->map(fn ($p) => $p->id.':'.$p->price.':'.$p->slug)->join('|');
+
+            self::$pricingEtagBase = md5(config('app.version', '1.0.0').'_'.$mtime.'_'.$plansSignature);
+            self::$pricingLastModified = $mtime;
+        }
+
+        $etag = $invitationParam
+            ? '"mayhen_pricing_'.md5(self::$pricingEtagBase.'_inv_'.$invitationParam).'"'
+            : '"mayhen_pricing_'.self::$pricingEtagBase.'"';
+
+        return [$etag, self::$pricingLastModified];
     }
 
     /**
@@ -88,27 +167,41 @@ class PageController extends Controller
             ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
-    public function pricing(): View
+    /**
+     * Hiển thị bảng giá các gói thiệp cưới online (/bang-gia).
+     * Tối ưu hóa cực hạn cho hàng triệu người dùng:
+     * - Zero Database Query cho khách vãng lai (99.9% traffic).
+     * - In-Memory Static RAM Memoization cho danh sách Plans và ETag base.
+     * - Edge CDN Caching qua ETag, Last-Modified & HTTP 304 Not Modified.
+     */
+    public function pricing(Request $request): Response|View
     {
-        $rawPlans = Cache::remember('mayhen_pricing_plans', 86400, function () {
-            $plans = Plan::where('is_active', true)
-                ->whereIn('slug', ['free', 'plus', 'pro'])
-                ->orderBy('price')
-                ->get();
+        $plans = self::getCachedPlans();
 
-            if ($plans->where('slug', 'plus')->isEmpty()) {
-                $plans = Plan::where('is_active', true)
-                    ->whereIn('slug', ['free', 'premium', 'pro'])
-                    ->orderBy('price')
-                    ->get();
-            }
+        // 1. Đối với người dùng đã đăng nhập: Phục vụ view động, không cache public để bảo toàn trạng thái header
+        if ($request->user() !== null) {
+            return view('client.pages.pricing', ['plans' => $plans]);
+        }
 
-            return $plans->map->getAttributes()->all();
-        });
+        // 2. Đối với khách vãng lai: Tối ưu Static RAM + ETag / 304 + Edge CDN
+        $invitationParam = $request->query('invitation_id') ?: $request->query('invitation');
+        [$etag, $mtime] = self::resolvePricingCacheMeta($invitationParam ? (string) $invitationParam : null);
 
-        $plans = Plan::hydrate($rawPlans);
+        // 3. Kiểm tra Header If-None-Match của Client / CDN Cloudflare
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
 
-        return view('client.pages.pricing', ['plans' => $plans]);
+        // 4. Trả về response HTML hoàn chỉnh kèm header tối ưu CDN
+        return response()
+            ->view('client.pages.pricing', ['plans' => $plans])
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     public function howItWorks(): View
