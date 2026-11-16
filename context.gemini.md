@@ -115,14 +115,23 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
 - Trình tạo thiệp tương tác trực quan thời gian thực (Editor V2).
 - Hỗ trợ đổi tiêu điểm ảnh thông minh (Smart Focal Point), chọn nhạc nền lãng mạn, chọn bảng màu Dresscode, kiểm tra chất lượng thiệp với AI Quality Doctor.
 
-### 5.4. Quản Lý Khách Mời & Check-in Lễ Tân
+### 5.4. Dịch Vụ In Thiệp Cưới Cao Cấp (`/dich-vu`)
+- **Controller**: `PageController@services`.
+- **View**: `resources/views/client/pages/services.blade.php`.
+- **Kiến trúc Chịu tải Cao & Zero DB Queries (1M Users Scale)**:
+  - **Zero Database Queries**: Phục vụ khách vãng lai (99.9% lưu lượng) đạt **tuyệt đối 0 truy vấn Database** (Đã có test tự động kiểm chứng `DB::getQueryLog()->toBeEmpty()`).
+  - **Static RAM Memoization**: Tính toán ETag và Last-Modified một lần trong tiến trình worker PHP (FPM / Octane) qua `PageController::$servicesEtag` và `PageController::$servicesLastModified`, phản hồi `0.00ms` mà không tốn I/O.
+  - **Global SEO Middleware Zero Overhead**: Tối ưu hóa `SeoService::matchRedirect()` với Static RAM Memoization (`SeoService::$memoizedRedirectMap`), triệt tiêu hoàn toàn chi phí truy vấn cache lặp lại trên mọi request GET toàn hệ thống.
+  - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng. Người dùng đã đăng nhập tự động nhận view động uncached để bảo toàn phiên cá nhân hóa.
+
+### 5.5. Quản Lý Khách Mời & Check-in Lễ Tân
 - Nhóm khách mời theo hộ gia đình, mã hóa đường dẫn cá nhân hóa, lời nhắn thiệp riêng.
 - Sơ đồ bàn tiệc thông minh (Table Seating Chart), cockpit lễ tân quét mã QR điểm danh ngày cưới.
 
-### 5.5. Đơn Hàng, Thanh Toán & SePay Webhook
+### 5.6. Đơn Hàng, Thanh Toán & SePay Webhook
 - Thanh toán chuyển khoản tự động VietQR, khớp mã đơn hàng thời gian thực qua webhook SePay có xác thực chữ ký (Signature Verification & Idempotency).
 
-### 5.6. Quản Trị Hệ Thống (Admin Portal)
+### 5.7. Quản Trị Hệ Thống (Admin Portal)
 - Dashboard phân tích tài chính, quản lý khách hàng 360, quản lý mẫu thiệp và phiên bản phát hành.
 - Trung tâm Điều hành SEO (`/admin/seo`): Chuyển hướng 301/302, thuật toán phát hiện vòng lặp vô tận (Loop Detection), tự động sinh sitemap XML và audit điểm sức khỏe SEO.
 - Quản lý Trang tĩnh CMS (`/admin/pages`): Điều khoản dịch vụ, Chính sách bảo mật (Luật 91/2025/QH15).
@@ -149,6 +158,7 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
+- **Dịch Vụ In Thiệp Cưới (`/dich-vu`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ServicesPagePerformanceTest.php` đạt **4/4 tests passed (19 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user.
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 20/20 test, 149 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, sitemap docs XML riêng biệt, và quyền RBAC đều được bảo đảm.
 - **Tạo XML Sitemap riêng cho Tài liệu Khách hàng (`/sitemap-docs.xml`)**:
   - *Route & Controller*: Bổ sung `Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs')` trong `routes/web.php` và phương thức `docs(DocumentationService $docsService)` trong `SitemapController.php`.

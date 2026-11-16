@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\InvitationEditorController;
+use App\Http\Controllers\Client\TemplateController;
 use App\Services\InvitationTemplateService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -67,12 +68,10 @@ class InvitationTemplate extends Model
         Cache::forget('mayhen_sitemap_xml');
         Cache::forget('mayhen_active_templates_collection');
         Cache::forget('mayhen_default_free_template');
-        Cache::forget('mayhen_active_templates_collection');
-        Cache::forget('mayhen_default_free_template');
+        HomeController::clearMemoization();
         InvitationEditorController::clearMemoization();
+        TemplateController::clearMemoization();
         InvitationTemplateService::clearSchemaCache($template?->slug);
-        \App\Http\Controllers\Client\InvitationEditorController::clearMemoization();
-        \App\Services\InvitationTemplateService::clearSchemaCache($template?->slug);
         if ($template) {
             Cache::forget("mayhen_template_detail_{$template->slug}");
         }

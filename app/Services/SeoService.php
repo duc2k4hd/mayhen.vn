@@ -3,10 +3,26 @@
 namespace App\Services;
 
 use App\Models\SeoRedirect;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class SeoService
 {
+    /**
+     * Bộ nhớ đệm Static RAM trong tiến trình PHP worker (FPM / Octane).
+     *
+     * @var Collection<string, SeoRedirect>|null
+     */
+    protected static ?Collection $memoizedRedirectMap = null;
+
+    /**
+     * Xóa memoization tĩnh khi danh sách redirect thay đổi.
+     */
+    public static function clearMemoization(): void
+    {
+        self::$memoizedRedirectMap = null;
+    }
+
     /**
      * Phát hiện vòng lặp chuyển hướng vô tận (Infinite Redirect Loop Detection).
      * Duyệt qua chuỗi chuyển hướng từ targetPath. Nếu gặp lại sourcePath trong tối đa 15 bước nhảy thì có vòng lặp.
@@ -56,11 +72,13 @@ class SeoService
     {
         $normalized = SeoRedirect::normalizePath($requestUri);
 
-        $redirectMap = Cache::remember('seo_active_redirects_map', 3600, function () {
-            return SeoRedirect::active()->get()->keyBy('source_path');
-        });
+        if (self::$memoizedRedirectMap === null) {
+            self::$memoizedRedirectMap = Cache::remember('seo_active_redirects_map', 3600, function () {
+                return SeoRedirect::active()->get()->keyBy('source_path');
+            });
+        }
 
-        return $redirectMap->get($normalized);
+        return self::$memoizedRedirectMap->get($normalized);
     }
 
     /**

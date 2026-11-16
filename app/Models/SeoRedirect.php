@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SeoService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,8 +52,14 @@ class SeoRedirect extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => Cache::forget('seo_active_redirects_map'));
-        static::deleted(fn () => Cache::forget('seo_active_redirects_map'));
+        static::saved(function () {
+            Cache::forget('seo_active_redirects_map');
+            SeoService::clearMemoization();
+        });
+        static::deleted(function () {
+            Cache::forget('seo_active_redirects_map');
+            SeoService::clearMemoization();
+        });
     }
 
     public function scopeActive(Builder $query): Builder
