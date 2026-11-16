@@ -2936,12 +2936,39 @@ a {
     gap: 18px;
 }
 .mayhen_docs_detail_desktop_sidebar_toggle {
-    height: 29px;
-    width: 29px;
-    flex: none;
+    height: 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    flex: none !important;
+    border: 1px solid var(--mayhen-docs-detail-border, #e5e7eb) !important;
+    border-radius: 7px !important;
+    background: var(--mayhen-docs-detail-surface, #ffffff) !important;
+    color: var(--mayhen-docs-detail-text, #374151) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+.mayhen_docs_detail_desktop_sidebar_toggle:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    transform: scale(1.05) !important;
+}
+.mayhen_docs_detail_desktop_sidebar_toggle:active {
+    transform: scale(0.95) !important;
+}
+.mayhen_docs_detail_desktop_sidebar_toggle[aria-pressed="true"] {
+    background: #e0f2fe !important;
+    border-color: #38bdf8 !important;
+    color: #0284c7 !important;
 }
 .mayhen_docs_detail_desktop_sidebar_toggle svg {
-    width: 17px;
+    width: 17px !important;
+    height: 17px !important;
+    display: block !important;
 }
 .mayhen_docs_detail_breadcrumb {
     display: flex;
@@ -4701,13 +4728,15 @@ a {
 }
 .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
     .mayhen_docs_detail_layout {
-    grid-template-columns: 0 minmax(0, 1fr) var(--mayhen-docs-detail-toc-w);
+    grid-template-columns: minmax(0, 1fr) var(--mayhen-docs-detail-toc-w) !important;
 }
 .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
     .mayhen_docs_detail_sidebar {
-    visibility: hidden;
-    overflow: hidden;
-    border: 0;
+    display: none !important;
+}
+.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
+    .mayhen_docs_detail_article {
+    max-width: 980px !important;
 }
 .mayhen_docs_detail_mobile_scrim {
     display: none;
@@ -4727,7 +4756,7 @@ a {
     }
     .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
         .mayhen_docs_detail_layout {
-        grid-template-columns: 0 minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) !important;
     }
     .mayhen_docs_detail_article {
         max-width: calc(var(--mayhen-docs-detail-article-max) + 105px);

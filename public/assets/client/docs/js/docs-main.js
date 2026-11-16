@@ -600,6 +600,11 @@
       if (targetInc && !fontInc) {
         applyFont(currentFont + 2, true);
       }
+
+      const targetSidebar = e.target.closest('#mayhen_docs_detail_sidebar_toggle, .mayhen_docs_detail_desktop_sidebar_toggle');
+      if (targetSidebar && !sidebarToggle) {
+        toggleSidebar();
+      }
     });
 
     // Mobile Drawer
@@ -619,13 +624,34 @@
     const mobileScrim = byId('mobile_scrim');
     if (mobileScrim) mobileScrim.addEventListener('click', () => toggleDrawer(false));
 
-    // Desktop Sidebar Collapse
+    // Desktop Sidebar Collapse & Mobile Drawer Handlers
     const sidebarToggle = byId('sidebar_toggle');
-    if (sidebarToggle) {
-      sidebarToggle.addEventListener('click', () => {
+    function toggleSidebar() {
+      const isMobile = window.innerWidth <= 1020;
+      if (isMobile) {
+        const isDrawerOpen = app.classList.contains(PREFIX + 'mobile_open');
+        toggleDrawer(!isDrawerOpen);
+      } else {
         const collapsed = app.classList.toggle(PREFIX + 'is_sidebar_collapsed');
-        sidebarToggle.setAttribute('aria-pressed', String(collapsed));
-      });
+        SafeStorage.set('mayhen_docs_sidebar_collapsed', String(collapsed));
+        if (sidebarToggle) {
+          sidebarToggle.setAttribute('aria-pressed', String(collapsed));
+          sidebarToggle.setAttribute('title', collapsed ? 'Mở thanh điều hướng' : 'Thu gọn thanh điều hướng');
+        }
+        showToast(collapsed ? 'Đã thu gọn thanh điều hướng.' : 'Đã mở thanh điều hướng.');
+      }
+    }
+
+    window.toggleDocsSidebar = toggleSidebar;
+
+    if (sidebarToggle) {
+      if (window.innerWidth > 1020 && SafeStorage.get('mayhen_docs_sidebar_collapsed') === 'true') {
+        app.classList.add(PREFIX + 'is_sidebar_collapsed');
+        sidebarToggle.setAttribute('aria-pressed', 'true');
+        sidebarToggle.setAttribute('title', 'Mở thanh điều hướng');
+      }
+
+      sidebarToggle.addEventListener('click', toggleSidebar);
     }
 
     // Note: Detail Category Accordions (.mayhen_docs_detail_nav_group_toggle) are handled centrally with event delegation in layout.blade.php

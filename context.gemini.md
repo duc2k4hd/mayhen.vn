@@ -123,6 +123,14 @@ php artisan serve
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 135 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Sửa lỗi nút Thu gọn / Mở rộng thanh điều hướng (`mayhen_docs_detail_desktop_sidebar_toggle`)**:
+  - *Nguyên nhân*: 
+    1. Trong CSS trước đó, trạng thái thu gọn `.mayhen_docs_detail_is_sidebar_collapsed` dùng `grid-template-columns: 0 ...` và `visibility: hidden` trên sidebar. Theo chuẩn CSS Grid, thẻ con có nội dung sẽ ngăn cản track 0 co lại, đồng thời `visibility: hidden` chỉ làm sidebar tàng hình chứ không giải phóng không gian, khiến layout không hề co giãn và bài viết không thể mở rộng.
+    2. Nút bấm chưa có kiểu dáng phím chức năng rõ rệt, thiếu trạng thái active `aria-pressed="true"`, và chưa lưu cấu hình trạng thái thu gọn vào `SafeStorage`.
+  - *Khắc phục*:
+    1. Cấu hình `display: none !important;` trên `.mayhen_docs_detail_sidebar` khi ở trạng thái `is_sidebar_collapsed`, đồng thời cấu hình `grid-template-columns: minmax(0, 1fr) var(--mayhen-docs-detail-toc-w) !important;` (hoặc `minmax(0, 1fr)` khi màn hình nhỏ). Độ rộng bài viết tự động mở rộng lên `980px` cho trải nghiệm đọc tập trung hoàn hảo.
+    2. Trong `docs-main.js`: Bổ sung cơ chế ghi nhớ trạng thái vào `localStorage` (`mayhen_docs_sidebar_collapsed`), cập nhật `aria-pressed`, đổi màu nền nút sang xanh dương nhạt `#e0f2fe`, và bật thông báo toast: "Đã thu gọn thanh điều hướng." / "Đã mở thanh điều hướng.".
+    3. Hỗ trợ kích hoạt linh hoạt trên cả Desktop (thu gọn sidebar) lẫn Mobile (mở/đóng drawer) kèm cơ chế Event Delegation dự phòng toàn cục trên `document`.
 - **Hoàn thiện các nút tương tác: Lưu bài viết, Tăng giảm cỡ chữ & Nút Trợ giúp Header**:
   - *Sửa lỗi nút Tăng/Giảm cỡ chữ (A- & A+)*: 
     - *Nguyên nhân*: Các đoạn văn và danh sách trước đây bị gán cứng `16.5px !important`, ngăn cản biến CSS `--mayhen-docs-detail-font-size` thay đổi kích thước chữ thực tế khi click.
