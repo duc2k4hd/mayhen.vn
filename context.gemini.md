@@ -454,3 +454,36 @@ php artisan serve
     5. Khách hàng gửi lại thành công sau khi hết 7 ngày cooldown.
     6. Admin và Staff được miễn trừ hoàn toàn mọi giới hạn in-flight và cooldown 7 ngày.
   - Toàn bộ 6/6 tests PASS 100% (30 assertions). Định dạng chuẩn Laravel Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.10. Chuẩn Hóa & Quản Lý 3 Hòm Thư Hệ Thống Trong Admin (`/admin/settings/platform?group=mail`)
+- **Phân định rõ ràng 3 tài khoản Email theo đúng nghiệp vụ chuyên biệt**:
+  1. **Mail Hệ Thống & Gửi Nội Bộ (`admin@mayhen.vn`)**:
+     - Key cấu hình: `mail_from_admin`.
+     - Vai trò: Gửi và tiếp nhận các thông báo nội bộ, báo cáo sao lưu tự động, cảnh báo mã độc/lỗi máy chủ và giao tiếp nội bộ ban quản trị điều hành Mây Hẹn.
+  2. **Mail Hỗ Trợ Khách Hàng / CSKH (`support@mayhen.vn`)**:
+     - Key cấu hình: `mail_from_support` (đồng bộ cùng `support_email` trong nhóm `GROUP_BRAND_SEO`).
+     - Vai trò: Tiếp nhận phản hồi, giải đáp thắc mắc, tư vấn gói thiệp cưới và xử lý khiếu nại cho cô dâu chú rể.
+  3. **Mail Chỉ Gửi Thông Báo Tự Động / Không Nhận Lại (`no-reply@mayhen.vn`)**:
+     - Key cấu hình: `mail_from_noreply`.
+     - Vai trò: Chuyên dùng gửi các thư giao dịch tự động từ hệ thống qua hàng đợi (`CustomerResetPasswordMail`, liên kết đặt lại mật khẩu, mã OTP xác thực, thông báo trạng thái đơn hàng); tuyệt đối không tiếp nhận thư phản hồi gửi về để bảo vệ an toàn hạ tầng.
+- **Kiến trúc Động (Dynamic Settings Resolution) & Loại Bỏ Hardcode**:
+  - Model: [`PlatformSetting.php`](app/Models/PlatformSetting.php) bổ sung 3 helper tĩnh:
+    - `PlatformSetting::getAdminEmail()`: trả về `admin@mayhen.vn` (hoặc giá trị Admin cấu hình).
+    - `PlatformSetting::getSupportEmail()`: trả về `support@mayhen.vn` (hoặc giá trị Admin cấu hình).
+    - `PlatformSetting::getNoreplyEmail()`: trả về `no-reply@mayhen.vn` (hoặc giá trị Admin cấu hình).
+  - Mailable: [`CustomerResetPasswordMail.php`](app/Mail/CustomerResetPasswordMail.php) đọc trực tiếp từ `PlatformSetting::getNoreplyEmail()` cho cả phong bì gửi đi (`Envelope::$from`) và truyền biến `$noreplyEmail` vào template Blade.
+  - Blade Templates:
+    - [`resources/views/emails/customer-reset-password.blade.php`](resources/views/emails/customer-reset-password.blade.php): Footer email hiển thị địa chỉ no-reply động qua `{{ $noreplyEmail ?? 'no-reply@mayhen.vn' }}`.
+    - [`resources/views/client/pages/forgot-password.blade.php`](resources/views/client/pages/forgot-password.blade.php): Giao diện quên mật khẩu hiển thị đúng hòm thư `no-reply` đang kích hoạt từ Admin.
+- **Giao diện Quản trị Admin Cao Cấp (`/admin/settings/platform?group=mail`)**:
+  - [`resources/views/admin/pages/settings/platform.blade.php`](resources/views/admin/pages/settings/platform.blade.php):
+    - Tích hợp cụm thẻ Callout Slate Quiet Luxury phân tách trực quan 3 nhóm hòm thư với 3 vạch màu nhận diện: Xanh dương (Nội bộ), Xanh lục (CSKH) và Tím thanh lịch (No-Reply).
+    - Cho phép Admin thay đổi bất kỳ hòm thư nào bất cứ lúc nào, hỗ trợ tự động ghi nhận nhật ký phiên bản (Version History) và khôi phục an toàn (Safe Rollback).
+- **Kiểm thử tự động**:
+  - Viết mới test suite `tests/Feature/AdminSystemEmailSettingsTest.php` với 5 ca kiểm thử:
+    1. Kiểm tra 3 email mặc định chuẩn hóa được seed an toàn.
+    2. Admin xem được cấu hình hòm thư và thẻ mô tả trực quan trên giao diện Admin.
+    3. Admin cập nhật thành công cả 3 hòm thư trong bảng quản trị.
+    4. Mailable `CustomerResetPasswordMail` đọc động cấu hình `no-reply` và tên người gửi từ PlatformSetting.
+    5. Trang quên mật khẩu Client hiển thị địa chỉ `no-reply` động theo cấu hình hệ thống.
+  - Toàn bộ 5/5 tests PASS 100% (24 assertions). Định dạng chuẩn Pint (`vendor/bin/pint --dirty --format agent`).

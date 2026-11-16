@@ -74,6 +74,30 @@ class PlatformSetting extends Model
         return $setting ? $setting->value : $default;
     }
 
+    /**
+     * Lấy địa chỉ email hệ thống nội bộ (admin@mayhen.vn).
+     */
+    public static function getAdminEmail(): string
+    {
+        return (string) static::getValue(static::GROUP_MAIL, 'mail_from_admin', 'admin@mayhen.vn');
+    }
+
+    /**
+     * Lấy địa chỉ email hỗ trợ khách hàng (support@mayhen.vn).
+     */
+    public static function getSupportEmail(): string
+    {
+        return (string) static::getValue(static::GROUP_MAIL, 'mail_from_support', 'support@mayhen.vn');
+    }
+
+    /**
+     * Lấy địa chỉ email chỉ gửi thông báo tự động (no-reply@mayhen.vn).
+     */
+    public static function getNoreplyEmail(): string
+    {
+        return (string) static::getValue(static::GROUP_MAIL, 'mail_from_noreply', 'no-reply@mayhen.vn');
+    }
+
     public static function setValue(string $group, string $key, mixed $value, ?int $userId = null): static
     {
         $setting = static::firstOrNew(['group' => $group, 'key' => $key]);

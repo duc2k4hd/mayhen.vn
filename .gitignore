@@ -124,6 +124,7 @@ Thumbs.db
 !/tests/Feature/AdminTemplateCustomizationTest.php
 !/tests/Feature/HomeHeroBannerCustomizationTest.php
 !/tests/Feature/CustomerForgotPasswordSecurityRateLimitTest.php
+!/tests/Feature/AdminSystemEmailSettingsTest.php
 !/tests/Feature/AdminGuestJourneyE2ERunnerTest.php
 !/tests/Feature/AdminEntitlementStateMachineTest.php
 !/tests/Feature/ClientSupportTicketTest.php

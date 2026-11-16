@@ -69,7 +69,7 @@
                     <tr>
                         <td align="center" style="background-color: #FAF5F0; padding: 22px 30px; border-top: 1px solid #EFE4DC;">
                             <p style="font-size: 11.5px; color: #9A8782; margin: 0 0 6px 0;">
-                                Email này được gửi tự động từ <strong>no-reply@mayhen.vn</strong>. Vui lòng không trả lời trực tiếp email này.
+                                Email này được gửi tự động từ <strong>{{ $noreplyEmail ?? 'no-reply@mayhen.vn' }}</strong>. Vui lòng không trả lời trực tiếp email này.
                             </p>
                             <p style="font-size: 11.5px; color: #9A8782; margin: 0;">
                                 © {{ date('Y') }} Mây Hẹn (mayhen.vn). All rights reserved.

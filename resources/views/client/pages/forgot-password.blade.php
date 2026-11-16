@@ -1,4 +1,7 @@
 <!doctype html>
+@php
+  $noreplyEmail = \App\Models\PlatformSetting::getNoreplyEmail();
+@endphp
 <html lang="vi">
 <head>
   <meta charset="utf-8">
@@ -145,7 +148,7 @@
           <span class="mayhen_forgot_password_demo_badge" id="mayhen_forgot_password_demo_badge" hidden>BẢN XEM TRƯỚC — CHƯA GỬI EMAIL</span>
           <p class="mayhen_forgot_password_panel_kicker">Một bước nữa thôi...</p>
           <h2 class="mayhen_forgot_password_heading">Kiểm tra hộp thư nhé!</h2>
-          <p class="mayhen_forgot_password_intro" id="mayhen_forgot_password_success_description">Nếu địa chỉ email này có tài khoản, bạn sẽ nhận được hướng dẫn đặt lại mật khẩu từ no-reply@mayhen.vn.</p>
+          <p class="mayhen_forgot_password_intro" id="mayhen_forgot_password_success_description">Nếu địa chỉ email này có tài khoản, bạn sẽ nhận được hướng dẫn đặt lại mật khẩu từ {{ $noreplyEmail }}.</p>
           <div class="mayhen_forgot_password_success_email" id="mayhen_forgot_password_success_email"></div>
           <div class="mayhen_forgot_password_success_tips">
             <div class="mayhen_forgot_password_success_tip"><svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_check"/></svg>Kiểm tra cả thư mục Spam, Quảng cáo hoặc Thư rác.</div>
@@ -190,7 +193,7 @@
   <p class="mayhen_forgot_password_modal_lead">Chỉ vài thao tác là bạn có thể quay lại với những kế hoạch ngọt ngào của mình.</p>
   <ol class="mayhen_forgot_password_modal_list">
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">01</span><span>Nhập email đã sử dụng để tạo tài khoản Mây Hẹn.</span></li>
-    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">02</span><span>Mở email khôi phục được gửi từ <strong>no-reply@mayhen.vn</strong> và kiểm tra liên kết an toàn.</span></li>
+    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">02</span><span>Mở email khôi phục được gửi từ <strong>{{ $noreplyEmail }}</strong> và kiểm tra liên kết an toàn.</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">03</span><span>Đặt một mật khẩu mới đủ mạnh (tối thiểu 8 ký tự cả chữ và số); sau đó đăng nhập lại.</span></li>
   </ol>
   <p class="mayhen_forgot_password_modal_callout">Liên kết khôi phục có hiệu lực trong 48 tiếng và tự động vô hiệu hóa ngay sau khi đổi mật khẩu thành công.</p>
@@ -200,7 +203,7 @@
 <template id="mayhen_forgot_password_template_noemail">
   <p class="mayhen_forgot_password_modal_lead">Nếu chưa nhận được thư, bạn có thể kiểm tra theo những cách dưới đây.</p>
   <div class="mayhen_forgot_password_accordion">
-    <details class="mayhen_forgot_password_accordion_item" open><summary class="mayhen_forgot_password_accordion_summary">01. Kiểm tra Spam hoặc Quảng cáo <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Thư đôi khi được lọc vào Spam/Junk, Promotions hoặc Other. Hãy tìm từ khóa “Mây Hẹn” hoặc “no-reply@mayhen.vn” trong hộp thư.</div></details>
+    <details class="mayhen_forgot_password_accordion_item" open><summary class="mayhen_forgot_password_accordion_summary">01. Kiểm tra Spam hoặc Quảng cáo <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Thư đôi khi được lọc vào Spam/Junk, Promotions hoặc Other. Hãy tìm từ khóa “Mây Hẹn” hoặc “{{ $noreplyEmail }}” trong hộp thư.</div></details>
     <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">02. Kiểm tra địa chỉ email <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Xem lại lỗi gõ, dấu chấm, tên miền như gmail.com và địa chỉ email đã dùng lúc đăng ký. Bạn có thể quay về form để nhập lại.</div></details>
     <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">03. Liên kết hết hạn? <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Liên kết có hạn dùng trong 48 tiếng. Nếu đã quá hạn, bạn hãy tạo yêu cầu mới. Không dùng lại liên kết cũ đã đổi thành công.</div></details>
     <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">04. Vẫn không khôi phục được? <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Mở mục “Liên hệ hỗ trợ” để gửi thông tin cho đội ngũ Mây Hẹn. Tuyệt đối không gửi mật khẩu cho bất kỳ ai.</div></details>

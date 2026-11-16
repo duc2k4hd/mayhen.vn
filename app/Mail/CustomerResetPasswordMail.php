@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\PlatformSetting;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,12 +47,15 @@ class CustomerResetPasswordMail extends Mailable implements ShouldQueue
     ) {}
 
     /**
-     * Cấu hình tiêu đề email và địa chỉ người gửi no-reply@mayhen.vn.
+     * Cấu hình tiêu đề email và địa chỉ người gửi no-reply động lấy từ Admin Platform Settings.
      */
     public function envelope(): Envelope
     {
+        $noreplyEmail = PlatformSetting::getNoreplyEmail();
+        $fromName = (string) PlatformSetting::getValue(PlatformSetting::GROUP_MAIL, 'mail_from_name', config('mail.from.name', 'Mây Hẹn — Thiệp Cưới Online'));
+
         return new Envelope(
-            from: new Address('no-reply@mayhen.vn', 'Mây Hẹn — Thiệp Cưới Online'),
+            from: new Address($noreplyEmail, $fromName),
             subject: '⚜️ [Mây Hẹn] Hướng Dẫn Đặt Lại Mật Khẩu Tài Khoản Của Bạn',
         );
     }
@@ -61,12 +65,15 @@ class CustomerResetPasswordMail extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
+        $noreplyEmail = PlatformSetting::getNoreplyEmail();
+
         return new Content(
             view: 'emails.customer-reset-password',
             with: [
                 'user' => $this->user,
                 'resetUrl' => $this->resetUrl,
                 'expireHours' => $this->expireHours,
+                'noreplyEmail' => $noreplyEmail,
             ],
         );
     }

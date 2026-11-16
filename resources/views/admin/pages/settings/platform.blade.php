@@ -277,6 +277,41 @@
                     @csrf
                     @method('PUT')
 
+                    @if($activeGroup === \App\Models\PlatformSetting::GROUP_MAIL)
+                        <!-- Thông Tin 3 Hòm Thư Chuẩn Hóa Hệ Thống Mây Hẹn -->
+                        <div style="margin-top: 18px; margin-bottom: 24px; padding: 18px 20px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+                            <div style="font-weight: 700; color: #1E293B; font-size: 0.9375rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                                <span>📬</span> 3 Tài Khoản Email Chuẩn Hóa Phân Quyền Toàn Nền Tảng Mây Hẹn
+                            </div>
+                            <div style="font-size: 0.8125rem; color: #64748B; margin-bottom: 14px; line-height: 1.5;">
+                                Hệ thống phân định rõ ràng 3 hòm thư đại diện nhằm tối ưu tỷ lệ vào Hộp thư đến (Inbox), phân tách rủi ro bảo mật và ngăn ngừa nghẽn luồng gửi thư giao dịch.
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+                                <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 14px 16px; border-left: 3px solid #3B82F6;">
+                                    <div style="font-size: 0.71875rem; font-weight: 700; color: #3B82F6; text-transform: uppercase; letter-spacing: 0.5px;">1. Mail Hệ Thống (Nội Bộ)</div>
+                                    <div style="font-weight: 700; color: #0F172A; font-size: 0.9375rem; margin: 4px 0 6px 0;">admin@mayhen.vn</div>
+                                    <div style="font-size: 0.75rem; color: #64748B; line-height: 1.45;">
+                                        Gửi/nhận cảnh báo hạ tầng, sao lưu dữ liệu, sự cố máy chủ và trao đổi nội bộ ban quản trị Mây Hẹn.
+                                    </div>
+                                </div>
+                                <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 14px 16px; border-left: 3px solid #10B981;">
+                                    <div style="font-size: 0.71875rem; font-weight: 700; color: #10B981; text-transform: uppercase; letter-spacing: 0.5px;">2. Mail CSKH & Hỗ Trợ</div>
+                                    <div style="font-weight: 700; color: #0F172A; font-size: 0.9375rem; margin: 4px 0 6px 0;">support@mayhen.vn</div>
+                                    <div style="font-size: 0.75rem; color: #64748B; line-height: 1.45;">
+                                        Tiếp nhận thắc mắc của cô dâu chú rể, tư vấn gói thiệp cưới, giải quyết khiếu nại và hiển thị tại chân trang.
+                                    </div>
+                                </div>
+                                <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 14px 16px; border-left: 3px solid #8B5CF6;">
+                                    <div style="font-size: 0.71875rem; font-weight: 700; color: #8B5CF6; text-transform: uppercase; letter-spacing: 0.5px;">3. Mail Không Nhận Lại (No-Reply)</div>
+                                    <div style="font-weight: 700; color: #0F172A; font-size: 0.9375rem; margin: 4px 0 6px 0;">no-reply@mayhen.vn</div>
+                                    <div style="font-size: 0.75rem; color: #64748B; line-height: 1.45;">
+                                        Gửi thư tự động qua hàng đợi (quên mật khẩu, OTP, xác nhận tài khoản); tuyệt đối không tiếp nhận thư phản hồi gửi về.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div style="margin-top: 8px;">
                         @foreach($settings as $field)
                             <div class="mayhen_admin_field_row">
