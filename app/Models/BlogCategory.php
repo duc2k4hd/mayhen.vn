@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Client\BlogController;
+use App\Services\BlogService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +36,30 @@ class BlogCategory extends Model
             if (empty($category->slug)) {
                 $category->slug = Str::slug($category->name);
             }
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \App\Services\BlogService::clearCache();
+            \App\Http\Controllers\Client\BlogController::clearMemoization();
+        });
+        static::deleted(function () {
+            \App\Services\BlogService::clearCache();
+            \App\Http\Controllers\Client\BlogController::clearMemoization();
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            BlogService::clearCache();
+            BlogController::clearMemoization();
+        });
+        static::deleted(function () {
+            BlogService::clearCache();
+            BlogController::clearMemoization();
         });
     }
 

@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cẩm Nang Cưới — Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . config('app.name'))
+@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . config('app.name'))
 @section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . config('app.name') . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
 
 @push('styles')

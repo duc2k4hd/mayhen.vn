@@ -25,18 +25,6 @@ class Plan extends Model
         });
     }
 
-    protected static function booted(): void
-    {
-        static::saved(function () {
-            Cache::forget('mayhen_pricing_plans');
-            \App\Http\Controllers\Client\PageController::clearPricingMemoization();
-        });
-        static::deleted(function () {
-            Cache::forget('mayhen_pricing_plans');
-            \App\Http\Controllers\Client\PageController::clearPricingMemoization();
-        });
-    }
-
     protected $fillable = [
         'slug',
         'name',

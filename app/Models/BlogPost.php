@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Client\BlogController;
+use App\Services\BlogService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +54,18 @@ class BlogPost extends Model
             if ($post->status === 'published' && empty($post->published_at)) {
                 $post->published_at = now();
             }
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            BlogService::clearCache();
+            BlogController::clearMemoization();
+        });
+        static::deleted(function () {
+            BlogService::clearCache();
+            BlogController::clearMemoization();
         });
     }
 
