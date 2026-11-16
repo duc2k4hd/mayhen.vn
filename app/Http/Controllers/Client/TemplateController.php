@@ -45,6 +45,11 @@ class TemplateController extends Controller
                 ->all();
         });
 
+        if (! is_array($raw)) {
+            Cache::forget('mayhen_active_templates_collection');
+            $raw = [];
+        }
+
         return self::$memoizedAllActive = InvitationTemplate::hydrate($raw);
     }
 

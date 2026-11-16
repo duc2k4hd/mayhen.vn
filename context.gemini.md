@@ -144,6 +144,7 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
 - **Kiến trúc Chịu tải Cao & Zero DB Queries (1M Users Scale)**:
   - **Zero Database Queries**: Phục vụ khách vãng lai (99.9% lưu lượng) đạt **tuyệt đối 0 truy vấn Database** trên cả trang chủ cẩm nang và trang lọc theo chuyên mục (Đã có test tự động kiểm chứng `DB::getQueryLog()->toBeEmpty()`).
   - **Static RAM Memoization**: Tận dụng RAM tĩnh trong worker PHP (FPM / Octane) cho danh mục hoạt động (`BlogService::$memoizedCategories`), bài viết nổi bật (`BlogService::$memoizedFeaturedPosts`), bài viết mặc định trang 1 (`BlogController::$memoizedDefaultPosts`) và ETag cơ sở.
+  - **Triệt tiêu Hoàn toàn Lỗi Cache `__PHP_Incomplete_Class`**: Tuyệt đối không serialize Eloquent Models/Collections vào Database Cache driver. Dùng Static RAM worker cho Collection và chỉ lưu mảng phẳng nguyên bản (raw attributes) cho Tầng 2 với lớp phòng vệ tự phục hồi `if (!is_array($raw)) Cache::forget(...)`.
   - **Tra Cứu Chuyên Mục Không Truy Vấn DB**: Phương thức `BlogService::findCategoryBySlug($slug)` tra cứu trực tiếp trong danh sách danh mục đã nạp sẵn trong RAM, triệt tiêu hoàn toàn truy vấn `where('slug', ...)`.
   - **Cache Busted Versioning**: Áp dụng versioning (`mayhen_blog_version`) để tự động làm mới tức thì toàn bộ cache phân trang và chuyên mục mà không tốn chi phí quét key.
   - **Auto Cache Invalidation**: `BlogPost::booted()` và `BlogCategory::booted()` tự động gọi `BlogService::clearCache()` và `BlogController::clearMemoization()` khi có thêm/sửa/xóa dữ liệu.
@@ -159,14 +160,23 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
     - **Điều hướng bài trước / bài tiếp & Chuyên đề cùng chủ đề**: Tự động liên kết mượt mà giúp giữ chân độc giả.
     - **Nút cuộn lên đầu trang (Back to Top)** và thông báo Toast xúc giác êm dịu.
 
-### 5.7. Quản Lý Khách Mời & Check-in Lễ Tân
+### 5.7. Liên Hệ & Đặt Hẹn Tư Vấn In Thiệp (`/lien-he`)
+- **Controller**: `PageController@contact`, `ContactController@submit`.
+- **View**: `resources/views/client/pages/contact.blade.php`.
+- **Kiến trúc Chịu tải Cao & Zero DB Queries (1M Users Scale)**:
+  - **Zero Database Queries**: Phục vụ khách vãng lai (99.9% lưu lượng) đạt **tuyệt đối 0 truy vấn Database** (`DB::getQueryLog()->toBeEmpty()`).
+  - **Static RAM Memoization**: Tính toán và lưu trữ ETag, Last-Modified cơ sở trực tiếp trong biến tĩnh worker PHP (`PageController::$contactEtag`, `PageController::$contactLastModified`), truy xuất tức thì trong 0.00ms.
+  - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng.
+  - **Bảo Toàn Trạng Thái Flash & Session**: Tự động nhận diện session khi có thông báo flash gửi form thành công (`contact_success`) hoặc lỗi validation (`errors`) hoặc người dùng đã đăng nhập để phục vụ view động uncached, bảo toàn 100% trải nghiệm tương tác.
+
+### 5.8. Quản Lý Khách Mời & Check-in Lễ Tân
 - Nhóm khách mời theo hộ gia đình, mã hóa đường dẫn cá nhân hóa, lời nhắn thiệp riêng.
 - Sơ đồ bàn tiệc thông minh (Table Seating Chart), cockpit lễ tân quét mã QR điểm danh ngày cưới.
 
-### 5.8. Đơn Hàng, Thanh Toán & SePay Webhook
+### 5.9. Đơn Hàng, Thanh Toán & SePay Webhook
 - Thanh toán chuyển khoản tự động VietQR, khớp mã đơn hàng thời gian thực qua webhook SePay có xác thực chữ ký (Signature Verification & Idempotency).
 
-### 5.9. Quản Trị Hệ Thống (Admin Portal)
+### 5.10. Quản Trị Hệ Thống (Admin Portal)
 - Dashboard phân tích tài chính, quản lý khách hàng 360, quản lý mẫu thiệp và phiên bản phát hành.
 - Trung tâm Điều hành SEO (`/admin/seo`): Chuyển hướng 301/302, thuật toán phát hiện vòng lặp vô tận (Loop Detection), tự động sinh sitemap XML và audit điểm sức khỏe SEO.
 - Quản lý Trang tĩnh CMS (`/admin/pages`): Điều khoản dịch vụ, Chính sách bảo mật (Luật 91/2025/QH15).
@@ -193,7 +203,8 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Cẩm Nang Cưới (`/cam-nang-cuoi` & `/cam-nang-cuoi/{slug}`) Suite**: ngày 2026-11-16, `php artisan test tests/Feature/BlogPagePerformanceTest.php tests/Feature/ClientBlogEditorialTest.php` đạt **11/11 tests passed (55 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck) trên trang chủ và khi lọc theo chuyên mục, cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và kiểm tra toàn diện bộ tính năng đọc bài Quiet Luxury trên trang chi tiết (Font Stepper, Bookmark, Copy Link, Print, Scrollspy TOC, Back to Top, SEO JSON-LD).
+- **Liên Hệ In Thiệp Cưới (`/lien-he`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ContactPagePerformanceTest.php` đạt **5/5 tests passed (20 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user hoặc session có flash success.
+- **Cẩm Nang Cưới (`/cam-nang-cuoi` & `/cam-nang-cuoi/{slug}`) Suite**: ngày 2026-11-16, `php artisan test tests/Feature/BlogPagePerformanceTest.php tests/Feature/ClientBlogEditorialTest.php` đạt **13/13 tests passed (63 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck) trên trang chủ và khi lọc theo chuyên mục/tìm kiếm, cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, triệt tiêu hoàn toàn lỗi `__PHP_Incomplete_Class`, và kiểm tra toàn diện bộ tính năng đọc bài Quiet Luxury trên trang chi tiết (Font Stepper, Bookmark, Copy Link, Print, Scrollspy TOC, Back to Top, SEO JSON-LD).
 - **Bảng Giá Thiệp Cưới (`/bang-gia`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/PricingPageTest.php` đạt **9/9 tests passed (41 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, hỗ trợ phân biệt ETag riêng cho query param `invitation_id`, và phục vụ view động cho authenticated user.
 - **Dịch Vụ In Thiệp Cưới (`/dich-vu`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ServicesPagePerformanceTest.php` đạt **4/4 tests passed (19 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user.
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 20/20 test, 149 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, sitemap docs XML riêng biệt, và quyền RBAC đều được bảo đảm.

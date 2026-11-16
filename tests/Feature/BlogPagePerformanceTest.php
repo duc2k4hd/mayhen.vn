@@ -121,3 +121,17 @@ test('người dùng đã đăng nhập nhận được view động không cach
     // Trang của authenticated user không chứa header ETag public
     expect($response->headers->has('ETag'))->toBeFalse();
 });
+
+test('truy cập với query param category bất kỳ không gây lỗi cache hoặc crash', function () {
+    $response = $this->get('/cam-nang-cuoi?category=y-tuong-phong-cach-thiep');
+
+    $response->assertOk();
+    $response->assertSee('Chuyên Đề & Cảm Hứng Ngày Chung Đôi');
+});
+
+test('tìm kiếm với query param q bất kỳ không gây lỗi cache hoặc crash', function () {
+    $response = $this->get('/cam-nang-cuoi?q=Quiet%20Luxury');
+
+    $response->assertOk();
+    $response->assertSee('Chuyên Đề & Cảm Hứng Ngày Chung Đôi');
+});

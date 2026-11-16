@@ -37,12 +37,21 @@ class PageController extends Controller
     protected static ?int $pricingLastModified = null;
 
     /**
+     * Cache ETag & Last-Modified cho trang Liên hệ /lien-he trong worker memory (FPM / Octane).
+     */
+    protected static ?string $contactEtag = null;
+
+    protected static ?int $contactLastModified = null;
+
+    /**
      * Xóa sạch RAM memoization khi cần thiết.
      */
     public static function clearMemoization(): void
     {
         self::$servicesEtag = null;
         self::$servicesLastModified = null;
+        self::$contactEtag = null;
+        self::$contactLastModified = null;
         self::clearPricingMemoization();
     }
 
@@ -82,6 +91,11 @@ class PageController extends Controller
 
             return $plans->map->getAttributes()->all();
         });
+
+        if (! is_array($rawPlans)) {
+            Cache::forget('mayhen_pricing_plans');
+            $rawPlans = [];
+        }
 
         self::$memoizedPlans = Plan::hydrate($rawPlans);
 
@@ -214,9 +228,60 @@ class PageController extends Controller
         return view('client.pages.about');
     }
 
-    public function contact(): View
+    /**
+     * Tính toán metadata cache cho trang Liên hệ /lien-he.
+     *
+     * @return array{0: string, 1: int}
+     */
+    protected static function resolveContactCacheMeta(): array
     {
-        return view('client.pages.contact');
+        if (self::$contactEtag !== null && self::$contactLastModified !== null) {
+            return [self::$contactEtag, self::$contactLastModified];
+        }
+
+        $viewPath = resource_path('views/client/pages/contact.blade.php');
+        $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
+        $etag = '"mayhen_contact_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
+
+        self::$contactEtag = $etag;
+        self::$contactLastModified = $mtime;
+
+        return [$etag, $mtime];
+    }
+
+    /**
+     * Hiển thị trang Liên hệ & Đặt hẹn tư vấn in thiệp (/lien-he).
+     * Tối ưu hóa cực hạn cho hàng triệu người dùng:
+     * - Zero Database Query cho khách vãng lai (99.9% traffic).
+     * - In-Memory Static RAM Memoization trong worker PHP (FPM / Octane).
+     * - Edge CDN Caching qua ETag, Last-Modified & HTTP 304 Not Modified.
+     */
+    public function contact(Request $request): Response|View
+    {
+        // 1. Đối với người dùng đã đăng nhập hoặc khi session có flash message:
+        // Phục vụ view động để bảo toàn trạng thái header hoặc thông báo thành công.
+        if ($request->user() !== null || session()->has('contact_success') || session()->has('errors')) {
+            return view('client.pages.contact');
+        }
+
+        // 2. Đối với khách vãng lai: Tối ưu Static RAM + ETag / 304 + Edge CDN
+        [$etag, $mtime] = self::resolveContactCacheMeta();
+
+        // 3. Kiểm tra Header If-None-Match của Client / CDN Cloudflare
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        // 4. Trả về response HTML hoàn chỉnh kèm header tối ưu CDN
+        return response()
+            ->view('client.pages.contact')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     /**

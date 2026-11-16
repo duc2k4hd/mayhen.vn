@@ -56,6 +56,10 @@ class HomeController extends Controller
                     ->map->getAttributes()
                     ->all();
             });
+            if (! is_array($rawFeatured)) {
+                Cache::forget('mayhen_home_featured_templates');
+                $rawFeatured = [];
+            }
             self::$memoizedFeatured = InvitationTemplate::hydrate($rawFeatured);
         }
         $featuredTemplates = self::$memoizedFeatured;
@@ -74,18 +78,20 @@ class HomeController extends Controller
                     ->map->getAttributes()
                     ->all();
             });
+            if (! is_array($rawGallery)) {
+                Cache::forget('mayhen_home_gallery_templates');
+                $rawGallery = [];
+            }
             self::$memoizedGallery = InvitationTemplate::hydrate($rawGallery);
         }
         $galleryTemplates = self::$memoizedGallery;
 
-        // 3. Lấy đánh giá nổi bật (Featured Reviews) - Đã cache loại trừ 100% DB query
+        // 3. Lấy đánh giá nổi bật (Featured Reviews) - Static RAM Memoization trong worker (0 DB Query)
         if (self::$memoizedReviews === null) {
-            self::$memoizedReviews = Cache::remember('mayhen_home_featured_reviews', 86400, function () {
-                return Review::with(['template:id,name,slug'])
-                    ->featured()
-                    ->take(6)
-                    ->get();
-            });
+            self::$memoizedReviews = Review::with(['template:id,name,slug'])
+                ->featured()
+                ->take(6)
+                ->get();
         }
         $featuredReviews = self::$memoizedReviews;
 

@@ -28,18 +28,25 @@ class SiteAnnouncementService
             return self::$memoizedAnnouncements[$placement];
         }
 
-        $cacheKey = "mayhen_active_announcement_{$placement}";
+        $cacheKey = "mayhen_active_announcement_attributes_{$placement}";
 
-        $result = Cache::remember($cacheKey, 600, function () use ($placement) {
+        $raw = Cache::remember($cacheKey, 600, function () use ($placement) {
             $item = SiteAnnouncement::active()
                 ->forPlacement($placement)
                 ->latest('id')
                 ->first();
 
-            return $item ?? false;
+            return $item ? $item->getAttributes() : null;
         });
 
-        $announcement = $result instanceof SiteAnnouncement ? $result : null;
+        if (! is_array($raw)) {
+            if ($raw !== null) {
+                Cache::forget($cacheKey);
+            }
+            $announcement = null;
+        } else {
+            $announcement = (new SiteAnnouncement)->newFromBuilder($raw);
+        }
 
         return self::$memoizedAnnouncements[$placement] = $announcement;
     }
