@@ -4727,14 +4727,22 @@ a {
     max-width: calc(var(--mayhen-docs-detail-article-max) + 100px);
 }
 .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
+    .mayhen_docs_detail_layout,
+#mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
     .mayhen_docs_detail_layout {
     grid-template-columns: minmax(0, 1fr) var(--mayhen-docs-detail-toc-w) !important;
 }
 .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
-    .mayhen_docs_detail_sidebar {
+    .mayhen_docs_detail_sidebar,
+.mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
+    #mayhen_docs_detail_sidebar,
+#mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
+    #mayhen_docs_detail_sidebar {
     display: none !important;
 }
 .mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
+    .mayhen_docs_detail_article,
+#mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed
     .mayhen_docs_detail_article {
     max-width: 980px !important;
 }

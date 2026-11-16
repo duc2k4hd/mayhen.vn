@@ -123,6 +123,9 @@ php artisan serve
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 135 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Sửa dứt điểm lỗi click nút Thu gọn Sidebar bị kích hoạt kép (Double-Toggle Bug)**:
+  - *Nguyên nhân cốt lõi*: Trong `docs-main.js`, cả sự kiện `DOMContentLoaded` và khối fallback `document.readyState === 'interactive'` đều khởi chạy `initDocsDetail`, khiến listener click trên `#mayhen_docs_detail_sidebar_toggle` bị gán 2 lần. Khi người dùng click một lần, hàm `toggle` chạy 2 lần liên tiếp (Lần 1: thu gọn -> Lần 2: hủy thu gọn), dẫn đến việc nút chỉ hiện toast "Đã mở thanh điều hướng" và sidebar vẫn giữ nguyên không đổi.
+  - *Khắc phục*: Tinh gọn điểm vào với hàm duy nhất `bootDocsApplication()`, kiểm tra nghiêm ngặt cờ `dataset.jsInitialized` và dùng `{ once: true }` chống gắn trùng lặp listener. Củng cố quy tắc ẩn sidebar với selector `#mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed #mayhen_docs_detail_sidebar { display: none !important; }`.
 - **Sửa lỗi nút Thu gọn / Mở rộng thanh điều hướng (`mayhen_docs_detail_desktop_sidebar_toggle`)**:
   - *Nguyên nhân*: 
     1. Trong CSS trước đó, trạng thái thu gọn `.mayhen_docs_detail_is_sidebar_collapsed` dùng `grid-template-columns: 0 ...` và `visibility: hidden` trên sidebar. Theo chuẩn CSS Grid, thẻ con có nội dung sẽ ngăn cản track 0 co lại, đồng thời `visibility: hidden` chỉ làm sidebar tàng hình chứ không giải phóng không gian, khiến layout không hề co giãn và bài viết không thể mở rộng.

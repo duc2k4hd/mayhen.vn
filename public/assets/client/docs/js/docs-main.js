@@ -600,11 +600,6 @@
       if (targetInc && !fontInc) {
         applyFont(currentFont + 2, true);
       }
-
-      const targetSidebar = e.target.closest('#mayhen_docs_detail_sidebar_toggle, .mayhen_docs_detail_desktop_sidebar_toggle');
-      if (targetSidebar && !sidebarToggle) {
-        toggleSidebar();
-      }
     });
 
     // Mobile Drawer
@@ -626,19 +621,24 @@
 
     // Desktop Sidebar Collapse & Mobile Drawer Handlers
     const sidebarToggle = byId('sidebar_toggle');
-    function toggleSidebar() {
+    function toggleSidebar(forceState = null) {
       const isMobile = window.innerWidth <= 1020;
       if (isMobile) {
         const isDrawerOpen = app.classList.contains(PREFIX + 'mobile_open');
-        toggleDrawer(!isDrawerOpen);
+        const nextState = forceState !== null ? forceState : !isDrawerOpen;
+        toggleDrawer(nextState);
       } else {
-        const collapsed = app.classList.toggle(PREFIX + 'is_sidebar_collapsed');
-        SafeStorage.set('mayhen_docs_sidebar_collapsed', String(collapsed));
+        const isCurrentlyCollapsed = app.classList.contains(PREFIX + 'is_sidebar_collapsed');
+        const nextState = forceState !== null ? forceState : !isCurrentlyCollapsed;
+
+        app.classList.toggle(PREFIX + 'is_sidebar_collapsed', nextState);
+        SafeStorage.set('mayhen_docs_sidebar_collapsed', String(nextState));
+
         if (sidebarToggle) {
-          sidebarToggle.setAttribute('aria-pressed', String(collapsed));
-          sidebarToggle.setAttribute('title', collapsed ? 'Mở thanh điều hướng' : 'Thu gọn thanh điều hướng');
+          sidebarToggle.setAttribute('aria-pressed', String(nextState));
+          sidebarToggle.setAttribute('title', nextState ? 'Mở thanh điều hướng' : 'Thu gọn thanh điều hướng');
         }
-        showToast(collapsed ? 'Đã thu gọn thanh điều hướng.' : 'Đã mở thanh điều hướng.');
+        showToast(nextState ? 'Đã thu gọn thanh điều hướng.' : 'Đã mở thanh điều hướng.');
       }
     }
 
@@ -651,7 +651,10 @@
         sidebarToggle.setAttribute('title', 'Mở thanh điều hướng');
       }
 
-      sidebarToggle.addEventListener('click', toggleSidebar);
+      sidebarToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleSidebar();
+      });
     }
 
     // Note: Detail Category Accordions (.mayhen_docs_detail_nav_group_toggle) are handled centrally with event delegation in layout.blade.php
@@ -956,31 +959,25 @@
   }
 
   /* ============================================================
-     ENTRY POINT EXECUTION
+     ENTRY POINT EXECUTION (Chống khởi tạo lặp lại)
   ============================================================ */
-  document.addEventListener('DOMContentLoaded', () => {
-    const indexRoot = document.getElementById('mayhen_docs_app');
-    if (indexRoot) {
-      initDocsIndex(indexRoot);
-    }
-
-    const detailRoot = document.getElementById('mayhen_docs_detail_app');
-    if (detailRoot) {
-      initDocsDetail(detailRoot);
-    }
-  });
-
-  // Fallback if script executes after DOMContentLoaded
-  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  function bootDocsApplication() {
     const indexRoot = document.getElementById('mayhen_docs_app');
     if (indexRoot && !indexRoot.dataset.jsInitialized) {
       indexRoot.dataset.jsInitialized = 'true';
       initDocsIndex(indexRoot);
     }
+
     const detailRoot = document.getElementById('mayhen_docs_detail_app');
     if (detailRoot && !detailRoot.dataset.jsInitialized) {
       detailRoot.dataset.jsInitialized = 'true';
       initDocsDetail(detailRoot);
     }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootDocsApplication, { once: true });
+  } else {
+    bootDocsApplication();
   }
 })();
