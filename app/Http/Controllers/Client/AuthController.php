@@ -19,14 +19,14 @@ class AuthController extends Controller
      */
     public function showLoginForm(Request $request): View|RedirectResponse
     {
-        if (Auth::check()) {
-            $safeRedirect = $this->resolveSafeRedirect($request->query('redirect'), route('home'));
+        $redirect = $this->determineRedirectUrl($request);
 
-            return redirect($safeRedirect);
+        if (Auth::check()) {
+            return redirect($redirect ?: route('home'));
         }
 
         return view('client.pages.login', [
-            'redirect' => $request->query('redirect'),
+            'redirect' => $redirect,
         ]);
     }
 
@@ -60,9 +60,12 @@ class AuthController extends Controller
             }
 
             $this->syncOwnedInvitations($request, $user);
-            $request->session()->regenerate();
 
-            $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('home'));
+            // Xác định URL đích: ưu tiên input redirect từ form, nếu không có lấy từ session url.intended
+            $intended = $request->input('redirect') ?: (string) $request->session()->pull('url.intended');
+            $safeRedirect = $this->resolveSafeRedirect($intended, route('home'));
+
+            $request->session()->regenerate();
 
             return redirect($safeRedirect)->with('success', 'Đăng nhập thành công! Chào mừng bạn quay trở lại.');
         }
@@ -77,14 +80,14 @@ class AuthController extends Controller
      */
     public function showRegisterForm(Request $request): View|RedirectResponse
     {
-        if (Auth::check()) {
-            $safeRedirect = $this->resolveSafeRedirect($request->query('redirect'), route('home'));
+        $redirect = $this->determineRedirectUrl($request);
 
-            return redirect($safeRedirect);
+        if (Auth::check()) {
+            return redirect($redirect ?: route('home'));
         }
 
         return view('client.pages.register', [
-            'redirect' => $request->query('redirect'),
+            'redirect' => $redirect,
         ]);
     }
 
@@ -118,9 +121,12 @@ class AuthController extends Controller
 
         Auth::login($user, true);
         $this->syncOwnedInvitations($request, $user);
-        $request->session()->regenerate();
 
-        $safeRedirect = $this->resolveSafeRedirect($request->input('redirect'), route('onboarding.index'));
+        // Xác định URL đích khi đăng ký: ưu tiên input redirect, nếu không có fallback về onboarding
+        $intended = $request->input('redirect') ?: (string) $request->session()->pull('url.intended');
+        $safeRedirect = $this->resolveSafeRedirect($intended, route('onboarding.index'));
+
+        $request->session()->regenerate();
 
         return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Bắt đầu tạo thiệp cưới của bạn ngay nhé.');
     }
@@ -138,7 +144,50 @@ class AuthController extends Controller
     }
 
     /**
-     * Giải quyết đường dẫn redirect an toàn, chống Open Redirect (AUTH-019).
+     * Xác định URL chuyển hướng ban đầu một cách an toàn và thông minh:
+     * 1. Query parameter ?redirect=...
+     * 2. Session 'url.intended' (do Laravel Middleware auth hoặc redirect()->guest() ghi nhận)
+     * 3. URL trang trước đó (url()->previous()) nếu là trang nội bộ hợp lệ
+     */
+    protected function determineRedirectUrl(Request $request): ?string
+    {
+        // 1. Kiểm tra query param 'redirect'
+        $queryRedirect = $request->query('redirect');
+        if (! empty($queryRedirect)) {
+            $safe = $this->resolveSafeRedirect($queryRedirect, '');
+            if (! empty($safe)) {
+                $request->session()->put('url.intended', $safe);
+
+                return $safe;
+            }
+        }
+
+        // 2. Kiểm tra session 'url.intended'
+        if ($request->session()->has('url.intended')) {
+            $intended = (string) $request->session()->get('url.intended');
+            $safe = $this->resolveSafeRedirect($intended, '');
+            if (! empty($safe)) {
+                return $safe;
+            }
+        }
+
+        // 3. Kiểm tra trang trước đó (url()->previous())
+        $previousUrl = url()->previous();
+        if (! empty($previousUrl) && $previousUrl !== $request->fullUrl()) {
+            $safe = $this->resolveSafeRedirect($previousUrl, '');
+            if (! empty($safe)) {
+                $request->session()->put('url.intended', $safe);
+
+                return $safe;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Giải quyết đường dẫn redirect an toàn, chống Open Redirect (AUTH-019)
+     * và ngăn chặn chuyển hướng vòng lặp về chính các trang auth.
      */
     protected function resolveSafeRedirect(?string $redirectUrl, string $fallback): string
     {
@@ -150,15 +199,51 @@ class AuthController extends Controller
 
         // Safe relative path: bắt đầu bằng / nhưng không phải // hoặc /\
         if (str_starts_with($redirectUrl, '/') && ! str_starts_with($redirectUrl, '//') && ! str_contains($redirectUrl, '\\')) {
+            if ($this->isAuthUrl($redirectUrl)) {
+                return $fallback;
+            }
+
             return $redirectUrl;
         }
 
         // Safe absolute URL trong cùng ứng dụng
         if (filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
+            if ($this->isAuthUrl($redirectUrl)) {
+                return $fallback;
+            }
+
             return $redirectUrl;
         }
 
         return $fallback;
+    }
+
+    /**
+     * Kiểm tra xem đường dẫn có phải là trang auth nội bộ (tránh redirect vòng lặp vô tận).
+     */
+    protected function isAuthUrl(string $url): bool
+    {
+        $path = parse_url($url, PHP_URL_PATH) ?? $url;
+        $path = rtrim($path, '/');
+
+        $authPaths = [
+            '/dang-nhap',
+            '/dang-ky',
+            '/dang-xuat',
+            '/quen-mat-khau',
+            '/dat-lai-mat-khau',
+            '/login',
+            '/register',
+            '/logout',
+        ];
+
+        foreach ($authPaths as $authPath) {
+            if ($path === $authPath || str_starts_with($path, $authPath.'/')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -35,7 +35,7 @@
                     Tạo tài khoản để bắt đầu trải nghiệm thiết kế thiệp cưới online phong cách Quiet Luxury dành riêng cho bạn
                 </p>
 
-                <a href="{{ route('login', ['redirect' => $redirect]) }}" class="mayhen_auth_pill_btn_outline">
+                <a href="{{ route('login', array_filter(['redirect' => $redirect])) }}" class="mayhen_auth_pill_btn_outline">
                     Đăng Nhập
                 </a>
 

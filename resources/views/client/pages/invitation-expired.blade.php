@@ -107,7 +107,7 @@
                     📦 Tải Dữ Liệu (.ZIP)
                 </a>
             @else
-                <a href="{{ route('login') }}" class="mayhen_status_btn" style="background: #1F1D1A;">
+                <a href="{{ route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_status_btn" style="background: #1F1D1A;">
                     Đăng Nhập Gia Hạn
                 </a>
             @endif

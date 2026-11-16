@@ -265,7 +265,7 @@ class TemplateController extends Controller
     /**
      * Serve static assets directly from resources/views/client/invitations/{slug}/
      */
-    public function asset(string $slug, string $path): Response
+    public function asset(string $slug, string $path): \Symfony\Component\HttpFoundation\Response
     {
         // Chống directory traversal & validate slug
         if (! preg_match('/^[a-z0-9_-]+$/', $slug)) {

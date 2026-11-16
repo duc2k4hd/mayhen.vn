@@ -53,7 +53,7 @@
                         Về Cá Nhân
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="mayhen_partner_btn mayhen_partner_btn--sm mayhen_partner_btn--outline">
+                    <a href="{{ route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_partner_btn mayhen_partner_btn--sm mayhen_partner_btn--outline">
                         Đăng Nhập
                     </a>
                 @endif

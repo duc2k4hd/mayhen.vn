@@ -169,14 +169,26 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
   - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng.
   - **Bảo Toàn Trạng Thái Flash & Session**: Tự động nhận diện session khi có thông báo flash gửi form thành công (`contact_success`) hoặc lỗi validation (`errors`) hoặc người dùng đã đăng nhập để phục vụ view động uncached, bảo toàn 100% trải nghiệm tương tác.
 
-### 5.8. Quản Lý Khách Mời & Check-in Lễ Tân
+### 5.8. Cơ Chế Tự Động Chuyển Hướng Lại Link Ban Đầu Sau Đăng Nhập / Đăng Ký (Intended URL Redirect)
+- **Controller**: `App\Http\Controllers\Client\AuthController` (`showLoginForm`, `login`, `showRegisterForm`, `register`).
+- **Nguyên lý hoạt động & Kiến trúc đa tầng**:
+  - **Tự động nhận diện URL ban đầu (Auto-capture)**: Khi người dùng được chuyển hướng hoặc bấm nút Đăng nhập từ bất kỳ trang nào (ví dụ: `/tao-thiep?template=...`, `/tai-khoan`, `/checkout`, `/mau-thiep/...`), hệ thống xác định đường dẫn mục tiêu theo 3 mức ưu tiên:
+    1. Query parameter `?redirect=...` trên thanh địa chỉ.
+    2. Session `url.intended` (được ghi nhận bởi Middleware `auth` hoặc `redirect()->guest(...)`).
+    3. Trang trước đó (`url()->previous()`) nếu người dùng nhấp trực tiếp từ một trang nội bộ.
+  - **Bảo toàn Query Parameters**: Giữ nguyên vẹn toàn bộ các tham số như `template=...`, `step=...`, `invitation_id=...` để người dùng quay lại đúng trạng thái đang thao tác dở.
+  - **Liên thông Đăng nhập <-> Đăng ký**: Chuyển đổi qua lại giữa form Đăng nhập và Đăng ký không làm mất tham số `redirect`. Người dùng đăng ký tài khoản mới cũng tự động được chuyển lại đúng link đích.
+  - **Phòng vệ Chống Tấn công Open Redirect (AUTH-019) & Chống Vòng Lặp Vô Tận**: Hàm `resolveSafeRedirect` chỉ chấp thuận URL tương đối an toàn hoặc tuyệt đối cùng domain `mayhen.vn`; đồng thời hàm `isAuthUrl` tự động loại trừ các trang `/dang-nhap`, `/dang-ky`, `/dang-xuat` để ngăn chặn hiện tượng redirect lặp vòng vô tận.
+  - **Tích hợp UI Nút Đăng nhập Toàn Hệ Thống**: Các nút Đăng Nhập / Đăng Ký trên Header desktop, Mobile Drawer menu, trang thiệp hết hạn (`invitation-expired.blade.php`), và layout đối tác (`partner/layouts/master.blade.php`) tự động gắn kèm `['redirect' => request()->fullUrl()]`.
+
+### 5.9. Quản Lý Khách Mời & Check-in Lễ Tân
 - Nhóm khách mời theo hộ gia đình, mã hóa đường dẫn cá nhân hóa, lời nhắn thiệp riêng.
 - Sơ đồ bàn tiệc thông minh (Table Seating Chart), cockpit lễ tân quét mã QR điểm danh ngày cưới.
 
-### 5.9. Đơn Hàng, Thanh Toán & SePay Webhook
+### 5.10. Đơn Hàng, Thanh Toán & SePay Webhook
 - Thanh toán chuyển khoản tự động VietQR, khớp mã đơn hàng thời gian thực qua webhook SePay có xác thực chữ ký (Signature Verification & Idempotency).
 
-### 5.10. Quản Trị Hệ Thống (Admin Portal)
+### 5.11. Quản Trị Hệ Thống (Admin Portal)
 - Dashboard phân tích tài chính, quản lý khách hàng 360, quản lý mẫu thiệp và phiên bản phát hành.
 - Trung tâm Điều hành SEO (`/admin/seo`): Chuyển hướng 301/302, thuật toán phát hiện vòng lặp vô tận (Loop Detection), tự động sinh sitemap XML và audit điểm sức khỏe SEO.
 - Quản lý Trang tĩnh CMS (`/admin/pages`): Điều khoản dịch vụ, Chính sách bảo mật (Luật 91/2025/QH15).
@@ -202,6 +214,8 @@ php artisan serve
 ---
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
+
+- **Tự Động Chuyển Hướng Lại Link Ban Đầu Sau Đăng Nhập / Đăng Ký (`AuthIntendedRedirectTest`)**: ngày 2026-11-16, `php artisan test tests/Feature/AuthIntendedRedirectTest.php` đạt **10/10 tests passed (43 assertions)**; xác thực chuyển hướng chính xác theo query `redirect`, bảo toàn query param (`template`, `step`), tự động nhận diện `url.intended` từ middleware `auth`, ghi nhận trang trước đó `url()->previous()`, liên thông giữ link khi đổi sang form đăng ký, chặn đứng tấn công Open Redirect và ngăn chặn vòng lặp vô tận về chính trang auth.
 
 - **Liên Hệ In Thiệp Cưới (`/lien-he`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ContactPagePerformanceTest.php` đạt **5/5 tests passed (20 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user hoặc session có flash success.
 - **Cẩm Nang Cưới (`/cam-nang-cuoi` & `/cam-nang-cuoi/{slug}`) Suite**: ngày 2026-11-16, `php artisan test tests/Feature/BlogPagePerformanceTest.php tests/Feature/ClientBlogEditorialTest.php` đạt **13/13 tests passed (63 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck) trên trang chủ và khi lọc theo chuyên mục/tìm kiếm, cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, triệt tiêu hoàn toàn lỗi `__PHP_Incomplete_Class`, và kiểm tra toàn diện bộ tính năng đọc bài Quiet Luxury trên trang chi tiết (Font Stepper, Bookmark, Copy Link, Print, Scrollspy TOC, Back to Top, SEO JSON-LD).

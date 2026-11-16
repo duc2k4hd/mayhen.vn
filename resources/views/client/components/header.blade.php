@@ -118,7 +118,7 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="mayhen_client_header_login_btn">
+                <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('login') : route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_header_login_btn">
                     Đăng Nhập
                 </a>
             @endauth
@@ -189,10 +189,10 @@
             </div>
         @else
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <a href="{{ route('login') }}" class="mayhen_client_button_base mayhen_client_button_secondary" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
+                <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('login') : route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_button_base mayhen_client_button_secondary" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
                     Đăng Nhập
                 </a>
-                <a href="{{ route('register') }}" class="mayhen_client_button_base mayhen_client_button_outline" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
+                <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('register') : route('register', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_button_base mayhen_client_button_outline" style="width: 100%; justify-content: center; height: 44px; font-size: 0.875rem;">
                     Đăng Ký
                 </a>
             </div>

@@ -35,7 +35,7 @@
                     Để tiếp tục đồng hành cùng Mây Hẹn, vui lòng đăng nhập bằng thông tin của bạn
                 </p>
 
-                <a href="{{ route('register', ['redirect' => $redirect]) }}" class="mayhen_auth_pill_btn_outline">
+                <a href="{{ route('register', array_filter(['redirect' => $redirect])) }}" class="mayhen_auth_pill_btn_outline">
                     Đăng Ký
                 </a>
 
