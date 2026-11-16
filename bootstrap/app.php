@@ -12,6 +12,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -44,4 +45,28 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Bắt toàn bộ ngoại lệ 404 (NotFoundHttpException, abort(404), route not found, findOrFail)
+        // và chuyển hướng hiển thị ra view thật errors.404 với HTTP status 404 cho mọi request web
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return null;
+            }
+
+            return response()->view('errors.404', [
+                'exception' => $e,
+            ], 404);
+        });
+
+        // Bắt toàn bộ ngoại lệ 404 (NotFoundHttpException, abort(404), route not found, findOrFail)
+        // và chuyển hướng hiển thị ra view thật errors.404 với HTTP status 404 cho mọi request web
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return null;
+            }
+
+            return response()->view('errors.404', [
+                'exception' => $e,
+            ], 404);
+        });
     })->create();

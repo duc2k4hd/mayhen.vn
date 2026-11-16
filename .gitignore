@@ -187,6 +187,7 @@ Thumbs.db
 !/tests/Feature/BlogPagePerformanceTest.php
 !/tests/Feature/ContactPagePerformanceTest.php
 !/tests/Feature/AuthIntendedRedirectTest.php
+!/tests/Feature/Custom404ViewHandlingTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
