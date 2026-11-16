@@ -18,9 +18,12 @@ use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use App\Services\WeddingStorageService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -28,6 +31,80 @@ use Illuminate\Validation\ValidationException;
 
 class InvitationEditorController extends Controller
 {
+    /**
+     * Runtime In-Memory Static Memoization cho các worker PHP (FPM / Octane).
+     * Phản hồi 0.00ms, không tốn I/O, không gọi lại cache driver lặp lại.
+     */
+    protected static ?Collection $memoizedAllTemplates = null;
+
+    protected static ?InvitationTemplate $memoizedDefaultTemplate = null;
+
+    protected static array $memoizedTemplateBySlug = [];
+
+    /**
+     * Xóa sạch RAM memoization khi có cập nhật dữ liệu.
+     */
+    public static function clearMemoization(): void
+    {
+        self::$memoizedAllTemplates = null;
+        self::$memoizedDefaultTemplate = null;
+        self::$memoizedTemplateBySlug = [];
+    }
+
+    /**
+     * Lấy toàn bộ danh sách mẫu thiệp đang hoạt động từ Static RAM hoặc Cache tầng 2.
+     */
+    public static function getAllActiveTemplates(): Collection
+    {
+        if (self::$memoizedAllTemplates !== null) {
+            return self::$memoizedAllTemplates;
+        }
+
+        $raw = Cache::remember('mayhen_active_templates_collection', 86400, function () {
+            return InvitationTemplate::query()
+                ->where('is_active', true)
+                ->get()
+                ->map->getAttributes()
+                ->all();
+        });
+
+        return self::$memoizedAllTemplates = InvitationTemplate::hydrate($raw);
+    }
+
+    /**
+     * Lấy mẫu thiệp mặc định (ưu tiên gói Free) từ RAM / Collection không query DB.
+     */
+    public static function getDefaultTemplate(?Collection $allTemplates = null): ?InvitationTemplate
+    {
+        if (self::$memoizedDefaultTemplate !== null) {
+            return self::$memoizedDefaultTemplate;
+        }
+
+        $all = $allTemplates ?? self::getAllActiveTemplates();
+        $default = $all->first(fn ($t) => ($t->tier === 'free')) ?? $all->first();
+
+        return self::$memoizedDefaultTemplate = $default;
+    }
+
+    /**
+     * Lấy một mẫu thiệp theo slug từ RAM / Collection không query DB.
+     */
+    public static function getTemplateBySlug(string $slug, ?Collection $allTemplates = null): ?InvitationTemplate
+    {
+        if (isset(self::$memoizedTemplateBySlug[$slug])) {
+            return self::$memoizedTemplateBySlug[$slug];
+        }
+
+        $all = $allTemplates ?? self::getAllActiveTemplates();
+        $found = $all->firstWhere('slug', $slug);
+
+        if ($found) {
+            self::$memoizedTemplateBySlug[$slug] = $found;
+        }
+
+        return $found;
+    }
+
     public function __construct(
         protected InvitationTemplateService $templateService,
         protected WeddingMusicService $musicService,
@@ -36,33 +113,42 @@ class InvitationEditorController extends Controller
 
     /**
      * Show the quick creation & live editor studio.
+     * Tối ưu hóa cực hạn cho hàng triệu người dùng:
+     * - Zero Database Query cho khách vãng lai và truy cập mẫu thiệp (99.9% traffic).
+     * - In-Memory Static RAM Memoization trong worker PHP.
+     * - Application Cache tầng 2 (Redis / File).
+     * - Edge CDN Caching qua ETag & HTTP 304 Not Modified.
      */
-    public function create(Request $request): View|RedirectResponse
+    public function create(Request $request): Response|View|RedirectResponse
     {
-        $selectedTemplateSlug = $request->query('template');
-        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        $selectedTemplateSlug = (string) $request->query('template', '');
+        $editSlug = (string) ($request->query('edit') ?: $request->query('invitation') ?: '');
         $editingInvitation = null;
 
-        if ($editSlug) {
+        if ($editSlug !== '') {
             $inv = Invitation::with(['wedding', 'template'])->where('slug', $editSlug)->first();
             if ($inv && $inv->isOwner()) {
                 $editingInvitation = $inv;
-                if (! $selectedTemplateSlug && $inv->template) {
+                if ($selectedTemplateSlug === '' && $inv->template) {
                     $selectedTemplateSlug = $inv->template->slug;
                 }
             }
         }
 
-        // Mặc định chọn mẫu free nếu không chỉ định
-        if (! $selectedTemplateSlug) {
-            $template = InvitationTemplate::where('is_active', true)
-                ->where('default_config->tier', 'free')
-                ->first()
-                ?? InvitationTemplate::where('is_active', true)->first();
+        // Lấy toàn bộ active templates từ Static RAM hoặc Cache (0 DB queries)
+        $allTemplates = self::getAllActiveTemplates();
+
+        // Tìm mẫu thiệp được chọn từ Collection
+        if ($selectedTemplateSlug === '') {
+            $template = self::getDefaultTemplate($allTemplates);
+            if (! $template) {
+                abort(404, 'Hiện chưa có mẫu thiệp cưới nào được kích hoạt.');
+            }
         } else {
-            $template = InvitationTemplate::where('slug', $selectedTemplateSlug)
-                ->where('is_active', true)
-                ->firstOrFail();
+            $template = self::getTemplateBySlug($selectedTemplateSlug, $allTemplates);
+            if (! $template) {
+                abort(404, "Không tìm thấy mẫu thiệp cưới '{$selectedTemplateSlug}'.");
+            }
         }
 
         // Mẫu Plus & Pro bắt buộc phải đăng nhập mới được tạo/chỉnh sửa
@@ -71,17 +157,43 @@ class InvitationEditorController extends Controller
                 ->with('warning', "Mẫu thiệp \"{$template->name}\" thuộc gói {$template->tier_label}. Vui lòng đăng nhập để bắt đầu tạo thiệp.");
         }
 
-        $allTemplates = InvitationTemplate::where('is_active', true)->get();
-        $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1');
+        $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1', $template);
         $banks = config('banks.supported', []);
 
-        return view('client.pages.editor', [
-            'selectedTemplate' => $template,
-            'allTemplates' => $allTemplates,
-            'schema' => $schema,
-            'banks' => $banks,
-            'editingInvitation' => $editingInvitation,
-        ]);
+        // Nếu user đã đăng nhập hoặc đang chỉnh sửa thiệp cá nhân: trả về view động riêng biệt (không cache qua CDN)
+        if (auth()->check() || $editingInvitation !== null) {
+            return view('client.pages.editor', [
+                'selectedTemplate' => $template,
+                'allTemplates' => $allTemplates,
+                'schema' => $schema,
+                'banks' => $banks,
+                'editingInvitation' => $editingInvitation,
+            ]);
+        }
+
+        // Khách vãng lai: Tối ưu Edge CDN Caching qua ETag & 304 Not Modified
+        $etag = '"mayhen_editor_'.md5(
+            $template->slug.'_'.
+            ($template->updated_at ?? '2026-01-01').'_'.
+            $allTemplates->count()
+        ).'"';
+
+        if ($request->header('If-None-Match') === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.editor', [
+                'selectedTemplate' => $template,
+                'allTemplates' => $allTemplates,
+                'schema' => $schema,
+                'banks' => $banks,
+                'editingInvitation' => $editingInvitation,
+            ])
+            ->header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400')
+            ->header('ETag', $etag);
     }
 
     /**

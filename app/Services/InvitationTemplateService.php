@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\Client\InvitationEditorController;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
 use App\Models\Wedding;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -864,12 +866,19 @@ class InvitationTemplateService
 
     /**
      * Đọc Schema cấu hình của mẫu thiệp (Schema-Driven Template Engine).
+     * Tối ưu hóa Static RAM + Application Cache, không query DB lặp lại.
      */
-    public function getSchema(string $slug, string $version = 'v1'): array
+    public function getSchema(string $slug, string $version = 'v1', ?InvitationTemplate $template = null): array
     {
         $cacheKey = "{$slug}:{$version}";
         if (isset(self::$schemaCache[$cacheKey])) {
             return self::$schemaCache[$cacheKey];
+        }
+
+        $appCacheKey = "mayhen_template_schema_{$slug}_{$version}";
+        $cached = Cache::get($appCacheKey);
+        if ($cached !== null && is_array($cached)) {
+            return self::$schemaCache[$cacheKey] = $cached;
         }
 
         $schemaPath = resource_path("views/client/invitations/{$slug}/schema.json");
@@ -883,17 +892,34 @@ class InvitationTemplateService
             $json = File::get($schemaPath);
             $rawSchema = json_decode($json, true) ?? [];
             $schema = $this->normalizeSchema($rawSchema, $slug);
-            self::$schemaCache[$cacheKey] = $schema;
+            Cache::put($appCacheKey, $schema, 86400);
 
-            return $schema;
+            return self::$schemaCache[$cacheKey] = $schema;
         }
 
-        // Nếu chưa có file schema.json riêng, tự sinh schema dựa theo template trong DB
-        $template = InvitationTemplate::where('slug', $slug)->first();
-        $fallbackSchema = $this->generateFallbackSchema($template);
-        self::$schemaCache[$cacheKey] = $fallbackSchema;
+        // Nếu chưa có file schema.json riêng, tự sinh schema dựa theo template (tận dụng template truyền vào hoặc memory)
+        $tpl = $template ?? InvitationEditorController::getTemplateBySlug($slug) ?? InvitationTemplate::where('slug', $slug)->first();
+        $fallbackSchema = $this->generateFallbackSchema($tpl);
+        Cache::put($appCacheKey, $fallbackSchema, 86400);
 
-        return $fallbackSchema;
+        return self::$schemaCache[$cacheKey] = $fallbackSchema;
+    }
+
+    /**
+     * Xóa cache Schema khi có phát hành phiên bản mới hoặc cập nhật template.
+     */
+    public static function clearSchemaCache(?string $slug = null): void
+    {
+        if ($slug) {
+            foreach (array_keys(self::$schemaCache) as $k) {
+                if (str_starts_with($k, "{$slug}:")) {
+                    unset(self::$schemaCache[$k]);
+                }
+            }
+            Cache::forget("mayhen_template_schema_{$slug}_v1");
+        } else {
+            self::$schemaCache = [];
+        }
     }
 
     /**

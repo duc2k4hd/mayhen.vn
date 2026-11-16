@@ -105,6 +105,7 @@ Thumbs.db
 !/tests/Feature/GuestCrmAndRsvpLifecycleDeepTest.php
 !/tests/Feature/SeatingAndReceptionLifecycleDeepTest.php
 !/tests/Feature/StudioEditorAndAutosaveDeepTest.php
+!/tests/Feature/InvitationEditorPerformanceTest.php
 !/tests/Feature/AdminPortalAndSystemAuditDeepTest.php
 !/tests/Feature/MonetaryGiftsAndKeepsakeLifecycleDeepTest.php
 !/tests/Feature/PartnerHandoverAndCustomDomainDeepTest.php
