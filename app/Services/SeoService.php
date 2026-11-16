@@ -21,6 +21,8 @@ class SeoService
     public static function clearMemoization(): void
     {
         self::$memoizedRedirectMap = null;
+        Cache::forget('seo_active_redirects_raw_map');
+        Cache::forget('seo_active_redirects_map');
     }
 
     /**
@@ -73,9 +75,22 @@ class SeoService
         $normalized = SeoRedirect::normalizePath($requestUri);
 
         if (self::$memoizedRedirectMap === null) {
-            self::$memoizedRedirectMap = Cache::remember('seo_active_redirects_map', 3600, function () {
-                return SeoRedirect::active()->get()->keyBy('source_path');
+            $raw = Cache::remember('seo_active_redirects_raw_map', 3600, function () {
+                return SeoRedirect::active()
+                    ->get(['id', 'source_path', 'target_url', 'status_code'])
+                    ->map->getAttributes()
+                    ->all();
             });
+
+            if (! is_array($raw)) {
+                Cache::forget('seo_active_redirects_raw_map');
+                $raw = SeoRedirect::active()
+                    ->get(['id', 'source_path', 'target_url', 'status_code'])
+                    ->map->getAttributes()
+                    ->all();
+            }
+
+            self::$memoizedRedirectMap = SeoRedirect::hydrate($raw)->keyBy('source_path');
         }
 
         return self::$memoizedRedirectMap->get($normalized);

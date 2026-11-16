@@ -2,51 +2,59 @@
  * MÂY HẸN (MAYHEN.VN) — EDITORIAL BLOG & MAGAZINE CSS
  * Pure Vanilla CSS with Mandatory Prefix: mayhen_blog_*
  * Zero CSS Frameworks & Quiet Luxury Typography
+ * Optimized for Readability, White Clean Canvas, and 100+ Content Tags
  */
 
 :root {
-    --mh-blog-bg: #FAF8F5;
+    --mh-blog-bg: #FFFFFF;
     --mh-blog-surface: #FFFFFF;
-    --mh-blog-text: #2C2824;
-    --mh-blog-heading: #1F1D1A;
-    --mh-blog-muted: #736E66;
-    --mh-blog-border: #EFE8DD;
+    --mh-blog-text: #1E293B;
+    --mh-blog-heading: #0F172A;
+    --mh-blog-muted: #64748B;
+    --mh-blog-border: #E2E8F0;
+    --mh-blog-border-light: #F1F5F9;
     --mh-blog-gold: #C5A880;
     --mh-blog-gold-dark: #9C7A4A;
-    --mh-blog-gold-light: #FFFDF9;
+    --mh-blog-gold-light: #FDFBF8;
+    --mh-blog-primary: #613B3E;
+    --mh-blog-font-size: 17px;
 }
 
 /* Base Wrapper */
 .mayhen_blog_wrapper {
-    background-color: var(--mh-blog-bg);
+    background-color: #FAF8F5;
     color: var(--mh-blog-text);
     min-height: 80vh;
-    padding-bottom: 80px;
+    padding-bottom: 60px;
 }
 
-/* Reading Progress Bar (Top Fixed) */
+/* ==============================================================
+   1. READING PROGRESS BAR (TOP FIXED)
+   ============================================================== */
 .mayhen_blog_reading_progress {
     position: fixed;
     top: 0;
     left: 0;
     width: 0%;
     height: 3px;
-    background: linear-gradient(90deg, #C5A880, #9C7A4A);
-    z-index: 9999;
-    transition: width 0.1s ease-out;
+    background: linear-gradient(90deg, #613B3E, #C5A880, #9C7A4A);
+    z-index: 99999;
+    transition: width 0.08s ease-out;
 }
 
-/* Hero Magazine Section */
+/* ==============================================================
+   2. BLOG INDEX / MARKETING VIEW STYLES
+   ============================================================== */
 .mayhen_blog_hero {
-    padding: 60px 0 40px;
+    padding: 44px 0 32px;
     text-align: center;
     border-bottom: 1px solid var(--mh-blog-border);
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 }
 
 .mayhen_blog_hero_badge {
     display: inline-block;
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 20px;
     background: var(--mh-blog-gold-light);
     border: 1px solid var(--mh-blog-gold);
@@ -55,46 +63,45 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .mayhen_blog_hero_title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
     font-weight: 600;
     color: var(--mh-blog-heading);
-    line-height: 1.2;
-    margin: 0 0 16px;
+    line-height: 1.25;
+    margin: 0 0 12px;
 }
 
 .mayhen_blog_hero_desc {
-    max-width: 680px;
+    max-width: 640px;
     margin: 0 auto;
-    font-size: 1.0625rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--mh-blog-muted);
 }
 
-/* Category Filter Bar */
 .mayhen_blog_filter_bar {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 40px;
+    gap: 8px;
+    margin-bottom: 32px;
 }
 
 .mayhen_blog_filter_link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 18px;
-    border-radius: 24px;
+    padding: 7px 16px;
+    border-radius: 20px;
     border: 1px solid var(--mh-blog-border);
-    background: var(--mh-blog-surface);
+    background: #FFFFFF;
     color: var(--mh-blog-text);
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -110,43 +117,42 @@
     color: #FFFFFF !important;
 }
 
-/* Featured Hero Article Card */
 .mayhen_blog_featured_card {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    background: var(--mh-blog-surface);
-    border-radius: 16px;
+    background: #FFFFFF;
+    border-radius: 12px;
     border: 1px solid var(--mh-blog-border);
     overflow: hidden;
-    margin-bottom: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-bottom: 36px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .mayhen_blog_featured_card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .mayhen_blog_featured_image_wrap {
     position: relative;
     overflow: hidden;
-    min-height: 340px;
+    min-height: 300px;
 }
 
 .mayhen_blog_featured_image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s ease;
 }
 
 .mayhen_blog_featured_card:hover .mayhen_blog_featured_image {
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 .mayhen_blog_featured_content {
-    padding: 40px;
+    padding: 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -155,20 +161,20 @@
 .mayhen_blog_category_pill {
     display: inline-block;
     color: var(--mh-blog-gold-dark);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .mayhen_blog_featured_title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.4rem, 2.2vw, 1.85rem);
     font-weight: 600;
     color: var(--mh-blog-heading);
-    line-height: 1.25;
-    margin: 0 0 16px;
+    line-height: 1.3;
+    margin: 0 0 12px;
 }
 
 .mayhen_blog_featured_title a {
@@ -183,30 +189,29 @@
 
 .mayhen_blog_featured_summary {
     color: var(--mh-blog-muted);
-    font-size: 0.9375rem;
+    font-size: 0.90625rem;
     line-height: 1.6;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .mayhen_blog_meta_row {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     font-size: 0.8125rem;
     color: var(--mh-blog-muted);
 }
 
-/* Post Grid */
 .mayhen_blog_grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
 }
 
 .mayhen_blog_card {
-    background: var(--mh-blog-surface);
-    border-radius: 12px;
+    background: #FFFFFF;
+    border-radius: 10px;
     border: 1px solid var(--mh-blog-border);
     overflow: hidden;
     display: flex;
@@ -215,42 +220,42 @@
 }
 
 .mayhen_blog_card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
 }
 
 .mayhen_blog_card_thumb_wrap {
     position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
-    background: #EFE8DD;
+    background: #F1F5F9;
 }
 
 .mayhen_blog_card_thumb {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.3s ease;
 }
 
 .mayhen_blog_card:hover .mayhen_blog_card_thumb {
-    transform: scale(1.04);
+    transform: scale(1.03);
 }
 
 .mayhen_blog_card_body {
-    padding: 24px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
 .mayhen_blog_card_title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.375rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.35;
     color: var(--mh-blog-heading);
-    margin: 0 0 10px;
+    margin: 0 0 8px;
 }
 
 .mayhen_blog_card_title a {
@@ -264,95 +269,372 @@
 }
 
 .mayhen_blog_card_summary {
-    font-size: 0.875rem;
-    line-height: 1.6;
+    font-size: 0.84375rem;
+    line-height: 1.55;
     color: var(--mh-blog-muted);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     flex: 1;
 }
 
-/* Pagination */
 .mayhen_blog_pagination {
     display: flex;
     justify-content: center;
-    margin-top: 40px;
+    margin-top: 32px;
 }
 
 /* ==============================================================
-   SINGLE POST DETAIL (QUIET LUXURY EDITORIAL LAYOUT)
+   3. SINGLE POST DETAIL PAGE (WHITE CANVAS, SLENDER TYPOGRAPHY)
    ============================================================== */
+.mayhen_blog_detail_page {
+    background-color: #FFFFFF;
+    color: var(--mh-blog-text);
+    padding-bottom: 60px;
+}
+
 .mayhen_blog_detail_container {
-    max-width: 1100px;
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px 20px 40px;
 }
 
-.mayhen_blog_detail_header {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 36px;
+/* Breadcrumb */
+.mayhen_blog_breadcrumb {
+    margin-bottom: 18px;
 }
 
-.mayhen_blog_detail_title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 3.8vw, 3rem);
+.mayhen_blog_breadcrumb_list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--mh-blog-muted);
+}
+
+.mayhen_blog_breadcrumb_list a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.mayhen_blog_breadcrumb_list a:hover {
+    color: var(--mh-blog-primary);
+}
+
+.mayhen_blog_breadcrumb_separator {
+    color: #CBD5E1;
+}
+
+.mayhen_blog_breadcrumb_current {
+    color: var(--mh-blog-heading);
+    font-weight: 500;
+}
+
+/* Article Header */
+.mayhen_blog_article_header {
+    border-bottom: 1px solid var(--mh-blog-border);
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+}
+
+.mayhen_blog_badge_pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(197, 168, 128, 0.12);
+    border: 1px solid rgba(197, 168, 128, 0.4);
+    color: var(--mh-blog-gold-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: background 0.15s ease;
+}
+
+.mayhen_blog_badge_pill:hover {
+    background: rgba(197, 168, 128, 0.2);
+}
+
+.mayhen_blog_article_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.3;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_blog_article_lead {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--mh-blog-muted);
+    margin-bottom: 20px;
+    border-left: 2px solid var(--mh-blog-gold);
+    padding-left: 14px;
+}
+
+.mayhen_blog_article_lead p {
+    margin: 0;
+}
+
+/* Author Box & Meta Stats */
+.mayhen_blog_meta_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--mh-blog-border);
+}
+
+.mayhen_blog_author_box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_blog_author_avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #613B3E;
+    color: #FFFFFF;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.mayhen_blog_author_info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mayhen_blog_author_name {
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--mh-blog-heading);
     line-height: 1.25;
-    margin: 16px 0 20px;
 }
 
-.mayhen_blog_detail_lead {
-    font-size: 1.125rem;
-    line-height: 1.65;
+.mayhen_blog_author_role {
+    font-size: 0.75rem;
     color: var(--mh-blog-muted);
-    font-style: italic;
-    margin-bottom: 24px;
 }
 
-.mayhen_blog_detail_cover_wrap {
-    width: 100%;
-    aspect-ratio: 21 / 9;
-    max-height: 480px;
-    border-radius: 16px;
+.mayhen_blog_stats_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8125rem;
+    color: var(--mh-blog-muted);
+}
+
+.mayhen_blog_stat_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mayhen_blog_dot {
+    color: #CBD5E1;
+}
+
+/* Reader Toolbar Controls */
+.mayhen_blog_toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 10px 14px;
+    background: #F8FAFC;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 8px;
+}
+
+.mayhen_blog_toolbar_group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_blog_toolbar_label {
+    font-size: 0.78125rem;
+    color: var(--mh-blog-muted);
+    font-weight: 500;
+}
+
+.mayhen_blog_font_stepper {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 6px;
     overflow: hidden;
-    margin-bottom: 40px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
-.mayhen_blog_detail_cover {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.mayhen_blog_tool_btn {
+    border: none;
+    background: transparent;
+    padding: 4px 10px;
+    font-size: 0.78125rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    cursor: pointer;
+    transition: background 0.15s ease;
 }
 
-/* Layout 2 cột: Sidebar Mục lục & Nội dung */
-.mayhen_blog_detail_layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
-    align-items: start;
+.mayhen_blog_tool_btn:hover {
+    background: #F1F5F9;
 }
 
-/* Sticky Table of Contents */
-.mayhen_blog_toc_sticky {
-    position: sticky;
-    top: 90px;
-    background: var(--mh-blog-surface);
-    padding: 24px;
-    border-radius: 12px;
+.mayhen_blog_font_display {
+    padding: 0 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mh-blog-muted);
+    border-left: 1px solid var(--mh-blog-border);
+    border-right: 1px solid var(--mh-blog-border);
+    min-width: 42px;
+    text-align: center;
+}
+
+.mayhen_blog_toolbar_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_blog_action_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--mh-blog-border);
+    background: #FFFFFF;
+    color: var(--mh-blog-text);
+    font-size: 0.78125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mayhen_blog_action_btn:hover {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+}
+
+.mayhen_blog_action_btn[aria-pressed="true"] {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    color: #92400E;
+}
+
+.mayhen_blog_action_btn[aria-pressed="true"] .mayhen_blog_bookmark_icon {
+    fill: #D97706;
+    stroke: #D97706;
+}
+
+/* Cover Image Wrap */
+.mayhen_blog_cover_wrapper {
+    margin-bottom: 30px;
+    border-radius: 10px;
+    overflow: hidden;
     border: 1px solid var(--mh-blog-border);
 }
 
+.mayhen_blog_cover_img {
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    max-height: 440px;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_blog_cover_caption {
+    padding: 8px 14px;
+    font-size: 0.75rem;
+    color: var(--mh-blog-muted);
+    text-align: center;
+    font-style: italic;
+    background: #F8FAFC;
+    border-top: 1px solid var(--mh-blog-border);
+}
+
+/* ==============================================================
+   4. LAYOUT 2 CỘT: MỤC LỤC BÀI VIẾT (TOC) & THÂN BÀI VIẾT
+   ============================================================== */
+.mayhen_blog_layout_grid {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 36px;
+    align-items: start;
+}
+
+/* Aside Sticky TOC */
+.mayhen_blog_sidebar {
+    position: sticky;
+    top: 84px;
+}
+
+.mayhen_blog_toc_card {
+    background: #FFFFFF;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.mayhen_blog_toc_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--mh-blog-border);
+    margin-bottom: 12px;
+}
+
+.mayhen_blog_toc_title_wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_blog_toc_sparkle {
+    color: var(--mh-blog-gold);
+    font-size: 0.8125rem;
+}
+
 .mayhen_blog_toc_title {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--mh-blog-heading);
-    margin: 0 0 14px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--mh-blog-border);
+    margin: 0;
+}
+
+.mayhen_blog_toc_toggle_mobile {
+    display: none;
+    border: none;
+    background: transparent;
+    padding: 4px;
+    color: var(--mh-blog-muted);
+    cursor: pointer;
 }
 
 .mayhen_blog_toc_list {
@@ -361,7 +643,18 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
+    max-height: calc(100vh - 280px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.mayhen_blog_toc_list::-webkit-scrollbar {
+    width: 4px;
+}
+.mayhen_blog_toc_list::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 4px;
 }
 
 .mayhen_blog_toc_item {
@@ -369,125 +662,1006 @@
     line-height: 1.4;
 }
 
-.mayhen_blog_toc_item_h3 {
-    padding-left: 14px;
+.mayhen_blog_toc_item--h3 {
+    padding-left: 12px;
     font-size: 0.78125rem;
 }
 
 .mayhen_blog_toc_link {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
     color: var(--mh-blog-muted);
     text-decoration: none;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.mayhen_blog_toc_bullet {
+    color: #CBD5E1;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.mayhen_blog_toc_link:hover {
+    color: var(--mh-blog-primary);
+    background: #F8FAFC;
+}
+
+.mayhen_blog_toc_link.is_active {
+    color: var(--mh-blog-primary);
+    font-weight: 600;
+    background: rgba(97, 59, 62, 0.08);
+}
+
+.mayhen_blog_toc_link.is_active .mayhen_blog_toc_bullet {
+    color: var(--mh-blog-primary);
+}
+
+.mayhen_blog_toc_empty {
+    font-size: 0.8125rem;
+    color: var(--mh-blog-muted);
+    margin: 0;
+    font-style: italic;
+}
+
+.mayhen_blog_sidebar_promo {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--mh-blog-border);
+}
+
+.mayhen_blog_promo_tag {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mh-blog-gold-dark);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.mayhen_blog_promo_title {
+    font-size: 0.84375rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.35;
+    margin: 0 0 6px;
+}
+
+.mayhen_blog_promo_desc {
+    font-size: 0.75rem;
+    color: var(--mh-blog-muted);
+    line-height: 1.45;
+    margin: 0 0 10px;
+}
+
+.mayhen_blog_promo_btn {
+    display: block;
+    text-align: center;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: var(--mh-blog-heading);
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+
+.mayhen_blog_promo_btn:hover {
+    background: var(--mh-blog-primary);
+}
+
+/* ==============================================================
+   5. THÂN BÀI VIẾT (.mayhen_blog_article_body)
+   CHĂM CHÚT TOÀN DIỆN HƠN 100 THẺ NỘI DUNG (WHITE CANVAS)
+   ============================================================== */
+.mayhen_blog_main_content {
+    min-width: 0;
+}
+
+.mayhen_blog_article_body {
+    background: #FFFFFF;
+    font-size: var(--mayhen-blog-font-size, 17px);
+    line-height: 1.85;
+    color: var(--mh-blog-text);
+    word-break: break-word;
+}
+
+/* Headings H1 - H6 */
+.mayhen_blog_article_body h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.3;
+    margin: 28px 0 14px;
+}
+
+.mayhen_blog_article_body h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5625rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.35;
+    margin: 32px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--mh-blog-border-light);
+    scroll-margin-top: 90px;
+}
+
+.mayhen_blog_article_body h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.4;
+    margin: 26px 0 10px;
+    scroll-margin-top: 90px;
+}
+
+.mayhen_blog_article_body h4 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    margin: 20px 0 8px;
+}
+
+.mayhen_blog_article_body h5 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    margin: 16px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.mayhen_blog_article_body h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mh-blog-muted);
+    margin: 14px 0 6px;
+}
+
+/* Đoạn văn & định dạng chữ */
+.mayhen_blog_article_body p {
+    margin: 0 0 16px;
+}
+
+/* In đậm & Highlight từ khóa quan trọng */
+.mayhen_blog_article_body strong,
+.mayhen_blog_article_body b {
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    background: rgba(245, 158, 11, 0.12);
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mayhen_blog_article_body em,
+.mayhen_blog_article_body i {
+    font-style: italic;
+}
+
+.mayhen_blog_article_body u {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.mayhen_blog_article_body s,
+.mayhen_blog_article_body del,
+.mayhen_blog_article_body strike {
+    text-decoration: line-through;
+    color: #94A3B8;
+}
+
+.mayhen_blog_article_body ins {
+    text-decoration: underline;
+    background: #DCFCE7;
+    color: #166534;
+    padding: 0.1em 0.25em;
+    border-radius: 3px;
+}
+
+.mayhen_blog_article_body mark {
+    background: #FEF08A;
+    color: #854D0E;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+.mayhen_blog_article_body small {
+    font-size: 0.85em;
+    color: var(--mh-blog-muted);
+}
+
+.mayhen_blog_article_body sub,
+.mayhen_blog_article_body sup {
+    font-size: 0.75em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+.mayhen_blog_article_body sup { top: -0.5em; }
+.mayhen_blog_article_body sub { bottom: -0.25em; }
+
+.mayhen_blog_article_body abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
+/* Liên kết (Links) */
+.mayhen_blog_article_body a {
+    color: var(--mh-blog-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
     transition: color 0.15s ease;
 }
 
-.mayhen_blog_toc_link:hover,
-.mayhen_blog_toc_link_active {
+.mayhen_blog_article_body a:hover {
     color: var(--mh-blog-gold-dark);
-    font-weight: 600;
 }
 
-/* Article Content */
-.mayhen_blog_content {
-    font-size: 1.0625rem;
-    line-height: 1.8;
+/* Danh sách (Lists) */
+.mayhen_blog_article_body ul,
+.mayhen_blog_article_body ol {
+    margin: 0 0 18px;
+    padding-left: 22px;
+}
+
+.mayhen_blog_article_body li {
+    margin-bottom: 7px;
+    line-height: 1.75;
+}
+
+.mayhen_blog_article_body li::marker {
+    color: var(--mh-blog-primary);
+}
+
+.mayhen_blog_article_body ul ul,
+.mayhen_blog_article_body ol ol,
+.mayhen_blog_article_body ul ol,
+.mayhen_blog_article_body ol ul {
+    margin: 6px 0 8px;
+    padding-left: 20px;
+}
+
+.mayhen_blog_article_body dl {
+    margin: 0 0 18px;
+}
+.mayhen_blog_article_body dt {
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    margin-top: 10px;
+}
+.mayhen_blog_article_body dd {
+    margin-left: 18px;
+    margin-bottom: 8px;
     color: var(--mh-blog-text);
 }
 
-.mayhen_blog_content h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--mh-blog-heading);
-    margin: 40px 0 16px;
-    line-height: 1.3;
-    scroll-margin-top: 100px;
-}
-
-.mayhen_blog_content h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.375rem;
-    font-weight: 600;
-    color: var(--mh-blog-heading);
-    margin: 30px 0 12px;
-    line-height: 1.35;
-    scroll-margin-top: 100px;
-}
-
-.mayhen_blog_content p {
-    margin: 0 0 20px;
-}
-
-.mayhen_blog_content blockquote {
+/* Khối trích dẫn (Blockquote & Q) */
+.mayhen_blog_article_body blockquote {
+    margin: 22px 0;
+    padding: 14px 18px;
+    background: #FDFBF8;
     border-left: 3px solid var(--mh-blog-gold);
-    padding: 16px 24px;
-    margin: 30px 0;
-    background: var(--mh-blog-gold-light);
+    border-radius: 0 8px 8px 0;
     font-style: italic;
     color: var(--mh-blog-heading);
-    border-radius: 0 8px 8px 0;
+    position: relative;
 }
 
-.mayhen_blog_content img {
+.mayhen_blog_article_body blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_blog_article_body blockquote cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--mh-blog-muted);
+    margin-top: 8px;
+}
+
+.mayhen_blog_article_body q {
+    quotes: "“" "”" "‘" "’";
+    font-style: italic;
+}
+
+/* Hộp thông báo / Callout đặc biệt */
+.mayhen_blog_article_body .callout,
+.mayhen_blog_article_body .callout-note,
+.mayhen_blog_article_body .callout-tip,
+.mayhen_blog_article_body .callout-warning,
+.mayhen_blog_article_body .callout-important {
+    margin: 20px 0;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--mh-blog-border);
+    background: #F8FAFC;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+}
+
+.mayhen_blog_article_body .callout-tip {
+    background: #F0FDF4;
+    border-color: #BBF7D0;
+    color: #14532D;
+}
+
+.mayhen_blog_article_body .callout-warning {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+    color: #78350F;
+}
+
+.mayhen_blog_article_body .callout-note {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #1E3A8A;
+}
+
+/* Bảng biểu (Tables) */
+.mayhen_blog_article_body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 22px 0;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--mh-blog-border);
+}
+
+.mayhen_blog_article_body thead {
+    background: #F8FAFC;
+    border-bottom: 2px solid var(--mh-blog-border);
+}
+
+.mayhen_blog_article_body th {
+    padding: 10px 14px;
+    font-weight: 600;
+    text-align: left;
+    color: var(--mh-blog-heading);
+    letter-spacing: 0.02em;
+}
+
+.mayhen_blog_article_body td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--mh-blog-border-light);
+    color: var(--mh-blog-text);
+}
+
+.mayhen_blog_article_body tbody tr:hover {
+    background: #FAFAFA;
+}
+
+.mayhen_blog_article_body caption {
+    padding: 6px 0;
+    font-size: 0.78125rem;
+    color: var(--mh-blog-muted);
+    caption-side: bottom;
+    text-align: right;
+    font-style: italic;
+}
+
+/* Hình ảnh & Đa phương tiện */
+.mayhen_blog_article_body img {
     max-width: 100%;
-    border-radius: 12px;
-    margin: 24px 0;
+    height: auto;
+    border-radius: 8px;
+    margin: 18px 0;
+    border: 1px solid var(--mh-blog-border-light);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* Share & CTA Box */
-.mayhen_blog_share_box {
+.mayhen_blog_article_body figure {
+    margin: 22px 0;
+    text-align: center;
+}
+
+.mayhen_blog_article_body figure img {
+    margin: 0 auto;
+}
+
+.mayhen_blog_article_body figcaption {
+    font-size: 0.78125rem;
+    color: var(--mh-blog-muted);
+    font-style: italic;
+    margin-top: 6px;
+}
+
+.mayhen_blog_article_body iframe,
+.mayhen_blog_article_body video {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 18px 0;
+    border: 1px solid var(--mh-blog-border);
+}
+
+/* Khối mã nguồn & Inline code */
+.mayhen_blog_article_body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85em;
+    background: #F1F5F9;
+    color: #0F172A;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    border: 1px solid #E2E8F0;
+}
+
+.mayhen_blog_article_body pre {
+    background: #0F172A;
+    color: #F8FAFC;
+    padding: 14px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-size: 0.84375rem;
+    line-height: 1.6;
+}
+
+.mayhen_blog_article_body pre code {
+    background: transparent;
+    border: none;
+    color: inherit;
+    padding: 0;
+}
+
+.mayhen_blog_article_body kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    color: #1E293B;
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+/* Đường kẻ phân cách (HR) */
+.mayhen_blog_article_body hr {
+    border: none;
+    height: 1px;
+    background: var(--mh-blog-border);
+    margin: 32px 0;
+    position: relative;
+    overflow: visible;
+    text-align: center;
+}
+
+.mayhen_blog_article_body hr::after {
+    content: "✦";
+    display: inline-block;
+    position: relative;
+    top: -0.7em;
+    font-size: 0.75rem;
+    padding: 0 10px;
+    background: #FFFFFF;
+    color: var(--mh-blog-gold);
+}
+
+/* Chi tiết thu gọn (Details / Summary) */
+.mayhen_blog_article_body details {
+    margin: 16px 0;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: #FAFAFA;
+}
+
+.mayhen_blog_article_body summary {
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+}
+
+.mayhen_blog_article_body details[open] {
+    background: #FFFFFF;
+}
+
+.mayhen_blog_article_body details[open] summary {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--mh-blog-border-light);
+}
+
+/* Checklist đám cưới */
+.mayhen_blog_article_body input[type="checkbox"] {
+    accent-color: var(--mh-blog-primary);
+    margin-right: 6px;
+    cursor: pointer;
+}
+
+/* ==============================================================
+   6. CÁC THÀNH PHẦN CUỐI BÀI VIẾT (TAGS, SHARE, CTA, POST NAV)
+   ============================================================== */
+/* Tags */
+.mayhen_blog_tags_section {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--mh-blog-border);
+}
+
+.mayhen_blog_tags_label {
+    font-size: 0.8125rem;
+    color: var(--mh-blog-muted);
+    font-weight: 600;
+}
+
+.mayhen_blog_tags_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mayhen_blog_tag_pill {
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: #F1F5F9;
+    color: #475569;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.mayhen_blog_tag_pill:hover {
+    background: #E2E8F0;
+    color: var(--mh-blog-primary);
+}
+
+/* Footer Share */
+.mayhen_blog_footer_share {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
-    border-top: 1px solid var(--mh-blog-border);
-    border-bottom: 1px solid var(--mh-blog-border);
-    margin: 40px 0;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #F8FAFC;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 8px;
+    margin: 28px 0;
 }
 
+.mayhen_blog_share_label {
+    font-size: 0.8125rem;
+    color: var(--mh-blog-muted);
+    font-weight: 500;
+}
+
+.mayhen_blog_share_btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_blog_share_social_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.78125rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.mayhen_blog_share_fb {
+    background: #1877F2;
+    color: #FFFFFF;
+}
+.mayhen_blog_share_fb:hover {
+    background: #0C63D4;
+}
+
+.mayhen_blog_share_zalo {
+    background: #0068FF;
+    color: #FFFFFF;
+}
+.mayhen_blog_share_zalo:hover {
+    background: #0052CC;
+}
+
+.mayhen_blog_zalo_badge {
+    font-size: 0.6875rem;
+    background: rgba(255, 255, 255, 0.25);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+}
+
+.mayhen_blog_share_copy {
+    background: #FFFFFF;
+    color: var(--mh-blog-heading);
+    border-color: var(--mh-blog-border);
+}
+.mayhen_blog_share_copy:hover {
+    background: #F1F5F9;
+}
+
+/* CTA Card */
 .mayhen_blog_cta_card {
-    background: linear-gradient(135deg, #FFFDF9 0%, #F5EFEB 100%);
+    background: #FDFBF8;
     border: 1px solid var(--mh-blog-gold);
-    border-radius: 16px;
-    padding: 36px;
+    border-radius: 12px;
+    padding: 28px 24px;
+    margin: 36px 0;
     text-align: center;
-    margin: 50px 0;
+}
+
+.mayhen_blog_cta_sparkle {
+    color: var(--mh-blog-gold);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .mayhen_blog_cta_title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.75rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 600;
     color: var(--mh-blog-heading);
     margin: 0 0 10px;
 }
 
-.mayhen_blog_cta_btn {
+.mayhen_blog_cta_desc {
+    max-width: 580px;
+    margin: 0 auto 18px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--mh-blog-muted);
+}
+
+.mayhen_blog_cta_actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mayhen_blog_cta_btn_primary {
     display: inline-block;
-    padding: 12px 28px;
-    border-radius: 30px;
+    padding: 10px 22px;
+    border-radius: 20px;
     background: var(--mh-blog-heading);
     color: #FFFFFF;
     text-decoration: none;
+    font-size: 0.84375rem;
     font-weight: 600;
-    font-size: 0.9375rem;
-    margin-top: 16px;
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
 }
 
-.mayhen_blog_cta_btn:hover {
-    background: var(--mh-blog-gold-dark);
+.mayhen_blog_cta_btn_primary:hover {
+    background: var(--mh-blog-primary);
 }
 
-/* Responsive Media Queries */
-@media (max-width: 900px) {
+.mayhen_blog_cta_btn_secondary {
+    display: inline-block;
+    padding: 9px 20px;
+    border-radius: 20px;
+    background: #FFFFFF;
+    color: var(--mh-blog-heading);
+    border: 1px solid var(--mh-blog-border);
+    text-decoration: none;
+    font-size: 0.84375rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.mayhen_blog_cta_btn_secondary:hover {
+    border-color: var(--mh-blog-gold);
+    color: var(--mh-blog-gold-dark);
+}
+
+/* Post Navigation (Prev / Next) */
+.mayhen_blog_post_nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.mayhen_blog_post_nav_link {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--mh-blog-border);
+    background: #FFFFFF;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.mayhen_blog_post_nav_link:hover {
+    border-color: var(--mh-blog-primary);
+    background: #F8FAFC;
+}
+
+.mayhen_blog_post_nav_label {
+    font-size: 0.75rem;
+    color: var(--mh-blog-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.mayhen_blog_post_nav_title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Related Section */
+.mayhen_blog_related_section {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--mh-blog-border);
+}
+
+.mayhen_blog_related_header {
+    margin-bottom: 20px;
+}
+
+.mayhen_blog_related_kicker {
+    font-size: 0.75rem;
+    color: var(--mh-blog-gold-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.mayhen_blog_related_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--mh-blog-heading);
+    margin: 0;
+}
+
+.mayhen_blog_related_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.mayhen_blog_related_card {
+    background: #FFFFFF;
+    border: 1px solid var(--mh-blog-border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_blog_related_card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.mayhen_blog_related_thumb_link {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #F1F5F9;
+    display: block;
+}
+
+.mayhen_blog_related_thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.mayhen_blog_related_card:hover .mayhen_blog_related_thumb {
+    transform: scale(1.03);
+}
+
+.mayhen_blog_related_body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.mayhen_blog_related_card_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    flex: 1;
+}
+
+.mayhen_blog_related_card_title a {
+    color: var(--mh-blog-heading);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.mayhen_blog_related_card_title a:hover {
+    color: var(--mh-blog-primary);
+}
+
+/* ==============================================================
+   7. BACK TO TOP BUTTON & TOAST
+   ============================================================== */
+.mayhen_blog_back_to_top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 1px solid var(--mh-blog-border);
+    color: var(--mh-blog-heading);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.25s ease;
+    z-index: 999;
+}
+
+.mayhen_blog_back_to_top.is_visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mayhen_blog_back_to_top:hover {
+    background: var(--mh-blog-heading);
+    color: #FFFFFF;
+    border-color: var(--mh-blog-heading);
+}
+
+.mayhen_blog_toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #0F172A;
+    color: #FFFFFF;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 999999;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.mayhen_blog_toast.is_show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ==============================================================
+   8. RESPONSIVE DESIGN (TABLET & MOBILE)
+   ============================================================== */
+@media (max-width: 1024px) {
+    .mayhen_blog_layout_grid {
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (max-width: 860px) {
     .mayhen_blog_featured_card {
         grid-template-columns: 1fr;
     }
-    .mayhen_blog_detail_layout {
+    .mayhen_blog_layout_grid {
         grid-template-columns: 1fr;
+        gap: 24px;
     }
-    .mayhen_blog_toc_sticky {
+    .mayhen_blog_sidebar {
         position: static;
-        margin-bottom: 30px;
+    }
+    .mayhen_blog_toc_toggle_mobile {
+        display: block;
+    }
+    .mayhen_blog_toc_nav {
+        display: none;
+        margin-top: 10px;
+    }
+    .mayhen_blog_toc_card.is_open .mayhen_blog_toc_nav {
+        display: block;
+    }
+    .mayhen_blog_toc_card.is_open .mayhen_blog_toc_toggle_mobile svg {
+        transform: rotate(180deg);
+    }
+    .mayhen_blog_sidebar_promo {
+        display: none;
+    }
+    .mayhen_blog_post_nav {
+        grid-template-columns: 1fr;
     }
 }
 
+@media (max-width: 640px) {
+    .mayhen_blog_detail_container {
+        padding: 12px 14px 30px;
+    }
+    .mayhen_blog_article_title {
+        font-size: 1.5rem;
+    }
+    .mayhen_blog_toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .mayhen_blog_toolbar_actions {
+        justify-content: space-between;
+    }
+    .mayhen_blog_cover_img {
+        aspect-ratio: 16 / 9;
+    }
+    .mayhen_blog_footer_share {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .mayhen_blog_share_btns {
+        justify-content: space-between;
+    }
+    .mayhen_blog_back_to_top {
+        bottom: 20px;
+        right: 18px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* ==============================================================
+   9. PRINT STYLES
+   ============================================================== */
+@media print {
+    .mayhen_blog_reading_progress,
+    .mayhen_blog_breadcrumb,
+    .mayhen_blog_toolbar,
+    .mayhen_blog_sidebar,
+    .mayhen_blog_footer_share,
+    .mayhen_blog_cta_card,
+    .mayhen_blog_post_nav,
+    .mayhen_blog_related_section,
+    .mayhen_blog_back_to_top,
+    .mayhen_blog_toast {
+        display: none !important;
+    }
+    .mayhen_blog_layout_grid {
+        grid-template-columns: 1fr !important;
+    }
+    .mayhen_blog_article_body {
+        font-size: 12pt !important;
+        color: #000000 !important;
+    }
+}

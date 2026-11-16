@@ -42,18 +42,6 @@ class BlogCategory extends Model
     protected static function booted(): void
     {
         static::saved(function () {
-            \App\Services\BlogService::clearCache();
-            \App\Http\Controllers\Client\BlogController::clearMemoization();
-        });
-        static::deleted(function () {
-            \App\Services\BlogService::clearCache();
-            \App\Http\Controllers\Client\BlogController::clearMemoization();
-        });
-    }
-
-    protected static function booted(): void
-    {
-        static::saved(function () {
             BlogService::clearCache();
             BlogController::clearMemoization();
         });

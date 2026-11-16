@@ -24,24 +24,20 @@ class BlogService
     protected static ?Collection $memoizedFeaturedPosts = null;
 
     /**
-     * Xóa sạch RAM memoization và tăng version cache khi bài viết/chuyên mục thay đổi.
+     * Xóa sạch RAM memoization khi bài viết/chuyên mục thay đổi.
      */
     public static function clearCache(): void
     {
         self::$memoizedCategories = null;
         self::$memoizedFeaturedPosts = null;
+        Cache::forget('mayhen_blog_categories_raw');
         Cache::forget('mayhen_blog_categories_with_count');
+        Cache::forget('mayhen_blog_featured_raw');
         Cache::forget('mayhen_blog_featured_posts');
-
-        if (Cache::has('mayhen_blog_version')) {
-            Cache::increment('mayhen_blog_version');
-        } else {
-            Cache::put('mayhen_blog_version', 2, 86400 * 30);
-        }
     }
 
     /**
-     * Lấy toàn bộ danh mục hoạt động kèm số lượng bài viết xuất bản (Cache 2 tầng: RAM + Redis/File).
+     * Lấy toàn bộ danh mục hoạt động kèm số lượng bài viết xuất bản (Static RAM Memoization trong worker).
      *
      * @return Collection<int, BlogCategory>
      */
@@ -51,9 +47,9 @@ class BlogService
             return self::$memoizedCategories;
         }
 
-        self::$memoizedCategories = Cache::remember('mayhen_blog_categories_with_count', 86400, function () {
-            return BlogCategory::active()->withCount('publishedPosts')->get();
-        });
+        self::$memoizedCategories = BlogCategory::active()
+            ->withCount('publishedPosts')
+            ->get();
 
         return self::$memoizedCategories;
     }
@@ -68,62 +64,6 @@ class BlogService
         return $categories->firstWhere('slug', $slug);
     }
 
-    /**
-     * Bộ nhớ đệm Static RAM trong tiến trình PHP worker (FPM / Octane).
-     *
-     * @var Collection<int, BlogCategory>|null
-     */
-    protected static ?Collection $memoizedCategories = null;
-
-    /**
-     * @var Collection<int, BlogPost>|null
-     */
-    protected static ?Collection $memoizedFeaturedPosts = null;
-
-    /**
-     * Xóa sạch RAM memoization và tăng version cache khi bài viết/chuyên mục thay đổi.
-     */
-    public static function clearCache(): void
-    {
-        self::$memoizedCategories = null;
-        self::$memoizedFeaturedPosts = null;
-        Cache::forget('mayhen_blog_categories_with_count');
-        Cache::forget('mayhen_blog_featured_posts');
-
-        if (Cache::has('mayhen_blog_version')) {
-            Cache::increment('mayhen_blog_version');
-        } else {
-            Cache::put('mayhen_blog_version', 2, 86400 * 30);
-        }
-    }
-
-    /**
-     * Lấy toàn bộ danh mục hoạt động kèm số lượng bài viết xuất bản (Cache 2 tầng: RAM + Redis/File).
-     *
-     * @return Collection<int, BlogCategory>
-     */
-    public static function getActiveCategories(): Collection
-    {
-        if (self::$memoizedCategories !== null) {
-            return self::$memoizedCategories;
-        }
-
-        self::$memoizedCategories = Cache::remember('mayhen_blog_categories_with_count', 86400, function () {
-            return BlogCategory::active()->withCount('publishedPosts')->get();
-        });
-
-        return self::$memoizedCategories;
-    }
-
-    /**
-     * Tìm danh mục theo slug trực tiếp từ danh mục đã memoize trong RAM mà không cần query lại DB.
-     */
-    public static function findCategoryBySlug(string $slug): ?BlogCategory
-    {
-        $categories = self::getActiveCategories();
-
-        return $categories->firstWhere('slug', $slug);
-    }
     /**
      * Tính toán thời gian đọc trung bình dựa trên tổng số từ (200 từ/phút).
      */
@@ -179,46 +119,34 @@ class BlogService
     }
 
     /**
-     * Lấy danh sách bài viết đã xuất bản kèm phân trang và tìm kiếm.
+     * Lấy danh sách bài viết đã xuất bản kèm phân trang và tìm kiếm (truy vấn tối ưu, không serialize Paginator vào cache để triệt tiêu lỗi cache).
      */
     public static function getPublishedPosts(int $perPage = 9, ?string $categorySlug = null, ?string $search = null, int $page = 1): LengthAwarePaginator
     {
-        // Khi có tìm kiếm từ khóa, truy vấn trực tiếp
-        if (! empty($search)) {
-            $search = trim($search);
+        $query = BlogPost::with(['category'])
+            ->published()
+            ->latest('published_at');
 
-            return BlogPost::with(['category', 'user'])
-                ->published()
-                ->latest('published_at')
-                ->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('summary', 'like', "%{$search}%")
-                        ->orWhere('author_name', 'like', "%{$search}%");
-                })
-                ->paginate($perPage, ['*'], 'page', $page)
-                ->withQueryString();
+        if (! empty($categorySlug)) {
+            $query->whereHas('category', function ($q) use ($categorySlug) {
+                $q->where('slug', $categorySlug);
+            });
         }
 
-        $version = Cache::get('mayhen_blog_version', 1);
-        $cacheKey = "mayhen_blog_v{$version}_posts_p{$page}_cat_".($categorySlug ?: 'all')."_per_{$perPage}";
+        if (! empty($search)) {
+            $search = trim($search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('author_name', 'like', "%{$search}%");
+            });
+        }
 
-        return Cache::remember($cacheKey, 86400, function () use ($perPage, $categorySlug, $page) {
-            $query = BlogPost::with(['category', 'user'])
-                ->published()
-                ->latest('published_at');
-
-            if (! empty($categorySlug)) {
-                $query->whereHas('category', function ($q) use ($categorySlug) {
-                    $q->where('slug', $categorySlug);
-                });
-            }
-
-            return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
-        });
+        return $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
     }
 
     /**
-     * Lấy các bài viết nổi bật (Featured).
+     * Lấy các bài viết nổi bật (Featured) - Static RAM Memoization trong worker.
      */
     public static function getFeaturedPosts(int $limit = 3): Collection
     {
@@ -226,14 +154,12 @@ class BlogService
             return self::$memoizedFeaturedPosts->take($limit);
         }
 
-        self::$memoizedFeaturedPosts = Cache::remember('mayhen_blog_featured_posts', 86400, function () use ($limit) {
-            return BlogPost::with(['category', 'user'])
-                ->published()
-                ->featured()
-                ->latest('published_at')
-                ->take($limit)
-                ->get();
-        });
+        self::$memoizedFeaturedPosts = BlogPost::with(['category', 'user'])
+            ->published()
+            ->featured()
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
 
         return self::$memoizedFeaturedPosts->take($limit);
     }

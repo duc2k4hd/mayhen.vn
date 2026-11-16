@@ -19,6 +19,13 @@ class BlogController extends Controller
     protected static ?LengthAwarePaginator $memoizedDefaultPosts = null;
 
     /**
+     * Cache bài viết theo chuyên mục/phân trang trong worker memory.
+     *
+     * @var array<string, LengthAwarePaginator>
+     */
+    protected static array $memoizedFilteredPosts = [];
+
+    /**
      * Cache ETag & Last-Modified cơ sở cho trang cẩm nang cưới.
      */
     protected static ?string $blogIndexEtag = null;
@@ -31,6 +38,7 @@ class BlogController extends Controller
     public static function clearMemoization(): void
     {
         self::$memoizedDefaultPosts = null;
+        self::$memoizedFilteredPosts = [];
         self::$blogIndexEtag = null;
         self::$blogIndexLastModified = null;
     }
@@ -93,7 +101,7 @@ class BlogController extends Controller
         // 3. Bài viết nổi bật (Static RAM memoization + Cache 24h)
         $featuredPosts = empty($categorySlug) && empty($search) ? BlogService::getFeaturedPosts(3) : collect();
 
-        // 4. Lấy danh sách bài viết phân trang (Tối ưu Static RAM cho Default Page 1)
+        // 4. Lấy danh sách bài viết phân trang (Tối ưu Static RAM cho Default Page 1 và Filter)
         if ($isDefaultPage) {
             if (self::$memoizedDefaultPosts === null) {
                 self::$memoizedDefaultPosts = BlogService::getPublishedPosts(
@@ -103,12 +111,16 @@ class BlogController extends Controller
             }
             $posts = self::$memoizedDefaultPosts;
         } else {
-            $posts = BlogService::getPublishedPosts(
-                perPage: 9,
-                categorySlug: $categorySlug ?: null,
-                search: $search ?: null,
-                page: $page
-            );
+            $filterKey = $categorySlug.'_'.$search.'_'.$page;
+            if (! isset(self::$memoizedFilteredPosts[$filterKey])) {
+                self::$memoizedFilteredPosts[$filterKey] = BlogService::getPublishedPosts(
+                    perPage: 9,
+                    categorySlug: $categorySlug ?: null,
+                    search: $search ?: null,
+                    page: $page
+                );
+            }
+            $posts = self::$memoizedFilteredPosts[$filterKey];
         }
 
         // 5. Nếu người dùng đã đăng nhập: Phục vụ view động, không cache public để bảo toàn phiên cá nhân
@@ -173,11 +185,28 @@ class BlogController extends Controller
         // Lấy bài viết liên quan
         $relatedPosts = BlogService::getRelatedPosts($post, 3);
 
+        // Lấy bài viết trước & bài viết kế tiếp (nếu bài viết đã có published_at)
+        $prevPost = null;
+        $nextPost = null;
+        if ($post->published_at !== null) {
+            $prevPost = BlogPost::published()
+                ->where('published_at', '<', $post->published_at)
+                ->latest('published_at')
+                ->first(['id', 'title', 'slug', 'published_at']);
+
+            $nextPost = BlogPost::published()
+                ->where('published_at', '>', $post->published_at)
+                ->oldest('published_at')
+                ->first(['id', 'title', 'slug', 'published_at']);
+        }
+
         return view('client.pages.blog.show', compact(
             'post',
             'toc',
             'processedContent',
-            'relatedPosts'
+            'relatedPosts',
+            'prevPost',
+            'nextPost'
         ));
     }
 }

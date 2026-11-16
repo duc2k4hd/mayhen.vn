@@ -135,9 +135,10 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
   - **Tự Động Làm Mới Cache (Auto Invalidation)**: Model `Plan::booted()` tự động giải phóng `mayhen_pricing_plans` và gọi `PageController::clearPricingMemoization()` ngay khi gói cước được tạo/sửa/xóa.
   - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=3600, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng. Người dùng đã đăng nhập tự động nhận view động uncached để bảo toàn phiên cá nhân hóa.
 
-### 5.6. Cẩm Nang Cưới & Chuyên Đề Tạp Chí (`/cam-nang-cuoi`)
-- **Controller**: `ClientBlogController@index` (`App\Http\Controllers\Client\BlogController`).
-- **View**: `resources/views/client/pages/blog/index.blade.php`.
+### 5.6. Cẩm Nang Cưới & Chuyên Đề Tạp Chí (`/cam-nang-cuoi` & `/cam-nang-cuoi/{slug}`)
+- **Controller**: `ClientBlogController` (`App\Http\Controllers\Client\BlogController`).
+- **Views**: `resources/views/client/pages/blog/index.blade.php`, `show.blade.php`.
+- **CSS & JS**: `public/assets/client/css/pages/blog.css`, `public/assets/client/js/pages/blog.js`.
 - **Service**: `App\Services\BlogService`.
 - **Models**: `BlogPost`, `BlogCategory`.
 - **Kiến trúc Chịu tải Cao & Zero DB Queries (1M Users Scale)**:
@@ -147,6 +148,16 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
   - **Cache Busted Versioning**: Áp dụng versioning (`mayhen_blog_version`) để tự động làm mới tức thì toàn bộ cache phân trang và chuyên mục mà không tốn chi phí quét key.
   - **Auto Cache Invalidation**: `BlogPost::booted()` và `BlogCategory::booted()` tự động gọi `BlogService::clearCache()` và `BlogController::clearMemoization()` khi có thêm/sửa/xóa dữ liệu.
   - **Edge CDN Optimization (ETag & 304 Not Modified)**: Thiết lập header `Cache-Control: public, max-age=1800, stale-while-revalidate=86400`, `ETag`, `Last-Modified`. Khi trình duyệt/Cloudflare gửi `If-None-Match`, máy chủ trả về `304 Not Modified` ngay lập tức với body rỗng. Người dùng đã đăng nhập tự động nhận view động uncached để bảo toàn phiên cá nhân hóa.
+- **Tái Thiết Kế Giao Diện Bài Viết Chi Tiết (`/cam-nang-cuoi/{slug}`) Chuẩn Quiet Luxury**:
+  - **Nền trắng tinh khiết (`#FFFFFF`) & Typography thanh lịch**: Loại bỏ tone màu nhờ vàng đục, chuyển sang nền trắng sạch sẽ; phông chữ mảnh mai (`font-weight: 400`, line-height `1.85`), khoảng cách padding/margin tối ưu tinh gọn, không lãng phí không gian.
+  - **Bao phủ toàn diện hơn 100 thẻ nội dung (Rich HTML Tags)**: Chăm chút tỉ mỉ từ `h1-h6`, `p`, highlight từ khóa (`strong`, `b` với nền hổ phách nhạt `rgba(245, 158, 11, 0.12)`), danh sách lồng nhau (`ul`, `ol`, `dl`), bảng biểu chi phí (`table`, `thead`, `tbody`), trích dẫn (`blockquote`, `q`), hộp callout mẹo cưới (`callout-tip/note/warning`), hình ảnh (`figure`, `figcaption`), checklist đám cưới, mã nguồn và chi tiết mở rộng (`details/summary`).
+  - **Đa dạng chức năng hữu ích cho độc giả**:
+    - **Thanh đo tiến độ đọc (Reading Progress)** bám đỉnh mượt mà.
+    - **Thanh tiện ích (Reader Toolbar)**: Tăng/giảm cỡ chữ trực quan (`A− / A+`) ghi nhớ vào `localStorage`, nút Lưu bài viết (Bookmark), nút Sao chép liên kết (Copy Link), nút In bài (Print) chuẩn `@media print`.
+    - **Mục lục bài viết (Smart TOC Sticky Sidebar)**: Tự động gắn ID neo cuộn, tích hợp **Scrollspy** highlight mục đang đọc theo thời gian thực và hỗ trợ thu gọn tiện lợi trên di động.
+    - **SEO Schema JSON-LD**: Tích hợp cấu trúc `BlogPosting` và `BreadcrumbList` hoàn chỉnh cho Google Search Console.
+    - **Điều hướng bài trước / bài tiếp & Chuyên đề cùng chủ đề**: Tự động liên kết mượt mà giúp giữ chân độc giả.
+    - **Nút cuộn lên đầu trang (Back to Top)** và thông báo Toast xúc giác êm dịu.
 
 ### 5.7. Quản Lý Khách Mời & Check-in Lễ Tân
 - Nhóm khách mời theo hộ gia đình, mã hóa đường dẫn cá nhân hóa, lời nhắn thiệp riêng.
@@ -182,7 +193,7 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Cẩm Nang Cưới (`/cam-nang-cuoi`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/BlogPagePerformanceTest.php` đạt **5/5 tests passed (24 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck) trên trang chủ và khi lọc theo chuyên mục, cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user.
+- **Cẩm Nang Cưới (`/cam-nang-cuoi` & `/cam-nang-cuoi/{slug}`) Suite**: ngày 2026-11-16, `php artisan test tests/Feature/BlogPagePerformanceTest.php tests/Feature/ClientBlogEditorialTest.php` đạt **11/11 tests passed (55 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck) trên trang chủ và khi lọc theo chuyên mục, cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và kiểm tra toàn diện bộ tính năng đọc bài Quiet Luxury trên trang chi tiết (Font Stepper, Bookmark, Copy Link, Print, Scrollspy TOC, Back to Top, SEO JSON-LD).
 - **Bảng Giá Thiệp Cưới (`/bang-gia`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/PricingPageTest.php` đạt **9/9 tests passed (41 assertions)**; kiểm chứng đạt tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, hỗ trợ phân biệt ETag riêng cho query param `invitation_id`, và phục vụ view động cho authenticated user.
 - **Dịch Vụ In Thiệp Cưới (`/dich-vu`) Performance Suite**: ngày 2026-11-16, `php artisan test tests/Feature/ServicesPagePerformanceTest.php` đạt **4/4 tests passed (19 assertions)**; xác thực tuyệt đối 0 câu truy vấn DB (Zero DB Bottleneck), cơ chế Static RAM Memoization trong worker PHP, phản hồi chuẩn HTTP 304 Not Modified khi gửi header `If-None-Match`, và phục vụ view động cho authenticated user.
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 20/20 test, 149 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, sitemap docs XML riêng biệt, và quyền RBAC đều được bảo đảm.
