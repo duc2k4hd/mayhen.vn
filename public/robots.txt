@@ -9,6 +9,8 @@ Allow: /ve-chung-toi
 Allow: /lien-he
 Allow: /cau-hoi-thuong-gap
 Allow: /bai-viet
+Allow: /docs/
+Allow: /sitemap-docs.xml
 
 # Chống lập chỉ mục các trang riêng tư, thanh toán, quản trị & thiệp cá nhân
 Disallow: /admin/
@@ -22,3 +24,4 @@ Disallow: /tao-thiep
 Disallow: /thiep/
 
 Sitemap: https://mayhen.vn/sitemap.xml
+Sitemap: https://mayhen.vn/sitemap-docs.xml

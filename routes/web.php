@@ -98,6 +98,7 @@ use Illuminate\Support\Facades\Route;
 
 // SEO Sitemap
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs');
 
 // Client Marketing Website
 Route::get('/', [HomeController::class, 'index'])->name('home');

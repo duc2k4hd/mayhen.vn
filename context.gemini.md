@@ -122,7 +122,17 @@ php artisan serve
 
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
-- **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 135 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 20/20 test, 149 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, sitemap docs XML riêng biệt, và quyền RBAC đều được bảo đảm.
+- **Tạo XML Sitemap riêng cho Tài liệu Khách hàng (`/sitemap-docs.xml`)**:
+  - *Route & Controller*: Bổ sung `Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs')` trong `routes/web.php` và phương thức `docs(DocumentationService $docsService)` trong `SitemapController.php`.
+  - *Phạm vi lập chỉ mục (Scope)*:
+    - Bao gồm trang gốc `/docs` (priority `0.9`, changefreq `weekly`).
+    - Bao gồm đầy đủ **58 bài viết tài liệu khách hàng** (`client`), tự động trích xuất `url`, `lastmod` (ISO 8601), `changefreq` và priority `0.8`. Tổng cộng chính xác **59 URLs**.
+    - **Tuyệt đối loại trừ 100% tài liệu quản trị nội bộ (Admin SOP Docs)**: Không chứa bất kỳ URL nào thuộc `/admin/docs/` hoặc các mã định danh `ADM-*`.
+  - *Tối ưu hóa SEO & Robots.txt*:
+    - Bổ sung chỉ dẫn `Allow: /docs/`, `Allow: /sitemap-docs.xml` và khai báo `Sitemap: https://mayhen.vn/sitemap-docs.xml` trong `public/robots.txt`.
+    - Bổ sung URL `/docs` vào sitemap chính `/sitemap.xml`.
+  - *Kiểm thử tự động*: Bài test trong `DocumentationCenterIntegrityTest.php` xác nhận trả về đúng định dạng `application/xml; charset=UTF-8`, cấu hình đủ 59 `<loc>`, không sót bài client và không lọt tài liệu admin.
 - **Sửa dứt điểm lỗi click nút Thu gọn Sidebar bị kích hoạt kép (Double-Toggle Bug)**:
   - *Nguyên nhân cốt lõi*: Trong `docs-main.js`, cả sự kiện `DOMContentLoaded` và khối fallback `document.readyState === 'interactive'` đều khởi chạy `initDocsDetail`, khiến listener click trên `#mayhen_docs_detail_sidebar_toggle` bị gán 2 lần. Khi người dùng click một lần, hàm `toggle` chạy 2 lần liên tiếp (Lần 1: thu gọn -> Lần 2: hủy thu gọn), dẫn đến việc nút chỉ hiện toast "Đã mở thanh điều hướng" và sidebar vẫn giữ nguyên không đổi.
   - *Khắc phục*: Tinh gọn điểm vào với hàm duy nhất `bootDocsApplication()`, kiểm tra nghiêm ngặt cờ `dataset.jsInitialized` và dùng `{ once: true }` chống gắn trùng lặp listener. Củng cố quy tắc ẩn sidebar với selector `#mayhen_docs_detail_app.mayhen_docs_detail_is_sidebar_collapsed #mayhen_docs_detail_sidebar { display: none !important; }`.

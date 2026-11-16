@@ -360,3 +360,34 @@ test('trang chi tiết tài liệu không chứa thẻ h1 thừa trong thân bà
     $adminResp->assertOk();
     expect(substr_count($adminResp->getContent(), '<h1'))->toBe(1);
 });
+
+test('sitemap-docs.xml hợp lệ chứa đầy đủ /docs và toàn bộ docs khách hàng, không index tài liệu admin', function () {
+    $resp = $this->get('/sitemap-docs.xml');
+
+    $resp->assertOk();
+    $resp->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+
+    $content = $resp->getContent();
+
+    // 1. Chứa URL gốc /docs
+    expect($content)->toContain(route('docs.index'));
+
+    // 2. Chứa các bài viết client mẫu
+    expect($content)->toContain(route('docs.show', ['category' => 'getting-started', 'slug' => 'CLI-START-001']));
+    expect($content)->toContain(route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-005']));
+    expect($content)->toContain(route('docs.show', ['category' => 'time-capsule', 'slug' => 'CLI-TIME-004']));
+
+    // 3. Tuyệt đối KHÔNG chứa bất kỳ tài liệu admin SOP nào
+    expect($content)->not->toContain('/admin/docs');
+    expect($content)->not->toContain('ADM-ORDR-003');
+    expect($content)->not->toContain('ADM-USER-001');
+
+    // 4. Đếm số lượng thẻ <loc>: đúng 59 URL (1 trang index /docs + 58 bài client)
+    $docsCount = substr_count($content, '<loc>');
+    expect($docsCount)->toBe(59);
+
+    // 5. Cấu trúc XML hợp lệ
+    expect($content)->toContain('<?xml version="1.0" encoding="UTF-8"?>');
+    expect($content)->toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+    expect($content)->toContain('</urlset>');
+});
