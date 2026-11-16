@@ -90,6 +90,45 @@
     {{-- Typography Fonts của từng mẫu thiệp --}}
     @stack('fonts')
 
+    {{-- Typography Fonts tùy biến từ Cấu hình Mẫu Thiệp (Showcase DNA) hoặc Đám Cưới --}}
+    @php
+        $invConfig = isset($template) && is_array($template->default_config) ? $template->default_config : [];
+        $invExtra = isset($wedding) && is_array($wedding->extra_data) ? $wedding->extra_data : [];
+        $activeHeadingFont = $invExtra['heading_font'] ?? ($invConfig['heading_font'] ?? null);
+        $activeBodyFont = $invExtra['body_font'] ?? ($invConfig['body_font'] ?? null);
+        $activeScriptFont = $invExtra['script_font'] ?? ($invConfig['script_font'] ?? null);
+    @endphp
+    @if(!empty($activeHeadingFont) || !empty($activeBodyFont) || !empty($activeScriptFont))
+        @php
+            $fontsToLoad = array_unique(array_filter([$activeHeadingFont, $activeBodyFont, $activeScriptFont]));
+            $fontQueryParts = [];
+            foreach ($fontsToLoad as $fName) {
+                $fontQueryParts[] = 'family=' . str_replace(' ', '+', $fName) . ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600';
+            }
+            $fontQueryStr = implode('&', $fontQueryParts);
+        @endphp
+        @if(!empty($fontQueryStr))
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?{{ $fontQueryStr }}&display=swap" rel="stylesheet">
+        @endif
+        <style id="mayhenDynamicTemplateTypography">
+            :root {
+                @if(!empty($activeHeadingFont))
+                    --font-serif: '{{ $activeHeadingFont }}', Georgia, serif !important;
+                    --font-heading: '{{ $activeHeadingFont }}', serif !important;
+                @endif
+                @if(!empty($activeBodyFont))
+                    --font-sans: '{{ $activeBodyFont }}', -apple-system, BlinkMacSystemFont, sans-serif !important;
+                    --font-body: '{{ $activeBodyFont }}', sans-serif !important;
+                @endif
+                @if(!empty($activeScriptFont))
+                    --font-script: '{{ $activeScriptFont }}', cursive !important;
+                @endif
+            }
+        </style>
+    @endif
+
     {{-- Stylesheets của từng mẫu thiệp --}}
     @stack('styles')
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\Wedding;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -321,6 +322,27 @@ class TemplateController extends Controller
                 $invitation = $inv;
                 $wedding = $inv->wedding;
             }
+        }
+
+        // Tự động khởi tạo Showcase Demo Wedding từ Cấu hình Mẫu Thiệp (Admin Showcase Customization)
+        if (! $wedding) {
+            $config = $template->default_config ?? [];
+            $extraData = is_array($config) ? $config : [];
+
+            $wedding = new Wedding([
+                'groom_name' => $config['groom_name'] ?? 'Hà Kiên',
+                'bride_name' => $config['bride_name'] ?? 'Phạm Xôn',
+                'wedding_date' => $config['wedding_date'] ?? '2026-12-20',
+                'cover_photo_url' => $config['cover_photo_url'] ?? ($config['hero_photo_url'] ?? null),
+                'music_url' => $config['music_url'] ?? null,
+                'venue_name' => $config['party_venue'] ?? ($config['venue_name'] ?? 'TƯ GIA NHÀ TRAI'),
+                'venue_address' => $config['event_party_address'] ?? ($config['venue_address'] ?? '423 An Dương Vương, Phú Thượng, Tây Hồ, Hà Nội'),
+                'story' => $config['story'] ?? null,
+                'bank_name' => $config['groom_bank_name'] ?? ($config['bank_name'] ?? null),
+                'bank_account_number' => $config['groom_bank_account'] ?? ($config['bank_account_number'] ?? null),
+                'bank_account_name' => $config['groom_bank_owner'] ?? ($config['bank_account_name'] ?? null),
+                'extra_data' => $extraData,
+            ]);
         }
 
         $wishSubmitUrl = route('templates.preview.wish', $slug);

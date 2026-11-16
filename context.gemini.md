@@ -340,3 +340,34 @@ php artisan serve
   - Phân giải đúng 100% ánh xạ giữa ID bài viết và Slug danh mục chuẩn.
   - Đảm bảo 100% hoạt động mượt mà trên cả localhost lẫn tên miền chính thức khi chạy production.
 - **Kiểm thử tự động**: Kiểm tra `git grep "file:///" resources/docs/` trả về kết quả rỗng (0 liên kết sót). Bộ kiểm thử `tests/Feature/DocumentationCenterIntegrityTest.php` vượt qua 23/23 tests (170 assertions) thành công. Code formatting đạt chuẩn Pint (`vendor/bin/pint --dirty --format agent`).
+
+### 5.6. Bảng Quản Trị Mẫu Thiệp Admin Toàn Diện & Tối Ưu Màu Sắc Công Thái Học (`/admin/templates/{id}/edit`)
+- **Tối ưu màu sắc giao diện Admin (Ergonomics & Eye-Friendly Theme)**:
+  - Loại bỏ hoàn toàn tone màu thiệp cưới ngà/vàng be/kem ấm khỏi bảng điều khiển Admin để khắc phục triệt để tình trạng chói mắt, lóa mắt khi thao tác quản trị hàng ngày.
+  - Áp dụng hệ thống màu trung tính hiện đại chuẩn Dashboard quốc tế:
+    - Nền chính: Xám dịu Slate Light `#F1F5F9`.
+    - Thẻ nội dung (Cards): Trắng tinh khiết `#FFFFFF` với viền mảnh `#E2E8F0` và bóng đổ mờ nhẹ.
+    - Màu chữ chính: Slate Charcoal `#0F172A`, phụ đề `#64748B`.
+    - Sidebar: Tối sang trọng `#0F172A` với chữ xám bạc `#94A3B8`, mục chọn tích cực xanh dịu `rgba(37, 99, 235, 0.12)` và `#60A5FA`.
+    - Màu tương tác & nút bấm: Xanh Slate Blue `#2563EB` (hover: `#1D4ED8`), focus outline `#2563EB`.
+- **Bộ công cụ chỉnh sửa mẫu thiệp Admin toàn năng (100% Parity với Khách hàng)**:
+  - Cấu trúc 5 tab phân tách trực quan:
+    1. *Thông Tin Mẫu*: Tên tiếng Việt, slug, mô tả, phân hạng (Free/Plus/Pro), danh mục, ghim trang chủ, kích hoạt, ảnh thumbnail.
+    2. *Nhạc & Phông Chữ*:
+       - Lựa chọn nhạc nền trưng bày từ kho bài hát tuyển chọn (`WeddingMusicService`) hoặc tải lên tệp âm thanh (mp3, m4a, wav) mới. Tích hợp audio player nghe thử trực tiếp trên trang.
+       - Tùy biến bộ 3 phông chữ chuẩn Việt hóa: Font tiêu đề (Heading), Font nội dung (Body), Font chữ ký nắn nót (Script) kèm theo thẻ xem trước phông chữ thời gian thực (Live Typography Preview).
+    3. *Đôi Lứa & Sự Kiện*: Tùy chỉnh tên chú rể, tên cô dâu, tứ thân phụ mẫu, ngày cưới dương lịch & âm lịch, địa điểm tiệc cưới, địa chỉ tổ chức và link Google Maps.
+    4. *Ảnh & Album 10 Ảnh*:
+       - Ảnh bìa chính (Hero Cover), Ảnh khung vòm Save The Date, Ảnh chân dung chú rể, Ảnh chân dung cô dâu kèm xem trước tức thì qua `FileReader`.
+       - Lưới quản lý trọn bộ 10 ảnh trong Album Gallery trưng bày của mẫu thiệp.
+    5. *Lời Ngỏ & Mừng Cưới*: Chuyện tình yêu 3 giai đoạn (Ngày đầu gặp gỡ, Khoảnh khắc cầu hôn, Ngày chung đôi), Lời cảm ơn chân thành, Dresscode quy định kèm bảng màu, Thông tin tài khoản ngân hàng & mã QR mừng cưới của Nhà trai và Nhà gái.
+- **Cơ chế Dọn dẹp Bộ nhớ Tự Động (Storage File Cleanup & Replacement)**:
+  - Tích hợp phương thức `handleFileUpload()` và `deleteStorageFileIfApplicable()` trong `app/Http/Controllers/Admin/TemplateController.php`.
+  - Bất kỳ khi nào Admin tải lên tệp mới (ảnh thumbnail, ảnh bìa, nhạc nền, ảnh dâu rể, ảnh album, mã QR), hệ thống tự động kiểm tra và xóa vĩnh viễn tệp cũ trong `Storage::disk('public')` nếu tệp đó từng được lưu trữ trong thư mục `/storage/...`.
+  - Triệt tiêu 100% tình trạng file rác mồ côi (orphan storage files), tiết kiệm tối đa dung lượng đĩa cứng máy chủ.
+- **Đồng bộ Trang Xem Trước Mẫu Thiệp (`/mau-thiep/{slug}/preview`)**:
+  - `TemplateController::preview()` khởi tạo đối tượng `Wedding` demo từ `default_config` của mẫu thiệp khi chưa có phiên bản thực tế của khách hàng.
+  - Layout [`client/layouts/invitation.blade.php`](resources/views/client/layouts/invitation.blade.php) nạp động các phông chữ và ghi đè các biến CSS `--font-serif`, `--font-heading`, `--font-sans`, `--font-script` tương ứng với cấu hình do Admin đã lưu.
+- **Kiểm thử tự động**:
+  - Viết mới test suite `tests/Feature/AdminTemplateCustomizationTest.php` kiểm tra toàn bộ luồng lưu cấu hình phong phú và kiểm chứng cơ chế tự động xóa tệp cũ trong storage disk khi upload tệp mới.
+  - Toàn bộ 20 tests trong 3 file kiểm thử Admin Template (`AdminTemplateTest.php`, `AdminTemplateReleaseLabTest.php`, `AdminTemplateCustomizationTest.php`) đều PASS 100% với 124 assertions. Code formatting đạt chuẩn Pint (`vendor/bin/pint --dirty --format agent`).

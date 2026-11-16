@@ -60,7 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Bắt toàn bộ ngoại lệ 404 (NotFoundHttpException, abort(404), route not found, findOrFail)
         // và chuyển hướng hiển thị ra view thật errors.404 với HTTP status 404 cho mọi request web
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return null;
             }

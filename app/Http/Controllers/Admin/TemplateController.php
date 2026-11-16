@@ -9,12 +9,15 @@ use App\Models\InvitationTemplateRelease;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
+use App\Services\WeddingMusicService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TemplateController extends Controller
@@ -85,6 +88,45 @@ class TemplateController extends Controller
         // Template Visual DNA (Innovation #10)
         $visualDna = InvitationTemplateService::extractVisualDna($template->slug);
 
+        // Danh sách bài hát từ Music Service để admin lựa chọn nhạc trưng bày
+        $musicCatalog = app(WeddingMusicService::class)->getCatalog();
+
+        // Danh sách Typography Font tuyển chọn có dấu đẹp cho thiệp cưới
+        $availableHeadingFonts = [
+            'Playfair Display',
+            'Cormorant Garamond',
+            'Cinzel',
+            'Great Vibes',
+            'Dancing Script',
+            'Lora',
+            'Merriweather',
+            'Alex Brush',
+            'Montserrat',
+            'Be Vietnam Pro',
+            'Inter',
+            'Quicksand',
+        ];
+
+        $availableBodyFonts = [
+            'Montserrat',
+            'Inter',
+            'Be Vietnam Pro',
+            'Open Sans',
+            'Roboto',
+            'Quicksand',
+            'Nunito Sans',
+            'Lora',
+        ];
+
+        $availableScriptFonts = [
+            'Dancing Script',
+            'Great Vibes',
+            'Alex Brush',
+            'Parisienne',
+            'Sacramento',
+            'Playfair Display',
+        ];
+
         return view('admin.pages.templates.edit', [
             'template' => $template,
             'audit' => $audit,
@@ -94,27 +136,231 @@ class TemplateController extends Controller
             'sectionsReport' => $audit['sections_report'] ?? [],
             'isCanonicalValid' => $audit['is_canonical_valid'] ?? false,
             'galleryValid' => $audit['gallery_valid'] ?? false,
+            'musicCatalog' => $musicCatalog,
+            'availableHeadingFonts' => $availableHeadingFonts,
+            'availableBodyFonts' => $availableBodyFonts,
+            'availableScriptFonts' => $availableScriptFonts,
+            'defaultConfig' => $template->default_config ?? [],
         ]);
     }
 
     /**
-     * Update template metadata and tier configurations.
+     * Update template metadata, showcase presentation data and configurations.
      */
     public function update(Request $request, int $id): RedirectResponse
     {
         $template = InvitationTemplate::findOrFail($id);
 
         $validated = $request->validate([
+            // 1. Basic & Tier
             'name' => 'required|string|max:150',
-            'description' => 'nullable|string|max:500',
+            'description' => 'nullable|string|max:1000',
             'category' => 'required|string|max:50',
             'tier' => 'required|string|in:free,plus,pro',
             'thumbnail_url' => 'nullable|string|max:500',
+            'thumbnail_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:10240',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
+
+            // 2. Music & Fonts
+            'music_url' => 'nullable|string|max:1000',
+            'music_file' => 'nullable|file|mimes:mp3,wav,m4a,ogg|max:20480',
+            'heading_font' => 'nullable|string|max:100',
+            'body_font' => 'nullable|string|max:100',
+            'script_font' => 'nullable|string|max:100',
+
+            // 3. Couple & Ceremony
+            'ceremony_type' => 'nullable|string|max:100',
+            'groom_name' => 'nullable|string|max:100',
+            'bride_name' => 'nullable|string|max:100',
+            'wedding_date' => 'nullable|string|max:50',
+            'party_time' => 'nullable|string|max:50',
+            'wedding_lunar_date' => 'nullable|string|max:200',
+            'groom_father' => 'nullable|string|max:100',
+            'groom_mother' => 'nullable|string|max:100',
+            'bride_father' => 'nullable|string|max:100',
+            'bride_mother' => 'nullable|string|max:100',
+            'party_venue' => 'nullable|string|max:255',
+            'event_party_address' => 'nullable|string|max:1000',
+            'party_map_url' => 'nullable|string|max:1000',
+
+            // 4. Photos
+            'cover_photo_url' => 'nullable|string|max:1000',
+            'cover_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'groom_photo_url' => 'nullable|string|max:1000',
+            'groom_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'bride_photo_url' => 'nullable|string|max:1000',
+            'bride_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'save_date_photo_url' => 'nullable|string|max:1000',
+            'save_date_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'gallery_urls' => 'nullable|array',
+            'gallery_urls.*' => 'nullable|string|max:1000',
+            'gallery_files' => 'nullable|array',
+            'gallery_files.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+
+            // 5. Story, Timeline & Gift
+            'story_stage_1_title' => 'nullable|string|max:200',
+            'story_stage_1_desc' => 'nullable|string|max:2000',
+            'story_stage_2_title' => 'nullable|string|max:200',
+            'story_stage_2_desc' => 'nullable|string|max:2000',
+            'story_stage_3_title' => 'nullable|string|max:200',
+            'story_stage_3_desc' => 'nullable|string|max:2000',
+            'footer_thank_you_text' => 'nullable|string|max:1000',
+            'timeline' => 'nullable|array',
+            'timeline.*.time' => 'nullable|string|max:50',
+            'timeline.*.title' => 'nullable|string|max:255',
+            'dresscode_colors' => 'nullable|string|max:255',
+            'dresscode_note' => 'nullable|string|max:1000',
+            'groom_bank_name' => 'nullable|string|max:100',
+            'groom_bank_account' => 'nullable|string|max:100',
+            'groom_bank_owner' => 'nullable|string|max:150',
+            'groom_qr_url' => 'nullable|string|max:1000',
+            'groom_qr_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
+            'bride_bank_name' => 'nullable|string|max:100',
+            'bride_bank_account' => 'nullable|string|max:100',
+            'bride_bank_owner' => 'nullable|string|max:150',
+            'bride_qr_url' => 'nullable|string|max:1000',
+            'bride_qr_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         $defaultConfig = $template->default_config ?? [];
+        $slug = $template->slug;
+
+        // --- 1. Xử lý Thumbnail (kèm dọn dẹp storage cũ nếu upload ảnh mới) ---
+        $thumbnailUrl = $template->thumbnail_url;
+        if ($request->hasFile('thumbnail_file')) {
+            $uploaded = $this->handleFileUpload($request, 'thumbnail_file', $slug, 'thumbnail', $thumbnailUrl);
+            if ($uploaded) {
+                $thumbnailUrl = $uploaded;
+            }
+        } elseif ($request->filled('thumbnail_url')) {
+            $thumbnailUrl = $request->input('thumbnail_url');
+        }
+
+        // --- 2. Xử lý Nhạc nền Showcase (kèm dọn dẹp storage cũ nếu upload file mới) ---
+        if ($request->hasFile('music_file')) {
+            $uploadedMusic = $this->handleFileUpload($request, 'music_file', $slug, 'music', $defaultConfig['music_url'] ?? null);
+            if ($uploadedMusic) {
+                $defaultConfig['music_url'] = $uploadedMusic;
+            }
+        } elseif ($request->has('music_url')) {
+            $defaultConfig['music_url'] = $request->input('music_url');
+        }
+
+        // --- 3. Xử lý Phông chữ Showcase ---
+        foreach (['heading_font', 'body_font', 'script_font'] as $fontField) {
+            if ($request->filled($fontField)) {
+                $defaultConfig[$fontField] = $request->input($fontField);
+            }
+        }
+
+        // --- 4. Xử lý Thông tin Cặp đôi & Tiệc cưới Showcase ---
+        foreach ([
+            'ceremony_type', 'groom_name', 'bride_name', 'wedding_date', 'party_time',
+            'wedding_lunar_date', 'groom_father', 'groom_mother', 'bride_father', 'bride_mother',
+            'party_venue', 'event_party_address', 'party_map_url',
+        ] as $infoField) {
+            if ($request->has($infoField)) {
+                $defaultConfig[$infoField] = $request->input($infoField);
+            }
+        }
+
+        // --- 5. Xử lý Ảnh trưng bày chính (Hero, Chú rể, Cô dâu, Save Date) ---
+        $photoUploadFields = [
+            'cover_photo_file' => 'cover_photo_url',
+            'hero_cover_file' => 'cover_photo_url',
+            'groom_photo_file' => 'groom_photo_url',
+            'bride_photo_file' => 'bride_photo_url',
+            'save_date_photo_file' => 'save_date_photo_url',
+            'couple_photo_file' => 'couple_photo_url',
+        ];
+        foreach ($photoUploadFields as $fileInput => $urlField) {
+            if ($request->hasFile($fileInput)) {
+                $oldFile = $defaultConfig[$urlField] ?? ($defaultConfig['hero_cover_url'] ?? null);
+                $uploadedPhoto = $this->handleFileUpload($request, $fileInput, $slug, 'photos', $oldFile);
+                if ($uploadedPhoto) {
+                    $defaultConfig[$urlField] = $uploadedPhoto;
+                    if ($urlField === 'cover_photo_url') {
+                        $defaultConfig['hero_photo_url'] = $uploadedPhoto;
+                        $defaultConfig['hero_cover_url'] = $uploadedPhoto;
+                    }
+                }
+            } elseif ($request->has($urlField)) {
+                $defaultConfig[$urlField] = $request->input($urlField);
+                if ($urlField === 'cover_photo_url') {
+                    $defaultConfig['hero_photo_url'] = $request->input($urlField);
+                    $defaultConfig['hero_cover_url'] = $request->input($urlField);
+                }
+            }
+        }
+
+        // --- 6. Xử lý Album 10 Ảnh cưới trưng bày (Gallery) ---
+        $existingGallery = $defaultConfig['gallery'] ?? [];
+        if (! is_array($existingGallery)) {
+            $existingGallery = [];
+        }
+        $galleryUrls = $request->input('gallery_urls', $request->input('gallery_url', []));
+        for ($i = 0; $i < 10; $i++) {
+            $galleryFileInput = "gallery_files.{$i}";
+            if ($request->hasFile($galleryFileInput)) {
+                $oldGalleryPhoto = $existingGallery[$i] ?? null;
+                $uploadedGalleryPhoto = $this->handleFileUpload($request, $galleryFileInput, $slug, 'gallery', $oldGalleryPhoto);
+                if ($uploadedGalleryPhoto) {
+                    $existingGallery[$i] = $uploadedGalleryPhoto;
+                }
+            } elseif (isset($galleryUrls[$i]) && $galleryUrls[$i] !== '') {
+                $existingGallery[$i] = $galleryUrls[$i];
+            }
+        }
+        $defaultConfig['gallery'] = $existingGallery;
+
+        // --- 7. Xử lý Chuyện tình yêu, Lịch trình & Dresscode ---
+        foreach ([
+            'story_stage_1_title', 'story_stage_1_desc',
+            'story_stage_2_title', 'story_stage_2_desc',
+            'story_stage_3_title', 'story_stage_3_desc',
+            'footer_thank_you_text', 'dresscode_colors', 'dresscode_note',
+        ] as $storyField) {
+            if ($request->has($storyField)) {
+                $defaultConfig[$storyField] = $request->input($storyField);
+            }
+        }
+
+        if ($request->has('timeline')) {
+            $defaultConfig['timeline'] = array_values(array_filter($request->input('timeline', []), function ($item) {
+                return ! empty($item['title']) || ! empty($item['time']);
+            }));
+        }
+
+        // --- 8. Xử lý Mừng cưới & Mã QR ---
+        foreach ([
+            'groom_bank_name', 'groom_bank_account', 'groom_bank_owner',
+            'bride_bank_name', 'bride_bank_account', 'bride_bank_owner',
+        ] as $bankField) {
+            if ($request->has($bankField)) {
+                $defaultConfig[$bankField] = $request->input($bankField);
+            }
+        }
+
+        if ($request->hasFile('groom_qr_file')) {
+            $uploadedGroomQr = $this->handleFileUpload($request, 'groom_qr_file', $slug, 'qr', $defaultConfig['groom_qr_url'] ?? null);
+            if ($uploadedGroomQr) {
+                $defaultConfig['groom_qr_url'] = $uploadedGroomQr;
+            }
+        } elseif ($request->has('groom_qr_url')) {
+            $defaultConfig['groom_qr_url'] = $request->input('groom_qr_url');
+        }
+
+        if ($request->hasFile('bride_qr_file')) {
+            $uploadedBrideQr = $this->handleFileUpload($request, 'bride_qr_file', $slug, 'qr', $defaultConfig['bride_qr_url'] ?? null);
+            if ($uploadedBrideQr) {
+                $defaultConfig['bride_qr_url'] = $uploadedBrideQr;
+            }
+        } elseif ($request->has('bride_qr_url')) {
+            $defaultConfig['bride_qr_url'] = $request->input('bride_qr_url');
+        }
+
+        // Cấu hình phân hạng và mô tả
         $defaultConfig['tier'] = $validated['tier'];
         if (isset($validated['description'])) {
             $defaultConfig['description'] = $validated['description'];
@@ -123,7 +369,7 @@ class TemplateController extends Controller
         $template->update([
             'name' => $validated['name'],
             'category' => $validated['category'],
-            'thumbnail_url' => $validated['thumbnail_url'] ?? $template->thumbnail_url,
+            'thumbnail_url' => $thumbnailUrl,
             'is_active' => $request->has('is_active'),
             'is_featured' => $request->has('is_featured'),
             'default_config' => $defaultConfig,
@@ -135,11 +381,59 @@ class TemplateController extends Controller
             'update_template',
             'InvitationTemplate',
             $template->id,
-            "Cập nhật cấu hình mẫu thiệp '{$template->name}' (Tier: {$validated['tier']})",
+            "Cập nhật toàn diện cấu hình & dữ liệu trưng bày mẫu thiệp '{$template->name}' (Tier: {$validated['tier']})",
             ['tier' => $validated['tier'], 'is_active' => $template->is_active, 'is_featured' => $template->is_featured]
         );
 
-        return redirect()->route('admin.templates.index')->with('success', "Đã cập nhật thông tin mẫu thiệp \"{$template->name}\" thành công.");
+        if ($request->has('save_and_continue')) {
+            return redirect()->route('admin.templates.edit', $template->id)->with('success', "Đã lưu cập nhật thông tin và dữ liệu trưng bày mẫu thiệp \"{$template->name}\" thành công.");
+        }
+
+        return redirect()->route('admin.templates.index')->with('success', "Đã lưu cập nhật thông tin và dữ liệu trưng bày mẫu thiệp \"{$template->name}\" thành công.");
+    }
+
+    /**
+     * Tải tệp lên đĩa public storage và tự động xóa tệp cũ trong storage để tránh rác dung lượng.
+     */
+    protected function handleFileUpload(Request $request, string $inputName, string $slug, string $folder, ?string $oldUrl = null): ?string
+    {
+        if (! $request->hasFile($inputName)) {
+            return null;
+        }
+
+        $file = $request->file($inputName);
+        if (! $file || ! $file->isValid()) {
+            return null;
+        }
+
+        // 1. Tự động xóa tệp cũ trong Storage nếu tệp cũ bắt đầu bằng /storage/
+        $this->deleteStorageFileIfApplicable($oldUrl);
+
+        // 2. Lưu tệp mới an toàn
+        $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+        $cleanFolder = Str::slug($folder);
+        $filename = Str::slug($slug).'-'.$cleanFolder.'-'.Str::random(10).'.'.$ext;
+        $path = $file->storeAs("templates/{$slug}/{$cleanFolder}", $filename, 'public');
+
+        return '/storage/'.$path;
+    }
+
+    /**
+     * Xóa tệp khỏi Storage nếu tệp cũ nằm trong thư mục storage public đã upload trước đó.
+     */
+    protected function deleteStorageFileIfApplicable(?string $url): void
+    {
+        if (empty($url)) {
+            return;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+        if ($path && str_starts_with($path, '/storage/')) {
+            $relativeStoragePath = substr($path, strlen('/storage/'));
+            if (Storage::disk('public')->exists($relativeStoragePath)) {
+                Storage::disk('public')->delete($relativeStoragePath);
+            }
+        }
     }
 
     /**

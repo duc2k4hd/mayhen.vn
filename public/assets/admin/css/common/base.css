@@ -17,9 +17,9 @@
 
 html, body {
     font-family: var(--mh-admin-font);
-    background-color: #F8F9FA;
-    color: #212529;
-    font-size: 15px;
+    background-color: #F1F5F9;
+    color: #0F172A;
+    font-size: 14px;
     line-height: 1.5;
     min-height: 100vh;
 }
