@@ -26,6 +26,10 @@ test('truy cập bài viết chi tiết Client Docs /docs/{category}/{slug} thà
     $response->assertSee('Căn chỉnh tiêu điểm ảnh cưới');
     $response->assertSee('Smart Focal Point');
     $response->assertSee('MỤC LỤC BÀI VIẾT');
+    $response->assertSee('mayhen_docs_detail_help_button');
+    $response->assertSee('mayhen_docs_detail_font_stepper');
+    $response->assertSee('mayhen_docs_detail_bookmark');
+    $response->assertSee('mayhen_docs_detail_bookmarks_panel');
 });
 
 test('các bài nhập môn mới xuất hiện trên trang hướng dẫn công khai', function () {

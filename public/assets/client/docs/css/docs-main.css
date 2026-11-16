@@ -2898,31 +2898,7 @@ a {
     color: var(--mayhen-docs-detail-muted);
     white-space: nowrap;
 }
-.mayhen_docs_detail_help_button {
-    height: 36px;
-    padding: 0 13px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: transparent;
-    border: 1px solid var(--mayhen-docs-detail-border);
-    border-radius: 9px;
-    color: var(--mayhen-docs-detail-rose);
-    font-size: 12px;
-    font-weight: 700;
-}
-.mayhen_docs_detail_help_button > span:first-child {
-    display: grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    border: 1.5px solid currentColor;
-    border-radius: 50%;
-    font-size: 11px;
-}
-.mayhen_docs_detail_help_button:hover {
-    background: var(--mayhen-docs-detail-rose-soft);
-}
+
 .mayhen_docs_detail_breadcrumb_bar {
     position: sticky;
     top: var(--mayhen-docs-detail-header-h);
@@ -3377,16 +3353,7 @@ a {
     background: var(--mayhen-docs-detail-rose-dark);
     border-color: var(--mayhen-docs-detail-rose-dark);
 }
-.mayhen_docs_detail_font_button {
-    height: 31px;
-    padding: 0 7px;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--mayhen-docs-detail-muted);
-    font-size: 12px;
-    font-weight: 800;
-}
+
 .mayhen_docs_detail_focus_button {
     display: grid;
     place-items: center;
@@ -6557,7 +6524,7 @@ body[data-theme="dark"] .mayhen_docs_theme_switcher_icon,
 .mayhen_docs_ordered_list li {
     margin: 8px 0 !important;
     line-height: 1.8 !important;
-    font-size: 16.5px !important;
+    font-size: var(--mayhen-docs-detail-font-size, 16.5px) !important;
 }
 
 /* 7. Đường kẻ phân cách ngang (HR) */
@@ -6986,7 +6953,7 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     .mayhen_docs_p,
     .mayhen_docs_list li,
     .mayhen_docs_ordered_list li {
-        font-size: 15.5px !important;
+        font-size: var(--mayhen-docs-detail-font-size, 15.5px) !important;
         line-height: 1.75 !important;
     }
 
@@ -7032,9 +6999,10 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
 
 /* =============================================================
    MÂY HẸN DOCS — ACTION BUTTONS, FONT SCALING & HELP PILL REFINEMENT
+   Quiet Luxury Aesthetics (Zero Tailwind, Native CSS Tokens)
    ============================================================= */
 
-/* 1. Nút Trợ giúp (Help Button) — Thiết kế dạng Pill sang trọng, chống vỡ chữ và méo icon */
+/* 1. Nút Trợ giúp (Help Button) — Dạng Pill thanh lịch, chống vỡ chữ và méo icon tuyệt đối */
 .mayhen_docs_detail_help_button {
     height: 36px !important;
     min-height: 36px !important;
@@ -7042,11 +7010,11 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     display: inline-flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 7px !important;
-    background: var(--mayhen-docs-surface, #ffffff) !important;
-    border: 1px solid var(--mayhen-docs-border, #e5e7eb) !important;
+    gap: 8px !important;
+    background: var(--mayhen-docs-detail-surface, #ffffff) !important;
+    border: 1px solid var(--mayhen-docs-detail-border, #eae0da) !important;
     border-radius: 999px !important;
-    color: var(--mayhen-docs-text, #374151) !important;
+    color: var(--mayhen-docs-detail-rose, #613b3e) !important;
     font-size: 12.5px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -7054,17 +7022,20 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     white-space: nowrap !important;
     flex: 0 0 auto !important;
     flex-shrink: 0 !important;
-    min-width: 96px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 1px 3px rgba(97, 59, 62, 0.05) !important;
     box-sizing: border-box !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .mayhen_docs_detail_help_button:hover {
-    border-color: #cbd5e1 !important;
-    background: #f8fafc !important;
-    color: #0f172a !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    border-color: #d6c2b8 !important;
+    background: #faf3f0 !important;
+    color: #43282a !important;
+    box-shadow: 0 2px 8px rgba(97, 59, 62, 0.08) !important;
+}
+
+.mayhen_docs_detail_help_button:active {
+    transform: scale(0.97) !important;
 }
 
 .mayhen_docs_detail_help_button .mayhen_docs_detail_help_icon,
@@ -7075,26 +7046,26 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     width: 22px !important;
     height: 22px !important;
     min-width: 22px !important;
-    max-width: 22px !important;
+    min-height: 22px !important;
     border-radius: 50% !important;
-    background: #f1f5f9 !important;
-    color: #475569 !important;
+    background: rgba(97, 59, 62, 0.08) !important;
+    color: var(--mayhen-docs-detail-rose, #613b3e) !important;
     flex-shrink: 0 !important;
     border: none !important;
     transition: transform 0.2s ease, background 0.2s ease !important;
 }
 
 .mayhen_docs_detail_help_button .mayhen_docs_detail_help_icon svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 13px !important;
+    height: 13px !important;
     display: block !important;
     stroke: currentColor !important;
 }
 
 .mayhen_docs_detail_help_button:hover .mayhen_docs_detail_help_icon {
     transform: scale(1.08) !important;
-    background: #e2e8f0 !important;
-    color: #1e293b !important;
+    background: rgba(97, 59, 62, 0.14) !important;
+    color: #43282a !important;
 }
 
 .mayhen_docs_detail_help_text {
@@ -7106,87 +7077,246 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     font-weight: 600 !important;
 }
 
-/* 2. Cặp nút Tăng / Giảm Cỡ Chữ (A- & A+) — Thiết kế phím xúc giác tinh tế */
-.mayhen_docs_detail_font_button {
-    height: 32px !important;
-    min-width: 34px !important;
-    padding: 0 9px !important;
-    border-radius: 7px !important;
-    border: 1px solid #e2e8f0 !important;
-    background: #ffffff !important;
-    color: #374151 !important;
-    font-size: 13px !important;
+/* 2. Cụm nút Tăng / Giảm Cỡ Chữ (A- & A+) — Stepper xúc giác tinh tế */
+.mayhen_docs_detail_font_stepper {
+    display: inline-flex !important;
+    align-items: center !important;
+    height: 34px !important;
+    background: var(--mayhen-docs-detail-surface, #ffffff) !important;
+    border: 1px solid var(--mayhen-docs-detail-border, #eae0da) !important;
+    border-radius: 8px !important;
+    padding: 2px !important;
+    box-shadow: 0 1px 2px rgba(97, 59, 62, 0.04) !important;
+    box-sizing: border-box !important;
+    user-select: none !important;
+}
+
+.mayhen_docs_detail_font_button,
+.mayhen_docs_detail_font_btn {
+    height: 28px !important;
+    min-width: 30px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--mayhen-docs-detail-rose, #613b3e) !important;
+    font-size: 12.5px !important;
     font-weight: 700 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
-    user-select: none !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
 }
 
-.mayhen_docs_detail_font_button:hover {
-    background: #f8fafc !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+.mayhen_docs_detail_font_button:hover,
+.mayhen_docs_detail_font_btn:hover {
+    background: #faf0ec !important;
+    color: #43282a !important;
 }
 
-.mayhen_docs_detail_font_button:active {
-    transform: scale(0.94) !important;
-    background: #e2e8f0 !important;
+.mayhen_docs_detail_font_button:active,
+.mayhen_docs_detail_font_btn:active {
+    transform: scale(0.92) !important;
+    background: #f3e6e1 !important;
 }
 
-/* 3. Nút Lưu Bài Viết (Bookmark Button) — Tương tác rõ nét, chuyển trạng thái "Đã lưu" */
-#mayhen_docs_detail_bookmark {
+.mayhen_docs_detail_font_indicator {
+    padding: 0 8px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: var(--mayhen-docs-detail-muted, #7e716a) !important;
+    border-left: 1px solid rgba(234, 224, 218, 0.7) !important;
+    border-right: 1px solid rgba(234, 224, 218, 0.7) !important;
+    line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 6px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
 }
 
-#mayhen_docs_detail_bookmark svg {
+/* 3. Nút Lưu Bài Viết (Bookmark Button) — Tương tác Quiet Luxury, chuyển đổi rõ nét */
+#mayhen_docs_detail_bookmark,
+.mayhen_docs_detail_btn_bookmark {
+    height: 34px !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--mayhen-docs-detail-border, #eae0da) !important;
+    background: var(--mayhen-docs-detail-surface, #ffffff) !important;
+    color: var(--mayhen-docs-detail-rose, #613b3e) !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px rgba(97, 59, 62, 0.04) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-sizing: border-box !important;
+}
+
+#mayhen_docs_detail_bookmark svg,
+.mayhen_docs_detail_btn_bookmark svg {
     width: 15px !important;
     height: 15px !important;
+    stroke: currentColor !important;
+    fill: none !important;
+    stroke-width: 2 !important;
     transition: transform 0.2s ease, fill 0.2s ease, color 0.2s ease !important;
 }
 
-#mayhen_docs_detail_bookmark:hover {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
+#mayhen_docs_detail_bookmark:hover,
+.mayhen_docs_detail_btn_bookmark:hover {
+    background: #faf3f0 !important;
+    border-color: #d6c2b8 !important;
+    color: #43282a !important;
 }
 
 #mayhen_docs_detail_bookmark[aria-pressed="true"],
-.mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"] {
-    background: #fef3c7 !important;
-    border-color: #f59e0b !important;
-    color: #92400e !important;
+.mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"],
+.mayhen_docs_detail_is_bookmarked {
+    background: #faf0ec !important;
+    border-color: #d9b8ae !important;
+    color: #613b3e !important;
     font-weight: 700 !important;
+    box-shadow: 0 2px 6px rgba(97, 59, 62, 0.08) !important;
 }
 
 #mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
-.mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"] svg {
-    color: #d97706 !important;
+.mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
+.mayhen_docs_detail_is_bookmarked svg {
+    color: #613b3e !important;
     fill: currentColor !important;
     stroke: currentColor !important;
-    transform: scale(1.1) !important;
+    transform: scale(1.08) !important;
 }
 
-/* 4. Thông báo Toast nổi bật khi lưu bài / đổi cỡ chữ */
+/* 4. Panel Danh Sách Bài Viết Đã Lưu trong Sidebar */
+.mayhen_docs_detail_bookmarks_panel {
+    margin: 16px 0 20px 0 !important;
+    padding: 12px 14px !important;
+    background: #faf5f2 !important;
+    border: 1px solid #eae0da !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
+}
+
+.mayhen_docs_detail_bookmarks_panel_header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    color: #613b3e !important;
+    margin-bottom: 8px !important;
+}
+
+.mayhen_docs_detail_bookmarks_panel_title {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.mayhen_docs_detail_bookmarks_panel_title svg {
+    width: 13px !important;
+    height: 13px !important;
+    fill: #613b3e !important;
+    display: inline-block !important;
+}
+
+.mayhen_docs_detail_bookmarks_badge {
+    background: #613b3e !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding: 1px 7px !important;
+    border-radius: 999px !important;
+    line-height: 1.4 !important;
+}
+
+.mayhen_docs_detail_bookmarks_list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.mayhen_docs_detail_bookmark_row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+    transition: background 0.15s ease !important;
+}
+
+.mayhen_docs_detail_bookmark_row:hover {
+    background: rgba(97, 59, 62, 0.06) !important;
+}
+
+.mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active {
+    background: rgba(97, 59, 62, 0.1) !important;
+}
+
+.mayhen_docs_detail_bookmark_link {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    color: #2d2623 !important;
+    text-decoration: none !important;
+    line-height: 1.4 !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.mayhen_docs_detail_bookmark_dot {
+    color: #c5a880 !important;
+    font-size: 10px !important;
+    flex-shrink: 0 !important;
+}
+
+.mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active .mayhen_docs_detail_bookmark_link {
+    font-weight: 700 !important;
+    color: #613b3e !important;
+}
+
+.mayhen_docs_detail_bookmark_del {
+    background: none !important;
+    border: none !important;
+    color: #a69891 !important;
+    cursor: pointer !important;
+    padding: 2px !important;
+    border-radius: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    transition: color 0.15s ease, background 0.15s ease !important;
+}
+
+.mayhen_docs_detail_bookmark_del:hover {
+    color: #dc2626 !important;
+    background: rgba(220, 38, 38, 0.1) !important;
+}
+
+/* 5. Thông báo Toast nổi bật */
 .mayhen_docs_detail_toast {
     position: fixed !important;
     bottom: 28px !important;
     left: 50% !important;
     transform: translate(-50%, 20px) !important;
-    background: #0f172a !important;
-    color: #f8fafc !important;
-    padding: 10px 20px !important;
+    background: #2d2623 !important;
+    color: #faf5f2 !important;
+    padding: 10px 22px !important;
     border-radius: 999px !important;
-    font-size: 13.5px !important;
+    border: 1px solid rgba(197, 168, 128, 0.3) !important;
+    font-size: 13px !important;
     font-weight: 600 !important;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2) !important;
+    box-shadow: 0 10px 25px rgba(45, 38, 35, 0.25) !important;
     opacity: 0 !important;
     pointer-events: none !important;
     z-index: 9999 !important;
@@ -7198,26 +7328,142 @@ body[data-theme="dark"] .mayhen_docs_callout_danger .mayhen_docs_callout_text,
     transform: translate(-50%, 0) !important;
 }
 
-/* Dark Mode Support for Refined Buttons */
-html[data-theme="dark"] .mayhen_docs_detail_help_button {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    color: #e2e8f0 !important;
+/* Dark Mode Support (Quiet Luxury Dark Tones) */
+html[data-theme="dark"] .mayhen_docs_detail_help_button,
+body[data-theme="dark"] .mayhen_docs_detail_help_button {
+    background: #24201e !important;
+    border-color: #3d3532 !important;
+    color: #e8c8c4 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
 }
 
-html[data-theme="dark"] .mayhen_docs_detail_help_button .mayhen_docs_detail_help_icon {
-    background: #334155 !important;
-    color: #cbd5e1 !important;
+html[data-theme="dark"] .mayhen_docs_detail_help_button:hover,
+body[data-theme="dark"] .mayhen_docs_detail_help_button:hover {
+    background: #2e2826 !important;
+    border-color: #554843 !important;
+    color: #f7dcd9 !important;
 }
 
-html[data-theme="dark"] .mayhen_docs_detail_font_button {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    color: #f1f5f9 !important;
+html[data-theme="dark"] .mayhen_docs_detail_help_button .mayhen_docs_detail_help_icon,
+body[data-theme="dark"] .mayhen_docs_detail_help_button .mayhen_docs_detail_help_icon {
+    background: #332b29 !important;
+    color: #e8c8c4 !important;
 }
 
-html[data-theme="dark"] #mayhen_docs_detail_bookmark[aria-pressed="true"] {
-    background: #78350f !important;
-    border-color: #b45309 !important;
-    color: #fef3c7 !important;
+html[data-theme="dark"] .mayhen_docs_detail_font_stepper,
+body[data-theme="dark"] .mayhen_docs_detail_font_stepper {
+    background: #24201e !important;
+    border-color: #3d3532 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_font_button,
+html[data-theme="dark"] .mayhen_docs_detail_font_btn,
+body[data-theme="dark"] .mayhen_docs_detail_font_button,
+body[data-theme="dark"] .mayhen_docs_detail_font_btn {
+    color: #e8c8c4 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_font_button:hover,
+html[data-theme="dark"] .mayhen_docs_detail_font_btn:hover,
+body[data-theme="dark"] .mayhen_docs_detail_font_button:hover,
+body[data-theme="dark"] .mayhen_docs_detail_font_btn:hover {
+    background: #332b29 !important;
+    color: #f7dcd9 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_font_indicator,
+body[data-theme="dark"] .mayhen_docs_detail_font_indicator {
+    color: #a69891 !important;
+    border-color: #3d3532 !important;
+}
+
+html[data-theme="dark"] #mayhen_docs_detail_bookmark,
+html[data-theme="dark"] .mayhen_docs_detail_btn_bookmark,
+body[data-theme="dark"] #mayhen_docs_detail_bookmark,
+body[data-theme="dark"] .mayhen_docs_detail_btn_bookmark {
+    background: #24201e !important;
+    border-color: #3d3532 !important;
+    color: #e8c8c4 !important;
+}
+
+html[data-theme="dark"] #mayhen_docs_detail_bookmark:hover,
+html[data-theme="dark"] .mayhen_docs_detail_btn_bookmark:hover,
+body[data-theme="dark"] #mayhen_docs_detail_bookmark:hover,
+body[data-theme="dark"] .mayhen_docs_detail_btn_bookmark:hover {
+    background: #2e2826 !important;
+    border-color: #554843 !important;
+    color: #f7dcd9 !important;
+}
+
+html[data-theme="dark"] #mayhen_docs_detail_bookmark[aria-pressed="true"],
+html[data-theme="dark"] .mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"],
+html[data-theme="dark"] .mayhen_docs_detail_is_bookmarked,
+body[data-theme="dark"] #mayhen_docs_detail_bookmark[aria-pressed="true"],
+body[data-theme="dark"] .mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"],
+body[data-theme="dark"] .mayhen_docs_detail_is_bookmarked {
+    background: #3b2427 !important;
+    border-color: #7a4248 !important;
+    color: #f7dcd9 !important;
+}
+
+html[data-theme="dark"] #mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
+html[data-theme="dark"] .mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
+html[data-theme="dark"] .mayhen_docs_detail_is_bookmarked svg,
+body[data-theme="dark"] #mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
+body[data-theme="dark"] .mayhen_docs_detail_btn#mayhen_docs_detail_bookmark[aria-pressed="true"] svg,
+body[data-theme="dark"] .mayhen_docs_detail_is_bookmarked svg {
+    color: #f7dcd9 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel,
+body[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel {
+    background: #201c1a !important;
+    border-color: #38302d !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel_header,
+body[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel_header {
+    color: #e8c8c4 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel_title svg,
+body[data-theme="dark"] .mayhen_docs_detail_bookmarks_panel_title svg {
+    fill: #e8c8c4 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmarks_badge,
+body[data-theme="dark"] .mayhen_docs_detail_bookmarks_badge {
+    background: #7a4248 !important;
+    color: #f7dcd9 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmark_link,
+body[data-theme="dark"] .mayhen_docs_detail_bookmark_link {
+    color: #ded6d1 !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmark_row:hover,
+body[data-theme="dark"] .mayhen_docs_detail_bookmark_row:hover {
+    background: rgba(232, 200, 196, 0.08) !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active,
+body[data-theme="dark"] .mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active {
+    background: rgba(232, 200, 196, 0.12) !important;
+}
+
+html[data-theme="dark"] .mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active .mayhen_docs_detail_bookmark_link,
+body[data-theme="dark"] .mayhen_docs_detail_bookmark_row.mayhen_docs_detail_bookmark_active .mayhen_docs_detail_bookmark_link {
+    color: #f7dcd9 !important;
+}
+
+/* Responsive Support for Header Right on Mobile (< 690px) */
+@media (max-width: 690px) {
+    .mayhen_docs_detail_help_button {
+        padding: 0 10px !important;
+        gap: 0 !important;
+    }
+    .mayhen_docs_detail_help_text {
+        display: none !important;
+    }
 }

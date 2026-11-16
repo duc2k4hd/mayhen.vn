@@ -52,7 +52,7 @@
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>
       </button>
-      <button type="button" class="mayhen_docs_detail_help_button" data-modal="mayhen_docs_detail_shortcuts_dialog" aria-label="Phím tắt và trợ giúp" title="Phím tắt và trợ giúp">
+      <button type="button" class="mayhen_docs_detail_help_button" id="mayhen_docs_detail_help_button" data-modal="mayhen_docs_detail_shortcuts_dialog" aria-label="Phím tắt và trợ giúp" title="Phím tắt và trợ giúp">
         <span class="mayhen_docs_detail_help_icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
@@ -100,6 +100,20 @@
         <div class="mayhen_docs_detail_sidebar_overline">{{ $isAdmin ? 'ADMIN KNOWLEDGE BASE' : 'THƯ VIỆN MÂY HẸN' }}</div>
         <h2 class="mayhen_docs_detail_sidebar_heading">{{ $isAdmin ? 'SOP & Vận hành' : 'Hướng dẫn sử dụng' }}</h2>
         <p class="mayhen_docs_detail_sidebar_desc">{{ $isAdmin ? 'Quy trình chuẩn, chính xác và cập nhật.' : 'Từng bước nhỏ, cho ngày vui trọn vẹn.' }}</p>
+
+        {{-- Saved Bookmarks Quick Panel --}}
+        <div class="mayhen_docs_detail_bookmarks_panel" id="mayhen_docs_detail_bookmarks_panel" hidden>
+          <div class="mayhen_docs_detail_bookmarks_panel_header">
+            <span class="mayhen_docs_detail_bookmarks_panel_title">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4V4Z" fill="currentColor"/></svg>
+              Bài viết đã lưu
+            </span>
+            <span class="mayhen_docs_detail_bookmarks_badge" id="mayhen_docs_detail_bookmarks_count">0</span>
+          </div>
+          <div class="mayhen_docs_detail_bookmarks_list" id="mayhen_docs_detail_bookmarks_list">
+            {{-- Rendered dynamically by JS --}}
+          </div>
+        </div>
 
         <div class="mayhen_docs_detail_sidebar_nav">
           @foreach((array)$categories as $catSlug => $cat)
@@ -175,16 +189,19 @@
             <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_copy_markdown" title="Sao chép nội dung">
               <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Sao chép Markdown
             </button>
-            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_ghost" id="mayhen_docs_detail_bookmark" aria-pressed="false">
-              <svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4V4Z"/></svg><span>Lưu bài</span>
+            <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_ghost mayhen_docs_detail_btn_bookmark" id="mayhen_docs_detail_bookmark" aria-pressed="false" title="Lưu bài viết này vào danh sách quan tâm">
+              <svg viewBox="0 0 24 24" class="mayhen_docs_bookmark_icon" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4V4Z"/></svg><span>Lưu bài</span>
             </button>
             <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_ghost" data-modal="mayhen_docs_detail_share_dialog">
               <svg viewBox="0 0 24 24"><path d="M13 6h7v7M20 6l-10 10"/><path d="M18 15v5H4V6h5"/></svg> Chia sẻ
             </button>
           </div>
           <div class="mayhen_docs_detail_action_secondary">
-            <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_decrease" aria-label="Giảm cỡ chữ">A−</button>
-            <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_increase" aria-label="Tăng cỡ chữ">A+</button>
+            <div class="mayhen_docs_detail_font_stepper" role="group" aria-label="Điều chỉnh cỡ chữ bài đọc">
+              <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_decrease" aria-label="Giảm cỡ chữ" title="Giảm cỡ chữ (A−)">A−</button>
+              <span class="mayhen_docs_detail_font_indicator" id="mayhen_docs_detail_font_current_label" aria-live="polite">16px</span>
+              <button type="button" class="mayhen_docs_detail_font_button" id="mayhen_docs_detail_font_increase" aria-label="Tăng cỡ chữ" title="Tăng cỡ chữ (A+)">A+</button>
+            </div>
             <button type="button" class="mayhen_docs_detail_font_button mayhen_docs_detail_focus_button" id="mayhen_docs_detail_focus_toggle" aria-pressed="false" title="Chế độ tập trung">
               <svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"/></svg>
             </button>

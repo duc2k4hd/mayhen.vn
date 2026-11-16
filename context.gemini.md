@@ -90,6 +90,10 @@ Tất cả các class CSS trong dự án bắt buộc phải có tiền tố đ�
   - Font chữ thanh lịch: Tiêu đề H1/H2 sử dụng `Playfair Display` serif chuẩn typography tiếng Việt (triệt tiêu lỗi đè dấu do negative letter-spacing).
   - Thân bài đọc thoải mái: Cỡ chữ 15-15.5px, line-height 1.85, độ đậm 400-600 nhẹ nhàng thay vì 800 thô cứng.
   - Sidebar gọn gàng: Bỏ tiêu đề viết hoa trùng lặp (`strtoupper` ASCII bug), phân mục accordion êm ái.
+  - Chuẩn hóa bộ điều khiển đọc & phím tiện ích:
+    - **Nút Trợ giúp (Help Button)**: Thiết kế dạng Pill Quiet Luxury bo tròn mềm mại (`border-radius: 999px`), icon tròn tỉ lệ 1:1 không bao giờ bị méo elip, chữ "Trợ giúp" giữ `white-space: nowrap !important;` không bị ngắt thành 2 dòng, responsive thông minh trên màn hình hẹp (< 690px).
+    - **Cụm Stepper Tăng/Giảm Cỡ Chữ (A− / A+)**: Thiết kế hộp điều khiển xúc giác tinh tế với hiển thị cỡ chữ động (16px), biến CSS `--mayhen-docs-detail-font-size` áp dụng trực tiếp cho toàn bộ văn bản (p, li, blockquote, callout) mà không bị ghi đè bởi media queries hay hardcoded `!important`.
+    - **Nút Lưu Bài Viết (Bookmark System)**: Trạng thái tương tác rõ rệt (chuyển "Đã lưu" kèm icon tô đặc rose `#613B3E`), lưu trữ đầy đủ tiêu đề và chuyên mục, tích hợp trực tiếp bảng "✦ Bài viết đã lưu" tự động cập nhật ngay trên Sidebar và hỗ trợ xóa nhanh từng bài.
 
 ### 5.2. Trang Chủ Marketing & Landing Page (`/`)
 - **Controller**: `HomeController`.
