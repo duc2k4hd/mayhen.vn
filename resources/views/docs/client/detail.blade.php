@@ -52,8 +52,15 @@
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_header_icon" data-modal="mayhen_docs_detail_settings_dialog" aria-label="Cài đặt đọc">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="17" r="2"/></svg>
       </button>
-      <button type="button" class="mayhen_docs_detail_help_button" data-modal="mayhen_docs_detail_shortcuts_dialog">
-        <span aria-hidden="true">?</span><span class="mayhen_docs_detail_help_text">Trợ giúp</span>
+      <button type="button" class="mayhen_docs_detail_help_button" data-modal="mayhen_docs_detail_shortcuts_dialog" aria-label="Phím tắt và trợ giúp" title="Phím tắt và trợ giúp">
+        <span class="mayhen_docs_detail_help_icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </span>
+        <span class="mayhen_docs_detail_help_text">Trợ giúp</span>
       </button>
     </div>
   </header>

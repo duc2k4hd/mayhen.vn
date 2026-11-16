@@ -123,6 +123,17 @@ php artisan serve
 ## 7. TRẠNG THÁI KIỂM THỬ HIỆN TẠI
 
 - **Documentation Center Suite**: ngày 2026-11-16, `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` đạt 19/19 test, 135 assertions; toàn bộ route `/docs`, `/admin/docs`, slug detail, và quyền RBAC đều được bảo đảm.
+- **Hoàn thiện các nút tương tác: Lưu bài viết, Tăng giảm cỡ chữ & Nút Trợ giúp Header**:
+  - *Sửa lỗi nút Tăng/Giảm cỡ chữ (A- & A+)*: 
+    - *Nguyên nhân*: Các đoạn văn và danh sách trước đây bị gán cứng `16.5px !important`, ngăn cản biến CSS `--mayhen-docs-detail-font-size` thay đổi kích thước chữ thực tế khi click.
+    - *Khắc phục*: Chuyển đổi sang `font-size: var(--mayhen-docs-detail-font-size, 16.5px) !important;` trên toàn bộ thân bài viết, danh sách, khối trích dẫn và callout. Điều chỉnh bước nhảy font từ 1px lên 2px (từ 13px đến 24px) để thay đổi rõ rệt và xuất hiện thông báo toast tức thì: "Cỡ chữ nội dung: {n}px".
+    - *Giao diện*: Thiết kế phím xúc giác bo góc 7px, viền sáng `#e2e8f0`, hover nổi khối sang trọng thay vì chữ trôi nổi không viền.
+  - *Sửa lỗi nút Lưu bài viết (Bookmark Button)*:
+    - *Nguyên nhân*: Khi click, trạng thái chỉ lưu ngầm vào `localStorage` mà không có phản hồi trực quan trên giao diện (text vẫn giữ "Lưu bài", icon rỗng, không đổi màu), tạo cảm giác nút chưa hoạt động.
+    - *Khắc phục*: Tự động chuyển text thành **"Đã lưu"**, tô đặc icon bookmark bằng màu vàng hổ phách `#d97706`, nền thẻ `#fef3c7`, viền vàng `#f59e0b` khi `aria-pressed="true"`. Bổ sung cơ chế fallback Event Delegation trên `document` để nút luôn nhận lệnh tức thì.
+  - *Tái thiết kế nút Trợ giúp Header (Help Pill Button)*:
+    - *Nguyên nhân*: Thiếu `white-space: nowrap` và `flex-shrink: 0` khiến flexbox header co ép nút, bẻ chữ thành 2 dòng ("Trợ" / "giúp") và làm icon dấu hỏi `?` bị bẹp méo thành hình elip.
+    - *Khắc phục*: Thiết kế nút dạng viên nang (Pill) Quiet Luxury với `min-width: 96px`, `white-space: nowrap !important; flex-shrink: 0 !important;`, thay thế dấu `?` thô sơ bằng icon SVG vòng tròn trợ giúp chuyên nghiệp bo tròn hoàn hảo `22px × 22px`.
 - **Tái thiết kế toàn diện Typography & Giao diện Đọc bài viết (`mayhen_docs_detail_article`)**:
   - *Nền trắng tinh & Text đen sắc nét*: Chuyển đổi toàn bộ nền khu vực đọc bài viết sang trắng tinh (`#ffffff`), màu chữ đen sâu (`#111827` / `#0f172a`), loại bỏ tone nâu hồng nhờ nhạt, đạt chuẩn độ tương phản cao WCAG AAA.
   - *Highlight từ khóa trực quan*: Toàn bộ thẻ in đậm `strong`, `b` được gắn background highlight vàng hổ phách nhẹ nhàng (`rgba(245, 158, 11, 0.12)` kèm border mảnh), giúp người đọc quét nhanh từ khóa, tính năng và các bước thao tác.

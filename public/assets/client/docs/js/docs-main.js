@@ -396,12 +396,16 @@
       });
     }
 
-    function applyFont(size) {
-      currentFont = Math.max(14, Math.min(22, size));
+    function applyFont(size, notify = false) {
+      currentFont = Math.max(13, Math.min(24, Math.round(size)));
       app.style.setProperty('--mayhen-docs-detail-font-size', currentFont + 'px');
+      document.documentElement.style.setProperty('--mayhen-docs-detail-font-size', currentFont + 'px');
       SafeStorage.set('mayhen_docs_font', currentFont);
       const fontValEl = byId('settings_font_value');
       if (fontValEl) fontValEl.textContent = currentFont + 'px';
+      if (notify) {
+        showToast('Cỡ chữ nội dung: ' + currentFont + 'px');
+      }
     }
 
     function applyFocus(on) {
@@ -414,7 +418,7 @@
 
     applyTheme(currentTheme);
     applyWidth(currentWidth);
-    applyFont(currentFont);
+    applyFont(currentFont, false);
     applyFocus(isFocus);
 
     // Toast
@@ -500,18 +504,18 @@
       });
     });
 
-    // Font Controls
+    // Font Controls (Bước nhảy 2px để thấy rõ sự khác biệt)
     const fontSmaller = byId('settings_smaller');
-    if (fontSmaller) fontSmaller.addEventListener('click', () => applyFont(currentFont - 1));
+    if (fontSmaller) fontSmaller.addEventListener('click', () => applyFont(currentFont - 2, true));
 
     const fontBigger = byId('settings_bigger');
-    if (fontBigger) fontBigger.addEventListener('click', () => applyFont(currentFont + 1));
+    if (fontBigger) fontBigger.addEventListener('click', () => applyFont(currentFont + 2, true));
 
     const fontDec = byId('font_decrease');
-    if (fontDec) fontDec.addEventListener('click', () => applyFont(currentFont - 1));
+    if (fontDec) fontDec.addEventListener('click', () => applyFont(currentFont - 2, true));
 
     const fontInc = byId('font_increase');
-    if (fontInc) fontInc.addEventListener('click', () => applyFont(currentFont + 1));
+    if (fontInc) fontInc.addEventListener('click', () => applyFont(currentFont + 2, true));
 
     // Focus Toggle
     const focusBtn = byId('focus_toggle');
@@ -519,8 +523,21 @@
       focusBtn.addEventListener('click', () => applyFocus(!isFocus));
     }
 
-    // Bookmark Toggle
+    // Bookmark Toggle & UI State
     const bookmarkBtn = byId('bookmark');
+    function updateBookmarkUI(bookmarked) {
+      if (!bookmarkBtn) return;
+      bookmarkBtn.setAttribute('aria-pressed', String(bookmarked));
+      const span = bookmarkBtn.querySelector('span');
+      if (span) {
+        span.textContent = bookmarked ? 'Đã lưu' : 'Lưu bài';
+      }
+      const svgPath = bookmarkBtn.querySelector('svg path');
+      if (svgPath) {
+        svgPath.setAttribute('fill', bookmarked ? 'currentColor' : 'none');
+      }
+    }
+
     if (bookmarkBtn) {
       const currentUrl = window.location.pathname;
       let bookmarks = [];
@@ -530,7 +547,7 @@
         bookmarks = [];
       }
       let isBookmarked = bookmarks.includes(currentUrl);
-      bookmarkBtn.setAttribute('aria-pressed', String(isBookmarked));
+      updateBookmarkUI(isBookmarked);
 
       bookmarkBtn.addEventListener('click', () => {
         isBookmarked = !isBookmarked;
@@ -542,9 +559,48 @@
           showToast('Đã bỏ lưu bài viết.');
         }
         SafeStorage.set('mayhen_docs_bookmarks', JSON.stringify(bookmarks));
-        bookmarkBtn.setAttribute('aria-pressed', String(isBookmarked));
+        updateBookmarkUI(isBookmarked);
       });
     }
+
+    // Global Event Delegation fallback for Article Action buttons
+    document.addEventListener('click', (e) => {
+      const targetBookmark = e.target.closest('#mayhen_docs_detail_bookmark');
+      if (targetBookmark && !bookmarkBtn) {
+        const currentUrl = window.location.pathname;
+        let bookmarks = [];
+        try {
+          bookmarks = JSON.parse(SafeStorage.get('mayhen_docs_bookmarks', '[]'));
+        } catch (err) {
+          bookmarks = [];
+        }
+        let isBookmarked = bookmarks.includes(currentUrl);
+        isBookmarked = !isBookmarked;
+        if (isBookmarked) {
+          if (!bookmarks.includes(currentUrl)) bookmarks.push(currentUrl);
+          showToast('Đã lưu bài viết vào danh sách quan tâm.');
+        } else {
+          bookmarks = bookmarks.filter(u => u !== currentUrl);
+          showToast('Đã bỏ lưu bài viết.');
+        }
+        SafeStorage.set('mayhen_docs_bookmarks', JSON.stringify(bookmarks));
+        targetBookmark.setAttribute('aria-pressed', String(isBookmarked));
+        const span = targetBookmark.querySelector('span');
+        if (span) span.textContent = isBookmarked ? 'Đã lưu' : 'Lưu bài';
+        const svgPath = targetBookmark.querySelector('svg path');
+        if (svgPath) svgPath.setAttribute('fill', isBookmarked ? 'currentColor' : 'none');
+      }
+
+      const targetDec = e.target.closest('#mayhen_docs_detail_font_decrease');
+      if (targetDec && !fontDec) {
+        applyFont(currentFont - 2, true);
+      }
+
+      const targetInc = e.target.closest('#mayhen_docs_detail_font_increase');
+      if (targetInc && !fontInc) {
+        applyFont(currentFont + 2, true);
+      }
+    });
 
     // Mobile Drawer
     function toggleDrawer(open) {
