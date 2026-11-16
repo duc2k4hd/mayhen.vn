@@ -109,6 +109,6 @@ Giao diện `/gia-dinh-duyet/{token}` được thiết kế theo phong cách tra
 
 ## 7. Bài viết Liên quan
 
-- [CLI-INVT-002: Tùy biến thông tin lễ cưới, thời gian và địa điểm](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/01-getting-started/CLI-START-002.md)
-- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-002.md)
-- [CLI-PART-005: Quyền riêng tư theo Luật 91/2025: Tải dữ liệu và xóa tài khoản](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-005.md)
+- [CLI-INVT-002: Tùy biến thông tin lễ cưới, thời gian và địa điểm](/docs/getting-started/CLI-START-002)
+- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](/docs/partner-privacy/CLI-PART-002)
+- [CLI-PART-005: Quyền riêng tư theo Luật 91/2025: Tải dữ liệu và xóa tài khoản](/docs/partner-privacy/CLI-PART-005)

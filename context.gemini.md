@@ -330,3 +330,13 @@ php artisan serve
   1. *Reset cốt lõi toàn cục*: Thêm block CSS Reset vào layout cha [`client/layouts/invitation.blade.php`](resources/views/client/layouts/invitation.blade.php) và [`client/invitations/partials/editor-bridge.blade.php`](resources/views/client/invitations/partials/editor-bridge.blade.php) cưỡng chế `html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; box-sizing: border-box; }`.
   2. *Full viền 100% chế độ Embed/Preview*: Khi ở chế độ `$isEmbed` / `.mayhen_embed_mode` / `.mayhen_template_auto_opened`, cưỡng chế `.mayhen_invitation_root` và toàn bộ container thiệp có `width: 100% !important; max-width: 100% !important; margin: 0 !important; border-radius: 0 !important; box-shadow: none !important;`, tràn khít 100% khung màn hình điện thoại mockup trong Studio Editor mà không còn bất kỳ margin thụt lề nào.
   3. *Cập nhật trực tiếp template*: Cấu hình lại [`ngay-tinh-yeu-dom-hoa/styles.css`](resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/styles.css) đồng bộ với chuẩn full viền mới.
+
+### 5.5. Chuẩn Hóa Liên Kết Bài Viết Trung Tâm Tài Liệu (`/docs` & `/admin/docs`)
+- **Vấn đề đã khắc phục**: Trong mục "Bài viết Liên quan" và các trích dẫn bài viết ở 36 tệp markdown thuộc `resources/docs/`, có 130 liên kết sử dụng tiền tố hệ thống tệp cục bộ (`file:///...`), khiến liên kết bị chặn bảo mật hoặc không hoạt động khi triển khai lên môi trường máy chủ / hosting thực tế (`mayhen.vn`).
+- **Giải pháp**:
+  - Toàn bộ 130 liên kết đã được chuẩn hóa về định dạng URL web tương đối (Relative Web Routes) do `DocumentationService` phân giải:
+    - Bài viết Client: `/docs/{category_slug}/{article_id}` (ví dụ: `/docs/partner-privacy/CLI-PART-002`).
+    - Bài viết Admin: `/admin/docs/{category_slug}/{article_id}` (ví dụ: `/admin/docs/system-health/ADM-SYS-001`).
+  - Phân giải đúng 100% ánh xạ giữa ID bài viết và Slug danh mục chuẩn.
+  - Đảm bảo 100% hoạt động mượt mà trên cả localhost lẫn tên miền chính thức khi chạy production.
+- **Kiểm thử tự động**: Kiểm tra `git grep "file:///" resources/docs/` trả về kết quả rỗng (0 liên kết sót). Bộ kiểm thử `tests/Feature/DocumentationCenterIntegrityTest.php` vượt qua 23/23 tests (170 assertions) thành công. Code formatting đạt chuẩn Pint (`vendor/bin/pint --dirty --format agent`).

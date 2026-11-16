@@ -109,6 +109,6 @@ Mức hoa hồng được tính tự động dựa trên tổng số lượng th
 
 ## 7. Bài viết Liên quan
 
-- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-002.md)
-- [CLI-PART-003: Theo dõi ví hoa hồng, lịch sử thanh toán và tạo lệnh rút tiền](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-003.md)
-- [ADM-PART-001: Thẩm định hồ sơ đối tác Studio mới (Dành cho Quản trị viên)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/09-partners-commissions/ADM-PART-001.md)
+- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](/docs/partner-privacy/CLI-PART-002)
+- [CLI-PART-003: Theo dõi ví hoa hồng, lịch sử thanh toán và tạo lệnh rút tiền](/docs/partner-privacy/CLI-PART-003)
+- [ADM-PART-001: Thẩm định hồ sơ đối tác Studio mới (Dành cho Quản trị viên)](/admin/docs/partners-commissions/ADM-PART-001)

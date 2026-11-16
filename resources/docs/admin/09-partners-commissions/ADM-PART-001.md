@@ -113,13 +113,13 @@ Nếu hồ sơ thiếu thông tin xác minh hoặc phong cách dịch vụ khôn
 ## 6. Những điều Tuyệt đối Bị cấm trong Xét duyệt Đối tác
 
 1. **CẤM DUYỆT HỒ SƠ ẢO / CHƯA LIÊN LẠC THỰC TẾ:** Mọi đối tác được kích hoạt đều có quyền gắn thương hiệu và hưởng hoa hồng tài chính, bắt buộc phải có cuộc gọi xác minh thực tế.
-2. **CẤM TỰ Ý NÂNG TỶ LỆ HOA HỒNG VƯỢT QUY ĐỊNH KHI MỚI KÍCH HOẠT:** Mọi đối tác mới đều xuất phát từ hạng `Silver` (15%). Việc nâng lên `Gold` (20%) hoặc `Platinum` (25–30%) phải tuân theo quy chuẩn doanh số tại [ADM-PART-002](file:///resources/docs/admin/09-partners-commissions/ADM-PART-002.md).
+2. **CẤM TỰ Ý NÂNG TỶ LỆ HOA HỒNG VƯỢT QUY ĐỊNH KHI MỚI KÍCH HOẠT:** Mọi đối tác mới đều xuất phát từ hạng `Silver` (15%). Việc nâng lên `Gold` (20%) hoặc `Platinum` (25–30%) phải tuân theo quy chuẩn doanh số tại [ADM-PART-002](/admin/docs/partners-commissions/ADM-PART-002).
 3. **CẤM TẠO TÀI KHOẢN ĐỐI TÁC TRÙNG LẶP CHO CÙNG MỘT PHÁP NHÂN:** Mỗi Studio chỉ được cấp 01 mã `partner_code` duy nhất để quản lý danh sách đám cưới tập trung.
 
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-PART-002: Quản lý cấu hình mức chiết khấu hoa hồng theo từng cấp độ đối tác (Tier)](file:///resources/docs/admin/09-partners-commissions/ADM-PART-002.md)
-* [ADM-PART-003: Kiểm tra và đối soát doanh thu tạo ra từ các thiệp của đối tác](file:///resources/docs/admin/09-partners-commissions/ADM-PART-003.md)
-* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](file:///resources/docs/admin/09-partners-commissions/ADM-PART-004.md)
-* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](file:///resources/docs/client/10-partner-privacy/CLI-PART-001.md)
+* [ADM-PART-002: Quản lý cấu hình mức chiết khấu hoa hồng theo từng cấp độ đối tác (Tier)](/admin/docs/partners-commissions/ADM-PART-002)
+* [ADM-PART-003: Kiểm tra và đối soát doanh thu tạo ra từ các thiệp của đối tác](/admin/docs/partners-commissions/ADM-PART-003)
+* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](/admin/docs/partners-commissions/ADM-PART-004)
+* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](/docs/partner-privacy/CLI-PART-001)

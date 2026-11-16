@@ -105,6 +105,6 @@ Mỗi mùa cưới (Mùa Thu - Đông hoặc Mùa Xuân), ban biên tập Mây H
 
 ## 7. Bài viết Liên quan
 
-- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-001.md)
-- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-002.md)
-- [ADM-TMPL-005: Quy trình phát hành bản phát hành mới và cơ chế Rollback an toàn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-005.md)
+- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](/admin/docs/templates-releases/ADM-TMPL-001)
+- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](/admin/docs/templates-releases/ADM-TMPL-002)
+- [ADM-TMPL-005: Quy trình phát hành bản phát hành mới và cơ chế Rollback an toàn](/admin/docs/templates-releases/ADM-TMPL-005)

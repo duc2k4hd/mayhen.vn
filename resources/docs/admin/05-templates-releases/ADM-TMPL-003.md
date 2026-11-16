@@ -102,6 +102,6 @@ Phục vụ việc bàn giao ca trực hoặc gửi báo cáo chất lượng ch
 
 ## 7. Bài viết Liên quan
 
-- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-001.md)
-- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-002.md)
-- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-004.md)
+- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](/admin/docs/templates-releases/ADM-TMPL-001)
+- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](/admin/docs/templates-releases/ADM-TMPL-002)
+- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](/admin/docs/templates-releases/ADM-TMPL-004)

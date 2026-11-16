@@ -113,6 +113,6 @@ Sau 7 ngày, hệ thống kích hoạt tiến trình tự động theo quy chu�
 
 ## 6. Bài viết Liên quan
 
-- [CLI-PART-004: Cổng duyệt thiệp dành cho hai bên gia đình phụ mẫu](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-004.md)
-- [CLI-GUEST-001: Quản lý danh sách khách mời và gửi thiệp cá nhân hóa](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/04-guest-rsvp/CLI-GUEST-001.md)
-- [ADM-SOP-004: Quy trình xử lý yêu cầu quyền riêng tư và xóa dữ liệu (Dành cho Quản trị viên)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/01-sop-onboarding/ADM-SOP-004.md)
+- [CLI-PART-004: Cổng duyệt thiệp dành cho hai bên gia đình phụ mẫu](/docs/partner-privacy/CLI-PART-004)
+- [CLI-GUEST-001: Quản lý danh sách khách mời và gửi thiệp cá nhân hóa](/docs/guest-rsvp/CLI-GUEST-001)
+- [ADM-SOP-004: Quy trình xử lý yêu cầu quyền riêng tư và xóa dữ liệu (Dành cho Quản trị viên)](/admin/docs/sop-onboarding/ADM-SOP-004)

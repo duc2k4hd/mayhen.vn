@@ -138,6 +138,6 @@ Khi người dùng gõ phím trong Studio Editor, giao diện thiệp sẽ cập
 
 ## 7. Bài viết Liên quan
 
-- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-002.md)
-- [ADM-TMPL-003: Thao tác Localize & Batch-repair đưa 100% tài nguyên về cục bộ](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-003.md)
-- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-004.md)
+- [ADM-TMPL-002: Sử dụng công cụ Chẩn đoán Asset quét ảnh và tài nguyên ngoài](/admin/docs/templates-releases/ADM-TMPL-002)
+- [ADM-TMPL-003: Thao tác Localize & Batch-repair đưa 100% tài nguyên về cục bộ](/admin/docs/templates-releases/ADM-TMPL-003)
+- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](/admin/docs/templates-releases/ADM-TMPL-004)

@@ -123,6 +123,6 @@ Khi khách hàng muốn đổi tên miền mới hoặc tiệc cưới đã kế
 
 ## 9. Bài viết Liên quan
 
-- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-001.md)
-- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-005.md)
-- [CLI-PART-003: Hướng dẫn cài đặt tên miền riêng cho thiệp cưới (Dành cho khách hàng)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partners-privacy/CLI-PART-003.md)
+- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](/admin/docs/system-health/ADM-SYS-001)
+- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](/admin/docs/system-health/ADM-SYS-005)
+- [CLI-PART-003: Hướng dẫn cài đặt tên miền riêng cho thiệp cưới (Dành cho khách hàng)](/docs/partner-privacy/CLI-PART-003)

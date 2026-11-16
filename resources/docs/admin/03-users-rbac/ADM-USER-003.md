@@ -115,6 +115,6 @@ Khi có nhân sự mới gia nhập hoặc luân chuyển bộ phận:
 
 ## 7. Bài viết Liên quan
 
-- [ADM-USER-001: Tra cứu hồ sơ khách hàng toàn diện (Customer 360 View)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-001.md)
-- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-002.md)
-- [ADM-USER-005: Kiểm tra và trích xuất nhật ký hoạt động kiểm toán (Audit Log)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-005.md)
+- [ADM-USER-001: Tra cứu hồ sơ khách hàng toàn diện (Customer 360 View)](/admin/docs/users-rbac/ADM-USER-001)
+- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](/admin/docs/users-rbac/ADM-USER-002)
+- [ADM-USER-005: Kiểm tra và trích xuất nhật ký hoạt động kiểm toán (Audit Log)](/admin/docs/users-rbac/ADM-USER-005)

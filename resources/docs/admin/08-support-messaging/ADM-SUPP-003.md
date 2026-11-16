@@ -122,7 +122,7 @@ Nhân viên CSKH khi kích hoạt chế độ hỗ trợ sẽ hoạt động dư
 ---
 
 ## 6. Bài viết liên quan
-* [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ theo độ ưu tiên (SLA Response Time)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-001.md)
-* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-002.md)
-* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-004.md)
-* [ADM-INVT-006: Can thiệp hỗ trợ thiệp khách hàng mà không làm rò rỉ hoặc mất dữ liệu khách mời](file:///resources/docs/admin/03-public-invitation/ADM-INVT-006.md)
+* [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ theo độ ưu tiên (SLA Response Time)](/admin/docs/support-messaging/ADM-SUPP-001)
+* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](/admin/docs/support-messaging/ADM-SUPP-002)
+* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](/admin/docs/support-messaging/ADM-SUPP-004)
+* [ADM-INVT-006: Can thiệp hỗ trợ thiệp khách hàng mà không làm rò rỉ hoặc mất dữ liệu khách mời](/admin/docs/public-invitation/ADM-INVT-006)

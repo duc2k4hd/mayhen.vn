@@ -103,6 +103,6 @@ Khi người dùng sao chép nội dung hoặc các mẫu thiệp được nhậ
 
 ## 6. Bài viết Liên quan
 
-- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-001.md)
-- [ADM-TMPL-003: Thao tác Localize & Batch-repair đưa 100% tài nguyên về cục bộ](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-003.md)
-- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-001.md)
+- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](/admin/docs/templates-releases/ADM-TMPL-001)
+- [ADM-TMPL-003: Thao tác Localize & Batch-repair đưa 100% tài nguyên về cục bộ](/admin/docs/templates-releases/ADM-TMPL-003)
+- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](/admin/docs/system-health/ADM-SYS-001)

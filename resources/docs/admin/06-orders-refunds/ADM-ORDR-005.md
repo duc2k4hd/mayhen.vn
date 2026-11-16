@@ -122,7 +122,7 @@ Vào lúc **17:30 hàng ngày** và **ngày cuối cùng của tháng**, Bộ ph
 ---
 
 ## 6. Bài viết liên quan
-* [ADM-ORDR-001: Tra cứu đơn hàng, trạng thái thanh toán và kiểm tra chữ ký số Webhook SePay](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-001.md)
-* [ADM-ORDR-002: Quy trình kích hoạt gói dịch vụ thủ công khi khách chuyển khoản sai nội dung](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-002.md)
-* [ADM-ORDR-003: Quy trình xét duyệt yêu cầu hoàn tiền (Refund Workflow) theo 3 cấp phê duyệt](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-003.md)
-* [ADM-ORDR-004: Xuất hóa đơn VAT điện tử và lưu trữ chứng từ thanh toán kế toán](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-004.md)
+* [ADM-ORDR-001: Tra cứu đơn hàng, trạng thái thanh toán và kiểm tra chữ ký số Webhook SePay](/admin/docs/orders-refunds/ADM-ORDR-001)
+* [ADM-ORDR-002: Quy trình kích hoạt gói dịch vụ thủ công khi khách chuyển khoản sai nội dung](/admin/docs/orders-refunds/ADM-ORDR-002)
+* [ADM-ORDR-003: Quy trình xét duyệt yêu cầu hoàn tiền (Refund Workflow) theo 3 cấp phê duyệt](/admin/docs/orders-refunds/ADM-ORDR-003)
+* [ADM-ORDR-004: Xuất hóa đơn VAT điện tử và lưu trữ chứng từ thanh toán kế toán](/admin/docs/orders-refunds/ADM-ORDR-004)

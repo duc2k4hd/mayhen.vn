@@ -136,8 +136,8 @@ Trong suốt quá trình hỗ trợ, nhân viên Mây Hẹn bắt buộc tuân t
 ---
 
 ## 8. Bài viết liên quan
-* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](file:///resources/docs/admin/03-public-invitation/ADM-INVT-001.md)
-* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](file:///resources/docs/admin/03-public-invitation/ADM-INVT-002.md)
-* [ADM-INVT-004: Gia hạn thời gian lưu trữ thiệp cưới và quy trình chuyển đổi gói dịch vụ](file:///resources/docs/admin/03-public-invitation/ADM-INVT-004.md)
-* [ADM-INVT-005: Khôi phục phiên bản thiệp cũ từ lịch sử bản sửa đổi](file:///resources/docs/admin/03-public-invitation/ADM-INVT-005.md)
-* [CLI-PART-002: Quyền riêng tư dữ liệu cá nhân (Chính sách tuân thủ Luật 91/2025/QH15)](file:///resources/docs/client/10-partner-privacy/CLI-PART-002.md)
+* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](/admin/docs/public-invitation/ADM-INVT-001)
+* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](/admin/docs/public-invitation/ADM-INVT-002)
+* [ADM-INVT-004: Gia hạn thời gian lưu trữ thiệp cưới và quy trình chuyển đổi gói dịch vụ](/admin/docs/public-invitation/ADM-INVT-004)
+* [ADM-INVT-005: Khôi phục phiên bản thiệp cũ từ lịch sử bản sửa đổi](/admin/docs/public-invitation/ADM-INVT-005)
+* [CLI-PART-002: Quyền riêng tư dữ liệu cá nhân (Chính sách tuân thủ Luật 91/2025/QH15)](/docs/partner-privacy/CLI-PART-002)

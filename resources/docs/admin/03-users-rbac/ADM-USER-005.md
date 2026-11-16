@@ -112,6 +112,6 @@ Khi phục vụ các đợt thanh tra tài chính nội bộ hoặc yêu cầu g
 
 ## 8. Bài viết Liên quan
 
-- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-002.md)
-- [ADM-USER-003: Phân quyền vai trò nhân viên và phòng ngừa lỗi tự tước quyền Super Admin](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-003.md)
-- [ADM-USER-004: Thực thi quyền lãng quên (PII Anonymization) theo Luật 91/2025/QH15](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-004.md)
+- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](/admin/docs/users-rbac/ADM-USER-002)
+- [ADM-USER-003: Phân quyền vai trò nhân viên và phòng ngừa lỗi tự tước quyền Super Admin](/admin/docs/users-rbac/ADM-USER-003)
+- [ADM-USER-004: Thực thi quyền lãng quên (PII Anonymization) theo Luật 91/2025/QH15](/admin/docs/users-rbac/ADM-USER-004)

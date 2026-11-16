@@ -125,7 +125,7 @@ Khi SePay gửi thông báo biến động số dư tới endpoint `POST /webhoo
 * **Cách xử lý:** 
   1. Vào cổng quản trị SePay đối soát xem có biến động số dư ngân hàng khớp với số tiền của khách không.
   2. Lấy **Mã giao dịch ngân hàng (Reference Code)** từ sao kê ngân hàng.
-  3. Sử dụng chức năng **[ Duyệt Đối Soát Thủ Công ]** (chi tiết tại [ADM-ORDR-002](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-002.md)) để kích hoạt quyền lợi cho cặp đôi.
+  3. Sử dụng chức năng **[ Duyệt Đối Soát Thủ Công ]** (chi tiết tại [ADM-ORDR-002](/admin/docs/orders-refunds/ADM-ORDR-002)) để kích hoạt quyền lợi cho cặp đôi.
 
 ### Tình huống 2: Nhận được cảnh báo "Chữ ký số Webhook không hợp lệ"
 * **Nguyên nhân:** Webhook secret trên file môi trường `.env` bị lệch so với cấu hình trên SePay Dashboard, hoặc có yêu cầu giả mạo từ IP lạ.
@@ -145,7 +145,7 @@ Khi SePay gửi thông báo biến động số dư tới endpoint `POST /webhoo
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-ORDR-002: Quy trình kích hoạt gói dịch vụ thủ công khi khách chuyển khoản sai nội dung](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-002.md)
-* [ADM-ORDR-003: Quy trình xét duyệt yêu cầu hoàn tiền (Refund Workflow) theo 3 cấp phê duyệt](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-003.md)
-* [ADM-ORDR-004: Xuất hóa đơn VAT điện tử và lưu trữ chứng từ thanh toán kế toán](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-004.md)
-* [ADM-ORDR-005: Đối soát số dư ngân hàng định kỳ và xử lý giao dịch treo/bất thường](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-005.md)
+* [ADM-ORDR-002: Quy trình kích hoạt gói dịch vụ thủ công khi khách chuyển khoản sai nội dung](/admin/docs/orders-refunds/ADM-ORDR-002)
+* [ADM-ORDR-003: Quy trình xét duyệt yêu cầu hoàn tiền (Refund Workflow) theo 3 cấp phê duyệt](/admin/docs/orders-refunds/ADM-ORDR-003)
+* [ADM-ORDR-004: Xuất hóa đơn VAT điện tử và lưu trữ chứng từ thanh toán kế toán](/admin/docs/orders-refunds/ADM-ORDR-004)
+* [ADM-ORDR-005: Đối soát số dư ngân hàng định kỳ và xử lý giao dịch treo/bất thường](/admin/docs/orders-refunds/ADM-ORDR-005)

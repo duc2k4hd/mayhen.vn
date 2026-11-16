@@ -142,7 +142,7 @@ Nhân viên hỗ trợ cần giải thích rõ ràng cho khách hàng:
 ---
 
 ## 8. Bài viết liên quan
-* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](file:///resources/docs/admin/03-public-invitation/ADM-INVT-001.md)
-* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](file:///resources/docs/admin/03-public-invitation/ADM-INVT-002.md)
-* [ADM-INVT-004: Gia hạn thời gian lưu trữ thiệp cưới và quy trình chuyển đổi gói dịch vụ](file:///resources/docs/admin/03-public-invitation/ADM-INVT-004.md)
-* [ADM-INVT-006: Can thiệp hỗ trợ thiệp khách hàng mà không làm rò rỉ hoặc mất dữ liệu khách mời](file:///resources/docs/admin/03-public-invitation/ADM-INVT-006.md)
+* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](/admin/docs/public-invitation/ADM-INVT-001)
+* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](/admin/docs/public-invitation/ADM-INVT-002)
+* [ADM-INVT-004: Gia hạn thời gian lưu trữ thiệp cưới và quy trình chuyển đổi gói dịch vụ](/admin/docs/public-invitation/ADM-INVT-004)
+* [ADM-INVT-006: Can thiệp hỗ trợ thiệp khách hàng mà không làm rò rỉ hoặc mất dữ liệu khách mời](/admin/docs/public-invitation/ADM-INVT-006)

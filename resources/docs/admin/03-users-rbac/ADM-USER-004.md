@@ -120,6 +120,6 @@ Khi khách hàng yêu cầu nhận bản sao dữ liệu cá nhân theo Điều 
 
 ## 7. Bài viết Liên quan
 
-- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-002.md)
-- [ADM-USER-005: Kiểm tra và trích xuất nhật ký hoạt động kiểm toán (Audit Log)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-005.md)
-- [CLI-PART-005: Hướng dẫn quyền riêng tư và yêu cầu xóa tài khoản (Dành cho khách hàng)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-005.md)
+- [ADM-USER-002: Quy trình khóa tài khoản vi phạm và mở khóa an toàn](/admin/docs/users-rbac/ADM-USER-002)
+- [ADM-USER-005: Kiểm tra và trích xuất nhật ký hoạt động kiểm toán (Audit Log)](/admin/docs/users-rbac/ADM-USER-005)
+- [CLI-PART-005: Hướng dẫn quyền riêng tư và yêu cầu xóa tài khoản (Dành cho khách hàng)](/docs/partner-privacy/CLI-PART-005)

@@ -133,6 +133,6 @@ Nếu sau khi công bố phiên bản mới, tổng đài hỗ trợ nhận đư
 
 ## 8. Bài viết Liên quan
 
-- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-001.md)
-- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/05-templates-releases/ADM-TMPL-004.md)
-- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-005.md)
+- [ADM-TMPL-001: Thêm mẫu thiệp mới: schema.json, ảnh đại diện và 10 section](/admin/docs/templates-releases/ADM-TMPL-001)
+- [ADM-TMPL-004: Kích hoạt, gắn nhãn Nổi bật và ẩn mẫu thiệp bảo trì](/admin/docs/templates-releases/ADM-TMPL-004)
+- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](/admin/docs/system-health/ADM-SYS-005)

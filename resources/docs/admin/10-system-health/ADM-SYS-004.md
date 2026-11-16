@@ -124,6 +124,6 @@ Nếu xuất hiện bất kỳ tiêu chí nào rơi vào trạng thái `CRITICAL
 
 ## 7. Bài viết Liên quan
 
-- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-001.md)
-- [ADM-SYS-003: Quy trình sao lưu toàn diện và diễn tập khôi phục thảm họa](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-003.md)
-- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-005.md)
+- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](/admin/docs/system-health/ADM-SYS-001)
+- [ADM-SYS-003: Quy trình sao lưu toàn diện và diễn tập khôi phục thảm họa](/admin/docs/system-health/ADM-SYS-003)
+- [ADM-SYS-005: Cấu hình nền tảng và quản lý Cờ tính năng (Feature Flags)](/admin/docs/system-health/ADM-SYS-005)

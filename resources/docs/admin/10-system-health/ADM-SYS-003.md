@@ -146,6 +146,6 @@ php artisan up
 
 ## 8. Bài viết Liên quan
 
-- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-001.md)
-- [ADM-SYS-002: Giám sát hàng đợi tác vụ (Job Center) và xử lý failed jobs](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-002.md)
-- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Admin Acceptance Audit Cockpit)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-004.md)
+- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](/admin/docs/system-health/ADM-SYS-001)
+- [ADM-SYS-002: Giám sát hàng đợi tác vụ (Job Center) và xử lý failed jobs](/admin/docs/system-health/ADM-SYS-002)
+- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Admin Acceptance Audit Cockpit)](/admin/docs/system-health/ADM-SYS-004)

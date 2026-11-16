@@ -141,7 +141,7 @@ Khi khách hàng nâng cấp từ gói cơ bản lên gói cao cấp và muốn 
 ---
 
 ## 8. Bài viết liên quan
-* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](file:///resources/docs/admin/03-public-invitation/ADM-INVT-001.md)
-* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](file:///resources/docs/admin/03-public-invitation/ADM-INVT-002.md)
-* [ADM-INVT-003: Xử lý thay đổi ngày cưới, dời lịch tiệc & đồng bộ dữ liệu](file:///resources/docs/admin/03-public-invitation/ADM-INVT-003.md)
-* [ADM-INVT-005: Khôi phục phiên bản thiệp cũ từ lịch sử bản sửa đổi](file:///resources/docs/admin/03-public-invitation/ADM-INVT-005.md)
+* [ADM-INVT-001: Tìm kiếm & Tra cứu thông tin thiệp cưới nâng cao](/admin/docs/public-invitation/ADM-INVT-001)
+* [ADM-INVT-002: Quy trình khóa thiệp cưới khẩn cấp](/admin/docs/public-invitation/ADM-INVT-002)
+* [ADM-INVT-003: Xử lý thay đổi ngày cưới, dời lịch tiệc & đồng bộ dữ liệu](/admin/docs/public-invitation/ADM-INVT-003)
+* [ADM-INVT-005: Khôi phục phiên bản thiệp cũ từ lịch sử bản sửa đổi](/admin/docs/public-invitation/ADM-INVT-005)

@@ -143,7 +143,7 @@ Khi đổi mới Access Token hoặc gia hạn hợp đồng Brandname:
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ theo độ ưu tiên (SLA Response Time)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-001.md)
-* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-002.md)
-* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-004.md)
-* [ADM-COCK-005: Xử lý sự cố hàng đợi gửi tin Zalo ZNS & SMS Brandname](file:///resources/docs/admin/07-checkin-cockpit/ADM-COCK-005.md)
+* [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ theo độ ưu tiên (SLA Response Time)](/admin/docs/support-messaging/ADM-SUPP-001)
+* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](/admin/docs/support-messaging/ADM-SUPP-002)
+* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](/admin/docs/support-messaging/ADM-SUPP-004)
+* [ADM-COCK-005: Xử lý sự cố hàng đợi gửi tin Zalo ZNS & SMS Brandname](/admin/docs/checkin-cockpit/ADM-COCK-005)

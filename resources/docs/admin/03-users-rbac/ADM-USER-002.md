@@ -101,6 +101,6 @@ Khi người dùng yêu cầu cấp lại mật khẩu qua kênh hỗ trợ chí
 
 ## 7. Bài viết Liên quan
 
-- [ADM-USER-001: Tra cứu hồ sơ khách hàng toàn diện (Customer 360 View)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-001.md)
-- [ADM-USER-003: Phân quyền vai trò nhân viên và phòng ngừa lỗi tự tước quyền Super Admin](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/03-users-rbac/ADM-USER-003.md)
-- [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ khách hàng](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/08-support-messaging/ADM-SUPP-001.md)
+- [ADM-USER-001: Tra cứu hồ sơ khách hàng toàn diện (Customer 360 View)](/admin/docs/users-rbac/ADM-USER-001)
+- [ADM-USER-003: Phân quyền vai trò nhân viên và phòng ngừa lỗi tự tước quyền Super Admin](/admin/docs/users-rbac/ADM-USER-003)
+- [ADM-SUPP-001: Tiếp nhận và phân loại Ticket hỗ trợ khách hàng](/admin/docs/support-messaging/ADM-SUPP-001)

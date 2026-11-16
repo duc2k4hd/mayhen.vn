@@ -116,6 +116,6 @@ Bảng nhật ký hoa hồng liệt kê chi tiết từng giao dịch theo đị
 
 ## 7. Bài viết Liên quan
 
-- [CLI-PART-001: Hướng dẫn đăng ký trở thành Đối tác Studio Cưới Mây Hẹn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-001.md)
-- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-002.md)
-- [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng đối tác (Dành cho Quản trị viên)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/09-partners-commissions/ADM-PART-004.md)
+- [CLI-PART-001: Hướng dẫn đăng ký trở thành Đối tác Studio Cưới Mây Hẹn](/docs/partner-privacy/CLI-PART-001)
+- [CLI-PART-002: Tạo và bàn giao thiệp cưới cho các cặp đôi khách hàng của studio](/docs/partner-privacy/CLI-PART-002)
+- [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng đối tác (Dành cho Quản trị viên)](/admin/docs/partners-commissions/ADM-PART-004)

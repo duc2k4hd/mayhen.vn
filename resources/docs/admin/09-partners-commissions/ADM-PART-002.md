@@ -110,7 +110,7 @@ Vào cuối mỗi quý tài chính (ngày 31/03, 30/06, 30/09, 31/12):
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-PART-001: Xét duyệt hồ sơ đăng ký đối tác Studio cưới mới và kích hoạt tài khoản](file:///resources/docs/admin/09-partners-commissions/ADM-PART-001.md)
-* [ADM-PART-003: Kiểm tra và đối soát doanh thu tạo ra từ các thiệp của đối tác](file:///resources/docs/admin/09-partners-commissions/ADM-PART-003.md)
-* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](file:///resources/docs/admin/09-partners-commissions/ADM-PART-004.md)
-* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](file:///resources/docs/client/10-partner-privacy/CLI-PART-001.md)
+* [ADM-PART-001: Xét duyệt hồ sơ đăng ký đối tác Studio cưới mới và kích hoạt tài khoản](/admin/docs/partners-commissions/ADM-PART-001)
+* [ADM-PART-003: Kiểm tra và đối soát doanh thu tạo ra từ các thiệp của đối tác](/admin/docs/partners-commissions/ADM-PART-003)
+* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](/admin/docs/partners-commissions/ADM-PART-004)
+* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](/docs/partner-privacy/CLI-PART-001)

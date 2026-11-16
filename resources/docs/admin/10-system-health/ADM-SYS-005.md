@@ -116,6 +116,6 @@ if (app(FeatureFlagService::class)->isEnabled('ai_story_generator', auth()->user
 
 ## 7. Bài viết Liên quan
 
-- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-001.md)
-- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Acceptance Audit Cockpit)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-004.md)
-- [ADM-SYS-006: Quản lý tên miền tùy chỉnh (Custom Domains) và bản ghi DNS SSL](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-006.md)
+- [ADM-SYS-001: Kiểm tra bảng sức khỏe hệ thống (System Health Check)](/admin/docs/system-health/ADM-SYS-001)
+- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Acceptance Audit Cockpit)](/admin/docs/system-health/ADM-SYS-004)
+- [ADM-SYS-006: Quản lý tên miền tùy chỉnh (Custom Domains) và bản ghi DNS SSL](/admin/docs/system-health/ADM-SYS-006)

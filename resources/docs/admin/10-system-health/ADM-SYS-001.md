@@ -121,6 +121,6 @@ Cung cấp thông tin chi tiết về cấu hình Runtime:
 
 ## 7. Bài viết Liên quan
 
-- [ADM-SYS-002: Giám sát hàng đợi tác vụ (Job Center) và xử lý failed jobs](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-002.md)
-- [ADM-SYS-003: Quy trình sao lưu toàn diện và diễn tập khôi phục thảm họa](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-003.md)
-- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Acceptance Audit Cockpit)](file:///d:/Project/Laravel/mayhen.vn/resources/docs/admin/10-system-health/ADM-SYS-004.md)
+- [ADM-SYS-002: Giám sát hàng đợi tác vụ (Job Center) và xử lý failed jobs](/admin/docs/system-health/ADM-SYS-002)
+- [ADM-SYS-003: Quy trình sao lưu toàn diện và diễn tập khôi phục thảm họa](/admin/docs/system-health/ADM-SYS-003)
+- [ADM-SYS-004: Bảng điều khiển Nghiệm thu Thương mại (Acceptance Audit Cockpit)](/admin/docs/system-health/ADM-SYS-004)

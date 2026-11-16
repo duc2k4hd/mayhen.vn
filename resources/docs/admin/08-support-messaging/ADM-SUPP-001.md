@@ -87,8 +87,8 @@ Khi tiếp nhận Ticket, nhân viên CSKH phân loại vào đúng nhóm:
 
 ### Bước 4: Phản hồi khách hàng & Khép Ticket
 1. Đọc kỹ câu hỏi và xem các tệp đính kèm (ảnh chụp màn hình lỗi) của khách hàng.
-2. Sử dụng thư viện câu trả lời mẫu (chi tiết tại [ADM-SUPP-002](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-002.md)) để trả lời nhanh và chuẩn văn phong Quiet Luxury.
-3. Nếu cần xem trực tiếp giao diện của khách: Kích hoạt chế độ hỗ trợ an toàn Impersonation (chi tiết tại [ADM-SUPP-003](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-003.md)).
+2. Sử dụng thư viện câu trả lời mẫu (chi tiết tại [ADM-SUPP-002](/admin/docs/support-messaging/ADM-SUPP-002)) để trả lời nhanh và chuẩn văn phong Quiet Luxury.
+3. Nếu cần xem trực tiếp giao diện của khách: Kích hoạt chế độ hỗ trợ an toàn Impersonation (chi tiết tại [ADM-SUPP-003](/admin/docs/support-messaging/ADM-SUPP-003)).
 4. Sau khi sự cố được khắc phục:
    * Gửi phản hồi cảm ơn và hướng dẫn kiểm tra lại.
    * Chuyển trạng thái Ticket sang `resolved` (Đã giải quyết).
@@ -117,7 +117,7 @@ Khi phát hiện sự cố ảnh hưởng diện rộng (ví dụ: máy chủ h�
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-002.md)
-* [ADM-SUPP-003: Tính năng Đóng vai hỗ trợ (Impersonation): Đăng nhập hỗ trợ khách an toàn](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-003.md)
-* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-004.md)
-* [ADM-SUPP-005: Điều phối tin nhắn thông báo tập trung (Reliable Messaging Gateway Dispatcher)](file:///resources/docs/admin/08-support-messaging/ADM-SUPP-005.md)
+* [ADM-SUPP-002: Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](/admin/docs/support-messaging/ADM-SUPP-002)
+* [ADM-SUPP-003: Tính năng Đóng vai hỗ trợ (Impersonation): Đăng nhập hỗ trợ khách an toàn](/admin/docs/support-messaging/ADM-SUPP-003)
+* [ADM-SUPP-004: Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](/admin/docs/support-messaging/ADM-SUPP-004)
+* [ADM-SUPP-005: Điều phối tin nhắn thông báo tập trung (Reliable Messaging Gateway Dispatcher)](/admin/docs/support-messaging/ADM-SUPP-005)

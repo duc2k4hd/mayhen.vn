@@ -117,6 +117,6 @@ Khi nhận được liên kết hoặc mã từ Studio, cô dâu chú rể thự
 
 ## 7. Bài viết Liên quan
 
-- [CLI-PART-001: Hướng dẫn đăng ký trở thành Đối tác Studio Cưới Mây Hẹn](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-001.md)
-- [CLI-PART-003: Theo dõi ví hoa hồng, lịch sử thanh toán và tạo lệnh rút tiền](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/10-partner-privacy/CLI-PART-003.md)
-- [CLI-INVT-001: Hướng dẫn tạo thiệp cưới mới từ kho mẫu](file:///d:/Project/Laravel/mayhen.vn/resources/docs/client/01-getting-started/CLI-START-001.md)
+- [CLI-PART-001: Hướng dẫn đăng ký trở thành Đối tác Studio Cưới Mây Hẹn](/docs/partner-privacy/CLI-PART-001)
+- [CLI-PART-003: Theo dõi ví hoa hồng, lịch sử thanh toán và tạo lệnh rút tiền](/docs/partner-privacy/CLI-PART-003)
+- [CLI-INVT-001: Hướng dẫn tạo thiệp cưới mới từ kho mẫu](/docs/getting-started/CLI-START-001)

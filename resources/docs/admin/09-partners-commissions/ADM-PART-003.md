@@ -83,7 +83,7 @@ Bảng kê hoa hồng toàn mạng lưới ghi nhận từng dòng biến độn
    * Đảm bảo không có hiện tượng tính trùng hoa hồng cho cùng một đơn hàng.
 
 ### Bước 3: Rà soát các đơn hàng bị Hoàn tiền (Refund Handling)
-* Nếu một đơn hàng bị hoàn tiền (`Order` chuyển sang `refunded` theo quy trình tại [ADM-ORDR-003](file:///resources/docs/admin/06-orders-refunds/ADM-ORDR-003.md)):
+* Nếu một đơn hàng bị hoàn tiền (`Order` chuyển sang `refunded` theo quy trình tại [ADM-ORDR-003](/admin/docs/orders-refunds/ADM-ORDR-003)):
   * Hệ thống tự động thu hồi khoản hoa hồng tương ứng.
   * Nếu hoa hồng đang ở trạng thái `pending`, hệ thống hủy bản ghi.
   * Nếu hoa hồng đã vào ví đối tác, hệ thống ghi nhận một dòng điều chỉnh giảm số dư ví (`wallet_balance`), đảm bảo Mây Hẹn không bị thất thoát tiền hoa hồng của các đơn đã hoàn trả.
@@ -110,7 +110,7 @@ Vào cuối mỗi tháng, kế toán xuất bảng kê phục vụ đối chiế
 ---
 
 ## 7. Bài viết liên quan
-* [ADM-PART-001: Xét duyệt hồ sơ đăng ký đối tác Studio cưới mới và kích hoạt tài khoản](file:///resources/docs/admin/09-partners-commissions/ADM-PART-001.md)
-* [ADM-PART-002: Quản lý cấu hình mức chiết khấu hoa hồng theo từng cấp độ đối tác (Tier)](file:///resources/docs/admin/09-partners-commissions/ADM-PART-002.md)
-* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](file:///resources/docs/admin/09-partners-commissions/ADM-PART-004.md)
-* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](file:///resources/docs/client/10-partner-privacy/CLI-PART-001.md)
+* [ADM-PART-001: Xét duyệt hồ sơ đăng ký đối tác Studio cưới mới và kích hoạt tài khoản](/admin/docs/partners-commissions/ADM-PART-001)
+* [ADM-PART-002: Quản lý cấu hình mức chiết khấu hoa hồng theo từng cấp độ đối tác (Tier)](/admin/docs/partners-commissions/ADM-PART-002)
+* [ADM-PART-004: Phê duyệt lệnh rút tiền hoa hồng: Kiểm tra mã chuẩn chi ngân hàng](/admin/docs/partners-commissions/ADM-PART-004)
+* [CLI-PART-001: Studio nhiếp ảnh liên kết và quản lý nhiều thiệp cưới khách hàng](/docs/partner-privacy/CLI-PART-001)
