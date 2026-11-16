@@ -89,26 +89,114 @@ class TemplateController extends Controller
             }
         }
 
-        // 4. Tìm kiếm từ khóa không dấu trong bộ nhớ PHP thuần
-        if ($search !== '') {
-            $searchLower = mb_strtolower($search);
+        // 4. Tìm kiếm từ khóa thông minh (Tokenized Multi-Term, Accent-Insensitive & Relevance Scoring) 100% trong RAM
+        $hasSearch = ($search !== '');
+        $scores = [];
+
+        if ($hasSearch) {
+            $searchLower = mb_strtolower($search, 'UTF-8');
             $unaccented = Str::ascii($searchLower);
-            $slugSearch = Str::slug($search);
+            $slugSearch = Str::slug($searchLower);
 
-            $filtered = $filtered->filter(function ($t) use ($searchLower, $unaccented, $slugSearch) {
-                $name = mb_strtolower($t->name ?? '');
-                $slug = mb_strtolower($t->slug ?? '');
-                $desc = mb_strtolower($t->description ?? '');
+            // Tách tokens từ đơn (loại bỏ khoảng trắng thừa)
+            $tokens = preg_split('/\s+/', $searchLower, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            $asciiTokens = array_map(fn ($token) => Str::ascii($token), $tokens);
 
-                return str_contains($name, $searchLower)
-                    || str_contains($slug, $slugSearch)
-                    || str_contains($slug, $unaccented)
-                    || str_contains($desc, $searchLower);
+            $filtered = $filtered->filter(function ($t) use ($searchLower, $unaccented, $slugSearch, $tokens, $asciiTokens, &$scores) {
+                $name = mb_strtolower($t->name ?? '', 'UTF-8');
+                $nameAscii = Str::ascii($name);
+                $slug = mb_strtolower($t->slug ?? '', 'UTF-8');
+                $slugWords = str_replace('-', ' ', $slug);
+                $desc = mb_strtolower($t->description ?? '', 'UTF-8');
+                $descAscii = Str::ascii($desc);
+                $category = mb_strtolower($t->category ?? '', 'UTF-8');
+
+                $score = 0;
+
+                // Cấp 1: Khớp trọn vẹn cụm từ (Exact phrase match)
+                if (str_contains($name, $searchLower)) {
+                    $score += 120;
+                } elseif (str_contains($nameAscii, $unaccented)) {
+                    $score += 100;
+                }
+
+                if (str_contains($slug, $slugSearch) || str_contains($slugWords, $unaccented)) {
+                    $score += 80;
+                }
+
+                if (str_contains($desc, $searchLower) || str_contains($descAscii, $unaccented)) {
+                    $score += 40;
+                }
+
+                // Cấp 2 & 3: Khớp tokenized từng từ (hỗ trợ cả có dấu và không dấu)
+                $matchedTokensCount = 0;
+                foreach ($tokens as $idx => $token) {
+                    $asciiToken = $asciiTokens[$idx] ?? Str::ascii($token);
+                    $tokenMatched = false;
+
+                    if (str_contains($name, $token) || str_contains($nameAscii, $asciiToken)) {
+                        $score += 30;
+                        $tokenMatched = true;
+                    }
+
+                    if (str_contains($slugWords, $asciiToken) || str_contains($slug, $asciiToken)) {
+                        $score += 20;
+                        $tokenMatched = true;
+                    }
+
+                    if (str_contains($category, $asciiToken)) {
+                        $score += 15;
+                        $tokenMatched = true;
+                    }
+
+                    if (str_contains($desc, $token) || str_contains($descAscii, $asciiToken)) {
+                        $score += 10;
+                        $tokenMatched = true;
+                    }
+
+                    if ($tokenMatched) {
+                        $matchedTokensCount++;
+                    }
+                }
+
+                // Thưởng điểm cao nếu khớp TẤT CẢ các từ khóa
+                if (count($tokens) > 1 && $matchedTokensCount === count($tokens)) {
+                    $score += 70;
+                }
+
+                if ($score > 0) {
+                    $scores[$t->id] = $score;
+
+                    return true;
+                }
+
+                return false;
             });
         }
 
-        // 5. Sắp xếp trong bộ nhớ PHP thuần
-        if ($sort === 'popular') {
+        // 5. Sắp xếp trong bộ nhớ PHP thuần (Ưu tiên điểm tìm kiếm nếu đang search)
+        if ($hasSearch) {
+            $templates = $filtered->sort(function ($a, $b) use ($scores, $sort) {
+                $scoreA = $scores[$a->id] ?? 0;
+                $scoreB = $scores[$b->id] ?? 0;
+
+                if ($scoreA !== $scoreB) {
+                    return $scoreB <=> $scoreA; // Score cao hơn xếp trước
+                }
+
+                if ($sort === 'popular') {
+                    return ((int) ($b->usage_count ?? 100)) <=> ((int) ($a->usage_count ?? 100));
+                }
+
+                $featA = (int) ($a->is_featured ?? 0);
+                $featB = (int) ($b->is_featured ?? 0);
+                if ($featA !== $featB) {
+                    return $featB <=> $featA;
+                }
+
+                return $a->id <=> $b->id;
+            })->values();
+        } elseif ($sort === 'popular') {
             $templates = $filtered->sortByDesc(fn ($t) => (int) ($t->usage_count ?? 100))->values();
         } else {
             $templates = $filtered->sortBy([

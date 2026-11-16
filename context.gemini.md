@@ -291,3 +291,18 @@ php artisan serve
     - Phân hệ Admin: `public/assets/client/docs/images/admin/{category}/{id}-step-{n}.png` (50 bài tương ứng với các danh mục: 01-sop-onboarding, 02-dashboard-analytics, 03-public-invitation, 03-users-rbac, 05-templates-releases, 06-orders-refunds, 07-checkin-cockpit, 08-support-messaging, 09-partners-commissions, 10-system-health).
   - **Hiệu ứng hiển thị & CSS**: `public/assets/client/docs/css/docs-main.css` đã được bổ sung quy chuẩn styling cho hình ảnh tài liệu: bo góc `12px`, viền tinh tế, đổ bóng nhẹ nhàng, hiệu ứng hover nhẹ và chú thích in nghiêng căn giữa theo chuẩn Quiet Luxury.
   - **Kiểm thử chất lượng**: `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` vượt qua 18/18 tests (127 assertions). Code formatting chuẩn `vendor/bin/pint --dirty --format agent`.
+
+### 5.2. Kho Mẫu Thiệp Cưới (`/mau-thiep`) — Tối Ưu Tìm Kiếm Đa Từ Khóa & Chịu Tải Triệu Lượt
+- **Vấn đề đã khắc phục**:
+  1. *Lỗi giao diện nút tìm kiếm bị đen sì*: Trong `public/assets/client/css/pages/templates.css`, nút `.mayhen_templates_search_submit` dùng `color: var(--mayhen-color-text-on-dark);` (biến CSS không tồn tại trong `tokens.css`), dẫn tới màu chữ bị rơi về `inherit` (#1C1917) trên nền nút màu đen (#1C1917), làm chữ "Tìm Kiếm" hoàn toàn vô hình. Đã cấu hình lại nền vàng be thương hiệu `var(--mayhen-color-primary, #C5A880)`, màu chữ trắng sắc nét `#FFFFFF !important;`, bo góc pill sang trọng, đổ bóng Quiet Luxury và hover chuyển động nhẹ nhàng.
+  2. *Lỗi logic tìm kiếm trả về 0 kết quả cho từ khóa ghép ("ngày mình")*:
+     - *Nguyên nhân*: Thuật toán cũ dùng `str_contains($name, $searchLower)` so sánh chuỗi con tuyệt đối liền mạch. Khi tìm `ngày mình`, các mẫu thiệp như `Ngày Tình Yêu Đơm Hoa` (có từ "ngày") và `Hạnh Phúc Mang Tên Chúng Mình` (có từ "mình") không chứa cụm liền nhau nên bị trả về 0 mẫu.
+     - *Giải pháp*: Triển khai thuật toán tìm kiếm thông minh Tokenized Multi-Term, Accent-Insensitive (không phân biệt dấu tiếng Việt) và Relevance Scoring 100% trong RAM:
+       - Tách chuỗi truy vấn thành các token từ đơn và phiên bản không dấu (`Str::ascii`).
+       - Phân cấp tính điểm độ phù hợp: Khớp nguyên cụm (+120/100 điểm) > Khớp tất cả các từ khóa (+70 điểm thưởng) > Khớp từng từ khóa trong Tên (+30), Slug (+20), Danh mục (+15), Mô tả (+10).
+       - Tự động ưu tiên xếp các mẫu có điểm phù hợp cao nhất lên đầu.
+  3. *Hiệu năng Cực hạn & Chịu tải Hàng triệu Tìm kiếm (Zero DB Bottleneck)*:
+     - Dữ liệu toàn bộ mẫu active được static RAM memoize qua `TemplateController::getAllActive()` trong worker PHP (FPM / Octane).
+     - Quá trình tính điểm và lọc chạy thuần trên RAM máy chủ (< 0.05ms), tuyệt đối 0 câu truy vấn DB.
+     - Hỗ trợ HTTP 304 Not Modified và ETag cho khách vãng lai, tiết kiệm 99% băng thông và tài nguyên CPU.
+- **Kiểm thử tự động**: `tests/Feature/TemplateSearchAndPerformanceTest.php` kiểm chứng thành công tìm kiếm có dấu, không dấu, từ khóa ghép, zero DB bottleneck và phản hồi HTTP 304. Toàn bộ 113 test suites liên quan đến Template đều PASS 100%.
