@@ -21,6 +21,9 @@ required_role: "customer"
 
 Danh sách khách mời là "xương sống" của toàn bộ công tác chuẩn bị đám cưới. Nếu danh sách không rõ ràng, hai bạn sẽ rất dễ gặp phải tình trạng: thiếu cỗ vào giờ cao điểm, thừa bàn tiệc gây lãng phí hàng chục triệu đồng, hoặc nhầm lẫn đại từ xưng hô khiến người lớn phật ý. Phân hệ **Quản Lý Khách Mời Thông Minh của Mây Hẹn** giúp hai bạn phân loại khoa học theo từng nhóm bạn, quản lý sĩ số chuẩn xác và tạo tiền đề để gửi thiệp cá nhân hóa 1-chạm.
 
+![Giao diện quản lý danh sách khách mời thông minh](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-001-step-1.png)
+*Giao diện Quản lý Khách mời: Phân loại theo 4 nhóm khách tiêu chuẩn, quản lý số lượng và lọc bàn tiệc trực quan.*
+
 ---
 
 ## 1. Hệ thống 4 nhóm khách mời tiêu chuẩn (4 Core Segments)

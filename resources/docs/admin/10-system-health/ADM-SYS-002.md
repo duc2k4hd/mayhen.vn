@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/system/jobs` (`admin.jobs.index`).  
 > **Nguyên tắc an toàn:** Tuyệt đối không bấm Thử lại (Retry) hàng loạt khi chưa phân tích nguyên nhân lỗi và kiểm tra tính lũy kế (Idempotency).
 
+
+![Giao diện quản lý Giám sát hàng đợi tác vụ (Job Center): Xử lý failed jobs, thử lại tác vụ an toàn](/assets/client/docs/images/admin/10-system-health/adm-sys-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ & Kiến trúc Hàng đợi

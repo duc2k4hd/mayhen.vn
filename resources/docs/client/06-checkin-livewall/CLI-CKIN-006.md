@@ -24,6 +24,9 @@ Màn hình LED trung tâm sân khấu là tâm điểm ánh nhìn của toàn b�
 
 Khách mời ngồi tại bàn tiệc chỉ cần quét mã QR ở góc màn hình LED để gửi lời chúc lãng mạn kèm chữ ký hoặc ảnh chụp kỷ niệm tại bàn. Những lời chúc ý nghĩa này sẽ **lập tức bay lên màn hình lớn** theo hiệu ứng bong bóng trang nhã, tạo nên bầu không khí ấm áp và kết nối trọn vẹn.
 
+![Màn hình trình chiếu sân khấu Live Wall](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-006-step-1.png)
+*Màn hình Trình chiếu Sân khấu Live Wall: Hiển thị lời chúc thời gian thực và mã PIN bảo vệ an toàn.*
+
 ---
 
 ## 1. Kiến trúc Trực quan của Màn Chiếu Sân Khấu (Live Wall Layout)

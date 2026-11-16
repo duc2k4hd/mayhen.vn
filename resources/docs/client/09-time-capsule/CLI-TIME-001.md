@@ -24,6 +24,9 @@ Hầu hết lời chúc đám cưới thông thường chỉ được đọc qua
 
 **Hộp Thời Gian (Digital Wedding Time Capsule)** của Mây Hẹn là chiếc hòm kỷ vật số độc bản: Cho phép cô dâu, chú rể và những người bạn tri kỷ viết những lá tâm thư gửi tới tương lai, được **niêm phong bằng sáp bảo mật** và chỉ mở khóa đúng vào các dịp kỷ niệm ngày cưới trong tương lai.
 
+![Hộp Thời Gian Digital Wedding Time Capsule](/assets/client/docs/images/client/09-time-capsule/cli-time-001-step-1.png)
+*Hộp Thời Gian Hôn Lễ: Gửi gắm những lá thư tương lai hẹn ngày mở khóa vào các dịp kỷ niệm đám cưới.*
+
 ---
 
 ## 1. Năm Cột Mốc Kỷ Niệm Hôn Lễ Ý Nghĩa

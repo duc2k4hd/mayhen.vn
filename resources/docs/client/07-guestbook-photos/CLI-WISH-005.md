@@ -24,6 +24,9 @@ Sau ngày cưới, những bông hoa tươi rồi sẽ tàn, những bàn tiệc
 
 Thay vì để những chữ ký ấy nằm rải rác trên môi trường số, Mây Hẹn cung cấp **Kho Lưu Trữ Bút Tích (Signature Archive)** với công nghệ ghép tranh khảm nghệ thuật **Signature Mosaic Wall** và khả năng kết xuất tài liệu in ấn cao cấp để đóng thành sách kỷ yếu hôn lễ.
 
+![Kho lưu trữ chữ ký và tranh khảm nghệ thuật Signature Mosaic Wall](/assets/client/docs/images/client/07-guestbook-photos/cli-wish-005-step-1.png)
+*Tranh Khảm Chữ Ký Nghệ Thuật: Ghép nối hàng trăm nét ký tay và tem sáp thành bức tranh kỷ niệm độc bản.*
+
 ---
 
 ## 1. Tranh Khảm Chữ Ký Nghệ Thuật (Signature Mosaic Wall)

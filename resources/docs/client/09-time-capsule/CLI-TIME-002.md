@@ -24,6 +24,9 @@ Một chiếc hòm thời gian chỉ thực sự thiêng liêng khi nó được
 
 Hệ thống **Tự Động Hóa Vòng Đời Đám Cưới (Wedding Lifecycle Automation Engine)** của Mây Hẹn hoạt động 24/7 trên máy chủ: Đúng 09:00 sáng ngày kỷ niệm 1 năm ngày cưới của bạn, một bức thư điện tử trang trọng sẽ được gửi thẳng vào hộp thư của hai vợ chồng để đánh thức kho báu ký ức.
 
+![Niêm phong hộp thời gian và tự động gửi email mở khóa](/assets/client/docs/images/client/09-time-capsule/cli-time-002-step-1.png)
+*Quản lý Hộp Thời Gian: Trạng thái niêm phong an toàn và hệ thống tự động gửi email nhắc mở khóa vào ngày kỷ niệm.*
+
 ---
 
 ## 1. Hành trình Vòng Đời Hộp Thời Gian (Capsule Lifecycle)

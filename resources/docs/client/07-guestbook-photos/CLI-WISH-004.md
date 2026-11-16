@@ -24,6 +24,9 @@ Khi kích hoạt tính năng Photo Drop tại sảnh tiệc, hàng chục vị k
 
 Để đảm bảo hình ảnh hiển thị trên Màn hình LED sân khấu (Stage Live Wall) luôn đẹp mắt, trang trọng và làm hài lòng các bậc phụ huynh lớn tuổi, Mây Hẹn cung cấp **Phân Hệ Kiểm Duyệt Ảnh Khách Gửi (Photo Moderation Desk)** với đầy đủ công cụ lọc, duyệt 1 chạm và xóa triệt để.
 
+![Phân hệ kiểm duyệt ảnh khách gửi trước khi chiếu màn hình lớn](/assets/client/docs/images/client/07-guestbook-photos/cli-wish-004-step-1.png)
+*Bảng Kiểm Duyệt Ảnh: Phê duyệt nhanh chóng 1 chạm để hiển thị trang trọng trên Live Wall sân khấu.*
+
 ---
 
 ## 1. Hai chế độ vận hành Kiểm duyệt (Auto-Approve vs Manual Gate)

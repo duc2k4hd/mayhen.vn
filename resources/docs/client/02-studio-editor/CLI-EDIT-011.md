@@ -21,6 +21,9 @@ required_role: "customer"
 
 Sau khi đã dành nhiều thời gian nhập đầy đủ tên họ hai bên gia đình, địa chỉ sảnh tiệc và những dòng tâm sự tình yêu, hai bạn bỗng thấy một mẫu thiệp mới ra mắt của Mây Hẹn đẹp hơn hoặc hợp với hoa cưới hơn. Ở các nền tảng thông thường, việc đổi mẫu thiệp thường đồng nghĩa với việc phải nhập lại toàn bộ từ đầu. Tại Mây Hẹn, nhờ công nghệ **Template Engine Độc Quyền**, hai bạn có thể tự do chuyển đổi giữa hàng chục mẫu thiệp khác nhau chỉ bằng một cú nhấp chuột mà **dữ liệu được bảo toàn nguyên vẹn 100%**.
 
+![Chuyển đổi mẫu thiệp cưới trong Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-011-step-1.png)
+*Thư viện chuyển đổi mẫu thiệp cưới: Đổi sang giao diện mới chỉ với một chạm mà bảo toàn nguyên vẹn mọi thông tin đã nhập.*
+
 ---
 
 ## 1. Nguyên lý bảo toàn dữ liệu độc quyền của Mây Hẹn

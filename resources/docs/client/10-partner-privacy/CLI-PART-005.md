@@ -30,6 +30,9 @@ Trong suốt quá trình chuẩn bị ngày cưới, bạn và gia đình cung c
 3. **Quyền tiếp cận & Nhận bản sao dữ liệu (DSAR Export):** Quyền tải về trọn bộ toàn bộ dữ liệu thiệp cưới, ảnh cưới và danh sách khách mời bất kỳ lúc nào.
 4. **Quyền yêu cầu xóa dữ liệu (Right to Erasure / Quyền được lãng quên):** Quyền yêu cầu xóa vĩnh viễn tài khoản và ẩn danh hóa thông tin sau khi tiệc cưới kết thúc.
 
+![Trung tâm quyền riêng tư và bảo vệ dữ liệu cá nhân theo Luật 91/2025](/assets/client/docs/images/client/10-partner-privacy/cli-part-005-step-1.png)
+*Trung Tâm Quyền Riêng Tư: Tuân thủ Luật 91/2025/QH15, hỗ trợ tải bản sao dữ liệu (DSAR) và xóa tài khoản vĩnh viễn.*
+
 ---
 
 ## 2. Bảng Cấu Hình Quyền Riêng Tư Thiệp Cưới (`privacy.show`)

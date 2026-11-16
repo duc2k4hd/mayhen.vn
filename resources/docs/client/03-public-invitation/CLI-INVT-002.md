@@ -21,6 +21,9 @@ required_role: "customer"
 
 Xu hướng cưới hiện đại ngày nay là sự kết hợp hài hòa giữa nét trang trọng của **thiệp giấy truyền thống** gửi tận tay người lớn tuổi, và sự tiện lợi của **thiệp cưới số** dành cho giới trẻ. Bằng cách in một mã QR nhỏ nhắn, trang nhã lên phong bao hoặc một chiếc thẻ kẹp xinh xắn (Companion Card), khách mời chỉ cần bật camera điện thoại là có thể xem album ảnh cưới trọn vẹn, nghe bản tình ca lãng mạn và bấm định vị dẫn đường đến tận sảnh tiệc.
 
+![Tạo mã QR thiệp cưới để in ấn](/assets/client/docs/images/client/03-public-invitation/cli-invt-002-step-1.png)
+*Tải mã QR vector độ nét cao sẵn sàng cho việc in ấn thiệp giấy và standee cưới.*
+
 ---
 
 ## 1. Hai loại mã QR hỗ trợ trên Mây Hẹn

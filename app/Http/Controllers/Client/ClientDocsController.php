@@ -45,7 +45,7 @@ class ClientDocsController extends Controller
 
         return view('docs.client.detail', [
             'space' => 'client',
-            'pageTitle' => ($article['title'] ?? 'Hướng dẫn').' — Mây Hẹn Docs',
+            'pageTitle' => ($article['title'] ?? 'Hướng dẫn').' | Mây Hẹn Docs',
             'metaDescription' => $article['summary'] ?? '',
             'categories' => $categories,
             'currentCategory' => $category,

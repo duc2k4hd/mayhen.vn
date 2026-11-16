@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route quản trị:** `GET /admin/settings/audit-logs` (`admin.settings.audit_logs`).  
 > **Tính toàn vẹn kiểm toán:** Nhật ký được lưu trữ theo cơ chế Ghi một lần Đọc nhiều lần (WORM: Write-Once-Read-Many) tại `storage/logs/admin_audit.jsonl`, không thể chỉnh sửa hay làm sai lệch lịch sử.
 
+
+![Giao diện quản lý Kiểm tra và trích xuất nhật ký hoạt động kiểm toán (Audit Log) truy vết thao tác](/assets/client/docs/images/admin/03-users-rbac/adm-user-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục Đích & Ý Nghĩa Của Hệ Thống Nhật Ký Kiểm Toán

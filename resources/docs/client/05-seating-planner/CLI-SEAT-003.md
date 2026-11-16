@@ -24,6 +24,9 @@ Theo phong tục cưới hỏi truyền thống Việt Nam, hôn lễ thường 
 
 Seating Planner của Mây Hẹn tích hợp cơ chế **Phân Vùng Không Gian (Seating Zones)** thông minh, cho phép bạn quy hoạch sơ đồ bàn tiệc độc lập hoặc chia tách ranh giới rõ ràng trong cùng một sảnh đại tiệc mà không bao giờ bị lẫn lộn khách mời giữa hai họ.
 
+![Phân vùng khu vực sơ đồ bàn tiệc theo sự kiện](/assets/client/docs/images/client/05-seating-planner/cli-seat-003-step-1.png)
+*Phân vùng Seating Zones: Tách biệt khu vực Nhà Trai và Nhà Gái đảm bảo tính trang nghiêm và trật tự.*
+
 ---
 
 ## 1. Hai kịch bản tổ chức tiệc cưới phổ biến

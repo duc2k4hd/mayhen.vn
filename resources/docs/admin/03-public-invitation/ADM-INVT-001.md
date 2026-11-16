@@ -21,6 +21,10 @@ required_role: "manager"
 > **Bộ điều khiển:** `App\Http\Controllers\Admin\InvitationController@index`  
 > **Tốc độ tra cứu chuẩn:** Dưới **150 mili-giây** nhờ tối ưu hóa Eloquent Eager Loading (`with(['wedding.user', 'template'])`) và chỉ mục tìm kiếm thông minh.
 
+
+![Giao diện quản lý Tra cứu thiệp theo mã, số điện thoại, tên cặp đôi hoặc tên miền phụ](/assets/client/docs/images/admin/03-public-invitation/adm-invt-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ của Chức năng Tra cứu Thiệp

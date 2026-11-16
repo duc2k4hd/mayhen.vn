@@ -15,6 +15,10 @@ required_role: "manager"
 
 # Vai trò quản trị và cách kiểm tra quyền
 
+
+![Giao diện quản lý Vai trò quản trị và cách kiểm tra quyền](/assets/client/docs/images/admin/01-sop-onboarding/adm-sop-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Các vai trò được nhận diện
 
 Mã tài khoản hiện cho phép các vai trò `admin`, `manager`, `staff`, `designer`, `finance` và `support` vào không gian quản trị. Quyền vào bảng điều khiển không đồng nghĩa được phép thực hiện mọi thao tác.

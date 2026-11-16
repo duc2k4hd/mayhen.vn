@@ -21,6 +21,9 @@ required_role: "customer"
 
 Việc chuẩn bị danh sách khách mời cho một đám cưới từ 200 đến hơn 500 khách thường tốn nhiều công sức nếu phải nhập thủ công từng người một. Mây Hẹn cung cấp công cụ **Smart CSV Import** chuẩn hóa cao độ, giúp bạn đưa toàn bộ danh sách khách từ Microsoft Excel, Apple Numbers hoặc Google Sheets vào hệ thống chỉ trong một lần tải lên, bảo đảm không lỗi font tiếng Việt và tự động sinh link thiệp cá nhân hóa cho từng khách mời.
 
+![Tải tệp mẫu Excel CSV và nhập danh sách khách hàng loạt](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-002-step-1.png)
+*Công cụ Nhập CSV Thông Minh: Hỗ trợ mã hóa UTF-8 tiếng Việt và sinh link cá nhân hóa hàng loạt.*
+
 ---
 
 ## 1. Cấu trúc tệp mẫu CSV chuẩn hóa của Mây Hẹn

@@ -27,6 +27,9 @@ Studio Tạo Thiệp V2 của Mây Hẹn được thiết kế theo trường ph
 
 Giao diện Studio được chia thành 3 phân vùng chuyên biệt, tối ưu cho cả màn hình máy tính lớn và thiết bị di động:
 
+![Không gian làm việc 3 phân vùng của Studio Tạo Thiệp V2](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-1.png)
+*Không gian Studio Tạo Thiệp V2: Khung điều khiển Topbar, thanh công cụ Left Rail và màn hình xem trước Live Canvas.*
+
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        1. STUDIO TOPBAR V2                             │

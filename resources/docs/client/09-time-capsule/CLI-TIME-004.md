@@ -24,6 +24,9 @@ Nhiều cặp đôi lo lắng: *"Sau 10 năm hay 20 năm nữa, nếu nền tả
 
 Tại Mây Hẹn, chúng tôi tôn trọng quyền làm chủ dữ liệu của khách hàng. Tuân thủ nghiêm ngặt **Quyền mang theo dữ liệu cá nhân (Right to Data Portability theo Luật 91/2025/QH15)**, Mây Hẹn cung cấp tính năng **Gói Lưu Trữ Đám Cưới Độc Lập (Portable Wedding Archive)**: Cho phép bạn tải về một file ZIP duy nhất chứa toàn bộ dữ liệu, có thể mở xem trực tiếp trên máy tính mà không cần Internet, lưu trữ an toàn vào ổ cứng gia đình suốt đời.
 
+![Gói lưu trữ đám cưới độc lập Portable Wedding Archive](/assets/client/docs/images/client/09-time-capsule/cli-time-004-step-1.png)
+*Tải Gói Lưu Trữ Độc Lập: Đóng gói toàn bộ thiệp cưới, ảnh gốc, lời chúc và chữ ký vào 1 tệp ZIP lưu giữ trọn đời.*
+
 ---
 
 ## 1. Cấu trúc Gói Lưu Trữ Độc Lập (Archive Structure)

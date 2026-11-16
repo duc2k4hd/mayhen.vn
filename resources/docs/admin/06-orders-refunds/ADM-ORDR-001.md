@@ -21,6 +21,10 @@ required_role: "finance"
 > **Cổng thanh toán tích hợp:** SePay Hub kết nối VietinBank/MBBank tự động quét biến động số dư VietQR.  
 > **Cơ chế an ninh cốt lõi:** Xác thực chữ ký số HMAC-SHA256 (`X-SePay-Signature`), phòng vệ tấn công phát lại (Replay Attack) và chống gian lận lặp chi tiêu (Double-Spending).
 
+
+![Giao diện quản lý Tra cứu đơn hàng, trạng thái thanh toán và kiểm tra chữ ký số Webhook SePay](/assets/client/docs/images/admin/06-orders-refunds/adm-ordr-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

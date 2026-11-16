@@ -24,6 +24,9 @@ Trong các đám cưới thời đại số, mừng cưới không dùng tiền 
 
 Để đảm bảo dòng tiền mừng về đúng tài khoản và tuyệt đối an toàn, Mây Hẹn cung cấp hệ thống **Cấu hình Đa Tài Khoản Ngân Hàng (Multi-Account VietQR)** với lớp bảo mật xác thực mật khẩu cấp cao chống chiếm đoạt tài khoản.
 
+![Cài đặt thông tin tài khoản ngân hàng và mã VietQR chuẩn](/assets/client/docs/images/client/08-gift-budget/cli-gift-001-step-1.png)
+*Section Mừng cưới VietQR: Hỗ trợ tài khoản riêng cho Chú Rể và Cô Dâu kèm cú pháp tự động.*
+
 ---
 
 ## 1. Cơ chế Hiển thị Độc Lập cho Nhà Trai và Nhà Gái

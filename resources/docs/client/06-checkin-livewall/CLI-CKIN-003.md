@@ -24,6 +24,9 @@ Trong thực tế tiệc cưới Việt Nam, dù cặp đôi đã chuẩn bị c
 
 Nếu lễ tân lúng túng hoặc từ chối khách tại cửa, ngày vui sẽ mất đi sự ấm cúng và hiếu khách. Module **Bàn Xử Lý Ngoại Lệ (Reception Exception Desk)** của Mây Hẹn cung cấp 3 công cụ đặc nhiệm giúp giải quyết êm đẹp mọi tình huống trong vòng 30 giây.
 
+![Bàn xử lý ngoại lệ và khách phát sinh Walk-in](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-003-step-1.png)
+*Module Bàn Xử Lý Ngoại Lệ: Tiếp nhận khách phát sinh Walk-in và điều chỉnh số người đi kèm mượt mà.*
+
 ---
 
 ## 1. Ba kịch bản phát sinh thực tế & Cách xử lý

@@ -21,6 +21,9 @@ required_role: "customer"
 
 Mỗi câu chuyện tình yêu đều có những dấu mốc thiêng liêng: một chiều mưa quán nhỏ, những chuyến bay xa cách hay một cái chạm tay ngượng ngùng thời sinh viên. Tuy nhiên, không phải cặp đôi nào cũng dễ dàng đúc kết những cảm xúc ấy thành những áng văn trang trọng, rung động lòng người. **Trợ Lý AI Story Writer** của Mây Hẹn được tinh chỉnh chuyên biệt theo phong cách ngôn từ **Quiet Luxury & Romantic Editorial**, giúp bạn chuyển hóa những kỷ niệm mộc mạc thành lời ngỏ thiệp cưới đầy chất thơ chỉ sau một chạm.
 
+![Giao diện Trợ lý AI Story Writer sáng tác lời ngỏ tình yêu 1-chạm](/assets/client/docs/images/client/02-studio-editor/cli-edit-007-step-1.png)
+*Trợ lý AI Story Writer: Sáng tác lời ngỏ tình yêu theo 3 trường phái thẩm mỹ Quiet Luxury.*
+
 ---
 
 ## 1. Ba trường phái thẩm mỹ ngôn từ (3 Curated Tones)

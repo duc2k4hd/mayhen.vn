@@ -21,6 +21,9 @@ required_role: "customer"
 
 Trong các đám cưới tại Việt Nam, việc tổ chức nhiều nghi lễ ở các địa điểm khác nhau (như Lễ Vu Quy tại nhà gái, Lễ Tân Hôn tại nhà trai và Tiệc cưới chính tại Trung tâm Hội nghị) là điều rất phổ biến. Nếu thông tin không rõ ràng, khách mời rất dễ đi nhầm giữa hai nhà hoặc lạc trong các tòa nhà trung tâm thương mại rộng lớn. Mây Hẹn hỗ trợ cấu hình đa sự kiện độc lập, mỗi sự kiện đều có bản đồ vệ tinh và nút chỉ đường Google Maps 1-chạm chuẩn xác.
 
+![Thẻ sự kiện cưới và nút chỉ đường Google Maps](/assets/client/docs/images/client/03-public-invitation/cli-invt-005-step-1.png)
+*Section Sự kiện cưới: Tích hợp thông tin ngày giờ, địa điểm chính xác và nút bấm mở ứng dụng Google Maps.*
+
 ---
 
 ## 1. Cấu trúc hiển thị Section Sự Kiện & Bản Đồ (Section 06)

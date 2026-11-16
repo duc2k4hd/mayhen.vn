@@ -21,6 +21,9 @@ required_role: "customer"
 
 Trong thời kỳ hội nhập, những đám cưới đa quốc gia hay những buổi tiệc có sự tham dự của đồng nghiệp, bạn bè ngoại quốc ngày càng trở nên phổ biến. Để khách nước ngoài không cảm thấy bỡ ngỡ và có thể dễ dàng nắm bắt giờ giấc, địa điểm cũng như gửi lời chúc phúc, Mây Hẹn cung cấp giải pháp **Thiệp Cưới Đa Ngôn Ngữ Chuẩn Mực (Bilingual Wedding Engine)**.
 
+![Giao diện thiệp cưới đa ngôn ngữ Song ngữ](/assets/client/docs/images/client/03-public-invitation/cli-invt-006-step-1.png)
+*Tính năng chuyển đổi ngôn ngữ linh hoạt: Tự động phát hiện ngôn ngữ trình duyệt hoặc chuyển đổi tức thời giữa Tiếng Việt và Tiếng Anh.*
+
 ---
 
 ## 1. Ba chế độ ngôn ngữ linh hoạt trên Mây Hẹn

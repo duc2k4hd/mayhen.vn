@@ -17,6 +17,10 @@ required_role: "finance"
 
 **Cảnh báo:** Đây là thao tác tài chính có thể kích hoạt đơn hàng. Chỉ nhân sự được ủy quyền thực hiện theo quy trình tài chính của đơn vị, sau khi đối chiếu chứng từ độc lập. Không phê duyệt chỉ dựa trên ảnh chụp do khách gửi. Hướng dẫn này chưa được kiểm thử bằng giao dịch trên môi trường cô lập.
 
+
+![Giao diện quản lý Đối soát đơn hàng chuyển khoản thủ công](/assets/client/docs/images/admin/06-orders-refunds/adm-ordr-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Tra cứu và đối chiếu
 
 1. Mở **Đơn Hàng & Doanh Thu** tại `/admin/orders`. Tìm theo mã đơn, tên, email hoặc số điện thoại khách hàng; mở đơn cần kiểm tra.

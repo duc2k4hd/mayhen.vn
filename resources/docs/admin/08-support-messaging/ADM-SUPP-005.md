@@ -23,6 +23,10 @@ required_role: "manager"
 > **Dịch vụ backend:** `App\Services\NotificationGatewayConfigService`.  
 > **Các kênh tích hợp:** **Zalo ZNS** (Zalo Official Account) và **SMS Brandname** (Viettel/VNPT/eSMS).
 
+
+![Giao diện quản lý Điều phối tin nhắn thông báo tập trung (Reliable Messaging Gateway Dispatcher)](/assets/client/docs/images/admin/08-support-messaging/adm-supp-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

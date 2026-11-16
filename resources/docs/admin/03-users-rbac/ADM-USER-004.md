@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route quản trị:** `GET /admin/privacy` (`admin.privacy.index`).  
 > **Xung đột pháp lý cốt lõi:** Cân bằng giữa *Quyền được lãng quên* (Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15) và *Nghĩa vụ lưu trữ chứng từ tài chính 10 năm* (Luật Kế toán Việt Nam số 88/2015/QH13).
 
+
+![Giao diện quản lý Thực thi quyền lãng quên (PII Anonymization): Ẩn danh hóa thông tin nhưng bảo toàn hóa đơn kế toán](/assets/client/docs/images/admin/03-users-rbac/adm-user-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Nguyên Tắc Cốt Lõi: Ẩn Danh Hóa Thay Vì Xóa Cứng (Soft Anonymization)

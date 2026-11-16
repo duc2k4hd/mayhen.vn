@@ -22,6 +22,10 @@ required_role: "support"
 > **Dịch vụ backend:** `App\Services\SupportImpersonationService` & `App\Http\Middleware\SupportImpersonationMiddleware`.  
 > **Giới hạn thời gian an toàn (TTL):** Tự động kết thúc sau **30 phút** không hoạt động, đưa Admin quay lại màn hình quản trị.
 
+
+![Giao diện quản lý Tính năng Đóng vai hỗ trợ (Impersonation): Đăng nhập hỗ trợ khách an toàn, có ghi log](/assets/client/docs/images/admin/08-support-messaging/adm-supp-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

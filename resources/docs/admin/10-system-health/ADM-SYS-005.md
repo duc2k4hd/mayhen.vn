@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/settings/flags` (`admin.settings.flags.index`).  
 > **Tác động:** Thay đổi trạng thái Cờ tính năng có hiệu lực ngay lập tức (Real-time) trên toàn bộ người dùng website mà không cần khởi động lại máy chủ.
 
+
+![Giao diện quản lý Cấu hình nền tảng (Platform Settings), Bật/Tắt Cờ tính năng (Feature Flags) cô lập](/assets/client/docs/images/admin/10-system-health/adm-sys-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ & Triết lý Phát hành An toàn

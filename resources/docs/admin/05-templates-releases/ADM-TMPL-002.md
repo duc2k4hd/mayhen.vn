@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route quản trị:** `GET /admin/assets/diagnostics` (`admin.assets.diagnostics.index`).  
 > **Nguyên tắc kỹ thuật sống còn:** Tuân thủ Nguyên tắc số 6 (100% Local Assets) — Tuyệt đối không để thiệp cưới người dùng phụ thuộc vào máy chủ CDN bên ngoài.
 
+
+![Giao diện quản lý Sử dụng công cụ Chẩn đoán Asset (Asset Diagnostics) quét ảnh và tài nguyên ngoài](/assets/client/docs/images/admin/05-templates-releases/adm-tmpl-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục Đích Của Trạm Chẩn Đoán Tài Nguyên (Asset Diagnostics Cockpit)

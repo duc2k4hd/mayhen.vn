@@ -24,6 +24,9 @@ Gửi quà mừng cưới là nét đẹp văn hóa chúc phúc cho đôi bạn 
 
 Với **Hộp Mừng Cưới VietQR Chuẩn Hóa** của Mây Hẹn, việc gửi quà mừng trở nên nhẹ nhàng, tinh tế và chuẩn xác 100%. Mọi thông tin về ngân hàng, số tài khoản và cú pháp lời chúc đều được mã hóa tự động vào mã QR.
 
+![Hộp mừng cưới VietQR tự động điền số tài khoản và lời chúc](/assets/client/docs/images/client/08-gift-budget/cli-gift-002-step-1.png)
+*Hộp Mừng Cưới Thông Minh: Quét mã QR tự động điền đúng tên, số tài khoản và lời chúc ý nghĩa.*
+
 ---
 
 ## 1. Hai cách mừng cưới tiện lợi tùy theo thiết bị

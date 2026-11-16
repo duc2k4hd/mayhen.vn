@@ -24,6 +24,9 @@ Nhiều trung tâm tiệc cưới lớn tại Việt Nam được xây dựng �
 
 Để đối phó với rủi ro P0 này, Mây Hẹn trang bị **Gói Cứu Hộ Ngoại Tuyến Khẩn Cấp (Emergency Offline Pack)** đạt chuẩn kiểm định sự kiện `TASK-VAL-03`. Cổng điểm danh có thể hoạt động hoàn toàn độc lập mà không cần một byte kết nối Internet nào.
 
+![Cơ chế điểm danh ngoại tuyến Offline Check-in](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-004-step-1.png)
+*Gói Cứu Hộ Ngoại Tuyến: Điểm danh không gián đoạn bằng IndexedDB cục bộ và tự động đồng bộ khi có mạng.*
+
 ---
 
 ## 1. Cơ chế Tải Trước Dữ Liệu (Pre-caching Snapshot)

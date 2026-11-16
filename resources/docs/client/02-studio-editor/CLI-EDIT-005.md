@@ -21,6 +21,9 @@ required_role: "customer"
 
 Mỗi đám cưới đều mang một câu chuyện và hình thức tổ chức riêng biệt: có cặp đôi thích một buổi tiệc thân mật tối giản cùng bạn bè, có gia đình tổ chức lễ nghi truyền thống trang trọng với đầy đủ lịch trình đón dâu và tiệc hai nhà. Mây Hẹn chuẩn hóa **Hệ khung 10 Section Tiêu Chuẩn**, cho phép bạn linh hoạt bật/tắt hoặc sắp xếp lại thứ tự từng phần chỉ bằng thao tác kéo thả trực quan mà không lo làm hỏng giao diện thiệp cưới.
 
+![Giao diện quản lý Bố cục 10 Section tiêu chuẩn của thiệp cưới](/assets/client/docs/images/client/02-studio-editor/cli-edit-005-step-1.png)
+*Tab Bố Cục trong Studio V2: Bật tắt linh hoạt và kéo thả thay đổi thứ tự 10 Section tiêu chuẩn.*
+
 ---
 
 ## 1. Hệ khung 10 Section Tiêu Chuẩn của Mây Hẹn

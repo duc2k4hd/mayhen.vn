@@ -21,6 +21,10 @@ required_role: "finance"
 > **Dịch vụ backend:** `App\Services\FinancialReconciliationService`.  
 > **Các phân hệ trực quan:** 3 Tab vận hành chuyên biệt: **Phiếu Đối Soát (`reconciliations`)**, **Nhật Ký Webhook (`webhook-logs`)**, và **Hồ Sơ Hoàn Tiền (`refunds`)**.
 
+
+![Giao diện quản lý Đối soát số dư ngân hàng định kỳ và xử lý giao dịch treo/bất thường](/assets/client/docs/images/admin/06-orders-refunds/adm-ordr-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

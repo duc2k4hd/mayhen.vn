@@ -1246,6 +1246,33 @@ body[data-theme="dark"],
   margin-bottom: 8px !important;
 }
 
+/* Visual Screenshots & Captions inside Docs */
+.mayhen_docs_detail_article_body img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--mayhen-docs-detail-border, #E5DCCD) !important;
+  box-shadow: 0 10px 30px rgba(31, 29, 26, 0.08) !important;
+  margin: 22px auto 10px auto !important;
+  background: var(--mayhen-docs-detail-surface, #FFFFFF) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.mayhen_docs_detail_article_body img:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 36px rgba(31, 29, 26, 0.12) !important;
+}
+
+.mayhen_docs_detail_article_body em {
+  display: block !important;
+  font-size: 13px !important;
+  color: var(--mayhen-docs-detail-muted, #7A726A) !important;
+  text-align: center !important;
+  margin: 0 0 24px 0 !important;
+  font-style: italic !important;
+}
+
 /* Action Buttons in Article Header */
 .mayhen_docs_detail_btn {
   font-size: 12px !important;

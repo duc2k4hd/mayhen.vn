@@ -24,6 +24,9 @@ Khi quan khách bước vào sảnh cưới đông đúc hàng trăm người, k
 
 Tính năng **Tra cứu bàn tiệc thông minh (Guest Table Finder)** của Mây Hẹn giải quyết triệt để vấn đề này: Khách mời chỉ cần mở thiệp cưới trên điện thoại hoặc nhập tên tại máy tính bảng lễ tân (Kiosk) là biết ngay số bàn, khu vực và những người bạn quen đang ngồi cùng bàn với mình.
 
+![Tra cứu bàn tiệc thông minh Table Finder](/assets/client/docs/images/client/05-seating-planner/cli-seat-005-step-1.png)
+*Công cụ Tra cứu bàn tiệc: Cho phép khách mời tự tìm vị trí bàn ngồi và xem danh sách người cùng bàn.*
+
 ---
 
 ## 1. Trải nghiệm của Khách Mời khi đến Sảnh Cưới

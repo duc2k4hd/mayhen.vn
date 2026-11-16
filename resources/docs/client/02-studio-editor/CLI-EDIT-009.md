@@ -21,6 +21,9 @@ required_role: "customer"
 
 Một tấm thiệp cưới gửi đi là lời thông báo trang trọng đến cả trăm bạn bè, người thân và đối tác quan trọng. Việc sơ suất thiếu địa chỉ sảnh tiệc, quên link Google Maps dẫn đường, hay chưa điền thông tin phụ mẫu hai bên có thể gây khó xử trong ngày trọng đại. **Bác Sĩ Thiệp Cưới (Visual Quality Doctor)** là tính năng độc quyền của Mây Hẹn, hoạt động như một chuyên gia thẩm định tự động rà soát từng chi tiết trên thiệp và chấm điểm độ hoàn thiện theo thời gian thực.
 
+![Giao diện Bác Sĩ Kiểm Tra Chất Lượng Quality Doctor](/assets/client/docs/images/client/02-studio-editor/cli-edit-009-step-1.png)
+*Công cụ Bác Sĩ Thiệp Cưới: Chấm điểm hoàn thiện theo thang điểm 100 và phát hiện thiếu sót theo thời gian thực.*
+
 ---
 
 ## 1. Cơ chế chấm điểm 100đ thời gian thực (Realtime Quality Score)

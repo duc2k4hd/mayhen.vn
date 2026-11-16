@@ -21,6 +21,9 @@ required_role: "customer"
 
 Đường dẫn thiệp cưới (Link thiệp) là điều đầu tiên khách mời nhìn thấy khi nhận tin nhắn mừng vui của hai bạn trên Zalo, Messenger hay tin nhắn SMS. Một đường link ngắn gọn, mang tên của hai bạn như `mayhen.vn/thiep/tuan-minh-lan-anh` kèm tấm thiệp xem trước xinh xắn sẽ thể hiện sự chu đáo, tôn trọng và để lại ấn tượng khó quên ngay từ cái nhìn đầu tiên.
 
+![Trang thiệp cưới công cộng với đường dẫn tinh tế](/assets/client/docs/images/client/03-public-invitation/cli-invt-001-step-1.png)
+*Giao diện thiệp cưới công cộng: Tối ưu hiển thị sang trọng trên mọi thiết bị và mạng xã hội.*
+
 ---
 
 ## 1. Quy chuẩn đặt tên đường dẫn đẹp (Custom Slug)

@@ -20,6 +20,10 @@ required_role: "designer"
 > **Route quản lý:** `GET /admin/templates` (`admin.templates.index`) và `/admin/templates/{id}/edit`.  
 > **Bộ quy chuẩn bắt buộc:** Tuân thủ 100% tài liệu `.agents/skills/mayhen-invitation-standards/SKILL.md` và `.agents/skills/mayhen-invitation-templates/SKILL.md`.
 
+
+![Giao diện quản lý Thêm mẫu thiệp mới vào hệ thống: Cấu hình schema.json, ảnh đại diện và 10 section](/assets/client/docs/images/admin/05-templates-releases/adm-tmpl-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Kiến Trúc Thư Mục Của Một Mẫu Thiệp Chuẩn

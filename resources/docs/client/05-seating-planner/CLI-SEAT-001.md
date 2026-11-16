@@ -21,6 +21,9 @@ required_role: "customer"
 
 Việc sắp xếp chỗ ngồi trong tiệc cưới của người Việt Nam không chỉ đơn thuần là phân bổ ghế ngồi, mà còn thể hiện sự trân trọng và tinh tế với họ hàng hai bên, bạn bè thời thơ ấu và đối tác quan trọng. **Seating Planner Studio** của Mây Hẹn mang đến trải nghiệm trực quan hóa mặt bằng sảnh tiệc, hỗ trợ kéo thả khách vào bàn và tích hợp **Bác Sĩ Sức Chứa (Seating Capacity Guardian)** để tính toán chính xác số mâm cỗ cần đặt với trung tâm tiệc cưới.
 
+![Khởi tạo sơ đồ bàn tiệc và sức chứa sảnh cưới](/assets/client/docs/images/client/05-seating-planner/cli-seat-001-step-1.png)
+*Giao diện Seating Planner: Quy hoạch mặt bằng sảnh tiệc, điều phối sức chứa và theo dõi số lượng ghế trống.*
+
 ---
 
 ## 1. Bảng điều khiển 4 chỉ số vàng (Seating Metric Cards)

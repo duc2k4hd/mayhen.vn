@@ -22,6 +22,10 @@ required_role: "manager"
 > **Thang bậc phân hạng chuẩn:** Gồm 3 hạng chính: **Bạc (`silver`)**, **Vàng (`gold`)**, và **Bạch Kim (`platinum`)**.  
 > **Giới hạn tỷ lệ hợp lệ:** Từ **0.0% đến 100.0%** (Tiêu chuẩn vận hành: 15% – 30%).
 
+
+![Giao diện quản lý Quản lý cấu hình mức chiết khấu hoa hồng theo từng cấp độ đối tác (Tier)](/assets/client/docs/images/admin/09-partners-commissions/adm-part-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route quản trị:** `GET /admin/templates` (`admin.templates.index`), `POST /admin/templates/{id}/toggle-active` và `POST /admin/templates/{id}/toggle-featured`.  
 > **Nguyên tắc tương thích ngược:** Việc tạm ẩn một mẫu thiệp không bao giờ làm ảnh hưởng đến các thiệp cưới của khách hàng đã tạo trước đó.
 
+
+![Giao diện quản lý Kích hoạt, gắn nhãn Nổi bật (Featured) và ẩn mẫu thiệp bảo trì](/assets/client/docs/images/admin/05-templates-releases/adm-tmpl-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục Đích Nghiệp Vụ Quản Trị Kho Mẫu (Store Curation)

@@ -21,6 +21,10 @@ required_role: "manager"
 > **Dịch vụ backend:** `App\Services\InvitationRenewalService` & `App\Services\InvitationLifecycleService`.  
 > **Kiểm toán bắt buộc:** Mọi thao tác can thiệp ngày hết hạn hoặc chuyển đổi gói dịch vụ đều được lưu vết chi tiết vào `audit_logs` với User ID, IP, lý do gia hạn và mốc thời gian trước/sau thay đổi.
 
+
+![Giao diện quản lý Gia hạn thời gian lưu trữ thiệp cưới và quy trình chuyển đổi gói dịch vụ](/assets/client/docs/images/admin/03-public-invitation/adm-invt-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

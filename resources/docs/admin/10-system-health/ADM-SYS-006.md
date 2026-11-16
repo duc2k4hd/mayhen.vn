@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản lý:** `/thiep/{id}/ten-mien` (`invitations.domain`).  
 > **Cơ chế định tuyến lõi:** Middleware toàn cục `DetectCustomDomain` phục vụ thiệp cưới trực tiếp từ tên miền riêng.
 
+
+![Giao diện quản lý Quản lý tên miền tùy chỉnh (Custom Domains) và kiểm tra bản ghi DNS SSL tự động](/assets/client/docs/images/admin/10-system-health/adm-sys-006-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Tổng Quan Kiến Trúc Đa Tên Miền (Custom Domain Architecture)

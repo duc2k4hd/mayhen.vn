@@ -17,6 +17,10 @@ required_role: "manager"
 
 Hồ sơ có thể chứa thông tin cá nhân. Chỉ tra cứu khi có nhu cầu công việc hợp lệ, dùng tài khoản của chính bạn và chỉ chia sẻ thông tin cần thiết qua kênh được phép. Không yêu cầu khách cung cấp mật khẩu hiện tại.
 
+
+![Giao diện quản lý Tra cứu hồ sơ khách hàng và lịch sử liên quan](/assets/client/docs/images/admin/03-users-rbac/adm-user-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Tìm và mở hồ sơ
 
 1. Mở mục quản lý người dùng tại `/admin/users` bằng tài khoản được cấp quyền.

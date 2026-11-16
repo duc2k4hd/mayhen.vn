@@ -21,6 +21,10 @@ required_role: "manager"
 > **Service lõi:** `App\Services\AiQualityAndCostObservatoryService`  
 > **Mô hình tích hợp:** Google Gemini 1.5 Flash, Gemini 1.5 Pro & Động cơ viết văn Heuristic dự phòng cục bộ (Zero-cost Offline Fallback).
 
+
+![Giao diện quản lý Giám sát trạm quan sát chi phí & chất lượng AI (AI Cost & Quality Observatory)](/assets/client/docs/images/admin/02-dashboard-analytics/adm-dash-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Vận hành của Đài Quan sát AI (AI Observatory)

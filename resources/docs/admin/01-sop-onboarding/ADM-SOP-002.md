@@ -15,6 +15,10 @@ required_role: "manager"
 
 # Đăng nhập quản trị an toàn và bảo vệ dữ liệu
 
+
+![Giao diện quản lý Đăng nhập quản trị an toàn và bảo vệ dữ liệu](/assets/client/docs/images/admin/01-sop-onboarding/adm-sop-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Đăng nhập
 
 1. Mở `/admin/login` và nhập **Email quản trị** cùng **Mật khẩu** của tài khoản được cấp quyền.

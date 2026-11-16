@@ -22,6 +22,10 @@ required_role: "manager"
 > **Dịch vụ backend:** `App\Services\PartnerManagementService`.  
 > **Hạng đối tác mặc định khi kích hoạt:** `Silver` (Tỷ lệ hoa hồng khởi điểm: **15%**).
 
+
+![Giao diện quản lý Xét duyệt hồ sơ đăng ký đối tác Studio cưới mới và kích hoạt tài khoản](/assets/client/docs/images/admin/09-partners-commissions/adm-part-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

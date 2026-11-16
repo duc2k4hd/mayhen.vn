@@ -22,6 +22,10 @@ required_role: "support"
 > **Dịch vụ backend:** `App\Services\CannedResponseService`.  
 > **Đặc trưng văn phong Mây Hẹn:** *Quiet Luxury*, tinh tế, nhã nhặn, tôn trọng sự trang trọng của hôn lễ, không dùng từ ngữ công nghệ khô khan.
 
+
+![Giao diện quản lý Quản lý và sử dụng thư viện câu trả lời mẫu chuẩn mực (Canned Responses)](/assets/client/docs/images/admin/08-support-messaging/adm-supp-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoints:** `POST /admin/reschedule` & `POST /admin/reschedule/{logId}/notify`  
 > **Tác động dữ liệu lớn:** Thao tác dời ngày cưới sẽ tác động trực tiếp lên toàn bộ thiệp cưới online, khối đếm ngược, lịch trình sự kiện và hàng trăm khách mời trong danh bạ. Bắt buộc đối soát văn bản yêu cầu trước khi bấm thực thi.
 
+
+![Giao diện quản lý Quy trình hỗ trợ khách đổi ngày cưới (Reschedule) và cập nhật thiệp đồng loạt](/assets/client/docs/images/admin/03-public-invitation/adm-invt-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Khi nào Cần Kích hoạt Quy trình Dời Ngày Cưới?

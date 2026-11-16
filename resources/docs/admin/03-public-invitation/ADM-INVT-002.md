@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoints:** `POST /admin/invitations/{id}/lock` & `POST /admin/invitations/{id}/unlock`  
 > **SLA Xử lý Khẩn cấp:** Dưới **5 phút** kể từ khi nhận văn bản khiếu nại bản quyền hoặc phát hiện nội dung độc hại, nhằm bảo vệ uy tín nền tảng Mây Hẹn và tránh rủi ro pháp lý liên đới.
 
+
+![Giao diện quản lý Xử lý khóa thiệp khẩn cấp khi phát hiện nội dung độc hại hoặc tranh chấp bản quyền](/assets/client/docs/images/admin/03-public-invitation/adm-invt-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Khi nào Bắt buộc phải Khóa thiệp Khẩn cấp?

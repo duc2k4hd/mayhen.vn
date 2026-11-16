@@ -17,6 +17,9 @@ required_role: "customer"
 
 Khách mời có thể dùng biểu mẫu xác nhận tham dự trên thiệp khi chủ thiệp cho phép. Các trường và cách trình bày có thể khác nhau theo mẫu; không phải mẫu nào cũng đã được xác minh có lựa chọn từng sự kiện hoặc khẩu phần ăn.
 
+![Giao diện xác nhận tham dự RSVP trên thiệp cưới](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-004-step-1.png)
+*Biểu mẫu xác nhận tham dự (RSVP) trực quan giúp khách mời phản hồi nhanh chóng.*
+
 ## Gửi phản hồi
 
 1. Mở liên kết thiệp do cô dâu chú rể gửi và tìm phần xác nhận tham dự. Giữ riêng liên kết cá nhân hóa nếu bạn được gửi một liên kết dành riêng cho mình.

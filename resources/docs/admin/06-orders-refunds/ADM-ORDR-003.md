@@ -22,6 +22,10 @@ required_role: "finance"
 > **Dịch vụ backend:** `App\Services\EntitlementStateMachineService::applyRefundedOrder`.  
 > **Nguyên tắc an toàn:** Không bao giờ hoàn tiền mặt hoặc chuyển khoản tùy tiện; bắt buộc có mã giao dịch chuyển khoản thực tế (`payout_reference_code`) từ ngân hàng công ty để khép hồ sơ kiểm toán.
 
+
+![Giao diện quản lý Quy trình xét duyệt yêu cầu hoàn tiền (Refund Workflow) theo 3 cấp phê duyệt](/assets/client/docs/images/admin/06-orders-refunds/adm-ordr-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Điều kiện hoàn tiền theo Chính sách Mây Hẹn

@@ -31,6 +31,9 @@ Kiến trúc bàn giao của Mây Hẹn đảm bảo:
 - **Không mất dữ liệu:** Toàn bộ ảnh cưới, lời tự sự, timeline và nhạc nền studio đã dựng đều được bảo toàn 100%.
 - **Giữ nguyên quyền lợi Đối tác:** Thiệp sau khi chuyển sang tài khoản cô dâu chú rể vẫn giữ liên kết `partner_id` để ghi nhận hoa hồng khi cặp đôi nâng cấp gói dịch vụ và giữ logo Co-branding của studio ở chân thiệp.
 
+![Quản lý và bàn giao thiệp cưới cho khách hàng của studio](/assets/client/docs/images/client/10-partner-privacy/cli-part-002-step-1.png)
+*Cổng quản lý đối tác: Danh sách thiệp khách hàng và quy trình sinh mã bàn giao Handover Code độc bản.*
+
 ---
 
 ## 2. Các Bước Tạo Thiệp Cho Khách Hàng (Dành cho Studio)

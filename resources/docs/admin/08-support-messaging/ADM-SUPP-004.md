@@ -22,6 +22,10 @@ required_role: "manager"
 > **Dịch vụ backend:** `App\Services\SiteAnnouncementService`.  
 > **Vị trí hiển thị hỗ trợ:** **Top Bar** (Thanh tiêu đề toàn site), **Client Dashboard** (Bảng điều khiển cặp đôi), và **Modal Popup** (Hộp thoại nổi).
 
+
+![Giao diện quản lý Tạo và phát thông báo hệ thống (Site Announcements) trên giao diện Client](/assets/client/docs/images/admin/08-support-messaging/adm-supp-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

@@ -24,6 +24,9 @@ Nhận được hàng chục, thậm chí hàng trăm lời chúc phúc từ ng�
 
 Hệ thống quản lý Sổ Ký Tên của Mây Hẹn cung cấp bảng điều khiển trực quan giúp bạn dễ dàng đọc duyệt, ghim những lời chúc cảm động nhất lên đầu trang và gửi lời tri ân tới từng vị khách quý.
 
+![Bảng duyệt lời chúc và gửi lời cảm ơn phản hồi](/assets/client/docs/images/client/07-guestbook-photos/cli-wish-002-step-1.png)
+*Bảng quản lý lời chúc: Duyệt nội dung, ghim lời chúc ý nghĩa và phản hồi tri ân khách mời.*
+
 ---
 
 ## 1. Trải nghiệm Phản Hồi của Cặp Đôi (Interactive Reply Card)

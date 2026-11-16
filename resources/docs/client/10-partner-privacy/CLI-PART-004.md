@@ -32,6 +32,9 @@ Trong văn hóa cưới hỏi truyền thống của người Việt, thiệp c�
 
 **Cổng Duyệt Thiệp Gia Đình (Two-Family Approval Portal)** của Mây Hẹn sinh ra 2 liên kết rà soát độc lập dành riêng cho Nhà Trai và Nhà Gái, giúp các bậc phụ huynh xem trước thiệp trên điện thoại dễ dàng và đóng góp ý kiến trước khi gửi thiệp tới các bậc cao niên trong họ.
 
+![Cổng duyệt thiệp dành cho hai bên gia đình phụ mẫu](/assets/client/docs/images/client/10-partner-privacy/cli-part-004-step-1.png)
+*Cổng Duyệt Thiệp Gia Đình: Tạo link riêng biệt cho Nhà Trai và Nhà Gái đối soát thông tin tôn nghiêm trước ngày gửi.*
+
 ---
 
 ## 2. Cách Lấy Liên Kết Duyệt Thiệp (Dành cho Cặp Đôi)

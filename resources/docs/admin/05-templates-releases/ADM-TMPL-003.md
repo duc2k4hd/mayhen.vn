@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route thao tác:** `POST /admin/assets/diagnostics/{id}/localize`, `POST /admin/assets/diagnostics/{id}/batch-repair` và `GET /admin/assets/diagnostics/export`.  
 > **Mục tiêu kỹ thuật:** Triệt tiêu hoàn toàn mã lỗi HTTP 404 và loại bỏ 100% liên kết CDN ngoại vi trôi nổi.
 
+
+![Giao diện quản lý Thao tác Localize & Batch-repair: Đưa 100% tài nguyên về thư mục cục bộ tự chứa](/assets/client/docs/images/admin/05-templates-releases/adm-tmpl-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Hai Cơ Chế Phục Hồi Tài Nguyên Cốt Lõi

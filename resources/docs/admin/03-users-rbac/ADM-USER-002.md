@@ -20,6 +20,10 @@ required_role: "manager"
 > **Route thao tác:** `GET /admin/users` và chi tiết người dùng `/admin/users/{id}`.  
 > **Cơ chế phòng vệ:** Hệ thống tự động chặn hành vi tự khóa tài khoản của chính mình và chặn khóa Super Admin cuối cùng đang hoạt động.
 
+
+![Giao diện quản lý Quy trình khóa tài khoản vi phạm, mở khóa và đặt lại mật khẩu an toàn](/assets/client/docs/images/admin/03-users-rbac/adm-user-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục Đích Nghiệp Vụ & Căn Cứ Khóa Tài Khoản

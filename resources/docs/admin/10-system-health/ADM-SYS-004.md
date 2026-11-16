@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/system/acceptance` (`admin.system.acceptance.index`).  
 > **Căn cứ pháp lý & kỹ thuật:** Mục 62 & 63 PRD V3 và Bộ Tiêu Chuẩn Cổng Kiểm Định Thương Mại Mây Hẹn (Release Candidate Test Gates).
 
+
+![Giao diện quản lý Bảng điều khiển Nghiệm thu Thương mại (Admin Acceptance Audit Cockpit): Chấm điểm tuân thủ](/assets/client/docs/images/admin/10-system-health/adm-sys-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ & Ý nghĩa Trạm Chỉ Huy Kiểm Định

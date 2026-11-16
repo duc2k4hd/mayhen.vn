@@ -22,6 +22,10 @@ required_role: "support"
 > **Dịch vụ backend:** `App\Services\SupportImpersonationService` & `App\Http\Middleware\SupportImpersonationMiddleware`.  
 > **Thời lượng phiên tối đa:** Cố định **30 phút** (`DEFAULT_TTL_MINUTES = 30`), tự động hủy và đưa Admin về màn hình đăng nhập nếu hết hạn.
 
+
+![Giao diện quản lý Can thiệp hỗ trợ thiệp khách hàng mà không làm rò rỉ hoặc mất dữ liệu khách mời](/assets/client/docs/images/admin/03-public-invitation/adm-invt-006-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

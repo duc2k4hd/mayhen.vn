@@ -15,6 +15,10 @@ required_role: "manager"
 
 # Quy trình tiếp nhận và xử lý yêu cầu quyền riêng tư dữ liệu cá nhân (Luật 91/2025/QH15)
 
+
+![Giao diện quản lý Quy trình tiếp nhận và xử lý yêu cầu quyền riêng tư dữ liệu cá nhân (Luật 91/2025/QH15)](/assets/client/docs/images/admin/01-sop-onboarding/adm-sop-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Trước khi xử lý
 
 Yêu cầu xóa hoặc ẩn danh có thể ảnh hưởng dữ liệu khách hàng. Xác minh danh tính và thẩm quyền theo quy trình của đơn vị, kiểm tra phạm vi yêu cầu và nghĩa vụ lưu giữ liên quan trước khi thao tác. Chỉ kiểm thử bằng tài khoản và dữ liệu giả trên môi trường cô lập.

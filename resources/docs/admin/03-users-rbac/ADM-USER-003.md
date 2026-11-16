@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/rbac` (`admin.rbac.index`) và `/admin/rbac/roles`.  
 > **Nguyên tắc an ninh tối cao:** Tuân thủ Mục 2.1, 2.2 và Mục 67 PRD V3 về Kiểm soát Truy cập Dựa trên Vai trò (Role-Based Access Control - RBAC).
 
+
+![Giao diện quản lý Phân quyền vai trò nhân viên và phòng ngừa lỗi tự tước quyền Super Admin](/assets/client/docs/images/admin/03-users-rbac/adm-user-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Cấu Trúc 6 Vai Trò Vận Hành Nội Bộ

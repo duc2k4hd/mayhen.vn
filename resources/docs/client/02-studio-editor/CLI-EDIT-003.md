@@ -21,6 +21,9 @@ required_role: "customer"
 
 Trong phong tục cưới hỏi của người Việt, thông tin về họ tên hai bên gia đình, thứ bậc con cái và ngày giờ hoàng đạo mang ý nghĩa văn hóa vô cùng trang nghiêm. Mây Hẹn thiết kế riêng bộ công cụ nhập liệu văn hóa chuẩn mực, giúp hai bạn ghi nhận đầy đủ, tinh tế và không bao giờ phạm phải các điều cấm kỵ truyền thống.
 
+![Giao diện nhập thông tin gia đình hai bên và cô dâu chú rể](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-1.png)
+*Bảng chỉnh sửa thông tin cặp đôi và phụ mẫu hai bên với tính năng đối soát ngày âm lịch tự động.*
+
 ---
 
 ## 1. Điều kiện chuẩn bị

@@ -17,6 +17,10 @@ required_role: "manager"
 
 **Quan trọng:** Chưa xác minh được chức năng điểm danh ngoại tuyến hoặc tự đồng bộ. Không giả định thao tác đã được lưu khi màn hình báo lỗi mạng, và không hứa với lễ tân rằng có thể dùng phần mềm khi mất kết nối.
 
+
+![Giao diện quản lý Xử lý gián đoạn mạng khi điểm danh tại sảnh tiệc](/assets/client/docs/images/admin/07-checkin-cockpit/adm-cock-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Nhận biết sự cố
 
 Trạm điểm danh có thể báo **“Lỗi mạng khi điểm danh quan khách.”** hoặc **“Lỗi mạng khi hủy điểm danh.”**. Kết quả tìm kiếm hoặc thống kê cũng có thể không cập nhật khi kết nối bị gián đoạn.

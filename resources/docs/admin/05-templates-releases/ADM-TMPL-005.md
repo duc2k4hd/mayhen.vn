@@ -20,6 +20,10 @@ required_role: "designer"
 > **Route quản trị:** `GET /admin/templates/{id}/releases` (`admin.templates.release_lab`).  
 > **Cổng an toàn kỹ thuật:** Bắt buộc vượt qua 100% bài kiểm tra tiền phát hành (Preflight Quality Gate) trước khi xuất bản ra toàn bộ người dùng website.
 
+
+![Giao diện quản lý Quy trình phát hành bản phát hành mới (Release Control) và cơ chế Rollback an toàn](/assets/client/docs/images/admin/05-templates-releases/adm-tmpl-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Ý Nghĩa Quản Lý Phiên Bản Mẫu Thiệp (Release Lab)

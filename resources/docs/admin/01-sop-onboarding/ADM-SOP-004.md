@@ -15,6 +15,10 @@ required_role: "manager"
 
 # Checklist bàn giao ca trực hàng ngày và sổ tay xử lý sự cố khẩn cấp (P0/P1 Runbook)
 
+
+![Giao diện quản lý Checklist bàn giao ca trực hàng ngày và sổ tay xử lý sự cố khẩn cấp (P0/P1 Runbook)](/assets/client/docs/images/admin/01-sop-onboarding/adm-sop-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## Khi nhận ca
 
 1. Đăng nhập bằng tài khoản của bạn và mở `/admin/dashboard`.

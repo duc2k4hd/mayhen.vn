@@ -31,6 +31,9 @@ Mọi giao dịch thanh toán phát sinh sau đó từ cặp đôi đều tự �
 - **Mua gói tương tác:** Tăng số lượng tin nhắn gửi thiệp Zalo ZNS hoặc mua thêm lượt tải ảnh Photo Drop tốc độ cao.
 - **Tỷ lệ chiết khấu cố định:** Tính theo cấp bậc hiện tại của Studio (**15%** đối với Hạng Bạc, **20%** đối với Hạng Vàng, và **25% - 30%** đối với Hạng Bạch Kim).
 
+![Ví hoa hồng và lịch sử thanh toán đối tác](/assets/client/docs/images/client/10-partner-privacy/cli-part-003-step-1.png)
+*Ví Hoa Hồng Đối Tác: Thống kê doanh thu mạng lưới, quản lý số dư và tạo lệnh rút tiền nhanh chóng.*
+
 ---
 
 ## 2. Các Chỉ Số Tài Chính Cốt Lõi Trên Dashboard

@@ -24,6 +24,9 @@ Khu vực sảnh đón tiếp trước cửa phòng tiệc là nơi ghi lại nh
 
 Màn hình sẽ tự động chạy trình chiếu (Slideshow) những khoảnh khắc đẹp nhất trong Album cưới. Đặc biệt, mỗi khi có khách mời được lễ tân điểm danh thành công bằng mã QR ngoài cửa, màn hình sẽ **tức thời bật thẻ chào mừng trang trọng**, xướng tên vị khách kèm số bàn tiệc trong sự trầm trồ của mọi người xung quanh.
 
+![Màn hình chào sảnh tiệc Venue Welcome Kiosk](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-005-step-1.png)
+*Màn hình Chào sảnh tiệc: Trình chiếu slideshow ảnh cưới và tự động xướng tên khách mời khi điểm danh.*
+
 ---
 
 ## 1. Cơ chế Hoạt động 2 Chế Độ (Idle Slideshow & Takeover Greeting)

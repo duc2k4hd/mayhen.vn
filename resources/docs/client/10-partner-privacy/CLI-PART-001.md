@@ -30,6 +30,9 @@ Chương trình **Mây Hẹn Partner Network** được thiết kế riêng cho 
 - **Bộ công cụ Studio Cockpit B2B:** Quản lý tập trung hàng trăm thiệp cưới khách hàng trên một giao diện duy nhất, chủ động thiết kế, tùy biến và bàn giao quyền sở hữu cho cặp đôi khi hoàn tất.
 - **Đóng dấu thương hiệu Studio (Co-branding):** Tùy chỉnh hiển thị logo và tên studio ở chân thiệp cưới để quảng bá thương hiệu tự nhiên đến hàng ngàn khách mời tham dự tiệc.
 
+![Đăng ký đối tác studio cưới Mây Hẹn](/assets/client/docs/images/client/10-partner-privacy/cli-part-001-step-1.png)
+*Trang Đăng Ký Đối Tác: Gia nhập mạng lưới Mây Hẹn Partner Network nhận hoa hồng chiết khấu hấp dẫn.*
+
 ---
 
 ## 2. Điều Kiện Chuẩn Bị Trước Khi Đăng Ký

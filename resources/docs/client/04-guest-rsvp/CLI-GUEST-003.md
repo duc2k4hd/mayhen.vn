@@ -21,6 +21,9 @@ required_role: "customer"
 
 Điểm khác biệt lớn nhất giữa một tin nhắn gửi link đại trà và một lời mời cưới chân thành nằm ở **sự chu đáo trong danh xưng**. Khi một người bạn mở link và nhìn thấy dòng chữ: *"Thân gửi: Anh Hoàng & Bạn gái"* hoặc người lớn tuổi thấy chữ: *"Kính mời: Bác Hai và Gia đình"* lồng ghép trang trọng trên chiếc phong thư mạ vàng, họ sẽ lập tức cảm nhận được sự hiếu lễ và chuẩn bị kỹ lưỡng của gia đình hai bạn.
 
+![Danh sách link thiệp cưới cá nhân hóa cho từng khách mời](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-003-step-1.png)
+*Bảng danh sách khách mời: Tự động sinh link riêng biệt với mã định danh token an toàn.*
+
 ---
 
 ## 1. Cơ chế hoạt động của Link thiệp cá nhân hóa

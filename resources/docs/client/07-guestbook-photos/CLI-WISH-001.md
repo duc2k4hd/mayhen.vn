@@ -24,6 +24,9 @@ Trong các đám cưới truyền thống, cuốn sổ ký tên bìa da đặt �
 
 **Sổ Ký Tên Điện Tử (Interactive Digital Guestbook)** của Mây Hẹn mang lại một trải nghiệm hoàn toàn mới: Dù ở xa nửa vòng trái đất hay đang ngồi tại bàn tiệc, khách mời đều có thể mở thiệp cưới trên điện thoại, tự tay **vẽ nét chữ ký mềm mại** bằng ngón tay hoặc bút cảm ứng, đính kèm lời chúc chân thành và nhận một chiếc **Tem Niêm Phong Sáp Ảo (Digital Wax Seal)** tinh xảo.
 
+![Sổ ký tên điện tử và vẽ chữ ký chúc phúc](/assets/client/docs/images/client/07-guestbook-photos/cli-wish-001-step-1.png)
+*Sổ ký tên điện tử: Trải nghiệm vẽ chữ ký cảm ứng và lưu giữ lời chúc với tem niêm phong sáp độc bản.*
+
 ---
 
 ## 1. Giao diện Vùng Ký Tên Nghệ Thuật (Signature Studio Canvas)

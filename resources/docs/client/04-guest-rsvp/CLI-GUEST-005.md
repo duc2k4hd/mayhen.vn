@@ -21,6 +21,9 @@ required_role: "customer"
 
 Một bữa tiệc cưới đẳng cấp và ấm áp được thể hiện qua sự chu đáo đối với từng khẩu vị của quan khách. Sẽ thật áy náy nếu một người bác lớn tuổi ăn chay trường phải ngồi trước một bàn tiệc toàn sơn hào hải vị, hay một người bạn bị dị ứng đậu phộng không thể an tâm dùng bữa. Tính năng **RSVP Theo Hộ Gia Đình & Tùy Chọn Ẩm Thực (Household RSVP & Dietary Care)** của Mây Hẹn giúp hai bạn thu thập chính xác số người đi kèm và nhu cầu món ăn đặc biệt để gửi bếp tiệc nhà hàng chuẩn bị chu đáo nhất.
 
+![Biểu mẫu RSVP theo hộ gia đình và món ăn kiêng](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-005-step-1.png)
+*Biểu mẫu RSVP Hộ gia đình: Cho phép đăng ký người lớn, trẻ em và ghi chú món ăn kiêng dị ứng.*
+
 ---
 
 ## 1. Cấu trúc biểu mẫu RSVP theo Hộ Gia Đình

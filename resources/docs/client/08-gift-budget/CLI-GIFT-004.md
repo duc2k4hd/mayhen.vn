@@ -24,6 +24,9 @@ required_role: "customer"
 
 **Bảng Dự Toán Ngân Sách Cưới (Wedding Budget Planner)** của Mây Hẹn cung cấp một khung tài chính chuẩn hóa, giúp hai bạn thiết lập hạn mức chi tiêu, theo dõi chi phí ước tính vs thực tế, quản lý các đợt thanh toán cọc và xuất file Excel đối soát chi tiết.
 
+![Bảng dự toán ngân sách cưới Wedding Budget Planner](/assets/client/docs/images/client/08-gift-budget/cli-gift-004-step-1.png)
+*Bảng Dự Toán Ngân Sách: Kiểm soát chi phí ước tính, theo dõi các đợt cọc và cảnh báo bội chi kịp thời.*
+
 ---
 
 ## 1. Bảng Chỉ Số Cân Đối Tài Chính (Budget Balance Dashboard)

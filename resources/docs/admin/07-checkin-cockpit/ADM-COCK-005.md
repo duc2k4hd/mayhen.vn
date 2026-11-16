@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoints:** `/admin/system/jobs` & `/admin/system/jobs/batches`  
 > **Nguyên tắc an toàn:** Tuyệt đối không xóa trắng (`Purge`) hàng đợi khi chưa kiểm tra nguyên nhân lỗi; việc xóa nhầm sẽ làm mất danh sách khách mời đang chờ nhận thiệp cưới.
 
+
+![Giao diện quản lý Kiểm tra và hỗ trợ giải phóng hàng đợi gửi tin Zalo/SMS cho khách mời](/assets/client/docs/images/admin/07-checkin-cockpit/adm-cock-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Cơ chế Vận hành Hàng đợi Gửi tin Zalo & SMS

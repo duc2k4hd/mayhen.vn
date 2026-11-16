@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoint:** `GET /admin/checkin/cockpit`  
 > **Bằng chứng kiểm toán:** Mọi thao tác điều chỉnh sĩ số, chuyển bàn hoặc đón khách phát sinh đều tự động lưu vết vào nhật ký vận hành với danh tính Điều phối viên (`operator`).
 
+
+![Giao diện quản lý Bảng điều khiển Giám sát Lễ tân (Admin Check-in Cockpit) trực tiếp ngày cưới](/assets/client/docs/images/admin/07-checkin-cockpit/adm-cock-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Giới thiệu Tổng quan về Admin Check-in Cockpit

@@ -24,6 +24,9 @@ Trong ngày trọng đại, thợ ảnh chính (Photographer) chỉ có thể gh
 
 Tính năng **Photo Drop (Hộp Nhận Ảnh Trực Tiếp)** của Mây Hẹn giải quyết trọn vẹn bài toán này: Chỉ cần quét mã QR đặt trên bàn tiệc, khách mời có thể tải ngay 10 bức ảnh sắc nét từ điện thoại lên album chung của đám cưới mà không cần tạo tài khoản hay cài đặt bất kỳ ứng dụng nào.
 
+![Tính năng Photo Drop tải ảnh chụp lên album chung](/assets/client/docs/images/client/07-guestbook-photos/cli-wish-003-step-1.png)
+*Photo Drop: Quét QR tại bàn tiệc để chia sẻ khoảnh khắc ảnh cưới trực tiếp lên album kỷ niệm.*
+
 ---
 
 ## 1. Trải nghiệm của Khách Mời tại Bàn Tiệc

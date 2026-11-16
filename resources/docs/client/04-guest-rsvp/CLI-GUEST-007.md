@@ -21,6 +21,9 @@ required_role: "customer"
 
 Gửi lời nhắc đám cưới là một nghệ thuật giao tiếp vô cùng nhạy cảm. Nếu hai bạn nhắn tin quá dồn dập hoặc lời lẽ khô cứng, khách mời có thể cảm thấy bị áp lực hoặc phiền toái. Ngược lại, nếu không nhắc hẹn, khách rất dễ vô tình bị cuốn vào công việc hàng ngày và lỡ hẹn với hai bạn. Mây Hẹn thiết kế riêng tính năng **Gentle Reminder Planner**, cung cấp lộ trình 3 mốc thời gian vàng cùng bộ văn mẫu trang trọng, giúp hai bạn gửi gắm sự chăm sóc chu đáo đến từng vị khách.
 
+![Kế hoạch nhắc hẹn Gentle Reminder Planner](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-007-step-1.png)
+*Công cụ Gentle Reminder: Lên lịch trình nhắc hẹn 3 mốc thời gian vàng gửi trước ngày cưới.*
+
 ---
 
 ## 1. Lộ trình 3 mốc thời gian nhắc hẹn vàng (3-Stage Golden Cadence)

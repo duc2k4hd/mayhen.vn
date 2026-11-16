@@ -23,6 +23,10 @@ required_role: "finance"
 > **Route xuất báo cáo kế toán:** `GET /admin/invoices/export` (`@exportCsv`).  
 > **Dịch vụ backend:** `App\Services\InvoiceManagementService`.
 
+
+![Giao diện quản lý Xuất hóa đơn VAT điện tử và lưu trữ chứng từ thanh toán kế toán](/assets/client/docs/images/admin/06-orders-refunds/adm-ordr-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `HIGH` | **Service lõi:** `App\Services\WeddingReadinessRadarService`  
 > **Cửa sổ giám sát chủ động:** Quét toàn bộ các đám cưới sẽ diễn ra trong vòng **14 đến 30 ngày tới** để phát hiện sớm các cặp đôi bị tắc nghẽn khâu chuẩn bị trước khi quá muộn.
 
+
+![Giao diện quản lý Bảng chỉ số sức khỏe ngày cưới (Wedding Readiness Radar) và cảnh báo trễ hạn](/assets/client/docs/images/admin/02-dashboard-analytics/adm-dash-002-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Giới thiệu về Radar Sức khỏe Ngày cưới (Wedding Readiness Radar)

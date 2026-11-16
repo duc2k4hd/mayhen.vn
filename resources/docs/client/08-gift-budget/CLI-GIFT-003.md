@@ -24,6 +24,9 @@ Sau khi tiệc cưới kết thúc, giây phút hồi hộp và ấm áp nhất 
 
 **Sổ Mừng Cưới Thông Minh (Gift Ledger)** của Mây Hẹn biến công việc kiểm đếm thành một hệ thống kế toán gia đình khoa học: Tự động tổng hợp tiền mừng chuyển khoản VietQR, hỗ trợ ghi nhanh phong bì tiền mặt, phân loại theo hai họ và tính toán chi tiết mức mừng trung bình.
 
+![Quản lý sổ mừng cưới đối soát minh bạch](/assets/client/docs/images/client/08-gift-budget/cli-gift-003-step-1.png)
+*Sổ Mừng Cưới Thông Minh: Tổng hợp tiền mừng VietQR, ghi chép tiền mặt và đối soát minh bạch.*
+
 ---
 
 ## 1. Bảng Chỉ Số Tài Chính Hôn Lễ Toàn Diện

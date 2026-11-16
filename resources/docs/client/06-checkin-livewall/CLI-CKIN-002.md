@@ -24,6 +24,9 @@ Trong các đám cưới quy mô từ 300 đến 800 khách, khung giờ cao đi
 
 Tính năng **Quét QR Điểm Danh Thần Tốc** của Mây Hẹn sử dụng thuật toán nhận diện camera độ phân giải cao kết hợp Web Worker, cho phép giải mã mã QR trên màn hình điện thoại hoặc thiệp in của khách chỉ trong **chưa đầy 1 giây**, hiển thị ngay số bàn tiệc to rõ và phát âm thanh chào mừng sinh động.
 
+![Quét mã QR điểm danh và tra số bàn tiệc thần tốc](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-002-step-1.png)
+*Giao diện Quét QR: Tốc độ xử lý dưới 1 giây, định vị số bàn và phát âm thanh thông báo đón tiếp.*
+
 ---
 
 ## 1. Cơ chế hoạt động của Mã QR Tiếp Đón

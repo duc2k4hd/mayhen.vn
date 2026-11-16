@@ -21,6 +21,9 @@ required_role: "customer"
 
 Giây phút khách mời bước chân vào sảnh tiệc là khoảnh khắc vàng quyết định ấn tượng đầu tiên về sự chu đáo của đám cưới. **Cổng Tiếp Tân Điểm Danh** của Mây Hẹn biến chiếc điện thoại hoặc máy tính bảng (iPad/Tablet) của lễ tân thành một máy quét QR chuyên nghiệp, giúp nhận diện khách mời trong **1 giây**, thông báo chính xác số bàn tiệc và đồng bộ dữ liệu trực tiếp lên màn hình LED sảnh tiệc (Live Wall).
 
+![Cổng tiếp tân điểm danh và quét mã QR tiếp đón tại sảnh cưới](/assets/client/docs/images/client/06-checkin-livewall/cli-ckin-001-step-1.png)
+*Giao diện Cổng Điểm Danh Lễ Tân: Nhận diện khách mời trong 1 giây và hiển thị số bàn tiệc chuẩn xác.*
+
 ---
 
 ## 1. Chuẩn bị trước giờ đón khách (Trước giờ G 30 phút)

@@ -24,6 +24,9 @@ Một trong những nỗi lo lớn nhất của các cặp đôi trong ngày cư
 
 Hệ thống **Bác Sĩ Bàn Tiệc (Seating Capacity Guardian)** của Mây Hẹn hoạt động như một chuyên gia tư vấn tiệc cưới giàu kinh nghiệm, tự động phân tích toàn bộ sơ đồ sảnh, cảnh báo bàn quá tải, phát hiện bàn quá thưa và tính toán chính xác số bàn chính thức lẫn bàn dự phòng cần đặt với nhà hàng.
 
+![Bác Sĩ Bàn Tiệc Seating Capacity Guardian](/assets/client/docs/images/client/05-seating-planner/cli-seat-004-step-1.png)
+*Chỉ số sức chứa bàn tiệc: Dự báo mâm cỗ chính thức và bàn dự phòng giúp tránh lãng phí chi phí.*
+
 ---
 
 ## 1. Cơ chế Chấm Điểm Sức Khỏe Bàn Tiệc (Health Score 0 - 100)

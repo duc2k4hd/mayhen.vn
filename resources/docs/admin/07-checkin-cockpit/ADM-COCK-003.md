@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoint:** `POST /admin/checkin/guests/{guestId}/update-table`  
 > **Thời điểm vàng xử lý:** Khung giờ cao điểm đón tiếp (18:00 - 18:45). Mọi quyết định điều phối bàn ghế phải được hoàn thành trong vòng **60 đến 90 giây** để tránh gây ùn tắc tại sảnh tiệc.
 
+
+![Giao diện quản lý Hỗ trợ cô dâu chú rể giải quyết xung đột sức chứa bàn tiệc trong giờ cao điểm](/assets/client/docs/images/admin/07-checkin-cockpit/adm-cock-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Các Nguyên nhân Gây Xung đột Sức chứa Giờ Cao điểm

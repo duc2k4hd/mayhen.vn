@@ -21,6 +21,9 @@ required_role: "customer"
 
 Sau khi đã hoàn thiện đầy đủ thông tin, chọn bản nhạc yêu thích và đạt điểm số tối đa cùng Bác Sĩ Thiệp Cưới, bước cuối cùng là **Xuất Bản Thiệp Cưới**. Đối với thiệp xuất bản lần đầu, hệ thống sẽ kích hoạt đường dẫn chính thức và mã QR để bạn bắt đầu gửi thiệp. Đối với thiệp đã từng gửi cho khách mà bạn cần chỉnh sửa lại, Mây Hẹn cung cấp công nghệ **Báo Cáo Tác Động Thay Đổi (Publish Impact Report)** độc quyền, giúp bạn kiểm soát rủi ro và không bao giờ để khách mời bị nhầm lẫn giờ giấc ngày vui.
 
+![Hộp thoại Báo Cáo Tác Động Xuất Bản Publish Impact Report](/assets/client/docs/images/client/02-studio-editor/cli-edit-010-step-1.png)
+*Hộp thoại Publish Impact Report: Phân tích thay đổi và cảnh báo rủi ro trước khi áp dụng lên thiệp thực tế.*
+
 ---
 
 ## 1. Xuất bản thiệp cưới lần đầu (First-time Publish)

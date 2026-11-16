@@ -21,6 +21,9 @@ required_role: "customer"
 
 Trong khâu tổ chức tiệc cưới, giai đoạn "đau đầu" nhất của các cặp đôi là chốt số lượng bàn tiệc trước 3 - 5 ngày diễn ra hôn lễ. Nếu đặt dư 5 bàn, hai bạn có thể lãng phí từ 20 đến 40 triệu đồng. Nếu đặt thiếu bàn, quan khách đến đông đủ sẽ phải đứng chờ hoặc ghép bàn chật chội. Tính năng **Bảng Điều Khiển Sĩ Số Thời Gian Thực (Live RSVP Dashboard)** của Mây Hẹn giúp hai bạn luôn nắm chắc trong tay từng con số chính xác đến từng người.
 
+![Bảng điều khiển sĩ số phản hồi RSVP thời gian thực](/assets/client/docs/images/client/04-guest-rsvp/cli-guest-006-step-1.png)
+*Bảng thống kê sĩ số khách mời: Theo dõi tỷ lệ phản hồi, số người tham dự và lọc trạng thái thời gian thực.*
+
 ---
 
 ## 1. Hệ thống 4 trạng thái phản hồi chuẩn mực

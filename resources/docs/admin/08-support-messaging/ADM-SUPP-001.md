@@ -23,6 +23,10 @@ required_role: "support"
 > **Dịch vụ backend:** `App\Services\IncidentResponseAndEscalationService`.  
 > **Hàng đợi ưu tiên đặc biệt:** **VIP Concierge 48h** dành riêng cho các cặp đôi có ngày cưới diễn ra trong vòng 48 giờ tới.
 
+
+![Giao diện quản lý Tiếp nhận và phân loại Ticket hỗ trợ theo độ ưu tiên (SLA Response Time)](/assets/client/docs/images/admin/08-support-messaging/adm-supp-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

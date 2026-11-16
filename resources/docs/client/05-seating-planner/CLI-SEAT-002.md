@@ -22,6 +22,9 @@ required_role: "customer"
 
 Xếp chỗ ngồi cho hàng trăm khách mời trong đám cưới từng là cơn ác mộng khi phải dùng giấy bút gạch xóa liên tục. **Seating Planner Canvas** của Mây Hẹn biến công việc này thành trải nghiệm trực quan sống động: Bạn chỉ cần kéo thả thẻ khách mời vào từng bàn tiệc tròn hoặc bàn dài. Hệ thống được tối ưu hóa chuẩn xác cho cả chuột máy tính lẫn màn hình cảm ứng iPad/máy tính bảng, tự động cộng dồn số ghế theo người đi kèm và lưu vết tức thì.
 
+![Kéo thả khách mời vào bàn tiệc trực quan trên màn hình 2 phân vùng](/assets/client/docs/images/client/05-seating-planner/cli-seat-002-step-1.png)
+*Giao diện Split Canvas: Danh sách khách chưa xếp chỗ bên trái và mặt bằng sơ đồ bàn tiệc kéo thả bên phải.*
+
 ---
 
 ## 1. Giao diện làm việc 2 phân vùng (Split Canvas Architecture)

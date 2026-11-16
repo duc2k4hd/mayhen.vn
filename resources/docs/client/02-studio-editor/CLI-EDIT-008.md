@@ -21,6 +21,9 @@ required_role: "customer"
 
 Khi chuẩn bị cưới, có vô vàn chi tiết cần chăm chút: từ câu chuyện tình yêu dài hàng trang đến danh sách lịch trình tiệc cưới phức tạp. Mối lo ngại lớn nhất của các cặp đôi là lỡ tay bấm nhầm làm mất nội dung hoặc mất kết nối mạng giữa chừng. Studio Tạo Thiệp V2 của Mây Hẹn được trang bị **Kiến Trúc Phòng Vệ Dữ Liệu 3 Tầng (3-Tier Resilience Architecture)**, bảo đảm từng ký tự, từng bức ảnh của hai bạn luôn được bảo vệ an toàn tuyệt đối.
 
+![Cơ chế lưu nháp và hoàn tác trên Studio Topbar](/assets/client/docs/images/client/02-studio-editor/cli-edit-008-step-1.png)
+*Thanh công cụ Studio: Hiển thị trạng thái lưu trữ nháp tức thì và các nút hoàn tác/làm lại (Undo/Redo).*
+
 ---
 
 ## 1. Kiến trúc 3 tầng phòng vệ dữ liệu của Mây Hẹn

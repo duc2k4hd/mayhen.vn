@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `HIGH` (Đọc dữ liệu tài chính & chiến lược) | **Endpoint:** `GET /admin/dashboard`  
 > **Chu kỳ cập nhật:** Dữ liệu tài chính và đơn hàng được tính toán trực tiếp từ cơ sở dữ liệu (Real-time DB Query), phản ánh chính xác từng giao dịch VietQR SePay vừa khớp lệnh.
 
+
+![Giao diện quản lý Hướng dẫn đọc Dashboard doanh thu thực tế, biểu đồ tăng trưởng và tỷ lệ chuyển đổi](/assets/client/docs/images/admin/02-dashboard-analytics/adm-dash-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Giới thiệu Tổng quan về Admin KPI Dashboard

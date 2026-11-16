@@ -21,6 +21,9 @@ required_role: "customer"
 
 Âm nhạc là linh hồn đánh thức cảm xúc. Khi khách mời mở thiệp cưới, một giai điệu tình ca quen thuộc cất lên êm ái sẽ lập tức đưa người xem vào không gian hạnh phúc ngập tràn của hai bạn. Tuy nhiên, các trình duyệt di động hiện đại (đặc biệt là **Apple iOS Safari** và **Google Chrome**) áp dụng chính sách bảo mật rất nghiêm ngặt đối với âm thanh tự động. Mây Hẹn cung cấp giải pháp âm nhạc chuẩn hóa, vừa bảo đảm tuân thủ chính sách trình duyệt, vừa mang lại trải nghiệm mở thiệp thăng hoa nhất.
 
+![Giao diện cài đặt nhạc nền lãng mạn và cấu hình tự động phát Autoplay](/assets/client/docs/images/client/02-studio-editor/cli-edit-006-step-1.png)
+*Tab Âm Nhạc trong Studio V2: Kho tình ca đám cưới bất hủ và giải pháp Autoplay chuẩn iOS/Android.*
+
 ---
 
 ## 1. Kho nhạc tình ca tinh tuyển 100% Local Assets

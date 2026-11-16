@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/settings/backups` (`admin.settings.backups.index`).  
 > **Tiêu chuẩn kiểm thử:** Tuân thủ nghiệm thu cổng kỹ thuật G1-017 & G4-003 (OPS-01 Verification Gate).
 
+
+![Giao diện quản lý Quy trình sao lưu toàn diện (System Backup) và diễn tập khôi phục thảm họa (Disaster Recovery)](/assets/client/docs/images/admin/10-system-health/adm-sys-003-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ & Tiêu chuẩn RPO / RTO

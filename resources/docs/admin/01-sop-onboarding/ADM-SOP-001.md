@@ -17,6 +17,10 @@ required_role: "manager"
 
 Bài này giúp người nhận ca xác định đúng môi trường và quyền của mình trước khi làm việc. Không dùng tài khoản thật hoặc thao tác thay đổi dữ liệu thật để thực hành.
 
+
+![Giao diện quản lý Tiếp nhận vận hành hệ thống Mây Hẹn](/assets/client/docs/images/admin/01-sop-onboarding/adm-sop-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ## 1. Xác định môi trường và tài khoản
 
 1. Xác nhận với người bàn giao bạn đang làm việc trên môi trường thử hay môi trường vận hành thật. Không sao chép dữ liệu khách từ môi trường thật sang môi trường thử khi chưa được phép.

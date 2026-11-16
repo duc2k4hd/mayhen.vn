@@ -21,6 +21,9 @@ required_role: "customer"
 
 Giữa guồng quay công việc bận rộn, khách mời rất dễ vô tình quên mất ngày cưới hoặc nhớ nhầm giờ tổ chức nếu chỉ xem qua tấm thiệp một lần từ cả tháng trước. Thấu hiểu điều đó, Mây Hẹn tích hợp sẵn **Bộ Công Cụ Đồng Bộ Lịch Thông Minh (Smart Calendar Integration)** trên từng tấm thiệp cưới. Quan khách chỉ cần chạm nhẹ một lần, ngày cưới của hai bạn sẽ tự động được ghi nhớ vào điện thoại kèm chuông báo nhắc nhở chu đáo.
 
+![Lưu lịch ngày cưới vào điện thoại](/assets/client/docs/images/client/03-public-invitation/cli-invt-004-step-1.png)
+*Section Lịch cưới & Đồng hồ đếm ngược: Tích hợp nút lưu lịch 1 chạm đồng bộ vào Apple Calendar và Google Calendar.*
+
 ---
 
 ## 1. Trải nghiệm lưu lịch diễn ra như thế nào trên thiệp cưới?

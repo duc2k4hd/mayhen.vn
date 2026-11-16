@@ -21,6 +21,9 @@ required_role: "customer"
 
 Có những ngày vui mà hai bạn chỉ muốn chia sẻ trọn vẹn trong vòng tay những người thực sự thân thiết. Tính năng **Mật Khẩu Thiệp Cưới Riêng Tư (Private Password Gate)** của Mây Hẹn cho phép hai bạn khóa thiệp cưới bằng một mã PIN hoặc câu hỏi thân thương. Chỉ những ai có mật mã do hai bạn gửi tặng mới có thể mở cánh thiệp để chiêm ngưỡng album ảnh và biết chính xác địa điểm tổ chức hôn lễ.
 
+![Màn hình phong bao niêm phong sáp và mở khóa mật mã](/assets/client/docs/images/client/03-public-invitation/cli-invt-003-step-1.png)
+*Giao diện mở khóa thiệp cưới bảo mật: Bảo vệ riêng tư tối đa và trải nghiệm mở thư độc đáo.*
+
 ---
 
 ## 1. Màn hình thiệp trông như thế nào khi bật chế độ bảo mật?

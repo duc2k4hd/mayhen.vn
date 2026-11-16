@@ -21,6 +21,9 @@ required_role: "customer"
 
 Một tấm thiệp cưới chạm đến cảm xúc không chỉ nhờ ngôn từ mà còn qua sự hòa quyện của màu sắc, nét chữ và từng chi tiết chạm khắc tinh tế. Trong Studio Mây Hẹn, hai bạn có thể tự do phối màu, đổi kiểu chữ và thiết kế sổ ký tên cảm ứng sang trọng mà không cần bất kỳ kỹ năng đồ họa phức tạp nào.
 
+![Giao diện tùy biến màu sắc và kiểu chữ trong Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-1.png)
+*Tab Phong Cách & Kiểu Chữ: Tùy biến bảng màu Quiet Luxury và phông chữ chuẩn tiếng Việt.*
+
 ---
 
 ## 1. Điều kiện chuẩn bị

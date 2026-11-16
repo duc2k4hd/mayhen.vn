@@ -24,6 +24,9 @@ Khi đám cưới đã khép lại, những chức năng như "Xác nhận tham 
 
 Thay vì đóng lại đường link, Mây Hẹn cung cấp tính năng **Chuyển Đổi Thành Bảo Tàng Kỷ Niệm Hôn Lễ (Wedding Keepsake Mode)**: Tự động ẩn các nút tương tác cũ, biến thiệp cưới thành một trang lưu niệm lãng mạn nơi phát video phóng sự cưới (Wedding Highlight Film), hiển thị tâm thư cảm tạ và cấp **Chứng Nhận Hôn Lễ Số Hóa (Digital Keepsake Certificate)** lưu giữ vĩnh viễn trên đám mây.
 
+![Chứng nhận ngày cưới số hóa Digital Keepsake Certificate](/assets/client/docs/images/client/09-time-capsule/cli-time-003-step-1.png)
+*Chứng Nhận Hôn Lễ Số Hóa: Khắc ghi dấu mốc ngày cưới trang trọng và bảo tồn kỷ niệm vĩnh cửu.*
+
 ---
 
 ## 1. Sự Khác Biệt Giữa Thiệp Cưới Trực Tiếp & Trang Kỷ Niệm

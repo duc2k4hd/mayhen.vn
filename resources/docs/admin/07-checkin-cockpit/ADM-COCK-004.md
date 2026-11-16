@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `CRITICAL` | **Endpoints:** `/admin/guest-photos` & `/admin/moderation/reports`  
 > **SLA Phản ứng Khẩn cấp:** Dưới **120 giây** kể từ khi nhận cảnh báo hoặc phát hiện nội dung nhạy cảm, nhằm ngăn chặn hình ảnh phản cảm bị phát tán lên Màn chiếu Sân khấu (Stage Live Wall).
 
+
+![Giao diện quản lý Kiểm duyệt ảnh Photo Drop và xử lý báo cáo vi phạm nội dung (Content Moderation)](/assets/client/docs/images/admin/07-checkin-cockpit/adm-cock-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Vai trò của Tường lửa Kiểm duyệt trong Ngày cưới

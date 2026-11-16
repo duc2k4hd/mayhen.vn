@@ -20,6 +20,10 @@ required_role: "admin.super"
 > **Route quản trị:** `GET /admin/system/health` (`admin.system.health.index`).  
 > **Tác vụ tác động nhạy cảm:** Tải nhật ký lỗi (`download-log`) và Làm sạch log (`clear-log`) có ghi vết kiểm toán toàn diện.
 
+
+![Giao diện quản lý Kiểm tra bảng sức khỏe hệ thống (System Health Check): CPU, RAM, Disk, DB Connection](/assets/client/docs/images/admin/10-system-health/adm-sys-001-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ & Phạm vi Giám sát

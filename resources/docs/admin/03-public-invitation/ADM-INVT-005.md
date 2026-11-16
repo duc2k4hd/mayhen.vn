@@ -23,6 +23,10 @@ required_role: "support"
 > **Dịch vụ backend:** `App\Services\InvitationRevisionService`.  
 > **Nguyên tắc an toàn:** Cơ chế **Append-only**. Khi phục hồi, hệ thống sinh một phiên bản mới `v(N+1)` kiểu `restored`, tuyệt đối không ghi đè hay xóa các bản ghi lịch sử cũ.
 
+
+![Giao diện quản lý Khôi phục phiên bản thiệp cũ từ lịch sử bản sửa đổi (Invitation Revisions)](/assets/client/docs/images/admin/03-public-invitation/adm-invt-005-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích & Bối cảnh nghiệp vụ

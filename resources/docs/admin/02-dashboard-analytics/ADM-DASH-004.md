@@ -20,6 +20,10 @@ required_role: "manager"
 > **Mức độ rủi ro:** `HIGH` | **Endpoint:** `GET /admin/analytics/export` (`admin.analytics.export`)  
 > **Chuẩn mã hóa:** UTF-8 kèm ký hiệu nhận diện **Byte Order Mark (`\xEF\xBB\xBF`)**, bảo đảm mở trực tiếp trên Microsoft Excel tiếng Việt không bị lỗi font hay vỡ dấu.
 
+
+![Giao diện quản lý Xuất báo cáo kinh doanh tổng hợp định dạng CSV UTF-8 phục vụ ban giám đốc](/assets/client/docs/images/admin/02-dashboard-analytics/adm-dash-004-step-1.png)
+*Bảng điều khiển quản trị: Trực quan hóa quy trình vận hành tiêu chuẩn và quản lý dữ liệu an toàn.*
+
 ---
 
 ## 1. Mục đích Nghiệp vụ của Chức năng Xuất Báo cáo

@@ -129,7 +129,11 @@ php artisan serve
   - **Sửa dứt điểm lỗi Accordion Sidebar "bấm cha chưa xổ xuống con"**: Chuyển listener sang event delegation trực tiếp ở cấp `document` toàn cục, đồng thời bổ sung cơ chế fallback tìm kiếm thẻ con `.mayhen_docs_detail_nav_links` trực tiếp trong nhóm cha `.mayhen_docs_detail_nav_group` nếu ID không trùng khớp.
   - **Chống co bẹp Header**: Cấu hình `max-width: 260px; min-width: 130px; flex: 1 1 auto;` cho ô tìm kiếm và `flex-shrink: 0;` cho nhóm điều khiển bên phải, đảm bảo giao diện luôn thoáng đãng trên mọi độ phân giải màn hình (768px - 1440px).
 - **Tiến độ Hàng đợi Docs (SQLite `storage/app/mayhen-docs-queue.sqlite`)**:
-  - `IMPLEMENTED`: 99 bài (Hoàn tất 100% toàn bộ các chuyên mục của Client Docs & Admin Docs: Client 01-10 và Admin 01-10).
-  - `PENDING_SCREENSHOT`: 9 bài (`CLI-START-001`, `CLI-START-003`, `CLI-START-004`, `CLI-START-005`, `ADM-SOP-001` đến `ADM-SOP-005` chờ chụp ảnh màn hình giao diện thực tế).
-  - `TODO`: **0 bài** — **100% TOÀN BỘ 108 BÀI HƯỚNG DẪN ĐÃ ĐƯỢC HOÀN THIỆN TRÊN NỀN TẢNG**.
+  - `IMPLEMENTED_WITH_SCREENSHOTS`: **108 / 108 bài (100%)** — Toàn bộ 58 bài Client và 50 bài Admin đã được tích hợp đầy đủ ảnh chụp màn hình máy tính (Desktop Screenshots 1440x900) thực tế từ ứng dụng trực tiếp, kèm mô tả các bước thao tác, chú thích ảnh, bảng dữ liệu mẫu và các cảnh báo phòng vệ rủi ro.
+  - `PENDING_SCREENSHOT`: **0 bài**.
+  - `TODO`: **0 bài**.
+  - **Kho lưu trữ hình ảnh chuẩn hóa**:
+    - Phân hệ Client: `public/assets/client/docs/images/client/{category}/{id}-step-{n}.png` (58 bài tương ứng với các danh mục: 01-getting-started, 02-studio-editor, 03-public-invitation, 04-guest-rsvp, 05-seating-planner, 06-checkin-livewall, 07-guestbook-photos, 08-gift-budget, 09-time-capsule, 10-partner-privacy).
+    - Phân hệ Admin: `public/assets/client/docs/images/admin/{category}/{id}-step-{n}.png` (50 bài tương ứng với các danh mục: 01-sop-onboarding, 02-dashboard-analytics, 03-public-invitation, 03-users-rbac, 05-templates-releases, 06-orders-refunds, 07-checkin-cockpit, 08-support-messaging, 09-partners-commissions, 10-system-health).
+  - **Hiệu ứng hiển thị & CSS**: `public/assets/client/docs/css/docs-main.css` đã được bổ sung quy chuẩn styling cho hình ảnh tài liệu: bo góc `12px`, viền tinh tế, đổ bóng nhẹ nhàng, hiệu ứng hover nhẹ và chú thích in nghiêng căn giữa theo chuẩn Quiet Luxury.
   - **Kiểm thử chất lượng**: `php artisan test tests/Feature/DocumentationCenterIntegrityTest.php --compact` vượt qua 18/18 tests (127 assertions). Code formatting chuẩn `vendor/bin/pint --dirty --format agent`.
