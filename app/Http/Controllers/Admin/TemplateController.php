@@ -234,11 +234,29 @@ class TemplateController extends Controller
             'wedding_lunar_date' => 'nullable|string|max:200',
             'groom_father' => 'nullable|string|max:100',
             'groom_mother' => 'nullable|string|max:100',
+            'groom_parents_address' => 'nullable|string|max:500',
             'bride_father' => 'nullable|string|max:100',
             'bride_mother' => 'nullable|string|max:100',
+            'bride_parents_address' => 'nullable|string|max:500',
+            'groom_bio' => 'nullable|string|max:2000',
+            'bride_bio' => 'nullable|string|max:2000',
             'party_venue' => 'nullable|string|max:255',
             'event_party_address' => 'nullable|string|max:1000',
             'party_map_url' => 'nullable|string|max:1000',
+
+            // Lễ Ăn Hỏi, Lễ Thành Hôn & Tiệc Nhà Gái
+            'engagement_time' => 'nullable|string|max:50',
+            'engagement_venue' => 'nullable|string|max:255',
+            'engagement_day' => 'nullable|string|max:20',
+            'engagement_weekday' => 'nullable|string|max:50',
+            'engagement_month_year' => 'nullable|string|max:50',
+            'engagement_lunar_date' => 'nullable|string|max:200',
+            'ceremony_time' => 'nullable|string|max:50',
+            'ceremony_venue' => 'nullable|string|max:255',
+            'bride_party_time' => 'nullable|string|max:50',
+            'bride_party_venue' => 'nullable|string|max:255',
+            'bride_party_address' => 'nullable|string|max:1000',
+            'bride_party_map_url' => 'nullable|string|max:1000',
 
             // 4. Photos
             'cover_photo_url' => 'nullable|string|max:1000',
@@ -249,12 +267,27 @@ class TemplateController extends Controller
             'bride_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
             'save_date_photo_url' => 'nullable|string|max:1000',
             'save_date_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'triptych_left_url' => 'nullable|string|max:1000',
+            'triptych_left_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'triptych_center_url' => 'nullable|string|max:1000',
+            'triptych_center_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'triptych_right_url' => 'nullable|string|max:1000',
+            'triptych_right_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
+            'footer_photo_url' => 'nullable|string|max:1000',
+            'footer_photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
             'gallery_urls' => 'nullable|array',
             'gallery_urls.*' => 'nullable|string|max:1000',
             'gallery_files' => 'nullable|array',
             'gallery_files.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:15360',
 
             // 5. Story, Timeline & Gift
+            'slogan' => 'nullable|string|max:500',
+            'story_title' => 'nullable|string|max:200',
+            'story_subtitle' => 'nullable|string|max:200',
+            'couple_quote' => 'nullable|string|max:1000',
+            'story_content' => 'nullable|string|max:2000',
+            'ending_title' => 'nullable|string|max:200',
+            'ending_text' => 'nullable|string|max:1000',
             'story_stage_1_title' => 'nullable|string|max:200',
             'story_stage_1_desc' => 'nullable|string|max:2000',
             'story_stage_2_title' => 'nullable|string|max:200',
@@ -313,15 +346,19 @@ class TemplateController extends Controller
         // --- 4. Xử lý Thông tin Cặp đôi & Tiệc cưới Showcase ---
         foreach ([
             'ceremony_type', 'groom_name', 'bride_name', 'wedding_date', 'party_time',
-            'wedding_lunar_date', 'groom_father', 'groom_mother', 'bride_father', 'bride_mother',
+            'wedding_lunar_date', 'groom_father', 'groom_mother', 'groom_parents_address',
+            'bride_father', 'bride_mother', 'bride_parents_address', 'groom_bio', 'bride_bio',
             'party_venue', 'event_party_address', 'party_map_url',
+            'engagement_time', 'engagement_venue', 'engagement_day', 'engagement_weekday',
+            'engagement_month_year', 'engagement_lunar_date', 'ceremony_time', 'ceremony_venue',
+            'bride_party_time', 'bride_party_venue', 'bride_party_address', 'bride_party_map_url',
         ] as $infoField) {
             if ($request->has($infoField)) {
                 $defaultConfig[$infoField] = $request->input($infoField);
             }
         }
 
-        // --- 5. Xử lý Ảnh trưng bày chính (Hero, Chú rể, Cô dâu, Save Date) ---
+        // --- 5. Xử lý Ảnh trưng bày chính (Hero, Chú rể, Cô dâu, Save Date, Triptych, Footer) ---
         $photoUploadFields = [
             'cover_photo_file' => 'cover_photo_url',
             'hero_cover_file' => 'cover_photo_url',
@@ -329,6 +366,10 @@ class TemplateController extends Controller
             'bride_photo_file' => 'bride_photo_url',
             'save_date_photo_file' => 'save_date_photo_url',
             'couple_photo_file' => 'couple_photo_url',
+            'triptych_left_file' => 'triptych_left_url',
+            'triptych_center_file' => 'triptych_center_url',
+            'triptych_right_file' => 'triptych_right_url',
+            'footer_photo_file' => 'footer_photo_url',
         ];
         foreach ($photoUploadFields as $fileInput => $urlField) {
             if ($request->hasFile($fileInput)) {
@@ -370,8 +411,10 @@ class TemplateController extends Controller
         }
         $defaultConfig['gallery'] = $existingGallery;
 
-        // --- 7. Xử lý Chuyện tình yêu, Lịch trình & Dresscode ---
+        // --- 7. Xử lý Chuyện tình yêu, Lời ngỏ, Slogan, Lịch trình & Dresscode ---
         foreach ([
+            'slogan', 'story_title', 'story_subtitle', 'couple_quote', 'story_content',
+            'ending_title', 'ending_text',
             'story_stage_1_title', 'story_stage_1_desc',
             'story_stage_2_title', 'story_stage_2_desc',
             'story_stage_3_title', 'story_stage_3_desc',
@@ -380,6 +423,12 @@ class TemplateController extends Controller
             if ($request->has($storyField)) {
                 $defaultConfig[$storyField] = $request->input($storyField);
             }
+        }
+
+        if ($request->filled('ending_text') && empty($defaultConfig['footer_thank_you_text'])) {
+            $defaultConfig['footer_thank_you_text'] = $request->input('ending_text');
+        } elseif ($request->filled('footer_thank_you_text') && empty($defaultConfig['ending_text'])) {
+            $defaultConfig['ending_text'] = $request->input('footer_thank_you_text');
         }
 
         if ($request->has('timeline')) {

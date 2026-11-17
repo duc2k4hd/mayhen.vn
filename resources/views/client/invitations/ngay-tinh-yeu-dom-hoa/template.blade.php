@@ -401,7 +401,7 @@
         <h3 class="mayhen_invitation_story_subtitle" data-sync-target="story_subtitle">{{ $storySubtitle }}</h3>
 
         {{-- Ảnh kỷ niệm lời ngỏ --}}
-        <div class="mayhen_invitation_story_img mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
+        <div class="mayhen_invitation_story_img mayhen_invitation_announce_photo mayhen_invitation_anim mayhen_invitation_anim--fadeInDown"
              data-lightbox-item="true">
             <img src="{{ $saveDatePhotoUrl }}"
                  alt="{{ $groomName }} & {{ $brideName }}"
@@ -471,7 +471,7 @@
 
         {{-- Chú Rể --}}
         <div class="mayhen_invitation_profile_row">
-            <div class="mayhen_invitation_groom_photo mayhen_invitation_anim mayhen_invitation_anim--fadeInLeft"
+            <div class="mayhen_invitation_profile_photo mayhen_invitation_groom_photo mayhen_invitation_anim mayhen_invitation_anim--fadeInLeft"
                  data-lightbox-item="true">
                 <img src="{{ $groomPhotoUrl }}"
                      alt="{{ $groomName }}"
@@ -492,7 +492,7 @@
                 <h3 class="mayhen_invitation_bride_name" data-sync-target="bride_name">{{ $brideName }}</h3>
                 <p class="mayhen_invitation_bride_bio" data-sync-target="bride_bio">{{ $brideBio }}</p>
             </div>
-            <div class="mayhen_invitation_bride_photo mayhen_invitation_anim mayhen_invitation_anim--fadeInRight"
+            <div class="mayhen_invitation_profile_photo mayhen_invitation_bride_photo mayhen_invitation_anim mayhen_invitation_anim--fadeInRight"
                  data-lightbox-item="true">
                 <img src="{{ $bridePhotoUrl }}"
                      alt="{{ $brideName }}"

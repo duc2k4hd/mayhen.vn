@@ -720,7 +720,28 @@ php artisan serve
 - **Kiểm thử tự động Pest ([`FaqPageSeoAndPerformanceTest.php`](tests/Feature/FaqPageSeoAndPerformanceTest.php))**:
   - Đạt **4/4 tests PASS (100%)**, 120 assertions kiểm tra toàn diện cả về SEO, Schema 20 câu hỏi, UI/UX elements, HTTP 304 và 0 Database Queries.
 
-### 5.21. Thiết Kế & Chuẩn Hóa Tất Cả Trang Chính Sách & Bảo Mật Chuẩn SEO & Pháp Lý Việt Nam
+### 5.22. Sửa Lỗi Giao Diện & Mở Rộng Quản Lý Toàn Diện Mẫu Thiệp 'Ngày Tình Yêu Đơm Hoa' (`ngay-tinh-yeu-dom-hoa`)
+- **Vấn đề đã khắc phục**:
+  1. *Lỗi ảnh bung to tràn màn hình & lệch layout*:
+     - Ảnh Lời Ngỏ / Save The Date (`$saveDatePhotoUrl`) và ảnh Chú Rể (`$groomPhotoUrl`) / Cô Dâu (`$bridePhotoUrl`) trước đây bị thiếu class khống chế và quy chuẩn CSS BEM, dẫn đến việc các ảnh chụp dọc nguyên bản (3:4, 9:16) bung ra chiều cao hàng ngàn pixel gây vỡ toàn bộ giao diện dọc.
+     - Khối `.mayhen_invitation_anim` có CSS `opacity: 0` gây tình trạng một số khối văn bản (Lễ Ăn Hỏi, Lễ Thành Hôn, Tâm sự đôi uyên ương...) bị biến mất hoặc vô hình khi người dùng cuộn nhanh hoặc khi chụp ảnh màn hình toàn trang (Full Page Screenshot) do `IntersectionObserver` không kịp kích hoạt.
+  2. *Admin chưa hỗ trợ chỉnh sửa hết ảnh và nội dung*:
+     - Mẫu `ngay-tinh-yeu-dom-hoa` sử dụng nhiều dữ liệu nghệ thuật đặc thù mà Admin `TemplateController::update()` và view `admin/templates/edit.blade.php` trước đây chưa cung cấp trường lưu trữ: Bộ ba ảnh nghệ thuật (Triptych 3 ảnh vòm), Ảnh tròn khép thiệp chân trang (Footer Couple Circle), Slogan bìa thiệp, Lời ngỏ & phụ đề chuyện tình yêu, Câu trích dẫn tình yêu (Quote), Địa chỉ tư gia song thân, Lời tâm sự Chú Rể & Cô Dâu, Chi tiết các buổi lễ (Lễ Ăn Hỏi, Lễ Thành Hôn tư gia, Tiệc cưới Nhà Gái) và Tiêu đề & Lời cảm ơn cuối thiệp.
+- **Giải pháp triển khai**:
+  - **Sửa Blade & CSS Mẫu Thiệp (`resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/`)**:
+    - Đồng bộ hệ thống class chuẩn BEM: Gắn đồng thời `.mayhen_invitation_announce_photo` và `.mayhen_invitation_story_img` cho ảnh Lời ngỏ; gắn `.mayhen_invitation_profile_photo` kèm `.mayhen_invitation_groom_photo` và `.mayhen_invitation_bride_photo` cho ảnh chân dung đôi uyên ương.
+    - Cập nhật [`styles.css`](resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/styles.css): Khống chế `aspect-ratio: 348.17 / 271`, `max-width: 348.17px`, `overflow: hidden`, `object-fit: cover` cho ảnh Lời ngỏ; khống chế Flexbox `165px x 225px` bo viền son đỏ `4px` cho ảnh Chú rể và Cô dâu; chuẩn hóa layout đối xứng `.mayhen_invitation_profile_row--bride { flex-direction: row-reverse; }`.
+    - Phòng vệ chuyển động mượt: Thiết lập fallback an toàn `opacity: 1` cho `.mayhen_invitation_anim` khi in ấn hoặc chưa sẵn sàng JS; nâng cấp [`script.js`](resources/views/client/invitations/ngay-tinh-yeu-dom-hoa/script.js) với `rootMargin: "100px 0px 100px 0px"` và bộ đếm thời gian tự động kích hoạt sau 2.0s để không bao giờ có phần tử nào bị mất chữ.
+  - **Mở rộng Admin Quản Lý Mẫu Thiệp (`TemplateController.php` & `templates/edit.blade.php`)**:
+    - **Controller (`TemplateController::update`)**: Mở rộng mảng validation và tự động lưu trữ vào `$defaultConfig`: `slogan`, `story_title`, `story_subtitle`, `couple_quote`, `story_content`, `groom_parents_address`, `bride_parents_address`, `groom_bio`, `bride_bio`, `engagement_time`, `engagement_venue`, `engagement_day`, `engagement_weekday`, `engagement_month_year`, `engagement_lunar_date`, `ceremony_time`, `ceremony_venue`, `bride_party_time`, `bride_party_venue`, `bride_party_address`, `bride_party_map_url`, `ending_title`, `ending_text`.
+    - **Hỗ trợ tải lên ảnh chuyên biệt**: Tích hợp upload tự động dọn dẹp Storage cũ cho Bộ ba ảnh nghệ thuật (`triptych_left_file`, `triptych_center_file`, `triptych_right_file`) và Ảnh tròn chân trang (`footer_photo_file`).
+    - **Giao diện Admin (`edit.blade.php`)**:
+      - *Tab 3 (Đôi Lứa & Sự Kiện)*: Thêm ô nhập địa chỉ tư gia song thân Nhà Trai/Nhà Gái, ô tâm sự Chú Rể & Cô Dâu (Profile Bio) và nhóm Các Buổi Lễ Chi Tiết (Lễ Ăn Hỏi, Lễ Thành Hôn tư gia, Tiệc Cưới Nhà Gái).
+      - *Tab 4 (Ảnh & Album 10 Ảnh)*: Thêm khu vực "Bộ Ba Ảnh Nghệ Thuật (Triptych 3 Khung Vòm)" và "Ảnh Tròn Chân Trang (Footer Couple Circle)" kèm ảnh xem trước và nút tải ảnh mới trực tiếp.
+      - *Tab 5 (Lời Ngỏ & Mừng Cưới)*: Thêm ô Slogan trang bìa, Tiêu đề & Phụ đề lời ngỏ, Câu trích dẫn tình yêu (Quote), Lời tâm sự mở đầu và Tiêu đề & Lời cảm ơn cuối thiệp.
+- **Kiểm thử chất lượng**:
+  - Đã chạy Pint chuẩn hóa phong cách mã nguồn PHP.
+  - Bộ kiểm thử tự động toàn diện Pest (`tests/Feature/`) vượt qua **116/116 test PASS (100%)**, 976 assertions.
 - **Mục tiêu**: Xây dựng lại toàn diện hai trang pháp lý cốt lõi: Điều Khoản Dịch Vụ (`/dieu-khoan-dich-vu` - `terms`) và Chính Sách Bảo Mật Dữ Liệu Cá Nhân (`/chinh-sach-bao-mat` - `privacy`) theo chuẩn SEO on-page, cấu trúc JSON-LD Schema.org, giao diện Quiet Luxury 100% Vanilla và tuân thủ nghiêm ngặt **Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15** cùng **Nghị định 13/2023/NĐ-CP**.
 - **Giao diện & Trải nghiệm UI/UX ([`legal.css`](public/assets/client/css/pages/legal.css) & [`legal.js`](public/assets/client/js/pages/legal.js))**:
   - 100% Vanilla CSS, tuân thủ nghiêm ngặt tiền tố BEM `mayhen_legal_*`.

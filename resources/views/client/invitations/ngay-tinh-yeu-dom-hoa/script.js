@@ -315,11 +315,17 @@
                         }
                     });
                 },
-                { threshold: 0.08 }
+                { threshold: 0.05, rootMargin: "100px 0px 100px 0px" }
             );
             animEls.forEach(function (el) {
                 io.observe(el);
             });
+            // Phòng vệ: sau 2s tự động kích hoạt hiển thị đầy đủ, chống mất chữ khi chụp màn hình hoặc cuộn trễ
+            setTimeout(function () {
+                animEls.forEach(function (el) {
+                    el.classList.add("mayhen_invitation_anim--active");
+                });
+            }, 2000);
         } else {
             animEls.forEach(function (el) {
                 el.classList.add("mayhen_invitation_anim--active");

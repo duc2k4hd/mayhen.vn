@@ -434,9 +434,13 @@
                                     <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Họ Tên Bố Chú Rể:</label>
                                     <input type="text" name="groom_father" value="{{ old('groom_father', $cfg['groom_father'] ?? 'Lê Quang Minh') }}" class="mayhen_admin_form_input">
                                 </div>
-                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 10px;">
                                     <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Họ Tên Mẹ Chú Rể:</label>
                                     <input type="text" name="groom_mother" value="{{ old('groom_mother', $cfg['groom_mother'] ?? 'Trần Thị Thu Trang') }}" class="mayhen_admin_form_input">
+                                </div>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Địa Chỉ Tư Gia Nhà Trai:</label>
+                                    <input type="text" name="groom_parents_address" value="{{ old('groom_parents_address', $cfg['groom_parents_address'] ?? 'Thôn Hưng Đạo, Xã An Đạo, H. Phù Ninh, Phú Thọ') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Thôn Hưng Đạo, Xã An Đạo, H. Phù Ninh, Phú Thọ">
                                 </div>
                             </div>
 
@@ -446,10 +450,36 @@
                                     <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Họ Tên Bố Cô Dâu:</label>
                                     <input type="text" name="bride_father" value="{{ old('bride_father', $cfg['bride_father'] ?? 'Phạm Văn Hùng') }}" class="mayhen_admin_form_input">
                                 </div>
-                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 10px;">
                                     <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Họ Tên Mẹ Cô Dâu:</label>
                                     <input type="text" name="bride_mother" value="{{ old('bride_mother', $cfg['bride_mother'] ?? 'Nguyễn Thị Tuyết') }}" class="mayhen_admin_form_input">
                                 </div>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Địa Chỉ Tư Gia Nhà Gái:</label>
+                                    <input type="text" name="bride_parents_address" value="{{ old('bride_parents_address', $cfg['bride_parents_address'] ?? 'Phường Vĩnh Phúc, Quận Ba Đình, TP. Hà Nội') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Phường Vĩnh Phúc, Quận Ba Đình, TP. Hà Nội">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bio Chú Rể & Cô Dâu -->
+                        <div class="mayhen_admin_group_heading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <polyline points="17 11 19 13 23 9"></polyline>
+                            </svg>
+                            <span>Tâm Sự Chân Dung Đôi Uyên Ương (Profile Bio)</span>
+                        </div>
+
+                        <div class="mayhen_admin_form_grid_2">
+                            <div class="mayhen_admin_form_group">
+                                <label for="groom_bio" class="mayhen_admin_form_label">Tâm Sự Chú Rể</label>
+                                <textarea id="groom_bio" name="groom_bio" class="mayhen_admin_form_textarea" style="min-height: 80px;" placeholder="Lời tâm sự ngắn hoặc châm ngôn sống của Chú Rể...">{{ old('groom_bio', $cfg['groom_bio'] ?? 'Chàng trai luôn tin rằng hạnh phúc giản đơn là được cùng em đi qua những tháng ngày bình yên.') }}</textarea>
+                            </div>
+
+                            <div class="mayhen_admin_form_group">
+                                <label for="bride_bio" class="mayhen_admin_form_label">Tâm Sự Cô Dâu</label>
+                                <textarea id="bride_bio" name="bride_bio" class="mayhen_admin_form_textarea" style="min-height: 80px;" placeholder="Lời tâm sự ngắn hoặc châm ngôn sống của Cô Dâu...">{{ old('bride_bio', $cfg['bride_bio'] ?? 'Cô gái nhỏ luôn mỉm cười vì biết rằng con đường phía trước luôn có anh che chở và sẻ chia.') }}</textarea>
                             </div>
                         </div>
 
@@ -461,7 +491,7 @@
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
-                            <span>Thời Gian & Địa Điểm Cử Hành Trưng Bày</span>
+                            <span>Thời Gian & Địa Điểm Tiệc Chính (Nhà Trai) Trưng Bày</span>
                         </div>
 
                         <div class="mayhen_admin_form_grid_3">
@@ -472,19 +502,19 @@
 
                             <div class="mayhen_admin_form_group">
                                 <label for="party_time" class="mayhen_admin_form_label">Giờ Cử Hành Tiệc</label>
-                                <input type="text" id="party_time" name="party_time" value="{{ old('party_time', $cfg['party_time'] ?? '10:00') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: 10:00 hoặc 18:30">
+                                <input type="text" id="party_time" name="party_time" value="{{ old('party_time', $cfg['party_time'] ?? '17:30') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: 10:00 hoặc 17:30">
                             </div>
 
                             <div class="mayhen_admin_form_group">
                                 <label for="wedding_lunar_date" class="mayhen_admin_form_label">Ngày Âm Lịch Trưng Bày</label>
-                                <input type="text" id="wedding_lunar_date" name="wedding_lunar_date" value="{{ old('wedding_lunar_date', $cfg['wedding_lunar_date'] ?? 'Nhằm ngày 16 tháng 08 năm Ất Tỵ') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Nhằm ngày 16 tháng 08 năm Ất Tỵ">
+                                <input type="text" id="wedding_lunar_date" name="wedding_lunar_date" value="{{ old('wedding_lunar_date', $cfg['wedding_lunar_date'] ?? 'Tức ngày 13 tháng 10 năm Bính Ngọ') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Tức ngày 13 tháng 10 năm Bính Ngọ">
                             </div>
                         </div>
 
                         <div class="mayhen_admin_form_grid_2">
                             <div class="mayhen_admin_form_group">
-                                <label for="party_venue" class="mayhen_admin_form_label">Tên Địa Điểm / Sảnh Tiệc</label>
-                                <input type="text" id="party_venue" name="party_venue" value="{{ old('party_venue', $cfg['party_venue'] ?? ($cfg['venue_name'] ?? 'TẠI TƯ GIA NHÀ TRAI')) }}" class="mayhen_admin_form_input" placeholder="Ví dụ: TƯ GIA NHÀ TRAI hoặc WHITE PALACE">
+                                <label for="party_venue" class="mayhen_admin_form_label">Tên Địa Điểm / Sảnh Tiệc Nhà Trai</label>
+                                <input type="text" id="party_venue" name="party_venue" value="{{ old('party_venue', $cfg['party_venue'] ?? ($cfg['venue_name'] ?? 'NHÀ VĂN HÓA TỔ 6 NHÂN ĐẠO')) }}" class="mayhen_admin_form_input" placeholder="Ví dụ: NHÀ VĂN HÓA TỔ 6 NHÂN ĐẠO hoặc WHITE PALACE">
                             </div>
 
                             <div class="mayhen_admin_form_group">
@@ -494,8 +524,89 @@
                         </div>
 
                         <div class="mayhen_admin_form_group">
-                            <label for="event_party_address" class="mayhen_admin_form_label">Địa Chỉ Cử Hành Tiệc</label>
-                            <input type="text" id="event_party_address" name="event_party_address" value="{{ old('event_party_address', $cfg['event_party_address'] ?? ($cfg['venue_address'] ?? '423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội')) }}" class="mayhen_admin_form_input" placeholder="Địa chỉ chi tiết nơi diễn ra hôn lễ...">
+                            <label for="event_party_address" class="mayhen_admin_form_label">Địa Chỉ Cử Hành Tiệc Nhà Trai</label>
+                            <input type="text" id="event_party_address" name="event_party_address" value="{{ old('event_party_address', $cfg['event_party_address'] ?? ($cfg['venue_address'] ?? 'TDP Nhân Sơn, P. Yên Nghĩa, TP. Hà Nội')) }}" class="mayhen_admin_form_input" placeholder="Địa chỉ chi tiết nơi diễn ra hôn lễ...">
+                        </div>
+
+                        <!-- Các Buổi Lễ Chi Tiết (Lễ Ăn Hỏi, Lễ Thành Hôn Tư Gia, Tiệc Cưới Nhà Gái) -->
+                        <div class="mayhen_admin_group_heading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span>Các Buổi Lễ Chi Tiết (Lễ Ăn Hỏi, Thành Hôn Tư Gia & Tiệc Nhà Gái)</span>
+                        </div>
+
+                        <!-- Lễ Ăn Hỏi -->
+                        <div style="background: #F8FAFC; padding: 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border); margin-bottom: 14px;">
+                            <strong style="font-size: 0.8125rem; color: var(--mh-admin-charcoal); display: block; margin-bottom: 10px;">Lễ Ăn Hỏi (Nhà Gái):</strong>
+                            <div class="mayhen_admin_form_grid_3" style="margin-bottom: 10px;">
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Giờ Cử Hành:</label>
+                                    <input type="text" name="engagement_time" value="{{ old('engagement_time', $cfg['engagement_time'] ?? '08:00') }}" class="mayhen_admin_form_input" placeholder="08:00">
+                                </div>
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Địa Điểm:</label>
+                                    <input type="text" name="engagement_venue" value="{{ old('engagement_venue', $cfg['engagement_venue'] ?? 'TƯ GIA NHÀ GÁI') }}" class="mayhen_admin_form_input" placeholder="TƯ GIA NHÀ GÁI">
+                                </div>
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Ngày Âm Lịch:</label>
+                                    <input type="text" name="engagement_lunar_date" value="{{ old('engagement_lunar_date', $cfg['engagement_lunar_date'] ?? '(Tức ngày 13 tháng 10 năm Bính Ngọ)') }}" class="mayhen_admin_form_input" placeholder="(Tức ngày 13 tháng 10 năm Bính Ngọ)">
+                                </div>
+                            </div>
+                            <div class="mayhen_admin_form_grid_3">
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Thứ trong tuần:</label>
+                                    <input type="text" name="engagement_weekday" value="{{ old('engagement_weekday', $cfg['engagement_weekday'] ?? 'CHỦ NHẬT') }}" class="mayhen_admin_form_input" placeholder="CHỦ NHẬT">
+                                </div>
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Ngày (Số):</label>
+                                    <input type="text" name="engagement_day" value="{{ old('engagement_day', $cfg['engagement_day'] ?? '21') }}" class="mayhen_admin_form_input" placeholder="21">
+                                </div>
+                                <div>
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Tháng - Năm:</label>
+                                    <input type="text" name="engagement_month_year" value="{{ old('engagement_month_year', $cfg['engagement_month_year'] ?? '11 - 2026') }}" class="mayhen_admin_form_input" placeholder="11 - 2026">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lễ Thành Hôn Tư Gia & Tiệc Nhà Gái Grid -->
+                        <div class="mayhen_admin_form_grid_2">
+                            <!-- Lễ Thành Hôn Tư Gia Nhà Trai -->
+                            <div style="background: #F8FAFC; padding: 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border);">
+                                <strong style="font-size: 0.8125rem; color: var(--mh-admin-charcoal); display: block; margin-bottom: 10px;">Lễ Thành Hôn Tư Gia (Nhà Trai):</strong>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 10px;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Giờ Cử Hành:</label>
+                                    <input type="text" name="ceremony_time" value="{{ old('ceremony_time', $cfg['ceremony_time'] ?? '13:00') }}" class="mayhen_admin_form_input" placeholder="13:00">
+                                </div>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Địa Điểm:</label>
+                                    <input type="text" name="ceremony_venue" value="{{ old('ceremony_venue', $cfg['ceremony_venue'] ?? 'TƯ GIA NHÀ TRAI') }}" class="mayhen_admin_form_input" placeholder="TƯ GIA NHÀ TRAI">
+                                </div>
+                            </div>
+
+                            <!-- Tiệc Cưới Nhà Gái -->
+                            <div style="background: #F8FAFC; padding: 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border);">
+                                <strong style="font-size: 0.8125rem; color: var(--mh-admin-charcoal); display: block; margin-bottom: 10px;">Tiệc Cưới Nhà Gái:</strong>
+                                <div class="mayhen_admin_form_grid_2" style="margin-bottom: 10px;">
+                                    <div>
+                                        <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Giờ Khai Tiệc:</label>
+                                        <input type="text" name="bride_party_time" value="{{ old('bride_party_time', $cfg['bride_party_time'] ?? '16:30') }}" class="mayhen_admin_form_input" placeholder="16:30">
+                                    </div>
+                                    <div>
+                                        <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Tên Địa Điểm:</label>
+                                        <input type="text" name="bride_party_venue" value="{{ old('bride_party_venue', $cfg['bride_party_venue'] ?? 'NHÀ VĂN HÓA TỔ 5 QUANG LÃM') }}" class="mayhen_admin_form_input" placeholder="NHÀ VĂN HÓA...">
+                                    </div>
+                                </div>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 10px;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Địa Chỉ Tiệc Nhà Gái:</label>
+                                    <input type="text" name="bride_party_address" value="{{ old('bride_party_address', $cfg['bride_party_address'] ?? 'Phường Phú Lương, TP. Hà Nội') }}" class="mayhen_admin_form_input" placeholder="Địa chỉ tiệc nhà gái...">
+                                </div>
+                                <div class="mayhen_admin_form_group" style="margin-bottom: 0;">
+                                    <label class="mayhen_admin_form_label" style="font-size: 0.75rem;">Link Bản Đồ Nhà Gái:</label>
+                                    <input type="text" name="bride_party_map_url" value="{{ old('bride_party_map_url', $cfg['bride_party_map_url'] ?? '') }}" class="mayhen_admin_form_input mayhen_admin_asset_url_input" placeholder="https://maps.google.com/...">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -586,6 +697,98 @@
                             </div>
                         </div>
 
+                        <!-- Bộ Ba Ảnh Nghệ Thuật (Triptych 3 Khung Vòm) -->
+                        <div class="mayhen_admin_group_heading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <line x1="15" y1="3" x2="15" y2="21"></line>
+                            </svg>
+                            <span>Bộ Ba Ảnh Nghệ Thuật (Triptych 3 Khung Vòm)</span>
+                        </div>
+
+                        <div class="mayhen_admin_form_grid_3">
+                            <!-- Triptych Left -->
+                            <div class="mayhen_admin_form_group">
+                                <label class="mayhen_admin_form_label">Ảnh Vòm Trái</label>
+                                <div class="mayhen_admin_asset_field_box">
+                                    <img src="{{ $cfg['triptych_left_url'] ?? $template->thumbnail_url }}" alt="Triptych Left" class="mayhen_admin_asset_thumb mayhen_admin_asset_thumb_tall" id="preview_triptych_left">
+                                    <div class="mayhen_admin_asset_controls">
+                                        <input type="text" name="triptych_left_url" value="{{ old('triptych_left_url', $cfg['triptych_left_url'] ?? '') }}" class="mayhen_admin_form_input mayhen_admin_asset_url_input" placeholder="Tệp assets hoặc URL">
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <label class="mayhen_admin_file_upload_btn">
+                                                <input type="file" name="triptych_left_file" accept="image/*" style="display: none;" onchange="previewImageInput(this, 'preview_triptych_left')">
+                                                <span>📁 Đổi Ảnh</span>
+                                            </label>
+                                            <span class="mayhen_admin_storage_pill">Tự dọn file cũ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Triptych Center -->
+                            <div class="mayhen_admin_form_group">
+                                <label class="mayhen_admin_form_label">Ảnh Vòm Giữa (Trọng Tâm)</label>
+                                <div class="mayhen_admin_asset_field_box">
+                                    <img src="{{ $cfg['triptych_center_url'] ?? $template->thumbnail_url }}" alt="Triptych Center" class="mayhen_admin_asset_thumb mayhen_admin_asset_thumb_tall" id="preview_triptych_center">
+                                    <div class="mayhen_admin_asset_controls">
+                                        <input type="text" name="triptych_center_url" value="{{ old('triptych_center_url', $cfg['triptych_center_url'] ?? '') }}" class="mayhen_admin_form_input mayhen_admin_asset_url_input" placeholder="Tệp assets hoặc URL">
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <label class="mayhen_admin_file_upload_btn">
+                                                <input type="file" name="triptych_center_file" accept="image/*" style="display: none;" onchange="previewImageInput(this, 'preview_triptych_center')">
+                                                <span>📁 Đổi Ảnh</span>
+                                            </label>
+                                            <span class="mayhen_admin_storage_pill">Tự dọn file cũ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Triptych Right -->
+                            <div class="mayhen_admin_form_group">
+                                <label class="mayhen_admin_form_label">Ảnh Vòm Phải</label>
+                                <div class="mayhen_admin_asset_field_box">
+                                    <img src="{{ $cfg['triptych_right_url'] ?? $template->thumbnail_url }}" alt="Triptych Right" class="mayhen_admin_asset_thumb mayhen_admin_asset_thumb_tall" id="preview_triptych_right">
+                                    <div class="mayhen_admin_asset_controls">
+                                        <input type="text" name="triptych_right_url" value="{{ old('triptych_right_url', $cfg['triptych_right_url'] ?? '') }}" class="mayhen_admin_form_input mayhen_admin_asset_url_input" placeholder="Tệp assets hoặc URL">
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <label class="mayhen_admin_file_upload_btn">
+                                                <input type="file" name="triptych_right_file" accept="image/*" style="display: none;" onchange="previewImageInput(this, 'preview_triptych_right')">
+                                                <span>📁 Đổi Ảnh</span>
+                                            </label>
+                                            <span class="mayhen_admin_storage_pill">Tự dọn file cũ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ảnh Tròn Chân Trang (Footer Couple Circle) -->
+                        <div class="mayhen_admin_group_heading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>Ảnh Tròn Chân Trang Thiệp (Footer Couple Circle)</span>
+                        </div>
+
+                        <div class="mayhen_admin_form_group">
+                            <label class="mayhen_admin_form_label">Ảnh Cặp Đôi Vòng Tròn Khép Thiệp</label>
+                            <div class="mayhen_admin_asset_field_box" style="max-width: 420px;">
+                                <img src="{{ $cfg['footer_photo_url'] ?? ($cfg['couple_photo_url'] ?? $template->thumbnail_url) }}" alt="Footer Circle" class="mayhen_admin_asset_thumb" style="border-radius: 50%;" id="preview_footer_img">
+                                <div class="mayhen_admin_asset_controls">
+                                    <input type="text" name="footer_photo_url" value="{{ old('footer_photo_url', $cfg['footer_photo_url'] ?? ($cfg['couple_photo_url'] ?? '')) }}" class="mayhen_admin_form_input mayhen_admin_asset_url_input" placeholder="Tên tệp assets hoặc URL ảnh">
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <label class="mayhen_admin_file_upload_btn">
+                                            <input type="file" name="footer_photo_file" accept="image/*" style="display: none;" onchange="previewImageInput(this, 'preview_footer_img')">
+                                            <span>📁 Tải Ảnh Tròn Mới</span>
+                                        </label>
+                                        <span class="mayhen_admin_storage_pill">Tự dọn ảnh cũ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- 10 Photos Album Gallery -->
                         <div class="mayhen_admin_group_heading">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -636,6 +839,41 @@
                     <!-- TAB 5: LỜI NGỎ, LỊCH & MỪNG CƯỚI           -->
                     <!-- ========================================== -->
                     <div class="mayhen_admin_tab_pane" id="tab-story-gift">
+                        <!-- Slogan & Lời Ngỏ Cặp Đôi -->
+                        <div class="mayhen_admin_group_heading">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Slogan Trang Bìa, Lời Ngỏ & Trích Dẫn Tình Yêu</span>
+                        </div>
+
+                        <div class="mayhen_admin_form_group">
+                            <label for="slogan" class="mayhen_admin_form_label">Slogan Lãng Mạn Trang Bìa</label>
+                            <input type="text" id="slogan" name="slogan" value="{{ old('slogan', $cfg['slogan'] ?? 'Tình yêu nở hoa khi hai trái tim chung một nhịp đập.') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Tình yêu nở hoa khi hai trái tim chung một nhịp đập.">
+                        </div>
+
+                        <div class="mayhen_admin_form_grid_2">
+                            <div class="mayhen_admin_form_group">
+                                <label for="story_title" class="mayhen_admin_form_label">Tiêu Đề Lời Ngỏ</label>
+                                <input type="text" id="story_title" name="story_title" value="{{ old('story_title', $cfg['story_title'] ?? 'Đám Cưới Của Chúng Mình') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: Đám Cưới Của Chúng Mình">
+                            </div>
+
+                            <div class="mayhen_admin_form_group">
+                                <label for="story_subtitle" class="mayhen_admin_form_label">Phụ Đề Lời Ngỏ (Kicker / Subtitle)</label>
+                                <input type="text" id="story_subtitle" name="story_subtitle" value="{{ old('story_subtitle', $cfg['story_subtitle'] ?? 'NGÀY TÌNH YÊU ĐƠM HOA') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: NGÀY TÌNH YÊU ĐƠM HOA">
+                            </div>
+                        </div>
+
+                        <div class="mayhen_admin_form_group">
+                            <label for="couple_quote" class="mayhen_admin_form_label">Câu Châm Ngôn / Trích Dẫn Tình Yêu (Quote)</label>
+                            <textarea id="couple_quote" name="couple_quote" class="mayhen_admin_form_textarea" style="min-height: 70px;" placeholder="Câu thơ hoặc trích dẫn tình yêu thi vị...">{{ old('couple_quote', $cfg['couple_quote'] ?? "Cảm ơn đời mỗi sớm mai thức dậy\nCho ta thêm ngày nữa để yêu thương.") }}</textarea>
+                        </div>
+
+                        <div class="mayhen_admin_form_group">
+                            <label for="story_content" class="mayhen_admin_form_label">Đoạn Văn Lời Ngỏ & Tâm Sự Tình Yêu</label>
+                            <textarea id="story_content" name="story_content" class="mayhen_admin_form_textarea" style="min-height: 80px;" placeholder="Đoạn văn tâm sự mở đầu thiệp cưới...">{{ old('story_content', $cfg['story_content'] ?? 'Chúng mình tin rằng tình yêu chân thành không phải là tìm được một người hoàn hảo, mà là cùng nhau hoàn thiện qua từng ngày.') }}</textarea>
+                        </div>
+
                         <div class="mayhen_admin_group_heading">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -695,9 +933,17 @@
                             </div>
                         </div>
 
-                        <div class="mayhen_admin_form_group">
-                            <label for="footer_thank_you_text" class="mayhen_admin_form_label">Lời Cảm Ơn Cuối Thiệp (Thank You Note)</label>
-                            <textarea id="footer_thank_you_text" name="footer_thank_you_text" class="mayhen_admin_form_textarea" style="min-height: 60px;">{{ old('footer_thank_you_text', $cfg['footer_thank_you_text'] ?? 'Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn và là món quà ý nghĩa nhất đối với gia đình chúng mình!') }}</textarea>
+                        <div class="mayhen_admin_form_grid_2">
+                            <div class="mayhen_admin_form_group">
+                                <label for="ending_title" class="mayhen_admin_form_label">Tiêu Đề Lời Cảm Ơn Cuối Thiệp</label>
+                                <input type="text" id="ending_title" name="ending_title" value="{{ old('ending_title', $cfg['ending_title'] ?? 'THANK YOU') }}" class="mayhen_admin_form_input" placeholder="Ví dụ: THANK YOU hoặc CẢM ƠN">
+                            </div>
+
+                            <div class="mayhen_admin_form_group">
+                                <label for="ending_text" class="mayhen_admin_form_label">Lời Cảm Ơn Cuối Thiệp (Thank You Note)</label>
+                                <textarea id="ending_text" name="ending_text" class="mayhen_admin_form_textarea" style="min-height: 60px;">{{ old('ending_text', $cfg['ending_text'] ?? ($cfg['footer_thank_you_text'] ?? 'Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn và là món quà ý nghĩa nhất đối với gia đình chúng mình!')) }}</textarea>
+                                <input type="hidden" name="footer_thank_you_text" id="footer_thank_you_text" value="{{ old('ending_text', $cfg['ending_text'] ?? ($cfg['footer_thank_you_text'] ?? '')) }}">
+                            </div>
                         </div>
 
                         <!-- Gift & Bank QR -->
