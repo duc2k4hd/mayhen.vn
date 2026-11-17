@@ -796,3 +796,22 @@ php artisan serve
     + Bộ ba ảnh Triptych: Cả 3 ảnh đều hiển thị ảnh cưới thật, biến mất hoàn toàn ảnh hoạt hình vector.
     + Toàn bộ ảnh Chú rể, Cô dâu, Banner, Album 10 ảnh cưới, 2 mã QR mừng cưới và ảnh tròn kết thiệp hiển thị đúng 100% ảnh thật từ Admin/Storage.
     + Dọn dẹp toàn bộ file test tạm thời, code sạch sẽ đạt chuẩn Pint và tuân thủ quy tắc kiến trúc.
+
+---
+
+### Đề án #86: Khắc phục lỗi ảnh và đồng bộ hiển thị mẫu thiệp "Mây Hẹn Curated" (`mayhen-curated`)
+- **Vấn đề ghi nhận**:
+  - Khi xem trước mẫu thiệp tại `/xem-thu/mayhen-curated`: Khung vòm Hero bìa chính bị trắng tinh, không hiển thị ảnh cặp đôi Hà Kiên & Phạm Xôn.
+  - Nguyên nhân: Đường dẫn `cover_photo_url` trong `default_config` là `mayhen-curated-photos-cK4zul0SXg.jpg` nhưng tệp ảnh này bị thiếu trên đĩa (trả về HTTP 404). Hàm `$resolveAsset` cũ trả về nguyên xi URL lỗi mà không kiểm tra tồn tại tệp, khiến thẻ `<img>` không tải được và để lộ nền khung màu trắng rỗng.
+- **Giải pháp triển khai**:
+  - **Khôi phục tệp ảnh bìa Hero**:
+    - Đồng bộ tệp ảnh chất lượng cao từ thư mục `thumbnail` sang `storage/app/public/templates/mayhen-curated/photos/mayhen-curated-photos-cK4zul0SXg.jpg`, đưa file vào trạng thái sẵn sàng và truy cập bình thường trên web.
+  - **Nâng cấp hàm chuẩn hóa `$resolveAsset` trong [`template.blade.php`](resources/views/client/invitations/mayhen-curated/template.blade.php)**:
+    - Bổ sung cơ chế trích xuất đường dẫn Storage và kiểm tra an toàn `file_exists(public_path($storageRelative))`.
+    - Tự động fallback về ảnh mặc định nội bộ của template (`hero-couple.webp`, `story-couple.webp`, `groom-portrait.webp`, `bride-portrait.webp`) nếu file lưu trữ bị lỗi hoặc mất mát, ngăn chặn hoàn toàn hiện tượng khung vòm bị trắng tinh.
+    - Đồng bộ biến `$slug = 'mayhen-curated'` và các trường ảnh: `$heroPhotoUrl`, `$groomPhotoUrl`, `$bridePhotoUrl`, `$saveDatePhotoUrl`, danh sách `$gallery` (10 ảnh).
+- **Xác minh kết quả**:
+  - Đã gửi HTTP Request thực tế đến `http://127.0.0.1:8000/xem-thu/mayhen-curated` (HTTP 200 OK).
+  - Khung vòm Hero bìa chính hiển thị 100% ảnh cưới thật sắc nét của cặp đôi Hà Kiên & Phạm Xôn.
+  - Toàn bộ ảnh Chú rể, Cô dâu, Lời ngỏ và 10 ảnh trong Album kỷ niệm hiển thị trọn vẹn từ Storage.
+  - Dọn dẹp tệp test tạm thời, định dạng sạch sẽ bằng Pint (`vendor/bin/pint --dirty --format agent`).

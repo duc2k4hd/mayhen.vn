@@ -1,4 +1,5 @@
 @php
+    $slug = $slug ?? 'mayhen-curated';
     $assetBase = url('/mau-thiep/mayhen-curated/assets');
     $isEmbed = request()->boolean('embed');
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
@@ -63,32 +64,51 @@
     $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
 
-    // 3. Hàm chuẩn hóa asset ảnh an toàn
-    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
+    // 3. Hàm chuẩn hóa asset ảnh an toàn tuyệt đối với fallback nội bộ (100% relative path chống CORS & 404)
+    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase, $slug): string {
+        $cleanFallback = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $fallback), '/');
+        $cleanFallback = ltrim(preg_replace('#^assets/#', '', $cleanFallback), '/');
+        $fallbackUrl   = !empty($cleanFallback) ? "{$assetBase}/{$cleanFallback}" : '';
+
         $val = trim((string) $path);
-        if (str_starts_with($val, 'data:image/')) {
-            return $val;
-        }
         if (str_starts_with($val, 'blob:')) {
-            $val = '';
+            return $fallbackUrl;
         }
-        if (empty($val)) {
-            $fb = trim($fallback);
-            if (empty($fb)) return '';
-            return (str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/'))
-                ? $fb
-                : $assetBase . '/' . ltrim($fb, '/');
+        if (!empty($val)) {
+            if (str_starts_with($val, 'data:')) {
+                return $val;
+            }
+            // Trích xuất path nếu là link Storage hoặc Uploads (kể cả full URL chứa http/127.0.0.1/domain)
+            if (preg_match('#/(storage|uploads)/(.+)$#', $val, $storageMatch)) {
+                $storageRelative = $storageMatch[1] . '/' . $storageMatch[2];
+                if (file_exists(public_path($storageRelative))) {
+                    return '/' . $storageRelative;
+                }
+            }
+            if (preg_match('#^/?(storage|uploads)/#', $val)) {
+                $storageRelative = ltrim($val, '/');
+                if (file_exists(public_path($storageRelative))) {
+                    return '/' . $storageRelative;
+                }
+            }
+            if (preg_match('#^https?://#', $val)) {
+                return $val;
+            }
+            $cleanOverride = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $val), '/');
+            $cleanOverride = ltrim(preg_replace('#^assets/#', '', $cleanOverride), '/');
+            $localFile     = resource_path("views/client/invitations/{$slug}/assets/{$cleanOverride}");
+            if (file_exists($localFile)) {
+                return "{$assetBase}/{$cleanOverride}";
+            }
+            return $fallbackUrl;
         }
-        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
-            return $val;
-        }
-        return $assetBase . '/' . ltrim($val, '/');
+        return $fallbackUrl;
     };
 
-    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'hero-couple.webp');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? ($extraData['hero_cover_url'] ?? null))), 'hero-couple.webp');
     $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'groom-portrait.webp');
     $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), 'bride-portrait.webp');
-    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'story-couple.webp');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? ($extraData['triptych_center_url'] ?? null), 'story-couple.webp');
 
     // Chuẩn bị danh sách 10 slot ảnh cho Section Album kỷ niệm
     $gallery = [];
