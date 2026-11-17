@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminCheckInController;
 use App\Http\Controllers\Admin\AdminContentModerationController;
 use App\Http\Controllers\Admin\AdminDeveloperIntegrationController;
 use App\Http\Controllers\Admin\AdminDocsController;
+use App\Http\Controllers\Admin\AdminDocsManagerController;
 use App\Http\Controllers\Admin\AdminDomainManagerController;
 use App\Http\Controllers\Admin\AdminEmailTemplateController;
 use App\Http\Controllers\Admin\AdminFeatureFlagController;
@@ -665,5 +666,15 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminDocsController::class, 'index'])->name('index');
         Route::get('/search', [AdminDocsController::class, 'search'])->middleware('throttle:docs_search')->name('search');
         Route::get('/{category}/{slug}', [AdminDocsController::class, 'show'])->name('show');
+    });
+
+    // Quản Lý Toàn Bộ Docs (Client Docs & Admin SOP CRUD Engine)
+    Route::prefix('docs-manager')->name('docs_manager.')->group(function () {
+        Route::get('/', [AdminDocsManagerController::class, 'index'])->name('index');
+        Route::get('/create', [AdminDocsManagerController::class, 'create'])->name('create');
+        Route::post('/', [AdminDocsManagerController::class, 'store'])->name('store');
+        Route::get('/{space}/{category}/{slug}/edit', [AdminDocsManagerController::class, 'edit'])->name('edit');
+        Route::put('/{space}/{category}/{slug}', [AdminDocsManagerController::class, 'update'])->name('update');
+        Route::delete('/{space}/{category}/{slug}', [AdminDocsManagerController::class, 'destroy'])->name('destroy');
     });
 });

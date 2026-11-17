@@ -423,6 +423,406 @@ class DocumentationService
     }
 
     /**
+     * Lấy toàn bộ danh sách bài viết kèm metadata đầy đủ để quản trị trong Admin Docs Manager.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getAllArticlesWithMetadata(?string $space = null, ?string $category = null, ?string $search = null): array
+    {
+        $spaces = ($space === 'client' || $space === 'admin') ? [$space] : ['client', 'admin'];
+        $articles = [];
+
+        foreach ($spaces as $s) {
+            $categories = $this->getCategories($s);
+            foreach ($categories as $catSlug => $catData) {
+                if ($category !== null && $category !== 'all' && $category !== '' && $catSlug !== $category) {
+                    continue;
+                }
+
+                foreach ($catData['articles'] as $art) {
+                    $artCopy = $art;
+                    $artCopy['space'] = $s;
+                    $artCopy['category_slug'] = $catSlug;
+                    $artCopy['category_name'] = $catData['name'];
+                    $articles[] = $artCopy;
+                }
+            }
+        }
+
+        // Lọc theo từ khóa tìm kiếm nếu có
+        if (! empty($search)) {
+            $normalizedSearch = $this->removeVietnameseAccents(mb_strtolower(trim($search)));
+            $articles = array_filter($articles, function ($art) use ($normalizedSearch) {
+                $idNorm = mb_strtolower($art['id'] ?? '');
+                $titleNorm = $this->removeVietnameseAccents(mb_strtolower($art['title'] ?? ''));
+                $summaryNorm = $this->removeVietnameseAccents(mb_strtolower($art['summary'] ?? ''));
+                $catNorm = $this->removeVietnameseAccents(mb_strtolower($art['category_name'] ?? ''));
+                $tagsNorm = $this->removeVietnameseAccents(mb_strtolower(implode(' ', (array) ($art['tags'] ?? []))));
+
+                return str_contains($idNorm, $normalizedSearch)
+                    || str_contains($titleNorm, $normalizedSearch)
+                    || str_contains($summaryNorm, $normalizedSearch)
+                    || str_contains($catNorm, $normalizedSearch)
+                    || str_contains($tagsNorm, $normalizedSearch);
+            });
+        }
+
+        // Sắp xếp: space (client trước, admin sau), category_order, article_order
+        usort($articles, function ($a, $b) {
+            if ($a['space'] !== $b['space']) {
+                return $a['space'] === 'client' ? -1 : 1;
+            }
+            $catOrderA = (int) ($a['category_order'] ?? 99);
+            $catOrderB = (int) ($b['category_order'] ?? 99);
+            if ($catOrderA !== $catOrderB) {
+                return $catOrderA <=> $catOrderB;
+            }
+
+            return ((int) ($a['order'] ?? 99)) <=> ((int) ($b['order'] ?? 99));
+        });
+
+        return array_values($articles);
+    }
+
+    /**
+     * Lấy danh sách các chuyên mục hiện có để hiển thị trong form / dropdown.
+     *
+     * @return array<int, array{slug: string, name: string, space: string, count: int, dir_name: string}>
+     */
+    public function getCategoryOptions(?string $space = null): array
+    {
+        $spaces = ($space === 'client' || $space === 'admin') ? [$space] : ['client', 'admin'];
+        $options = [];
+
+        foreach ($spaces as $s) {
+            $categories = $this->getCategories($s);
+            foreach ($categories as $catSlug => $catData) {
+                $options[] = [
+                    'slug' => $catSlug,
+                    'name' => $catData['name'],
+                    'space' => $s,
+                    'order' => $catData['order'] ?? 99,
+                    'count' => count($catData['articles'] ?? []),
+                ];
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * Lấy bài viết ở dạng raw để hiển thị trong form chỉnh sửa Markdown.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getArticleRaw(string $space, string $category, string $slug): ?array
+    {
+        $space = $this->sanitizeSpace($space);
+        $filePath = $this->resolveArticleFilePath($space, $category, $slug);
+
+        if (! $filePath || ! file_exists($filePath)) {
+            return null;
+        }
+
+        $raw = file_get_contents($filePath);
+        if ($raw === false) {
+            return null;
+        }
+
+        $meta = [];
+        $content = $raw;
+
+        if (preg_match('/^---\r?\n(.*?)\r?\n---\r?\n(.*)$/s', $raw, $matches)) {
+            $frontmatter = $matches[1];
+            $content = ltrim($matches[2]);
+
+            foreach (explode("\n", $frontmatter) as $line) {
+                $line = trim($line);
+                if (empty($line) || str_starts_with($line, '#')) {
+                    continue;
+                }
+                if (str_contains($line, ':')) {
+                    [$key, $val] = explode(':', $line, 2);
+                    $key = trim($key);
+                    $val = trim($val);
+
+                    if (str_starts_with($val, '[') && str_ends_with($val, ']')) {
+                        $items = explode(',', trim($val, '[]'));
+                        $meta[$key] = array_map('trim', $items);
+                    } else {
+                        $meta[$key] = trim($val, '"\'');
+                    }
+                }
+            }
+        }
+
+        $tags = $meta['tags'] ?? [];
+        $tagsString = is_array($tags) ? implode(', ', $tags) : (string) $tags;
+
+        return [
+            'space' => $space,
+            'category_slug' => $category,
+            'category_name' => $meta['category'] ?? '',
+            'id' => $meta['id'] ?? $slug,
+            'slug' => $meta['id'] ?? $slug,
+            'title' => $meta['title'] ?? basename($filePath, '.md'),
+            'summary' => $meta['summary'] ?? '',
+            'reader' => $meta['reader'] ?? '',
+            'order' => (int) ($meta['order'] ?? 1),
+            'updated_at' => $meta['updated_at'] ?? date('Y-m-d'),
+            'tags' => $tagsString,
+            'mapped_page' => $meta['mapped_page'] ?? '',
+            'mapped_route' => $meta['mapped_route'] ?? '',
+            'risk_level' => $meta['risk_level'] ?? 'LOW',
+            'required_role' => $meta['required_role'] ?? 'all',
+            'content' => $content,
+            'file_path' => $filePath,
+        ];
+    }
+
+    /**
+     * Tạo mới một bài viết tài liệu Markdown với Frontmatter chuẩn.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function createArticle(array $data): array
+    {
+        $space = $this->sanitizeSpace((string) ($data['space'] ?? 'client'));
+        $catSlug = Str::slug((string) ($data['category_slug'] ?? 'chung'));
+        $catName = trim((string) ($data['category_name'] ?? Str::headline($catSlug)));
+        $rawId = trim((string) ($data['id'] ?? ''));
+
+        // Chuẩn hóa ID/mã tài liệu: chỉ giữ chữ, số, dấu gạch ngang
+        $id = preg_replace('/[^a-zA-Z0-9_-]/', '', $rawId);
+        if ($id === '') {
+            $id = strtoupper($space === 'admin' ? 'ADM-SOP-' : 'CLI-DOC-').str_pad((string) random_int(100, 999), 3, '0', STR_PAD_LEFT);
+        }
+
+        // Kiểm tra xem ID đã tồn tại trong space chưa
+        $existing = $this->resolveArticleFilePath($space, $catSlug, $id);
+        if ($existing && file_exists($existing)) {
+            throw new \InvalidArgumentException("Mã tài liệu '{$id}' đã tồn tại trong không gian '{$space}'. Vui lòng chọn mã khác.");
+        }
+
+        // Xác định hoặc tạo thư mục danh mục
+        $targetDir = $this->resolveOrCreateCategoryDirectory($space, $catSlug, $catName);
+
+        $targetFilePath = $targetDir.DIRECTORY_SEPARATOR.$id.'.md';
+        $fullMarkdown = $this->buildMarkdownContent($id, $catName, $data);
+
+        if (file_put_contents($targetFilePath, $fullMarkdown) === false) {
+            throw new \RuntimeException("Không thể ghi tệp tài liệu tại đường dẫn: {$targetFilePath}");
+        }
+
+        $this->clearCache($space);
+
+        return [
+            'space' => $space,
+            'category_slug' => $catSlug,
+            'id' => $id,
+            'file_path' => $targetFilePath,
+        ];
+    }
+
+    /**
+     * Cập nhật bài viết tài liệu Markdown hiện có.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function updateArticle(string $oldSpace, string $oldCategory, string $oldSlug, array $data): array
+    {
+        $oldSpace = $this->sanitizeSpace($oldSpace);
+        $oldFilePath = $this->resolveArticleFilePath($oldSpace, $oldCategory, $oldSlug);
+
+        if (! $oldFilePath || ! file_exists($oldFilePath)) {
+            throw new \InvalidArgumentException('Không tìm thấy bài viết tài liệu cũ để cập nhật.');
+        }
+
+        $newSpace = $this->sanitizeSpace((string) ($data['space'] ?? $oldSpace));
+        $newCatSlug = Str::slug((string) ($data['category_slug'] ?? $oldCategory));
+        $newCatName = trim((string) ($data['category_name'] ?? Str::headline($newCatSlug)));
+        $newRawId = trim((string) ($data['id'] ?? $oldSlug));
+        $newId = preg_replace('/[^a-zA-Z0-9_-]/', '', $newRawId) ?: $oldSlug;
+
+        // Nếu thay đổi ID hoặc thay đổi Space hoặc Category
+        $isRelocating = ($newSpace !== $oldSpace || $newCatSlug !== $oldCategory || $newId !== $oldSlug);
+
+        if ($isRelocating) {
+            $conflictingPath = $this->resolveArticleFilePath($newSpace, $newCatSlug, $newId);
+            if ($conflictingPath && file_exists($conflictingPath) && realpath($conflictingPath) !== realpath($oldFilePath)) {
+                throw new \InvalidArgumentException("Mã tài liệu '{$newId}' đã tồn tại trong danh mục '{$newCatSlug}' của '{$newSpace}'.");
+            }
+        }
+
+        $targetDir = $this->resolveOrCreateCategoryDirectory($newSpace, $newCatSlug, $newCatName);
+        $targetFilePath = $targetDir.DIRECTORY_SEPARATOR.$newId.'.md';
+        $fullMarkdown = $this->buildMarkdownContent($newId, $newCatName, $data);
+
+        if (file_put_contents($targetFilePath, $fullMarkdown) === false) {
+            throw new \RuntimeException("Không thể cập nhật tệp tài liệu tại: {$targetFilePath}");
+        }
+
+        // Nếu chuyển vị trí / đổi tên thì xóa tệp cũ
+        if ($isRelocating && realpath($oldFilePath) !== realpath($targetFilePath)) {
+            @unlink($oldFilePath);
+        }
+
+        $this->clearCache();
+
+        return [
+            'space' => $newSpace,
+            'category_slug' => $newCatSlug,
+            'id' => $newId,
+            'file_path' => $targetFilePath,
+        ];
+    }
+
+    /**
+     * Xóa một bài viết tài liệu Markdown.
+     */
+    public function deleteArticle(string $space, string $category, string $slug): bool
+    {
+        $space = $this->sanitizeSpace($space);
+        $filePath = $this->resolveArticleFilePath($space, $category, $slug);
+
+        if (! $filePath || ! file_exists($filePath)) {
+            return false;
+        }
+
+        $deleted = @unlink($filePath);
+        $this->clearCache($space);
+
+        return $deleted;
+    }
+
+    /**
+     * Tìm đường dẫn tệp thực tế của bài viết.
+     */
+    protected function resolveArticleFilePath(string $space, string $category, string $slug): ?string
+    {
+        $spaceDir = $this->basePath.DIRECTORY_SEPARATOR.$space;
+        if (! is_dir($spaceDir)) {
+            return null;
+        }
+
+        // Tìm trong thư mục khớp *-category hoặc category
+        $matchingDirs = glob($spaceDir.DIRECTORY_SEPARATOR.'*-'.$category, GLOB_ONLYDIR) ?: [];
+        if (empty($matchingDirs)) {
+            $matchingDirs = glob($spaceDir.DIRECTORY_SEPARATOR.$category, GLOB_ONLYDIR) ?: [];
+        }
+
+        foreach ($matchingDirs as $dir) {
+            $candidate = $dir.DIRECTORY_SEPARATOR.$slug.'.md';
+            if (file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        // Fallback: Quét toàn bộ các thư mục con trong space để tìm tệp có id hoặc filename khớp slug
+        $allDirs = glob($spaceDir.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR) ?: [];
+        foreach ($allDirs as $dir) {
+            $candidate = $dir.DIRECTORY_SEPARATOR.$slug.'.md';
+            if (file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Xác định hoặc tạo mới thư mục danh mục theo chuẩn {order}-{category_slug}.
+     */
+    protected function resolveOrCreateCategoryDirectory(string $space, string $catSlug, string $catName): string
+    {
+        $spaceDir = $this->basePath.DIRECTORY_SEPARATOR.$space;
+        if (! is_dir($spaceDir)) {
+            mkdir($spaceDir, 0755, true);
+        }
+
+        $existing = glob($spaceDir.DIRECTORY_SEPARATOR.'*-'.$catSlug, GLOB_ONLYDIR) ?: [];
+        if (! empty($existing)) {
+            return $existing[0];
+        }
+
+        // Tìm thứ tự số cao nhất hiện có
+        $allDirs = glob($spaceDir.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR) ?: [];
+        $maxOrder = 0;
+        foreach ($allDirs as $dir) {
+            $base = basename($dir);
+            $parts = explode('-', $base, 2);
+            if (isset($parts[0]) && is_numeric($parts[0])) {
+                $maxOrder = max($maxOrder, (int) $parts[0]);
+            }
+        }
+
+        $nextOrder = str_pad((string) ($maxOrder + 1), 2, '0', STR_PAD_LEFT);
+        $newDir = $spaceDir.DIRECTORY_SEPARATOR."{$nextOrder}-{$catSlug}";
+
+        if (! is_dir($newDir)) {
+            mkdir($newDir, 0755, true);
+        }
+
+        return $newDir;
+    }
+
+    /**
+     * Soạn thảo chuỗi Markdown hoàn chỉnh gồm YAML Frontmatter và Body.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function buildMarkdownContent(string $id, string $catName, array $data): string
+    {
+        $title = trim((string) ($data['title'] ?? 'Tài liệu không tên'));
+        $titleSafe = str_replace('"', '\"', $title);
+        $summary = trim((string) ($data['summary'] ?? ''));
+        $summarySafe = str_replace('"', '\"', $summary);
+        $reader = trim((string) ($data['reader'] ?? 'Nhân sự vận hành & Khách hàng'));
+        $order = (int) ($data['order'] ?? 1);
+        $updatedAt = trim((string) ($data['updated_at'] ?? date('Y-m-d')));
+
+        // Tags
+        $rawTags = $data['tags'] ?? [];
+        if (is_string($rawTags)) {
+            $tagList = array_filter(array_map('trim', explode(',', $rawTags)));
+        } else {
+            $tagList = (array) $rawTags;
+        }
+        $tagsFormatted = '['.implode(', ', $tagList).']';
+
+        $mappedPage = trim((string) ($data['mapped_page'] ?? ''));
+        $mappedRoute = trim((string) ($data['mapped_route'] ?? ''));
+        $riskLevel = in_array($data['risk_level'] ?? '', ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], true) ? $data['risk_level'] : 'LOW';
+        $requiredRole = trim((string) ($data['required_role'] ?? 'all'));
+        $content = rtrim((string) ($data['content'] ?? ''));
+
+        $yaml = "---\n";
+        $yaml .= "id: {$id}\n";
+        $yaml .= "title: \"{$titleSafe}\"\n";
+        $yaml .= "category: \"{$catName}\"\n";
+        $yaml .= "summary: \"{$summarySafe}\"\n";
+        if ($reader !== '') {
+            $yaml .= "reader: \"{$reader}\"\n";
+        }
+        $yaml .= "order: {$order}\n";
+        $yaml .= "updated_at: \"{$updatedAt}\"\n";
+        $yaml .= "tags: {$tagsFormatted}\n";
+        if ($mappedPage !== '') {
+            $yaml .= "mapped_page: \"{$mappedPage}\"\n";
+        }
+        if ($mappedRoute !== '') {
+            $yaml .= "mapped_route: \"{$mappedRoute}\"\n";
+        }
+        $yaml .= "risk_level: \"{$riskLevel}\"\n";
+        $yaml .= "required_role: \"{$requiredRole}\"\n";
+        $yaml .= "---\n\n";
+
+        return $yaml.$content."\n";
+    }
+
+    /**
      * Xóa sạch bộ nhớ đệm docs (cả Static RAM và Laravel Cache driver).
      */
     public function clearCache(?string $space = null): void

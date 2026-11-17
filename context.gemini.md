@@ -584,3 +584,29 @@ php artisan serve
   - Thanh tab `.mayhen_admin_tabs` và `.mayhen_admin_tabs_nav` có đường phân cách đáy thanh mảnh `1px solid #E2E8F0`.
   - Nút tab `.mayhen_admin_tab` & `.mayhen_admin_tab_btn` chữ xám Slate `#64748B`, trạng thái active gạch chân xanh hiện đại `#2563EB`, loại bỏ hoàn toàn các màu nâu thiệp cưới `#C5A880` và `#EFE8DD`.
   - Tự động áp dụng và sửa triệt để trên toàn bộ các trang: Khóa API & Webhooks (`developer/index.blade.php`), Trạng thái Dịch vụ (`health/index.blade.php`), Giám sát Bảo mật (`security/index.blade.php`).
+
+### 5.16. Phân Hệ Quản Lý Toàn Bộ Docs (Admin Docs Manager CRUD Engine — `/admin/docs-manager`)
+- **Mục tiêu**: Bổ sung phân hệ quản trị trọn vẹn (CRUD) cho toàn bộ tài liệu hệ thống, bao gồm cả **Docs Khách hàng (Client Docs)** tại `resources/docs/client/` và **Sổ tay SOP Vận hành (Admin SOP Docs)** tại `resources/docs/admin/`.
+- **Controller & Service**:
+  - `AdminDocsManagerController`: Cung cấp các hành vi `index`, `create`, `store`, `edit`, `update`, `destroy`.
+  - `DocumentationService`: Mở rộng thêm 6 phương thức CRUD:
+    - `getAllArticlesWithMetadata(?string $space, ?string $category, ?string $search)`: Lấy bài viết kèm đầy đủ metadata, hỗ trợ lọc không gian (client/admin), chuyên mục và tìm kiếm tiếng Việt không dấu.
+    - `getCategoryOptions(?string $space)`: Thu thập toàn bộ danh mục và số lượng bài viết tương ứng.
+    - `getArticleRaw(string $space, string $category, string $slug)`: Trích xuất nội dung Markdown nguyên bản cùng metadata parsed để nạp vào form chỉnh sửa.
+    - `createArticle(array $data)`: Sinh cấu trúc Markdown kèm YAML frontmatter chuẩn, tự động nhận diện hoặc tạo mới thư mục `{order}-{category_slug}`, ghi tệp an toàn và xóa cache tức thì.
+    - `updateArticle(string $oldSpace, string $oldCategory, string $oldSlug, array $data)`: Cập nhật nội dung/metadata, xử lý dọn dẹp hoặc di dời tệp tin khi đổi ID/chuyên mục/không gian, xóa cache.
+    - `deleteArticle(string $space, string $category, string $slug)`: Xóa tệp tin `.md` trên đĩa cứng và xóa cache tĩnh/driver.
+- **Routes & Master Navigation**:
+  - Routes đăng ký tại `routes/admin.php`: `admin.docs_manager.*`.
+  - Menu item tích hợp trực tiếp tại `resources/views/admin/layouts/master.blade.php` trong mục `Tổng Quan & Trí Tuệ`.
+- **Giao diện Quản trị (Pure HTML/CSS/JS — Zero External Frameworks)**:
+  - `resources/views/admin/pages/docs_manager/index.blade.php`: KPI Cards thống kê (Tổng số Docs, Docs Client, Docs Admin, Số chuyên mục), thanh lọc tabs không gian (`Tất cả` | `Khách hàng` | `Admin SOP`), dropdown chuyên mục, ô tìm kiếm thời gian thực, bảng quản trị với badge ID, thẻ tags, và nút thao tác nhanh (Xem trực tiếp trên web, Chỉnh sửa, Xóa an toàn).
+  - `resources/views/admin/pages/docs_manager/create.blade.php` & `edit.blade.php`: Bố cục 2 cột trực quan. Cột trái gồm tiêu đề, tóm tắt, bộ soạn thảo Markdown kèm thanh công cụ tiện ích (H2, H3, In đậm, In nghiêng, Note, Tip, Warning callouts, Code block, Table snippet). Cột phải gồm lựa chọn không gian, chọn/tạo chuyên mục, mã ID tệp, thứ tự, đối tượng độc giả, tags, phân quyền vai trò (`required_role`), mức rủi ro (`risk_level`), và đường dẫn liên kết.
+- **Triệt Tiêu Hoàn Toàn Margin Mặc Định Của Trình Duyệt Trong Studio Preview**:
+  - Đã bổ sung gán inline style trực tiếp `document.body.style.setProperty('margin', '0px', 'important')` và `document.documentElement.style.setProperty('margin', '0px', 'important')` trong `editor-bridge.blade.php`.
+  - Kết hợp với CSS Reset toàn cục để đảm bảo 100% mẫu thiệp cưới hiển thị tràn viền (full viền) hoàn hảo trong khung mockup điện thoại, triệt tiêu dải màu margin 8px mặc định từ user agent stylesheet.
+  - Đã chạy `php artisan optimize:clear` và `php artisan view:clear` để giải phóng toàn bộ cache view cũ.
+- **Kiểm Thử Toàn Diện ([`AdminDocsManagerCrudTest.php`](tests/Feature/AdminDocsManagerCrudTest.php))**:
+  - Đã viết bộ kiểm thử Feature gồm 5 test cases bao phủ toàn diện: Phân quyền truy cập, thống kê KPIs, lọc & tìm kiếm, toàn bộ chu trình tạo -> đọc -> sửa -> xóa cả 2 không gian Client & Admin. Kết quả: **5/5 PASS (100%)**, thời gian thực thi dưới 1 giây.
+  - Chạy lại toàn bộ `DocumentationCenterIntegrityTest.php`: **23/23 tests PASS (100%)**.
+  - Định dạng mã nguồn chuẩn mực qua `vendor/bin/pint --dirty --format agent`.

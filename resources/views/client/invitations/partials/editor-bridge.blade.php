@@ -179,10 +179,14 @@
     if (isEmbed) {
         window.__MAYHEN_IS_EMBED = true;
         document.documentElement.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
+        document.documentElement.style.setProperty('margin', '0px', 'important');
+        document.documentElement.style.setProperty('padding', '0px', 'important');
         if (document.body) {
             document.body.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
             document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
             document.body.style.overflow = 'auto';
+            document.body.style.setProperty('margin', '0px', 'important');
+            document.body.style.setProperty('padding', '0px', 'important');
         }
 
         var autoOpenInvitation = function() {
@@ -190,6 +194,8 @@
                 document.body.classList.add('mayhen_embed_mode', 'mayhen_template_auto_opened');
                 document.body.classList.remove('mayhen_invitation_scroll_locked', 'scroll_locked', 'no-scroll');
                 document.body.style.overflow = 'auto';
+                document.body.style.setProperty('margin', '0px', 'important');
+                document.body.style.setProperty('padding', '0px', 'important');
             }
 
             // Đánh dấu đã mở và ẩn các container mở đầu
