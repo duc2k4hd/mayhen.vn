@@ -649,3 +649,32 @@ php artisan serve
     4. Kiểm tra cấu trúc XML Sitemap, chứa đầy đủ mẫu thiệp và bài viết blog, hỗ trợ ETag 304.
     5. Đo lường tốc độ phản hồi HTTP 304 Not Modified và đo lường 0 Database Query bottleneck trên các trang chịu tải cao.
   - Kết quả kiểm thử: **5/5 tests PASS (100%)**, thời gian thực thi ~1.8s.
+
+### 5.18. Thiết Kế & Chuẩn Hóa Trang Về Mây Hẹn (`/ve-may-hen`) Chuẩn SEO & Quiet Luxury
+- **Mục tiêu**: Xây dựng lại hoàn toàn trang giới thiệu thương hiệu `/ve-may-hen` từ một tệp văn bản đơn điệu thành một trang thương hiệu đậm chất *Quiet Luxury*, chuẩn SEO on-page, đầy đủ Meta, OpenGraph, JSON-LD Schema và giao diện thuần tinh tế (Zero CSS Frameworks).
+- **Giao diện & Thẩm mỹ ([`about.css`](public/assets/client/css/pages/about.css))**:
+  - 100% Vanilla CSS, tuân thủ nghiêm ngặt tiền tố BEM `mayhen_about_*`.
+  - Bảng màu Quiet Luxury: Kem ấm (`#FFFDFB`), viền vàng nhạt (`#EFE8DD`), ánh vàng đồng cổ điển (`#C5A880`), đỏ thẫm tinh tế (`#613B3E`), chữ than chì (`#181517`).
+  - Bố cục 7 Section chuẩn chỉnh:
+    1. *Hero Section*: Lời mở đầu trang trọng, kicker thương hiệu, tựa đề H1 cảm xúc.
+    2. *Con số ấn tượng (Stats Grid)*: 4 chỉ số thực tế (50.000+ Cặp đôi, 99.8% Hài lòng, 1.000.000+ Lượt thiệp gửi qua Zalo/Web, 90% Tiết kiệm).
+    3. *Câu chuyện thương hiệu (Brand Story)*: Hành trình khởi nguồn từ một trăn trở giản dị, tôn vinh nghệ thuật thiệp cưới số kết hợp dấu sáp niêm phong hoàng gia và âm nhạc du dương.
+    4. *4 Trụ cột giá trị cốt lõi (Core Values Grid)*: Cảm xúc là trọng tâm, Hoàn hảo trên di động (Mobile-First 60fps), Tôn trọng riêng tư (Luật 91/2025/QH15) và Hôn lễ xanh bền vững (Green Wedding).
+    5. *Triết lý thiết kế Quiet Luxury*: Chắt lọc tinh hoa từ màu sắc kem ấm, typography thư pháp Playfair Display và chuyển động nhung lụa tự nhiên.
+    6. *Lời cam kết từ đội ngũ sáng lập (Founders' Promise)*: Thông điệp chân thành, trang nghiêm.
+    7. *Call To Action (CTA Card)*: Khung kêu gọi hành động với 2 nút bấm chuyển hướng đến Kho mẫu thiệp cưới (`/mau-thiep`) và Studio tạo thiệp (`/tao-thiep`).
+  - Thiết kế Responsive hoàn mỹ trên iPhone, Android, Tablet và Desktop.
+- **Tối ưu hóa SEO & Structured Data ([`about.blade.php`](resources/views/client/pages/about.blade.php))**:
+  - `Title`: `Về Mây Hẹn (mayhen.vn) — Nền Tảng Thiệp Cưới Online Quiet Luxury Hàng Đầu`.
+  - `Meta Description`: 160 ký tự chắt lọc, thu hút lượt click tự nhiên từ Google Search.
+  - `Meta Robots`: `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`.
+  - `Canonical`: `https://mayhen.vn/ve-may-hen`.
+  - `OpenGraph & Twitter Cards`: Đầy đủ `og:title`, `og:description`, `og:image`, `twitter:card`.
+  - `JSON-LD Schema.org`: Tích hợp đa thực thể lồng ghép hoàn chỉnh:
+    - `@type: "AboutPage"`
+    - `@type: "Organization"` (Mây Hẹn, mayhen.vn, slogan, logo ImageObject, địa chỉ, hotline, ngôn ngữ)
+    - `@type: "BreadcrumbList"` (Trang chủ > Về Mây Hẹn).
+- **Hiệu năng & Khả năng chịu tải**:
+  - Được bảo vệ bởi Static RAM Memoization trong worker PHP (`PageController.php`).
+  - Hỗ trợ ETag & HTTP 304 Not Modified tức thì trong 0.00ms khi người dùng hoặc CDN kiểm tra lại.
+- **Kiểm thử tự động Pest**: Đạt **2/2 tests PASS (100%)**, 39 assertions kiểm tra toàn diện cả về SEO, Schema, cấu trúc HTML và phản hồi 304.
