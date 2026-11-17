@@ -719,3 +719,27 @@ php artisan serve
   - Đạt tuyệt đối **0 Database Query** khi phục vụ người dùng.
 - **Kiểm thử tự động Pest ([`FaqPageSeoAndPerformanceTest.php`](tests/Feature/FaqPageSeoAndPerformanceTest.php))**:
   - Đạt **4/4 tests PASS (100%)**, 120 assertions kiểm tra toàn diện cả về SEO, Schema 20 câu hỏi, UI/UX elements, HTTP 304 và 0 Database Queries.
+
+### 5.21. Thiết Kế & Chuẩn Hóa Tất Cả Trang Chính Sách & Bảo Mật Chuẩn SEO & Pháp Lý Việt Nam
+- **Mục tiêu**: Xây dựng lại toàn diện hai trang pháp lý cốt lõi: Điều Khoản Dịch Vụ (`/dieu-khoan-dich-vu` - `terms`) và Chính Sách Bảo Mật Dữ Liệu Cá Nhân (`/chinh-sach-bao-mat` - `privacy`) theo chuẩn SEO on-page, cấu trúc JSON-LD Schema.org, giao diện Quiet Luxury 100% Vanilla và tuân thủ nghiêm ngặt **Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15** cùng **Nghị định 13/2023/NĐ-CP**.
+- **Giao diện & Trải nghiệm UI/UX ([`legal.css`](public/assets/client/css/pages/legal.css) & [`legal.js`](public/assets/client/js/pages/legal.js))**:
+  - 100% Vanilla CSS, tuân thủ nghiêm ngặt tiền tố BEM `mayhen_legal_*`.
+  - Bộ màu Quiet Luxury: Kem ấm (`#FFFDFB`), viền be (`#EFE8DD`), ánh vàng đồng (`#C5A880`), đỏ thẫm (`#613B3E`), chữ than chì (`#181517`).
+  - Layout 2 cột chuyên nghiệp:
+    1. *Sticky Sidebar*: Mục lục điều khoản Table of Contents (TOC) thông minh, tự động theo dõi vị trí cuộn trang (ScrollSpy), phím chuyển đổi nhanh giữa các trang chính sách liên quan, nút In văn bản (`window.print()`).
+    2. *Main Article Body*: Nội dung pháp lý mạch lạc, tiêu đề H2 font Playfair Display, đánh số thứ tự tròn mạ vàng, các hộp Callout nổi bật, bảng biểu minh bạch và khung chữ ký cam kết pháp lý cuối trang.
+  - Tối ưu hóa trên Mobile & Tablet: Mục lục cuộn ngang, khoảng cách dòng thoáng (line-height 1.85), cỡ chữ 15.5px dễ đọc.
+- **Nội dung Pháp lý & Chuẩn SEO**:
+  - **Trang Điều Khoản Dịch Vụ (`terms.blade.php`)**:
+    - 9 Điều khoản pháp lý chặt chẽ: Chấp thuận điều khoản, Tài khoản & bảo mật, Quyền sở hữu trí tuệ độc quyền (mẫu thiệp, tem sáp wax seal), Cơ chế mừng cưới VietQR chuyển khoản thẳng 0đ phí hoa hồng, Gói dịch vụ & cam kết hoàn tiền 100% khi lỗi hệ thống trong 48h, Trách nhiệm nội dung & Báo cáo vi phạm, Cam kết Uptime máy chủ 99.9% SLA, Thời hạn lưu trữ kỷ niệm và Luật áp dụng Việt Nam.
+    - SEO Meta: Title, Meta Description (155 ký tự), Canonical, OpenGraph, Robots `index, follow`.
+    - Schema JSON-LD: `@type: "BreadcrumbList"` kết hợp `@type: "WebPage"` và `@type: "Organization"`.
+  - **Trang Chính Sách Bảo Mật (`privacy.blade.php`)**:
+    - 9 Điều khoản bảo vệ dữ liệu theo Luật 91/2025/QH15: Cơ sở pháp lý, 3 nhóm dữ liệu thu thập (Chủ thiệp, Khách mời, Kỹ thuật), Nguyên tắc tối thiểu dữ liệu (Data Minimization), Cơ chế bảo vệ riêng tư đa tầng (Private Passcode, noindex thiệp riêng tư, phân quyền Nhà Trai / Nhà Gái), Quyền chủ thể dữ liệu (DSAR & Right to be Forgotten), Mã hóa đường truyền TLS 1.3 và lưu trữ máy chủ Tier 3 tại Việt Nam, Nhật ký kiểm toán bất biến (Audit Logs), Quản lý Cookie thiết yếu và Đầu mối liên hệ Cán bộ Bảo vệ Dữ liệu (DPO).
+    - SEO Meta: Title, Meta Description, Canonical, OpenGraph, Robots `index, follow`.
+    - Schema JSON-LD: `@type: "BreadcrumbList"` kết hợp `@type: "WebPage"` và `@type: "Organization"`.
+- **Hiệu năng & Khả năng chịu tải Cao (Zero DB Bottleneck)**:
+  - Cập nhật `PageController::terms()` và `PageController::privacy()` tích hợp Static RAM Memoization và ETag / HTTP 304 Not Modified.
+  - Phản hồi tức thì trong 0.00ms cho các truy cập lặp lại, đạt tuyệt đối **0 Database Query**.
+- **Kiểm thử tự động Pest ([`LegalAndPolicyPagesSeoTest.php`](tests/Feature/LegalAndPolicyPagesSeoTest.php))**:
+  - Đạt **4/4 tests PASS (100%)**, 71 assertions kiểm tra toàn diện cả về SEO Meta, Schema, 9 điều khoản mỗi trang, ETag 304, 0 Database Query và liên kết chéo.

@@ -44,7 +44,7 @@ class PageController extends Controller
     protected static ?int $contactLastModified = null;
 
     /**
-     * Cache ETag & Last-Modified cho các trang tĩnh (about, faq) trong worker memory.
+     * Cache ETag & Last-Modified cho các trang tĩnh (about, faq, terms, privacy) trong worker memory.
      *
      * @var array<string, array{0: string, 1: int}>
      */
@@ -431,18 +431,54 @@ class PageController extends Controller
             ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
-    public function terms(): View
+    public function terms(Request $request): Response|View
     {
         $page = self::getCachedCmsPage('dieu-khoan-dich-vu');
 
-        return view('client.pages.terms', compact('page'));
+        if ($request->user() !== null) {
+            return view('client.pages.terms', compact('page'));
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta('terms', 'terms');
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.terms', compact('page'))
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
-    public function privacy(): View
+    public function privacy(Request $request): Response|View
     {
         $page = self::getCachedCmsPage('chinh-sach-bao-mat');
 
-        return view('client.pages.privacy', compact('page'));
+        if ($request->user() !== null) {
+            return view('client.pages.privacy', compact('page'));
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta('privacy', 'privacy');
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.privacy', compact('page'))
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     public function showPage(string $slug): View
