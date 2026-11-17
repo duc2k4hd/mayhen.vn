@@ -66,9 +66,25 @@
     $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
 
-    // 3. Hàm chuẩn hóa asset ảnh
-    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
+    // 3. Hàm chuẩn hóa asset ảnh an toàn, hỗ trợ kiểm tra file_exists cho Storage & Local Assets
+    $slug = 'giua-muon-ngan-vi-sao';
+    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase, $slug): string {
         $val = trim((string) $path);
+
+        $getFallbackUrl = function (string $fb) use ($assetBase, $slug): string {
+            $fb = trim($fb);
+            if (empty($fb)) return '';
+            if (str_starts_with($fb, 'data:') || str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/')) {
+                return $fb;
+            }
+            $cleanFb = ltrim(preg_replace('#^assets/#', '', $fb), '/');
+            return "/mau-thiep/{$slug}/assets/{$cleanFb}";
+        };
+
+        if (empty($val) || str_starts_with($val, 'blob:')) {
+            return $getFallbackUrl($fallback);
+        }
+
         if (str_starts_with($val, 'data:')) {
             if (preg_match('#^data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$#D', $val, $matches)) {
                 $decoded = base64_decode($matches[2], true);
@@ -88,30 +104,43 @@
                     }
                 }
             }
-            $val = '';
+            return $getFallbackUrl($fallback);
         }
-        if (str_starts_with($val, 'blob:')) {
-            $val = '';
+
+        // Trích xuất path nếu là link Storage hoặc Uploads (kể cả full URL chứa http/127.0.0.1/domain)
+        if (preg_match('#/(storage|uploads)/(.+)$#', $val, $storageMatch)) {
+            $storageRelative = $storageMatch[1] . '/' . $storageMatch[2];
+            if (file_exists(public_path($storageRelative))) {
+                return '/' . $storageRelative;
+            }
         }
-        if (empty($val)) {
-            $fb = trim($fallback);
-            if (empty($fb)) return '';
-            return (str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/'))
-                ? $fb
-                : $assetBase . '/' . ltrim($fb, '/');
+        if (preg_match('#^/?(storage|uploads)/#', $val)) {
+            $storageRelative = ltrim($val, '/');
+            if (file_exists(public_path($storageRelative))) {
+                return '/' . $storageRelative;
+            }
         }
-        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {
             return $val;
         }
-        return $assetBase . '/' . ltrim($val, '/');
+
+        $cleanVal = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $val), '/');
+        $cleanVal = ltrim(preg_replace('#^assets/#', '', $cleanVal), '/');
+        $localFile = resource_path("views/client/invitations/{$slug}/assets/{$cleanVal}");
+        if (file_exists($localFile)) {
+            return "/mau-thiep/{$slug}/assets/{$cleanVal}";
+        }
+
+        return $getFallbackUrl($fallback);
     };
 
-    // Ảnh chính của mẫu
-    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), '7da1e3a6d59c1a98.webp');
+    // Ảnh chính của mẫu (Đồng bộ tuyệt đối từ Database Showcase & Storage)
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? ($extraData['hero_cover_url'] ?? null))), '7da1e3a6d59c1a98.webp');
     $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'b058b38c28460637.webp');
     $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), '307b8d7ea14424b9.webp');
-    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'c3655bd60267c1b2.webp');
-    $ketPhotoUrl = $resolveAsset($extraData['ket_photo_url'] ?? null, 'f5cbab06395d882b.webp');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? ($extraData['triptych_center_url'] ?? null), 'c3655bd60267c1b2.webp');
+    $ketPhotoUrl = $resolveAsset($extraData['footer_photo_url'] ?? ($extraData['ket_photo_url'] ?? null), 'f5cbab06395d882b.webp');
     // 3. Lời ngỏ & Chuyện tình yêu (Love Story)
     $storyTitle = $extraData['story_title'] ?? 'Chuyện Tình Yêu';
     $storySubtitle = $extraData['story_subtitle'] ?? 'Hành Trình Gặp Gỡ Giữa Ngân Hà';
@@ -162,21 +191,21 @@
     // 4. Mừng cưới QR & Ngân hàng
     $groomBankName = $extraData['groom_bank_name'] ?? 'Vietcombank';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123 456 789';
-    $groomAccountName = $extraData['groom_account_name'] ?? 'NGUYEN MINH TUAN';
+    $groomAccountName = $extraData['groom_bank_owner'] ?? ($extraData['groom_account_name'] ?? 'HÀ VĂN KIÊN');
     $cleanGroomAcc = preg_replace('/\s+/', '', $groomBankAccount);
     $qrGroomFallback = \App\Services\VietQrService::generateDataUri($groomBankName, $cleanGroomAcc, 0, 'Mung cuoi ' . $groomName);
     $qrGroomUrl = $resolveAsset(
-        $extraData['qr_groom_image'] ?? null,
+        $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null),
         $qrGroomFallback
     );
 
     $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '1903 5555 8888';
-    $brideAccountName = $extraData['bride_account_name'] ?? 'TRAN THU HA';
+    $brideAccountName = $extraData['bride_bank_owner'] ?? ($extraData['bride_account_name'] ?? 'PHẠM THỊ XÔN');
     $cleanBrideAcc = preg_replace('/\s+/', '', $brideBankAccount);
     $qrBrideFallback = \App\Services\VietQrService::generateDataUri($brideBankName, $cleanBrideAcc, 0, 'Mung cuoi ' . $brideName);
     $qrBrideUrl = $resolveAsset(
-        $extraData['qr_bride_image'] ?? null,
+        $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null),
         $qrBrideFallback
     );
 
@@ -1294,7 +1323,7 @@
                 <span class="mayhen_invitation_lap_lanh mayhen_invitation_l5" aria-hidden="true"><svg><use href="#mayhen_invitation_sr_sao"></use></svg></span>
                 <div class="mayhen_invitation_ClientEditImage mayhen_invitation_img_ket mayhen_invitation_ending_photo mayhen_invitation_anh_tron">
                     <div class="mayhen_invitation_ladi_image">
-                        <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $ketPhotoUrl }}');" data-sync-target="hero_photo_url"></div>
+                        <div class="mayhen_invitation_ladi_image_background" style="background-image: url('{{ $ketPhotoUrl }}');" data-sync-target="footer_photo_url"></div>
                     </div>
                 </div>
                 <span class="mayhen_invitation_vet_sang" aria-hidden="true"></span>

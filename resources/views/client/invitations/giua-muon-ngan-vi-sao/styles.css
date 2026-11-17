@@ -176,82 +176,24 @@ body.mayhen_invitation_sr_khoa .mayhen_invitation_ladi_wraper.mayhen_invitation_
     width: 100%;
 }
 
-/* ---- Vị trí và tỷ lệ từng ảnh theo đúng mẫu gốc ---- */
-.mayhen_invitation_img_dau .mayhen_invitation_ladi_image_background {
-    background-image: url('7da1e3a6d59c1a98.webp');
-    background-size: 110% !important;
-    background-position: calc(50% + 16px) calc(50% + 37px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-@media (min-width: 768px) {
-    .mayhen_invitation_img_dau .mayhen_invitation_ladi_image_background {
-        background-size: 115% !important;
-        background-position: calc(50% + 14px) calc(50% + 54px) !important;
-    }
-}
-
-.mayhen_invitation_img_chure .mayhen_invitation_ladi_image_background {
-    background-image: url('b058b38c28460637.webp');
-    background-size: 100% !important;
-    background-position: calc(50% + 0px) calc(50% + 0px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-
-.mayhen_invitation_img_codau .mayhen_invitation_ladi_image_background {
-    background-image: url('307b8d7ea14424b9.webp');
-    background-size: 195% !important;
-    background-position: calc(50% + 5px) calc(50% + 16px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-@media (min-width: 768px) {
-    .mayhen_invitation_img_codau .mayhen_invitation_ladi_image_background {
-        background-size: 220% !important;
-        background-position: calc(50% + 10px) calc(50% + 26px) !important;
-    }
-}
-
-.mayhen_invitation_img_moi .mayhen_invitation_ladi_image_background {
-    background-image: url('c3655bd60267c1b2.webp');
-    background-size: 100% !important;
-    background-position: calc(50% + 1px) calc(50% + 23px) !important;
-    background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-@media (min-width: 768px) {
-    .mayhen_invitation_img_moi .mayhen_invitation_ladi_image_background {
-        background-size: 100% !important;
-        background-position: calc(50% + 0px) calc(50% + 21px) !important;
-    }
-}
-
-
+/* ---- Vị trí và tỷ lệ chuẩn hóa cho toàn bộ ảnh trong mẫu ---- */
+.mayhen_invitation_img_dau .mayhen_invitation_ladi_image_background,
+.mayhen_invitation_img_chure .mayhen_invitation_ladi_image_background,
+.mayhen_invitation_img_codau .mayhen_invitation_ladi_image_background,
+.mayhen_invitation_img_moi .mayhen_invitation_ladi_image_background,
 .mayhen_invitation_img_ket .mayhen_invitation_ladi_image_background {
-    background-image: url('f5cbab06395d882b.webp');
-    background-size: 100% !important;
-    background-position: calc(50% + 0px) calc(50% + 0px) !important;
+    background-size: cover !important;
+    background-position: center center !important;
     background-repeat: no-repeat !important;
-    filter: brightness(1.05) contrast(1.02);
-}
-@media (min-width: 768px) {
-    .mayhen_invitation_img_ket .mayhen_invitation_ladi_image_background {
-        background-size: 105% !important;
-        background-position: calc(50% + 9px) calc(50% + 0px) !important;
-    }
+    filter: brightness(1.03) contrast(1.02);
 }
 
-.mayhen_invitation_album_img_0 .mayhen_invitation_ladi_image_background { background-image: url('c3655bd60267c1b2.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_1 .mayhen_invitation_ladi_image_background { background-image: url('a5a53978e8384d26.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_2 .mayhen_invitation_ladi_image_background { background-image: url('7da1e3a6d59c1a98.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_3 .mayhen_invitation_ladi_image_background { background-image: url('40f8fb60afcb59af.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_4 .mayhen_invitation_ladi_image_background { background-image: url('4d93c5df689bbae4.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_5 .mayhen_invitation_ladi_image_background { background-image: url('872462fa026e4df9.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_6 .mayhen_invitation_ladi_image_background { background-image: url('14325e164a136da2.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_7 .mayhen_invitation_ladi_image_background { background-image: url('f5cbab06395d882b.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_8 .mayhen_invitation_ladi_image_background { background-image: url('686ca1bfd6d65f13.webp'); filter: brightness(1.05); }
-.mayhen_invitation_album_img_9 .mayhen_invitation_ladi_image_background { background-image: url('fbf493cec2de5fdc.webp'); filter: brightness(1.05); }
+.mayhen_invitation_gallery_img .mayhen_invitation_ladi_image_background {
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    filter: brightness(1.03) contrast(1.02);
+}
 
 /* Chữ bạc trắng phát sáng */
 .mayhen_invitation_sr_phat_sang,

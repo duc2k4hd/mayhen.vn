@@ -488,6 +488,14 @@
       "description": "Xác nhận tham dự (RSVP), sổ lưu bút và lời cảm tạ chân thành",
       "fields": [
         {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh kỷ niệm kết thiệp (Vòng tròn ánh sáng)",
+          "type": "image",
+          "required": false,
+          "default": "f5cbab06395d882b.webp",
+          "placeholder": "Đường dẫn ảnh kết thiệp"
+        },
+        {
           "key": "wedding.extra_data.thank_you_title",
           "label": "Tiêu đề tri ân kết thiệp",
           "type": "text",

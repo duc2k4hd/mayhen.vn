@@ -815,3 +815,34 @@ php artisan serve
   - Khung vòm Hero bìa chính hiển thị 100% ảnh cưới thật sắc nét của cặp đôi Hà Kiên & Phạm Xôn.
   - Toàn bộ ảnh Chú rể, Cô dâu, Lời ngỏ và 10 ảnh trong Album kỷ niệm hiển thị trọn vẹn từ Storage.
   - Dọn dẹp tệp test tạm thời, định dạng sạch sẽ bằng Pint (`vendor/bin/pint --dirty --format agent`).
+
+---
+
+### Đề án #87: Khắc phục lỗi ảnh và đồng bộ hiển thị mẫu thiệp "Giữa Muôn Ngàn Vì Sao" (`giua-muon-ngan-vi-sao`)
+- **Vấn đề ghi nhận**:
+  - Khi xem trước mẫu thiệp tại `/xem-thu/giua-muon-ngan-vi-sao`:
+    1. Khung bìa Hero bị rỗng (404) do file `giua-muon-ngan-vi-sao-photos-naDcVizmwq.jpg` bị thiếu trên đĩa trong thư mục `storage/app/public/templates/giua-muon-ngan-vi-sao/photos/`.
+    2. Trong `styles.css`: Các rule CSS hardcode `background-image` trỏ vào các tệp tĩnh cũ và thiết lập các thuộc tính crop ép cứng như `background-size: 195% !important; background-position: calc(50% + 5px) calc(50% + 16px) !important;`, khiến ảnh chân dung chú rể và cô dâu bị phóng đại lệch lạc, mất cân đối.
+    3. Trong `template.blade.php`: Biến `$ketPhotoUrl` (ảnh kết thiệp) chỉ đọc `$extraData['ket_photo_url']` (bị rỗng) thay vì `$extraData['footer_photo_url']` đã lưu trong database, khiến phần kết thiệp rơi về ảnh stock cũ; thuộc tính `data-sync-target` ở phần kết thiệp bị nhầm là `hero_photo_url` thay vì `footer_photo_url`.
+    4. Album ảnh Coverflow 3D: Thiếu class CSS `mayhen_invitation_wb_cf_it` trên các item, khiến coverflow không ăn style và JavaScript không tìm thấy item để khởi chạy hiệu ứng 3D Coverflow cũng như popup phóng to ảnh.
+    5. Album 10 ảnh cưới (`gallery`): Trong `default_config` vẫn là danh sách 10 mã hash webp demo cũ thay vì bộ 10 ảnh cưới chụp thật của cặp đôi.
+- **Giải pháp triển khai**:
+  - **Khôi phục tệp ảnh bìa Hero**:
+    - Khôi phục file `giua-muon-ngan-vi-sao-photos-naDcVizmwq.jpg` (268,732 bytes) từ ảnh thumbnail sẵn có vào `storage/app/public/templates/giua-muon-ngan-vi-sao/photos/`.
+  - **Nâng cấp hàm chuẩn hóa `$resolveAsset` trong [`template.blade.php`](resources/views/client/invitations/giua-muon-ngan-vi-sao/template.blade.php)**:
+    - Tích hợp kiểm tra an toàn `file_exists(public_path($storageRelative))` cho tất cả URL `/storage/...` và `/uploads/...`.
+    - Tự động fallback về ảnh mặc định nội bộ nếu file lưu trữ bị thiếu hoặc lỗi đường dẫn.
+    - Đồng bộ đầy đủ các biến: `$heroPhotoUrl`, `$groomPhotoUrl`, `$bridePhotoUrl`, `$saveDatePhotoUrl`, `$ketPhotoUrl`, `$groomAccountName`, `$brideAccountName`, `$qrGroomUrl`, `$qrBrideUrl`.
+    - Sửa `data-sync-target="footer_photo_url"` ở phần kết thiệp.
+  - **Chuẩn hóa tỷ lệ ảnh trong [`styles.css`](resources/views/client/invitations/giua-muon-ngan-vi-sao/styles.css)**:
+    - Loại bỏ toàn bộ `background-image` tĩnh hardcode trong file CSS.
+    - Thay thế các thuộc tính zoom ép cứng (`195% !important`, `calc(...)`) bằng tiêu chuẩn responsive `background-size: cover !important; background-position: center center !important; background-repeat: no-repeat !important;` cho toàn bộ ảnh tròn và khung chân dung, giúp mọi ảnh chụp của cặp đôi luôn vừa vặn, không biến dạng tỉ lệ.
+  - **Đồng bộ hóa 10 ảnh Album Cưới (Gallery)**:
+    - Khởi tạo thư mục `storage/app/public/templates/giua-muon-ngan-vi-sao/gallery/` và cập nhật mảng `gallery` trong `default_config` trỏ đến 10 ảnh cưới chụp thật chất lượng cao của cặp đôi.
+  - **Cập nhật [`schema.json`](resources/views/client/invitations/giua-muon-ngan-vi-sao/schema.json)**:
+    - Bổ sung trường cấu hình `wedding.extra_data.footer_photo_url` vào section `ending`.
+- **Xác minh kết quả**:
+  - Gửi HTTP request thực tế đến `http://127.0.0.1:8000/xem-thu/giua-muon-ngan-vi-sao` (HTTP 200 OK).
+  - 100% các vị trí ảnh (Hero Cover, Save the Date, Chú rể, Cô dâu, Album 10 ảnh cưới, Mã VietQR động, Ảnh kết thiệp) đều hiển thị ảnh cưới thật từ Storage.
+  - Toàn bộ test suite `GiuaMuonNganViSaoTemplateTest`, `Gate2TemplateStudioAndSyncInvariantsTest`, `TemplateRenderAndMediaSecurityDeepTest` vượt qua 100%.
+  - Định dạng code sạch sẽ theo Laravel Pint (`vendor/bin/pint --dirty --format agent`).
