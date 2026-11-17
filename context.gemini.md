@@ -964,3 +964,33 @@ php artisan serve
   - Pest Feature Tests: 10/10 passed (WebsiteCatalogAndSeoDeepTest, 0 DB query on cached requests).
   - Authentication & Dashboard Tests: 12/12 passed (105 assertions).
   - Pint Formatter: passed.
+
+### Đề án #94: Nâng cấp Toàn Diện Nội Dung & Giao Diện Trang /ve-may-hen (Brand Story & Poetic Heritage)
+- **Yêu cầu**: Tích hợp câu chuyện thương hiệu sâu sắc, lời thơ biểu tượng và giải mã ý nghĩa nhận diện Mây Hẹn (áng mây, trái tim, ngôi sao, sắc vàng champagne) vào trang `/ve-may-hen`, thiết kế giao diện sang trọng chuẩn Quiet Luxury.
+- **Thay đổi**:
+  - **[`resources/views/client/pages/about.blade.php`](resources/views/client/pages/about.blade.php)**:
+    - **Hero Section**: Hiển thị biểu tượng chính `mayhen-favicon.png` với khung viền vàng champagne, tiêu đề thơ mộng *"Mây Hẹn — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi"*, lời tựa xúc động về những lời hẹn bình dị đến ngày cùng chung bước.
+    - **Poetic Heritage Card**: Khung thiệp thư pháp tôn vinh hai câu thơ lục bát độc quyền:
+      > *“Hẹn trời, hẹn đất, hẹn Mây*  
+      > *Hẹn ngày chung bước, đong đầy yêu thương.”*  
+      Kèm 2 cột phân tích văn học sâu sắc về vần thơ "Mây - đầy", ý nghĩa gửi lời hẹn vào càn khôn rộng lớn và sự đồng hành bền bỉ qua những ngày bình dị tương lai.
+    - **Iconography Section (Giải Mã Biểu Tượng)**: Bento Grid 4 thẻ tinh tế giải thích 4 yếu tố cấu thành logo Mây Hẹn:
+      1. *Áng Mây*: Sự dịu dàng, bình yên, tự do và nâng niu lời hẹn.
+      2. *Trái Tim*: Hai người, một hành trình, nhịp đập gắn kết và sẻ chia.
+      3. *Ngôi Sao*: Cột mốc đặc biệt của cuộc đời, ngày cưới tỏa sáng lấp lánh.
+      4. *Sắc Vàng Champagne*: Vẻ đẹp của sự trân trọng, ấm áp, thanh lịch, tinh tế và không phô trương.
+    - **Manifesto Box ("Từ Một Lời Mời Đến Một Kỷ Niệm")**: Thước đo thẩm mỹ *"Bởi một tấm thiệp đẹp không chỉ nằm ở màu sắc, hình ảnh hay hiệu ứng. Nó còn đẹp khi người nhận cảm thấy mình thật sự được chờ đón."* Lưới 3 cột: Thiết kế độc bản, Chạm đến trái tim, Lưu giữ trọn đời.
+    - **Core Values & Impact**: 4 Trụ cột giá trị cốt lõi (Cảm xúc là trọng tâm, Hoàn hảo di động, Tôn trọng riêng tư Luật 91/2025/QH15, Hôn lễ xanh bền vững) cùng số liệu thực tế (50.000+ cặp đôi, 1.000.000+ thiệp gửi, 99.8% hài lòng).
+    - **Lời Hẹn Ước Khép Lại & CTA**: Lời cam kết chung bước và 2 nút hành động dẫn đến kho mẫu và tạo thiệp cưới.
+    - Cập nhật Schema JSON-LD cấu trúc `AboutPage` & `Organization` chuẩn SEO.
+  - **[`public/assets/client/css/pages/about.css`](public/assets/client/css/pages/about.css)**:
+    - Bổ sung hệ thống CSS chuẩn BEM `mayhen_about_*`, zero external library:
+      - `.mayhen_about_hero_logo_wrap`: vòng tròn biểu tượng viền vàng champagne, hiệu ứng nổi 3D.
+      - `.mayhen_about_poem_card`: card thơ lụa viền chỉ đứt nét vàng cổ điển.
+      - `.mayhen_about_iconography_grid` & `.mayhen_about_iconography_card`: thẻ giải mã biểu tượng với icon nổi và hover trượt nhẹ.
+      - `.mayhen_about_manifesto_box`: nền kem gradient Warm Cream editorial.
+      - Responsive tối ưu cho cả Desktop, Tablet và Mobile ($\le 640px$).
+- **Xác minh kết quả**:
+  - Render view thành công (74.317 bytes HTML, 0 lỗi).
+  - Pest: 10/10 passed (WebsiteCatalogAndSeoDeepTest).
+  - Pint: passed.

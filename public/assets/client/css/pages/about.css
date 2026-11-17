@@ -458,6 +458,268 @@
 }
 
 /* ==========================================================================
+   2. HERO LOGO & BADGE
+   ========================================================================== */
+.mayhen_about_hero_logo_wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+    border: 2px solid var(--mh-about-gold);
+    box-shadow: 0 12px 32px rgba(197, 168, 128, 0.25);
+    margin-bottom: 24px;
+    padding: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mayhen_about_hero_logo_wrap:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 16px 40px rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_about_hero_logo_img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   POETIC HERITAGE SECTION (HAI CÂU THƠ, MỘT LỜI HẸN)
+   ========================================================================== */
+.mayhen_about_poem_section {
+    max-width: 980px;
+    margin: 0 auto 72px;
+    padding: 0 20px;
+}
+
+.mayhen_about_poem_card {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FCFAF6 100%);
+    border: 1.5px solid rgba(197, 168, 128, 0.45);
+    border-radius: var(--mh-about-radius-lg);
+    padding: 48px 36px 40px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 16px 48px rgba(97, 59, 62, 0.05);
+}
+
+.mayhen_about_poem_card::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(197, 168, 128, 0.3);
+    border-radius: calc(var(--mh-about-radius-lg) - 6px);
+    pointer-events: none;
+}
+
+.mayhen_about_poem_ornament {
+    font-size: 24px;
+    color: var(--mh-about-gold);
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+.mayhen_about_poem_verse {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--mh-about-primary);
+    margin: 0 0 16px;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_about_poem_subtitle {
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--mh-about-gold-deep);
+    font-weight: 600;
+    margin-bottom: 32px;
+}
+
+.mayhen_about_poem_analysis_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    text-align: left;
+    margin-top: 24px;
+    border-top: 1px solid rgba(232, 227, 218, 0.8);
+    padding-top: 28px;
+}
+
+.mayhen_about_poem_analysis_col h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--mh-about-text-heading);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_about_poem_analysis_col h3 span {
+    color: var(--mh-about-gold);
+}
+
+.mayhen_about_poem_analysis_col p {
+    font-size: 14.5px;
+    color: var(--mh-about-text-muted);
+    line-height: 1.75;
+    margin: 0;
+}
+
+.mayhen_about_poem_footnote {
+    margin-top: 24px;
+    padding: 12px 18px;
+    background: rgba(197, 168, 128, 0.1);
+    border-radius: var(--mh-about-radius-sm);
+    font-size: 13.5px;
+    color: var(--mh-about-gold-deep);
+    font-style: italic;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   ICONOGRAPHY SECTION (GIẢI MÃ Ý NGHĨA BIỂU TƯỢNG)
+   ========================================================================== */
+.mayhen_about_iconography_section {
+    margin-bottom: 80px;
+}
+
+.mayhen_about_iconography_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.mayhen_about_iconography_card {
+    background: #FFFFFF;
+    border: 1px solid var(--mh-about-border);
+    border-radius: var(--mh-about-radius-md);
+    padding: 32px 28px;
+    box-shadow: var(--mh-about-shadow-sm);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_about_iconography_card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(197, 168, 128, 0.6);
+    box-shadow: var(--mh-about-shadow-md);
+}
+
+.mayhen_about_iconography_card_top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.mayhen_about_iconography_badge_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(197, 168, 128, 0.18) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.mayhen_about_iconography_badge_icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--mh-about-gold-deep);
+}
+
+.mayhen_about_iconography_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--mh-about-text-heading);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.mayhen_about_iconography_sub {
+    font-size: 13px;
+    color: var(--mh-about-gold-deep);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.mayhen_about_iconography_desc {
+    font-size: 15px;
+    color: var(--mh-about-text-muted);
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* ==========================================================================
+   MANIFESTO: TỪ MỘT LỜI MỜI ĐẾN MỘT KỶ NIỆM
+   ========================================================================== */
+.mayhen_about_manifesto_box {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    border-radius: var(--mh-about-radius-lg);
+    padding: 56px 40px;
+    margin-bottom: 80px;
+    position: relative;
+}
+
+.mayhen_about_manifesto_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 40px;
+}
+
+.mayhen_about_manifesto_item {
+    background: #FFFFFF;
+    border-radius: var(--mh-about-radius-md);
+    padding: 28px 22px;
+    border: 1px solid rgba(232, 227, 218, 0.9);
+    box-shadow: 0 4px 16px rgba(43, 26, 17, 0.04);
+}
+
+.mayhen_about_manifesto_item_icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(197, 168, 128, 0.15);
+    color: var(--mh-about-gold-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.mayhen_about_manifesto_item_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--mh-about-text-heading);
+    margin-bottom: 10px;
+}
+
+.mayhen_about_manifesto_item_desc {
+    font-size: 14px;
+    color: var(--mh-about-text-muted);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN (MOBILE-FIRST EXCELLENCE)
    ========================================================================== */
 @media (max-width: 992px) {
@@ -479,17 +741,46 @@
         grid-template-columns: 1fr;
         gap: 20px;
     }
+    .mayhen_about_iconography_grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .mayhen_about_manifesto_grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .mayhen_about_poem_analysis_grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 @media (max-width: 640px) {
     .mayhen_about_hero {
         padding: 48px 16px 40px;
     }
+    .mayhen_about_hero_logo_wrap {
+        width: 76px;
+        height: 76px;
+        margin-bottom: 18px;
+    }
     .mayhen_about_hero_title {
-        font-size: 28px;
+        font-size: 26px;
     }
     .mayhen_about_hero_lead {
-        font-size: 16px;
+        font-size: 15.5px;
+    }
+    .mayhen_about_poem_card {
+        padding: 32px 18px 24px;
+    }
+    .mayhen_about_poem_verse {
+        font-size: 21px;
+    }
+    .mayhen_about_iconography_card {
+        padding: 24px 18px;
+    }
+    .mayhen_about_manifesto_box {
+        padding: 36px 18px;
     }
     .mayhen_about_stats_grid {
         grid-template-columns: 1fr;
@@ -509,7 +800,7 @@
         padding: 36px 20px;
     }
     .mayhen_about_cta_title {
-        font-size: 26px;
+        font-size: 24px;
     }
     .mayhen_about_cta_btn_group {
         flex-direction: column;
