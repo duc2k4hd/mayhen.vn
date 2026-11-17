@@ -1073,3 +1073,34 @@ php artisan serve
   - Test Suite `AdminTemplateTest`: 11/11 passed (67 assertions, kiểm thử thành công cả luồng create và update full_page_preview).
   - Toàn bộ suite `AdminTemplate*`: 23/23 passed (153 assertions).
   - Pint code style: passed 100%.
+
+### Đề án #98: Tích hợp Google Tag Manager (GTM) vào thẻ <head> & Quản lý Cấu hình trong Admin Settings
+- **Bối cảnh & Yêu cầu người dùng**:
+  - Tích hợp mã Google Tag Manager (GTM) vào thẻ `<head>` của website theo cấu trúc:
+    ```html
+    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-PQF4ZWBG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    ```
+  - Quản trị viên có thể tùy biến hoặc thay đổi mã GTM Container ID trực tiếp trong trang Quản trị Admin (`/admin/settings/platform?group=brand_seo`).
+- **Giải pháp kỹ thuật đã triển khai**:
+  - **1. Cấu hình Nền tảng Platform Settings ([`PlatformConfigurationService.php`](app/Services/PlatformConfigurationService.php) & [`PlatformSetting.php`](app/Models/PlatformSetting.php))**:
+    - Bổ sung cài đặt `gtm_container_id` vào nhóm `brand_seo` (mặc định `'GTM-PQF4ZWBG'`, `type => 'text'`).
+    - Thêm helper method `PlatformSetting::getGtmContainerId()`:
+      - Tự động bóc tách mã ID chính xác kể cả khi người dùng dán nguyên đoạn thẻ script `<script async src="...GTM-XXXXX...">`.
+      - Trả về `null` khi người dùng xóa trắng (hỗ trợ tắt theo dõi GTM an toàn).
+    - Tự động làm mới cache và xóa runtime cache khi admin lưu cài đặt mới qua `AdminPlatformSettingController.php`.
+  - **2. Thành phần Blade Component GTM ([`resources/views/client/components/gtm.blade.php`](resources/views/client/components/gtm.blade.php))**:
+    - Nhúng script GTM async và khởi tạo `window.dataLayer`, `gtag('js', new Date())` chuẩn theo yêu cầu.
+    - Cơ chế an toàn `@if (!empty($gtmContainerId))` không làm phát sinh lỗi JS khi chưa cấu hình hoặc khi tắt theo dõi.
+  - **3. Nhúng Toàn diện vào Thẻ `<head>` của Toàn Bộ Hệ Thống**:
+    - Layout Website Client: [`resources/views/client/components/head.blade.php`](resources/views/client/components/head.blade.php) (bao phủ Trang chủ, Dịch vụ, Bảng giá, Kho mẫu, Cẩm nang cưới, Giới thiệu, Tài khoản, Tạo thiệp).
+    - Layout Mẫu Thiệp Cưới: [`resources/views/client/layouts/invitation.blade.php`](resources/views/client/layouts/invitation.blade.php) (bao phủ mọi mẫu thiệp cưới công khai và trang xem thử).
+    - Thiệp mời công khai độc lập: [`resources/views/client/pages/public-invitation.blade.php`](resources/views/client/pages/public-invitation.blade.php).
+- **Xác minh kết quả**:
+  - Test Suite `GoogleTagManagerIntegrationTest`: 5/5 tests passed (10 assertions, kiểm thử hiển thị mặc định, đổi ID, trích xuất mã khi dán thẻ script, tắt GTM và lưu từ trang admin).
+  - Test Suite `WebsiteCatalogAndSeoDeepTest`: 10/10 passed (63 assertions, chuẩn 0 DB query).
+  - Pint code style: passed 100%.

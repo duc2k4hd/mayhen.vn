@@ -16,6 +16,9 @@
 {{-- Favicon --}}
 @include('client.components.favicon')
 
+{{-- Google Tag Manager (GTM) --}}
+@include('client.components.gtm')
+
 @php
     // Kiểm tra URL có chứa tham số query (? hoặc &)
     $hasQueryParams = count(request()->query()) > 0 || !empty(request()->getQueryString());

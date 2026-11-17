@@ -103,9 +103,11 @@ class AdminPlatformSettingController extends Controller
 
         // Xóa memoization và cache liên quan để cập nhật ngay lập tức
         HomeController::clearMemoization();
+        PlatformSetting::clearRuntimeCache();
         Cache::forget('mayhen_home_hero_banner');
         Cache::forget('platform_setting_brand_seo_brand_logo');
         Cache::forget('platform_setting_brand_seo_brand_favicon');
+        Cache::forget('platform_setting_brand_seo_gtm_container_id');
 
         if ($result['updated'] === 0) {
             return back()->with('info', 'Không có giá trị nào thay đổi trong nhóm thiết lập này.');

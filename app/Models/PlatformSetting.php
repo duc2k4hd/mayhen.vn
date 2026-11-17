@@ -107,6 +107,29 @@ class PlatformSetting extends Model
         return $finalValue;
     }
 
+    public static function clearRuntimeCache(): void
+    {
+        static::$runtimeCache = [];
+    }
+
+    /**
+     * Lấy mã Google Tag Manager Container ID (mặc định GTM-PQF4ZWBG).
+     */
+    public static function getGtmContainerId(): ?string
+    {
+        $raw = (string) static::getValue(static::GROUP_BRAND_SEO, 'gtm_container_id', 'GTM-PQF4ZWBG');
+        $raw = trim($raw);
+        if ($raw === '') {
+            return null;
+        }
+
+        if (preg_match('/GTM-[A-Z0-9]+/i', $raw, $matches)) {
+            return strtoupper($matches[0]);
+        }
+
+        return $raw;
+    }
+
     /**
      * Lấy địa chỉ email hệ thống nội bộ (admin@mayhen.vn).
      */

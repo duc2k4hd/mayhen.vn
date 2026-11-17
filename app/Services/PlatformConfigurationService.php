@@ -51,6 +51,13 @@ class PlatformConfigurationService
                     'support_email' => ['label' => 'Hòm Thư Hỗ Trợ Khách Hàng', 'default' => 'support@mayhen.vn', 'is_secret' => false, 'type' => 'text', 'help' => 'Email tiếp nhận phản hồi từ cặp đôi và quan khách (mặc định support@mayhen.vn).'],
                     'hotline' => ['label' => 'Đường Dây Nóng (Hotline)', 'default' => '0988.776.xxx', 'is_secret' => false, 'type' => 'text', 'help' => 'Số điện thoại hiển thị tại chân trang và trung tâm hỗ trợ.'],
                     'default_meta_description' => ['label' => 'Meta Description Mặc Định', 'default' => 'Mây Hẹn - Nền tảng thiết kế & gửi thiệp cưới online phong cách Quiet Luxury cao cấp, lưu trữ trọn đời và quản lý khách mời thông minh.', 'is_secret' => false, 'type' => 'textarea', 'help' => 'Đoạn mô tả ngắn gọn tối ưu cho công cụ tìm kiếm Google.'],
+                    'gtm_container_id' => [
+                        'label' => 'Mã Google Tag Manager (GTM Container ID)',
+                        'default' => 'GTM-PQF4ZWBG',
+                        'is_secret' => false,
+                        'type' => 'text',
+                        'help' => 'Mã vùng chứa GTM (ví dụ: GTM-PQF4ZWBG) tự động chèn mã theo dõi vào thẻ <head> của toàn bộ website và thiệp cưới. Hỗ trợ nhập mã ID hoặc dán cả đoạn thẻ script. Để trống nếu muốn tắt theo dõi.',
+                    ],
                 ],
             ],
 

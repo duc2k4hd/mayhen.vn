@@ -10,6 +10,9 @@
 
     @include('client.components.favicon')
 
+    {{-- Google Tag Manager (GTM) --}}
+    @include('client.components.gtm')
+
     <!-- Open Graph for Zalo / Facebook & Social Link Preview (Section 27 Master PRD V3) -->
     <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
     <meta property="og:type" content="article">

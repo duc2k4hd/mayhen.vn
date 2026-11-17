@@ -53,6 +53,9 @@
     {{-- Favicon chuẩn Mây Hẹn --}}
     @include('client.components.favicon')
 
+    {{-- Google Tag Manager (GTM) --}}
+    @include('client.components.gtm')
+
     {{-- CSS Reset Cốt Lõi: Full viền tuyệt đối, triệt tiêu 100% margin mặc định của trình duyệt --}}
     <style id="mayhen_invitation_base_reset">
         *, *::before, *::after {
