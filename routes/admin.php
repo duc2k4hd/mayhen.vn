@@ -673,6 +673,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminDocsManagerController::class, 'index'])->name('index');
         Route::get('/create', [AdminDocsManagerController::class, 'create'])->name('create');
         Route::post('/', [AdminDocsManagerController::class, 'store'])->name('store');
+        Route::post('/preview', [AdminDocsManagerController::class, 'preview'])->name('preview');
         Route::get('/{space}/{category}/{slug}/edit', [AdminDocsManagerController::class, 'edit'])->name('edit');
         Route::put('/{space}/{category}/{slug}', [AdminDocsManagerController::class, 'update'])->name('update');
         Route::delete('/{space}/{category}/{slug}', [AdminDocsManagerController::class, 'destroy'])->name('destroy');

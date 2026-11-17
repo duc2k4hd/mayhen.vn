@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\DocumentationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -218,5 +219,31 @@ class AdminDocsManagerController extends Controller
         return redirect()
             ->route('admin.docs_manager.index', ['space' => $space])
             ->with('success', "Đã xóa tài liệu [{$slug}] thành công!");
+    }
+
+    /**
+     * API Preview Render Markdown theo thời gian thực chuẩn giao diện Docs Mây Hẹn.
+     */
+    public function preview(Request $request): JsonResponse
+    {
+        $content = (string) $request->input('content', '');
+        $title = (string) $request->input('title', 'Tiêu đề tài liệu');
+        $summary = (string) $request->input('summary', '');
+        $categoryName = (string) $request->input('category_name', 'Chuyên mục');
+        $space = (string) $request->input('space', 'client');
+
+        $toc = [];
+        $htmlBody = $this->docsService->renderMarkdownBody($content, $toc);
+
+        return response()->json([
+            'success' => true,
+            'html_body' => $htmlBody,
+            'toc' => $toc,
+            'title' => $title,
+            'summary' => $summary,
+            'category_name' => $categoryName,
+            'space' => $space,
+            'updated_at' => date('d/m/Y'),
+        ]);
     }
 }

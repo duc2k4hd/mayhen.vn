@@ -601,7 +601,14 @@ php artisan serve
   - Menu item tích hợp trực tiếp tại `resources/views/admin/layouts/master.blade.php` trong mục `Tổng Quan & Trí Tuệ`.
 - **Giao diện Quản trị (Pure HTML/CSS/JS — Zero External Frameworks)**:
   - `resources/views/admin/pages/docs_manager/index.blade.php`: KPI Cards thống kê (Tổng số Docs, Docs Client, Docs Admin, Số chuyên mục), thanh lọc tabs không gian (`Tất cả` | `Khách hàng` | `Admin SOP`), dropdown chuyên mục, ô tìm kiếm thời gian thực, bảng quản trị với badge ID, thẻ tags, và nút thao tác nhanh (Xem trực tiếp trên web, Chỉnh sửa, Xóa an toàn).
-  - `resources/views/admin/pages/docs_manager/create.blade.php` & `edit.blade.php`: Bố cục 2 cột trực quan. Cột trái gồm tiêu đề, tóm tắt, bộ soạn thảo Markdown kèm thanh công cụ tiện ích (H2, H3, In đậm, In nghiêng, Note, Tip, Warning callouts, Code block, Table snippet). Cột phải gồm lựa chọn không gian, chọn/tạo chuyên mục, mã ID tệp, thứ tự, đối tượng độc giả, tags, phân quyền vai trò (`required_role`), mức rủi ro (`risk_level`), và đường dẫn liên kết.
+  - `resources/views/admin/pages/docs_manager/partials/editor_canvas.blade.php`:
+    - **Trình Soạn Thảo Trực Quan (Visual Document Writer)**: Soạn bài trực quan như trong Word/Google Docs/Notion, không bắt người mới phải gõ cú pháp Markdown thô.
+    - **Live Preview Giống Hệt 100% Khách Hàng**: Nạp toàn bộ CSS `docs-main.css`, font Playfair Display & Open Sans, render đầy đủ Breadcrumb, Kicker, H1, Meta, Lead Text, Callouts và Box trợ giúp chân trang.
+    - **Chế Độ Xem Song Song (Split Screen 50/50)**: Vừa gõ bài bên trái vừa thấy bài viết hiển thị trực tiếp theo thời gian thực bên phải.
+    - **Thanh Công Cụ Định Dạng Thông Minh**: Đổi kiểu chữ (H2, H3, P), in đậm, in nghiêng, gạch chân, hộp ghi chú (Note/Tip/Warning), chèn ảnh kèm caption, chèn link, chèn bảng, trích dẫn.
+    - **Mẫu Khung Bài Viết Có Sẵn (Quick Templates)**: 4 mẫu cấu trúc chuẩn (Hướng dẫn từng bước 1-2-3, Giới thiệu tính năng, SOP vận hành, FAQ) giúp người mới bấm 1 click là có ngay bài viết mẫu để chỉnh sửa.
+    - **Đồng Bộ Hai Chiều (2-Way Sync Engine)**: Tự động chuyển đổi giữa Visual Editor HTML và Markdown chuẩn để lưu trữ an toàn vào file `.md`.
+  - `resources/views/admin/pages/docs_manager/create.blade.php` & `edit.blade.php`: Tích hợp canvas soạn thảo trực quan, kết hợp cột cấu hình metadata (Không gian, Chuyên mục, ID, Thứ tự, Reader, Tags, Phân quyền vai trò, Mức độ rủi ro, Route liên kết).
 - **Triệt Tiêu Hoàn Toàn Margin Mặc Định Của Trình Duyệt Trong Studio Preview**:
   - Đã bổ sung gán inline style trực tiếp `document.body.style.setProperty('margin', '0px', 'important')` và `document.documentElement.style.setProperty('margin', '0px', 'important')` trong `editor-bridge.blade.php`.
   - Kết hợp với CSS Reset toàn cục để đảm bảo 100% mẫu thiệp cưới hiển thị tràn viền (full viền) hoàn hảo trong khung mockup điện thoại, triệt tiêu dải màu margin 8px mặc định từ user agent stylesheet.

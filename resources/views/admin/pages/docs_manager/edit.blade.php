@@ -244,23 +244,8 @@
                     </div>
 
                     <div class="mayhen_admin_form_group">
-                        <label class="mayhen_admin_label" for="doc_content">Nội Dung Chi Tiết (Markdown) <span class="required">*</span></label>
-                        
-                        <!-- Toolbar chèn nhanh cú pháp Markdown -->
-                        <div class="mayhen_admin_toolbar">
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('## ', '')">H2</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('### ', '')">H3</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('**', '**')"><b>B</b></button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('*', '*')"><i>I</i></button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('> [!NOTE]\n> ', '')">📘 Note</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('> [!TIP]\n> ', '')">💡 Tip</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('> [!WARNING]\n> ', '')">⚠️ Warning</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('```php\n', '\n```')">Code</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertTable()">📊 Bảng</button>
-                            <button type="button" class="mayhen_admin_tb_btn" onclick="insertSyntax('- ', '')">Danh sách</button>
-                        </div>
-
-                        <textarea id="doc_content" name="content" class="mayhen_admin_textarea mayhen_admin_editor_textarea" placeholder="Soạn thảo nội dung tài liệu bằng Markdown..." required>{{ old('content', $article['content'] ?? '') }}</textarea>
+                        <label class="mayhen_admin_label">Nội Dung Chi Tiết Bài Viết <span class="required">*</span></label>
+                        @include('admin.pages.docs_manager.partials.editor_canvas')
                     </div>
                 </div>
             </div>
@@ -398,22 +383,6 @@
 </div>
 
 <script>
-function insertSyntax(before, after) {
-    const textarea = document.getElementById('doc_content');
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end);
-    const replacement = before + (selected || 'nội_dung') + after;
-    textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
-    textarea.focus();
-    textarea.setSelectionRange(start + before.length, start + before.length + (selected ? selected.length : 8));
-}
-
-function insertTable() {
-    const tableText = "\n| Cột 1 | Cột 2 | Cột 3 |\n| :--- | :--- | :--- |\n| Giá trị 1 | Giá trị 2 | Giá trị 3 |\n| Giá trị 4 | Giá trị 5 | Giá trị 6 |\n\n";
-    insertSyntax(tableText, "");
-}
-
 function onCategorySelect(val) {
     if (!val) return;
     const sel = document.getElementById('category_slug_select');

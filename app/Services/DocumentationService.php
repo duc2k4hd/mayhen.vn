@@ -840,6 +840,22 @@ class DocumentationService
     }
 
     /**
+     * Xuất bản HTML Markdown ra bên ngoài phục vụ Preview trực quan trong Admin Docs Manager.
+     *
+     * @param  array<int, array{id: string, text: string, level: int}>|null  $toc
+     */
+    public function renderMarkdownBody(string $markdown, ?array &$toc = null): string
+    {
+        $dummyToc = [];
+        $actualToc = &$toc;
+        if ($actualToc === null) {
+            $actualToc = $dummyToc;
+        }
+
+        return $this->renderMarkdown($markdown, $actualToc);
+    }
+
+    /**
      * Chuyển đổi Markdown cơ bản sang HTML ngữ nghĩa an toàn và sinh TOC.
      *
      * @param  array<int, array{id: string, text: string, level: int}>  $toc
