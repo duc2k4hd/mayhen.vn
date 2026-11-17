@@ -1,10 +1,53 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . config('app.name'))
-@section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . config('app.name') . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
+@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . config('app.name', 'Mây Hẹn'))
+@section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . config('app.name', 'Mây Hẹn') . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
+@section('canonical', route('blog.index'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/blog.css') }}">
+@endpush
+
+@push('schema')
+<script type="application/ld+json">
+{!! json_encode([
+    '@' . 'context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type' => 'BreadcrumbList',
+            '@id' => url('/cam-nang-cuoi') . '/#breadcrumb',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Trang chủ',
+                    'item' => url('/'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Cẩm nang cưới',
+                    'item' => url('/cam-nang-cuoi'),
+                ],
+            ],
+        ],
+        [
+            '@type' => 'Blog',
+            '@id' => url('/cam-nang-cuoi') . '/#blog',
+            'url' => url('/cam-nang-cuoi'),
+            'name' => 'Cẩm Nang Cưới & Chuyên Đề Hôn Lễ — Mây Hẹn',
+            'description' => 'Góc nhìn tinh tế về nghệ thuật cưới Quiet Luxury, nghi lễ truyền thống và kinh nghiệm chuẩn bị ngày cưới trọn vẹn.',
+            'inLanguage' => 'vi-VN',
+            'publisher' => [
+                '@type' => 'Organization',
+                '@id' => url('/') . '/#organization',
+                'name' => 'Mây Hẹn',
+                'url' => url('/'),
+            ],
+        ],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
 @endpush
 
 @section('content')

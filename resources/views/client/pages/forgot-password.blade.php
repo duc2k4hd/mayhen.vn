@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#faf7f3">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="Quên mật khẩu Mây Hẹn? Khôi phục tài khoản an toàn để tiếp tục chuẩn bị cho ngày chung đôi.">
-  <meta name="robots" content="noindex, follow">
+  <meta name="robots" content="noindex, nofollow">
   <title>Quên mật khẩu | {{ config('app.name', 'Mây Hẹn') }}</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">

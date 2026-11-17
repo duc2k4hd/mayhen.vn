@@ -2,9 +2,52 @@
 
 @section('title', 'Về ' . config('app.name') . ' — Nền Tảng Thiệp Cưới Online Đẳng Cấp')
 @section('meta_description', 'Câu chuyện thương hiệu và sứ mệnh của ' . config('app.name') . ' (mayhen.vn) trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.')
+@section('canonical', route('about'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
+@endpush
+
+@push('schema')
+<script type="application/ld+json">
+{!! json_encode([
+    '@' . 'context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type' => 'BreadcrumbList',
+            '@id' => url('/ve-may-hen') . '/#breadcrumb',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Trang chủ',
+                    'item' => url('/'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Về Mây Hẹn',
+                    'item' => url('/ve-may-hen'),
+                ],
+            ],
+        ],
+        [
+            '@type' => 'AboutPage',
+            '@id' => url('/ve-may-hen') . '/#webpage',
+            'url' => url('/ve-may-hen'),
+            'name' => 'Về Mây Hẹn — Nền Tảng Thiệp Cưới Online Đẳng Cấp',
+            'description' => 'Câu chuyện thương hiệu và sứ mệnh của Mây Hẹn (mayhen.vn) trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.',
+            'inLanguage' => 'vi-VN',
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                '@id' => url('/') . '/#website',
+                'name' => 'Mây Hẹn',
+                'url' => url('/'),
+            ],
+        ],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
 @endpush
 
 @section('content')

@@ -11,6 +11,7 @@
   @if(($space ?? 'client') === 'admin')
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
   @else
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta property="og:title" content="{{ $pageTitle ?? 'Mây Hẹn Docs' }}">
     <meta property="og:description" content="{{ $metaDescription ?? '' }}">

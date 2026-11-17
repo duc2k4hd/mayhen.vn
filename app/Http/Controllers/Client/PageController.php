@@ -44,6 +44,20 @@ class PageController extends Controller
     protected static ?int $contactLastModified = null;
 
     /**
+     * Cache ETag & Last-Modified cho các trang tĩnh (about, faq, how-it-works) trong worker memory.
+     *
+     * @var array<string, array{0: string, 1: int}>
+     */
+    protected static array $staticPagesMeta = [];
+
+    /**
+     * Cache CmsPage cho terms và privacy trong worker memory.
+     *
+     * @var array<string, CmsPage|null>
+     */
+    protected static array $memoizedCmsPages = [];
+
+    /**
      * Xóa sạch RAM memoization khi cần thiết.
      */
     public static function clearMemoization(): void
@@ -52,6 +66,8 @@ class PageController extends Controller
         self::$servicesLastModified = null;
         self::$contactEtag = null;
         self::$contactLastModified = null;
+        self::$staticPagesMeta = [];
+        self::$memoizedCmsPages = [];
         self::clearPricingMemoization();
     }
 
@@ -218,14 +234,63 @@ class PageController extends Controller
             ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
-    public function howItWorks(): View
+    protected static function resolveStaticPageMeta(string $viewFile, string $key): array
     {
-        return view('client.pages.how-it-works');
+        if (isset(self::$staticPagesMeta[$key])) {
+            return self::$staticPagesMeta[$key];
+        }
+
+        $viewPath = resource_path("views/client/pages/{$viewFile}.blade.php");
+        $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
+        $etag = '"mayhen_'.$key.'_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
+
+        return self::$staticPagesMeta[$key] = [$etag, $mtime];
     }
 
-    public function about(): View
+    public function howItWorks(Request $request): Response|View
     {
-        return view('client.pages.about');
+        if ($request->user() !== null) {
+            return view('client.pages.how-it-works');
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta('how-it-works', 'how_it_works');
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.how-it-works')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    }
+
+    public function about(Request $request): Response|View
+    {
+        if ($request->user() !== null) {
+            return view('client.pages.about');
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta('about', 'about');
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.about')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     /**
@@ -353,21 +418,52 @@ class PageController extends Controller
         return back()->with('contact_success', true);
     }
 
-    public function faq(): View
+    protected static function getCachedCmsPage(string $slug): ?CmsPage
     {
-        return view('client.pages.faq');
+        if (array_key_exists($slug, self::$memoizedCmsPages)) {
+            return self::$memoizedCmsPages[$slug];
+        }
+
+        $page = Cache::remember("mayhen_cms_page_{$slug}", 86400, function () use ($slug) {
+            return CmsPage::where('slug', $slug)->published()->first();
+        });
+
+        return self::$memoizedCmsPages[$slug] = $page;
+    }
+
+    public function faq(Request $request): Response|View
+    {
+        if ($request->user() !== null) {
+            return view('client.pages.faq');
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta('faq', 'faq');
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view('client.pages.faq')
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     public function terms(): View
     {
-        $page = CmsPage::where('slug', 'dieu-khoan-dich-vu')->published()->first();
+        $page = self::getCachedCmsPage('dieu-khoan-dich-vu');
 
         return view('client.pages.terms', compact('page'));
     }
 
     public function privacy(): View
     {
-        $page = CmsPage::where('slug', 'chinh-sach-bao-mat')->published()->first();
+        $page = self::getCachedCmsPage('chinh-sach-bao-mat');
 
         return view('client.pages.privacy', compact('page'));
     }

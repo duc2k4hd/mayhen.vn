@@ -6,7 +6,7 @@
     <title>Thiệp mời cưới: "{{ $wedding->groom_name }} & {{ $wedding->bride_name }}" | {{ config('app.name') }}</title>
     <meta name="description" content="Trân trọng kính mời quý khách tới chung vui cùng {{ $wedding->groom_name }} & {{ $wedding->bride_name }}.">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" content="noindex, nofollow">
 
     @include('client.components.favicon')
 

@@ -19,10 +19,25 @@
 @php
     // Kiểm tra URL có chứa tham số query (? hoặc &)
     $hasQueryParams = count(request()->query()) > 0 || !empty(request()->getQueryString());
-    // Trang xem thử, tạo thiệp, thiệp cưới hoặc admin mặc định là noindex, nofollow
-    $isNoFollowRoute = request()->is('xem-thu*', 'admin*', 'tao-thiep*', 'thiep*');
-    // Các trang công cụ/chức năng khác không phải trang nội dung SEO chính là noindex, follow
-    $isNonMainPage = request()->is('thanh-toan*', 'tai-khoan*');
+    // Trang xem thử, tạo thiệp, thiệp cưới, admin, auth, checkout, tài khoản và đối tác mặc định là noindex, nofollow
+    $isNoFollowRoute = request()->is(
+        'xem-thu*',
+        'admin*',
+        'tao-thiep*',
+        'thiep*',
+        'dang-nhap*',
+        'dang-ky*',
+        'quen-mat-khau*',
+        'doi-mat-khau*',
+        'doi-tac*',
+        'trinh-chieu*',
+        'checkin*',
+        'thanh-toan*',
+        'tai-khoan*',
+        'api*'
+    );
+    // Các trang có query params tìm kiếm lọc nội bộ cũng không index để tránh duplicate content
+    $isNonMainPage = false;
 @endphp
 @if (trim($__env->yieldContent('robots')))
     <meta name="robots" content="@yield('robots')">

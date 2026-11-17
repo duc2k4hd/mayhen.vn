@@ -650,6 +650,7 @@ Route::post('/api/feedback/submit', function (Request $request) {
     ]);
 })->middleware('throttle:20,1')->name('feedback.submit');
 Route::get('/huong-dan', [PageController::class, 'howItWorks'])->name('how-it-works');
+Route::permanentRedirect('/huong-dan-tao-thiep', '/huong-dan');
 Route::get('/ve-may-hen', [PageController::class, 'about'])->name('about');
 Route::get('/lien-he', [PageController::class, 'contact'])->name('contact');
 Route::post('/lien-he', [PageController::class, 'submitContact'])->middleware('throttle:10,1')->name('contact.submit');

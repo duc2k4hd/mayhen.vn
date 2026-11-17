@@ -188,29 +188,6 @@ class AdminDocsManagerController extends Controller
     }
 
     /**
-     * Quét danh sách các ảnh docs có sẵn phục vụ bộ chọn ảnh trực quan.
-     *
-     * @return array<int, string>
-     */
-    protected function getDocsAvailableImages(): array
-    {
-        $docsImages = [];
-        $imgDir = public_path('assets/client/docs/images');
-        if (is_dir($imgDir)) {
-            $files = \Illuminate\Support\Facades\File::allFiles($imgDir);
-            foreach ($files as $f) {
-                $ext = strtolower($f->getExtension());
-                if (in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif'], true)) {
-                    $rel = str_replace(public_path(), '', $f->getRealPath());
-                    $docsImages[] = str_replace('\\', '/', $rel);
-                }
-            }
-        }
-
-        return $docsImages;
-    }
-
-    /**
      * Xử lý cập nhật tài liệu.
      */
     public function update(Request $request, string $space, string $category, string $slug): RedirectResponse

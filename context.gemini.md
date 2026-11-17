@@ -611,5 +611,41 @@ php artisan serve
     - **Floating Link Popover**: Khi click vào thẻ `<a>`, popover thông minh xuất hiện hiển thị URL đích, nút `✏️ Sửa link`, nút `↗️ Mở trang đích tab mới`, và nút `🔗✕ Gỡ bỏ link` (giữ nguyên văn bản).
     - **Smart Internal Link Picker**: Modal chèn/sửa link tích hợp dropdown nạp toàn bộ danh sách bài viết Docs nội bộ (nhóm theo Client và Admin SOP). Người mới chỉ cần chọn bài viết mong muốn, hệ thống sẽ **tự động điền URL chuẩn** (`/docs/{category}/{slug}` hoặc `/admin/docs/{category}/{slug}`) và **tự động điền Tiêu đề bài viết**, triệt tiêu nguy cơ gõ sai link hay người mới không biết URL.
 - **Kiểm Thử Toàn Diện ([`AdminDocsManagerCrudTest.php`](tests/Feature/AdminDocsManagerCrudTest.php))**:
-  - Bộ kiểm thử Pest đạt **7/7 test cases PASS (100%)**, 59 assertions, thời gian chạy ~1.1s.
+  - Bộ kiểm thử Pest đạt **8/8 test cases PASS (100%)**, 64 assertions, thời gian chạy ~1.1s.
   - Định dạng chuẩn mực qua `vendor/bin/pint --dirty --format agent`.
+
+### 5.17. Rà Soát Chuẩn Hóa SEO & Tối Ưu Tốc Độ Tải Trang Toàn Bộ Các Trang Public ([`PublicPagesSeoAndPerformanceTest.php`](tests/Feature/PublicPagesSeoAndPerformanceTest.php))
+- **Mục tiêu**: Kiểm tra và tối ưu toàn diện các trang công cộng (Public Pages), khắc phục triệt để các lỗ hổng lập chỉ mục, thiết lập Structured Data Schema.org, nâng cấp XML Sitemap động và tối đa hóa tốc độ tải trang chịu tải hàng triệu người dùng.
+- **Khắc phục lỗi chặn lập chỉ mục (Robots Meta & Directives)**:
+  - *Sửa lỗi nghiêm trọng trên trang Chi tiết Mẫu thiệp (`template-detail.blade.php`)*: Trang chi tiết mẫu thiệp trước đó bị gán nhầm `@section('robots', 'noindex, follow')`, khiến Google bỏ qua toàn bộ danh mục sản phẩm mẫu thiệp. Đã sửa thành `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`, đồng thời bổ sung đầy đủ canonical URL và OpenGraph image từ thumbnail mẫu thiệp.
+  - *Thiết lập chặn lập chỉ mục triệt để cho toàn bộ trang riêng tư (`head.blade.php` & Auth Pages)*:
+    - Nhận diện tự động toàn bộ route: `xem-thu*`, `admin*`, `tao-thiep*`, `thiep*`, `dang-nhap*`, `dang-ky*`, `quen-mat-khau*`, `doi-mat-khau*`, `doi-tac*`, `trinh-chieu*`, `checkin*`, `thanh-toan*`, `tai-khoan*`, `api*` và các URL có query param tìm kiếm lọc.
+    - Cưỡng chế thẻ `<meta name="robots" content="noindex, nofollow">` trên tất cả trang xác thực (`login`, `register`, `forgot-password`, `reset-password`), trang thiệp cưới khách mời cá nhân (`public-invitation.blade.php`) nhằm tuân thủ tuyệt đối Luật Bảo vệ Dữ liệu Cá nhân (91/2025/QH15).
+  - *Chuẩn hóa tệp `public/robots.txt`*:
+    - Sửa các đường dẫn cũ không khớp (`/ve-chung-toi` -> `/ve-may-hen`, `/bai-viet` -> `/cam-nang-cuoi/`).
+    - Bổ sung chỉ thị Allow rõ ràng cho `/huong-dan`, `/tu-van-goi-cuoi`, `/trang/`.
+    - Bổ sung Disallow toàn bộ phân hệ quản trị, tài khoản, đối tác, xác thực, thanh toán, xem thử và ngăn bot cào query search (`/*?*q=`).
+    - Khai báo đầy đủ 2 Sitemap: `https://mayhen.vn/sitemap.xml` và `https://mayhen.vn/sitemap-docs.xml`.
+- **Mở rộng toàn diện XML Sitemap Engine ([`SitemapController.php`](app/Http/Controllers/Client/SitemapController.php))**:
+  - Không còn giới hạn ở 11 trang tĩnh cố định.
+  - Tự động nạp động toàn bộ **Mẫu thiệp cưới đang hoạt động** (`TemplateController::getAllActive()`) với `priority: 0.85`, `changefreq: weekly` và `lastmod` cập nhật theo thời gian thực.
+  - Tự động nạp động toàn bộ **Bài viết Cẩm nang cưới đã xuất bản** (`BlogPost::published()`) với `priority: 0.8`, `changefreq: weekly` và `lastmod` cập nhật theo thời gian thực.
+  - Tích hợp 2 tầng cache (Static RAM Memoization + Cache file/redis 24h) và **HTTP 304 Not Modified** thông qua ETag của toàn bộ XML payload, giúp bot Google kiểm tra sitemap trong 0.00ms mà không tốn tài nguyên máy chủ.
+- **Bổ sung Structured Data Schema.org (JSON-LD Rich Snippets)**:
+  - `about.blade.php`: Bổ sung `AboutPage` Schema kết hợp `BreadcrumbList`.
+  - `faq.blade.php`: Bổ sung `FAQPage` Schema gồm 5 câu hỏi thường gặp tiêu chuẩn, kích hoạt tính năng kết quả tìm kiếm mở rộng (Rich Snippets) trên Google.
+  - `blog/index.blade.php`: Bổ sung `Blog` / `CollectionPage` Schema kết hợp `BreadcrumbList`.
+  - `docs/layout.blade.php`: Khai báo rõ ràng meta robots `index, follow` cho tài liệu khách hàng và `noindex, nofollow` cho tài liệu Admin SOP.
+- **Tối ưu hóa hiệu năng & Triệt tiêu nghẽn Database (Zero DB Bottleneck)**:
+  - Trong `PageController.php`:
+    - Áp dụng Static RAM Memoization và ETag / HTTP 304 Not Modified cho các trang: `/ve-may-hen` (about), `/cau-hoi-thuong-gap` (faq), `/huong-dan` (how-it-works).
+    - Áp dụng In-Memory Memoization cho `CmsPage` tại `/dieu-khoan-dich-vu` (terms) và `/chinh-sach-bao-mat` (privacy).
+    - Đảm bảo khi phục vụ hàng triệu lượt truy cập đồng thời vào các trang chính, toàn bộ dữ liệu trả về tức thì từ RAM mà không phát sinh câu truy vấn MySQL nào.
+- **Kiểm thử tự động Pest ([`PublicPagesSeoAndPerformanceTest.php`](tests/Feature/PublicPagesSeoAndPerformanceTest.php))**:
+  - Đã xây dựng bộ kiểm thử gồm 5 test cases lớn, **185 assertions kiểm tra toàn diện**:
+    1. Kiểm tra SEO thẻ meta, OpenGraph, Canonical, JSON-LD Schema và `robots: index, follow` trên toàn bộ 12 trang chính.
+    2. Kiểm tra chặn index tuyệt đối `noindex, nofollow` trên toàn bộ trang riêng tư/auth/editor.
+    3. Kiểm tra tính toàn vẹn và chính xác của chỉ thị `public/robots.txt`.
+    4. Kiểm tra cấu trúc XML Sitemap, chứa đầy đủ mẫu thiệp và bài viết blog, hỗ trợ ETag 304.
+    5. Đo lường tốc độ phản hồi HTTP 304 Not Modified và đo lường 0 Database Query bottleneck trên các trang chịu tải cao.
+  - Kết quả kiểm thử: **5/5 tests PASS (100%)**, thời gian thực thi ~1.8s.

@@ -2,7 +2,7 @@
 
 @section('title', 'Đăng Ký Tài Khoản | ' . config('app.name'))
 @section('meta_description', 'Tạo tài khoản Mây Hẹn để bắt đầu thiết kế thiệp cưới online phong cách Quiet Luxury.')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/auth.css') }}">

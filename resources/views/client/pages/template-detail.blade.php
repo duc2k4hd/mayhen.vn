@@ -18,9 +18,12 @@
     $usageCount = $template->usage_count ?? 120;
 @endphp
 
-@section('title', ('Mẫu thiệp "'. $template->name ?? '') . '" Sang Trọng & Qúy Phái | ' . config('app.name'))
-@section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . config('app.name') . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
-@section('robots', 'noindex, follow')
+@section('title', 'Mẫu Thiệp Cưới "' . ($template->name ?? '') . '" Đẹp & Tinh Tế | ' . config('app.name', 'Mây Hẹn'))
+@section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . config('app.name', 'Mây Hẹn') . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
+@section('canonical', route('templates.show', $template->slug))
+@section('og_image', $template->thumbnail_url ?: asset('assets/client/images/og-share.jpg'))
+@section('og_image_alt', 'Mẫu thiệp cưới ' . ($template->name ?? ''))
+@section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/template-detail.css') }}?v={{ time() }}">
