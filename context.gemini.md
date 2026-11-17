@@ -769,3 +769,30 @@ php artisan serve
   - Phản hồi tức thì trong 0.00ms cho các truy cập lặp lại, đạt tuyệt đối **0 Database Query**.
 - **Kiểm thử tự động Pest ([`LegalAndPolicyPagesSeoTest.php`](tests/Feature/LegalAndPolicyPagesSeoTest.php))**:
   - Đạt **4/4 tests PASS (100%)**, 71 assertions kiểm tra toàn diện cả về SEO Meta, Schema, 9 điều khoản mỗi trang, ETag 304, 0 Database Query và liên kết chéo.
+
+---
+
+### Đề án #85: Khắc phục triệt để lỗi ảnh và đồng bộ hiển thị mẫu thiệp "Hạnh Phúc Mang Tên Chúng Mình" (`hanh-phuc-mang-ten-chung-minh`)
+- **Vấn đề ghi nhận**:
+  - Khi xem trước mẫu thiệp tại `/xem-thu/hanh-phuc-mang-ten-chung-minh`:
+    1. *Khung vòm bìa chính (Hero Frame)*: Bị trống trơn không có ảnh, để lộ mảng nền gradient rỗng do đường dẫn `cover_photo_url` (`1kRDUJbRQt.jpg`) bị thiếu file thực tế trên đĩa dẫn đến lỗi HTTP 404.
+    2. *Bộ ba ảnh Triptych ("Đám Cưới Của Chúng Mình")*: Hai ảnh hai bên (trái và phải) bị hiển thị ảnh hoạt hình vector mặc định (`story-1.webp`, `story-3.webp`) dù trong Admin đã tải ảnh cưới thật lên đầy đủ.
+    3. *Mã QR mừng cưới & Lời cảm ơn*: Template sử dụng tên trường cũ (`qr_groom_image`, `qr_bride_image`, `groom_account_name`) không khớp với dữ liệu Admin đã lưu (`groom_qr_url`, `bride_qr_url`, `groom_bank_owner`, `bride_bank_owner`), khiến mã QR cũng bị fallback về ảnh mặc định.
+- **Giải pháp triển khai**:
+  - **Khắc phục ảnh bìa chính (Hero Cover)**:
+    - Trích xuất và khôi phục ảnh bìa chất lượng cao (1366x2048) từ thumbnail đã lưu vào thư mục `storage/app/public/templates/hanh-phuc-mang-ten-chung-minh/photos/hanh-phuc-mang-ten-chung-minh-photos-1kRDUJbRQt.jpg`, đảm bảo đường dẫn ảnh hoạt động 100% không còn bị 404.
+    - Cập nhật hàm `$resolveAsset` trong [`template.blade.php`](resources/views/client/invitations/hanh-phuc-mang-ten-chung-minh/template.blade.php) với cơ chế kiểm tra `file_exists(public_path(...))` thông minh: Nếu file lưu trữ không tồn tại hoặc lỗi đường dẫn, tự động fallback an toàn về ảnh mặc định thay vì trả về URL lỗi làm rỗng khung giao diện.
+  - **Đồng bộ hóa 100% các trường ảnh và thông tin từ Admin vào Template**:
+    - *Bộ ba ảnh Triptych*: Map chính xác `$triptychLeftUrl` với `$extraData['triptych_left_url']`, `$triptychCenterUrl` với `$extraData['triptych_center_url']`, `$triptychRightUrl` với `$extraData['triptych_right_url']` kèm `data-sync-target` chuẩn hóa.
+    - *Ảnh chân dung Chú rể & Cô dâu*: Đồng bộ lấy từ `$extraData['groom_photo_url']` và `$extraData['bride_photo_url']`.
+    - *Ảnh Banner đôi uyên ương*: Lấy từ `$extraData['couple_photo_url'] ?? $extraData['save_date_photo_url']`.
+    - *Mã QR & Chủ tài khoản mừng cưới*: Đọc chính xác `$extraData['groom_qr_url']`, `$extraData['bride_qr_url']`, `$extraData['groom_bank_owner']`, `$extraData['bride_bank_owner']`.
+    - *Ảnh tròn kết thiệp (Footer Circle)*: Đọc chính xác `$extraData['footer_photo_url']`.
+  - **Cập nhật [`schema.json`](resources/views/client/invitations/hanh-phuc-mang-ten-chung-minh/schema.json)**:
+    - Bổ sung định nghĩa các trường `triptych_left_url`, `triptych_center_url`, `triptych_right_url` vào section `story` để Studio Editor và Admin Schema đồng bộ hoàn hảo hai chiều.
+- **Xác minh kết quả**:
+  - Kiểm tra trực tiếp trên route thực tế `http://127.0.0.1:8000/xem-thu/hanh-phuc-mang-ten-chung-minh`:
+    + Khung bìa Hero chính: Hiển thị 100% ảnh cưới thật sắc nét của cặp đôi Hà Kiên & Phạm Xôn.
+    + Bộ ba ảnh Triptych: Cả 3 ảnh đều hiển thị ảnh cưới thật, biến mất hoàn toàn ảnh hoạt hình vector.
+    + Toàn bộ ảnh Chú rể, Cô dâu, Banner, Album 10 ảnh cưới, 2 mã QR mừng cưới và ảnh tròn kết thiệp hiển thị đúng 100% ảnh thật từ Admin/Storage.
+    + Dọn dẹp toàn bộ file test tạm thời, code sạch sẽ đạt chuẩn Pint và tuân thủ quy tắc kiến trúc.

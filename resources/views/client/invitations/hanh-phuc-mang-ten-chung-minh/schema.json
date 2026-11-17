@@ -122,6 +122,27 @@
           "max": 1000
         },
         {
+          "key": "wedding.extra_data.triptych_left_url",
+          "label": "Ảnh kỷ niệm vòm trái",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/story-1.webp"
+        },
+        {
+          "key": "wedding.extra_data.triptych_center_url",
+          "label": "Ảnh kỷ niệm vòm giữa (trọng tâm)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/story-2.webp"
+        },
+        {
+          "key": "wedding.extra_data.triptych_right_url",
+          "label": "Ảnh kỷ niệm vòm phải",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets/story-3.webp"
+        },
+        {
           "key": "wedding.extra_data.save_date_photo_url",
           "label": "Ảnh kỷ niệm lời ngỏ",
           "type": "image",

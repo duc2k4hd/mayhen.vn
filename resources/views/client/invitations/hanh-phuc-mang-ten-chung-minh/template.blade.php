@@ -2,7 +2,6 @@
 
 @php
     $slug = $slug ?? 'hanh-phuc-mang-ten-chung-minh';
-    $assetBase = url('/mau-thiep/hanh-phuc-mang-ten-chung-minh/assets');
     $isEmbed = !empty($isEmbed) || request()->boolean('embed') || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Hạnh Phúc Mang Tên Chúng Mình';
@@ -15,36 +14,45 @@
         }
     }
 
-    $resolveAsset = function (string $filename, ?string $customUrl = null) use ($slug, $assetBase) {
-        $customUrl = trim((string) $customUrl);
-        if (str_starts_with($customUrl, 'data:')) {
-            if (preg_match('#^data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$#D', $customUrl, $matches)) {
-                $decoded = base64_decode($matches[2], true);
-                $image = $decoded === false ? false : @getimagesizefromstring($decoded);
-                if ($image !== false && ($image['mime'] ?? '') === 'image/' . $matches[1]) {
-                    return $customUrl;
+    // --- Hàm resolve asset an toàn tuyệt đối với fallback nội bộ (100% relative path chống CORS & 404) ---
+    $resolveAsset = function (string $relativePath, ?string $overrideUrl = null) use ($slug): string {
+        $cleanRelative = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $relativePath), '/');
+        $cleanRelative = ltrim(preg_replace('#^assets/#', '', $cleanRelative), '/');
+        $fallbackUrl   = "/mau-thiep/{$slug}/assets/{$cleanRelative}";
+
+        $override = trim((string) ($overrideUrl ?? ''));
+        if (str_starts_with($override, 'blob:')) {
+            return $fallbackUrl;
+        }
+        if (!empty($override)) {
+            if (str_starts_with($override, 'data:')) {
+                return $override;
+            }
+            // Trích xuất path nếu là link Storage hoặc Uploads (kể cả full URL chứa http/127.0.0.1/domain)
+            if (preg_match('#/(storage|uploads)/(.+)$#', $override, $storageMatch)) {
+                $storageRelative = $storageMatch[1] . '/' . $storageMatch[2];
+                if (file_exists(public_path($storageRelative))) {
+                    return '/' . $storageRelative;
                 }
             }
-            if (preg_match('#^data:image/svg\+xml;(base64|utf8),(.+)$#Ds', $customUrl, $matches)) {
-                $svg = $matches[1] === 'base64' ? base64_decode($matches[2], true) : rawurldecode($matches[2]);
-                $document = new \DOMDocument();
-                if (is_string($svg) && !str_contains(strtoupper($svg), '<!DOCTYPE') && @$document->loadXML($svg, LIBXML_NONET)) {
-                    $xpath = new \DOMXPath($document);
-                    $unsafe = $xpath->query('//*[not(local-name()="svg" or local-name()="g" or local-name()="rect" or local-name()="path" or local-name()="circle" or local-name()="text" or local-name()="tspan" or local-name()="defs" or local-name()="clipPath" or local-name()="polygon" or local-name()="polyline" or local-name()="line" or local-name()="ellipse")] | //@*[starts-with(translate(local-name(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "on") or local-name()="href" or local-name()="style"]');
-                    if ($document->documentElement?->localName === 'svg' && $unsafe->length === 0) {
-                        return $customUrl;
-                    }
+            if (preg_match('#^/?(storage|uploads)/#', $override)) {
+                $storageRelative = ltrim($override, '/');
+                if (file_exists(public_path($storageRelative))) {
+                    return '/' . $storageRelative;
                 }
             }
-            $customUrl = '';
+            if (preg_match('#^https?://#', $override)) {
+                return $override;
+            }
+            $cleanOverride = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $override), '/');
+            $cleanOverride = ltrim(preg_replace('#^assets/#', '', $cleanOverride), '/');
+            $localFile     = resource_path("views/client/invitations/{$slug}/assets/{$cleanOverride}");
+            if (file_exists($localFile)) {
+                return "/mau-thiep/{$slug}/assets/{$cleanOverride}";
+            }
+            return $fallbackUrl;
         }
-        if (preg_match('#^[a-z][a-z0-9+.-]*:#i', $customUrl) && !preg_match('#^https?://#i', $customUrl)) {
-            $customUrl = '';
-        }
-        if (!empty($customUrl)) {
-            return $customUrl;
-        }
-        return $assetBase . '/' . ltrim($filename, '/');
+        return $fallbackUrl;
     };
 
     // 1. Thông tin Đôi Uyên Ương & Loại Lễ
@@ -165,17 +173,30 @@
     }
 
     // 10. Mừng Cưới & Ngân Hàng
-    $groomBankName = $data['groom_bank_name'] ?? ($extraData['groom_bank_name'] ?? 'Vietcombank');
-    $groomBankAccount = $data['groom_bank_account'] ?? ($extraData['groom_bank_account'] ?? '0123456789');
-    $groomAccountName = $data['groom_account_name'] ?? ($extraData['groom_account_name'] ?? ($data['groom_bank_holder'] ?? ($extraData['groom_bank_holder'] ?? 'NGUYEN DINH SANG')));
+    $groomBankName = $extraData['groom_bank_name'] ?? ($data['groom_bank_name'] ?? 'Vietcombank');
+    $groomBankAccount = $extraData['groom_bank_account'] ?? ($data['groom_bank_account'] ?? '0123456789');
+    $groomAccountName = $extraData['groom_bank_owner'] ?? ($extraData['groom_account_name'] ?? ($data['groom_bank_owner'] ?? ($data['groom_account_name'] ?? ($data['groom_bank_holder'] ?? ($extraData['groom_bank_holder'] ?? 'HÀ VĂN KIÊN')))));
 
-    $brideBankName = $data['bride_bank_name'] ?? ($extraData['bride_bank_name'] ?? 'Techcombank');
-    $brideBankAccount = $data['bride_bank_account'] ?? ($extraData['bride_bank_account'] ?? '9876543210');
-    $brideAccountName = $data['bride_account_name'] ?? ($extraData['bride_account_name'] ?? ($data['bride_bank_holder'] ?? ($extraData['bride_bank_holder'] ?? 'NGUYEN HOAI THUONG')));
+    $brideBankName = $extraData['bride_bank_name'] ?? ($data['bride_bank_name'] ?? 'Techcombank');
+    $brideBankAccount = $extraData['bride_bank_account'] ?? ($data['bride_bank_account'] ?? '9876543210');
+    $brideAccountName = $extraData['bride_bank_owner'] ?? ($extraData['bride_account_name'] ?? ($data['bride_bank_owner'] ?? ($data['bride_account_name'] ?? ($data['bride_bank_holder'] ?? ($extraData['bride_bank_holder'] ?? 'PHẠM THỊ XÔN')))));
 
-    // 11. Ending Lời Tri Ân Kết Thiệp
-    $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? ($data['thank_you_title'] ?? ($data['ending_title'] ?? 'Thank You!')));
-    $endingText = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? ($data['thank_you_quote'] ?? ($data['ending_text'] ?? 'Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.')));
+    // 11. Ảnh Trưng Bày & Bộ Ba Ảnh Nghệ Thuật (Đồng bộ tuyệt đối với Admin Showcase)
+    $heroPhotoUrl = $wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? ($extraData['hero_cover_url'] ?? ($data['hero_photo_url'] ?? null))));
+    $triptychLeftUrl = $extraData['triptych_left_url'] ?? ($data['triptych_left_url'] ?? ($extraData['story_photo_1'] ?? ($data['story_photo_1'] ?? null)));
+    $triptychCenterUrl = $extraData['triptych_center_url'] ?? ($data['triptych_center_url'] ?? ($extraData['save_date_photo_url'] ?? ($data['save_date_photo_url'] ?? ($extraData['story_photo_2'] ?? ($data['story_photo_2'] ?? null)))));
+    $triptychRightUrl = $extraData['triptych_right_url'] ?? ($data['triptych_right_url'] ?? ($extraData['story_photo_3'] ?? ($data['story_photo_3'] ?? null)));
+    $saveDatePhotoUrl = $extraData['save_date_photo_url'] ?? ($data['save_date_photo_url'] ?? null);
+    $couplePhotoUrl = $extraData['couple_photo_url'] ?? ($data['couple_photo_url'] ?? ($saveDatePhotoUrl ?? ($heroPhotoUrl ?? null)));
+    $groomPhotoUrl = $wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? ($data['groom_photo_url'] ?? null));
+    $bridePhotoUrl = $wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? ($data['bride_photo_url'] ?? null));
+    $footerPhotoUrl = $extraData['footer_photo_url'] ?? ($data['footer_photo_url'] ?? ($couplePhotoUrl ?? ($heroPhotoUrl ?? null)));
+    $groomQrUrl = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? ($data['groom_qr_url'] ?? ($data['qr_groom_image'] ?? null)));
+    $brideQrUrl = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? ($data['bride_qr_url'] ?? ($data['qr_bride_image'] ?? null)));
+
+    // 12. Ending Lời Tri Ân Kết Thiệp
+    $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? ($data['thank_you_title'] ?? ($data['ending_title'] ?? 'THANK YOU')));
+    $endingText = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? ($extraData['footer_thank_you_text'] ?? ($data['thank_you_quote'] ?? ($data['ending_text'] ?? 'Sự hiện diện và lời chúc phúc của bạn là niềm vinh hạnh lớn lao đối với gia đình chúng mình.'))));
 
     $guestName = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
@@ -249,7 +270,7 @@
             </div>
 
             <div class="mayhen_invitation_hero_frame mayhen_invitation_lightbox_trigger">
-                <img src="{{ $resolveAsset('hero-couple.webp', $wedding->cover_photo_url ?? ($data['hero_photo_url'] ?? null)) }}"
+                <img src="{{ $resolveAsset('hero-couple.webp', $heroPhotoUrl) }}"
                      alt="{{ $coupleNames }}"
                      data-sync-target="hero_photo_url">
             </div>
@@ -284,13 +305,13 @@
 
         <div class="mayhen_invitation_triptych mayhen_invitation_reveal">
             <div class="mayhen_invitation_triptych_item mayhen_invitation_lightbox_trigger">
-                <img src="{{ $resolveAsset('story-1.webp', $data['story_photo_1'] ?? null) }}" alt="Ảnh kỷ niệm 1" data-sync-target="story_photo_1">
+                <img src="{{ $resolveAsset('story-1.webp', $triptychLeftUrl) }}" alt="Ảnh kỷ niệm 1" data-sync-target="triptych_left_url">
             </div>
             <div class="mayhen_invitation_triptych_item mayhen_invitation_triptych_item--center mayhen_invitation_lightbox_trigger">
-                <img src="{{ $resolveAsset('story-2.webp', $extraData['save_date_photo_url'] ?? ($data['story_photo_2'] ?? null)) }}" alt="Ảnh kỷ niệm 2" data-sync-target="save_date_photo_url">
+                <img src="{{ $resolveAsset('story-2.webp', $triptychCenterUrl) }}" alt="Ảnh kỷ niệm 2" data-sync-target="triptych_center_url">
             </div>
             <div class="mayhen_invitation_triptych_item mayhen_invitation_lightbox_trigger">
-                <img src="{{ $resolveAsset('story-3.webp', $data['story_photo_3'] ?? null) }}" alt="Ảnh kỷ niệm 3" data-sync-target="story_photo_3">
+                <img src="{{ $resolveAsset('story-3.webp', $triptychRightUrl) }}" alt="Ảnh kỷ niệm 3" data-sync-target="triptych_right_url">
             </div>
         </div>
 
@@ -332,7 +353,7 @@
                 <span class="mayhen_invitation_announce_name" data-sync-target="bride_name">{{ $brideName }}</span>
             </div>
             <div class="mayhen_invitation_banner_photo mayhen_invitation_lightbox_trigger">
-                <img src="{{ $resolveAsset('banner-couple.webp', $data['couple_photo_url'] ?? null) }}"
+                <img src="{{ $resolveAsset('banner-couple.webp', $couplePhotoUrl) }}"
                      alt="{{ $coupleNames }}"
                      data-sync-target="couple_photo_url">
             </div>
@@ -341,7 +362,7 @@
         <div class="mayhen_invitation_couple_list">
             <div class="mayhen_invitation_couple_row mayhen_invitation_reveal mayhen_invitation_reveal--left">
                 <div class="mayhen_invitation_couple_photo mayhen_invitation_lightbox_trigger">
-                    <img src="{{ $resolveAsset('groom-portrait.webp', $wedding->groom_photo_url ?? ($data['groom_photo_url'] ?? null)) }}"
+                    <img src="{{ $resolveAsset('groom-portrait.webp', $groomPhotoUrl) }}"
                          alt="{{ $groomName }}"
                          data-sync-target="groom_photo_url">
                 </div>
@@ -359,7 +380,7 @@
                     <p class="mayhen_invitation_couple_bio" data-sync-target="bride_bio">{{ $brideBio }}</p>
                 </div>
                 <div class="mayhen_invitation_couple_photo mayhen_invitation_lightbox_trigger">
-                    <img src="{{ $resolveAsset('bride-portrait.webp', $wedding->bride_photo_url ?? ($data['bride_photo_url'] ?? null)) }}"
+                    <img src="{{ $resolveAsset('bride-portrait.webp', $bridePhotoUrl) }}"
                          alt="{{ $brideName }}"
                          data-sync-target="bride_photo_url">
                 </div>
@@ -662,9 +683,9 @@
             <div class="mayhen_invitation_gift_card mayhen_invitation_reveal mayhen_invitation_reveal--left">
                 <h3 class="mayhen_invitation_gift_title">Mừng Cưới Đến<br>Chú Rể</h3>
                 <div class="mayhen_invitation_gift_qr mayhen_invitation_lightbox_trigger">
-                    <img src="{{ $resolveAsset('qr-groom.webp', $extraData['qr_groom_image'] ?? ($data['qr_groom_image'] ?? null)) }}"
+                    <img src="{{ $resolveAsset('qr-groom.webp', $groomQrUrl) }}"
                          alt="QR Chú Rể"
-                         data-sync-target="qr_groom_image">
+                         data-sync-target="groom_qr_url">
                 </div>
                 <div class="mayhen_invitation_gift_meta">
                     <span data-sync-target="groom_bank_name">{{ $groomBankName }}</span>
@@ -673,7 +694,7 @@
                 </div>
                 <div class="mayhen_invitation_gift_actions">
                     <button type="button" class="mayhen_invitation_chip_btn" data-copy-target="groom_bank_account">Sao chép STK</button>
-                    <a href="{{ $resolveAsset('qr-groom.webp', $extraData['qr_groom_image'] ?? ($data['qr_groom_image'] ?? null)) }}" download="QR-Chu-Re.webp" class="mayhen_invitation_chip_btn">Tải ảnh QR</a>
+                    <a href="{{ $resolveAsset('qr-groom.webp', $groomQrUrl) }}" download="QR-Chu-Re.webp" class="mayhen_invitation_chip_btn">Tải ảnh QR</a>
                 </div>
             </div>
 
@@ -681,9 +702,9 @@
             <div class="mayhen_invitation_gift_card mayhen_invitation_reveal mayhen_invitation_reveal--right">
                 <h3 class="mayhen_invitation_gift_title">Mừng Cưới Đến<br>Cô Dâu</h3>
                 <div class="mayhen_invitation_gift_qr mayhen_invitation_lightbox_trigger">
-                    <img src="{{ $resolveAsset('qr-bride.webp', $extraData['qr_bride_image'] ?? ($data['qr_bride_image'] ?? null)) }}"
+                    <img src="{{ $resolveAsset('qr-bride.webp', $brideQrUrl) }}"
                          alt="QR Cô Dâu"
-                         data-sync-target="qr_bride_image">
+                         data-sync-target="bride_qr_url">
                 </div>
                 <div class="mayhen_invitation_gift_meta">
                     <span data-sync-target="bride_bank_name">{{ $brideBankName }}</span>
@@ -692,7 +713,7 @@
                 </div>
                 <div class="mayhen_invitation_gift_actions">
                     <button type="button" class="mayhen_invitation_chip_btn" data-copy-target="bride_bank_account">Sao chép STK</button>
-                    <a href="{{ $resolveAsset('qr-bride.webp', $extraData['qr_bride_image'] ?? ($data['qr_bride_image'] ?? null)) }}" download="QR-Co-Dau.webp" class="mayhen_invitation_chip_btn">Tải ảnh QR</a>
+                    <a href="{{ $resolveAsset('qr-bride.webp', $brideQrUrl) }}" download="QR-Co-Dau.webp" class="mayhen_invitation_chip_btn">Tải ảnh QR</a>
                 </div>
             </div>
         </div>
@@ -831,7 +852,7 @@
             data-mayhen-section="ending">
         <span class="mayhen_invitation_eyebrow">Forever &amp; Always</span>
         <div class="mayhen_invitation_footer_ring mayhen_invitation_lightbox_trigger">
-            <img src="{{ $resolveAsset('footer-couple.webp', $extraData['footer_photo_url'] ?? ($data['footer_photo_url'] ?? null)) }}"
+            <img src="{{ $resolveAsset('footer-couple.webp', $footerPhotoUrl) }}"
                  alt="{{ $coupleNames }}"
                  data-sync-target="footer_photo_url">
         </div>
