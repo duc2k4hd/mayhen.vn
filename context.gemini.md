@@ -918,3 +918,16 @@ php artisan serve
 - **Xác minh kết quả**:
   - Pest: 10/10 tests passed (63 assertions), `vendor/bin/pint --dirty --format agent` passed.
   - View cache cleared: `php artisan view:clear`.
+
+### Đề án #92: Khôi phục 2 nút điều hướng Trước/Sau (mayhen_home_showcase_nav_*) trên Mobile
+- **Nguyên nhân**: Trong [`public/assets/client/css/pages/home.css`](public/assets/client/css/pages/home.css), tại truy vấn `@media (max-width: 480px)` trước đó đã bị gán `.mayhen_home_showcase_nav_btn { display: none; }`, làm ẩn hoàn toàn 2 nút Previous / Next trên toàn bộ thiết bị di động (smartphone).
+- **Giải pháp**:
+  - Xóa bỏ khai báo `display: none;` trong `@media (max-width: 480px)`.
+  - Thiết kế lại 2 nút điều hướng trên mobile theo phong cách Quiet Luxury:
+    - Kích thước 40px × 40px (icon SVG 18px), nền kính mờ `background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px);`, viền `border: 1px solid rgba(197, 168, 128, 0.5);`, đổ bóng nổi `box-shadow: 0 4px 16px rgba(43, 26, 17, 0.14);`.
+    - `z-index: 250` đảm bảo luôn nổi lên trên các thẻ thiệp, dễ bấm bằng 1 ngón tay cái.
+    - Căn lề `.mayhen_home_showcase_nav_prev { left: 8px; }` và `.mayhen_home_showcase_nav_next { right: 8px; }` nằm gọn trong khoảng cách giữa mép màn hình và thẻ trung tâm, không che lấp nội dung thiệp.
+  - Bổ sung tinh chỉnh cho màn hình siêu nhỏ `@media (max-width: 360px)`: kích thước 34px × 34px (icon 16px), căn lề `left: 4px; right: 4px;`.
+- **Xác minh kết quả**:
+  - Pest: 10/10 passed (63 assertions).
+  - Pint: passed.
