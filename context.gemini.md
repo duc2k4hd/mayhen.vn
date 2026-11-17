@@ -588,7 +588,8 @@ php artisan serve
 ### 5.16. Phân Hệ Quản Lý Toàn Bộ Docs (Admin Docs Manager CRUD Engine — `/admin/docs-manager`)
 - **Mục tiêu**: Bổ sung phân hệ quản trị trọn vẹn (CRUD) cho toàn bộ tài liệu hệ thống, bao gồm cả **Docs Khách hàng (Client Docs)** tại `resources/docs/client/` và **Sổ tay SOP Vận hành (Admin SOP Docs)** tại `resources/docs/admin/`.
 - **Controller & Service**:
-  - `AdminDocsManagerController`: Cung cấp các hành vi `index`, `create`, `store`, `edit`, `update`, `destroy`.
+  - `AdminDocsManagerController`: Cung cấp các hành vi `index`, `create`, `store`, `edit`, `update`, `destroy`, `preview`.
+  - Quét tự động danh sách ảnh docs có sẵn trong `public/assets/client/docs/images/` (`getDocsAvailableImages()`) để phục vụ bộ chọn ảnh trực quan.
   - `DocumentationService`: Mở rộng thêm 6 phương thức CRUD:
     - `getAllArticlesWithMetadata(?string $space, ?string $category, ?string $search)`: Lấy bài viết kèm đầy đủ metadata, hỗ trợ lọc không gian (client/admin), chuyên mục và tìm kiếm tiếng Việt không dấu.
     - `getCategoryOptions(?string $space)`: Thu thập toàn bộ danh mục và số lượng bài viết tương ứng.
@@ -599,21 +600,16 @@ php artisan serve
 - **Routes & Master Navigation**:
   - Routes đăng ký tại `routes/admin.php`: `admin.docs_manager.*`.
   - Menu item tích hợp trực tiếp tại `resources/views/admin/layouts/master.blade.php` trong mục `Tổng Quan & Trí Tuệ`.
-- **Giao diện Quản trị (Pure HTML/CSS/JS — Zero External Frameworks)**:
-  - `resources/views/admin/pages/docs_manager/index.blade.php`: KPI Cards thống kê (Tổng số Docs, Docs Client, Docs Admin, Số chuyên mục), thanh lọc tabs không gian (`Tất cả` | `Khách hàng` | `Admin SOP`), dropdown chuyên mục, ô tìm kiếm thời gian thực, bảng quản trị với badge ID, thẻ tags, và nút thao tác nhanh (Xem trực tiếp trên web, Chỉnh sửa, Xóa an toàn).
-  - `resources/views/admin/pages/docs_manager/partials/editor_canvas.blade.php`:
-    - **Trình Soạn Thảo Trực Quan (Visual Document Writer)**: Soạn bài trực quan như trong Word/Google Docs/Notion, không bắt người mới phải gõ cú pháp Markdown thô.
-    - **Live Preview Giống Hệt 100% Khách Hàng**: Nạp toàn bộ CSS `docs-main.css`, font Playfair Display & Open Sans, render đầy đủ Breadcrumb, Kicker, H1, Meta, Lead Text, Callouts và Box trợ giúp chân trang.
-    - **Chế Độ Xem Song Song (Split Screen 50/50)**: Vừa gõ bài bên trái vừa thấy bài viết hiển thị trực tiếp theo thời gian thực bên phải.
-    - **Thanh Công Cụ Định Dạng Thông Minh**: Đổi kiểu chữ (H2, H3, P), in đậm, in nghiêng, gạch chân, hộp ghi chú (Note/Tip/Warning), chèn ảnh kèm caption, chèn link, chèn bảng, trích dẫn.
-    - **Mẫu Khung Bài Viết Có Sẵn (Quick Templates)**: 4 mẫu cấu trúc chuẩn (Hướng dẫn từng bước 1-2-3, Giới thiệu tính năng, SOP vận hành, FAQ) giúp người mới bấm 1 click là có ngay bài viết mẫu để chỉnh sửa.
-    - **Đồng Bộ Hai Chiều (2-Way Sync Engine)**: Tự động chuyển đổi giữa Visual Editor HTML và Markdown chuẩn để lưu trữ an toàn vào file `.md`.
-  - `resources/views/admin/pages/docs_manager/create.blade.php` & `edit.blade.php`: Tích hợp canvas soạn thảo trực quan, kết hợp cột cấu hình metadata (Không gian, Chuyên mục, ID, Thứ tự, Reader, Tags, Phân quyền vai trò, Mức độ rủi ro, Route liên kết).
-- **Triệt Tiêu Hoàn Toàn Margin Mặc Định Của Trình Duyệt Trong Studio Preview**:
-  - Đã bổ sung gán inline style trực tiếp `document.body.style.setProperty('margin', '0px', 'important')` và `document.documentElement.style.setProperty('margin', '0px', 'important')` trong `editor-bridge.blade.php`.
-  - Kết hợp với CSS Reset toàn cục để đảm bảo 100% mẫu thiệp cưới hiển thị tràn viền (full viền) hoàn hảo trong khung mockup điện thoại, triệt tiêu dải màu margin 8px mặc định từ user agent stylesheet.
-  - Đã chạy `php artisan optimize:clear` và `php artisan view:clear` để giải phóng toàn bộ cache view cũ.
+- **Nâng Cấp Toàn Diện Visual Editor Cho Hình Ảnh & Liên Kết Nội Bộ ([`editor_canvas.blade.php`](resources/views/admin/pages/docs_manager/partials/editor_canvas.blade.php))**:
+  - **Khắc phục lỗi Hình ảnh trong Visual Editor**:
+    - Nhận diện và gộp chuẩn xác cú pháp 2 dòng của Docs Mây Hẹn: Dòng 1 `![alt](url)` + Dòng 2 `*caption*` vào chung 1 thẻ `<figure>` có `<figcaption contenteditable="true">`, ngăn chặn việc caption bị tách thành một đoạn văn nghiêng rời rạc.
+    - **Floating Image Toolbar**: Tích hợp thanh công cụ nổi ngay trên ảnh khi hover/focus gồm nút `✏️ Sửa ảnh` và `🗑️ Xóa ảnh`.
+    - **Thư Viện Ảnh Docs Tích Hợp**: Modal chèn/sửa ảnh có dropdown quét sẵn toàn bộ ảnh có trong hệ thống docs, tự động trích xuất tên file làm caption và alt, có khung xem trước hình ảnh mini (Image Preview Thumbnail).
+    - Hỗ trợ double-click vào ảnh hoặc sửa caption trực tiếp trên `<figcaption>` với đồng bộ 2 chiều tức thì.
+  - **Khắc phục lỗi Liên Kết Nội Bộ (Internal Links) Bị Đen & Không Chỉnh Sửa Được**:
+    - Thẻ `<a>` trong Visual Editor được thiết kế nổi bật với màu xanh liên kết `#1D4ED8`, gạch chân rõ nét `#93C5FD`, nền xanh dịu `rgba(239, 246, 255, 0.75)`, hover sáng màu `#1E40AF`.
+    - **Floating Link Popover**: Khi click vào thẻ `<a>`, popover thông minh xuất hiện hiển thị URL đích, nút `✏️ Sửa link`, nút `↗️ Mở trang đích tab mới`, và nút `🔗✕ Gỡ bỏ link` (giữ nguyên văn bản).
+    - **Smart Internal Link Picker**: Modal chèn/sửa link tích hợp dropdown nạp toàn bộ danh sách bài viết Docs nội bộ (nhóm theo Client và Admin SOP). Người mới chỉ cần chọn bài viết mong muốn, hệ thống sẽ **tự động điền URL chuẩn** (`/docs/{category}/{slug}` hoặc `/admin/docs/{category}/{slug}`) và **tự động điền Tiêu đề bài viết**, triệt tiêu nguy cơ gõ sai link hay người mới không biết URL.
 - **Kiểm Thử Toàn Diện ([`AdminDocsManagerCrudTest.php`](tests/Feature/AdminDocsManagerCrudTest.php))**:
-  - Đã viết bộ kiểm thử Feature gồm 5 test cases bao phủ toàn diện: Phân quyền truy cập, thống kê KPIs, lọc & tìm kiếm, toàn bộ chu trình tạo -> đọc -> sửa -> xóa cả 2 không gian Client & Admin. Kết quả: **5/5 PASS (100%)**, thời gian thực thi dưới 1 giây.
-  - Chạy lại toàn bộ `DocumentationCenterIntegrityTest.php`: **23/23 tests PASS (100%)**.
-  - Định dạng mã nguồn chuẩn mực qua `vendor/bin/pint --dirty --format agent`.
+  - Bộ kiểm thử Pest đạt **7/7 test cases PASS (100%)**, 59 assertions, thời gian chạy ~1.1s.
+  - Định dạng chuẩn mực qua `vendor/bin/pint --dirty --format agent`.

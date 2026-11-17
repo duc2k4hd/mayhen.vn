@@ -9,6 +9,7 @@ use App\Services\DocumentationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -72,10 +73,14 @@ class AdminDocsManagerController extends Controller
         }
 
         $categoryOptions = $this->docsService->getCategoryOptions();
+        $allArticles = $this->docsService->getAllArticlesWithMetadata();
+        $docsImages = $this->getDocsAvailableImages();
 
         return view('admin.pages.docs_manager.create', [
             'selectedSpace' => $selectedSpace,
             'categoryOptions' => $categoryOptions,
+            'allArticles' => $allArticles,
+            'docsImages' => $docsImages,
             'pageTitle' => 'Thêm Mới Tài Liệu Docs — Mây Hẹn Admin',
         ]);
     }
@@ -144,6 +149,8 @@ class AdminDocsManagerController extends Controller
         }
 
         $categoryOptions = $this->docsService->getCategoryOptions();
+        $allArticles = $this->docsService->getAllArticlesWithMetadata();
+        $docsImages = $this->getDocsAvailableImages();
 
         return view('admin.pages.docs_manager.edit', [
             'space' => $space,
@@ -151,8 +158,56 @@ class AdminDocsManagerController extends Controller
             'slug' => $slug,
             'article' => $article,
             'categoryOptions' => $categoryOptions,
+            'allArticles' => $allArticles,
+            'docsImages' => $docsImages,
             'pageTitle' => 'Chỉnh Sửa Tài Liệu: '.($article['title'] ?? $slug),
         ]);
+    }
+
+    /**
+     * Quét danh sách các ảnh docs có sẵn phục vụ bộ chọn ảnh trực quan.
+     *
+     * @return array<int, string>
+     */
+    protected function getDocsAvailableImages(): array
+    {
+        $docsImages = [];
+        $imgDir = public_path('assets/client/docs/images');
+        if (is_dir($imgDir)) {
+            $files = File::allFiles($imgDir);
+            foreach ($files as $f) {
+                $ext = strtolower($f->getExtension());
+                if (in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif'], true)) {
+                    $rel = str_replace(public_path(), '', $f->getRealPath());
+                    $docsImages[] = str_replace('\\', '/', $rel);
+                }
+            }
+        }
+
+        return $docsImages;
+    }
+
+    /**
+     * Quét danh sách các ảnh docs có sẵn phục vụ bộ chọn ảnh trực quan.
+     *
+     * @return array<int, string>
+     */
+    protected function getDocsAvailableImages(): array
+    {
+        $docsImages = [];
+        $imgDir = public_path('assets/client/docs/images');
+        if (is_dir($imgDir)) {
+            $files = \Illuminate\Support\Facades\File::allFiles($imgDir);
+            foreach ($files as $f) {
+                $ext = strtolower($f->getExtension());
+                if (in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif'], true)) {
+                    $rel = str_replace(public_path(), '', $f->getRealPath());
+                    $docsImages[] = str_replace('\\', '/', $rel);
+                }
+            }
+        }
+
+        return $docsImages;
     }
 
     /**
