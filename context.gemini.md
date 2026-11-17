@@ -1044,3 +1044,32 @@ php artisan serve
   - Test Suite `HomeHeroBannerCustomizationTest`: 4/4 passed (18 assertions).
   - Render view Header thành công: sinh đúng thẻ `<img class="mayhen_client_header_brand_logo" ... width="230" height="55">`.
   - Pint code style: passed 100%.
+
+### Đề án #97: Bổ sung Quản lý Ảnh Chụp Toàn Mẫu Cuộn (Full Page Scroll Preview) trong Thêm & Sửa Mẫu Thiệp Admin
+- **Bối cảnh & Yêu cầu người dùng**:
+  - Trên Trang Chủ (`/`) và Kho Mẫu Thiệp (`/mau-thiep`), các mẫu thiệp có hiệu ứng Pan Scroll tự động trôi dọc theo mockup màn hình điện thoại khi rê chuột hoặc lướt xem.
+  - Tuy nhiên trong Module Quản lý Mẫu Thiệp của Admin (`/admin/templates`), hệ thống chưa có chỗ để thêm, sửa, chọn, tải ảnh toàn trang dạng cuộn này (`full_page_preview`).
+  - Ngoài ra, chưa có giao diện Thêm Mới Mẫu Thiệp thủ công (`/admin/templates/create`) ngoài việc quét phát hiện qua mã nguồn.
+- **Giải pháp kỹ thuật đã triển khai**:
+  - **1. Thiết kế Giao diện Mockup Điện thoại Cuộn Trực quan ([`templates.css`](public/assets/admin/css/pages/templates.css))**:
+    - Xây dựng component `.mayhen_admin_full_scroll_preview_box` và `.mayhen_admin_phone_mockup_scroll` mô phỏng một chiếc smartphone cao cấp (viền bo 18px, loa thoại, badge "Scroll Preview").
+    - Tích hợp hiệu ứng cuộn mượt mà: Tự động tính toán tỷ lệ ảnh thật (`naturalHeight / naturalWidth`) và đặt tốc độ cuộn êm dịu theo độ dài ảnh (`--mockup-scroll-y`, `--mockup-scroll-dur`).
+    - Nút bấm `▶ Cuộn Thử / ⏸ Dừng` cùng hiệu ứng hover cuộn trực quan giúp Quản trị viên kiểm tra chính xác ảnh sẽ hiển thị trên web như thế nào.
+  - **2. Bổ sung trường trong Form Chỉnh Sửa Mẫu Thiệp ([`edit.blade.php`](resources/views/admin/pages/templates/edit.blade.php))**:
+    - Thêm trường `Ảnh Chụp Toàn Mẫu Để Cuộn (Full Page Scroll Preview)` ngay dưới Thumbnail Cover tại Tab 1.
+    - Hỗ trợ nhập URL đường dẫn hoặc tải file mới lên máy chủ (hỗ trợ file WebP, PNG, JPG lên tới 25MB).
+    - Tự động phát hiện ảnh có sẵn trong thư mục assets của template (`detectedLocalFullPreview`) và cung cấp nút chọn nhanh 1-click.
+    - Nút Xóa/Đặt lại về mặc định.
+  - **3. Thêm mới Mẫu Thiệp Thủ công ([`create.blade.php`](resources/views/admin/pages/templates/create.blade.php)) & Routes/Controller**:
+    - Bổ sung 2 routes: `GET /admin/templates/create` (`admin.templates.create`) và `POST /admin/templates` (`admin.templates.store`) được phân quyền `admin.manager`.
+    - Tạo form `create.blade.php` chuẩn Quiet Luxury với auto-slug, phân loại danh mục, gói dịch vụ, Thumbnail Cover, và **Full Page Scroll Preview**.
+    - Controller tự động scaffold thư mục view tối thiểu (`template.blade.php` kế thừa `client.layouts.invitation`) nếu thư mục chưa tồn tại, ghi Audit Log và làm mới cache.
+    - Thêm nút `＋ Thêm Mẫu Mới` trên trang danh sách `index.blade.php`.
+  - **4. Backend Controller & Validation ([`TemplateController.php`](app/Http/Controllers/Admin/TemplateController.php))**:
+    - Thêm validation `full_page_preview_url` và `full_page_preview_file` (max 25MB).
+    - Xử lý upload lưu vào `storage/templates/{slug}/preview/` và tự động dọn dẹp file cũ khi upload file mới.
+    - Lưu vào `default_config['full_page_preview']` đồng bộ với accessor `InvitationTemplate::fullPagePreview`.
+- **Xác minh kết quả**:
+  - Test Suite `AdminTemplateTest`: 11/11 passed (67 assertions, kiểm thử thành công cả luồng create và update full_page_preview).
+  - Toàn bộ suite `AdminTemplate*`: 23/23 passed (153 assertions).
+  - Pint code style: passed 100%.

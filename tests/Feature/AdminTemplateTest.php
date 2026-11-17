@@ -2,6 +2,7 @@
 
 use App\Models\InvitationTemplate;
 use App\Models\User;
+use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
     $this->admin = User::factory()->create([
@@ -27,6 +28,13 @@ beforeEach(function () {
             'complexity' => 'standard',
         ],
     ]);
+});
+
+afterEach(function () {
+    $tempDir = resource_path('views/client/invitations/huong-sac-mua-thu');
+    if (File::isDirectory($tempDir)) {
+        File::deleteDirectory($tempDir);
+    }
 });
 
 test('guest cannot access admin templates list or edit', function () {
@@ -140,4 +148,52 @@ test('customer cannot export admin templates csv', function () {
     $this->actingAs($this->customer)
         ->get(route('admin.templates.export'))
         ->assertRedirect(route('admin.login'));
+});
+
+test('admin can access create template page and store a template with full page scroll preview', function () {
+    $createResponse = $this->actingAs($this->admin)->get(route('admin.templates.create'));
+    $createResponse->assertStatus(200);
+    $createResponse->assertSee('Thêm Mẫu Thiệp Cưới Mới');
+    $createResponse->assertSee('Ảnh Chụp Toàn Mẫu Để Cuộn (Full Page Scroll Preview)');
+
+    $storeResponse = $this->actingAs($this->admin)->post(route('admin.templates.store'), [
+        'name' => 'Hương Sắc Mùa Thu',
+        'slug' => 'huong-sac-mua-thu',
+        'category' => 'floral',
+        'tier' => 'pro',
+        'description' => 'Mẫu thiệp hoa lá mùa thu lãng mạn',
+        'thumbnail_url' => '/storage/templates/huong-sac-mua-thu/thumb.webp',
+        'full_page_preview_url' => '/storage/templates/huong-sac-mua-thu/preview/full-scroll.webp',
+        'is_active' => '1',
+        'is_featured' => '1',
+    ]);
+
+    $created = InvitationTemplate::where('slug', 'huong-sac-mua-thu')->first();
+    expect($created)->not->toBeNull();
+    $storeResponse->assertRedirect(route('admin.templates.edit', $created->id));
+    $storeResponse->assertSessionHas('success');
+
+    expect($created->name)->toBe('Hương Sắc Mùa Thu');
+    expect($created->category)->toBe('floral');
+    expect($created->tier)->toBe('pro');
+    expect($created->full_page_preview)->toBe('/storage/templates/huong-sac-mua-thu/preview/full-scroll.webp');
+    expect($created->default_config['full_page_preview'])->toBe('/storage/templates/huong-sac-mua-thu/preview/full-scroll.webp');
+});
+
+test('admin can update template full page scroll preview url', function () {
+    $response = $this->actingAs($this->admin)->put(route('admin.templates.update', $this->template->id), [
+        'name' => $this->template->name,
+        'category' => $this->template->category,
+        'tier' => 'plus',
+        'thumbnail_url' => $this->template->thumbnail_url,
+        'full_page_preview_url' => '/storage/templates/ngay-tinh-yeu-dom-hoa/preview/updated-full-page.webp',
+        'is_active' => '1',
+    ]);
+
+    $response->assertRedirect(route('admin.templates.index'));
+    $response->assertSessionHas('success');
+
+    $fresh = $this->template->fresh();
+    expect($fresh->full_page_preview)->toBe('/storage/templates/ngay-tinh-yeu-dom-hoa/preview/updated-full-page.webp');
+    expect($fresh->default_config['full_page_preview'])->toBe('/storage/templates/ngay-tinh-yeu-dom-hoa/preview/updated-full-page.webp');
 });

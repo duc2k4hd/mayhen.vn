@@ -129,7 +129,14 @@
                     <span>Quét & Đồng Bộ Mẫu</span>
                 </button>
             </form>
-            <a href="{{ route('templates.index') }}" class="mayhen_admin_btn mayhen_admin_btn_primary" target="_blank">
+            <a href="{{ route('admin.templates.create') }}" class="mayhen_admin_btn mayhen_admin_btn_primary" title="Tạo mới một mẫu thiệp cưới trong hệ thống">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Thêm Mẫu Mới</span>
+            </a>
+            <a href="{{ route('templates.index') }}" class="mayhen_admin_btn mayhen_admin_btn_outline" target="_blank">
                 <span>Xem Thư Viện Public &nearr;</span>
             </a>
         </div>

@@ -198,6 +198,67 @@
                             </div>
                         </div>
 
+                        <!-- Full Page Scroll Preview Image -->
+                        <div class="mayhen_admin_form_group" style="margin-top: 18px;">
+                            <label class="mayhen_admin_form_label" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                                <span>Ảnh Chụp Toàn Mẫu Để Cuộn (Full Page Scroll Preview)</span>
+                                <span style="font-size: 0.75rem; color: #7A756E; font-weight: normal;">Dùng cho hiệu ứng cuộn tự động trên Trang Chủ & Kho Mẫu</span>
+                            </label>
+
+                            @php
+                                $currentFullPreview = old('full_page_preview_url', $defaultConfig['full_page_preview'] ?? $template->full_page_preview);
+                            @endphp
+
+                            <div class="mayhen_admin_full_scroll_preview_box">
+                                <div class="mayhen_admin_phone_mockup_scroll" id="phone_mockup_container" title="Rê chuột hoặc bấm 'Cuộn Thử' để xem hiệu ứng cuộn mượt mà">
+                                    <div class="mayhen_admin_phone_mockup_speaker"></div>
+                                    <div class="mayhen_admin_phone_mockup_inner" id="phone_mockup_inner">
+                                        <img src="{{ $currentFullPreview }}" alt="Full Page Scroll Preview" class="mayhen_admin_phone_mockup_img" id="preview_full_page_img" onerror="this.onerror=null; this.src='{{ $template->thumbnail_url }}';">
+                                    </div>
+                                    <div class="mayhen_admin_phone_mockup_badge">Scroll Preview</div>
+                                </div>
+
+                                <div class="mayhen_admin_asset_controls" style="flex: 1;">
+                                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                                        <input 
+                                            type="text" 
+                                            name="full_page_preview_url" 
+                                            id="full_page_preview_url_input" 
+                                            value="{{ old('full_page_preview_url', $defaultConfig['full_page_preview'] ?? '') }}" 
+                                            class="mayhen_admin_form_input mayhen_admin_asset_url_input" 
+                                            placeholder="Đường dẫn ảnh dài toàn trang (/mau-thiep/.../assets/... hoặc /storage/...) hoặc tải tệp bên dưới"
+                                            onchange="updateFullPreviewFromUrl(this.value)"
+                                        >
+                                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="toggleScrollSimulation()" style="padding: 6px 12px; font-size: 0.75rem; white-space: nowrap;">
+                                            <span id="scroll_simulation_btn_text">▶ Cuộn Thử</span>
+                                        </button>
+                                    </div>
+
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <label class="mayhen_admin_file_upload_btn">
+                                            <input type="file" name="full_page_preview_file" id="full_page_preview_file_input" accept="image/*" style="display: none;" onchange="previewFullPageImageInput(this)">
+                                            <span>📁 Tải Ảnh Cuộn Mới (Tối đa 25MB)</span>
+                                        </label>
+
+                                        @if (!empty($detectedLocalFullPreview))
+                                            <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="selectDetectedLocalAsset('{{ $detectedLocalFullPreview }}')" style="font-size: 0.75rem; padding: 5px 10px; color: #8A6D3B; border-color: #D6C29A; background-color: #FCF8F2;" title="Gán đường dẫn ảnh phát hiện có sẵn trong thư mục assets">
+                                                <span>⚡ Chọn ảnh có sẵn trong assets ({{ basename($detectedLocalFullPreview) }})</span>
+                                            </button>
+                                        @endif
+
+                                        <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="resetFullPreviewField()" style="font-size: 0.75rem; padding: 5px 10px; color: #991B1B;">
+                                            <span>Xóa / Đặt lại</span>
+                                        </button>
+                                        <span class="mayhen_admin_storage_pill">Tự dọn ảnh cũ</span>
+                                    </div>
+
+                                    <div style="font-size: 0.75rem; color: #64748B; line-height: 1.5; margin-top: 6px;">
+                                        💡 <strong>Mẹo:</strong> Ảnh cuộn toàn trang (Full Page Scroll) là ảnh chụp toàn bộ các section từ đầu đến cuối của mẫu thiệp (khuyến nghị định dạng WebP, chiều rộng khoảng 480px - 900px, chiều dài từ 2.000px đến 10.000px). Khi khách xem trên Trang Chủ hoặc Kho Mẫu, ảnh sẽ tự động trôi mượt mà mô phỏng màn hình điện thoại thật.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Status Checkboxes -->
                         <div style="display: flex; gap: 24px; margin-top: 24px; padding: 14px 16px; background-color: #F8FAFC; border-radius: var(--mh-admin-radius-sm); border: 1px solid var(--mh-admin-border);">
                             <label class="mayhen_admin_checkbox_label">
@@ -1340,6 +1401,97 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    // Full Page Scroll Preview Controls
+    function previewFullPageImageInput(input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const targetImg = document.getElementById('preview_full_page_img');
+                if (targetImg) {
+                    targetImg.src = e.target.result;
+                    targetImg.onload = function() {
+                        setupPhoneMockupScrollSpeed(this);
+                    };
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function updateFullPreviewFromUrl(url) {
+        const targetImg = document.getElementById('preview_full_page_img');
+        if (targetImg && url && url.trim() !== '') {
+            targetImg.src = url.trim();
+            targetImg.onload = function() {
+                setupPhoneMockupScrollSpeed(this);
+            };
+        }
+    }
+
+    function selectDetectedLocalAsset(url) {
+        const urlInput = document.getElementById('full_page_preview_url_input');
+        if (urlInput) {
+            urlInput.value = url;
+            updateFullPreviewFromUrl(url);
+        }
+    }
+
+    function resetFullPreviewField() {
+        const urlInput = document.getElementById('full_page_preview_url_input');
+        const fileInput = document.getElementById('full_page_preview_file_input');
+        if (urlInput) urlInput.value = '';
+        if (fileInput) fileInput.value = '';
+        const targetImg = document.getElementById('preview_full_page_img');
+        if (targetImg) {
+            targetImg.src = '{{ $template->thumbnail_url }}';
+        }
+    }
+
+    let isMockupScrolling = false;
+    function toggleScrollSimulation() {
+        const mockup = document.getElementById('phone_mockup_container');
+        const btnText = document.getElementById('scroll_simulation_btn_text');
+        if (!mockup) return;
+
+        isMockupScrolling = !isMockupScrolling;
+        if (isMockupScrolling) {
+            mockup.classList.add('is-animating');
+            if (btnText) btnText.textContent = '⏸ Dừng';
+        } else {
+            mockup.classList.remove('is-animating');
+            if (btnText) btnText.textContent = '▶ Cuộn Thử';
+        }
+    }
+
+    function setupPhoneMockupScrollSpeed(img) {
+        const mockupInner = document.getElementById('phone_mockup_inner');
+        if (!img || !mockupInner) return;
+        const naturalH = img.naturalHeight || 0;
+        const naturalW = img.naturalWidth || 1;
+        const innerW = mockupInner.clientWidth || 110;
+        const computedH = innerW * (naturalH / naturalW);
+        const innerH = mockupInner.clientHeight || 190;
+        const delta = Math.max(0, computedH - innerH);
+        
+        const duration = Math.max(8, Math.min(60, delta / 120));
+        img.style.setProperty('--mockup-scroll-y', `-${delta}px`);
+        img.style.setProperty('--mockup-scroll-dur', `${duration.toFixed(1)}s`);
+    }
+
+    window.addEventListener('load', function() {
+        const fullImg = document.getElementById('preview_full_page_img');
+        if (fullImg) {
+            if (fullImg.complete) {
+                setupPhoneMockupScrollSpeed(fullImg);
+            } else {
+                fullImg.addEventListener('load', function() {
+                    setupPhoneMockupScrollSpeed(this);
+                });
+            }
+        }
+    });
 
     // =========================================================================
     // MUSIC PICKER POPUP MODAL & SHOWCASE AUDIO CONTROLS

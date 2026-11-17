@@ -76,6 +76,145 @@ class TemplateController extends Controller
     }
 
     /**
+     * Show form for creating a new template manually.
+     */
+    public function create(): View
+    {
+        return view('admin.pages.templates.create', [
+            'availableCategories' => [
+                'luxury' => 'Hoàng Gia Tem Sáp (Luxury)',
+                'modern' => 'Hiện Đại Sắc Nét (Modern)',
+                'traditional' => 'Truyền Thống Á Đông (Traditional)',
+                'floral' => 'Hoa Lá Thiên Nhiên (Floral)',
+                'minimal' => 'Tối Giản Tinh Tế (Minimal)',
+                'editorial' => 'Tạp Chí Editorial (Editorial)',
+            ],
+            'availableTiers' => [
+                'free' => 'Gói Miễn Phí (Free)',
+                'plus' => 'Gói Hạnh Phúc (Plus - Mặc định)',
+                'pro' => 'Gói Cao Cấp VIP (Pro)',
+            ],
+        ]);
+    }
+
+    /**
+     * Store a newly created template.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'slug' => 'nullable|string|max:100|alpha_dash|unique:invitation_templates,slug',
+            'category' => 'required|string|max:50',
+            'tier' => 'required|string|in:free,plus,pro',
+            'description' => 'nullable|string|max:1000',
+            'thumbnail_url' => 'nullable|string|max:500',
+            'thumbnail_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:10240',
+            'full_page_preview_url' => 'nullable|string|max:1000',
+            'full_page_preview_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:25600',
+            'is_active' => 'nullable',
+            'is_featured' => 'nullable',
+        ]);
+
+        $slug = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
+
+        $baseSlug = $slug;
+        $counter = 1;
+        while (InvitationTemplate::where('slug', $slug)->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        $thumbnailUrl = $validated['thumbnail_url'] ?? "/assets/client/images/templates/{$slug}/thumb.webp";
+        if ($request->hasFile('thumbnail_file')) {
+            $uploadedThumb = $this->handleFileUpload($request, 'thumbnail_file', $slug, 'thumbnail');
+            if ($uploadedThumb) {
+                $thumbnailUrl = $uploadedThumb;
+            }
+        }
+
+        $defaultConfig = [
+            'tier' => $validated['tier'],
+            'description' => $validated['description'] ?? '',
+        ];
+
+        if ($request->hasFile('full_page_preview_file')) {
+            $uploadedFullPreview = $this->handleFileUpload($request, 'full_page_preview_file', $slug, 'preview');
+            if ($uploadedFullPreview) {
+                $defaultConfig['full_page_preview'] = $uploadedFullPreview;
+            }
+        } elseif ($request->filled('full_page_preview_url')) {
+            $defaultConfig['full_page_preview'] = trim((string) $request->input('full_page_preview_url'));
+        }
+
+        $template = InvitationTemplate::create([
+            'name' => $validated['name'],
+            'slug' => $slug,
+            'category' => $validated['category'],
+            'thumbnail_url' => $thumbnailUrl,
+            'demo_url' => "/xem-thu/{$slug}",
+            'is_active' => $request->has('is_active'),
+            'is_featured' => $request->has('is_featured'),
+            'default_config' => $defaultConfig,
+            'current_version' => '1.0.0',
+            'release_status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $templateDir = resource_path("views/client/invitations/{$slug}");
+        if (! File::isDirectory($templateDir)) {
+            File::makeDirectory($templateDir, 0755, true);
+            File::makeDirectory("{$templateDir}/assets", 0755, true);
+            File::makeDirectory("{$templateDir}/assets/images", 0755, true);
+
+            $scaffoldBlade = <<<'BLADE'
+            @extends('client.layouts.invitation')
+
+            @section('title', 'Thiệp Cưới ' . ($templateData['groom_name'] ?? 'Chú Rể') . ' & ' . ($templateData['bride_name'] ?? 'Cô Dâu'))
+
+            @push('styles')
+                <style>
+                    .mayhen_invitation_container {
+                        max-width: 480px;
+                        margin: 0 auto;
+                        background: #FFFDF9;
+                        min-height: 100vh;
+                        position: relative;
+                    }
+                </style>
+            @endpush
+
+            @section('content')
+            <div class="mayhen_invitation_container">
+                {{-- Section 1: Opening Envelope --}}
+                <section class="mayhen_invitation_opening" id="section-opening" data-sync-target="opening">
+                    <!-- Opening content -->
+                </section>
+
+                {{-- Section 2: Hero Cover --}}
+                <section class="mayhen_invitation_hero" id="section-hero">
+                    <h1 data-sync-target="hero_title">{{ $templateData['groom_name'] ?? 'Minh Quân' }} & {{ $templateData['bride_name'] ?? 'Ái Như' }}</h1>
+                </section>
+            </div>
+            @endsection
+            BLADE;
+            File::put("{$templateDir}/template.blade.php", $scaffoldBlade);
+        }
+
+        InvitationTemplate::clearTemplateCaches($template);
+
+        AuditLogger::log(
+            'create_template',
+            'InvitationTemplate',
+            $template->id,
+            "Tạo mới mẫu thiệp cưới '{$template->name}' (Slug: {$slug})",
+            ['tier' => $validated['tier'], 'category' => $validated['category']]
+        );
+
+        return redirect()->route('admin.templates.edit', $template->id)->with('success', "Đã tạo mẫu thiệp cưới \"{$template->name}\" thành công. Hãy bổ sung thông tin và ảnh cuộn toàn trang bên dưới.");
+    }
+
+    /**
      * Display the template edit form alongside the Schema Validator Inspector.
      */
     public function edit(int $id): View
@@ -183,6 +322,24 @@ class TemplateController extends Controller
             'Playfair Display',
         ];
 
+        // Phát hiện ảnh chụp toàn trang có sẵn trong assets của mẫu thiệp
+        $detectedLocalFullPreview = null;
+        $potentialLocalPaths = [
+            "views/client/invitations/{$template->slug}/assets/images/{$template->slug}.webp" => "/mau-thiep/{$template->slug}/assets/images/{$template->slug}.webp",
+            "views/client/invitations/{$template->slug}/assets/{$template->slug}.webp" => "/mau-thiep/{$template->slug}/assets/{$template->slug}.webp",
+            "views/client/invitations/{$template->slug}/assets/images/preview.webp" => "/mau-thiep/{$template->slug}/assets/images/preview.webp",
+            "views/client/invitations/{$template->slug}/assets/preview.webp" => "/mau-thiep/{$template->slug}/assets/preview.webp",
+            "views/client/invitations/{$template->slug}/assets/images/full.webp" => "/mau-thiep/{$template->slug}/assets/images/full.webp",
+            "views/client/invitations/{$template->slug}/assets/full.webp" => "/mau-thiep/{$template->slug}/assets/full.webp",
+        ];
+
+        foreach ($potentialLocalPaths as $relPath => $webUrl) {
+            if (file_exists(resource_path($relPath))) {
+                $detectedLocalFullPreview = $webUrl;
+                break;
+            }
+        }
+
         return view('admin.pages.templates.edit', [
             'template' => $template,
             'audit' => $audit,
@@ -196,6 +353,7 @@ class TemplateController extends Controller
             'availableHeadingFonts' => $availableHeadingFonts,
             'availableBodyFonts' => $availableBodyFonts,
             'availableScriptFonts' => $availableScriptFonts,
+            'detectedLocalFullPreview' => $detectedLocalFullPreview,
             'defaultConfig' => $template->default_config ?? [],
         ]);
     }
@@ -215,6 +373,8 @@ class TemplateController extends Controller
             'tier' => 'required|string|in:free,plus,pro',
             'thumbnail_url' => 'nullable|string|max:500',
             'thumbnail_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:10240',
+            'full_page_preview_url' => 'nullable|string|max:1000',
+            'full_page_preview_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:25600',
             'is_active' => 'nullable',
             'is_featured' => 'nullable',
 
@@ -324,6 +484,22 @@ class TemplateController extends Controller
             }
         } elseif ($request->filled('thumbnail_url')) {
             $thumbnailUrl = $request->input('thumbnail_url');
+        }
+
+        // --- 1.2. Xử lý Ảnh Chụp Toàn Mẫu Cuộn (Full Page Scroll Preview) ---
+        if ($request->hasFile('full_page_preview_file')) {
+            $oldFullPreview = $defaultConfig['full_page_preview'] ?? null;
+            $uploadedFullPreview = $this->handleFileUpload($request, 'full_page_preview_file', $slug, 'preview', $oldFullPreview);
+            if ($uploadedFullPreview) {
+                $defaultConfig['full_page_preview'] = $uploadedFullPreview;
+            }
+        } elseif ($request->has('full_page_preview_url')) {
+            $fullPageUrl = trim((string) $request->input('full_page_preview_url'));
+            if ($fullPageUrl !== '') {
+                $defaultConfig['full_page_preview'] = $fullPageUrl;
+            } else {
+                unset($defaultConfig['full_page_preview']);
+            }
         }
 
         // --- 2. Xử lý Nhạc nền Showcase (kèm dọn dẹp storage cũ nếu upload file mới) ---

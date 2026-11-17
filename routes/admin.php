@@ -113,6 +113,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminTemplateController::class, 'index'])->name('index');
         Route::get('/export-csv', [AdminTemplateController::class, 'exportCsv'])->name('export');
         Route::post('/scan-discovery', [AdminTemplateController::class, 'scanDiscovery'])->middleware('admin.super')->name('scan_discovery');
+        Route::get('/create', [AdminTemplateController::class, 'create'])->middleware('admin.manager')->name('create');
+        Route::post('/', [AdminTemplateController::class, 'store'])->middleware('admin.manager')->name('store');
         Route::get('/{id}/edit', [AdminTemplateController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminTemplateController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::post('/{id}/toggle-active', [AdminTemplateController::class, 'toggleActive'])->middleware('admin.manager')->name('toggle_active');
