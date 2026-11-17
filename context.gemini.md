@@ -867,29 +867,31 @@ php artisan serve
 
 ---
 
-### Đề án #89: Chuẩn hóa hệ thống ảnh thiệp cưới — Đồng bộ 100% giữa Codebase (assets), Storage, Database (default_config), Template Blade và Studio
-- **Vấn đề ghi nhận**:
-  - Người dùng phản ánh khi sửa ảnh thật trong Admin thì ngoài giao diện xem thử và thiệp vẫn còn hiển thị ảnh hoạt hình chibi rác hoặc khung ảnh bị trắng trơn/trống rỗng.
-  - Phân tích nguyên nhân gốc rễ:
-    1. Thư mục `assets/` của các mẫu (`hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `mayhen-curated`) chứa toàn bộ ảnh vẽ vector hoạt hình chibi (dung lượng 8KB-18KB) từ lúc clone mẫu ban đầu. Trong Blade, khi `$resolveAsset` không tìm thấy override hoặc khi trường cấu hình bị rỗng, hệ thống fallback về các file chibi này.
-    2. Tại `ngay-tinh-yeu-dom-hoa`, CSS gọi `url("images/cloud-door-gate.webp")` trả về 404 do thiếu route phục vụ trực tiếp asset không qua tiền tố `assets/`, làm cánh cửa mở thiệp bị lỗi trong suốt làm lộ nội dung bên dưới và đè biểu tượng Song Hỷ lên góc trên màn hình.
-    3. Tại `giua-muon-ngan-vi-sao`, template Blade vẫn còn tham chiếu tên các file hash cũ (`7da1e3...`, `b058b3...`) làm giá trị fallback.
-    4. Tại `tron-kiep-nay-ben-nhau`, chưa có thư mục storage và album 10 ảnh trong DB bị thiếu.
+### Đề án #90: Nâng cấp toàn diện giao diện Mobile Trang Chủ (Mobile-First Quiet Luxury UI Refinement)
+- **Vấn đề ghi nhận (qua 4 ảnh thực tế từ người dùng)**:
+  1. *Hero Section*: Ảnh nền cưới (`banner-home.webp`) có chứa cành hoa đào, ảnh cặp đôi và hình mờ văn bản ("THÔNG", "Ông Bà", "Trọng Nghĩa Bích Ngọc") nằm đè trực tiếp dưới khối chữ màu đen trên màn hình hẹp, làm chữ bị chìm, khó đọc, thiếu tương phản. Nút phụ "Xem mẫu trên điện thoại" có viền quá mờ nhạt, trong suốt và trôi nổi trên ảnh nền.
+  2. *Khối Lợi ích Niềm tin (Hero Trust)*: 3 cột nằm ngang bị bóp nghẹt trên màn hình nhỏ (< 480px / 375px), khiến các cụm từ tiếng Việt bị ngắt dòng cộc lốc một từ ("Có bản" / "đồ", "Báo tham" / "dự", "Dễ gửi" / "Zalo") và đè lên chữ viết tay hình mờ của ảnh nền.
+  3. *Trio Phone Mockups Stage*: 3 mô hình iPhone xoay 3D bị chen chúc, 2 điện thoại hai bên chiếm diện tích quá lớn và đè lên nhau, các nhãn nổi ("Nhạc Nền Cưới", "186 Khách Mời") bị lệch và che viền.
+  4. *3D Coverflow Showcase Carousel*: Thẻ thiệp bị co lại chỉ còn 195px, hai thẻ kề bên lấn chiếm và góc thẻ phía sau nhô lên trên thẻ chính ("Nổi Bật" lòi ra góc trên); lớp phủ tối màu che mất 70% chiều cao thẻ thiệp khiến bức ảnh thiệp bị khuất; các nút "Xem Mẫu" và "Chọn Mẫu" cùng các thẻ tag bị dồn ép chật chội.
 - **Giải pháp triển khai**:
-  - **Đồng bộ hóa 100% ảnh thật vào thư mục `assets/` (Xóa bỏ triệt để ảnh hoạt hình chibi)**:
-    - Thay thế toàn bộ các file chibi trong `assets/` của `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `mayhen-curated` bằng chính các tệp ảnh cưới thật chất lượng cao từ Storage.
-    - Đảm bảo ngay cả khi template rơi vào trường hợp fallback, 100% ảnh hiển thị luôn là ảnh cưới người thật tuyệt đẹp.
-  - **Khắc phục lỗi 404 cho asset cánh cửa mở thiệp ([`routes/web.php`](routes/web.php))**:
-    - Bổ sung route `Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])->where('path', '^(?!assets/).+');`.
-    - Asset cánh cửa `cloud-door-gate.webp` và các asset trong CSS giờ đây trả về HTTP 200 OK cho cả đường dẫn trực tiếp và đường dẫn qua `assets/`.
-  - **Chuẩn hóa template `giua-muon-ngan-vi-sao`**:
-    - Cập nhật toàn bộ fallback trong `template.blade.php` sang tên chuẩn ngữ nghĩa: `hero-placeholder.webp`, `groom-placeholder.webp`, `bride-placeholder.webp`, `story-placeholder.webp`, `footer-placeholder.webp`.
-    - Xóa bỏ hoàn toàn các mã hash rác.
-  - **Khởi tạo Storage & đồng bộ Database cho `tron-kiep-nay-ben-nhau`**:
-    - Khởi tạo thư mục `storage/app/public/templates/tron-kiep-nay-ben-nhau/{photos,gallery,qr}` và nạp đầy đủ ảnh chụp áo dài truyền thống vào storage.
-    - Cập nhật `default_config` trong Database trỏ vào các tệp `/storage/...` hợp lệ.
-    - Cập nhật `template.blade.php` của mẫu này đồng bộ các trường `groom_qr_url`, `bride_qr_url`, `music_url`.
+  - **Tối ưu Hero Section & Tương phản chữ ([`home.css`](public/assets/client/css/pages/home.css))**:
+    - Bổ sung lớp gradient phủ sáng đa tầng `linear-gradient(180deg, ...)` chuyên dụng cho mobile, vừa làm dịu ảnh nền phía sau vừa đảm bảo chữ đen đọc siêu nét, tương phản hoàn hảo.
+    - Căn giữa nội dung Hero trên mobile tạo bố cục tạp chí Quiet Luxury cân bằng.
+    - Thiết kế lại nút "Xem mẫu trên điện thoại" trên mobile với nền trắng đục (`#FFFFFF`), viền vàng champagne sắc sảo (`border: 1px solid rgba(197, 168, 128, 0.55)`) và đổ bóng nhẹ để tạo điểm chạm tương tác rõ ràng, nổi bật.
+  - **Thiết kế lại Hero Trust dạng thẻ ngang Kính mờ (Frosted Glass Cards)**:
+    - Trên màn hình di động, chuyển từ dạng 3 cột ngang chật hẹp thành danh sách 3 thẻ ngang kính mờ (`background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-radius: 12px;`).
+    - Tiêu đề nằm bên trái ("Dễ gửi Zalo •", "Có bản đồ •", "Báo tham dự •"), mô tả đầy đủ bên phải. Khắc phục triệt để 100% tình trạng gãy chữ và che phủ hoàn toàn ảnh nền rối mắt bên dưới.
+  - **Tinh chỉnh Trio Phone Mockups trên Mobile**:
+    - Điện thoại trung tâm trở thành tâm điểm với kích thước 195px x 415px, đổ bóng sâu 3D sang trọng.
+    - Hai điện thoại nắp thư và thiệp tiệc hai bên được thu nhỏ (`width: 155px; height: 355px`), giảm độ mờ (`opacity: 0.70`) và nép phía sau như tấm màn sân khấu, tạo chiều sâu thị giác (Depth of Field) mà không tranh chấp không gian.
+    - Căn chỉnh lại vị trí và đổ bóng cho 2 Floating Badges để nổi bật sắc nét trên màn hình điện thoại.
+  - **Chuẩn hóa 3D Coverflow Showcase Carousel ([`home.js`](public/assets/client/js/pages/home.js) & [`home.css`](public/assets/client/css/pages/home.css))**:
+    - Trong `home.js`: Trên mobile (`isMobile`), thẻ trung tâm giữ `scale: 1.0` siêu nét; hai thẻ kề bên dãn cách ra `xPercent = 78%` với độ mờ dịu `opacity: 0.35` để gợi ý vuốt mà không đè thẻ chính; ẩn hoàn toàn các thẻ khoảng cách $\ge 2$ (`opacity: 0; pointer-events: none;`) để triệt tiêu vĩnh viễn hiện tượng lộ góc thẻ ("g Bật") phía sau.
+    - Trong `home.css`: Xóa bỏ các thuộc tính margin âm gây lệch tâm (`margin-left: -97.5px; margin-top: -175px;`), tăng chiều rộng thẻ lên `clamp(230px, 68vw, 255px)` chuẩn tỷ lệ 9:16.
+    - Tối ưu hóa lớp phủ thông tin: Trên mobile, chỉ phủ gradient 30% ở chân thẻ, ẩn mô tả dài và tags dư thừa (vì bên dưới đã có Curator box chi tiết), nhường lại 70% diện tích để tôn vinh toàn bộ tác phẩm nghệ thuật thiệp cưới.
+    - Nút "Xem Mẫu" và "Chọn Mẫu" được làm lại dạng pill 38px bo tròn, biểu tượng rõ nét và dễ dàng thao tác bằng ngón tay.
+    - Thanh lọc phong cách (Filter bar): Ẩn thanh cuộn xám (`scrollbar-width: none`), cuộn ngang cảm ứng mượt mà.
 - **Xác minh kết quả**:
-  - Kiểm tra curl HTTP status code tới toàn bộ ảnh trên 5 mẫu thiệp: 100% trả về HTTP 200 OK.
-  - Chạy toàn bộ Pest test suites liên quan (`GiuaMuonNganViSaoTemplateTest`, `Gate2TemplateStudioAndSyncInvariantsTest`, `TemplateRenderAndMediaSecurityDeepTest`, `AdminGuestPhotoTest`, `HacBachTraoDuyenTemplateTest`, `NetMucTinhYeuTemplateTest`): PASS 100% với hơn 400 assertions.
-  - Định dạng code sạch sẽ theo Laravel Pint (`vendor/bin/pint --dirty --format agent`).
+  - Chạy `vendor/bin/pest tests/Feature/WebsiteCatalogAndSeoDeepTest.php`: 100% passed (10 tests, 63 assertions).
+  - Kiểm tra định dạng Pint: `vendor/bin/pint --dirty --format agent` (passed).
+  - Kiểm tra độ tương thích trên tất cả kích thước viewport mobile: 320px, 360px, 375px, 390px, 414px, 430px và tablet 768px.

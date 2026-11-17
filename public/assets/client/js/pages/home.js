@@ -144,35 +144,35 @@ function initShowcaseCoverflow() {
                 xPercent = 0;
                 rotYDeg = 0;
                 zPx = 0;
-                scale = isMobile ? 1.08 : 1.18;
+                scale = isMobile ? 1.0 : 1.18;
                 opacity = 1;
             } else if (absDiff === 1) {
-                // Thẻ kề bên 1: Dãn cách để không chạm mép thẻ chính, hơi nghiêng chéo
-                xPercent = isMobile ? 64 : (isTablet ? 68 : 74);
-                rotYDeg = 34;
-                zPx = isMobile ? -65 : -90;
-                scale = 0.82;
-                opacity = 0.82;
+                // Thẻ kề bên 1: Dãn cách vừa phải, góc nghiêng nhẹ và độ mờ êm dịu trên mobile
+                xPercent = isMobile ? 78 : (isTablet ? 70 : 74);
+                rotYDeg = isMobile ? 22 : 34;
+                zPx = isMobile ? -85 : -90;
+                scale = isMobile ? 0.76 : 0.82;
+                opacity = isMobile ? 0.35 : 0.82;
             } else if (absDiff === 2) {
-                // Thẻ vị trí 2: Hiển thị chéo sắc nét, nối tiếp mượt mà
-                xPercent = isMobile ? 116 : (isTablet ? 126 : 138);
+                // Thẻ vị trí 2: Trên mobile ẩn hoàn toàn để không rối mắt và không bị lộ góc thẻ phía sau
+                xPercent = isMobile ? 130 : (isTablet ? 126 : 138);
                 rotYDeg = 44;
-                zPx = isMobile ? -160 : -200;
+                zPx = isMobile ? -180 : -200;
                 scale = 0.70;
-                opacity = 0.60;
+                opacity = isMobile ? 0 : 0.60;
             } else if (absDiff === 3) {
                 // Thẻ vị trí 3: Xếp tầng xa hơn
-                xPercent = isMobile ? 158 : (isTablet ? 174 : 194);
+                xPercent = isMobile ? 165 : (isTablet ? 174 : 194);
                 rotYDeg = 50;
                 zPx = isMobile ? -240 : -295;
                 scale = 0.60;
-                opacity = 0.42;
+                opacity = isMobile ? 0 : 0.42;
             } else if (absDiff === 4) {
                 xPercent = isMobile ? 194 : (isTablet ? 218 : 244);
                 rotYDeg = 54;
                 zPx = isMobile ? -310 : -380;
                 scale = 0.52;
-                opacity = 0.30;
+                opacity = isMobile ? 0 : 0.30;
             } else {
                 const base = isMobile ? 194 : (isTablet ? 218 : 244);
                 const step = isMobile ? 32 : 44;
@@ -180,11 +180,11 @@ function initShowcaseCoverflow() {
                 rotYDeg = Math.min(58, 54 + (absDiff - 4) * 1.2);
                 zPx = -Math.min(480, 380 + (absDiff - 4) * 30);
                 scale = 0.48;
-                opacity = Math.max(0.15, 0.30 - (absDiff - 4) * 0.04);
+                opacity = isMobile ? 0 : Math.max(0.15, 0.30 - (absDiff - 4) * 0.04);
             }
 
-            // Ẩn các thẻ quá xa trên màn hình điện thoại nhỏ để tránh tràn viền
-            if (isMobile && absDiff > 2) {
+            // Ẩn các thẻ từ khoảng cách 2 trở đi trên màn hình điện thoại nhỏ để tránh tràn viền và che lấp
+            if (isMobile && absDiff > 1) {
                 opacity = 0;
             }
 
