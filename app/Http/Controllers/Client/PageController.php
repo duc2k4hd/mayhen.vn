@@ -44,7 +44,7 @@ class PageController extends Controller
     protected static ?int $contactLastModified = null;
 
     /**
-     * Cache ETag & Last-Modified cho các trang tĩnh (about, faq, how-it-works) trong worker memory.
+     * Cache ETag & Last-Modified cho các trang tĩnh (about, faq) trong worker memory.
      *
      * @var array<string, array{0: string, 1: int}>
      */
@@ -245,29 +245,6 @@ class PageController extends Controller
         $etag = '"mayhen_'.$key.'_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
 
         return self::$staticPagesMeta[$key] = [$etag, $mtime];
-    }
-
-    public function howItWorks(Request $request): Response|View
-    {
-        if ($request->user() !== null) {
-            return view('client.pages.how-it-works');
-        }
-
-        [$etag, $mtime] = self::resolveStaticPageMeta('how-it-works', 'how_it_works');
-
-        $clientEtag = $request->header('If-None-Match');
-        if ($clientEtag && trim($clientEtag) === $etag) {
-            return response('', 304)
-                ->header('ETag', $etag)
-                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
-                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
-        }
-
-        return response()
-            ->view('client.pages.how-it-works')
-            ->header('ETag', $etag)
-            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
-            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
     public function about(Request $request): Response|View

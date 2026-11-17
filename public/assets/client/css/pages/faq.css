@@ -1,0 +1,716 @@
+/**
+ * MAYHEN.VN — CLIENT FAQ PAGE STYLESHEET (CÂU HỎI THƯỜNG GẶP)
+ * Quy chuẩn: 100% Vanilla CSS, Tiền tố bắt buộc: mayhen_faq_*
+ * Phong cách: Quiet Luxury, Editorial, Lãng mạn, Tối giản, Tinh tế.
+ */
+
+:root {
+    --mh-faq-bg: #FFFDFB;
+    --mh-faq-card-bg: #FFFFFF;
+    --mh-faq-border: #EFE8DD;
+    --mh-faq-border-subtle: #F6F2EB;
+    --mh-faq-gold: #C5A880;
+    --mh-faq-gold-light: #F7F3ED;
+    --mh-faq-gold-deep: #9A7B56;
+    --mh-faq-primary: #613B3E;
+    --mh-faq-primary-soft: #F9F3F3;
+    --mh-faq-text-heading: #181517;
+    --mh-faq-text-body: #2C2623;
+    --mh-faq-text-muted: #72685E;
+    --mh-faq-radius-sm: 8px;
+    --mh-faq-radius-md: 14px;
+    --mh-faq-radius-lg: 20px;
+    --mh-faq-shadow-sm: 0 2px 10px rgba(97, 59, 62, 0.03);
+    --mh-faq-shadow-md: 0 10px 30px -4px rgba(97, 59, 62, 0.06);
+    --mh-faq-shadow-hover: 0 14px 36px -6px rgba(97, 59, 62, 0.10);
+    --mh-faq-transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_faq_wrapper {
+    background-color: var(--mh-faq-bg);
+    color: var(--mh-faq-text-body);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.8;
+    padding-bottom: 80px;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   1. HERO SECTION & TÌM KIẾM
+   ========================================================================== */
+.mayhen_faq_hero {
+    position: relative;
+    padding: 72px 20px 48px;
+    text-align: center;
+    background: radial-gradient(circle at 50% 15%, rgba(197, 168, 128, 0.12) 0%, rgba(255, 253, 251, 0) 70%);
+}
+
+.mayhen_faq_hero_container {
+    max-width: 820px;
+    margin: 0 auto;
+}
+
+.mayhen_faq_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mh-faq-gold-deep);
+    margin-bottom: 16px;
+}
+
+.mayhen_faq_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(30px, 4.5vw, 46px);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--mh-faq-text-heading);
+    margin-bottom: 18px;
+    letter-spacing: -0.01em;
+}
+
+.mayhen_faq_lead {
+    font-size: clamp(15px, 1.8vw, 17px);
+    color: var(--mh-faq-text-muted);
+    max-width: 680px;
+    margin: 0 auto 36px;
+    line-height: 1.75;
+}
+
+/* Thanh tìm kiếm trực quan */
+.mayhen_faq_search_box {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.mayhen_faq_search_input_wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--mh-faq-card-bg);
+    border: 1.5px solid var(--mh-faq-border);
+    border-radius: 999px;
+    padding: 6px 18px 6px 20px;
+    box-shadow: var(--mh-faq-shadow-md);
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_search_input_wrap:focus-within {
+    border-color: var(--mh-faq-gold);
+    box-shadow: 0 10px 30px -4px rgba(197, 168, 128, 0.25);
+}
+
+.mayhen_faq_search_icon {
+    width: 20px;
+    height: 20px;
+    color: var(--mh-faq-gold-deep);
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.mayhen_faq_search_input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15.5px;
+    color: var(--mh-faq-text-heading);
+    font-family: inherit;
+    padding: 8px 0;
+}
+
+.mayhen_faq_search_input::placeholder {
+    color: #A0988E;
+}
+
+.mayhen_faq_search_clear {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--mh-faq-border-subtle);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--mh-faq-text-muted);
+    padding: 0;
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_search_clear:hover {
+    background: var(--mh-faq-border);
+    color: var(--mh-faq-text-heading);
+}
+
+/* ==========================================================================
+   2. HIGHLIGHTS STRIP (ĐIỂM NHẤN TIN CẬY)
+   ========================================================================== */
+.mayhen_faq_highlights {
+    padding: 0 20px 48px;
+}
+
+.mayhen_faq_highlights_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.mayhen_faq_highlight_card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--mh-faq-card-bg);
+    border: 1px solid var(--mh-faq-border-subtle);
+    border-radius: var(--mh-faq-radius-md);
+    padding: 16px 20px;
+    box-shadow: var(--mh-faq-shadow-sm);
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_highlight_card:hover {
+    border-color: var(--mh-faq-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--mh-faq-shadow-md);
+}
+
+.mayhen_faq_highlight_icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--mh-faq-gold-light);
+    color: var(--mh-faq-gold-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_faq_highlight_title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--mh-faq-text-heading);
+    margin-bottom: 2px;
+}
+
+.mayhen_faq_highlight_desc {
+    font-size: 12px;
+    color: var(--mh-faq-text-muted);
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   3. CATEGORY FILTER TABS
+   ========================================================================== */
+.mayhen_faq_tabs_section {
+    padding: 0 20px 32px;
+    position: sticky;
+    top: 72px;
+    z-index: 10;
+    background: rgba(255, 253, 251, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.mayhen_faq_tabs_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.mayhen_faq_tab_btn {
+    border: 1px solid var(--mh-faq-border);
+    background: var(--mh-faq-card-bg);
+    color: var(--mh-faq-text-muted);
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: var(--mh-faq-transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.mayhen_faq_tab_btn:hover {
+    border-color: var(--mh-faq-gold);
+    color: var(--mh-faq-text-heading);
+}
+
+.mayhen_faq_tab_btn.is-active {
+    background: var(--mh-faq-primary);
+    border-color: var(--mh-faq-primary);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(97, 59, 62, 0.2);
+}
+
+.mayhen_faq_tab_count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--mh-faq-border-subtle);
+    color: var(--mh-faq-text-muted);
+}
+
+.mayhen_faq_tab_btn.is-active .mayhen_faq_tab_count {
+    background: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+}
+
+/* ==========================================================================
+   4. ACCORDION FAQ LIST
+   ========================================================================== */
+.mayhen_faq_content_section {
+    padding: 0 20px 64px;
+}
+
+.mayhen_faq_container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.mayhen_faq_group {
+    margin-bottom: 40px;
+}
+
+.mayhen_faq_group.is-hidden {
+    display: none !important;
+}
+
+.mayhen_faq_group_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--mh-faq-border-subtle);
+}
+
+.mayhen_faq_group_icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--mh-faq-gold-light);
+    color: var(--mh-faq-gold-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_faq_group_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--mh-faq-text-heading);
+}
+
+.mayhen_faq_items_wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Card câu hỏi */
+.mayhen_faq_card {
+    background: var(--mh-faq-card-bg);
+    border: 1px solid var(--mh-faq-border);
+    border-radius: var(--mh-faq-radius-md);
+    box-shadow: var(--mh-faq-shadow-sm);
+    transition: var(--mh-faq-transition);
+    overflow: hidden;
+}
+
+.mayhen_faq_card.is-hidden {
+    display: none !important;
+}
+
+.mayhen_faq_card:hover {
+    border-color: var(--mh-faq-gold);
+    box-shadow: var(--mh-faq-shadow-md);
+}
+
+.mayhen_faq_card.is-open {
+    border-color: var(--mh-faq-gold);
+    box-shadow: var(--mh-faq-shadow-md);
+}
+
+/* Nút bấm câu hỏi */
+.mayhen_faq_question_btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_question_title_wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+}
+
+.mayhen_faq_q_number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--mh-faq-border-subtle);
+    color: var(--mh-faq-gold-deep);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_card.is-open .mayhen_faq_q_number {
+    background: var(--mh-faq-primary);
+    color: #FFFFFF;
+}
+
+.mayhen_faq_question_text {
+    font-size: 16.5px;
+    font-weight: 600;
+    color: var(--mh-faq-text-heading);
+    line-height: 1.5;
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_card:hover .mayhen_faq_question_text,
+.mayhen_faq_card.is-open .mayhen_faq_question_text {
+    color: var(--mh-faq-primary);
+}
+
+.mayhen_faq_toggle_icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mh-faq-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mh-faq-text-muted);
+    flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_faq_card.is-open .mayhen_faq_toggle_icon {
+    transform: rotate(180deg);
+    background: var(--mh-faq-gold-light);
+    color: var(--mh-faq-gold-deep);
+}
+
+/* Khung câu trả lời */
+.mayhen_faq_answer_wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_faq_card.is-open .mayhen_faq_answer_wrap {
+    max-height: 800px;
+}
+
+.mayhen_faq_answer_body {
+    padding: 0 24px 24px 64px;
+    font-size: 15px;
+    color: var(--mh-faq-text-body);
+    line-height: 1.8;
+    border-top: 1px dashed var(--mh-faq-border-subtle);
+    padding-top: 16px;
+}
+
+.mayhen_faq_answer_body p {
+    margin-bottom: 12px;
+}
+
+.mayhen_faq_answer_body p:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_faq_answer_body ul {
+    margin: 8px 0 14px 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.mayhen_faq_answer_body ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 6px;
+    color: var(--mh-faq-text-body);
+}
+
+.mayhen_faq_answer_body ul li::before {
+    content: "✦";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--mh-faq-gold-deep);
+    font-size: 11px;
+}
+
+.mayhen_faq_answer_body a {
+    color: var(--mh-faq-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 500;
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_answer_body a:hover {
+    color: var(--mh-faq-gold-deep);
+}
+
+/* Callout trong câu trả lời */
+.mayhen_faq_callout {
+    background: var(--mh-faq-primary-soft);
+    border-left: 3px solid var(--mh-faq-primary);
+    padding: 12px 16px;
+    border-radius: 0 var(--mh-faq-radius-sm) var(--mh-faq-radius-sm) 0;
+    font-size: 14px;
+    margin: 12px 0;
+    color: var(--mh-faq-primary);
+}
+
+/* Không tìm thấy kết quả */
+.mayhen_faq_empty_state {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--mh-faq-card-bg);
+    border: 1px dashed var(--mh-faq-border);
+    border-radius: var(--mh-faq-radius-lg);
+    margin-top: 24px;
+}
+
+.mayhen_faq_empty_state.is-visible {
+    display: block;
+}
+
+.mayhen_faq_empty_icon {
+    width: 48px;
+    height: 48px;
+    color: var(--mh-faq-gold);
+    margin-bottom: 14px;
+}
+
+.mayhen_faq_empty_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mh-faq-text-heading);
+    margin-bottom: 6px;
+}
+
+.mayhen_faq_empty_desc {
+    font-size: 14px;
+    color: var(--mh-faq-text-muted);
+    max-width: 440px;
+    margin: 0 auto 20px;
+}
+
+/* ==========================================================================
+   5. SUPPORT CTA BOX (CHƯA TÌM THẤY CÂU TRẢ LỜI?)
+   ========================================================================== */
+.mayhen_faq_support_section {
+    padding: 20px 20px 0;
+}
+
+.mayhen_faq_support_card {
+    max-width: 860px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #FFFDFB 0%, #F9F5F0 100%);
+    border: 1.5px solid var(--mh-faq-border);
+    border-radius: var(--mh-faq-radius-lg);
+    padding: 44px 36px;
+    text-align: center;
+    box-shadow: var(--mh-faq-shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_faq_support_card::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.mayhen_faq_support_kicker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mh-faq-gold-deep);
+    margin-bottom: 10px;
+}
+
+.mayhen_faq_support_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(24px, 3.2vw, 32px);
+    font-weight: 600;
+    color: var(--mh-faq-text-heading);
+    margin-bottom: 12px;
+}
+
+.mayhen_faq_support_desc {
+    font-size: 15px;
+    color: var(--mh-faq-text-muted);
+    max-width: 580px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+}
+
+.mayhen_faq_support_actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.mayhen_faq_btn_primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--mh-faq-primary);
+    color: #FFFFFF !important;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 13px 26px;
+    border-radius: 999px;
+    text-decoration: none !important;
+    box-shadow: 0 4px 16px rgba(97, 59, 62, 0.22);
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_btn_primary:hover {
+    background: #4A2B2E;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(97, 59, 62, 0.28);
+}
+
+.mayhen_faq_btn_secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    color: var(--mh-faq-text-heading) !important;
+    border: 1px solid var(--mh-faq-border);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 13px 24px;
+    border-radius: 999px;
+    text-decoration: none !important;
+    box-shadow: var(--mh-faq-shadow-sm);
+    transition: var(--mh-faq-transition);
+}
+
+.mayhen_faq_btn_secondary:hover {
+    border-color: var(--mh-faq-gold);
+    color: var(--mh-faq-primary) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--mh-faq-shadow-md);
+}
+
+/* ==========================================================================
+   6. RESPONSIVE DESIGN (MOBILE & TABLET)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .mayhen_faq_highlights_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .mayhen_faq_hero {
+        padding: 48px 16px 36px;
+    }
+
+    .mayhen_faq_highlights {
+        padding: 0 16px 36px;
+    }
+
+    .mayhen_faq_highlights_grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .mayhen_faq_tabs_section {
+        padding: 0 12px 24px;
+        top: 60px;
+    }
+
+    .mayhen_faq_tabs_nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 6px;
+        scrollbar-width: none;
+    }
+
+    .mayhen_faq_tabs_nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mayhen_faq_content_section {
+        padding: 0 16px 48px;
+    }
+
+    .mayhen_faq_question_btn {
+        padding: 16px 18px;
+    }
+
+    .mayhen_faq_answer_body {
+        padding: 0 18px 18px 18px;
+    }
+
+    .mayhen_faq_question_text {
+        font-size: 15.5px;
+    }
+
+    .mayhen_faq_support_card {
+        padding: 32px 20px;
+    }
+
+    .mayhen_faq_support_actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .mayhen_faq_btn_primary,
+    .mayhen_faq_btn_secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}

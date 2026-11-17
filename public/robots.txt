@@ -9,8 +9,6 @@ Allow: /dich-vu
 Allow: /ve-may-hen
 Allow: /lien-he
 Allow: /cau-hoi-thuong-gap
-Allow: /huong-dan
-Allow: /huong-dan-tao-thiep
 Allow: /tu-van-goi-cuoi
 Allow: /docs/
 Allow: /trang/

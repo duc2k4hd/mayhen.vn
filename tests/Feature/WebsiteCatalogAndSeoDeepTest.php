@@ -299,4 +299,18 @@ class WebsiteCatalogAndSeoDeepTest extends TestCase
         $resp2 = $this->withHeaders(['If-None-Match' => $etag])->get(route('home'));
         $this->assertEquals(304, $resp2->getStatusCode());
     }
+
+    /**
+     * SEO-008: Kiểm tra chuyển hướng 301 vĩnh viễn từ các URL /huong-dan về /docs.
+     */
+    public function test_legacy_guide_urls_permanently_redirect_to_docs(): void
+    {
+        $res1 = $this->get('/huong-dan');
+        $res1->assertStatus(301);
+        $res1->assertRedirect('/docs');
+
+        $res2 = $this->get('/huong-dan-tao-thiep');
+        $res2->assertStatus(301);
+        $res2->assertRedirect('/docs');
+    }
 }

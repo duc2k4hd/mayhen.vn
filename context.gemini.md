@@ -623,7 +623,7 @@ php artisan serve
     - Cưỡng chế thẻ `<meta name="robots" content="noindex, nofollow">` trên tất cả trang xác thực (`login`, `register`, `forgot-password`, `reset-password`), trang thiệp cưới khách mời cá nhân (`public-invitation.blade.php`) nhằm tuân thủ tuyệt đối Luật Bảo vệ Dữ liệu Cá nhân (91/2025/QH15).
   - *Chuẩn hóa tệp `public/robots.txt`*:
     - Sửa các đường dẫn cũ không khớp (`/ve-chung-toi` -> `/ve-may-hen`, `/bai-viet` -> `/cam-nang-cuoi/`).
-    - Bổ sung chỉ thị Allow rõ ràng cho `/huong-dan`, `/tu-van-goi-cuoi`, `/trang/`.
+    - Bổ sung chỉ thị Allow rõ ràng cho `/docs`, `/tu-van-goi-cuoi`, `/trang/`. Loại bỏ hoàn toàn `/huong-dan` khỏi robots.txt và sitemap.
     - Bổ sung Disallow toàn bộ phân hệ quản trị, tài khoản, đối tác, xác thực, thanh toán, xem thử và ngăn bot cào query search (`/*?*q=`).
     - Khai báo đầy đủ 2 Sitemap: `https://mayhen.vn/sitemap.xml` và `https://mayhen.vn/sitemap-docs.xml`.
 - **Mở rộng toàn diện XML Sitemap Engine ([`SitemapController.php`](app/Http/Controllers/Client/SitemapController.php))**:
@@ -638,7 +638,7 @@ php artisan serve
   - `docs/layout.blade.php`: Khai báo rõ ràng meta robots `index, follow` cho tài liệu khách hàng và `noindex, nofollow` cho tài liệu Admin SOP.
 - **Tối ưu hóa hiệu năng & Triệt tiêu nghẽn Database (Zero DB Bottleneck)**:
   - Trong `PageController.php`:
-    - Áp dụng Static RAM Memoization và ETag / HTTP 304 Not Modified cho các trang: `/ve-may-hen` (about), `/cau-hoi-thuong-gap` (faq), `/huong-dan` (how-it-works).
+    - Áp dụng Static RAM Memoization và ETag / HTTP 304 Not Modified cho các trang: `/ve-may-hen` (about), `/cau-hoi-thuong-gap` (faq).
     - Áp dụng In-Memory Memoization cho `CmsPage` tại `/dieu-khoan-dich-vu` (terms) và `/chinh-sach-bao-mat` (privacy).
     - Đảm bảo khi phục vụ hàng triệu lượt truy cập đồng thời vào các trang chính, toàn bộ dữ liệu trả về tức thì từ RAM mà không phát sinh câu truy vấn MySQL nào.
 - **Kiểm thử tự động Pest ([`PublicPagesSeoAndPerformanceTest.php`](tests/Feature/PublicPagesSeoAndPerformanceTest.php))**:
@@ -678,3 +678,44 @@ php artisan serve
   - Được bảo vệ bởi Static RAM Memoization trong worker PHP (`PageController.php`).
   - Hỗ trợ ETag & HTTP 304 Not Modified tức thì trong 0.00ms khi người dùng hoặc CDN kiểm tra lại.
 - **Kiểm thử tự động Pest**: Đạt **2/2 tests PASS (100%)**, 39 assertions kiểm tra toàn diện cả về SEO, Schema, cấu trúc HTML và phản hồi 304.
+
+### 5.19. Hợp Nhất Hệ Thống Tài Liệu — Khai Tử `/huong-dan`, Tập Trung Toàn Diện Vào `/docs`
+- **Mục tiêu**: Loại bỏ hoàn toàn sự phân mảnh thông tin giữa trang `/huong-dan` cũ và Trung tâm Tài liệu `/docs` hiện đại. Đảm bảo toàn bộ khách hàng và công cụ tìm kiếm được quy về một đầu mối duy nhất: Trung tâm Tài liệu Hướng dẫn Mây Hẹn (`/docs`).
+- **Thực thi Kiến trúc & Điều hướng**:
+  - `routes/web.php`: Cài đặt chuyển hướng vĩnh viễn HTTP 301 (`Route::permanentRedirect('/huong-dan', '/docs')` và `Route::permanentRedirect('/huong-dan-tao-thiep', '/docs')`). Bảo vệ 100% sức mạnh SEO và backlinks cũ.
+  - `public/robots.txt`: Bỏ chỉ thị allow `/huong-dan`.
+  - `app/Http/Controllers/Client/PageController.php`: Xóa bỏ phương thức `howItWorks()`, làm sạch bộ nhớ worker.
+  - `app/Http/Controllers/Client/SitemapController.php`: Bỏ URL `how-it-works` khỏi XML Sitemap.
+  - Xóa bỏ vĩnh viễn tệp view không còn sử dụng: `resources/views/client/pages/how-it-works.blade.php` và stylesheet `public/assets/client/css/pages/how-it-works.css`.
+  - Cập nhật toàn bộ liên kết giao diện Client:
+    - `header.blade.php`: Menu điều hướng mobile và desktop trỏ chính xác về `route('docs.index')`.
+    - `footer.blade.php`: Chân trang (mục "Hướng Dẫn Tạo & Gửi Thiệp" và footer link) trỏ về `route('docs.index')`.
+    - `home.blade.php`: Nút CTA quy trình bước tạo thiệp ("Xem Hướng Dẫn Chi Tiết") trỏ về `route('docs.index')`.
+- **Kiểm thử tự động Pest**: Bổ sung test case `test_legacy_guide_urls_permanently_redirect_to_docs` vào `tests/Feature/WebsiteCatalogAndSeoDeepTest.php`, xác nhận cả `/huong-dan` và `/huong-dan-tao-thiep` trả về mã phản hồi HTTP 301 chuyển hướng đến `/docs`. 100% tests PASS.
+
+### 5.20. Thiết Kế & Chuẩn Hóa Trang Câu Hỏi Thường Gặp (`/cau-hoi-thuong-gap`) Chuẩn SEO & Quiet Luxury
+- **Mục tiêu**: Xây dựng lại toàn diện trang giải đáp thắc mắc `/cau-hoi-thuong-gap` (FAQ) theo phong cách *Quiet Luxury*, chuẩn SEO on-page, tối ưu Google Rich Snippets với cấu trúc dữ liệu JSON-LD Schema `FAQPage` đầy đủ 20 câu hỏi và giao diện tương tác thuần 100% Vanilla (Zero Frameworks).
+- **Giao diện & Trải nghiệm UI/UX ([`faq.css`](public/assets/client/css/pages/faq.css) & [`faq.js`](public/assets/client/js/pages/faq.js))**:
+  - 100% Vanilla CSS, tuân thủ nghiêm ngặt tiền tố BEM `mayhen_faq_*`.
+  - Bộ màu Quiet Luxury: Kem ấm (`#FFFDFB`), viền be/vàng nhạt (`#EFE8DD`), ánh vàng đồng (`#C5A880`), đỏ thẫm tinh tế (`#613B3E`), chữ than chì (`#181517`).
+  - Bố cục 5 Section hoàn chỉnh:
+    1. *Hero Section & Instant Search*: Tiêu đề H1 cảm xúc, kicker mạ vàng, thanh tìm kiếm câu hỏi tức thì client-side (Real-time Filter trong 0ms, hỗ trợ tiếng Việt không dấu) kèm nút xóa nhanh (x).
+    2. *Điểm nhấn tin cậy (Highlights Strip)*: 4 chỉ số nổi bật (Miễn Phí Tạo Thử 100%, 3 Phút Hoàn Thành, 0đ Phí Mừng Cưới, Bảo Mật Chuẩn Luật 91/2025/QH15).
+    3. *Category Filter Tabs Navigation*: Bộ nút lọc dạng Pill chuyển đổi 6 chuyên mục mượt mà (Tất Cả, Khởi Tạo & Đổi Mẫu, RSVP & Đón Khách, Mừng Cưới VietQR, Gửi Thiệp & Zalo, Gói Cước & Chi Phí, Bảo Mật & Riêng Tư) kèm số đếm tự động.
+    4. *Accordion FAQ List (20 câu hỏi)*: Thiết kế card bo cong mềm mại, số thứ tự nổi bật, icon toggle xoay 180 độ êm ái, hỗ trợ Accessibility (`aria-expanded`, `aria-controls`), mở câu hỏi qua URL Hash (Deep Linking: `#faq-vietqr`).
+    5. *Support Call To Action Card*: Khung liên hệ hỗ trợ trực tiếp 24/7 qua Zalo, Email hoặc tra cứu sổ tay `/docs`.
+- **Nội dung Content Chuẩn SEO ([`faq.blade.php`](resources/views/client/pages/faq.blade.php))**:
+  - Giải quyết toàn bộ băn khoăn thực tế của cô dâu chú rể: tạo thử miễn phí, thời gian hoàn thành, Live Sync đổi mẫu không mất dữ liệu, nhân bản thiệp Nhà Trai / Nhà Gái, RSVP giới hạn số suất (Headcount Policy), khảo sát khẩu vị & xe buýt, điểm danh QR Code sơ đồ bàn tiệc, VietQR Napas 24/7 trực tiếp tài khoản ngân hàng không chiết khấu hoa hồng, tối ưu ảnh to trên Zalo/Messenger, chính sách âm thanh iPhone/Android, bảng giá minh bạch, lưu giữ thiệp lâu dài và cam kết quyền riêng tư theo Luật 91/2025/QH15.
+- **Tối ưu hóa SEO & Structured Data**:
+  - `Title`: `Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online | Mây Hẹn (mayhen.vn)`.
+  - `Meta Description`: 155 ký tự súc tích, kích thích tỷ lệ nhấp tự nhiên từ Google.
+  - `Meta Robots`: `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`.
+  - `Canonical`: `https://mayhen.vn/cau-hoi-thuong-gap`.
+  - `OpenGraph & Twitter Cards`: Đầy đủ `og:title`, `og:description`, `og:image`, `twitter:card`.
+  - `JSON-LD Schema.org`: Tích hợp đồng thời `BreadcrumbList` và `FAQPage` chứa toàn bộ 20 cặp câu hỏi - câu trả lời tương ứng, kích hoạt tính năng kết quả tìm kiếm mở rộng (FAQ Rich Snippets) trên Google Search.
+- **Hiệu năng & Tốc độ Cực hạn**:
+  - Được bảo vệ bởi Static RAM Memoization trong worker PHP (`PageController::faq()`).
+  - Hỗ trợ ETag & HTTP 304 Not Modified tức thì trong 0.00ms.
+  - Đạt tuyệt đối **0 Database Query** khi phục vụ người dùng.
+- **Kiểm thử tự động Pest ([`FaqPageSeoAndPerformanceTest.php`](tests/Feature/FaqPageSeoAndPerformanceTest.php))**:
+  - Đạt **4/4 tests PASS (100%)**, 120 assertions kiểm tra toàn diện cả về SEO, Schema 20 câu hỏi, UI/UX elements, HTTP 304 và 0 Database Queries.

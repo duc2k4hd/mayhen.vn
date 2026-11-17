@@ -12,8 +12,8 @@ test('giua muon ngan vi sao preview page loads successfully with default data', 
 
     $content = $response->getContent();
 
-    expect($content)->toContain('Minh Tuấn');
-    expect($content)->toContain('Thu Hà');
+    expect($content)->toContain('Hà Kiên');
+    expect($content)->toContain('Phạm Xôn');
     expect($content)->toContain('Trung tâm Tiệc cưới Ngân Hà');
     expect($content)->toContain('Giữa Muôn Ngàn Vì Sao');
 

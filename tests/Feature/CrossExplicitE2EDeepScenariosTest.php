@@ -34,7 +34,7 @@ test('DEEP-01: rsvp count increase updates seating and checkin without overridin
         'user_id' => $user->id,
         'groom_name' => 'Thanh Tùng',
         'bride_name' => 'Thu Thảo',
-        'wedding_date' => '2026-11-20',
+        'wedding_date' => now()->addMonth()->format('Y-m-d'),
     ]);
 
     $invitation = Invitation::create([

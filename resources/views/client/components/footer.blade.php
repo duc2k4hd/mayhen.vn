@@ -189,7 +189,7 @@
                         <li><a href="{{ route('about') }}" class="mayhen_client_footer_nav_link">Câu Chuyện Thương Hiệu</a></li>
                         <li><a href="{{ route('pricing') }}" class="mayhen_client_footer_nav_link">Bảng Giá Các Gói Cưới</a></li>
                         <li><a href="{{ route('blog.index') }}" class="mayhen_client_footer_nav_link">Cẩm Nang &amp; Ý Tưởng Cưới</a></li>
-                        <li><a href="{{ route('how-it-works') }}" class="mayhen_client_footer_nav_link">Quy Trình Tạo &amp; Gửi Thiệp</a></li>
+                        <li><a href="{{ route('docs.index') }}" class="mayhen_client_footer_nav_link">Hướng Dẫn Tạo &amp; Gửi Thiệp</a></li>
                         <li><a href="{{ route('contact') }}" class="mayhen_client_footer_nav_link">Hợp Tác Studio / Nhiếp Ảnh</a></li>
                         <li><a href="{{ route('faq') }}" class="mayhen_client_footer_nav_link">Câu Hỏi Thường Gặp (FAQ)</a></li>
                         <li><a href="{{ route('privacy') }}" class="mayhen_client_footer_nav_link">Chính Sách Bảo Mật Dữ Liệu</a></li>
@@ -276,7 +276,7 @@
                     <span>|</span>
                     <a href="{{ route('templates.index') }}">Thiệp cưới phong bì sáp</a>
                     <span>|</span>
-                    <a href="{{ route('how-it-works') }}">Quy trình gửi thiệp cưới Zalo</a>
+                    <a href="{{ route('docs.index') }}">Quy trình gửi thiệp cưới Zalo</a>
                 </div>
             </div>
         </div>

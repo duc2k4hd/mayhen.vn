@@ -153,8 +153,8 @@
             <span>Cẩm Nang &amp; Ý Tưởng Cưới</span>
             <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
         </a>
-        <a href="{{ route('how-it-works') }}" class="mayhen_client_header_drawer_link">
-            <span>Hướng Dẫn Tạo Thiệp</span>
+        <a href="{{ route('docs.index') }}" class="mayhen_client_header_drawer_link">
+            <span>Hướng Dẫn &amp; Tài Liệu</span>
             <span style="font-size: 0.875rem; color: var(--mayhen-color-primary);">&rarr;</span>
         </a>
         <a href="{{ route('contact') }}" class="mayhen_client_header_drawer_link">

@@ -1636,8 +1636,8 @@
                         <span>Tạo Thử Thiệp Miễn Phí</span>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
-                    <a href="{{ route('how-it-works') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_md">
-                        <span>Xem Chi Tiết Quy Trình</span>
+                    <a href="{{ route('docs.index') }}" class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_md">
+                        <span>Xem Hướng Dẫn Chi Tiết</span>
                     </a>
                 </div>
             </div>
