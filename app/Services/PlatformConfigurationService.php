@@ -27,6 +27,20 @@ class PlatformConfigurationService
                 'settings' => [
                     'brand_name' => ['label' => 'Tên Thương Hiệu', 'default' => 'Mây Hẹn Atelier', 'is_secret' => false, 'type' => 'text', 'help' => 'Tên hiển thị trên tiêu đề trang, email và hóa đơn.'],
                     'tagline' => ['label' => 'Khẩu Hiệu (Tagline)', 'default' => 'Nền tảng thiệp cưới trực tuyến cao cấp', 'is_secret' => false, 'type' => 'text', 'help' => 'Slogan xuất hiện trên banner và trang giới thiệu.'],
+                    'brand_logo' => [
+                        'label' => 'Ảnh Logo Thương Hiệu (Brand Logo)',
+                        'default' => '/storage/images/client/business/mayhen-logo.png',
+                        'is_secret' => false,
+                        'type' => 'image',
+                        'help' => 'Ảnh logo chính thức của Mây Hẹn hiển thị trên thanh Header toàn website (kích thước hiển thị 230x55px, PNG/WebP/SVG). Tự động dọn ảnh cũ trong Storage khi thay thế.',
+                    ],
+                    'brand_favicon' => [
+                        'label' => 'Biểu Tượng Favicon (Brand Favicon)',
+                        'default' => '/storage/images/client/business/mayhen-favicon.png',
+                        'is_secret' => false,
+                        'type' => 'image',
+                        'help' => 'Biểu tượng favicon hiển thị trên tab trình duyệt, bookmark và nhận diện di động (PNG/ICO tỉ lệ 1:1). Tự động dọn ảnh cũ trong Storage khi thay thế.',
+                    ],
                     'home_hero_banner' => [
                         'label' => 'Ảnh Nền Hero Trang Chủ (Banner Home)',
                         'default' => '/storage/images/client/banners/banner-home.webp',

@@ -1017,3 +1017,30 @@ php artisan serve
   - Render view thành công (75.428 bytes HTML, 0 lỗi).
   - Pest: 10/10 passed (WebsiteCatalogAndSeoDeepTest).
   - Pint: passed.
+
+### Đề án #96: Thay thế Logo Header bằng hình ảnh thật 230x55px & Tích hợp Quản lý Logo / Favicon trong Admin Settings
+- **Bối cảnh & Yêu cầu người dùng**:
+  1. Thay thế SVG icon (`mayhen_client_header_logo_icon`) và tên thương hiệu chữ (`mayhen_client_header_brand_name`) ở Header toàn trang client bằng ảnh logo thật có kích thước `width: 230px, height: 55px`, lấy từ `public/storage/images/client/business/mayhen-logo.png`.
+  2. Cho phép quản trị viên chỉnh sửa/upload ảnh **Logo** và **Favicon** trực tiếp từ trang Admin `/admin/settings/platform?group=brand_seo`.
+  3. Đảm bảo toàn bộ website (Header, Favicon meta tags) tự động đồng bộ theo cấu hình mới, không làm giảm hiệu năng (Zero DB query nhờ hệ thống Cache/Memoization có sẵn).
+- **Giải pháp kỹ thuật đã triển khai**:
+  - **1. Backend Platform Settings Configuration ([`PlatformConfigurationService.php`](app/Services/PlatformConfigurationService.php))**:
+    - Thêm 2 cấu hình mới vào nhóm `brand_seo`:
+      - `brand_logo`: Đường dẫn logo chính của website (mặc định `/storage/images/client/business/mayhen-logo.png`, `type => 'image'`).
+      - `brand_favicon`: Đường dẫn biểu tượng favicon website (mặc định `/storage/images/client/business/mayhen-favicon.png`, `type => 'image'`).
+  - **2. Quản lý Upload Ảnh & Xóa Cache trong Admin ([`AdminPlatformSettingController.php`](app/Http/Controllers/Admin/AdminPlatformSettingController.php))**:
+    - Mở rộng logic upload file trong `update()` để nhận diện trường `brand_logo` và `brand_favicon`.
+    - Tự động lưu file vào thư mục `public/storage/images/client/business/` với tiền tố `brand_logo-` và `brand_favicon-`.
+    - Bảo vệ an toàn các file gốc hệ thống (`mayhen-logo.png`, `mayhen-favicon.png`) không bị xóa nhầm khi upload ảnh mới.
+    - Tự động làm mới cache key `platform_setting_brand_seo_brand_logo` và `platform_setting_brand_seo_brand_favicon` ngay khi admin nhấn Lưu.
+  - **3. Cập nhật Blade Components ([`header.blade.php`](resources/views/client/components/header.blade.php) & [`favicon.blade.php`](resources/views/client/components/favicon.blade.php))**:
+    - Header: Thay thế cụm icon SVG + span chữ bằng `<img class="mayhen_client_header_brand_logo" src="{{ asset($headerBrandLogo) }}" alt="{{ config('app.name', 'Mây Hẹn') }}" width="230" height="55" loading="eager" decoding="async">`.
+    - Favicon: Đồng bộ toàn bộ thẻ `<link rel="icon">`, `<link rel="apple-touch-icon">` đọc động từ `PlatformSetting::getValue('brand_seo', 'brand_favicon', ...)`.
+  - **4. Styling & Tối ưu Responsive ([`header.css`](public/assets/client/css/components/header.css))**:
+    - Cấu hình `.mayhen_client_header_brand_logo` với `width: 230px; height: 55px; max-height: 55px; object-fit: contain; object-position: left center;`.
+    - Scale tỉ lệ linh hoạt trên màn hình nhỏ: `175px x 42px` ở `@media (max-width: 860px)` và `155px x 38px` ở `@media (max-width: 480px)` giúp logo luôn sắc nét, vừa vặn không làm méo hay vỡ khung header.
+- **Xác minh kết quả**:
+  - Test Suite `WebsiteCatalogAndSeoDeepTest`: 10/10 passed (63 assertions, đạt chuẩn 0 DB query).
+  - Test Suite `HomeHeroBannerCustomizationTest`: 4/4 passed (18 assertions).
+  - Render view Header thành công: sinh đúng thẻ `<img class="mayhen_client_header_brand_logo" ... width="230" height="55">`.
+  - Pint code style: passed 100%.

@@ -1,13 +1,16 @@
 <header class="mayhen_client_header_wrapper">
     <div class="mayhen_client_layout_container mayhen_client_header_container">
+        @php
+            $headerBrandLogo = \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'brand_logo', '/storage/images/client/business/mayhen-logo.png');
+        @endphp
         <!-- Logo -->
         <a href="{{ route('home') }}" class="mayhen_client_header_brand" aria-label="{{ config('app.name') }} - Thiệp Cưới Online">
-            <svg class="mayhen_client_header_logo_icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 3C16 3 13 8 9 10C5 12 3 16 3 18C3 24 9 28 16 29C23 28 29 24 29 18C29 16 27 12 23 10C19 8 16 3 16 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M16 11V23M11 16H21" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-            </svg>
-            <span class="mayhen_client_header_brand_name">{{ config('app.name') }}</span>
-            <span class="mayhen_client_header_brand_tagline">Thiệp Cưới Online</span>
+            <img src="{{ asset($headerBrandLogo) }}" 
+                 alt="{{ config('app.name') }} - Thiệp Cưới Online" 
+                 class="mayhen_client_header_brand_logo" 
+                 width="230" 
+                 height="55" 
+                 loading="eager">
         </a>
 
         <!-- Desktop Navigation -->

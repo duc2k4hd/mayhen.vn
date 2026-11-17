@@ -62,13 +62,20 @@ class AdminPlatformSettingController extends Controller
 
         $inputs = $request->all();
 
-        // Xử lý tải lên tệp ảnh (ví dụ: home_hero_banner_file)
+        // Xử lý tải lên tệp ảnh (ví dụ: home_hero_banner_file, brand_logo_file, brand_favicon_file)
         foreach ($request->allFiles() as $fileKey => $file) {
             $settingKey = str_ends_with($fileKey, '_file') ? substr($fileKey, 0, -5) : $fileKey;
             if ($file && $file->isValid()) {
-                // Xóa ảnh cũ trong Storage nếu có và là ảnh upload
+                // Danh sách tệp mặc định hệ thống không bao giờ được xóa
+                $systemDefaults = [
+                    '/storage/images/client/banners/banner-home.webp',
+                    '/storage/images/client/business/mayhen-logo.png',
+                    '/storage/images/client/business/mayhen-favicon.png',
+                ];
+
+                // Xóa ảnh cũ trong Storage nếu có và là ảnh upload do người dùng thay thế
                 $oldValue = PlatformSetting::getValue($group, $settingKey);
-                if ($oldValue && str_starts_with($oldValue, '/storage/') && $oldValue !== '/storage/images/client/banners/banner-home.webp') {
+                if ($oldValue && str_starts_with($oldValue, '/storage/') && ! in_array($oldValue, $systemDefaults, true)) {
                     $relPath = substr(parse_url($oldValue, PHP_URL_PATH), strlen('/storage/'));
                     if (Storage::disk('public')->exists($relPath)) {
                         Storage::disk('public')->delete($relPath);
@@ -76,17 +83,29 @@ class AdminPlatformSettingController extends Controller
                 }
 
                 $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
-                $filename = 'banner-home-'.Str::random(10).'.'.$ext;
-                $path = $file->storeAs('images/client/banners', $filename, 'public');
+                $directory = match ($settingKey) {
+                    'brand_logo', 'brand_favicon' => 'images/client/business',
+                    default => 'images/client/banners',
+                };
+                $prefix = match ($settingKey) {
+                    'brand_logo' => 'brand-logo-',
+                    'brand_favicon' => 'brand-favicon-',
+                    default => 'banner-home-',
+                };
+
+                $filename = $prefix.Str::random(10).'.'.$ext;
+                $path = $file->storeAs($directory, $filename, 'public');
                 $inputs[$settingKey] = '/storage/'.$path;
             }
         }
 
         $result = $this->configService->updateGroupSettings($group, $inputs, $request->user());
 
-        // Xóa memoization và cache home để cập nhật ngay lập tức
+        // Xóa memoization và cache liên quan để cập nhật ngay lập tức
         HomeController::clearMemoization();
         Cache::forget('mayhen_home_hero_banner');
+        Cache::forget('platform_setting_brand_seo_brand_logo');
+        Cache::forget('platform_setting_brand_seo_brand_favicon');
 
         if ($result['updated'] === 0) {
             return back()->with('info', 'Không có giá trị nào thay đổi trong nhóm thiết lập này.');

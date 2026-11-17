@@ -2754,7 +2754,7 @@
 /* Pagination Dots — absolute inside stage */
 .mayhen_home_showcase_pagination {
     position: absolute;
-    bottom: 10px;
+    bottom: -25px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 20;
