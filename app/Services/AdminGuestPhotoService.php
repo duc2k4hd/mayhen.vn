@@ -42,9 +42,9 @@ class AdminGuestPhotoService
                     ->orWhere('caption', 'like', "%{$keyword}%")
                     ->orWhere('ip_address', 'like', "%{$keyword}%")
                     ->orWhereHas('wedding', function ($wq) use ($keyword) {
-                        $wq->where('title', 'like', "%{$keyword}%")
-                            ->orWhere('groom_name', 'like', "%{$keyword}%")
-                            ->orWhere('bride_name', 'like', "%{$keyword}%");
+                        $wq->where('groom_name', 'like', "%{$keyword}%")
+                            ->orWhere('bride_name', 'like', "%{$keyword}%")
+                            ->orWhere('venue_name', 'like', "%{$keyword}%");
                     });
             });
         }
@@ -195,9 +195,10 @@ class AdminGuestPhotoService
 
         foreach ($photos as $item) {
             $sizeKb = round($item->file_size / 1024, 1);
+            $weddingName = $item->wedding ? ($item->wedding->groom_name.' & '.$item->wedding->bride_name) : '—';
             fputcsv($handle, [
                 $item->id,
-                $item->wedding?->title ?: '—',
+                $weddingName,
                 $item->uploader_name,
                 $item->guest?->name ?: 'Khách vãng lai',
                 $item->photo_url,

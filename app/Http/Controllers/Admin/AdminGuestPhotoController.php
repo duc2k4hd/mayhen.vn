@@ -29,7 +29,7 @@ class AdminGuestPhotoController extends Controller
         ];
 
         $data = $this->photoService->getGuestPhotosOverview($filters);
-        $weddings = Wedding::latest()->limit(50)->get(['id', 'title', 'groom_name', 'bride_name']);
+        $weddings = Wedding::latest()->limit(50)->get(['id', 'groom_name', 'bride_name', 'wedding_date']);
 
         return view('admin.pages.guest_photos.index', [
             'stats' => $data['stats'],

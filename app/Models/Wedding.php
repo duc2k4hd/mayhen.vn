@@ -166,6 +166,20 @@ class Wedding extends Model
     }
 
     /**
+     * Tiêu đề hiển thị ngắn gọn của tiệc cưới (VD: "Hà Kiên & Phạm Xôn").
+     */
+    public function getTitleAttribute(): string
+    {
+        if (! empty($this->groom_name) && ! empty($this->bride_name)) {
+            return "{$this->groom_name} & {$this->bride_name}";
+        }
+
+        return ! empty($this->groom_name)
+            ? $this->groom_name
+            : (! empty($this->bride_name) ? $this->bride_name : "Đám cưới #{$this->id}");
+    }
+
+    /**
      * Lấy danh sách các sự kiện đang hoạt động (active), tự động fallback nếu chưa có.
      */
     public function getActiveEvents()

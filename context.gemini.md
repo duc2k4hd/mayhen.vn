@@ -846,3 +846,21 @@ php artisan serve
   - 100% các vị trí ảnh (Hero Cover, Save the Date, Chú rể, Cô dâu, Album 10 ảnh cưới, Mã VietQR động, Ảnh kết thiệp) đều hiển thị ảnh cưới thật từ Storage.
   - Toàn bộ test suite `GiuaMuonNganViSaoTemplateTest`, `Gate2TemplateStudioAndSyncInvariantsTest`, `TemplateRenderAndMediaSecurityDeepTest` vượt qua 100%.
   - Định dạng code sạch sẽ theo Laravel Pint (`vendor/bin/pint --dirty --format agent`).
+
+---
+
+### Đề án #88: Khắc phục lỗi Unknown column 'title' in 'field list' tại `/admin/guest-photos`
+- **Vấn đề ghi nhận**:
+  - Khi truy cập trang quản trị Thư viện Ảnh Khách Gửi (`/admin/guest-photos`), hệ thống báo lỗi 500:
+    `SQLSTATE[42S22]: Column not found: 1054 Unknown column 'title' in 'field list' (SQL: select id, title, groom_name, bride_name from weddings order by created_at desc limit 50)`
+  - Nguyên nhân:
+    1. Trong [`AdminGuestPhotoController.php:32`](app/Http/Controllers/Admin/AdminGuestPhotoController.php), query select cột `title` không tồn tại trong bảng `weddings`. Bảng `weddings` chỉ quản lý tên theo `groom_name`, `bride_name`.
+    2. Trong [`AdminGuestPhotoService.php`](app/Services/AdminGuestPhotoService.php): Tại bộ lọc tìm kiếm từ khóa `q`, query có điều kiện `$wq->where('title', 'like', ...)` gây lỗi SQL 1054 khi người dùng tìm kiếm; hàm export CSV cũng truy cập `$item->wedding?->title`.
+- **Giải pháp triển khai**:
+  - **Sửa query Controller**: Đổi select trong `AdminGuestPhotoController::index` thành `['id', 'groom_name', 'bride_name', 'wedding_date']`.
+  - **Sửa query Service**: Trong `AdminGuestPhotoService`, đổi tìm kiếm theo `groom_name`, `bride_name`, `venue_name` thay vì `title`; khi export CSV gán tên đám cưới từ `$item->wedding->groom_name . ' & ' . $item->wedding->bride_name`.
+  - **Bổ sung Accessor an toàn trong [`Wedding.php`](app/Models/Wedding.php)**: Thêm accessor `getTitleAttribute(): string` trả về chuỗi tên ngắn gọn của tiệc cưới (`{$groom_name} & {$bride_name}`), tương thích 100% nếu có bất kỳ nơi nào truy cập `$wedding->title`.
+- **Xác minh kết quả**:
+  - Chạy `vendor/bin/pest tests/Feature/AdminGuestPhotoTest.php` và `LiveGuestPhotoDropTest.php` vượt qua 100% (22 tests, 99 assertions).
+  - Kiểm tra render trang index và lọc tìm kiếm hoạt động hoàn hảo, không còn lỗi SQL.
+  - Định dạng code với Pint (`vendor/bin/pint --dirty --format agent`).
