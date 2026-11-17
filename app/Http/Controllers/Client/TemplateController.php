@@ -429,10 +429,19 @@ class TemplateController extends Controller
             $realAssetsDir = realpath($assetsDir);
 
             if ($realAssetsDir !== false) {
+                // 1. Thử tìm đường dẫn trực tiếp
                 $candidatePath = $assetsDir.DIRECTORY_SEPARATOR.$cleanPath;
                 $realCandidate = realpath($candidatePath);
                 if ($realCandidate !== false && is_file($realCandidate) && str_starts_with($realCandidate, $realAssetsDir)) {
                     $realTarget = $realCandidate;
+                } else {
+                    // 2. Chống lặp tiền tố "assets/" (do styles.css nằm ở /assets/styles.css gọi url("assets/..."))
+                    $trimmedPath = preg_replace('#^assets/#', '', $cleanPath);
+                    $candidateTrimmed = $assetsDir.DIRECTORY_SEPARATOR.$trimmedPath;
+                    $realTrimmed = realpath($candidateTrimmed);
+                    if ($realTrimmed !== false && is_file($realTrimmed) && str_starts_with($realTrimmed, $realAssetsDir)) {
+                        $realTarget = $realTrimmed;
+                    }
                 }
             }
         }

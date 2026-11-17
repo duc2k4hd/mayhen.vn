@@ -27,10 +27,14 @@
             if (str_starts_with($override, 'data:')) {
                 return $override;
             }
+            // Trích xuất path nếu là link Storage hoặc Uploads (kể cả full URL chứa http/127.0.0.1/domain)
+            if (preg_match('#/(storage|uploads)/(.+)$#', $override, $storageMatch)) {
+                return '/' . $storageMatch[1] . '/' . $storageMatch[2];
+            }
             if (preg_match('#^/?(storage|uploads)/#', $override)) {
                 return '/' . ltrim($override, '/');
             }
-            if (preg_match('#^https?://#', $override) && !str_contains($override, 'localhost') && !str_contains($override, '127.0.0.1')) {
+            if (preg_match('#^https?://#', $override)) {
                 return $override;
             }
             $cleanOverride = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $override), '/');
@@ -167,17 +171,7 @@
         : (json_decode((string) ($invitation->custom_config ?? '{}'), true) ?? []);
     $isCuratedSeven = ! empty($isCuratedSeven) || ! empty($invConfig['is_curated_seven']) || ! empty($invConfig['is_curated']);
 
-    // --- 9. ẢNH ---
-    $heroPhotoUrl      = $resolveAsset('assets/images/hero-couple.webp',           $wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null));
-    $saveDatePhotoUrl  = $resolveAsset('assets/images/section2-couple-banner.webp', $extraData['save_date_photo_url'] ?? ($extraData['couple_banner_url'] ?? null));
-    $triptychLeftUrl   = $resolveAsset('assets/images/triptych-left.webp',          $extraData['triptych_left_url'] ?? null);
-    $triptychCenterUrl = $resolveAsset('assets/images/triptych-center.webp',        $extraData['triptych_center_url'] ?? null);
-    $triptychRightUrl  = $resolveAsset('assets/images/triptych-right.webp',         $extraData['triptych_right_url'] ?? null);
-    $groomPhotoUrl     = $resolveAsset('assets/images/groom-portrait.webp',         $extraData['groom_photo_url'] ?? ($wedding->groom_photo_url ?? null));
-    $bridePhotoUrl     = $resolveAsset('assets/images/bride-portrait.webp',         $extraData['bride_photo_url'] ?? ($wedding->bride_photo_url ?? null));
-    $footerPhotoUrl    = $resolveAsset('assets/images/footer-couple-circle.webp',   $extraData['footer_photo_url'] ?? null);
-
-    // Album 10 ảnh cưới tiêu chuẩn — mảng extra_data.gallery
+    // --- 9. ALBUM 10 ẢNH CƯỚI TIÊU CHUẨN — MẢNG EXTRA_DATA.GALLERY ---
     $defaultGalleryList = [
         0 => 'assets/images/gallery-01.webp',
         1 => 'assets/images/gallery-02.webp',
@@ -198,18 +192,46 @@
         $galleryPhotos[$g] = $resolveAsset($defaultPath, $img);
     }
 
-    // --- 10. SECTION 9: MỪNG CƯỚI ---
+    // --- 10. BỘ ẢNH TRƯNG BÀY (HERO, SAVE DATE, TRIPTYCH, PROFILE, FOOTER) ---
+    // Ưu tiên ảnh thật đã upload trong Admin hoặc từ Album Gallery thật, loại bỏ hoàn toàn ảnh hoạt hình
+    $heroCover = $wedding->cover_photo_url
+        ?? ($extraData['cover_photo_url']
+        ?? ($extraData['hero_photo_url']
+        ?? ($extraData['hero_cover_url']
+        ?? ($template->thumbnail_url
+        ?? ($galleryPhotos[0] ?? null)))));
+    $heroPhotoUrl = $resolveAsset('assets/images/hero-couple.webp', $heroCover);
+
+    $saveDatePhoto = $extraData['save_date_photo_url']
+        ?? ($extraData['couple_banner_url']
+        ?? ($galleryPhotos[1] ?? null));
+    $saveDatePhotoUrl = $resolveAsset('assets/images/section2-couple-banner.webp', $saveDatePhoto);
+
+    $triptychLeftUrl   = $resolveAsset('assets/images/triptych-left.webp',   $extraData['triptych_left_url'] ?? ($galleryPhotos[0] ?? null));
+    $triptychCenterUrl = $resolveAsset('assets/images/triptych-center.webp', $extraData['triptych_center_url'] ?? ($galleryPhotos[1] ?? null));
+    $triptychRightUrl  = $resolveAsset('assets/images/triptych-right.webp',  $extraData['triptych_right_url'] ?? ($galleryPhotos[2] ?? null));
+
+    $groomPhotoUrl     = $resolveAsset('assets/images/groom-portrait.webp', $extraData['groom_photo_url'] ?? ($wedding->groom_photo_url ?? null));
+    $bridePhotoUrl     = $resolveAsset('assets/images/bride-portrait.webp', $extraData['bride_photo_url'] ?? ($wedding->bride_photo_url ?? null));
+
+    $footerPhoto       = $extraData['footer_photo_url']
+        ?? ($extraData['couple_photo_url']
+        ?? ($galleryPhotos[3]
+        ?? ($saveDatePhotoUrl ?? null)));
+    $footerPhotoUrl    = $resolveAsset('assets/images/footer-couple-circle.webp', $footerPhoto);
+
+    // --- 11. SECTION 9: MỪNG CƯỚI & MÃ QR ---
     $groomBankName    = $extraData['groom_bank_name']    ?? 'Vietcombank';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123456789';
-    $groomAccountName = $extraData['groom_account_name'] ?? 'NGUYEN DINH SANG';
-    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['qr_groom_image'] ?? null);
+    $groomAccountName = $extraData['groom_account_name'] ?? ($extraData['groom_bank_owner'] ?? 'NGUYEN DINH SANG');
+    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null));
 
     $brideBankName    = $extraData['bride_bank_name']    ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '9876543210';
-    $brideAccountName = $extraData['bride_account_name'] ?? 'NGUYEN HOAI THUONG';
-    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['qr_bride_image'] ?? null);
+    $brideAccountName = $extraData['bride_account_name'] ?? ($extraData['bride_bank_owner'] ?? 'NGUYEN HOAI THUONG');
+    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null));
 
-    // --- 11. SECTION 10: ENDING ---
+    // --- 12. SECTION 10: ENDING ---
     $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? 'Thank You');
     $endingText  = $extraData['thank_you_quote'] ?? ($extraData['ending_text'] ?? 'Sự hiện diện của quý khách là niềm vinh hạnh lớn nhất của chúng tôi!');
 

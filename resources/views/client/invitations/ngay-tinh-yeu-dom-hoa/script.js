@@ -286,9 +286,13 @@
         if (isEmbed) {
             rootEl.classList.add("mayhen_invitation_root--opened");
         } else {
+            var envelope = rootEl.querySelector(".mayhen_invitation_envelope");
+            var openingScreen = rootEl.querySelector(".mayhen_invitation_opening");
             if (leftDoor) leftDoor.addEventListener("click", openDoors);
             if (rightDoor) rightDoor.addEventListener("click", openDoors);
             if (openBtn) openBtn.addEventListener("click", openDoors);
+            if (envelope) envelope.addEventListener("click", openDoors);
+            if (openingScreen) openingScreen.addEventListener("click", openDoors);
         }
 
         var nextCue = rootEl.querySelector("[data-scroll-next]");

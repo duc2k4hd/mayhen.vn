@@ -158,13 +158,14 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
 }
 
 /* ==========================================================================
-   0. CLOUD DOORS OPENING SCREEN & FLOATING CONTROLS (EXACT SOURCE CLONE)
+   0. CLOUD DOORS OPENING SCREEN & FLOATING CONTROLS
    ========================================================================== */
 .mayhen_invitation_opening {
     position: fixed;
     inset: 0;
     z-index: 9999;
     pointer-events: none;
+    transition: opacity 0.8s ease 1s, visibility 0.8s ease 1s;
 }
 
 .mayhen_invitation_cloud_door {
@@ -173,12 +174,14 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
     width: 50vw;
     height: 100vh;
     z-index: 9999;
-    background-image: url("assets/images/cloud-door-gate.webp");
+    background-color: #7b1113;
+    background-image: url("images/cloud-door-gate.webp"), url("assets/images/cloud-door-gate.webp");
     background-repeat: no-repeat;
     background-size: 200% 100%;
-    transition: transform 4s ease-in-out;
+    transition: transform 1.8s cubic-bezier(0.77, 0, 0.175, 1);
     cursor: pointer;
     pointer-events: auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
 }
 
 .mayhen_invitation_cloud_door--left {
@@ -189,6 +192,69 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
 .mayhen_invitation_cloud_door--right {
     right: 0;
     background-position: right center;
+}
+
+/* Phong ấn Song Hỷ ở giữa 2 cánh cửa */
+.mayhen_invitation_envelope {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: opacity 0.6s ease, transform 0.8s ease;
+}
+
+.mayhen_invitation_envelope__song_hy {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
+    animation: mayhenPulse 2s infinite ease-in-out;
+}
+
+.mayhen_invitation_open_btn {
+    position: fixed;
+    top: calc(50% + 72px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10002;
+    background: #8e0101;
+    color: #ffffff;
+    border: 2px solid #fce39e;
+    border-radius: 30px;
+    cursor: pointer;
+    padding: 8px 26px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.5s ease, transform 0.3s ease;
+    pointer-events: auto;
+}
+
+.mayhen_invitation_open_btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    background: #a50000;
+}
+
+.mayhen_invitation_open_btn__text {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+    letter-spacing: 2px;
+    font-family: var(--mayhen-invitation-serif-font, serif);
+}
+
+/* Khi đã mở thiệp: Trượt 2 cánh cửa và ẩn vĩnh viễn phong ấn & nút mở */
+.mayhen_invitation_root--opened .mayhen_invitation_opening {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
 
 .mayhen_invitation_root--opened .mayhen_invitation_cloud_door--left {
@@ -203,41 +269,17 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
     pointer-events: none;
 }
 
-.mayhen_invitation_open_btn {
-    position: fixed;
-    top: 22%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10000;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    transition: opacity 0.5s ease;
-}
-
-@media (min-width: 768px) {
-    .mayhen_invitation_open_btn {
-        top: 12%;
-    }
+.mayhen_invitation_root--opened .mayhen_invitation_envelope {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.25);
+    pointer-events: none !important;
+    display: none;
 }
 
 .mayhen_invitation_root--opened .mayhen_invitation_open_btn {
     opacity: 0;
-    pointer-events: none;
+    pointer-events: none !important;
     display: none;
-}
-
-.mayhen_invitation_open_btn__text {
-    display: block;
-    font-size: 28px;
-    font-weight: 700;
-    color: #ffffff;
-    white-space: nowrap;
-    letter-spacing: 2px;
-    font-family: var(--mayhen-invitation-script-font);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 192, 203, 0.6);
-    animation: mayhenPulseText 1.5s infinite;
 }
 
 /* Floating Music Button & Hint (#music-toggle, #music-hint) */
@@ -382,7 +424,8 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
 .mayhen_invitation_section {
     position: relative;
     width: 100%;
-    background-image: url("assets/images/bg-paper-texture.webp");
+    background-color: #fffaf5;
+    background-image: url("images/bg-paper-texture.webp"), url("assets/images/bg-paper-texture.webp");
     background-repeat: repeat-y;
     background-size: 100% auto;
     background-position: top center;
@@ -547,8 +590,43 @@ body.mayhen_template_auto_opened .mayhen_invitation_root,
     right: 0;
 }
 
+.mayhen_invitation_ladi_headline_wedding_day {
+    font-family: var(--mayhen-invitation-serif-font, serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--mayhen-invitation-accent, #8e0101);
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 14px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.mayhen_invitation_ladi_paragraph_lunar_calendar {
+    font-family: var(--mayhen-invitation-body-font, sans-serif);
+    font-size: 13px;
+    color: var(--mayhen-invitation-text, #181517);
+    text-align: center;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.mayhen_invitation_ladi_paragraph_slogan {
+    font-family: var(--mayhen-invitation-serif-font, serif);
+    font-style: italic;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--mayhen-invitation-text, #181517);
+    text-align: center;
+    max-width: 320px;
+    margin: 0 auto 16px;
+    padding: 0 12px;
+    width: 100%;
+}
+
 .mayhen_invitation_hero__scroll_cue {
-    margin-top: 6px;
+    margin-top: 18px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;

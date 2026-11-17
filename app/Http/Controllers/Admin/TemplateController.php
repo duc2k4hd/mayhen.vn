@@ -382,7 +382,7 @@ class TemplateController extends Controller
                         $defaultConfig['hero_cover_url'] = $uploadedPhoto;
                     }
                 }
-            } elseif ($request->has($urlField)) {
+            } elseif ($request->filled($urlField)) {
                 $defaultConfig[$urlField] = $request->input($urlField);
                 if ($urlField === 'cover_photo_url') {
                     $defaultConfig['hero_photo_url'] = $request->input($urlField);
@@ -452,7 +452,7 @@ class TemplateController extends Controller
             if ($uploadedGroomQr) {
                 $defaultConfig['groom_qr_url'] = $uploadedGroomQr;
             }
-        } elseif ($request->has('groom_qr_url')) {
+        } elseif ($request->filled('groom_qr_url')) {
             $defaultConfig['groom_qr_url'] = $request->input('groom_qr_url');
         }
 
@@ -461,7 +461,7 @@ class TemplateController extends Controller
             if ($uploadedBrideQr) {
                 $defaultConfig['bride_qr_url'] = $uploadedBrideQr;
             }
-        } elseif ($request->has('bride_qr_url')) {
+        } elseif ($request->filled('bride_qr_url')) {
             $defaultConfig['bride_qr_url'] = $request->input('bride_qr_url');
         }
 
