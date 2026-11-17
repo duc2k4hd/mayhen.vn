@@ -864,3 +864,32 @@ php artisan serve
   - Chạy `vendor/bin/pest tests/Feature/AdminGuestPhotoTest.php` và `LiveGuestPhotoDropTest.php` vượt qua 100% (22 tests, 99 assertions).
   - Kiểm tra render trang index và lọc tìm kiếm hoạt động hoàn hảo, không còn lỗi SQL.
   - Định dạng code với Pint (`vendor/bin/pint --dirty --format agent`).
+
+---
+
+### Đề án #89: Chuẩn hóa hệ thống ảnh thiệp cưới — Đồng bộ 100% giữa Codebase (assets), Storage, Database (default_config), Template Blade và Studio
+- **Vấn đề ghi nhận**:
+  - Người dùng phản ánh khi sửa ảnh thật trong Admin thì ngoài giao diện xem thử và thiệp vẫn còn hiển thị ảnh hoạt hình chibi rác hoặc khung ảnh bị trắng trơn/trống rỗng.
+  - Phân tích nguyên nhân gốc rễ:
+    1. Thư mục `assets/` của các mẫu (`hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `mayhen-curated`) chứa toàn bộ ảnh vẽ vector hoạt hình chibi (dung lượng 8KB-18KB) từ lúc clone mẫu ban đầu. Trong Blade, khi `$resolveAsset` không tìm thấy override hoặc khi trường cấu hình bị rỗng, hệ thống fallback về các file chibi này.
+    2. Tại `ngay-tinh-yeu-dom-hoa`, CSS gọi `url("images/cloud-door-gate.webp")` trả về 404 do thiếu route phục vụ trực tiếp asset không qua tiền tố `assets/`, làm cánh cửa mở thiệp bị lỗi trong suốt làm lộ nội dung bên dưới và đè biểu tượng Song Hỷ lên góc trên màn hình.
+    3. Tại `giua-muon-ngan-vi-sao`, template Blade vẫn còn tham chiếu tên các file hash cũ (`7da1e3...`, `b058b3...`) làm giá trị fallback.
+    4. Tại `tron-kiep-nay-ben-nhau`, chưa có thư mục storage và album 10 ảnh trong DB bị thiếu.
+- **Giải pháp triển khai**:
+  - **Đồng bộ hóa 100% ảnh thật vào thư mục `assets/` (Xóa bỏ triệt để ảnh hoạt hình chibi)**:
+    - Thay thế toàn bộ các file chibi trong `assets/` của `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `mayhen-curated` bằng chính các tệp ảnh cưới thật chất lượng cao từ Storage.
+    - Đảm bảo ngay cả khi template rơi vào trường hợp fallback, 100% ảnh hiển thị luôn là ảnh cưới người thật tuyệt đẹp.
+  - **Khắc phục lỗi 404 cho asset cánh cửa mở thiệp ([`routes/web.php`](routes/web.php))**:
+    - Bổ sung route `Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])->where('path', '^(?!assets/).+');`.
+    - Asset cánh cửa `cloud-door-gate.webp` và các asset trong CSS giờ đây trả về HTTP 200 OK cho cả đường dẫn trực tiếp và đường dẫn qua `assets/`.
+  - **Chuẩn hóa template `giua-muon-ngan-vi-sao`**:
+    - Cập nhật toàn bộ fallback trong `template.blade.php` sang tên chuẩn ngữ nghĩa: `hero-placeholder.webp`, `groom-placeholder.webp`, `bride-placeholder.webp`, `story-placeholder.webp`, `footer-placeholder.webp`.
+    - Xóa bỏ hoàn toàn các mã hash rác.
+  - **Khởi tạo Storage & đồng bộ Database cho `tron-kiep-nay-ben-nhau`**:
+    - Khởi tạo thư mục `storage/app/public/templates/tron-kiep-nay-ben-nhau/{photos,gallery,qr}` và nạp đầy đủ ảnh chụp áo dài truyền thống vào storage.
+    - Cập nhật `default_config` trong Database trỏ vào các tệp `/storage/...` hợp lệ.
+    - Cập nhật `template.blade.php` của mẫu này đồng bộ các trường `groom_qr_url`, `bride_qr_url`, `music_url`.
+- **Xác minh kết quả**:
+  - Kiểm tra curl HTTP status code tới toàn bộ ảnh trên 5 mẫu thiệp: 100% trả về HTTP 200 OK.
+  - Chạy toàn bộ Pest test suites liên quan (`GiuaMuonNganViSaoTemplateTest`, `Gate2TemplateStudioAndSyncInvariantsTest`, `TemplateRenderAndMediaSecurityDeepTest`, `AdminGuestPhotoTest`, `HacBachTraoDuyenTemplateTest`, `NetMucTinhYeuTemplateTest`): PASS 100% với hơn 400 assertions.
+  - Định dạng code sạch sẽ theo Laravel Pint (`vendor/bin/pint --dirty --format agent`).

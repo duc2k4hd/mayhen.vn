@@ -136,11 +136,11 @@
     };
 
     // Ảnh chính của mẫu (Đồng bộ tuyệt đối từ Database Showcase & Storage)
-    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? ($extraData['hero_cover_url'] ?? null))), '7da1e3a6d59c1a98.webp');
-    $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'b058b38c28460637.webp');
-    $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), '307b8d7ea14424b9.webp');
-    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? ($extraData['triptych_center_url'] ?? null), 'c3655bd60267c1b2.webp');
-    $ketPhotoUrl = $resolveAsset($extraData['footer_photo_url'] ?? ($extraData['ket_photo_url'] ?? null), 'f5cbab06395d882b.webp');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? ($extraData['hero_cover_url'] ?? null))), 'hero-placeholder.webp');
+    $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'groom-placeholder.webp');
+    $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), 'bride-placeholder.webp');
+    $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? ($extraData['triptych_center_url'] ?? null), 'story-placeholder.webp');
+    $ketPhotoUrl = $resolveAsset($extraData['footer_photo_url'] ?? ($extraData['ket_photo_url'] ?? null), 'footer-placeholder.webp');
     // 3. Lời ngỏ & Chuyện tình yêu (Love Story)
     $storyTitle = $extraData['story_title'] ?? 'Chuyện Tình Yêu';
     $storySubtitle = $extraData['story_subtitle'] ?? 'Hành Trình Gặp Gỡ Giữa Ngân Hà';
@@ -168,22 +168,22 @@
     $defaultGallery = (! empty($template) && ! empty($template->default_gallery))
         ? $template->default_gallery
         : [
-            'c3655bd60267c1b2.webp',
-            'a5a53978e8384d26.webp',
-            '7da1e3a6d59c1a98.webp',
-            '40f8fb60afcb59af.webp',
-            '4d93c5df689bbae4.webp',
-            '872462fa026e4df9.webp',
-            '14325e164a136da2.webp',
-            'f5cbab06395d882b.webp',
-            '686ca1bfd6d65f13.webp',
-            'fbf493cec2de5fdc.webp',
+            'hero-placeholder.webp',
+            'story-placeholder.webp',
+            'groom-placeholder.webp',
+            'bride-placeholder.webp',
+            'footer-placeholder.webp',
+            'hero-placeholder.webp',
+            'story-placeholder.webp',
+            'groom-placeholder.webp',
+            'bride-placeholder.webp',
+            'footer-placeholder.webp',
         ];
     $rawGallery = $wedding->extra_data['gallery'] ?? ($extraData['gallery'] ?? []);
     $gallery = [];
     for ($i = 0; $i < 10; $i++) {
-        $p = ! empty($rawGallery[$i]) ? $rawGallery[$i] : ($defaultGallery[$i] ?? 'c3655bd60267c1b2.webp');
-        $gallery[] = $resolveAsset($p, $defaultGallery[$i] ?? 'c3655bd60267c1b2.webp');
+        $p = ! empty($rawGallery[$i]) ? $rawGallery[$i] : ($defaultGallery[$i] ?? 'hero-placeholder.webp');
+        $gallery[] = $resolveAsset($p, $defaultGallery[$i] ?? 'hero-placeholder.webp');
     }
 
     $musicUrl = $resolveAsset($wedding->music_url ?? null, 'wedding-song.mp3');

@@ -119,6 +119,7 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
 Route::get('/xem-thu-tinh-nang/{feature}', [PremiumPreviewController::class, 'preview'])->name('premium.preview');
 Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
+Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])->where('path', '^(?!assets/).+')->name('templates.asset.direct');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
 

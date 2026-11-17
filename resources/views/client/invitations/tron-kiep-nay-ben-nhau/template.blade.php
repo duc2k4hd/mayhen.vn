@@ -194,20 +194,20 @@
     // --- 10. SECTION 9: HỘP MỪNG CƯỚI ---
     $groomBankName    = $extraData['groom_bank_name']    ?? 'Vietcombank - CN Cần Thơ';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '1029384756';
-    $groomAccountName = $extraData['groom_account_name'] ?? 'TRAN QUOC HUNG';
-    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['qr_groom_image'] ?? null);
+    $groomAccountName = $extraData['groom_bank_owner'] ?? ($extraData['groom_account_name'] ?? 'TRAN QUOC HUNG');
+    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null));
 
     $brideBankName    = $extraData['bride_bank_name']    ?? 'Techcombank - CN Bạc Liêu';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '190345678901';
-    $brideAccountName = $extraData['bride_account_name'] ?? 'AU MY ANH';
-    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['qr_bride_image'] ?? null);
+    $brideAccountName = $extraData['bride_bank_owner'] ?? ($extraData['bride_account_name'] ?? 'AU MY ANH');
+    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null));
 
     // --- 11. SECTION 10: TƯƠNG TÁC & LỜI CẢM ƠN ---
     $endingTitle    = $extraData['thank_you_title'] ?? 'Thank You!';
     $endingText     = $extraData['thank_you_quote'] ?? 'Sự hiện diện của quý vị là niềm vinh hạnh lớn nhất cho gia đình chúng tôi!';
-    $footerPhotoUrl = $resolveAsset('assets/images/ceremony-aodai-02.webp', $extraData['footer_photo_url'] ?? null);
+    $footerPhotoUrl = $resolveAsset('assets/images/ceremony-aodai-02.webp', $extraData['footer_photo_url'] ?? ($extraData['couple_photo_url'] ?? null));
 
-    $musicUrl       = $resolveAsset('assets/audio/wedding-melody.mp3', $extraData['background_music_url'] ?? null);
+    $musicUrl       = $resolveAsset('assets/audio/wedding-melody.mp3', $wedding->music_url ?? ($extraData['music_url'] ?? ($extraData['background_music_url'] ?? null)));
     $rsvpEndpoint   = $rsvpSubmitUrl ?? '';
     $wishEndpoint   = $wishSubmitUrl ?? '';
     $sigEndpoint    = '';
