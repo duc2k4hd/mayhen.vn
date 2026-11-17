@@ -994,3 +994,26 @@ php artisan serve
   - Render view thành công (74.317 bytes HTML, 0 lỗi).
   - Pest: 10/10 passed (WebsiteCatalogAndSeoDeepTest).
   - Pint: passed.
+
+### Đề án #95: Tái thiết kế Hero Section trang /ve-may-hen chuẩn Atelier Haute Couture
+- **Vấn đề ghi nhận (từ ảnh chụp của người dùng)**:
+  - Khối Hero trước đó bị đơn điệu, phẳng lì trên nền trắng, logo tròn đặt chênh vênh, chữ "CÂU CHUYỆN THƯƠNG HIỆU" với 2 gạch ngang thô cứng.
+  - Tiêu đề thiếu nhịp điệu mỹ thuật, 2 đoạn văn bản căn giữa bị ngắt dòng rơi rụng các từ lẻ loi ("và những người thương quý.", "riêng của hai người.") tạo cảm giác luộm thuộm. Ký tự phân cách "✦ ✿ ✦" lỗi thời.
+- **Giải pháp triển khai**:
+  - **1. Thiết kế lại Hero Header & Huy hiệu Thương hiệu ([`about.blade.php`](resources/views/client/pages/about.blade.php) & [`about.css`](public/assets/client/css/pages/about.css))**:
+    - **Nền Ánh Sáng Ấm**: `radial-gradient(ellipse 75% 55% at 50% 0%, rgba(197, 168, 128, 0.22) 0%, rgba(255, 253, 249, 0.75) 50%, var(--mh-about-bg) 100%)` với đường chỉ vàng hairline tinh tế ở đỉnh.
+    - **Atelier Crest Medallion**: Logo Mây Hẹn đặt trong khung huy hiệu tròn viền kép vàng champagne ánh kim (`border: 1.5px solid #C5A880; box-shadow: 0 0 0 4px rgba(197, 168, 128, 0.16), 0 12px 30px rgba(97, 59, 62, 0.08);`), bên dưới là kicker `✦ CÂU CHUYỆN THƯƠNG HIỆU ✦`.
+    - **Typography Editorial Đẳng Cấp**:
+      - Nhãn thương hiệu: `MÂY HẸN ATELIER` (dãn cách 0.22em).
+      - Tiêu đề phân tầng: `Nơi Những Lời Hẹn` kết hợp cùng dòng chữ nghiêng hoa lệ `Trở Thành Ngày Chung Đôi` mạ gradient vàng gold quý tộc (`-webkit-background-clip: text`).
+  - **2. Bức Thư Lụa Đầu Tiên (The Atelier Silk Letter Parchment)**:
+    - Đóng khung hai đoạn văn trong một chiếc card mở như chất giấy mỹ thuật cao cấp (`.mayhen_about_hero_letter_card`), bo góc 20px, 4 góc đính họa tiết góc vàng hoàng gia (Gold Hairline Corner Accents).
+    - Căn chỉnh dòng văn bản cân đối hoàn hảo với `text-wrap: balance; max-width: 650px; line-height: 1.95;`, triệt tiêu hoàn toàn hiện tượng rớt chữ cộc lốc.
+    - Dải ruy băng phân cách tinh xảo giữa 2 đoạn văn với icon hoa văn `❦` mạ vàng.
+    - Chữ ký trang trọng chân bức thư: `✦ Lời ngỏ từ Mây Hẹn Atelier ✦`.
+  - **3. Tối ưu Responsive**:
+    - Trên tablet và mobile, card tự động co giãn êm ái, padding gọn gàng, cỡ chữ đọc rõ nét, không bị tràn viền.
+- **Xác minh kết quả**:
+  - Render view thành công (75.428 bytes HTML, 0 lỗi).
+  - Pest: 10/10 passed (WebsiteCatalogAndSeoDeepTest).
+  - Pint: passed.

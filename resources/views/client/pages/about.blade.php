@@ -81,26 +81,52 @@
 
 @section('content')
 <div class="mayhen_about_wrapper">
-    {{-- 1. HERO SECTION: LỜI MỞ ĐẦU THƯƠNG HIỆU --}}
+    {{-- 1. HERO SECTION: LỜI MỞ ĐẦU THƯƠNG HIỆU (ATELIER HAUTE COUTURE) --}}
     <section class="mayhen_about_hero">
         <div class="mayhen_about_hero_container">
-            <div class="mayhen_about_hero_logo_wrap">
-                <img src="{{ asset('storage/images/client/business/mayhen-favicon.png') }}" 
-                     alt="Biểu Tượng Mây Hẹn" 
-                     class="mayhen_about_hero_logo_img" 
-                     width="72" 
-                     height="72" 
-                     loading="eager">
+            {{-- Huy hiệu Monogram Hoàng Gia Mây Hẹn --}}
+            <div class="mayhen_about_hero_crest">
+                <div class="mayhen_about_hero_crest_box">
+                    <img src="{{ asset('storage/images/client/business/mayhen-favicon.png') }}" 
+                         alt="Biểu Tượng Mây Hẹn" 
+                         class="mayhen_about_hero_crest_img" 
+                         width="72" 
+                         height="72" 
+                         loading="eager">
+                </div>
+                <span class="mayhen_about_hero_kicker">Câu Chuyện Thương Hiệu</span>
             </div>
-            <span class="mayhen_about_kicker">Câu Chuyện Thương Hiệu</span>
-            <h1 class="mayhen_about_hero_title">Mây Hẹn — Nơi Những Lời Hẹn<br>Trở Thành Ngày Chung Đôi</h1>
-            <p class="mayhen_about_hero_lead">
-                Có những lời hẹn bắt đầu thật giản dị: một cuộc gặp gỡ, một cái nắm tay, một lời đồng ý. Rồi đến một ngày, hai người muốn chia sẻ niềm vui ấy với gia đình, bạn bè và những người thương quý.
-            </p>
-            <p class="mayhen_about_hero_lead" style="margin-top: -18px; font-weight: 500; color: var(--mh-about-text-heading);">
-                <strong>Mây Hẹn</strong> đồng hành cùng khoảnh khắc ấy. Không chỉ để tạo nên một tấm thiệp cưới đẹp, mà để mỗi lời mời được gửi đi bằng sự trân trọng và mang trọn vẹn dấu ấn riêng của hai người.
-            </p>
-            <div class="mayhen_about_hero_symbol" aria-hidden="true">✦ ✿ ✦</div>
+
+            {{-- Tiêu đề Typography Editorial --}}
+            <span class="mayhen_about_hero_brand_lead">MÂY HẸN ATELIER</span>
+            <h1 class="mayhen_about_hero_title">
+                Nơi Những Lời Hẹn
+                <span class="mayhen_about_hero_title_highlight">Trở Thành Ngày Chung Đôi</span>
+            </h1>
+
+            {{-- Bức Thư Lụa Đầu Tiên (The Atelier Silk Letter Parchment) --}}
+            <div class="mayhen_about_hero_letter_card">
+                <span class="mayhen_about_hero_letter_corner mayhen_about_hero_letter_corner--tl" aria-hidden="true"></span>
+                <span class="mayhen_about_hero_letter_corner mayhen_about_hero_letter_corner--tr" aria-hidden="true"></span>
+                <span class="mayhen_about_hero_letter_corner mayhen_about_hero_letter_corner--bl" aria-hidden="true"></span>
+                <span class="mayhen_about_hero_letter_corner mayhen_about_hero_letter_corner--br" aria-hidden="true"></span>
+
+                <p class="mayhen_about_hero_letter_p1">
+                    Có những lời hẹn bắt đầu thật giản dị: một cuộc gặp gỡ, một cái nắm tay, một lời đồng ý. Rồi đến một ngày, hai người muốn sẻ chia niềm vui thiêng liêng ấy với gia đình, bạn bè và những người thương quý.
+                </p>
+
+                <div class="mayhen_about_hero_letter_divider" aria-hidden="true">
+                    <span class="mayhen_about_hero_letter_divider_heart">❦</span>
+                </div>
+
+                <p class="mayhen_about_hero_letter_p2">
+                    <strong>Mây Hẹn</strong> đồng hành cùng khoảnh khắc ấy. Không chỉ để tạo nên một tấm thiệp cưới đẹp, mà để mỗi lời mời được gửi đi bằng sự trân trọng và mang trọn vẹn dấu ấn riêng của hai người.
+                </p>
+
+                <div class="mayhen_about_hero_letter_sign">
+                    ✦ Lời ngỏ từ Mây Hẹn Atelier ✦
+                </div>
+            </div>
         </div>
     </section>
 
